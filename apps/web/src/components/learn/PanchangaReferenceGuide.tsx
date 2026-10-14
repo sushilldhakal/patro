@@ -242,7 +242,7 @@ export function KaranaReferenceTable() {
         <tbody>
           <tr className={learnRefHighlightRow}>
             <td className={patroMono}>{N(1)}</td>
-            <td>{bilingualText(lang, tFor("ne", "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}</td>
+            <td>{bilingualText(lang, tFor(undefined, "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}</td>
             <td>{t("learn.fixed")}</td>
             <td>{t("learn.first_half_of_shukla_pratipada_once_a_year")}</td>
           </tr>

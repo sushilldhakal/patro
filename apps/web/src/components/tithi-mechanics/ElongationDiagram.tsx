@@ -146,12 +146,12 @@ export function ElongationDiagram({
   earthPathMonths = 1,
   onE,
   compact,
-  month = tFor("ne", "learn.ashadh"),
+  month = tFor(undefined, "learn.ashadh"),
 }: Props) {
   const fmt = (n: number) => toNepaliDigits(n);
   const elapsedDay = lunarDay ?? (EProp / 360) * SYNODIC_MONTH;
   const E = lunarDay != null ? ((elapsedDay % SYNODIC_MONTH) / SYNODIC_MONTH) * 360 : EProp;
-  const curPaksha = (((E % 360) + 360) % 360) < 180 ? tFor("ne", "common.paksha_shukla") : tFor("ne", "common.paksha_krishna");
+  const curPaksha = (((E % 360) + 360) % 360) < 180 ? tFor(undefined, "common.paksha_shukla") : tFor(undefined, "common.paksha_krishna");
   const idx = tithiIndexFromElongation(E);
   const [earthX, earthY] = earthPosFromLunarDay(elapsedDay);
   const earthArc = earthOrbitDegFromLunarDay(elapsedDay);
@@ -362,7 +362,7 @@ export function ElongationDiagram({
           className={edEarthOrbitLabel}
           textAnchor="middle"
         >
-          {tFor("ne", "ui.tithi_mechanics.x_1535357f")}{fmt(Math.round(earthArcSpan))}° / {fmt(earthPathMonths)}{tFor("ne", "ui.tithi_mechanics.x_5ee8838b")}
+          {tFor(undefined, "ui.tithi_mechanics.x_1535357f")}{fmt(Math.round(earthArcSpan))}° / {fmt(earthPathMonths)}{tFor(undefined, "ui.tithi_mechanics.x_5ee8838b")}
         </text>
       )}
 
@@ -373,7 +373,7 @@ export function ElongationDiagram({
 
       <path d={orbitDirPath} className={edOrbitDir} fill="none" markerEnd="url(#ed-orbit-arrow)" />
       <text x={earthX} y={earthY - ED.R - 18} className={edOrbitDirLabel} textAnchor="middle">
-        {tFor("ne", "ui.tithi_mechanics.x_6925b398")}
+        {tFor(undefined, "ui.tithi_mechanics.x_6925b398")}
       </text>
 
       {!compact && degTicks}
@@ -386,7 +386,7 @@ export function ElongationDiagram({
           className={edPakshaOn(curPaksha === /* copy-ok */ "शुक्ल")}
           textAnchor="middle"
         >
-          {month}{tFor("ne", "ui.tithi_mechanics.x_9f3dfb72")}
+          {month}{tFor(undefined, "ui.tithi_mechanics.x_9f3dfb72")}
         </text>
       )}
       {!compact && (
@@ -396,7 +396,7 @@ export function ElongationDiagram({
           className={edPakshaOn(curPaksha === /* copy-ok */ "कृष्ण")}
           textAnchor="middle"
         >
-          {month}{tFor("ne", "ui.tithi_mechanics.x_c856afad")}
+          {month}{tFor(undefined, "ui.tithi_mechanics.x_c856afad")}
         </text>
       )}
 
@@ -429,7 +429,7 @@ export function ElongationDiagram({
       ))}
       <circle cx={ED.sunX} cy={ED.sunY} r={ED.sunR} fill="url(#ed-sun)" />
       <text x={ED.sunX} y={ED.sunY + ED.sunR + 30} className={edBodyLabel} textAnchor="middle">
-        {tFor("ne", "kundali.report.meta_sun")}
+        {tFor(undefined, "kundali.report.meta_sun")}
       </text>
 
       <g className={hoEarthGroup} transform={`translate(${earthX - ED.earthX0} ${earthY - ED.earthY0})`}>
@@ -455,10 +455,10 @@ export function ElongationDiagram({
         />
         <circle cx={ED.earthX0 + axUx * ED.earthR} cy={ED.earthY0 + axUy * ED.earthR} r={4} className={edTiltCap} />
         <text x={ED.earthX0 + axUx * ED.earthR * 1.5 + 8} y={ED.earthY0 + axUy * ED.earthR * 1.5 - 2} textAnchor="start" className={edTiltLabel}>
-          {tFor("ne", "ui.tithi_mechanics.x_cb1f3f30")}{fmt(EARTH_AXIAL_TILT)}°
+          {tFor(undefined, "ui.tithi_mechanics.x_cb1f3f30")}{fmt(EARTH_AXIAL_TILT)}°
         </text>
         <text x={ED.earthX0} y={ED.earthY0 + ED.earthR + 22} className={edBodyLabel} textAnchor="middle">
-          {tFor("ne", "vastu.element.earth")}
+          {tFor(undefined, "vastu.element.earth")}
         </text>
       </g>
 
@@ -467,16 +467,16 @@ export function ElongationDiagram({
       </g>
 
       <text x={amX - 14} y={amY - 30} className={edEndNe()} textAnchor="middle">
-        {tFor("ne", "learn.aunsi")}
+        {tFor(undefined, "learn.aunsi")}
       </text>
       <text x={amX - 14} y={amY - 12} className={edEndEn()} textAnchor="middle">
-        {tFor("ne", "ui.tithi_mechanics.x_913f369e")}
+        {tFor(undefined, "ui.tithi_mechanics.x_913f369e")}
       </text>
       <text x={puX + 16} y={puY - 30} className={edEndNe()} textAnchor="middle">
-        {tFor("ne", "learn.purnima")}
+        {tFor(undefined, "learn.purnima")}
       </text>
       <text x={puX + 16} y={puY - 12} className={edEndEn()} textAnchor="middle">
-        {tFor("ne", "ui.tithi_mechanics.x_0df195b8")}
+        {tFor(undefined, "ui.tithi_mechanics.x_0df195b8")}
       </text>
     </svg>
   );

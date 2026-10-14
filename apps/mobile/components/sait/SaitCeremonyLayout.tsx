@@ -119,7 +119,7 @@ export function SaitCeremonyLayout({
   const countText = countLabel
     ? countLabel(displayCount, year)
     : pick(
-        tFor("ne", "ui.sait.x_63f5f4fd", { v0: digits(year), v1: digits(displayCount) }),
+        tFor(undefined, "ui.sait.x_63f5f4fd", { v0: digits(year), v1: digits(displayCount) }),
         `${displayCount} auspicious days in ${year}`,
       );
 

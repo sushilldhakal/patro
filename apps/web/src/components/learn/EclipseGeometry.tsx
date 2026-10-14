@@ -173,14 +173,14 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
 
   const statusLabel =
     status === "total"
-      ? tFor("ne", "learn.study.eclipse.status_total")
+      ? tFor(undefined, "learn.study.eclipse.status_total")
       : status === "partial"
-        ? tFor("ne", "learn.study.eclipse.status_partial")
+        ? tFor(undefined, "learn.study.eclipse.status_partial")
         : status === "penumbral"
-          ? tFor("ne", "ui.learn.x_0793f232")
+          ? tFor(undefined, "ui.learn.x_0793f232")
           : solar
-            ? tFor("ne", "ui.learn.x_7d7d699d")
-            : tFor("ne", "learn.study.eclipse.status_none");
+            ? tFor(undefined, "ui.learn.x_7d7d699d")
+            : tFor(undefined, "learn.study.eclipse.status_none");
 
   const showShadow =
     status !== "none" || solar || (g.xEc > 0.3 && Math.abs(g.radial) < TH_PENUMBRAL_VIS);
@@ -237,7 +237,7 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
         {rays}
         <circle cx={sun.x} cy={sun.y} r={ECL.sunR} fill="url(#ecl-sun)" className={eclSunDisc} />
         <text x={sun.x} y={sun.y + ECL.sunR + 28} className={eclBodyLabel} textAnchor="middle">
-          {tFor("ne", "kundali.report.meta_sun")}
+          {tFor(undefined, "kundali.report.meta_sun")}
         </text>
 
         {/* Earth's orbital path around the Sun (क्रान्तिवृत्त) */}
@@ -291,27 +291,27 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
         <NodeCallout
           px={asc.x}
           py={asc.y}
-          label={tFor("ne", "ui.learn.x_47c24036")}
+          label={tFor(undefined, "ui.learn.x_47c24036")}
           side={asc.x < earth.x ? "left" : "right"}
         />
         <NodeCallout
           px={desc.x}
           py={desc.y}
-          label={tFor("ne", "ui.learn.x_fd9918e5")}
+          label={tFor(undefined, "ui.learn.x_fd9918e5")}
           side={desc.x < earth.x ? "left" : "right"}
         />
 
         {moonAbove && moonGroup}
 
         <text x={earth.x} y={earth.y + ECL.earthR + 30} className={eclBodyLabel} textAnchor="middle">
-          {tFor("ne", "vastu.element.earth")}
+          {tFor(undefined, "vastu.element.earth")}
         </text>
 
         <text x={ECL.W / 2} y={ECL.H - 52} className={eclPlaneCaption} textAnchor="middle">
-          {tFor("ne", "ui.learn.x_f915ca7c")}
+          {tFor(undefined, "ui.learn.x_f915ca7c")}
         </text>
         <text x={ECL.W / 2} y={ECL.H - 28} className={eclTiltNote} textAnchor="middle">
-          {tFor("ne", "ui.learn.x_28614245")}{fmt(5)}{tFor("ne", "ui.learn.x_a415b0a7")}{fmt(19)}{tFor("ne", "ui.learn.x_4d6a4881")}
+          {tFor(undefined, "ui.learn.x_28614245")}{fmt(5)}{tFor(undefined, "ui.learn.x_a415b0a7")}{fmt(19)}{tFor(undefined, "ui.learn.x_4d6a4881")}
         </text>
       </g>
 
@@ -326,7 +326,7 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
           {statusLabel}
         </text>
         <text textAnchor="end" y={26} className={eclStatusSub}>
-          {tFor("ne", "ui.learn.x_05739f5a")}{fmt(Math.abs(realBeta(g.betaDeg)).toFixed(1))}{tFor("ne", "ui.learn.x_09ff5cb3")}{fmt(Math.round(g.E))}°
+          {tFor(undefined, "ui.learn.x_05739f5a")}{fmt(Math.abs(realBeta(g.betaDeg)).toFixed(1))}{tFor(undefined, "ui.learn.x_09ff5cb3")}{fmt(Math.round(g.E))}°
         </text>
       </g>
     </svg>

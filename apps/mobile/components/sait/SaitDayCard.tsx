@@ -209,7 +209,7 @@ export function SaitDayCard({
                 className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[annaMonth.tone])}
               >
                 {pick(
-                  tFor("ne", "ui.sait.x_92984250", { v0: digits(annaMonth.ordinal_month) }),
+                  tFor(undefined, "ui.sait.x_92984250", { v0: digits(annaMonth.ordinal_month) }),
                   `month ${annaMonth.ordinal_month}`,
                 )}
               </Text>

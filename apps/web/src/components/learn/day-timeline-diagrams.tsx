@@ -227,7 +227,7 @@ export function DayLengthHourAngle() {
             {t("learn.diagrams.sunset")}
           </text>
           <text x={noon} y={r.y + 17} textAnchor="middle" className="fill-current text-diagram-2xs opacity-55">
-            {bilingualText(lang, tFor("ne", "ui.learn.x_56eaf2db", { v0: n(r.len) }), `2H = ${r.len}`)}
+            {bilingualText(lang, tFor(undefined, "ui.learn.x_56eaf2db", { v0: n(r.len) }), `2H = ${r.len}`)}
           </text>
         </g>
       ))}
@@ -299,7 +299,7 @@ export function MoonriseSlip() {
       {days.map((row, i) => (
         <g key={row.d}>
           <text x={L - 8} y={rowY(i) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-60">
-            {bilingualText(lang, tFor("ne", "ui.learn.x_ca6354ee", { v0: n(row.d) }), `day ${row.d}`)}
+            {bilingualText(lang, tFor(undefined, "ui.learn.x_ca6354ee", { v0: n(row.d) }), `day ${row.d}`)}
           </text>
           <line x1={L} y1={rowY(i)} x2={Rr} y2={rowY(i)} stroke={INK} strokeOpacity={0.16} strokeWidth={0.8} />
           {row.rises.map((h) => (
@@ -392,14 +392,14 @@ export function SunriseSamplesTithi() {
       ))}
       <line x1={x(4.5)} y1={barY - 6} x2={x(4.5)} y2={barY + 32} stroke={WARN} strokeWidth={1.3} />
       <text x={x(4.5)} y={barY - 12} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
-        {bilingualText(lang, tFor("ne", "ui.learn.tithi_changes_04_30"), `tithi changes ${n("04:30")}`)}
+        {bilingualText(lang, tFor(undefined, "ui.learn.tithi_changes_04_30"), `tithi changes ${n("04:30")}`)}
       </text>
 
       {/* the sampling instant */}
       <line x1={x(6.17)} y1={barY + 34} x2={x(6.17)} y2={barY + 56} stroke={MARK} strokeWidth={1.4} />
       <circle cx={x(6.17)} cy={barY + 34} r={3.6} fill={MARK} />
       <text x={x(6.17)} y={barY + 70} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, tFor("ne", "ui.learn.x_388cd0a9"), `sunrise ${n("05:45")} — sampled here`)}
+        {bilingualText(lang, tFor(undefined, "ui.learn.x_388cd0a9"), `sunrise ${n("05:45")} — sampled here`)}
       </text>
 
       <text x={L} y={30} className="fill-current text-diagram-2xs opacity-55">

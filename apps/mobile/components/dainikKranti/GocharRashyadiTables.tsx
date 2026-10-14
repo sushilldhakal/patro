@@ -7,9 +7,7 @@ import {
   RASHYADI_PLANET_ABBREV,
   RASHYADI_PLANET_KEYS,
   RASHYADI_ROW_KEYS,
-  RASHYADI_ROW_LABEL,
   rashyadiCellValue,
-  type RashyadiRowKey,
   type RashyadiSegment,
 } from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { cn } from "@vedic-patro/domain/utils";

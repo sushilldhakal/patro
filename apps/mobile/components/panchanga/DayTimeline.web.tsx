@@ -274,7 +274,7 @@ export function DayTimeline({
       const [hh, mm] = needleClock.split(":").map(Number);
       if (!Number.isNaN(hh) && !Number.isNaN(mm)) {
         mins = hh * 60 + mm;
-        nowLabel = pick(tFor("ne", "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
+        nowLabel = pick(tFor(undefined, "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
       }
     } else if (showNeedle && isToday) {
       mins = minutesSinceMidnightInTimezone(now, timeZone);
@@ -290,7 +290,7 @@ export function DayTimeline({
     // ("अहिले"); otherwise it falls back to the ephemeris query instant.
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
     if (nowG != null) {
-      nowLabel = pick(tFor("ne", "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
+      nowLabel = pick(tFor(undefined, "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
     }
   } else if (showNeedle && isToday) {
     const minsNow = minutesSinceMidnightInTimezone(now, timeZone);

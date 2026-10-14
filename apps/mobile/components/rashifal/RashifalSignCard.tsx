@@ -204,7 +204,7 @@ export function RashifalSignCard({ sign, period, taraLine }: Props) {
           {period !== "daily" && sign.best_day && sign.weak_day ? (
             <Text className={rashifalClasses.footNote}>
               {pick(
-                tFor("ne", "ui.rashifal.x_eb406d86", { v0: sign.best_day.date_bs ?? sign.best_day.date_ad, v1: sign.weak_day.date_bs ?? sign.weak_day.date_ad }),
+                tFor(undefined, "ui.rashifal.x_eb406d86", { v0: sign.best_day.date_bs ?? sign.best_day.date_ad, v1: sign.weak_day.date_bs ?? sign.weak_day.date_ad }),
                 `Best: ${sign.best_day.date_ad} · Weak: ${sign.weak_day.date_ad}`,
               )}
             </Text>

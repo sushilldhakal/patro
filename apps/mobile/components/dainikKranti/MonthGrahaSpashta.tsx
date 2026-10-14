@@ -159,7 +159,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   const footnote = (
     <Text className={dainikKrantiClasses.monthFootnote} style={nepaliTextStyle()}>
       {pick(
-        tFor("ne", "ui.dainik_kranti.x_9c4c2ea7", { v0: getRashiList("ne").join(", ") }),
+        tFor(undefined, "ui.dainik_kranti.x_9c4c2ea7", { v0: getRashiList("ne").join(", ") }),
         `Signs: ${getRashiList("en").join(", ")}. Each planet's bracket shows sign deg|kala|vikala — e.g. Vrishabha 13|6|29 = Vrishabha sign, 13 deg 6 kala 29 vikala.`,
       )}
     </Text>

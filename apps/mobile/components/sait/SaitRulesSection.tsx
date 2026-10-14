@@ -87,16 +87,16 @@ export function SaitRulesSection({
           <Text className={saitClasses.rulesSubtitle} style={nepaliTextStyle()}>
             {offCount > 0
               ? pick(
-                  tFor("ne", "ui.sait.x_ddd39103", { v0: digits(ruleCount), v1: digits(offCount) }),
+                  tFor(undefined, "ui.sait.x_ddd39103", { v0: digits(ruleCount), v1: digits(offCount) }),
                   `${offCount} of ${ruleCount} rules switched off`,
                 )
               : togglingEnabled
                 ? pick(
-                    tFor("ne", "ui.sait.x_c4bd9ee6", { v0: digits(ruleCount) }),
+                    tFor(undefined, "ui.sait.x_c4bd9ee6", { v0: digits(ruleCount) }),
                     `${ruleCount} classical rules · switch off any your tradition skips`,
                   )
                 : pick(
-                    tFor("ne", "ui.sait.x_881055f9", { v0: digits(ruleCount) }),
+                    tFor(undefined, "ui.sait.x_881055f9", { v0: digits(ruleCount) }),
                     `${ruleCount} classical rules · with sources`,
                   )}
           </Text>

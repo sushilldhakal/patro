@@ -26,12 +26,12 @@ const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function moonPhasePhrase(index: number, pick: (ne: string, en: string) => string): string {
-  if (index === 14) return pick(tFor("ne", "ui.learn.full_moon"), tFor("en", "ui.learn.full_moon"));
-  if (index === 29) return pick(tFor("ne", "ui.learn.new_moon"), tFor("en", "ui.learn.new_moon"));
-  if (index >= 6 && index <= 8) return pick(tFor("ne", "ui.home.waxing_half_moon"), tFor("en", "ui.home.waxing_half_moon"));
-  if (index >= 21 && index <= 23) return pick(tFor("ne", "ui.home.waning_half_moon"), tFor("en", "ui.home.waning_half_moon"));
-  if (index < 14) return pick(tFor("ne", "ui.home.waxing_moon"), tFor("en", "ui.home.waxing_moon"));
-  return pick(tFor("ne", "ui.home.waning_moon"), tFor("en", "ui.home.waning_moon"));
+  if (index === 14) return pick(tFor(undefined, "ui.learn.full_moon"), tFor("en", "ui.learn.full_moon"));
+  if (index === 29) return pick(tFor(undefined, "ui.learn.new_moon"), tFor("en", "ui.learn.new_moon"));
+  if (index >= 6 && index <= 8) return pick(tFor(undefined, "ui.home.waxing_half_moon"), tFor("en", "ui.home.waxing_half_moon"));
+  if (index >= 21 && index <= 23) return pick(tFor(undefined, "ui.home.waning_half_moon"), tFor("en", "ui.home.waning_half_moon"));
+  if (index < 14) return pick(tFor(undefined, "ui.home.waxing_moon"), tFor("en", "ui.home.waxing_moon"));
+  return pick(tFor(undefined, "ui.home.waning_moon"), tFor("en", "ui.home.waning_moon"));
 }
 
 function daysAwayLabel(days: number, lang: string, digits: (v: string | number) => string): string {
@@ -39,10 +39,10 @@ function daysAwayLabel(days: number, lang: string, digits: (v: string | number) 
   const english = lang.slice(0, 2) === "en";
   if (days > 0) {
     if (english) return days === 1 ? "After 1 day" : `After ${count} days`;
-    return tFor("ne", "ui.home.x_261cd2ac", { v0: count });
+    return tFor(undefined, "ui.home.x_261cd2ac", { v0: count });
   }
   if (english) return days === -1 ? "1 day ago" : `${count} days ago`;
-  return tFor("ne", "ui.home.x_796f4d7b", { v0: count });
+  return tFor(undefined, "ui.home.x_796f4d7b", { v0: count });
 }
 
 type Props = {

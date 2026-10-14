@@ -386,7 +386,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                 tone="moon"
                 steps={[
                   t("learn.study.two_systems.chain_angular_gap"),
-                  pick(tFor("ne", "ui.learn.x_d321b519", { v0: num(TITHI_ARC) }), `every ${TITHI_ARC}° = 1 tithi`),
+                  pick(tFor(undefined, "ui.learn.x_d321b519", { v0: num(TITHI_ARC) }), `every ${TITHI_ARC}° = 1 tithi`),
                   t("learn.study.two_systems.chain_paksha"),
                   t("learn.study.two_systems.chain_lunar_month"),
                 ]}
@@ -606,11 +606,11 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                     >
                       {travelled.moon >= 360
                         ? pick(
-                            tFor("ne", "ui.learn.x_c4114654", { v0: num((travelled.moon - 360).toFixed(1)) }),
+                            tFor(undefined, "ui.learn.x_c4114654", { v0: num((travelled.moon - 360).toFixed(1)) }),
                             `sidereal lap done +${(travelled.moon - 360).toFixed(1)}°`,
                           )
                         : pick(
-                            tFor("ne", "ui.learn.x_be4a9c80", { v0: num((360 - travelled.moon).toFixed(1)) }),
+                            tFor(undefined, "ui.learn.x_be4a9c80", { v0: num((360 - travelled.moon).toFixed(1)) }),
                             `${(360 - travelled.moon).toFixed(1)}° to the 360° lap`,
                           )}
                     </Text>
@@ -752,14 +752,14 @@ function DriftLadder({
           className="text-caption"
           style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.6) }]}
         >
-          {pick(tFor("ne", "learn.study.two_systems.one_timeline"), tFor("en", "learn.study.two_systems.one_timeline"))}
+          {pick(tFor(undefined, "learn.study.two_systems.one_timeline"), tFor("en", "learn.study.two_systems.one_timeline"))}
         </Text>
         <Text
           className="text-caption"
           style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.6) }]}
         >
           {pick(
-            tFor("ne", "ui.learn.x_e83f4e4a", { v0: num(span.toFixed(0)), v1: num(
+            tFor(undefined, "ui.learn.x_e83f4e4a", { v0: num(span.toFixed(0)), v1: num(
               year.twelveLunarDays.toFixed(0),
             ), v2: num(shortfall.toFixed(0)) }),
             `Solar year ${span.toFixed(0)} d · 12 lunar months ${year.twelveLunarDays.toFixed(
@@ -851,7 +851,7 @@ function DriftLadder({
               style={[nepaliTextStyle(9), { color: illustration.sky96 }]}
             >
               {pick(
-                tFor("ne", "ui.learn.x_efb4e824", { v0: num(year.twelveLunarDays.toFixed(0)) }),
+                tFor(undefined, "ui.learn.x_efb4e824", { v0: num(year.twelveLunarDays.toFixed(0)) }),
                 `12 lunar months = ${year.twelveLunarDays.toFixed(0)} d`,
               )}
             </Text>
@@ -877,16 +877,16 @@ function DriftLadder({
 
       <View className="mt-1 gap-1">
         <LadderKey color={withAlpha(illustration.orange50, 0.6)}>
-          {pick(tFor("ne", "learn.study.two_systems.legend_solar_months"), tFor("en", "learn.study.two_systems.legend_solar_months"))}
+          {pick(tFor(undefined, "learn.study.two_systems.legend_solar_months"), tFor("en", "learn.study.two_systems.legend_solar_months"))}
         </LadderKey>
         <LadderKey color={withAlpha(illustration.teal60, 0.6)}>
           {pick(
-            tFor("ne", "ui.learn.x_d723f1f1", { v0: num(lunarDone) }),
+            tFor(undefined, "ui.learn.x_d723f1f1", { v0: num(lunarDone) }),
             `Lunar months — amavasya to amavasya · ${lunarDone} begun so far this year`,
           )}
         </LadderKey>
         <LadderKey color={withAlpha(illustration.green52, 0.7)}>
-          {pick(tFor("ne", "learn.study.two_systems.legend_remaining_gap"), tFor("en", "learn.study.two_systems.legend_remaining_gap"))}
+          {pick(tFor(undefined, "learn.study.two_systems.legend_remaining_gap"), tFor("en", "learn.study.two_systems.legend_remaining_gap"))}
         </LadderKey>
       </View>
     </View>

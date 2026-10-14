@@ -24,19 +24,19 @@ const GRAHA_ORDER = [
 ] as const satisfies readonly GrahaKey[];
 
 const RASHI_EN_NE: Record<string, string> = {
-  get Mesha() { return tFor("ne", "rashis.1"); },
-  get Vrishabha() { return tFor("ne", "rashis.2"); },
-  get Mithuna() { return tFor("ne", "rashis.3"); },
-  get Karka() { return tFor("ne", "rashis.4"); },
-  get Karkata() { return tFor("ne", "rashis.4"); },
-  get Simha() { return tFor("ne", "rashis.5"); },
-  get Kanya() { return tFor("ne", "rashis.6"); },
-  get Tula() { return tFor("ne", "rashis.7"); },
-  get Vrishchika() { return tFor("ne", "rashis.8"); },
-  get Dhanu() { return tFor("ne", "rashis.9"); },
-  get Makara() { return tFor("ne", "rashis.10"); },
-  get Kumbha() { return tFor("ne", "rashis.11"); },
-  get Meena() { return tFor("ne", "rashis.12"); },
+  get Mesha() { return tFor(undefined, "rashis.1"); },
+  get Vrishabha() { return tFor(undefined, "rashis.2"); },
+  get Mithuna() { return tFor(undefined, "rashis.3"); },
+  get Karka() { return tFor(undefined, "rashis.4"); },
+  get Karkata() { return tFor(undefined, "rashis.4"); },
+  get Simha() { return tFor(undefined, "rashis.5"); },
+  get Kanya() { return tFor(undefined, "rashis.6"); },
+  get Tula() { return tFor(undefined, "rashis.7"); },
+  get Vrishchika() { return tFor(undefined, "rashis.8"); },
+  get Dhanu() { return tFor(undefined, "rashis.9"); },
+  get Makara() { return tFor(undefined, "rashis.10"); },
+  get Kumbha() { return tFor(undefined, "rashis.11"); },
+  get Meena() { return tFor(undefined, "rashis.12"); },
 };
 
 function rashiNe(english?: string): string {

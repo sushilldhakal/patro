@@ -528,7 +528,7 @@ export function KundaliView({
             {suryaMeta?.nakshatra ? (
               <DetailTraitRow
                 label={t("kundali.surya_nakshatra")}
-                value={bilingualText(lang, tFor("ne", "ui.kundali.x_b8d3d3cc", { v0: suryaMeta.nakshatra.ne, v1: digits(suryaMeta.nakshatra.pada) }), `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
+                value={bilingualText(lang, tFor(undefined, "ui.kundali.x_b8d3d3cc", { v0: suryaMeta.nakshatra.ne, v1: digits(suryaMeta.nakshatra.pada) }), `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
               />
             ) : null}
           </div>
@@ -599,7 +599,7 @@ export function KundaliView({
 
       {showSection("kundali-overview") && d1Rows.length > 0 && (
         <div id="kundali-charts" className="scroll-mt-24">
-          <PanchangaSection titleNe={tFor("ne", "ui.kundali.divisional_charts_2")} titleEn={tFor("en", "ui.kundali.divisional_charts_2")}>
+          <PanchangaSection titleNe={tFor(undefined, "ui.kundali.divisional_charts_2")} titleEn={tFor("en", "ui.kundali.divisional_charts_2")}>
             <DivisionalChartCompare
               vargaCharts={detail.vargaCharts}
               combustion={detail.combustion}
@@ -611,7 +611,7 @@ export function KundaliView({
       {/* Graha details — astronomical readout for the birth instant (D1), with upagraha (shadow points) as a separate table in the same section */}
       {showSection("kundali-graha") && d1Rows.length > 0 && (
         <div id="kundali-graha" className="scroll-mt-24">
-          <PanchangaSection titleNe={tFor("ne", "kundali.nav_graha_details")} titleEn={tFor("en", "kundali.nav_graha_details")}>
+          <PanchangaSection titleNe={tFor(undefined, "kundali.nav_graha_details")} titleEn={tFor("en", "kundali.nav_graha_details")}>
             <Suspense fallback={<SectionLoading />}>
               <GrahaAstroTable
                 planets={astroPlanets}
@@ -637,7 +637,7 @@ export function KundaliView({
           so no combination appears twice. */}
       {showSection("kundali-yoga") && (
         <div id="kundali-yoga" className="scroll-mt-24 space-y-6">
-          <PanchangaSection titleNe={tFor("ne", "kundali.nav_yoga")} titleEn={tFor("en", "kundali.nav_yoga")}>
+          <PanchangaSection titleNe={tFor(undefined, "kundali.nav_yoga")} titleEn={tFor("en", "kundali.nav_yoga")}>
             <Suspense fallback={<SectionLoading />}>
               {detail.yogas.some((y) => y.present) && <YogaList yogas={detail.yogas} />}
               <div className="px-3.5 pb-3.5">
@@ -651,7 +651,7 @@ export function KundaliView({
 
       {showSection("kundali-dasha") && (dasha || tribhagiDasha || yoginiDasha) && (
         <div id="kundali-dasha" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe={tFor("ne", "kundali.nav_dasha")} titleEn={tFor("en", "kundali.nav_dasha")}>
+        <PanchangaSection titleNe={tFor(undefined, "kundali.nav_dasha")} titleEn={tFor("en", "kundali.nav_dasha")}>
           <div className="p-4">
             <Suspense fallback={<SectionLoading />}>
               <DashaSystemPanel
@@ -770,7 +770,7 @@ export function KundaliView({
 
       {showSection("kundali-shanti") && showShanti && (
         <div id="kundali-shanti" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe={tFor("ne", "ui.kundali.navagraha_shanti")} titleEn={tFor("en", "ui.kundali.navagraha_shanti")}>
+        <PanchangaSection titleNe={tFor(undefined, "ui.kundali.navagraha_shanti")} titleEn={tFor("en", "ui.kundali.navagraha_shanti")}>
           <div className="p-4">
             <div className={kundaliDetailClasses.view.shantiNote}>
               <Flame className="h-4 w-4 text-secondary" />

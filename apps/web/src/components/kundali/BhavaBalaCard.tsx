@@ -77,7 +77,7 @@ export function BhavaBalaTable({
   const { lang, digits } = useLocale();
 
   const houseLabel = (house: number) =>
-    bilingualText(lang, tFor("ne", "ui.kundali.x_f08204a5", { v0: digits(house) }), `House ${house}`);
+    bilingualText(lang, tFor(undefined, "ui.kundali.x_f08204a5", { v0: digits(house) }), `House ${house}`);
 
   const lordLabel = (key: GrahaKey) =>
     bilingualText(lang, GRAHA_NAME[key].ne, GRAHA_NAME[key].en);
@@ -110,7 +110,7 @@ export function BhavaBalaTable({
           {t("kundali.bhava_bala_house_strength_virupas")}
         </h3>
         <p className={kundaliDetailClasses.glance.intro}>
-          {bilingualText(lang, tFor("ne", "ui.kundali.x_cf46d965", { v0: digits(data.referenceVirupas) }), `Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; ${data.referenceVirupas} virupas = 100%.`)}
+          {bilingualText(lang, tFor(undefined, "ui.kundali.x_cf46d965", { v0: digits(data.referenceVirupas) }), `Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; ${data.referenceVirupas} virupas = 100%.`)}
         </p>
       </div>
 

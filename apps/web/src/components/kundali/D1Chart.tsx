@@ -62,8 +62,8 @@ function drishtiBadgeText(grahaKey: string, ref: BhavaReferencePayload, lang: La
     const nature = info.isMalefic ? "Malefic" : "Benefic";
     return info.isChaya ? `${nature} (Shadow) Aspect` : `${nature} Aspect`;
   }
-  const nature = info.isMalefic ? tFor("ne", "ui.kundali.x_49c16645") : tFor("ne", "samvatsara_names.saumya");
-  return info.isChaya ? tFor("ne", "ui.kundali.x_dd187864", { v0: nature }) : tFor("ne", "ui.kundali.x_7e22a3b0", { v0: nature });
+  const nature = info.isMalefic ? tFor(undefined, "ui.kundali.x_49c16645") : tFor(undefined, "samvatsara_names.saumya");
+  return info.isChaya ? tFor(undefined, "ui.kundali.x_dd187864", { v0: nature }) : tFor(undefined, "ui.kundali.x_7e22a3b0", { v0: nature });
 }
 
 function DrishtiPanel({

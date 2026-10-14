@@ -115,7 +115,7 @@ export function HoraWeekdayCycleDiagram() {
   const landedIdx = WEEK[Math.round(Math.min(6, Math.max(0, step)))]!;
   const dayNames = lang === "en"
     ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    : [tFor("ne", "ui.panchanga.x_296abb3f"), tFor("ne", "ui.panchanga.x_de395c78"), tFor("ne", "ui.learn.x_f99d3173"), tFor("ne", "ui.hora_data.x_d8cdfd5c"), tFor("ne", "ui.hora_data.x_d1899f97"), tFor("ne", "ui.hora_data.x_7967d87e"), tFor("ne", "ui.hora_data.x_3ceeaf93")];
+    : [tFor(undefined, "ui.panchanga.x_296abb3f"), tFor(undefined, "ui.panchanga.x_de395c78"), tFor(undefined, "ui.learn.x_f99d3173"), tFor(undefined, "ui.hora_data.x_d8cdfd5c"), tFor(undefined, "ui.hora_data.x_d1899f97"), tFor(undefined, "ui.hora_data.x_7967d87e"), tFor(undefined, "ui.hora_data.x_3ceeaf93")];
 
   return (
     <LearnDiagram3D

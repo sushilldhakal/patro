@@ -571,9 +571,9 @@ export function HoraRing({ p, isToday, timezone }: Props) {
                   </span>
                 </h2>
                 {bilingualNode(lang, <p className="mx-auto mt-3.5 max-w-[600px] text-sm leading-relaxed dark:text-[var(--hora-ink-dim)] [&_em]:italic [&_em]:text-foreground dark:[&_em]:text-[var(--hora-ink)] [&_span]:font-semibold [&_span]:text-foreground dark:[&_span]:text-[var(--hora-ink)]">
-                    {tFor("ne", "ui.panchanga.x_e273a0b5")}{" "}
-                    <em>{tFor("ne", "panchanga.hora.hora")}</em>{tFor("ne", "ui.panchanga.x_5fb306d7")}<em>{tFor("ne", "ui.panchanga.x_61c1a547")}</em>{tFor("ne", "ui.panchanga.x_acab7efc")}<span>{tFor("ne", "ui.panchanga.x_296abb3f")}</span>{tFor("ne", "ui.panchanga.x_416a0c97")}<span>{tFor("ne", "vastu.pada.soma.name")}</span>{tFor("ne", "ui.panchanga.x_c138525e")}{" "}
-                    <span>{tFor("ne", "ui.panchanga.x_de395c78")}</span>{tFor("ne", "ui.panchanga.x_f11e3a10")}<span>{tFor("ne", "ui.panchanga.x_c56a6d02")}</span>{tFor("ne", "ui.panchanga.x_fd5b5d8b")}
+                    {tFor(undefined, "ui.panchanga.x_e273a0b5")}{" "}
+                    <em>{tFor(undefined, "panchanga.hora.hora")}</em>{tFor(undefined, "ui.panchanga.x_5fb306d7")}<em>{tFor(undefined, "ui.panchanga.x_61c1a547")}</em>{tFor(undefined, "ui.panchanga.x_acab7efc")}<span>{tFor(undefined, "ui.panchanga.x_296abb3f")}</span>{tFor(undefined, "ui.panchanga.x_416a0c97")}<span>{tFor(undefined, "vastu.pada.soma.name")}</span>{tFor(undefined, "ui.panchanga.x_c138525e")}{" "}
+                    <span>{tFor(undefined, "ui.panchanga.x_de395c78")}</span>{tFor(undefined, "ui.panchanga.x_f11e3a10")}<span>{tFor(undefined, "ui.panchanga.x_c56a6d02")}</span>{tFor(undefined, "ui.panchanga.x_fd5b5d8b")}
                   </p>,
                   <p className="mx-auto mt-3.5 max-w-[600px] text-sm leading-relaxed dark:text-[var(--hora-ink-dim)] [&_em]:italic [&_em]:text-foreground dark:[&_em]:text-[var(--hora-ink)] [&_span]:font-semibold [&_span]:text-foreground dark:[&_span]:text-[var(--hora-ink)]">
                     Each ring is one day — twenty-four <em>horas</em> ruled in turn by the seven

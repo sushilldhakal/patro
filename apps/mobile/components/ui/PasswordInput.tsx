@@ -28,7 +28,7 @@ export function PasswordInput({ style, className, ...props }: TextInputProps) {
         className="absolute right-1 h-10 w-10 items-center justify-center rounded-full active:bg-muted"
         accessibilityRole="button"
         accessibilityLabel={pick(
-          visible ? tFor("ne", "ui.ui.x_41ccbc34") : tFor("ne", "ui.ui.x_5abec41f"),
+          visible ? tFor(undefined, "ui.ui.x_41ccbc34") : tFor(undefined, "ui.ui.x_5abec41f"),
           visible ? "Hide password" : "Show password",
         )}
         accessibilityState={{ selected: visible }}

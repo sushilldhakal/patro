@@ -301,7 +301,7 @@ function BhavaDiamond({
               aria-pressed={selected}
               aria-label={bilingualText(
                 lang,
-                tFor("ne", "ui.kundali.x_dc5617a3", { v0: digits(houseNum), v1: digits(Math.round(house.totalPinda)) }),
+                tFor(undefined, "ui.kundali.x_dc5617a3", { v0: digits(houseNum), v1: digits(Math.round(house.totalPinda)) }),
                 `House ${houseNum}, ${Math.round(house.totalPinda)} virupas`,
               )}
               className="cursor-pointer outline-none"

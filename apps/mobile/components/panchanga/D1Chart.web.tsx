@@ -18,15 +18,15 @@ import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
 const PLANET_ABBR_NE: Record<string, string> = {
-  get sun() { return tFor("ne", "kundali.x.abbr_sun"); },
-  get moon() { return tFor("ne", "kundali.x.abbr_moon"); },
-  get mars() { return tFor("ne", "kundali.x.abbr_mars"); },
-  get mercury() { return tFor("ne", "kundali.x.abbr_mercury"); },
-  get jupiter() { return tFor("ne", "kundali.x.abbr_jupiter"); },
-  get venus() { return tFor("ne", "kundali.x.abbr_venus"); },
-  get saturn() { return tFor("ne", "kundali.x.abbr_saturn"); },
-  get rahu() { return tFor("ne", "kundali.x.abbr_rahu"); },
-  get ketu() { return tFor("ne", "kundali.x.abbr_ketu"); },
+  get sun() { return tFor(undefined, "kundali.x.abbr_sun"); },
+  get moon() { return tFor(undefined, "kundali.x.abbr_moon"); },
+  get mars() { return tFor(undefined, "kundali.x.abbr_mars"); },
+  get mercury() { return tFor(undefined, "kundali.x.abbr_mercury"); },
+  get jupiter() { return tFor(undefined, "kundali.x.abbr_jupiter"); },
+  get venus() { return tFor(undefined, "kundali.x.abbr_venus"); },
+  get saturn() { return tFor(undefined, "kundali.x.abbr_saturn"); },
+  get rahu() { return tFor(undefined, "kundali.x.abbr_rahu"); },
+  get ketu() { return tFor(undefined, "kundali.x.abbr_ketu"); },
 };
 
 const PLANET_ABBR_EN: Record<string, string> = {
@@ -62,8 +62,8 @@ function drishtiBadgeText(grahaKey: string, ref: BhavaReferencePayload, lang: "n
     const nature = info.isMalefic ? "Malefic" : "Benefic";
     return info.isChaya ? `${nature} (Shadow) Aspect` : `${nature} Aspect`;
   }
-  const nature = info.isMalefic ? tFor("ne", "ui.kundali.x_49c16645") : tFor("ne", "samvatsara_names.saumya");
-  return info.isChaya ? tFor("ne", "ui.kundali.x_dd187864", { v0: nature }) : tFor("ne", "ui.kundali.x_7e22a3b0", { v0: nature });
+  const nature = info.isMalefic ? tFor(undefined, "ui.kundali.x_49c16645") : tFor(undefined, "samvatsara_names.saumya");
+  return info.isChaya ? tFor(undefined, "ui.kundali.x_dd187864", { v0: nature }) : tFor(undefined, "ui.kundali.x_7e22a3b0", { v0: nature });
 }
 
 function DrishtiPanel({

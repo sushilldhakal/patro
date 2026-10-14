@@ -97,7 +97,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
         textAnchor="middle"
         dominantBaseline="central"
       >
-        {isNew ? tFor("ne", "ui.learn.x_71469f61") : isFull ? tFor("ne", "kundali.x.grade_full") : fmt(k + 1)}
+        {isNew ? tFor(undefined, "ui.learn.x_71469f61") : isFull ? tFor(undefined, "kundali.x.grade_full") : fmt(k + 1)}
       </text>
     );
   });
@@ -169,7 +169,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
       <circle cx={SEM.cx} cy={SEM.cy} r={SEM.sunR + 30} fill="url(#sem-sunglow)" />
       <circle cx={SEM.cx} cy={SEM.cy} r={SEM.sunR} fill="url(#sem-sun)" />
       <text x={SEM.cx} y={SEM.cy + SEM.sunR + 26} className={edBodyLabel} textAnchor="middle">
-        {tFor("ne", "kundali.report.meta_sun")}
+        {tFor(undefined, "kundali.report.meta_sun")}
       </text>
 
       <g className={hoEarthGroup} transform={`translate(${ex} ${ey})`}>
@@ -183,7 +183,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
         />
         <line x1={southX} y1={southY} x2={northX} y2={northY} className={hoPoleAxis} />
         <text y={SEM.earthR + 22} className={edBodyLabel} textAnchor="middle">
-          {tFor("ne", "vastu.element.earth")}
+          {tFor(undefined, "vastu.element.earth")}
         </text>
       </g>
 
@@ -201,7 +201,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
       })()}
 
       <text x={SEM.cx} y={SEM.H - 18} className={hoOrbitDir} textAnchor="middle">
-        {tFor("ne", "ui.learn.x_2ccb2c5f")}{fmt(12)}.{fmt(4)}{tFor("ne", "ui.learn.x_02f5808c")}
+        {tFor(undefined, "ui.learn.x_2ccb2c5f")}{fmt(12)}.{fmt(4)}{tFor(undefined, "ui.learn.x_02f5808c")}
       </text>
     </svg>
   );

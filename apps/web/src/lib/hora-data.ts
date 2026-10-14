@@ -27,13 +27,13 @@ export const HORA_PLANETS: Record<HoraPlanetKey, HoraPlanet> = {
 };
 
 export const HORA_DEVA: Record<HoraPlanetKey, string> = {
-  get shani() { return tFor("ne", "kundali.graha_name_saturn"); },
-  get guru() { return tFor("ne", "kundali.graha_name_jupiter"); },
-  get mangala() { return tFor("ne", "grahas.mars"); },
-  get ravi() { return tFor("ne", "ui.hora_data.x_f8f0bc57"); },
-  get shukra() { return tFor("ne", "kundali.graha_name_venus"); },
-  get budha() { return tFor("ne", "kundali.graha_name_mercury"); },
-  get soma() { return tFor("ne", "vastu.pada.soma.name"); },
+  get shani() { return tFor(undefined, "kundali.graha_name_saturn"); },
+  get guru() { return tFor(undefined, "kundali.graha_name_jupiter"); },
+  get mangala() { return tFor(undefined, "grahas.mars"); },
+  get ravi() { return tFor(undefined, "ui.hora_data.x_f8f0bc57"); },
+  get shukra() { return tFor(undefined, "kundali.graha_name_venus"); },
+  get budha() { return tFor(undefined, "kundali.graha_name_mercury"); },
+  get soma() { return tFor(undefined, "vastu.pada.soma.name"); },
 };
 
 export const HORA_CYCLE: HoraPlanetKey[] = [

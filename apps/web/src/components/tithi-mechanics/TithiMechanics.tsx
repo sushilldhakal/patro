@@ -204,23 +204,23 @@ export function TithiMechanics() {
     <div className={cn(tmPageShell, "rounded-2xl border border-border overflow-hidden")}>
       <div className={tmWrap}>
         <header className={tmHero}>
-          <div className={tmHeroEyebrow}>{tFor("ne", "ui.tithi_mechanics.x_f88f5709")}</div>
+          <div className={tmHeroEyebrow}>{tFor(undefined, "ui.tithi_mechanics.x_f88f5709")}</div>
           <h2 className={tmHeroTitle}>
-            {tFor("ne", "ui.tithi_mechanics.x_f4c576c6")}<b>{tFor("ne", "ui.tithi_mechanics.x_6942a040")}</b>
+            {tFor(undefined, "ui.tithi_mechanics.x_f4c576c6")}<b>{tFor(undefined, "ui.tithi_mechanics.x_6942a040")}</b>
           </h2>
           <p className={tmHeroSub}>
-            {tFor("ne", "ui.tithi_mechanics.x_6ea902dd")}<b>{tFor("ne", "ui.tithi_mechanics.x_acf8fcc7")}</b>{tFor("ne", "ui.tithi_mechanics.x_88b1e63b")}
+            {tFor(undefined, "ui.tithi_mechanics.x_6ea902dd")}<b>{tFor(undefined, "ui.tithi_mechanics.x_acf8fcc7")}</b>{tFor(undefined, "ui.tithi_mechanics.x_88b1e63b")}
           </p>
         </header>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_bcb9ab5e")}</span>
-            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_68b80d92")}</h3>
+            <span className={tmSecKicker}>{tFor(undefined, "ui.tithi_mechanics.x_bcb9ab5e")}</span>
+            <h3 className={tmSecTitle}>{tFor(undefined, "ui.tithi_mechanics.x_68b80d92")}</h3>
           </div>
           <p className={tmLede}>
-            {tFor("ne", "ui.tithi_mechanics.x_2f2bb5c1")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_5d278368")}</span>{tFor("ne", "ui.tithi_mechanics.x_80aa8f40")}<b>{tFor("ne", "ui.tithi_mechanics.x_913f369e")}</b>{tFor("ne", "ui.tithi_mechanics.x_45cbe500")}{" "}
-            <span className={cn("hl-amber")}>{tFor("ne", "learn.aunsi")}</span>{tFor("ne", "ui.tithi_mechanics.x_67f222da")}<b>{tFor("ne", "ui.tithi_mechanics.x_0df195b8")}</b>{tFor("ne", "ui.tithi_mechanics.x_73a2e4c1")}<span className={cn("hl-amber")}>{tFor("ne", "learn.purnima")}</span>{tFor("ne", "ui.tithi_mechanics.x_804e4a49")}
+            {tFor(undefined, "ui.tithi_mechanics.x_2f2bb5c1")}<span className={cn("hl")}>{tFor(undefined, "ui.tithi_mechanics.x_5d278368")}</span>{tFor(undefined, "ui.tithi_mechanics.x_80aa8f40")}<b>{tFor(undefined, "ui.tithi_mechanics.x_913f369e")}</b>{tFor(undefined, "ui.tithi_mechanics.x_45cbe500")}{" "}
+            <span className={cn("hl-amber")}>{tFor(undefined, "learn.aunsi")}</span>{tFor(undefined, "ui.tithi_mechanics.x_67f222da")}<b>{tFor(undefined, "ui.tithi_mechanics.x_0df195b8")}</b>{tFor(undefined, "ui.tithi_mechanics.x_73a2e4c1")}<span className={cn("hl-amber")}>{tFor(undefined, "learn.purnima")}</span>{tFor(undefined, "ui.tithi_mechanics.x_804e4a49")}
           </p>
           <ElongationStudy animMonths={1} />
 
@@ -230,24 +230,24 @@ export function TithiMechanics() {
                 {toNepaliDigits(12)}
                 <span className={cn("u")}>°</span>
               </div>
-              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_417c5e77")}</div>
-              <div className={cn("desc")}>{tFor("ne", "ui.tithi_mechanics.x_15793647")}</div>
+              <div className={cn("lbl")}>{tFor(undefined, "ui.tithi_mechanics.x_417c5e77")}</div>
+              <div className={cn("desc")}>{tFor(undefined, "ui.tithi_mechanics.x_15793647")}</div>
             </div>
             <div className={tmFcard}>
               <div className={cn("big")}>
                 ~{toNepaliDigits(12)}
-                <span className={cn("u")}>{tFor("ne", "ui.tithi_mechanics.x_82929384")}</span>
+                <span className={cn("u")}>{tFor(undefined, "ui.tithi_mechanics.x_82929384")}</span>
               </div>
-              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_eb231874")}</div>
+              <div className={cn("lbl")}>{tFor(undefined, "ui.tithi_mechanics.x_eb231874")}</div>
               <div className={cn("desc")}>
-                {tFor("ne", "ui.tithi_mechanics.x_bddc9020")}
+                {tFor(undefined, "ui.tithi_mechanics.x_bddc9020")}
               </div>
             </div>
             <div className={tmFcard}>
-              <div className={cn("big")}>{tFor("ne", "panchanga.wheel.sunrise")}</div>
-              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_984f4787")}</div>
+              <div className={cn("big")}>{tFor(undefined, "panchanga.wheel.sunrise")}</div>
+              <div className={cn("lbl")}>{tFor(undefined, "ui.tithi_mechanics.x_984f4787")}</div>
               <div className={cn("desc")}>
-                {tFor("ne", "ui.tithi_mechanics.x_d06e2c1f")}<b>{tFor("ne", "ui.tithi_mechanics.x_e855eb08")}</b>{tFor("ne", "ui.tithi_mechanics.x_c5a15ced")}
+                {tFor(undefined, "ui.tithi_mechanics.x_d06e2c1f")}<b>{tFor(undefined, "ui.tithi_mechanics.x_e855eb08")}</b>{tFor(undefined, "ui.tithi_mechanics.x_c5a15ced")}
               </div>
             </div>
           </div>
@@ -255,78 +255,78 @@ export function TithiMechanics() {
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_9fa3c929")}</span>
-            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_6ae40563")}</h3>
+            <span className={tmSecKicker}>{tFor(undefined, "ui.tithi_mechanics.x_9fa3c929")}</span>
+            <h3 className={tmSecTitle}>{tFor(undefined, "ui.tithi_mechanics.x_6ae40563")}</h3>
             <span className={tmSecEn}>Repeated tithi</span>
           </div>
           <p className={tmLede}>
-            {tFor("ne", "ui.tithi_mechanics.x_85d930d7")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_ff5562b2")}</span>{tFor("ne", "ui.tithi_mechanics.x_57bf6775")}<b>{tFor("ne", "ui.tithi_mechanics.x_bae2d920")}</b>{tFor("ne", "ui.tithi_mechanics.x_f7724611")}<span className={cn("hl-amber")}>{tFor("ne", "ui.tithi_mechanics.x_2d985120")}</span>{tFor("ne", "ui.tithi_mechanics.x_416a4fb5")}
+            {tFor(undefined, "ui.tithi_mechanics.x_85d930d7")}<span className={cn("hl")}>{tFor(undefined, "ui.tithi_mechanics.x_ff5562b2")}</span>{tFor(undefined, "ui.tithi_mechanics.x_57bf6775")}<b>{tFor(undefined, "ui.tithi_mechanics.x_bae2d920")}</b>{tFor(undefined, "ui.tithi_mechanics.x_f7724611")}<span className={cn("hl-amber")}>{tFor(undefined, "ui.tithi_mechanics.x_2d985120")}</span>{tFor(undefined, "ui.tithi_mechanics.x_416a4fb5")}
           </p>
           <div className={tmCardPadLg}>
             <SunriseTimeline mode="vriddhi" />
             <div className={tmCardCap}>
-              {tFor("ne", "ui.tithi_mechanics.x_9776509b")}
+              {tFor(undefined, "ui.tithi_mechanics.x_9776509b")}
             </div>
           </div>
         </section>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_cfd118d4")}</span>
-            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_0a3f3885")}</h3>
+            <span className={tmSecKicker}>{tFor(undefined, "ui.tithi_mechanics.x_cfd118d4")}</span>
+            <h3 className={tmSecTitle}>{tFor(undefined, "ui.tithi_mechanics.x_0a3f3885")}</h3>
             <span className={tmSecEn}>Skipped tithi</span>
           </div>
           <p className={tmLede}>
-            {tFor("ne", "ui.tithi_mechanics.x_8a8cc924")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_3e037cb2")}</span>{tFor("ne", "ui.tithi_mechanics.x_dcc53455")}<b>{tFor("ne", "ui.tithi_mechanics.x_3cca62ad")}</b>{tFor("ne", "ui.tithi_mechanics.x_82cbe54f")}<span className={cn("hl-amber")}>{tFor("ne", "ui.tithi_mechanics.x_71db6576")}</span>{tFor("ne", "ui.tithi_mechanics.x_b52ab797")}
+            {tFor(undefined, "ui.tithi_mechanics.x_8a8cc924")}<span className={cn("hl")}>{tFor(undefined, "ui.tithi_mechanics.x_3e037cb2")}</span>{tFor(undefined, "ui.tithi_mechanics.x_dcc53455")}<b>{tFor(undefined, "ui.tithi_mechanics.x_3cca62ad")}</b>{tFor(undefined, "ui.tithi_mechanics.x_82cbe54f")}<span className={cn("hl-amber")}>{tFor(undefined, "ui.tithi_mechanics.x_71db6576")}</span>{tFor(undefined, "ui.tithi_mechanics.x_b52ab797")}
           </p>
           <div className={tmCardPadLg}>
             <SunriseTimeline mode="kshaya" />
             <div className={tmCardCap}>
-              {tFor("ne", "ui.tithi_mechanics.x_d46d2ef1")}
+              {tFor(undefined, "ui.tithi_mechanics.x_d46d2ef1")}
             </div>
           </div>
         </section>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_0c9dbd72")}</span>
-            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_6b282619")}</h3>
+            <span className={tmSecKicker}>{tFor(undefined, "ui.tithi_mechanics.x_0c9dbd72")}</span>
+            <h3 className={tmSecTitle}>{tFor(undefined, "ui.tithi_mechanics.x_6b282619")}</h3>
             <span className={tmSecEn}>Extra month</span>
           </div>
           <p className={tmLede}>
-            {tFor("ne", "ui.tithi_mechanics.x_0cbb14c4")}<b>{tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}</b>{tFor("ne", "ui.tithi_mechanics.x_1a013320")}<b>{tFor("ne", "ui.tithi_mechanics.x_32ec504d")}</b>{tFor("ne", "ui.tithi_mechanics.x_d13b4791")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_fd0282e1")}</span>{tFor("ne", "ui.tithi_mechanics.x_2d6d0b83")}{" "}
-            <span className={cn("hl-amber")}>{tFor("ne", "learn.study.sem.caption_adhika_masa")}</span>{tFor("ne", "ui.tithi_mechanics.x_2983b24f")}
+            {tFor(undefined, "ui.tithi_mechanics.x_0cbb14c4")}<b>{tFor(undefined, "learn.diagrams.hierarchy_step_lunar_month")}</b>{tFor(undefined, "ui.tithi_mechanics.x_1a013320")}<b>{tFor(undefined, "ui.tithi_mechanics.x_32ec504d")}</b>{tFor(undefined, "ui.tithi_mechanics.x_d13b4791")}<span className={cn("hl")}>{tFor(undefined, "ui.tithi_mechanics.x_fd0282e1")}</span>{tFor(undefined, "ui.tithi_mechanics.x_2d6d0b83")}{" "}
+            <span className={cn("hl-amber")}>{tFor(undefined, "learn.study.sem.caption_adhika_masa")}</span>{tFor(undefined, "ui.tithi_mechanics.x_2983b24f")}
           </p>
           <div className={tmCardPadLg}>
             <AdhikMassDiagram />
             <div className={tmCardCap}>
-              {tFor("ne", "ui.tithi_mechanics.x_9e5a2850")}
+              {tFor(undefined, "ui.tithi_mechanics.x_9e5a2850")}
             </div>
           </div>
           <div className={tmKeys}>
             <div className={tmKey}>
-              <h4>{tFor("ne", "ui.tithi_mechanics.x_ea92eee6")}</h4>
+              <h4>{tFor(undefined, "ui.tithi_mechanics.x_ea92eee6")}</h4>
               <p>
-                {tFor("ne", "ui.tithi_mechanics.x_ca6c88cd")}
+                {tFor(undefined, "ui.tithi_mechanics.x_ca6c88cd")}
               </p>
             </div>
             <div className={tmKey}>
-              <h4>{tFor("ne", "ui.tithi_mechanics.x_35718df5")}</h4>
+              <h4>{tFor(undefined, "ui.tithi_mechanics.x_35718df5")}</h4>
               <p>
-                {tFor("ne", "ui.tithi_mechanics.x_bf0a0109")}
+                {tFor(undefined, "ui.tithi_mechanics.x_bf0a0109")}
               </p>
             </div>
             <div className={tmKey}>
-              <h4>{tFor("ne", "ui.tithi_mechanics.x_5e66ef8c")}</h4>
+              <h4>{tFor(undefined, "ui.tithi_mechanics.x_5e66ef8c")}</h4>
               <p>
-                {tFor("ne", "ui.tithi_mechanics.x_b471c637")}
+                {tFor(undefined, "ui.tithi_mechanics.x_b471c637")}
               </p>
             </div>
           </div>
         </section>
 
         <p className={tmNote}>
-          {tFor("ne", "ui.tithi_mechanics.x_2c6a9775")}
+          {tFor(undefined, "ui.tithi_mechanics.x_2c6a9775")}
         </p>
       </div>
     </div>

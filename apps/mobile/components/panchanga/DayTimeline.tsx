@@ -460,7 +460,7 @@ export function DayTimeline({
 
   if (showNeedle && needleClock && chartMins != null) {
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) nowLabel = pick(tFor("ne", "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
+    if (nowG != null) nowLabel = pick(tFor(undefined, "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
   } else if (showNeedle && isToday) {
     nowG = needleGhatiOnVedicChart(minutesSinceMidnightInTimezone(now, timeZone), data.sunriseMin);
   } else if (showNeedle && chartMins != null) {

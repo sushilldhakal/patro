@@ -49,7 +49,7 @@ export function VimshopakaCard({ data }: { data: VimshopakaData }) {
           {t("kundali.vimshopaka_bala")}
         </h3>
         <p className={v.intro}>
-          {bilingualText(lang, tFor("ne", "ui.kundali.x_0d730df7", { v0: digits(data.max_score) }), `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`)}
+          {bilingualText(lang, tFor(undefined, "ui.kundali.x_0d730df7", { v0: digits(data.max_score) }), `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`)}
         </p>
       </div>
 

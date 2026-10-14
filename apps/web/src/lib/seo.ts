@@ -188,7 +188,7 @@ export function buildJsonLd(meta: PageSeoMeta, pathname: string, t: TFunc): Reco
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
         name: SITE_NAME,
-        alternateName: [tFor("ne", "app_name"), "Vedic Patro", "Nepali Patro"],
+        alternateName: [tFor(undefined, "app_name"), "Vedic Patro", "Nepali Patro"],
         description: meta.description,
         url: `${SITE_URL}/`,
         inLanguage: ["ne", "en"],

@@ -168,7 +168,7 @@ export function KaranaReferenceTable() {
   const rows: string[][] = [
     [
       digits(1),
-      `${pick(tFor("ne", "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}`,
+      `${pick(tFor(undefined, "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}`,
       t("learn.fixed"),
       t("learn.first_half_of_shukla_pratipada_once_a_year"),
     ],

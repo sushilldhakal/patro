@@ -160,7 +160,7 @@ const chandraKrantiLegacyRoute = createRoute({
 });
 const dainikKrantiNeLegacyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  get path() { return tFor("ne", "ui.app_routes.x_d4820713"); },
+  path: "/दैनिकक्रान्ति", // copy-ok: legacy Nepali URL
   validateSearch: validateDainikKrantiSearch,
   component: function DainikKrantiNeLegacyRedirect() {
     const search = dainikKrantiNeLegacyRoute.useSearch();
@@ -379,15 +379,15 @@ const basepath = import.meta.env.BASE_URL.replace(/\/$/, "");
 function RouteErrorFallback() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-      <p className="text-lg font-semibold text-foreground">{tFor("ne", "ui.router.x_3f682f0a")}</p>
-      <p className="text-sm">{tFor("ne", "common.route_error_body")}</p>
+      <p className="text-lg font-semibold text-foreground">{tFor(undefined, "ui.router.x_3f682f0a")}</p>
+      <p className="text-sm">{tFor(undefined, "common.route_error_body")}</p>
       <p className="text-sm text-muted-foreground">Something went wrong. Reloading usually fixes this.</p>
       <button
         type="button"
         onClick={() => window.location.reload()}
         className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
       >
-        {tFor("ne", "ui.router.x_367f4805")}
+        {tFor(undefined, "ui.router.x_367f4805")}
       </button>
     </div>
   );

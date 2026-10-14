@@ -32,7 +32,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
       <button
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
-        aria-label={pick(tFor("ne", "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${inactive.en}`)}
+        aria-label={pick(tFor(undefined, "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${inactive.en}`)}
         className={cn(btnClass, panchangaPageClasses.dayCycle.toggleLabel, panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleSingle, "text-foreground hover:bg-muted")}
         style={shellStyle}
       >

@@ -72,10 +72,10 @@ function daysAwayLabel(
   const english = lang.slice(0, 2) === "en";
   if (days > 0) {
     if (english) return days === 1 ? "After 1 day" : `After ${count} days`;
-    return tFor("ne", "ui.home.x_261cd2ac", { v0: count });
+    return tFor(undefined, "ui.home.x_261cd2ac", { v0: count });
   }
   if (english) return days === -1 ? "1 day ago" : `${count} days ago`;
-  return tFor("ne", "ui.home.x_796f4d7b", { v0: count });
+  return tFor(undefined, "ui.home.x_796f4d7b", { v0: count });
 }
 
 function clockLabel(

@@ -167,7 +167,7 @@ export function PatroYearSheetStepper({
   const manualLabel = t("ui.patro_date.enter_manually");
   const eraShort = patroEraShortLabel(era, lang);
   const rangeHint = pick(
-    tFor("ne", "ui.patro_date.x_855271e0", { v0: digits(yearWindowStart), v1: digits(yearWindowEnd), v2: digits(clamped) }),
+    tFor(undefined, "ui.patro_date.x_855271e0", { v0: digits(yearWindowStart), v1: digits(yearWindowEnd), v2: digits(clamped) }),
     `${yearWindowStart}–${yearWindowEnd} (${clamped} selected)`,
   );
 

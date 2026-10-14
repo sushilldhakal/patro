@@ -612,7 +612,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
         {hasFilter ? (
           <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
             {pick(
-              tFor("ne", "ui.avakahada.x_91fdc25d", { v0: digits(highlightSet.size) }),
+              tFor(undefined, "ui.avakahada.x_91fdc25d", { v0: digits(highlightSet.size) }),
               `· ${highlightSet.size} nakshatras in search`,
             )}
           </Text>

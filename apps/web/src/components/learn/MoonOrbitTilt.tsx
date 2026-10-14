@@ -219,7 +219,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
           className={motMoon}
         />
         <text y={-MOON_R - 9} className={motMoonLabel} textAnchor="middle">
-          {tFor("ne", "kundali.graha_name_moon")}
+          {tFor(undefined, "kundali.graha_name_moon")}
         </text>
       </g>
     </g>
@@ -270,11 +270,11 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         {/* legend */}
         <g>
           <line x1={34} y1={32} x2={70} y2={32} className={cn(motOrbit, "above")} />
-          <text x={78} y={37} className={motLegendLabel}>{tFor("ne", "ui.learn.x_c9de59a6")}</text>
+          <text x={78} y={37} className={motLegendLabel}>{tFor(undefined, "ui.learn.x_c9de59a6")}</text>
           <line x1={34} y1={58} x2={70} y2={58} className={cn(motOrbit, "below")} />
-          <text x={78} y={63} className={motLegendLabel}>{tFor("ne", "ui.learn.x_e1130c48")}</text>
+          <text x={78} y={63} className={motLegendLabel}>{tFor(undefined, "ui.learn.x_e1130c48")}</text>
           <circle cx={52} cy={84} r={8} className={motNode} />
-          <text x={78} y={89} className={motLegendLabel}>{tFor("ne", "ui.learn.rahu_ketu_the_nodes")}</text>
+          <text x={78} y={89} className={motLegendLabel}>{tFor(undefined, "ui.learn.rahu_ketu_the_nodes")}</text>
         </g>
 
         {/* ── ecliptic plane: FAR half (behind Earth) ───────────────── */}
@@ -302,10 +302,10 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <path d={DISC.near} fill="url(#mot-plane-near)" className={motPlaneFace} />
         <ellipse cx={CX} cy={CY} rx={RD} ry={RD * SE} className={motPlaneRim} fill="none" />
         <text x={CX} y={CY + RD * SE + 34} className={motPlaneLabel} textAnchor="middle">
-          {tFor("ne", "ui.learn.x_db15df7a")}
+          {tFor(undefined, "ui.learn.x_db15df7a")}
         </text>
         <text x={CX} y={CY + EARTH_R + 28} className={cn(edBodyLabel, motEarthLabel)} textAnchor="middle">
-          {tFor("ne", "vastu.element.earth")}
+          {tFor(undefined, "vastu.element.earth")}
         </text>
 
         {/* orbit half ABOVE the plane — bright, on top of the plane */}
@@ -316,7 +316,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <line x1={tiltWedge.p0.x} y1={tiltWedge.p0.y} x2={tiltWedge.pPlane.x} y2={tiltWedge.pPlane.y} className={motTiltRef()} />
         <line x1={tiltWedge.p0.x} y1={tiltWedge.p0.y} x2={tiltWedge.pOrbit.x} y2={tiltWedge.pOrbit.y} className={motTiltRef(true)} />
         <text x={tiltWedge.p0.x + 12} y={tiltWedge.p0.y - 42} className={motTiltLabel} textAnchor="start">
-          ~{fmt(5)}{tFor("ne", "ui.learn.x_05e90463")}
+          ~{fmt(5)}{tFor(undefined, "ui.learn.x_05e90463")}
         </text>
 
         {/* nodes — the two points where the tilted orbit pierces the plane */}
@@ -340,7 +340,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <circle cx={sun.x} cy={sun.y} r={40} fill="url(#mot-sunglow)" />
         <circle cx={sun.x} cy={sun.y} r={24} fill="url(#mot-sun)" />
         <text x={sun.x} y={sun.y + 42} className={motSunLabel} textAnchor="middle">
-          {tFor("ne", "kundali.report.meta_sun")}
+          {tFor(undefined, "kundali.report.meta_sun")}
         </text>
 
         {/* Sun–Earth–shadow axis — crimson, drawn last so nothing occludes it */}
@@ -350,7 +350,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
           <line x1={sun.x} y1={sun.y} x2={shadow.x} y2={shadow.y} className={motSunLineAligned(!!season)} />
           <circle cx={shadow.x} cy={shadow.y} r={11} className={motShadowDot} />
           <text x={shadow.x} y={shadow.y - 18} className={motShadowLabel} textAnchor="middle">
-            {tFor("ne", "ui.learn.umbra")}
+            {tFor(undefined, "ui.learn.umbra")}
           </text>
         </g>
 
@@ -362,12 +362,12 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
             className={motEclipseBannerType(status === "lunar" ? "lunar" : "solar")}
             textAnchor="middle"
           >
-            {status === "lunar" ? tFor("ne", "ui.learn.x_54a0d2df") : tFor("ne", "ui.learn.x_b02336b2")}
+            {status === "lunar" ? tFor(undefined, "ui.learn.x_54a0d2df") : tFor(undefined, "ui.learn.x_b02336b2")}
           </text>
         )}
         {!eclipsing && season && (
           <text x={CX} y={48} className={motSeasonBanner} textAnchor="middle">
-            {tFor("ne", "ui.learn.x_cd04e8e6")}
+            {tFor(undefined, "ui.learn.x_cd04e8e6")}
           </text>
         )}
       </g>
@@ -407,7 +407,7 @@ export function MoonOrbitTiltStudy() {
     else if (atNode && angDiff(E, 0) < 15) status = "solar";
     const season = angDiff(omega, sunLon) < 13 || angDiff(omega, sunLon + 180) < 13;
     const phase =
-      angDiff(E, 180) < 12 ? tFor("ne", "learn.purnima") : angDiff(E, 0) < 12 ? tFor("ne", "learn.aunsi") : E < 180 ? tFor("ne", "learn.diagrams.paksha_shukla") : tFor("ne", "learn.diagrams.paksha_krishna");
+      angDiff(E, 180) < 12 ? tFor(undefined, "learn.purnima") : angDiff(E, 0) < 12 ? tFor(undefined, "learn.aunsi") : E < 180 ? tFor(undefined, "learn.diagrams.paksha_shukla") : tFor(undefined, "learn.diagrams.paksha_krishna");
     return { sunLon, omega, u, status, season, phase };
   }, [dayT, precT]);
 
@@ -430,12 +430,12 @@ export function MoonOrbitTiltStudy() {
 
   const statusText =
     model.status === "lunar"
-      ? tFor("ne", "learn.diagrams.eclipse_event_lunar")
+      ? tFor(undefined, "learn.diagrams.eclipse_event_lunar")
       : model.status === "solar"
-        ? tFor("ne", "learn.diagrams.eclipse_event_solar")
+        ? tFor(undefined, "learn.diagrams.eclipse_event_solar")
         : model.season
-          ? tFor("ne", "ui.learn.eclipse_season")
-          : tFor("ne", "learn.study.eclipse.status_none");
+          ? tFor(undefined, "ui.learn.eclipse_season")
+          : tFor(undefined, "learn.study.eclipse.status_none");
 
   return (
     <div className={tmCardPadLg}>
@@ -449,32 +449,32 @@ export function MoonOrbitTiltStudy() {
       <div className={edControls}>
         <div className={edReadout}>
           <div className={edRo}>
-            <span className={edRoK}>{tFor("ne", "ui.learn.orbital_tilt")}</span>
+            <span className={edRoK}>{tFor(undefined, "ui.learn.orbital_tilt")}</span>
             <span className={edRoV({ mono: true })}>~{fmt(REAL_TILT.toFixed(1))}°</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.moon_phase")}</span>
+            <span className={edRoK}>{tFor(undefined, "learn.study.eclipse.moon_phase")}</span>
             <span className={edRoV()}>{model.phase}</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.node_cycle")}</span>
-            <span className={edRoV({ mono: true })}>{fmt(precT.toFixed(1))} / {fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_66430b7c")}</span>
+            <span className={edRoK}>{tFor(undefined, "learn.study.eclipse.node_cycle")}</span>
+            <span className={edRoV({ mono: true })}>{fmt(precT.toFixed(1))} / {fmt(NODAL_YEARS)}{tFor(undefined, "ui.learn.x_66430b7c")}</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.state")}</span>
+            <span className={edRoK}>{tFor(undefined, "learn.study.eclipse.state")}</span>
             <span className={edRoV({ amber: model.status !== "none" })}>{statusText}</span>
           </div>
         </div>
 
         <div className={motSliderRow}>
-          <span className={motSliderLabel}>{tFor("ne", "ui.learn.x_74bf8cc5")}</span>
+          <span className={motSliderLabel}>{tFor(undefined, "ui.learn.x_74bf8cc5")}</span>
           <div className={edScrubWrap}>
             <button
               type="button"
               className={edPlayBtn}
               onClick={() => setPlaying((p) => !p)}
-              title={playing ? tFor("ne", "panchanga.hora.pause") : tFor("ne", "panchanga.hora.play")}
-              aria-label={playing ? tFor("ne", "panchanga.hora.pause") : tFor("ne", "panchanga.hora.play")}
+              title={playing ? tFor(undefined, "panchanga.hora.pause") : tFor(undefined, "panchanga.hora.play")}
+              aria-label={playing ? tFor(undefined, "panchanga.hora.pause") : tFor(undefined, "panchanga.hora.play")}
             >
               {playing ? <Pause size={16} /> : <Play size={16} />}
             </button>
@@ -495,7 +495,7 @@ export function MoonOrbitTiltStudy() {
         </div>
 
         <div className={motSliderRow}>
-          <span className={motSliderLabel}>{tFor("ne", "ui.learn.x_844b4d3b")}{fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_f90332cc")}</span>
+          <span className={motSliderLabel}>{tFor(undefined, "ui.learn.x_844b4d3b")}{fmt(NODAL_YEARS)}{tFor(undefined, "ui.learn.x_f90332cc")}</span>
           <input
             className={edScrub}
             type="range"
@@ -510,20 +510,20 @@ export function MoonOrbitTiltStudy() {
 
         <div className={edPresets}>
           <button type="button" className={edPreset()} onClick={jumpNextEclipse}>
-            {tFor("ne", "ui.learn.x_937693d0")}
+            {tFor(undefined, "ui.learn.x_937693d0")}
           </button>
           <button
             type="button"
             className={edPreset()}
             onClick={() => setPrecT((p) => (p + NODAL_YEARS / 4) % NODAL_YEARS)}
           >
-            {tFor("ne", "ui.learn.x_fa553da9")}
+            {tFor(undefined, "ui.learn.x_fa553da9")}
           </button>
         </div>
       </div>
       <p className={tmCardCap}>
-        {tFor("ne", "ui.learn.x_a88a1493")}<span className={cn("hl-amber")}>{tFor("ne", "ui.learn.x_60e8fbbd")}</span>{tFor("ne", "ui.learn.x_91630415")}<b>~{fmt(5)}°</b>{tFor("ne", "ui.learn.x_b67a0a51")}<b>{tFor("ne", "ui.learn.x_09b86982")}</b>{tFor("ne", "ui.learn.x_3fe90601")}{" "}
-        <span className={cn("hl")}>{tFor("ne", "ui.learn.x_ab1d2347")}</span>{tFor("ne", "ui.learn.x_53350eeb")}<b>{fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_fc380af1")}</b>{tFor("ne", "ui.learn.x_12331c28")}
+        {tFor(undefined, "ui.learn.x_a88a1493")}<span className={cn("hl-amber")}>{tFor(undefined, "ui.learn.x_60e8fbbd")}</span>{tFor(undefined, "ui.learn.x_91630415")}<b>~{fmt(5)}°</b>{tFor(undefined, "ui.learn.x_b67a0a51")}<b>{tFor(undefined, "ui.learn.x_09b86982")}</b>{tFor(undefined, "ui.learn.x_3fe90601")}{" "}
+        <span className={cn("hl")}>{tFor(undefined, "ui.learn.x_ab1d2347")}</span>{tFor(undefined, "ui.learn.x_53350eeb")}<b>{fmt(NODAL_YEARS)}{tFor(undefined, "ui.learn.x_fc380af1")}</b>{tFor(undefined, "ui.learn.x_12331c28")}
       </p>
     </div>
   );

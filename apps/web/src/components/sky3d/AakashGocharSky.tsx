@@ -731,7 +731,7 @@ export function AakashGocharSky({
    * Just the city: the page's own label carries the country too — "काठमाडौँ,
    * NP" — which reads as a postal address once "रेखा" is appended to it.
    */
-  const placeName = placeLabel?.split(",")[0].trim() || pick(tFor("ne", "learn.diagrams.city_kathmandu"), tFor("en", "learn.diagrams.city_kathmandu"));
+  const placeName = placeLabel?.split(",")[0].trim() || pick(tFor(undefined, "learn.diagrams.city_kathmandu"), tFor("en", "learn.diagrams.city_kathmandu"));
   /**
    * The clock, as one chosen step and two switches.
    *
@@ -1722,7 +1722,7 @@ export function AakashGocharSky({
     const minute = String(local.getUTCMinutes()).padStart(2, "0");
     const h12 = h24 % 12 || 12;
     const half =
-      lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor("ne", "ui.sky3d.x_97797b0d") : tFor("ne", "ui.sky3d.x_1842d5be");
+      lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor(undefined, "ui.sky3d.x_97797b0d") : tFor(undefined, "ui.sky3d.x_1842d5be");
     const short = {
       day: `${bsMonthLabel(bs.month, lang)} ${digits(bs.day)}`,
       clock: `${digits(h12)}:${digits(minute)} ${half}`,
@@ -1737,7 +1737,7 @@ export function AakashGocharSky({
     const mark = bs.approximate ? "≈" : "";
     return {
       short,
-      date: tFor("ne", "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
+      date: tFor(undefined, "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
       // Out past the table the AD year rides along, so the reading can be
       // checked against a calendar the reader already knows.
       time: `${digits(wall)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
@@ -1775,21 +1775,21 @@ export function AakashGocharSky({
     <>
       <IconButton
         icon={<Rewind className="size-full" />}
-        label={pick(tFor("ne", "ui.sky3d.one_step_back"), tFor("en", "ui.sky3d.one_step_back"))}
+        label={pick(tFor(undefined, "ui.sky3d.one_step_back"), tFor("en", "ui.sky3d.one_step_back"))}
         active={playing && reverse}
         compact={fullscreen}
         onPress={() => stepTime("back")}
       />
       <IconButton
         icon={playing ? <Pause className="size-full" /> : <Play className="size-full" />}
-        label={playing ? pick(tFor("ne", "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor("ne", "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
+        label={playing ? pick(tFor(undefined, "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor(undefined, "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
         active={playing}
         compact={fullscreen}
         onPress={togglePlay}
       />
       <IconButton
         icon={<FastForward className="size-full" />}
-        label={pick(tFor("ne", "ui.sky3d.one_step_forward"), tFor("en", "ui.sky3d.one_step_forward"))}
+        label={pick(tFor(undefined, "ui.sky3d.one_step_forward"), tFor("en", "ui.sky3d.one_step_forward"))}
         active={playing && !reverse}
         compact={fullscreen}
         onPress={() => stepTime("forward")}
@@ -1805,7 +1805,7 @@ export function AakashGocharSky({
     <>
       <Chip
         active={mode === "space"}
-        label={pick(tFor("ne", "ui.sky3d.space"), tFor("en", "ui.sky3d.space"))}
+        label={pick(tFor(undefined, "ui.sky3d.space"), tFor("en", "ui.sky3d.space"))}
         onPress={() => {
           setMode("space");
           view.current = { yaw: SYSTEM_YAW, pitch: SYSTEM_PITCH, distance: SYSTEM_DISTANCE };
@@ -1813,7 +1813,7 @@ export function AakashGocharSky({
       />
       <Chip
         active={mode === "horizon"}
-        label={pick(tFor("ne", "ui.common.horizon"), tFor("en", "ui.common.horizon"))}
+        label={pick(tFor(undefined, "ui.common.horizon"), tFor("en", "ui.common.horizon"))}
         onPress={() => {
           setMode("horizon");
           /* You are standing on your own place here, so following it is a lock
@@ -1825,7 +1825,7 @@ export function AakashGocharSky({
       />
       <Chip
         active={mode === "globe"}
-        label={pick(tFor("ne", "ui.sky3d.earth_globe"), tFor("en", "ui.sky3d.earth_globe"))}
+        label={pick(tFor(undefined, "ui.sky3d.earth_globe"), tFor("en", "ui.sky3d.earth_globe"))}
         onPress={() => {
           setMode("globe");
           view.current = { yaw: GLOBE_YAW, pitch: GLOBE_PITCH, distance: GLOBE_VIEW };
@@ -1972,7 +1972,7 @@ export function AakashGocharSky({
                 dangerouslySetInnerHTML={{ __html: compassNeedle }}
               />
               <p className="m-0 text-2xl font-extrabold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                {pick(tFor("ne", "ui.sky3d.point_your_device_up"), tFor("en", "ui.sky3d.point_your_device_up"))}
+                {pick(tFor(undefined, "ui.sky3d.point_your_device_up"), tFor("en", "ui.sky3d.point_your_device_up"))}
               </p>
             </div>
           </div>
@@ -2016,7 +2016,7 @@ export function AakashGocharSky({
             than up with the HUD it has nothing to do with. */}
         {mode === "horizon" && fovBadge && sample ? (
           <div className="pointer-events-none absolute bottom-[88px] left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-black/60 px-3 py-1 text-xs font-bold text-white backdrop-blur">
-            {pick(tFor("ne", "ui.sky3d.fov"), tFor("en", "ui.sky3d.fov"))} {digits(Math.round(fovForZoom("horizon", sample.zoomDistance)))}°
+            {pick(tFor(undefined, "ui.sky3d.fov"), tFor("en", "ui.sky3d.fov"))} {digits(Math.round(fovForZoom("horizon", sample.zoomDistance)))}°
           </div>
         ) : null}
 
@@ -2028,7 +2028,7 @@ export function AakashGocharSky({
           {sunRashi != null ? (
             <>
               <p className="m-0 text-diagram-xs font-semibold uppercase tracking-eyebrow text-white/50">
-                {pick(tFor("ne", "learn.playground.sun_rashi_month"), tFor("en", "learn.playground.sun_rashi_month"))}
+                {pick(tFor(undefined, "learn.playground.sun_rashi_month"), tFor("en", "learn.playground.sun_rashi_month"))}
               </p>
               <p className="m-0 text-sm font-bold text-white">
                 {sunRashiName} · {sunMonthName}
@@ -2038,24 +2038,24 @@ export function AakashGocharSky({
           {eclipse?.kind === "solar" ? (
             <p className="m-0 mt-1 text-xs font-bold text-amber-200">
               {pick(
-                tFor("ne", "ui.sky3d.solar_eclipse_node", { node: tFor("ne", eclipse.node === "rahu" ? "grahas.rahu" : "grahas.ketu") }),
+                tFor(undefined, "ui.sky3d.solar_eclipse_node", { node: tFor(undefined, eclipse.node === "rahu" ? "grahas.rahu" : "grahas.ketu") }),
                 tFor("en", "ui.sky3d.solar_eclipse_node", { node: eclipse.node === "rahu" ? "Rāhu" : "Ketu" }),
               )}
             </p>
           ) : eclipse?.kind === "lunar" ? (
             <p className="m-0 mt-1 text-xs font-bold text-rose-200">
               {pick(
-                tFor("ne", "ui.sky3d.lunar_eclipse_node", { node: tFor("ne", eclipse.node === "rahu" ? "grahas.rahu" : "grahas.ketu") }),
+                tFor(undefined, "ui.sky3d.lunar_eclipse_node", { node: tFor(undefined, eclipse.node === "rahu" ? "grahas.rahu" : "grahas.ketu") }),
                 tFor("en", "ui.sky3d.lunar_eclipse_node", { node: eclipse.node === "rahu" ? "Rāhu" : "Ketu" }),
               )}
             </p>
           ) : syzygy === "amavasya" ? (
             <p className="m-0 mt-1 text-xs font-bold text-slate-200">
-              {pick(tFor("ne", "ui.sky3d.amavasya_moon_between_sun_and_earth_2"), tFor("en", "ui.sky3d.amavasya_moon_between_sun_and_earth_2"))}
+              {pick(tFor(undefined, "ui.sky3d.amavasya_moon_between_sun_and_earth_2"), tFor("en", "ui.sky3d.amavasya_moon_between_sun_and_earth_2"))}
             </p>
           ) : syzygy === "purnima" ? (
             <p className="m-0 mt-1 text-xs font-bold text-amber-100">
-              {pick(tFor("ne", "ui.sky3d.purnima_earth_between_sun_and_moon_2"), tFor("en", "ui.sky3d.purnima_earth_between_sun_and_moon_2"))}
+              {pick(tFor(undefined, "ui.sky3d.purnima_earth_between_sun_and_moon_2"), tFor("en", "ui.sky3d.purnima_earth_between_sun_and_moon_2"))}
             </p>
           ) : null}
           <p className="m-0 mt-1 text-xs font-bold" style={{ color: LABEL_COLOR.hud }}>
@@ -2066,18 +2066,18 @@ export function AakashGocharSky({
           </p>
           <p className="m-0 text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>
             {mode === "horizon"
-              ? `${pick(tFor("ne", "ui.common.horizon"), tFor("en", "ui.common.horizon"))} · ${digits(observer.lat.toFixed(2))}°, ${digits(
+              ? `${pick(tFor(undefined, "ui.common.horizon"), tFor("en", "ui.common.horizon"))} · ${digits(observer.lat.toFixed(2))}°, ${digits(
                   observer.lon.toFixed(2),
-                )}° · ${isDay ? pick(tFor("ne", "common.day"), tFor("en", "common.day")) : pick(tFor("ne", "ui.sky3d.night"), tFor("en", "ui.sky3d.night"))}`
+                )}° · ${isDay ? pick(tFor(undefined, "common.day"), tFor("en", "common.day")) : pick(tFor(undefined, "ui.sky3d.night"), tFor("en", "ui.sky3d.night"))}`
               : mode === "globe"
-                ? pick(tFor("ne", "ui.sky3d.earth_globe_ecliptic_ring"), tFor("en", "ui.sky3d.earth_globe_ecliptic_ring"))
-                : pick(tFor("ne", "ui.sky3d.from_space"), tFor("en", "ui.sky3d.from_space"))}
+                ? pick(tFor(undefined, "ui.sky3d.earth_globe_ecliptic_ring"), tFor("en", "ui.sky3d.earth_globe_ecliptic_ring"))
+                : pick(tFor(undefined, "ui.sky3d.from_space"), tFor("en", "ui.sky3d.from_space"))}
           </p>
           {/* The rate, since the speed buttons no longer carry a caption. */}
           <p className="m-0 text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>
             {playing
               ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
-              : pick(tFor("ne", "ui.sky3d.paused_2"), tFor("en", "ui.sky3d.paused_2"))}
+              : pick(tFor(undefined, "ui.sky3d.paused_2"), tFor("en", "ui.sky3d.paused_2"))}
           </p>
         </div>
 
@@ -2095,16 +2095,16 @@ export function AakashGocharSky({
             )}
           >
             {phaseFlash === "solar"
-              ? pick(tFor("ne", "ui.sky3d.solar_eclipse_moon_covers_the_sun"), tFor("en", "ui.sky3d.solar_eclipse_moon_covers_the_sun"))
+              ? pick(tFor(undefined, "ui.sky3d.solar_eclipse_moon_covers_the_sun"), tFor("en", "ui.sky3d.solar_eclipse_moon_covers_the_sun"))
               : phaseFlash === "lunar"
-                ? pick(tFor("ne", "ui.sky3d.lunar_eclipse_earth_s_shadow_on"), tFor("en", "ui.sky3d.lunar_eclipse_earth_s_shadow_on"))
+                ? pick(tFor(undefined, "ui.sky3d.lunar_eclipse_earth_s_shadow_on"), tFor("en", "ui.sky3d.lunar_eclipse_earth_s_shadow_on"))
                 : phaseFlash === "amavasya"
-                  ? pick(tFor("ne", "ui.sky3d.amavasya_moon_between_sun_and_earth"), tFor("en", "ui.sky3d.amavasya_moon_between_sun_and_earth"))
-                  : pick(tFor("ne", "ui.sky3d.purnima_earth_between_sun_and_moon"), tFor("en", "ui.sky3d.purnima_earth_between_sun_and_moon"))}
+                  ? pick(tFor(undefined, "ui.sky3d.amavasya_moon_between_sun_and_earth"), tFor("en", "ui.sky3d.amavasya_moon_between_sun_and_earth"))
+                  : pick(tFor(undefined, "ui.sky3d.purnima_earth_between_sun_and_moon"), tFor("en", "ui.sky3d.purnima_earth_between_sun_and_moon"))}
           </div>
         ) : flash !== null ? (
           <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full border border-amber-400/60 bg-amber-500/20 px-4 py-1.5 text-sm font-bold text-amber-100 backdrop-blur">
-            {pick(tFor("ne", "learn.playground.sankranti"), tFor("en", "learn.playground.sankranti"))} · {formatRashiByNumber(flash, lang)} ·{" "}
+            {pick(tFor(undefined, "learn.playground.sankranti"), tFor("en", "learn.playground.sankranti"))} · {formatRashiByNumber(flash, lang)} ·{" "}
             {lang === "en" ? BS_MONTH_NAMES[flash - 1] : BS_MONTHS_NE[flash - 1]} {digits(1)}
           </div>
         ) : null}
@@ -2112,7 +2112,7 @@ export function AakashGocharSky({
         <div className="absolute right-3 flex gap-2" style={{ top: overlayTop }}>
           <IconButton
             icon={<Search size={16} />}
-            label={pick(tFor("ne", "ui.sky3d.search_the_sky"), tFor("en", "ui.sky3d.search_the_sky"))}
+            label={pick(tFor(undefined, "ui.sky3d.search_the_sky"), tFor("en", "ui.sky3d.search_the_sky"))}
             active={searchOpen}
             onPress={() => {
               setSearchOpen((v) => !v);
@@ -2122,7 +2122,7 @@ export function AakashGocharSky({
           />
           <IconButton
             icon={<RotateCcw size={16} />}
-            label={pick(tFor("ne", "ui.sky3d.back_to_the_chosen_date"), tFor("en", "ui.sky3d.back_to_the_chosen_date"))}
+            label={pick(tFor(undefined, "ui.sky3d.back_to_the_chosen_date"), tFor("en", "ui.sky3d.back_to_the_chosen_date"))}
             active={false}
             onPress={() => {
               /* The nav above starts on today, so with no date chosen this is
@@ -2132,7 +2132,7 @@ export function AakashGocharSky({
           />
           <IconButton
             icon={<Focus size={16} />}
-            label={pick(tFor("ne", "learn.playground.focus"), tFor("en", "learn.playground.focus"))}
+            label={pick(tFor(undefined, "learn.playground.focus"), tFor("en", "learn.playground.focus"))}
             active={focusOpen}
             onPress={() => {
               setFocusOpen((v) => !v);
@@ -2143,8 +2143,8 @@ export function AakashGocharSky({
             icon={fullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
             label={
               fullscreen
-                ? pick(tFor("ne", "common.exit_fullscreen"), tFor("en", "common.exit_fullscreen"))
-                : pick(tFor("ne", "common.fullscreen"), tFor("en", "common.fullscreen"))
+                ? pick(tFor(undefined, "common.exit_fullscreen"), tFor("en", "common.exit_fullscreen"))
+                : pick(tFor(undefined, "common.fullscreen"), tFor("en", "common.fullscreen"))
             }
             active={fullscreen}
             onPress={() => setFullscreen((f) => !f)}
@@ -2169,13 +2169,13 @@ export function AakashGocharSky({
             <div className={mode === "horizon" ? "grid grid-cols-4 gap-1" : "grid grid-cols-3 gap-1"}>
               <ViewTile
                 icon={<Grid3x3 className="size-full" />}
-                label={pick(tFor("ne", "ui.sky3d.grids"), tFor("en", "ui.sky3d.grids"))}
+                label={pick(tFor(undefined, "ui.sky3d.grids"), tFor("en", "ui.sky3d.grids"))}
                 active={toggles.grid}
                 onPress={() => setToggles((t) => ({ ...t, grid: !t.grid }))}
               />
               <ViewTile
                 icon={<Sparkles className="size-full" />}
-                label={pick(tFor("ne", "ui.sky3d.figures"), tFor("en", "ui.sky3d.figures"))}
+                label={pick(tFor(undefined, "ui.sky3d.figures"), tFor("en", "ui.sky3d.figures"))}
                 active={toggles.constellations}
                 onPress={() => setToggles((t) => ({ ...t, constellations: !t.constellations }))}
               />
@@ -2188,20 +2188,20 @@ export function AakashGocharSky({
               {mode === "horizon" ? (
                 <ViewTile
                   icon={<Mountain className="size-full" />}
-                  label={pick(tFor("ne", "ui.sky3d.landscape"), tFor("en", "ui.sky3d.landscape"))}
+                  label={pick(tFor(undefined, "ui.sky3d.landscape"), tFor("en", "ui.sky3d.landscape"))}
                   active={toggles.landscape}
                   onPress={() => setToggles((t) => ({ ...t, landscape: !t.landscape }))}
                 />
               ) : null}
               <ViewTile
                 icon={<CaseSensitive className="size-full" />}
-                label={pick(tFor("ne", "ui.sky3d.labels"), tFor("en", "ui.sky3d.labels"))}
+                label={pick(tFor(undefined, "ui.sky3d.labels"), tFor("en", "ui.sky3d.labels"))}
                 active={toggles.labels}
                 onPress={() => setToggles((t) => ({ ...t, labels: !t.labels }))}
               />
             </div>
             <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
-              {pick(tFor("ne", "learn.playground.guides"), tFor("en", "learn.playground.guides"))}
+              {pick(tFor(undefined, "learn.playground.guides"), tFor("en", "learn.playground.guides"))}
             </span>
             {/* ग्रिड is a tile above; the rest are the finer guides, which
                 stay as chips because they are read before they are pressed. */}
@@ -2213,7 +2213,7 @@ export function AakashGocharSky({
               {mode === "globe" ? (
                 <Chip
                   active={toggles.lockStars}
-                  label={pick(tFor("ne", "ui.sky3d.lock_to_stars"), tFor("en", "ui.sky3d.lock_to_stars"))}
+                  label={pick(tFor(undefined, "ui.sky3d.lock_to_stars"), tFor("en", "ui.sky3d.lock_to_stars"))}
                   onPress={() => setToggles((t) => ({ ...t, lockStars: !t.lockStars }))}
                 />
               ) : null}
@@ -2226,37 +2226,37 @@ export function AakashGocharSky({
               {mode === "horizon" ? null : (
                 <Chip
                   active={toggles.primeMeridian}
-                  label={`${placeName} ${pick(tFor("ne", "ui.sky3d.meridian_word"), tFor("en", "ui.sky3d.meridian_word"))}`}
+                  label={`${placeName} ${pick(tFor(undefined, "ui.sky3d.meridian_word"), tFor("en", "ui.sky3d.meridian_word"))}`}
                   onPress={() => setToggles((t) => ({ ...t, primeMeridian: !t.primeMeridian }))}
                 />
               )}
               {mode !== "space" ? (
                 <Chip
                   active={toggles.vedicStars}
-                  label={pick(tFor("ne", "ui.sky3d.vedic_stars"), tFor("en", "ui.sky3d.vedic_stars"))}
+                  label={pick(tFor(undefined, "ui.sky3d.vedic_stars"), tFor("en", "ui.sky3d.vedic_stars"))}
                   onPress={() => setToggles((t) => ({ ...t, vedicStars: !t.vedicStars }))}
                 />
               ) : null}
               {mode === "globe" ? (
                 <Chip
                   active={toggles.tilt}
-                  label={pick(tFor("ne", "learn.playground.tilt"), tFor("en", "learn.playground.tilt"))}
+                  label={pick(tFor(undefined, "learn.playground.tilt"), tFor("en", "learn.playground.tilt"))}
                   onPress={() => setToggles((t) => ({ ...t, tilt: !t.tilt }))}
                 />
               ) : null}
             </div>
             <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
-              {pick(tFor("ne", "ui.sky3d.belts"), tFor("en", "ui.sky3d.belts"))}
+              {pick(tFor(undefined, "ui.sky3d.belts"), tFor("en", "ui.sky3d.belts"))}
             </span>
             <div className="flex flex-wrap gap-1.5">
               <Chip
                 active={toggles.rashiBelt}
-                label={pick(tFor("ne", "panchanga.wheel.rashi"), tFor("en", "panchanga.wheel.rashi"))}
+                label={pick(tFor(undefined, "panchanga.wheel.rashi"), tFor("en", "panchanga.wheel.rashi"))}
                 onPress={() => setToggles((t) => ({ ...t, rashiBelt: !t.rashiBelt }))}
               />
               <Chip
                 active={toggles.nakshatraBelt}
-                label={pick(tFor("ne", "nakshatra"), tFor("en", "nakshatra"))}
+                label={pick(tFor(undefined, "nakshatra"), tFor("en", "nakshatra"))}
                 onPress={() => setToggles((t) => ({ ...t, nakshatraBelt: !t.nakshatraBelt }))}
               />
               {/* The बिक्रम month ring belongs to अन्तरिक्ष, where the wheel is
@@ -2268,7 +2268,7 @@ export function AakashGocharSky({
               {mode !== "space" ? null : (
                 <Chip
                   active={toggles.monthRing}
-                  label={pick(tFor("ne", "learn.playground.months"), tFor("en", "learn.playground.months"))}
+                  label={pick(tFor(undefined, "learn.playground.months"), tFor("en", "learn.playground.months"))}
                   onPress={() => setToggles((t) => ({ ...t, monthRing: !t.monthRing }))}
                 />
               )}
@@ -2277,7 +2277,7 @@ export function AakashGocharSky({
           ) : null}
           <IconButton
             icon={<SlidersHorizontal size={16} />}
-            label={pick(tFor("ne", "ui.sky3d.view_controls"), tFor("en", "ui.sky3d.view_controls"))}
+            label={pick(tFor(undefined, "ui.sky3d.view_controls"), tFor("en", "ui.sky3d.view_controls"))}
             active={drawerOpen}
             onPress={() => {
               setDrawerOpen((v) => !v);
@@ -2367,21 +2367,21 @@ export function AakashGocharSky({
             style={{ top: `calc(${overlayTop} + 2.75rem)` }}
           >
             <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
-              {pick(tFor("ne", "learn.playground.focus"), tFor("en", "learn.playground.focus"))}
+              {pick(tFor(undefined, "learn.playground.focus"), tFor("en", "learn.playground.focus"))}
             </span>
             <div className="flex flex-col gap-1">
               {(
                 [
-                  ["sun", pick(tFor("ne", "kundali.report.meta_sun"), tFor("en", "kundali.report.meta_sun"))],
-                  ["earth", pick(tFor("ne", "vastu.element.earth"), tFor("en", "vastu.element.earth"))],
-                  ["moon", pick(tFor("ne", "kundali.graha_name_moon"), tFor("en", "kundali.graha_name_moon"))],
-                  ["mercury", pick(tFor("ne", "kundali.graha_name_mercury"), tFor("en", "kundali.graha_name_mercury"))],
-                  ["venus", pick(tFor("ne", "kundali.graha_name_venus"), tFor("en", "kundali.graha_name_venus"))],
-                  ["jupiter", pick(tFor("ne", "kundali.graha_name_jupiter"), tFor("en", "kundali.graha_name_jupiter"))],
-                  ["saturn", pick(tFor("ne", "kundali.graha_name_saturn"), tFor("en", "kundali.graha_name_saturn"))],
-                  ["mars", pick(tFor("ne", "kundali.graha_name_mars"), tFor("en", "kundali.graha_name_mars"))],
-                  ["rahu", pick(tFor("ne", "grahas.rahu"), tFor("en", "grahas.rahu"))],
-                  ["ketu", pick(tFor("ne", "grahas.ketu"), tFor("en", "grahas.ketu"))],
+                  ["sun", pick(tFor(undefined, "kundali.report.meta_sun"), tFor("en", "kundali.report.meta_sun"))],
+                  ["earth", pick(tFor(undefined, "vastu.element.earth"), tFor("en", "vastu.element.earth"))],
+                  ["moon", pick(tFor(undefined, "kundali.graha_name_moon"), tFor("en", "kundali.graha_name_moon"))],
+                  ["mercury", pick(tFor(undefined, "kundali.graha_name_mercury"), tFor("en", "kundali.graha_name_mercury"))],
+                  ["venus", pick(tFor(undefined, "kundali.graha_name_venus"), tFor("en", "kundali.graha_name_venus"))],
+                  ["jupiter", pick(tFor(undefined, "kundali.graha_name_jupiter"), tFor("en", "kundali.graha_name_jupiter"))],
+                  ["saturn", pick(tFor(undefined, "kundali.graha_name_saturn"), tFor("en", "kundali.graha_name_saturn"))],
+                  ["mars", pick(tFor(undefined, "kundali.graha_name_mars"), tFor("en", "kundali.graha_name_mars"))],
+                  ["rahu", pick(tFor(undefined, "grahas.rahu"), tFor("en", "grahas.rahu"))],
+                  ["ketu", pick(tFor(undefined, "grahas.ketu"), tFor("en", "grahas.ketu"))],
                 ] as const
               ).map(([key, label]) => {
                 const checked = key === "earth" ? !selectedKey : selectedKey === key;
@@ -2424,7 +2424,7 @@ export function AakashGocharSky({
                   setToggles((t) => ({ ...t, lockCenter: !t.lockCenter }));
                 }}
               />
-              {pick(tFor("ne", "ui.sky3d.follow_graha"), tFor("en", "ui.sky3d.follow_graha"))}
+              {pick(tFor(undefined, "ui.sky3d.follow_graha"), tFor("en", "ui.sky3d.follow_graha"))}
             </label>
           </div>
         ) : null}
@@ -2445,7 +2445,7 @@ export function AakashGocharSky({
           <div className="flex items-center gap-1.5">
             <IconButton
               icon={playing ? <Pause className="size-full" /> : <Play className="size-full" />}
-              label={playing ? pick(tFor("ne", "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor("ne", "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
+              label={playing ? pick(tFor(undefined, "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor(undefined, "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
               active={playing}
               compact
               onPress={togglePlay}
@@ -2453,7 +2453,7 @@ export function AakashGocharSky({
             <div className="flex-1" />
             <IconButton
               icon={<ChevronUp className="size-full" />}
-              label={pick(tFor("ne", "ui.sky3d.show_controls"), tFor("en", "ui.sky3d.show_controls"))}
+              label={pick(tFor(undefined, "ui.sky3d.show_controls"), tFor("en", "ui.sky3d.show_controls"))}
               active={false}
               compact
               onPress={() => setControlsOpen(true)}
@@ -2468,7 +2468,7 @@ export function AakashGocharSky({
                   <div className="flex-1" />
                   <IconButton
                     icon={<ChevronDown className="size-full" />}
-                    label={pick(tFor("ne", "ui.sky3d.hide_controls"), tFor("en", "ui.sky3d.hide_controls"))}
+                    label={pick(tFor(undefined, "ui.sky3d.hide_controls"), tFor("en", "ui.sky3d.hide_controls"))}
                     active={false}
                     compact
                     onPress={() => setControlsOpen(false)}
@@ -2492,7 +2492,7 @@ export function AakashGocharSky({
                 max={RATE_NOTCHES}
                 step={1}
                 value={Math.round(rateToSlider(timeRate))}
-                aria-label={pick(tFor("ne", "learn.diagrams.orbit_speed"), tFor("en", "learn.diagrams.orbit_speed"))}
+                aria-label={pick(tFor(undefined, "learn.diagrams.orbit_speed"), tFor("en", "learn.diagrams.orbit_speed"))}
                 className="sky-time-slider sky-time-slider--thin min-w-0 flex-1"
                 onChange={(e) => applyTimeRate(sliderToRate(Number(e.target.value)))}
               />
@@ -2508,13 +2508,13 @@ export function AakashGocharSky({
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <button
             type="button"
-            aria-label={pick(tFor("ne", "ui.common.close"), tFor("en", "ui.common.close"))}
+            aria-label={pick(tFor(undefined, "ui.common.close"), tFor("en", "ui.common.close"))}
             className="absolute inset-0 cursor-default"
             onClick={() => setGrahaPickerOpen(false)}
           />
           <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-4">
             <p className="m-0 mb-3 text-sm font-bold text-foreground">
-              {pick(tFor("ne", "ui.sky3d.what_should_the_camera_follow"), tFor("en", "ui.sky3d.what_should_the_camera_follow"))}
+              {pick(tFor(undefined, "ui.sky3d.what_should_the_camera_follow"), tFor("en", "ui.sky3d.what_should_the_camera_follow"))}
             </p>
             {/* Your own place, first: it is the one target that is not up in
                 the sky, and the one that holds the ground still while the
@@ -2533,7 +2533,7 @@ export function AakashGocharSky({
               )}
             >
               <MapPin className="size-3.5 shrink-0" style={{ color: LABEL_COLOR.observer }} />
-              <span className="truncate">{pick(tFor("ne", "ui.sky3d.your_location_2"), tFor("en", "ui.sky3d.your_location_2"))}</span>
+              <span className="truncate">{pick(tFor(undefined, "ui.sky3d.your_location_2"), tFor("en", "ui.sky3d.your_location_2"))}</span>
             </button>
             <div className="grid grid-cols-3 gap-2">
               {GEO_BODY_ORDER.map((key) => (
@@ -2571,7 +2571,7 @@ export function AakashGocharSky({
                   setGrahaPickerOpen(false);
                 }}
               >
-                {pick(tFor("ne", "ui.sky3d.stop_following"), tFor("en", "ui.sky3d.stop_following"))}
+                {pick(tFor(undefined, "ui.sky3d.stop_following"), tFor("en", "ui.sky3d.stop_following"))}
               </button>
             ) : null}
           </div>
@@ -2616,7 +2616,7 @@ export function AakashGocharSky({
   return (
     <>
       <div className="rounded-2xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-        {pick(tFor("ne", "learn.playground.fullscreen_notice"), tFor("en", "learn.playground.fullscreen_notice"))}
+        {pick(tFor(undefined, "learn.playground.fullscreen_notice"), tFor("en", "learn.playground.fullscreen_notice"))}
       </div>
       {createPortal(
         <div

@@ -53,7 +53,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
     return (
       <Pressable
         onPress={() => onModeChange?.(inactive.value)}
-        accessibilityLabel={pick(tFor("ne", "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${inactive.en}`)}
+        accessibilityLabel={pick(tFor(undefined, "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${inactive.en}`)}
         className={cn("items-center justify-center active:bg-muted", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleSingle)}
         style={[shell, { paddingHorizontal: padX }]}
       >

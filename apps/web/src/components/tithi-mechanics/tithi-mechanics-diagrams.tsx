@@ -112,10 +112,10 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
         <line x1={x} y1={trackTop - 22} x2={x} y2={trackTop + trackH + 10} className={tmSunline} />
         <TmSun x={x} y={trackTop - 34} r={10} />
         <text x={x} y={trackTop + trackH + 30} className={tmDate} textAnchor="middle">
-          {fmt(startGate + i)}{tFor("ne", "dainik.text")}
+          {fmt(startGate + i)}{tFor(undefined, "dainik.text")}
         </text>
         <text x={x} y={trackTop + trackH + 46} className={tmDateSub} textAnchor="middle">
-          {tFor("ne", "panchanga.wheel.sunrise")}
+          {tFor(undefined, "panchanga.wheel.sunrise")}
         </text>
       </g>
     );
@@ -136,7 +136,7 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
         {bands}
         {marks}
         <text x={padL - 2} y={36} className={tmTlCap}>
-          {tFor("ne", "ui.tithi_mechanics.x_0b057b2f")}{fmt(rate)}{tFor("ne", "ui.tithi_mechanics.x_6a013502")}{isVri ? tFor("ne", "ui.tithi_mechanics.x_dd1238ac") : tFor("ne", "ui.tithi_mechanics.x_d3495442")})
+          {tFor(undefined, "ui.tithi_mechanics.x_0b057b2f")}{fmt(rate)}{tFor(undefined, "ui.tithi_mechanics.x_6a013502")}{isVri ? tFor(undefined, "ui.tithi_mechanics.x_dd1238ac") : tFor(undefined, "ui.tithi_mechanics.x_d3495442")})
         </text>
         <line x1={padL} y1={52} x2={W - padR} y2={52} className={tmTravel} />
         <polygon
@@ -157,11 +157,11 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
                   <span>
                     {fmt(tNo(skipBand))} {tName(skipBand).ne}
                   </span>
-                  <em>{tFor("ne", "ui.tithi_mechanics.x_3ff78e11")}</em>
+                  <em>{tFor(undefined, "ui.tithi_mechanics.x_3ff78e11")}</em>
                 </div>
               )}
               <div className={tmCalCellDup(dup)}>
-                <div className={tmCalGate}>{fmt(c.gate)}{tFor("ne", "dainik.text")}</div>
+                <div className={tmCalGate}>{fmt(c.gate)}{tFor(undefined, "dainik.text")}</div>
                 <div className={tmCalTithi}>{tName(c.band).ne}</div>
                 <div className={tmCalNo}>
                   {tName(c.band).paksha.split(" ")[0]} {fmt(tNo(c.band))}
@@ -205,9 +205,9 @@ export function AdhikMassDiagram() {
 
   const lunarName = [tFor("ne", "ui.tithi_mechanics.x_f6a94d89"), tFor("ne", "ui.tithi_mechanics.x_a6766ae7"), tFor("ne", "learn.ashadh")];
   const labelFor = (i: number) => {
-    if (i < adhik) return { ne: lunarName[i]!, tag: tFor("ne", "ui.tithi_mechanics.x_80a6b6b6") };
-    if (i === adhik) return { ne: tFor("ne", "ui.learn.adhik") + lunarName[i], tag: tFor("ne", "ui.tithi_mechanics.x_b82964bb") };
-    return { ne: lunarName[i - 1] || tFor("ne", "learn.ashadh"), tag: tFor("ne", "ui.tithi_mechanics.x_80a6b6b6") };
+    if (i < adhik) return { ne: lunarName[i]!, tag: tFor(undefined, "ui.tithi_mechanics.x_80a6b6b6") };
+    if (i === adhik) return { ne: tFor("ne", "ui.learn.adhik") + lunarName[i], tag: tFor(undefined, "ui.tithi_mechanics.x_b82964bb") };
+    return { ne: lunarName[i - 1] || tFor("ne", "learn.ashadh"), tag: tFor(undefined, "ui.tithi_mechanics.x_80a6b6b6") };
   };
 
   const solarSegs = [];
@@ -221,7 +221,7 @@ export function AdhikMassDiagram() {
           {rashiSym[i]}
         </text>
         <text x={(x0 + x1) / 2} y={solarY + 40} className={tmSegName()} textAnchor="middle">
-          {rashi[i]}{tFor("ne", "ui.tithi_mechanics.x_af2b54e2")}
+          {rashi[i]}{tFor(undefined, "ui.tithi_mechanics.x_af2b54e2")}
         </text>
       </g>
     );
@@ -257,7 +257,7 @@ export function AdhikMassDiagram() {
           className={tmSegTag(isAdhik)}
           textAnchor="middle"
         >
-          {isAdhik ? tFor("ne", "ui.tithi_mechanics.x_c37746af") : tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}
+          {isAdhik ? tFor(undefined, "ui.tithi_mechanics.x_c37746af") : tFor(undefined, "learn.diagrams.hierarchy_step_lunar_month")}
         </text>
       </g>
     );
@@ -282,7 +282,7 @@ export function AdhikMassDiagram() {
     callout = (
       <g>
         <text x={(cx0 + cx1) / 2} y={lunarY - 12} className={tmAdhikNote} textAnchor="middle">
-          {tFor("ne", "ui.learn.adhik_month")}
+          {tFor(undefined, "ui.learn.adhik_month")}
         </text>
         <rect
           x={cx0}
@@ -300,8 +300,8 @@ export function AdhikMassDiagram() {
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className={tmDiagramSvg}>
         <text x={padL} y={34} className={tmTrackLabel}>
-          {tFor("ne", "ui.tithi_mechanics.x_32ec504d")}{" "}
-          <tspan className={tmTrackSub}>{tFor("ne", "ui.tithi_mechanics.x_6134bad2")}</tspan>
+          {tFor(undefined, "ui.tithi_mechanics.x_32ec504d")}{" "}
+          <tspan className={tmTrackSub}>{tFor(undefined, "ui.tithi_mechanics.x_6134bad2")}</tspan>
         </text>
         {solarSegs}
         {sankrMarks}
@@ -309,19 +309,19 @@ export function AdhikMassDiagram() {
         {lunarSegs}
         {amavMarks}
         <text x={padL} y={lunarY + bandH + 56} className={tmTrackLabel}>
-          {tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}{" "}
-          <tspan className={tmTrackSub}>{tFor("ne", "ui.tithi_mechanics.x_734e679e")}</tspan>
+          {tFor(undefined, "learn.diagrams.hierarchy_step_lunar_month")}{" "}
+          <tspan className={tmTrackSub}>{tFor(undefined, "ui.tithi_mechanics.x_734e679e")}</tspan>
         </text>
       </svg>
       <div className={tmAmLegend}>
         <span>
-          <TmLegendDot kind="sun" />{tFor("ne", "ui.tithi_mechanics.x_a2e095ec")}
+          <TmLegendDot kind="sun" />{tFor(undefined, "ui.tithi_mechanics.x_a2e095ec")}
         </span>
         <span>
-          <TmLegendDot kind="moon" />{tFor("ne", "ui.tithi_mechanics.x_11561c52")}
+          <TmLegendDot kind="moon" />{tFor(undefined, "ui.tithi_mechanics.x_11561c52")}
         </span>
         <span>
-          <i className={tmLegAdhik} />{tFor("ne", "ui.tithi_mechanics.x_2ca8db9e")}
+          <i className={tmLegAdhik} />{tFor(undefined, "ui.tithi_mechanics.x_2ca8db9e")}
         </span>
       </div>
     </div>

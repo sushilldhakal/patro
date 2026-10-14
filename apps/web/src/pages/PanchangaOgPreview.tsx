@@ -167,7 +167,7 @@ export function PanchangaOgPreview() {
     <div className="flex items-end justify-between" style={{ height: 46, flex: "0 0 auto" }}>
       <div className="flex items-baseline gap-3">
         <span className="text-3xl font-extrabold tracking-tight text-ill-brand-blue">
-          {tFor("ne", "app_name")}
+          {tFor(undefined, "app_name")}
         </span>
         <span className="text-lg font-bold text-ill-brand-saffron">{placeLabel}</span>
       </div>

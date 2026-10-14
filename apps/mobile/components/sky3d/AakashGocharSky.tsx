@@ -1445,7 +1445,7 @@ export function AakashGocharSky({
     const h24 = local.getUTCHours();
     const minute = String(local.getUTCMinutes()).padStart(2, "0");
     const h12 = h24 % 12 || 12;
-    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor("ne", "ui.sky3d.x_97797b0d") : tFor("ne", "ui.sky3d.x_1842d5be");
+    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor(undefined, "ui.sky3d.x_97797b0d") : tFor(undefined, "ui.sky3d.x_1842d5be");
     const short = {
       day: `${bsMonthLabel(bsShort.month, lang)} ${digits(bsShort.day)}`,
       clock: `${digits(h12)}:${digits(minute)} ${half}`,
@@ -1464,7 +1464,7 @@ export function AakashGocharSky({
     const mark = bs.approximate ? "≈" : "";
     return {
       short,
-      date: tFor("ne", "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
+      date: tFor(undefined, "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
       // Out past the table the AD year rides along, so the reading can be
       // checked against a calendar the reader already knows.
       time: `${digits(clock)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
@@ -1851,7 +1851,7 @@ export function AakashGocharSky({
       </Pressable>
       <Pressable
         onPress={() => toggleFavourite(t.id)}
-        accessibilityLabel={pick(tFor("ne", "ui.sky3d.favourite"), tFor("en", "ui.sky3d.favourite"))}
+        accessibilityLabel={pick(tFor(undefined, "ui.sky3d.favourite"), tFor("en", "ui.sky3d.favourite"))}
         className="h-7 w-7 items-center justify-center rounded-lg active:bg-white/10"
       >
         <Ionicons

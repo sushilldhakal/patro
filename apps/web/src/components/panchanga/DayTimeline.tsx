@@ -174,7 +174,7 @@ export function DayCycleToggle({
       <button
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
-        aria-label={bilingualText(lang, tFor("ne", "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
+        aria-label={bilingualText(lang, tFor(undefined, "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
         className={cn(
           "inline-flex items-center justify-center transition-colors hover:bg-surface-hover md:hidden",
           panchangaPageClasses.dayCycle.toggleSingle,

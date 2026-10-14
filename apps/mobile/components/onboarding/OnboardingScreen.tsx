@@ -198,41 +198,41 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       style={{ backgroundColor: colors.background }}
       contentContainerClassName="p-6 pb-10 pt-16"
     >
-      <Text className="text-display font-bold text-foreground">{tFor("ne", "ui.onboarding.x_0822b526")}</Text>
+      <Text className="text-display font-bold text-foreground">{tFor(undefined, "ui.onboarding.x_0822b526")}</Text>
       <Text className="text-body mt-1 text-foreground">Welcome to Vedic Patro</Text>
       <Text className="text-body mt-2 text-muted-foreground">
-        {tFor("ne", "ui.onboarding.x_f8221375")}
+        {tFor(undefined, "ui.onboarding.x_f8221375")}
       </Text>
       <Text className="text-body mt-1 text-muted-foreground">
         Let's set a few preferences before you start — you can change all of these later in
         Settings.
       </Text>
 
-      <Section label={tFor("ne", "ui.onboarding.x_d90a78d6")}>
+      <Section label={tFor(undefined, "ui.onboarding.x_d90a78d6")}>
         <OptionCard
           icon="phone-portrait-outline"
-          title={tFor("ne", "ui.onboarding.x_db713fc4")}
+          title={tFor(undefined, "ui.onboarding.x_db713fc4")}
           selected={theme === "system"}
           onPress={() => chooseTheme("system")}
         />
         <OptionCard
           icon="sunny-outline"
-          title={tFor("ne", "ui.onboarding.x_41f208d0")}
+          title={tFor(undefined, "ui.onboarding.x_41f208d0")}
           selected={theme === "light"}
           onPress={() => chooseTheme("light")}
         />
         <OptionCard
           icon="moon-outline"
-          title={tFor("ne", "ui.onboarding.x_90d38a50")}
+          title={tFor(undefined, "ui.onboarding.x_90d38a50")}
           selected={theme === "dark"}
           onPress={() => chooseTheme("dark")}
         />
       </Section>
 
-      <Section label={tFor("ne", "ui.onboarding.x_b87583dc")}>
+      <Section label={tFor(undefined, "ui.onboarding.x_b87583dc")}>
         <OptionCard
           icon="language-outline"
-          title={tFor("ne", "switch_to_nepali")}
+          title={tFor(undefined, "switch_to_nepali")}
           selected={language === "ne"}
           onPress={() => setLanguage("ne")}
         />
@@ -244,35 +244,35 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
         />
       </Section>
 
-      <Section label={tFor("ne", "ui.onboarding.x_360302e9")}>
+      <Section label={tFor(undefined, "ui.onboarding.x_360302e9")}>
         <OptionCard
           icon="calendar-outline"
-          title={tFor("ne", "ui.onboarding.x_a2762b40")}
+          title={tFor(undefined, "ui.onboarding.x_a2762b40")}
           subtitle="Bikram Sambat"
           selected={era === "bs"}
           onPress={() => setEra("bs")}
         />
         <OptionCard
           icon="calendar-outline"
-          title={tFor("ne", "ui.onboarding.x_514b3c9d")}
+          title={tFor(undefined, "ui.onboarding.x_514b3c9d")}
           subtitle="Gregorian"
           selected={era === "ad"}
           onPress={() => setEra("ad")}
         />
       </Section>
 
-      <Section label={tFor("ne", "ui.onboarding.x_856487a7")}>
+      <Section label={tFor(undefined, "ui.onboarding.x_856487a7")}>
         <OptionCard
           icon="download-outline"
-          title={tFor("ne", "ui.onboarding.x_3cf0da1c")}
-          subtitle={tFor("ne", "ui.onboarding.x_444fe4eb")}
+          title={tFor(undefined, "ui.onboarding.x_3cf0da1c")}
+          subtitle={tFor(undefined, "ui.onboarding.x_444fe4eb")}
           selected={dataMode === "offline"}
           onPress={() => setDataMode("offline")}
         />
         <OptionCard
           icon="cloud-outline"
-          title={tFor("ne", "ui.onboarding.x_5ac38b38")}
-          subtitle={tFor("ne", "ui.onboarding.x_3eb17acd")}
+          title={tFor(undefined, "ui.onboarding.x_5ac38b38")}
+          subtitle={tFor(undefined, "ui.onboarding.x_3eb17acd")}
           selected={dataMode === "online"}
           onPress={() => setDataMode("online")}
         />
@@ -281,12 +281,12 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       {dataMode === "offline" ? (
         <Text className="text-caption mt-3 text-muted-foreground">
           {isOnline
-            ? tFor("ne", "ui.onboarding.x_3c35ba8e")
-            : tFor("ne", "ui.onboarding.x_e00d1329")}
+            ? tFor(undefined, "ui.onboarding.x_3c35ba8e")
+            : tFor(undefined, "ui.onboarding.x_e00d1329")}
         </Text>
       ) : (
         <Text className="text-caption mt-3 text-muted-foreground">
-          {tFor("ne", "ui.onboarding.x_5f81991c")}
+          {tFor(undefined, "ui.onboarding.x_5f81991c")}
         </Text>
       )}
 
@@ -297,7 +297,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       >
         {submitting ? <ActivityIndicator size="small" color={neutral.white} /> : null}
         <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-          {tFor("ne", "ui.onboarding.x_5158dc32")}
+          {tFor(undefined, "ui.onboarding.x_5158dc32")}
         </Text>
       </Pressable>
     </ScrollView>
