@@ -10,22 +10,17 @@
  * different rate models on one screen cannot agree.
  */
 
-import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { Text } from "@/components/ui/Text";
-import { adToBS, bsToAD, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
+import { TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { useSkyTimeSheet, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
-
-/** Starts at बिहान (~04:00) so the labels read left → right as named. */
-const DAY_ORIGIN_SEC = 4 * 3600;
 
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
 const DAYLIGHT_STOPS = [
@@ -43,91 +38,15 @@ const DAYLIGHT_STOPS = [
   illustration.violet24,
 ];
 
-type Field = keyof WallParts;
-
-/** Civil Gregorian → UTC ms, proleptic and era-safe for years 0–99. */
-function utcMsFromWall(p: WallParts): number {
-  const d = new Date(0);
-  d.setUTCFullYear(p.year, p.month - 1, p.day);
-  d.setUTCHours(p.hour, p.minute, p.second, 0);
-  return d.getTime();
-}
-
-function nepaliYmd(p: WallParts): { year: number; month: number; day: number } {
-  if (p.year >= 1643 && p.year <= 2144) {
-    const bs = adToBS(wallCivilUtc(p));
-    return { year: bs.year, month: bs.month, day: bs.day };
-  }
-  /* Past the compiled table the बिक्रम year is the Gregorian one plus the
-     standard offset — good enough to step by, and marked ≈ everywhere it is
-     read, exactly as the HUD's own stamp is. */
-  const year = p.year + (p.month < 4 ? 56 : 57);
-  const month = ((p.month - 4 + 12) % 12) + 1;
-  return { year, month, day: Math.min(Math.max(1, p.day), 32) };
-}
-
-function applyBsYmd(p: WallParts, year: number, month: number, day: number): WallParts {
-  const m = ((month - 1 + 12) % 12) + 1;
-  const length = getBSMonthLength(year, m) || 30;
-  const d = Math.min(Math.max(1, day), length);
-  const ad = bsToAD(year, m, d);
-  return { ...p, year: ad.getFullYear(), month: ad.getMonth() + 1, day: ad.getDate() };
-}
-
-function stepBsField(p: WallParts, field: "year" | "month" | "day", delta: number): WallParts {
-  const bs = nepaliYmd(p);
-  if (field === "year") return applyBsYmd(p, bs.year + delta, bs.month, bs.day);
-  if (field === "month") {
-    const next = shiftBsMonth(bs.year, bs.month, delta);
-    return applyBsYmd(p, next.year, next.month, bs.day);
-  }
-  let day = bs.day + delta;
-  let { year, month } = bs;
-  for (let i = 0; i < 24 && day > getBSMonthLength(year, month); i += 1) {
-    day -= getBSMonthLength(year, month);
-    const next = shiftBsMonth(year, month, 1);
-    year = next.year;
-    month = next.month;
-  }
-  for (let i = 0; i < 24 && day < 1; i += 1) {
-    const prev = shiftBsMonth(year, month, -1);
-    year = prev.year;
-    month = prev.month;
-    day += getBSMonthLength(year, month);
-  }
-  return applyBsYmd(p, year, month, day);
-}
-
-function addField(p: WallParts, field: Field, delta: number): WallParts {
-  const d = new Date(utcMsFromWall(p));
-  if (field === "year") d.setUTCFullYear(d.getUTCFullYear() + delta);
-  else if (field === "month") d.setUTCMonth(d.getUTCMonth() + delta);
-  else if (field === "day") d.setUTCDate(d.getUTCDate() + delta);
-  else if (field === "hour") d.setUTCHours(d.getUTCHours() + delta);
-  else if (field === "minute") d.setUTCMinutes(d.getUTCMinutes() + delta);
-  else d.setUTCSeconds(d.getUTCSeconds() + delta);
-  return {
-    year: d.getUTCFullYear(),
-    month: d.getUTCMonth() + 1,
-    day: d.getUTCDate(),
-    hour: d.getUTCHours(),
-    minute: d.getUTCMinutes(),
-    second: d.getUTCSeconds(),
-  };
-}
-
-function pad2(n: number): string {
-  return String(Math.trunc(n)).padStart(2, "0");
-}
+const JUMP_ICONS: Record<"prev" | "now" | "next", keyof typeof Ionicons.glyphMap> = {
+  prev: "play-skip-back",
+  now: "time-outline",
+  next: "play-skip-forward",
+};
 
 export function SkyTimeSheet({
   timeMs,
   zoneOffsetMs,
-  nepaliCal,
-  digits,
-  pick,
-  speedLabel,
-  playing,
   rateValue,
   rateMax,
   onRate,
@@ -138,12 +57,6 @@ export function SkyTimeSheet({
 }: {
   timeMs: number;
   zoneOffsetMs: number;
-  /** नेपाली steps विक्रम संवत्; English keeps Gregorian, as on the web. */
-  nepaliCal: boolean;
-  digits: (value: string | number) => string;
-  pick: (ne: string, en: string) => string;
-  speedLabel: string;
-  playing: boolean;
   /** Bipolar rung: negative runs backwards, 0 is paused. */
   rateValue: number;
   rateMax: number;
@@ -153,35 +66,18 @@ export function SkyTimeSheet({
   onApplyMs: (ms: number) => void;
   onClose: () => void;
 }) {
-  const parts = wallPartsFromMs(timeMs, zoneOffsetMs);
-  const ne = nepaliCal ? nepaliYmd(parts) : null;
-  const daySec = parts.hour * 3600 + parts.minute * 60 + parts.second;
-  const activePeriod = periodIdAtHour(parts.hour);
+  /* The app's rate is a rung on the speed ladder; the sheet reads it as the
+     simulated seconds per second it stands for. */
+  const rung = Math.round(rateValue);
+  const timeRate = rung === 0 ? 0 : Math.sign(rung) * (TIME_STEPS[Math.min(Math.abs(rung), TIME_STEPS.length) - 1]?.seconds ?? 1);
+  const v = useSkyTimeSheet({ timeMs, zoneOffsetMs, timeRate, onApplyMs });
 
-  const apply = (next: WallParts) => onApplyMs(utcMsFromWall(next) - zoneOffsetMs);
-  const step = (field: Field, delta: number) => {
-    if (nepaliCal && (field === "year" || field === "month" || field === "day")) {
-      apply(stepBsField(parts, field, delta));
-      return;
-    }
-    apply(addField(parts, field, delta));
-  };
-
-  const plain = (field: Field): string => {
-    if (field === "year") return String(ne ? ne.year : parts.year);
-    if (field === "month") return pad2(ne ? ne.month : parts.month);
-    if (field === "day") return pad2(ne ? ne.day : parts.day);
-    if (field === "hour") return pad2(parts.hour);
-    if (field === "minute") return pad2(parts.minute);
-    return pad2(parts.second);
-  };
-
-  const stepper = (field: Field, label: string, wide?: boolean) => (
-    <View className="items-center" style={{ width: wide ? 62 : 42 }}>
+  const stepper = (f: SkyTimeFieldView) => (
+    <View key={f.field} className="items-center" style={{ width: f.wide ? 62 : 42 }}>
       <Pressable
-        onPress={() => step(field, 1)}
+        onPress={f.up}
         accessibilityRole="button"
-        accessibilityLabel={pick(tFor("ne", "ui.sky3d.increase", { v0: label }), tFor("en", "ui.sky3d.increase", { v0: label }))}
+        accessibilityLabel={f.upLabel}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
         <Ionicons name="chevron-up" size={15} color={withAlpha(neutral.white, 0.55)} />
@@ -190,12 +86,12 @@ export function SkyTimeSheet({
         className="text-title font-bold"
         style={[nepaliTextStyle(20, { dense: true }), { color: neutral.white, fontVariant: ["tabular-nums"] }]}
       >
-        {digits(plain(field))}
+        {f.value}
       </Text>
       <Pressable
-        onPress={() => step(field, -1)}
+        onPress={f.down}
         accessibilityRole="button"
-        accessibilityLabel={pick(tFor("ne", "ui.sky3d.decrease", { v0: label }), tFor("en", "ui.sky3d.decrease", { v0: label }))}
+        accessibilityLabel={f.downLabel}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
         <Ionicons name="chevron-down" size={15} color={withAlpha(neutral.white, 0.55)} />
@@ -203,18 +99,20 @@ export function SkyTimeSheet({
     </View>
   );
 
-  const sep = (glyph: string) => (
-    <Text className="text-title font-bold" style={{ color: withAlpha(neutral.white, 0.4) }}>
+  const sep = (glyph: string, key: string) => (
+    <Text key={key} className="text-title font-bold" style={{ color: withAlpha(neutral.white, 0.4) }}>
       {glyph}
     </Text>
   );
 
   const navAction = (
+    key: string,
     icon: keyof typeof Ionicons.glyphMap,
     label: string,
     onPress: () => void,
   ) => (
     <Pressable
+      key={key}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -231,7 +129,8 @@ export function SkyTimeSheet({
     </Pressable>
   );
 
-  const daySlider = useMemo(() => (daySec - DAY_ORIGIN_SEC + 86_400) % 86_400, [daySec]);
+  const withSeps = (fields: SkyTimeFieldView[], glyph: string) =>
+    fields.flatMap((f, i) => (i === 0 ? [stepper(f)] : [sep(glyph, `sep-${f.field}`), stepper(f)]));
 
   return (
     /* A card floating clear of the sky's edges, not a sheet welded to the
@@ -241,7 +140,7 @@ export function SkyTimeSheet({
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={pick(tFor("ne", "ui.common.close"), tFor("en", "ui.common.close"))}
+        accessibilityLabel={v.labels.close}
         style={{ position: "absolute", inset: 0, backgroundColor: withAlpha(neutral.black, 0.4) }}
       />
       <View
@@ -251,36 +150,24 @@ export function SkyTimeSheet({
         <View className="mb-3 h-1 w-10 self-center rounded-full bg-white/30" />
 
         <View className="flex-row items-center justify-center gap-3">
-          <View className="flex-row items-center">
-            {stepper("year", pick(tFor("ne", "ui.sky3d.year"), tFor("en", "ui.sky3d.year")), true)}
-            {sep("/")}
-            {stepper("month", pick(tFor("ne", "ui.sky3d.month"), tFor("en", "ui.sky3d.month")))}
-            {sep("/")}
-            {stepper("day", pick(tFor("ne", "common.day"), tFor("en", "common.day")))}
-          </View>
-          <View className="flex-row items-center">
-            {stepper("hour", pick(tFor("ne", "ui.sky3d.hour"), tFor("en", "ui.sky3d.hour")))}
-            {sep(":")}
-            {stepper("minute", pick(tFor("ne", "ui.sky3d.minute"), tFor("en", "ui.sky3d.minute")))}
-            {sep(":")}
-            {stepper("second", pick(tFor("ne", "ui.sky3d.second"), tFor("en", "ui.sky3d.second")))}
-          </View>
+          <View className="flex-row items-center">{withSeps(v.dateFields, "/")}</View>
+          <View className="flex-row items-center">{withSeps(v.clockFields, ":")}</View>
         </View>
 
         <Text
           className="text-body mb-1 mt-4 text-center font-semibold"
           style={[nepaliTextStyle(13, { dense: true }), { color: withAlpha(neutral.white, 0.9) }]}
         >
-          {speedLabel}
+          {v.speedLabel}
         </Text>
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={onTogglePlay}
             accessibilityRole="button"
-            accessibilityLabel={playing ? pick(tFor("ne", "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor("ne", "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
+            accessibilityLabel={v.playing ? v.labels.pause : v.labels.play}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
-            <Ionicons name={playing ? "pause" : "play"} size={22} color={neutral.white} />
+            <Ionicons name={v.playing ? "pause" : "play"} size={22} color={neutral.white} />
           </Pressable>
           <Slider
             style={{ flex: 1, height: 32 }}
@@ -296,7 +183,7 @@ export function SkyTimeSheet({
           <Pressable
             onPress={onResetRate}
             accessibilityRole="button"
-            accessibilityLabel={pick(tFor("ne", "ui.sky3d.realtime_speed"), tFor("en", "ui.sky3d.realtime_speed"))}
+            accessibilityLabel={v.labels.realtime}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
             <Ionicons name="refresh" size={20} color={neutral.white} />
@@ -304,15 +191,7 @@ export function SkyTimeSheet({
         </View>
 
         <View className="mt-3 flex-row">
-          {navAction("play-skip-back", pick(tFor("ne", "ui.sky3d.previous_night"), tFor("en", "ui.sky3d.previous_night")), () =>
-            onApplyMs(timeMs - 86_400_000),
-          )}
-          {navAction("time-outline", pick(tFor("ne", "ui.sky3d.set_time_to_now"), tFor("en", "ui.sky3d.set_time_to_now")), () =>
-            onApplyMs(Date.now()),
-          )}
-          {navAction("play-skip-forward", pick(tFor("ne", "ui.sky3d.next_night"), tFor("en", "ui.sky3d.next_night")), () =>
-            onApplyMs(timeMs + 86_400_000),
-          )}
+          {v.jumps.map((jump) => navAction(jump.id, JUMP_ICONS[jump.id], jump.label, jump.run))}
         </View>
 
         {/* The daylight scrub: the gradient is the day itself, so the handle
@@ -331,35 +210,27 @@ export function SkyTimeSheet({
               minimumValue={0}
               maximumValue={86_399}
               step={60}
-              value={daySlider}
-              onValueChange={(v) => {
-                const sec = (v + DAY_ORIGIN_SEC) % 86_400;
-                apply({
-                  ...parts,
-                  hour: Math.floor(sec / 3600),
-                  minute: Math.floor((sec % 3600) / 60),
-                  second: sec % 60,
-                });
-              }}
+              value={v.daySlider}
+              onValueChange={v.setDaySlider}
               minimumTrackTintColor="transparent"
               maximumTrackTintColor="transparent"
               thumbTintColor={neutral.white}
             />
           </View>
           <View className="mt-1.5 h-4 flex-row justify-between">
-            {DAY_PERIODS.map((band) => (
+            {v.dayPeriods.map((band) => (
               <Text
                 key={band.id}
                 className="text-caption"
                 style={[
                   nepaliTextStyle(10, { dense: true }),
                   {
-                    color: band.id === activePeriod ? neutral.white : withAlpha(neutral.white, 0.55),
-                    fontWeight: band.id === activePeriod ? "600" : "500",
+                    color: band.active ? neutral.white : withAlpha(neutral.white, 0.55),
+                    fontWeight: band.active ? "600" : "500",
                   },
                 ]}
               >
-                {pick(band.ne, band.en)}
+                {band.label}
               </Text>
             ))}
           </View>

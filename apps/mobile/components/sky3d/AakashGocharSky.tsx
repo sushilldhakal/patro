@@ -83,7 +83,6 @@ import {
   type SkyTargetKind,
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
 import {
-  localFavourites,
   pushRecent,
   putFavourites,
   recents as readRecents,
@@ -1595,15 +1594,6 @@ export function AakashGocharSky({
     <SkyTimeSheet
       timeMs={simDate.getTime()}
       zoneOffsetMs={zoneOffsetMs}
-      nepaliCal={lang !== "en"}
-      digits={digits}
-      pick={pick}
-      speedLabel={
-        playing
-          ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
-          : t("ui.sky3d.paused")
-      }
-      playing={playing}
       /* The ladder, read as one bipolar rung: 0 is a stopped clock, the sign
          is the direction, and the magnitude is how far up the ladder it is. */
       rateValue={playing ? (reverse ? -(speedIndex + 1) : speedIndex + 1) : 0}
