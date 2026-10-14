@@ -2,6 +2,7 @@ import { FileText, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { useLocale } from "@/i18n/locale";
+import { useRouteLoading } from "@/lib/route-loading";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import {
@@ -15,6 +16,7 @@ import {
 
 function LegalBody({ intro, sections }: { intro: { ne: string; en: string }; sections: LegalSection[] }) {
   const { lang } = useLocale();
+  useRouteLoading(false);
   const pick = (v: { ne: string; en: string }) => (lang === "en" ? v.en : v.ne);
   return (
     <div className={cn(legalClasses.wrap, legalClasses.text, "space-y-8")}>
