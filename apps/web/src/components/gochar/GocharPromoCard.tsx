@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Orbit } from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useGocharPromoCard } from "@vedic-patro/features/gochar";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
-import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   location: PanchangaLocation;
   className?: string;
@@ -17,8 +15,7 @@ type Props = {
 
 /** Panchanga footer / cross-link card → full Gochar page. */
 export function GocharPromoCard({ location, className, compact }: Props) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
+  const copy = useGocharPromoCard();
   const era = useCalendarEra();
 
   return (
@@ -42,17 +39,17 @@ export function GocharPromoCard({ location, className, compact }: Props) {
           </span>
           <div className="min-w-0">
             <h2 className={cn("m-0", gocharClasses.promoTitle)}>
-              {t("gochar.promo_title")}
+              {copy.title}
             </h2>
             {!compact ? (
               <p className={cn("mb-0", gocharClasses.promoBody)}>
-                {tFor(lang, "ui.gochar.seen_the_day_s_panchang_now")}
+                {copy.body}
               </p>
             ) : null}
           </div>
         </div>
         <span className={cn("inline-flex transition-colors group-hover:bg-secondary/90", gocharClasses.promoCta, gocharClasses.promoCtaText)}>
-          {t("gochar.promo_cta")}
+          {copy.cta}
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </span>
       </div>

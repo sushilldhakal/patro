@@ -5,79 +5,36 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
-import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
-import { useLocale } from "@/lib/i18n";
+import { LEARN_ICONS } from "@/lib/learn/learn-library";
+import { useRelatedPageLinks } from "@vedic-patro/features/common";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import {
-  RELATED_CARD_LIMIT,
-  SITE_LINK_BLURB_KEY,
-  SITE_LINK_LABEL_KEY,
-  getRelatedLearnSlugs,
-  getRelatedSiteLinkIds,
-  iconForLinkId,
-  resolveSitePageId,
-  siteLinkHref,
-} from "@/lib/related-page-links";
+import { iconForLinkId, resolveSitePageId, siteLinkHref } from "@/lib/related-page-links";
 import { useThemeColors } from "@/lib/theme-context";
-
-type Card = { key: string; label: string; description?: string; href: string; learnIcon?: string; icon?: ReturnType<typeof iconForLinkId> };
 
 /**
  * "Related" cards that close every page on web (`RelatedPageLinks`): learn
  * articles first, then peer pages from the same sidebar group, six at most.
  */
 export function RelatedPageLinks() {
-  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const pathname = normalizeMobilePathname(usePathname());
+  const related = useRelatedPageLinks(resolveSitePageId(pathname));
+  if (related.cards.length === 0) return null;
 
-  const pageId = resolveSitePageId(pathname);
-  if (!pageId) return null;
-
-  const learnCards: Card[] = getRelatedLearnSlugs(pageId)
-    .map((slug): Card | null => {
-      const topic = LEARN_LIBRARY_BY_SLUG[slug];
-      if (!topic || topic.status !== "published") return null;
-      return {
-        key: `learn:${slug}`,
-        label: pick(topic.title.ne, topic.title.en),
-        description: pick(topic.summary.ne, topic.summary.en),
-        href: hrefForLearnSlug(slug) as string,
-        learnIcon: topic.icon as string,
-      };
-    })
-    .filter((c): c is Card => c !== null);
-
-  const siteCards: Card[] = getRelatedSiteLinkIds(pageId).map((linkId) => {
-    let label: string;
-    let description: string | undefined;
-    if (linkId.startsWith("element:")) {
-      const id = linkId.slice(8);
-      label = t(`panchanga_elements.${id}.title`);
-      description = t(`panchanga_elements.${id}.blurb`);
-    } else if (linkId.startsWith("sait:")) {
-      label = t(`sait.categories.${linkId.slice(5)}`);
-      description = t("sidebar_nav.items.sait_moment.blurb");
-    } else {
-      const labelKey = SITE_LINK_LABEL_KEY[linkId];
-      label = labelKey ? t(labelKey) : linkId;
-      const blurbKey = SITE_LINK_BLURB_KEY[linkId];
-      description = blurbKey ? t(blurbKey) : undefined;
-    }
-    return { key: linkId, label, description, href: siteLinkHref(linkId), icon: iconForLinkId(linkId) };
-  });
-
-  const cards = [...learnCards, ...siteCards].slice(0, RELATED_CARD_LIMIT);
-  if (cards.length === 0) return null;
+  const cards = related.cards.map((card) =>
+    card.kind === "learn"
+      ? { ...card, href: hrefForLearnSlug(card.slug) as string, learnIcon: LEARN_ICONS[card.icon] as string, icon: undefined }
+      : { ...card, href: siteLinkHref(card.linkId), learnIcon: undefined, icon: iconForLinkId(card.linkId) },
+  );
 
   return (
-    <View className="mt-10 border-t border-border pt-8" accessibilityLabel={t("related_pages.aria")}>
+    <View className="mt-10 border-t border-border pt-8" accessibilityLabel={related.aria}>
       <View className="mb-3 flex-row items-center gap-2">
         <AppNavIcon name="compass" size={16} color={colors.secondary} />
         <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {t("related_pages.heading")}
+          {related.heading}
         </Text>
       </View>
       <View className="gap-2">

@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { useLocale } from "@/lib/i18n";
-import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
+import { useGrahaStatusBadges } from "@vedic-patro/features/graha";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
@@ -22,11 +21,9 @@ export function GrahaStatusBadges({
   className,
   size = 14,
 }: Props) {
-  const { t } = useLocale();
   const colors = useThemeColors();
-  const vakri = showVakri(planetKey, isRetrograde);
-  const asta = showAsta(planetKey, isCombust);
-  if (!vakri && !asta) return null;
+  const { vakri, asta, any, labels } = useGrahaStatusBadges({ planetKey, isRetrograde, isCombust });
+  if (!any) return null;
 
   return (
     <View className={cn("flex-row", grahaClasses.statusRow, className)}>
@@ -35,7 +32,7 @@ export function GrahaStatusBadges({
           name="refresh"
           size={size}
           color={colors.secondary}
-          accessibilityLabel={t("common.retrograde")}
+          accessibilityLabel={labels.retrograde}
         />
       ) : null}
       {asta ? (
@@ -43,7 +40,7 @@ export function GrahaStatusBadges({
           name="flame"
           size={size}
           color={colors.danger}
-          accessibilityLabel={t("common.combust")}
+          accessibilityLabel={labels.combust}
         />
       ) : null}
     </View>

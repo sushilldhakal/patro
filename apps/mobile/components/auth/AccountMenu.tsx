@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { Modal, Pressable, View } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useLocale } from "@/lib/i18n";
+import { useAccountMenu } from "@vedic-patro/features/account";
 import { useThemeColors } from "@/lib/theme-context";
 import { AuthDialog } from "./AuthDialog";
 
@@ -15,49 +14,45 @@ import { cn } from "@vedic-patro/domain/utils";
 /** Signed-out → लग-इन button; signed-in → avatar + account sheet. Mirrors web AccountMenu. */
 export function AccountMenu() {
   const colors = useThemeColors();
-  const { t } = useLocale();
-  const { user, loading, logout } = useAuth();
   const router = useRouter();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useAccountMenu(useAuth());
+  const { copy } = menu;
 
-  if (loading) {
+  if (menu.status === "loading") {
     return <View className={accountClasses.avatarSkeleton} />;
   }
 
-  if (!user) {
+  if (menu.status === "signed-out") {
     return (
       <>
         <Button
           variant="outline"
           size="sm"
-          label={t("kundali.login")}
-          onPress={() => setAuthOpen(true)}
+          label={copy.signIn}
+          onPress={menu.openAuth}
           className="gap-1.5"
           icon={<Ionicons name="person-outline" size={14} color={colors.foreground} />}
         />
-        <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
+        <AuthDialog open={menu.authOpen} onOpenChange={menu.setAuthOpen} initialMode="login" />
       </>
     );
   }
 
-  const initial = user.email.charAt(0).toUpperCase();
-
   return (
     <>
       <Pressable
-        onPress={() => setMenuOpen(true)}
+        onPress={menu.openMenu}
         className={cn(accountClasses.avatar, "active:opacity-80")}
-        accessibilityLabel={t("account_page.menu_aria")}
+        accessibilityLabel={copy.menuAria}
       >
-        <Text className={accountClasses.avatarText}>{initial}</Text>
+        <Text className={accountClasses.avatarText}>{menu.initial}</Text>
       </Pressable>
 
-      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+      <Modal visible={menu.menuOpen} transparent animationType="fade" onRequestClose={menu.closeMenu}>
         <Pressable
           className="flex-1"
           style={{ backgroundColor: withAlpha(neutral.black, 0.4) }}
-          onPress={() => setMenuOpen(false)}
+          onPress={menu.closeMenu}
         />
         <View
           className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-border pb-8"
@@ -72,16 +67,14 @@ export function AccountMenu() {
             </View>
             <View className="min-w-0 flex-1">
               <Text numberOfLines={1} className={accountClasses.menuEmail}>
-                {user.email}
+                {menu.email}
               </Text>
               <View className="mt-0.5 flex-row items-center gap-1">
-                {user.is_verified ? (
+                {menu.verified ? (
                   <Ionicons name="checkmark-circle" size={12} color={colors.success} />
                 ) : null}
                 <Text className={accountClasses.menuStatus}>
-                  {user.is_verified
-                    ? t("account_page.verified")
-                    : t("account_page.email_unverified")}
+                  {menu.statusLabel}
                 </Text>
               </View>
             </View>
@@ -89,25 +82,22 @@ export function AccountMenu() {
           <View className="mx-4 h-px bg-border" />
           <Pressable
             onPress={() => {
-              setMenuOpen(false);
+              menu.closeMenu();
               router.push("/account" as never);
             }}
             className={cn(accountClasses.menuItem, "mx-2 mt-2 flex-row py-3 active:bg-muted")}
           >
             <Ionicons name="person-outline" size={16} color={colors.foreground} />
             <Text className={accountClasses.menuItemText}>
-              {t("ui.auth.account_profiles")}
+              {copy.myProfiles}
             </Text>
           </Pressable>
           <Pressable
-            onPress={() => {
-              setMenuOpen(false);
-              void logout();
-            }}
+            onPress={menu.signOut}
             className={cn(accountClasses.menuItem, "mx-2 flex-row py-3 active:bg-muted")}
           >
             <Ionicons name="log-out-outline" size={16} color={colors.foreground} />
-            <Text className={accountClasses.menuItemText}>{t("account_page.sign_out")}</Text>
+            <Text className={accountClasses.menuItemText}>{copy.signOut}</Text>
           </Pressable>
         </View>
       </Modal>

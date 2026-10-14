@@ -15,8 +15,6 @@ export {
   type SiteLinkGroupKey,
 } from "@vedic-patro/domain/related-page-links";
 
-export const RELATED_CARD_LIMIT = 6;
-
 /** This app's route for each static site link id. */
 export const SITE_LINK_PATH: Record<string, string> = {
   panchanga: "/panchanga",
@@ -40,39 +38,6 @@ export const SITE_LINK_PATH: Record<string, string> = {
   "surya-grahan": "/panchanga/surya-grahan",
   "shanti-vidhi": "/shanti-vidhi",
   "vivah-sait": "/vivah-sait",
-};
-
-export const SITE_LINK_LABEL_KEY: Record<string, string> = {
-  panchanga: "panchanga.title",
-  "aakash-gochar": "sidebar_nav.items.aakash-gochar.label",
-  holidays: "sidebar_nav.items.holidays.label",
-  converter: "sidebar_nav.items.converter.label",
-  suryakranti: "sidebar_nav.items.suryakranti.label",
-  "panchanga-year": "sidebar_nav.items.panchanga-year.label",
-  dainikkranti: "sidebar_nav.items.dainikkranti.label",
-  "panchak-patro": "sidebar_nav.items.panchak-patro.label",
-  ritu: "sidebar_nav.items.ritu.label",
-  "avakahada-chakra": "sidebar_nav.items.avakahada.label",
-  "abhijit-muhurta": "sidebar_nav.items.abhijit.label",
-  kundali: "sidebar_nav.items.kundali.label",
-  "kundali-milan": "sidebar_nav.items.kundali-milan.label",
-  rashifal: "rashifal.title",
-  gochar: "sidebar_nav.items.gochar.label",
-  "graha-asta": "sidebar_nav.items.graha-asta.label",
-  "graha-vakri": "sidebar_nav.items.graha-vakri.label",
-  "chandra-grahan": "sidebar_nav.items.chandra-grahan.label",
-  "surya-grahan": "sidebar_nav.items.surya-grahan.label",
-  "shanti-vidhi": "seo.routes.shanti_vidhi.title",
-  "vivah-sait": "seo.routes.vivah_sait.title",
-};
-
-export const SITE_LINK_BLURB_KEY: Record<string, string> = {
-  gochar: "sidebar_nav.items.gochar.blurb",
-  "graha-asta": "sidebar_nav.items.graha-asta.blurb",
-  "graha-vakri": "sidebar_nav.items.graha-vakri.blurb",
-  "chandra-grahan": "sidebar_nav.items.chandra-grahan.blurb",
-  "surya-grahan": "sidebar_nav.items.surya-grahan.blurb",
-  "aakash-gochar": "sidebar_nav.items.aakash-gochar.blurb",
 };
 
 /** Same Lucide icons web's `SITE_LINK_ICONS` picks, as drawer icon names. */

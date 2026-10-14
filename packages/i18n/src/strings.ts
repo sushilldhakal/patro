@@ -6821,20 +6821,14 @@ export const strings = {
   },
 
   /* ── ui.auth ────────────────────────────────────────────────────────────── */
-  "ui.auth.account_profiles": { ne: "खाता र प्रोफाइल", en: "Account & profiles" },
   "ui.auth.apple_sign_in_failed": { ne: "एपल लग-इन असफल", en: "Apple sign-in failed" },
   "ui.auth.birth_place": { ne: "जन्म स्थान", en: "Birth place" },
   "ui.auth.confirm_to_turn_on_label": {
     ne: "{{label}} चालु गर्न पुष्टि गर्नुहोस्",
     en: "Confirm to turn on {{label}}",
   },
-  "ui.auth.could_not_save_profile": { ne: "प्रोफाइल सेभ गर्न सकिएन", en: "Could not save profile" },
-  "ui.auth.full_name": { ne: "पूरा नाम", en: "Full name" },
   "ui.auth.hh_mm": { ne: "घण्टा:मिनेट", en: "HH:MM" },
-  "ui.auth.name_is_required": { ne: "नाम अनिवार्य छ", en: "Name is required" },
   "ui.auth.not_now": { ne: "अहिले होइन", en: "Not now" },
-  "ui.auth.save_changes": { ne: "परिवर्तन सेभ", en: "Save changes" },
-  "ui.auth.set_as_default_profile": { ne: "पूर्वनिर्धारित प्रोफाइल", en: "Set as default profile" },
   "ui.auth.sign_out": { ne: "साइन आउट", en: "Sign out" },
   "ui.auth.turn_on": { ne: "चालु गर्नुहोस्", en: "Turn on" },
   "ui.auth.unlock_with_label": { ne: "{{label}} प्रयोग गर्नुहोस्", en: "Unlock with {{label}}" },
@@ -6934,20 +6928,14 @@ export const strings = {
   "ui.gochar.what_s_changing": { ne: "के परिवर्तन हुँदैछ", en: "What's changing" },
 
   /* ── ui.graha ───────────────────────────────────────────────────────────── */
-  "ui.graha.about": { ne: "परिचय", en: "About" },
   "ui.graha.all_panchanga_elements": { ne: "सबै पञ्चाङ्ग तत्त्वहरू", en: "All panchanga elements" },
 
   /* ── ui.home ────────────────────────────────────────────────────────────── */
   "ui.home.ashubh_times": { ne: "अशुभ समय", en: "Ashubh times" },
   "ui.home.could_not_load_calendar": { ne: "पात्रो लोड गर्न सकिएन।", en: "Could not load calendar." },
-  "ui.home.could_not_load_sait_data": { ne: "साइत डाटा लोड गर्न सकिएन।", en: "Could not load sait data." },
   "ui.home.full_detail": { ne: "पूरा विवरण →", en: "Full detail →" },
   "ui.home.geocentric": { ne: "भूकेन्द्रित", en: "Geocentric" },
   "ui.home.muhurta_details_unavailable": { ne: "मुहूर्त विवरण उपलब्ध छैन।", en: "Muhurta details unavailable." },
-  "ui.home.no_sait_dates_are_available_for": {
-    ne: "यस महिना कुनै साइत उपलब्ध छैन।",
-    en: "No sait dates are available for this month.",
-  },
   "ui.home.read_more": { ne: "थप पढ्नुहोस् →", en: "Read more →" },
   "ui.home.set_a_reminder": { ne: "रिमाइन्डर राख्नुहोस्", en: "Set a reminder" },
   "ui.home.shubh_times": { ne: "शुभ समय", en: "Shubh times" },
@@ -7631,11 +7619,6 @@ export const strings = {
     en: "Typed year {{previewDisplay}} {{previewEraLabel}}",
   },
 
-  /* ── ui.rashifal ────────────────────────────────────────────────────────── */
-  "ui.rashifal.add_a_kundali_profile": { ne: "कुण्डली प्रोफाइल थप्नुहोस्।", en: "Add a kundali profile." },
-  "ui.rashifal.loading": { ne: "लोड…", en: "Loading…" },
-  "ui.rashifal.profile": { ne: "प्रोफाइल", en: "Profile" },
-  "ui.rashifal.sign_in": { ne: "साइन इन", en: "Sign in" },
 
   /* ── ui.reminders ───────────────────────────────────────────────────────── */
   "ui.reminders.add": { ne: "+ थप्नुहोस्", en: "+ Add" },
@@ -7715,13 +7698,6 @@ export const strings = {
 
   /* ── ui.sait ────────────────────────────────────────────────────────────── */
   "ui.sait.choose_a_profile": { ne: "प्रोफाइल छान्नुहोस्", en: "Choose a profile" },
-  "ui.sait.general_no_profile": { ne: "सामान्य (प्रोफाइल बिना)", en: "General (no profile)" },
-  "ui.sait.no_saved_profiles_add_one_in": {
-    ne: "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
-    en: "No saved profiles — add one in your account.",
-  },
-  "ui.sait.personalise": { ne: "आफ्नो प्रोफाइलअनुसार", en: "Personalise" },
-  "ui.sait.sign_in_to_pick_your_profile": { ne: "प्रोफाइल छान्न लग-इन गर्नुहोस्", en: "Sign in to pick your profile" },
 
   /* ── ui.sky3d ───────────────────────────────────────────────────────────── */
   "ui.sky3d.amavasya_moon_between_sun_and_earth": {

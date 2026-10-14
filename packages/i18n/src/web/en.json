@@ -4230,6 +4230,7 @@
       "the_red_marker_on_the_globe": "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works."
     },
     "auth": {
+      "apple_sign_in_failed": "Apple sign-in failed",
       "hh_mm": "HH:MM",
       "yyyy_mm_dd": "YYYY-MM-DD"
     },
@@ -4239,6 +4240,7 @@
       "earth_s_axis": "Earth's axis",
       "horizon": "Horizon",
       "notes": "Notes",
+      "retry": "Retry",
       "rest_and_last": "{{rest}} and {{last}}"
     },
     "dainik_kranti": {
@@ -4279,6 +4281,9 @@
       "upcoming_transit_events": "Upcoming transit events",
       "what_s_changing": "What's changing",
       "in_rashiuntil_until_lang": "In {{rashiUntil}} until {{lang}}"
+    },
+    "graha": {
+      "all_panchanga_elements": "All panchanga elements"
     },
     "home": {
       "geocentric": "Geocentric",
@@ -4519,6 +4524,13 @@
     "reminders": {
       "reminders": "Reminders"
     },
+    "sait": {
+      "choose_a_profile": "Choose a profile",
+      "month_ordinal_month": "month {{ordinal_month}}",
+      "offcount_of_rulecount_rules_switched_off": "{{offCount}} of {{ruleCount}} rules switched off",
+      "rulecount_classical_rules_switch_off_any": "{{ruleCount}} classical rules · switch off any your tradition skips",
+      "rulecount_classical_rules_with_sources": "{{ruleCount}} classical rules · with sources"
+    },
     "sky3d": {
       "amavasya_moon_between_sun_and_earth": "Amavasya · Moon between Sun and Earth",
       "back": "Back",
@@ -4614,12 +4626,6 @@
     "mobile_bottom_nav": {
       "primary_navigation": "Primary navigation",
       "home": "Home"
-    },
-    "sait": {
-      "month_ordinal_month": "month {{ordinal_month}}",
-      "offcount_of_rulecount_rules_switched_off": "{{offCount}} of {{ruleCount}} rules switched off",
-      "rulecount_classical_rules_switch_off_any": "{{ruleCount}} classical rules · switch off any your tradition skips",
-      "rulecount_classical_rules_with_sources": "{{ruleCount}} classical rules · with sources"
     },
     "tithi_mechanics": {
       "x_1535357f": "Earth ~",

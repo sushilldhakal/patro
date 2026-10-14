@@ -1,9 +1,25 @@
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
-import { RASHIFAL_FLAG_ICON, toNepaliDigits } from "@/lib/rashifal-ui";
+import { RASHIFAL_FLAG_ICON } from "@/lib/rashifal-ui";
 import type { RashifalGocharRow } from "@/lib/api";
+import { useRashifalGocharChips, type RashifalGocharFlag } from "@vedic-patro/features/rashifal";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
+
+const TONE = {
+  vedha: rashifalClasses.gochar.toneVedha,
+  good: rashifalClasses.gochar.toneGood,
+  bad: rashifalClasses.gochar.toneBad,
+} as const;
+
+const FLAG_COLOR: Record<RashifalGocharFlag, string> = {
+  vedha: "text-muted-foreground",
+  retrograde: "text-secondary",
+  combust: "text-destructive",
+};
+
+function FlagIcon({ flag }: { flag: RashifalGocharFlag }) {
+  const Icon = RASHIFAL_FLAG_ICON[flag];
+  return <Icon className={cn("size-3", FLAG_COLOR[flag])} aria-hidden="true" />;
+}
 
 /**
  * The nine-graha gochar strip inside "why this reading?" — one chip per graha
@@ -23,100 +39,38 @@ export function RashifalGocharChips({
   rows: RashifalGocharRow[];
   className?: string;
 }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const ne = lang === "ne";
-  const Vedha = RASHIFAL_FLAG_ICON.vedha;
-  const Retro = RASHIFAL_FLAG_ICON.retrograde;
-  const Combust = RASHIFAL_FLAG_ICON.combust;
+  const { chips, legend } = useRashifalGocharChips(rows);
 
-  if (!rows.length) return null;
-
-  // Only explain the marks that are actually on screen today.
-  const anyVedha = rows.some((row) => Boolean(row.vedha_by));
-  const anyRetro = rows.some((row) => row.retrograde);
-  const anyCombust = rows.some((row) => row.combust);
+  if (!chips.length) return null;
 
   return (
     <div className={cn(rashifalClasses.gochar.wrap, className)}>
       <ul className={cn("m-0 flex list-none flex-wrap p-0", rashifalClasses.gochar.list)}>
-        {rows.map((row) => {
-          const grahaName = ne ? row.graha_ne : row.graha_en;
-          const vedhaName = (ne ? row.vedha_by_ne : row.vedha_by) ?? row.vedha_by;
-          const vedhaLabel = vedhaName
-            ? t("rashifal.flags.vedha_by", { graha: vedhaName })
-            : t("rashifal.flags.vedha");
-          return (
-            <li
-              key={row.graha}
-              className={cn(
-                "m-0 inline-flex",
-                rashifalClasses.gochar.chip,
-                rashifalClasses.gochar.chipText,
-                row.vedha_by
-                  ? rashifalClasses.gochar.toneVedha
-                  : row.favourable
-                    ? rashifalClasses.gochar.toneGood
-                    : rashifalClasses.gochar.toneBad,
-              )}
-              title={t("rashifal.gochar_hint", {
-                graha: grahaName,
-                house: toNepaliDigits(row.house, lang),
-                sign: ne ? row.sign_ne : row.sign_en,
-              })}
-            >
-              <span>{grahaName}</span>
-              <span className={rashifalClasses.gochar.house}>
-                {toNepaliDigits(row.house, lang)}
+        {chips.map((chip) => (
+          <li
+            key={chip.key}
+            className={cn("m-0 inline-flex", rashifalClasses.gochar.chip, rashifalClasses.gochar.chipText, TONE[chip.tone])}
+            title={chip.hint}
+          >
+            <span>{chip.graha}</span>
+            <span className={rashifalClasses.gochar.house}>{chip.house}</span>
+            {chip.flags.map((f) => (
+              <span key={f.flag} className="inline-flex" title={f.label} aria-label={f.label}>
+                <FlagIcon flag={f.flag} />
               </span>
-              {row.vedha_by ? (
-                <span className="inline-flex" title={vedhaLabel} aria-label={vedhaLabel}>
-                  <Vedha className="size-3 text-muted-foreground" aria-hidden="true" />
-                </span>
-              ) : null}
-              {row.retrograde ? (
-                <span
-                  className="inline-flex"
-                  title={t("rashifal.flags.retrograde")}
-                  aria-label={t("rashifal.flags.retrograde")}
-                >
-                  <Retro className="size-3 text-secondary" aria-hidden="true" />
-                </span>
-              ) : null}
-              {row.combust ? (
-                <span
-                  className="inline-flex"
-                  title={t("rashifal.flags.combust")}
-                  aria-label={t("rashifal.flags.combust")}
-                >
-                  <Combust className="size-3 text-destructive" aria-hidden="true" />
-                </span>
-              ) : null}
-            </li>
-          );
-        })}
+            ))}
+          </li>
+        ))}
       </ul>
 
-      {anyVedha || anyRetro || anyCombust ? (
+      {legend.length ? (
         <p className={cn("m-0 flex flex-wrap items-center", rashifalClasses.gochar.legend, rashifalClasses.gochar.legendText)}>
-          {anyVedha ? (
-            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
-              <Vedha className="size-3 text-muted-foreground" aria-hidden="true" />
-              {t("rashifal.flags.vedha")}
+          {legend.map((f) => (
+            <span key={f.flag} className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
+              <FlagIcon flag={f.flag} />
+              {f.label}
             </span>
-          ) : null}
-          {anyRetro ? (
-            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
-              <Retro className="size-3 text-secondary" aria-hidden="true" />
-              {t("rashifal.flags.retrograde")}
-            </span>
-          ) : null}
-          {anyCombust ? (
-            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
-              <Combust className="size-3 text-destructive" aria-hidden="true" />
-              {t("rashifal.flags.combust")}
-            </span>
-          ) : null}
+          ))}
         </p>
       ) : null}
     </div>
