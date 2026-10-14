@@ -3,10 +3,12 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
-import { GRAHA_PAGE_DESCRIPTIONS } from "@vedic-patro/domain/graha-detail-descriptions";
-import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
-import { bilingualText } from "@vedic-patro/domain/locale";
-import { useLocale } from "@/lib/i18n";
+import {
+  useAllElementsLink,
+  useElementDescription,
+  useGrahaDescription,
+  type AboutCard,
+} from "@vedic-patro/features/graha";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
@@ -42,28 +44,18 @@ export function GrahaBanner({
   );
 }
 
-/** "About" block — what / how / meaning, keyed by graha page id. */
-export function GrahaDescription({ pageId }: { pageId: string }) {
-  const { lang, pick, t } = useLocale();
-  const desc = GRAHA_PAGE_DESCRIPTIONS[pageId];
-  const blocks = desc
-    ? (["what", "how", "meaning"] as const).map((section) => ({
-        section,
-        body: bilingualText(lang, desc[section].ne, desc[section].en),
-      }))
-    : [];
-  if (!blocks.length) return null;
-
+function AboutCardView({ about }: { about: AboutCard | null }) {
+  if (!about) return null;
   return (
     <Card className={grahaClasses.aboutCard}>
       <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
-        {t("ui.graha.about")}
+        {about.title}
       </Text>
       <View className={grahaClasses.aboutBody}>
-        {blocks.map((b) => (
+        {about.blocks.map((b) => (
           <View key={b.section} className={grahaClasses.aboutBlock}>
             <Text className={grahaClasses.aboutBlockTitle} style={nepaliTextStyle(14)}>
-              {t(`element_page.section_${b.section}`)}
+              {b.heading}
             </Text>
             <Text className={grahaClasses.aboutBlockText} style={nepaliTextStyle(14)}>
               {b.body}
@@ -73,38 +65,21 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
       </View>
     </Card>
   );
+}
+
+/** "About" block — what / how / meaning, keyed by graha page id. */
+export function GrahaDescription({ pageId }: { pageId: string }) {
+  return <AboutCardView about={useGrahaDescription(pageId)} />;
 }
 
 /** Element page "About" block — same content as web `ElementDescription`. */
 export function ElementDescription({ elementId }: { elementId: string }) {
-  const { lang, pick, t } = useLocale();
-  const blocks = elementDescriptionBlocks(elementId, lang);
-  if (!blocks.length) return null;
-
-  return (
-    <Card className={grahaClasses.aboutCard}>
-      <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
-        {t("ui.graha.about")}
-      </Text>
-      <View className={grahaClasses.aboutBody}>
-        {blocks.map((b) => (
-          <View key={b.section} className={grahaClasses.aboutBlock}>
-            <Text className={grahaClasses.aboutBlockTitle} style={nepaliTextStyle(14)}>
-              {t(`element_page.section_${b.section}`)}
-            </Text>
-            <Text className={grahaClasses.aboutBlockText} style={nepaliTextStyle(14)}>
-              {b.body}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </Card>
-  );
+  return <AboutCardView about={useElementDescription(elementId)} />;
 }
 
 /** Trailing "← all panchanga elements" link shared by the graha pages. */
 export function AllElementsLink() {
-  const { t, pick } = useLocale();
+  const { label } = useAllElementsLink();
   const colors = useThemeColors();
   const router = useRouter();
   return (
@@ -114,7 +89,7 @@ export function AllElementsLink() {
     >
       <Ionicons name="grid-outline" size={14} color={colors.primary} />
       <Text style={{ color: colors.primary }} className="text-sm underline">
-        {t("ui.graha.all_panchanga_elements")}
+        {label}
       </Text>
     </Pressable>
   );

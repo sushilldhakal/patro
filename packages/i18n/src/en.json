@@ -4270,17 +4270,11 @@
       "nepali_calendar_and_panchanga": "Nepali calendar and Panchanga"
     },
     "auth": {
-      "account_profiles": "Account & profiles",
       "apple_sign_in_failed": "Apple sign-in failed",
       "birth_place": "Birth place",
       "confirm_to_turn_on_label": "Confirm to turn on {{label}}",
-      "could_not_save_profile": "Could not save profile",
-      "full_name": "Full name",
       "hh_mm": "HH:MM",
-      "name_is_required": "Name is required",
       "not_now": "Not now",
-      "save_changes": "Save changes",
-      "set_as_default_profile": "Set as default profile",
       "sign_out": "Sign out",
       "turn_on": "Turn on",
       "unlock_with_label": "Unlock with {{label}}",
@@ -4363,17 +4357,14 @@
       "in_rashiuntil_until_lang": "In {{rashiUntil}} until {{lang}}"
     },
     "graha": {
-      "about": "About",
       "all_panchanga_elements": "All panchanga elements"
     },
     "home": {
       "ashubh_times": "Ashubh times",
       "could_not_load_calendar": "Could not load calendar.",
-      "could_not_load_sait_data": "Could not load sait data.",
       "full_detail": "Full detail →",
       "geocentric": "Geocentric",
       "muhurta_details_unavailable": "Muhurta details unavailable.",
-      "no_sait_dates_are_available_for": "No sait dates are available for this month.",
       "read_more": "Read more →",
       "set_a_reminder": "Set a reminder",
       "shubh_times": "Shubh times",
@@ -5061,12 +5052,6 @@
       "b_c_year": "B.C. year",
       "b_b_s_year": "B.B.S. year"
     },
-    "rashifal": {
-      "add_a_kundali_profile": "Add a kundali profile.",
-      "loading": "Loading…",
-      "profile": "Profile",
-      "sign_in": "Sign in"
-    },
     "reminders": {
       "add": "+ Add",
       "alerts_for_windows_and_each_profile": "Alerts for शुभ / अशुभ windows, and each profile's daily do / don't",
@@ -5119,10 +5104,6 @@
     },
     "sait": {
       "choose_a_profile": "Choose a profile",
-      "general_no_profile": "General (no profile)",
-      "no_saved_profiles_add_one_in": "No saved profiles — add one in your account.",
-      "personalise": "Personalise",
-      "sign_in_to_pick_your_profile": "Sign in to pick your profile",
       "month_ordinal_month": "month {{ordinal_month}}",
       "offcount_of_rulecount_rules_switched_off": "{{offCount}} of {{ruleCount}} rules switched off",
       "rulecount_classical_rules_switch_off_any": "{{ruleCount}} classical rules · switch off any your tradition skips",

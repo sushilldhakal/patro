@@ -4230,6 +4230,7 @@
       "the_red_marker_on_the_globe": "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।"
     },
     "auth": {
+      "apple_sign_in_failed": "एपल लग-इन असफल",
       "hh_mm": "घण्टा:मिनेट",
       "yyyy_mm_dd": "वर्ष-महिना-दिन"
     },
@@ -4238,6 +4239,7 @@
       "earth_s_axis": "पृथ्वीको अक्ष",
       "horizon": "क्षितिज",
       "notes": "टिप्पणी",
+      "retry": "पुनः प्रयास",
       "rest_and_last": "{{rest}} र {{last}}"
     },
     "dainik_kranti": {
@@ -4278,6 +4280,9 @@
       "upcoming_transit_events": "आगामी गोचर घटनाहरू",
       "what_s_changing": "के परिवर्तन हुँदैछ",
       "in_rashiuntil_until_lang": "{{rashiUntil}} मा {{lang}} सम्म"
+    },
+    "graha": {
+      "all_panchanga_elements": "सबै पञ्चाङ्ग तत्त्वहरू"
     },
     "home": {
       "geocentric": "भूकेन्द्रित",
@@ -4514,6 +4519,13 @@
       "x_be9a266a": "{{v0}} {{v1}}मा प्रवेश",
       "reload_reset_zoom": "रिलोड · जुम रिसेट · {{mode}}"
     },
+    "sait": {
+      "choose_a_profile": "प्रोफाइल छान्नुहोस्",
+      "month_ordinal_month": "{{ordinal_month}} औँ महिना",
+      "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
+      "rulecount_classical_rules_switch_off_any": "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
+      "rulecount_classical_rules_with_sources": "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित"
+    },
     "sky3d": {
       "amavasya_moon_between_sun_and_earth": "औंसी · चन्द्र सूर्य–पृथ्वीको बीचमा",
       "back": "पछाडि",
@@ -4609,12 +4621,6 @@
     "mobile_bottom_nav": {
       "primary_navigation": "मुख्य नेभिगेसन",
       "home": "गृह"
-    },
-    "sait": {
-      "month_ordinal_month": "{{ordinal_month}} औँ महिना",
-      "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
-      "rulecount_classical_rules_switch_off_any": "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
-      "rulecount_classical_rules_with_sources": "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित"
     },
     "tithi_mechanics": {
       "x_1535357f": "पृथ्वी ~",

@@ -1,10 +1,9 @@
 import { Flame, RotateCcw } from "lucide-react";
-import { useLocale } from "@/i18n/locale";
+import { useGrahaStatusBadges, useGrahaStatusLabels } from "@vedic-patro/features/graha";
 import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   /** Graha key ("sun" … "ketu"); gates which markers are allowed. */
   planetKey?: string;
@@ -22,21 +21,19 @@ type Props = {
  * hover tooltip, never as inline text.
  */
 export function GrahaStatusBadges({ planetKey, isRetrograde, isCombust, className, size = 14 }: Props) {
-  const { lang } = useLocale();
-  const vakri = showVakri(planetKey, isRetrograde);
-  const asta = showAsta(planetKey, isCombust);
-  if (!vakri && !asta) return null;
+  const { vakri, asta, any, labels } = useGrahaStatusBadges({ planetKey, isRetrograde, isCombust });
+  if (!any) return null;
   const px = `${size}px`;
 
   return (
     <span className={cn(grahaClasses.statusRow, "inline-flex", className)}>
       {vakri && (
-        <span className="inline-flex" title={tFor(lang, "common.retrograde")} aria-label={tFor(lang, "common.retrograde")}>
+        <span className="inline-flex" title={labels.retrograde} aria-label={labels.retrograde}>
           <RotateCcw className="text-secondary" style={{ width: px, height: px }} strokeWidth={2.5} aria-hidden />
         </span>
       )}
       {asta && (
-        <span className="inline-flex" title={tFor(lang, "common.combust")} aria-label={tFor(lang, "common.combust")}>
+        <span className="inline-flex" title={labels.combust} aria-label={labels.combust}>
           <Flame className="text-destructive" style={{ width: px, height: px }} strokeWidth={2.5} aria-hidden />
         </span>
       )}
@@ -98,7 +95,7 @@ export function GrahaStatusMarksSvg({
 
 /** Compact icon key explaining the chart/list markers. */
 export function GrahaStatusLegend({ className }: { className?: string }) {
-  const { lang } = useLocale();
+  const labels = useGrahaStatusLabels();
   return (
     <p
       className={cn(
@@ -110,11 +107,11 @@ export function GrahaStatusLegend({ className }: { className?: string }) {
     >
       <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <RotateCcw className="size-3.5 text-secondary" aria-hidden />
-        {tFor(lang, "common.retrograde")}
+        {labels.retrograde}
       </span>
       <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <Flame className="size-3.5 text-destructive" aria-hidden />
-        {tFor(lang, "common.combust")}
+        {labels.combust}
       </span>
     </p>
   );

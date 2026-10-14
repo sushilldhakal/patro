@@ -4270,17 +4270,11 @@
       "nepali_calendar_and_panchanga": "नेपाली पात्रो र पञ्चाङ्ग"
     },
     "auth": {
-      "account_profiles": "खाता र प्रोफाइल",
       "apple_sign_in_failed": "एपल लग-इन असफल",
       "birth_place": "जन्म स्थान",
       "confirm_to_turn_on_label": "{{label}} चालु गर्न पुष्टि गर्नुहोस्",
-      "could_not_save_profile": "प्रोफाइल सेभ गर्न सकिएन",
-      "full_name": "पूरा नाम",
       "hh_mm": "घण्टा:मिनेट",
-      "name_is_required": "नाम अनिवार्य छ",
       "not_now": "अहिले होइन",
-      "save_changes": "परिवर्तन सेभ",
-      "set_as_default_profile": "पूर्वनिर्धारित प्रोफाइल",
       "sign_out": "साइन आउट",
       "turn_on": "चालु गर्नुहोस्",
       "unlock_with_label": "{{label}} प्रयोग गर्नुहोस्",
@@ -4363,17 +4357,14 @@
       "in_rashiuntil_until_lang": "{{rashiUntil}} मा {{lang}} सम्म"
     },
     "graha": {
-      "about": "परिचय",
       "all_panchanga_elements": "सबै पञ्चाङ्ग तत्त्वहरू"
     },
     "home": {
       "ashubh_times": "अशुभ समय",
       "could_not_load_calendar": "पात्रो लोड गर्न सकिएन।",
-      "could_not_load_sait_data": "साइत डाटा लोड गर्न सकिएन।",
       "full_detail": "पूरा विवरण →",
       "geocentric": "भूकेन्द्रित",
       "muhurta_details_unavailable": "मुहूर्त विवरण उपलब्ध छैन।",
-      "no_sait_dates_are_available_for": "यस महिना कुनै साइत उपलब्ध छैन।",
       "read_more": "थप पढ्नुहोस् →",
       "set_a_reminder": "रिमाइन्डर राख्नुहोस्",
       "shubh_times": "शुभ समय",
@@ -5061,12 +5052,6 @@
       "b_c_year": "ई.पू. वर्ष",
       "b_b_s_year": "पू.वि.सं. वर्ष"
     },
-    "rashifal": {
-      "add_a_kundali_profile": "कुण्डली प्रोफाइल थप्नुहोस्।",
-      "loading": "लोड…",
-      "profile": "प्रोफाइल",
-      "sign_in": "साइन इन"
-    },
     "reminders": {
       "add": "+ थप्नुहोस्",
       "alerts_for_windows_and_each_profile": "शुभ/अशुभ समयको सम्झना र प्रत्येक प्रोफाइलका लागि दैनिक गर्ने/नगर्ने कुरा",
@@ -5119,10 +5104,6 @@
     },
     "sait": {
       "choose_a_profile": "प्रोफाइल छान्नुहोस्",
-      "general_no_profile": "सामान्य (प्रोफाइल बिना)",
-      "no_saved_profiles_add_one_in": "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
-      "personalise": "आफ्नो प्रोफाइलअनुसार",
-      "sign_in_to_pick_your_profile": "प्रोफाइल छान्न लग-इन गर्नुहोस्",
       "month_ordinal_month": "{{ordinal_month}} औँ महिना",
       "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
       "rulecount_classical_rules_switch_off_any": "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
