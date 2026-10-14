@@ -6,3 +6,5 @@ export * from "./use-kundali-milan-page";
 export * from "./use-bhava-detail";
 export * from "./use-dasha-tree";
 export * from "./use-shadbala-card";
+export * from "./use-kundali-report";
+export * from "./use-kundali-milan-result";

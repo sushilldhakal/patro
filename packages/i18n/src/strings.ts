@@ -6867,7 +6867,6 @@ export const strings = {
 
   /* ── ui.common ──────────────────────────────────────────────────────────── */
   "ui.common.account": { ne: "खाता", en: "Account" },
-  "ui.common.bride": { ne: "कन्या", en: "Bride" },
   "ui.common.change_location": { ne: "स्थान बदल्नुहोस्", en: "Change location" },
   "ui.common.close": { ne: "बन्द गर्नुहोस्", en: "Close" },
   "ui.common.could_not_load_panchanga": { ne: "पञ्चाङ्ग लोड गर्न सकिएन।", en: "Could not load panchanga." },
@@ -6876,7 +6875,6 @@ export const strings = {
     ne: "जन्म मिति, समय र स्थान सही राख्नुहोस्।",
     en: "Enter accurate birth date, time, and place.",
   },
-  "ui.common.groom": { ne: "वर", en: "Groom" },
   "ui.common.horizon": { ne: "क्षितिज", en: "Horizon" },
   "ui.common.notes": { ne: "टिप्पणी", en: "Notes" },
   "ui.common.retry": { ne: "पुनः प्रयास", en: "Retry" },
@@ -6976,7 +6974,6 @@ export const strings = {
     ne: "ग्रहको वास्तविक प्रभाव यसको भावेशत्व, बल, दृष्टि, संयोजन, अस्त/वक्री जस्ता अवस्थामा भर पर्छ — तल दिइएको सामान्य शुभ/पाप वर्गीकरण एउटा आधारभूत सिद्धान्त मात्र हो, अनिवार्य नियम होइन।",
     en: "A graha's actual effect depends on its lordship, strength, aspects, conjunctions, combustion/retrogression and more — the general benefic/malefic classification below is only a baseline classical principle, not an unconditional rule.",
   },
-  "ui.kundali.absent": { ne: "छैन", en: "Absent" },
   "ui.kundali.add_first_profile": { ne: "पहिलो प्रोफाइल थप्नुहोस्", en: "Add first profile" },
   "ui.kundali.all_aspects": { ne: "सबै दृष्टि", en: "All aspects" },
   "ui.kundali.aspects": { ne: "दृष्टि", en: "Aspects" },
@@ -7017,7 +7014,6 @@ export const strings = {
     ne: " यस अयनांशमा ग्रह, लग्न र नक्षत्र पुनः गणना हुन्छ।",
     en: " Grahas, lagna and nakshatra are recomputed in this ayanamsha.",
   },
-  "ui.kundali.guna": { ne: "गुण", en: "guna" },
   "ui.kundali.health_signals": { ne: "स्वास्थ्य संकेत", en: "Health signals" },
   "ui.kundali.house": { ne: "भाव", en: "house" },
   "ui.kundali.house_house": { ne: "भाव {{house}}", en: "house {{house}}" },
@@ -7029,7 +7025,6 @@ export const strings = {
   "ui.kundali.lord_placement": { ne: "भावेश सम्बन्ध", en: "Lord placement" },
   "ui.kundali.lord_results": { ne: "स्वामी र फल", en: "Lord & results" },
   "ui.kundali.malefic_grahas": { ne: "पापग्रह", en: "Malefic grahas" },
-  "ui.kundali.nadi_dosha_advisory": { ne: "नाडी दोष सूचना", en: "Nadi dosha advisory" },
   "ui.kundali.natural_significator": { ne: "स्वाभाविक कारक", en: "Natural significator" },
   "ui.kundali.navagraha_remedial_measures": { ne: "नवग्रह शान्ति उपाय", en: "Navagraha remedial measures" },
   "ui.kundali.needs_attention": { ne: "⚠️ ध्यान दिनुपर्ने", en: "⚠️ Needs attention" },
@@ -7090,7 +7085,6 @@ export const strings = {
   "ui.kundali.source_naadisutrasource": { ne: "स्रोत: {{naadiSutraSource}}", en: "Source: {{naadiSutraSource}}" },
   "ui.kundali.summary": { ne: "सारांश", en: "Summary" },
   "ui.kundali.this_section_is_not_available": { ne: "यो खण्ड उपलब्ध छैन।", en: "This section is not available." },
-  "ui.kundali.total_guna_match": { ne: "कुल गुण मिलान", en: "Total guna match" },
   "ui.kundali.upagrahas": { ne: "उपग्रह", en: "Upagrahas" },
   "ui.kundali.viewing": { ne: "हेर्दै", en: "Viewing" },
   "ui.kundali.what_is_lal_kitab_s_sustha": {

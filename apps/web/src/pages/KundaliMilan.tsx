@@ -8,7 +8,6 @@ import {
 } from "@/components/kundali/MilanProfilePicker";
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
 import { PageShell } from "@/components/PageShell";
-import { useLocale } from "@/i18n/locale";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useRouteLoading } from "@/lib/route-loading";
@@ -52,7 +51,6 @@ function BirthDetailsTable({ details }: { details: MilanDetails }) {
 }
 
 export function KundaliMilan() {
-  const { lang } = useLocale();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const pickerRef = useRef<MilanProfilePickerHandle>(null);
   const page = useKundaliMilanPage({ isAuthenticated, authLoading, ayanamshaStorage });
@@ -150,7 +148,6 @@ export function KundaliMilan() {
                     boyName={boyProfile.full_name}
                     girlName={girlProfile.full_name}
                     result={milan.result}
-                    lang={lang}
                   />
                 </div>
               ) : null}
