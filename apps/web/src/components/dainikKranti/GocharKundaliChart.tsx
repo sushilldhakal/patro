@@ -1,24 +1,15 @@
-import type { GocharGraha } from "@/lib/api";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import {
-  buildGocharBhavaHouses,
-  formatGocharBsLabel,
-} from "@vedic-patro/domain/dainikKranti/gochar-display";
+import { useGocharKundaliChart, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { Sparkles } from "lucide-react";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
-import { useLocale } from "@/i18n/locale";
-
-import { tFor } from "@vedic-patro/i18n/runtime";
-type GrahaRow = GocharGraha & { key: string };
 
 type Props = {
-  grahas: GrahaRow[];
-  /** पापाशाःसू०७, म.६, श.१०, रा.९के.३ */
+  grahas: GocharGrahaRow[];
+  /** The papansha line (planet codes by rashi). */
   papanshaLine?: string;
-  /** गा.पाशाः१५सू८, १८म.७, … */
+  /** The gapansha line. */
   gapanshaLine?: string;
   dateBs?: string | null;
   dateAd?: string | null;
@@ -26,55 +17,32 @@ type Props = {
   className?: string;
 };
 
-export function GocharKundaliChart({
-  grahas,
-  papanshaLine = "",
-  gapanshaLine = "",
-  dateBs,
-  dateAd,
-  loading,
-  className,
-}: Props) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const dateLabel = formatGocharBsLabel(dateBs, dateAd);
+export function GocharKundaliChart({ className, ...props }: Props) {
+  const chart = useGocharKundaliChart(props);
 
   return (
     <div className={cn(dainikKrantiClasses.chartCard, className)}>
       <h3 className={cn(dainikKrantiClasses.chartTitle, dainikKrantiClasses.chartTitleText)}>
-        <Sparkles className="h-4 w-4 text-secondary" /> {t("dainik.transit_chart")}
+        <Sparkles className="h-4 w-4 text-secondary" /> {chart.title}
       </h3>
 
       <div className={cn(dainikKrantiClasses.chartLines, "space-y-2")}>
-        <div className={dainikKrantiClasses.chartLine}>
-          <p className={dainikKrantiClasses.chartLineText}>
-            {papanshaLine || t("dainik.papashah")}
-          </p>
-        </div>
-        {gapanshaLine ? (
-          <div className={dainikKrantiClasses.chartLine}>
-            <p className={dainikKrantiClasses.chartLineText}>
-              {gapanshaLine}
-            </p>
+        {chart.lines.map((line, i) => (
+          <div key={i} className={dainikKrantiClasses.chartLine}>
+            <p className={dainikKrantiClasses.chartLineText}>{line}</p>
           </div>
-        ) : null}
+        ))}
       </div>
 
-      {loading ? (
-        <p className={dainikKrantiClasses.chartState}>{t("dainik.loading")}</p>
-      ) : grahas.length === 0 ? (
-        <p className={dainikKrantiClasses.chartState}>{t("dainik.no_details_available")}</p>
+      {chart.houses ? (
+        <D1Chart houses={chart.houses} />
       ) : (
-        <D1Chart houses={buildGocharBhavaHouses(grahas)} />
+        <p className={dainikKrantiClasses.chartState}>{chart.stateText}</p>
       )}
 
-      {grahas.some((g) => g.is_retrograde || g.is_combust) ? (
-        <GrahaStatusLegend className="mt-2" />
-      ) : null}
+      {chart.showStatusLegend ? <GrahaStatusLegend className="mt-2" /> : null}
 
-      {dateLabel ? (
-        <p className={dainikKrantiClasses.chartDate}>{tFor(lang, "ui.dainik_kranti.position_on_datelabel", { dateLabel })}</p>
-      ) : null}
+      {chart.dateLine ? <p className={dainikKrantiClasses.chartDate}>{chart.dateLine}</p> : null}
     </div>
   );
 }

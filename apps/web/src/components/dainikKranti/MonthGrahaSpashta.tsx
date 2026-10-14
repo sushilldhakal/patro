@@ -1,14 +1,8 @@
-import { useTranslation } from "@vedic-patro/i18n/react";
-import {
-  PATRO_PLANET_KEYS,
-  PATRO_PLANET_NE,
-  type GrahaSpashtaRow,
-} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import type { GrahaSpashtaRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import { useMonthGrahaSpashta } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import {
   Table,
   TableBody,
@@ -25,15 +19,9 @@ import {
   patroStickySubHeadCell,
   patroStickySubHeadCorner,
 } from "@/lib/patro-classes";
-import { tFor } from "@vedic-patro/i18n/runtime";
 
 const th = cn(dainikKrantiClasses.monthTh, "whitespace-nowrap");
 const td = cn(dainikKrantiClasses.monthTd, "whitespace-nowrap");
-
-const PLANET_EN: Record<string, string> = {
-  sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",
-  venus: "Venus", saturn: "Saturn", rahu: "Rahu",
-};
 
 type Props = {
   rows: GrahaSpashtaRow[];
@@ -43,116 +31,77 @@ type Props = {
   embedded?: boolean;
 };
 
-function formatPlanetCell(cell: { rashiNe: string; rashiEn?: string; coords: string } | undefined, isEn: boolean): string {
-  if (!cell) return "—";
-  return `${isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe} ${cell.coords}`;
-}
-
 export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: Props) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const isEn = lang === "en";
+  const m = useMonthGrahaSpashta(rows, { todayKey, loading, empty });
   const table = (
       <Table>
         <TableHeader>
           <TableRow className={patroStickyHeadRow}>
-            <TableHead className={cn(th, patroStickyHeadCorner, "pl-3 text-left")}>{t("dainik.date")}</TableHead>
-            <TableHead className={cn(th, patroStickyHeadCell, "text-left")}>{t("dainik.day")}</TableHead>
-            {PATRO_PLANET_KEYS.map((key) => (
-              <TableHead key={key} className={cn(th, patroStickyHeadCell, "min-w-[5.5rem] text-center")}>
-                {bilingualText(lang, PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
+            <TableHead className={cn(th, patroStickyHeadCorner, "pl-3 text-left")}>{m.head.date}</TableHead>
+            <TableHead className={cn(th, patroStickyHeadCell, "text-left")}>{m.head.day}</TableHead>
+            {m.planets.map((p) => (
+              <TableHead key={p.key} className={cn(th, patroStickyHeadCell, "min-w-[5.5rem] text-center")}>
+                {p.label}
               </TableHead>
             ))}
-            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4rem] text-center")}>
-              {t("aside.deshaantar")}
-            </TableHead>
-            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4rem] text-center")}>
-              {t("aside.akshamsha")}
-            </TableHead>
-            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4.5rem] text-center")}>{t("dainik.belaantar")}</TableHead>
+            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4rem] text-center")}>{m.head.deshaantar}</TableHead>
+            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4rem] text-center")}>{m.head.akshamsha}</TableHead>
+            <TableHead className={cn(th, patroStickyHeadCell, "min-w-[4.5rem] text-center")}>{m.head.belaantar}</TableHead>
           </TableRow>
           <TableRow className="bg-muted/60 hover:bg-muted/60">
             <TableHead colSpan={2} className={patroStickySubHeadCorner} />
-            {PATRO_PLANET_KEYS.map((key) => (
-              <TableHead key={`sub-${key}`} className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>
-                {t("dainik.ra_deg_ka_vi")}
+            {m.planets.map((p) => (
+              <TableHead key={`sub-${p.key}`} className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>
+                {m.subHead.planet}
               </TableHead>
             ))}
-            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>
-              {t("aside.deshaantar")}
-            </TableHead>
-            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>
-              {t("aside.akshamsha")}
-            </TableHead>
-            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>{t("dainik.time_corr")}</TableHead>
+            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>{m.subHead.deshaantar}</TableHead>
+            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>{m.subHead.akshamsha}</TableHead>
+            <TableHead className={cn(th, patroStickySubHeadCell, "text-center font-normal")}>{m.subHead.belaantar}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loading ? (
+          {m.stateText ? (
             <TableRow>
               <TableCell colSpan={13} className={dainikKrantiClasses.monthLoading}>
-                {t("dainik.loading")}
-              </TableCell>
-            </TableRow>
-          ) : empty || rows.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={13} className={dainikKrantiClasses.monthLoading}>
-                {t("dainik.no_days_found_in_this_paksha")}
+                {m.stateText}
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((row) => {
-              const isToday = row.dateAd === todayKey;
-              const hasPlanets = PATRO_PLANET_KEYS.some((k) => row.planets[k]);
-              return (
-                <TableRow
-                  key={row.dateAd}
-                  className={cn(isToday && cn(dainikKrantiClasses.rowToday, "hover:bg-secondary/20"))}
+            m.rows.map((row) => (
+              <TableRow
+                key={row.key}
+                className={cn(row.isToday && cn(dainikKrantiClasses.rowToday, "hover:bg-secondary/20"))}
+              >
+                <TableCell
+                  className={cn(
+                    td,
+                    "sticky left-0 z-10",
+                    dainikKrantiClasses.stickyDateCell,
+                    row.isToday && dainikKrantiClasses.rowToday,
+                  )}
                 >
-                  <TableCell
-                    className={cn(
-                      td,
-                      "sticky left-0 z-10",
-                      dainikKrantiClasses.stickyDateCell,
-                      isToday && dainikKrantiClasses.rowToday,
-                    )}
-                  >
-                    {digits(row.day)}
+                  {row.day}
+                </TableCell>
+                <TableCell className={td}>{row.weekday}</TableCell>
+                {row.cells.map((cell) => (
+                  <TableCell key={cell.key} className={cn(td, dainikKrantiClasses.monthTdMono)}>
+                    <span className="inline-flex items-center justify-center gap-1">
+                      {cell.value}
+                      <GrahaStatusBadges
+                        planetKey={cell.key}
+                        isRetrograde={cell.isRetrograde}
+                        isCombust={cell.isCombust}
+                        size={12}
+                      />
+                    </span>
                   </TableCell>
-                  <TableCell className={cn(td, "")}>
-                    {bilingualText(lang, row.weekdayNe ?? "—", row.weekdayEn ?? row.weekdayNe ?? "—")}
-                  </TableCell>
-                  {PATRO_PLANET_KEYS.map((key) => {
-                    const cell = row.planets[key];
-                    return (
-                      <TableCell
-                        key={key}
-                        className={cn(td, dainikKrantiClasses.monthTdMono)}
-                      >
-                        <span className="inline-flex items-center justify-center gap-1">
-                          {formatPlanetCell(cell, isEn)}
-                          <GrahaStatusBadges
-                            planetKey={key}
-                            isRetrograde={cell?.isRetrograde}
-                            isCombust={cell?.isCombust}
-                            size={12}
-                          />
-                        </span>
-                      </TableCell>
-                    );
-                  })}
-                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
-                    {row.deshaantar ?? "—"}
-                  </TableCell>
-                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
-                    {row.akshamsha ?? "—"}
-                  </TableCell>
-                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
-                    {row.belaantar ?? (hasPlanets ? "—" : "—")}
-                  </TableCell>
-                </TableRow>
-              );
-            })
+                ))}
+                <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>{row.deshaantar}</TableCell>
+                <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>{row.akshamsha}</TableCell>
+                <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>{row.belaantar}</TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
@@ -160,17 +109,14 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
 
   const footnote = (
     <p className={dainikKrantiClasses.monthFootnote}>
-      {bilingualNode(lang, 
-        <>
-          {tFor(undefined, "ui.dainik_kranti.x_9f5629ff")}{getRashiList("ne").join(", ")}{tFor(undefined, "ui.dainik_kranti.x_3fa0c883")}{" "}
-          <span className="font-mono">{tFor(undefined, "ui.dainik_kranti.x_536ecbd5")}</span>{tFor(undefined, "ui.dainik_kranti.x_e59e68b7")}{" "}
-          <span className="font-mono text-foreground">{tFor(undefined, "ui.dainik_kranti.x_9846f458")}</span>{tFor(undefined, "ui.dainik_kranti.x_6d4da8be")}
-        </>,
-        <>
-          Signs: {getRashiList("en").join(", ")}. Each planet's bracket shows{" "}
-          <span className="font-mono">sign deg|kala|vikala</span> — e.g.{" "}
-          <span className="font-mono text-foreground">Vrishabha 13|6|29</span> = Vrishabha sign, 13 deg 6 kala 29 vikala.
-        </>,
+      {m.footnote.map((run, i) =>
+        run.mono ? (
+          <span key={i} className={cn("font-mono", run.strong && "text-foreground")}>
+            {run.text}
+          </span>
+        ) : (
+          <span key={i}>{run.text}</span>
+        ),
       )}
     </p>
   );
