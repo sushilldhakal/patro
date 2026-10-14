@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
-import type { ReaderRow } from "@vedic-patro/features/documents";
+import { playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -127,7 +127,7 @@ export function DocumentReader({
           isPlaying={isActive && audio.activePlaying}
           progress={isActive ? audio.activeProgress : 0}
           meaningOpen={audio.openMeaningIds.has(shloka.id)}
-          playsFromFull={!shloka.audio_url && hasFull && shloka.full_audio_start != null}
+          playsFromFull={playsFromFullRecording(shloka, hasFull)}
           onPlay={onPlay}
           onToggleMeaning={audio.toggleMeaning}
         />

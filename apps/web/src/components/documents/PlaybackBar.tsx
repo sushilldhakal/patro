@@ -1,6 +1,5 @@
 import { Headphones, ListMusic, Pause, Play, SkipBack, SkipForward } from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { bilingualText, useLocale } from "@/i18n/locale";
+import { usePlaybackBar } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -34,13 +33,6 @@ interface Props {
   onSwitchToFull: () => void;
 }
 
-function formatTime(seconds: number): string {
-  const total = Math.max(0, Math.round(seconds));
-  const m = Math.floor(total / 60);
-  const s = total - m * 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
 /**
  * One floating transport bar for the whole document — plays either the
  * single continuous recording or one verse's own clip, never both. Which one
@@ -71,16 +63,24 @@ export function PlaybackBar({
   onPrev,
   onSwitchToFull,
 }: Props) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
+  const bar = usePlaybackBar({
+    mode,
+    hasFullRecording,
+    canPlayThrough: Boolean(onPlayThrough),
+    full: { playing: fullPlaying, currentTime: fullCurrentTime, duration: fullDuration },
+    verse: { playing: versePlaying, currentTime: verseCurrentTime, duration: verseDuration },
+    activeShloka,
+  });
+  const { copy } = bar;
 
-  if (mode == null) {
-    if (!hasFullRecording && !onPlayThrough) return null;
+  if (bar.face === "hidden") return null;
+
+  if (bar.face === "idle") {
     return (
       <div className="fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4">
         <button
           type="button"
-          onClick={hasFullRecording ? onStartFull : () => onPlayThrough?.()}
+          onClick={bar.idle.startsFull ? onStartFull : () => onPlayThrough?.()}
           className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow, "text-left backdrop-blur transition-colors hover:border-secondary/60")}
         >
           <span className={cn(documentsClasses.barPlay, "text-secondary-foreground")}>
@@ -88,7 +88,7 @@ export function PlaybackBar({
           </span>
           <span className={documentsClasses.fill}>
             <span className={cn(documentsClasses.barTitle, "block truncate")}>
-              {t(hasFullRecording ? "documents.play_full_recording" : "documents.play_through")}
+              {bar.idle.title}
             </span>
             <span className={cn(documentsClasses.barSubtitle, "block truncate")}>{documentTitle}</span>
           </span>
@@ -98,18 +98,17 @@ export function PlaybackBar({
     );
   }
 
-  if (mode === "full") {
-    const fillPct = fullDuration > 0 ? (fullCurrentTime / fullDuration) * 100 : 0;
+  if (bar.face === "full") {
     return (
       <div className="fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4">
         <div className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow, "backdrop-blur")}>
           <button
             type="button"
             onClick={onToggleFull}
-            aria-label={t(fullPlaying ? "documents.pause_verse" : "documents.play_full_recording")}
+            aria-label={bar.full.toggleLabel}
             className={cn(documentsClasses.barPlay, "text-secondary-foreground")}
           >
-            {fullPlaying ? (
+            {bar.full.playing ? (
               <Pause className="size-5" fill="currentColor" strokeWidth={0} />
             ) : (
               <Play className="ml-0.5 size-5" fill="currentColor" strokeWidth={0} />
@@ -117,25 +116,25 @@ export function PlaybackBar({
           </button>
           <div className={documentsClasses.fill}>
             <p className={cn(documentsClasses.barKicker, "truncate")}>
-              {t("documents.play_full_recording")}
+              {copy.playFull}
             </p>
             <div className={documentsClasses.barScrubRow}>
               <span className={documentsClasses.barTime}>
-                {formatTime(fullCurrentTime)}
+                {bar.full.current}
               </span>
               <input
                 type="range"
                 className="shloka-scrub w-full min-w-0 flex-1 cursor-pointer outline-none"
-                style={{ "--fill": `${fillPct}%` } as React.CSSProperties}
+                style={{ "--fill": `${bar.full.fillPct}%` } as React.CSSProperties}
                 min={0}
                 max={fullDuration || 1}
                 step={0.1}
                 value={fullCurrentTime}
                 onChange={(e) => onSeekFull(Number(e.target.value))}
-                aria-label={t("documents.seek")}
+                aria-label={copy.seek}
               />
               <span className={documentsClasses.barTime}>
-                {formatTime(fullDuration)}
+                {bar.full.total}
               </span>
             </div>
           </div>
@@ -144,27 +143,22 @@ export function PlaybackBar({
     );
   }
 
-  // mode === "verse"
-  if (!activeShloka) return null;
-  const canSwitchToFull = hasFullRecording && activeShloka.full_audio_start != null;
-  const verseTitle = bilingualText(lang, activeShloka.meaning_ne, activeShloka.meaning_en);
-
   return (
     <div className="fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4">
       <div className={cn(documentsClasses.barShell, documentsClasses.barPad, "backdrop-blur")}>
-        {activeShloka.audio_url ? (
+        {bar.verse.hasClip ? (
           <div className="mb-1.5 flex items-center gap-2">
             <span className={cn(documentsClasses.barTime, "text-right")}>
-              {formatTime(verseCurrentTime)}
+              {bar.verse.current}
             </span>
             <div className={cn(documentsClasses.barTrack, "shloka-scrub")}>
               <div
                 className={cn(documentsClasses.barTrackFill, "transition-[width]")}
-                style={{ width: `${verseDuration > 0 ? (verseCurrentTime / verseDuration) * 100 : 0}%` }}
+                style={{ width: `${bar.verse.fillPct}%` }}
               />
             </div>
             <span className={documentsClasses.barTime}>
-              {formatTime(verseDuration)}
+              {bar.verse.total}
             </span>
           </div>
         ) : null}
@@ -174,7 +168,7 @@ export function PlaybackBar({
             type="button"
             onClick={onPrev}
             disabled={!hasPrev}
-            aria-label={t("documents.prev_verse")}
+            aria-label={copy.prevVerse}
             className={cn(documentsClasses.barSkip, "text-muted-foreground hover:text-foreground disabled:opacity-30")}
           >
             <SkipBack className="size-4" fill="currentColor" />
@@ -182,11 +176,11 @@ export function PlaybackBar({
           <button
             type="button"
             onClick={onToggleVerse}
-            disabled={!activeShloka.audio_url}
-            aria-label={t(versePlaying ? "documents.pause_verse" : "documents.play_verse")}
+            disabled={!bar.verse.hasClip}
+            aria-label={bar.verse.toggleLabel}
             className={cn(documentsClasses.barPlay, "text-secondary-foreground disabled:opacity-40")}
           >
-            {versePlaying ? (
+            {bar.verse.playing ? (
               <Pause className="size-5" fill="currentColor" strokeWidth={0} />
             ) : (
               <Play className="ml-0.5 size-5" fill="currentColor" strokeWidth={0} />
@@ -196,7 +190,7 @@ export function PlaybackBar({
             type="button"
             onClick={onNext}
             disabled={!hasNext}
-            aria-label={t("documents.next_verse")}
+            aria-label={copy.nextVerse}
             className={cn(documentsClasses.barSkip, "text-muted-foreground hover:text-foreground disabled:opacity-30")}
           >
             <SkipForward className="size-4" fill="currentColor" />
@@ -204,18 +198,15 @@ export function PlaybackBar({
 
           <div className={documentsClasses.fill}>
             <p className={cn(documentsClasses.barKicker, "truncate")}>{documentTitle}</p>
-            <p className={cn(documentsClasses.barTitle, "truncate")}>
-              {t("documents.now_playing", { label: activeShloka.verse_label })}
-              {verseTitle ? ` — ${verseTitle}` : ""}
-            </p>
+            <p className={cn(documentsClasses.barTitle, "truncate")}>{bar.verse.title}</p>
           </div>
 
-          {canSwitchToFull ? (
+          {bar.verse.canSwitchToFull ? (
             <button
               type="button"
               onClick={onSwitchToFull}
-              aria-label={t("documents.switch_to_full")}
-              title={t("documents.switch_to_full")}
+              aria-label={copy.switchToFull}
+              title={copy.switchToFull}
               className={cn(documentsClasses.barSkip, "text-muted-foreground hover:text-foreground")}
             >
               <ListMusic className="size-4" />
