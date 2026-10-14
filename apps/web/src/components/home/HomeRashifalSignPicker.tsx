@@ -157,7 +157,7 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
                 key={sign.id}
                 className="basis-full pl-3 md:pl-4 xl:basis-1/2"
               >
-                <RashifalSignCard sign={sign} period="monthly" tone={sign.tone} />
+                <RashifalSignCard sign={sign} period="monthly" />
               </CarouselItem>
             ))}
           </CarouselContent>

@@ -5063,16 +5063,9 @@
     },
     "rashifal": {
       "add_a_kundali_profile": "Add a kundali profile.",
-      "details": "Details",
       "loading": "Loading…",
       "profile": "Profile",
-      "sign_in": "Sign in",
-      "why_this_reading": "Why this reading?",
-      "x_762ddce2": "Rashi {{v0}} · Lagna {{v1}} · Sun {{v2}}",
-      "x_388669f2": "{{v0}} mahadasha, {{v1}} antardasha running",
-      "x_5a098681": "{{v0}} in house {{v1}}, in {{v2}} — {{v3}}",
-      "x_c9d4bf4e": "{{v0}} mahadasha until {{v1}}. {{v2}} antardasha until {{v3}}.",
-      "x_eb406d86": "Best: {{v0}} · Weak: {{v1}}"
+      "sign_in": "Sign in"
     },
     "reminders": {
       "add": "+ Add",

@@ -7676,11 +7676,9 @@ export const strings = {
 
   /* ── ui.rashifal ────────────────────────────────────────────────────────── */
   "ui.rashifal.add_a_kundali_profile": { ne: "कुण्डली प्रोफाइल थप्नुहोस्।", en: "Add a kundali profile." },
-  "ui.rashifal.details": { ne: "विवरण", en: "Details" },
   "ui.rashifal.loading": { ne: "लोड…", en: "Loading…" },
   "ui.rashifal.profile": { ne: "प्रोफाइल", en: "Profile" },
   "ui.rashifal.sign_in": { ne: "साइन इन", en: "Sign in" },
-  "ui.rashifal.why_this_reading": { ne: "किन यस्तो?", en: "Why this reading?" },
 
   /* ── ui.reminders ───────────────────────────────────────────────────────── */
   "ui.reminders.add": { ne: "+ थप्नुहोस्", en: "+ Add" },
@@ -8348,11 +8346,6 @@ export const strings = {
   "ui.patro_date.a_d_year": { ne: "ई.सं. वर्ष", en: "A.D. year" },
   "ui.patro_date.b_c_year": { ne: "ई.पू. वर्ष", en: "B.C. year" },
   "ui.patro_date.b_b_s_year": { ne: "पू.वि.सं. वर्ष", en: "B.B.S. year" },
-  "ui.rashifal.x_762ddce2": { ne: "राशि {{v0}} · लग्न {{v1}} · सूर्य {{v2}}", en: "Rashi {{v0}} · Lagna {{v1}} · Sun {{v2}}" },
-  "ui.rashifal.x_388669f2": { ne: "{{v0}} महादशा, {{v1}} अन्तर्दशा चलिरहेको", en: "{{v0}} mahadasha, {{v1}} antardasha running" },
-  "ui.rashifal.x_5a098681": { ne: "{{v0}} {{v1}} भावमा, {{v2}} राशिमा — {{v3}}", en: "{{v0}} in house {{v1}}, in {{v2}} — {{v3}}" },
-  "ui.rashifal.x_c9d4bf4e": { ne: "{{v0}} महादशा {{v1}}सम्म। {{v2}} अन्तर्दशा {{v3}}सम्म।", en: "{{v0}} mahadasha until {{v1}}. {{v2}} antardasha until {{v3}}." },
-  "ui.rashifal.x_eb406d86": { ne: "उत्तम: {{v0}} · कमजोर: {{v1}}", en: "Best: {{v0}} · Weak: {{v1}}" },
   "ui.sait.x_63f5f4fd": { ne: "{{v0}} मा {{v1}} शुभ दिन", en: "{{v1}} auspicious days in {{v0}}" },
   "ui.sait.x_92984250": { ne: "{{v0}} औँ महिना", en: "Month {{v0}}" },
   "ui.sait.x_ddd39103": { ne: "{{v0}} मध्ये {{v1}} नियम हटाइएको", en: "{{v1}} of {{v0}} rules turned off" },

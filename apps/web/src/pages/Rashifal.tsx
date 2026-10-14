@@ -131,7 +131,7 @@ export function Rashifal() {
           <p className={rashifalClasses.methodNote}>{page.copy.methodNote}</p>
           <div className={rashifalClasses.signGrid}>
             {page.general.signs.map(({ sign, taraLine }) => (
-              <RashifalSignCard key={sign.id} sign={sign} period={page.period} taraLine={taraLine} tone={sign.tone} />
+              <RashifalSignCard key={sign.id} sign={sign} period={page.period} taraLine={taraLine} />
             ))}
           </div>
         </div>

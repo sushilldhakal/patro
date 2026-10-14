@@ -127,7 +127,7 @@ export function HomeRashifalTeaser({
         <>
           <div className="md:hidden">
             {sunSign ? (
-              <RashifalSignCard sign={sunSign} period="monthly" tone={sunSign.tone} />
+              <RashifalSignCard sign={sunSign} period="monthly" />
             ) : null}
           </div>
           <div className="hidden md:block">

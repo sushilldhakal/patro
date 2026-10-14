@@ -26,6 +26,13 @@ export const RASHIFAL_DOMAIN_ICON: Record<RashifalDomainKey, RashifalDomainIcon>
   travel: "airplane-outline",
 };
 
+export const RASHIFAL_LUCKY_ICON = {
+  color: "color-palette-outline",
+  number: "keypad-outline",
+  direction: "compass-outline",
+  time: "time-outline",
+} satisfies Record<string, RashifalDomainIcon>;
+
 export const RASHIFAL_PERIOD_ICON: Record<RashifalPeriod, RashifalDomainIcon> = {
   daily: "sunny-outline",
   weekly: "calendar-outline",

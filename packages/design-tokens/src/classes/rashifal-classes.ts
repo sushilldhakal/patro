@@ -58,6 +58,8 @@ export const rashifalClasses = {
 
   // ── Life areas ────────────────────────────────────────────────────────────
   domains: "border-b border-border/60 px-4 py-3",
+  /** Web only: the three-column life-area grid. */
+  domainGrid: "m-0 grid list-none grid-cols-3 gap-x-3 gap-y-2",
   domain: "m-0 min-w-0",
   domainHead: "flex items-center gap-1",
   domainLabel: "text-diagram-xs font-semibold text-muted-foreground",
@@ -77,6 +79,10 @@ export const rashifalClasses = {
   whyLabel: "text-xs font-semibold text-muted-foreground",
   details: "border-t border-border bg-surface-muted px-4 py-3",
   componentList: "gap-1.5",
+  /** Web only: the <ul> reset for the component list. */
+  componentListReset: "m-0 flex list-none flex-col p-0",
+  /** Web only: hover state of the details toggle. */
+  whyButtonHover: "transition-colors hover:bg-muted/40 hover:text-foreground",
   componentRow: "items-baseline gap-2",
   componentLabel: "w-24 shrink-0 text-xs font-semibold text-foreground",
   componentNote: "min-w-0 flex-1 text-xs text-muted-foreground",
