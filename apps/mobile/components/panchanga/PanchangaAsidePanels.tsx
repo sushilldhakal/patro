@@ -9,7 +9,10 @@ type Props = {
   sunset?: string;
   timezone: string;
   chartData?: PanchangaDay | null;
-  chartAd: string;
+  /** Civil-day Julian identity (`jd_ut`) for the planet events. */
+  jdUt?: number;
+  /** Civil `date_ad` the planet events count days from. */
+  refDateAd?: string;
   location: LocationParams;
 };
 
@@ -18,14 +21,15 @@ export function PanchangaAsidePanels({
   sunset,
   timezone,
   chartData,
-  chartAd,
+  jdUt,
+  refDateAd,
   location,
 }: Props) {
   return (
     <View className="gap-4">
       <GhatiClock sunrise={sunrise} sunset={sunset} timezone={timezone} />
       {chartData ? <SunriseD1ChartPanel p={chartData} /> : null}
-      <PlanetEventsPanel dateAd={chartAd} location={location} />
+      {jdUt != null && refDateAd ? <PlanetEventsPanel jdUt={jdUt} refDateAd={refDateAd} location={location} /> : null}
     </View>
   );
 }

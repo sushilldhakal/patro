@@ -74,7 +74,7 @@ export default function PanchangaScreen() {
             location={location}
             onLocationChange={setLocation}
           />
-          {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} /> : null}
+          {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
             <DayTimeline
               p={wheelData}
@@ -106,7 +106,8 @@ export default function PanchangaScreen() {
             sunset={page.sunset}
             timezone={page.timeZone}
             chartData={data}
-            chartAd={page.chartAd}
+            jdUt={page.jdUt}
+            refDateAd={page.civilAnchor}
             location={location.params}
           />
         </View>

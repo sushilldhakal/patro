@@ -3,12 +3,11 @@ import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-n
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@vedic-patro/domain/graha-details";
-import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
-import { useLocale } from "@/lib/i18n";
+import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
+import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
 import { nepaliLineHeight } from "@/lib/nepali-text";
 
-import { brand, midnight, nativeShadow, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { brand, midnight, nativeShadow, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const W_INK = midnight.foam;
 const W_DOCK_BG = withAlpha(wheel.surface, 0.96);
 const W_DOCK_BORDER = withAlpha(wheel.line, 0.32);
@@ -29,28 +28,18 @@ export function PlanetSelectMenu({
   onSelect,
   compact = false,
 }: PlanetSelectMenuProps) {
-  const { t, pick } = useLocale();
+  const menu = usePlanetSelectMenu({ grahas, selected, onSelect });
+  const { open, setOpen } = menu;
   const { width: sw, height: sh } = useWindowDimensions();
-  const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState({ x: 0, y: 0, w: 36, h: 36 });
   const btnRef = useRef<View>(null);
-  const selectedKey = GRAHA_DETAIL_ORDER[selected] ?? "moon";
-  const selectedLabel = GRAHA_NAME[selectedKey];
 
   const openMenu = useCallback(() => {
     btnRef.current?.measureInWindow((x, y, w, h) => {
       setAnchor({ x, y, w, h });
       setOpen(true);
     });
-  }, []);
-
-  const choose = useCallback(
-    (index: number) => {
-      onSelect(index);
-      setOpen(false);
-    },
-    [onSelect],
-  );
+  }, [setOpen]);
 
   const menuH = Math.min(grahas.length * 44 + 12, sh - 24);
   const left = Math.min(Math.max(8, anchor.x + anchor.w - MENU_W), sw - MENU_W - 8);
@@ -63,8 +52,8 @@ export function PlanetSelectMenu({
         ref={btnRef}
         onPress={openMenu}
         accessibilityRole="button"
-        accessibilityLabel={t("kundali.select_a_planet")}
-        accessibilityHint={pick(selectedLabel.ne, selectedLabel.en)}
+        accessibilityLabel={menu.label}
+        accessibilityHint={menu.selectedName}
         className="rounded-full"
         style={{
           width: compact ? 32 : 36,
@@ -76,7 +65,7 @@ export function PlanetSelectMenu({
           justifyContent: "center",
         }}
       >
-        <GrahaPlanetIcon graha={selectedKey} size={compact ? 18 : 22} />
+        <GrahaPlanetIcon graha={menu.selectedKey} size={compact ? 18 : 22} />
       </Pressable>
 
       <Modal
@@ -84,10 +73,10 @@ export function PlanetSelectMenu({
         transparent
         animationType="fade"
         statusBarTranslucent
-        onRequestClose={() => setOpen(false)}
+        onRequestClose={menu.close}
       >
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={menu.close} accessibilityLabel={menu.closeLabel} />
           <View
             className="rounded-2xl py-1.5"
             style={{
@@ -102,49 +91,43 @@ export function PlanetSelectMenu({
               ...nativeShadow("lg"),
             }}
           >
-            {grahas.map((g, i) => {
-              const key = GRAHA_DETAIL_ORDER[i] ?? "sun";
-              const name = GRAHA_NAME[key];
-              const color = GRAHA_META[i]?.color ?? midnight.foam;
-              const active = i === selected;
-              return (
-                <Pressable
-                  key={key}
-                  onPress={() => choose(i)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: active }}
-                  className="px-3 py-2"
+            {menu.options.map((o) => (
+              <Pressable
+                key={o.key}
+                onPress={o.choose}
+                accessibilityRole="button"
+                accessibilityState={{ selected: o.active }}
+                className="px-3 py-2"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  backgroundColor: o.active ? W_ROW_HOT : "transparent",
+                }}
+              >
+                <GrahaPlanetIcon graha={o.key} size={22} />
+                <View
+                  className="rounded-full"
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                    backgroundColor: active ? W_ROW_HOT : "transparent",
+                    width: 7,
+                    height: 7,
+                    backgroundColor: o.color,
+                  }}
+                />
+                <Text
+                  className="text-lg"
+                  style={{
+                    flex: 1,
+                    color: W_INK,
+                    fontWeight: o.active ? "700" : "500",
+                    lineHeight: nepaliLineHeight(15),
                   }}
                 >
-                  <GrahaPlanetIcon graha={key} size={22} />
-                  <View
-                    className="rounded-full"
-                    style={{
-                      width: 7,
-                      height: 7,
-                      backgroundColor: color,
-                    }}
-                  />
-                  <Text
-                    className="text-lg"
-                    style={{
-                      flex: 1,
-                      color: W_INK,
-                      fontWeight: active ? "700" : "500",
-                      lineHeight: nepaliLineHeight(15),
-                    }}
-                  >
-                    {pick(g.ne || name.ne, name.en)}
-                  </Text>
-                  {active ? <Ionicons name="checkmark" size={16} color={W_INK} /> : null}
-                </Pressable>
-              );
-            })}
+                  {o.name}
+                </Text>
+                {o.active ? <Ionicons name="checkmark" size={16} color={W_INK} /> : null}
+              </Pressable>
+            ))}
           </View>
         </View>
       </Modal>
