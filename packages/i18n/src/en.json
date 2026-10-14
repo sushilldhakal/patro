@@ -4290,12 +4290,6 @@
       "you_ll_stay_signed_in_next": "You'll stay signed in. Next time, open the app with {{label}}.",
       "yyyy_mm_dd": "YYYY-MM-DD"
     },
-    "avakahada": {
-      "charan_value_lang": "Charan {{value}} · {{lang}}",
-      "drag_to_pan_when_zoomed": "· Drag to pan when zoomed",
-      "enemy_yoni_vairiyoni": "Enemy yoni: {{vairiYoni}}",
-      "x_91fdc25d": "· {{v0}} nakshatras in search"
-    },
     "branding": {
       "powered_by_vedic_patro_nepal_panchanga": "Powered by Vedic Patro · Nepal Panchanga · Location {{place}}",
       "powered_by_vedic_patro_nepal_panchanga_2": "Powered by Vedic Patro · Nepal Panchanga · Default location Kathmandu"
@@ -5038,8 +5032,6 @@
       "x_324ebf10": " — tithi, nakshatra, yoga and karana from the actual planetary positions at this time. Being computed precisely from the sky, it may differ a little from a printed siddhantic patro.",
       "x_be9a266a": "{{v0}} enters {{v1}}",
       "x_c068f043": "{{v0}}",
-      "exit_full_screen": "Exit full screen",
-      "full_screen": "Full screen",
       "annual_panchanga_wheel": "Annual panchanga wheel",
       "abhijit_muhurta": "Abhijit muhurta",
       "transits_ingress": "Transits & ingress",
@@ -5050,7 +5042,6 @@
       "e_g_2082": "e.g. 2082",
       "enter_manually": "Enter manually",
       "location_changes_apply_immediately": "Location changes apply immediately.",
-      "month_year": "Month / year",
       "switch_to_targetlabel": "Switch to {{targetLabel}}",
       "type_the_year_number": "Type the year number",
       "typed_year_previewdisplay_previeweralabel": "Typed year {{previewDisplay}} {{previewEraLabel}}",
@@ -5208,8 +5199,6 @@
       "what_should_the_camera_follow": "What should the camera follow?",
       "your_location_2": "Your location",
       "stop_following": "Stop following",
-      "increase": "Increase {{v0}}",
-      "decrease": "Decrease {{v0}}",
       "year": "year",
       "month": "month",
       "hour": "hour",

@@ -4290,12 +4290,6 @@
       "you_ll_stay_signed_in_next": "तपाईं साइन इन नै रहनुहुनेछ। अर्को पटकदेखि {{label}} ले एप खोल्नुहोस्।",
       "yyyy_mm_dd": "वर्ष-महिना-दिन"
     },
-    "avakahada": {
-      "charan_value_lang": "चरण {{value}} · {{lang}}",
-      "drag_to_pan_when_zoomed": "· जुम गरेपछि तानेर सार्न सकिन्छ",
-      "enemy_yoni_vairiyoni": "वैरि योनि: {{vairiYoni}}",
-      "x_91fdc25d": "· खोजमा {{v0}} नक्षत्र"
-    },
     "branding": {
       "powered_by_vedic_patro_nepal_panchanga": "वैदिक पात्रो · नेपाल पञ्चाङ्ग · गणना स्थान: {{place}}",
       "powered_by_vedic_patro_nepal_panchanga_2": "वैदिक पात्रो · नेपाल पञ्चाङ्ग · गणना स्थान: काठमाडौं"
@@ -5038,8 +5032,6 @@
       "x_324ebf10": " बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
       "x_be9a266a": "{{v0}} {{v1}}मा प्रवेश",
       "x_c068f043": "{{v0}} बजे",
-      "exit_full_screen": "सामान्य दृश्य",
-      "full_screen": "पूर्ण स्क्रिन",
       "annual_panchanga_wheel": "वार्षिक पञ्चाङ्ग चक्र",
       "abhijit_muhurta": "अभिजित् मुहूर्त",
       "transits_ingress": "ग्रह गोचर र प्रवेश",
@@ -5050,7 +5042,6 @@
       "e_g_2082": "जस्तै २०८२",
       "enter_manually": "हातले लेख्नुहोस्",
       "location_changes_apply_immediately": "स्थान परिवर्तन तुरुन्त लागू हुन्छ।",
-      "month_year": "महिना / वर्ष",
       "switch_to_targetlabel": "{{targetLabel}} मा जानुहोस्",
       "type_the_year_number": "वर्ष नम्बर टाइप गर्नुहोस्",
       "typed_year_previewdisplay_previeweralabel": "टाइप गरिएको वर्ष {{previewDisplay}} {{previewEraLabel}}",
@@ -5208,8 +5199,6 @@
       "what_should_the_camera_follow": "के पछ्याउने?",
       "your_location_2": "तपाईंको स्थान",
       "stop_following": "पछ्याउन छोड्नुहोस्",
-      "increase": "{{v0}} बढाउनुहोस्",
-      "decrease": "{{v0}} घटाउनुहोस्",
       "year": "वर्ष",
       "month": "महिना",
       "hour": "घण्टा",
