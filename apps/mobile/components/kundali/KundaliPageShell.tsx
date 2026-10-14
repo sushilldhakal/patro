@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { PanchangaSplitShell, useShowPanchangaSidebar } from "@/components/panchanga/PanchangaSplitShell";
-import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
+import type { KundaliSectionId } from "@vedic-patro/features/kundali";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";

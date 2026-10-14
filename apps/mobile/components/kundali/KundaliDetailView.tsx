@@ -29,9 +29,8 @@ import {
   dashaSystemFromSection,
   type KundaliContentSectionId,
   type KundaliSectionId,
-} from "@/lib/kundali/kundali-section-nav";
+} from "@vedic-patro/features/kundali";
 import { useLocale } from "@/lib/i18n";
-import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { cn } from "@vedic-patro/domain/utils";
 import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -80,7 +79,7 @@ export function KundaliDetailView({
             )}
           >
             <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(13)}>
-              {kundaliLabel(tab.i18nKey, lang)}
+              {t(tab.labelKey)}
             </Text>
           </Pressable>
         );

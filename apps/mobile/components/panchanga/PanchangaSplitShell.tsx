@@ -5,7 +5,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { useThemeColors } from "@/lib/theme-context";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
-import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
+import type { KundaliSectionId } from "@vedic-patro/features/kundali";
 
 export const PANCHANGA_SIDEBAR_RAIL_WIDTH = 224;
 

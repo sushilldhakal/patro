@@ -215,3 +215,45 @@ export function useKundaliSectionNav({ activeId, onNavigate }: { activeId: Kunda
     expandedChildren: groups.find((g) => g.hasChildren && g.expanded)?.children ?? [],
   };
 }
+
+/**
+ * The kundali section links nested in the panchanga sidebar, shared by the
+ * website's `panchanga/KundaliSidebarSubnav.tsx` and the app's
+ * `kundali/KundaliSidebarSubnav.tsx`. Each group says where it leads (its
+ * own id, or its default child) so the website can render links and the app
+ * presses; the open group follows the active section.
+ */
+export function useKundaliSidebarSubnav(activeId: KundaliSectionId) {
+  const { t } = useLocale();
+  const activeGroup = navGroupIdForSection(activeId);
+  const [expandedId, setExpandedId] = useState<string | null>(activeGroup);
+
+  // Opening a section expands its group. Adjusting state while rendering (not in
+  // an effect) means the group is already open on the render that shows the section.
+  const [seenActiveGroup, setSeenActiveGroup] = useState(activeGroup);
+  if (activeGroup !== seenActiveGroup) {
+    setSeenActiveGroup(activeGroup);
+    if (activeGroup) setExpandedId(activeGroup);
+  }
+
+  return KUNDALI_NAV_GROUPS.map((group) => {
+    const children = "children" in group ? group.children : [];
+    const expanded = expandedId === group.id;
+    return {
+      id: group.id,
+      label: t(group.labelKey),
+      active: isKundaliNavGroupActive(group.id, activeId),
+      hasChildren: children.length > 0,
+      expanded,
+      /** The section the group's own link opens. */
+      target: (children.length > 0 ? (defaultChildForGroup(group.id) ?? children[0]!.id) : group.id) as KundaliSectionId,
+      open: () => setExpandedId(group.id),
+      toggle: () => setExpandedId(expanded ? null : group.id),
+      children: children.map((child) => ({
+        id: child.id as KundaliSectionId,
+        label: t(child.labelKey),
+        active: isKundaliNavChildActive(child.id as KundaliSectionId, activeId),
+      })),
+    };
+  });
+}

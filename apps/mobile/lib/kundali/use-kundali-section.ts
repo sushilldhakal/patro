@@ -5,7 +5,7 @@ import {
   DEFAULT_KUNDALI_SECTION,
   parseKundaliSectionFromHash,
   type KundaliSectionId,
-} from "@/lib/kundali/kundali-section-nav";
+} from "@vedic-patro/features/kundali";
 
 function readHashSection(): KundaliSectionId {
   if (Platform.OS === "web" && typeof window !== "undefined") {

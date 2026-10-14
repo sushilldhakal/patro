@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
+import type { KundaliSectionId } from "@vedic-patro/features/kundali";
 import { useKundaliSectionNav } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
