@@ -5376,14 +5376,8 @@
     },
     "mobile_drawer_nav": {
       "sun_times": "सूर्यक्रान्ति",
-      "panchak": "पञ्चक पात्रो",
       "avakahada": "अवकहडा चक्र",
-      "abhijit": "अभिजित् मुहूर्त",
-      "n_3_d_sky_gochar": "३D आकाश गोचर",
-      "jyotish_muhurta": "ज्योतिष तथा मुहूर्त",
-      "transition_elements": "संक्रमण तत्त्व",
-      "auspicious_muhurta": "शुभ मुहूर्त",
-      "panchanga": "सूर्य पञ्चाङ्ग"
+      "n_3_d_sky_gochar": "३D आकाश गोचर"
     },
     "mobile_nav": {
       "transit": "दैनिक"

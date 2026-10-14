@@ -4482,6 +4482,9 @@
         "9"
       ]
     },
+    "more": {
+      "more": "More"
+    },
     "navigation": {
       "main": "Main"
     },
@@ -4753,6 +4756,9 @@
     "router": {
       "x_3f682f0a": "Something went wrong",
       "x_367f4805": "Reload"
+    },
+    "mobile_drawer_nav": {
+      "n_3_d_sky_gochar": "3D sky gochar"
     }
   }
 }
