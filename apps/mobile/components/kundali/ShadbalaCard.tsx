@@ -237,7 +237,14 @@ export function ShadbalaCard({
         </View>
       </View>
 
-      <ShadbalaChart planets={card.planets} selectedKey={card.selectedKey} onSelect={card.select} yuddha={yuddha} />
+      <ShadbalaChart
+        planets={card.planets}
+        selectedKey={card.selectedKey}
+        onSelect={card.select}
+        yuddha={yuddha}
+        scale={card.scale}
+        onScaleChange={card.setScale}
+      />
 
       <View>
         <Text className={kundaliDetailClasses.glance.tableTitle} style={nepaliTextStyle(13)}>

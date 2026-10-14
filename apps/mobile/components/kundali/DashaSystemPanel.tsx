@@ -1,30 +1,14 @@
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { DashaTree } from "@/components/kundali/DashaTree";
 import type { DashaSystem, DashaTreeResponse } from "@/lib/api";
-import {
-  DASHA_LORD_EN,
-  DASHA_LORD_NE,
-  dashaMahadashaGrahaKey,
-  type DashaLord,
-} from "@vedic-patro/domain/dasha";
-import { useLocale } from "@/lib/i18n";
-import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
+import { useDashaSystemPanel } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { tFor } from "@vedic-patro/i18n/runtime";
-type DashaTab = {
-  id: DashaSystem;
-  labelNe: string;
-  labelEn: string;
-  data: DashaTreeResponse | null | undefined;
-  maxLevel: number;
-};
 
 type Props = {
   vimshottari: DashaTreeResponse | null | undefined;
@@ -36,64 +20,42 @@ type Props = {
   onActiveChange?: (id: DashaSystem) => void;
 };
 
-export function DashaSystemPanel({
-  vimshottari,
-  tribhagi,
-  yogini,
-  timeZone,
-  active: activeProp,
-  onActiveChange,
-}: Props) {
-  const { lang, pick, digits } = useLocale();
+export function DashaSystemPanel({ timeZone, ...input }: Props) {
   const { isTablet } = useBreakpoint();
-  const tabs: DashaTab[] = [
-    { id: "vimshottari", labelNe: tFor("ne", "kundali.x.dasha_system_vimshottari"), labelEn: tFor("en", "kundali.x.dasha_system_vimshottari"), data: vimshottari, maxLevel: 4 },
-    { id: "tribhagi", labelNe: tFor("ne", "kundali.x.dasha_system_tribhagi"), labelEn: tFor("en", "kundali.x.dasha_system_tribhagi"), data: tribhagi, maxLevel: 4 },
-    { id: "yogini", labelNe: tFor("ne", "kundali.x.dasha_system_yogini"), labelEn: tFor("en", "kundali.x.dasha_system_yogini"), data: yogini, maxLevel: 1 },
-  ];
-  const [uncontrolled, setUncontrolled] = useState<DashaSystem>("vimshottari");
-  const active = activeProp ?? uncontrolled;
-  const setActive = (id: DashaSystem) => {
-    onActiveChange?.(id);
-    if (activeProp == null) setUncontrolled(id);
-  };
-  const current = tabs.find((tab) => tab.id === active) ?? tabs[0]!;
-  const dasha = current.data;
+  const panel = useDashaSystemPanel(input);
 
-  if (!vimshottari && !tribhagi && !yogini) return null;
+  if (!panel.hasAny) return null;
 
   return (
     <View className={kundaliDetailClasses.dashaSystem.root}>
-      <View className={kundaliDetailClasses.subTabs.tabsBar}>
-        {tabs.map((tab) => {
-          const selected = active === tab.id;
-          return (
-            <Pressable
-              key={tab.id}
-              onPress={() => setActive(tab.id)}
+      <View className={kundaliDetailClasses.subTabs.tabsBar} accessibilityRole="tablist" accessibilityLabel={panel.tabsLabel}>
+        {panel.tabs.map((tab) => (
+          <Pressable
+            key={tab.id}
+            onPress={() => panel.setActive(tab.id)}
+            accessibilityState={{ selected: tab.selected }}
+            className={cn(
+              kundaliDetailClasses.subTabs.tab,
+              "border active:opacity-80",
+              tab.selected
+                ? cn(kundaliDetailClasses.subTabs.tabActive, "border-border/60 shadow-sm")
+                : "border-transparent",
+            )}
+          >
+            <Text
               className={cn(
-                kundaliDetailClasses.subTabs.tab,
-                "border active:opacity-80",
-                selected
-                  ? cn(kundaliDetailClasses.subTabs.tabActive, "border-border/60 shadow-sm")
-                  : "border-transparent",
+                kundaliDetailClasses.subTabs.tabText,
+                kundaliDetailClasses.subTabs.tabActiveText,
               )}
+              style={nepaliTextStyle(13)}
             >
-              <Text
-                className={cn(
-                  kundaliDetailClasses.subTabs.tabText,
-                  kundaliDetailClasses.subTabs.tabActiveText,
-                )}
-                style={nepaliTextStyle(13)}
-              >
-                {pick(tab.labelNe, tab.labelEn)}
-              </Text>
-            </Pressable>
-          );
-        })}
+              {tab.label}
+            </Text>
+          </Pressable>
+        ))}
       </View>
 
-      {dasha ? (
+      {panel.birth ? (
         <View className={isTablet ? "flex-row flex-wrap gap-3" : "gap-3"}>
           <View
             className={kundaliDetailClasses.dashaSystem.card}
@@ -108,48 +70,32 @@ export function DashaSystemPanel({
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >
-              {kundaliLabel("mahadasha_at_birth", lang)}
+              {panel.birth.label}
             </Text>
-            {(() => {
-              const grahaKey = dashaMahadashaGrahaKey(current.id, dasha.mahadasha_lord);
-              const lordLabel =
-                current.id === "yogini"
-                  ? lang === "en"
-                    ? dasha.mahadasha_lord
-                    : dasha.mahadasha_lord_ne
-                  : lang === "en"
-                    ? DASHA_LORD_EN[dasha.mahadasha_lord as DashaLord] ?? dasha.mahadasha_lord
-                    : DASHA_LORD_NE[dasha.mahadasha_lord as DashaLord] ?? dasha.mahadasha_lord_ne;
-              return (
-                <View className={cn(kundaliDetailClasses.dashaSystem.lordRow, "flex-wrap")}>
-                  {grahaKey ? <GrahaPlanetIcon graha={grahaKey} size={28} /> : null}
-                  <Text className={kundaliDetailClasses.dashaSystem.lord} style={nepaliTextStyle(16)}>
-                    {lordLabel}
-                  </Text>
-                </View>
-              );
-            })()}
+            <View className={cn(kundaliDetailClasses.dashaSystem.lordRow, "flex-wrap")}>
+              {panel.birth.grahaKey ? <GrahaPlanetIcon graha={panel.birth.grahaKey} size={28} /> : null}
+              <Text className={kundaliDetailClasses.dashaSystem.lord} style={nepaliTextStyle(16)}>
+                {panel.birth.lord}
+              </Text>
+            </View>
             <Text className={kundaliDetailClasses.dashaSystem.balance} style={nepaliTextStyle(12)}>
-              {pick(
-                `${kundaliLabel("dasha_balance", lang)}: ${digits(dasha.balance_label)}`,
-                `${kundaliLabel("dasha_balance", lang)}: ${dasha.balance_label}`,
-              )}
+              {panel.birth.balance}
             </Text>
           </View>
         </View>
       ) : null}
 
-      {dasha?.tree?.length ? (
+      {panel.tree ? (
         <DashaTree
-          tree={dasha.tree}
+          tree={panel.tree}
           timeZone={timeZone}
-          system={current.id}
-          maxLevel={current.maxLevel}
-          cycleYears={current.id === "yogini" ? yogini?.cycle_years : undefined}
+          system={panel.system}
+          maxLevel={panel.maxLevel}
+          cycleYears={panel.cycleYears}
         />
       ) : (
         <Text className={kundaliDetailClasses.dashaSystem.empty} style={nepaliTextStyle(14)}>
-          {kundaliLabel("dasha_unavailable", lang)}
+          {panel.empty}
         </Text>
       )}
     </View>

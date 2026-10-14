@@ -1,35 +1,25 @@
-import { useMemo } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import type { BhavaBalaData, BhavaBalaHouse, BhavaReferencePayload, VargaCharts } from "@/lib/api";
-import { bhavaReferenceKeys, fetchBhavaReference } from "@/lib/api";
-import {
-  buildBhavaChart,
-  houseClasses,
-  type BhavaHouse,
-  type HouseClass,
-} from "@vedic-patro/domain/bhava";
-import { splitList } from "@vedic-patro/domain/kundali/bhava-detail";
-import {
-  NI_HOUSE_POLYGONS,
-  pointsToSvg,
-  polygonCentroid,
-} from "@vedic-patro/domain/kundali/north-indian-layout";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { BhavaBalaData, VargaCharts } from "@/lib/api";
+import { type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@vedic-patro/domain/utils";
-import { type StrengthBand, strengthBand, houseNumberPos, rashiFromMadhya, clampPct } from "@vedic-patro/domain/kundali/bhava-bala-chart";
-import { tFor } from "@vedic-patro/i18n/runtime";
-const HOUSE_CLASS_LABEL: Record<HouseClass, string> = {
-  kendra: "kundali.kendra",
-  trikona: "kundali.trikona",
-  dusthana: "kundali.dusthana",
-  upachaya: "kundali.upachaya",
+import { type StrengthBand, clampPct } from "@vedic-patro/domain/kundali/bhava-bala-chart";
+import { useBhavaBalaChart, type BhavaBalaTone } from "@vedic-patro/features/kundali";
+
+type Chart = ReturnType<typeof useBhavaBalaChart>;
+
+const TONE_BAR: Record<BhavaBalaTone, string> = {
+  primary: kundaliDetailClasses.bhavaChart.barPrimary,
+  secondary: kundaliDetailClasses.bhavaChart.barSecondary,
+  accent: kundaliDetailClasses.bhavaChart.barAccent,
+};
+
+const BAND_SWATCH: Record<StrengthBand, string> = {
+  strong: kundaliDetailClasses.bhavaChart.barPrimary,
+  average: "bg-muted-foreground",
+  weak: "bg-destructive",
 };
 
 function scoreFillClass(band: StrengthBand): string {
@@ -42,28 +32,6 @@ function scoreTextClass(band: StrengthBand): string {
   if (band === "strong") return kundaliDetailClasses.bhavaChart.scoreStrong;
   if (band === "weak") return kundaliDetailClasses.bhavaChart.scoreWeak;
   return kundaliDetailClasses.bhavaChart.scoreAvg;
-}
-
-function buildD1Houses(
-  vargaCharts?: VargaCharts,
-  combustion?: Record<string, boolean | null>,
-): BhavaHouse[] {
-  if (!vargaCharts) return [];
-  const entries = vargaCharts.entries["1"] ?? [];
-  const lagna = entries.find((entry) => entry.key === "lagna");
-  if (!lagna) return [];
-  return buildBhavaChart(
-    lagna.vargaRashi,
-    entries
-      .filter((entry) => entry.key !== "lagna")
-      .map((entry) => ({
-        key: entry.key,
-        labelNe: GRAHA_NAME[entry.key as GrahaKey]?.ne ?? entry.key,
-        rashi: entry.vargaRashi,
-        isRetrograde: entry.retrograde ?? false,
-        isCombust: combustion?.[entry.key] ?? false,
-      })),
-  );
 }
 
 function Meter({
@@ -83,63 +51,33 @@ function Meter({
   );
 }
 
-function ComponentTile({
-  label,
-  value,
-  max,
-  barClass,
-  digits,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  barClass: string;
-  digits: (v: string | number) => string;
-}) {
-  const abs = Math.abs(value).toFixed(1);
-  const signed = value < 0 ? `−${abs}` : abs;
+function ComponentTile({ tile }: { tile: Chart["inspector"]["tiles"][number] }) {
   return (
     <div className={kundaliDetailClasses.bhavaChart.tile}>
-      <p className={kundaliDetailClasses.bhavaChart.tileLabel}>{label}</p>
-      <p className={kundaliDetailClasses.bhavaChart.tileValue}>
-        {digits(signed)}
-      </p>
+      <p className={kundaliDetailClasses.bhavaChart.tileLabel}>{tile.label}</p>
+      <p className={kundaliDetailClasses.bhavaChart.tileValue}>{tile.display}</p>
       <div className={kundaliDetailClasses.bhavaChart.tileMeter}>
-        <Meter value={value} max={max} className={barClass} />
+        <Meter value={tile.value} max={tile.max} className={TONE_BAR[tile.tone]} />
       </div>
     </div>
   );
 }
 
-function StrengthBadge({
-  band,
-  isStrongest,
-}: {
-  band: StrengthBand;
-  isStrongest: boolean;
-}) {
-  const { t } = useTranslation();
-  const label = isStrongest
-    ? t("kundali.very_strong")
-    : band === "strong"
-      ? t("kundali.report.confidence_strong")
-      : band === "weak"
-        ? t("kundali.x.status_weak")
-        : t("kundali.average_strength");
+function StrengthBadge({ badge }: { badge: Chart["inspector"]["badge"] }) {
   return (
     <span
       className={cn(
         kundaliDetailClasses.bhavaChart.badge,
         kundaliDetailClasses.bhavaChart.badgeText,
         "inline-flex",
-        isStrongest || band === "strong"
+        badge.tone === "good"
           ? cn(kundaliDetailClasses.bhavaChart.badgeGood, kundaliDetailClasses.bhavaChart.badgeGoodText)
-          : band === "weak"
+          : badge.tone === "weak"
             ? cn(kundaliDetailClasses.bhavaChart.badgeWeak, kundaliDetailClasses.bhavaChart.badgeWeakText)
             : cn(kundaliDetailClasses.bhavaChart.badgeAvg, kundaliDetailClasses.bhavaChart.badgeAvgText),
       )}
     >
-      {label}
+      {badge.label}
     </span>
   );
 }
@@ -152,88 +90,33 @@ function Chip({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function BhavaBalaChart({
-  data,
-  selectedHouse,
-  onSelectHouse,
-  vargaCharts,
-  combustion,
-}: {
+export function BhavaBalaChart(props: {
   data: BhavaBalaData;
   selectedHouse: number;
   onSelectHouse: (house: number) => void;
   vargaCharts?: VargaCharts;
   combustion?: Record<string, boolean | null>;
 }) {
-  const { t } = useTranslation();
-  const chartHouses = useMemo(
-    () => buildD1Houses(vargaCharts, combustion),
-    [vargaCharts, combustion],
-  );
-  const referenceQ = useQuery({
-    queryKey: bhavaReferenceKeys.all,
-    queryFn: fetchBhavaReference,
-    staleTime: Infinity,
-  });
-
-  const byHouse = useMemo(
-    () => new Map(data.houses.map((house) => [house.house, house])),
-    [data.houses],
-  );
-  const rankByHouse = useMemo(() => {
-    const ranked = [...data.houses].sort((a, b) => b.totalPinda - a.totalPinda);
-    return new Map(ranked.map((house, index) => [house.house, index + 1]));
-  }, [data.houses]);
-
-  const selected = byHouse.get(selectedHouse) ?? data.strongest;
-  const selectedChartHouse = chartHouses.find((house) => house.house === selected.house);
-  const band = strengthBand(selected.percent);
-  const rashi = selectedChartHouse?.rashi ?? rashiFromMadhya(selected.madhyaLongitude);
-  const occupants = selectedChartHouse?.planets ?? [];
-  const maxBhavadhipati = Math.max(...data.houses.map((house) => house.bhavadhipati), 1);
-  const maxDrishti = Math.max(...data.houses.map((house) => Math.abs(house.drishti)), 30);
-  const totalScale = Math.max(data.strongest.totalPinda, data.referenceVirupas);
-
-  const goHouse = (delta: number) => {
-    onSelectHouse((((selected.house - 1 + delta) % 12) + 12) % 12 + 1);
-  };
+  const chart = useBhavaBalaChart(props);
 
   return (
     <div className="space-y-4">
       <div>
-        <h3 className={kundaliDetailClasses.bhavaChart.title}>{t("kundali.explore_houses")}</h3>
-        <p className={kundaliDetailClasses.prose.mutedMt1}>{t("kundali.explore_houses_hint")}</p>
+        <h3 className={kundaliDetailClasses.bhavaChart.title}>{chart.title}</h3>
+        <p className={kundaliDetailClasses.prose.mutedMt1}>{chart.hint}</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
-        <BhavaDiamond
-          houses={data.houses}
-          selectedHouse={selected.house}
-          onSelectHouse={onSelectHouse}
-        />
-        <HouseInspector
-          house={selected}
-          rashi={rashi}
-          occupants={occupants}
-          rank={rankByHouse.get(selected.house) ?? 1}
-          totalHouses={data.houses.length}
-          band={band}
-          isStrongest={selected.house === data.strongest.house}
-          totalScale={totalScale}
-          maxBhavadhipati={maxBhavadhipati}
-          maxDrishti={maxDrishti}
-          reference={referenceQ.data}
-          onPrev={() => goHouse(-1)}
-          onNext={() => goHouse(1)}
-        />
+        <BhavaDiamond chart={chart} />
+        <HouseInspector inspector={chart.inspector} />
       </div>
 
       <div className={cn(kundaliDetailClasses.bhavaChart.legend, kundaliDetailClasses.bhavaChart.legendText, "flex")}>
-        <LegendSwatch className={kundaliDetailClasses.bhavaChart.barPrimary} label={t("kundali.report.confidence_strong")} />
-        <LegendSwatch className="bg-muted-foreground" label={t("kundali.average_strength")} />
-        <LegendSwatch className="bg-destructive" label={t("kundali.x.status_weak")} />
+        {chart.legend.map((item) => (
+          <LegendSwatch key={item.band} className={BAND_SWATCH[item.band]} label={item.label} />
+        ))}
       </div>
-      <p className={kundaliDetailClasses.prose.muted}>{t("kundali.explore_houses_legend")}</p>
+      <p className={kundaliDetailClasses.prose.muted}>{chart.legendNote}</p>
     </div>
   );
 }
@@ -247,26 +130,14 @@ function LegendSwatch({ className, label }: { className: string; label: string }
   );
 }
 
-function BhavaDiamond({
-  houses,
-  selectedHouse,
-  onSelectHouse,
-}: {
-  houses: BhavaBalaHouse[];
-  selectedHouse: number;
-  onSelectHouse: (house: number) => void;
-}) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const byHouse = useMemo(() => new Map(houses.map((house) => [house.house, house])), [houses]);
-
+function BhavaDiamond({ chart }: { chart: Chart }) {
   return (
     <div className={kundaliDetailClasses.bhavaChart.panel}>
       <svg
         viewBox="0 0 300 300"
         className="mx-auto h-auto w-full max-w-[420px]"
         role="img"
-        aria-label={t("kundali.bhava_bala_chart")}
+        aria-label={chart.chartLabel}
       >
         <rect
           x="0"
@@ -285,142 +156,81 @@ function BhavaDiamond({
           strokeWidth="1.25"
         />
 
-        {Object.entries(NI_HOUSE_POLYGONS).map(([houseStr, points]) => {
-          const houseNum = Number(houseStr);
-          const house = byHouse.get(houseNum);
-          if (!house) return null;
-          const [cx, cy] = polygonCentroid(points);
-          const [nx, ny] = houseNumberPos(points);
-          const selected = houseNum === selectedHouse;
-          const band = strengthBand(house.percent);
-          return (
-            <g
-              key={houseNum}
-              role="button"
-              tabIndex={0}
-              aria-pressed={selected}
-              aria-label={bilingualText(
-                lang,
-                tFor(undefined, "ui.kundali.x_dc5617a3", { v0: digits(houseNum), v1: digits(Math.round(house.totalPinda)) }),
-                `House ${houseNum}, ${Math.round(house.totalPinda)} virupas`,
-              )}
-              className="cursor-pointer outline-none"
-              onClick={() => onSelectHouse(houseNum)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onSelectHouse(houseNum);
-                }
-              }}
-            >
+        {chart.cells.map((cell) => (
+          <g
+            key={cell.house}
+            role="button"
+            tabIndex={0}
+            aria-pressed={cell.selected}
+            aria-label={cell.label}
+            className="cursor-pointer outline-none"
+            onClick={cell.select}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                cell.select();
+              }
+            }}
+          >
+            <polygon
+              points={cell.points}
+              className={cn(cell.selected ? "fill-primary/20" : "fill-transparent")}
+              style={{ pointerEvents: "all" }}
+            />
+            {cell.selected && (
               <polygon
-                points={pointsToSvg(points)}
-                className={cn(selected ? "fill-primary/20" : "fill-transparent")}
-                style={{ pointerEvents: "all" }}
+                points={cell.points}
+                className="fill-none stroke-primary"
+                strokeWidth="1.6"
+                style={{ pointerEvents: "none" }}
               />
-              {selected && (
-                <polygon
-                  points={pointsToSvg(points)}
-                  className="fill-none stroke-primary"
-                  strokeWidth="1.6"
-                  style={{ pointerEvents: "none" }}
-                />
-              )}
-              <text
-                x={nx}
-                y={ny}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-muted-foreground text-diagram-xs font-semibold"
-                style={{ pointerEvents: "none" }}
-              >
-                {digits(houseNum)}
-              </text>
-              <text
-                x={cx}
-                y={cy + 3}
-                textAnchor="middle"
-                className={cn("text-base font-bold tabular-nums", scoreFillClass(band))}
-                style={{ pointerEvents: "none" }}
-              >
-                {digits(Math.round(house.totalPinda))}
-              </text>
-            </g>
-          );
-        })}
+            )}
+            <text
+              x={cell.numberPos.x}
+              y={cell.numberPos.y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="fill-muted-foreground text-diagram-xs font-semibold"
+              style={{ pointerEvents: "none" }}
+            >
+              {cell.number}
+            </text>
+            <text
+              x={cell.center.x}
+              y={cell.center.y + 3}
+              textAnchor="middle"
+              className={cn("text-base font-bold tabular-nums", scoreFillClass(cell.band))}
+              style={{ pointerEvents: "none" }}
+            >
+              {cell.score}
+            </text>
+          </g>
+        ))}
       </svg>
     </div>
   );
 }
 
-function HouseInspector({
-  house,
-  rashi,
-  occupants,
-  rank,
-  totalHouses,
-  band,
-  isStrongest,
-  totalScale,
-  maxBhavadhipati,
-  maxDrishti,
-  reference,
-  onPrev,
-  onNext,
-}: {
-  house: BhavaBalaHouse;
-  rashi: number;
-  occupants: BhavaHouse["planets"];
-  rank: number;
-  totalHouses: number;
-  band: StrengthBand;
-  isStrongest: boolean;
-  totalScale: number;
-  maxBhavadhipati: number;
-  maxDrishti: number;
-  reference?: BhavaReferencePayload;
-  onPrev: () => void;
-  onNext: () => void;
-}) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const lordKey = house.lordKey as GrahaKey;
-  const lordName = bilingualText(lang, GRAHA_NAME[lordKey]?.ne, GRAHA_NAME[lordKey]?.en, house.lordName);
-  const classes = houseClasses(house.house);
-  const titles =
-    reference?.houseDetail[house.house] != null
-      ? bilingualText(
-          lang,
-          reference.houseDetail[house.house].titlesNe,
-          reference.houseDetail[house.house].titlesEn,
-        )
-      : reference?.houseInfo[house.house] != null
-        ? bilingualText(lang, reference.houseInfo[house.house].themeNe, reference.houseInfo[house.house].themeEn)
-        : "";
-  const signifies = splitList(titles);
-  const classical = reference?.houseClassicalName[house.house];
-
+function HouseInspector({ inspector: h }: { inspector: Chart["inspector"] }) {
   return (
     <div className={cn(kundaliDetailClasses.bhavaChart.inspector, "space-y-4")}>
       <div className={cn(kundaliDetailClasses.bhavaChart.inspectorHead, "flex")}>
         <div>
           <p className={kundaliDetailClasses.bhavaChart.houseTitle}>
             <span className={cn(kundaliDetailClasses.bhavaChart.houseNum, kundaliDetailClasses.bhavaChart.houseNumText, "mr-2 inline-flex")}>
-              {digits(house.house)}
+              {h.number}
             </span>
-            {formatRashiByNumber(rashi, lang)}
-            {classical ? (
-              <span className={kundaliDetailClasses.bhavaChart.classical}>
-                · {bilingualText(lang, classical.ne, classical.en)}
-              </span>
+            {h.rashiName}
+            {h.classical ? (
+              <span className={kundaliDetailClasses.bhavaChart.classical}>· {h.classical}</span>
             ) : null}
           </p>
         </div>
         <div className={cn(kundaliDetailClasses.bhavaChart.navRow, "flex")}>
-          <Button type="button" variant="outline" size="icon-sm" onClick={onPrev} aria-label={t("kundali.previous_house")}>
+          <Button type="button" variant="outline" size="icon-sm" onClick={h.prev} aria-label={h.prevLabel}>
             <ChevronLeft />
           </Button>
-          <Button type="button" variant="outline" size="icon-sm" onClick={onNext} aria-label={t("kundali.next_house")}>
+          <Button type="button" variant="outline" size="icon-sm" onClick={h.next} aria-label={h.nextLabel}>
             <ChevronRight />
           </Button>
         </div>
@@ -428,93 +238,63 @@ function HouseInspector({
 
       <div className={cn(kundaliDetailClasses.bhavaChart.metaRow, kundaliDetailClasses.bhavaChart.metaText, "flex")}>
         <span className="inline-flex items-center gap-1.5">
-          {t("kundali.ruled_by")}
-          <GrahaPlanetIcon graha={lordKey} size={18} />
-          <span className={kundaliDetailClasses.prose.strong}>{lordName}</span>
+          {h.ruledBy}
+          <GrahaPlanetIcon graha={h.lordKey} size={18} />
+          <span className={kundaliDetailClasses.prose.strong}>{h.lordName}</span>
         </span>
-        {classes.length > 0 ? (
+        {h.classes ? (
           <>
             <span aria-hidden>·</span>
-            <span>{classes.map((cls) => t(HOUSE_CLASS_LABEL[cls])).join(" · ")}</span>
+            <span>{h.classes}</span>
           </>
         ) : null}
         <span aria-hidden>·</span>
-        <span>{t("kundali.house_rank", { rank: digits(rank), total: digits(totalHouses) })}</span>
-        <StrengthBadge band={band} isStrongest={isStrongest} />
+        <span>{h.rank}</span>
+        <StrengthBadge badge={h.badge} />
       </div>
 
       <div>
         <div className={cn(kundaliDetailClasses.bhavaChart.scoreHead, "flex")}>
-          <p className={kundaliDetailClasses.prose.heading}>{t("kundali.nav_bhava_bala")}</p>
-          <p className={cn(kundaliDetailClasses.bhavaChart.score, scoreTextClass(band))}>
-            {t("kundali.virupas_rupas", {
-              virupas: digits(house.totalPinda.toFixed(1)),
-              rupas: digits(house.rupas.toFixed(2)),
-            })}
-          </p>
+          <p className={kundaliDetailClasses.prose.heading}>{h.scoreTitle}</p>
+          <p className={cn(kundaliDetailClasses.bhavaChart.score, scoreTextClass(h.band))}>{h.score}</p>
         </div>
         <div className={kundaliDetailClasses.bhavaChart.tileMeter}>
-          <Meter value={house.totalPinda} max={totalScale} className={kundaliDetailClasses.bhavaChart.barPrimary} />
+          <Meter value={h.totalPinda} max={h.totalScale} className={kundaliDetailClasses.bhavaChart.barPrimary} />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
-        <ComponentTile
-          label={t("kundali.bhavadhipati")}
-          value={house.bhavadhipati}
-          max={maxBhavadhipati}
-          barClass={kundaliDetailClasses.bhavaChart.barPrimary}
-          digits={digits}
-        />
-        <ComponentTile
-          label={t("kundali.bhava_disha")}
-          value={house.disha}
-          max={60}
-          barClass={kundaliDetailClasses.bhavaChart.barSecondary}
-          digits={digits}
-        />
-        <ComponentTile
-          label={t("kundali.bhava_drishti")}
-          value={house.drishti}
-          max={maxDrishti}
-          barClass={kundaliDetailClasses.bhavaChart.barAccent}
-          digits={digits}
-        />
+        {h.tiles.map((tile) => (
+          <ComponentTile key={tile.key} tile={tile} />
+        ))}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>
-            {t("kundali.signifies")}
-          </p>
+          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>{h.signifiesLabel}</p>
           <div className={cn(kundaliDetailClasses.bhavaChart.chips, "flex")}>
-            {signifies.length > 0 ? (
-              signifies.map((item) => <Chip key={item}>{item}</Chip>)
+            {h.signifies.length > 0 ? (
+              h.signifies.map((item) => <Chip key={item}>{item}</Chip>)
             ) : (
               <p className={kundaliDetailClasses.prose.muted}>—</p>
             )}
           </div>
         </div>
         <div>
-          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>
-            {t("kundali.occupants")}
-          </p>
-          {occupants.length > 0 ? (
+          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>{h.occupantsLabel}</p>
+          {h.occupants.length > 0 ? (
             <div className={cn(kundaliDetailClasses.bhavaChart.chips, "flex")}>
-              {occupants.map((planet) => {
-                const key = planet.key as GrahaKey;
-                return (
-                  <Chip key={planet.key}>
-                    <span className="inline-flex items-center gap-1.5">
-                      <GrahaPlanetIcon graha={key} size={16} />
-                      {bilingualText(lang, GRAHA_NAME[key]?.ne, GRAHA_NAME[key]?.en, planet.labelNe)}
-                    </span>
-                  </Chip>
-                );
-              })}
+              {h.occupants.map((planet) => (
+                <Chip key={planet.key}>
+                  <span className="inline-flex items-center gap-1.5">
+                    <GrahaPlanetIcon graha={planet.key as GrahaKey} size={16} />
+                    {planet.name}
+                  </span>
+                </Chip>
+              ))}
             </div>
           ) : (
-            <p className={kundaliDetailClasses.prose.muted}>{t("kundali.no_occupants")}</p>
+            <p className={kundaliDetailClasses.prose.muted}>{h.noOccupants}</p>
           )}
         </div>
       </div>

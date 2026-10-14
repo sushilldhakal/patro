@@ -1,18 +1,7 @@
-import { useMemo } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { RotateCcw } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import type { VargaChartEntry, VargaCharts } from "@/lib/api";
-import { rashiToHouse } from "@vedic-patro/domain/bhava";
-import {
-  DIGNITY_LABELS,
-  GRAHA_NAME,
-  RELATION_LABELS,
-  type GrahaKey,
-} from "@vedic-patro/domain/graha-details";
+import { type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { useGrahaDetailsList, type GrahaDetailsInput } from "@vedic-patro/features/kundali";
 import {
   Table,
   TableBody,
@@ -24,88 +13,34 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
-type Row = VargaChartEntry & {
-  bhava: number;
-  ownerBhava?: number;
-  rulesBhavas: number[];
-};
-
 const g = kundaliDetailClasses.grahaList;
 const th = kundaliDetailClasses.table.th;
 const td = kundaliDetailClasses.table.td;
 
-export type GrahaDetailsListProps = {
-  division: number;
-  /** Key of this chart's house-1 anchor (lagna / moon / …). */
-  anchorKey: string;
-  /** Server-computed varga placements for every point. */
-  vargaCharts: VargaCharts;
-};
+export type GrahaDetailsListProps = GrahaDetailsInput;
 
-/**
- * Detailed graha table for one divisional chart. All jyotish values (varga
- * sign, DMS, nakshatra pada with lord / KP sub-lord, owner, relationship,
- * dignity) come from the API — only the whole-sign house arrangement relative
- * to the chosen anchor is applied here.
- */
-export function GrahaDetailsList({
-  division,
-  anchorKey,
-  vargaCharts,
-}: GrahaDetailsListProps) {
-  const { t } = useTranslation();
-  const { digits, lang } = useLocale();
+/** Detailed graha table for one divisional chart (rows from `useGrahaDetailsList`). */
+export function GrahaDetailsList(props: GrahaDetailsListProps) {
+  const list = useGrahaDetailsList(props);
 
-  const rows = useMemo<Row[]>(() => {
-    const entries = vargaCharts.entries[String(division)] ?? [];
-    const anchorEntry = entries.find((e) => e.key === anchorKey);
-    if (!anchorEntry) return [];
-    const anchorRashi = anchorEntry.vargaRashi;
-    const byKey = new Map(entries.map((e) => [e.key, e]));
-
-    return entries.map((entry) => {
-      const owner = byKey.get(entry.ownerKey);
-      const rules = vargaCharts.ownedRashis[entry.key] ?? [];
-      return {
-        ...entry,
-        bhava: rashiToHouse(entry.vargaRashi, anchorRashi),
-        ownerBhava: owner ? rashiToHouse(owner.vargaRashi, anchorRashi) : undefined,
-        rulesBhavas:
-          entry.key !== "lagna"
-            ? rules.map((rashi) => rashiToHouse(rashi, anchorRashi)).sort((a, b) => a - b)
-            : [],
-      };
-    });
-  }, [division, anchorKey, vargaCharts]);
-
-  if (rows.length === 0) return null;
-
-  const grahaName = (key: string) =>
-    bilingualText(lang, GRAHA_NAME[key as GrahaKey]?.ne ?? key, GRAHA_NAME[key as GrahaKey]?.en ?? key);
-  const rashiName = (rashi: number) => formatRashiByNumber(rashi, lang);
+  if (list.rows.length === 0) return null;
 
   return (
     <Table>
       <TableHeader>
         <TableRow className="bg-muted/40 hover:bg-muted/40">
-          <TableHead className={cn(th, "sticky left-0 z-10 bg-muted pl-3.5")}>
-            {t("kundali.graha")}
-          </TableHead>
-          <TableHead className={th}>{t("kundali.rashi_longitude")}</TableHead>
-          <TableHead className={cn(th, "text-center")}>{t("kundali.bhava_19")}</TableHead>
-          <TableHead className={th}>{t("kundali.nakshatra_pada")}</TableHead>
-          <TableHead className={th}>{t("kundali.lord_sub")}</TableHead>
-          <TableHead className={th}>{t("kundali.owner")}</TableHead>
-          <TableHead className={th}>{t("kundali.relationship")}</TableHead>
-          <TableHead className={th}>{t("kundali.dignity")}</TableHead>
-          <TableHead className={th}>{t("kundali.rules")}</TableHead>
+          {list.columns.map((c, i) => (
+            <TableHead
+              key={c.key}
+              className={cn(th, i === 0 && "sticky left-0 z-10 bg-muted pl-3.5", c.key === "bhava" && "text-center")}
+            >
+              {c.label}
+            </TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row, i) => {
-          const name = row.key === "lagna" ? t("kundali.lagna") : grahaName(row.key);
-          const nakName = bilingualText(lang, NAKSHATRA_ICONS[row.nakshatraIndex]?.ne ?? "—", NAKSHATRA_ICONS[row.nakshatraIndex]?.en ?? "—");
+        {list.rows.map((row, i) => {
           const zebra = i % 2 === 1 && "bg-muted/20";
           return (
             <TableRow
@@ -125,65 +60,44 @@ export function GrahaDetailsList({
                 )}
               >
                 <span className="inline-flex items-center gap-1.5">
-                  {row.key !== "lagna" && (
+                  {!row.isLagna && (
                     <GrahaPlanetIcon graha={row.key as GrahaKey} size={22} />
                   )}
-                  {name}
+                  {row.name}
                   {row.retrograde && (
                     <span
                       className={cn(g.retroBadge, g.retroText, "inline-flex normal-case")}
-                      title={t("kundali.retrograde")}
+                      title={list.retroTitle}
                     >
                       <RotateCcw className="size-2.5" aria-hidden />
-                      {t("kundali.r")}
+                      {list.retroLabel}
                     </span>
                   )}
                 </span>
               </TableCell>
               <TableCell className={cn(td, g.dms)}>
-                <span className={g.dmsDeg}>
-                  {digits(String(row.dms.deg).padStart(2, "0"))}°
-                </span>{" "}
-                <span className={cn(g.dmsRashi, "font-sans")}>{rashiName(row.dms.rashiNum)}</span>{" "}
-                {digits(String(row.dms.min).padStart(2, "0"))}′{" "}
-                {digits(String(row.dms.sec).padStart(2, "0"))}″
+                <span className={g.dmsDeg}>{row.deg}</span>{" "}
+                <span className={cn(g.dmsRashi, "font-sans")}>{row.rashiName}</span>{" "}
+                {row.min}{" "}
+                {row.sec}
               </TableCell>
-              <TableCell className={cn(td, g.bhava)}>
-                {digits(row.bhava)}
+              <TableCell className={cn(td, g.bhava)}>{row.bhava}</TableCell>
+              <TableCell className={td}>
+                {row.nakName}
+                <span> {row.pada}</span>
               </TableCell>
               <TableCell className={td}>
-                {nakName}
-                <span> ({digits(row.pada)})</span>
-              </TableCell>
-              <TableCell className={td}>
-                {grahaName(row.nakshatraLord)}
+                {row.nakLord.name}
                 <span className="mx-1">/</span>
-                {grahaName(row.subLord)}
+                {row.subLord.name}
               </TableCell>
               <TableCell className={td}>
-                {grahaName(row.ownerKey)}
-                {row.ownerBhava != null && (
-                  <span>
-                    {" "}
-                    {tFor(lang, "ui.kundali.bhava_ownerbhava", { ownerBhava: digits(row.ownerBhava) })}
-                  </span>
-                )}
+                {row.owner.name}
+                {row.owner.bhava != null && <span> {row.owner.bhava}</span>}
               </TableCell>
-              <TableCell className={td}>
-                {row.relation
-                  ? bilingualText(lang, RELATION_LABELS[row.relation].ne, RELATION_LABELS[row.relation].en)
-                  : "—"}
-              </TableCell>
-              <TableCell className={td}>
-                {row.dignity
-                  ? bilingualText(lang, DIGNITY_LABELS[row.dignity].ne, DIGNITY_LABELS[row.dignity].en)
-                  : "—"}
-              </TableCell>
-              <TableCell className={td}>
-                {row.rulesBhavas.length > 0
-                  ? tFor(lang, "ui.kundali.bhava_value", { value: row.rulesBhavas.map((h) => digits(h)).join(", ") })
-                  : "—"}
-              </TableCell>
+              <TableCell className={td}>{row.relation}</TableCell>
+              <TableCell className={td}>{row.dignity}</TableCell>
+              <TableCell className={td}>{row.rules}</TableCell>
             </TableRow>
           );
         })}

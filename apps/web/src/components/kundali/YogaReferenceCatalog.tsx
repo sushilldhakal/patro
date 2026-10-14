@@ -1,11 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { ChevronDown, Loader2, Search } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import {
-  fetchYogaReference,
-  type YogaReferenceEntry,
-} from "@/lib/api";
+import { useYogaReferenceCatalog } from "@vedic-patro/features/kundali";
 import {
   Table,
   TableBody,
@@ -26,80 +20,36 @@ export type YogaReferenceCatalogProps = {
   excludeIds?: ReadonlySet<string>;
 };
 
-/**
- * Reference catalog of Raman's 162 combinations (Part I), showing the ones that
- * are NOT formed in this chart. Present combinations live in the "कुण्डली योग"
- * table instead; their ids arrive via `excludeIds` and are filtered out here.
- * Fetched once from the CDN-cached `/kundali/yogas/reference` endpoint.
- */
+/** Reference catalog of Raman's 162 combinations not formed in this chart (see `useYogaReferenceCatalog`). */
 export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps = {}) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const [entries, setEntries] = useState<YogaReferenceEntry[] | null>(null);
-  const [error, setError] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    if (!open || entries || error) return;
-    let alive = true;
-    fetchYogaReference()
-      .then((res) => alive && setEntries(res.combinations))
-      .catch(() => alive && setError(true));
-    return () => {
-      alive = false;
-    };
-  }, [open, entries, error]);
-
-  // Base list = the 162 minus whatever is already present in the chart.
-  const available = useMemo(
-    () =>
-      entries?.filter((e) => !(excludeIds?.has(e.yogaId) ?? false)) ?? [],
-    [entries, excludeIds],
-  );
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return available;
-    return available.filter((e) =>
-      [e.name, e.nameNe, e.yogaId, e.definition, e.definitionNe, e.result, e.resultNe]
-        // Guard: an older API payload may lack the Nepali fields (undefined).
-        .some((v) => (v ?? "").toLowerCase().includes(q)),
-    );
-  }, [available, query]);
+  const cat = useYogaReferenceCatalog({ excludeIds });
 
   return (
     <div className={y.root}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={cat.toggle}
         className={cn(y.toggle, "flex w-full text-left")}
-        aria-expanded={open}
+        aria-expanded={cat.open}
       >
         <span className="flex flex-col">
-          <span className={y.title}>
-            {t("kundali.yoga_reference_catalog_162_combinations")}
-          </span>
-          <span className={y.source}>
-            {t("kundali.x.yoga_catalog_source")}
-          </span>
+          <span className={y.title}>{cat.title}</span>
+          <span className={y.source}>{cat.source}</span>
         </span>
         <ChevronDown
-          className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")}
+          className={cn("size-4 shrink-0 transition-transform", cat.open && "rotate-180")}
           aria-hidden
         />
       </button>
 
-      {open && (
+      {cat.open && (
         <div className={y.body}>
-          {error ? (
-            <p className={y.message}>
-              {t("kundali.could_not_load_the_reference_catalog")}
-            </p>
-          ) : !entries ? (
+          {cat.status === "error" ? (
+            <p className={y.message}>{cat.errorText}</p>
+          ) : cat.status === "loading" ? (
             <p className={cn(y.loadingRow, y.loadingText, "flex")}>
               <Loader2 className="size-4 animate-spin" aria-hidden />
-              {t("kundali.loading")}
+              {cat.loadingText}
             </p>
           ) : (
             <>
@@ -107,9 +57,9 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
                 <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 <input
                   type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={t("kundali.x.yoga_catalog_search_placeholder")}
+                  value={cat.query}
+                  onChange={(e) => cat.setQuery(e.target.value)}
+                  placeholder={cat.searchPlaceholder}
                   className={cn(y.searchInput, "w-full bg-transparent outline-none placeholder:text-muted-foreground")}
                 />
               </label>
@@ -118,48 +68,50 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/40 hover:bg-muted/40">
-                      <TableHead className={cn(th, "pl-3.5")}>ID</TableHead>
-                      <TableHead className={th}>{t("kundali.yoga")}</TableHead>
-                      <TableHead className={th}>{t("kundali.rule")}</TableHead>
-                      <TableHead className={cn(th, "pr-3.5")}>{t("kundali.result")}</TableHead>
+                      {cat.columns.map((c, i) => (
+                        <TableHead
+                          key={c.key}
+                          className={cn(th, i === 0 && "pl-3.5", i === cat.columns.length - 1 && "pr-3.5")}
+                        >
+                          {c.label}
+                        </TableHead>
+                      ))}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filtered.map((e, i) => (
+                    {cat.rows.map((e, i) => (
                       <TableRow
-                        key={e.yogaId}
+                        key={e.id}
                         className={cn(i % 2 === 1 && "bg-muted/20")}
                       >
                         <TableCell className={cn(td, y.idText, "pl-3.5 whitespace-nowrap")}>
-                          {e.yogaId}
+                          {e.id}
                         </TableCell>
                         <TableCell className={cn(td, y.nameText, "whitespace-nowrap")}>
-                          {bilingualText(lang, e.nameNe?.trim() ? e.nameNe : e.name, e.name)}
+                          {e.name}
                         </TableCell>
                         <TableCell className={cn(td, "min-w-[14rem] whitespace-normal leading-snug")}>
-                          {bilingualText(lang, e.definitionNe?.trim() ? e.definitionNe : e.definition, e.definition)}
+                          {e.definition}
                         </TableCell>
                         <TableCell className={cn(td, "min-w-[12rem] whitespace-normal pr-3.5 leading-snug")}>
-                          {bilingualText(lang, e.resultNe?.trim() ? e.resultNe : e.result, e.result)}
+                          {e.result}
                         </TableCell>
                       </TableRow>
                     ))}
-                    {filtered.length === 0 && (
+                    {cat.rows.length === 0 && (
                       <TableRow>
                         <TableCell
                           colSpan={4}
                           className={cn(y.message, "px-3.5")}
                         >
-                          {t("kundali.no_matching_combination")}
+                          {cat.noMatch}
                         </TableCell>
                       </TableRow>
                     )}
                   </TableBody>
                 </Table>
               </div>
-              <p className={y.note}>
-                {t("kundali.grouped_ids_e_g_33_44_75_106_are_kept_as_in_the_source_")}
-              </p>
+              <p className={y.note}>{cat.note}</p>
             </>
           )}
         </div>
