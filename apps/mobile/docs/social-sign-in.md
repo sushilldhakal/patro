@@ -32,22 +32,23 @@ edit the native project.
 4. Rebuild the dev client (`npx expo run:ios` / `npx expo run:android`). The
    reversed-client URL scheme is added for you from the iOS client ID.
 
-For the **web** build and for **dev builds that only have `googleWebClientId`**, the
-same **Web** OAuth client must list mobile redirect URIs (the web site uses
-`/auth/google/callback`; Expo uses `/oauthredirect` or a custom scheme):
+Native builds never use the browser flow on the Web client — Google rejects
+custom-scheme redirects there with `invalid_request`.
 
-```bash
-node scripts/print-google-oauth-setup.cjs
-```
+- **iOS**: `expo-auth-session` with the iOS client (PKCE code flow), redirect
+  `com.googleusercontent.apps.<ios-client>:/oauthredirect` (registered by
+  `app.config.js`). Token `aud` = iOS client → server `GOOGLE_IOS_CLIENT_ID`.
+- **Android**: `@react-native-google-signin/google-signin` (Play services).
+  Google no longer allows custom-scheme redirects on new Android clients, so
+  the browser flow cannot work. The SDK matches package + signing SHA-1 against
+  the Android client and returns a token whose `aud` is
+  `extra.googleNativeServerClientId` — the Web client in the **same** Google
+  Cloud project → server `GOOGLE_CLIENT_IDS`. Create one Android client per
+  signing SHA-1 (Play App Signing key, upload key, local debug key).
+  `DEVELOPER_ERROR` at sign-in means the SHA-1 is not registered.
 
-Typical entries under *Authorized redirect URIs*:
-
-- `http://localhost:8081/oauthredirect` (Expo web / Metro default)
-- `http://localhost:19006/oauthredirect` (older Expo web port)
-- `vedicpatro:/oauthredirect` (iOS/Android dev or production build)
-
-Under *Authorized JavaScript origins* for web: `http://localhost:8081` (and your
-production web origin if you ship Expo web).
+The **Expo web** build still uses the Web client; `node scripts/print-google-oauth-setup.cjs`
+prints its redirect URIs (`http://localhost:8081/oauthredirect`, …).
 
 The app logs `[Google OAuth] redirect URI:` in dev; the sign-in sheet lists the
 same checklist if Google returns `redirect_uri_mismatch`.

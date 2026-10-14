@@ -5,7 +5,7 @@
     "version": "1.1.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
-    "scheme": "vedicpatro",
+    "scheme": ["vedicpatro", "com.vedicpatro.mobile"],
     "userInterfaceStyle": "automatic",
     "primaryColor": "#073f43",
     "description": "Nepali Bikram Sambat calendar, daily panchanga, kundali, muhurta, and sky view — in Nepali and English.",
@@ -239,6 +239,12 @@
       "expo-status-bar",
       "expo-apple-authentication",
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.87401467000-p62fl4jjhr2la688pnr0q7i6g2nbd73g"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
@@ -293,8 +299,9 @@
       "supportUrl": "https://www.vedicpatro.com",
       "supportEmail": "support@vedicpatro.com",
       "googleWebClientId": "568648791161-elpu27mjfjhcb3p9rm2vim62kgrqinao.apps.googleusercontent.com",
-      "googleIosClientId": "568648791161-4o9fdadb47ltb2nfp1fsdbj03u50q509.apps.googleusercontent.com",
-      "googleAndroidClientId": "568648791161-0dhpp9t58h249d0ema1lmk3nm00euql0.apps.googleusercontent.com",
+      "googleNativeServerClientId": "87401467000-03kdni0kl72e0fh45mitv6jcb1qbv3q6.apps.googleusercontent.com",
+      "googleIosClientId": "87401467000-p62fl4jjhr2la688pnr0q7i6g2nbd73g.apps.googleusercontent.com",
+      "googleAndroidClientId": "87401467000-p1k8l38hbfn125v45kmj62u4iujnd29f.apps.googleusercontent.com",
       "facebookAppId": "1044570391345268",
       "router": {},
       "eas": {

@@ -3,10 +3,12 @@ import { useLegalPage, type LegalKind } from "@vedic-patro/features/legal";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { PageHeader, PageShell } from "@/components/PageShell";
+import { useRouteLoading } from "@/lib/route-loading";
 
 /** Privacy / terms — the website's drawing of `useLegalPage` (@vedic-patro/features). */
 function LegalPage({ kind }: { kind: LegalKind }) {
   const page = useLegalPage(kind);
+  useRouteLoading(false);
   const Icon = kind === "privacy" ? Shield : FileText;
   return (
     <PageShell showRelatedLinks={false}>

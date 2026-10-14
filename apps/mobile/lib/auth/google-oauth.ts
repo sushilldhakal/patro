@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import {
   googleAndroidClientId,
   googleIosClientId,
+  googleNativeServerClientId,
   googleWebClientId,
 } from "@/lib/auth/oauth-config";
 
@@ -18,13 +19,18 @@ export function reversedGoogleClientScheme(clientId: string | undefined): string
 /**
  * Custom-scheme redirect Google receives on native builds.
  *
- * Use the app scheme (registered in Info.plist), not the reversed iOS client
- * scheme. The ID token is requested with the *Web* client so production
- * `POST /auth/google` can verify `aud` against GOOGLE_CLIENT_ID. The reversed
- * iOS scheme mints a token the API rejects unless GOOGLE_IOS_CLIENT_ID is set.
+ * Google only accepts a custom scheme on a *native* OAuth client (a Web client
+ * rejects it with invalid_request), so native builds sign in with the iOS /
+ * Android client. The API accepts their ID tokens via GOOGLE_IOS_CLIENT_ID /
+ * GOOGLE_ANDROID_CLIENT_ID.
+ *
+ * iOS: the reversed iOS client ID (registered by app.config.js).
+ * Android: the package name (registered via `scheme` in app.json).
  */
 export function getGoogleNativeRedirectUri(): string {
-  return "vedicpatro://oauthredirect";
+  const reversed = reversedGoogleClientScheme(googleIosClientId);
+  if (Platform.OS === "ios" && reversed) return `${reversed}:/oauthredirect`;
+  return "com.vedicpatro.mobile:/oauthredirect";
 }
 
 /** Redirect URI sent to Google — must be registered on the matching OAuth client. */
@@ -37,26 +43,25 @@ export function getGoogleRedirectUri(): string {
   });
 }
 
-/** URIs to add under Web OAuth client → Authorized redirect URIs (copy/paste checklist). */
+/** URIs to add under Web OAuth client → Authorized redirect URIs (web build only). */
 export function listGoogleWebClientRedirectUris(): string[] {
-  const uris = new Set<string>([getGoogleRedirectUri(), getGoogleNativeRedirectUri()]);
+  const uris = new Set<string>([getGoogleRedirectUri()]);
   uris.add("http://localhost:8081/oauthredirect");
   uris.add("http://localhost:19006/oauthredirect");
-  uris.add("vedicpatro:/oauthredirect");
-  uris.add("vedicpatro://oauthredirect");
-  const reversed = reversedGoogleClientScheme(googleIosClientId);
-  if (reversed) uris.add(`${reversed}:/oauthredirect`);
-  return [...uris].filter(Boolean).sort();
+  return [...uris].filter((uri) => uri.startsWith("http")).sort();
 }
 
 /**
- * Auth-session config. Native uses the Web client ID on purpose so the ID
- * token audience matches the API. Do not pass iosClientId/androidClientId here
- * — expo-auth-session would switch client and mint a token the API rejects.
+ * Auth-session config. Native uses the platform client (iOS / Android) with a
+ * PKCE code flow — the code is exchanged in SocialSignInButtons for an ID
+ * token whose `aud` is that platform client. Web keeps the implicit id_token
+ * flow on the Web client.
  */
 export function getGoogleClientIds() {
   return {
-    clientId: googleWebClientId,
+    webClientId: googleWebClientId,
+    iosClientId: googleIosClientId,
+    androidClientId: googleAndroidClientId,
     redirectUri: getGoogleRedirectUri(),
     selectAccount: true,
   };
@@ -75,10 +80,10 @@ export function isGoogleSignInConfiguredForPlatform(): boolean {
     return Boolean(googleWebClientId);
   }
   if (Platform.OS === "ios") {
-    return Boolean(googleIosClientId || googleWebClientId);
+    return Boolean(googleIosClientId);
   }
   if (Platform.OS === "android") {
-    return Boolean(googleAndroidClientId || googleWebClientId);
+    return Boolean(googleAndroidClientId && googleNativeServerClientId);
   }
   return false;
 }
@@ -107,10 +112,13 @@ export function googleSignInSetupMessage(): string {
     );
   }
 
+  const nativeClient = Platform.OS === "ios" ? "iOS" : "Android";
   return (
-    `Google redirect URI mismatch. In Google Cloud Console → Credentials → Web OAuth client ` +
-    `(…${googleWebClientId?.slice(-20) ?? "your-client"}), add:\n\n` +
-    `Authorized redirect URIs:\n  • ${redirectChecklist}\n\n` +
-    `This app is currently using: ${redirectUri}`
+    `Google sign-in is not set up for this build. In Google Cloud Console → Credentials, ` +
+    `the ${nativeClient} OAuth client must use package / bundle ID com.vedicpatro.mobile` +
+    (Platform.OS === "android"
+      ? ` and this build's signing SHA-1 (one Android client per SHA-1).`
+      : `.`) +
+    `\n\nThis app is currently using: ${redirectUri}`
   );
 }
