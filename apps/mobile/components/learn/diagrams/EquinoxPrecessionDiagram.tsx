@@ -88,7 +88,7 @@ export function EquinoxPrecessionDiagram() {
         { color: DIAGRAM_LABEL_COLOR.warn, label: copy.equinox },
       ]}
       readouts={[
-        { k: t("ui.learn.bs_year"), v: digits(Math.round(year)), tone: "accent" },
+        { k: t("holidays.bs_year"), v: digits(Math.round(year)), tone: "accent" },
         { k: t("ui.learn.equinox_now_in"), v: getRashiName(rashiIdx + 1, lang), tone: "warn" },
         { k: t("ui.learn.ayanamsha_from_mesha"), v: `${digits(ayanamsha < 0 ? (-ayanamsha).toFixed(1) : ayanamsha.toFixed(1))}°` },
       ]}

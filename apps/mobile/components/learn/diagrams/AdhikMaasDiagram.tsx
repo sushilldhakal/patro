@@ -36,7 +36,7 @@ const ADHIK = findAdhik();
 
 const LUNAR_NAME = [
   { get ne() { return tFor("ne", "ui.learn.baisakh"); }, get en() { return tFor("en", "ui.learn.baisakh"); } },
-  { get ne() { return tFor("ne", "ui.learn.jestha"); }, get en() { return tFor("en", "ui.learn.jestha"); } },
+  { get ne() { return tFor("ne", "ui.tithi_mechanics.x_a6766ae7"); }, get en() { return tFor("en", "ui.tithi_mechanics.x_a6766ae7"); } },
   { get ne() { return tFor("ne", "learn.ashadh"); }, get en() { return tFor("en", "learn.ashadh"); } },
 ];
 

@@ -225,7 +225,7 @@ export function DivisionalChartCompare({
 
   return (
     <KundaliSection
-      title={t("ui.kundali.divisional_charts")}
+      title={t("ui.kundali.divisional_charts_2")}
       subtitle={t("ui.kundali.compare_two_charts_d1_d9_etc")}
       icon="grid-outline"
     >

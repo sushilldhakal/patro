@@ -163,7 +163,7 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
             {!signedIn ? (
               <View className="flex-row flex-wrap gap-2">
                 <Chip
-                  label={t("ui.reminders.today_s_moon_sign")}
+                  label={t("muhurta_aside.moon_ref_chandrabal")}
                   active={settings.guestSignId == null}
                   onPress={() => save({ ...settings, guestSignId: null })}
                 />

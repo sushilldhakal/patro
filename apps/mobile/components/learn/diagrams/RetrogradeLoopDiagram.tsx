@@ -148,7 +148,7 @@ export function RetrogradeLoopDiagram() {
         value: t,
         min: 0,
         max: SYNODIC / 3,
-        label: pick(tFor("ne", "ui.learn.day", { v0: digits(Math.round(day)) }), tFor("en", "ui.learn.day", { v0: digits(Math.round(day)) })),
+        label: pick(tFor("ne", "ui.learn.x_ca6354ee", { v0: digits(Math.round(day)) }), tFor("en", "ui.learn.x_ca6354ee", { v0: digits(Math.round(day)) })),
         onChange: scrubTo,
       }}
       playing={playing}

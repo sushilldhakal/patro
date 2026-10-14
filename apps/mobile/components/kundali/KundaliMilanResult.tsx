@@ -55,10 +55,10 @@ function KutaDetailPanel({
   return (
     <View className={cn(m.panel, "mx-2 mb-2")}>
       <Text className={m.panelTitle} style={nepaliTextStyle(14)}>
-        {name} {t("ui.kundali.kuta_details")}
+        {name} {t("kundali.x.kuta_details_heading")}
       </Text>
       <Text className={m.panelPoints} style={nepaliTextStyle(13)}>
-        {name} {t("ui.kundali.kuta_points")}:{" "}
+        {name} {t("kundali.x.kuta_points_label")}:{" "}
         <Text className={cn("font-num", m.panelPointsValue)}>
           {digits(formatObtained(kuta.obtained))}/{digits(kuta.max)}
         </Text>
@@ -106,7 +106,7 @@ export function KundaliMilanResult({
     { key: "obt", ne: tFor("ne", "kundali.x.milan_col_obtained"), en: tFor("en", "kundali.x.milan_col_obtained"), width: 72 },
     { key: "boy", ne: boyName, en: boyName, width: 118 },
     { key: "girl", ne: girlName, en: girlName, width: 118 },
-    { key: "area", ne: tFor("ne", "ui.kundali.area_of_life"), en: tFor("en", "ui.kundali.area_of_life"), width: 150 },
+    { key: "area", ne: tFor("ne", "kundali.x.milan_col_area_of_life"), en: tFor("en", "kundali.x.milan_col_area_of_life"), width: 150 },
   ];
 
   return (
@@ -276,7 +276,7 @@ export function KundaliMilanResult({
           style={nepaliTextStyle(11)}
         >
           *
-          {t("ui.kundali.max_maximum_point_obt_obtained_point")}
+          {t("kundali.x.milan_points_footnote")}
         </Text>
       </TableScrollShell>
 

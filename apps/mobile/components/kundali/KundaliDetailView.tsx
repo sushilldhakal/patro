@@ -104,7 +104,7 @@ export function KundaliDetailView({
       {show("kundali-graha") && d1Rows.length > 0 ? (
         <KundaliSection
           edgeToEdgeContent
-          title={t("ui.kundali.graha_details")}
+          title={t("kundali.nav_graha_details")}
           subtitle={t("ui.kundali.positions_at_the_birth_instant")}
           icon="planet-outline"
         >
@@ -181,7 +181,7 @@ export function KundaliDetailView({
       {show("kundali-shadbala") ? <KundaliSources kind="shadbala" /> : null}
 
       {show("kundali-bhava-bala") ? (
-        <KundaliSection title={t("ui.kundali.bhava_bala")} icon="stats-chart-outline">
+        <KundaliSection title={t("kundali.nav_bhava_bala")} icon="stats-chart-outline">
           {balaTabs}
           {detail.bhavaBala ? (
             <BhavaBalaCard
@@ -236,7 +236,7 @@ export function KundaliDetailView({
 
       {show("kundali-shanti") ? (
         <KundaliSection
-          title={t("ui.kundali.shanti_vidhi")}
+          title={t("nav.shanti_vidhi")}
           subtitle={t("ui.kundali.navagraha_remedial_measures")}
           icon="flame-outline"
         >

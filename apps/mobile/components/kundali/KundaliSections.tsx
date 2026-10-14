@@ -196,7 +196,7 @@ export function BhavaTable({
     { key: "owner", ne: tFor("ne", "panchanga.wheel.lord"), en: tFor("en", "panchanga.wheel.lord"), width: 72 },
     { key: "rashi", ne: tFor("ne", "panchanga.wheel.rashi"), en: tFor("en", "panchanga.wheel.rashi"), width: 68 },
     { key: "qual", ne: tFor("ne", "kundali.qualities"), en: tFor("en", "kundali.qualities"), width: 88 },
-    { key: "aspect", ne: tFor("ne", "ui.kundali.aspected_by"), en: tFor("en", "ui.kundali.aspected_by"), width: 108 },
+    { key: "aspect", ne: tFor("ne", "kundali.aspected_by"), en: tFor("en", "kundali.aspected_by"), width: 108 },
   ];
 
   return (
