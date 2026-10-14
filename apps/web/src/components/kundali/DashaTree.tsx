@@ -1,35 +1,11 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowRight, ChevronRight } from "lucide-react";
-import { useLocale } from "@/i18n/locale";
-import { dashaExpandKeys, fetchDashaChildren, type DashaSystem, type DashaTreeNode } from "@/lib/api";
-import { formatZonedAdMoment, formatZonedBsMoment } from "@vedic-patro/domain/bs-calendar";
+import type { DashaSystem, DashaTreeNode } from "@/lib/api";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import {
-  DASHA_LORD_EN,
-  DASHA_LORD_NE,
-  breakdownDashaDuration,
-  dashaMahadashaGrahaKey,
-  formatDashaDuration,
-  formatDashaDurationParts,
-  type DashaLord,
-} from "@vedic-patro/domain/dasha";
+import type { DashaLord } from "@vedic-patro/domain/dasha";
+import type { SpanWithChildren } from "@vedic-patro/domain/kundali/dasha-tree";
+import { DASHA_MAX_LEVEL, useDashaNode, useDashaTree, type DashaChainRow } from "@vedic-patro/features/kundali";
 import { cn } from "@vedic-patro/domain/utils";
-import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-
-import { tFor } from "@vedic-patro/i18n/runtime";
-/** Catalogue keys, outermost dasha level first. */
-const LEVEL_LABELS: string[] = [
-  "kundali.maha_dasha",
-  "kundali.x.dasha_level_antar",
-  "kundali.x.dasha_level_pratyantar",
-  "kundali.x.dasha_level_sukshma",
-  "kundali.x.dasha_level_prana",
-];
-
-const MAX_LEVEL = LEVEL_LABELS.length - 1;
 
 const LORD_ACCENT: Record<DashaLord, string> = {
   sun: "border-amber-500/35 bg-amber-500/[0.08]",
@@ -87,20 +63,6 @@ function lordDot(lord: string, system: DashaSystem): string {
   return LORD_DOT[(lord as DashaLord) in LORD_DOT ? (lord as DashaLord) : "ketu"];
 }
 
-/** A BS year like "2076" means nothing in English — English mode shows the
- * Gregorian calendar instead of translating BS month names into English. */
-function formatMoment(
-  date: Date,
-  lang: string,
-  timeZone?: string,
-  digits?: (v: string | number) => string,
-): string {
-  const isEn = lang.slice(0, 2) === "en";
-  return isEn
-    ? formatZonedAdMoment(date, { lang, timeZone, digits })
-    : formatZonedBsMoment(date, { lang, timeZone, digits });
-}
-
 function MomentLine({ label, value }: { label: string; value: string }) {
   return (
     <p className={kundaliDetailClasses.prose.bodyTight}>
@@ -138,9 +100,7 @@ function TimelineDot({
   );
 }
 
-function SpanProgress({ start, end, now }: { start: Date; end: Date; now: number }) {
-  const total = end.getTime() - start.getTime();
-  const pct = total > 0 ? Math.min(100, Math.max(0, ((now - start.getTime()) / total) * 100)) : 0;
+function SpanProgress({ pct }: { pct: number }) {
   return (
     <div className={kundaliDetailClasses.dashaTree.progressTrack}>
       <div
@@ -151,55 +111,27 @@ function SpanProgress({ start, end, now }: { start: Date; end: Date; now: number
   );
 }
 
-const DURATION_COLS = [
-  "kundali.x.duration_bs",
-  "kundali.x.duration_years",
-  "kundali.x.duration_months",
-  "holidays.col_days",
-  "kundali.yoga",
-] as const;
-
-function DashaDurationGrid({
-  start,
-  end,
-  lang,
-  digits,
-}: {
-  start: Date;
-  end: Date;
-  lang: string;
-  digits: (v: string | number) => string;
-}) {
-  const { t } = useTranslation();
-  const ms = end.getTime() - start.getTime();
-  const parts = breakdownDashaDuration(ms);
-  const locale = lang === "en" ? "en" : "ne";
-  const avadhi = formatDashaDurationParts(parts, locale);
-  const values = [avadhi, parts.years, parts.months, parts.days, parts.yogas] as const;
-
+function DashaDurationGrid({ grid }: { grid: NonNullable<DashaChainRow["grid"]> }) {
   return (
     <div className="mt-2 overflow-x-auto">
       <table className="w-full min-w-[280px] border-collapse text-sm">
         <thead>
           <tr>
-            {DURATION_COLS.map((col) => (
-              <th
-                key={col}
-                className={cn(kundaliDetailClasses.dashaTree.durationHeadCell, "border text-left")}
-              >
-                {t(col)}
+            {grid.columns.map((col) => (
+              <th key={col} className={cn(kundaliDetailClasses.dashaTree.durationHeadCell, "border text-left")}>
+                {col}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           <tr>
-            {values.map((value, i) => (
+            {grid.values.map((value, i) => (
               <td
-                key={DURATION_COLS[i]}
+                key={grid.columns[i]}
                 className={cn(kundaliDetailClasses.dashaTree.durationCell, kundaliDetailClasses.dashaTree.durationValue, "border")}
               >
-                {digits(value)}
+                {value}
               </td>
             ))}
           </tr>
@@ -209,49 +141,11 @@ function DashaDurationGrid({
   );
 }
 
-function displayLordName(span: SpanWithChildren, lang: string, system: DashaSystem): string {
-  if (system === "yogini") return span.lordNe;
-  const lord = span.lord as DashaLord;
-  return lang === "en" ? DASHA_LORD_EN[lord] ?? span.lordNe : DASHA_LORD_NE[lord] ?? span.lordNe;
-}
-
-function isRunning(span: SpanWithChildren | undefined, now: number): boolean {
-  return span != null && span.start.getTime() <= now && now < span.end.getTime();
-}
-
-function findRunning(spans: SpanWithChildren[] | undefined, now: number): SpanWithChildren | undefined {
-  return spans?.find((s) => isRunning(s, now));
-}
-
-/** Every period at one level under `parent` — fetched only when the API
- * didn't already embed them (pratyantar and deeper come from a lazy
- * /kundali/dasha/expand call, cached by React Query once fetched). A fixed
- * 4-call chain (see `DashaTree`) keeps every render calling the same number
- * of hooks regardless of how deep this chart's `maxLevel` goes — React's
- * rules of hooks forbid a variable-length loop of `useQuery`. */
-function useLevelChildren(
-  parent: SpanWithChildren | undefined,
-  system: DashaSystem,
-  parentLevel: number,
-  maxLevel: number,
-): SpanWithChildren[] | undefined {
-  const enabled = parent != null && parentLevel < maxLevel && parent.childNodes == null;
-  const startIso = parent?.start.toISOString() ?? "";
-  const endIso = parent?.end.toISOString() ?? "";
-  const q = useQuery({
-    queryKey: dashaExpandKeys.span(parent?.lord ?? "", startIso, endIso, system),
-    queryFn: () => fetchDashaChildren(parent!.lord, startIso, endIso, system),
-    enabled,
-    staleTime: Infinity,
-  });
-  if (parent == null || parentLevel >= maxLevel) return undefined;
-  return (parent.childNodes ?? q.data?.children)?.map(toSpan);
-}
+type Copy = ReturnType<typeof useDashaTree>["copy"];
 
 /** Recursive accordion node — one mahadasha/antar/pratyantar/etc. row on the
- * spine, expandable to reveal its own children. This is the full explorer
- * ("browse every period", not just what's running now) that sits below the
- * always-visible {@link ChainStack}. */
+ * spine, expandable to reveal its own children (the full explorer below the
+ * always-visible {@link ChainStack}). */
 function DashaNode({
   span,
   level,
@@ -260,6 +154,7 @@ function DashaNode({
   isLast,
   system,
   maxLevel,
+  copy,
 }: {
   span: SpanWithChildren;
   level: number;
@@ -268,31 +163,10 @@ function DashaNode({
   isLast?: boolean;
   system: DashaSystem;
   maxLevel: number;
+  copy: Copy;
 }) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const running = isRunning(span, now);
-  const [open, setOpen] = useState(false);
-  const expandable = level < maxLevel;
-
-  const needsFetch = open && expandable && !span.childNodes;
-  const startIso = span.start.toISOString();
-  const endIso = span.end.toISOString();
-  const childQ = useQuery({
-    queryKey: dashaExpandKeys.span(span.lord, startIso, endIso, system),
-    queryFn: () => fetchDashaChildren(span.lord, startIso, endIso, system),
-    enabled: needsFetch,
-    staleTime: Infinity,
-  });
-
-  const children = useMemo<SpanWithChildren[] | null>(() => {
-    if (!open || !expandable) return null;
-    const nodes = span.childNodes ?? childQ.data?.children;
-    return nodes ? nodes.map(toSpan) : null;
-  }, [open, expandable, span.childNodes, childQ.data]);
-
-  const duration = formatDashaDuration(span.end.getTime() - span.start.getTime(), lang);
-  const levelLabel = t(LEVEL_LABELS[level]!);
+  const node = useDashaNode({ span, level, now, timeZone, system, maxLevel });
+  const { open, expandable, running, children } = node;
   const accent = lordAccent(span.lord, system);
 
   return (
@@ -317,7 +191,7 @@ function DashaNode({
       >
         <button
           type="button"
-          onClick={() => expandable && setOpen((v) => !v)}
+          onClick={node.toggle}
           disabled={!expandable}
           aria-expanded={expandable ? open : undefined}
           className={cn(
@@ -331,25 +205,25 @@ function DashaNode({
             ) : (
               <span className="w-3.5 shrink-0" aria-hidden />
             )}
-            <span className={kundaliDetailClasses.dashaTree.spanLord}>{displayLordName(span, lang, system)}</span>
+            <span className={kundaliDetailClasses.dashaTree.spanLord}>{node.name}</span>
             <span className={kundaliDetailClasses.dashaTree.spanMeta}>
-              {levelLabel}
+              {node.level}
               <span className="mx-1">·</span>
-              {digits(duration)}
+              {node.duration}
             </span>
             {running && (
               <span className={cn(kundaliDetailClasses.dashaTree.runningBadge, kundaliDetailClasses.dashaTree.runningBadgeText)}>
-                {t("kundali.running")}
+                {copy.running}
               </span>
             )}
           </span>
 
           <span className="mt-2 block space-y-0.5 pl-5.5">
-            <MomentLine label={t("kundali.begin")} value={formatMoment(span.start, lang, timeZone, digits)} />
-            <MomentLine label={t("kundali.end")} value={formatMoment(span.end, lang, timeZone, digits)} />
+            <MomentLine label={copy.begin} value={node.start} />
+            <MomentLine label={copy.end} value={node.end} />
           </span>
 
-          {running && <SpanProgress start={span.start} end={span.end} now={now} />}
+          {node.progress != null && <SpanProgress pct={node.progress} />}
         </button>
 
         {children && (
@@ -365,6 +239,7 @@ function DashaNode({
                   isLast={i === children.length - 1}
                   system={system}
                   maxLevel={maxLevel}
+                  copy={copy}
                 />
               ))}
             </ul>
@@ -375,123 +250,45 @@ function DashaNode({
   );
 }
 
-function ChainStackRow({
-  span,
-  level,
-  system,
-  lang,
-  digits,
-  timeZone,
-  now,
-  isLast,
-}: {
-  span: SpanWithChildren;
-  level: number;
-  system: DashaSystem;
-  lang: "ne" | "en";
-  digits: (v: string | number) => string;
-  timeZone?: string;
-  now: number;
-  isLast: boolean;
-}) {
-  const { t } = useTranslation();
-  const grahaKey = dashaMahadashaGrahaKey(system, span.lord);
-  const running = isRunning(span, now);
-
+function ChainStackRow({ row, copy }: { row: DashaChainRow; copy: Copy }) {
   return (
     <div className={kundaliDetailClasses.dashaTree.detail}>
       <p className={cn(kundaliDetailClasses.dashaTree.detailHead, "flex")}>
-        {grahaKey ? <GrahaPlanetIcon graha={grahaKey} size={26} /> : null}
+        {row.graha ? <GrahaPlanetIcon graha={row.graha} size={26} /> : null}
         <span className={kundaliDetailClasses.dashaTree.detailTitle}>
-          {displayLordName(span, lang, system)}
-          <span className={kundaliDetailClasses.dashaTree.detailLevel}> — {t(LEVEL_LABELS[level]!)}</span>
+          {row.name}
+          <span className={kundaliDetailClasses.dashaTree.detailLevel}> — {row.level}</span>
         </span>
-        {running && (
+        {row.running && (
           <span className={cn(kundaliDetailClasses.dashaTree.runningBadge, kundaliDetailClasses.dashaTree.runningBadgeText, "ml-auto shrink-0")}>
-            {t("kundali.running")}
+            {copy.running}
           </span>
         )}
       </p>
       <div className={cn(kundaliDetailClasses.dashaTree.detailFlow, "space-y-1")}>
         <p className={cn(kundaliDetailClasses.dashaTree.detailFlowRow, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
           <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>
-            {formatMoment(span.start, lang, timeZone, digits)}
-          </span>
+          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>{row.start}</span>
         </p>
         <p className={cn(kundaliDetailClasses.dashaTree.detailFlowRow, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
           <ArrowRight className="size-3.5 shrink-0 text-foreground" aria-hidden />
-          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>
-            {formatMoment(span.end, lang, timeZone, digits)}
-          </span>
+          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>{row.end}</span>
         </p>
       </div>
       <div className={cn(kundaliDetailClasses.dashaTree.detailTotals, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
         <p>
-          <span>{t("kundali.total")} — </span>
-          <span className={kundaliDetailClasses.dashaTree.detailStrong}>
-            {digits(formatDashaDuration(span.end.getTime() - span.start.getTime(), lang))}
-          </span>
+          <span>{copy.total} — </span>
+          <span className={kundaliDetailClasses.dashaTree.detailStrong}>{row.total}</span>
         </p>
-        {running && (
+        {row.left && (
           <p>
-            <span>{t("kundali.left")} — </span>
-            <span className={kundaliDetailClasses.dashaTree.detailStrong}>
-              {digits(formatDashaDuration(span.end.getTime() - now, lang))}
-            </span>
+            <span>{copy.left} — </span>
+            <span className={kundaliDetailClasses.dashaTree.detailStrong}>{row.left}</span>
           </p>
         )}
       </div>
-      {running && <SpanProgress start={span.start} end={span.end} now={now} />}
-      {isLast && <DashaDurationGrid start={span.start} end={span.end} lang={lang} digits={digits} />}
-    </div>
-  );
-}
-
-/**
- * The full active chain — Mahadasha down to whatever level is known — as one
- * unified stack, each level a plain row connected by a down-arrow. Nothing
- * here is collapsed or click-gated: every level's begin/end/total/left is
- * visible the instant the page loads, so "what's running right now" needs
- * no expanding and no scrolling to find.
- */
-function ChainStack({
-  path,
-  system,
-  now,
-  timeZone,
-  lang,
-  digits,
-}: {
-  path: SpanWithChildren[];
-  system: DashaSystem;
-  now: number;
-  timeZone?: string;
-  lang: "ne" | "en";
-  digits: (v: string | number) => string;
-}) {
-  if (path.length === 0) return null;
-  return (
-    <div className={cn(kundaliDetailClasses.dashaTree.pathBox, "divide-y divide-border/50")}>
-      {path.map((span, i) => (
-        <div key={`${span.lord}-${i}`}>
-          {i > 0 && (
-            <div className="flex justify-center py-0.5">
-              <ArrowDown className="size-4 text-muted-foreground" aria-hidden />
-            </div>
-          )}
-          <ChainStackRow
-            span={span}
-            level={i}
-            system={system}
-            lang={lang}
-            digits={digits}
-            timeZone={timeZone}
-            now={now}
-            isLast={i === path.length - 1}
-          />
-        </div>
-      ))}
+      {row.progress != null && <SpanProgress pct={row.progress} />}
+      {row.grid && <DashaDurationGrid grid={row.grid} />}
     </div>
   );
 }
@@ -509,100 +306,75 @@ export type DashaTreeProps = {
 };
 
 /**
- * Dasha timeline: an always-visible stack of the live chain (Mahadasha down
- * to whatever level is known — nothing collapsed, no clicking needed to see
- * "what's running right now"), followed by the full accordion tree for
- * browsing every other period at every level.
+ * Dasha timeline: an always-visible stack of the live chain (nothing
+ * collapsed), followed by the full accordion tree for browsing every period.
  */
 export function DashaTree({
   tree,
   timeZone,
   system = "vimshottari",
-  maxLevel = MAX_LEVEL,
+  maxLevel = DASHA_MAX_LEVEL,
   cycleYears,
 }: DashaTreeProps) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const [now] = useState(() => Date.now());
-  const mahadashas = useMemo(() => tree.map(toSpan), [tree]);
-
-  const p0 = findRunning(mahadashas, now);
-  const list1 = useLevelChildren(p0, system, 0, maxLevel);
-  const p1 = findRunning(list1, now);
-  const list2 = useLevelChildren(p1, system, 1, maxLevel);
-  const p2 = findRunning(list2, now);
-  const list3 = useLevelChildren(p2, system, 2, maxLevel);
-  const p3 = findRunning(list3, now);
-  const list4 = useLevelChildren(p3, system, 3, maxLevel);
-  const p4 = findRunning(list4, now);
-
-  const knownPath = [p0, p1, p2, p3, p4].filter((s): s is SpanWithChildren => s != null);
-
-  const timelineStart = mahadashas[0]?.start;
-  const timelineEnd = mahadashas[mahadashas.length - 1]?.end;
-  const yoginiCycle =
-    p0 && cycleYears
-      ? Math.floor((p0.start.getTime() - (timelineStart?.getTime() ?? p0.start.getTime())) / (cycleYears * 365.2425 * 86400000)) + 1
-      : null;
+  const dasha = useDashaTree({ tree, timeZone, system, maxLevel, cycleYears });
+  const { copy, chain, range } = dasha;
 
   return (
     <div className="space-y-5">
-      {knownPath.length > 0 && (
+      {chain.length > 0 && (
         <div className="space-y-2">
           <div className={cn(kundaliDetailClasses.dashaTree.runningHead, "flex")}>
-            <p className={kundaliDetailClasses.dashaTree.runningTitle}>
-              {t("kundali.running_dasha")}
-            </p>
-            {yoginiCycle ? (
+            <p className={kundaliDetailClasses.dashaTree.runningTitle}>{copy.runningDasha}</p>
+            {dasha.cycle ? (
               <span className={cn(kundaliDetailClasses.dashaTree.cycleChip, kundaliDetailClasses.dashaTree.cycleChipText)}>
-                {tFor(lang, "ui.kundali.cycle_yoginicycle", { yoginiCycle: digits(yoginiCycle) })}
+                {dasha.cycle}
               </span>
             ) : null}
           </div>
-          <ChainStack
-            path={knownPath}
-            system={system}
-            now={now}
-            timeZone={timeZone}
-            lang={lang}
-            digits={digits}
-          />
+          {/* The full active chain as one stack, each level joined by a down-arrow. */}
+          <div className={cn(kundaliDetailClasses.dashaTree.pathBox, "divide-y divide-border/50")}>
+            {chain.map((row, i) => (
+              <div key={row.key}>
+                {i > 0 && (
+                  <div className="flex justify-center py-0.5">
+                    <ArrowDown className="size-4 text-muted-foreground" aria-hidden />
+                  </div>
+                )}
+                <ChainStackRow row={row} copy={copy} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {timelineStart && timelineEnd && (
+      {range && (
         <div className={cn(kundaliDetailClasses.dashaTree.range, kundaliDetailClasses.dashaTree.rangeText, "flex")}>
           <span>
-            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{t("kundali.from")}</span>{" "}
-            <span className={kundaliDetailClasses.dashaTree.rangeValue}>
-              {formatMoment(timelineStart, lang, timeZone, digits)}
-            </span>
+            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{copy.from}</span>{" "}
+            <span className={kundaliDetailClasses.dashaTree.rangeValue}>{range.from}</span>
           </span>
           <span className="hidden sm:inline">→</span>
           <span>
-            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{t("kundali.to")}</span>{" "}
-            <span className={kundaliDetailClasses.dashaTree.rangeValue}>
-              {formatMoment(timelineEnd, lang, timeZone, digits)}
-            </span>
+            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{copy.to}</span>{" "}
+            <span className={kundaliDetailClasses.dashaTree.rangeValue}>{range.to}</span>
           </span>
         </div>
       )}
 
       <div>
-        <p className={kundaliDetailClasses.dashaTree.timelineLabel}>
-          {t("kundali.x.dasha_full_timeline")}
-        </p>
+        <p className={kundaliDetailClasses.dashaTree.timelineLabel}>{copy.fullTimeline}</p>
         <ol className="relative m-0 list-none pl-3">
-          {mahadashas.map((span, i) => (
+          {dasha.mahadashas.map((span, i) => (
             <DashaNode
               key={`${span.lord}-${span.start.getTime()}-${i}`}
               span={span}
               level={0}
-              now={now}
+              now={dasha.now}
               timeZone={timeZone}
-              isLast={i === mahadashas.length - 1}
+              isLast={i === dasha.mahadashas.length - 1}
               system={system}
               maxLevel={maxLevel}
+              copy={copy}
             />
           ))}
         </ol>

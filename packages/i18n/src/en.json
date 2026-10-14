@@ -4448,7 +4448,6 @@
       "needs_attention": "⚠️ Needs attention",
       "no_brighu_naadi_sutras_apply_since": "No Brighu Naadi sutras apply, since no graha occupies this house.",
       "no_graha_aspects_this_house": "No graha aspects this house.",
-      "no_graha_here_see_the_placement": "No graha here — see the placement of {{pick}}, this house's ruling graha.",
       "no_graha_occupies_or_aspects_this": "No graha occupies or aspects this house.",
       "no_graha_occupies_this_house_so": "No graha occupies this house, so there's no graha-in-house reading.",
       "no_graha_occupies_this_house_so_2": "No graha occupies this house, so it casts no aspect outward.",
@@ -4465,13 +4464,11 @@
       "rules": "Rules",
       "safe_practice": "Safe practice:",
       "save_birth_details_once_then_generate": "Save birth details once, then generate kundali quickly.",
-      "sign_lord_pick_wasn_t_found": "Sign lord {{pick}} wasn't found placed in this D1 chart.",
       "source_bhaveshphalasource": "Source: {{bhaveshPhalaSource}}",
       "source_lal_kitab_parts_2_11": "Source: Lal Kitab, parts 2–11",
       "source_lalkitabrevisionsource": "Source: {{lalKitabRevisionSource}}",
       "source_naadisutrasource": "Source: {{naadiSutraSource}}",
       "summary": "Summary",
-      "this_house_has_no_occupying_graha": "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{pick}}, this house's fixed (pakka ghar) lord.",
       "this_section_is_not_available": "This section is not available.",
       "total_guna_match": "Total guna match",
       "upagrahas": "Upagrahas",
@@ -4517,8 +4514,7 @@
       "degree": "Degree",
       "lord_sub": "Lord / Sub",
       "longitude": "Longitude",
-      "mixed": "Mixed",
-      "graha_in_house_phala": "{{graha}} in house {{house}}{{lagna}}"
+      "mixed": "Mixed"
     },
     "learn": {
       "a_solar_month_is_not_a": "A solar month is not a count of days — it is 30° of the Sun's travel along the rashi belt. Because Earth's orbit is elliptical, the Sun's apparent motion is fastest near perihelion (Poush–Magh), so that 30° passes quickly — a short month. Near aphelion (Asar) it crawls — a long month. This data comes from the same table the patro itself uses.",

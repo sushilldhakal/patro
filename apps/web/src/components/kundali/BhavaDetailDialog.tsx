@@ -1,42 +1,13 @@
-import { useState } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { useMediaQuery, BELOW_MD_MQ } from "@/hooks/use-media-query";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { BhavaReferencePayload } from "@/lib/api";
-import {
-  HOUSE_ORDINAL_NE,
-  HOUSE_ORDINAL_EN,
-  HOUSE_LORD_TITLE_NE,
-  computeAspectedBy,
-  splitList,
-} from "@vedic-patro/domain/kundali/bhava-detail";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { subsetsOf3 } from "@vedic-patro/domain/kundali/bhava-detail";
-
-import { tFor } from "@vedic-patro/i18n/runtime";
-function grahaName(key: string, lang: "ne" | "en"): string {
-  const entry = GRAHA_NAME[key as GrahaKey];
-  return entry ? bilingualText(lang, entry.ne, entry.en, key) : key;
-}
-
-function joinNames(keys: string[], lang: "ne" | "en"): string {
-  if (keys.length === 0) return tFor(lang, "ui.kundali.none");
-  return keys.map((k) => grahaName(k, lang)).join(lang === "en" ? ", " : ", ");
-}
-
-function yutiKey(keys: string[]): string {
-  return [...keys].sort().join("+");
-}
-
-type TabId = "summary" | "lord" | "drishti" | "rules";
+import { useBhavaDetail, useBhavaDialogCopy } from "@vedic-patro/features/kundali";
 
 /** A compact, always-visible card within a tab — replaces the old
  * TopSection/AccordionItem pattern now that each tab already isolates its
@@ -101,85 +72,51 @@ function ShlokaCard({
   );
 }
 
-function GrahaKarakatvaCard({
-  grahaKey,
-  house,
-  reference,
-  lang,
-  digits,
-}: {
-  grahaKey: string;
-  house: number;
-  reference: BhavaReferencePayload;
-  lang: "ne" | "en";
-  digits: (v: string | number) => string;
-}) {
-  const k = reference.grahaKarakatva[grahaKey];
-  if (!k) return null;
-  const saravali = reference.grahaHouseSaravali[grahaKey]?.[house];
+type Karakatva = ReturnType<typeof useBhavaDetail>["lord"]["karakatva"][number];
 
+function GrahaKarakatvaCard({ card }: { card: Karakatva }) {
   return (
     <div className="space-y-2">
-      <p className={kundaliDetailClasses.prose.headingBold}>
-        {GRAHA_ICON[grahaKey as GrahaKey] ?? "🪐"} {grahaName(grahaKey, lang)}
-      </p>
+      <p className={kundaliDetailClasses.prose.headingBold}>{card.title}</p>
 
-      <ShlokaCard
-        label={tFor(lang, "ui.kundali.karakatva_shloka")}
-        source={bilingualText(lang, k.shlokaSourceNe, k.shlokaSourceEn)}
-        shloka={k.shloka}
-      />
+      <ShlokaCard {...card.shloka} />
 
       <div>
-        <p className={kundaliDetailClasses.prose.heading}>📋 {tFor(lang, "ui.kundali.karakatva_subjects")}</p>
-        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.subjectsNe, k.subjectsEn)}{tFor(undefined, "ui.kundali.x_d617dd33")}</p>
+        <p className={kundaliDetailClasses.prose.heading}>📋 {card.subjectsLabel}</p>
+        <p className={kundaliDetailClasses.prose.bodyMt1}>{card.subjects}</p>
       </div>
 
       <div>
-        <p className={kundaliDetailClasses.prose.heading}>💡 {tFor(lang, "ui.kundali.significance")}</p>
-        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.significanceNe, k.significanceEn)}</p>
+        <p className={kundaliDetailClasses.prose.heading}>💡 {card.significanceLabel}</p>
+        <p className={kundaliDetailClasses.prose.bodyMt1}>{card.significance}</p>
       </div>
 
       <div className={kundaliDetailClasses.prose.quote}>
         <div className="flex items-center justify-between gap-2">
-          <p className={kundaliDetailClasses.prose.heading}>
-            ⬡{" "}
-            {tFor(lang, "ui.kundali.lang_in_house_house_value", { house: digits(house), value: house === 1 ? " (Lagna)" : "", lang: grahaName(grahaKey, lang) })}
-          </p>
-          {saravali && (
+          <p className={kundaliDetailClasses.prose.heading}>⬡ {card.placementTitle}</p>
+          {card.rating && (
             <span
               className={cn(
                 kundaliDetailClasses.bhavaDialog.pill, "text-sm font-semibold leading-none",
-                ratingBadgeCls[saravali.rating],
+                ratingBadgeCls[card.rating.kind],
               )}
             >
-              {bilingualText(lang, reference.ratingLabel[saravali.rating].ne, reference.ratingLabel[saravali.rating].en)}
+              {card.rating.label}
             </span>
           )}
         </div>
 
-        {saravali ? (
-          /* एक भावमा जति ग्रन्थ (सारावली, फलदीपिका, होरासार, जातक पारिजात, ...)
-              उद्धृत छन् ती सबैका श्लोकहरू पहिले लगातार देखाइन्छ (प्रत्येकको आफ्नै
-              ग्रन्थ-सन्दर्भसहित, तर छुट्टै अर्थ/व्याख्या बिना), अनि अन्त्यमा एकपटक
-              मात्र समग्र अर्थ र व्याख्या (`summaryNe`/`summaryEn`) — हरेक ग्रहको
-              लागि सधैं यही एउटै ढाँचा। */
+        {card.summary != null ? (
+          /* Every cited text's shloka for this placement first (each with its
+             own source), then one combined meaning at the end. */
           <div className="space-y-2.5">
-            {saravali.entries.map((citation, i) => (
-              <ShlokaCard
-                key={i}
-                source={bilingualText(lang, citation.shlokaSourceNe, citation.shlokaSourceEn)}
-                shloka={citation.shloka}
-              />
+            {card.citations.map((citation, i) => (
+              <ShlokaCard key={i} {...citation} />
             ))}
-            <p className={kundaliDetailClasses.bhavaDialog.summary}>
-              💡 {bilingualText(lang, saravali.summaryNe, saravali.summaryEn)}
-            </p>
+            <p className={kundaliDetailClasses.bhavaDialog.summary}>💡 {card.summary}</p>
           </div>
         ) : (
-          <p className={kundaliDetailClasses.prose.mutedMt15}>
-            {tFor(lang, "ui.kundali.no_classical_shloka_is_available_for")}
-          </p>
+          <p className={kundaliDetailClasses.prose.mutedMt15}>{card.noShloka}</p>
         )}
       </div>
     </div>
@@ -194,7 +131,7 @@ type Props = {
 };
 
 export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: Props) {
-  const { lang, digits } = useLocale();
+  const copy = useBhavaDialogCopy();
   const house = houseNumber != null ? houses.find((h) => h.house === houseNumber) : undefined;
   const isMobile = useMediaQuery(BELOW_MD_MQ);
   const open = Boolean(house);
@@ -210,17 +147,15 @@ export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: P
         house={house}
         houses={houses}
         reference={reference}
-        lang={lang}
-        digits={digits}
         onClose={onClose}
       />
     ) : isMobile ? (
       <DrawerHeader>
-        <DrawerTitle>{tFor(lang, "rashifal.profile.loading")}</DrawerTitle>
+        <DrawerTitle>{copy.loading}</DrawerTitle>
       </DrawerHeader>
     ) : (
       <DialogHeader>
-        <DialogTitle>{tFor(lang, "rashifal.profile.loading")}</DialogTitle>
+        <DialogTitle>{copy.loading}</DialogTitle>
       </DialogHeader>
     )
   ) : null;
@@ -245,114 +180,46 @@ function BhavaDetailBody({
   house,
   houses,
   reference,
-  lang,
-  digits,
   onClose,
 }: {
   variant: "dialog" | "drawer";
   house: BhavaHouse;
   houses: BhavaHouse[];
   reference: BhavaReferencePayload;
-  lang: "ne" | "en";
-  digits: (v: string | number) => string;
   onClose: () => void;
 }) {
-  const info = reference.houseInfo[house.house];
-  const lordKey = reference.rashiLord[house.rashi];
-  const lordHouse = houses.find((h) => h.planets.some((p) => p.key === lordKey))?.house;
-  const bhaveshEntry = lordHouse != null ? reference.bhaveshPhala[house.house]?.[lordHouse] : undefined;
-  const lordTitle = bilingualText(
-    lang,
-    HOUSE_LORD_TITLE_NE[house.house - 1],
-    `Lord of house ${digits(house.house)}`,
-  );
-
-  const occupants = house.planets;
-  const aspectedBy = computeAspectedBy(houses, house.house);
-
-  const beneficPresent = [...occupants.map((p) => p.key), ...aspectedBy].some(
-    (k) => reference.grahaDrishti[k]?.isMalefic === false,
-  );
-  const maleficPresent = [...occupants.map((p) => p.key), ...aspectedBy].some(
-    (k) => reference.grahaDrishti[k]?.isMalefic === true,
-  );
-  // The one-line takeaway for this house — computed once and surfaced both in
-  // the collapsed "Health signals" row and inside it, instead of being buried
-  // as the last accordion item where nobody scrolled to find it.
-  const verdictLabel = maleficPresent
-    ? tFor(lang, "ui.kundali.needs_attention")
-    : tFor(lang, "ui.kundali.generally_fine");
-  const verdictCls = maleficPresent
-    ? "border-destructive/30 bg-destructive/10 text-destructive"
-    : "border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
-
-  const badge = houseBadge(house.house);
-  const ordinal = bilingualText(lang, HOUSE_ORDINAL_NE[house.house - 1], HOUSE_ORDINAL_EN[house.house - 1]);
-  const lalKitabFixedLord = reference.lalKitabFixedLord[house.house] ?? [];
-
-  const occupantKeys = occupants.map((p) => p.key);
-  const yuti2Entry = occupantKeys.length === 2 ? reference.grahaYuti2[yutiKey(occupantKeys)] : undefined;
-  const yuti3Entries =
-    occupantKeys.length >= 3
-      ? subsetsOf3(occupantKeys)
-          .map((triple) => reference.grahaYuti3[yutiKey(triple)])
-          .filter((e): e is NonNullable<typeof e> => Boolean(e))
-      : [];
-  const showYutiSection = occupantKeys.length >= 2;
-
-  const applicableSutras = reference.naadiSutras
-    .filter((s) => s.grahas.every((g) => occupantKeys.includes(g)))
-    .sort((a, b) => a.number - b.number);
-  const lalKitabEntries = occupants
-    .map((p) => ({ key: p.key, entry: reference.lalKitabHouse[p.key]?.[house.house] }))
-    .filter((e): e is { key: string; entry: NonNullable<typeof e.entry> } => Boolean(e.entry));
-  const lalKitabYutiMatch =
-    occupantKeys.length >= 2 && occupantKeys.length <= 3
-      ? reference.lalKitabYuti.find((y) => yutiKey(y.grahas) === yutiKey(occupantKeys))
-      : undefined;
-
-  const themes = splitList(bilingualText(lang, info.themeNe, info.themeEn));
-  const classicalName = reference.houseClassicalName[house.house];
-  const bodyPart = reference.houseBodyPart[house.house];
-  const houseDetail = reference.houseDetail[house.house];
+  const d = useBhavaDetail({ house, houses, reference });
+  const { header, summary, lord, drishti, rules, tab } = d;
+  const verdictCls =
+    summary.health.tone === "attention"
+      ? "border-destructive/30 bg-destructive/10 text-destructive"
+      : "border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
 
   const HeaderWrap = variant === "drawer" ? DrawerHeader : DialogHeader;
   const TitleWrap = variant === "drawer" ? DrawerTitle : DialogTitle;
-
-  const tabs: { id: TabId; icon: string; label: string }[] = [
-    { id: "summary", icon: "📋", label: tFor(lang, "ui.kundali.summary") },
-    { id: "lord", icon: "👑", label: tFor(lang, "ui.kundali.lord_results") },
-    { id: "drishti", icon: "👁️", label: tFor(lang, "ui.kundali.aspects") },
-    { id: "rules", icon: "📚", label: tFor(lang, "ui.kundali.rules") },
-  ];
-  const [tab, setTab] = useState<TabId>("summary");
 
   return (
     <>
       <HeaderWrap className={cn(kundaliDetailClasses.bhavaDialog.header, "text-left")}>
         <TitleWrap className="flex items-center gap-2 text-lg">
           <span className={cn(kundaliDetailClasses.bhavaDialog.headerBadge, kundaliDetailClasses.bhavaDialog.headerBadgeText, "flex")}>
-            {digits(house.house)}
+            {header.number}
           </span>
-          {ordinal} {tFor(lang, "ui.kundali.house")}
-          {classicalName && (
-            <span className={kundaliDetailClasses.prose.quiet}>
-              · {bilingualText(lang, classicalName.ne, classicalName.en)}
-            </span>
+          {header.title}
+          {header.classicalName && (
+            <span className={kundaliDetailClasses.prose.quiet}>· {header.classicalName}</span>
           )}
         </TitleWrap>
-        <p className={kundaliDetailClasses.prose.muted}>{themes.join(" · ")}</p>
+        <p className={kundaliDetailClasses.prose.muted}>{header.themes}</p>
       </HeaderWrap>
 
-      {/* Tabs replace the old single long stacked-accordion list — only one
-          group is on screen at a time, so reading the dialog no longer means
-          scrolling past 7-8 sections to reach the one you want. */}
+      {/* One group on screen at a time instead of one long stacked list. */}
       <div className={cn(kundaliDetailClasses.bhavaDialog.tabBar, "flex shrink-0 gap-1 overflow-x-auto px-3 py-2")}>
-        {tabs.map((t) => (
+        {d.tabs.map((t) => (
           <button
             key={t.id}
             type="button"
-            onClick={() => setTab(t.id)}
+            onClick={() => d.setTab(t.id)}
             className={cn(
               kundaliDetailClasses.bhavaDialog.tab,
               kundaliDetailClasses.bhavaDialog.tabText,
@@ -372,256 +239,140 @@ function BhavaDetailBody({
         {tab === "summary" && (
           <div className="space-y-3">
             <div className="grid gap-3 sm:grid-cols-2">
-              {/* यस भावमा — occupying grahas, condensed; leads with the chart's
-                  actual sign/lord/type since that moved here out of the header */}
-              <Block
-                icon="🪐"
-                title={tFor(lang, "ui.kundali.occupants")}
-                right={occupants.length === 0 ? tFor(lang, "ui.kundali.empty") : undefined}
-              >
+              <Block icon="🪐" title={summary.occupantsTitle} right={summary.occupantsRight ?? undefined}>
                 <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
                   <span>
-                    <span className={kundaliDetailClasses.prose.strong}>
-                      {digits(house.rashi)} {formatRashiByNumber(house.rashi, lang)}
-                    </span>{" "}
-                    {tFor(lang, "dainik.sign")}
+                    <span className={kundaliDetailClasses.prose.strong}>{summary.sign}</span> {summary.signLabel}
                   </span>
                   <span className="text-border">·</span>
                   <span>
-                    {tFor(lang, "panchanga.wheel.lord")}{" "}
-                    <span className={kundaliDetailClasses.prose.accent}>{grahaName(lordKey, lang)}</span>
+                    {summary.lordLabel} <span className={kundaliDetailClasses.prose.accent}>{summary.lord}</span>
                   </span>
-                  {badge && (
+                  {summary.badge && (
                     <>
                       <span className="text-border">·</span>
-                      <span className="text-muted-foreground">{formatHouseBadge(badge, lang)}</span>
+                      <span className="text-muted-foreground">{summary.badge}</span>
                     </>
                   )}
                 </div>
-                {occupants.length > 0 ? (
+                {summary.occupants.length > 0 ? (
                   <div className="space-y-1.5">
-                    {occupants.map((p) => {
-                      const k = reference.grahaKarakatva[p.key];
-                      const subjects = k
-                        ? splitList(bilingualText(lang, k.subjectsNe, k.subjectsEn)).slice(0, 3).join(" · ")
-                        : "";
-                      return (
-                        <div key={p.key}>
-                          <p className={kundaliDetailClasses.prose.heading}>{grahaName(p.key, lang)}</p>
-                          {subjects && <p className={kundaliDetailClasses.prose.muted}>{subjects}</p>}
-                        </div>
-                      );
-                    })}
+                    {summary.occupants.map((p) => (
+                      <div key={p.key}>
+                        <p className={kundaliDetailClasses.prose.heading}>{p.name}</p>
+                        {p.subjects && <p className={kundaliDetailClasses.prose.muted}>{p.subjects}</p>}
+                      </div>
+                    ))}
                   </div>
                 ) : (
-                  <p className={kundaliDetailClasses.prose.bodyMuted}>
-                    {tFor(lang, "ui.kundali.no_graha_here_see_the_placement_2", { lang: grahaName(lordKey, lang) })}
-                  </p>
+                  <p className={kundaliDetailClasses.prose.bodyMuted}>{summary.noOccupants}</p>
                 )}
               </Block>
 
-              {/* स्वास्थ्य संकेत — the headline verdict, shown as a compact card
-                  next to Occupants instead of buried as the 8th accordion item */}
               <Block
                 icon="🩺"
-                title={tFor(lang, "ui.kundali.health_signals")}
+                title={summary.health.title}
                 right={
-                  <span
-                    className={cn(
-                      kundaliDetailClasses.bhavaDialog.pillInline, "inline-flex text-sm font-semibold leading-none",
-                      verdictCls,
-                    )}
-                  >
-                    {verdictLabel}
+                  <span className={cn(kundaliDetailClasses.bhavaDialog.pillInline, "inline-flex text-sm font-semibold leading-none", verdictCls)}>
+                    {summary.health.verdict}
                   </span>
                 }
               >
                 <p className={kundaliDetailClasses.prose.body}>
-                  <span className={kundaliDetailClasses.prose.strong}>
-                    {tFor(lang, "ui.kundali.parts")}
-                  </span>{" "}
-                  {bilingualText(lang, info.medicalNe, info.medicalEn)}
+                  <span className={kundaliDetailClasses.prose.strong}>{summary.health.partsLabel}</span> {summary.health.parts}
                 </p>
-                {bodyPart && (
-                  <p className={kundaliDetailClasses.prose.mutedMt1}>
-                    {bilingualText(lang, bodyPart.ne, bodyPart.en)}
-                  </p>
-                )}
-                {!maleficPresent && !beneficPresent && (
-                  <p className={kundaliDetailClasses.prose.mutedMt1}>
-                    {tFor(lang, "ui.kundali.no_graha_occupies_or_aspects_this")}
-                  </p>
-                )}
+                {summary.health.bodyPart && <p className={kundaliDetailClasses.prose.mutedMt1}>{summary.health.bodyPart}</p>}
+                {summary.health.quiet && <p className={kundaliDetailClasses.prose.mutedMt1}>{summary.health.quiet}</p>}
               </Block>
             </div>
 
-            {/* भाव विवरण — the full house-by-house reference notes (sign, lord,
-                natural significator, description, cited shloka, and separate
-                benefic/malefic effects), not just the one-line theme/summary
-                the header already carries */}
-            {houseDetail && (
-              <Block
-                icon="📖"
-                title={tFor(lang, "ui.kundali.general_house_reference")}
-              >
-                <p className={kundaliDetailClasses.prose.muted}>
-                  {bilingualText(lang, houseDetail.titlesNe, houseDetail.titlesEn)}
-                </p>
+            {summary.reference && (
+              <Block icon="📖" title={summary.reference.title}>
+                <p className={kundaliDetailClasses.prose.muted}>{summary.reference.titles}</p>
                 <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                   <span>
-                    {tFor(lang, "ui.kundali.natural_significator")}:{" "}
-                    <span className={kundaliDetailClasses.prose.strong}>
-                      {bilingualText(lang, houseDetail.naturalNe, houseDetail.naturalEn)}
-                    </span>
+                    {summary.reference.naturalLabel}:{" "}
+                    <span className={kundaliDetailClasses.prose.strong}>{summary.reference.natural}</span>
                   </span>
                 </div>
-                <p className={kundaliDetailClasses.prose.bodyMt2}>
-                  {bilingualText(lang, houseDetail.descriptionNe, houseDetail.descriptionEn)}
-                </p>
-                {/* कालपुरुष कुण्डली अनुसार — यो सधैं मेष लग्न मानेर गणना गरिएको आदर्श/सैद्धान्तिक
-                    राशि-स्वामी हो, यस जातकको वास्तविक राशि/स्वामी होइन (त्यो माथि हेडरमा
-                    देखिन्छ)। दुवैलाई एउटै लेबलमा नराखिएकाले यहाँ छुट्टै र स्पष्ट चिनो दिइएको छ। */}
-                <p className={kundaliDetailClasses.prose.mutedMt2}>
-                  {bilingualText(
-                    lang,
-                    tFor(undefined, "ui.kundali.x_759ec7db", { v0: houseDetail.signNe, v1: houseDetail.lordNe }),
-                    `In the Kalapurusha (natural zodiac) chart this house corresponds to ${houseDetail.signEn} (ruled by ${houseDetail.lordEn}) — that's not this native's actual sign; see the real sign/lord for this house above.`,
-                  )}
-                </p>
+                <p className={kundaliDetailClasses.prose.bodyMt2}>{summary.reference.description}</p>
+                {/* The Kalapurusha (natural zodiac, Mesha lagna) sign/lord — not this native's own. */}
+                <p className={kundaliDetailClasses.prose.mutedMt2}>{summary.reference.kalapurusha}</p>
                 <div className="mt-2">
-                  <ShlokaCard
-                    label={tFor(lang, "ui.kundali.classical_citation")}
-                    source={bilingualText(lang, houseDetail.shlokaSourceNe, houseDetail.shlokaSourceEn)}
-                    shloka={houseDetail.shloka}
-                  />
+                  <ShlokaCard {...summary.reference.shloka} />
                 </div>
-                <p className={kundaliDetailClasses.prose.mutedMt2}>
-                  {tFor(lang, "ui.kundali.a_graha_s_actual_effect_depends")}
-                </p>
+                <p className={kundaliDetailClasses.prose.mutedMt2}>{summary.reference.effectNote}</p>
                 <p className={kundaliDetailClasses.prose.bodyMt15}>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                    {tFor(lang, "ui.kundali.benefic_grahas")} (
-                    {bilingualText(lang, houseDetail.beneficGrahasNe, houseDetail.beneficGrahasEn)}):
-                  </span>{" "}
-                  {bilingualText(lang, houseDetail.beneficEffectNe, houseDetail.beneficEffectEn)}
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">{summary.reference.benefic.label}</span>{" "}
+                  {summary.reference.benefic.text}
                 </p>
                 <p className={kundaliDetailClasses.prose.bodyMt1}>
-                  <span className="font-semibold text-destructive">
-                    {tFor(lang, "ui.kundali.malefic_grahas")} (
-                    {bilingualText(lang, houseDetail.maleficGrahasNe, houseDetail.maleficGrahasEn)}):
-                  </span>{" "}
-                  {bilingualText(lang, houseDetail.maleficEffectNe, houseDetail.maleficEffectEn)}
+                  <span className="font-semibold text-destructive">{summary.reference.malefic.label}</span>{" "}
+                  {summary.reference.malefic.text}
                 </p>
               </Block>
             )}
-
           </div>
         )}
 
         {tab === "lord" && (
           <div className="space-y-3">
-            {/* ग्रह फलादेश — one worked saravali example per occupying graha, expandable for full karakatva */}
-            <Block
-              icon="🪐"
-              title={tFor(lang, "ui.kundali.graha_in_this_house")}
-              right={occupants.length > 0 ? digits(occupants.length) : undefined}
-            >
-              {occupants.length > 0 ? (
+            <Block icon="🪐" title={lord.grahasTitle} right={lord.grahasCount ?? undefined}>
+              {lord.karakatva.length > 0 ? (
                 <div className="divide-y divide-border/50">
-                  {occupants.map((p) => (
-                    <div key={p.key} className="py-3 first:pt-0 last:pb-0">
-                      <GrahaKarakatvaCard
-                        grahaKey={p.key}
-                        house={house.house}
-                        reference={reference}
-                        lang={lang}
-                        digits={digits}
-                      />
+                  {lord.karakatva.map((card) => (
+                    <div key={card.key} className="py-3 first:pt-0 last:pb-0">
+                      <GrahaKarakatvaCard card={card} />
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className={kundaliDetailClasses.prose.muted}>
-                  {tFor(lang, "ui.kundali.no_graha_occupies_this_house_so")}
-                </p>
+                <p className={kundaliDetailClasses.prose.muted}>{lord.noGrahas}</p>
               )}
             </Block>
 
-            {/* भावेश सम्बन्ध — this house's real (chart-specific) lord and
-                where it actually sits, with the matching BPHS ch. 13
-                (भावेशफलाध्याय) shloka for that exact lord-house pair. */}
-            <Block
-              icon="👑"
-              title={tFor(lang, "ui.kundali.lord_placement")}
-              right={
-                lordHouse != null
-                  ? tFor(lang, "ui.kundali.house_lordhouse", { lordHouse: digits(lordHouse) })
-                  : undefined
-              }
-            >
-              {lordHouse != null ? (
+            {/* This house's real lord, where it sits, and the BPHS ch. 13 shloka for that pair. */}
+            <Block icon="👑" title={lord.placementTitle} right={lord.placementRight ?? undefined}>
+              {lord.placement ? (
                 <p className={kundaliDetailClasses.prose.plain}>
-                  <span className={kundaliDetailClasses.prose.strong}>{lordTitle}</span>{" "}
-                  <span className={kundaliDetailClasses.prose.accent}>{grahaName(lordKey, lang)}</span> →{" "}
-                  {tFor(lang, "ui.kundali.house_lordhouse", { lordHouse: digits(lordHouse) })}
+                  <span className={kundaliDetailClasses.prose.strong}>{lord.placement.title}</span>{" "}
+                  <span className={kundaliDetailClasses.prose.accent}>{lord.placement.lord}</span> → {lord.placement.where}
                 </p>
               ) : (
-                <p className={kundaliDetailClasses.prose.muted}>
-                  {tFor(lang, "ui.kundali.sign_lord_lang_wasn_t_found", { lang: grahaName(lordKey, lang) })}
-                </p>
+                <p className={kundaliDetailClasses.prose.muted}>{lord.lordMissing}</p>
               )}
-              {lordHouse != null &&
-                (bhaveshEntry ? (
-                  <div className="mt-2 space-y-1.5">
-                    {bhaveshEntry.shloka && (
-                      <ShlokaCard source={tFor(lang, "ui.kundali.bphs_ch_13")} shloka={bhaveshEntry.shloka} />
-                    )}
-                    <p className={kundaliDetailClasses.prose.body}>{bilingualText(lang, bhaveshEntry.ne, bhaveshEntry.en)}</p>
-                    <p className={kundaliDetailClasses.prose.muted}>
-                      {tFor(lang, "ui.kundali.source_bhaveshphalasource", { bhaveshPhalaSource: reference.bhaveshPhalaSource })}
-                    </p>
-                  </div>
+              {lord.bhavesh &&
+                ("comingSoon" in lord.bhavesh ? (
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>🚧 {lord.bhavesh.comingSoon}</p>
                 ) : (
-                  <p className={kundaliDetailClasses.prose.mutedMt2}>
-                    🚧 {tFor(lang, "ui.kundali.coming_soon")}
-                  </p>
+                  <div className="mt-2 space-y-1.5">
+                    {lord.bhavesh.shloka && <ShlokaCard {...lord.bhavesh.shloka} />}
+                    <p className={kundaliDetailClasses.prose.body}>{lord.bhavesh.text}</p>
+                    <p className={kundaliDetailClasses.prose.muted}>{lord.bhavesh.source}</p>
+                  </div>
                 ))}
             </Block>
 
-            {/* ग्रह युति फल — shown only when 2+ grahas share this house */}
-            {showYutiSection && (
-              <Block icon="👥" title={tFor(lang, "ui.kundali.graha_conjunction_yuti_result")}>
+            {lord.yuti && (
+              <Block icon="👥" title={lord.yuti.title}>
                 <div className="space-y-3">
-                  {yuti2Entry && (
+                  {lord.yuti.pair && (
                     <div className={kundaliDetailClasses.prose.quote}>
                       <p className={kundaliDetailClasses.prose.heading}>
-                        {joinNames(occupantKeys, lang)}
-                        {yuti2Entry.yogaNameNe && (
-                          <span className={kundaliDetailClasses.prose.quiet}>
-                            {" "}
-                            ({bilingualText(lang, yuti2Entry.yogaNameNe, yuti2Entry.yogaNameEn ?? yuti2Entry.yogaNameNe)})
-                          </span>
-                        )}
+                        {lord.yuti.pair.names}
+                        {lord.yuti.pair.yoga && <span className={kundaliDetailClasses.prose.quiet}> ({lord.yuti.pair.yoga})</span>}
                       </p>
-                      <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, yuti2Entry.textNe, yuti2Entry.textEn)}</p>
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>{lord.yuti.pair.text}</p>
                     </div>
                   )}
-                  {yuti3Entries.map((entry) => (
-                    <div key={yutiKey(entry.grahas)} className={kundaliDetailClasses.prose.quote}>
-                      <p className={kundaliDetailClasses.prose.heading}>{joinNames(entry.grahas, lang)}</p>
-                      <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, entry.textNe, entry.textEn)}</p>
+                  {lord.yuti.triples.map((entry) => (
+                    <div key={entry.key} className={kundaliDetailClasses.prose.quote}>
+                      <p className={kundaliDetailClasses.prose.heading}>{entry.names}</p>
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>{entry.text}</p>
                     </div>
                   ))}
-                  {occupantKeys.length >= 3 && (
-                    <p className={kundaliDetailClasses.prose.bodyMuted}>
-                      {bilingualText(lang, reference.grahaYutiGeneralRule.ne, reference.grahaYutiGeneralRule.en)}
-                    </p>
-                  )}
-                  {!yuti2Entry && yuti3Entries.length === 0 && occupantKeys.length < 3 && (
-                    <p className={kundaliDetailClasses.prose.muted}>
-                      {tFor(lang, "ui.kundali.no_reference_is_available_for_this")}
-                    </p>
-                  )}
+                  {lord.yuti.generalRule && <p className={kundaliDetailClasses.prose.bodyMuted}>{lord.yuti.generalRule}</p>}
+                  {lord.yuti.none && <p className={kundaliDetailClasses.prose.muted}>{lord.yuti.none}</p>}
                 </div>
               </Block>
             )}
@@ -629,151 +380,102 @@ function BhavaDetailBody({
         )}
 
         {tab === "drishti" && (
-          /* दृष्टि — outgoing aspects from occupants, expandable for the full incoming picture */
-          <Block icon="👁️" title={tFor(lang, "ui.kundali.aspects")}>
-            {occupants.length > 0 ? (
+          <Block icon="👁️" title={drishti.title}>
+            {drishti.outgoing.length > 0 ? (
               <div className="space-y-1.5">
-                {occupants.map((p) => {
-                  const targets = drishtiTargetHouses(p.key, house.house);
-                  return (
-                    <p key={p.key} className={kundaliDetailClasses.prose.plain}>
-                      <span className={kundaliDetailClasses.prose.strong}>{grahaName(p.key, lang)}</span>
-                      {" → "}
-                      {targets.map((t) => bilingualText(lang, tFor(undefined, "ui.kundali.x_b908d7d7", { v0: digits(t) }), digits(t))).join(" · ")}{" "}
-                      {tFor(lang, "ui.kundali.house")}
-                    </p>
-                  );
-                })}
+                {drishti.outgoing.map((p) => (
+                  <p key={p.key} className={kundaliDetailClasses.prose.plain}>
+                    <span className={kundaliDetailClasses.prose.strong}>{p.name}</span>
+                    {" → "}
+                    {p.targets}
+                  </p>
+                ))}
               </div>
             ) : (
-              <p className={kundaliDetailClasses.prose.muted}>
-                {tFor(lang, "ui.kundali.no_graha_occupies_this_house_so_2")}
-              </p>
+              <p className={kundaliDetailClasses.prose.muted}>{drishti.noOutgoing}</p>
             )}
             <div className={kundaliDetailClasses.prose.divider}>
-              <p className={kundaliDetailClasses.prose.headingMb15}>
-                {tFor(lang, "ui.kundali.all_aspects")}
-              </p>
-              {aspectedBy.length > 0 ? (
+              <p className={kundaliDetailClasses.prose.headingMb15}>{drishti.allTitle}</p>
+              {drishti.incoming.length > 0 ? (
                 <div className="space-y-2">
-                  <p className={kundaliDetailClasses.prose.heading}>
-                    {tFor(lang, "ui.kundali.grahas_aspecting_this_house")}
-                  </p>
-                  {aspectedBy.map((k) => {
-                    const d = reference.grahaDrishti[k];
-                    return (
-                      <div key={k}>
-                        <p className={kundaliDetailClasses.prose.heading}>{grahaName(k, lang)}</p>
-                        {d && (
-                          <p className={kundaliDetailClasses.prose.bodyMutedMt05}>
-                            {bilingualText(lang, d.summaryNe, d.summaryEn)}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <p className={kundaliDetailClasses.prose.heading}>{drishti.incomingTitle}</p>
+                  {drishti.incoming.map((g) => (
+                    <div key={g.key}>
+                      <p className={kundaliDetailClasses.prose.heading}>{g.name}</p>
+                      {g.summary && <p className={kundaliDetailClasses.prose.bodyMutedMt05}>{g.summary}</p>}
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <p className={kundaliDetailClasses.prose.muted}>
-                  {tFor(lang, "ui.kundali.no_graha_aspects_this_house")}
-                </p>
+                <p className={kundaliDetailClasses.prose.muted}>{drishti.noIncoming}</p>
               )}
             </div>
           </Block>
         )}
 
         {tab === "rules" && (
-          /* सम्बन्धित नियम — Brighu Naadi sutras + Lal Kitab signals */
-          <Block icon="📚" title={tFor(lang, "ui.kundali.related_rules")}>
+          <Block icon="📚" title={rules.title}>
             <Accordion type="multiple">
               <AccordionItem value="naadi">
                 <AccordionTrigger className="text-sm hover:no-underline">
-                  <span className="flex-1">{tFor(lang, "ui.kundali.brighu_naadi_sutras")}</span>
-                  <span className="text-muted-foreground">{digits(applicableSutras.length)}</span>
+                  <span className="flex-1">{rules.sutrasTitle}</span>
+                  <span className="text-muted-foreground">{rules.sutrasCount}</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  {applicableSutras.length > 0 ? (
+                  {rules.sutras.length > 0 ? (
                     <div className="space-y-3">
-                      {applicableSutras.map((s) => (
-                        <div key={s.number} className={kundaliDetailClasses.prose.quote}>
-                          <p className={kundaliDetailClasses.prose.heading}>
-                            {bilingualText(lang, tFor(undefined, "ui.kundali.x_b54eae14", { v0: digits(s.number), v1: s.titleNe }), `Sutra ${digits(s.number)} — ${s.titleEn}`)}
-                          </p>
-                          <p className={kundaliDetailClasses.prose.muted}>{bilingualText(lang, s.categoryNe, s.categoryEn)}</p>
-                          <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, s.bodyNe, s.bodyEn)}</p>
+                      {rules.sutras.map((s) => (
+                        <div key={s.key} className={kundaliDetailClasses.prose.quote}>
+                          <p className={kundaliDetailClasses.prose.heading}>{s.title}</p>
+                          <p className={kundaliDetailClasses.prose.muted}>{s.category}</p>
+                          <p className={kundaliDetailClasses.prose.bodyMt1}>{s.body}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className={kundaliDetailClasses.prose.muted}>
-                      {tFor(lang, "ui.kundali.no_brighu_naadi_sutras_apply_since")}
-                    </p>
+                    <p className={kundaliDetailClasses.prose.muted}>{rules.noSutras}</p>
                   )}
-                  <p className={kundaliDetailClasses.prose.mutedMt2}>
-                    {tFor(lang, "ui.kundali.source_naadisutrasource", { naadiSutraSource: reference.naadiSutraSource })}
-                  </p>
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>{rules.sutraSource}</p>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="lalkitab">
                 <AccordionTrigger className="text-sm hover:no-underline">
-                  <span className="flex-1">{tFor(lang, "ui.kundali.lal_kitab")}</span>
-                  <span className="text-muted-foreground">{digits(lalKitabEntries.length)}</span>
+                  <span className="flex-1">{rules.lalKitabTitle}</span>
+                  <span className="text-muted-foreground">{rules.lalKitabCount}</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  {lalKitabEntries.length > 0 ? (
+                  {rules.lalKitab.length > 0 ? (
                     <div className="space-y-3">
-                      {lalKitabEntries.map(({ key, entry }) => {
-                        const tip = reference.lalKitabSafetyTips[key];
-                        return (
-                          <div key={key}>
-                            <p className={kundaliDetailClasses.prose.heading}>
-                              {GRAHA_ICON[key as GrahaKey] ?? "🪐"} {grahaName(key, lang)} —{" "}
-                              {tFor(lang, "ui.kundali.house_house", { house: digits(house.house) })}
-                            </p>
-                            <p className={kundaliDetailClasses.prose.bodyMt05}>{bilingualText(lang, entry.ne, entry.en)}</p>
-                            {tip && (
-                              <p className={kundaliDetailClasses.prose.bodyMutedMt1}>
-                                {tFor(lang, "ui.kundali.safe_practice")} {bilingualText(lang, tip.ne, tip.en)}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
+                      {rules.lalKitab.map((e) => (
+                        <div key={e.key}>
+                          <p className={kundaliDetailClasses.prose.heading}>{e.title}</p>
+                          <p className={kundaliDetailClasses.prose.bodyMt05}>{e.text}</p>
+                          {e.tip && <p className={kundaliDetailClasses.prose.bodyMutedMt1}>{e.tip}</p>}
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <p className={kundaliDetailClasses.prose.bodyMuted}>
-                      {tFor(lang, "ui.kundali.this_house_has_no_occupying_graha_2", { lang: joinNames(lalKitabFixedLord, lang) })}
-                    </p>
+                    <p className={kundaliDetailClasses.prose.bodyMuted}>{rules.noLalKitab}</p>
                   )}
-                  {lalKitabYutiMatch && (
+                  {rules.lalKitabYuti && (
                     <div className={kundaliDetailClasses.prose.quoteTop}>
-                      <p className={kundaliDetailClasses.prose.heading}>
-                        {tFor(lang, "ui.kundali.graha_yuti")} {joinNames(lalKitabYutiMatch.grahas, lang)}
-                      </p>
-                      <p className={kundaliDetailClasses.prose.bodyMt1}>
-                        {bilingualText(lang, lalKitabYutiMatch.textNe, lalKitabYutiMatch.textEn)}
-                      </p>
+                      <p className={kundaliDetailClasses.prose.heading}>{rules.lalKitabYuti.title}</p>
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>{rules.lalKitabYuti.text}</p>
                     </div>
                   )}
-                  <p className={kundaliDetailClasses.prose.mutedMt2}>
-                    {tFor(lang, "ui.kundali.source_lal_kitab_parts_2_11")}
-                  </p>
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>{rules.lalKitabSource}</p>
                   <Accordion type="single" collapsible className="mt-2">
                     <AccordionItem value="lalkitab-sustha-dustha" className="border-b-0">
                       <AccordionTrigger className="py-1.5 text-sm text-secondary hover:no-underline">
-                        {tFor(lang, "ui.kundali.what_is_lal_kitab_s_sustha")}
+                        {rules.susthaTitle}
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-1.5">
-                          {reference.lalKitabSusthaDustha.map((rule, i) => (
-                            <p key={i} className={kundaliDetailClasses.prose.body}>
-                              {bilingualText(lang, rule.ne, rule.en)}
-                            </p>
+                          {rules.sustha.map((rule, i) => (
+                            <p key={i} className={kundaliDetailClasses.prose.body}>{rule}</p>
                           ))}
                         </div>
-                        <p className={kundaliDetailClasses.prose.mutedMt2}>
-                          {tFor(lang, "ui.kundali.source_lalkitabrevisionsource", { lalKitabRevisionSource: reference.lalKitabRevisionSource })}
-                        </p>
+                        <p className={kundaliDetailClasses.prose.mutedMt2}>{rules.susthaSource}</p>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -786,7 +488,7 @@ function BhavaDetailBody({
 
       <div className={cn(kundaliDetailClasses.bhavaDialog.footer, "flex justify-end")}>
         <Button variant="outline" onClick={onClose}>
-          {tFor(lang, "ui.common.close")}
+          {d.close}
         </Button>
       </div>
     </>

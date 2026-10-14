@@ -7041,10 +7041,6 @@ export const strings = {
     ne: "यस भावमा कुनै ग्रहको दृष्टि पर्दैन।",
     en: "No graha aspects this house.",
   },
-  "ui.kundali.no_graha_here_see_the_placement": {
-    ne: "कुनै ग्रह छैन — राशि स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
-    en: "No graha here — see the placement of {{pick}}, this house's ruling graha.",
-  },
   "ui.kundali.no_graha_occupies_or_aspects_this": {
     ne: "यस भावमा कुनै ग्रहको दृष्टि वा उपस्थिति छैन।",
     en: "No graha occupies or aspects this house.",
@@ -7085,10 +7081,6 @@ export const strings = {
     ne: "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
     en: "Save birth details once, then generate kundali quickly.",
   },
-  "ui.kundali.sign_lord_pick_wasn_t_found": {
-    ne: "राशि स्वामी {{pick}} यो D1 चार्टमा फेला परेन।",
-    en: "Sign lord {{pick}} wasn't found placed in this D1 chart.",
-  },
   "ui.kundali.source_bhaveshphalasource": { ne: "स्रोत: {{bhaveshPhalaSource}}", en: "Source: {{bhaveshPhalaSource}}" },
   "ui.kundali.source_lal_kitab_parts_2_11": { ne: "स्रोत: लाल किताब — भाग २–११", en: "Source: Lal Kitab, parts 2–11" },
   "ui.kundali.source_lalkitabrevisionsource": {
@@ -7097,10 +7089,6 @@ export const strings = {
   },
   "ui.kundali.source_naadisutrasource": { ne: "स्रोत: {{naadiSutraSource}}", en: "Source: {{naadiSutraSource}}" },
   "ui.kundali.summary": { ne: "सारांश", en: "Summary" },
-  "ui.kundali.this_house_has_no_occupying_graha": {
-    ne: "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
-    en: "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{pick}}, this house's fixed (pakka ghar) lord.",
-  },
   "ui.kundali.this_section_is_not_available": { ne: "यो खण्ड उपलब्ध छैन।", en: "This section is not available." },
   "ui.kundali.total_guna_match": { ne: "कुल गुण मिलान", en: "Total guna match" },
   "ui.kundali.upagrahas": { ne: "उपग्रह", en: "Upagrahas" },
@@ -8428,7 +8416,6 @@ export const strings = {
   "ui.panchanga.reload_reset_zoom": { ne: "रिलोड · जुम रिसेट · {{mode}}", en: "Reload · reset zoom · {{mode}}" },
   "ui.sky3d.solar_eclipse_node": { ne: "सूर्यग्रहण · औंसी + {{node}}", en: "Solar eclipse · new moon + {{node}}" },
   "ui.sky3d.lunar_eclipse_node": { ne: "चन्द्रग्रहण · पूर्णिमा + {{node}}", en: "Lunar eclipse · full moon + {{node}}" },
-  "ui.kundali.graha_in_house_phala": { ne: "भाव {{house}}{{lagna}} मा {{graha}}को फल", en: "{{graha}} in house {{house}}{{lagna}}" },
 } satisfies Record<string, Translatable>;
 
 export type StringKey = keyof typeof strings;

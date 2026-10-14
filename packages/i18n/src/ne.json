@@ -4448,7 +4448,6 @@
       "needs_attention": "⚠️ ध्यान दिनुपर्ने",
       "no_brighu_naadi_sutras_apply_since": "यस भावमा कुनै ग्रह नभएकाले लागू हुने भृगु नाडी सूत्र देखिएका छैनन्।",
       "no_graha_aspects_this_house": "यस भावमा कुनै ग्रहको दृष्टि पर्दैन।",
-      "no_graha_here_see_the_placement": "कुनै ग्रह छैन — राशि स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
       "no_graha_occupies_or_aspects_this": "यस भावमा कुनै ग्रहको दृष्टि वा उपस्थिति छैन।",
       "no_graha_occupies_this_house_so": "यस भावमा कुनै ग्रह नभएकाले ग्रह फलादेश छैन।",
       "no_graha_occupies_this_house_so_2": "यस भावमा कुनै ग्रह नभएकाले यहाँबाट बाहिर दृष्टि पर्दैन।",
@@ -4465,13 +4464,11 @@
       "rules": "नियम",
       "safe_practice": "सुरक्षित व्यवहार:",
       "save_birth_details_once_then_generate": "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
-      "sign_lord_pick_wasn_t_found": "राशि स्वामी {{pick}} यो D1 चार्टमा फेला परेन।",
       "source_bhaveshphalasource": "स्रोत: {{bhaveshPhalaSource}}",
       "source_lal_kitab_parts_2_11": "स्रोत: लाल किताब — भाग २–११",
       "source_lalkitabrevisionsource": "स्रोत: {{lalKitabRevisionSource}}",
       "source_naadisutrasource": "स्रोत: {{naadiSutraSource}}",
       "summary": "सारांश",
-      "this_house_has_no_occupying_graha": "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
       "this_section_is_not_available": "यो खण्ड उपलब्ध छैन।",
       "total_guna_match": "कुल गुण मिलान",
       "upagrahas": "उपग्रह",
@@ -4517,8 +4514,7 @@
       "degree": "अंश",
       "lord_sub": "स्वामी / उप",
       "longitude": "स्पष्ट",
-      "mixed": "मिश्रित",
-      "graha_in_house_phala": "भाव {{house}}{{lagna}} मा {{graha}}को फल"
+      "mixed": "मिश्रित"
     },
     "learn": {
       "a_solar_month_is_not_a": "सौर महिना दिनको गन्ती होइन — यो राशि पट्टीमा सूर्यको ३०° यात्रा हो। पृथ्वीको कक्ष अण्डाकार भएकाले उपसौर (पुष–माघ) नजिक सूर्यको देखिने गति छिटो हुन्छ, त्यसैले त्यो ३०° छिटो पार हुन्छ — छोटो महिना। अपसौर (असार) नजिक गति सुस्त हुन्छ — लामो महिना। यो तथ्याङ्क पात्रोले नै प्रयोग गर्ने तालिकाबाटै आएको हो।",
