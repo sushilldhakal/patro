@@ -9,6 +9,8 @@ export const calendarClasses = {
   grid: "overflow-hidden border border-border bg-border",
   gridWide: "rounded-xl shadow-sm",
   gridPhone: "rounded-none",
+  gridWeb: "shadow-ring-soft max-md:rounded-none max-md:shadow-none",
+  gridCols: "grid grid-cols-7 gap-px",
   weekdayCell: "min-w-0 bg-surface-inset",
   weekdayCellWide: "items-start px-3 py-2",
   weekdayCellPhone: "items-center px-0 py-1",
@@ -19,7 +21,14 @@ export const calendarClasses = {
 
   // ── Day cells ─────────────────────────────────────────────────────────────
   emptyCell: "bg-surface-muted",
+  emptyWeb: "min-h-[104px] cursor-default max-md:min-h-12",
   cell: "relative min-w-0 overflow-hidden bg-card",
+  cellWeb: "flex min-h-[104px] flex-col max-md:min-h-[5rem] max-md:p-1",
+  cellSelected: "shadow-[inset_0_0_0_2px_var(--ring)]",
+  cellHit: "absolute inset-0 z-0 border-none bg-transparent p-0",
+  moonWrap: "pointer-events-none absolute right-0.5 top-0.5 z-[2] size-3.5 max-md:right-0 max-md:top-0 sm:size-4 md:right-1 md:top-1",
+  edgeStrip: "pointer-events-none absolute z-[2] flex w-[1.375rem] items-center justify-center overflow-visible max-md:hidden inset-y-1",
+  edgeText: "inline-block max-h-full whitespace-nowrap font-num font-semibold leading-[1.4] tracking-wide [writing-mode:vertical-rl] [text-orientation:mixed]",
   cellWide: "p-2",
   cellPhone: "p-1",
   cellWithEdgeLabels: "px-3.5",

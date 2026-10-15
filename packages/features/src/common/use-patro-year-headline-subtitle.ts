@@ -1,15 +1,14 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
+import { fetchFestivals } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/era";
-import { fetchFestivals } from "@/lib/api";
-import { formatPatroYearGregorianRange } from "@vedic-patro/domain/patro-headline-subtitle";
+import { formatPatroYearGregorianRange, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { useLanguage } from "@vedic-patro/i18n/react";
 
 /**
- * Gregorian year span under Vikram year headlines (PatroYearNav).
- * Uses page payload when present; otherwise loads festivals metadata (includes
- * `gregorian_range` for bs/bbs/ad/bc browse years).
+ * Gregorian year span under a Vikram year headline.
+ * Uses the page payload when present; otherwise loads festivals metadata.
  */
 export function usePatroYearHeadlineSubtitle(
   era: Era,
@@ -18,16 +17,13 @@ export function usePatroYearHeadlineSubtitle(
   rangeLabel?: string | null,
   displayLanguage?: Language,
 ): string | undefined {
-  const { lang, digits } = usePatroDisplayLocale(displayLanguage);
+  const baseLang = useLanguage();
+  const lang = displayLanguage ?? baseLang;
+  const digits = patroHeadlineDigits(lang);
 
   const fromProps = useMemo(() => {
     if (gregorianRange?.start && gregorianRange?.end) {
-      return formatPatroYearGregorianRange(
-        gregorianRange.start,
-        gregorianRange.end,
-        lang,
-        digits,
-      );
+      return formatPatroYearGregorianRange(gregorianRange.start, gregorianRange.end, lang, digits);
     }
     return rangeLabel?.trim() ? rangeLabel : undefined;
   }, [gregorianRange, rangeLabel, lang, digits]);

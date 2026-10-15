@@ -15,7 +15,7 @@ import { PACK_GROUPS, type PackGroupId, type PackSizeEstimate } from "@/lib/offl
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { formatByteSize, parsePositiveYear } from "@vedic-patro/features/common";
-import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
+import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 /** Copy keys for each download group (`offline.group.<id>.name` / `.hint`). */
 const groupName = (id: PackGroupId) => `offline.group.${id}.name`;

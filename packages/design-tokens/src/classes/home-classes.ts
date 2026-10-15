@@ -102,6 +102,12 @@ export const homeClasses = {
     "max-w-full flex-row items-center justify-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm",
   quickTile: "flex-col justify-center gap-3 rounded-2xl px-2.5 py-3.5",
   quickLabel: "text-sm font-bold leading-snug text-foreground",
+  quickGroups: "flex flex-col gap-8",
+  quickLinkCard:
+    "group flex w-auto shrink-0 flex-row items-center text-left md:aspect-square md:w-[calc((100%-3rem)/5)] md:max-w-32 md:flex-col md:items-center md:justify-center md:gap-3 md:rounded-2xl md:px-2.5 md:py-3.5 md:text-center md:shadow-none lg:max-w-none lg:w-[calc((100%-5.25rem)/8)]",
+  quickLinkIconWrap: "inline-flex shrink-0 items-center justify-center",
+  quickLinkDesc: "hidden w-full min-w-0 text-xs leading-snug text-muted-foreground md:block",
+  quickTitlePhone: "text-left",
 
   // ── Veda mantra ───────────────────────────────────────────────────────────
   vedaTitle: "min-w-0 flex-1 text-base font-bold text-secondary",

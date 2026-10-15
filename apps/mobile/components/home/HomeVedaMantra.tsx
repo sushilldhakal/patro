@@ -1,49 +1,18 @@
 import { useEffect } from "react";
-import { Pressable, View } from "react-native";
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@/components/icons/Ionicons";
-import { Text } from "@/components/ui/Text";
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useHomeVedaMantra } from "@vedic-patro/features/home";
-import { inkOn } from "@/lib/theme";
-import { useThemeColors } from "@/lib/theme-context";
-import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { cn } from "@vedic-patro/domain/utils";
-import { patroSecBand } from "@/lib/patro-classes";
+import { HomeVedaMantra as HomeVedaMantraView } from "@vedic-patro/ui/kit/shell";
 
-function PlayButton({
-  playing,
-  onToggle,
-  label,
-}: {
-  playing: boolean;
-  onToggle: () => void;
-  label: { play: string; pause: string };
-}) {
-  const colors = useThemeColors();
-  return (
-    <Pressable
-      onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityLabel={playing ? label.pause : label.play}
-      className={cn(homeClasses.vedaPlay, "active:opacity-80")}
-    >
-      <Ionicons name={playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} />
-    </Pressable>
-  );
-}
-
-/** Today's Veda mantra — Sanskrit, audio, and a link to where it comes from. */
+/** Today's Veda mantra. The player stays here; the card is `@vedic-patro/ui/kit/shell`. */
 export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
   const router = useRouter();
   const mantra = useHomeVedaMantra(dateAd, { offlineDays: 6 });
   const audioUrl = mantra.audioUrl;
-  // 100 ms status ticks so the word highlight follows the chant smoothly.
   const player = useAudioPlayer(audioUrl ? { uri: audioUrl } : null, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
 
   useEffect(() => {
-    // Recitation should be audible with the iPhone's silent switch on.
     void setAudioModeAsync({
       playsInSilentMode: true,
       interruptionMode: "duckOthers",
@@ -53,62 +22,40 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
     }).catch(() => {});
   }, []);
 
-  const toggleAudio = () => {
-    if (status.playing) {
-      player.pause();
-      return;
-    }
-    if (status.didJustFinish || (status.duration > 0 && status.currentTime >= status.duration - 0.1)) {
-      void player.seekTo(0);
-    }
-    player.play();
-  };
-
   if (!mantra.ready) return null;
 
   const progress = status.playing && status.duration > 0 ? status.currentTime / status.duration : -1;
-  const activeToken = mantra.activeTokenAt(progress);
   const { copy, read } = mantra;
-
-  const openSource = () =>
-    router.push({
-      pathname: "/documents/[slug]/[chapter]",
-      params: { slug: read.slug, chapter: read.chapter, verse: read.verse },
-    } as never);
-
   return (
-    <View className="overflow-hidden rounded-xl border border-foreground/10 bg-card">
-      <View className={cn(patroSecBand, "flex-row items-center")}>
-        <Text className={homeClasses.vedaTitle}>
-          {copy.title}
-        </Text>
-        {audioUrl ? <PlayButton playing={status.playing} onToggle={toggleAudio} label={copy} /> : null}
-      </View>
-
-      <View className={homeClasses.vedaBody}>
-        <Text className={homeClasses.vedaSanskrit} selectable>
-          {mantra.tokens.map((tok, i) =>
-            i === activeToken ? (
-              <Text key={i} className={homeClasses.vedaWord}>
-                {tok}
-              </Text>
-            ) : (
-              tok
-            ),
-          )}
-        </Text>
-
-        <View className={homeClasses.vedaFooter}>
-          <Pressable onPress={openSource} accessibilityRole="link" hitSlop={8} className="active:opacity-70">
-            <Text className={homeClasses.vedaMore}>
-              {copy.readMore}
-            </Text>
-          </Pressable>
-          <Text className={homeClasses.vedaSource}>
-            {mantra.source}
-          </Text>
-        </View>
-      </View>
-    </View>
+    <HomeVedaMantraView
+      title={copy.title}
+      tokens={mantra.tokens}
+      activeToken={mantra.activeTokenAt(progress)}
+      source={mantra.source}
+      readMore={copy.readMore}
+      playLabel={copy.play}
+      pauseLabel={copy.pause}
+      playing={status.playing}
+      onToggle={
+        audioUrl
+          ? () => {
+              if (status.playing) {
+                player.pause();
+                return;
+              }
+              if (status.didJustFinish || (status.duration > 0 && status.currentTime >= status.duration - 0.1)) {
+                void player.seekTo(0);
+              }
+              player.play();
+            }
+          : undefined
+      }
+      onOpenPassage={() =>
+        router.push({
+          pathname: "/documents/[slug]/[chapter]",
+          params: { slug: read.slug, chapter: read.chapter, verse: read.verse },
+        } as never)
+      }
+    />
   );
 }

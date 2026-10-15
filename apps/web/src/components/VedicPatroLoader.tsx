@@ -1,9 +1,9 @@
-import { cn } from "@vedic-patro/domain/utils";
-import { useVedicPatroLoader } from "@vedic-patro/features/common";
+import { VedicPatroLoader as VedicPatroLoaderView } from "@vedic-patro/ui/kit/shell";
 
 /** Reference app-icon size from vedicpatro brand sheet */
 export const PAGE_LOADER_SIZE = 120;
 
+/** Page loader. The caption column is shared; the mark is the website's loader image. */
 export function VedicPatroLoader({
   label,
   size = PAGE_LOADER_SIZE,
@@ -14,18 +14,11 @@ export function VedicPatroLoader({
   size?: number;
   className?: string;
 }) {
-  const shown = useVedicPatroLoader(label);
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-4", className)}>
-      <img
-        src="/loader.svg"
-        alt=""
-        width={size}
-        height={size}
-        className="shrink-0 rounded-[22%] shadow-md"
-        aria-hidden
-      />
-      {shown ? <p className="text-sm">{shown}</p> : null}
-    </div>
+    <VedicPatroLoaderView
+      label={label}
+      className={className}
+      mark={<img src="/loader.svg" alt="" width={size} height={size} className="shrink-0 rounded-[22%] shadow-md" aria-hidden />}
+    />
   );
 }

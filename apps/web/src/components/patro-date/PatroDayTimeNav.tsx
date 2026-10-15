@@ -21,7 +21,7 @@ import {
 import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
+import { PatroDayTimeHeader } from "@vedic-patro/ui/kit/shell";
 
 export type PatroDayTimeNavProps = {
   date: Date;

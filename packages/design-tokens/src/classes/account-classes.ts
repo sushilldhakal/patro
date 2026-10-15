@@ -85,6 +85,7 @@ export const accountClasses = {
   avatarText: "text-sm font-semibold text-secondary",
   menuEmail: "text-sm text-foreground",
   menuStatus: "text-xs",
+  menuPanel: "absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-border bg-card p-1.5 shadow-lg",
   menuItem: "items-center gap-2 rounded-md px-2.5 py-2 text-sm",
   menuItemText: "text-sm text-foreground",
 
