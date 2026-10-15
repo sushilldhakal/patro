@@ -172,7 +172,6 @@ export function KundaliDetailView({
             data={detail.shadbala}
             yuddha={detail.yuddha}
             bhavaBala={detail.bhavaBala}
-            compactHeader
           />
         </KundaliSection>
       ) : null}
@@ -185,7 +184,6 @@ export function KundaliDetailView({
           {detail.bhavaBala ? (
             <BhavaBalaCard
               data={detail.bhavaBala}
-              compactHeader
               vargaCharts={detail.vargaCharts}
               combustion={detail.combustion}
             />
@@ -203,7 +201,7 @@ export function KundaliDetailView({
         <KundaliSection title={t("kundali.nav_ashtakavarga")} icon="apps-outline">
           {balaTabs}
           {detail.ashtakavarga ? (
-            <AshtakavargaCard data={detail.ashtakavarga} compactHeader />
+            <AshtakavargaCard data={detail.ashtakavarga} />
           ) : (
             <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
               {t("ui.kundali.this_section_is_not_available")}
@@ -222,7 +220,7 @@ export function KundaliDetailView({
         >
           {balaTabs}
           {detail.vimshopaka && detail.vimshopaka.classifications.length > 0 ? (
-            <VimshopakaCard data={detail.vimshopaka} compactHeader />
+            <VimshopakaCard data={detail.vimshopaka} />
           ) : (
             <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
               {t("ui.kundali.this_section_is_not_available")}

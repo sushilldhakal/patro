@@ -1,5 +1,8 @@
 import type { JyotishKit } from "../contract";
-import { PlaybackBar, ShlokaCard } from "./Documents";
+import { BhavaDetailDialog } from "./BhavaDetail";
+import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
+import { DashaTree } from "./DashaTree";
+import { ShantiVidhiPanel } from "./Shanti";
 import {
   AyanamshaSelector,
   HouseRequirementsForm,
@@ -10,6 +13,7 @@ import {
 } from "./Forms";
 import { DocumentCard } from "./DocumentCard";
 import { DocumentJumpForm } from "./DocumentJumpForm";
+import { PlaybackBar, ShlokaCard } from "./Documents";
 import {
   RashifalComponents,
   RashifalDomains,
@@ -56,6 +60,16 @@ export type {
   KundaliProfilePickerProps,
   OwnerCompatibilityProps,
   ProfileFormProps,
+  AshtakavargaCardProps,
+  BhavaBalaCardProps,
+  BhavaDetailDialogProps,
+  DashaSystemPanelProps,
+  DashaTreeProps,
+  GrahaDetailsListProps,
+  ShadbalaCardProps,
+  ShantiVidhiPanelProps,
+  VimshopakaCardProps,
+  YogaReferenceCatalogProps,
   SaitRule,
   SaitRulesSectionProps,
   SaitSourcesProps,
@@ -86,6 +100,16 @@ export {
   KundaliProfilePicker,
   OwnerCompatibility,
   ProfileForm,
+  AshtakavargaCard,
+  BhavaBalaCard,
+  BhavaDetailDialog,
+  DashaSystemPanel,
+  DashaTree,
+  GrahaDetailsList,
+  ShadbalaCard,
+  ShantiVidhiPanel,
+  VimshopakaCard,
+  YogaReferenceCatalog,
   SaitRulesSection,
   SaitSources,
   SuitabilityBadge,
@@ -120,4 +144,14 @@ export const jyotishKit = {
   OwnerCompatibility,
   KundaliMilanResult,
   KundaliProfilePicker,
+  VimshopakaCard,
+  YogaReferenceCatalog,
+  GrahaDetailsList,
+  AshtakavargaCard,
+  BhavaBalaCard,
+  ShadbalaCard,
+  DashaTree,
+  DashaSystemPanel,
+  ShantiVidhiPanel,
+  BhavaDetailDialog,
 } satisfies JyotishKit;

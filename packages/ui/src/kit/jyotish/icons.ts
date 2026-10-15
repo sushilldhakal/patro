@@ -195,3 +195,13 @@ export const iconGlobe: IconNode = [
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" }],
   ["path", { d: "M2 12h20" }],
 ];
+
+export const iconArrowDown: IconNode = [
+  ["path", { d: "M12 5v14" }],
+  ["path", { d: "m19 12-7 7-7-7" }],
+];
+
+export const iconArrowRight: IconNode = [
+  ["path", { d: "M5 12h14" }],
+  ["path", { d: "m12 5 7 7-7 7" }],
+];

@@ -11,6 +11,18 @@ import type {
   ProfileInput,
   LocationParams,
   Profile,
+  AshtakavargaData,
+  BhavaBalaData,
+  BhavaReferencePayload,
+  DashaSystem,
+  DashaTreeNode,
+  DashaTreeResponse,
+  GrahaShantiRecommendation,
+  ShadbalaPlanet,
+  ShadbalaResponse,
+  VargaCharts,
+  VimshopakaData,
+  YuddhaData,
   RashifalGocharRow,
   RashifalPeriod,
   RashifalPersonal,
@@ -21,6 +33,9 @@ import type {
   Shloka,
 } from "@vedic-patro/api-client";
 import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
+import type { GrahaDetailsInput } from "@vedic-patro/features/kundali";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
@@ -283,6 +298,82 @@ export type KundaliProfilePickerProps = {
   renderForm: (args: KundaliProfileFormArgs) => ReactNode;
 };
 
+/** Planet glyph. The kit cannot import the app icon. */
+export type GrahaSlot = (props: { graha: string; size?: number }) => ReactNode;
+export type RashiSlot = (props: { number: number; name?: string; size?: number }) => ReactNode;
+
+export type VimshopakaCardProps = { data: VimshopakaData; renderGraha: GrahaSlot };
+
+export type YogaReferenceCatalogProps = { excludeIds?: ReadonlySet<string> };
+
+export type GrahaDetailsListProps = GrahaDetailsInput & { renderGraha: GrahaSlot };
+
+export type AshtakavargaCardProps = { data: AshtakavargaData; renderGraha: GrahaSlot; renderRashi: RashiSlot };
+
+export type BhavaBalaCardProps = {
+  data: BhavaBalaData;
+  vargaCharts?: VargaCharts;
+  combustion?: Record<string, boolean | null>;
+  renderGraha: GrahaSlot;
+  /** The wheel stays a sibling drawing (family of charts). */
+  renderChart: (props: {
+    data: BhavaBalaData;
+    selectedHouse: number;
+    onSelectHouse: (house: number) => void;
+    vargaCharts?: VargaCharts;
+    combustion?: Record<string, boolean | null>;
+  }) => ReactNode;
+};
+
+export type ShadbalaCardProps = {
+  data: ShadbalaResponse;
+  yuddha?: YuddhaData;
+  bhavaBala?: BhavaBalaData | null;
+  renderGraha: GrahaSlot;
+  renderChart: (props: {
+    planets: ShadbalaPlanet[];
+    selectedKey: string;
+    onSelect: (key: string) => void;
+    yuddha?: YuddhaData;
+    scale: ShadbalaScale;
+    onScaleChange: (scale: ShadbalaScale) => void;
+  }) => ReactNode;
+};
+
+export type DashaTreeProps = {
+  tree: DashaTreeNode[];
+  timeZone?: string;
+  system?: DashaSystem;
+  maxLevel?: number;
+  cycleYears?: number;
+  renderGraha: GrahaSlot;
+};
+
+export type DashaSystemPanelProps = {
+  vimshottari: DashaTreeResponse | null | undefined;
+  tribhagi: DashaTreeResponse | null | undefined;
+  yogini: DashaTreeResponse | null | undefined;
+  timeZone?: string;
+  active?: DashaSystem;
+  onActiveChange?: (id: DashaSystem) => void;
+  renderGraha: GrahaSlot;
+};
+
+export type ShantiVidhiPanelProps = {
+  grahaShanti?: GrahaShantiRecommendation;
+  isError?: boolean;
+  renderGraha: GrahaSlot;
+  /** App scroll helper. The website scrolls the detail block itself. */
+  scrollIntoView?: (node: unknown) => void;
+};
+
+export type BhavaDetailDialogProps = {
+  houses: BhavaHouse[];
+  houseNumber: number | null;
+  reference: BhavaReferencePayload | null | undefined;
+  onClose: () => void;
+};
+
 export type JyotishKit = {
   SaitSources: ComponentType<SaitSourcesProps>;
   SuitabilityBadge: ComponentType<SuitabilityBadgeProps>;
@@ -311,4 +402,14 @@ export type JyotishKit = {
   OwnerCompatibility: ComponentType<OwnerCompatibilityProps>;
   KundaliMilanResult: ComponentType<KundaliMilanResultProps>;
   KundaliProfilePicker: ComponentType<KundaliProfilePickerProps>;
+  VimshopakaCard: ComponentType<VimshopakaCardProps>;
+  YogaReferenceCatalog: ComponentType<YogaReferenceCatalogProps>;
+  GrahaDetailsList: ComponentType<GrahaDetailsListProps>;
+  AshtakavargaCard: ComponentType<AshtakavargaCardProps>;
+  BhavaBalaCard: ComponentType<BhavaBalaCardProps>;
+  ShadbalaCard: ComponentType<ShadbalaCardProps>;
+  DashaTree: ComponentType<DashaTreeProps>;
+  DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
+  ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;
+  BhavaDetailDialog: ComponentType<BhavaDetailDialogProps>;
 };
