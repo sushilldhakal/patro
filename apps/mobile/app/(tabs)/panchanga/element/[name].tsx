@@ -297,7 +297,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
 
       <ElementDescription elementId={meta.id} />
 
-      <AllElementsLink />
+      <AllElementsLink onPress={() => router.push("/panchanga/details" as never)} />
     </AppShell>
   );
 }
