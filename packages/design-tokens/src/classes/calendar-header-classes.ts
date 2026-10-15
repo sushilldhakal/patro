@@ -72,7 +72,7 @@ export const calendarHeaderClasses = {
     "relative grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]",
   webTitle: "flex min-w-0 flex-row items-center gap-3 max-md:order-1",
   webNav: "flex min-w-0 flex-row items-center gap-2 max-md:order-3 xs:max-md:col-start-1",
-  webSegment: "max-md:order-4 max-xs:hidden xs:max-md:justify-self-end",
+  webSegment: "max-md:hidden",
   // Below the xs breakpoint the controls shrink another step (and their text a step).
   webDenseControl: "max-xs:h-8.5",
   webDenseIcon: "max-xs:size-8.5",
@@ -80,7 +80,7 @@ export const calendarHeaderClasses = {
   nativeDenseControl: "h-8.5",
   nativeDenseIcon: "size-8.5",
   nativeDenseText: "text-sm",
-  webSwap: "justify-self-end max-md:order-4 xs:hidden",
+  webSwap: "justify-self-end max-md:order-4 md:hidden",
   webLocation: "min-w-0 justify-self-end max-md:order-2 xs:relative",
   webMonthAnchor: "min-w-0 max-xs:flex-1 xs:relative",
   webChevronHide: "max-xs:hidden",
