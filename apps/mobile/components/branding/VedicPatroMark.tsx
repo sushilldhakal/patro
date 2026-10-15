@@ -18,10 +18,11 @@ import { useBrandMotionEnabled, useOpacityPulse, useRotate, useScalePulse } from
 const PIVOT = { x: 63.4, y: 50 };
 
 /**
- * That pivot after `translate(6, 6) scale(5)` inside the 512 viewBox.
- * 6 + 63.4 * 5 = 323, and 323 / 512 of the view width.
+ * That pivot after `translate(6, 6) scale(5)` inside the 512 viewBox:
+ * 6 + 63.4 * 5 = 323, i.e. 67 units right of the view center (256), on the
+ * vertical center. As a fraction of the view width:
  */
-const PIVOT_ORIGIN = "63.0859375% 50%";
+const PIVOT_DX = (323 - 256) / 512;
 
 const RAYS = [
   "M62.13 30.54 L63.40 18.30 L64.67 30.54 Z",
@@ -107,7 +108,10 @@ export function VedicPatroMark({ size = 42 }: { size?: number }) {
   const sun = useScalePulse(1.05, 1_700, motion);
   const halo = useOpacityPulse(0.4, 0.85, 1_700, motion, 1);
   const crescent = useOpacityPulse(0.92, 1, 3_000, motion, 1);
-  const aroundSun = { transformOrigin: PIVOT_ORIGIN };
+  // Turn about the sun, not the view center: shift to the pivot, transform,
+  // shift back. (`transformOrigin` with a native-driven transform made these
+  // layers vanish on Android.)
+  const dx = PIVOT_DX * size;
 
   return (
     <View
@@ -138,13 +142,13 @@ export function VedicPatroMark({ size = 42 }: { size?: number }) {
         <Circle cx={PIVOT.x} cy={PIVOT.y} r={29.3} fill="url(#vpm-halo-halo)" />
       </Layer>
 
-      <Layer size={size} id="vpm-rays" style={[aroundSun, { transform: [{ rotate: rays }] }]}>
+      <Layer size={size} id="vpm-rays" style={{ transform: [{ translateX: dx }, { rotate: rays }, { translateX: -dx }] }}>
         {RAYS.map((d, i) => (
           <Path key={i} d={d} fill="url(#vpm-rays-g)" />
         ))}
       </Layer>
 
-      <Layer size={size} id="vpm-sun" style={[aroundSun, { transform: [{ scale: sun }] }]}>
+      <Layer size={size} id="vpm-sun" style={{ transform: [{ translateX: dx }, { scale: sun }, { translateX: -dx }] }}>
         <Circle cx={PIVOT.x} cy={PIVOT.y} r={17.7} fill="url(#vpm-sun-sun)" />
         <Circle
           cx={PIVOT.x}
