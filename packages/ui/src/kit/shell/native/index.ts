@@ -8,6 +8,8 @@ import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
 import { HomeVedaMantra } from "./HomeVedaMantra";
 import { LanguageButton } from "./LanguageButton";
 import { MobileNavMenu } from "./MobileNavMenu";
+import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
+import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
@@ -32,6 +34,8 @@ export {
   HomeVedaMantra,
   LanguageButton,
   MobileNavMenu,
+  MuhurtaAsidePanel,
+  PanchangaVivaranPanel,
   PatroCalendarHeader,
   PatroDayTimeHeader,
   PatroDayTimePanel,
@@ -65,6 +69,9 @@ export type {
   HomeVedaMantraProps,
   LanguageButtonProps,
   MobileNavItem,
+  MuhurtaAsidePanelProps,
+  PanchangaVivaranPanelProps,
+  VivaranPlanetStatus,
   MobileNavMenuProps,
   MobileNavSection,
   PatroCalendarHeaderProps,
@@ -115,4 +122,6 @@ export const shellKit = {
   MobileNavMenu,
   BsCalendarGrid,
   BsNativeSelect,
+  MuhurtaAsidePanel,
+  PanchangaVivaranPanel,
 } satisfies ShellKit;

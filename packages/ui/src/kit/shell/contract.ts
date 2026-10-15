@@ -352,6 +352,28 @@ export type BsNativeSelectProps = {
   comfortable?: boolean;
 };
 
+export type MuhurtaAsidePanelProps = {
+  p: PanchangaDay;
+  /** Hint glyph. Each app supplies its icon set. */
+  hintIcon?: ReactNode;
+  /** Opens the full table for the active sub-tab. The app supplies the route. */
+  onOpenTable?: (elementId: string) => void;
+  className?: string;
+};
+
+export type VivaranPlanetStatus = { key: string; isRetrograde?: boolean; isCombust?: boolean };
+
+export type PanchangaVivaranPanelProps = {
+  p?: PanchangaDay;
+  selectedDay?: CalendarDay | null;
+  loading?: boolean;
+  /** Retrograde and combust marks. Drawn by the graha kit, passed in. */
+  renderPlanetStatus?: (planet: VivaranPlanetStatus) => ReactNode;
+  /** Opens the day's full panchanga. Each app supplies its router. */
+  onOpenDetail?: () => void;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -378,4 +400,6 @@ export type ShellKit = {
   MobileNavMenu: ComponentType<MobileNavMenuProps>;
   BsCalendarGrid: ComponentType<BsCalendarGridProps>;
   BsNativeSelect: ComponentType<BsNativeSelectProps>;
+  MuhurtaAsidePanel: ComponentType<MuhurtaAsidePanelProps>;
+  PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
 };
