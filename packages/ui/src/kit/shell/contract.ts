@@ -3,10 +3,11 @@
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
 import type { ComponentType, ReactNode } from "react";
-import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
+import type { CalendarDay, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
+import type { SunTimesPage } from "@vedic-patro/features/sun-times";
 import type { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";
 
 export type StatCardProps = {
@@ -352,6 +353,83 @@ export type BsNativeSelectProps = {
   comfortable?: boolean;
 };
 
+export type MuhurtaAsidePanelProps = {
+  p: PanchangaDay;
+  /** Hint glyph. Each app supplies its icon set. */
+  hintIcon?: ReactNode;
+  /** Opens the full table for the active sub-tab. The app supplies the route. */
+  onOpenTable?: (elementId: string) => void;
+  className?: string;
+};
+
+export type VivaranPlanetStatus = { key: string; isRetrograde?: boolean; isCombust?: boolean };
+
+export type PanchangaVivaranPanelProps = {
+  p?: PanchangaDay;
+  selectedDay?: CalendarDay | null;
+  loading?: boolean;
+  /** Retrograde and combust marks. Drawn by the graha kit, passed in. */
+  renderPlanetStatus?: (planet: VivaranPlanetStatus) => ReactNode;
+  /** Opens the day's full panchanga. Each app supplies its router. */
+  onOpenDetail?: () => void;
+  className?: string;
+};
+
+export type PatroYearEraToggleProps = {
+  era: Era;
+  onEraChange: (era: Era) => void;
+  className?: string;
+  compact?: boolean;
+  comfortable?: boolean;
+  variant?: "inline" | "dropdown";
+};
+
+export type RituSeasonsProps = {
+  location?: LocationParams;
+  /** Title row. The ritu page uses the toolbar (`false`). */
+  showHeader?: boolean;
+  placeLabel?: string;
+  headerIcon?: ReactNode;
+  onWhyPress?: () => void;
+  className?: string;
+};
+
+export type VerticalEdgeLabelProps = {
+  text: string;
+  side: "left" | "right";
+  className?: string;
+  /** Tailwind inset override, for example `inset-y-2`. */
+  insetClass?: string;
+  /** App callers pass a theme colour. The website uses `className`. */
+  color?: string;
+};
+
+export type MatrixCell = {
+  key: string;
+  children?: ReactNode;
+  className?: string;
+  colSpan?: number;
+  /** `row` makes the body cell a row header. */
+  scope?: "col" | "row";
+  title?: string;
+};
+
+export type MatrixRow = { key: string; className?: string; cells: MatrixCell[] };
+
+export type MatrixTableProps = {
+  label?: string;
+  headerRows: MatrixRow[];
+  rows: MatrixRow[];
+  className?: string;
+  tableClassName?: string;
+};
+
+export type SunTimesYearGridProps = {
+  page: SunTimesPage;
+  hideHeader?: boolean;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -378,4 +456,11 @@ export type ShellKit = {
   MobileNavMenu: ComponentType<MobileNavMenuProps>;
   BsCalendarGrid: ComponentType<BsCalendarGridProps>;
   BsNativeSelect: ComponentType<BsNativeSelectProps>;
+  MuhurtaAsidePanel: ComponentType<MuhurtaAsidePanelProps>;
+  PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
+  PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
+  RituSeasons: ComponentType<RituSeasonsProps>;
+  VerticalEdgeLabel: ComponentType<VerticalEdgeLabelProps>;
+  MatrixTable: ComponentType<MatrixTableProps>;
+  SunTimesYearGrid: ComponentType<SunTimesYearGridProps>;
 };

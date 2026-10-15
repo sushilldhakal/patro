@@ -18,6 +18,8 @@ export const rituClasses = {
   whyLinkText: "text-xs font-semibold text-secondary dark:text-primary",
 
   card: "gap-2 rounded-xl bg-card p-3.5 shadow-xs",
+  cardCurrent: "shadow-[0_0_0_1.5px_color-mix(in_srgb,var(--secondary)_38%,transparent)] dark:shadow-[0_0_0_1.5px_color-mix(in_srgb,var(--primary)_38%,transparent)]",
+  dateChipBox: "h-[46px] w-[46px] flex-col bg-secondary/13",
   kicker: "text-sm font-bold uppercase tracking-eyebrow",
   kickerCurrent: "text-secondary dark:text-primary",
   seasonRow: "items-center gap-3",

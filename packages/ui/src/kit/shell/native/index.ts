@@ -7,20 +7,27 @@ import { HomeQuickLinks } from "./HomeQuickLinks";
 import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
 import { HomeVedaMantra } from "./HomeVedaMantra";
 import { LanguageButton } from "./LanguageButton";
+import { MatrixTable } from "./MatrixTable";
 import { MobileNavMenu } from "./MobileNavMenu";
+import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
+import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
 import { RelatedPageLinks } from "./RelatedPageLinks";
+import { RituSeasons } from "./RituSeasons";
+import { PatroYearEraToggle } from "./PatroYearEraToggle";
 import { PatroYearHeader } from "./PatroYearHeader";
 import { PatroYearNav, PatroYearNavBlock } from "./PatroYearNav";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
+import { SunTimesYearGrid } from "./SunTimesYearGrid";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { VedicPatroLoader } from "./VedicPatroLoader";
+import { VerticalEdgeLabel } from "./VerticalEdgeLabel";
 
 export {
   AccountMenu,
@@ -31,7 +38,10 @@ export {
   HomeRashifalSignPicker,
   HomeVedaMantra,
   LanguageButton,
+  MatrixTable,
   MobileNavMenu,
+  MuhurtaAsidePanel,
+  PanchangaVivaranPanel,
   PatroCalendarHeader,
   PatroDayTimeHeader,
   PatroDayTimePanel,
@@ -39,14 +49,18 @@ export {
   PatroHeaderSwap,
   PatroHeaderTabs,
   PatroMonthYearNav,
+  PatroYearEraToggle,
   RelatedPageLinks,
+  RituSeasons,
   PatroYearHeader,
   PatroYearNav,
   PatroYearNavBlock,
   SeoContentSection,
   SiteFooter,
   StatCard,
+  SunTimesYearGrid,
   TodayHighlightCard,
+  VerticalEdgeLabel,
   VedicPatroLoader,
 };
 export type {
@@ -64,7 +78,11 @@ export type {
   HomeRashifalThumbView,
   HomeVedaMantraProps,
   LanguageButtonProps,
+  MatrixCell,
+  MatrixRow,
+  MatrixTableProps,
   MobileNavItem,
+  MuhurtaAsidePanelProps,
   MobileNavMenuProps,
   MobileNavSection,
   PatroCalendarHeaderProps,
@@ -76,7 +94,10 @@ export type {
   PatroHeaderTab,
   PatroHeaderTabsProps,
   PatroMonthYearNavProps,
+  PatroYearEraToggleProps,
+  PanchangaVivaranPanelProps,
   RelatedLinkItem,
+  RituSeasonsProps,
   RelatedPageLinksProps,
   PatroYearHeaderProps,
   PatroYearNavBlockProps,
@@ -84,7 +105,10 @@ export type {
   SeoContentSectionProps,
   SiteFooterProps,
   StatCardProps,
+  SunTimesYearGridProps,
   TodayHighlightCardProps,
+  VerticalEdgeLabelProps,
+  VivaranPlanetStatus,
   VedicPatroLoaderProps,
   ShellKit,
 } from "../contract";
@@ -115,4 +139,11 @@ export const shellKit = {
   MobileNavMenu,
   BsCalendarGrid,
   BsNativeSelect,
+  MuhurtaAsidePanel,
+  PanchangaVivaranPanel,
+  PatroYearEraToggle,
+  RituSeasons,
+  VerticalEdgeLabel,
+  MatrixTable,
+  SunTimesYearGrid,
 } satisfies ShellKit;

@@ -10,7 +10,7 @@ import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";
 import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { parsePatroYearSearchQuery } from "@/lib/patro-year-search-query";
-import { PatroYearEraToggle } from "./PatroYearEraToggle";
+import { PatroYearEraToggle } from "@vedic-patro/ui/kit/shell";
 
 const POPOVER = "pointer-events-auto z-[140] w-[min(calc(100vw-2rem),14rem)] gap-0 p-0";
 const NATIVE_SELECT = "patro-native-select h-9 w-full rounded-md border border-input/30 bg-input/30 px-2 text-base font-num outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50";

@@ -9,7 +9,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
 import { brand } from "@vedic-patro/design-tokens";
 import { usePanchangaMonthGrid } from "@vedic-patro/features/home";
-import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";
+import { VerticalEdgeLabel } from "@vedic-patro/ui/kit/shell";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import {
   CALENDAR_GRID_GAP,
