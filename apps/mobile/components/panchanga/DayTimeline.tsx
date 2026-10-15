@@ -4,7 +4,8 @@ import { useState } from "react";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroSecBand } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { ScrollView, View, type LayoutChangeEvent } from "react-native"
+import { ScrollView, View, type LayoutChangeEvent, type ViewStyle } from "react-native"
+import { fillGridCell } from "@/lib/fill-grid";
 import { Text } from "@/components/ui/Text"
 import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import type { CivilTimeline, PanchangaDay } from "@/lib/api";
@@ -99,11 +100,6 @@ function planetGridCols(width: number): number {
   if (width >= BREAKPOINTS.md) return 4;
   if (width >= 380) return 3;
   return 2;
-}
-
-function gridItemWidth(containerWidth: number, cols: number, gap: number, horizontalPad = SECTION_H_PAD): number {
-  const inner = Math.max(0, containerWidth - horizontalPad * 2);
-  return (inner - gap * (cols - 1)) / cols;
 }
 
 const TRACK_CLS: Record<string, string> = {
@@ -399,9 +395,10 @@ export function DayTimeline({
   const chartWidth = Math.max(MIN_CHART_WIDTH, measuredWidth);
   const scrollChart = measuredWidth < MIN_CHART_WIDTH;
   const periodCols = periodGridCols(measuredWidth);
-  const periodCardW = gridItemWidth(measuredWidth, periodCols, PERIOD_CARD_GAP);
+  const sectionInner = Math.max(0, measuredWidth - SECTION_H_PAD * 2);
+  const periodCell = fillGridCell(sectionInner, periodCols, PERIOD_CARD_GAP);
   const planetCols = planetGridCols(measuredWidth);
-  const planetCardW = gridItemWidth(measuredWidth, planetCols, PLANET_CARD_GAP);
+  const planetCell = fillGridCell(sectionInner, planetCols, PLANET_CARD_GAP);
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
 
@@ -668,7 +665,7 @@ export function DayTimeline({
         <PeriodCards
           tone="danger"
           title={copy.inauspicious}
-          cardWidth={periodCardW}
+          cellStyle={periodCell}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
             label: pick(a.detailNe, a.detailEn),
@@ -681,7 +678,7 @@ export function DayTimeline({
         <PeriodCards
           tone="success"
           title={copy.auspicious}
-          cardWidth={periodCardW}
+          cellStyle={periodCell}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
             label: pick(s.name, s.nameEn),
@@ -755,7 +752,7 @@ export function DayTimeline({
                       "gap-0.5 rounded-lg border border-border/60 px-2 py-1.5",
                       isLagna ? "bg-secondary/12" : "bg-foreground/5",
                     )}
-                    style={{ width: planetCardW }}
+                    style={planetCell}
                   >
                     <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-0.5">
                       <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
@@ -807,12 +804,12 @@ function PeriodCards({
   tone,
   title,
   items,
-  cardWidth,
+  cellStyle,
 }: {
   tone: "danger" | "success";
   title: string;
   items: { n: string; label: string; time: string }[];
-  cardWidth: number;
+  cellStyle: ViewStyle;
 }) {
   const accent = tone === "danger" ? illustration.red60 : illustration.green40;
   const borderColor = tone === "danger" ? withAlpha(illustration.red57, 0.28) : withAlpha(illustration.green40, 0.28);
@@ -828,7 +825,7 @@ function PeriodCards({
           <View
             key={`${it.time}-${i}`}
             className={panchangaPageClasses.dayCycle.periodCard}
-            style={{ width: cardWidth, borderColor, backgroundColor }}
+            style={[cellStyle, { borderColor, backgroundColor }]}
           >
             <View className={cn("flex-row", panchangaPageClasses.dayCycle.periodHead)}>
               <View

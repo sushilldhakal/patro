@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { View } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
@@ -7,7 +7,7 @@ import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import { usePanchangaVivaran, type VivaranCell as VivaranCellData } from "@vedic-patro/features/home";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";
-import { useBreakpoint } from "@/lib/responsive";
+import { fillGridCell, fillGridColumns } from "@/lib/fill-grid";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -17,21 +17,6 @@ const VIVARAN_WRAP_GAP = 8;
 const VIVARAN_MIN_TILE = 112;
 const GOCHAR_WRAP_GAP = 6;
 const GOCHAR_MIN_TILE = 148;
-
-function wrapTileWidth(
-  containerWidth: number,
-  gap: number,
-  minTile: number,
-  minCols: number,
-  maxCols: number,
-): number | `${number}%` {
-  if (containerWidth <= 0) return minCols <= 1 ? "100%" : "48%";
-  const cols = Math.min(
-    maxCols,
-    Math.max(minCols, Math.floor((containerWidth + gap) / (minTile + gap))),
-  );
-  return (containerWidth - gap * (cols - 1)) / cols;
-}
 
 type Props = {
   p?: PanchangaDay;
@@ -86,7 +71,7 @@ function GocharPlanetCard({
   degree,
   isRetrograde,
   isCombust,
-  tileWidth,
+  cellStyle,
 }: {
   planetKey: string;
   label: string;
@@ -94,16 +79,12 @@ function GocharPlanetCard({
   degree: string;
   isRetrograde?: boolean;
   isCombust?: boolean;
-  tileWidth: number | `${number}%`;
+  cellStyle: ViewStyle;
 }) {
   return (
     <View
       className={cn(INSET_TILE, homeClasses.gocharTile)}
-      style={{
-        width: tileWidth,
-        flexGrow: 0,
-        flexShrink: 0,
-      }}
+      style={cellStyle}
     >
       <View className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
         <Text
@@ -162,19 +143,17 @@ function AsideFooter({ view, selectedAd }: { view: NonNullable<ReturnType<typeof
 export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: Props) {
   const view = usePanchangaVivaran({ p, selectedDay });
   const colors = useThemeColors();
-  const { width: windowWidth } = useBreakpoint();
   const [vivaranWrapWidth, setVivaranWrapWidth] = useState(0);
   const [gocharWrapWidth, setGocharWrapWidth] = useState(0);
-  const vivaranTileW = useMemo(
-    () => wrapTileWidth(vivaranWrapWidth, VIVARAN_WRAP_GAP, VIVARAN_MIN_TILE, 2, 2),
-    [vivaranWrapWidth],
-  );
-  /* Web `grid-cols-2 sm:grid-cols-3` on the viewport width. */
-  const gocharCols = windowWidth >= 640 ? 3 : 2;
-  const gocharTileW = useMemo(
-    () => wrapTileWidth(gocharWrapWidth, GOCHAR_WRAP_GAP, GOCHAR_MIN_TILE, gocharCols, gocharCols),
-    [gocharWrapWidth, gocharCols],
-  );
+  // At least two per row, more when they fit; rows always filled.
+  const vivaranCell = useMemo(() => {
+    const cols = fillGridColumns(vivaranWrapWidth, VIVARAN_MIN_TILE, VIVARAN_WRAP_GAP, 2, 4);
+    return fillGridCell(vivaranWrapWidth, cols, VIVARAN_WRAP_GAP);
+  }, [vivaranWrapWidth]);
+  const gocharCell = useMemo(() => {
+    const cols = fillGridColumns(gocharWrapWidth, GOCHAR_MIN_TILE, GOCHAR_WRAP_GAP, 2, 4);
+    return fillGridCell(gocharWrapWidth, cols, GOCHAR_WRAP_GAP);
+  }, [gocharWrapWidth]);
 
   if (loading || !p || !view) {
     return (
@@ -184,7 +163,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
             <View
               key={i}
               className="h-16 rounded-lg p-2.5"
-              style={{ backgroundColor: colors.surfaceInset, width: "48%", flexGrow: 0, flexShrink: 0 }}
+              style={[fillGridCell(0, 2, VIVARAN_WRAP_GAP), { backgroundColor: colors.surfaceInset }]}
             >
               <View className="h-3 w-16 rounded bg-muted-foreground/20" />
               <View className="mt-2 h-4 w-24 rounded bg-muted-foreground/20" />
@@ -209,11 +188,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
         {view.cells.map((cell) => (
           <View
             key={cell.label}
-            style={{
-              width: vivaranTileW,
-              flexGrow: 0,
-              flexShrink: 0,
-            }}
+            style={vivaranCell}
             className="min-w-0"
           >
             <VivaranCell {...cell} />
@@ -243,7 +218,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
                 degree={degree}
                 isRetrograde={isRetrograde}
                 isCombust={isCombust}
-                tileWidth={gocharTileW}
+                cellStyle={gocharCell}
               />
             ))}
           </View>

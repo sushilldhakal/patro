@@ -11,8 +11,11 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
-/* The tile itself is the shared `patroNavataraRow`; the app wraps three to a line. */
-const SLOT = "min-w-[31%] flex-1";
+/* The tile itself is the shared `patroNavataraRow`; the app wraps three to a
+   line and `flex-1` stretches a short last row so no slot is left empty. The
+   web edges the tile with an inset ring shadow, which native does not draw —
+   a hairline border is its equivalent. */
+const SLOT = "min-w-[31%] flex-1 border border-border/60";
 
 type Props = {
   p: PanchangaDay;
