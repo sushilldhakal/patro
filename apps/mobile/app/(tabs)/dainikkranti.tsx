@@ -6,13 +6,10 @@ import { Trans } from "@vedic-patro/i18n/react";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { AppShell } from "@/components/AppShell";
 import { DayPatroCard } from "@/components/dainikKranti/DayPatroCard";
-import { DayPatroExpandPanel } from "@/components/dainikKranti/DayPatroExpandPanel";
+import { DayPatroExpandPanel, MonthCalcNotes, MonthGrahaSpashta, MonthLagnaMatrix } from "@vedic-patro/ui/kit/panchanga";
 import { DainikKrantiHeader } from "@/components/dainikKranti/DainikKrantiHeader";
 import { GocharRashyadiBlock } from "@/components/dainikKranti/GocharRashyadiBlock";
 import { SunriseSunsetIcon } from "@/components/panchanga/SunriseSunsetIcon";
-import { MonthCalcNotes } from "@/components/dainikKranti/MonthCalcNotes";
-import { MonthGrahaSpashta } from "@/components/dainikKranti/MonthGrahaSpashta";
-import { MonthLagnaMatrix } from "@/components/dainikKranti/MonthLagnaMatrix";
 import { PatroAccordion, PatroAccordionItem } from "@/components/dainikKranti/PatroAccordion";
 import {
   TableCell,

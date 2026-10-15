@@ -38,3 +38,43 @@ export const panchangaCardTitle =
 
 export const panchangaCardSubtitle =
   "whitespace-normal text-xs font-semibold leading-snug text-muted-foreground sm:whitespace-nowrap";
+
+/**
+ * Spherical graha artwork. One value per fill the SVGs used, so neither app
+ * types the colour again. Names are the planet and the role of the paint.
+ */
+export const grahaArt = {
+  jupiterLight: "#c98a4e",
+  jupiterDark: "#7c441c",
+  jupiterBand: "#8a5226",
+  jupiterBandMid: "#9c6634",
+  jupiterBandDeep: "#7a431f",
+  jupiterSpot: "#cf7d4a",
+  ketuLight: "#b06080",
+  ketuMid: "#601828",
+  ketuDark: "#1c0408",
+  ketuSpot: "#d08098",
+  marsLight: "#e07748",
+  marsDark: "#a83a1c",
+  marsSpot: "#8f2f15",
+  mercuryLight: "#bcc1c8",
+  mercuryDark: "#71767e",
+  mercurySpot: "#5f646b",
+  moonLight: "#eef1f5",
+  moonDark: "#b9bfc7",
+  moonSpot: "#9aa1ab",
+  rahuLight: "#7060c0",
+  rahuMid: "#2a2060",
+  rahuDark: "#080420",
+  rahuBand: "#9080e0",
+  saturnLight: "#e6c265",
+  saturnDark: "#b07f1f",
+  saturnRing: "#caa64e",
+  saturnRingBright: "#e6cf86",
+  sunLight: "#ffd56b",
+  sunDark: "#f08a14",
+  sunRay: "#f6a623",
+  venusLight: "#9fd0e8",
+  venusDark: "#3f8db5",
+  venusCloud: "#cfeaf6",
+} as const;

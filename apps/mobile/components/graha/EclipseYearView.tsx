@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { useEclipsePage, type EclipseKind } from "@vedic-patro/features/graha";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
@@ -14,6 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 
 /** Solar / lunar eclipses — the app's drawing of `useEclipsePage` (@vedic-patro/features). */
 export function EclipseYearView({ kind }: { kind: EclipseKind }) {
+  const router = useRouter();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -52,7 +54,7 @@ export function EclipseYearView({ kind }: { kind: EclipseKind }) {
       )}
 
       <GrahaDescription pageId={page.descriptionPageId} />
-      <AllElementsLink />
+      <AllElementsLink onPress={() => router.push("/panchanga/details" as never)} />
     </AppShell>
   );
 }

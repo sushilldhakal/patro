@@ -215,4 +215,13 @@ export const dainikKrantiClasses = {
   calcLegend: "rounded-xl border border-border p-4",
   calcLegendEmbedded: "mt-4 border-t border-border pt-4",
   calcLegendNote: "mt-4 text-sm leading-relaxed",
+
+  /** Same classes as the website's `components/ui/table` so month tables keep that look. */
+  htmlTableWrap: "relative w-full overflow-x-auto",
+  htmlTable: "w-full caption-bottom text-sm",
+  htmlHead: "[&_tr]:border-b",
+  htmlBody: "[&_tr:last-child]:border-0",
+  htmlRow: "border-b transition-colors hover:bg-muted/50",
+  htmlTh: "h-10 px-2 text-left align-middle text-sm whitespace-nowrap text-foreground",
+  htmlTd: "p-2 align-middle whitespace-nowrap",
 } as const;

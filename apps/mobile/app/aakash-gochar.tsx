@@ -12,7 +12,7 @@ import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { AakashGocharSky } from "@/components/sky3d/AakashGocharSky";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
-import { GocharSkySection } from "@/components/gochar/GocharSkySection";
+import { GocharSkySection } from "@vedic-patro/ui/kit/panchanga";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

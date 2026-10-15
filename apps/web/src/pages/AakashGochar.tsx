@@ -12,7 +12,7 @@ import { PageShell, PageHeader } from "@/components/PageShell";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import { AakashGocharSky } from "@/components/sky3d/AakashGocharSky";
-import { GocharSkySection } from "@/components/gochar/GocharSkySection";
+import { GocharSkySection } from "@vedic-patro/ui/kit/panchanga";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

@@ -11,7 +11,7 @@ import {
   NakshatraGlyphIcon,
   RashiGlyphIcon,
 } from "@/components/panchanga/element/ElementGlyphIcon";
-import { NavataraBalamCardGrid } from "@/components/panchanga/NavataraBalamCardGrid";
+import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { Card } from "@/components/ui/Card";
 import { ErrorState, LoadingState } from "@/components/ui/States";
@@ -297,7 +297,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
 
       <ElementDescription elementId={meta.id} />
 
-      <AllElementsLink />
+      <AllElementsLink onPress={() => router.push("/panchanga/details" as never)} />
     </AppShell>
   );
 }

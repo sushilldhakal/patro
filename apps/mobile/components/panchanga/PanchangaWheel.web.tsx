@@ -24,8 +24,8 @@ import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
-import { PlanetSelectMenu } from "./PlanetSelectMenu";
-import { WheelDateSheet } from "./WheelDateSheet";
+import { PlanetSelectMenu, WheelDateSheet } from "@vedic-patro/ui/kit/panchanga";
+import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { useLocale } from "@/lib/i18n";
 import { patroSkel, patroWheelShell } from "@/lib/patro-classes";
 import {
@@ -769,8 +769,17 @@ function PanchangaWheelBody({
         clock={pickerClock}
         timeZone={tz}
         playback={yearScrub}
-        onCommit={handleCalendarCommit}
+        onCommit={(_era, y, m, d, c) => handleCalendarCommit(y, m, d, c)}
         onClose={() => setCalendarOpen(false)}
+        renderSheet={(slot) => (
+          <SkyTimeSheet
+            timeMs={slot.timeMs}
+            zoneOffsetMs={slot.zoneOffsetMs}
+            transport={slot.transport}
+            onApplyMs={slot.onApplyMs}
+            onClose={slot.onClose}
+          />
+        )}
       />
     </div>
   ) : null;

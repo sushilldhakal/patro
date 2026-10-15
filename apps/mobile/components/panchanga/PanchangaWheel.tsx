@@ -28,8 +28,8 @@ import {
 import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
-import { PlanetSelectMenu } from "./PlanetSelectMenu";
-import { WheelDateSheet } from "./WheelDateSheet";
+import { PlanetSelectMenu, WheelDateSheet } from "@vedic-patro/ui/kit/panchanga";
+import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { parseClockParts } from "./use-panchanga-mode";
 import {
   wheelLegendDot,
@@ -173,7 +173,27 @@ function WheelCalendarModal({
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={onClose}>
       <View style={{ flex: 1 }}>
-        {open ? <WheelDateSheet year={year} month={month} day={day} clock={clock} timeZone={timeZone} playback={playback} onCommit={onCommit} onClose={onClose} /> : null}
+        {open ? (
+          <WheelDateSheet
+            year={year}
+            month={month}
+            day={day}
+            clock={clock}
+            timeZone={timeZone}
+            playback={playback}
+            onCommit={(_era, y, m, d, c) => onCommit(y, m, d, c)}
+            onClose={onClose}
+            renderSheet={(slot) => (
+              <SkyTimeSheet
+                timeMs={slot.timeMs}
+                zoneOffsetMs={slot.zoneOffsetMs}
+                transport={slot.transport}
+                onApplyMs={slot.onApplyMs}
+                onClose={slot.onClose}
+              />
+            )}
+          />
+        ) : null}
       </View>
     </Modal>
   );

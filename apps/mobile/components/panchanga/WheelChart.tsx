@@ -1,4 +1,4 @@
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Animated, PanResponder, View } from "react-native";
 import Svg, {
   Circle,
@@ -11,6 +11,9 @@ import Svg, {
   Text as SvgText,
   TSpan,
 } from "react-native-svg";
+
+/** Web typings of Defs omit children when moduleSuffixes resolves the .web types. */
+const SvgDefs = Defs as ComponentType<{ children?: ReactNode }>;
 import Ketu from "@/assets/graha/ketu.svg";
 import Rahu from "@/assets/graha/rahu.svg";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
@@ -887,11 +890,11 @@ function WheelChartImpl({
         if (sky) {
           core.push(
             <G key={`pl${i}`} pointerEvents="none">
-              <Defs>
+              <SvgDefs>
                 <ClipPath id={`wheel-pl-${i}`}>
                   <Circle cx={px} cy={py} r={planetR} />
                 </ClipPath>
-              </Defs>
+              </SvgDefs>
               {collar ? (
                 <Circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
               ) : null}
@@ -939,10 +942,21 @@ function WheelChartImpl({
               x={0}
               y={0}
               textAnchor="middle"
-              fill={W_INK}
+              fill="none"
               stroke={wheelPalette.nameHalo}
               strokeWidth={1.6}
-              paintOrder="stroke"
+              fontSize={13}
+              fontWeight="600"
+              fontFamily={FONT}
+              {...nepaliSvgTextCenter}
+            >
+              {pick(g.ne, g.en)}
+            </SvgText>
+            <SvgText
+              x={0}
+              y={0}
+              textAnchor="middle"
+              fill={W_INK}
               fontSize={13}
               fontWeight="600"
               fontFamily={FONT}
@@ -958,11 +972,11 @@ function WheelChartImpl({
       const globe = place ? earthTop(place.lat, place.lon, place.at) : null;
       core.push(
         <G key="earth" pointerEvents="none" transform={`translate(${CX} ${CY}) rotate(${globe?.spin ?? 0})`}>
-          <Defs>
+          <SvgDefs>
             <ClipPath id="wheel-earth">
               <Circle cx={0} cy={0} r={earthR} />
             </ClipPath>
-          </Defs>
+          </SvgDefs>
           <SvgImage
             href={EARTH_TOP}
             x={-earthR}

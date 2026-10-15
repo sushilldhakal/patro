@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { useGrahaAstaPage, type AstaPeriodView } from "@vedic-patro/features/graha";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
@@ -17,6 +18,7 @@ import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 /** Graha asta — the app's drawing of `useGrahaAstaPage` (@vedic-patro/features). */
 export default function GrahaAstaScreen() {
   const { t } = useLocale();
+  const router = useRouter();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -66,7 +68,7 @@ export default function GrahaAstaScreen() {
       )}
 
       <GrahaDescription pageId={page.descriptionPageId} />
-      <AllElementsLink />
+      <AllElementsLink onPress={() => router.push("/panchanga/details" as never)} />
     </AppShell>
   );
 }

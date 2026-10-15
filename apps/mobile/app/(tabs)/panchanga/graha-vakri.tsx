@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { useGrahaVakriPage, type VakriEventView } from "@vedic-patro/features/graha";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
@@ -18,6 +19,7 @@ import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 /** Graha vakri — the app's drawing of `useGrahaVakriPage` (@vedic-patro/features). */
 export default function GrahaVakriScreen() {
   const { t } = useLocale();
+  const router = useRouter();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -67,7 +69,7 @@ export default function GrahaVakriScreen() {
       )}
 
       <GrahaDescription pageId={page.descriptionPageId} />
-      <AllElementsLink />
+      <AllElementsLink onPress={() => router.push("/panchanga/details" as never)} />
     </AppShell>
   );
 }

@@ -2,10 +2,10 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { DayTimeline } from "@/components/panchanga/DayTimeline";
+import { DayTimeline, EphemerisModeBanner } from "@vedic-patro/ui/kit/panchanga";
+import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PanchangaAsidePanels } from "@/components/panchanga/PanchangaAsidePanels";
-import { EphemerisModeBanner } from "@vedic-patro/ui/kit/panchanga";
 import { useDayCycleTabs } from "@/components/panchanga/use-day-cycle-tabs";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
@@ -80,6 +80,9 @@ export default function PanchangaScreen() {
               showToggle={false}
               civil={page.civilTimeline}
               civilLoading={page.civilLoading}
+              renderStatus={(mark) => (
+                <GrahaStatusBadges planetKey={mark.planetKey} isRetrograde={mark.isRetrograde} isCombust={mark.isCombust} size={mark.size} />
+              )}
             />
           ) : null}
         </View>

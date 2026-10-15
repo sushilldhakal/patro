@@ -1,0 +1,81 @@
+import { useId, type ComponentType, type ReactNode } from "react";
+import { Circle, ClipPath, Defs, Ellipse, G, Line, Path, RadialGradient, Rect, Stop, Svg } from "react-native-svg";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
+
+export type GrahaPlanetIconProps = {
+  graha: GrahaKey;
+  size?: number;
+  className?: string;
+};
+
+/** Web typings of `Defs` omit `children` when the app resolves `.web` first. */
+const SvgDefs = Defs as ComponentType<{ children?: ReactNode }>;
+
+/** Spherical graha artwork. Colours come from `grahaArt`. */
+export function GrahaPlanetIcon({ graha, size = 32 }: GrahaPlanetIconProps) {
+  const id = useId().replace(/:/g, "");
+  const spec = grahaPlanetArt[graha];
+  const grad = `${id}-g`;
+  const clip = `${id}-c`;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 48 48">
+      <SvgDefs>
+        <RadialGradient id={grad} cx={spec.cx} cy={spec.cy} r={spec.gradR}>
+          {spec.stops.map((stop) => (
+            <Stop key={stop.offset} offset={stop.offset} stopColor={stop.color} />
+          ))}
+        </RadialGradient>
+        {spec.spots || graha === "jupiter" ? (
+          <ClipPath id={clip}>
+            <Circle cx="24" cy="24" r={spec.r} />
+          </ClipPath>
+        ) : null}
+      </SvgDefs>
+      {spec.rays ? (
+        <G stroke={spec.rays.stroke} strokeWidth={2.4} strokeLinecap="round">
+          {spec.rays.lines.map((line) => (
+            <Line key={line.join(",")} x1={line[0]} y1={line[1]} x2={line[2]} y2={line[3]} />
+          ))}
+        </G>
+      ) : null}
+      {spec.ring ? (
+        <G transform="rotate(-20 24 24)">
+          <Ellipse cx="24" cy="24" rx="24" ry="7.2" fill="none" stroke={spec.ring.stroke} strokeWidth={2.4} opacity={0.9} />
+        </G>
+      ) : null}
+      <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} />
+      {spec.ring ? (
+        <G transform="rotate(-20 24 24)">
+          <Path d="M0 24a 24 7.2 0 0 0 48 0" fill="none" stroke={spec.ring.bright} strokeWidth={2.4} />
+        </G>
+      ) : null}
+      {graha === "jupiter" ? (
+        <G clipPath={`url(#${clip})`} opacity={0.55}>
+          {jupiterBands.map((band) => (
+            <Rect key={band.y} x="0" y={band.y} width="48" height={band.h} fill={band.fill} />
+          ))}
+          <Ellipse cx={jupiterSpot.cx} cy={jupiterSpot.cy} rx={jupiterSpot.rx} ry={jupiterSpot.ry} fill={jupiterSpot.fill} />
+        </G>
+      ) : null}
+      {spec.spots && spec.spots.items.length > 0 ? (
+        <G clipPath={`url(#${clip})`} opacity={spec.spots.opacity} fill={spec.spots.fill}>
+          {spec.spots.items.map((spot) =>
+            spot.rx != null ? (
+              <Ellipse
+                key={`${spot.cx}-${spot.cy}`}
+                cx={spot.cx}
+                cy={spot.cy}
+                rx={spot.rx}
+                ry={spot.ry}
+                transform={spot.rotate != null ? `rotate(${spot.rotate} ${spot.cx} ${spot.cy})` : undefined}
+              />
+            ) : (
+              <Circle key={`${spot.cx}-${spot.cy}`} cx={spot.cx} cy={spot.cy} r={spot.r} />
+            ),
+          )}
+        </G>
+      ) : null}
+    </Svg>
+  );
+}

@@ -42,12 +42,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { DayPatroExpandPanel } from "@/components/dainikKranti/DayPatroExpandPanel";
-import { GocharKundaliChart } from "@/components/dainikKranti/GocharKundaliChart";
-import { GocharRashyadiTable } from "@/components/dainikKranti/GocharRashyadiTables";
-import { MonthLagnaMatrix } from "@/components/dainikKranti/MonthLagnaMatrix";
-import { MonthGrahaSpashta } from "@/components/dainikKranti/MonthGrahaSpashta";
-import { MonthCalcNotes } from "@/components/dainikKranti/MonthCalcNotes";
+import { DayPatroExpandPanel, MonthCalcNotes, MonthGrahaSpashta, MonthLagnaMatrix } from "@vedic-patro/ui/kit/panchanga";
+import { D1Chart } from "@/components/kundali/D1Chart";
+import { GocharKundaliChart, GocharRashyadiTable } from "@vedic-patro/ui/kit/panchanga";
 import {
   DainikKrantiMobileLoading,
   DainikKrantiTableLoading,
@@ -576,6 +573,7 @@ export function DainikKranti() {
               dateBs={gochar.dateBs}
               dateAd={gochar.dateAd}
               loading={status.gocharLoading}
+              renderChart={(houses) => <D1Chart houses={houses} />}
             />
             {tables.rashyadiRange.end ? (
               <GocharRashyadiTable

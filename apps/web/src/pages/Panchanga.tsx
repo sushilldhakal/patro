@@ -10,8 +10,7 @@ import { PatroDayTimeNav } from "@/components/patro-date";
 import { useDayCycleToggle } from "@vedic-patro/features/panchanga-drawing";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
-import { GhatiClock } from "@/components/panchanga/GhatiClock";
-import { DayTimeline } from "@/components/panchanga/DayTimeline";
+import { DayTimeline, GhatiClock } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
@@ -19,7 +18,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { EphemerisModeBanner, GocharPromoCard, PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/kundali/D1Chart";
-import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
+import { GrahaStatusBadges, GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { currentPatroYearRangeLinkSearch, patroRouteLinkSearch, searchToLocation } from "@/lib/url-state";
@@ -180,6 +179,14 @@ export function Panchanga() {
               showToggle={false}
               civil={page.civilTimeline}
               civilLoading={page.civilLoading}
+              renderStatus={(mark) => (
+                <GrahaStatusBadges
+                  planetKey={mark.planetKey}
+                  isRetrograde={mark.isRetrograde}
+                  isCombust={mark.isCombust}
+                  size={mark.size}
+                />
+              )}
             />
           )}
         </div>

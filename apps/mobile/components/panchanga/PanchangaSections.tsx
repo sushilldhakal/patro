@@ -32,7 +32,7 @@ import {
   panchangaSectionNote,
 } from "./PanchangaLayout";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
+import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
