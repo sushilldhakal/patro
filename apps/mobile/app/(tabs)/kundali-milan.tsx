@@ -6,9 +6,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { EMPTY_PROFILE, ProfileForm } from "@/components/auth/ProfileForm";
-import {
-  ProfileFormModal,
-} from "@/components/kundali/KundaliProfilePicker";
+import { Sheet, Text as KitText } from "@vedic-patro/ui";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
@@ -151,12 +149,8 @@ export default function KundaliMilanScreen() {
         }}
       />
 
-      <ProfileFormModal
-        open={addOpen}
-        title={copy.addProfile}
-        subtitle={copy.profileFormHint}
-        onClose={() => setAddOpen(false)}
-      >
+      <Sheet open={addOpen} title={copy.addProfile} onClose={() => setAddOpen(false)}>
+        <KitText className="text-sm text-muted-foreground">{copy.profileFormHint}</KitText>
         <ProfileForm
           initial={EMPTY_PROFILE}
           onCancel={() => setAddOpen(false)}
@@ -165,7 +159,7 @@ export default function KundaliMilanScreen() {
             await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
           }}
         />
-      </ProfileFormModal>
+      </Sheet>
 
       <AuthDialog
         key={authDialog.mode}

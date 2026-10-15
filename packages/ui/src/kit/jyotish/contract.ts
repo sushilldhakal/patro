@@ -6,7 +6,9 @@
 import type { ComponentType, ReactNode } from "react";
 import type {
   BratabandhaNakshatraMode,
+  AshtakutaResult,
   DocumentSummary,
+  ProfileInput,
   LocationParams,
   Profile,
   RashifalGocharRow,
@@ -18,7 +20,12 @@ import type {
   SaitSuitability,
   Shloka,
 } from "@vedic-patro/api-client";
+import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
+import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import type { ProfilePlace } from "@vedic-patro/features/account";
+import type { FetchCivilDay } from "@vedic-patro/features/vastu";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import type { useRashifalSignCard } from "@vedic-patro/features/rashifal";
 
@@ -215,6 +222,67 @@ export type PlaybackBarProps = {
   renderSeek?: (args: PlaybackSeekArgs) => ReactNode;
 };
 
+export type AyanamshaSelectorProps = {
+  mode: AyanamshaMode;
+  onModeChange: (mode: AyanamshaMode) => void;
+};
+
+export type ProfileFormProps = {
+  initial: ProfileInput;
+  existing?: Profile;
+  onCancel: () => void;
+  onSaved: (saved: Profile) => void;
+  afterSave?: (isNew: boolean) => void;
+  renderPlace: (args: {
+    value: string;
+    onSelect: (place: ProfilePlace) => void;
+    onSelectLabel: (label: string, lat: number | undefined, lon: number | undefined, timezone?: string) => void;
+  }) => ReactNode;
+};
+
+export type HouseSelectArgs = {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { id: string; label: string }[];
+};
+
+export type HouseRequirementsFormProps = {
+  plan: HousePlan;
+  onChange: (plan: HousePlan) => void;
+  /** App bottom-sheet select. The website draws a select element. */
+  renderSelect?: (args: HouseSelectArgs) => ReactNode;
+};
+
+export type OwnerCompatibilityProps = {
+  fetchDay: FetchCivilDay;
+  renderProfile: (args: { selectedId: string | null; onSelect: (profile: Profile | null) => void }) => ReactNode;
+  renderPlace: (args: { location: PanchangaLocation; onChange: (location: PanchangaLocation) => void }) => ReactNode;
+  renderSelect?: (args: HouseSelectArgs) => ReactNode;
+};
+
+export type KundaliMilanResultProps = {
+  boyName: string;
+  girlName: string;
+  result: AshtakutaResult;
+};
+
+export type KundaliProfileFormArgs = {
+  initial: ProfileInput;
+  existing?: Profile;
+  onCancel: () => void;
+  onSaved: (saved: Profile) => void;
+};
+
+export type KundaliProfilePickerProps = {
+  selectedId?: string | null;
+  onSelect: (profile: Profile) => void;
+  bindOpen?: (openAdd: () => void) => void;
+  onPrefetch?: (id: string) => void;
+  renderForm: (args: KundaliProfileFormArgs) => ReactNode;
+};
+
 export type JyotishKit = {
   SaitSources: ComponentType<SaitSourcesProps>;
   SuitabilityBadge: ComponentType<SuitabilityBadgeProps>;
@@ -237,4 +305,10 @@ export type JyotishKit = {
   SaitAsidePanel: ComponentType<SaitAsidePanelProps>;
   ShlokaCard: ComponentType<ShlokaCardProps>;
   PlaybackBar: ComponentType<PlaybackBarProps>;
+  AyanamshaSelector: ComponentType<AyanamshaSelectorProps>;
+  ProfileForm: ComponentType<ProfileFormProps>;
+  HouseRequirementsForm: ComponentType<HouseRequirementsFormProps>;
+  OwnerCompatibility: ComponentType<OwnerCompatibilityProps>;
+  KundaliMilanResult: ComponentType<KundaliMilanResultProps>;
+  KundaliProfilePicker: ComponentType<KundaliProfilePickerProps>;
 };

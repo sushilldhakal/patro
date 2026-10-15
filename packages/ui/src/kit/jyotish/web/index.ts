@@ -1,5 +1,13 @@
 import type { JyotishKit } from "../contract";
 import { PlaybackBar, ShlokaCard } from "./Documents";
+import {
+  AyanamshaSelector,
+  HouseRequirementsForm,
+  KundaliMilanResult,
+  KundaliProfilePicker,
+  OwnerCompatibility,
+  ProfileForm,
+} from "./Forms";
 import { DocumentCard } from "./DocumentCard";
 import { DocumentJumpForm } from "./DocumentJumpForm";
 import {
@@ -40,6 +48,14 @@ export type {
   SaitDayCardProps,
   SaitProfilePickerProps,
   ShlokaCardProps,
+  AyanamshaSelectorProps,
+  HouseRequirementsFormProps,
+  HouseSelectArgs,
+  KundaliMilanResultProps,
+  KundaliProfileFormArgs,
+  KundaliProfilePickerProps,
+  OwnerCompatibilityProps,
+  ProfileFormProps,
   SaitRule,
   SaitRulesSectionProps,
   SaitSourcesProps,
@@ -64,6 +80,12 @@ export {
   SaitDayCard,
   SaitProfilePicker,
   ShlokaCard,
+  AyanamshaSelector,
+  HouseRequirementsForm,
+  KundaliMilanResult,
+  KundaliProfilePicker,
+  OwnerCompatibility,
+  ProfileForm,
   SaitRulesSection,
   SaitSources,
   SuitabilityBadge,
@@ -92,4 +114,10 @@ export const jyotishKit = {
   SaitAsidePanel,
   ShlokaCard,
   PlaybackBar,
+  AyanamshaSelector,
+  ProfileForm,
+  HouseRequirementsForm,
+  OwnerCompatibility,
+  KundaliMilanResult,
+  KundaliProfilePicker,
 } satisfies JyotishKit;
