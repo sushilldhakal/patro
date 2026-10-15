@@ -8,6 +8,7 @@ import { apiKeys, fetchPanchanga } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
 
 export default function DayDetailScreen() {
   const { ad } = useLocalSearchParams<{ ad: string }>();
@@ -20,10 +21,10 @@ export default function DayDetailScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="border-b border-border py-3" style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
-        <Text className="text-title font-bold text-foreground">{t("ui.day.day_detail")}</Text>
-        <Text className="text-body text-muted-foreground">{ad}</Text>
+    <SafeAreaView className={msc.dayScreen}>
+      <View className={msc.dayHeader} style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
+        <Text className={msc.dayTitle}>{t("ui.day.day_detail")}</Text>
+        <Text className={msc.daySubtitle}>{ad}</Text>
       </View>
       <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING }}>
         {query.isLoading ? (
