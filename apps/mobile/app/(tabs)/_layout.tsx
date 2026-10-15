@@ -7,6 +7,7 @@ import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
+import { useThemeColors } from "@/lib/theme-context";
 
 /** Width of the left-edge strip that starts a swipe-back, in points. */
 const EDGE_SWIPE_WIDTH = 28;
@@ -35,6 +36,7 @@ export default function TabsLayout() {
   const swipeBack = useEdgeSwipeBack();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
   const tabBarHeight = floatingNavTabBarHeight(isTablet, insets.bottom);
 
   return (
@@ -58,7 +60,9 @@ export default function TabsLayout() {
         // pathname — so without this every navigation re-rendered every page
         // seen so far, and the app got slower the more of it was opened.
         freezeOnBlur: true,
-        sceneStyle: { backgroundColor: "transparent", flex: 1 },
+        // Opaque: a transparent scene lets the previous screen show through
+        // (overlapping) while a newly opened tab is still mounting its content.
+        sceneStyle: { backgroundColor: colors.background, flex: 1 },
         tabBarStyle: {
           position: "absolute",
           left: 0,

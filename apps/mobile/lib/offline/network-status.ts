@@ -28,13 +28,34 @@ export function useNetworkStatus(): { isOnline: boolean; isWifi: boolean } {
   return state;
 }
 
+/**
+ * Last state NetInfo reported. Every API request asks "am I online?" first, and
+ * `NetInfo.fetch()` is a native round trip (slow on Android) — so one listener
+ * keeps the answer and requests read it instantly instead of each awaiting a fetch.
+ */
+let lastState: NetInfoState | null = null;
+let watching = false;
+
+function watchConnectivity() {
+  if (watching) return;
+  watching = true;
+  NetInfo.addEventListener((next) => {
+    lastState = next;
+  });
+}
+
+async function currentState(): Promise<NetInfoState> {
+  watchConnectivity();
+  if (lastState) return lastState;
+  lastState = await NetInfo.fetch();
+  return lastState;
+}
+
 /** One-off connectivity check for use outside components (query functions, background jobs). */
 export async function isCurrentlyOnline(): Promise<boolean> {
-  const state = await NetInfo.fetch();
-  return isOnlineState(state);
+  return isOnlineState(await currentState());
 }
 
 export async function isCurrentlyOnWifi(): Promise<boolean> {
-  const state = await NetInfo.fetch();
-  return state.type === "wifi";
+  return (await currentState()).type === "wifi";
 }

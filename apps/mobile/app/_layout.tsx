@@ -52,7 +52,10 @@ const queryClient = new QueryClient({
       // remounts. Account data (profiles) sets its own shorter staleTime.
       staleTime: 60 * 60_000,
       gcTime: QUERY_GC_TIME,
-      retry: 2,
+      // Two retries with the default backoff (1 s, 2 s) kept a failed screen on its
+      // loader for 3+ s before showing the error or the offline copy.
+      retry: 1,
+      retryDelay: 800,
     },
   },
 });
