@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { fetchPanchangaAtMidnight, locationCacheKey, PANCHANGA_CACHE_VERSION } from "@vedic-patro/api-client";
 import { usePanchangaPage } from "@vedic-patro/features/panchanga";
@@ -17,6 +18,7 @@ import { bsToAD } from "@vedic-patro/domain/bs-calendar";
  */
 export function useAppPanchangaPage() {
   const params = useLocalSearchParams<{ date?: string }>();
+  const queryClient = useQueryClient();
   const { location, setLocation, ready } = usePanchangaLocation();
   const [date, setDate] = useState(() => (typeof params.date === "string" && params.date ? parseAdStr(params.date) : new Date()));
   const { clock, setClock } = usePanchangaClock(location.params.timezone ?? "Asia/Kathmandu");
@@ -27,6 +29,10 @@ export function useAppPanchangaPage() {
 
   const adDateStr = civilIsoFromDate(date);
   const atTime = buildAtTimeDatetime(adDateStr, clock);
+  const daySource = (dateAd: string) => ({
+    queryKey: panchangaKeys.day(dateAd, "ad", location.params),
+    queryFn: () => fetchPanchanga(dateAd, "ad", location.params),
+  });
 
   const page = usePanchangaPage({
     location,
@@ -35,13 +41,13 @@ export function useAppPanchangaPage() {
     setClock,
     enabled: ready,
     sources: {
-      udaya: {
-        queryKey: panchangaKeys.day(adDateStr, "ad", location.params),
-        queryFn: () => fetchPanchanga(adDateStr, "ad", location.params),
-      },
+      udaya: daySource(adDateStr),
       atTime: () => ({
         queryKey: panchangaKeys.atTime(atTime, location.params),
-        queryFn: () => fetchEphemerisPanchangaDay(atTime, adDateStr, location.params),
+        queryFn: () =>
+          fetchEphemerisPanchangaDay(atTime, adDateStr, location.params, {
+            dailyFor: (dateAd) => queryClient.ensureQueryData(daySource(dateAd)),
+          }),
       }),
       midnight: (civilDateAd) => ({
         queryKey: ["panchanga", "civil-day", PANCHANGA_CACHE_VERSION, civilDateAd, locationCacheKey(location.params)],

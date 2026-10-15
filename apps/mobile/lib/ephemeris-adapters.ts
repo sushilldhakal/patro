@@ -27,10 +27,23 @@ export async function fetchEphemerisPanchangaDay(
   datetime: string,
   civilDateAd: string,
   location?: LocationParams,
-  options?: { ayanamsha?: string }
+  options?: {
+    ayanamsha?: string;
+    /**
+     * Where the daily panchanga comes from — the page passes its query cache,
+     * so the day it already loaded (or is loading) is reused rather than
+     * downloaded again. The browser answers that repeat from its HTTP cache;
+     * the app's fetch has none, so it was a second ~140 KB round trip.
+     */
+    dailyFor?: (dateAd: string) => Promise<PanchangaDay>;
+  }
 ): Promise<PanchangaDay> {
-  const raw = await fetchPanchangaAtTime(datetime, location, options);
+  const dailyFor = options?.dailyFor ?? ((dateAd: string) => fetchPanchanga(dateAd, "ad", location));
+  // Started alongside the at-time request: it is almost always the anchor day.
+  const civilDaily = dailyFor(civilDateAd);
+  civilDaily.catch(() => undefined);
+  const raw = await fetchPanchangaAtTime(datetime, location, { ayanamsha: options?.ayanamsha });
   const anchor = raw.panchanga_date_ad ?? raw.date_ad ?? civilDateAd;
-  const daily = await fetchPanchanga(anchor, "ad", location);
+  const daily = await (anchor === civilDateAd ? civilDaily : dailyFor(anchor));
   return mergeEphemerisAtTimeWithDaily(raw, daily);
 }

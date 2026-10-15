@@ -69,7 +69,9 @@ export default function PanchangaScreen() {
     );
   }
 
-  if (!ready || page.showWheelSkeleton) {
+  // Only while the saved place is unknown (primed at launch, so rarely). While
+  // the day loads, the page below draws its own skeletons under a live date bar.
+  if (!ready) {
     return (
       <ScrollView
         className="flex-1 bg-background"

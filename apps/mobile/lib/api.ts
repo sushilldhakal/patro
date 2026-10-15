@@ -435,8 +435,8 @@ function languageForBrowseEra(era: MonthBrowseEra): "en" | "ne" {
 export const apiKeys = {
   month: (y: number, m: number, loc?: LocationParams, era: MonthBrowseEra = "bs") =>
     ["month", era, y, m, locationKey(loc)] as const,
-  panchanga: (date: string, era: string, loc?: LocationParams) =>
-    ["panchanga", date, era, locationKey(loc)] as const,
+  /** Same request as `panchangaKeys.day`, so the same key: the home panel's day is the panchanga page's. */
+  panchanga: (date: string, era: string, loc?: LocationParams) => panchangaKeys.day(date, era, loc),
   today: (loc?: LocationParams) => ["panchanga", "today", locationKey(loc)] as const,
   holidays: (year: number) => ["holidays", year] as const,
   convertAd: (d: string) => ["convert", "ad", d] as const,
