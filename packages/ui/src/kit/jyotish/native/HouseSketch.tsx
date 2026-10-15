@@ -1,41 +1,18 @@
-/**
- * A rough Vāstu house sketch: the classical courtyard plan, drawn inside the
- * compass ring. Native counterpart of the web app's
- * `src/components/vastu/HouseSketch.tsx`.
- *
- * Not a floor plan and not a solver's output — `vastu-house-template.ts` is
- * plain arithmetic on the plot's dimensions, and rooms sit in whatever
- * compass zone `assignVastuSpaces` gave them. What it does show is the shape
- * the treatises actually describe: the Brahmasthāna open in the middle, the
- * ālindra gallery ringing it so every room is reached without crossing the
- * court, clockwise (pradakṣiṇā) movement around that gallery, and the main
- * door standing in a named, auspicious pada of the facing wall.
- *
- * Drawn in the ring's own SVG coordinate space (RING_SIZE units) rather than
- * with layout views: everything then scales together, and the arrows,
- * hatching and dashed court boundary are SVG's job anyway. The ring and the
- * plan are two `Svg`s of the same edge length stacked in one `View`, which is
- * how the web copy stacks its two absolutely-positioned `<svg>`s.
- */
-
 import { useId } from "react";
 import { View } from "react-native";
 import Svg, { Defs, G, Line, Path, Pattern, Rect as SvgRect, Text as SvgText } from "react-native-svg";
-import { Text } from "@/components/ui/Text";
-import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
-import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
+import { Text } from "@vedic-patro/ui";
+import { fontFamily } from "@vedic-patro/design-tokens";
 import {
   VASTU_ELEMENT_COLOR,
-  VASTU_INK,
   vastuDirection,
   vastuElementTint,
-  type CardinalWall,
 } from "@vedic-patro/domain/vastu";
 import { RING_SIZE } from "@vedic-patro/domain/vastu-ring";
 import { useHouseSketch } from "@vedic-patro/features/vastu";
 import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
-import type { PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
-import { VastuCompassRing } from "./VastuCompassRing";
+import type { HouseSketchProps } from "../contract";
+import { VastuCompassRing } from "./VastuCompass";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
@@ -48,7 +25,7 @@ function roomTint(room: TemplateRoom): string {
 }
 
 /** Stair treads, so a staircase reads as one rather than as an empty room. */
-function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
+function StairTreads({ rect, px, stroke }: { rect: Rect; px: PxFn; stroke: string }) {
   const along = rect.h >= rect.w;
   const steps = 7;
   return (
@@ -62,7 +39,7 @@ function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
             y1={px(rect.y + rect.h * f)}
             x2={px(rect.x + rect.w)}
             y2={px(rect.y + rect.h * f)}
-            stroke={VASTU_INK.text}
+            stroke={stroke}
             strokeOpacity={0.3}
             strokeWidth={0.7}
           />
@@ -73,7 +50,7 @@ function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
             y1={px(rect.y)}
             x2={px(rect.x + rect.w * f)}
             y2={px(rect.y + rect.h)}
-            stroke={VASTU_INK.text}
+            stroke={stroke}
             strokeOpacity={0.3}
             strokeWidth={0.7}
           />
@@ -123,25 +100,15 @@ function LegendItem({ swatch, label }: { swatch: React.ReactNode; label: string 
   return (
     <View className={vastuClasses.legendItem}>
       {swatch}
-      <Text className={vastuClasses.legendText} style={nepaliTextStyle(11, { dense: true })}>
+      <Text className={vastuClasses.legendText}>
         {label}
       </Text>
     </View>
   );
 }
 
-export function HouseSketch({
-  size,
-  plot,
-  facing,
-  assignments,
-}: {
-  /** Rendered edge length in points, shared by the ring and the plan. */
-  size: number;
-  plot: PlotSize;
-  facing: CardinalWall;
-  assignments: SpaceAssignment[];
-}) {
+export function HouseSketch({ size, plot, facing, assignments, ink, center, marks }: HouseSketchProps) {
+  const edge = size ?? RING_SIZE;
   const hatchId = `vastu-court-${useId().replace(/:/g, "")}`;
   const sketch = useHouseSketch({ plot, facing, assignments });
   const {
@@ -169,15 +136,15 @@ export function HouseSketch({
 
   return (
     <View>
-      <View style={{ width: size, height: size }} className="self-center">
+      <View style={{ width: edge, height: edge }} className="self-center">
         <View className="absolute inset-0">
-          <VastuCompassRing size={size} />
+          <VastuCompassRing size={edge} center={center} ink={ink} marks={marks} />
         </View>
 
         <View className="absolute inset-0">
           <Svg
-            width={size}
-            height={size}
+            width={edge}
+            height={edge}
             viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
             accessibilityLabel={sketch.labels.aria}
             pointerEvents="none"
@@ -213,7 +180,7 @@ export function HouseSketch({
                   width={px(room.rect.w)}
                   height={px(room.rect.h)}
                   fill={roomTint(room)}
-                  stroke={VASTU_INK.text}
+                  stroke={ink.text}
                   strokeOpacity={0.55}
                   strokeWidth={0.9}
                 />
@@ -224,7 +191,7 @@ export function HouseSketch({
                 d={`M ${px(outer.x)} ${px(outer.y)} h ${px(outer.w)} v ${px(outer.h)} h ${-px(outer.w)} Z M ${px(court.x)} ${px(court.y)} h ${px(court.w)} v ${px(court.h)} h ${-px(court.w)} Z`}
                 fillRule="evenodd"
                 fill={vastuElementTint("space", 0.16)}
-                stroke={VASTU_INK.text}
+                stroke={ink.text}
                 strokeOpacity={0.45}
                 strokeWidth={0.9}
               />
@@ -244,7 +211,7 @@ export function HouseSketch({
 
               {plan.rooms.map((room) =>
                 room.kind === "staircase" ? (
-                  <StairTreads key={`${room.id}-tread`} rect={room.rect} px={px} />
+                  <StairTreads key={`${room.id}-tread`} rect={room.rect} px={px} stroke={ink.text} />
                 ) : null,
               )}
 
@@ -265,10 +232,10 @@ export function HouseSketch({
                       x={cx}
                       y={cy - (tight ? 0 : 5 * fs)}
                       textAnchor="middle"
-                      {...nepaliSvgTextCenter}
-                      fill={VASTU_INK.text}
+                      alignmentBaseline="central"
+                      fill={ink.text}
                       fontSize={(tight ? 7.5 : 9.5) * fs}
-                      fontFamily={NOTO_DEVANAGARI_BOLD}
+                      fontFamily={fontFamily.native.bold}
                     >
                       {label(room)}
                     </SvgText>
@@ -277,10 +244,10 @@ export function HouseSketch({
                         x={cx}
                         y={cy + 7 * fs}
                         textAnchor="middle"
-                        fill={VASTU_INK.text}
+                        fill={ink.text}
                         fillOpacity={0.7}
-                        fontSize={15 * fs}
-                        fontFamily={NOTO_DEVANAGARI_REGULAR}
+                        fontSize={7.5 * fs}
+                        fontFamily={fontFamily.native.regular}
                       >
                         {roomSize(room.rect)}
                       </SvgText>
@@ -295,9 +262,9 @@ export function HouseSketch({
                   x={courtCx}
                   y={courtCy - 7 * fs}
                   textAnchor="middle"
-                  fill={VASTU_INK.text}
-                  fontSize={15 * fs}
-                  fontFamily={NOTO_DEVANAGARI_BOLD}
+                  fill={ink.text}
+                  fontSize={10 * fs}
+                  fontFamily={fontFamily.native.bold}
                 >
                   {sketch.labels.brahmasthan}
                 </SvgText>
@@ -305,10 +272,10 @@ export function HouseSketch({
                   x={courtCx}
                   y={courtCy + 4 * fs}
                   textAnchor="middle"
-                  fill={VASTU_INK.text}
+                  fill={ink.text}
                   fillOpacity={0.75}
-                  fontSize={15 * fs}
-                  fontFamily={NOTO_DEVANAGARI_REGULAR}
+                  fontSize={8 * fs}
+                  fontFamily={fontFamily.native.regular}
                 >
                   {roomSize(court)}
                 </SvgText>
@@ -317,8 +284,8 @@ export function HouseSketch({
                   y={courtCy + 14 * fs}
                   textAnchor="middle"
                   fill={DOOR_COLOR}
-                  fontSize={15 * fs}
-                  fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
+                  fontSize={8 * fs}
+                  fontFamily={fontFamily.native.semibold}
                 >
                   {sketch.labels.openToSky}
                 </SvgText>
@@ -331,7 +298,7 @@ export function HouseSketch({
                 width={px(plot.width)}
                 height={px(plot.height)}
                 fill="none"
-                stroke={VASTU_INK.text}
+                stroke={ink.text}
                 strokeWidth={3}
               />
 
@@ -353,7 +320,7 @@ export function HouseSketch({
       <View className={vastuClasses.sketchCaption}>
         <Text
           className={vastuClasses.sketchSummary}
-          style={nepaliTextStyle(13)}
+         
         >
           {sketch.summary}
         </Text>
@@ -402,7 +369,7 @@ export function HouseSketch({
             <Text
               key={rule}
               className={vastuClasses.sketchRuleText}
-              style={nepaliTextStyle(11, { dense: true })}
+             
             >
               {rule}
             </Text>
@@ -413,4 +380,3 @@ export function HouseSketch({
   );
 }
 
-export default HouseSketch;

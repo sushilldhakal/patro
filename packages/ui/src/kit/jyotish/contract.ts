@@ -39,9 +39,10 @@ import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPan
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import type { CardinalWall, VastuSelectionId } from "@vedic-patro/domain/vastu";
+import type { HousePlan, PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import type { FetchCivilDay, VastuPlannerStorage, VastuSketchOffline } from "@vedic-patro/features/vastu";
 import type { ProfilePlace } from "@vedic-patro/features/account";
-import type { FetchCivilDay } from "@vedic-patro/features/vastu";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import type { useRashifalSignCard } from "@vedic-patro/features/rashifal";
 
@@ -326,6 +327,104 @@ export type BhavaBalaCardProps = {
   }) => ReactNode;
 };
 
+export type D1MarkArgs = {
+  planetKey: string;
+  isRetrograde: boolean | undefined;
+  isCombust: boolean | undefined;
+  x: number;
+  y: number;
+  size: number;
+};
+
+/**
+ * North-Indian D1. `houses` is the only data prop. `size` is a max width on
+ * the website and the SVG edge in the app. `renderMarks` draws the vakri / asta
+ * glyphs inside the SVG (website `<svg>` children, app `react-native-svg` nodes).
+ * The bhava sheet is the kit `BhavaDetailDialog`.
+ */
+export type D1ChartProps = {
+  houses: BhavaHouse[];
+  size?: number;
+  renderMarks: (args: D1MarkArgs) => ReactNode;
+};
+
+export type VastuCenter = { cx: number; cy: number };
+
+export type VastuInk = { text: string; background: string };
+
+export type VastuMarks = { good: string; bad: string };
+
+export type ShadbalaChartProps = {
+  planets: ShadbalaPlanet[];
+  selectedKey: string;
+  onSelect: (key: string) => void;
+  yuddha?: YuddhaData;
+  scale: ShadbalaScale;
+  onScaleChange: (scale: ShadbalaScale) => void;
+  renderGraha: GrahaSlot;
+};
+
+export type BhavaBalaChartProps = {
+  data: BhavaBalaData;
+  selectedHouse: number;
+  onSelectHouse: (house: number) => void;
+  vargaCharts?: VargaCharts;
+  combustion?: Record<string, boolean | null>;
+  renderGraha: GrahaSlot;
+};
+
+export type HouseSketchProps = {
+  plot: PlotSize;
+  facing: CardinalWall;
+  assignments: SpaceAssignment[];
+  ink: VastuInk;
+  center: VastuCenter;
+  marks: VastuMarks;
+  /** App edge length. The website stretches the drawing to its container. */
+  size?: number;
+};
+
+export type PlotSelectArgs = {
+  value: string;
+  label: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+};
+
+export type PlotPlannerProps = {
+  storage: VastuPlannerStorage;
+  offline?: VastuSketchOffline;
+  /** App picker. The website draws a `<select>`. */
+  renderSelect?: (args: PlotSelectArgs) => ReactNode;
+  /** App sketch edge in points. The website fills the container. */
+  sketchSize?: number;
+  renderOwner: () => ReactNode;
+  renderRequirements: (args: { plan: HousePlan; onChange: (plan: HousePlan) => void }) => ReactNode;
+};
+
+export type VastuPurushaWheelProps = {
+  selected: VastuSelectionId;
+  onSelect: (id: VastuSelectionId) => void;
+  centerContent?: ReactNode;
+  /** Compass heading (0 = north, clockwise). The facing wall sits at the top. */
+  headingDeg?: number | null;
+  /** Wheel centre in the shared viewBox. The ring passes the same point. */
+  center: VastuCenter;
+  ink: VastuInk;
+  marks: VastuMarks;
+  /** App edge length. The website stretches with `className`. */
+  size?: number;
+  className?: string;
+};
+
+export type VastuCompassRingProps = {
+  center: VastuCenter;
+  ink: VastuInk;
+  marks: VastuMarks;
+  size?: number;
+  className?: string;
+};
+
 export type ShadbalaCardProps = {
   data: ShadbalaResponse;
   yuddha?: YuddhaData;
@@ -450,7 +549,14 @@ export type JyotishKit = {
   GrahaDetailsList: ComponentType<GrahaDetailsListProps>;
   AshtakavargaCard: ComponentType<AshtakavargaCardProps>;
   BhavaBalaCard: ComponentType<BhavaBalaCardProps>;
+  BhavaBalaChart: ComponentType<BhavaBalaChartProps>;
   ShadbalaCard: ComponentType<ShadbalaCardProps>;
+  ShadbalaChart: ComponentType<ShadbalaChartProps>;
+  VastuPurushaWheel: ComponentType<VastuPurushaWheelProps>;
+  VastuCompassRing: ComponentType<VastuCompassRingProps>;
+  HouseSketch: ComponentType<HouseSketchProps>;
+  PlotPlanner: ComponentType<PlotPlannerProps>;
+  D1Chart: ComponentType<D1ChartProps>;
   DashaTree: ComponentType<DashaTreeProps>;
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;

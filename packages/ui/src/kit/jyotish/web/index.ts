@@ -4,6 +4,12 @@ import { DivisionalChartCompare } from "./Compare";
 import { KundaliReport } from "./Report";
 import { KundaliSectionNav, KundaliSidebarSubnav } from "./Structure";
 import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
+import { BhavaBalaChart, ShadbalaChart } from "./StrengthCharts";
+import { VastuCompassRing } from "./VastuCompass";
+import { D1Chart } from "./D1Chart";
+import { VastuPurushaWheel } from "./VastuWheel";
+import { HouseSketch } from "./HouseSketch";
+import { PlotPlanner } from "./Plot";
 import { DashaTree } from "./DashaTree";
 import { ShantiVidhiPanel } from "./Shanti";
 import {
@@ -65,11 +71,13 @@ export type {
   ProfileFormProps,
   AshtakavargaCardProps,
   BhavaBalaCardProps,
+  BhavaBalaChartProps,
   BhavaDetailDialogProps,
   DashaSystemPanelProps,
   DashaTreeProps,
   GrahaDetailsListProps,
   ShadbalaCardProps,
+  ShadbalaChartProps,
   ShantiVidhiPanelProps,
   VimshopakaCardProps,
   YogaReferenceCatalogProps,
@@ -105,11 +113,18 @@ export {
   ProfileForm,
   AshtakavargaCard,
   BhavaBalaCard,
+  BhavaBalaChart,
   BhavaDetailDialog,
   DashaSystemPanel,
   DashaTree,
   GrahaDetailsList,
   ShadbalaCard,
+  ShadbalaChart,
+  VastuCompassRing,
+  VastuPurushaWheel,
+  HouseSketch,
+  PlotPlanner,
+  D1Chart,
   ShantiVidhiPanel,
   VimshopakaCard,
   YogaReferenceCatalog,
@@ -156,7 +171,14 @@ export const jyotishKit = {
   GrahaDetailsList,
   AshtakavargaCard,
   BhavaBalaCard,
+  BhavaBalaChart,
   ShadbalaCard,
+  ShadbalaChart,
+  VastuCompassRing,
+  VastuPurushaWheel,
+  HouseSketch,
+  PlotPlanner,
+  D1Chart,
   DashaTree,
   DashaSystemPanel,
   ShantiVidhiPanel,
