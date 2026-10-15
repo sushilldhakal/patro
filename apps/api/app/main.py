@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -145,6 +146,39 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+class ServerTimingMiddleware:
+    """Adds ``Server-Timing: app;dur=<ms>`` — time spent inside this process.
+
+    Outermost, so it covers every middleware and the route. From outside, a
+    request's total minus this is network: client → Cloudflare → nginx → here.
+    Without it there was no way to tell a slow server from a slow path to it.
+    Pure ASGI (not ``BaseHTTPMiddleware``) so it adds no per-request task hop.
+    """
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        started = time.perf_counter()
+
+        async def send_with_timing(message):
+            if message["type"] == "http.response.start":
+                dur = (time.perf_counter() - started) * 1000
+                headers = list(message.get("headers", []))
+                headers.append((b"server-timing", f"app;dur={dur:.1f}".encode()))
+                message = {**message, "headers": headers}
+            await send(message)
+
+        await self.app(scope, receive, send_with_timing)
+
+
+# Added last ⇒ outermost: the timing includes CORS, era rewriting and gzip.
+app.add_middleware(ServerTimingMiddleware)
 
 
 @app.exception_handler(EphemerisError)

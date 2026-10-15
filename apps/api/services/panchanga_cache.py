@@ -304,7 +304,21 @@ def _migrate_added_columns(conn: sqlite3.Connection) -> list[str]:
     return added
 
 
+# Database paths whose schema this process has already brought up to date.
+_schema_ready: set[str] = set()
+
+
 def ensure_schema() -> None:
+    """Create/migrate the table — once per process, not on every read and write.
+
+    It used to run in full (a fresh connection, ``PRAGMA table_info`` and the
+    whole ``CREATE … IF NOT EXISTS`` script) before every cache lookup and store,
+    so a single day request paid it twice. The file check keeps a deleted or
+    replaced database (tests, a manual reset) from being skipped.
+    """
+    db_path = panchanga_db_path()
+    if str(db_path) in _schema_ready and db_path.exists():
+        return
     with _connect() as conn:
         # Order matters: migrate first so the CREATE INDEX statements in _SCHEMA
         # find their columns on a pre-existing table.
@@ -315,6 +329,7 @@ def ensure_schema() -> None:
                 "panchanga_cache: added column(s) %s (additive, existing rows NULL)",
                 ", ".join(migrated),
             )
+    _schema_ready.add(str(db_path))
 
 
 def stored_provenance_hashes() -> list[tuple[str | None, int]]:
