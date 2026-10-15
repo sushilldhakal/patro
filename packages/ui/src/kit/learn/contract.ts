@@ -57,6 +57,16 @@ export type LearnTopicCardProps = {
   onOpen: () => void;
 };
 
+export type EotGraphProps = {
+  eccentricity: number;
+  /** Axial tilt in radians. */
+  tilt: number;
+  /** Day of the year currently on screen, for the marker. */
+  dayOfYear: number;
+  /** Total days in the sim's year, so the marker maps onto the 365-day curve. */
+  daysPerYear: number;
+};
+
 export type LearnKit = {
   ArticleBody: (props: ArticleBodyProps) => ReactNode;
   ChapterOverlay: (props: ChapterOverlayProps) => ReactNode;
@@ -64,4 +74,5 @@ export type LearnKit = {
   ChapterTip: (props: ChapterTipProps) => ReactNode;
   LearnMoreCard: (props: LearnMoreCardProps) => ReactNode;
   LearnTopicCard: (props: LearnTopicCardProps) => ReactNode;
+  EotGraph: (props: EotGraphProps) => ReactNode;
 };

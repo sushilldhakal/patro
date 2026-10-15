@@ -81,7 +81,7 @@ import { trackFor } from "@vedic-patro/domain/learn/chapter-tracks";
 import { DayChapterBar, DayChapterWelcome } from "./DayChapterPlayer";
 import { ChapterOverlay } from "./ChapterOverlay";
 import { ChapterStill, ChapterTip } from "@vedic-patro/ui/kit/learn";
-import EotGraph from "./EotGraph";
+import { EotGraph } from "@vedic-patro/ui/kit/learn";
 import { labelPinCss } from "./scene-label-pin";
 import Scene, {
   type CameraState,
