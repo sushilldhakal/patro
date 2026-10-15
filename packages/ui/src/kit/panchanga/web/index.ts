@@ -60,7 +60,6 @@ export {
 export { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 export { WheelChart } from "./WheelChart";
 export { AvakahadaWheel, AVAKAHADA_WHEEL_ROWS } from "./AvakahadaWheel";
-export { D1Chart } from "./D1Chart";
 export { PanchangaWheel } from "./PanchangaWheel";
 export type { YearWheelCalendarPick, YearWheelScrub } from "./PanchangaWheel";
 export type { WheelAtTimeClient } from "../wheel-clock";

@@ -2,7 +2,7 @@ import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { Sprout, type LucideIcon } from "lucide-react";
 import { useHomeQuickLinks, type HomeQuickLink } from "@vedic-patro/features/home";
 import { HomeQuickLinks as HomeQuickLinksView, type HomeQuickLinkGroup } from "@vedic-patro/ui/kit/shell";
-import { type ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
@@ -72,8 +72,12 @@ function RituIcon({ location }: { location: PanchangaLocation }) {
 }
 
 function FeatureIcon({ feature }: { feature: HomeQuickLink["feature"] }) {
-  const Icon = featureIcon(feature);
-  return <Icon size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
+  return createElement(featureIcon(feature), {
+    size: QUICK_LINK_ICON_SIZE,
+    strokeWidth: QUICK_LINK_ICON_STROKE,
+    className: quickLinkIconClass,
+    "aria-hidden": true,
+  });
 }
 
 /** Shortcut tiles. The drawing is `@vedic-patro/ui/kit/shell`; this file supplies the route and the icon. */

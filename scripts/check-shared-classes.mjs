@@ -34,8 +34,12 @@ function walk(dir, out = []) {
   }
   return out;
 }
+/** The UI kit's `web/` halves are the website's readers, its `native/` halves the app's. */
+const kit = walk(join(root, "packages/ui/src"));
 const web = walk(join(root, "apps/web/src"));
 const app = ["app", "components", "lib"].flatMap((d) => walk(join(root, "apps/mobile", d)));
+const webReaders = [...web, ...kit.filter((f) => f.includes("/web/"))];
+const appReaders = [...app, ...kit.filter((f) => f.includes("/native/"))];
 const read = (f) => readFileSync(f, "utf8");
 const IMPORT = /@vedic-patro\/design-tokens\/classes\/([\w-]+)|\/packages\/design-tokens\/src\/classes\/([\w-]+)/g;
 
@@ -44,7 +48,7 @@ const importsOf = (files) => {
   for (const f of files) for (const x of read(f).matchAll(IMPORT)) (m.get(x[1] ?? x[2]) ?? m.set(x[1] ?? x[2], new Set()).get(x[1] ?? x[2])).add(f);
   return m;
 };
-const webImports = importsOf(web), appImports = importsOf(app);
+const webImports = importsOf(webReaders), appImports = importsOf(appReaders);
 const failures = [];
 
 for (const file of readdirSync(MAPS).filter((f) => f.endsWith("-classes.ts"))) {

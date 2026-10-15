@@ -4,8 +4,6 @@ import { useLocale } from "@/i18n/locale";
 import { displayLocationLabel, type PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { RituSeasons as View } from "@vedic-patro/ui/kit/shell";
 
-export { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
-
 /** The why-link and the header icon stay here. The cards are `@vedic-patro/ui/kit/shell`. */
 export function RituSeasons({ location, showHeader = true }: { location: PanchangaLocation; showHeader?: boolean }) {
   const navigate = useNavigate();

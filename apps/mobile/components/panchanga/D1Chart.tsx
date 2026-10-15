@@ -1,38 +1,21 @@
+import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import { D1Chart as KitD1Chart } from "@vedic-patro/ui/kit/panchanga";
-import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
-import { useBreakpoint } from "@/lib/responsive";
-import { useThemeColors } from "@/lib/theme-context";
+import { D1Chart as Shared } from "@vedic-patro/ui/kit/jyotish";
 
-type Props = {
-  houses: BhavaHouse[];
-};
-
-/**
- * The drawing lives in the kit. This binder keeps the house-detail sheet,
- * which belongs to the kundali screens, and the device theme colours.
- */
-export function D1Chart({ houses }: Props) {
-  const { isTablet } = useBreakpoint();
-  const colors = useThemeColors();
+/** The drawing and the house-detail sheet are `@vedic-patro/ui/kit/jyotish`, the same chart the website draws; this file supplies the vakri / asta glyphs. */
+export function D1Chart({ houses, size }: { houses: BhavaHouse[]; size?: number }) {
   return (
-    <KitD1Chart
+    <Shared
       houses={houses}
-      isTablet={isTablet}
-      colors={{
-        card: colors.card,
-        border: colors.border,
-        secondary: colors.secondary,
-        mutedForeground: colors.mutedForeground,
-        foreground: colors.foreground,
-        danger: colors.danger,
-      }}
-      renderHouseDetail={(detail) => (
-        <BhavaDetailDialog
-          houses={detail.houses}
-          houseNumber={detail.houseNumber}
-          reference={detail.reference}
-          onClose={detail.onClose}
+      size={size}
+      renderMarks={(mark) => (
+        <GrahaStatusMarksSvg
+          planetKey={mark.planetKey}
+          isRetrograde={mark.isRetrograde}
+          isCombust={mark.isCombust}
+          x={mark.x}
+          y={mark.y}
+          size={mark.size}
         />
       )}
     />

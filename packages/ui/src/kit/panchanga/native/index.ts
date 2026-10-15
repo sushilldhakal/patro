@@ -63,11 +63,9 @@ export {
 export { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 export { WheelChart } from "./WheelChart";
 export { AvakahadaWheel, AVAKAHADA_WHEEL_ROWS } from "./AvakahadaWheel";
-export { D1Chart } from "./D1Chart";
 export { PanchangaWheel } from "./PanchangaWheel";
 export type { WheelCalendarPick, YearWheelScrub } from "./PanchangaWheel";
 export type { WheelAtTimeClient } from "../wheel-clock";
-export type { D1ChartColors, D1ChartProps, D1HouseDetail } from "../d1-contract";
 export type { AvakahadaWheelAssets } from "./AvakahadaWheel";
 export type { WheelChartAssets } from "./WheelChart";
 export type { WheelHover } from "@vedic-patro/features/panchanga-drawing";
