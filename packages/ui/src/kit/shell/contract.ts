@@ -165,6 +165,65 @@ export type PatroYearNavBlockProps = PatroYearNavProps & {
   className?: string;
 };
 
+export type HomeQuickLinkItem = {
+  key: string;
+  label: string;
+  onPress: () => void;
+  icon?: ReactNode;
+  description?: string;
+};
+
+export type HomeQuickLinkGroup = {
+  id: string;
+  title: string;
+  items: HomeQuickLinkItem[];
+};
+
+export type HomeQuickLinksProps = {
+  groups: HomeQuickLinkGroup[];
+  className?: string;
+};
+
+export type HomeVedaMantraProps = {
+  title: string;
+  tokens: string[];
+  /** Index of the word under the playhead, or -1. */
+  activeToken: number;
+  source: string;
+  readMore: string;
+  playLabel: string;
+  pauseLabel: string;
+  playing: boolean;
+  onToggle?: () => void;
+  onOpenPassage: () => void;
+  className?: string;
+};
+
+export type HomeRashifalThumbView = {
+  id: number;
+  index: number;
+  name: string;
+  percent: number;
+  percentLabel: string;
+  active: boolean;
+  barClassName: string;
+  percentClassName: string;
+  glyph: ReactNode;
+};
+
+export type HomeRashifalSignPickerProps = {
+  label: string;
+  thumbs: HomeRashifalThumbView[];
+  onSelect: (index: number) => void;
+  prevLabel: string;
+  nextLabel: string;
+  onPrev: () => void;
+  onNext: () => void;
+  /** The selected sign's card, and the following one on a wide screen. */
+  cards: ReactNode;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -181,4 +240,7 @@ export type ShellKit = {
   PatroYearHeader: ComponentType<PatroYearHeaderProps>;
   PatroYearNav: ComponentType<PatroYearNavProps>;
   PatroYearNavBlock: ComponentType<PatroYearNavBlockProps>;
+  HomeQuickLinks: ComponentType<HomeQuickLinksProps>;
+  HomeVedaMantra: ComponentType<HomeVedaMantraProps>;
+  HomeRashifalSignPicker: ComponentType<HomeRashifalSignPickerProps>;
 };

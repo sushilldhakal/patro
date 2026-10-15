@@ -1,6 +1,7 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
+import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { Sprout, type LucideIcon } from "lucide-react";
 import { useHomeQuickLinks, type HomeQuickLink } from "@vedic-patro/features/home";
+import { HomeQuickLinks as HomeQuickLinksView, type HomeQuickLinkGroup } from "@vedic-patro/ui/kit/shell";
 import { type ReactNode } from "react";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
@@ -105,55 +106,27 @@ export function NavDrawerLinkCard({
   );
 }
 
-function LinkCategory({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <section>
-      <h2 className={cn(homeClasses.quickTitle, "text-left md:text-center md:text-sm md:uppercase md:tracking-wider md:text-muted-foreground")}>
-        {title}
-      </h2>
-      <div className={cn(homeClasses.quickRow, "gap-2 md:justify-center md:gap-3")}>{children}</div>
-    </section>
-  );
-}
-
-function RituQuickLink({ link, location }: { link: HomeQuickLink; location: PanchangaLocation }) {
-  const era = useCalendarEra();
+function RituIcon({ location }: { location: PanchangaLocation }) {
   const { current, loading } = useCurrentRitu(location);
-
-  return (
-    <QuickLinkCard
-      to="/ritu"
-      search={patroRouteLinkSearch(link.to, location, era)}
-      label={link.label}
-      iconNode={
-        loading ? (
-          <Sprout size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />
-        ) : current?.emoji ? (
-          <span className="text-base leading-none" aria-hidden>
-            {current.emoji}
-          </span>
-        ) : (
-          <Sprout size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />
-        )
-      }
-    />
-  );
+  if (!loading && current?.emoji) {
+    return (
+      <span className="text-base leading-none" aria-hidden>
+        {current.emoji}
+      </span>
+    );
+  }
+  return <Sprout size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
 }
 
-export function HomeQuickLinks({
-  location,
-  className,
-}: {
-  location: PanchangaLocation;
-  className?: string;
-}) {
+function FeatureIcon({ feature }: { feature: HomeQuickLink["feature"] }) {
+  const Icon = featureIcon(feature);
+  return <Icon size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
+}
+
+/** Shortcut tiles. The drawing is `@vedic-patro/ui/kit/shell`; this file supplies the route and the icon. */
+export function HomeQuickLinks({ location, className }: { location: PanchangaLocation; className?: string }) {
   const era = useCalendarEra();
+  const navigate = useNavigate();
   const { groups } = useHomeQuickLinks();
 
   const searchFor = (link: HomeQuickLink) =>
@@ -165,25 +138,16 @@ export function HomeQuickLinks({
           ? patroRouteLinkSearch(link.to, location, era)
           : undefined;
 
-  return (
-    <div className={cn("space-y-8", className)}>
-      {groups.map((group) => (
-        <LinkCategory key={group.id} title={group.title}>
-          {group.links.map((link) =>
-            link.feature === "ritu" ? (
-              <RituQuickLink key={link.to} link={link} location={location} />
-            ) : (
-              <QuickLinkCard
-                key={link.to}
-                to={link.to as LinkProps["to"]}
-                search={searchFor(link) as LinkProps["search"]}
-                icon={featureIcon(link.feature)}
-                label={link.label}
-              />
-            ),
-          )}
-        </LinkCategory>
-      ))}
-    </div>
-  );
+  const viewGroups: HomeQuickLinkGroup[] = groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    items: group.links.map((link) => ({
+      key: link.to,
+      label: link.label,
+      icon: link.feature === "ritu" ? <RituIcon location={location} /> : <FeatureIcon feature={link.feature} />,
+      onPress: () => navigate({ to: link.to as LinkProps["to"], search: searchFor(link) as LinkProps["search"] }),
+    })),
+  }));
+
+  return <HomeQuickLinksView groups={viewGroups} className={className} />;
 }

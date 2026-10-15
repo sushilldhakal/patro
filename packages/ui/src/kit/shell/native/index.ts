@@ -1,4 +1,7 @@
 import type { ShellKit } from "../contract";
+import { HomeQuickLinks } from "./HomeQuickLinks";
+import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
+import { HomeVedaMantra } from "./HomeVedaMantra";
 import { LanguageButton } from "./LanguageButton";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
@@ -13,6 +16,9 @@ import { StatCard } from "./StatCard";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 
 export {
+  HomeQuickLinks,
+  HomeRashifalSignPicker,
+  HomeVedaMantra,
   LanguageButton,
   PatroCalendarHeader,
   PatroDayTimeHeader,
@@ -31,6 +37,12 @@ export {
 };
 export type {
   CalendarHeaderSegment,
+  HomeQuickLinkGroup,
+  HomeQuickLinkItem,
+  HomeQuickLinksProps,
+  HomeRashifalSignPickerProps,
+  HomeRashifalThumbView,
+  HomeVedaMantraProps,
   LanguageButtonProps,
   PatroCalendarHeaderProps,
   PatroDayTimeHeaderProps,
@@ -67,4 +79,7 @@ export const shellKit = {
   PatroYearHeader,
   PatroYearNav,
   PatroYearNavBlock,
+  HomeQuickLinks,
+  HomeVedaMantra,
+  HomeRashifalSignPicker,
 } satisfies ShellKit;
