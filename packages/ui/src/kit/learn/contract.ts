@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
+import type { LunarReading, SolarReading, buildYearLadders } from "@vedic-patro/domain/sky3d/two-systems";
 import type { ChapterVolumeLevel, DayChapterPlayer } from "@vedic-patro/features/learn";
 import type { SkyTimeTransport } from "@vedic-patro/features/sky3d";
 
@@ -108,6 +109,34 @@ export type SkyTimeSheetProps = {
   icons: SkyTimeSheetIcons;
 };
 
+export type TwoSystemsFocus = "solar" | "lunar" | "both";
+
+export type TwoSystemsPanelProps = {
+  focus: TwoSystemsFocus;
+  onFocus: (focus: TwoSystemsFocus) => void;
+  speedIndex: number;
+  onSpeed: (index: number) => void;
+  playing: boolean;
+  onTogglePlay: () => void;
+  dayOfYear: number;
+  onSeek: (day: number) => void;
+  year: ReturnType<typeof buildYearLadders>;
+  solar: SolarReading;
+  lunar: LunarReading;
+  moonLongitude: number;
+  travelledMoon: number;
+  travelledSun: number;
+  distanceAu: number;
+  lunarDone: number;
+  playIcon: ReactNode;
+  pauseIcon: ReactNode;
+  fullscreen?: boolean;
+  detailsOpen: boolean;
+  onToggleDetails?: () => void;
+  expandIcon?: ReactNode;
+  collapseIcon?: ReactNode;
+};
+
 export type DayChapterWelcomeProps = {
   player: DayChapterPlayer;
   /** The big play glyph on the opening card. */
@@ -170,6 +199,7 @@ export type LearnKit = {
   SkyTimeSheet: (props: SkyTimeSheetProps) => ReactNode;
   DayChapterWelcome: (props: DayChapterWelcomeProps) => ReactNode;
   DayChapterBar: (props: DayChapterBarProps) => ReactNode;
+  TwoSystemsPanel: (props: TwoSystemsPanelProps) => ReactNode;
   RashiReferenceTable: () => ReactNode;
   GrahaReferenceTable: () => ReactNode;
   NakshatraReferenceTable: () => ReactNode;

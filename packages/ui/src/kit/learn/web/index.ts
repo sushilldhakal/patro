@@ -17,6 +17,7 @@ import {
   YogaReferenceTable,
 } from "./ReferenceTables";
 import { DayChapterBar, DayChapterWelcome } from "./DayChapterChrome";
+import { TwoSystemsPanel } from "./TwoSystemsPanel";
 
 export type {
   ArticleBodyProps,
@@ -32,6 +33,7 @@ export type {
   SkyTimeSheetProps,
   DayChapterWelcomeProps,
   DayChapterBarProps,
+  TwoSystemsPanelProps,
 } from "../contract";
 export {
   ArticleBody,
@@ -53,6 +55,7 @@ export {
   KaranaReferenceTable,
   DayChapterWelcome,
   DayChapterBar,
+  TwoSystemsPanel,
 };
 
 export const learnKit = {
@@ -75,4 +78,5 @@ export const learnKit = {
   KaranaReferenceTable,
   DayChapterWelcome,
   DayChapterBar,
+  TwoSystemsPanel,
 } satisfies LearnKit;

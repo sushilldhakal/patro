@@ -27,15 +27,14 @@ import { ChevronDown, ChevronUp, Maximize2, Minimize2, Pause, Play, RotateCcw } 
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
-import { edPlayBtn, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";
-import { edScrub } from "@/lib/diagram-classes";
+import { TwoSystemsPanel } from "@vedic-patro/ui/kit/learn";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
 import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
 import {
+  TWO_SYSTEMS_SPEEDS,
   buildYearLadders,
   dtFromDate,
   longitudeTravelled,
@@ -43,7 +42,6 @@ import {
   meshaSankrantiOnOrBefore,
   siderealLon,
   solarReading,
-  tithiName,
   SIDEREAL_MONTH,
   SIDEREAL_YEAR,
   TITHI_ARC,
@@ -57,18 +55,9 @@ import Scene, {
 } from "./TwoSystemsScene";
 import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
-import { effect, illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { effect, illustration, midnight } from "@vedic-patro/design-tokens";
 const CANVAS_BG = midnight.popover;
 const GOLD = illustration.amber57;
-
-/** Days of simulated time per real second, per speed rung. */
-const SPEEDS = [2, 8, 30];
-
-const FOCUS_CHIPS: { id: Focus; key: string }[] = [
-  { id: "solar", key: "learn.study.two_systems.focus_solar" },
-  { id: "lunar", key: "learn.study.two_systems.focus_lunar" },
-  { id: "both", key: "learn.study.two_systems.focus_both" },
-];
 
 export function TwoSystemsStudy() {
   const { t } = useTranslation();
@@ -87,7 +76,7 @@ export function TwoSystemsStudy() {
   const clock = useRef<SceneClock>({
     dt: year.yearStartDt,
     playing: false,
-    daysPerSecond: SPEEDS[0]!,
+    daysPerSecond: TWO_SYSTEMS_SPEEDS[0]!,
   });
   const camera = useRef<CameraState>({ yaw: 0.35, pitch: 0.78, distance: 19 });
 
@@ -124,7 +113,7 @@ export function TwoSystemsStudy() {
     clock.current.playing = playing;
   }, [playing]);
   useEffect(() => {
-    clock.current.daysPerSecond = SPEEDS[speed]!;
+    clock.current.daysPerSecond = TWO_SYSTEMS_SPEEDS[speed]!;
   }, [speed]);
 
   const onSample = useCallback((s: SceneSample) => {
@@ -173,7 +162,6 @@ export function TwoSystemsStudy() {
 
   /** Where the Moon's own sightline lands on the belt. */
   const moonLongitude = useMemo(() => siderealLon("moon", dt), [dt]);
-  const moonRashi = Math.floor(moonLongitude / 30) % 12;
 
   /** True Sun–Earth distance for the instant on screen — the readout's honesty. */
   const distanceAu = useMemo(() => geocentricPointAt("sun", dt).distanceAu, [dt]);
@@ -213,91 +201,6 @@ export function TwoSystemsStudy() {
   }, [fullscreen]);
 
   const canvasHeight = fullscreen ? "100%" : "clamp(340px, 52vh, 560px)";
-
-  const hud = (
-    <>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3 calendar:grid-cols-5">
-        <div className={edRo}>
-          <span className={edRoK}>{t("learn.study.two_systems.solar_month_gate")}</span>
-          <span className={edRoV({ amber: true })}>
-            {ne ? solar.monthNameNe : solar.monthName} {num(solar.gate)}
-          </span>
-        </div>
-        <div className={edRo}>
-          <span className={edRoK}>{t("learn.study.two_systems.sun_in_rashi")}</span>
-          <span className={edRoV()}>
-            {num(Math.floor(solar.longitude))}° · {t("dainik.sign")} {num(solar.rashiIndex + 1)}
-          </span>
-        </div>
-        <div className={edRo}>
-          <span className={edRoK}>{t("learn.study.two_systems.moon_in_rashi")}</span>
-          <span className={edRoV()}>
-            {getRashiName(moonRashi + 1, lang)} · {num(Math.floor(moonLongitude))}°
-          </span>
-        </div>
-        <div className={edRo}>
-          <span className={edRoK}>{t("learn.study.two_systems.moon_sun_angle")}</span>
-          <span className={edRoV({ mono: true })}>{num(lunar.elongation.toFixed(1))}°</span>
-        </div>
-        <div className={edRo}>
-          <span className={edRoK}>{t("learn.study.two_systems.tithi_paksha")}</span>
-          <span className={edRoV()}>
-            {tithiName(lunar)} · {lunar.shukla ? t("learn.shukla") : t("learn.krishna")}
-          </span>
-        </div>
-      </div>
-
-      {/*
-        The counters that make a month's worth of degrees legible. A longitude
-        wraps at 360° and so can never show that the Moon needs more than one
-        turn; these do not wrap.
-      */}
-      <div className="mt-2.5 grid grid-cols-1 gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2.5 text-xs sm:grid-cols-2">
-        <div>
-          <div className="font-semibold text-sky-200">
-            {t("learn.study.two_systems.moon_travelled")}
-          </div>
-          <div className="mt-0.5 font-num text-base font-bold text-white">
-            {num(travelled.moon.toFixed(1))}°
-            <span
-              className={cn(
-                "ml-1.5 rounded px-1.5 py-0.5 text-diagram-xs font-bold",
-                travelled.moon >= 360
-                  ? "bg-emerald-400/25 text-emerald-100"
-                  : "bg-white/10 text-white/60",
-              )}
-            >
-              {travelled.moon >= 360
-                ? t("learn.study.two_systems.sidereal_lap_done", {
-                    degrees: num((travelled.moon - 360).toFixed(1)),
-                  })
-                : t("learn.study.two_systems.sidereal_lap_remaining", {
-                    degrees: num((360 - travelled.moon).toFixed(1)),
-                  })}
-            </span>
-          </div>
-          <div className="mt-0.5 leading-snug text-white/55">
-            {t("learn.study.two_systems.sidereal_vs_synodic")}
-          </div>
-        </div>
-        <div>
-          <div className="font-semibold text-amber-200">
-            {t("learn.study.two_systems.sun_travelled")}
-          </div>
-          <div className="mt-0.5 font-num text-base font-bold text-white">
-            {num(travelled.sunThisYear.toFixed(1))}°
-            <span className="ml-1.5 text-xs font-normal text-white/50">/ {num(360)}°</span>
-            <span className="ml-2 text-xs font-normal text-sky-200/80">
-              {t("learn.study.two_systems.from_sun")} {num(distanceAu.toFixed(4))} AU
-            </span>
-          </div>
-          <div className="mt-0.5 leading-snug text-white/55">
-            {t("learn.study.two_systems.belt_pinned_to_stars")}
-          </div>
-        </div>
-      </div>
-    </>
-  );
 
   const body = (
     <div
@@ -431,107 +334,31 @@ export function TwoSystemsStudy() {
         </p>
       </div>
 
-      <div
-        className={cn(
-          "flex flex-col gap-3 border-t border-white/10 bg-black/30 px-3.5 py-3 text-white",
-          /* In fullscreen the panel is a sibling of the canvas, so it can
-             never cover the scene — but it still has to be capped, or the
-             readings and the ladder eat a short screen on their own. */
-          fullscreen && "shrink-0 overflow-y-auto overscroll-contain pb-[max(0.75rem,env(safe-area-inset-bottom))]",
-          fullscreen && (detailsOpen ? "max-h-[46vh]" : "max-h-none"),
-        )}
-      >
-        <div className="flex flex-wrap items-center gap-1.5">
-          {FOCUS_CHIPS.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => setFocus(c.id)}
-              className={cn(
-                "h-[30px] cursor-pointer rounded-full border px-3 text-sm font-semibold transition-colors",
-                focus === c.id
-                  ? `border-transparent bg-[var(--tm-gold,${illustration.amber57})] text-ill-amber5`
-                  : "border-white/20 text-white/70 hover:border-white/50 hover:text-white",
-              )}
-            >
-              {t(c.key)}
-            </button>
-          ))}
-          <span className="ml-auto flex gap-1.5">
-            {SPEEDS.map((s, i) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSpeed(i)}
-                className={cn(
-                  "h-[30px] cursor-pointer rounded-full border px-2.5 font-num text-xs font-semibold transition-colors",
-                  speed === i
-                    ? "border-transparent bg-white/85 text-black"
-                    : "border-white/20 text-white/60 hover:border-white/50",
-                )}
-              >
-                {num(s)}×
-              </button>
-            ))}
-          </span>
-          {fullscreen && (
-            <button
-              type="button"
-              onClick={() => setDetailsOpen((o) => !o)}
-              aria-expanded={detailsOpen}
-              className="ml-1 inline-flex h-[30px] shrink-0 cursor-pointer items-center gap-1 rounded-full border border-white/20 px-2.5 text-xs font-semibold text-white/70 hover:border-white/50 hover:text-white"
-            >
-              {detailsOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
-              {t("learn.study.two_systems.readings")}
-            </button>
-          )}
-        </div>
-
-        <div className={edScrubWrap}>
-          <button
-            type="button"
-            className={cn(edPlayBtn, "border-white/25 bg-white/10 text-white hover:bg-white/20")}
-            onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? t("learn.pause") : t("learn.play")}
-          >
-            {playing ? <Pause size={16} /> : <Play size={16} />}
-          </button>
-          <input
-            className={edScrub}
-            type="range"
-            min={0}
-            max={year.yearDays}
-            step={0.25}
-            value={Math.min(Math.max(dayOfYear, 0), year.yearDays)}
-            style={{ "--fill": `${(dayOfYear / year.yearDays) * 100}%` } as React.CSSProperties}
-            onChange={(e) => {
-              setPlaying(false);
-              setDt(year.yearStartDt + Number(e.target.value));
-            }}
-          />
-          <span className="shrink-0 font-num text-xs text-white/60">
-            {num(Math.max(0, Math.floor(dayOfYear)))}/{num(Math.round(year.yearDays))}
-          </span>
-        </div>
-
-        {(!fullscreen || detailsOpen) && (
-          <>
-            <div
-              className="text-white [--tm-ink:theme(colors.white)]"
-              style={{ ["--tm-ink-faint" as string]: withAlpha(neutral.white, 0.55) }}
-            >
-              {hud}
-            </div>
-            <DriftLadder
-              year={year}
-              dayOfYear={dayOfYear}
-              lunarDone={lunarDone}
-              ne={ne}
-              num={num}
-            />
-          </>
-        )}
-      </div>
+      <TwoSystemsPanel
+        focus={focus}
+        onFocus={setFocus}
+        speedIndex={speed}
+        onSpeed={setSpeed}
+        playing={playing}
+        onTogglePlay={() => setPlaying((p) => !p)}
+        dayOfYear={dayOfYear}
+        onSeek={setDt}
+        year={year}
+        solar={solar}
+        lunar={lunar}
+        moonLongitude={moonLongitude}
+        travelledMoon={travelled.moon}
+        travelledSun={travelled.sunThisYear}
+        distanceAu={distanceAu}
+        lunarDone={lunarDone}
+        playIcon={<Play size={16} />}
+        pauseIcon={<Pause size={16} />}
+        fullscreen={fullscreen}
+        detailsOpen={detailsOpen}
+        onToggleDetails={() => setDetailsOpen((open) => !open)}
+        expandIcon={<ChevronUp size={14} />}
+        collapseIcon={<ChevronDown size={14} />}
+      />
     </div>
   );
 
@@ -640,139 +467,6 @@ function Label({ label }: { label: SceneLabel }) {
       {isRashi && label.index ? <RashiSkyGlyph index={label.index} size={14} color={GOLD} /> : null}
       {label.text}
     </span>
-  );
-}
-
-/**
- * The two ladders on one timeline — the picture the article's closing
- * paragraph describes. Solar months on top, lunar months below, both starting
- * at Mesha Sankranti. By the twelfth lunar month the lower ladder has fallen
- * about eleven days short of the upper one, and the marked overhang is the
- * gap an adhik maas is inserted to close.
- */
-function DriftLadder({
-  year,
-  dayOfYear,
-  lunarDone,
-  ne,
-  num,
-}: {
-  year: ReturnType<typeof buildYearLadders>;
-  dayOfYear: number;
-  lunarDone: number;
-  ne: boolean;
-  num: (v: number | string) => string;
-}) {
-  const { t } = useTranslation();
-  const span = year.yearDays;
-  const pct = (days: number) => `${(days / span) * 100}%`;
-  const playhead = Math.min(Math.max(dayOfYear, 0), span);
-  const shortfall = year.lunarShortfall;
-
-  return (
-    <div className="select-none">
-      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 text-xs text-white/60">
-        <span>{t("learn.study.two_systems.one_timeline")}</span>
-        <span className="font-num">
-          {t("learn.study.two_systems.ladder_summary", {
-            solarDays: num(span.toFixed(0)),
-            lunarDays: num(year.twelveLunarDays.toFixed(0)),
-            gapDays: num(shortfall.toFixed(0)),
-          })}
-        </span>
-      </div>
-
-      <div className="relative">
-        {/* Solar months */}
-        <div className="relative flex h-6 w-full overflow-hidden rounded-md">
-          {year.solar.map((m, i) => (
-            <div
-              key={m.index}
-              className={cn(
-                "flex items-center justify-center overflow-hidden border-r border-black/40 text-diagram-xs font-semibold text-amber-50 last:border-r-0",
-                i % 2 ? "bg-amber-500/35" : "bg-amber-500/22",
-              )}
-              style={{ width: pct(m.days) }}
-              title={`${ne ? m.nameNe : m.name} · ${m.days.toFixed(1)}`}
-            >
-              <span className="truncate px-0.5">{ne ? m.nameNe : m.name}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Lunar months, clipped to the same span so the overhang is visible. */}
-        <div className="relative mt-1 h-5 w-full overflow-hidden rounded-md bg-white/5">
-          {year.lunar.map((m, i) => {
-            const from = m.startDt - year.yearStartDt;
-            if (from >= span) return null;
-            return (
-              <div
-                key={m.index}
-                className={cn(
-                  "absolute top-0 flex h-full items-center justify-center border-r border-black/40 text-diagram-xs font-semibold text-sky-50",
-                  i % 2 ? "bg-sky-400/35" : "bg-sky-400/22",
-                  i === 12 && "bg-emerald-400/45",
-                )}
-                style={{ left: pct(Math.max(0, from)), width: pct(Math.min(m.days, span - from)) }}
-              >
-                <span className="truncate px-0.5">{num(i + 1)}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/*
-          The measurement, stated plainly: twelve whole lunar months laid off
-          from the year's own start, and what is left of the year afterwards.
-          It is a ruler rather than a calendar row — the lunar months above run
-          on their real dates, which begin mid-cycle, so the comparison of
-          *lengths* has to be drawn separately or it is not a comparison.
-        */}
-        <div className="relative mt-1 h-4 w-full overflow-hidden rounded-md bg-white/5">
-          <div
-            className="absolute inset-y-0 left-0 flex items-center justify-center border-r border-black/40 bg-sky-400/30 text-diagram-xs font-semibold text-sky-50"
-            style={{ width: pct(year.twelveLunarDays) }}
-          >
-            <span className="truncate px-1">
-              {t("learn.study.two_systems.twelve_lunar_months_days", {
-                days: num(year.twelveLunarDays.toFixed(0)),
-              })}
-            </span>
-          </div>
-          {shortfall > 0 && (
-            <div
-              className="absolute inset-y-0 right-0 flex items-center justify-center bg-emerald-400/35 text-diagram-xs font-bold text-emerald-50"
-              style={{ width: pct(shortfall) }}
-              title={t("learn.study.two_systems.adhik_maas_gap")}
-            >
-              <span className="truncate px-0.5">{num(shortfall.toFixed(0))}</span>
-            </div>
-          )}
-        </div>
-
-        <div
-          className="pointer-events-none absolute -top-1 bottom-0 w-px bg-white"
-          style={{ left: pct(playhead) }}
-        >
-          <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-white" />
-        </div>
-      </div>
-
-      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/55">
-        <span>
-          <i className="mr-1 inline-block h-2 w-2 rounded-sm bg-amber-500/60 align-middle" />
-          {t("learn.study.two_systems.legend_solar_months")}
-        </span>
-        <span>
-          <i className="mr-1 inline-block h-2 w-2 rounded-sm bg-sky-400/60 align-middle" />
-          {t("learn.study.two_systems.legend_lunar_months", { begun: num(lunarDone) })}
-        </span>
-        <span>
-          <i className="mr-1 inline-block h-2 w-2 rounded-sm bg-emerald-400/70 align-middle" />
-          {t("learn.study.two_systems.legend_remaining_gap")}
-        </span>
-      </div>
-    </div>
   );
 }
 
