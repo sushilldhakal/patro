@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Polyline, Rect } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { iconSize, mobileRoles } from "@vedic-patro/design-tokens";
@@ -24,8 +25,7 @@ export function Icon({ node, size = "md", tone = "foreground", filled, strokeWid
       viewBox="0 0 24 24"
       fill="none"
       accessibilityLabel={label}
-      accessibilityElementsHidden={!label}
-      importantForAccessibility={label ? "yes" : "no-hide-descendants"}
+      {...(Platform.OS === "web" ? { "aria-hidden": !label } : { accessibilityElementsHidden: !label, importantForAccessibility: label ? "yes" : "no-hide-descendants" })}
       testID={testID}
     >
       <G
