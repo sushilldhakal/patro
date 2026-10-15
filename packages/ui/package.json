@@ -12,7 +12,11 @@
     "./web": "./src/web/index.ts",
     "./native": "./src/native/index.ts",
     "./contract": "./src/contract.ts",
-    "./classes": "./src/classes.ts"
+    "./classes": "./src/classes.ts",
+    "./kit/*": {
+      "react-native": "./src/kit/*/native/index.ts",
+      "default": "./src/kit/*/web/index.ts"
+    }
   },
   "scripts": {
     "lint": "node scripts/check-platforms.mjs"

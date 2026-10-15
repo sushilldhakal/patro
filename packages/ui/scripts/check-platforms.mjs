@@ -23,19 +23,20 @@ const WEB_ONLY = /from\s+["'](react-dom[\w/-]*|lucide-react[\w/-]*|@base-ui\/[\w
 const DOM_TAGS = /<(div|span|button|table|svg|p|h[1-6]|section|input)\b/;
 
 for (const f of files) {
-  const rel = relative(src, f);
+  const full = relative(src, f);
+  const rel = full.replace(/^kit\/[^/]+\//, "");
   const text = readFileSync(f, "utf8");
   const code = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
-  if (/[ऀ-ॿ]/.test(code)) problems.push(`${rel}: Nepali text — copy comes in through props (from t())`);
-  if (/#[0-9a-fA-F]{3,8}\b|\brgba?\(/.test(code)) problems.push(`${rel}: hand-typed colour — use theme roles / design tokens`);
-  if (/\.(web|native|ios|android)\.tsx?$/.test(f)) problems.push(`${rel}: no platform file suffixes — platforms are the web/ and native/ folders`);
+  if (/[ऀ-ॿ]/.test(code)) problems.push(`${full}: Nepali text — copy comes in through props (from t())`);
+  if (/#[0-9a-fA-F]{3,8}\b|\brgba?\(/.test(code)) problems.push(`${full}: hand-typed colour — use theme roles / design tokens`);
+  if (/\.(web|native|ios|android)\.tsx?$/.test(f)) problems.push(`${full}: no platform file suffixes — platforms are the web/ and native/ folders`);
   if (rel.startsWith("web/")) {
-    if (NATIVE_ONLY.test(code)) problems.push(`${rel}: imports React Native code — the website kit is plain HTML`);
+    if (NATIVE_ONLY.test(code)) problems.push(`${full}: imports React Native code — the website kit is plain HTML`);
   } else if (rel.startsWith("native/")) {
-    if (WEB_ONLY.test(code)) problems.push(`${rel}: uses web-only code — the app kit is React Native`);
-    if (DOM_TAGS.test(code)) problems.push(`${rel}: renders an HTML element — use React Native components`);
+    if (WEB_ONLY.test(code)) problems.push(`${full}: uses web-only code — the app kit is React Native`);
+    if (DOM_TAGS.test(code)) problems.push(`${full}: renders an HTML element — use React Native components`);
   } else {
-    if (NATIVE_ONLY.test(code) || WEB_ONLY.test(code)) problems.push(`${rel}: shared kit files must not import either platform`);
+    if (NATIVE_ONLY.test(code) || WEB_ONLY.test(code)) problems.push(`${full}: shared kit files must not import either platform`);
   }
 }
 
