@@ -128,6 +128,10 @@ export type PatroDayTimeHeaderProps = {
   nextDisabled?: boolean;
   subtitle?: string;
   crossEraText?: string;
+  /** App only: right end of the title row (the location button). The website lays these out in its own grid. */
+  titleAside?: ReactNode;
+  /** App only: right end of the date row (the tabs). */
+  navAside?: ReactNode;
   className?: string;
 };
 
@@ -139,6 +143,10 @@ export type PatroYearHeaderProps = {
   todayYear?: number;
   onEraChange?: (era: Era) => void;
   subtitle?: string | null;
+  /** App only: right end of the title row (the location button). */
+  titleAside?: ReactNode;
+  /** App only: right end of the date row (the tabs). */
+  navAside?: ReactNode;
   className?: string;
 };
 

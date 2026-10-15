@@ -1,6 +1,6 @@
 import { cn } from "@vedic-patro/domain/utils";
 import { navMenuClasses as nav } from "@vedic-patro/design-tokens/classes/shell/nav-menu-classes";
-import { Box, Pressable, Text } from "@vedic-patro/ui";
+import { Box, Grid, Pressable, Text } from "@vedic-patro/ui";
 import type { MobileNavMenuProps } from "../contract";
 
 /** Drawer tiles. Each app supplies the icon and where the tile goes. */
@@ -15,13 +15,13 @@ export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps
             </Text>
             <Box className={nav.accent} />
           </Box>
-          <Box className={nav.row}>
+          <Grid cols={{ base: 3, compact: 4 }} gap={10}>
             {section.items.map((item) => (
               <Pressable
                 key={item.key}
                 label={item.label}
                 onPress={item.onPress}
-                className={cn(nav.tile, item.active && "text-secondary")}
+                className={cn(nav.tile, "w-full", item.active && "text-secondary")}
                 webClassName={nav.tileWeb}
               >
                 <Box className={cn(nav.iconWrap, item.active && nav.iconWrapActive)}>{item.icon}</Box>
@@ -30,7 +30,7 @@ export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps
                 </Text>
               </Pressable>
             ))}
-          </Box>
+          </Grid>
         </Box>
       ))}
     </Box>

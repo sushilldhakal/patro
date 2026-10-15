@@ -1,10 +1,7 @@
 import { adToBS, bsToAD } from "@vedic-patro/domain/bs-calendar";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/patro-browse-params";
-import { cn } from "@vedic-patro/domain/utils";
-import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
-import { Box } from "@vedic-patro/ui";
-import { PatroDayTimeHeader, PatroHeaderSwap, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
+import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderTabs } from "./PatroHeaderTabs";
@@ -27,8 +24,9 @@ function weekdayInEra(era: Era, year: number, month: number, day: number, given?
 }
 
 /**
- * The app's date header for every page. The rows are the website's grid:
- * title and location, then the date picker and the toggle.
+ * The app's date header for every page: month + year (home, month browse), year only, or
+ * day + month + year with a clock. Two rows at every width: title and location, then the
+ * date picker and the toggle.
  */
 export function PatroDateNav(props: PatroDateNavProps) {
   const { era, onEraChange, year, location, onLocationChange, crossEraSubtitle, tabs, tabsLabel, className } = props;
@@ -60,62 +58,54 @@ export function PatroDateNav(props: PatroDateNavProps) {
     );
   }
 
-  const locationClass = tabs ? pick.webDtLocation : pick.webDtLocationSolo;
-  const aside = (
-    <>
-      {tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} className={pick.webDtTabs} /> : null}
-      {tabs ? <PatroHeaderSwap tabs={tabs} className={pick.webDtSwap} /> : null}
-      <PatroHeaderLocation location={location} onLocationChange={onLocationChange} className={locationClass} />
-    </>
-  );
+  const locationButton = <PatroHeaderLocation location={location} onLocationChange={onLocationChange} />;
+  const tabsView = tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} /> : null;
 
   if (props.mode === "year") {
     return (
-      <Box className={cn(pick.webDtGrid, className)}>
-        <PatroYearHeader
-          className="contents"
-          era={era}
-          year={year}
-          onChange={props.onYearChange}
-          onEraChange={onEraChange}
-          onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
-          todayYear={patroBrowseTodayYear(era)}
-          subtitle={crossEraSubtitle}
-        />
-        {aside}
-      </Box>
+      <PatroYearHeader
+        className={className}
+        era={era}
+        year={year}
+        onChange={props.onYearChange}
+        onEraChange={onEraChange}
+        onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
+        todayYear={patroBrowseTodayYear(era)}
+        subtitle={crossEraSubtitle}
+        titleAside={locationButton}
+        navAside={tabsView}
+      />
     );
   }
 
   return (
-    <Box className={cn(pick.webDtGrid, className)}>
-      <PatroDayTimeHeader
-        className="contents"
-        era={era}
-        year={year}
-        month={props.month}
-        day={props.day}
-        weekday={weekdayInEra(era, year, props.month, props.day, props.weekday)}
-        today={todayInEra(era, props.todayAd)}
-        clock={props.clock}
-        onClockChange={props.onClockChange}
-        onEraChange={onEraChange}
-        onSelect={(y, m, d) => {
-          if (props.onSelectDate) {
-            props.onSelectDate(y, m, d);
-            return;
-          }
-          if (y !== year) props.onYearChange(y);
-          if (m !== props.month) props.onMonthChange(m);
-          if (d !== props.day) props.onDayChange(d);
-        }}
-        onStepDay={(delta) => (delta < 0 ? props.onPrev?.() : props.onNext?.())}
-        onToday={() => props.onToday?.()}
-        prevDisabled={props.prevDisabled}
-        nextDisabled={props.nextDisabled}
-        crossEraText={crossEraSubtitle}
-      />
-      {aside}
-    </Box>
+    <PatroDayTimeHeader
+      className={className}
+      era={era}
+      year={year}
+      month={props.month}
+      day={props.day}
+      weekday={weekdayInEra(era, year, props.month, props.day, props.weekday)}
+      today={todayInEra(era, props.todayAd)}
+      clock={props.clock}
+      onClockChange={props.onClockChange}
+      onEraChange={onEraChange}
+      onSelect={(y, m, d) => {
+        if (props.onSelectDate) {
+          props.onSelectDate(y, m, d);
+          return;
+        }
+        if (y !== year) props.onYearChange(y);
+        if (m !== props.month) props.onMonthChange(m);
+        if (d !== props.day) props.onDayChange(d);
+      }}
+      onStepDay={(delta) => (delta < 0 ? props.onPrev?.() : props.onNext?.())}
+      onToday={() => props.onToday?.()}
+      prevDisabled={props.prevDisabled}
+      nextDisabled={props.nextDisabled}
+      crossEraText={crossEraSubtitle}
+      titleAside={locationButton}
+      navAside={tabsView}
+    />
   );
 }
