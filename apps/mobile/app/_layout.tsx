@@ -83,7 +83,10 @@ const asyncStoragePersister = createAsyncStoragePersister({
 // SQLite) — keep them out of this general-purpose persister so it stays small
 // and fast for everything else the user has recently viewed (a day's
 // panchanga, gochar, rashifal, festivals, holidays…).
-function shouldPersistQuery(query: { queryKey: readonly unknown[] }): boolean {
+function shouldPersistQuery(query: { queryKey: readonly unknown[]; state: { status: string } }): boolean {
+  // Only settled data: a pending query is dehydrated with a promise that cannot be saved,
+  // and restoring it fails with "promise.then is not a function" (the whole cache is then discarded).
+  if (query.state.status !== "success") return false;
   const [scope, sub] = query.queryKey;
   if (scope === "month") return false;
   if (scope === "panchanga" && sub === "year-wheel") return false;
