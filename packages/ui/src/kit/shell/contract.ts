@@ -20,7 +20,22 @@ export type SeoContentSectionProps = {
   className?: string;
 };
 
+export type PatroHeaderTab = { key: string; label: string; active: boolean; onPress: () => void };
+
+export type PatroHeaderTabsProps = {
+  tabs: PatroHeaderTab[];
+  label?: string;
+  className?: string;
+};
+
+export type PatroHeaderSwapProps = {
+  tabs: PatroHeaderTab[];
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
+  PatroHeaderTabs: ComponentType<PatroHeaderTabsProps>;
+  PatroHeaderSwap: ComponentType<PatroHeaderSwapProps>;
 };

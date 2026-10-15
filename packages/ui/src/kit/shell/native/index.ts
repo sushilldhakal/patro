@@ -1,8 +1,9 @@
 import type { ShellKit } from "../contract";
+import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
 import { SeoContentSection } from "./SeoContentSection";
 import { StatCard } from "./StatCard";
 
-export { SeoContentSection, StatCard };
-export type { SeoContentSectionProps, StatCardProps, ShellKit } from "../contract";
+export { PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, StatCard };
+export type { PatroHeaderSwapProps, PatroHeaderTab, PatroHeaderTabsProps, SeoContentSectionProps, StatCardProps, ShellKit } from "../contract";
 
-export const shellKit = { StatCard, SeoContentSection } satisfies ShellKit;
+export const shellKit = { StatCard, SeoContentSection, PatroHeaderTabs, PatroHeaderSwap } satisfies ShellKit;
