@@ -26,6 +26,7 @@ jobs:
       - run: npm run check:design
       - run: npm run check:classes
       - run: npm run check:copy
+      - run: npm run check:duplicates
 
   api-contract:
     # The TypeScript client is checked against contracts/openapi.json; this
