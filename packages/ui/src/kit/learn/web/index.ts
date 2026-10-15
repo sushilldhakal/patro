@@ -8,6 +8,14 @@ import { EarthRotationDiagram } from "./EarthRotationDiagram";
 import { ServerPipelineDiagram } from "./ServerPipelineDiagram";
 import { CompassControl } from "./CompassControl";
 import { SkyTimeSheet } from "./SkyTimeSheet";
+import {
+  GrahaReferenceTable,
+  KaranaReferenceTable,
+  NakshatraReferenceTable,
+  RashiReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+} from "./ReferenceTables";
 
 export type {
   ArticleBodyProps,
@@ -34,6 +42,12 @@ export {
   ServerPipelineDiagram,
   CompassControl,
   SkyTimeSheet,
+  RashiReferenceTable,
+  GrahaReferenceTable,
+  NakshatraReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+  KaranaReferenceTable,
 };
 
 export const learnKit = {
@@ -48,4 +62,10 @@ export const learnKit = {
   ServerPipelineDiagram,
   CompassControl,
   SkyTimeSheet,
+  RashiReferenceTable,
+  GrahaReferenceTable,
+  NakshatraReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+  KaranaReferenceTable,
 } satisfies LearnKit;

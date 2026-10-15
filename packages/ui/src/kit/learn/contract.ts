@@ -136,4 +136,10 @@ export type LearnKit = {
   ServerPipelineDiagram: (props: ServerPipelineDiagramProps) => ReactNode;
   CompassControl: (props: CompassControlProps) => ReactNode;
   SkyTimeSheet: (props: SkyTimeSheetProps) => ReactNode;
+  RashiReferenceTable: () => ReactNode;
+  GrahaReferenceTable: () => ReactNode;
+  NakshatraReferenceTable: () => ReactNode;
+  TithiReferenceTable: () => ReactNode;
+  YogaReferenceTable: () => ReactNode;
+  KaranaReferenceTable: () => ReactNode;
 };
