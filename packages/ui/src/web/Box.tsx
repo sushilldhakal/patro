@@ -1,9 +1,9 @@
 import { cn } from "@vedic-patro/domain/utils";
 import type { BoxProps } from "../contract";
 
-export function Box({ as: Tag = "div", className, webClassName, children, label, testID }: BoxProps) {
+export function Box({ as: Tag = "div", className, webClassName, children, label, testID, widthPercent }: BoxProps) {
   return (
-    <Tag className={cn(className, webClassName) || undefined} aria-label={label} data-testid={testID}>
+    <Tag className={cn(className, webClassName) || undefined} aria-label={label} data-testid={testID} style={widthPercent === undefined ? undefined : { width: `${widthPercent}%` }}>
       {children}
     </Tag>
   );

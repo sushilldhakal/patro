@@ -7,6 +7,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./mobile-tailwind.json": "./generated/mobile-tailwind.json",
+    "./classes/*": {
+      "import": "./src/classes/*.ts",
+      "default": "./src/classes/*.ts"
+    },
     "./classes/patro-classes": {
       "import": "./src/classes/patro-classes.ts",
       "default": "./src/classes/patro-classes.ts"

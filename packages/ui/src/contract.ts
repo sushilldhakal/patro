@@ -33,6 +33,8 @@ export type BoxProps = StyleProps & {
   as?: BoxTag;
   /** Accessible name (aria-label / accessibilityLabel). */
   label?: string;
+  /** Width as a percentage of the parent (0–100), for the few places a class cannot say it (e.g. a computed bar). */
+  widthPercent?: number;
 };
 
 // ─── Text ────────────────────────────────────────────────────────────────────
@@ -58,6 +60,25 @@ export type TextProps = StyleProps & {
   as?: TextTag;
   /** Truncate after this many lines. */
   numberOfLines?: number;
+};
+
+// ─── Input ───────────────────────────────────────────────────────────────────
+
+export type InputType = "text" | "search" | "email" | "password" | "number";
+
+/** `<input>` / `<textarea>` on the website, `TextInput` in the app. Controlled. */
+export type InputProps = StyleProps & {
+  value: string;
+  onChange: (value: string) => void;
+  /** Return key / Enter. */
+  onSubmit?: () => void;
+  placeholder?: string;
+  type?: InputType;
+  multiline?: boolean;
+  disabled?: boolean;
+  autoFocus?: boolean;
+  /** Accessible name (aria-label / accessibilityLabel). */
+  label?: string;
 };
 
 // ─── Pressable ───────────────────────────────────────────────────────────────
@@ -177,6 +198,7 @@ export type UiKit = {
   Box: ComponentType<BoxProps>;
   Text: ComponentType<TextProps>;
   Pressable: ComponentType<PressableProps>;
+  Input: ComponentType<InputProps>;
   Card: ComponentType<CardProps>;
   Button: ComponentType<ButtonProps>;
   Icon: ComponentType<IconProps>;
