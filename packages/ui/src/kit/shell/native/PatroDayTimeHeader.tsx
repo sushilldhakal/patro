@@ -57,12 +57,12 @@ export function PatroDayTimeHeader({
         {titleAside ? <View className="shrink-0">{titleAside}</View> : null}
       </View>
 
-      <View className="flex-row items-center gap-2">
-        <View className={pick.nativeNav}>
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="min-w-0 shrink flex-row items-center gap-2">
           <Pressable label={labels.prevDay} onPress={() => h.stepDay(-1)} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
           </Pressable>
-          <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}>
+          <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, "min-w-28 flex-none shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}>
             {dense ? null : <Icon node={shellIcons.calendar} size="sm" tone="secondary" />}
             <Text numberOfLines={1} className={pick.dateButtonText}>
               {dense ? h.buttonTextShort : h.buttonText}

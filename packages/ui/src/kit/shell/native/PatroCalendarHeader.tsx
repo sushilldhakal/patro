@@ -1,4 +1,5 @@
-import { TextInput, View, useWindowDimensions } from "react-native";
+import { useState } from "react";
+import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { cn } from "@vedic-patro/domain/utils";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
@@ -29,10 +30,14 @@ export function PatroCalendarHeader({
   displayLanguage,
   className,
 }: PatroCalendarHeaderProps) {
-  const { width } = useWindowDimensions();
-  const isCompact = width < 768;
-  const isCalendarWide = width >= 992;
-  const dense = width < 420;
+  const { width: windowWidth } = useWindowDimensions();
+  /* The row layout follows the width this header actually gets (the home page puts a side
+     panel next to it on an iPad), not the window. */
+  const [boxWidth, setBoxWidth] = useState(0);
+  const width = boxWidth || windowWidth;
+  const isCompact = width < 560;
+  const isCalendarWide = width >= 900;
+  const dense = windowWidth < 420;
   const header = usePatroCalendarHeader({ era, year, month, onChange });
   const nav = usePatroMonthYearNav({ era, year, month, location, crossEraSubtitle, displayLanguage });
   const { panel, labels, yearInput } = header;
@@ -68,7 +73,7 @@ export function PatroCalendarHeader({
       <Pressable
         label={labels.picker}
         onPress={() => header.togglePanel("month")}
-        className={cn(cls.selectButton, "flex-1", monthOpen ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
+        className={cn(cls.selectButton, "min-w-32 shrink", monthOpen ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
       >
         <Text numberOfLines={1} className={cn(cls.selectLabel, dense && cls.nativeDenseText)}>
           {header.title.month} {header.title.year}
@@ -125,12 +130,12 @@ export function PatroCalendarHeader({
           {locationButton}
         </View>
         {swap ? (
-          <View className="flex-row items-center gap-2">
-            <View className="min-w-0 flex-1">{stepper}</View>
+          <View className="flex-row items-center justify-between gap-2">
+            <View className="min-w-0 shrink">{stepper}</View>
             {swap}
           </View>
         ) : (
-          stepper
+          <View className="flex-row">{stepper}</View>
         )}
       </>
     );
@@ -142,7 +147,7 @@ export function PatroCalendarHeader({
           {locationButton}
         </View>
         <View className="flex-row items-center justify-between gap-3">
-          <View className="min-w-0 flex-1">{stepper}</View>
+          <View className="min-w-0 shrink">{stepper}</View>
           {segment}
         </View>
       </>
@@ -151,7 +156,7 @@ export function PatroCalendarHeader({
     rows = (
       <View className="flex-row items-center gap-3.5">
         {title}
-        <View className="w-80">{stepper}</View>
+        <View className="min-w-0 shrink">{stepper}</View>
         {segment}
         {locationButton}
       </View>
@@ -159,7 +164,13 @@ export function PatroCalendarHeader({
   }
 
   return (
-    <View className={cn("w-full gap-3", className)}>
+    <View
+      className={cn("w-full gap-3", className)}
+      onLayout={(e: LayoutChangeEvent) => {
+        const next = e.nativeEvent.layout.width;
+        setBoxWidth((prev) => (Math.abs(prev - next) < 1 ? prev : next));
+      }}
+    >
       {rows}
 
       <Sheet open={monthOpen} onClose={header.closePanel} title={labels.picker} closeLabel={labels.yearGo}>

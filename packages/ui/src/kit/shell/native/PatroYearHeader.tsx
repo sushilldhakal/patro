@@ -37,15 +37,15 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
         {titleAside ? <View className="shrink-0">{titleAside}</View> : null}
       </View>
 
-      <View className="flex-row items-center gap-2">
-        <View className={pick.nativeNav}>
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="min-w-0 shrink flex-row items-center gap-2">
           <Pressable label={labels.prev} onPress={h.prev} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
           </Pressable>
           <Pressable
             label={labels.picker}
             onPress={h.toggle}
-            className={cn(pick.yearButton, "flex-1", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
+            className={cn(pick.yearButton, "shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
           >
             <Text className={pick.yearButtonText}>{h.yearLabel}</Text>
             <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />
