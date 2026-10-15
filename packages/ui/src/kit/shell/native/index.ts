@@ -4,8 +4,9 @@ import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
+import { TodayHighlightCard } from "./TodayHighlightCard";
 
-export { LanguageButton, PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, SiteFooter, StatCard };
+export { LanguageButton, PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, SiteFooter, StatCard, TodayHighlightCard };
 export type {
   LanguageButtonProps,
   PatroHeaderSwapProps,
@@ -14,6 +15,7 @@ export type {
   SeoContentSectionProps,
   SiteFooterProps,
   StatCardProps,
+  TodayHighlightCardProps,
   ShellKit,
 } from "../contract";
 
@@ -24,4 +26,5 @@ export const shellKit = {
   PatroHeaderSwap,
   SiteFooter,
   LanguageButton,
+  TodayHighlightCard,
 } satisfies ShellKit;

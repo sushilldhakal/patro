@@ -2,7 +2,8 @@
  * Shell kit props — one contract for the website and the app.
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
+import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
 import type { SeoContentRoute } from "@vedic-patro/features/common";
 
 export type StatCardProps = {
@@ -46,6 +47,21 @@ export type LanguageButtonProps = {
   className?: string;
 };
 
+export type TodayHighlightMoon = { tithiIndex: number; title: string };
+
+export type TodayHighlightCardProps = {
+  selectedDay: CalendarDay | null;
+  selectedAdDate: string;
+  todayAd: string;
+  isAdCalendar: boolean;
+  year: number;
+  month: number;
+  p?: PanchangaDay;
+  className?: string;
+  /** Moon artwork stays in each app (it is a panchanga drawing). */
+  moon?: (info: TodayHighlightMoon) => ReactNode;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -53,4 +69,5 @@ export type ShellKit = {
   PatroHeaderSwap: ComponentType<PatroHeaderSwapProps>;
   SiteFooter: ComponentType<SiteFooterProps>;
   LanguageButton: ComponentType<LanguageButtonProps>;
+  TodayHighlightCard: ComponentType<TodayHighlightCardProps>;
 };
