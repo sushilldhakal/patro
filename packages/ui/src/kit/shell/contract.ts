@@ -224,6 +224,59 @@ export type HomeRashifalSignPickerProps = {
   className?: string;
 };
 
+export type AccountMenuProps = {
+  status: "loading" | "signed-out" | "signed-in";
+  initial: string;
+  email: string;
+  verified: boolean;
+  statusLabel: string;
+  menuOpen: boolean;
+  onOpenMenu: () => void;
+  onCloseMenu: () => void;
+  onSignIn: () => void;
+  onProfiles: () => void;
+  onSignOut: () => void;
+  copy: { signIn: string; menuAria: string; myProfiles: string; signOut: string };
+  /** The sign-in dialog, rendered by the app while it is open. */
+  auth?: ReactNode;
+};
+
+export type AuthDialogViewProps = {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description: string;
+  social?: ReactNode;
+  email: string;
+  onEmail: (value: string) => void;
+  emailLabel: string;
+  emailPlaceholder: string;
+  showPassword: boolean;
+  password: string;
+  onPassword: (value: string) => void;
+  passwordLabel: string;
+  passwordPlaceholder: string;
+  showConfirm: boolean;
+  confirm: string;
+  onConfirm: (value: string) => void;
+  confirmLabel: string;
+  error?: string | null;
+  notice?: string | null;
+  busy: boolean;
+  submitLabel: string;
+  onSubmit: () => void;
+  mode: "login" | "signup" | "forgot";
+  onSwitch: (mode: "login" | "signup" | "forgot") => void;
+  switchCopy: { forgot: string; newHere: string; create: string; already: string; signIn: string; back: string };
+  showLegal: boolean;
+  legalAgree?: string;
+  privacyLabel?: string;
+  termsLabel?: string;
+  onPrivacy?: () => void;
+  onTerms?: () => void;
+  closeLabel: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -243,4 +296,6 @@ export type ShellKit = {
   HomeQuickLinks: ComponentType<HomeQuickLinksProps>;
   HomeVedaMantra: ComponentType<HomeVedaMantraProps>;
   HomeRashifalSignPicker: ComponentType<HomeRashifalSignPickerProps>;
+  AccountMenu: ComponentType<AccountMenuProps>;
+  AuthDialog: ComponentType<AuthDialogViewProps>;
 };

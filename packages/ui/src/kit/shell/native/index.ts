@@ -1,4 +1,6 @@
 import type { ShellKit } from "../contract";
+import { AccountMenu } from "./AccountMenu";
+import { AuthDialog } from "./AuthDialog";
 import { HomeQuickLinks } from "./HomeQuickLinks";
 import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
 import { HomeVedaMantra } from "./HomeVedaMantra";
@@ -16,6 +18,8 @@ import { StatCard } from "./StatCard";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 
 export {
+  AccountMenu,
+  AuthDialog,
   HomeQuickLinks,
   HomeRashifalSignPicker,
   HomeVedaMantra,
@@ -36,6 +40,8 @@ export {
   TodayHighlightCard,
 };
 export type {
+  AccountMenuProps,
+  AuthDialogViewProps,
   CalendarHeaderSegment,
   HomeQuickLinkGroup,
   HomeQuickLinkItem,
@@ -82,4 +88,6 @@ export const shellKit = {
   HomeQuickLinks,
   HomeVedaMantra,
   HomeRashifalSignPicker,
+  AccountMenu,
+  AuthDialog,
 } satisfies ShellKit;
