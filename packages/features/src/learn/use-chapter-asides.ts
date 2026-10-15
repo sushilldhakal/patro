@@ -1,8 +1,8 @@
 /**
  * The asides a running chapter can raise over its scene — a Learn diagram
- * panel, a still picture with its caption, and a one-line tip — shared by the
- * website (`apps/web/src/components/learn/ChapterOverlay.tsx`, `ChapterStill.tsx`)
- * and the app (`apps/mobile/components/learn/playground/…`). Each app draws them.
+ * panel, a still picture with its caption, and a one-line tip. Both apps draw
+ * them from `@vedic-patro/ui/kit/learn` (`ChapterOverlay`, `ChapterStill`,
+ * `ChapterTip`). The app's overlay file only binds the id to its diagram registry.
  */
 
 import { useEffect, useState } from "react";

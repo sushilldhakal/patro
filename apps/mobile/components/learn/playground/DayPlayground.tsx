@@ -86,7 +86,7 @@ import {
 import { trackFor } from "@vedic-patro/domain/learn/chapter-tracks";
 import { DayChapterBar, DayChapterWelcome } from "@/components/learn/playground/DayChapterPlayer";
 import { ChapterOverlay } from "@/components/learn/playground/ChapterOverlay";
-import { ChapterStill, ChapterTip } from "@/components/learn/playground/ChapterStill";
+import { ChapterStill, ChapterTip } from "@vedic-patro/ui/kit/learn";
 import EotGraph from "@/components/learn/playground/EotGraph";
 import PerfMeter, { type PerfSample } from "@/components/learn/playground/PerfMeter";
 import type { PlaygroundLabel } from "@/components/learn/playground/playground-labels";

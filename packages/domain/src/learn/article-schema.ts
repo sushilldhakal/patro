@@ -5,8 +5,8 @@
  * blocks. Bodies used to be hand-built React trees (one component per
  * article); as the knowledge library grew past a handful of topics that
  * meant duplicating the same markup 80 times. Here the body is plain data
- * and `article-render.tsx` owns the markup, so a new article is prose plus
- * a diagram id.
+ * and `article-model.ts` plus the learn UI kit own the markup, so a new
+ * article is prose plus a diagram id.
  *
  * Every string the reader sees is bilingual — `{ ne, en }`. Nepali is the
  * primary language, so write Nepali with Devanagari digits (१२°, ३६५) to
@@ -31,6 +31,9 @@ export type Cell = string | Bi;
  * - `*text*`   → teal highlight (the article's key terms)
  * - `~text~`   → amber highlight (astronomical events, warnings)
  * - `` `text` `` → numeric/monospace run
+ * - `[[slug|label]]` → a link to another Learn article
+ *
+ * The parser is `parseInlineMarkup` in `article-model.ts`.
  */
 export type Block =
   /** Opening paragraph of a section — slightly larger than `para`. */

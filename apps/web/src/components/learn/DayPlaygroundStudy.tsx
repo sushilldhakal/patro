@@ -80,7 +80,7 @@ import {
 import { trackFor } from "@vedic-patro/domain/learn/chapter-tracks";
 import { DayChapterBar, DayChapterWelcome } from "./DayChapterPlayer";
 import { ChapterOverlay } from "./ChapterOverlay";
-import { ChapterStill, ChapterTip } from "./ChapterStill";
+import { ChapterStill, ChapterTip } from "@vedic-patro/ui/kit/learn";
 import EotGraph from "./EotGraph";
 import { labelPinCss } from "./scene-label-pin";
 import Scene, {
