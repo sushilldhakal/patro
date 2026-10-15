@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
+import type { PersistedClient } from "@tanstack/react-query-persist-client";
 
 /**
  * Storage for the persisted React Query cache.
@@ -86,6 +87,31 @@ const fileStorage: PersistStorage = {
 };
 
 export const queryCacheStorage: PersistStorage = Platform.OS === "web" ? AsyncStorage : fileStorage;
+
+/**
+ * Upper bound on the persisted cache, in JSON characters. Every query waits for
+ * the restore before it may fetch, so the whole file is read and parsed before
+ * any screen can load — and the whole cache is re-serialized on the JS thread
+ * every few seconds while browsing. Uncapped, a week of browsing (one day's
+ * panchanga is ~140 KB) grew it to many MB and both costs to seconds.
+ */
+const PERSIST_BUDGET_CHARS = 2_000_000;
+
+/** `JSON.stringify` of the most recently updated queries that fit {@link PERSIST_BUDGET_CHARS}. */
+export function serializeQueryCache(client: PersistedClient): string {
+  const newestFirst = [...client.clientState.queries].sort(
+    (a, b) => (b.state.dataUpdatedAt ?? 0) - (a.state.dataUpdatedAt ?? 0),
+  );
+  const kept: typeof newestFirst = [];
+  let used = 0;
+  for (const query of newestFirst) {
+    const size = JSON.stringify(query).length;
+    if (used + size > PERSIST_BUDGET_CHARS) continue;
+    kept.push(query);
+    used += size;
+  }
+  return JSON.stringify({ ...client, clientState: { ...client.clientState, queries: kept } });
+}
 
 /** `JSON.parse`, timed for {@link queryCacheRestoreStats}. */
 export function deserializeQueryCache(text: string) {

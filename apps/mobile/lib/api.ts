@@ -376,12 +376,31 @@ function appLocationQuery(path: string, location?: LocationParams): string {
   return `${path}${path.includes("?") ? "&" : "?"}${qs}`;
 }
 
+/**
+ * The URL actually sent: with a `city_id` the server takes the place (and its
+ * timezone) from the city and ignores `lat`/`lon`/`timezone` — the response is
+ * byte-identical without them. Sending them anyway made every app URL a
+ * different CDN object from the website's (which sends `city_id` alone), so the
+ * app missed the Cloudflare cache the website keeps warm and waited 1–2 s on
+ * the origin per request instead of ~50 ms. `path` itself keeps them, so query
+ * keys and offline-download keys are unchanged.
+ */
+function networkPath(path: string): string {
+  const q = path.indexOf("?");
+  if (q === -1) return path;
+  // Filtered as raw text, not re-encoded: other params (`+05:45` offsets) must go out byte-for-byte.
+  const pairs = path.slice(q + 1).split("&");
+  if (!pairs.some((p) => p.startsWith("city_id="))) return path;
+  const kept = pairs.filter((p) => !/^(lat|lon|timezone)=/.test(p));
+  return `${path.slice(0, q)}?${kept.join("&")}`;
+}
+
 // Every public read goes through here, so a response saved by the offline
 // download (lib/offline) answers the same request when there is no network.
 async function offlineAwareJson<T>(path: string): Promise<T> {
   return offlineAwareGet<T>(
     path,
-    () => fetchWithTimeout(`${DATA_BASE}${path}`, path),
+    () => fetchWithTimeout(`${DATA_BASE}${networkPath(path)}`, path),
     (res) => apiErrorFrom(res, path),
   );
 }

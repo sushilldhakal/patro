@@ -12,6 +12,7 @@ import {
   deserializeQueryCache,
   queryCacheRestoreStats,
   queryCacheStorage,
+  serializeQueryCache,
 } from "@/lib/query-cache-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
@@ -30,6 +31,7 @@ import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
 import { loadCalendarEraPreference } from "@/lib/patro-era-preference";
+import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 
@@ -70,6 +72,7 @@ const asyncStoragePersister = createAsyncStoragePersister({
   // A file on iOS/Android — AsyncStorage rows over ~2 MB are unreadable on Android.
   storage: queryCacheStorage,
   key: "vedic-patro-query-cache",
+  serialize: serializeQueryCache,
   deserialize: deserializeQueryCache,
   // Serializing the whole cache runs on the JS thread; batch writes while browsing.
   throttleTime: 3000,
@@ -112,7 +115,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([isOnboardingComplete(), loadCalendarEraPreference()]).then(([done]) => {
+    // The saved place is read here too, so the first screen fetches it rather than Kathmandu.
+    Promise.all([isOnboardingComplete(), loadCalendarEraPreference(), loadStoredLocation()]).then(([done]) => {
       if (active) setOnboarded(done);
     });
     return () => {

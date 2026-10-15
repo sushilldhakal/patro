@@ -100,18 +100,41 @@ export async function readStoredLocation(): Promise<PanchangaLocation> {
   }
 }
 
+/**
+ * The saved place, read once per process. Every screen used to read SecureStore
+ * on mount and render Kathmandu until it answered, so anyone with another place
+ * saved fetched each page twice — Kathmandu first, then their own. The root
+ * layout primes this before the splash hides, so screens start on the right place.
+ */
+let sharedLocation: PanchangaLocation | null = null;
+let sharedLocationLoad: Promise<PanchangaLocation> | null = null;
+
+export function loadStoredLocation(): Promise<PanchangaLocation> {
+  if (sharedLocation) return Promise.resolve(sharedLocation);
+  sharedLocationLoad ??= readStoredLocation().then((stored) => {
+    sharedLocation ??= stored;
+    return sharedLocation;
+  });
+  return sharedLocationLoad;
+}
+
+function saveLocation(next: PanchangaLocation) {
+  sharedLocation = next;
+  SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+}
+
 const BACKFILL_TIMEOUT_MS = 4000;
 
 export function usePanchangaLocation(initial?: PanchangaLocation) {
   const [location, setLocationState] = useState<PanchangaLocation>(
-    initial ?? DEFAULT_PANCHANGA_LOCATION,
+    initial ?? sharedLocation ?? DEFAULT_PANCHANGA_LOCATION,
   );
-  const [ready, setReady] = useState(Boolean(initial));
+  const [ready, setReady] = useState(Boolean(initial) || sharedLocation != null);
 
   useEffect(() => {
     if (initial) return;
     let active = true;
-    readStoredLocation().then((stored) => {
+    loadStoredLocation().then((stored) => {
       if (!active) return;
       setLocationState(stored);
       setReady(true);
@@ -123,7 +146,7 @@ export function usePanchangaLocation(initial?: PanchangaLocation) {
         ]).then((healed) => {
           if (!active || healed === stored) return;
           setLocationState((cur) => (cur.label === stored.label ? healed : cur));
-          SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(healed)).catch(() => {});
+          if (sharedLocation === stored) saveLocation(healed);
         });
       }
     });
@@ -134,7 +157,7 @@ export function usePanchangaLocation(initial?: PanchangaLocation) {
 
   const setLocation = useCallback((next: PanchangaLocation) => {
     setLocationState(next);
-    SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+    saveLocation(next);
   }, []);
 
   return { location, setLocation, ready };
