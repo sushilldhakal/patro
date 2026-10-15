@@ -1,6 +1,6 @@
 /**
- * The nine-graha gochar strip inside "why this reading?", shared by the
- * website's and the app's `components/rashifal/RashifalGocharChips.tsx`: one
+ * The nine-graha gochar strip inside "why this reading?", drawn by
+ * `@vedic-patro/ui/kit/jyotish` RashifalGocharChips: one
  * chip per graha with the house counted from the sign, its tone, the three
  * transit flags with their labels, and a legend for the flags on screen.
  */
