@@ -6,7 +6,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PanchangaAsidePanels } from "@/components/panchanga/PanchangaAsidePanels";
-import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
+import { EphemerisModeBanner } from "@vedic-patro/ui/kit/panchanga";
 import { useDayCycleTabs } from "@/components/panchanga/use-day-cycle-tabs";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
