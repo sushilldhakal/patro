@@ -21,7 +21,12 @@ import {
   EclipticBeltStudy,
   PrecessionSkyStudy,
 } from "@/components/learn/ComputationSkyDiagrams";
-import { EarthRotationDiagram } from "@/components/learn/EarthRotationDiagram";
+import earthRotatingUrl from "@/assets/earth_rotating.svg?url";
+import { EarthRotationDiagram as EarthRotationFigure } from "@vedic-patro/ui/kit/learn";
+
+function EarthRotationDiagram() {
+  return <EarthRotationFigure globeSrc={earthRotatingUrl} />;
+}
 import { EclipseStudy } from "@/components/learn/EclipseStudy";
 import { EquinoxPrecession } from "@/components/learn/EquinoxPrecession";
 import { HeliocentricOrbitStudy } from "@/components/learn/HeliocentricOrbitStudy";

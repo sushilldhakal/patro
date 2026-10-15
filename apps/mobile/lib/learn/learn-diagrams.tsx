@@ -11,8 +11,14 @@ import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
  */
 
 import type { ComponentType } from "react";
+import { Image } from "react-native";
+import { EarthRotationDiagram as EarthRotationFigure } from "@vedic-patro/ui/kit/learn";
 import { HoraTodayDiagram } from "@/components/learn/diagrams/HoraTodayDiagram";
-import { EarthRotationDiagram } from "@/components/learn/diagrams/EarthRotationDiagram";
+
+const earthGlobe = Image.resolveAssetSource(require("@/assets/sky3d/earth.jpg")).uri;
+function EarthRotationDiagram() {
+  return <EarthRotationFigure globeSrc={earthGlobe} />;
+}
 import { SunRayAngleDiagram } from "@/components/learn/diagrams/SunRayAngleDiagram";
 import { HoraWeekdayCycleDiagram } from "@/components/learn/diagrams/HoraWeekdayCycleDiagram";
 import { YearLengthLadderDiagram } from "@/components/learn/diagrams/YearLengthLadderDiagram";

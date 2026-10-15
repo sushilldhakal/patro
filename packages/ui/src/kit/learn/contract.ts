@@ -57,6 +57,11 @@ export type LearnTopicCardProps = {
   onOpen: () => void;
 };
 
+export type EarthRotationDiagramProps = {
+  /** Clipped globe picture. Each app passes its own asset. */
+  globeSrc: string;
+};
+
 export type EotGraphProps = {
   eccentricity: number;
   /** Axial tilt in radians. */
@@ -75,4 +80,5 @@ export type LearnKit = {
   LearnMoreCard: (props: LearnMoreCardProps) => ReactNode;
   LearnTopicCard: (props: LearnTopicCardProps) => ReactNode;
   EotGraph: (props: EotGraphProps) => ReactNode;
+  EarthRotationDiagram: (props: EarthRotationDiagramProps) => ReactNode;
 };

@@ -4,6 +4,7 @@ import { ChapterOverlay } from "./ChapterOverlay";
 import { ChapterStill, ChapterTip } from "./ChapterAsides";
 import { LearnMoreCard, LearnTopicCard } from "./LearnCards";
 import { EotGraph } from "./EotGraph";
+import { EarthRotationDiagram } from "./EarthRotationDiagram";
 
 export type {
   ArticleBodyProps,
@@ -13,7 +14,26 @@ export type {
   LearnMoreCardProps,
   LearnTopicCardProps,
   EotGraphProps,
+  EarthRotationDiagramProps,
 } from "../contract";
-export { ArticleBody, ChapterOverlay, ChapterStill, ChapterTip, LearnMoreCard, LearnTopicCard, EotGraph };
+export {
+  ArticleBody,
+  ChapterOverlay,
+  ChapterStill,
+  ChapterTip,
+  LearnMoreCard,
+  LearnTopicCard,
+  EotGraph,
+  EarthRotationDiagram,
+};
 
-export const learnKit = { ArticleBody, ChapterOverlay, ChapterStill, ChapterTip, LearnMoreCard, LearnTopicCard, EotGraph } satisfies LearnKit;
+export const learnKit = {
+  ArticleBody,
+  ChapterOverlay,
+  ChapterStill,
+  ChapterTip,
+  LearnMoreCard,
+  LearnTopicCard,
+  EotGraph,
+  EarthRotationDiagram,
+} satisfies LearnKit;
