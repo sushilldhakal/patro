@@ -67,7 +67,6 @@ export default defineConfig([
   {
     // TanStack Table's hook API is intentionally dynamic; React Compiler skips it.
     files: [
-      'src/components/SunTimesYearGrid.tsx',
       'src/pages/AvakahadaChakra.tsx',
       'src/pages/Holidays.tsx',
     ],
