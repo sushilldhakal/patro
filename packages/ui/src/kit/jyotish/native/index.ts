@@ -6,6 +6,7 @@ import { KundaliSectionNav, KundaliSidebarSubnav } from "./Structure";
 import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
 import { BhavaBalaChart, ShadbalaChart } from "./StrengthCharts";
 import { VastuCompassRing } from "./VastuCompass";
+import { D1Chart } from "./D1Chart";
 import { VastuPurushaWheel } from "./VastuWheel";
 import { HouseSketch } from "./HouseSketch";
 import { PlotPlanner } from "./Plot";
@@ -123,6 +124,7 @@ export {
   VastuPurushaWheel,
   HouseSketch,
   PlotPlanner,
+  D1Chart,
   ShantiVidhiPanel,
   VimshopakaCard,
   YogaReferenceCatalog,
@@ -176,6 +178,7 @@ export const jyotishKit = {
   VastuPurushaWheel,
   HouseSketch,
   PlotPlanner,
+  D1Chart,
   DashaTree,
   DashaSystemPanel,
   ShantiVidhiPanel,

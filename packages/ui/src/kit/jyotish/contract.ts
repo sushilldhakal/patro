@@ -327,6 +327,27 @@ export type BhavaBalaCardProps = {
   }) => ReactNode;
 };
 
+export type D1MarkArgs = {
+  planetKey: string;
+  isRetrograde: boolean | undefined;
+  isCombust: boolean | undefined;
+  x: number;
+  y: number;
+  size: number;
+};
+
+/**
+ * North-Indian D1. `houses` is the only data prop. `size` is a max width on
+ * the website and the SVG edge in the app. `renderMarks` draws the vakri / asta
+ * glyphs inside the SVG (website `<svg>` children, app `react-native-svg` nodes).
+ * The bhava sheet is the kit `BhavaDetailDialog`.
+ */
+export type D1ChartProps = {
+  houses: BhavaHouse[];
+  size?: number;
+  renderMarks: (args: D1MarkArgs) => ReactNode;
+};
+
 export type VastuCenter = { cx: number; cy: number };
 
 export type VastuInk = { text: string; background: string };
@@ -535,6 +556,7 @@ export type JyotishKit = {
   VastuCompassRing: ComponentType<VastuCompassRingProps>;
   HouseSketch: ComponentType<HouseSketchProps>;
   PlotPlanner: ComponentType<PlotPlannerProps>;
+  D1Chart: ComponentType<D1ChartProps>;
   DashaTree: ComponentType<DashaTreeProps>;
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;
