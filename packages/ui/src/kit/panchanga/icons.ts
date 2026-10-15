@@ -60,6 +60,8 @@ export const layoutGridIcon: IconNode = [
   ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }],
 ];
 
+export const chevronDownIcon: IconNode = [["path", { d: "m6 9 6 6 6-6", key: "1bl5f8" }]];
+
 export const chevronLeftIcon: IconNode = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
 
 export const chevronRightIcon: IconNode = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];

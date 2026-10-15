@@ -32,7 +32,7 @@ import {
   RashiSection,
   RituSection,
   SunMoonSamvatSection,
-} from "@/components/panchanga/PanchangaSections";
+} from "@vedic-patro/ui/kit/panchanga";
 import { useRouteLoading } from "@/lib/route-loading";
 import { buildPatroBrowseYearOptions, pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import type { Era } from "@vedic-patro/domain/era";

@@ -20,7 +20,7 @@ import {
   RashiSection,
   RituSection,
   SunMoonSamvatSection,
-} from "@/components/panchanga/PanchangaSections";
+} from "@vedic-patro/ui/kit/panchanga";
 import { useThemeColors } from "@/lib/theme-context";
 import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
