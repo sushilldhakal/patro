@@ -22,24 +22,32 @@ function columnsAt(cols: GridColumns, width: number): number {
 }
 
 /**
- * React Native has no CSS grid: cells go in wrapping rows, each `100 / cols` % wide,
- * with half the gap as padding on every side and the same amount pulled back out
- * with a negative margin, so the outer edge stays flush and the gaps stay `gap`.
+ * React Native has no CSS grid: the cells go in rows of `cols`, each cell `flex: 1` so every
+ * column is exactly the same width (percent widths can add up to a hair over 100% and wrap a
+ * column). A short last row is padded with empty cells so its columns line up.
  */
 export function Grid({ cols, gap = 0, gapX, gapY, label, className, nativeClassName, children, testID }: GridProps) {
   const { width } = useWindowDimensions();
   const n = Math.max(1, columnsAt(cols, width));
-  const x = (gapX ?? gap) / 2;
-  const y = (gapY ?? gap) / 2;
+  const x = gapX ?? gap;
+  const y = gapY ?? gap;
+  const items = Children.toArray(children);
+  const rows: (typeof items)[] = [];
+  for (let i = 0; i < items.length; i += n) rows.push(items.slice(i, i + n));
   return (
-    <View className={cn(className, nativeClassName)} accessibilityLabel={label} testID={testID}>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", marginHorizontal: -x, marginVertical: -y }}>
-        {Children.toArray(children).map((child, i) => (
-          <View key={i} style={{ width: `${100 / n}%`, paddingHorizontal: x, paddingVertical: y }}>
-            {child}
-          </View>
-        ))}
-      </View>
+    <View className={cn(className, nativeClassName)} accessibilityLabel={label} testID={testID} style={{ gap: y }}>
+      {rows.map((row, r) => (
+        <View key={r} style={{ flexDirection: "row", gap: x }}>
+          {row.map((child, c) => (
+            <View key={c} style={{ flex: 1, flexBasis: 0, minWidth: 0 }}>
+              {child}
+            </View>
+          ))}
+          {Array.from({ length: n - row.length }, (_, k) => (
+            <View key={`pad-${k}`} style={{ flex: 1, flexBasis: 0, minWidth: 0 }} />
+          ))}
+        </View>
+      ))}
     </View>
   );
 }

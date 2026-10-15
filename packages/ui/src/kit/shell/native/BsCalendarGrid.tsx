@@ -1,29 +1,35 @@
-import { Text as RNText } from "react-native";
+import { useCallback, useState } from "react";
+import { Pressable as RNPressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import { useColorScheme } from "nativewind";
+import { mobileRoles } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/domain/utils";
-import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
-import { useBsCalendarGrid, type BsCalendarCell } from "@vedic-patro/features/home";
+import { useBsCalendarGrid } from "@vedic-patro/features/home";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { Grid, Box, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { Box, Sheet, Text } from "@vedic-patro/ui";
 import type { BsCalendarGridProps } from "../contract";
+import { VerticalEdgeLabel } from "./VerticalEdgeLabel";
 
 const TODAY_AD = new Date().toISOString().split("T")[0];
+const COLS = 7;
+const GAP = 1;
 
-function EdgeLabel({ text, side, className }: { text: string; side: "left" | "right"; className?: string }) {
-  const { label, fontSize } = verticalEdgeLabel(text);
-  return (
-    <Box className={cn(cal.edgeStrip, side === "left" ? "left-0.5" : "right-0.5")}>
-      <RNText
-        className={cn("font-num font-semibold", className)}
-        style={{ fontSize, transform: [{ rotate: side === "left" ? "-90deg" : "90deg" }] }}
-      >
-        {label}
-      </RNText>
-    </Box>
-  );
+/** The grid is measured once so the header and every row share one exact column width (percent widths wrap a column on some phones). */
+function useGridWidth() {
+  const [width, setWidth] = useState(0);
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const next = e.nativeEvent.layout.width;
+    setWidth((prev) => (Math.abs(prev - next) < 0.5 ? prev : next));
+  }, []);
+  const col = width > 0 ? Math.floor(((width - GAP * (COLS - 1)) / COLS) * 100) / 100 : 0;
+  return { onLayout, col };
 }
 
-/** Month grid. The moon glyph is supplied by each app. */
+function colStyle(col: number, extra?: object) {
+  return col > 0 ? { width: col, maxWidth: col, minWidth: 0, ...extra } : { flex: 1, flexBasis: 0, minWidth: 0, ...extra };
+}
+
+/** Month grid for the app: rows of seven columns, drawn with React Native (no CSS grid). The moon glyph is supplied by each app. */
 export function BsCalendarGrid({
   days,
   publicHolidayDates,
@@ -31,57 +37,146 @@ export function BsCalendarGrid({
   onSelectDay,
   isEnriching = false,
   todayAd = TODAY_AD,
-  primaryDate = "bs",
+  primaryDate: primaryDateProp = "bs",
   moon,
   className,
 }: BsCalendarGridProps) {
-  const { t } = useLocale();
-  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate });
+  const { t, lang } = useLocale();
+  const { colorScheme } = useColorScheme();
+  const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
+  const { width } = useWindowDimensions();
+  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp });
+  const { primaryDate } = grid;
+  const { onLayout, col } = useGridWidth();
+  const isCompact = width < 768;
+  const isTablet = !isCompact;
+  const dayNumClass = isTablet ? "text-3xl" : "text-2xl";
+  const tithiRowMinH = lang === "en" ? 14 : 18;
+  const moonSize = width >= 640 ? 16 : 14;
+  const moonInset = isCompact ? 0 : 4;
+  const cellMinH = isCompact ? 80 : 104;
 
   return (
-    <Box className={cn(cal.grid, cal.gridWide, cal.gridWeb, className)}>
-      <Grid cols={7} gap={1}>
-        {grid.weekdays.map((w) => (
-          <Box key={w.key} className={cn("flex-col gap-px max-md:items-center max-md:px-0 max-md:py-1", cal.weekdayCell, cal.weekdayCellWide)}>
-            {w.label === w.short ? (
-              <Text className={cal.weekdayEn}>{w.label}</Text>
-            ) : (
-              <>
-                <Text className={cn(cal.weekdayNe, "max-md:hidden", w.weekend && cal.weekdayWeekend)}>{w.label}</Text>
-                <Text className={cn("hidden max-md:flex", cal.weekdayNeShort, w.weekend && cal.weekdayWeekend)}>{w.short}</Text>
-              </>
-            )}
-          </Box>
-        ))}
-
-        {grid.cells.map((cell, i) => {
-          if (!cell) return <Box key={`empty-${i}`} className={cn(cal.emptyWeb, cal.emptyCell)} />;
-          return (
-            <DayCell
-              key={cell.day.date_ad}
-              cell={cell}
-              primaryDate={grid.primaryDate}
-              isEnriching={isEnriching}
-              todayBadge={grid.todayBadge}
-              moon={moon}
-              onSelect={() => onSelectDay?.(cell.day)}
-              onOpenFestivals={() => grid.openFestivals(cell)}
-            />
-          );
-        })}
-      </Grid>
-
-      <Sheet
-        open={grid.festivalDialog != null}
-        onClose={grid.closeFestivals}
-        title={grid.festivalDialog?.title}
-        closeLabel={t("common.close")}
-        className="max-w-sm"
+    <>
+      <View
+        onLayout={onLayout}
+        className={cn(cal.grid, isCompact ? "rounded-none" : cal.gridWide, className)}
+        style={{ backgroundColor: roles.border, gap: GAP }}
       >
+        <View style={{ flexDirection: "row", gap: GAP }}>
+          {grid.weekdays.map((w) => {
+            const label = isCompact ? w.short : w.label;
+            return (
+              <View key={w.key} style={colStyle(col)} className={cn(cal.weekdayCell, isCompact ? cal.weekdayCellPhone : cal.weekdayCellWide)}>
+                <Text
+                  className={cn(
+                    lang === "en" ? cal.weekdayEn : isCompact ? cal.weekdayNeShort : cal.weekdayNe,
+                    w.weekend && lang !== "en" && cal.weekdayWeekend,
+                  )}
+                >
+                  {label}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {grid.rows.map((row, rowIndex) => (
+          <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: GAP }}>
+            {row.map((cell, colIndex) => {
+              const cellIndex = rowIndex * 7 + colIndex;
+              if (!cell) return <View key={`empty-${cellIndex}`} style={colStyle(col, { minHeight: cellMinH })} className={cal.emptyCell} />;
+
+              const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, extraFestCount, tithi } = cell;
+              const compactBsFest = cell.bsFestCompact && isCompact;
+              const bgClass = isOutside ? cal.cellOutside : isToday ? cal.cellToday : isPublicHoliday ? cal.cellHoliday : undefined;
+              const dayColorClass = !isOutside && (isWeekend || isPublicHoliday) ? cal.dayNumberDanger : isOutside ? cal.cellTextOutside : cal.cellText;
+              const openFestivals = () => grid.openFestivals(cell);
+
+              return (
+                <RNPressable
+                  key={cell.day.date_ad}
+                  onPress={() => onSelectDay?.(cell.day)}
+                  style={colStyle(col, { minHeight: cellMinH })}
+                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, bgClass)}
+                >
+                  {isSelected ? (
+                    <View pointerEvents="none" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderWidth: 2, borderColor: roles.primary }} />
+                  ) : null}
+
+                  {cell.tithiIndex != null && moon ? (
+                    <View pointerEvents="none" style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2, width: moonSize, height: moonSize }}>
+                      {moon({ tithiIndex: cell.tithiIndex, title: cell.moonTitle })}
+                    </View>
+                  ) : null}
+
+                  {!isCompact && leftFest ? <VerticalEdgeLabel text={leftFest} side="left" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
+                  {!isCompact && rightFest ? <VerticalEdgeLabel text={rightFest} side="right" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
+
+                  <View className="w-full flex-row items-start justify-center" style={{ minHeight: tithiRowMinH }}>
+                    {tithi ? (
+                      <Text numberOfLines={1} className={cn("flex-1", cal.tithi, isTablet ? "text-sm" : cal.tithiPhone)}>
+                        {tithi}
+                      </Text>
+                    ) : isEnriching && !isOutside ? (
+                      <View className={cn("mx-auto", cal.tithiPending)} />
+                    ) : (
+                      <View className="min-w-0 flex-1" />
+                    )}
+                  </View>
+
+                  <View className="flex-1 items-center justify-center gap-0.5 py-0.5">
+                    {isToday ? (
+                      <View className={cn(cal.todayBadge, isCompact && cal.todayBadgePhone)}>
+                        <Text className={cal.todayBadgeText}>{grid.todayBadge}</Text>
+                      </View>
+                    ) : null}
+                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1">
+                      <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
+                      <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
+                        {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
+                      </Text>
+                      {extraFestCount > 0 && primaryDate !== "bs" ? (
+                        <RNPressable onPress={openFestivals} className={cn(cal.countBadge, isCompact && cal.countBadgePhone)}>
+                          <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
+                        </RNPressable>
+                      ) : null}
+                    </View>
+                  </View>
+
+                  {compactBsFest ? (
+                    <RNPressable onPress={openFestivals} className={cn("mx-auto mt-auto", cal.countBadgeCompact)}>
+                      <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
+                    </RNPressable>
+                  ) : null}
+
+                  {mainFest && !isOutside && !compactBsFest ? (
+                    <View className={cn("w-full min-w-0", cal.festivalExtraStack)}>
+                      <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                        {mainFest}
+                      </Text>
+                      {isCompact && festivals.length > 1 && extraFestCount === 0
+                        ? festivals.slice(1, 3).map((name, fi) => (
+                            <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-center", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                              {name}
+                            </Text>
+                          ))
+                        : null}
+                    </View>
+                  ) : null}
+                  {hasFestival && !mainFest ? <View className="mx-auto mt-0.5 h-1 w-1 rounded-full bg-accent" /> : null}
+                </RNPressable>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+
+      <Sheet open={grid.festivalDialog != null} onClose={grid.closeFestivals} title={grid.festivalDialog?.title} closeLabel={t("common.close")}>
         {grid.festivalDialog ? (
           <>
             <Text className="mb-3 text-sm text-muted-foreground">{grid.festivalDialog.description}</Text>
-            <Box as="ul" className="max-h-[min(60vh,20rem)] gap-2 overflow-y-auto pr-1">
+            <Box className="gap-2">
               {grid.festivalDialog.festivals.map((name, i) => (
                 <Text key={`${name}-${i}`} className={cn(cal.festivalItem, cal.festivalItemText)}>
                   {name}
@@ -91,153 +186,6 @@ export function BsCalendarGrid({
           </>
         ) : null}
       </Sheet>
-    </Box>
-  );
-}
-
-function DayCell({
-  cell,
-  primaryDate,
-  isEnriching,
-  todayBadge,
-  moon,
-  onSelect,
-  onOpenFestivals,
-}: {
-  cell: BsCalendarCell;
-  primaryDate: "bs" | "ad";
-  isEnriching: boolean;
-  todayBadge: string;
-  moon?: BsCalendarGridProps["moon"];
-  onSelect: () => void;
-  onOpenFestivals: () => void;
-}) {
-  const {
-    isOutside,
-    isToday,
-    isSelected,
-    isWeekend,
-    isPublicHoliday,
-    festivals,
-    hasFestival,
-    mainFest,
-    leftFest,
-    rightFest,
-    tithi,
-    extraFestCount,
-  } = cell;
-  const edgeTone = isPublicHoliday ? "text-danger" : "text-foreground/85";
-
-  return (
-    <Box
-      className={cn(
-        cal.cellWeb,
-        cal.cell,
-        cal.cellWide,
-        cal.cellText,
-        (leftFest || rightFest) && "md:px-3.5",
-        isOutside && cn(cal.cellOutside, cal.cellTextOutside),
-        isToday && cal.cellToday,
-        isSelected && cal.cellSelected,
-        isPublicHoliday && cal.cellHoliday,
-      )}
-    >
-      <Pressable
-        label={cell.ariaLabel}
-        onPress={onSelect}
-        className={cal.cellHit}
-        webClassName={cn(
-          "transition-colors",
-          isOutside && "hover:bg-surface-hover",
-          isToday && "hover:bg-surface-today-hover",
-          !isToday && !isOutside && !isPublicHoliday && !hasFestival && "hover:bg-surface-hover",
-        )}
-      />
-
-      {cell.tithiIndex != null && moon ? <Box className={cal.moonWrap}>{moon({ tithiIndex: cell.tithiIndex, title: cell.moonTitle })}</Box> : null}
-
-      {leftFest ? <EdgeLabel text={leftFest} side="left" className={cn(edgeTone, primaryDate === "bs" && "max-md:hidden")} /> : null}
-      {rightFest ? <EdgeLabel text={rightFest} side="right" className={cn(edgeTone, primaryDate === "bs" && "max-md:hidden")} /> : null}
-
-      <Box className="relative z-[1] min-h-0 flex-1 flex-col pointer-events-none">
-        <Text className="w-full items-start leading-none">
-          {tithi ? (
-            <Text className={cn("w-full md:text-sm", cal.tithi, cal.tithiPhone)} numberOfLines={1}>
-              {tithi}
-            </Text>
-          ) : isEnriching && !isOutside ? (
-            <Text className={cn("inline-block animate-pulse", cal.tithiPending)} />
-          ) : null}
-        </Text>
-
-        <Box className="flex-1 flex-col items-center justify-center gap-0.5">
-          {isToday ? <Text className={cn(cal.todayBadge, cal.todayBadgeText, "max-md:px-1")}>{todayBadge}</Text> : null}
-          <Text className="flex-row flex-wrap items-baseline justify-center gap-x-1 leading-none">
-            <Text
-              className={cn(
-                "font-num",
-                cal.dayNumber,
-                cal.dayNumberWide,
-                "max-md:text-2xl",
-                !isOutside && (isWeekend || isPublicHoliday) && cal.dayNumberDanger,
-              )}
-            >
-              {cell.primaryDay}
-            </Text>
-            <Text
-              className={cn(
-                "font-num whitespace-nowrap md:text-sm",
-                cal.secondaryDate,
-                cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain,
-              )}
-            >
-              <Text className="md:hidden">{cell.secondaryLabelShort}</Text>
-              <Text className="max-md:hidden">{cell.secondaryLabel}</Text>
-            </Text>
-            {extraFestCount > 0 && primaryDate !== "bs" ? (
-              <Pressable
-                label={cell.extraFestAria}
-                onPress={onOpenFestivals}
-                className={cn("pointer-events-auto shrink-0 border-none max-md:px-0.5", cal.countBadge, cal.countBadgeText)}
-                webClassName="transition-opacity hover:opacity-90"
-              >
-                <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
-              </Pressable>
-            ) : null}
-          </Text>
-        </Box>
-
-        {cell.bsFestCompact ? (
-          <Pressable
-            label={cell.festCountAria}
-            onPress={onOpenFestivals}
-            className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden", cal.countBadgeCompact, cal.countBadgeText)}
-            webClassName="transition-opacity hover:opacity-90"
-          >
-            <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
-          </Pressable>
-        ) : null}
-
-        {mainFest ? (
-          <Text
-            className={cn(
-              "w-full min-w-0 flex-col gap-px",
-              cal.festival,
-              isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal,
-              primaryDate === "bs" && "max-md:hidden",
-            )}
-          >
-            <Text numberOfLines={2}>{mainFest}</Text>
-            {festivals.length > 1 && extraFestCount === 0
-              ? festivals.slice(1, 3).map((name, fi) => (
-                  <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("md:hidden", cal.festivalExtra)}>
-                    {name}
-                  </Text>
-                ))
-              : null}
-          </Text>
-        ) : null}
-      </Box>
-    </Box>
+    </>
   );
 }
