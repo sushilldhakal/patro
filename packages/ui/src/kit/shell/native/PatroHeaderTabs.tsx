@@ -6,10 +6,10 @@ import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { PatroHeaderSwapProps, PatroHeaderTabsProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
-/** Below xs a two-option toggle becomes one button offering the other view. */
+/** Below `md` (the website's breakpoint) a two-option toggle becomes one button offering the other view. */
 export function PatroHeaderTabs({ tabs, label, className }: PatroHeaderTabsProps) {
   const { width } = useWindowDimensions();
-  if (width < breakpoints.xs && tabs.length === 2) {
+  if (width < breakpoints.md && tabs.length === 2) {
     return <PatroHeaderSwap tabs={tabs} className={className} />;
   }
   return (

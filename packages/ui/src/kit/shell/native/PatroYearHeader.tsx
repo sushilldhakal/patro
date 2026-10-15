@@ -34,7 +34,7 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
             ) : null}
           </View>
         </View>
-        {titleAside}
+        {titleAside ? <View className="shrink-0">{titleAside}</View> : null}
       </View>
 
       <View className="flex-row items-center gap-2">
@@ -54,7 +54,7 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
             <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
           </Pressable>
         </View>
-        {navAside}
+        {navAside ? <View className="shrink-0">{navAside}</View> : null}
       </View>
 
       <Sheet open={h.open} onClose={h.close} title={labels.picker} closeLabel={labels.thisYear}>
