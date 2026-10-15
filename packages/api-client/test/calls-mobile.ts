@@ -87,7 +87,8 @@ add("apiLogout", async () => {
 add("apiApple", () => au.apiApple("apple-identity-token", "a@b.np"));
 
 // ─── Sky favourites (account-backed when signed in) ─────────────────────────
-import * as sky from "@/lib/sky3d/sky-bookmarks";
-const sk: any = sky;
-add("syncFavourites", () => sk.syncFavourites(true));
-add("putFavourites", () => sk.putFavourites(["M31", "M42"], true));
+// The sync/merge lives in @vedic-patro/features (useSkyBookmarks) and is not
+// exported; these are the two requests it makes when signed in.
+import { fetchSkyFavourites, putSkyFavourites } from "@vedic-patro/api-client";
+add("syncFavourites", () => fetchSkyFavourites());
+add("putFavourites", () => putSkyFavourites(["M31", "M42"]));
