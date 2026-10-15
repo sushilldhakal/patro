@@ -10,12 +10,14 @@ import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
+import { RelatedPageLinks } from "./RelatedPageLinks";
 import { PatroYearHeader } from "./PatroYearHeader";
 import { PatroYearNav, PatroYearNavBlock } from "./PatroYearNav";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
 import { TodayHighlightCard } from "./TodayHighlightCard";
+import { VedicPatroLoader } from "./VedicPatroLoader";
 
 export {
   AccountMenu,
@@ -31,6 +33,7 @@ export {
   PatroHeaderSwap,
   PatroHeaderTabs,
   PatroMonthYearNav,
+  RelatedPageLinks,
   PatroYearHeader,
   PatroYearNav,
   PatroYearNavBlock,
@@ -38,6 +41,7 @@ export {
   SiteFooter,
   StatCard,
   TodayHighlightCard,
+  VedicPatroLoader,
 };
 export type {
   AccountMenuProps,
@@ -59,6 +63,8 @@ export type {
   PatroHeaderTab,
   PatroHeaderTabsProps,
   PatroMonthYearNavProps,
+  RelatedLinkItem,
+  RelatedPageLinksProps,
   PatroYearHeaderProps,
   PatroYearNavBlockProps,
   PatroYearNavProps,
@@ -66,6 +72,7 @@ export type {
   SiteFooterProps,
   StatCardProps,
   TodayHighlightCardProps,
+  VedicPatroLoaderProps,
   ShellKit,
 } from "../contract";
 
@@ -90,4 +97,6 @@ export const shellKit = {
   HomeRashifalSignPicker,
   AccountMenu,
   AuthDialog,
+  RelatedPageLinks,
+  VedicPatroLoader,
 } satisfies ShellKit;

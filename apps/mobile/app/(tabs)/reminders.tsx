@@ -45,7 +45,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
-import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
+import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
 const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;

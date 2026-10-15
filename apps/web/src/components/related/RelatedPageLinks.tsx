@@ -1,8 +1,8 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { RelatedPageLinks as RelatedPageLinksView, type RelatedLinkItem } from "@vedic-patro/ui/kit/shell";
 import { useRelatedPageLinks } from "@vedic-patro/features/common";
 import {
   ArrowLeftRight,
-  ArrowRight,
   CalendarClock,
   CalendarRange,
   Compass,
@@ -26,7 +26,6 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { resolveSitePageId, shouldShowRelatedLinks, siteLinkRouteProps } from "@/lib/related-page-links";
-import { cn } from "@vedic-patro/domain/utils";
 
 const SITE_LINK_ICONS: Record<string, LucideIcon> = {
   panchanga: CalendarClock,
@@ -55,47 +54,6 @@ function iconForLinkId(id: string): LucideIcon {
   return SITE_LINK_ICONS[id] ?? Compass;
 }
 
-function RelatedNavCard({
-  label,
-  description,
-  icon: Icon,
-  to,
-  params,
-  search,
-}: {
-  label: string;
-  description?: string;
-  icon: LucideIcon;
-  to: string;
-  params?: Record<string, string>;
-  search?: Record<string, unknown>;
-}) {
-  return (
-    <Link
-      to={to}
-      params={params}
-      search={search}
-      className="group flex items-start gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5 transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]"
-    >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
-        <Icon className="size-4" aria-hidden />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-foreground">{label}</span>
-        {description ? (
-          <span className="mt-0.5 block text-xs leading-snug text-muted-foreground line-clamp-2">
-            {description}
-          </span>
-        ) : null}
-      </span>
-      <ArrowRight
-        className="mt-1 size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-secondary"
-        aria-hidden
-      />
-    </Link>
-  );
-}
-
 export function RelatedPageLinks({ className }: { className?: string }) {
   const { location } = usePanchangaLocation();
   const era = useCalendarEra();
@@ -108,44 +66,40 @@ export function RelatedPageLinks({ className }: { className?: string }) {
     },
   });
 
+  const navigate = useNavigate();
   const pageId = shouldShowRelatedLinks(pathname) ? resolveSitePageId(pathname, params) : null;
   const related = useRelatedPageLinks(pageId);
   if (related.cards.length === 0) return null;
 
+  const items: RelatedLinkItem[] = related.cards.map((card) => {
+    if (card.kind === "learn") {
+      const Icon = LEARN_ICONS[card.icon];
+      return {
+        key: card.key,
+        label: card.label,
+        description: card.description,
+        icon: <Icon className="size-4" aria-hidden />,
+        onPress: () => navigate({ to: "/learn/$slug", params: { slug: card.slug } }),
+      };
+    }
+    const route = siteLinkRouteProps(card.linkId, location, era);
+    const Icon = iconForLinkId(card.linkId);
+    return {
+      key: card.key,
+      label: card.label,
+      description: card.description,
+      icon: <Icon className="size-4" aria-hidden />,
+      onPress: () => navigate({ to: route.to, params: route.params, search: route.search } as never),
+    };
+  });
+
   return (
-    <aside className={cn("mt-10 border-t border-border pt-8", className)} aria-label={related.aria}>
-      <div className="mb-3 flex items-center gap-2 text-secondary">
-        <Compass className="size-4" aria-hidden />
-        <h2 className="text-sm font-semibold text-foreground">{related.heading}</h2>
-      </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {related.cards.map((card) => {
-          if (card.kind === "learn") {
-            return (
-              <RelatedNavCard
-                key={card.key}
-                label={card.label}
-                description={card.description}
-                icon={LEARN_ICONS[card.icon]}
-                to="/learn/$slug"
-                params={{ slug: card.slug }}
-              />
-            );
-          }
-          const route = siteLinkRouteProps(card.linkId, location, era);
-          return (
-            <RelatedNavCard
-              key={card.key}
-              label={card.label}
-              description={card.description}
-              icon={iconForLinkId(card.linkId)}
-              to={route.to}
-              params={route.params}
-              search={route.search}
-            />
-          );
-        })}
-      </div>
-    </aside>
+    <RelatedPageLinksView
+      className={className}
+      heading={related.heading}
+      label={related.aria}
+      headingIcon={<Compass className="size-4" aria-hidden />}
+      items={items}
+    />
   );
 }

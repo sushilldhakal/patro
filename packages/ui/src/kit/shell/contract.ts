@@ -277,6 +277,30 @@ export type AuthDialogViewProps = {
   closeLabel: string;
 };
 
+export type RelatedLinkItem = {
+  key: string;
+  label: string;
+  description?: string;
+  icon?: ReactNode;
+  onPress: () => void;
+};
+
+export type RelatedPageLinksProps = {
+  heading: string;
+  label: string;
+  headingIcon?: ReactNode;
+  items: RelatedLinkItem[];
+  className?: string;
+};
+
+export type VedicPatroLoaderProps = {
+  /** Omit for the localized default; pass null to hide the caption. */
+  label?: string | null;
+  /** The mark: the website's image, or the app's animated art. */
+  mark: ReactNode;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -298,4 +322,6 @@ export type ShellKit = {
   HomeRashifalSignPicker: ComponentType<HomeRashifalSignPickerProps>;
   AccountMenu: ComponentType<AccountMenuProps>;
   AuthDialog: ComponentType<AuthDialogViewProps>;
+  RelatedPageLinks: ComponentType<RelatedPageLinksProps>;
+  VedicPatroLoader: ComponentType<VedicPatroLoaderProps>;
 };

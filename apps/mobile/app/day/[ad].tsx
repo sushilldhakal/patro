@@ -8,7 +8,7 @@ import { apiKeys, fetchPanchanga } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
+import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 export default function DayDetailScreen() {
   const { ad } = useLocalSearchParams<{ ad: string }>();

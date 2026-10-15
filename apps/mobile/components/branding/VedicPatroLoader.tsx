@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import { Text } from "@/components/ui/Text";
 import Svg, {
   Circle,
   G,
@@ -10,7 +9,7 @@ import Svg, {
   Rect,
   Stop,
 } from "react-native-svg";
-import { useVedicPatroLoader } from "@vedic-patro/features/common";
+import { VedicPatroLoader as VedicPatroLoaderView } from "@vedic-patro/ui/kit/shell";
 import { Defs } from "@/lib/svg-defs";
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
 import { useBrandMotionEnabled, useOpacityPulse, useRotate, useScalePulse } from "./svg-motion";
@@ -170,14 +169,15 @@ export function VedicPatroLoader({
   size?: number;
   className?: string;
 }) {
-  const shown = useVedicPatroLoader(label);
-
   return (
-    <View className={`items-center justify-center gap-4 ${className ?? ""}`}>
-      <View className="overflow-hidden rounded-[22%] shadow-md" style={{ width: size, height: size }}>
-        <LoaderSvg size={size} />
-      </View>
-      {shown ? <Text className="text-sm">{shown}</Text> : null}
-    </View>
+    <VedicPatroLoaderView
+      label={label}
+      className={className}
+      mark={
+        <View className="overflow-hidden rounded-[22%] shadow-md" style={{ width: size, height: size }}>
+          <LoaderSvg size={size} />
+        </View>
+      }
+    />
   );
 }
