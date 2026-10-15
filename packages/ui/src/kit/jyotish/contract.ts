@@ -35,7 +35,8 @@ import type {
 import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import type { ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
-import type { GrahaDetailsInput } from "@vedic-patro/features/kundali";
+import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPanelConfig } from "@vedic-patro/features/kundali";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
@@ -374,6 +375,48 @@ export type BhavaDetailDialogProps = {
   onClose: () => void;
 };
 
+export type KundaliSectionNavProps = {
+  activeId: KundaliSectionId;
+  onNavigate: (id: KundaliSectionId) => void;
+  className?: string;
+  variant?: "sidebar" | "horizontal";
+  renderIcon?: (name: KundaliNavIcon) => ReactNode;
+};
+
+export type KundaliSidebarLinkArgs = {
+  hash: string;
+  label: string;
+  active: boolean;
+  onPress?: () => void;
+  className: string;
+};
+
+export type KundaliSidebarSubnavProps = {
+  activeSectionId: KundaliSectionId;
+  renderLink: (args: KundaliSidebarLinkArgs) => ReactNode;
+};
+
+export type KundaliReportProps = {
+  moment: InstantQuery;
+  location?: LocationParams;
+  ayanamsha?: string;
+  disabled?: boolean;
+  renderShell: (args: { title: string; children: ReactNode }) => ReactNode;
+};
+
+export type DivisionalChartCompareProps = {
+  vargaCharts: VargaCharts;
+  combustion?: Record<string, boolean | null>;
+  defaultLeft?: DivisionalPanelConfig;
+  defaultRight?: DivisionalPanelConfig;
+  renderSelect?: (args: HouseSelectArgs) => ReactNode;
+  renderChart: (houses: BhavaHouse[]) => ReactNode;
+  renderLegend?: () => ReactNode;
+  renderBhava: (args: { division: number; anchorKey: string; vargaCharts: VargaCharts }) => ReactNode;
+  renderGraha: GrahaSlot;
+  renderShell?: (args: { title: string; subtitle: string; children: ReactNode }) => ReactNode;
+};
+
 export type JyotishKit = {
   SaitSources: ComponentType<SaitSourcesProps>;
   SuitabilityBadge: ComponentType<SuitabilityBadgeProps>;
@@ -412,4 +455,8 @@ export type JyotishKit = {
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;
   BhavaDetailDialog: ComponentType<BhavaDetailDialogProps>;
+  KundaliSectionNav: ComponentType<KundaliSectionNavProps>;
+  KundaliSidebarSubnav: ComponentType<KundaliSidebarSubnavProps>;
+  KundaliReport: ComponentType<KundaliReportProps>;
+  DivisionalChartCompare: ComponentType<DivisionalChartCompareProps>;
 };

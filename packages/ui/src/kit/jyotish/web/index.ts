@@ -1,5 +1,8 @@
 import type { JyotishKit } from "../contract";
 import { BhavaDetailDialog } from "./BhavaDetail";
+import { DivisionalChartCompare } from "./Compare";
+import { KundaliReport } from "./Report";
+import { KundaliSectionNav, KundaliSidebarSubnav } from "./Structure";
 import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
 import { DashaTree } from "./DashaTree";
 import { ShantiVidhiPanel } from "./Shanti";
@@ -110,6 +113,10 @@ export {
   ShantiVidhiPanel,
   VimshopakaCard,
   YogaReferenceCatalog,
+  KundaliSectionNav,
+  KundaliSidebarSubnav,
+  KundaliReport,
+  DivisionalChartCompare,
   SaitRulesSection,
   SaitSources,
   SuitabilityBadge,
@@ -154,4 +161,8 @@ export const jyotishKit = {
   DashaSystemPanel,
   ShantiVidhiPanel,
   BhavaDetailDialog,
+  KundaliSectionNav,
+  KundaliSidebarSubnav,
+  KundaliReport,
+  DivisionalChartCompare,
 } satisfies JyotishKit;
