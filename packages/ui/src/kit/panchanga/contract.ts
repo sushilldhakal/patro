@@ -24,6 +24,13 @@ export type MuhurtaNowPanelProps = {
   viewedDateAd?: string;
 };
 
+export type GocharPromoCardProps = {
+  onPress: () => void;
+  className?: string;
+  /** Hides the explanatory line. The website's full card shows it. */
+  compact?: boolean;
+};
+
 export type SunriseD1ChartPanelProps = {
   p: PanchangaDay;
   /** The app's D1 drawing (website kundali chart, app panchanga chart). */

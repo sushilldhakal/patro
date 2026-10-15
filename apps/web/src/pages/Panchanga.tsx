@@ -17,10 +17,9 @@ import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { EphemerisModeBanner, PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
+import { EphemerisModeBanner, GocharPromoCard, PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
-import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { currentPatroYearRangeLinkSearch, patroRouteLinkSearch, searchToLocation } from "@/lib/url-state";
@@ -279,7 +278,15 @@ export function Panchanga() {
         )}
       </div>
 
-      <GocharPromoCard location={location} className="mt-7 max-sm:px-2.5" />
+      <GocharPromoCard
+        className="mt-7 max-sm:px-2.5"
+        onPress={() =>
+          navigate({
+            to: "/gochar",
+            search: patroRouteLinkSearch("/gochar", location, langEra) as never,
+          })
+        }
+      />
 
       <LearnMoreCard
         className="mt-7 max-sm:px-2.5"

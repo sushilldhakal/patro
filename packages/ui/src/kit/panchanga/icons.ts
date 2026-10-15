@@ -1,0 +1,51 @@
+import type { IconNode } from "../../contract";
+
+/** Lucide node lists (v1.17). Shared so both halves draw the same artwork. */
+export const orbitIcon: IconNode = [
+  ["path", { d: "M20.341 6.484A10 10 0 0 1 10.266 21.85", key: "1enhxb" }],
+  ["path", { d: "M3.659 17.516A10 10 0 0 1 13.74 2.152", key: "1crzgf" }],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }],
+  ["circle", { cx: "19", cy: "5", r: "2", key: "mhkx31" }],
+  ["circle", { cx: "5", cy: "19", r: "2", key: "v8kfzx" }],
+];
+
+export const arrowRightIcon: IconNode = [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }],
+];
+
+export const sunriseIcon: IconNode = [
+  ["path", { d: "M12 2v8", key: "1q4o3n" }],
+  ["path", { d: "m4.93 10.93 1.41 1.41", key: "2a7f42" }],
+  ["path", { d: "M2 18h2", key: "j10viu" }],
+  ["path", { d: "M20 18h2", key: "wocana" }],
+  ["path", { d: "m19.07 10.93-1.41 1.41", key: "15zs5n" }],
+  ["path", { d: "M22 22H2", key: "19qnx5" }],
+  ["path", { d: "m8 6 4-4 4 4", key: "ybng9g" }],
+  ["path", { d: "M16 18a4 4 0 0 0-8 0", key: "1lzouq" }],
+];
+
+export const moonIcon: IconNode = [
+  [
+    "path",
+    {
+      d: "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401",
+      key: "kfwtm",
+    },
+  ],
+];
+
+export const rotateCcwIcon: IconNode = [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+];
+
+export const flameIcon: IconNode = [
+  [
+    "path",
+    {
+      d: "M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4",
+      key: "1slcih",
+    },
+  ],
+];

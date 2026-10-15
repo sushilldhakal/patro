@@ -21,7 +21,7 @@ import {
   RituSection,
   SunMoonSamvatSection,
 } from "@/components/panchanga/PanchangaSections";
-import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
+import { GocharPromoCard } from "@vedic-patro/ui/kit/panchanga";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
@@ -192,7 +192,7 @@ export default function PanchangaScreen() {
           </View>
         ) : null}
 
-        <GocharPromoCard />
+        <GocharPromoCard onPress={() => router.push("/gochar" as never)} />
         <LearnMoreCard
           heading={page.copy.learnHeading}
           slugs={page.learnSlugs}
