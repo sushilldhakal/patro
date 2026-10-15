@@ -19,7 +19,7 @@ from pathlib import Path
 csv.field_size_limit(sys.maxsize)
 
 # Bump when the mapping below changes so an unchanged CSV still reseeds.
-PURANA_IMPORT_VERSION = b"purana-csv-5"
+PURANA_IMPORT_VERSION = b"purana-csv-7"
 
 _DEVANAGARI_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")
 
@@ -258,9 +258,25 @@ def purana_dir() -> Path | None:
     if override:
         path = Path(override)
         return path if path.is_dir() else None
-    # nepali-holiday-api/services/this_file.py → calender-patro/purana
-    sibling = Path(__file__).resolve().parents[2] / "purana"
-    return sibling if sibling.is_dir() else None
+    # nepali-holiday-api/apps/api/services/this_file.py → calender-patro/purana
+    here = Path(__file__).resolve()
+    for parent in here.parents[1:6]:
+        sibling = parent / "purana"
+        if sibling.is_dir():
+            return sibling
+    return None
+
+
+def _spec_path(directory: Path, spec: PuranaSpec) -> Path | None:
+    """The CSV for a spec. Browser downloads add a ' (1)' suffix; accept both."""
+    exact = directory / spec.filename
+    if exact.is_file():
+        return exact
+    stem = Path(spec.filename).stem
+    for candidate in sorted(directory.glob(f"{stem}*.csv")):
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def purana_source_paths() -> list[Path]:
@@ -268,9 +284,7 @@ def purana_source_paths() -> list[Path]:
     if directory is None:
         return []
     return sorted(
-        path
-        for spec in PURANAS
-        if (path := directory / spec.filename).is_file()
+        path for spec in PURANAS if (path := _spec_path(directory, spec)) is not None
     )
 
 
@@ -409,8 +423,24 @@ def _split_marked(text: str, pattern: re.Pattern[str], speaker: str) -> list[_Pi
     return merged or [_Piece(_clean_verse(pattern.sub(" ", text)), (), None, "verse")]
 
 
+_AT_MARK = re.compile(r"@[०-९0-9]+:[०-९0-9]+")
+
+
+def _split_at_marks(text: str) -> list[str]:
+    """Vishnu Purana cells run on with `@2:1` verse stamps. One part per shloka."""
+    parts = [_clean_verse(part) for part in _AT_MARK.split(text)]
+    return [part for part in parts if part]
+
+
 def _expand_row(sanskrit: str, iast: str) -> list[tuple[_Piece, _Piece]]:
     """Split a cell that holds several shlokas. One pair per shloka."""
+    if len(_AT_MARK.findall(sanskrit)) > 1 and len(_AT_MARK.findall(sanskrit)) == len(_AT_MARK.findall(iast)):
+        dev_parts, iast_parts = _split_at_marks(sanskrit), _split_at_marks(iast)
+        if len(dev_parts) == len(iast_parts):
+            return [
+                (_Piece(d, (), None, "verse"), _Piece(i, (), None, "verse"))
+                for d, i in zip(dev_parts, iast_parts)
+            ]
     dev_pieces = _split_marked(sanskrit, _DEV_MARK, "उवाच")
     iast_pieces = _split_marked(iast, _LATIN_MARK, "uvāca")
     if len(iast_pieces) > 1 and len(dev_pieces) == len(iast_pieces):
@@ -634,6 +664,6 @@ def seed_puranas(conn: sqlite3.Connection) -> None:
     if directory is None:
         return
     for spec in PURANAS:
-        path = directory / spec.filename
-        if path.is_file():
+        path = _spec_path(directory, spec)
+        if path is not None:
             _seed_one(conn, spec, path)

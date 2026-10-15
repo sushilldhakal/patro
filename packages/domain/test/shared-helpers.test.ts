@@ -12,6 +12,7 @@ import { positiveInt, positiveMonth } from "../src/patro-browse-params";
 test("Veda citations", () => {
   assert.equal(formatVedaCite("rigveda:1.1.3", "ne"), "ऋग्वेद १.१.३");
   assert.equal(formatVedaCite("rigveda:1.1.3", "en"), "Rigveda 1.1.3");
+  assert.equal(formatVedaCite("agni-purana:12.3", "ne"), "अग्निपुराण १२.३");
   assert.equal(formatVedaCite("unknown:1", "en"), null);
   assert.equal(formatVedaCite(null, "en"), null);
 });

@@ -150,6 +150,9 @@ def _content_version(paths: list[Path]) -> str:
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
     digest.update(PURANA_IMPORT_VERSION)
+    from services.shloka_sources import SOURCE_LOGIC_VERSION
+
+    digest.update(SOURCE_LOGIC_VERSION)
     for path in purana_source_paths():
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
@@ -411,6 +414,10 @@ def ensure_seeded() -> None:
             from services.purana_documents import seed_puranas
 
             seed_puranas(conn)
+
+            from services.shloka_sources import fill_sources
+
+            fill_sources(conn)
 
             conn.execute(
                 "INSERT INTO documents_meta (key, value) VALUES ('version', ?) "
