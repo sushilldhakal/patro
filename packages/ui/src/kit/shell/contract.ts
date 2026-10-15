@@ -3,6 +3,7 @@
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
 import type { ComponentType } from "react";
+import type { SeoContentRoute } from "@vedic-patro/features/common";
 
 export type StatCardProps = {
   label: string;
@@ -14,6 +15,12 @@ export type StatCardProps = {
   width?: string;
 };
 
+export type SeoContentSectionProps = {
+  route: SeoContentRoute;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
+  SeoContentSection: ComponentType<SeoContentSectionProps>;
 };
