@@ -118,6 +118,6 @@ Demo account: create one on production and put email/password in the notes.
 - [ ] Screenshots captured (see `screenshots/README.md`)  
 - [ ] Feature graphic uploaded on Play  
 - [ ] No `expo-dev-client` / debug menu in the production binary (production profile)  
-- [ ] Support email `support@vedicpatro.com` receives mail  
+- [ ] Support email `vedicnepalpatro@gmail.com` receives mail  
 - [ ] Website redeployed so `/.well-known/apple-app-site-association` shows `H6AS5X74R2` (source file is already updated)  
 - [ ] Play signing SHA-256 substituted in assetlinks.json  
