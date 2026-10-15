@@ -32,6 +32,14 @@ const nativeTokenColors = Object.fromEntries(
   Object.entries(tokens.colors).map(([name, value]) => [name, nativeColor(value)]),
 );
 
+/**
+ * Tailwind 4 (the website) takes any multiple of 0.25 as a spacing step
+ * (`size-9.5`, `h-8.5`, `gap-x-3.25`); Tailwind 3 (NativeWind) only knows its
+ * fixed scale and silently drops the rest. Every quarter step up to 120 is
+ * added here (n × 4px, like the website); the tokens' own values still win.
+ */
+const quarterSteps = Object.fromEntries(Array.from({ length: 481 }, (_, n) => [String(n / 4), `${n}px`]));
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -76,13 +84,15 @@ module.exports = {
         success: "rgb(var(--tw-success) / <alpha-value>)",
         warning: "rgb(var(--tw-warning) / <alpha-value>)",
         info: "rgb(var(--tw-info) / <alpha-value>)",
+        input: "rgb(var(--tw-input) / <alpha-value>)",
         "surface-inset": "rgb(var(--tw-surface-inset) / <alpha-value>)",
         "surface-muted": "rgb(var(--tw-surface-muted) / <alpha-value>)",
         "tab-active": "rgba(var(--tw-tab-active) / 0.12)",
         "tab-hover": "rgba(var(--tw-tab-active) / 0.06)",
       },
       fontFamily: tokens.fontFamily,
-      spacing: tokens.spacing,
+      spacing: { ...quarterSteps, ...tokens.spacing },
+      width: { "1/7": "14.2857143%" },
       /* Web (Tailwind 4) accepts any `/N` alpha; v3's scale skips 8, 12, 15, 18, 35,
          45, 55, 65, 85 — so `bg-secondary/8` etc. silently drew nothing here. */
       /* Every `/N` the website's class strings use (Tailwind 4 takes any N). */
@@ -93,6 +103,7 @@ module.exports = {
         8: "0.08",
         11: "0.11",
         12: "0.12",
+        13: "0.13",
         15: "0.15",
         18: "0.18",
         22: "0.22",

@@ -14,8 +14,9 @@ function twVars(roles: MobileRoles): Record<string, string> {
   return out;
 }
 
-const LIGHT_TW_VARS = twVars(mobileRoles("light"));
-const DARK_TW_VARS = twVars(mobileRoles("dark"));
+/** The website's `--input` (field borders on its selects); not one of the shared roles. */
+const LIGHT_TW_VARS = { ...twVars(mobileRoles("light")), "--tw-input": "74 69 64" };
+const DARK_TW_VARS = { ...twVars(mobileRoles("dark")), "--tw-input": "63 66 82" };
 
 export function nativeWindThemeVars(resolvedTheme: "light" | "dark") {
   return vars(resolvedTheme === "dark" ? DARK_TW_VARS : LIGHT_TW_VARS);

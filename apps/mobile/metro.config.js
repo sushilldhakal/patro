@@ -72,6 +72,10 @@ finalConfig.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === "@vedic-patro/ui") {
     return { type: "sourceFile", filePath: UI_NATIVE_ENTRY };
   }
+  const kit = /^@vedic-patro\/ui\/kit\/([\w-]+)$/.exec(moduleName);
+  if (kit) {
+    return { type: "sourceFile", filePath: path.resolve(__dirname, `../../packages/ui/src/kit/${kit[1]}/native/index.ts`) };
+  }
   if (defaultResolveRequest) {
     return defaultResolveRequest(context, moduleName, platform);
   }

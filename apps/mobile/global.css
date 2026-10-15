@@ -7,6 +7,7 @@
 
 @layer base {
   :root {
+    --tw-input: 74 69 64;
     /* tokens:light:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 248 246 242;
     --tw-foreground: 26 20 16;
@@ -46,6 +47,7 @@
   }
 
   .dark {
+    --tw-input: 63 66 82;
     /* tokens:dark:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 15 18 32;
     --tw-foreground: 243 239 232;
