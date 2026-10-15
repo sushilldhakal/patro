@@ -87,10 +87,10 @@ export function PatroDayTimeHeader({
           className={cn(pick.dateButton, h.open ? cls.selectButtonOpen : cls.selectButtonIdle)}
           webClassName={cn("hover:bg-muted", cls.webDenseControl)}
         >
-          <Icon node={calendarIcon} size="sm" tone="secondary" webClassName="max-[419px]:hidden" />
-          <Text className={cn(pick.dateButtonText, "truncate max-[419px]:hidden")}>{h.buttonText}</Text>
-          <Text className={cn(pick.dateButtonText, "truncate min-[420px]:hidden")}>{h.buttonTextShort}</Text>
-          {h.timeText ? <Text className={cn(pick.dateButtonTime, "max-[419px]:hidden")}>{h.timeText}</Text> : null}
+          <Icon node={calendarIcon} size="sm" tone="secondary" webClassName={pick.webDateIconHide} />
+          <Text className={cn(pick.dateButtonText, pick.webDateFull)}>{h.buttonText}</Text>
+          <Text className={cn(pick.dateButtonText, pick.webDateShort)}>{h.buttonTextShort}</Text>
+          {h.timeText ? <Text className={cn(pick.dateButtonTime, pick.webDateTimeHide)}>{h.timeText}</Text> : null}
         </Pressable>
         <Pressable label={labels.nextDay} onPress={() => h.stepDay(1)} disabled={nextDisabled} className={cls.iconButton} webClassName={cn("hover:bg-muted", cls.webDenseIcon)}>
           <Icon node={chevronRight} size="md" tone="secondary" />

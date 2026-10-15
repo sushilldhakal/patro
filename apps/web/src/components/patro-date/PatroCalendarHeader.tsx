@@ -91,7 +91,7 @@ export function PatroCalendarHeader({
         <Pressable label={labels.prevMonth} onPress={() => header.stepMonth(-1)} disabled={prevDisabled} className={cls.iconButton} webClassName={cn("hover:bg-muted", cls.webDenseIcon)}>
           <Icon node={chevronLeft} size="md" tone="secondary" />
         </Pressable>
-        <Box className="min-w-0 max-[419px]:flex-1 min-[420px]:relative">
+        <Box className={cls.webMonthAnchor}>
           <Pressable
             label={labels.picker}
             onPress={() => header.togglePanel("month")}
@@ -101,7 +101,7 @@ export function PatroCalendarHeader({
             <Text className={cn(cls.selectLabel, cls.webDenseText, "whitespace-nowrap")}>
               {header.title.month} {header.title.year}
             </Text>
-            <Icon node={chevronDown} size="sm" tone="secondary" webClassName="max-[419px]:hidden" />
+            <Icon node={chevronDown} size="sm" tone="secondary" webClassName={cls.webChevronHide} />
           </Pressable>
           {monthOpen ? (
             <Box className={cn(cls.panel, PANEL)} label={labels.picker}>

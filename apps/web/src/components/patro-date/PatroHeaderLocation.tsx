@@ -60,8 +60,8 @@ export function PatroHeaderLocation({
         <Box className={cls.locationPin}>
           <Icon node={mapPin} size="sm" tone="secondary" />
         </Box>
-        <Text className={cn(cls.locationName, "max-w-32 truncate max-[419px]:max-w-16")}>{picker.labelMain}</Text>
-        <Icon node={chevronDown} size="sm" tone="secondary" webClassName="max-[419px]:hidden" />
+        <Text className={cn(cls.locationName, cls.webLocationName)}>{picker.labelMain}</Text>
+        <Icon node={chevronDown} size="sm" tone="secondary" webClassName={cls.webChevronHide} />
       </Pressable>
       {open ? (
         <Box className={cn(cls.panel, cls.webPanel, "right-0")} label={picker.copy.choose}>
