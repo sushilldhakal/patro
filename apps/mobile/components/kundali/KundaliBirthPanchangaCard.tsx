@@ -30,6 +30,7 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function TraitRow({ label, value }: { label: string; value: string }) {
   return (
@@ -272,7 +273,7 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
                 className={kundaliDetailClasses.birth.shlokaLabel}
                 style={nepaliTextStyle(12)}
               >
-                {pick("अवकहडा श्लोक", "Avakahada Shloka")}
+                {pick(tFor("ne", "kundali.avakahada_shloka"), tFor("en", "kundali.avakahada_shloka"))}
               </Text>
               <Text className={kundaliDetailClasses.birth.shlokaText} style={nepaliTextStyle(14)}>
                 {avakahadaShloka}

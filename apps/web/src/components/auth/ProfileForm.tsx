@@ -1,59 +1,16 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CityAutocomplete } from "@/components/auth/CityAutocomplete";
-import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import {
-  createProfile,
-  updateProfile,
-  type Profile,
-  type ProfileInput,
-} from "@/lib/auth/client";
+import type { Profile, ProfileInput } from "@/lib/auth/client";
+import { useProfileForm } from "@vedic-patro/features/account";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
+export { EMPTY_PROFILE, profileToInput } from "@vedic-patro/features/account";
+
 const labelClass = accountClasses.label;
 const fieldWrap = cn("flex flex-col", accountClasses.field);
-
-/** Blank profile, used when adding a new one. */
-export const EMPTY_PROFILE: ProfileInput = {
-  full_name: "",
-  phone: "",
-  email: "",
-  gender: "",
-  country: "",
-  city: "",
-  location_label: "",
-  latitude: null,
-  longitude: null,
-  timezone: "",
-  birth_date: "",
-  birth_time: "",
-  birth_era: "bs",
-  is_default: false,
-};
-
-/** Map a saved profile to editable form input. */
-export function profileToInput(p: Profile): ProfileInput {
-  return {
-    full_name: p.full_name,
-    phone: p.phone ?? "",
-    email: p.email ?? "",
-    gender: p.gender ?? "",
-    country: p.country ?? "",
-    city: p.city ?? "",
-    location_label: p.location_label ?? "",
-    latitude: p.latitude,
-    longitude: p.longitude,
-    timezone: p.timezone ?? "",
-    birth_date: p.birth_date ? formatDateInput(p.birth_date) : "",
-    birth_time: p.birth_time ? formatTimeInput(p.birth_time) : "",
-    birth_era: p.birth_era ?? "bs",
-    is_default: p.is_default,
-  };
-}
+const selectClass = cn(accountClasses.select, "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50");
 
 export function ProfileForm({
   initial,
@@ -66,54 +23,28 @@ export function ProfileForm({
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
 }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const [form, setForm] = useState<ProfileInput>(initial);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  function set<K extends keyof ProfileInput>(key: K, val: ProfileInput[K]) {
-    setForm((f) => ({ ...f, [key]: val }));
-  }
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.full_name.trim()) {
-      setError(t("profile.name_required"));
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      // Drop empty strings so optional fields stay null on the server.
-      const payload = Object.fromEntries(
-        Object.entries(form).map(([k, v]) => [k, v === "" ? null : v])
-      ) as ProfileInput;
-      payload.full_name = form.full_name.trim();
-      const saved = existing
-        ? await updateProfile(existing.id, payload)
-        : await createProfile(payload);
-      onSaved(saved);
-    } catch {
-      setError(t("profile.save_failed"));
-    } finally {
-      setBusy(false);
-    }
-  }
+  const f = useProfileForm({ initial, existing, onSaved });
+  const { form, copy } = f;
 
   return (
-    <form onSubmit={onSubmit} className={cn("flex flex-col", accountClasses.profileForm)}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        void f.submit();
+      }}
+      className={cn("flex flex-col", accountClasses.profileForm)}
+    >
       <div className={cn("grid sm:grid-cols-2", accountClasses.fieldRow)}>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.full_name")}</label>
-          <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} required />
+          <label className={labelClass}>{copy.fullName}</label>
+          <Input value={form.full_name} onChange={(e) => f.setName(e.target.value)} required />
         </div>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.phone")}</label>
-          <Input value={form.phone ?? ""} onChange={(e) => set("phone", e.target.value)} placeholder="+977…" />
+          <label className={labelClass}>{copy.phone}</label>
+          <Input value={form.phone ?? ""} onChange={(e) => f.setPhone(e.target.value)} placeholder={copy.phonePlaceholder} />
         </div>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.email")}</label>
+          <label className={labelClass}>{copy.email}</label>
           <Input
             type="email"
             inputMode="email"
@@ -121,78 +52,57 @@ export function ProfileForm({
             autoCapitalize="none"
             spellCheck={false}
             value={form.email ?? ""}
-            onChange={(e) => set("email", e.target.value)}
+            onChange={(e) => f.setEmail(e.target.value)}
           />
         </div>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.gender")}</label>
-          <select
-            value={form.gender ?? ""}
-            onChange={(e) => set("gender", e.target.value)}
-            className={cn(accountClasses.select, "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50")}
-          >
+          <label className={labelClass}>{copy.gender}</label>
+          <select value={form.gender ?? ""} onChange={(e) => f.setGender(e.target.value)} className={selectClass}>
             <option value="">—</option>
-            <option value="male">{t("profile.male")}</option>
-            <option value="female">{t("profile.female")}</option>
-            <option value="other">{t("profile.other")}</option>
+            {f.genders.map((g) => (
+              <option key={g.value} value={g.value}>
+                {g.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
       <div className={fieldWrap}>
-        <label className={labelClass}>{t("profile.city_birth_place")}</label>
-        <CityAutocomplete
-          value={form.location_label || form.city}
-          onSelect={(sel) =>
-            setForm((f) => ({
-              ...f,
-              city: sel.city,
-              country: sel.country,
-              latitude: sel.latitude,
-              longitude: sel.longitude,
-              timezone: sel.timezone,
-              location_label: sel.location_label,
-            }))
-          }
-        />
-        {form.country && (
-          <p className={accountClasses.hint}>
-            {form.country}
-            {form.timezone ? ` · ${form.timezone}` : ""}
-          </p>
-        )}
+        <label className={labelClass}>{copy.birthPlace}</label>
+        <CityAutocomplete value={f.placeValue} onSelect={f.selectPlace} />
+        {f.placeHint && <p className={accountClasses.hint}>{f.placeHint}</p>}
       </div>
 
       <div className={cn("grid sm:grid-cols-3", accountClasses.fieldRow)}>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.birth_date")}</label>
+          <label className={labelClass}>{copy.birthDate}</label>
           <Input
             value={form.birth_date ?? ""}
-            onChange={(e) => set("birth_date", formatDateInput(e.target.value))}
-            placeholder={bilingualText(lang, "वर्ष-महिना-दिन", "YYYY-MM-DD")}
+            onChange={(e) => f.setBirthDate(e.target.value)}
+            placeholder={copy.birthDatePlaceholder}
             inputMode="numeric"
             maxLength={10}
           />
         </div>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.birth_time")}</label>
+          <label className={labelClass}>{copy.birthTime}</label>
           <Input
             value={form.birth_time ?? ""}
-            onChange={(e) => set("birth_time", formatTimeInput(e.target.value))}
-            placeholder={bilingualText(lang, "घण्टा:मिनेट", "HH:MM")}
+            onChange={(e) => f.setBirthTime(e.target.value)}
+            placeholder={copy.birthTimePlaceholder}
             inputMode="numeric"
             maxLength={5}
           />
         </div>
         <div className={fieldWrap}>
-          <label className={labelClass}>{t("profile.calendar")}</label>
-          <select
-            value={form.birth_era ?? "bs"}
-            onChange={(e) => set("birth_era", e.target.value)}
-            className={cn(accountClasses.select, "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50")}
-          >
-            <option value="bs">{t("profile.calendar_bs")}</option>
-            <option value="ad">{t("profile.calendar_ad")}</option>
+          <label className={labelClass}>{copy.calendar}</label>
+          <select value={form.birth_era ?? "bs"} onChange={(e) => f.setEra(e.target.value)} className={selectClass}>
+            {f.eras.map((era) => (
+              <option key={era.value} value={era.value}>
+                {era.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -201,24 +111,20 @@ export function ProfileForm({
         <input
           type="checkbox"
           checked={!!form.is_default}
-          onChange={(e) => set("is_default", e.target.checked)}
+          onChange={(e) => f.setDefault(e.target.checked)}
           className="size-4 accent-[var(--secondary)]"
         />
-        {t("profile.set_default")}
+        {copy.setDefault}
       </label>
 
-      {error && <p className={accountClasses.formError}>{error}</p>}
+      {f.error && <p className={accountClasses.formError}>{f.error}</p>}
 
       <div className={cn("flex", accountClasses.formActions)}>
-        <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
-          {t("common.cancel")}
+        <Button type="button" variant="ghost" onClick={onCancel} disabled={f.busy}>
+          {copy.cancel}
         </Button>
-        <Button type="submit" disabled={busy}>
-          {busy
-            ? t("common.saving")
-            : existing
-              ? t("profile.save_changes")
-              : t("profile.create_profile")}
+        <Button type="submit" disabled={f.busy}>
+          {copy.submit}
         </Button>
       </div>
     </form>

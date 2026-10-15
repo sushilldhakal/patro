@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/api";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
 import { useEffect, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import i18n, { ensureEnglishBundle } from "./i18n/index";
 import { router } from "./router.tsx";
 import { AuthProvider } from "./lib/auth/AuthContext";

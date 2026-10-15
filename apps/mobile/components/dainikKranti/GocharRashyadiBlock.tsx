@@ -50,15 +50,15 @@ export function GocharRashyadiBlock({
   gocharLoading,
   rashyadiLoading,
 }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const { width } = useBreakpoint();
 
   const startVersion = rashyadiRange.start?.versionNe;
   const endVersion = rashyadiRange.end?.versionNe;
   const showEndHeader = Boolean(endVersion && endVersion !== startVersion);
   const kundaliTitle = startVersion
-    ? `${startVersion} ${pick("गोचर कुण्डली", "Transit Chart")}`
-    : pick("गोचर कुण्डली", "Transit Chart");
+    ? `${startVersion} ${t("dainik.transit_chart")}`
+    : t("dainik.transit_chart");
 
   const layout = width >= BREAKPOINTS.lg ? "three" : width >= BREAKPOINTS.md ? "two" : "one";
   const colStyle = headerColStyle(width);

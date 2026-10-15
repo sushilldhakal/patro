@@ -12,6 +12,7 @@ import {
   type LearnTopicMeta,
 } from "./learn-topics-meta";
 
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 export type { LearnCategory, LearnTopicMeta };
 export { LEARN_CATEGORIES, LEARN_TOPIC_METAS };
 
@@ -81,9 +82,9 @@ function MergedBody({ page }: { page: MergedPage }) {
 
   return (
     <>
-      <nav className={tmChapterNav} aria-label={lang === "en" ? "On this page" : "यस पृष्ठमा"}>
+      <nav className={tmChapterNav} aria-label={tFor(lang, "ui.learn.on_this_page")}>
         <span className={tmChapterNavLabel}>
-          {lang === "en" ? "On this page" : "यस पृष्ठमा"}
+          {tFor(lang, "ui.learn.on_this_page")}
         </span>
         <ol>
           {chapters.map(({ part }, i) => (
@@ -106,7 +107,7 @@ function MergedBody({ page }: { page: MergedPage }) {
   );
 }
 
-const NE_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+const NE_DIGITS = lazyList("ne", "ui.learn.x_d8148326");
 const toNepaliIndex = (lang: string, n: number) =>
   lang === "en" ? String(n) : String(n).replace(/\d/g, (d) => NE_DIGITS[Number(d)]!);
 

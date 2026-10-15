@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useRouterState } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   buildJsonLd,
   ogImageForRoute,

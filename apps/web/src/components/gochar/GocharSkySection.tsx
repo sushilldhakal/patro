@@ -1,11 +1,8 @@
 import type { GocharGraha } from "@/lib/api";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { GRAHA_NAME, GRAHA_DETAIL_ORDER } from "@vedic-patro/domain/graha-details";
-import { grahaExalted, grahaNakshatraLine, formatGocharPatroDate, motionLabel } from "@vedic-patro/domain/gochar-page-utils";
-import { grahaRashiDisplay } from "@vedic-patro/domain/dainikKranti/gochar-display";
+import { useGocharSkyCards } from "@vedic-patro/features/gochar";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroCard, patroMono } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
@@ -48,36 +45,19 @@ export function GocharSkySection({
   onSelectPlanet,
   selectedPlanet,
 }: Props) {
-  const { lang, digits } = useLocale();
+  const { cards, copy } = useGocharSkyCards(gochar);
 
   return (
     <section className={cn(patroCard, gocharClasses.skyCard, "shadow-ring-soft")}>
       <div className={gocharClasses.skyHead}>
-        <p className={cn("m-0", gocharClasses.skyEyebrow)}>
-          {bilingualText(lang, "आकाश एक नजरमा", "The sky at a glance")}
-        </p>
-        <h2 className={cn("mb-0", gocharClasses.skyTitle)}>
-          {bilingualText(lang, "प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
-        </h2>
+        <p className={cn("m-0", gocharClasses.skyEyebrow)}>{copy.eyebrow}</p>
+        <h2 className={cn("mb-0", gocharClasses.skyTitle)}>{copy.title}</h2>
         <p className={cn("mb-0", gocharClasses.skyDate)}>{dateLabel}</p>
       </div>
 
       <div className={cn("grid sm:grid-cols-2 lg:grid-cols-3", gocharClasses.skyGrid)}>
-        {GRAHA_DETAIL_ORDER.map((key) => {
-          const g = gochar[key];
-          if (!g) return null;
-          const name = bilingualText(lang, GRAHA_NAME[key].ne, GRAHA_NAME[key].en);
-          const rashi = grahaRashiDisplay(g, lang);
-          const deg =
-            g.deg_in_rashi != null
-              ? lang === "en"
-                ? `${g.deg_in_rashi.toFixed(1)}°`
-                : `${digits(g.deg_in_rashi.toFixed(1))}°`
-              : "—";
-          const exalted = grahaExalted(key, g);
-          const untilAd = g.next_rashi_entry?.entry_time_local?.slice(0, 10);
-          const rashiUntil = rashi ?? (lang === "en" ? g.rashi : g.rashi_ne);
-
+        {cards.map((card) => {
+          const key = card.key;
           return (
             <button
               key={key}
@@ -109,43 +89,35 @@ export function GocharSkySection({
                       "tabular-nums",
                     )}
                   >
-                    <span>{name}</span>
-                    <span className="font-bold">{rashi}</span>
-                    <span>{deg}</span>
+                    <span>{card.name}</span>
+                    <span className="font-bold">{card.rashi}</span>
+                    <span>{card.deg}</span>
                     <GrahaStatusBadges
                       planetKey={key}
-                      isRetrograde={g.is_retrograde}
-                      isCombust={g.is_combust}
+                      isRetrograde={card.isRetrograde}
+                      isCombust={card.isCombust}
                       size={13}
                     />
                   </p>
                 </div>
-                {exalted ? (
+                {card.exalted ? (
                   <span className={cn(gocharClasses.exaltedBadge, gocharClasses.exaltedBadgeText)}>
-                    {bilingualText(lang, "उच्च", "Exalted")}
+                    {copy.exalted}
                   </span>
                 ) : null}
               </div>
 
               {/* Card body */}
               <div className={cn("flex flex-col px-3", gocharClasses.planetBody)}>
-                <MetaRow
-                  label={bilingualText(lang, "नक्षत्र", "Nakshatra")}
-                  value={grahaNakshatraLine(g, lang, digits)}
-                />
-                <MetaRow
-                  label={bilingualText(lang, "गति", "Motion")}
-                  value={motionLabel(g, lang)}
-                />
+                <MetaRow label={copy.nakshatra} value={card.nakshatra} />
+                <MetaRow label={copy.motion} value={card.motion} />
               </div>
 
               {/* Card footer */}
-              {untilAd ? (
+              {card.footer ? (
                 <div className={cn("mt-auto px-3", gocharClasses.planetFooter)}>
                   <p className={cn("m-0", gocharClasses.planetFooterText)}>
-                    {lang === "en"
-                      ? `In ${rashiUntil} until ${formatGocharPatroDate(untilAd, lang)}`
-                      : `${rashiUntil} मा ${formatGocharPatroDate(untilAd, lang)} सम्म`}
+                    {card.footer}
                   </p>
                 </div>
               ) : null}

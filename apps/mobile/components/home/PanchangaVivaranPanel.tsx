@@ -1,19 +1,13 @@
 import { useMemo, useState } from "react";
-import { View } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
-import {
-  formatPatroSignedCorrection,
-  getAbhijitMuhurta,
-  getPlanetGocharLines,
-  getSolarCorrections,
-} from "@vedic-patro/domain/panchanga-format";
-import { buildPanchangaDetailCells, type PanchangaDetailCell } from "@/lib/panchanga-detail-cells";
+import { usePanchangaVivaran, type VivaranCell as VivaranCellData } from "@vedic-patro/features/home";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import { useLocale } from "@/lib/i18n";
-import { useBreakpoint } from "@/lib/responsive";
+import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";
+import { fillGridCell, fillGridColumns } from "@/lib/fill-grid";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -23,21 +17,6 @@ const VIVARAN_WRAP_GAP = 8;
 const VIVARAN_MIN_TILE = 112;
 const GOCHAR_WRAP_GAP = 6;
 const GOCHAR_MIN_TILE = 148;
-
-function wrapTileWidth(
-  containerWidth: number,
-  gap: number,
-  minTile: number,
-  minCols: number,
-  maxCols: number,
-): number | `${number}%` {
-  if (containerWidth <= 0) return minCols <= 1 ? "100%" : "48%";
-  const cols = Math.min(
-    maxCols,
-    Math.max(minCols, Math.floor((containerWidth + gap) / (minTile + gap))),
-  );
-  return (containerWidth - gap * (cols - 1)) / cols;
-}
 
 type Props = {
   p?: PanchangaDay;
@@ -50,9 +29,9 @@ type Props = {
 /* The website draws the tile edge with a ring shadow; a hairline border is its native equivalent. */
 const INSET_TILE = cn(homeClasses.vivaranTile, "border border-gold/25");
 
-function VivaranCell({ label, value, hint, wide, mono }: PanchangaDetailCell) {
+function VivaranCell({ label, value, hint, mono, ayana }: VivaranCellData) {
   return (
-    <View className={cn(INSET_TILE, wide && "col-span-2")}>
+    <View className={INSET_TILE}>
       <Text className={homeClasses.vivaranLabel} style={nepaliTextStyle()}>
         {label}
       </Text>
@@ -61,6 +40,7 @@ function VivaranCell({ label, value, hint, wide, mono }: PanchangaDetailCell) {
         style={nepaliTextStyle()}
       >
         {value ?? "—"}
+        {ayana ? <Text className={cn(ayana.north ? patroAyanaNorth : patroAyanaSouth, "mb-0 ml-1.5")}> {ayana.mark}</Text> : null}
       </Text>
       {hint ? (
         <Text className={homeClasses.vivaranHint} style={nepaliTextStyle()}>
@@ -91,7 +71,7 @@ function GocharPlanetCard({
   degree,
   isRetrograde,
   isCombust,
-  tileWidth,
+  cellStyle,
 }: {
   planetKey: string;
   label: string;
@@ -99,16 +79,12 @@ function GocharPlanetCard({
   degree: string;
   isRetrograde?: boolean;
   isCombust?: boolean;
-  tileWidth: number | `${number}%`;
+  cellStyle: ViewStyle;
 }) {
   return (
     <View
       className={cn(INSET_TILE, homeClasses.gocharTile)}
-      style={{
-        width: tileWidth,
-        flexGrow: 0,
-        flexShrink: 0,
-      }}
+      style={cellStyle}
     >
       <View className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
         <Text
@@ -137,29 +113,18 @@ function GocharPlanetCard({
   );
 }
 
-function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }) {
-  const { t, lang } = useLocale();
+function AsideFooter({ view, selectedAd }: { view: NonNullable<ReturnType<typeof usePanchangaVivaran>>; selectedAd?: string }) {
   const router = useRouter();
-  const abhijit = getAbhijitMuhurta(p);
-  const isEn = lang === "en";
-
   return (
     <View className={homeClasses.vivaranFooter}>
-      {abhijit ? (
+      {view.abhijit ? (
         <Text className={homeClasses.vivaranFooterText} style={nepaliTextStyle()}>
-          <Text className={homeClasses.vivaranFooterStrong}>{t("abhijit.title")} </Text>
-          <Text className={homeClasses.vivaranFooterNum}>
-            {abhijit.rangeDisplay}
-            {abhijit.noonDisplay
-              ? isEn
-                ? ` (noon ${abhijit.noonDisplay})`
-                : ` (${t("abhijit.noon_short")} ${abhijit.noonDisplay})`
-              : ""}
-          </Text>
+          <Text className={homeClasses.vivaranFooterStrong}>{view.abhijit.title} </Text>
+          <Text className={homeClasses.vivaranFooterNum}>{view.abhijit.range}</Text>
         </Text>
       ) : (
         <Text className="text-sm" style={nepaliTextStyle()}>
-          {t("abhijit.unavailable")}
+          {view.abhijitUnavailable}
         </Text>
       )}
       {selectedAd ? (
@@ -167,7 +132,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
           variant="outline"
           size="sm"
           className="mt-3 w-full"
-          label={t("panchanga.detail_title")}
+          label={view.detailLink}
           onPress={() => router.push({ pathname: "/panchanga", params: { date: selectedAd } })}
         />
       ) : null}
@@ -176,23 +141,21 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
 }
 
 export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: Props) {
-  const { pick, lang } = useLocale();
+  const view = usePanchangaVivaran({ p, selectedDay });
   const colors = useThemeColors();
-  const { width: windowWidth } = useBreakpoint();
   const [vivaranWrapWidth, setVivaranWrapWidth] = useState(0);
   const [gocharWrapWidth, setGocharWrapWidth] = useState(0);
-  const vivaranTileW = useMemo(
-    () => wrapTileWidth(vivaranWrapWidth, VIVARAN_WRAP_GAP, VIVARAN_MIN_TILE, 2, 2),
-    [vivaranWrapWidth],
-  );
-  /* Web `grid-cols-2 sm:grid-cols-3` on the viewport width. */
-  const gocharCols = windowWidth >= 640 ? 3 : 2;
-  const gocharTileW = useMemo(
-    () => wrapTileWidth(gocharWrapWidth, GOCHAR_WRAP_GAP, GOCHAR_MIN_TILE, gocharCols, gocharCols),
-    [gocharWrapWidth, gocharCols],
-  );
+  // At least two per row, more when they fit; rows always filled.
+  const vivaranCell = useMemo(() => {
+    const cols = fillGridColumns(vivaranWrapWidth, VIVARAN_MIN_TILE, VIVARAN_WRAP_GAP, 2, 4);
+    return fillGridCell(vivaranWrapWidth, cols, VIVARAN_WRAP_GAP);
+  }, [vivaranWrapWidth]);
+  const gocharCell = useMemo(() => {
+    const cols = fillGridColumns(gocharWrapWidth, GOCHAR_MIN_TILE, GOCHAR_WRAP_GAP, 2, 4);
+    return fillGridCell(gocharWrapWidth, cols, GOCHAR_WRAP_GAP);
+  }, [gocharWrapWidth]);
 
-  if (loading || !p) {
+  if (loading || !p || !view) {
     return (
       <View>
         <View className={cn("flex-row flex-wrap", homeClasses.vivaranCells)} style={{ gap: VIVARAN_WRAP_GAP }}>
@@ -200,7 +163,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
             <View
               key={i}
               className="h-16 rounded-lg p-2.5"
-              style={{ backgroundColor: colors.surfaceInset, width: "48%", flexGrow: 0, flexShrink: 0 }}
+              style={[fillGridCell(0, 2, VIVARAN_WRAP_GAP), { backgroundColor: colors.surfaceInset }]}
             >
               <View className="h-3 w-16 rounded bg-muted-foreground/20" />
               <View className="mt-2 h-4 w-24 rounded bg-muted-foreground/20" />
@@ -212,34 +175,6 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
     );
   }
 
-  const cells = buildPanchangaDetailCells(p, lang, selectedDay, {
-    sunriseSunset: pick("सूर्योदय / सूर्यास्त", "Sunrise / Sunset"),
-    moonrise: pick("चन्द्रोदय", "Moonrise"),
-    ritu: pick("ऋतु", "Season"),
-    nakshatra: pick("नक्षत्र", "Nakshatra"),
-    yoga: pick("योग", "Yoga"),
-    karana: pick("करण", "Karana"),
-    dash: pick("—", "—"),
-  });
-  const planets = getPlanetGocharLines(p, lang);
-  const solar = getSolarCorrections(p);
-  const hasSolar =
-    solar?.deshaantar != null || solar?.akshamsha != null || solar?.belaantar != null;
-  const solarCards = hasSolar
-    ? (
-        [
-          [pick("देशान्तर", "Deshaantar"), solar?.deshaantar] as const,
-          [pick("अक्षांश", "Akshamsha"), solar?.akshamsha] as const,
-          [pick("बेलान्तर", "Belaantar"), solar?.belaantar] as const,
-        ] as const
-      )
-        .filter(([, block]) => block != null)
-        .map(([label, block]) => ({
-          label,
-          value: formatPatroSignedCorrection(block) ?? "—",
-        }))
-    : [];
-
   return (
     <View>
       <View
@@ -250,14 +185,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
           setVivaranWrapWidth((prev) => (prev === w ? prev : w));
         }}
       >
-        {cells.map((cell) => (
+        {view.cells.map((cell) => (
           <View
             key={cell.label}
-            style={{
-              width: cell.wide ? "100%" : vivaranTileW,
-              flexGrow: 0,
-              flexShrink: 0,
-            }}
+            style={vivaranCell}
             className="min-w-0"
           >
             <VivaranCell {...cell} />
@@ -265,10 +196,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
         ))}
       </View>
 
-      {planets.length > 0 ? (
+      {view.planets.length > 0 ? (
         <View className={homeClasses.gocharSection}>
           <Text className={homeClasses.gocharTitle} style={nepaliTextStyle()}>
-            {pick("ग्रह गोचर", "Planet positions")}
+            {view.gocharTitle}
           </Text>
           <View
             className="flex-row flex-wrap"
@@ -278,7 +209,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
               setGocharWrapWidth((prev) => (prev === w ? prev : w));
             }}
           >
-            {planets.map(({ key, label, rashi, degree, isRetrograde, isCombust }) => (
+            {view.planets.map(({ key, label, rashi, degree, isRetrograde, isCombust }) => (
               <GocharPlanetCard
                 key={key}
                 planetKey={key}
@@ -287,17 +218,17 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
                 degree={degree}
                 isRetrograde={isRetrograde}
                 isCombust={isCombust}
-                tileWidth={gocharTileW}
+                cellStyle={gocharCell}
               />
             ))}
           </View>
         </View>
       ) : null}
 
-      {solarCards.length > 0 ? (
-        <View className={planets.length > 0 ? homeClasses.solarWithPlanets : homeClasses.solarAlone}>
+      {view.solar.length > 0 ? (
+        <View className={view.planets.length > 0 ? homeClasses.solarWithPlanets : homeClasses.solarAlone}>
           <View className="flex-row" style={{ gap: GOCHAR_WRAP_GAP }}>
-            {solarCards.map(({ label, value }) => (
+            {view.solar.map(({ label, value }) => (
               <View key={label} style={{ flex: 1 }}>
                 <GocharSolarCard title={label} value={value} />
               </View>
@@ -306,7 +237,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
         </View>
       ) : null}
 
-      <AsideFooter p={p} selectedAd={selectedAd} />
+      <AsideFooter view={view} selectedAd={selectedAd} />
     </View>
   );
 }

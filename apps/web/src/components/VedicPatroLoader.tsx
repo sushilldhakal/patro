@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/domain/utils";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useVedicPatroLoader } from "@vedic-patro/features/common";
 
 /** Reference app-icon size from vedicpatro brand sheet */
 export const PAGE_LOADER_SIZE = 120;
@@ -14,8 +14,7 @@ export function VedicPatroLoader({
   size?: number;
   className?: string;
 }) {
-  const { lang } = useLocale();
-  const shown = label === undefined ? bilingualText(lang, "लोड हुँदैछ…", "Loading…") : label;
+  const shown = useVedicPatroLoader(label);
   return (
     <div className={cn("flex flex-col items-center justify-center gap-4", className)}>
       <img

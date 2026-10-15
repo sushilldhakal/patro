@@ -1,29 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { useLocale } from "@/i18n/locale";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { CalendarRange } from "lucide-react";
-import {
-  ApiError,
-  fetchCivilTimeline,
-  fetchPanchangaCivilDay,
-  fetchPanchangaDay,
-  locationCacheKey,
-  panchangaKeys,
-} from "@/lib/api";
-import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate, parseCivilIso } from "@vedic-patro/domain/patro-day";
-import { adToBS, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { usePanchangaPage } from "@vedic-patro/features/panchanga";
+import { fetchPanchangaCivilDay, fetchPanchangaDay, panchangaKeys } from "@/lib/api";
+import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
-import { isEphemerisPanchanga } from "@vedic-patro/domain/ephemeris-adapters";
-import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { GhatiClock } from "@/components/panchanga/GhatiClock";
-import { DayTimeline, DayCycleToggle, type DayCycleMode } from "@/components/panchanga/DayTimeline";
+import { DayTimeline, DayCycleToggle } from "@/components/panchanga/DayTimeline";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
@@ -33,16 +20,10 @@ import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchan
 import { PlanetEventsPanel } from "@/components/panchanga/PlanetEventsPanel";
 import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
-import {
-  EphemerisModeBanner,
-} from "@/components/panchanga/MuhurtaNowPanel";
+import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
 import { SunriseD1ChartPanel } from "@/components/panchanga/SunriseD1ChartPanel";
-import { usePanchangaLocation, displayLocationLabel } from "@/components/panchanga/use-panchanga-location";
-import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
-import {
-  currentPatroYearRangeLinkSearch,
-  searchToLocation,
-} from "@/lib/url-state";
+import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
+import { currentPatroYearRangeLinkSearch, searchToLocation } from "@/lib/url-state";
 import {
   DinVisheshSection,
   FestivalsSection,
@@ -63,192 +44,61 @@ const PANCHANGA_ROUTE_LOADING = false;
 
 const routeApi = getRouteApi("/panchanga");
 
+/** Daily panchanga — the website's drawing of `usePanchangaPage` (@vedic-patro/features). */
 export function Panchanga() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
   const langEra = useCalendarEra();
   const search = routeApi.useSearch();
   const navigate = routeApi.useNavigate();
 
   const { location, setLocation } = usePanchangaLocation(searchToLocation(search));
   const dayBrowse = usePatroPanchangaUrlBrowse(search, navigate, location, setLocation);
-  const {
-    dayState,
+  const { dayState, date, setDate, syncPickerFromDateAd, syncResolvedPatroDay, clock, setClock, setDisplayEra } = dayBrowse;
+  const browseEra = dayState.display.era;
+  const atTimeClock = clock.split(":").length >= 3 ? clock : `${clock}:00`;
+
+  const page = usePanchangaPage({
+    location,
     date,
-    setDate,
-    syncPickerFromDateAd,
-    syncResolvedPatroDay,
     clock,
     setClock,
-    setDisplayEra,
-  } = dayBrowse;
-  const browseEra = dayState.display.era;
-  const [clockUserAdjusted, setClockUserAdjusted] = useState(false);
-
-  const udayaQuery = useQuery({
-    queryKey: panchangaKeys.daySelection(dayState, location.params),
-    queryFn: () => fetchPanchangaDay(dayState, location.params),
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
+    openedWithTime: Boolean(search.time),
+    sources: {
+      udaya: {
+        queryKey: panchangaKeys.daySelection(dayState, location.params),
+        queryFn: () => fetchPanchangaDay(dayState, location.params),
+      },
+      atTime: ({ wheel }) => ({
+        queryKey: panchangaKeys.atTimeDay(dayState, atTimeClock, location.params),
+        queryFn: () => fetchEphemerisPanchangaDay(dayState, atTimeClock, location.params, { resolvedJdUt: wheel?.jd_ut ?? undefined }),
+        enabled: wheel != null && (dayState.kind === "input" || (wheel.jd_ut != null && wheel.date_parts?.gregorian?.era !== "bc")),
+      }),
+      midnight: (civilDateAd) => ({
+        queryKey: panchangaKeys.civilDay(civilDateAd, location.params),
+        queryFn: () => fetchPanchangaCivilDay(civilDateAd, dayState.display, location.params),
+      }),
+      civilEra: browseEra,
+    },
   });
+  const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
+  /* The resolved day drives the picker and the URL — but not while
+     keepPreviousData still shows the day being left (that undid the jump). */
+  const udayaPlaceholder = page.wheelIsPlaceholder;
   useEffect(() => {
-    // keepPreviousData leaves yesterday's payload in `data` while the new day
-    // loads. Syncing that back undoes the wheel date jump and scrolls to top.
-    if (udayaQuery.isPlaceholderData) return;
-    const payload = udayaQuery.data;
-    if (!payload) return;
-    const ad = civilAnchorFromPanchangaDay(payload);
+    if (!wheelData || udayaPlaceholder) return;
+    const ad = civilAnchorFromPanchangaDay(wheelData);
     if (ad) syncPickerFromDateAd(ad);
     syncResolvedPatroDay({
-      date_ad: payload.date_ad,
-      date_parts: payload.date_parts,
+      date_ad: wheelData.date_ad,
+      date_parts: wheelData.date_parts,
       bs_date:
-        payload.bs_date && typeof payload.bs_date === "object"
-          ? {
-              year: payload.bs_date.year,
-              month: payload.bs_date.month,
-              day: payload.bs_date.day,
-            }
+        wheelData.bs_date && typeof wheelData.bs_date === "object"
+          ? { year: wheelData.bs_date.year, month: wheelData.bs_date.month, day: wheelData.bs_date.day }
           : undefined,
     });
-  }, [udayaQuery.data, udayaQuery.isPlaceholderData, syncPickerFromDateAd, syncResolvedPatroDay]);
+  }, [wheelData, udayaPlaceholder, syncPickerFromDateAd, syncResolvedPatroDay]);
 
-  const wheelData = udayaQuery.data;
-  const civilAnchor = wheelData ? civilAnchorFromPanchangaDay(wheelData) : "";
-  const hasCivilAnchor = civilAnchor.trim().length > 0;
-  const adDateStr = civilAnchor;
-  const isCeCivilDay = useMemo(() => {
-    const gEra = wheelData?.date_parts?.gregorian?.era;
-    if (gEra === "bc") return false;
-    if (!hasCivilAnchor) return false;
-    try {
-      return parseCivilIso(civilAnchor).year >= 1;
-    } catch {
-      return false;
-    }
-  }, [wheelData?.date_parts?.gregorian?.era, civilAnchor, hasCivilAnchor]);
-  const jdUt = wheelData?.jd_ut;
-  const atTimeClock =
-    clock.split(":").length >= 3 ? clock : `${clock}:00`;
-
-  const atTimeReady =
-    wheelData != null &&
-    (dayState.kind === "input" ||
-      (jdUt != null && wheelData.date_parts?.gregorian?.era !== "bc"));
-
-  const instantQuery = useQuery({
-    queryKey: panchangaKeys.atTimeDay(dayState, atTimeClock, location.params),
-    queryFn: () =>
-      fetchEphemerisPanchangaDay(dayState, atTimeClock, location.params, {
-        resolvedJdUt: jdUt ?? undefined,
-      }),
-    staleTime: 1000 * 60 * 5,
-    placeholderData: keepPreviousData,
-    enabled: atTimeReady,
-  });
-
-  // दिन-चक्र day boundary: sunrise→sunrise (default) vs midnight→midnight.
-  // The civil timeline is fetched lazily, only when Calendar Day is active.
-  const [dayCycleMode, setDayCycleMode] = useState<DayCycleMode>("Day-Night");
-  const civilQuery = useQuery({
-    queryKey: panchangaKeys.civil(civilAnchor, location.params),
-    queryFn: () => fetchCivilTimeline(civilAnchor, browseEra, location.params),
-    enabled: dayCycleMode === "Calendar Day" && hasCivilAnchor,
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const midnightDayQuery = useQuery({
-    queryKey: panchangaKeys.civilDay(civilAnchor, location.params),
-    queryFn: () =>
-      fetchPanchangaCivilDay(civilAnchor, dayState.display, location.params),
-    enabled: dayCycleMode === "Calendar Day" && hasCivilAnchor,
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const instantData = instantQuery.data;
-  const data = instantData ?? (isCeCivilDay ? undefined : wheelData);
-  const isError = udayaQuery.isError && !wheelData;
-  const ephemeris = isEphemerisPanchanga(instantData);
-
-  const showWheelSkeleton = udayaQuery.isLoading && !wheelData;
-
-  // The backend already resolved this day in every era, so read its answer.
-  // `adToBS` is the offline skeleton only — it is built from a Vikram-era month
-  // table and cannot date a pre-epoch day, which is how a BBS day rendered as
-  // "पू.वि.सं. १" no matter which year was asked for.
-  const bs = useMemo(() => {
-    const vikram = wheelData?.date_parts?.vikram;
-    if (vikram) {
-      return {
-        year: vikram.year,
-        month: vikram.month,
-        day: vikram.day,
-        monthName: BS_MONTHS_NE[vikram.month - 1] ?? "",
-      };
-    }
-    return adToBS(date);
-  }, [wheelData?.date_parts?.vikram, date]);
-
-  // Reference source for the "moving" anga sections (तिथि/नक्षत्र/योग/करण, rashi,
-  // balam, panchaka/lagna). दिन-रात reads them at midnight; अहोरात्र at sunrise.
-  // Date-property sections (festivals, ritu, samvat, sun/moon) always use the
-  // civil-date udaya day, so they stay identical across modes.
-  const isCivilMode = dayCycleMode === "Calendar Day";
-  const angaData = isCivilMode
-    ? midnightDayQuery.data ?? wheelData ?? data
-    : wheelData ?? data;
-
-  const sunrise = udayaQuery.data
-    ? getSunrise(udayaQuery.data)
-    : data
-      ? getSunrise(data)
-      : undefined;
-  const sunset = udayaQuery.data
-    ? getSunset(udayaQuery.data)
-    : data
-      ? getSunset(data)
-      : undefined;
-  const effectiveTimezone = resolveTimeZone(data?.location?.timezone, location.params.timezone);
-  const isToday = adDateStr === todayAdStringInTimezone(new Date(), effectiveTimezone);
-
-  const locationLabel = displayLocationLabel(location, data?.location?.name, lang);
-  const todayAd = todayAdStringInTimezone(new Date(), effectiveTimezone);
-
-  const hadUrlTimeRef = useRef(Boolean(search.time));
-  const clockSyncedKeyRef = useRef<string | null>(null);
-  const [keepClockOnDate, setKeepClockOnDate] = useState(false);
-  const [jumpSyncKey, setJumpSyncKey] = useState<string | null>(null);
-  const [trackedAdDate, setTrackedAdDate] = useState(adDateStr);
-  if (adDateStr !== trackedAdDate) {
-    setTrackedAdDate(adDateStr);
-    if (keepClockOnDate) {
-      setKeepClockOnDate(false);
-      setJumpSyncKey(`${adDateStr}|${locationCacheKey(location.params)}`);
-    } else {
-      setClockUserAdjusted(false);
-    }
-  }
-  // A date jump that carries its own clock marks that clock as already synced.
-  // Written in an effect (not while rendering); declared before the effects that read it.
-  useEffect(() => {
-    if (jumpSyncKey) clockSyncedKeyRef.current = jumpSyncKey;
-  }, [jumpSyncKey]);
-
-  const handleClockChange = useCallback(
-    (next: string) => {
-      setClockUserAdjusted(true);
-      setClock(next);
-    },
-    [setClock],
-  );
-
-  const pickerYearOptions = useMemo(
-    () => buildPatroBrowseYearOptions(browseEra),
-    [browseEra],
-  );
+  const pickerYearOptions = useMemo(() => buildPatroBrowseYearOptions(browseEra), [browseEra]);
   const isGregorianBrowse = isGregorianEraBrowse(browseEra);
   const civilParts = civilPartsFromPickerDate(date);
   const pickerYear = isGregorianBrowse ? civilParts.year : bs.year;
@@ -257,11 +107,8 @@ export function Panchanga() {
 
   const handleCalendarCommit = useCallback(
     (nextEra: Era, y: number, m: number, d: number, nextClock: string) => {
-      const dateChanged =
-        nextEra !== browseEra || y !== pickerYear || m !== pickerMonth || d !== pickerDay;
-      if (dateChanged) setKeepClockOnDate(true);
-      setClockUserAdjusted(true);
-      setClock(nextClock);
+      const dateChanged = nextEra !== browseEra || y !== pickerYear || m !== pickerMonth || d !== pickerDay;
+      page.commitClock(nextClock, dateChanged);
       if (nextEra !== browseEra) {
         setDisplayEra(nextEra, { year: y, month: m, day: d });
         return;
@@ -272,49 +119,8 @@ export function Panchanga() {
       }
       pickBrowseVikramDate(setDate, nextEra, y, m, d, location.params);
     },
-    [setClock, setDate, setDisplayEra, browseEra, location.params, pickerYear, pickerMonth, pickerDay],
+    [page, setDate, setDisplayEra, browseEra, location.params, pickerYear, pickerMonth, pickerDay],
   );
-
-  // Seed the chosen time once per date/location. When the viewed date is today,
-  // open at the current wall-clock time in that place so the दिन-चक्र needle and
-  // the wheel point at "now" without the user having to scrub. Other days fall
-  // back to that day's sunrise. A manual pick (clockUserAdjusted) is preserved.
-  useEffect(() => {
-    const syncKey = `${adDateStr}|${locationCacheKey(location.params)}`;
-    if (clockSyncedKeyRef.current === syncKey) return;
-    if (clockUserAdjusted) return;
-
-    if (isToday) {
-      clockSyncedKeyRef.current = syncKey;
-      hadUrlTimeRef.current = false;
-      setClock(defaultClockForTimezone(effectiveTimezone));
-      return;
-    }
-
-    // Non-today: honor an explicitly shared time on the very first load, then
-    // default a subsequent day/location change to that day's sunrise.
-    const sunrise = formatTimeShort(
-      udayaQuery.data ? getSunrise(udayaQuery.data) : undefined,
-    );
-    if (!sunrise) return;
-
-    if (hadUrlTimeRef.current && clockSyncedKeyRef.current === null) {
-      hadUrlTimeRef.current = false;
-      clockSyncedKeyRef.current = syncKey;
-      return;
-    }
-
-    clockSyncedKeyRef.current = syncKey;
-    setClock(sunrise);
-  }, [
-    adDateStr,
-    location.params,
-    isToday,
-    effectiveTimezone,
-    clockUserAdjusted,
-    udayaQuery.data,
-    setClock,
-  ]);
 
   useRouteLoading(PANCHANGA_ROUTE_LOADING);
 
@@ -332,13 +138,13 @@ export function Panchanga() {
             era={browseEra}
             date={date}
             vikram={wheelData?.date_parts?.vikram}
-            civilDateAd={hasCivilAnchor ? civilAnchor : wheelData?.date_ad}
+            civilDateAd={page.civilAnchor || wheelData?.date_ad}
             gregorian={wheelData?.date_parts?.gregorian}
             onDateChange={setDate}
             onEraChange={setDisplayEra}
-            todayAd={todayAd}
+            todayAd={page.todayAd}
             clock={clock}
-            onClockChange={handleClockChange}
+            onClockChange={page.changeClock}
             toolbar={
               <>
                 <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} size="md" />
@@ -357,8 +163,8 @@ export function Panchanga() {
             }
           />
 
-          {ephemeris && data && (
-            <EphemerisModeBanner p={data} clock={clock} viewedDateAd={adDateStr} />
+          {page.ephemeris && data && (
+            <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} />
           )}
 
           {/* Timeline shares the wheel's udaya (sunrise-to-sunrise) day for the
@@ -371,27 +177,27 @@ export function Panchanga() {
             <DayTimeline
               p={wheelData}
               loading={showWheelSkeleton}
-              dateAd={adDateStr}
-              isToday={isToday}
-              timezone={effectiveTimezone}
-              needleClock={clockUserAdjusted ? clock : undefined}
-              showNeedle={clockUserAdjusted || isToday}
+              dateAd={page.civilAnchor}
+              isToday={page.isToday}
+              timezone={page.timeZone}
+              needleClock={page.clockUserAdjusted ? clock : undefined}
+              showNeedle={page.clockUserAdjusted || page.isToday}
               mode={dayCycleMode}
               onModeChange={setDayCycleMode}
               showToggle={false}
-              civil={civilQuery.data}
-              civilLoading={civilQuery.isLoading}
+              civil={page.civilTimeline}
+              civilLoading={page.civilLoading}
             />
           )}
         </div>
 
         <aside className={cn("flex flex-col", panchangaPageClasses.page.aside, "xl:sticky xl:top-[76px] xl:self-start")}>
-          <GhatiClock sunrise={sunrise} sunset={sunset} timezone={effectiveTimezone} />
+          <GhatiClock sunrise={page.sunrise} sunset={page.sunset} timezone={page.timeZone} />
           {data && <SunriseD1ChartPanel p={data} />}
-          {jdUt != null && hasCivilAnchor ? (
+          {page.jdUt != null && page.civilAnchor ? (
             <PlanetEventsPanel
-              jdUt={jdUt}
-              refDateAd={civilAnchor}
+              jdUt={page.jdUt}
+              refDateAd={page.civilAnchor}
               location={location.params}
               browseLocation={location}
             />
@@ -408,10 +214,10 @@ export function Panchanga() {
               bsYear={bs.year}
               bsMonthNe={bs.monthName}
               bsDay={bs.day}
-              isToday={isToday}
-              timezone={effectiveTimezone}
-              locationLabel={locationLabel}
-              civil={isCivilMode}
+              isToday={page.isToday}
+              timezone={page.timeZone}
+              locationLabel={page.locationLabel}
+              civil={page.isCivilMode}
               atTimeDayState={dayState.kind === "input" ? dayState : undefined}
               calendarPick={{
                 era: browseEra,
@@ -419,7 +225,7 @@ export function Panchanga() {
                 month: pickerMonth,
                 day: pickerDay,
                 yearOptions: pickerYearOptions,
-                todayAd,
+                todayAd: page.todayAd,
                 clock,
                 locationParams: location.params,
                 onCommit: handleCalendarCommit,
@@ -439,21 +245,14 @@ export function Panchanga() {
                 )}
               >
                 <CalendarRange className="size-4" />
-                {t("panchanga.year_link")}
+                {page.copy.yearLink}
               </Link>
             ) : null}
           </>
         )}
 
-        {isError && (
-          <div className={cn(panchangaPageClasses.page.errorBox, panchangaPageClasses.page.errorText)}>
-            {/* Prefer the backend's own explanation — for an unreachable date
-                ("bbs year must be 1..12942", "outside the installed ephemeris
-                range") that is the only thing that tells the user what to fix. */}
-            {udayaQuery.error instanceof ApiError && udayaQuery.error.detail
-              ? udayaQuery.error.detail
-              : t("panchanga.error_load")}
-          </div>
+        {page.loadError && (
+          <div className={cn(panchangaPageClasses.page.errorBox, panchangaPageClasses.page.errorText)}>{page.copy.error}</div>
         )}
 
         {data && (
@@ -479,8 +278,8 @@ export function Panchanga() {
 
       <LearnMoreCard
         className="mt-7 max-sm:px-2.5"
-        heading={t("panchanga.learn_heading")}
-        slugs={["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"]}
+        heading={page.copy.learnHeading}
+        slugs={page.learnSlugs}
       />
 
       <RelatedPageLinks className="max-sm:px-2.5" />

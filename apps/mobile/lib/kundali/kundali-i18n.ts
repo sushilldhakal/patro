@@ -44,8 +44,8 @@ export function formatChoghadiyaAtBirth(
 ): string {
   const name = lang === "en" ? row.nameEn ?? row.nameNe : row.nameNe;
   let qualityLabel = row.quality;
-  if (row.quality === "शुभ") qualityLabel = kundaliLabel("choghadiya_shubha", lang);
-  else if (row.quality === "अशुभ") qualityLabel = kundaliLabel("choghadiya_ashubha", lang);
-  else if (row.quality === "सामान्य") qualityLabel = kundaliLabel("choghadiya_samanya", lang);
+  if (row.quality === /* copy-ok */ "शुभ") qualityLabel = kundaliLabel("choghadiya_shubha", lang);
+  else if (row.quality === /* copy-ok */ "अशुभ") qualityLabel = kundaliLabel("choghadiya_ashubha", lang);
+  else if (row.quality === /* copy-ok */ "सामान्य") qualityLabel = kundaliLabel("choghadiya_samanya", lang);
   return `${name} (${qualityLabel})`;
 }

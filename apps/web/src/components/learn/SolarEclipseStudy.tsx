@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { edBodyLabel, edScrub, hoEarthGroup, solAntumbra, solBannerType, solCorona, solEarthGlow, solEyeFrame, solEyeMoon, solEyeRim, solEyeSky, solEyeStatus, solEyeSun, solEyeTitle, solLegendLabel, solLight, solMoon, solMoonLabel, solPenumbra, solRay, solSpotAnti, solSpotPen, solSpotUmbra, solSunGlow, solUmbra } from "@/lib/diagram-classes";
 import { motSliderLabel, motSliderRow, tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap, edSvg } from "@/lib/learn-classes";
 import { Pause, Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocaleDigits } from "@/i18n/digits";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 

@@ -1,22 +1,15 @@
 import type { RefObject } from "react";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
+import type { LearnArticle, LearnNeighbour } from "@vedic-patro/features/learn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import {
-  LEARN_LIBRARY_BY_SLUG,
-  LEARN_SECTIONS_BY_ID,
-  adjacentPublishedTopics,
-  type LibraryTopic,
-} from "@/lib/learn/learn-library";
 import { MERGED_BY_SLUG } from "@/lib/learn/merged-pages";
 import { DATA_ARTICLES } from "@/lib/learn/articles";
 import { MergedArticleBody } from "@/components/learn/MergedArticleBody";
 import { ArticleBody } from "@/components/learn/article-render";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
-import { playgroundFor } from "@vedic-patro/domain/learn/playground-config";
 import { DayPlayground } from "@/components/learn/playground/DayPlayground";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
@@ -24,27 +17,25 @@ import { cn } from "@vedic-patro/domain/utils";
 
 function TopicNavCard({
   topic,
+  kicker,
   direction,
   onPress,
 }: {
-  topic: LibraryTopic;
+  topic: LearnNeighbour;
+  kicker: string;
   direction: "prev" | "next";
   onPress: () => void;
 }) {
-  const { pick } = useLocale();
   const colors = useThemeColors();
   return (
-    <Pressable
-      onPress={onPress}
-      className={cn(learnPageClasses.navCard, "w-full min-w-0 active:opacity-90 sm:flex-1")}
-    >
+    <Pressable onPress={onPress} className={cn(learnPageClasses.navCard, "w-full min-w-0 active:opacity-90 sm:flex-1")}>
       {direction === "prev" ? <Ionicons name="arrow-back" size={16} color={colors.secondary} /> : null}
       <View className={`min-w-0 flex-1 ${direction === "next" ? "items-end" : ""}`}>
         <Text className={cn(learnPageClasses.navKicker, "text-foreground")} style={nepaliTextStyle()}>
-          {direction === "prev" ? pick("अघिल्लो", "Previous") : pick("अर्को", "Next")}
+          {kicker}
         </Text>
         <Text numberOfLines={1} className={learnPageClasses.navTitle} style={nepaliTextStyle()}>
-          {pick(topic.title.ne, topic.title.en)}
+          {topic.title}
         </Text>
       </View>
       {direction === "next" ? <Ionicons name="arrow-forward" size={16} color={colors.secondary} /> : null}
@@ -52,35 +43,26 @@ function TopicNavCard({
   );
 }
 
+/** One Learn article — draws `useLearnArticle` (@vedic-patro/features) with the app's article renderer. */
 export function LearnArticleView({
-  slug,
+  article,
   scrollRef,
   initialChapter,
 }: {
-  slug: string;
+  article: LearnArticle;
   scrollRef?: RefObject<ScrollView | null>;
   initialChapter?: string;
 }) {
   const router = useRouter();
-  const { pick } = useLocale();
   const colors = useThemeColors();
-  const topic = LEARN_LIBRARY_BY_SLUG[slug];
-  const section = topic ? LEARN_SECTIONS_BY_ID[topic.section] : undefined;
-  const merged = MERGED_BY_SLUG[slug];
-  const data = DATA_ARTICLES[slug];
-  const { prev, next } = adjacentPublishedTopics(slug);
-  /* Not every topic gets one: a topic with no entry in the config is one the
-     sim cannot honestly illustrate. Same map as web. */
-  const playground = playgroundFor(slug);
-  /* A topic with a guided (narrated) tour explains itself through the
-     playground and its voiceover — the written prose below it would be saying
-     the same thing twice. Same rule as web's LearnArticle. */
-  const hasGuidedTour = Boolean(playground?.guided);
+  const { topic, copy, prev, next } = article;
+  const merged = topic ? MERGED_BY_SLUG[topic.slug] : undefined;
+  const data = topic ? DATA_ARTICLES[topic.slug] : undefined;
 
   if (!topic || (!merged && !data)) {
     return (
       <View className="items-center justify-center py-12">
-        <Text className="text-center text-muted-foreground">{pick("लेख फेला परेन।", "Article not found.")}</Text>
+        <Text className="text-center text-muted-foreground">{copy.notFound}</Text>
       </View>
     );
   }
@@ -90,37 +72,22 @@ export function LearnArticleView({
       <View className="gap-8 px-4 py-8 sm:px-6">
         {/* Hero: category eyebrow, title, summary — as web's article header. */}
         <View className="items-center pb-5 pt-12">
-          <Text
-            className="text-center text-xs font-semibold uppercase tracking-eyebrow-wide text-accent"
-            style={nepaliTextStyle()}
-          >
-            {section ? pick(section.title.ne, section.title.en) : ""}
+          <Text className="text-center text-xs font-semibold uppercase tracking-eyebrow-wide text-accent" style={nepaliTextStyle()}>
+            {topic.sectionLabel}
           </Text>
-          <Text
-            className="mt-3.5 text-center text-3xl font-bold leading-tight tracking-tight text-foreground"
-            style={nepaliTextStyle()}
-          >
-            {pick(topic.title.ne, topic.title.en)}
+          <Text className="mt-3.5 text-center text-3xl font-bold leading-tight tracking-tight text-foreground" style={nepaliTextStyle()}>
+            {topic.title}
           </Text>
-          <Text
-            className="mt-4 max-w-2xl text-center text-base leading-relaxed text-muted-foreground"
-            style={nepaliTextStyle()}
-          >
-            {pick(topic.summary.ne, topic.summary.en)}
+          <Text className="mt-4 max-w-2xl text-center text-base leading-relaxed text-muted-foreground" style={nepaliTextStyle()}>
+            {topic.summary}
           </Text>
         </View>
 
         {/* Above the prose, as on web: a topic that has a playground is one you
             can watch, and the reader should meet it before the words. */}
-        {playground ? (
-          <DayPlayground
-            key={slug}
-            config={playground}
-            title={pick(`${topic.title.ne} · आकाश`, `${topic.title.en} · sky`)}
-          />
-        ) : null}
+        {article.playground ? <DayPlayground key={topic.slug} config={article.playground} title={copy.playgroundTitle} /> : null}
 
-        {hasGuidedTour ? null : merged ? (
+        {article.hasGuidedTour ? null : merged ? (
           <MergedArticleBody page={merged} scrollRef={scrollRef} initialChapter={initialChapter} />
         ) : data ? (
           <ArticleBody article={data} />
@@ -128,24 +95,21 @@ export function LearnArticleView({
 
         <View className={cn(learnPageClasses.navRow, "mt-4")}>
           {prev ? (
-            <TopicNavCard topic={prev} direction="prev" onPress={() => router.push(hrefForLearnSlug(prev.slug))} />
+            <TopicNavCard topic={prev} kicker={copy.prev} direction="prev" onPress={() => router.push(hrefForLearnSlug(prev.slug))} />
           ) : (
             <View className="hidden flex-1 sm:flex" />
           )}
           {next ? (
-            <TopicNavCard topic={next} direction="next" onPress={() => router.push(hrefForLearnSlug(next.slug))} />
+            <TopicNavCard topic={next} kicker={copy.next} direction="next" onPress={() => router.push(hrefForLearnSlug(next.slug))} />
           ) : (
             <View className="hidden flex-1 sm:flex" />
           )}
         </View>
 
-        <Pressable
-          onPress={() => router.push("/learn")}
-          className={cn(learnPageClasses.inlineLink, "-mt-2 flex-row justify-center active:opacity-80")}
-        >
+        <Pressable onPress={() => router.push("/learn")} className={cn(learnPageClasses.inlineLink, "-mt-2 flex-row justify-center active:opacity-80")}>
           <Ionicons name="book-outline" size={16} color={colors.secondary} />
           <Text className={learnPageClasses.inlineLinkText} style={nepaliTextStyle()}>
-            {pick("सबै विषय", "All topics")}
+            {copy.allTopics}
           </Text>
         </Pressable>
       </View>

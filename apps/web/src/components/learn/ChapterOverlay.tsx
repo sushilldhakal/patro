@@ -22,7 +22,7 @@
  * chapter's own `overlay` decides afresh.
  */
 
-import { useTranslation } from "react-i18next";
+import { useChapterOverlay } from "@vedic-patro/features/learn";
 import { X } from "lucide-react";
 
 import { LEARN_DIAGRAMS } from "@/lib/learn/learn-diagrams";
@@ -38,7 +38,7 @@ export function ChapterOverlay({
   onClose: () => void;
   className?: string;
 }) {
-  const { t } = useTranslation();
+  const { closeLabel } = useChapterOverlay();
   const Diagram = LEARN_DIAGRAMS[id as keyof typeof LEARN_DIAGRAMS];
   if (!Diagram) return null;
   return (
@@ -53,7 +53,7 @@ export function ChapterOverlay({
       <button
         type="button"
         onClick={onClose}
-        aria-label={t("common.close")}
+        aria-label={closeLabel}
         className="absolute right-1.5 top-1.5 z-10 grid size-7 cursor-pointer place-items-center rounded-full border border-[var(--tm-border)] bg-[var(--tm-card)] text-[var(--tm-ink-dim)] hover:text-[var(--tm-ink)]"
       >
         <X size={14} />

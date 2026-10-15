@@ -26,7 +26,7 @@ Personal info beyond the table, financial, health, messages, photos, files, cale
 ## Security practices
 
 - Data is encrypted in transit (TLS).
-- Users can request deletion (in-app + email support@vedicpatro.com).
+- Users can request deletion (in-app + email vedicnepalpatro@gmail.com).
 - Independent security review: No.
 
 ## Camera / microphone / motion

@@ -6,9 +6,8 @@
  * off this page while the tour is running.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useTranslation } from "react-i18next";
 import {
   ChevronUp,
   Pause,
@@ -22,12 +21,9 @@ import {
   X,
 } from "lucide-react";
 
-import { formatChapterClock } from "@vedic-patro/domain/learn/chapter-player";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { useLocale } from "@/i18n/locale";
+import { useDayChapterBar, useDayChapterWelcome } from "@vedic-patro/features/learn";
 import { cn } from "@vedic-patro/domain/utils";
 import { edScrub } from "@/lib/diagram-classes";
-import { chapterParts } from "@vedic-patro/domain/learn/chapter-tracks";
 import type { DayChapterPlayer } from "@/hooks/use-chapter-track";
 
 export function DayChapterWelcome({
@@ -35,48 +31,46 @@ export function DayChapterWelcome({
 }: {
   player: DayChapterPlayer;
 }) {
-  const { t } = useTranslation();
-  if (!player.showWelcome) return null;
-  const lastIndex = player.chapters.length - 1;
-  const hasPlayground = Boolean(player.chapters[lastIndex]?.free);
+  const w = useDayChapterWelcome(player);
+  if (!w.visible) return null;
   return (
     /* No `backdrop-blur` — the original's own welcome overlay is a plain
        `rgba(0,0,0,0.5)` scrim over the running scene, not a frosted one. */
     <div className="pointer-events-auto absolute inset-0 z-20 flex items-center justify-center bg-black/55 px-4 transition-opacity">
       <div className="flex max-w-md flex-col items-center text-center text-white">
         <p className="text-xs font-semibold uppercase tracking-eyebrow-wide text-white/55">
-          {t("learn.chapters.eyebrow")}
+          {w.eyebrow}
         </p>
         {/* Sans throughout, matching the original — it declares no serif
             anywhere in its type scale (Source Sans Pro end to end). */}
         <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-          {t(player.track.titleKey)}
+          {w.title}
         </h2>
         <p className="mt-2 text-sm text-white/70 sm:text-base">
-          {t(player.track.subtitleKey)}
+          {w.subtitle}
         </p>
         {/* `.is-gigantic` in the original — a button sized well past its
             normal chrome, the one clearly-largest thing on the screen. */}
         <button
           type="button"
-          onClick={player.play}
+          onClick={w.play}
           className="mt-6 grid size-24 cursor-pointer place-items-center rounded-full border border-white/30 bg-white text-black transition-transform hover:scale-105"
-          aria-label={t("learn.chapters.begin")}
+          aria-label={w.begin}
         >
           <Play size={40} fill="currentColor" strokeWidth={0} className="ml-1.5" />
         </button>
         <p className="mt-3 text-xs font-semibold uppercase tracking-eyebrow-wide text-white/70">
-          {t("learn.chapters.begin")}
+          {w.begin}
         </p>
         {/* The original's second way in: "or … go to playground". Only when
             this track actually ends on a free chapter to jump to. */}
-        {hasPlayground ? (
+        {w.playground ? (
           <button
             type="button"
-            onClick={() => player.goTo(lastIndex)}
+            onClick={w.playground.open}
             className="mt-4 text-xs font-semibold uppercase tracking-eyebrow-wide text-white/60 underline-offset-4 hover:text-white hover:underline"
           >
-            {t("learn.chapters.playground")}
+            {w.playground.label}
           </button>
         ) : null}
       </div>
@@ -85,12 +79,12 @@ export function DayChapterWelcome({
 }
 
 export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const ne = lang !== "en";
-  const num = (v: string) => (ne ? toNepaliDigits(v) : v);
-  const [tocOpen, setTocOpen] = useState(false);
-  const [volumeOpen, setVolumeOpen] = useState(false);
+  const bar = useDayChapterBar(player);
+  const { scrub, toc, transport, volume } = bar;
+  const tocOpen = toc.open;
+  const setTocOpen = toc.setOpen;
+  const volumeOpen = volume.open;
+  const setVolumeOpen = volume.setOpen;
   const volumeRef = useRef<HTMLDivElement | null>(null);
 
   /* No outside-pointerdown listener here, unlike the volume popover below:
@@ -105,16 +99,11 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
     };
     document.addEventListener("pointerdown", onDoc);
     return () => document.removeEventListener("pointerdown", onDoc);
-  }, [volumeOpen]);
+  }, [volumeOpen, setVolumeOpen]);
 
-  const parts = useMemo(() => chapterParts(player.chapters), [player.chapters]);
-  const free = Boolean(player.chapter.free);
-  const progress = player.duration > 0 ? (player.time / player.duration) * 100 : 0;
-  const isLast = player.index >= player.chapters.length - 1;
-  const isFirst = player.index <= 0;
-  const playing = player.playing;
-  const ended = player.ended;
-  const VolumeIcon = player.volume === 0 ? VolumeX : player.volume < 0.5 ? Volume1 : Volume2;
+  const { free } = bar;
+  const { isFirst, isLast, playing, ended } = transport;
+  const VolumeIcon = volume.level === "mute" ? VolumeX : volume.level === "low" ? Volume1 : Volume2;
 
   return (
     <div className="flex flex-col">
@@ -123,17 +112,17 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
           <input
             type="range"
             className={cn(edScrub, "ed-scrub-dark")}
-            style={{ "--fill": `${progress}%` } as React.CSSProperties}
+            style={{ "--fill": `${scrub.progress}%` } as React.CSSProperties}
             min={0}
-            max={player.duration || 1}
-            step={50}
-            value={player.time}
-            onChange={(e) => player.seek(Number(e.target.value))}
-            aria-label={t("learn.chapters.scrub")}
+            max={scrub.max}
+            step={scrub.step}
+            value={scrub.value}
+            onChange={(e) => scrub.seek(Number(e.target.value))}
+            aria-label={scrub.label}
           />
           <div className="mt-1 flex items-start justify-between font-num text-xs tabular-nums text-white/45">
-            <span>{num(formatChapterClock(player.time))}</span>
-            <span>{num(formatChapterClock(player.duration))}</span>
+            <span>{scrub.time}</span>
+            <span>{scrub.duration}</span>
           </div>
         </div>
       )}
@@ -144,11 +133,7 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
           onClick={() => setTocOpen((v) => !v)}
           className="flex max-w-full items-center gap-1.5 px-2 py-1 text-sm font-semibold text-white/90 hover:text-white"
         >
-          <span className="truncate">
-            {t("learn.chapters.chapter")} {num(String(player.index + 1))}
-            {": "}
-            {t(player.chapter.titleKey)}
-          </span>
+          <span className="truncate">{bar.heading}</span>
           <ChevronUp size={14} className={cn("shrink-0 text-white/50 transition-transform", tocOpen ? "" : "rotate-180")} />
         </button>
         {/*
@@ -176,44 +161,41 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
               >
                 <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
                   <span className="text-sm font-semibold text-white">
-                    {t("learn.chapters.chapter_list")}
+                    {toc.title}
                   </span>
                   <button
                     type="button"
                     onClick={() => setTocOpen(false)}
                     className="grid size-7 place-items-center rounded-full text-white/60 hover:bg-white/10 hover:text-white"
-                    aria-label={t("common.close")}
+                    aria-label={toc.closeLabel}
                   >
                     <X size={16} />
                   </button>
                 </div>
                 <div className="touch-auto flex-1 overflow-y-auto overscroll-contain py-1">
-                  {parts.map((part, pi) => (
-                    <div key={part.partKey ?? `p-${pi}`}>
-                      {part.partKey ? (
+                  {toc.parts.map((part) => (
+                    <div key={part.key}>
+                      {part.label ? (
                         <div className="px-4 pb-1 pt-3 text-diagram-xs font-semibold uppercase tracking-eyebrow-wide text-white/35">
-                          {t(part.partKey)}
+                          {part.label}
                         </div>
                       ) : null}
-                      {part.items.map(({ chapter, index }) => (
+                      {part.items.map((item) => (
                         <button
-                          key={chapter.id}
+                          key={item.id}
                           type="button"
-                          onClick={() => {
-                            player.goTo(index);
-                            setTocOpen(false);
-                          }}
+                          onClick={item.select}
                           className={cn(
                             "flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold",
-                            index === player.index
+                            item.active
                               ? "bg-white/15 text-white"
                               : "text-white/70 hover:bg-white/8 hover:text-white",
                           )}
                         >
                           <span className="w-5 shrink-0 tabular-nums text-white/40">
-                            {num(String(index + 1))}
+                            {item.number}
                           </span>
-                          <span className="truncate">{t(chapter.titleKey)}</span>
+                          <span className="truncate">{item.title}</span>
                         </button>
                       ))}
                     </div>
@@ -235,24 +217,17 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
           <button
             type="button"
             disabled={isFirst}
-            onClick={player.prev}
+            onClick={transport.prev}
             className="grid size-10 place-items-center text-white/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-            aria-label={t("learn.chapters.prev")}
+            aria-label={transport.prevLabel}
           >
             <SkipBack size={22} fill="currentColor" />
           </button>
           <button
             type="button"
-            onClick={
-              ended
-                ? () => {
-                    player.seek(0);
-                    player.play();
-                  }
-                : player.toggle
-            }
+            onClick={transport.primary}
             className="grid size-12 place-items-center text-white hover:text-white"
-            aria-label={ended ? t("learn.chapters.replay") : playing ? t("learn.pause") : t("learn.play")}
+            aria-label={transport.primaryLabel}
           >
             {ended ? (
               <RotateCcw size={26} />
@@ -265,12 +240,12 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
           <button
             type="button"
             disabled={isLast}
-            onClick={player.next}
+            onClick={transport.next}
             className={cn(
               "grid size-10 place-items-center text-white/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-30",
-              player.ended && !isLast && "text-amber-100",
+              transport.nextHighlighted && "text-amber-100",
             )}
-            aria-label={t("learn.chapters.next")}
+            aria-label={transport.nextLabel}
           >
             <SkipForward size={22} fill="currentColor" />
           </button>
@@ -282,7 +257,7 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
               type="button"
               onClick={() => setVolumeOpen((v) => !v)}
               className="grid size-9 place-items-center rounded-full text-white/60 hover:text-white"
-              aria-label={t("learn.chapters.volume")}
+              aria-label={volume.label}
             >
               <VolumeIcon size={18} />
             </button>
@@ -290,22 +265,22 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
               <div className="absolute bottom-[calc(100%+6px)] right-0 z-20 flex items-center gap-2 rounded-full border border-white/15 bg-black/90 px-3 py-2 backdrop-blur">
                 <button
                   type="button"
-                  onClick={player.toggleMute}
+                  onClick={volume.toggleMute}
                   className="shrink-0 text-white/70 hover:text-white"
-                  aria-label={t("learn.chapters.volume")}
+                  aria-label={volume.label}
                 >
                   <VolumeIcon size={16} />
                 </button>
                 <input
                   type="range"
                   className={cn(edScrub, "ed-scrub-dark w-24")}
-                  style={{ "--fill": `${player.volume * 100}%` } as React.CSSProperties}
+                  style={{ "--fill": `${volume.value * 100}%` } as React.CSSProperties}
                   min={0}
                   max={1}
                   step={0.01}
-                  value={player.volume}
-                  onChange={(e) => player.setVolume(Number(e.target.value))}
-                  aria-label={t("learn.chapters.volume")}
+                  value={volume.value}
+                  onChange={(e) => volume.set(Number(e.target.value))}
+                  aria-label={volume.label}
                 />
               </div>
             )}

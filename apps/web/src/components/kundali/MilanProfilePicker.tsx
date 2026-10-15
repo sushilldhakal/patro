@@ -4,7 +4,7 @@ import {
   useState,
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   ChevronRight,
   Clock,

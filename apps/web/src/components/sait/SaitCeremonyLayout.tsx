@@ -1,6 +1,4 @@
 import { HeartHandshake } from "lucide-react";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import type { Era } from "@vedic-patro/domain/era";
@@ -8,7 +6,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
 import { SaitRulesSection, type SaitRule } from "@/components/sait/SaitRulesSection";
 import { PageHeader, PageShell } from "@/components/PageShell";
-import { useLocale } from "@/i18n/locale";
+import { saitDayKey, useSaitCeremonyList } from "@vedic-patro/features/sait";
 import type {
   BratabandhaNakshatraMode,
   SaitDetailDay,
@@ -58,8 +56,6 @@ interface Props {
   footer?: React.ReactNode;
 }
 
-const NAKSHATRA_MODE_IDS = ["classical", "nepali", "liberal"] as const;
-
 /**
  * Shared ceremonial sāit layout — page header, rules, year/location bar,
  * then month-grouped day cards. Uses the app's default 1400px shell width.
@@ -96,23 +92,7 @@ export function SaitCeremonyLayout({
   countLabel,
   footer,
 }: Props) {
-  const { digits, lang } = useLocale();
-  const { t } = useTranslation();
-  const byMonth = useMemo(() => {
-    const map = new Map<number, SaitDetailDay[]>();
-    for (const d of days) {
-      const list = map.get(d.bs_month) ?? [];
-      list.push(d);
-      map.set(d.bs_month, list);
-    }
-    return [...map.entries()].sort(([a], [b]) => a - b);
-  }, [days]);
-
-  const defaultCount = (n: number, y: number) =>
-    t("sait.count_label", { count: digits(n), year: digits(y) });
-  const displayCount = count ?? days.length;
-  const countText = (countLabel ?? defaultCount)(displayCount, year);
-
+  const list = useSaitCeremonyList({ days, count, year, emptyLabel, countLabel });
   let cardIndex = 0;
 
   return (
@@ -135,14 +115,14 @@ export function SaitCeremonyLayout({
       {nakshatraMode && onNakshatraModeChange ? (
         <div className={saitClasses.nakshatraRow}>
           <span className={saitClasses.nakshatraLabel}>
-            {t("sait.nakshatra_tradition")}
+            {list.nakshatra.label}
           </span>
           <div
             className={cn(saitClasses.nakshatraGroup, "inline-flex")}
             role="radiogroup"
-            aria-label={t("sait.nakshatra_tradition")}
+            aria-label={list.nakshatra.label}
           >
-            {NAKSHATRA_MODE_IDS.map((id) => {
+            {list.nakshatra.modes.map(({ id, label }) => {
               const active = nakshatraMode === id;
               return (
                 <button
@@ -160,7 +140,7 @@ export function SaitCeremonyLayout({
                       : cn(saitClasses.nakshatraBtnTextIdle, "hover:bg-surface-muted hover:text-foreground"),
                   )}
                 >
-                  {t(`sait.nakshatra_modes.${id}`)}
+                  {label}
                 </button>
               );
             })}
@@ -181,9 +161,9 @@ export function SaitCeremonyLayout({
         className=""
       />
 
-      {!loading && displayCount > 0 ? (
+      {!loading && list.displayCount > 0 ? (
         <p className={cn("m-0", saitClasses.countText)}>
-          {countText}
+          {list.countText}
         </p>
       ) : null}
 
@@ -208,42 +188,31 @@ export function SaitCeremonyLayout({
             ))}
           </div>
         ) : days.length > 0 ? (
-          byMonth.map(([month, monthDays]) => {
-            const monthNe = monthDays[0]?.bs_month_name_ne;
-            const monthLabel =
-              lang === "en"
-                ? t("sait.month_number", { month: digits(month), defaultValue: `Month ${digits(month)}` })
-                : (monthNe ?? t("sait.month_number", { month: digits(month) }));
-            return (
-              <div key={month} className={saitClasses.monthBlock}>
-                <div className={saitClasses.monthHeader}>
-                  <h2 className={cn("m-0", saitClasses.monthTitle)}>
-                    {monthLabel}
-                  </h2>
-                  <span className={saitClasses.monthCount}>
-                    {t("sait.days_count", { count: digits(monthDays.length) })}
-                  </span>
-                </div>
-                <div className={cn("grid sm:grid-cols-2 lg:grid-cols-3", saitClasses.dayGrid)}>
-                  {monthDays.map((d) => {
-                    const i = cardIndex++;
-                    return (
-                      <SaitDayCard
-                        key={`${d.bs_month}-${d.bs_day}-${d.window_start}`}
-                        d={d}
-                        index={i}
-                        suitability={suitabilityByDay?.get(`${d.bs_month}-${d.bs_day}`)}
-                        personalize={personalizeByDay?.get(`${d.bs_month}-${d.bs_day}`)}
-                      />
-                    );
-                  })}
-                </div>
+          list.months.map((m) => (
+            <div key={m.month} className={saitClasses.monthBlock}>
+              <div className={saitClasses.monthHeader}>
+                <h2 className={cn("m-0", saitClasses.monthTitle)}>{m.label}</h2>
+                <span className={saitClasses.monthCount}>{m.count}</span>
               </div>
-            );
-          })
+              <div className={cn("grid sm:grid-cols-2 lg:grid-cols-3", saitClasses.dayGrid)}>
+                {m.days.map((d) => {
+                  const i = cardIndex++;
+                  return (
+                    <SaitDayCard
+                      key={`${saitDayKey(d)}-${d.window_start}`}
+                      d={d}
+                      index={i}
+                      suitability={suitabilityByDay?.get(saitDayKey(d))}
+                      personalize={personalizeByDay?.get(saitDayKey(d))}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))
         ) : (
           <p className={cn("m-0", saitClasses.emptyText)}>
-            {emptyLabel ?? t("sait.empty_year")}
+            {list.empty}
           </p>
         )}
       </section>

@@ -1,10 +1,10 @@
-import { lazy, Suspense, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { lazy, Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 import { User, LogOut, UserCircle, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useAccountMenu } from "@vedic-patro/features/account";
 import { importWithRetry } from "@/lib/lazy-route";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -14,42 +14,38 @@ const LazyAuthDialog = lazy(() =>
 );
 
 export function AccountMenu() {
-  const { t } = useTranslation();
-  const { user, loading, logout } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useAccountMenu(useAuth());
+  const { copy } = menu;
 
-  if (loading) {
+  if (menu.status === "loading") {
     return <div className={cn("animate-pulse", accountClasses.avatarSkeleton)} aria-hidden />;
   }
 
-  if (!user) {
+  if (menu.status === "signed-out") {
     return (
       <>
-        <Button variant="outline" size="sm" onClick={() => setAuthOpen(true)}>
+        <Button variant="outline" size="sm" onClick={menu.openAuth}>
           <User className="size-3.5" />
-          {t("auth.sign_in")}
+          {copy.signIn}
         </Button>
-        {authOpen ? (
+        {menu.authOpen ? (
           <Suspense fallback={null}>
-            <LazyAuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
+            <LazyAuthDialog open={menu.authOpen} onOpenChange={menu.setAuthOpen} initialMode="login" />
           </Suspense>
         ) : null}
       </>
     );
   }
 
-  const initial = user.email.charAt(0).toUpperCase();
-
   return (
-    <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+    <Popover open={menu.menuOpen} onOpenChange={menu.setMenuOpen}>
       <PopoverTrigger asChild>
         <button
           type="button"
           className={cn("flex transition-colors hover:bg-secondary/25", accountClasses.avatar, accountClasses.avatarText)}
-          aria-label={t("account_page.menu_aria")}
+          aria-label={copy.menuAria}
         >
-          {initial}
+          {menu.initial}
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-60 p-1.5">
@@ -58,14 +54,14 @@ export function AccountMenu() {
             <UserCircle className="size-5" />
           </div>
           <div className="min-w-0">
-            <p className={cn("truncate", accountClasses.menuEmail)}>{user.email}</p>
+            <p className={cn("truncate", accountClasses.menuEmail)}>{menu.email}</p>
             <p className={cn("flex items-center gap-1", accountClasses.menuStatus)}>
-              {user.is_verified ? (
+              {menu.verified ? (
                 <>
-                  <BadgeCheck className="size-3 text-emerald-500" /> {t("account_page.verified")}
+                  <BadgeCheck className="size-3 text-emerald-500" /> {menu.statusLabel}
                 </>
               ) : (
-                t("account_page.email_unverified")
+                menu.statusLabel
               )}
             </p>
           </div>
@@ -73,22 +69,19 @@ export function AccountMenu() {
         <div className="my-1 h-px bg-border" />
         <Link
           to="/account"
-          onClick={() => setMenuOpen(false)}
+          onClick={menu.closeMenu}
           className={cn("flex transition-colors hover:bg-muted hover:text-foreground", accountClasses.menuItem)}
         >
           <UserCircle className="size-4" />
-          {t("account_page.my_profiles")}
+          {copy.myProfiles}
         </Link>
         <button
           type="button"
-          onClick={() => {
-            setMenuOpen(false);
-            void logout();
-          }}
+          onClick={menu.signOut}
           className={cn("flex w-full transition-colors hover:bg-muted hover:text-foreground", accountClasses.menuItem)}
         >
           <LogOut className="size-4" />
-          {t("account_page.sign_out")}
+          {copy.signOut}
         </button>
       </PopoverContent>
     </Popover>

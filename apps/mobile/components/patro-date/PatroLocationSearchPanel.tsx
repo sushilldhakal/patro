@@ -42,7 +42,7 @@ type Props = {
 /** Search field + city list — used in Patro date sheet Location tab (single source). */
 export function PatroLocationSearchPanel({ location, onLocationChange, embedded, listHeight }: Props) {
   const colors = useThemeColors();
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   const inputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -86,7 +86,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setGeoError(pick("अनुमति अस्वीकृत — सहर खोज्नुहोस्", "Permission denied — search for a city"));
+        setGeoError(t("location.permission_denied"));
         return;
       }
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
@@ -106,7 +106,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
       setQuery("");
       setDebouncedQuery("");
     } catch {
-      setGeoError(pick("स्थान पत्ता लागेन", "Location not found"));
+      setGeoError(t("location.not_found"));
     } finally {
       setGeoLoading(false);
     }
@@ -120,7 +120,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           ref={inputRef}
           value={query}
           onChangeText={setQuery}
-          placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
+          placeholder={t("location.search_city")}
           placeholderTextColor={colors.mutedForeground}
           className={patroDateClasses.locationInput}
           autoCapitalize="none"
@@ -141,7 +141,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
         )}
         <Text className={patroDateClasses.locationGeoLabel}>
-          {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
+          {t("location.use_my_location")}
         </Text>
       </Pressable>
 
@@ -151,16 +151,16 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
 
   const listFooter = (
     <Text className={patroDateClasses.locationHint}>
-      {pick("स्थान परिवर्तन तुरुन्त लागू हुन्छ।", "Location changes apply immediately.")}
+      {t("ui.patro_date.location_changes_apply_immediately")}
     </Text>
   );
 
   const emptyMessage = (() => {
     if (debouncedQuery.length < 2) {
-      return pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters");
+      return t("location.type_min_chars");
     }
     if (isSearching) return null;
-    return pick("कुनै सहर भेटिएन", "No city found");
+    return t("location.no_city_found");
   })();
 
   if (embedded) {
@@ -219,7 +219,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
     debouncedQuery.length < 2 ? (
       <View className={patroDateClasses.locationEmpty}>
         <Text className={patroDateClasses.locationEmptyText}>
-          {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
+          {t("location.type_min_chars")}
         </Text>
       </View>
     ) : isSearching ? (
@@ -229,7 +229,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
     ) : results.length === 0 ? (
       <View className={patroDateClasses.locationEmpty}>
         <Text className={patroDateClasses.locationEmptyText}>
-          {pick("कुनै सहर भेटिएन", "No city found")}
+          {t("location.no_city_found")}
         </Text>
       </View>
     ) : (

@@ -24,7 +24,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { createPortal } from "react-dom";
 import { Canvas } from "@react-three/fiber";
 import { ChevronDown, ChevronUp, Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";

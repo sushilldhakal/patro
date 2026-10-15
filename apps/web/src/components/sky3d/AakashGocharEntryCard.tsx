@@ -5,11 +5,11 @@
 
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, Orbit } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useAakashGocharEntryCard } from "@vedic-patro/features/home";
 import { cn } from "@vedic-patro/domain/utils";
 
 export function AakashGocharEntryCard({ className }: { className?: string }) {
-  const { lang } = useLocale();
+  const card = useAakashGocharEntryCard();
 
   return (
     <Link
@@ -21,10 +21,10 @@ export function AakashGocharEntryCard({ className }: { className?: string }) {
     >
       <Orbit className="size-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
       <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-        {bilingualText(lang, "३D आकाश गोचर", "3D Aakash Gochar")}
+        {card.label}
       </span>
       <span className="shrink-0 text-xs text-muted-foreground">
-        {bilingualText(lang, "भूकेन्द्रित", "Geocentric")}
+        {card.tag}
       </span>
       <ChevronRight
         className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"

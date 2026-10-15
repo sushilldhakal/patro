@@ -34,11 +34,10 @@ import {
   bsToAD,
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
-  WEEKDAYS_SHORT_NE,
 } from "@vedic-patro/domain/bs-calendar";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
-import { bikramFromSun } from "@vedic-patro/domain/sky3d/bikram-solar";
+import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
@@ -82,13 +81,7 @@ import {
   type SkyTarget,
   type SkyTargetKind,
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
-import {
-  localFavourites,
-  pushRecent,
-  putFavourites,
-  recents as readRecents,
-  syncFavourites,
-} from "@/lib/sky3d/sky-bookmarks";
+import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import {
   AakashGocharScene,
   type SceneToggles,
@@ -105,6 +98,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const Scene = memo(AakashGocharScene);
 
 const CANVAS_BG = wheel.sky2;
@@ -143,27 +137,6 @@ const LABEL_COLOR = {
  * The speed ladder, in simulated seconds per real second. Pressing a fast
  * button repeatedly climbs it; pause drops back to the first rung.
  */
-/**
- * What the camera can be hung on, besides पृथ्वी.
- *
- * The seven the eye can see plus the Sun and Moon — the same nine a पञ्चाङ्ग
- * tables. राहु and केतु are left out on purpose: they are the crossings of the
- * Moon's plane, not places, so centring on one puts the camera on a point that
- * is only defined by two other things.
- */
-/** The focus list, in the web's own order — पृथ्वी second, the two छाया ग्रह last. */
-const FOCUS_TARGETS: { key: GrahaKey; ne: string; en: string }[] = [
-  { key: "sun", ne: "सूर्य", en: "Sun" },
-  { key: "moon", ne: "चन्द्र", en: "Moon" },
-  { key: "mercury", ne: "बुध", en: "Mercury" },
-  { key: "venus", ne: "शुक्र", en: "Venus" },
-  { key: "jupiter", ne: "बृहस्पति", en: "Jupiter" },
-  { key: "saturn", ne: "शनि", en: "Saturn" },
-  { key: "mars", ne: "मंगल", en: "Mars" },
-  { key: "rahu", ne: "राहु", en: "Rahu" },
-  { key: "ketu", ne: "केतु", en: "Ketu" },
-];
-
 /**
  * Where the fast buttons pick the ladder up from a standstill: a minute a
  * second. {@link DEFAULT_STEP_INDEX} is real time, which is the right thing
@@ -290,7 +263,7 @@ export function AakashGocharSky({
   timeZone = "Asia/Kathmandu",
   height = 460,
 }: AakashGocharSkyProps) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const { isDark } = useTheme();
 
   /* The API is the source of truth: pin the model onto it for this date, so the
@@ -514,8 +487,6 @@ export function AakashGocharSky({
   useEffect(() => {
     glRef.current?.setClearColor(CANVAS_BG, showCamera ? 0 : 1);
   }, [showCamera]);
-  const [favourites, setFavourites] = useState<string[]>([]);
-  const [recentIds, setRecentIds] = useState<string[]>([]);
   /**
    * Where the camera has been asked to look, for anything that is not a graha.
    *
@@ -548,34 +519,10 @@ export function AakashGocharSky({
   const [aimedCentered, setAimedCentered] = useState(false);
   const { user } = useAuth();
   const signedIn = !!user;
-
-  /* Load the on-device lists once, then pull the account's favourites down and
-     fold this device's in — same order the web signs in and merges. */
-  useEffect(() => {
-    let alive = true;
-    void readRecents().then((ids) => {
-      if (alive) setRecentIds(ids);
-    });
-    void syncFavourites(signedIn).then((ids) => {
-      if (alive) setFavourites(ids);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [signedIn]);
-
-  const toggleFavourite = useCallback(
-    (id: string) => {
-      setFavourites((current) => {
-        const next = current.includes(id)
-          ? current.filter((v) => v !== id)
-          : [...current, id];
-        void putFavourites(next, signedIn);
-        return next;
-      });
-    },
-    [signedIn],
-  );
+  const { favourites, recentIds, toggleFavourite, pushRecent } = useSkyBookmarks({
+    signedIn,
+    storage: skyBookmarkStorage,
+  });
 
   const catalogStars = useMemo(() => displayVedicStars(vedicStars ?? []), [vedicStars]);
   const namedStars = useMemo(() => vedicStarTargets(catalogStars), [catalogStars]);
@@ -598,7 +545,7 @@ export function AakashGocharSky({
    */
   const pickTarget = useCallback((target: SkyTarget) => {
     setAimed(target);
-    void pushRecent(target.id).then(setRecentIds);
+    pushRecent(target.id);
     if (target.at === "graha") {
       setSelectedKey(target.graha);
       setToggles((t) => ({ ...t, lockCenter: true }));
@@ -606,7 +553,7 @@ export function AakashGocharSky({
       setSkyAim({ lon: target.lon, lat: target.lat, nonce: Date.now() });
     }
     setSheet(null);
-  }, []);
+  }, [pushRecent]);
 
   /** What the scene reports for a press on anything that is not a graha. */
   type SkyHit = {
@@ -1419,58 +1366,8 @@ export function AakashGocharSky({
    * 2830. Hence UTC getters on a shifted instant, and a weekday counted in
    * days from the epoch.
    */
-  const simStamp = useMemo(() => {
-    const local = new Date(simDate.getTime() + zoneOffsetMs);
-    const y = local.getUTCFullYear();
-    const mo = String(local.getUTCMonth() + 1).padStart(2, "0");
-    const d = String(local.getUTCDate()).padStart(2, "0");
-    const clock = `${String(local.getUTCHours()).padStart(2, "0")}:${String(
-      local.getUTCMinutes(),
-    ).padStart(2, "0")}`;
-    // 1 Jan 1970 was a Thursday, and 0 is Sunday.
-    const dayIndex = Math.floor((simDate.getTime() + zoneOffsetMs) / 86400000);
-    const weekday = (((dayIndex + 4) % 7) + 7) % 7;
-    const place = timeZone.split("/").pop()?.replace(/_/g, " ") ?? timeZone;
-    // Proleptic Gregorian throughout, as everywhere else in the app; year 0 is
-    // 1 BC, so anything at or below it reads with the era spelled out.
-    const adYear = y > 0 ? `${y}` : `${1 - y} BC`;
-
-    /* The corner pill's own readout: the day in बिक्रम and the clock as a
-       clock is read — twelve hours and a half-of-day word, not the 24-hour
-       stamp the HUD keeps. Built for both languages, as on the web: an English
-       reader of a Nepali almanac still wants "Bhadau 10" there, and the HUD
-       above is already carrying the Gregorian date. */
-    const bsShort = bikramFromSun(simDate, sunLongitude ?? 0, sunSpeed);
-    const h24 = local.getUTCHours();
-    const minute = String(local.getUTCMinutes()).padStart(2, "0");
-    const h12 = h24 % 12 || 12;
-    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? "पूर्वाह्न" : "अपराह्न";
-    const short = {
-      day: `${bsMonthLabel(bsShort.month, lang)} ${digits(bsShort.day)}`,
-      clock: `${digits(h12)}:${digits(minute)} ${half}`,
-    };
-
-    if (lang === "en") {
-      return { date: `${adYear}-${mo}-${d}`, time: `${clock} · ${place}`, short };
-    }
-
-    const adYearNe = y > 0 ? `${digits(y)} ई.` : `${digits(1 - y)} ई.पू.`;
-
-    /* Past बि.सं. २२०० the compiled table has nothing, so the Sun becomes the
-       calendar it always was — see [[bikram-solar]]. Marked with ≈ so it never
-       passes for the almanac. */
-    const bs = bikramFromSun(simDate, sunLongitude ?? 0, sunSpeed);
-    const mark = bs.approximate ? "≈" : "";
-    return {
-      short,
-      date: `${mark}${digits(bs.year)} ${bsMonthLabel(bs.month, "ne")} ${digits(bs.day)}, ${
-        WEEKDAYS_SHORT_NE[weekday]
-      }बार`,
-      // Out past the table the AD year rides along, so the reading can be
-      // checked against a calendar the reader already knows.
-      time: `${digits(clock)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
-    };
-  }, [simDate, zoneOffsetMs, timeZone, lang, digits, sunLongitude, sunSpeed]);
+  const simStamp = useSkyStamp({ simDate, zoneOffsetMs, timeZone, sunLongitude, sunSpeed });
+  const focusTargets = useSkyFocusTargets();
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
 
@@ -1488,7 +1385,7 @@ export function AakashGocharSky({
     <>
       <IconButton
         name="play-back"
-        label={pick("पछाडि छिटो", "Faster backward")}
+        label={t("ui.sky3d.faster_backward")}
         active={!playing ? false : reverse && speedIndex > 0}
         overlay={fullscreen}
         compact={fullscreen}
@@ -1496,7 +1393,7 @@ export function AakashGocharSky({
       />
       <IconButton
         name={playing ? "pause" : "play"}
-        label={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+        label={playing ? t("panchanga.hora.pause") : t("panchanga.hora.play")}
         active={playing}
         overlay={fullscreen}
         compact={fullscreen}
@@ -1504,7 +1401,7 @@ export function AakashGocharSky({
       />
       <IconButton
         name="play-forward"
-        label={pick("अगाडि छिटो", "Faster forward")}
+        label={t("ui.sky3d.faster_forward")}
         active={!playing ? false : !reverse && speedIndex > 0}
         overlay={fullscreen}
         compact={fullscreen}
@@ -1512,7 +1409,7 @@ export function AakashGocharSky({
       />
       <IconButton
         name="refresh"
-        label={pick("मितिमा फर्कनुहोस्", "Back to the chosen date")}
+        label={t("ui.sky3d.back_to_the_chosen_date")}
         active={false}
         overlay={fullscreen}
         compact={fullscreen}
@@ -1525,7 +1422,7 @@ export function AakashGocharSky({
       {onDateChange ? (
         <IconButton
           name="calendar-outline"
-          label={pick("मिति छान्नुहोस्", "Choose a date")}
+          label={t("ui.sky3d.choose_a_date")}
           active={datePickerOpen}
           overlay={fullscreen}
           compact={fullscreen}
@@ -1539,7 +1436,7 @@ export function AakashGocharSky({
     <>
       <Chip
         active={mode === "space"}
-        label={pick("अन्तरिक्ष", "Space")}
+        label={t("ui.sky3d.space")}
         onPress={() => {
           setMode("space");
           view.current = { yaw: 0.5, pitch: 0.62, distance: SYSTEM_DISTANCE };
@@ -1549,7 +1446,7 @@ export function AakashGocharSky({
       />
       <Chip
         active={mode === "horizon"}
-        label={pick("क्षितिज", "Horizon")}
+        label={t("ui.common.horizon")}
         onPress={() => {
           setMode("horizon");
           /* Standing at your own place here, so a graha-follow left over from
@@ -1562,7 +1459,7 @@ export function AakashGocharSky({
       />
       <Chip
         active={mode === "globe"}
-        label={pick("पृथ्वी गोला", "Earth globe")}
+        label={t("ui.sky3d.earth_globe")}
         onPress={() => {
           setMode("globe");
           view.current = { yaw: 0.6, pitch: 0.42, distance: GLOBE_VIEW };
@@ -1596,15 +1493,6 @@ export function AakashGocharSky({
     <SkyTimeSheet
       timeMs={simDate.getTime()}
       zoneOffsetMs={zoneOffsetMs}
-      nepaliCal={lang !== "en"}
-      digits={digits}
-      pick={pick}
-      speedLabel={
-        playing
-          ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
-          : pick("रोकिएको", "Paused")
-      }
-      playing={playing}
       /* The ladder, read as one bipolar rung: 0 is a stopped clock, the sign
          is the direction, and the magnitude is how far up the ladder it is. */
       rateValue={playing ? (reverse ? -(speedIndex + 1) : speedIndex + 1) : 0}
@@ -1652,27 +1540,27 @@ export function AakashGocharSky({
       <View className="flex-row gap-1">
         <ViewTile
           icon="grid-outline"
-          label={pick("ग्रिड", "Grids")}
+          label={t("ui.sky3d.grids")}
           active={toggles.grid}
           onPress={() => setToggles((t) => ({ ...t, grid: !t.grid }))}
         />
         <ViewTile
           icon="sparkles-outline"
-          label={pick("तारापुञ्ज", "Figures")}
+          label={t("ui.sky3d.figures")}
           active={toggles.constellations}
           onPress={() => setToggles((t) => ({ ...t, constellations: !t.constellations }))}
         />
         {mode === "horizon" ? (
           <ViewTile
             icon="triangle-outline"
-            label={pick("भूभाग", "Landscape")}
+            label={t("ui.sky3d.landscape")}
             active={toggles.landscape}
             onPress={() => setToggles((t) => ({ ...t, landscape: !t.landscape }))}
           />
         ) : null}
         <ViewTile
           icon="text-outline"
-          label={pick("नाम", "Labels")}
+          label={t("ui.sky3d.labels")}
           active={toggles.labels}
           onPress={() => setToggles((t) => ({ ...t, labels: !t.labels }))}
         />
@@ -1680,28 +1568,28 @@ export function AakashGocharSky({
 
       {/* ग्रिड is a tile above; the rest are the finer guides, which stay as
           chips because they are read before they are pressed. */}
-      <SheetSection heading={pick("मार्गदर्शक", "Guides")}>
+      <SheetSection heading={t("learn.playground.guides")}>
         {/* Only पृथ्वी गोला, where the Earth turning under the zodiac is the
             thing on screen and holding it still is how you read the ring
             against it. अन्तरिक्ष is already in the stars' own frame, and in
             क्षितिज a frozen sky is just a stopped clock. */}
-        {mode === "globe" ? sheetChip("lockStars", pick("तारा स्थिर", "Lock to stars")) : null}
+        {mode === "globe" ? sheetChip("lockStars", t("ui.sky3d.lock_to_stars")) : null}
         {/* The observer's meridian is a line drawn on a globe you are looking
             *at*. Standing on the dome you are on that line, so there is
             nothing to draw and the scene never drew one. */}
-        {mode === "horizon" ? null : sheetChip("primeMeridian", pick(`${placeName} रेखा`, `${placeName} meridian`))}
-        {mode !== "space" ? sheetChip("vedicStars", pick("वैदिक तारा", "Vedic stars")) : null}
-        {mode === "globe" ? sheetChip("tilt", pick("अक्ष झुकाव", "Tilt")) : null}
+        {mode === "horizon" ? null : sheetChip("primeMeridian", t("ui.sky3d.placename_meridian", { placeName }))}
+        {mode !== "space" ? sheetChip("vedicStars", t("ui.sky3d.vedic_stars")) : null}
+        {mode === "globe" ? sheetChip("tilt", t("learn.playground.tilt")) : null}
       </SheetSection>
-      <SheetSection heading={pick("वलय", "Belts")}>
-        {sheetChip("rashiBelt", pick("राशि", "Rashi"))}
-        {sheetChip("nakshatraBelt", pick("नक्षत्र", "Nakshatra"))}
+      <SheetSection heading={t("ui.sky3d.belts")}>
+        {sheetChip("rashiBelt", t("panchanga.wheel.rashi"))}
+        {sheetChip("nakshatraBelt", t("nakshatra"))}
         {/* The बिक्रम month ring belongs to अन्तरिक्ष, where the wheel is the
             subject. On the dome it is a fourth band stacked over a sky already
             carrying stars and a cage; on the globe it drew nothing at all — the
             ring lives in the space-only wheel — so the chip there was a switch
             wired to nothing. */}
-        {mode !== "space" ? null : sheetChip("monthRing", pick("महिना", "Months"))}
+        {mode !== "space" ? null : sheetChip("monthRing", t("learn.playground.months"))}
       </SheetSection>
     </Dropdown>
   );
@@ -1720,7 +1608,7 @@ export function AakashGocharSky({
         className="text-caption font-semibold uppercase tracking-eyebrow"
         style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.55) }]}
       >
-        {pick("केन्द्रविन्दु", "Focus")}
+        {t("learn.playground.focus")}
       </Text>
       {/* A one-of-these list, as on the web — radios rather than chips, because
           the camera hangs on exactly one thing and a row of pills reads like a
@@ -1728,13 +1616,7 @@ export function AakashGocharSky({
           web uses, and choosing anything turns the follow on in the same press:
           picking here is only ever asked for because you want to ride it. */}
       <View className="gap-0.5">
-        {(
-          [
-            { key: "sun" as const, ne: "सूर्य", en: "Sun" },
-            { key: "earth" as const, ne: "पृथ्वी", en: "Earth" },
-            ...FOCUS_TARGETS.filter((t) => t.key !== "sun"),
-          ]
-        ).map(({ key, ne: neName, en }) => {
+        {focusTargets.map(({ key, label }) => {
           const checked = key === "earth" ? !selectedKey : selectedKey === key;
           return (
             <Pressable
@@ -1764,7 +1646,7 @@ export function AakashGocharSky({
                 className="text-caption font-semibold"
                 style={[nepaliTextStyle(12, { dense: true }), { color: checked ? neutral.white : withAlpha(neutral.white, 0.7) }]}
               >
-                {pick(neName, en)}
+                {label}
               </Text>
             </Pressable>
           );
@@ -1801,7 +1683,7 @@ export function AakashGocharSky({
             { color: selectedKey ? withAlpha(neutral.white, 0.7) : withAlpha(neutral.white, 0.3) },
           ]}
         >
-          {pick("ग्रह पछ्याउनुहोस्", "Follow graha")}
+          {t("ui.sky3d.follow_graha")}
         </Text>
       </Pressable>
     </Dropdown>
@@ -1852,7 +1734,7 @@ export function AakashGocharSky({
       </Pressable>
       <Pressable
         onPress={() => toggleFavourite(t.id)}
-        accessibilityLabel={pick("पसन्दमा राख्नुहोस्", "Favourite")}
+        accessibilityLabel={pick(tFor(undefined, "ui.sky3d.favourite"), tFor("en", "ui.sky3d.favourite"))}
         className="h-7 w-7 items-center justify-center rounded-lg active:bg-white/10"
       >
         <Ionicons
@@ -1907,12 +1789,12 @@ export function AakashGocharSky({
       case "favourites":
         return {
           rows: favourites.map((id) => searchById.get(id)).filter((t): t is SkyTarget => !!t),
-          empty: pick("अझै कुनै मनपर्ने छैन", "No favourites yet"),
+          empty: t("ui.sky3d.no_favourites_yet"),
         };
       case "recents":
         return {
           rows: recentIds.map((id) => searchById.get(id)).filter((t): t is SkyTarget => !!t),
-          empty: pick("अझै केही हेरिएको छैन", "Nothing looked at yet"),
+          empty: t("ui.sky3d.nothing_looked_at_yet"),
         };
       case "kind":
         return { rows: skyTargetsOfKind(searchPane.kind, namedStars), empty: "" };
@@ -1936,7 +1818,7 @@ export function AakashGocharSky({
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder={pick("ग्रह, तारा, नक्षत्र…", "Planet, star, constellation…")}
+          placeholder={t("ui.sky3d.planet_star_constellation")}
           placeholderTextColor={withAlpha(neutral.white, 0.35)}
           /* No `autoFocus`. Opening the panel is how you browse what is up
              there; taking focus threw a keyboard over most of the list before
@@ -1947,7 +1829,7 @@ export function AakashGocharSky({
         />
         <Pressable
           onPress={() => (searchQuery ? setSearchQuery("") : setSheet(null))}
-          accessibilityLabel={searchQuery ? pick("खाली गर्नुहोस्", "Clear") : pick("खोज बन्द गर्नुहोस्", "Close search")}
+          accessibilityLabel={searchQuery ? t("ui.sky3d.clear") : t("ui.sky3d.close_search")}
           className="h-5 w-5 items-center justify-center"
         >
           <Ionicons name="close" size={14} color={withAlpha(neutral.white, 0.45)} />
@@ -1959,7 +1841,7 @@ export function AakashGocharSky({
           <View>{searchResults.map(searchRow)}</View>
         ) : (
           <Text className="text-caption px-2.5 py-3 text-center text-white/45">
-            {pick("केही भेटिएन", "Nothing found")}
+            {t("ui.sky3d.nothing_found")}
           </Text>
         )
       ) : searchPane.view === "home" ? (
@@ -1967,24 +1849,24 @@ export function AakashGocharSky({
           {searchShortcut(
             "favourites",
             "star-outline",
-            pick("मनपर्ने", "Favourites"),
+            t("ui.sky3d.favourites"),
             favourites.length,
             () => setSearchPane({ view: "favourites" }),
           )}
           {searchShortcut(
             "recents",
             "time-outline",
-            pick("हालैको", "Recents"),
+            t("ui.sky3d.recents"),
             recentIds.length,
             () => setSearchPane({ view: "recents" }),
           )}
-          {searchShortcut("browse", "list-outline", pick("सूची", "Browse"), null, () =>
+          {searchShortcut("browse", "list-outline", t("ui.sky3d.browse"), null, () =>
             setSearchPane({ view: "browse" }),
           )}
         </View>
       ) : searchPane.view === "browse" ? (
         <View>
-          {searchBack(pick("पछाडि", "Back"), { view: "home" })}
+          {searchBack(t("ui.sky3d.back"), { view: "home" })}
           {SKY_KINDS.map((k) =>
             searchShortcut(
               k.kind,
@@ -1998,7 +1880,7 @@ export function AakashGocharSky({
       ) : (
         <View>
           {searchBack(
-            pick("पछाडि", "Back"),
+            t("ui.sky3d.back"),
             searchPane.view === "kind" ? { view: "browse" } : { view: "home" },
           )}
           {(() => {
@@ -2128,7 +2010,7 @@ export function AakashGocharSky({
           >
             <View className="rounded-full border border-white/15 bg-black/60 px-3 py-1">
               <Text className="text-sm font-bold text-white" style={nepaliTextStyle(12, { dense: true })}>
-                {pick("दृश्य क्षेत्र", "FOV")}{" "}
+                {t("ui.sky3d.fov")}{" "}
                 {digits(Math.round(fovForZoom("horizon", sample.zoomDistance)))}°
               </Text>
             </View>
@@ -2149,7 +2031,7 @@ export function AakashGocharSky({
                 className="text-display text-center font-extrabold text-white"
                 style={nepaliTextStyle(24, { dense: true })}
               >
-                {pick("फोन माथि उठाउनुहोस्", "Point your device up")}
+                {t("ui.sky3d.point_your_device_up")}
               </Text>
             </View>
           </View>
@@ -2180,18 +2062,18 @@ export function AakashGocharSky({
           </Text>
           <Text className="text-caption" style={[nepaliTextStyle(10, { dense: true }), { color: LABEL_COLOR.hudDim }]}>
             {mode === "horizon"
-              ? `${pick("क्षितिज", "Horizon")} · ${digits(observer.lat.toFixed(2))}°, ${digits(observer.lon.toFixed(2))}° · ${
-                  isDay ? pick("दिन", "day") : pick("रात", "night")
+              ? `${t("ui.common.horizon")} · ${digits(observer.lat.toFixed(2))}°, ${digits(observer.lon.toFixed(2))}° · ${
+                  isDay ? t("common.day") : t("ui.sky3d.night")
                 }`
               : mode === "globe"
-                ? pick("पृथ्वी गोला · क्रान्तिवृत्त वलय", "Earth globe · ecliptic ring")
-                : pick("अन्तरिक्षबाट", "From space")}
+                ? t("ui.sky3d.earth_globe_ecliptic_ring")
+                : t("ui.sky3d.from_space")}
           </Text>
           {/* The rate, since the speed buttons no longer carry a caption. */}
           <Text className="text-caption" style={[nepaliTextStyle(10, { dense: true }), { color: LABEL_COLOR.hudDim }]}>
             {playing
               ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
-              : pick("⏸ रोकिएको", "⏸ paused")}
+              : t("ui.sky3d.paused_2")}
           </Text>
         </View>
 
@@ -2202,7 +2084,7 @@ export function AakashGocharSky({
         <View className="absolute right-3 flex-row gap-2" style={{ top: overlayTop }}>
           <IconButton
             name="search"
-            label={pick("आकाशमा खोज्नुहोस्", "Search the sky")}
+            label={t("ui.sky3d.search_the_sky")}
             active={sheet === "search"}
             overlay
             onPress={() =>
@@ -2216,7 +2098,7 @@ export function AakashGocharSky({
           />
           <IconButton
             name="refresh"
-            label={pick("मितिमा फर्कनुहोस्", "Back to the chosen date")}
+            label={t("ui.sky3d.back_to_the_chosen_date")}
             active={false}
             overlay
             onPress={() => {
@@ -2227,14 +2109,14 @@ export function AakashGocharSky({
           />
           <IconButton
             name="scan-outline"
-            label={pick("केन्द्रविन्दु", "Focus")}
+            label={t("learn.playground.focus")}
             active={sheet === "focus"}
             overlay
             onPress={() => setSheet((v) => (v === "focus" ? null : "focus"))}
           />
           <IconButton
             name={fullscreen ? "contract" : "expand"}
-            label={fullscreen ? pick("सामान्य दृश्य", "Exit fullscreen") : pick("पूर्ण स्क्रिन", "Fullscreen")}
+            label={fullscreen ? t("common.exit_fullscreen") : t("common.fullscreen")}
             active={fullscreen}
             overlay
             onPress={() => setFullscreen((f) => !f)}
@@ -2251,7 +2133,7 @@ export function AakashGocharSky({
                 className="text-caption font-bold"
                 style={[nepaliTextStyle(12, { dense: true }), { color: illustration.amber77 }]}
               >
-                {`${pick("सङ्क्रान्ति", "Sankranti")} · ${rashiNames[sankranti]} · ${
+                {`${t("learn.playground.sankranti")} · ${rashiNames[sankranti]} · ${
                   monthNames[sankranti]
                 } ${digits(1)}`}
               </Text>
@@ -2291,14 +2173,11 @@ export function AakashGocharSky({
               >
                 {eclipse
                   ? eclipse.kind === "solar"
-                    ? pick("सूर्यग्रहण · चन्द्र सूर्यलाई ढाक्छ", "Solar eclipse · Moon covers the Sun")
-                    : pick(
-                        "चन्द्रग्रहण · पृथ्वीको छाया चन्द्रमा",
-                        "Lunar eclipse · Earth's shadow on the Moon",
-                      )
+                    ? t("ui.sky3d.solar_eclipse_moon_covers_the_sun")
+                    : t("ui.sky3d.lunar_eclipse_earth_s_shadow_on")
                   : syzygy === "amavasya"
-                    ? pick("औंसी · चन्द्र सूर्य–पृथ्वीको बीचमा", "Amavasya · Moon between Sun and Earth")
-                    : pick("पूर्णिमा · पृथ्वी सूर्य–चन्द्रको बीचमा", "Purnima · Earth between Sun and Moon")}
+                    ? t("ui.sky3d.amavasya_moon_between_sun_and_earth")
+                    : t("ui.sky3d.purnima_earth_between_sun_and_moon")}
               </Text>
             </View>
           </View>
@@ -2310,7 +2189,7 @@ export function AakashGocharSky({
         <View className="absolute left-3" style={{ bottom: adjustBottom }}>
           <IconButton
             name="options"
-            label={pick("दृश्य नियन्त्रण", "View controls")}
+            label={t("ui.sky3d.view_controls")}
             active={sheet === "layers"}
             overlay
             onPress={() => setSheet((v) => (v === "layers" ? null : "layers"))}
@@ -2330,7 +2209,7 @@ export function AakashGocharSky({
               backgroundColor: withAlpha(neutral.black, 0.6),
             }}
             accessibilityRole="button"
-            accessibilityLabel={pick("समय नियन्त्रण", "Time controls")}
+            accessibilityLabel={t("ui.sky3d.time_controls")}
           >
             <Text className="text-caption font-bold" style={[nepaliTextStyle(13, { dense: true }), { color: neutral.white }]}>
               {simStamp.short.day}
@@ -2351,7 +2230,7 @@ export function AakashGocharSky({
         {sheet === "layers" || sheet === "focus" || sheet === "search" ? (
           <Pressable
             onPress={() => setSheet(null)}
-            accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+            accessibilityLabel={t("ui.common.close")}
             style={{ position: "absolute", inset: 0 }}
           />
         ) : null}
@@ -2441,7 +2320,7 @@ export function AakashGocharSky({
           <Pressable
             className="absolute inset-0"
             onPress={() => setDatePickerOpen(false)}
-            accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+            accessibilityLabel={t("ui.common.close")}
           />
           <View className="w-full max-w-sm rounded-2xl border border-border bg-card p-4">
             <BsDateTimePicker
@@ -2451,12 +2330,12 @@ export function AakashGocharSky({
               yearOptions={windowedBrowseYears("bs", dateBs.year)}
               todayAd={todayAd}
               onSelectDate={(y, m, d) => onDateChange?.(bsToAD(y, m, d))}
-              monthAriaLabel={pick("महिना", "Month")}
-              yearAriaLabel={pick("वर्ष", "Year")}
+              monthAriaLabel={t("common.month")}
+              yearAriaLabel={t("common.year")}
               clock={clock}
               onClockChange={onClockChange}
-              hourAriaLabel={pick("घण्टा", "Hour")}
-              minuteAriaLabel={pick("मिनेट", "Minute")}
+              hourAriaLabel={t("panchanga.hour_aria")}
+              minuteAriaLabel={t("panchanga.minute_aria")}
               showTime={Boolean(onClockChange)}
               onDone={() => setDatePickerOpen(false)}
             />
@@ -2535,7 +2414,7 @@ const SkyLabels = memo(function SkyLabels({
       in past this mode's own default view, short (उ.भा) at or beyond it. */
   namesExpanded?: boolean;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
 
   return (
     <View style={{ position: "absolute", inset: 0 }} pointerEvents="none">
@@ -2761,8 +2640,8 @@ const SkyLabels = memo(function SkyLabels({
               numberOfLines={2}
             >
               {label.text === "earth"
-                ? pick("पृथ्वीको अक्ष", "Earth's axis")
-                : pick("कक्षाको लम्ब", "Orbit's perpendicular")}
+                ? t("ui.common.earth_s_axis")
+                : t("ui.sky3d.orbit_s_perpendicular")}
             </Text>
           );
         }
@@ -2824,8 +2703,8 @@ const SkyLabels = memo(function SkyLabels({
               numberOfLines={1}
             >
               {label.text === "cancer"
-                ? pick("कर्कट रेखा · २३.४४°उ", "Tropic of Cancer · 23.44°N")
-                : pick("मकर रेखा · २३.४४°द", "Tropic of Capricorn · 23.44°S")}
+                ? t("ui.sky3d.tropic_of_cancer_23_44_n")
+                : t("ui.sky3d.tropic_of_capricorn_23_44_s")}
             </Text>
           );
         }

@@ -23,13 +23,13 @@ const PLANET_COLOR: Record<string, string> = {
  * same live data, a native-idiomatic layout.
  */
 export function HoraTodayDiagram() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const { slots, currentIndex, loading } = useTodayHora();
 
   if (loading || !slots || slots.length === 0) {
     return (
       <View className="min-h-[140px] items-center justify-center rounded-2xl border border-border bg-card">
-        <Text className="text-body text-muted-foreground">{pick("लोड हुँदैछ…", "Loading…")}</Text>
+        <Text className="text-body text-muted-foreground">{t("rashifal.profile.loading")}</Text>
       </View>
     );
   }
@@ -46,14 +46,14 @@ export function HoraTodayDiagram() {
           />
           <View className="min-w-0 flex-1">
             <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
-              {pick("अहिलेको होरा", "Current hora")}
+              {t("ui.learn.current_hora")}
             </Text>
             <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
               {pick(current.planet_ne, current.planet_en)}
             </Text>
             <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
               {current.start_local_time_short} – {current.end_local_time_short} ·{" "}
-              {current.tone === "good" ? pick("शुभ", "Auspicious") : pick("अशुभ", "Inauspicious")}
+              {current.tone === "good" ? t("kundali.auspicious") : t("kundali.inauspicious")}
             </Text>
           </View>
         </View>

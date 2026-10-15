@@ -10,217 +10,106 @@
  * the tone colouring — is the same.
  */
 
-import { useMemo, useState } from "react";
 import { View } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
-import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
-import {
-  DEFAULT_PANCHANGA_LOCATION,
-  resolveLocationTimezone,
-  type PanchangaLocation,
-} from "@/lib/use-panchanga-location";
-import { fetchJanmaRashi, fetchPanchanga, type NavataraTone } from "@/lib/api";
-import { useLocale } from "@/lib/i18n";
+import { fetchPanchanga } from "@/lib/api";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
+import { useOwnerCompatibility, type FetchCivilDay } from "@vedic-patro/features/vastu";
 import { cn } from "@vedic-patro/domain/utils";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
-const TONE_LABEL_KEY: Record<NavataraTone, string> = {
-  best: "vastu.plot.tone.best",
-  good: "vastu.plot.tone.good",
-  neutral: "vastu.plot.tone.neutral",
-  bad: "vastu.plot.tone.bad",
-  worst: "vastu.plot.tone.worst",
-};
-
-const AD_MONTHS_EN = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const AD_MONTHS_NE = [
-  "जनवरी",
-  "फेब्रुअरी",
-  "मार्च",
-  "अप्रिल",
-  "मे",
-  "जुन",
-  "जुलाई",
-  "अगस्ट",
-  "सेप्टेम्बर",
-  "अक्टोबर",
-  "नोभेम्बर",
-  "डिसेम्बर",
-];
-
-/** Days in an AD month, leap years included. */
-function daysInMonth(year: number, month: number): number {
-  return new Date(year, month, 0).getDate();
-}
-
-function pad(n: number): string {
-  return String(n).padStart(2, "0");
-}
+const fetchDay: FetchCivilDay = (dateAd, location) => fetchPanchanga(dateAd, "ad", location);
 
 export function OwnerCompatibility() {
-  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
-
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
-  const chartParams = selectedProfile ? profileChartParams(selectedProfile) : null;
-
-  // Independent from the app's shared site-wide location — usePanchangaLocation()
-  // persists to a single global key with no scoping, so using it here would
-  // silently overwrite the location the rest of the app (panchanga, etc.) shows.
-  const [plotLocation, setPlotLocation] = useState<PanchangaLocation>(DEFAULT_PANCHANGA_LOCATION);
-  const today = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth() + 1);
-  const [day, setDay] = useState(today.getDate());
-
-  // A month change can strand the day (31st → February); clamp on read so the
-  // date sent to the API is always one that exists.
-  const safeDay = Math.min(day, daysInMonth(year, month));
-  const candidateDate = `${year}-${pad(month)}-${pad(safeDay)}`;
-
-  const janmaQ = useQuery({
-    queryKey: ["vastu-owner-nakshatra", chartParams?.moment, chartParams?.location.params],
-    queryFn: () => fetchJanmaRashi(chartParams!.moment, resolveLocationTimezone(chartParams!.location)),
-    enabled: !!chartParams,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const dayQ = useQuery({
-    queryKey: ["vastu-construction-day", candidateDate, plotLocation.params, lang],
-    queryFn: () => fetchPanchanga(candidateDate, "ad", plotLocation.params),
-    enabled: !!chartParams,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // janma_nakshatra is 1..27; NavataraRow.index is 0-based — convert once, here.
-  const ownerIndex = janmaQ.data ? janmaQ.data.janma_nakshatra - 1 : null;
-  const row =
-    ownerIndex !== null ? (dayQ.data?.tarabala_table?.rows.find((r) => r.index === ownerIndex) ?? null) : null;
-
-  const isLoading = chartParams != null && (janmaQ.isLoading || dayQ.isLoading);
-  const isError = chartParams != null && (janmaQ.isError || dayQ.isError);
-
-  const yearOptions = Array.from({ length: 12 }, (_, i) => {
-    const y = today.getFullYear() - 1 + i;
-    return { value: String(y), label: digits(y) };
-  });
-  const monthOptions = AD_MONTHS_EN.map((en, i) => ({
-    value: String(i + 1),
-    label: pick(AD_MONTHS_NE[i]!, en),
-  }));
-  const dayOptions = Array.from({ length: daysInMonth(year, month) }, (_, i) => ({
-    value: String(i + 1),
-    label: digits(i + 1),
-  }));
+  const v = useOwnerCompatibility({ fetchDay });
+  const date = v.dateParts;
 
   return (
     <View className={vastuClasses.ownerCard}>
       <View className={vastuClasses.ownerHeader}>
         <Ionicons name="calendar-outline" size={16} color={colors.secondary} />
         <Text className={vastuClasses.ownerHeading} style={nepaliTextStyle(14)}>
-          {t("vastu.plot.owner_heading")}
+          {v.copy.heading}
         </Text>
       </View>
 
       <View className={vastuClasses.ownerBody}>
         <Text className={cn(vastuClasses.planBlurb, "text-foreground")} style={nepaliTextStyle(13)}>
-          {t("vastu.plot.owner_blurb")}
+          {v.copy.blurb}
         </Text>
 
-        <SaitProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={setSelectedProfile} />
+        <SaitProfilePicker selectedId={v.selectedProfile?.id ?? null} onSelect={v.setSelectedProfile} />
 
-        {chartParams && (
+        {v.hasProfile && (
           <>
             <View className="gap-3">
               <View>
-                <Text
-                  className={vastuClasses.fieldLabel}
-                  style={nepaliTextStyle(12)}
-                >
-                  {t("vastu.plot.construction_date_label")}
+                <Text className={vastuClasses.fieldLabel} style={nepaliTextStyle(12)}>
+                  {v.copy.dateLabel}
                 </Text>
                 <View className="flex-row gap-2">
                   <View className="flex-1">
                     <NativeStringSelect
-                      value={String(year)}
-                      options={yearOptions}
-                      ariaLabel={t("vastu.plot.construction_date_label")}
-                      onChange={(v) => setYear(Number(v))}
+                      value={date.year}
+                      options={date.yearOptions}
+                      ariaLabel={v.copy.dateLabel}
+                      onChange={date.setYear}
                     />
                   </View>
                   <View className="flex-[1.4]">
                     <NativeStringSelect
-                      value={String(month)}
-                      options={monthOptions}
-                      ariaLabel={t("vastu.plot.construction_date_label")}
-                      onChange={(v) => setMonth(Number(v))}
+                      value={date.month}
+                      options={date.monthOptions}
+                      ariaLabel={v.copy.dateLabel}
+                      onChange={date.setMonth}
                     />
                   </View>
                   <View className="flex-1">
                     <NativeStringSelect
-                      value={String(safeDay)}
-                      options={dayOptions}
-                      ariaLabel={t("vastu.plot.construction_date_label")}
-                      onChange={(v) => setDay(Number(v))}
+                      value={date.day}
+                      options={date.dayOptions}
+                      ariaLabel={v.copy.dateLabel}
+                      onChange={date.setDay}
                     />
                   </View>
                 </View>
               </View>
               <View>
-                <Text
-                  className={vastuClasses.fieldLabel}
-                  style={nepaliTextStyle(12)}
-                >
-                  {t("vastu.plot.construction_place_label")}
+                <Text className={vastuClasses.fieldLabel} style={nepaliTextStyle(12)}>
+                  {v.copy.placeLabel}
                 </Text>
-                <LocationSelector location={plotLocation} onLocationChange={setPlotLocation} />
+                <LocationSelector location={v.plotLocation} onLocationChange={v.setPlotLocation} />
               </View>
             </View>
 
-            {isLoading && (
+            {v.status && (
               <Text className={vastuClasses.mutedNote} style={nepaliTextStyle(13)}>
-                {t("vastu.plot.owner_loading")}
+                {v.status}
               </Text>
             )}
-            {isError && (
+            {v.error && (
               <Text className={vastuClasses.destructiveText} style={nepaliTextStyle(13)}>
-                {t("vastu.plot.owner_error")}
+                {v.error}
               </Text>
             )}
 
-            {row && (
-              <View className={cn(vastuClasses.ownerResult, patroNavataraToneBg(row.tone))}>
+            {v.result && (
+              <View className={cn(vastuClasses.ownerResult, patroNavataraToneBg(v.result.tone))}>
                 <Text className={vastuClasses.ownerResultTitle} style={nepaliTextStyle(13)}>
-                  {t("vastu.plot.owner_nakshatra_label")}: {pick(row.name, row.name_en ?? row.name)}
+                  {v.result.title}
                 </Text>
                 <Text className={cn(vastuClasses.ownerResultVerdict, "text-foreground")} style={nepaliTextStyle(13)}>
-                  {t("vastu.plot.construction_result", { tone: t(TONE_LABEL_KEY[row.tone]) })}
+                  {v.result.verdict}
                 </Text>
                 <Text className={vastuClasses.infoDisclaimer} style={nepaliTextStyle(13)}>
-                  {t("vastu.plot.construction_disclaimer")}
+                  {v.result.disclaimer}
                 </Text>
               </View>
             )}

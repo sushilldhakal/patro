@@ -16,8 +16,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { MergedPage } from "@/lib/learn/merged-pages";
 import { DATA_ARTICLES } from "@/lib/learn/articles";
 import { ArticleBody } from "@/components/learn/article-render";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 
-const NE_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+const NE_DIGITS = lazyList("ne", "ui.learn.x_d8148326");
 const toNepaliIndex = (lang: string, n: number) =>
   lang === "en" ? String(n) : String(n).replace(/\d/g, (d) => NE_DIGITS[Number(d)]!);
 
@@ -34,10 +35,10 @@ function ChapterBody({ slug, offset }: { slug: string; offset: number }): { node
 }
 
 function ChapterComingSoon() {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   return (
     <Text className="text-body italic text-muted-foreground" style={nepaliTextStyle(13)}>
-      {pick("यो अध्याय छिट्टै आउँदैछ।", "This chapter is coming soon.")}
+      {t("ui.learn.this_chapter_is_coming_soon")}
     </Text>
   );
 }
@@ -51,7 +52,7 @@ export function MergedArticleBody({
   scrollRef?: React.RefObject<ScrollView | null>;
   initialChapter?: string;
 }) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const chapterRefs = useRef<Record<string, View | null>>({});
 
   // Section numbers run continuously across chapters, so each chapter's
@@ -108,7 +109,7 @@ export function MergedArticleBody({
     <View className="gap-6">
       <View className="gap-1.5 rounded-xl border border-border bg-muted/20 p-3">
         <Text className="text-caption font-bold uppercase tracking-wide text-muted-foreground">
-          {pick("यस पृष्ठमा", "On this page")}
+          {t("ui.learn.on_this_page")}
         </Text>
         <View className="gap-1">
           {chapters.map(({ part }, i) => (

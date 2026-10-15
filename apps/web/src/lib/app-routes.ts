@@ -49,7 +49,7 @@ export const ROUTES: RouteMeta[] = [
   { id: "vivah-sait", path: "/vivah-sait", seoKey: "seo.routes.vivah_sait", sitemap: { changefreq: "weekly", priority: "0.8" }, prerender: true },
   { id: "dainikkranti", path: "/dainikkranti", seoKey: "seo.routes.dainikkranti", sitemap: { changefreq: "weekly", priority: "0.8" }, prerender: true },
   { id: "chandrakranti-legacy", path: "/chandrakranti", seoKey: "seo.routes.dainikkranti" },
-  { id: "dainikkranti-ne-legacy", path: "/दैनिकक्रान्ति", seoKey: "seo.routes.dainikkranti" },
+  { id: "dainikkranti-ne-legacy", path: "/दैनिकक्रान्ति", seoKey: "seo.routes.dainikkranti" }, // copy-ok: legacy Nepali URL
   { id: "shanti-vidhi", path: "/shanti-vidhi", seoKey: "seo.routes.shanti_vidhi", sitemap: { changefreq: "monthly", priority: "0.6" }, prerender: true },
   { id: "converter", path: "/converter", seoKey: "seo.routes.converter", sitemap: { changefreq: "monthly", priority: "0.8" }, prerender: true },
   { id: "holidays", path: "/holidays", seoKey: "seo.routes.holidays", sitemap: { changefreq: "weekly", priority: "0.8" }, prerender: true },
@@ -112,8 +112,8 @@ export function isPanchangaRoute(pathname: string): boolean {
     pathname === "/abhijit-muhurta" ||
     pathname === "/dainikkranti" ||
     pathname === "/chandrakranti" ||
-    pathname === "/दैनिकक्रान्ति" ||
-    decodeURIComponent(pathname) === "/दैनिकक्रान्ति"
+    pathname === /* copy-ok */ "/दैनिकक्रान्ति" ||
+    decodeURIComponent(pathname) === /* copy-ok */ "/दैनिकक्रान्ति"
   );
 }
 

@@ -1,13 +1,5 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { useAuthSession } from "@vedic-patro/features/account";
 import {
   apiDeleteAccount,
   apiFacebook,
@@ -43,26 +35,25 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children, ssr = false }: { children: ReactNode; ssr?: boolean }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(!ssr && isBrowser);
-  /** Bumped on logout so late apiMe() responses cannot restore a stale session. */
-  const authEpoch = useRef(0);
-
-  const refreshUser = useCallback(async () => {
-    const epoch = authEpoch.current;
-    if (!tokenStore.access && !tokenStore.refresh) {
-      setUser(null);
-      return;
-    }
-    try {
-      const me = await apiMe();
-      if (epoch !== authEpoch.current) return;
-      setUser(me);
-    } catch {
-      if (epoch !== authEpoch.current) return;
-      setUser(null);
-    }
-  }, []);
+  const session = useAuthSession<AuthUser>({
+    initialLoading: !ssr && isBrowser,
+    fetchMe: apiMe,
+    hasSession: () => Boolean(tokenStore.access || tokenStore.refresh),
+    login: async (email, password) => tokenStore.set(await apiLogin(email, password)),
+    signup: async (email, password) => tokenStore.set(await apiSignup(email, password)),
+    google: async (idToken) => tokenStore.set(await apiGoogle(idToken)),
+    facebook: async (accessToken) => {
+      clearFacebookAutoLoginSkip();
+      tokenStore.set(await apiFacebook(accessToken));
+    },
+    signOut: async () => {
+      await Promise.all([apiLogout(), facebookLogout()]);
+    },
+    deleteAccount: apiDeleteAccount,
+    onSignedOut: skipFacebookAutoLogin,
+    afterDelete: facebookLogout,
+  });
+  const { refreshUser, setLoading } = session;
 
   // Bootstrap: complete a pending Google redirect sign-in, else restore any
   // stored session. Both run on first mount only.
@@ -87,9 +78,8 @@ export function AuthProvider({ children, ssr = false }: { children: ReactNode; s
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refreshUser().finally(() => setLoading(false));
-  }, [refreshUser, ssr]);
+  }, [refreshUser, setLoading, ssr]);
 
   // Keep tabs in sync when a session changes elsewhere.
   useEffect(() => {
@@ -103,76 +93,18 @@ export function AuthProvider({ children, ssr = false }: { children: ReactNode; s
     return () => window.removeEventListener("storage", onStorage);
   }, [refreshUser, ssr]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    authEpoch.current += 1;
-    const epoch = authEpoch.current;
-    tokenStore.set(await apiLogin(email, password));
-    const me = await apiMe();
-    if (epoch !== authEpoch.current) return;
-    setUser(me);
-  }, []);
-
-  const signup = useCallback(async (email: string, password: string) => {
-    authEpoch.current += 1;
-    const epoch = authEpoch.current;
-    tokenStore.set(await apiSignup(email, password));
-    const me = await apiMe();
-    if (epoch !== authEpoch.current) return;
-    setUser(me);
-  }, []);
-
-  const loginWithGoogle = useCallback(async (idToken: string) => {
-    authEpoch.current += 1;
-    const epoch = authEpoch.current;
-    tokenStore.set(await apiGoogle(idToken));
-    const me = await apiMe();
-    if (epoch !== authEpoch.current) return;
-    setUser(me);
-  }, []);
-
-  const loginWithFacebook = useCallback(async (accessToken: string) => {
-    authEpoch.current += 1;
-    const epoch = authEpoch.current;
-    clearFacebookAutoLoginSkip();
-    tokenStore.set(await apiFacebook(accessToken));
-    const me = await apiMe();
-    if (epoch !== authEpoch.current) return;
-    setUser(me);
-  }, []);
-
-  const logout = useCallback(async () => {
-    authEpoch.current += 1;
-    skipFacebookAutoLogin();
-    setUser(null);
-    await Promise.all([apiLogout(), facebookLogout()]);
-  }, []);
-
-  const deleteAccount = useCallback(async () => {
-    authEpoch.current += 1;
-    skipFacebookAutoLogin();
-    try {
-      await apiDeleteAccount();
-    } finally {
-      setUser(null);
-      await facebookLogout();
-    }
-  }, []);
-
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      user,
-      loading,
-      isAuthenticated: user !== null,
-      login,
-      signup,
-      loginWithGoogle,
-      loginWithFacebook,
-      logout,
-      deleteAccount,
-      refreshUser,
-    }),
-    [user, loading, login, signup, loginWithGoogle, loginWithFacebook, logout, deleteAccount, refreshUser]
-  );
+  const value: AuthContextValue = {
+    user: session.user,
+    loading: session.loading,
+    isAuthenticated: session.isAuthenticated,
+    login: session.login,
+    signup: session.signup,
+    loginWithGoogle: session.loginWithGoogle,
+    loginWithFacebook: session.loginWithFacebook,
+    logout: session.logout,
+    deleteAccount: session.deleteAccount,
+    refreshUser,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

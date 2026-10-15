@@ -27,6 +27,7 @@ import { patroEraShortLabel } from "./patro-era-labels";
 import type { PatroDateNavMode } from "./types";
 import type { PatroDateSheetController, PatroSheetTab } from "./use-patro-date-sheet";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
+import { patroDateSheetTitleKey, usePatroDateSheetView } from "@vedic-patro/features/patro-date";
 
 type Props = {
   sheet: PatroDateSheetController;
@@ -61,7 +62,7 @@ export function PatroDateSheet({
 }: Props) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   const scrollRef = useRef<ScrollView>(null);
   const [tab, setTab] = useState<PatroSheetTab>("date");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -108,16 +109,13 @@ export function PatroDateSheet({
     };
   }, []);
 
-  const dateTitle =
-    mode === "year"
-      ? pick("वर्ष", "Year")
-      : mode === "year-month"
-        ? pick("महिना / वर्ष", "Month / year")
-        : showTime
-          ? pick("मिति र समय", "Date & time")
-          : pick("मिति", "Date");
-
-  const headerTitle = tab === "date" ? dateTitle : pick("स्थान छान्नुहोस्", "Choose location");
+  const view = usePatroDateSheetView({
+    open: sheet.open,
+    tab,
+    dateTitle: t(patroDateSheetTitleKey(mode, showTime)),
+    location,
+    onLocationChange,
+  });
 
   const patchDraft = (patch: Partial<PatroDateSheetDraft>) => {
     setDraft((d) => {
@@ -197,51 +195,31 @@ export function PatroDateSheet({
                 className="text-base font-semibold text-foreground"
                 style={nepaliTextStyle()}
               >
-                {headerTitle}
+                {view.headerTitle}
               </Text>
             </View>
 
             <View className="flex-row gap-2 px-4 pb-3 pt-3">
-              <Pressable
-                onPress={() => selectTab("date")}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: tab === "date" }}
-                className={cn(
-                  patroDateClasses.tab,
-                  "flex-1 items-center justify-center",
-                  tab === "date" ? patroDateClasses.tabActive : cn(patroDateClasses.tabIdle, "active:bg-muted"),
-                )}
-              >
-                <Text
+              {view.tabs.map(({ id, label, selected }) => (
+                <Pressable
+                  key={id}
+                  onPress={() => selectTab(id)}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected }}
                   className={cn(
-                    patroDateClasses.tabLabel,
-                    tab === "date" ? patroDateClasses.tabLabelActive : patroDateClasses.tabLabelIdle,
+                    patroDateClasses.tab,
+                    "flex-1 items-center justify-center",
+                    selected ? patroDateClasses.tabActive : cn(patroDateClasses.tabIdle, "active:bg-muted"),
                   )}
-                  style={nepaliTextStyle(14)}
                 >
-                  {dateTitle}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => selectTab("location")}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: tab === "location" }}
-                className={cn(
-                  patroDateClasses.tab,
-                  "flex-1 items-center justify-center",
-                  tab === "location" ? patroDateClasses.tabActive : cn(patroDateClasses.tabIdle, "active:bg-muted"),
-                )}
-              >
-                <Text
-                  className={cn(
-                    patroDateClasses.tabLabel,
-                    tab === "location" ? patroDateClasses.tabLabelActive : patroDateClasses.tabLabelIdle,
-                  )}
-                  style={nepaliTextStyle(14)}
-                >
-                  {pick("स्थान", "Location")}
-                </Text>
-              </Pressable>
+                  <Text
+                    className={cn(patroDateClasses.tabLabel, selected ? patroDateClasses.tabLabelActive : patroDateClasses.tabLabelIdle)}
+                    style={nepaliTextStyle(14)}
+                  >
+                    {label}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
 
             {tab === "date" ? (
@@ -280,16 +258,13 @@ export function PatroDateSheet({
               <View
                 className="border-t border-border bg-muted/80 px-4 py-3"
                 accessibilityLiveRegion="polite"
-                accessibilityLabel={pick(
-                  `टाइप गरिएको वर्ष ${previewDisplay} ${previewEraLabel}`,
-                  `Typed year ${previewDisplay} ${previewEraLabel}`,
-                )}
+                accessibilityLabel={t("ui.patro_date.typed_year_previewdisplay_previeweralabel", { previewDisplay, previewEraLabel })}
               >
                 <Text
                   className="text-caption text-center font-medium text-muted-foreground"
                   style={nepaliTextStyle(12)}
                 >
-                  {pick("वर्ष", "Year")}
+                  {view.labels.year}
                 </Text>
                 <Text
                   className="text-display text-center font-num font-bold text-foreground"
@@ -306,7 +281,7 @@ export function PatroDateSheet({
                 className={cn(patroDateClasses.done, "active:opacity-90")}
               >
                 <Text className={patroDateClasses.doneLabel} style={nepaliTextStyle(14)}>
-                  {pick("भयो", "Done")}
+                  {view.labels.done}
                 </Text>
               </Pressable>
             </View>

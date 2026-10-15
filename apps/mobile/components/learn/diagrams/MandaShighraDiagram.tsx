@@ -100,7 +100,7 @@ const MandaShighraScene = memo(function MandaShighraScene({ clock, onSample, onL
 });
 
 export function MandaShighraDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const { clock, value: f, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 0,
     min: 0,
@@ -110,11 +110,11 @@ export function MandaShighraDiagram() {
 
   const manda = mandaOffset(f);
   const shighra = shighraOffset(f);
-  const copy = { mean: pick("मध्यम ग्रह", "Mean planet"), manda: pick("+ मन्द सुधार", "+ manda correction"), shighra: pick("+ शीघ्र = स्फुट ग्रह", "+ shighra = true planet") };
+  const copy = { mean: t("ui.learn.mean_planet"), manda: t("ui.learn.manda_correction"), shighra: t("ui.learn.shighra_true_planet") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — मन्द र शीघ्र सुधार", "3D — manda and shighra corrections")}
+      title={t("ui.learn.n3d_manda_and_shighra_corrections")}
       height={280}
       camera={{ yaw: 0.35, pitch: 0.85 }}
       frame={{ width: 1.4, height: 0.8 }}
@@ -125,23 +125,20 @@ export function MandaShighraDiagram() {
         { color: DIAGRAM_LABEL_COLOR.warn, label: copy.shighra },
       ]}
       readouts={[
-        { k: pick("फेरो", "Revolution"), v: `${digits((f * 100).toFixed(0))}%`, tone: "accent" },
-        { k: pick("मन्द सच्याइ", "Manda correction"), v: `${digits(manda >= 0 ? "+" + manda.toFixed(1) : manda.toFixed(1))}°` },
-        { k: pick("शीघ्र सच्याइ", "Shighra correction"), v: `${digits(shighra >= 0 ? "+" + shighra.toFixed(1) : shighra.toFixed(1))}°`, tone: "warn" },
+        { k: t("ui.learn.revolution"), v: `${digits((f * 100).toFixed(0))}%`, tone: "accent" },
+        { k: t("ui.learn.manda_correction_2"), v: `${digits(manda >= 0 ? "+" + manda.toFixed(1) : manda.toFixed(1))}°` },
+        { k: t("ui.learn.shighra_correction"), v: `${digits(shighra >= 0 ? "+" + shighra.toFixed(1) : shighra.toFixed(1))}°`, tone: "warn" },
       ]}
       slider={{
         value: f,
         min: 0,
         max: 1,
-        label: pick(`फेरो ${digits((f * 100).toFixed(0))}%`, `Revolution ${digits((f * 100).toFixed(0))}%`),
+        label: t("ui.learn.revolution_value", { value: digits((f * 100).toFixed(0)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
-      caption={pick(
-        "मध्यम ग्रह (भित्री घेरा) एउटा स्थिर गतिमा वृत्तमा घुम्छ — गणना सजिलो तर आकाशमा गलत। मन्द सुधारले कक्ष हामीबाट केन्द्रित नभएको कुरा मिलाउँछ — प्रति फेरो एक तरङ्ग। शीघ्र सुधारले हाम्रो आफ्नै परिक्रमा गति मिलाउँछ — यहीँबाट वक्री गतिको बीउ आउँछ। दुवै लगाएपछि बाहिरी घेराको स्फुट ग्रह — साँचो स्थान — बन्छ।",
-        "The mean planet (inner ring) moves at a constant rate around a circle — easy to compute, wrong on the sky. The manda correction accounts for the orbit not being centred on us — one wave per revolution. The shighra correction accounts for our own orbital motion — this is where the seed of retrograde motion comes from. Applied together they give the outer ring's sphuta graha — the true position.",
-      )}
+      caption={t("ui.learn.the_mean_planet_inner_ring_moves")}
     >
       {({ onLabels }) => <MandaShighraScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

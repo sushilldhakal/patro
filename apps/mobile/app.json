@@ -216,7 +216,7 @@
             "buildArchs": ["armeabi-v7a", "arm64-v8a"],
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
-            "extraProguardRules": "-dontwarn com.google.mlkit.**\n-dontwarn com.google.android.gms.internal.mlkit_**\n-dontwarn androidx.camera.mlkit.**"
+            "extraProguardRules": "-dontwarn com.google.mlkit.**\n-dontwarn com.google.android.gms.internal.mlkit_**\n-dontwarn androidx.camera.mlkit.**\n-keep class expo.modules.gl.** { *; }"
           }
         }
       ],
@@ -297,8 +297,8 @@
       "privacyPolicyUrl": "https://www.vedicpatro.com/privacy",
       "termsOfUseUrl": "https://www.vedicpatro.com/terms",
       "supportUrl": "https://www.vedicpatro.com",
-      "supportEmail": "support@vedicpatro.com",
-      "googleWebClientId": "568648791161-elpu27mjfjhcb3p9rm2vim62kgrqinao.apps.googleusercontent.com",
+      "supportEmail": "vedicnepalpatro@gmail.com",
+      "googleWebClientId": "87401467000-03kdni0kl72e0fh45mitv6jcb1qbv3q6.apps.googleusercontent.com",
       "googleNativeServerClientId": "87401467000-03kdni0kl72e0fh45mitv6jcb1qbv3q6.apps.googleusercontent.com",
       "googleIosClientId": "87401467000-p62fl4jjhr2la688pnr0q7i6g2nbd73g.apps.googleusercontent.com",
       "googleAndroidClientId": "87401467000-p1k8l38hbfn125v45kmj62u4iujnd29f.apps.googleusercontent.com",

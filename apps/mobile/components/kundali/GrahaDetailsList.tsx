@@ -1,43 +1,19 @@
-import { useMemo } from "react";
 import { View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { DataTable, type Column } from "@/components/ui/DataTable";
-import {
-  GrahaInline,
-  GrahaInlineChildren,
-  NakshatraInline,
-} from "@/components/kundali/KundaliGlyphLabels";
-import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import type { VargaChartEntry, VargaCharts } from "@/lib/api";
-import { rashiToHouse } from "@vedic-patro/domain/bhava";
-import {
-  DIGNITY_LABELS,
-  GRAHA_NAME,
-  RELATION_LABELS,
-  type GrahaKey,
-} from "@vedic-patro/domain/graha-details";
-import { useLocale } from "@/lib/i18n";
+import { GrahaInline, GrahaInlineChildren } from "@/components/kundali/KundaliGlyphLabels";
+import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
+import type { VargaCharts } from "@/lib/api";
+import { useGrahaDetailsList } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-type Row = VargaChartEntry & {
-  bhava: number;
-  ownerBhava?: number;
-  rulesBhavas: number[];
-};
-
-function grahaLabel(key: string, lang: "ne" | "en"): string {
-  if (key === "lagna") return lang === "en" ? "Ascendant" : "लग्न";
-  const meta = GRAHA_NAME[key as GrahaKey];
-  if (!meta) return key;
-  return lang === "en" ? meta.en : meta.ne;
-}
-
 const g = kundaliDetailClasses.grahaList;
+/** Column widths, in the order of `columns` from the hook. */
+const COLUMN_WIDTHS = [116, 196, 64, 168, 164, 132, 96, 96, 88];
 
 export function GrahaDetailsList({
   division,
@@ -48,138 +24,70 @@ export function GrahaDetailsList({
   anchorKey: string;
   vargaCharts: VargaCharts;
 }) {
-  const { lang, pick, digits } = useLocale();
   const colors = useThemeColors();
+  const list = useGrahaDetailsList({ division, anchorKey, vargaCharts });
 
-  const rows = useMemo<Row[]>(() => {
-    const entries = vargaCharts.entries[String(division)] ?? [];
-    const anchorEntry = entries.find((e) => e.key === anchorKey);
-    if (!anchorEntry) return [];
-    const anchorRashi = anchorEntry.vargaRashi;
-    const byKey = new Map(entries.map((e) => [e.key, e]));
+  if (list.rows.length === 0) return null;
 
-    return entries.map((entry) => {
-      const owner = byKey.get(entry.ownerKey);
-      const rules = vargaCharts.ownedRashis[entry.key] ?? [];
-      return {
-        ...entry,
-        bhava: rashiToHouse(entry.vargaRashi, anchorRashi),
-        ownerBhava: owner ? rashiToHouse(owner.vargaRashi, anchorRashi) : undefined,
-        rulesBhavas:
-          entry.key !== "lagna"
-            ? rules.map((rashi) => rashiToHouse(rashi, anchorRashi)).sort((a, b) => a - b)
-            : [],
-      };
-    });
-  }, [division, anchorKey, vargaCharts]);
-
-  if (rows.length === 0) return null;
-
-  const columns: Column[] = [
-    { key: "graha", ne: "ग्रह", en: "Graha", width: 116 },
-    { key: "rashi_lon", ne: "राशि / स्पष्ट", en: "Rashi / Long.", width: 196 },
-    { key: "bhava", ne: "भाव", en: "Bhava", width: 64 },
-    { key: "nak", ne: "नक्षत्र (पद)", en: "Nak (pada)", width: 168 },
-    { key: "lord_sub", ne: "नक्षत्रेश / उप", en: "Lord / Sub", width: 164 },
-    { key: "owner", ne: "स्वामी", en: "Owner", width: 132 },
-    { key: "rel", ne: "सम्बन्ध", en: "Relation", width: 96 },
-    { key: "dignity", ne: "स्थिति", en: "Dignity", width: 96 },
-    { key: "rules", ne: "स्वामित्व", en: "Rules", width: 88 },
-  ];
+  const columns: Column[] = list.columns.map((c, i) => ({ key: c.key, ne: c.label, en: c.label, width: COLUMN_WIDTHS[i] ?? 96 }));
 
   return (
     <DataTable
       compact
       columns={columns}
-      rows={rows.map((row) => {
-        const dmsLine = (
-          <View key="dms" className="flex-row items-center gap-1">
-            <Text
-              className={cn(g.dms, g.dmsDeg)}
-              style={nepaliTextStyle(11)}
-            >
-              {digits(String(row.dms.deg).padStart(2, "0"))}°
+      rows={list.rows.map((row) => ({
+        key: row.key,
+        highlight: row.retrograde,
+        cells: [
+          <GrahaInlineChildren key="g" grahaKey={row.key} size={18}>
+            <Text className={g.name} style={nepaliTextStyle(11)}>
+              {row.name}
             </Text>
-            <RashiGlyphIcon number={row.dms.rashiNum} size={14} />
+            {row.retrograde ? (
+              <View className={g.retroBadge} accessibilityLabel={list.retroTitle}>
+                <Ionicons name="refresh" size={10} color={colors.secondary} />
+                <Text className={g.retroText}>{list.retroLabel}</Text>
+              </View>
+            ) : null}
+          </GrahaInlineChildren>,
+          <View key="dms" className="flex-row items-center gap-1">
+            <Text className={cn(g.dms, g.dmsDeg)} style={nepaliTextStyle(11)}>
+              {row.deg}
+            </Text>
+            <RashiGlyphIcon number={row.rashiNum} size={14} />
             <Text className={g.dmsRashi} style={nepaliTextStyle(11)}>
-              {formatRashiByNumber(row.dms.rashiNum, lang)}
+              {row.rashiName}
             </Text>
             <Text className={g.dms} style={nepaliTextStyle(11)}>
-              {digits(String(row.dms.min).padStart(2, "0"))}′{digits(String(row.dms.sec).padStart(2, "0"))}″
+              {row.min} {row.sec}
             </Text>
-          </View>
-        );
-        const ownerCell =
-          row.ownerBhava != null ? (
-            <GrahaInline
-              grahaKey={row.ownerKey}
-              label={`${grahaLabel(row.ownerKey, lang)} (${digits(row.ownerBhava)})`}
-              size={14}
-              textSize={11}
-            />
-          ) : (
-            <GrahaInline grahaKey={row.ownerKey} label={grahaLabel(row.ownerKey, lang)} size={14} textSize={11} />
-          );
-
-        return {
-          key: row.key,
-          highlight: Boolean(row.retrograde),
-          cells: [
-            <GrahaInlineChildren key="g" grahaKey={row.key} size={18}>
-              <Text className={g.name} style={nepaliTextStyle(11)}>
-                {grahaLabel(row.key, lang)}
-              </Text>
-              {row.retrograde ? (
-                <View className={g.retroBadge}>
-                  <Ionicons name="refresh" size={10} color={colors.secondary} />
-                  <Text className={g.retroText}>
-                    {pick("व", "R")}
-                  </Text>
-                </View>
-              ) : null}
-            </GrahaInlineChildren>,
-            dmsLine,
-            <Text
-              key="b"
-              className={cn(g.dms, g.bhava)}
-              style={nepaliTextStyle(11)}
-            >
-              {digits(row.bhava)}
-            </Text>,
-            <NakshatraInline
-              key="nak"
-              index={row.nakshatraIndex}
-              lang={lang}
-              pada={row.pada}
-              digits={digits}
-              size={16}
-            />,
-            <View key="ls" className="flex-row items-center gap-0.5">
-              <GrahaInline
-                grahaKey={row.nakshatraLord}
-                label={grahaLabel(row.nakshatraLord, lang)}
-                size={14}
-                textSize={11}
-              />
-              <Text style={nepaliTextStyle(11)}>/</Text>
-              <GrahaInline grahaKey={row.subLord} label={grahaLabel(row.subLord, lang)} size={14} textSize={11} />
-            </View>,
-            ownerCell,
-            row.relation
-              ? pick(RELATION_LABELS[row.relation].ne, RELATION_LABELS[row.relation].en)
-              : "—",
-            row.dignity
-              ? pick(DIGNITY_LABELS[row.dignity].ne, DIGNITY_LABELS[row.dignity].en)
-              : "—",
-            row.rulesBhavas.length > 0
-              ? pick(
-                  `${row.rulesBhavas.map((h) => digits(h)).join(",")}`,
-                  row.rulesBhavas.map((h) => digits(h)).join(","),
-                )
-              : "—",
-          ],
-        };
-      })}
+          </View>,
+          <Text key="b" className={cn(g.dms, g.bhava)} style={nepaliTextStyle(11)}>
+            {row.bhava}
+          </Text>,
+          <View key="nak" className="flex-row items-center gap-1.5">
+            <NakshatraGlyphIcon name={row.nakshatraNe} number={row.nakshatraIndex + 1} size={16} />
+            <Text className="text-sm text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+              {row.nakName} {row.pada}
+            </Text>
+          </View>,
+          <View key="ls" className="flex-row items-center gap-0.5">
+            <GrahaInline grahaKey={row.nakLord.key} label={row.nakLord.name} size={14} textSize={11} />
+            <Text style={nepaliTextStyle(11)}>/</Text>
+            <GrahaInline grahaKey={row.subLord.key} label={row.subLord.name} size={14} textSize={11} />
+          </View>,
+          <GrahaInline
+            key="o"
+            grahaKey={row.owner.key}
+            label={row.owner.bhava != null ? `${row.owner.name} ${row.owner.bhava}` : row.owner.name}
+            size={14}
+            textSize={11}
+          />,
+          row.relation,
+          row.dignity,
+          row.rules,
+        ],
+      }))}
     />
   );
 }

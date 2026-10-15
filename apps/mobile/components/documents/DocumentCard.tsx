@@ -3,18 +3,15 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
 import type { DocumentSummary } from "@/lib/documents/api";
-import { useLocale } from "@/lib/i18n";
+import { useDocumentCard } from "@vedic-patro/features/documents";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
 export function DocumentCard({ doc }: { doc: DocumentSummary }) {
-  const { t, lang, digits } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();
-  const title = lang === "ne" ? doc.title_ne || doc.title_en : doc.title_en || doc.title_ne;
-  const subtitle = lang === "ne" ? doc.subtitle_ne || doc.subtitle_en : doc.subtitle_en || doc.subtitle_ne;
-  const description = lang === "ne" ? doc.description_ne || doc.description_en : doc.description_en || doc.description_ne;
+  const { title, subtitle, description, meta } = useDocumentCard(doc);
 
   return (
     <Pressable
@@ -39,14 +36,11 @@ export function DocumentCard({ doc }: { doc: DocumentSummary }) {
         </Text>
       ) : null}
       <View className={documentsClasses.cardMeta}>
-        {doc.has_chapters ? (
-          <Text className={documentsClasses.cardMetaText}>
-            {t("documents.chapters_count", { count: digits(doc.chapter_count) })}
+        {meta.map((m) => (
+          <Text key={m} className={documentsClasses.cardMetaText}>
+            {m}
           </Text>
-        ) : null}
-        <Text className={documentsClasses.cardMetaText}>
-          {t("documents.shlokas_count", { count: digits(doc.shloka_count) })}
-        </Text>
+        ))}
       </View>
     </Pressable>
   );

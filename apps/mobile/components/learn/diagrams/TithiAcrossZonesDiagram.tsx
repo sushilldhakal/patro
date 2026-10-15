@@ -9,10 +9,11 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const PLACES = [
-  { ne: "काठमाडौँ", en: "Kathmandu", tz: "UTC+05:45", end: 3.75, rise: 6.17, before: true },
-  { ne: "सिड्नी", en: "Sydney", tz: "UTC+11:00", end: 9.0, rise: 6.5, before: false },
+  { get ne() { return tFor("ne", "learn.diagrams.city_kathmandu"); }, get en() { return tFor("en", "learn.diagrams.city_kathmandu"); }, tz: "UTC+05:45", end: 3.75, rise: 6.17, before: true },
+  { get ne() { return tFor("ne", "learn.diagrams.city_sydney"); }, get en() { return tFor("en", "learn.diagrams.city_sydney"); }, tz: "UTC+11:00", end: 9.0, rise: 6.5, before: false },
 ];
 const L = -0.55;
 const Rr = 0.55;
@@ -68,33 +69,30 @@ const TithiAcrossZonesScene = memo(function TithiAcrossZonesScene({ onLabels, co
 });
 
 export function TithiAcrossZonesDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const copy = {
-    sunrise: pick("सूर्योदय", "Sunrise"),
-    before: pick("तिथि सूर्योदयअघि सकियो", "Tithi ended before sunrise"),
-    after: pick("तिथि सूर्योदयपछि सकियो", "Tithi ended after sunrise"),
+    sunrise: t("kundali.sunrise"),
+    before: t("ui.learn.tithi_ended_before_sunrise"),
+    after: t("ui.learn.tithi_ended_after_sunrise"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — एउटै क्षण, दुई ठाउँ, दुई तिथि", "3D — same instant, two places, two tithis")}
+      title={t("ui.learn.n3d_same_instant_two_places_two")}
       height={230}
       camera={{ yaw: 0.1, pitch: 0.6 }}
       frame={{ width: 1.4, height: 0.6 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्योदय", "Sunrise") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("तिथि सकिने क्षण (विश्वव्यापी)", "Tithi-end instant (global)") },
+        { color: DIAGRAM_COLOR.sun, label: t("kundali.sunrise") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.tithi_end_instant_global") },
       ]}
       readouts={[
-        { k: pick("तिथि सकिने क्षण", "Tithi ends"), v: `${digits("22:00")} UTC`, tone: "accent" },
-        { k: pick("काठमाडौँ", "Kathmandu"), v: pick("सूर्योदयअघि सकियो", "ended before sunrise"), tone: "warn" },
-        { k: pick("सिड्नी", "Sydney"), v: pick("सूर्योदयपछि सकियो", "ended after sunrise") },
+        { k: t("ui.learn.tithi_ends"), v: `${digits("22:00")} UTC`, tone: "accent" },
+        { k: t("learn.diagrams.city_kathmandu"), v: t("ui.learn.ended_before_sunrise"), tone: "warn" },
+        { k: t("learn.diagrams.city_sydney"), v: t("ui.learn.ended_after_sunrise") },
       ]}
-      caption={pick(
-        "तिथि सिंगो पृथ्वीका लागि एउटै क्षणमा सकिन्छ। फरक पर्ने कुरा हो — त्यो क्षण प्रत्येक ठाउँको सूर्योदयको सापेक्ष कहाँ पर्छ। काठमाडौँमा सीमा सूर्योदयअघि पर्छ, त्यसैले त्यो दिनले अर्को तिथि लिन्छ; सिड्नीमा सीमा सूर्योदयपछि पर्छ, त्यसैले त्यो दिनले अघिल्लै तिथि राख्छ। दुवै सही छन् — कारण सूर्योदय नियम हो, खगोलशास्त्रमा भिन्नता होइन।",
-        "A tithi ends at one absolute instant for the whole planet. What differs is where that instant falls relative to each place's own sunrise. At Kathmandu the boundary falls before sunrise, so that day takes the next tithi; at Sydney it falls after sunrise, so that day keeps the earlier one. Both are correct — the reason is the sunrise rule, not a difference in the astronomy.",
-      )}
+      caption={t("ui.learn.a_tithi_ends_at_one_absolute")}
     >
       {({ onLabels }) => <TithiAcrossZonesScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

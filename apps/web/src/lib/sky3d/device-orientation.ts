@@ -103,6 +103,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { dampHeading } from "@vedic-patro/domain/compass-heading";
 
 export type OrientationPermissionState =
   | "unnecessary"
@@ -168,12 +169,6 @@ const cameraCorrection = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0
 const zAxis = new THREE.Vector3(0, 0, 1);
 
 const normalizeDeg = (d: number) => ((d % 360) + 360) % 360;
-
-/** Shortest-path blend, so 359° → 1° does not swing the long way round. */
-function dampDeg(prev: number, next: number, k: number): number {
-  const delta = ((next - prev + 540) % 360) - 180;
-  return normalizeDeg(prev + delta * k);
-}
 
 /**
  * `alpha`/`beta`/`gamma` (+ the screen's own rotation) → the world rotation
@@ -381,7 +376,7 @@ export function useDeviceOrientation(
         } else if (trusted) {
           // Weighted by how square-on the reading is, so the offset creeps
           // toward a glancing one and locks onto a flat-on one.
-          headingOffset.current = dampDeg(headingOffset.current, want, HEADING_OFFSET_DAMP * trust);
+          headingOffset.current = dampHeading(headingOffset.current, want, HEADING_OFFSET_DAMP * trust);
         } else if (!headingCalibrated.current) {
           // Nothing square-on has arrived yet and the phone is being held
           // upright, which is where AR mode lives — so this is all there is.
@@ -390,7 +385,7 @@ export function useDeviceOrientation(
           // land first is worse than one that settles over a third of a
           // second. The weighted branch above takes over the moment the
           // reader tips the phone far enough for the edge to mean something.
-          headingOffset.current = dampDeg(headingOffset.current, want, HEADING_OFFSET_DAMP);
+          headingOffset.current = dampHeading(headingOffset.current, want, HEADING_OFFSET_DAMP);
         }
         if (trusted) headingCalibrated.current = true;
       }

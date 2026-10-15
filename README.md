@@ -9,10 +9,13 @@ apps/
   web/      React + Vite, pre-rendered           (was dhakal-patro)
   mobile/   Expo + React Native                  (was vedic-patro-mobile)
 packages/
+  features/       page logic: one hook per page (data, state, rows, copy) — both apps draw it
+  ui/             UI kit: Box, Text, Pressable, Card, Button, Icon, Table, Sheet (HTML + Tailwind / React Native + NativeWind)
   api-client/     API response types and query keys used by both apps
-  design-tokens/  colours, the shared type scale, radii
-  i18n/           the Nepali/English catalogue (strings.ts → ne.json / en.json)
+  design-tokens/  colours, the shared type scale, radii, per-page class maps
+  i18n/           the Nepali/English catalogue (strings.ts → ne.json / en.json) and the one translator
   domain/         pure logic and reference data used by both apps
+  icons/          which icon means what
 ```
 
 The three apps were imported with their full git history (`git log -- apps/web`).
@@ -33,7 +36,14 @@ Shared code lives in `packages/` and is imported by name, e.g.
 `import { buildWordTrack } from "@vedic-patro/domain/word-tracking"`. Packages ship
 TypeScript source; there is no build step.
 
+- **Change a page's behaviour** (what it loads, its rows, search, sort): edit
+  its hook in `packages/features/src/<page>/` — both apps follow. Pages not yet
+  moved there still have a copy in each app; see `packages/features/README.md`.
 - **Change copy:** edit `packages/i18n/src/strings.ts`, then `npm run i18n`.
+  Never type text into a component; `npm run check:copy` fails on new inline
+  Nepali text in `apps/*`.
+- **Build UI** with `@vedic-patro/ui` and the page's class map, so the same
+  JSX reads the same on the website and in the app.
 - **Change a colour:** edit `packages/design-tokens/src/index.ts`, then
   `npm run tokens` (writes the CSS blocks in both apps).
 - **Domain code** must stay plain TypeScript with no React, React Native or

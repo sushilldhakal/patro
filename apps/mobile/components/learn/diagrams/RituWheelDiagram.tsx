@@ -12,25 +12,27 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const AYANAMSHA = 24;
 const R_OUT = 0.58;
 const R_MID = 0.46;
 
 const RITUS = [
-  { ne: "वसन्त", en: "Vasanta", color: illustration.green55 },
-  { ne: "ग्रीष्म", en: "Grishma", color: illustration.orange53b },
-  { ne: "वर्षा", en: "Varsha", color: illustration.sky54 },
-  { ne: "शरद्", en: "Sharad", color: illustration.amber45 },
-  { ne: "हेमन्त", en: "Hemanta", color: illustration.sky65 },
-  { ne: "शिशिर", en: "Shishira", color: illustration.sky74 },
+  { get ne() { return tFor("ne", "learn.study.ritu.vasanta"); }, get en() { return tFor("en", "learn.study.ritu.vasanta"); }, color: illustration.green55 },
+  { get ne() { return tFor("ne", "ui.learn.grishma"); }, get en() { return tFor("en", "ui.learn.grishma"); }, color: illustration.orange53b },
+  { get ne() { return tFor("ne", "ui.learn.varsha"); }, get en() { return tFor("en", "ui.learn.varsha"); }, color: illustration.sky54 },
+  { get ne() { return tFor("ne", "ui.learn.sharad"); }, get en() { return tFor("en", "ui.learn.sharad"); }, color: illustration.amber45 },
+  { get ne() { return tFor("ne", "learn.study.ritu.hemanta"); }, get en() { return tFor("en", "learn.study.ritu.hemanta"); }, color: illustration.sky65 },
+  { get ne() { return tFor("ne", "ui.learn.shishira"); }, get en() { return tFor("en", "ui.learn.shishira"); }, color: illustration.sky74 },
 ];
-const MONTHS_NE = ["बैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कात्तिक", "मंसिर", "पुष", "माघ", "फागुन", "चैत"];
+const MONTHS_NE = BS_MONTHS_NE;
 const MONTHS_EN = ["Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"];
 const MARKERS = [
-  { lambda: 90, ne: "ग्रीष्म अयनान्त", en: "Summer solstice", eq: false },
-  { lambda: 180, ne: "शरद् विषुव", en: "Autumn equinox", eq: true },
-  { lambda: 270, ne: "शीत अयनान्त", en: "Winter solstice", eq: false },
-  { lambda: 0, ne: "वसन्त विषुव", en: "Spring equinox", eq: true },
+  { lambda: 90, get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, eq: false },
+  { lambda: 180, get ne() { return tFor("ne", "learn.study.autumn_equinox"); }, get en() { return tFor("en", "learn.study.autumn_equinox"); }, eq: true },
+  { lambda: 270, get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, eq: false },
+  { lambda: 0, get ne() { return tFor("ne", "learn.study.spring_equinox"); }, get en() { return tFor("en", "learn.study.spring_equinox"); }, eq: true },
 ];
 
 /* बैशाख १ at angle 0, running clockwise (screen +x, +z). */
@@ -124,29 +126,26 @@ const RituWheelScene = memo(function RituWheelScene({ onLabels, monthNames, ritu
 });
 
 export function RituWheelDiagram() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const monthNames = lang === "en" ? MONTHS_EN : MONTHS_NE;
   const rituNames = RITUS.map((r) => pick(r.ne, r.en));
 
   return (
     <LearnDiagram3D
-      title={pick("३D — छ ऋतु चक्र", "3D — the six-ṛtu wheel")}
+      title={t("ui.learn.n3d_the_six_tu_wheel")}
       height={280}
       camera={{ yaw: 0.2, pitch: 0.95 }}
       frame={{ width: 1.5, height: 0.75 }}
       idleSpin={0.02}
       legend={[
-        { color: DIAGRAM_COLOR.tropical, label: pick("विषुव (सायन)", "Equinox (tropical)") },
-        { color: DIAGRAM_COLOR.sidereal, label: pick("अयनान्त (सायन)", "Solstice (tropical)") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.equinox_tropical") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.solstice_tropical") },
       ]}
       readouts={[
-        { k: pick("ऋतु", "Ṛtu"), v: `${6} (${pick("२ महिना हरेक", "2 months each")})` },
-        { k: pick("अयनांश", "Ayanamsha"), v: `${AYANAMSHA}°`, tone: "accent" },
+        { k: t("ui.learn.tu"), v: `${6} (${t("ui.learn.n2_months_each")})` },
+        { k: t("kundali.ayanamsha"), v: `${AYANAMSHA}°`, tone: "accent" },
       ]}
-      caption={pick(
-        "बाहिरी घेरामा १२ निरयन बि.सं. महिना, भित्री घेरामा ६ ऋतु (दुई–दुई महिना)। चार सायन बिन्दु (विषुव/अयनान्त) जानाजान महिनाको सीमामा पर्दैनन् — ग्रीष्म अयनान्त असारभित्रै पर्छ, जेठ–असारको जोर्नीमा होइन — किनकि एउटा नाप ताराको सापेक्ष हो, अर्को विषुवको। अयन चलनका कारण यी बिन्दु हरेक ७२ वर्षमा ~१° अनुसार घेराभित्र सर्दै जान्छन्, जुन नै \"ऋतु सर्नु\" हो।",
-        "The outer ring is the 12 sidereal BS months, the inner ring the 6 ṛtus (two months each). The four tropical markers (equinox/solstice) deliberately don't land on month boundaries — the summer solstice falls inside Asar, not at the Jestha–Asar seam — because one ruler is tied to the stars and the other to the equinox. Precession creeps these markers around the ring by ~1° every 72 years, which is what \"ṛtu drift\" means.",
-      )}
+      caption={t("ui.learn.the_outer_ring_is_the_12")}
     >
       {({ onLabels }) => <RituWheelScene onLabels={onLabels} monthNames={monthNames} rituNames={rituNames} />}
     </LearnDiagram3D>

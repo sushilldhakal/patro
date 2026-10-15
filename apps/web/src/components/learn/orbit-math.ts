@@ -1,3 +1,4 @@
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Keplerian heliocentric orbit — sun at focus, CCW in SVG (y-down). */
 
 export const ORBIT = {
@@ -78,30 +79,30 @@ export function ellipsePathPoints(steps = 120): string {
 export const ORBIT_MARKERS = [
   {
     nu: 0,
-    ne: "हिम सङ्क्रान्ति",
-    en: "Winter solstice",
-    detail: "सबैभन्दा लामो रात",
-    tag: "सूर्य नजिक · छिटो",
+    get ne() { return tFor("ne", "learn.study.orbit.winter_solstice"); },
+    get en() { return tFor("en", "learn.study.orbit.winter_solstice"); },
+    get detail() { return tFor(undefined, "ui.learn.x_6d7ade13"); },
+    get tag() { return tFor(undefined, "ui.learn.x_c240b06d"); },
   },
   {
     nu: 90,
-    ne: "वसंत विषुव",
-    en: "Vernal equinox",
-    detail: "दिन र रात बराबर",
+    get ne() { return tFor("ne", "learn.study.orbit.vernal_equinox"); },
+    get en() { return tFor("en", "learn.study.orbit.vernal_equinox"); },
+    get detail() { return tFor(undefined, "ui.learn.x_e0a35b0d"); },
     tag: "",
   },
   {
     nu: 180,
-    ne: "ग्रीष्म सङ्क्रान्ति",
-    en: "Summer solstice",
-    detail: "सबैभन्दा लामो दिन",
-    tag: "सूर्य टाढा · ढिलो",
+    get ne() { return tFor("ne", "learn.study.orbit.summer_solstice"); },
+    get en() { return tFor("en", "learn.study.orbit.summer_solstice"); },
+    get detail() { return tFor(undefined, "ui.learn.x_9194aad9"); },
+    get tag() { return tFor(undefined, "ui.learn.x_956087b9"); },
   },
   {
     nu: 270,
-    ne: "शरद विषुव",
-    en: "Autumnal equinox",
-    detail: "दिन र रात बराबर",
+    get ne() { return tFor("ne", "learn.study.orbit.autumnal_equinox"); },
+    get en() { return tFor("en", "learn.study.orbit.autumnal_equinox"); },
+    get detail() { return tFor(undefined, "ui.learn.x_e0a35b0d"); },
     tag: "",
   },
 ] as const;

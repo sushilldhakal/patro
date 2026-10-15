@@ -1,13 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
 import { Sunrise, Moon } from "lucide-react";
-import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
-
+import { useGhatiClock } from "@vedic-patro/features/panchanga";
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
-function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
 
 interface Props {
   sunrise?: string;
@@ -16,27 +9,7 @@ interface Props {
 }
 
 export function GhatiClock({ sunrise, sunset, timezone }: Props) {
-  const { lang, digits } = useLocale();
-  const [now, setNow] = useState(() => new Date());
-  const timeZone = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 200);
-    return () => clearInterval(id);
-  }, []);
-
-  const { hour: hh, minute: mm, second: ss } = useMemo(
-    () => getZonedTimeParts(now, timeZone),
-    [now, timeZone]
-  );
-
-  const sunriseMin = parseTimeToMinutes(sunrise) ?? 5 * 60 + 12;
-  const minsNow = minutesSinceMidnightInTimezone(now, timeZone, true);
-  let vg = (minsNow - sunriseMin) / 24;
-  if (vg < 0) vg += 60;
-  const gh = Math.floor(vg);
-  const pa = Math.floor((vg - gh) * 60);
-  const vi = Math.floor(((vg - gh) * 60 - pa) * 60);
+  const { vedic, civil, copy } = useGhatiClock({ sunrise, timezone });
 
   return (
     <div className="relative overflow-hidden isolate text-center rounded-xl px-4 pt-5 pb-4 bg-ill-wheel-sky2 text-ill-brand-off-white shadow-lg">
@@ -58,27 +31,27 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
       />
 
       <div className="text-sm font-semibold tracking-eyebrow-wide text-ill-brand-off-white/55">
-        {bilingualText(lang, "वैदिक समय", "Vedic time")}
+        {copy.title}
       </div>
       <div className="font-mono font-bold text-5xl leading-none mt-3.5 tracking-tight tabular-nums">
-        {digits(pad2(gh))}
+        {vedic.ghati}
         <span className="text-ill-brand-off-white/40">:</span>
-        {digits(pad2(pa))}
+        {vedic.pala}
         <span className="text-ill-brand-off-white/40">:</span>
-        <span className="text-sm text-ill-brand-off-white/65">{digits(pad2(vi))}</span>
+        <span className="text-sm text-ill-brand-off-white/65">{vedic.vipala}</span>
       </div>
       <div className="text-sm font-semibold tracking-wide text-panchang mt-2">
-        {bilingualText(lang, "घडी : पला : विपला", "Ghati : Pala : Vipala")}
+        {copy.vedicUnits}
       </div>
 
       <div className="h-px bg-white/12 mx-5 my-3.5" />
 
       <div className="font-mono font-bold text-xl leading-none tabular-nums">
-        {digits(pad2(hh))}:{digits(pad2(mm))}
-        <span className="text-sm text-ill-brand-off-white/65">:{digits(pad2(ss))}</span>
+        {civil.hour}:{civil.minute}
+        <span className="text-sm text-ill-brand-off-white/65">:{civil.second}</span>
       </div>
       <div className="text-sm font-semibold tracking-wide text-ill-brand-off-white/50 mt-2">
-        {bilingualText(lang, "घण्टा : मिनेट", "Hour : Minute")}
+        {copy.civilUnits}
       </div>
 
       <div className="flex justify-center gap-4 mt-3.5 text-sm font-mono text-ill-brand-off-white/80">

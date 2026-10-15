@@ -27,7 +27,7 @@ function TimesCard({
 }) {
   const router = useRouter();
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   if (rows.length === 0) return null;
 
   return (
@@ -54,7 +54,7 @@ function TimesCard({
               <Pressable
                 onPress={() => router.push({ pathname: "/reminders", params: { window: option.key } } as never)}
                 accessibilityRole="button"
-                accessibilityLabel={pick("रिमाइन्डर राख्नुहोस्", "Set a reminder")}
+                accessibilityLabel={t("ui.home.set_a_reminder")}
                 hitSlop={8}
                 className="h-9 w-9 items-center justify-center rounded-full active:opacity-70"
               >
@@ -70,7 +70,7 @@ function TimesCard({
 
 /** Today's शुभ / अशुभ windows, each with a bell that opens "new reminder" on that window. */
 export function HomeAuspiciousTimes({ p }: { p: PanchangaDay | undefined }) {
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   if (!p) return null;
   const rows = getMuhurtaRows(p, lang);
   const bad = rows.filter((r) => !r.auspicious);
@@ -80,8 +80,8 @@ export function HomeAuspiciousTimes({ p }: { p: PanchangaDay | undefined }) {
 
   return (
     <View className="gap-4">
-      <TimesCard title={pick("अशुभ समय", "Ashubh times")} rows={bad} color={BAD} digits={num} />
-      <TimesCard title={pick("शुभ समय", "Shubh times")} rows={good} color={GOOD} digits={num} />
+      <TimesCard title={t("ui.home.ashubh_times")} rows={bad} color={BAD} digits={num} />
+      <TimesCard title={t("ui.home.shubh_times")} rows={good} color={GOOD} digits={num} />
     </View>
   );
 }

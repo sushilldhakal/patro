@@ -14,6 +14,7 @@ import { getWheelRashis, RASHI_LORDS, RASHI_ELEM, PADA_AKSHAR } from "@vedic-pat
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WHEEL_TITHIS, WHEEL_YOGAS, KAR_MOV, KAR_FIX_NAMES, KARANA_EN } from "@vedic-patro/domain/tithi-wheel-data";
 import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const YOGA_EN = [
   "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda",
@@ -23,15 +24,15 @@ const YOGA_EN = [
 ];
 
 const GRAHA_ROWS = [
-  { ne: "सूर्य", en: "Sun", meaningNe: "आत्मा, पिता, अधिकार — राशि र सङ्क्रान्तिको माप", meaningEn: "Soul, father, authority — measures rashi and sankranti" },
-  { ne: "चन्द्र", en: "Moon", meaningNe: "मन, माता — तिथि, नक्षत्र, पक्ष", meaningEn: "Mind, mother — tithi, nakshatra, paksha" },
-  { ne: "मंगल", en: "Mars", meaningNe: "साहस, भाइ — मङ्गलवार, होरा", meaningEn: "Courage, siblings — Tuesday, hora" },
-  { ne: "बुध", en: "Mercury", meaningNe: "बुद्धि, वाणी — बुधवार", meaningEn: "Intellect, speech — Wednesday" },
-  { ne: "बृहस्पति", en: "Jupiter", meaningNe: "गुरु, ज्ञान — बिहीवार", meaningEn: "Teacher, knowledge — Thursday" },
-  { ne: "शुक्र", en: "Venus", meaningNe: "प्रेम, सौन्दर्य — शुक्रवार", meaningEn: "Love, beauty — Friday" },
-  { ne: "शनि", en: "Saturn", meaningNe: "कर्म, धैर्य — शनिवार", meaningEn: "Karma, patience — Saturday" },
-  { ne: "राहु", en: "Rahu", meaningNe: "छाया ग्रह — ग्रहण, अप्रत्याशित परिवर्तन", meaningEn: "Shadow planet — eclipses, sudden change" },
-  { ne: "केतु", en: "Ketu", meaningNe: "छाया ग्रह — मोक्ष, आध्यात्म", meaningEn: "Shadow planet — moksha, spirituality" },
+  { get ne() { return tFor("ne", "kundali.report.meta_sun"); }, get en() { return tFor("en", "kundali.report.meta_sun"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_sun"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_sun"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_moon"); }, get en() { return tFor("en", "kundali.graha_name_moon"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_moon"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_moon"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_mars"); }, get en() { return tFor("en", "kundali.graha_name_mars"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_mars"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_mars"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_mercury"); }, get en() { return tFor("en", "kundali.graha_name_mercury"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_mercury"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_mercury"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_jupiter"); }, get en() { return tFor("en", "kundali.graha_name_jupiter"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_jupiter"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_jupiter"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_venus"); }, get en() { return tFor("en", "kundali.graha_name_venus"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_venus"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_venus"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_saturn"); }, get en() { return tFor("en", "kundali.graha_name_saturn"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_saturn"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_saturn"); } },
+  { get ne() { return tFor("ne", "grahas.rahu"); }, get en() { return tFor("en", "grahas.rahu"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_rahu"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_rahu"); } },
+  { get ne() { return tFor("ne", "grahas.ketu"); }, get en() { return tFor("en", "grahas.ketu"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_ketu"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_ketu"); } },
 ];
 
 function TableCaption({ children }: { children: string }) {
@@ -43,12 +44,12 @@ function TableCaption({ children }: { children: string }) {
 }
 
 export function RashiReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("१२ राशि — प्रत्येक ३०° (जम्मा ३६०°)", "12 Rashis — each 30° (360° total)")}</TableCaption>
+      <TableCaption>{t("learn.12_rashis_each_30_360_total")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("राशि", "Rashi"), "°", pick("स्वामी", "Lord"), pick("तत्त्व", "Element")]}
+        headers={[pick("#", "#"), t("panchanga.wheel.rashi"), "°", t("panchanga.wheel.lord"), t("panchanga.wheel_panel.element")]}
         rows={getWheelRashis().map((r, i) => [
           digits(i + 1),
           pick(r.ne, r.en),
@@ -62,12 +63,12 @@ export function RashiReferenceTable() {
 }
 
 export function GrahaReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("नव ग्रह (९) — पञ्चाङ्ग र कुण्डलीमा प्रयोग", "Nava Graha (9) — used in almanac and kundali")}</TableCaption>
+      <TableCaption>{t("learn.nava_graha_9_used_in_panchanga_and_kundali")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("ग्रह", "Graha"), pick("संक्षिप्त अर्थ", "Brief meaning")]}
+        headers={[pick("#", "#"), t("kundali.graha"), t("learn.brief_meaning")]}
         rows={GRAHA_ROWS.map((g, i) => [digits(i + 1), pick(g.ne, g.en), pick(g.meaningNe, g.meaningEn)])}
       />
     </View>
@@ -89,23 +90,23 @@ export function ComputationReferenceDiagram() {
 }
 
 export function NakshatraReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
       <TableCaption>
-        {pick("२७ नक्षत्र — प्रत्येक १३°२०′, चार पद (३°२०′ प्रति पद)", "27 Nakshatras — each 13°20′, four padas (3°20′ per pada)")}
+        {t("learn.27_nakshatras_each_13_20_four_padas_3_20_per_pada")}
       </TableCaption>
       <LearnTable
         headers={[
           pick("#", "#"),
-          pick("नक्षत्र", "Nakshatra"),
+          t("nakshatra"),
           "°",
-          pick("स्वामी", "Lord"),
-          pick("चिह्न", "Symbol"),
-          pick("पद १", "Pada 1"),
-          pick("पद २", "Pada 2"),
-          pick("पद ३", "Pada 3"),
-          pick("पद ४", "Pada 4"),
+          t("panchanga.wheel.lord"),
+          t("learn.symbol"),
+          t("learn.pada_1"),
+          t("learn.pada_2"),
+          t("learn.pada_3"),
+          t("learn.pada_4"),
         ]}
         rows={NAKSHATRA_ICONS.map((nak, i) => {
           const padas = PADA_AKSHAR[i]!;
@@ -125,12 +126,12 @@ export function NakshatraReferenceTable() {
 }
 
 export function TithiReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("३० तिथि — चन्द्र–सूर्यको १२° कोणीय दूरी", "30 Tithis — the 12° angular gap between Moon and Sun")}</TableCaption>
+      <TableCaption>{t("learn.30_tithis_the_12_angular_gap_between_moon_and_sun")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("तिथि", "Tithi"), pick("पक्ष", "Paksha"), pick("कोण (≈)", "Angle (≈)")]}
+        headers={[pick("#", "#"), t("tithi"), t("sections.paksha"), t("learn.angle")]}
         rows={WHEEL_TITHIS.map((row, i) => [
           digits(i + 1),
           pick(row.ne, row.en),
@@ -143,12 +144,12 @@ export function TithiReferenceTable() {
 }
 
 export function YogaReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("२७ योग — सूर्य + चन्द्रको देशान्तर जोड (प्रत्येक १३°२०′)", "27 Yogas — sum of Sun + Moon longitude (each 13°20′)")}</TableCaption>
+      <TableCaption>{t("learn.27_yogas_sum_of_sun_moon_longitude_each_13_20")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("योग", "Yoga"), pick("° (≈)", "° (≈)")]}
+        headers={[pick("#", "#"), t("kundali.yoga"), pick("° (≈)", "° (≈)")]}
         rows={WHEEL_YOGAS.map((y, i) => [
           digits(i + 1),
           pick(y, YOGA_EN[i] ?? y),
@@ -160,43 +161,37 @@ export function YogaReferenceTable() {
 }
 
 export function KaranaReferenceTable() {
-  const { pick, digits } = useLocale();
-  const charRows = KAR_MOV.map((ne) => ({ ne, typeNe: "चर (७)", typeEn: "Movable (7)" }));
-  const sthiraRows = KAR_FIX_NAMES.slice(1).map((ne) => ({ ne, typeNe: "स्थिर (४)", typeEn: "Fixed (4)" }));
+  const { t, pick, digits } = useLocale();
+  const charRows = KAR_MOV.map((ne) => ({ ne, typeNe: tFor("ne", "learn.movable_7"), typeEn: tFor("en", "learn.movable_7") }));
+  const sthiraRows = KAR_FIX_NAMES.slice(1).map((ne) => ({ ne, typeNe: tFor("ne", "learn.fixed_4"), typeEn: tFor("en", "learn.fixed_4") }));
 
   const rows: string[][] = [
     [
       digits(1),
-      `${pick("किंस्तुघ्न", KARANA_EN["किंस्तुघ्न"] ?? "Kimstughna")}`,
-      pick("स्थिर", "Fixed"),
-      pick("शुक्ल प्रतिपदाको पहिलो आधा — वर्षमा एक पटक", "First half of Shukla Pratipada — once a year"),
+      `${pick(tFor(undefined, "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}`,
+      t("learn.fixed"),
+      t("learn.first_half_of_shukla_pratipada_once_a_year"),
     ],
     ...charRows.map((k, i) => [
       digits(i + 2),
-      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === "विष्टि" ? pick(" (भद्रा)", " (Bhadra)") : ""}`,
+      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === /* copy-ok */ "विष्टि" ? t("learn.bhadra") : ""}`,
       pick(k.typeNe, k.typeEn),
-      pick("महिनाभरि बारम्बार दोहोरिन्छ", "Repeats throughout the month"),
+      t("learn.repeats_throughout_the_month"),
     ]),
     ...sthiraRows.map((k, i) => [
       digits(i + 9),
       pick(k.ne, KARANA_EN[k.ne] ?? k.ne),
       pick(k.typeNe, k.typeEn),
-      pick(
-        "महिनामा एक–एक पटक — कृष्ण चतुर्दशी, औंसी, शुक्ल प्रतिपदा, पूर्णिमा",
-        "Once each per month — Krishna Chaturdashi, Aaushi, Shukla Pratipada, Purnima",
-      ),
+      t("learn.once_each_per_month_krishna_chaturdashi_aaushi_shukla_p"),
     ]),
   ];
 
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("११ करण — तिथिको आधा (६° कोण); महिनामा ६० करण", "11 Karanas — half a tithi (6° angle); 60 karanas per month")}</TableCaption>
-      <LearnTable headers={[pick("#", "#"), pick("करण", "Karana"), pick("प्रकार", "Type"), pick("टिप्पणी", "Note")]} rows={rows} />
+      <TableCaption>{t("learn.11_karanas_half_a_tithi_6_angle_60_karanas_per_month")}</TableCaption>
+      <LearnTable headers={[pick("#", "#"), t("kundali.karana"), t("holidays.col_type"), t("learn.note")]} rows={rows} />
       <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
-        {pick(
-          "क्रम: किंस्तुघ्न → (बव…विष्टि)×८ → शकुनि → चतुष्पद → नाग → किंस्तुघ्न — जम्मा ६० करण/महिना।",
-          "Order: Kimstughna → (Bava…Vishti)×8 → Shakuni → Chatushpada → Naga → Kimstughna — 60 karanas/month in all.",
-        )}
+        {t("learn.order_kimstughna_bava_vishti_8_shakuni_chatushpada_naga")}
       </Text>
     </View>
   );

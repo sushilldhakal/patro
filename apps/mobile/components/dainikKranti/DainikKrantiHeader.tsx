@@ -32,6 +32,9 @@ type Props = {
   location: PanchangaLocation;
   onLocationChange: (location: PanchangaLocation) => void;
   samvatsara?: SamvatsaraPayload | null;
+  /** Paksha choices and their group label (from the shared page hook). */
+  pakshaOptions: readonly (readonly [PakshaFilter, string])[];
+  pakshaAria: string;
 };
 
 function PakshaSegToggle({
@@ -40,14 +43,15 @@ function PakshaSegToggle({
   options,
   className,
   buttonClassName,
+  ariaLabel,
 }: {
+  ariaLabel: string;
   value: PakshaFilter | "krishna" | "shukla";
   onChange: (v: PakshaFilter) => void;
   options: readonly (readonly [PakshaFilter, string])[];
   className?: string;
   buttonClassName?: string;
 }) {
-  const { pick } = useLocale();
   return (
     <View
       className={cn(
@@ -56,7 +60,7 @@ function PakshaSegToggle({
         className,
       )}
       accessibilityRole="radiogroup"
-      accessibilityLabel={pick("पक्ष छान्नुहोस्", "Select paksha")}
+      accessibilityLabel={ariaLabel}
     >
       {options.map(([opt, label]) => (
         <Pressable
@@ -98,8 +102,10 @@ export function DainikKrantiHeader({
   location,
   onLocationChange,
   samvatsara,
+  pakshaOptions,
+  pakshaAria,
 }: Props) {
-  const { pick, digits, lang } = useLocale();
+  const { digits, lang } = useLocale();
   const { isCompact } = useBreakpoint();
 
   const crossEraSubtitle = useMemo(
@@ -107,23 +113,15 @@ export function DainikKrantiHeader({
     [year, month, lang, digits],
   );
 
-  const pakshaOptionsAll: readonly (readonly [PakshaFilter, string])[] = [
-    ["all", pick("सबै", "All")],
-    ["krishna", pick("कृष्ण", "Krishna")],
-    ["shukla", pick("शुक्ल", "Shukla")],
-  ];
-
-  const pakshaOptionsMobile: readonly (readonly [PakshaFilter, string])[] = [
-    ["krishna", pick("कृष्ण", "Krishna")],
-    ["shukla", pick("शुक्ल", "Shukla")],
-  ];
+  const pakshaOptionsMobile = pakshaOptions.filter(([value]) => value !== "all");
 
   const pakshaToggleDesktop = (
-    <PakshaSegToggle value={paksha} onChange={onPakshaChange} options={pakshaOptionsAll} />
+    <PakshaSegToggle ariaLabel={pakshaAria} value={paksha} onChange={onPakshaChange} options={pakshaOptions} />
   );
 
   const pakshaToggleMobile = (
     <PakshaSegToggle
+      ariaLabel={pakshaAria}
       value={mobilePakshaDisplay}
       onChange={onPakshaChange}
       options={pakshaOptionsMobile}

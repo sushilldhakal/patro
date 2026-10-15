@@ -1,6 +1,7 @@
 import { LEARN_TOPICS_BY_SLUG } from "@/lib/learn/learn-topics-meta";
 import { PRERENDER_PATHS as ALL_PRERENDER_PATHS } from "@/lib/public-indexable-paths";
 import { ROUTE_SEO_KEYS, isNoindexPath } from "@/lib/app-routes";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 
 export const SITE_NAME = "Vedic Patro";
 export const SITE_URL = "https://www.vedicpatro.com";
@@ -53,7 +54,7 @@ export interface FaqItem {
 
 type TFunc = (key: string, opts?: Record<string, unknown>) => string;
 
-const DEVANAGARI_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+const DEVANAGARI_DIGITS = lazyList("ne", "ui.learn.x_d8148326");
 
 function toDevanagariDigits(value: number): string {
   return String(value).replace(/\d/g, (d) => DEVANAGARI_DIGITS[Number(d)]!);
@@ -187,7 +188,7 @@ export function buildJsonLd(meta: PageSeoMeta, pathname: string, t: TFunc): Reco
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
         name: SITE_NAME,
-        alternateName: ["वैदिक पात्रो", "Vedic Patro", "Nepali Patro"],
+        alternateName: [tFor(undefined, "app_name"), "Vedic Patro", "Nepali Patro"],
         description: meta.description,
         url: `${SITE_URL}/`,
         inLanguage: ["ne", "en"],

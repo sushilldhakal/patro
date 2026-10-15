@@ -107,7 +107,7 @@ function AndroidStringSelect({ value, options, onChange, minWidth = 96 }: Props)
 /** Web `<select>`, Android dropdown, iOS bottom-sheet wheel — for string values (e.g. chart anchor). */
 export function NativeStringSelect(props: Props) {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
@@ -181,7 +181,7 @@ export function NativeStringSelect(props: Props) {
           }}
         >
           <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
-            <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>{pick("रद्द", "Cancel")}</Text>
+            <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>{t("common.cancel")}</Text>
           </Pressable>
           <Text
             style={{
@@ -202,7 +202,7 @@ export function NativeStringSelect(props: Props) {
             style={{ minWidth: 72, alignItems: "flex-end" }}
           >
             <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
-              {pick("भयो", "Done")}
+              {t("common.done")}
             </Text>
           </Pressable>
         </View>

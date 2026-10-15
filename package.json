@@ -17,7 +17,8 @@
     "i18n": "npm run generate -w @vedic-patro/i18n",
     "check:shared": "node scripts/check-shared-usage.mjs",
     "check:design": "node scripts/check-design-drift.mjs",
-    "check:classes": "node scripts/check-shared-classes.mjs"
+    "check:classes": "node scripts/check-shared-classes.mjs",
+    "check:copy": "node scripts/check-inline-copy.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

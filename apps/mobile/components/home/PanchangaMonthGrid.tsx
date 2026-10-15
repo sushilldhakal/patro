@@ -3,20 +3,12 @@ import { Text } from "@/components/ui/Text";
 import type { CalendarDay } from "@/lib/api";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { useLocale } from "@/lib/i18n";
-import {
-  getMonthDayChandraRashi,
-  getMonthDayKarana,
-  getMonthDayNakshatra,
-  getMonthDayNakshatraShort,
-  getMonthDayYoga,
-} from "@/lib/panchanga-month";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { nepaliDayNumberStyle, nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
-import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { cn } from "@vedic-patro/domain/utils";
 import { brand } from "@vedic-patro/design-tokens";
+import { usePanchangaMonthGrid } from "@vedic-patro/features/home";
 import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import {
@@ -25,26 +17,6 @@ import {
   selectionRingStyle,
   useCalendarGridWidth,
 } from "./calendar-grid-layout";
-import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
-
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_SHORT_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function chunk<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = [];
-  for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size));
-  return rows;
-}
-
-function formatTithiLabel(day: CalendarDay, isEn: boolean): string {
-  return isEn ? (day.tithi ?? day.tithi_ne ?? "—") : (day.tithi_ne ?? day.tithi ?? "—");
-}
-
-function timeShort(v?: string): string {
-  if (!v) return "—";
-  return v.slice(0, 5);
-}
 
 type Props = {
   days: CalendarDay[];
@@ -67,7 +39,7 @@ export function PanchangaMonthGrid({
 }: Props) {
   const theme = useThemeColors();
   const { isDark } = useTheme();
-  const { pick, digits, lang } = useLocale();
+  const { lang } = useLocale();
   const { isCompact, width } = useBreakpoint();
   const { onLayout, colWidth } = useCalendarGridWidth();
   const col = (extra?: object) => calendarColStyle(colWidth, extra);
@@ -80,7 +52,7 @@ export function PanchangaMonthGrid({
   const numFont = (bold: boolean) =>
     isEn ? (bold ? "font-num-bold" : "font-num") : undefined;
 
-  const rows = chunk(days, 7);
+  const grid = usePanchangaMonthGrid({ days, todayAd, selectedAd });
 
   return (
     <View
@@ -95,11 +67,11 @@ export function PanchangaMonthGrid({
       ) : null}
 
       <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }} className="border-b border-border">
-        {(isCompact ? WEEKDAYS_SHORT_NE : WEEKDAYS_NE).map((ne, i) => {
-          const weekend = i === 0 || i === 6;
+        {grid.weekdays.map((w) => {
+          const weekend = w.weekend;
           return (
             <View
-              key={`${ne}-${i}`}
+              key={w.key}
               style={col()}
               className="min-h-10 items-center justify-center bg-background px-1 py-1.5"
             >
@@ -108,41 +80,23 @@ export function PanchangaMonthGrid({
                 className={cn("text-center text-sm font-semibold leading-tight", weekend && "text-danger")}
                 style={nepaliTextStyle()}
               >
-                {pick(ne, WEEKDAYS_EN[i])}
+                {isCompact ? w.short : w.label}
               </Text>
             </View>
           );
         })}
       </View>
 
-      {rows.map((row, rowIndex) => (
+      {grid.rows.map((row, rowIndex) => (
         <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
-          {row.map((day, colIndex) => {
-            const cellIndex = rowIndex * 7 + colIndex;
-            const isOutside = day.outsideMonth === true;
-            const phase = getPakshaPhase(day);
-            const isKrishna = phase === "krishna";
-            const isToday = day.date_ad === todayAd;
-            const isSel = day.date_ad === selectedAd;
-            const rashiLabel = getMonthDayChandraRashi(day, lang) ?? "—";
-            const yogaLabel = getMonthDayYoga(day, lang);
-            const karanaLabel = getMonthDayKarana(day, lang);
-            const nakshatraFull = getMonthDayNakshatra(day, lang) ?? "—";
-            const nakshatraLabel = isCompact ? (getMonthDayNakshatraShort(day, lang) ?? nakshatraFull) : nakshatraFull;
-            const secondary = getSecondaryCellDate(day, "bs", lang, cellIndex === 0);
-            const secondaryLabel = secondary.monthLabel
-              ? `${secondary.monthLabel} ${digits(secondary.day)}`
-              : digits(secondary.day);
-            const secondaryLabelShort = secondary.monthLabelShort
-              ? `${secondary.monthLabelShort} ${digits(secondary.day)}`
-              : digits(secondary.day);
-            const sunRise = digits(timeShort(day.sunrise));
-            const sunSet = digits(timeShort(day.sunset));
-            const hasSunTimes = Boolean(day.sunrise || day.sunset);
-            const sunTimesLabel = [day.sunrise ? sunRise : "—", day.sunset ? sunSet : "—"].join(" ");
-            const tithiLabel = formatTithiLabel(day, isEn);
-            const tithiIdx = tithiIndexFromCalendarDay(day);
-            const moonTitle = moonPhaseTitle(phase, isEn);
+          {row.map((cell) => {
+            const { day, isOutside, isToday, isSelected: isSel, isKrishna, hasSunTimes } = cell;
+            const rashiLabel = cell.rashi;
+            const yogaLabel = cell.yoga;
+            const karanaLabel = cell.karana;
+            const nakshatraLabel = isCompact ? cell.nakshatraShort : cell.nakshatra;
+            const tithiLabel = cell.tithi;
+            const sunTimesLabel = cell.sunTimesLabel;
 
             /* Web cellClass: outside surface-muted/70, krishna background, shukla white. */
             let bg = "bg-white dark:bg-background";
@@ -170,12 +124,12 @@ export function PanchangaMonthGrid({
                   />
                 ) : null}
 
-                {tithiIdx != null ? (
+                {cell.tithiIndex != null ? (
                   <View
                     pointerEvents="none"
                     style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2 }}
                   >
-                    <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={moonSize} title={moonTitle} />
+                    <CalendarMoonPhaseIcon tithiIndex={cell.tithiIndex} size={moonSize} title={cell.moonTitle} />
                   </View>
                 ) : null}
 
@@ -186,17 +140,17 @@ export function PanchangaMonthGrid({
                         className={cn("text-sm font-bold leading-none", numFont(true))}
                         style={isEn ? undefined : nepaliDayNumberStyle()}
                       >
-                        {digits(day.day)}
+                        {cell.primaryDay}
                       </Text>
                       <Text
                         className={cn(
                           "font-semibold text-muted-foreground",
-                          secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                          cell.secondaryNamed ? "text-diagram-xs" : "text-xs",
                           numFont(false),
                         )}
                         style={isEn ? undefined : nepaliTextStyle()}
                       >
-                        {secondaryLabelShort}
+                        {cell.secondaryLabelShort}
                       </Text>
                     </View>
                     <View className="w-full items-start gap-px">
@@ -231,11 +185,11 @@ export function PanchangaMonthGrid({
                   </View>
                 ) : (
                   <View className="w-full gap-0.5">
-                    {day.sunrise ? (
-                      <VerticalEdgeLabel text={sunRise} side="left" color={theme.textMuted} className="font-normal" />
+                    {cell.sunrise ? (
+                      <VerticalEdgeLabel text={cell.sunrise ?? ""} side="left" color={theme.textMuted} className="font-normal" />
                     ) : null}
-                    {day.sunset ? (
-                      <VerticalEdgeLabel text={sunSet} side="right" color={theme.textMuted} className="font-normal" />
+                    {cell.sunset ? (
+                      <VerticalEdgeLabel text={cell.sunset ?? ""} side="right" color={theme.textMuted} className="font-normal" />
                     ) : null}
 
                     <Text className="w-full text-center text-xs font-semibold leading-snug" style={nepaliTextStyle()}>
@@ -253,17 +207,17 @@ export function PanchangaMonthGrid({
                         className={cn("text-lg font-bold leading-none", numFont(true))}
                         style={isEn ? undefined : nepaliDayNumberStyle()}
                       >
-                        {digits(day.day)}
+                        {cell.primaryDay}
                       </Text>
                       <Text
                         className={cn(
                           "font-semibold leading-none text-muted-foreground",
-                          secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                          cell.secondaryNamed ? "text-diagram-xs" : "text-xs",
                           numFont(false),
                         )}
                         style={isEn ? undefined : nepaliTextStyle()}
                       >
-                        {secondaryLabel}
+                        {cell.secondaryLabel}
                       </Text>
                     </View>
 

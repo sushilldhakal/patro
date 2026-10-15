@@ -14,17 +14,18 @@ import { DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const SPAN = 1.2;
 const MOON_R = 0.06;
 
 const PHASES = [
-  { ne: "औंसी", en: "Amavasya", E: 0 },
-  { ne: "शुक्ल चन्द्र", en: "Shukla Moon", E: 45 },
-  { ne: "प्रथम त्रैमासिक", en: "First Quarter", E: 90 },
-  { ne: "पूर्णिमा", en: "Purnima", E: 180 },
-  { ne: "कृष्ण चन्द्र", en: "Krishna Moon", E: 225 },
-  { ne: "अन्तिम त्रैमासिक", en: "Last Quarter", E: 270 },
-  { ne: "अर्को औंसी", en: "Next Amavasya", E: 354 },
+  { get ne() { return tFor("ne", "ui.learn.amavasya"); }, get en() { return tFor("en", "ui.learn.amavasya"); }, E: 0 },
+  { get ne() { return tFor("ne", "ui.learn.shukla_moon"); }, get en() { return tFor("en", "ui.learn.shukla_moon"); }, E: 45 },
+  { get ne() { return tFor("ne", "ui.learn.first_quarter_2"); }, get en() { return tFor("en", "ui.learn.first_quarter_2"); }, E: 90 },
+  { get ne() { return tFor("ne", "learn.purnima"); }, get en() { return tFor("en", "learn.purnima"); }, E: 180 },
+  { get ne() { return tFor("ne", "ui.learn.krishna_moon"); }, get en() { return tFor("en", "ui.learn.krishna_moon"); }, E: 225 },
+  { get ne() { return tFor("ne", "ui.learn.last_quarter_2"); }, get en() { return tFor("en", "ui.learn.last_quarter_2"); }, E: 270 },
+  { get ne() { return tFor("ne", "ui.learn.next_amavasya"); }, get en() { return tFor("en", "ui.learn.next_amavasya"); }, E: 354 },
 ] as const;
 
 const xOf = (i: number) => -SPAN / 2 + (i / (PHASES.length - 1)) * SPAN;
@@ -71,24 +72,21 @@ const MoonPhasesScene = memo(function MoonPhasesScene({ onLabels, lang }: SceneP
 });
 
 export function MoonPhasesDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — चन्द्र कलाका सात चरण", "3D — the seven named Moon phases")}
+      title={t("ui.learn.n3d_the_seven_named_moon_phases")}
       height={220}
       camera={{ yaw: 0, pitch: 0.25 }}
       frame={{ width: 1.5, height: 0.42 }}
       idleSpin={0}
-      legend={[{ color: illustration.sky84, label: pick("साँचो सूर्य-कोणले उज्यालो पारिएको चन्द्र", "Moon lit from the true Sun angle") }]}
+      legend={[{ color: illustration.sky84, label: t("ui.learn.moon_lit_from_the_true_sun") }]}
       readouts={[
-        { k: pick("देखाइएका चरण", "Phases shown"), v: digits(PHASES.length) },
-        { k: pick("एक लुनेसन", "One lunation"), v: `${digits("29.53")} ${pick("दिन", "days")}`, tone: "accent" },
+        { k: t("ui.learn.phases_shown"), v: digits(PHASES.length) },
+        { k: t("ui.learn.one_lunation"), v: `${digits("29.53")} ${t("common.days")}`, tone: "accent" },
       ]}
-      caption={pick(
-        "औंसी (कोण ०°, अन्धकार) देखि पूर्णिमा (कोण १८०°, पूर्ण उज्यालो) हुँदै फेरि अर्को औंसीसम्म — सातवटा नामाकरण गरिएका बिन्दु। प्रत्येक चन्द्र साँचो सूर्य-कोणबाट उज्यालो पारिएको छ, त्यसैले आकार कोरिएको होइन — गणना गरिएको हो।",
-        "From Amavasya (0°, dark) through Purnima (180°, fully lit) to the next Amavasya — seven named points along the way. Each Moon is lit from its true Sun-elongation angle, so the shape is computed, not drawn.",
-      )}
+      caption={t("ui.learn.from_amavasya_0_dark_through_purnima")}
     >
       {({ onLabels }) => <MoonPhasesScene onLabels={onLabels} lang={lang} />}
     </LearnDiagram3D>

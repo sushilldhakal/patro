@@ -1,26 +1,24 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
+import { useSiteFooter } from "@vedic-patro/features/common";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
 export function SiteFooter() {
-  const { t } = useTranslation();
+  const links = useSiteFooter();
   return (
     <footer className={shellClasses.footer}>
       <div className={cn("flex flex-wrap", shellClasses.footerRow, shellClasses.footerLink)}>
-        <Link to="/privacy" className="hover:text-foreground">
-          {t("footer.privacy")}
-        </Link>
-        <Link to="/terms" className="hover:text-foreground">
-          {t("footer.terms")}
-        </Link>
-        <a href={`mailto:${LEGAL_CONTACT_EMAIL}`} className="hover:text-foreground">
-          {t("footer.support")}
-        </a>
-        <a href={LEGAL_SITE} className="hover:text-foreground">
-          vedicpatro.com
-        </a>
+        {links.map((link) =>
+          link.kind === "page" ? (
+            <Link key={link.id} to={link.path as "/privacy" | "/terms"} className="hover:text-foreground">
+              {link.label}
+            </Link>
+          ) : (
+            <a key={link.id} href={link.url} className="hover:text-foreground">
+              {link.label}
+            </a>
+          ),
+        )}
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "@vedic-patro/i18n/react";
 
 export { toDevanagariDigits, usesDevanagariDigits, formatLocaleDigits } from "@vedic-patro/domain/locale";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
@@ -14,9 +14,6 @@ export function formatMonoDigits(
 }
 
 export function useLocaleDigits() {
-  const { i18n: inst } = useTranslation();
-  return useCallback(
-    (value: string | number) => formatLocaleDigits(value, inst.language),
-    [inst.language],
-  );
+  const lang = useLanguage();
+  return useCallback((value: string | number) => formatLocaleDigits(value, lang), [lang]);
 }

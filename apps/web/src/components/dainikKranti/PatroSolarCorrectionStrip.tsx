@@ -1,5 +1,5 @@
 import { Clock, Globe2, Navigation } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { usePatroSolarCorrection, type PatroSolarKey } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 
@@ -10,44 +10,41 @@ type Props = {
   className?: string;
 };
 
-const SOLAR_ITEMS = [
-  { key: "deshaantar" as const, icon: Globe2, i18n: "aside.deshaantar" },
-  { key: "akshamsha" as const, icon: Navigation, i18n: "aside.akshamsha" },
-  { key: "belaantar" as const, icon: Clock, i18n: "aside.belaantar" },
-] as const;
+const SOLAR_ICON: Record<PatroSolarKey, typeof Clock> = {
+  deshaantar: Globe2,
+  akshamsha: Navigation,
+  belaantar: Clock,
+};
 
 export function PatroSolarCorrectionStrip({ deshaantar, akshamsha, belaantar, className }: Props) {
-  const { t } = useTranslation();
-  const values = { deshaantar, akshamsha, belaantar };
-  const visible = SOLAR_ITEMS.filter((item) => values[item.key]);
-  if (visible.length === 0) return null;
+  const items = usePatroSolarCorrection({ deshaantar, akshamsha, belaantar });
+  if (items.length === 0) return null;
 
   return (
     <div className={cn(dainikKrantiClasses.solarStrip, className)}>
-      {visible.map((item) => {
-        const Icon = item.icon;
-        const isBela = item.key === "belaantar";
+      {items.map((item) => {
+        const Icon = SOLAR_ICON[item.key];
         return (
           <div
             key={item.key}
             className={cn(
               dainikKrantiClasses.solarItem,
-              isBela ? dainikKrantiClasses.solarItemBela : dainikKrantiClasses.solarItemPlain,
+              item.highlight ? dainikKrantiClasses.solarItemBela : dainikKrantiClasses.solarItemPlain,
             )}
             style={{ maxWidth: "48%" }}
           >
             <div className={cn(dainikKrantiClasses.solarLabel, dainikKrantiClasses.solarLabelText)}>
-              <Icon className={cn("h-3.5 w-3.5 shrink-0", isBela ? "text-secondary" : "text-muted-foreground")} />
-              {t(item.i18n)}
+              <Icon className={cn("h-3.5 w-3.5 shrink-0", item.highlight ? "text-secondary" : "text-muted-foreground")} />
+              {item.label}
             </div>
             <div
               className={cn(
                 dainikKrantiClasses.solarValue,
                 "break-words",
-                isBela ? dainikKrantiClasses.solarValueBela : dainikKrantiClasses.solarValuePlain,
+                item.highlight ? dainikKrantiClasses.solarValueBela : dainikKrantiClasses.solarValuePlain,
               )}
             >
-              {values[item.key]}
+              {item.value}
             </div>
           </div>
         );

@@ -18,7 +18,7 @@
  * a ऋतु argument has to be made in उत्तरायण/दक्षिणायन rather than in महिना.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";

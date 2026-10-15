@@ -6,6 +6,32 @@
  */
 const tokens = require("@vedic-patro/design-tokens/mobile-tailwind.json");
 
+/*
+ * The web tokens tint surfaces with CSS `color-mix(in srgb, var(--X) N%,
+ * var(--card))`. React Native cannot evaluate color-mix, so NativeWind dropped
+ * those colours and tone/slot/badge/chip backgrounds rendered as nothing. The
+ * same tint drawn as `--X` at N% opacity over the card looks identical.
+ */
+const MIX_TO_NATIVE_VAR = {
+  "--foreground": "--tw-foreground",
+  "--color-danger": "--tw-danger",
+  "--color-success": "--tw-success",
+  "--color-warning": "--tw-warning",
+  "--brand-green": "--tw-success",
+  "--brand-saffron": "--tw-primary",
+  "--brand-gold": "--tw-accent",
+};
+
+function nativeColor(value) {
+  const m = /^color-mix\(in srgb, var\((--[a-z-]+)\) ([\d.]+)%, var\(--card\)\)$/.exec(String(value));
+  if (!m || !MIX_TO_NATIVE_VAR[m[1]]) return value;
+  return `rgb(var(${MIX_TO_NATIVE_VAR[m[1]]}) / ${Number(m[2]) / 100})`;
+}
+
+const nativeTokenColors = Object.fromEntries(
+  Object.entries(tokens.colors).map(([name, value]) => [name, nativeColor(value)]),
+);
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -14,6 +40,8 @@ module.exports = {
     "./lib/**/*.{js,jsx,ts,tsx}",
     "../../packages/design-tokens/src/**/*.{js,ts,tsx}",
     "../../packages/domain/src/**/*.{js,ts,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,tsx}",
+    "../../packages/features/src/**/*.{js,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
   darkMode: "class",
@@ -42,7 +70,7 @@ module.exports = {
         ring: "rgb(var(--tw-primary) / <alpha-value>)",
         saffron: "rgb(var(--tw-primary) / <alpha-value>)",
         vermilion: "rgb(var(--tw-destructive) / <alpha-value>)",
-        ...tokens.colors,
+        ...nativeTokenColors,
         /* After the spread: the status colours take an alpha (`bg-success/12`),
            which the plain \`var()\` values in the generated colours cannot. */
         success: "rgb(var(--tw-success) / <alpha-value>)",

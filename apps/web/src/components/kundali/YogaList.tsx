@@ -1,5 +1,5 @@
 import { Check, Info } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { KundaliYoga } from "@/lib/api";
 import {

@@ -1,27 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native"
-import { Text } from "@/components/ui/Text"
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMemo } from "react";
+import { Pressable, ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-  fetchPanchanga,
-  locationCacheKey,
-  fetchCivilTimeline,
-  panchangaKeys,
-} from "@/lib/api";
-import { adToBS, bsToAD } from "@vedic-patro/domain/bs-calendar";
-import { buildAtTimeDatetime, fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
-import { chartDateAd, isEphemerisPanchanga } from "@vedic-patro/domain/ephemeris-adapters";
-import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
-import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
-import { DayCycleToggle, type DayCycleMode } from "@/components/panchanga/DayCycleToggle";
+import { DayCycleToggle } from "@/components/panchanga/DayCycleToggle";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PanchangaAsidePanels } from "@/components/panchanga/PanchangaAsidePanels";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
+import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
+import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
 import {
   DinVisheshSection,
   FestivalsSection,
@@ -33,193 +22,58 @@ import {
   RituSection,
   SunMoonSamvatSection,
 } from "@/components/panchanga/PanchangaSections";
-import {
-  defaultClockForTimezone,
-  usePanchangaClock,
-} from "@/components/panchanga/use-panchanga-mode";
 import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
-import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import {
-  floatingNavBottomPadding,
-  PAGE_HORIZONTAL_PADDING,
-  PANCHANGA_SIDEBAR_SPLIT,
-  PANCHANGA_SIDEBAR_WIDTH,
-} from "@/lib/mobile-nav";
+import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
-import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
-function toAdStr(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
+/** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 export default function PanchangaScreen() {
-  const { pick, t, lang } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width, isTablet, isCompact } = useBreakpoint();
   const inShell = useInPanchangaTabsShell();
   const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
   const splitSidebar = width >= PANCHANGA_SIDEBAR_SPLIT;
-  const params = useLocalSearchParams<{ date?: string }>();
-  const { location, setLocation, ready } = usePanchangaLocation();
-
-  const [date, setDate] = useState(() =>
-    typeof params.date === "string" && params.date ? parseAdStr(params.date) : new Date(),
-  );
-  const timezoneForMode = location.params.timezone ?? "Asia/Kathmandu";
-  const { clock, setClock } = usePanchangaClock(timezoneForMode);
-  const [clockUserAdjusted, setClockUserAdjusted] = useState(false);
-  const [dayCycleMode, setDayCycleMode] = useState<DayCycleMode>("Day-Night");
-
-  useEffect(() => {
-    if (typeof params.date === "string" && params.date) {
-      setDate(parseAdStr(params.date));
-    }
-  }, [params.date]);
-
-  const adDateStr = toAdStr(date);
-  const bs = adToBS(date);
-  const atTimeDatetime = buildAtTimeDatetime(adDateStr, clock);
-
-  const udayaQuery = useQuery({
-    queryKey: panchangaKeys.day(adDateStr, "ad", location.params),
-    queryFn: () => fetchPanchanga(adDateStr, "ad", location.params),
-    enabled: ready,
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const instantQuery = useQuery({
-    queryKey: panchangaKeys.atTime(atTimeDatetime, location.params),
-    queryFn: () => fetchEphemerisPanchangaDay(atTimeDatetime, adDateStr, location.params),
-    enabled: ready,
-    staleTime: 1000 * 60 * 5,
-    placeholderData: keepPreviousData,
-  });
-
-  /* Midnight→midnight is its own timeline from the server, fetched only when
-     the reader actually switches to it. Without this the दिन-रात toggle moved
-     a piece of state nothing downstream read — see `DayTimeline`'s `mode`. */
-  const civilQuery = useQuery({
-    queryKey: panchangaKeys.civil(adDateStr, location.params),
-    queryFn: () => fetchCivilTimeline(adDateStr, "ad", location.params),
-    enabled: ready && dayCycleMode === "Calendar Day",
-    staleTime: 1000 * 60 * 30,
-    placeholderData: keepPreviousData,
-  });
-
-  const { data, isError } = instantQuery;
-  const ephemeris = isEphemerisPanchanga(data);
-  const wheelData = udayaQuery.data;
-  const showWheelSkeleton = udayaQuery.isLoading && !wheelData;
-
-  const sunrise = wheelData ? getSunrise(wheelData) : data ? getSunrise(data) : undefined;
-  const sunset = wheelData ? getSunset(wheelData) : data ? getSunset(data) : undefined;
-  const effectiveTimezone = resolveTimeZone(data?.location?.timezone, location.params.timezone);
-  const isToday = adDateStr === todayAdStringInTimezone(new Date(), effectiveTimezone);
-  const locationLabel = displayLocationLabel(location, data?.location?.name, lang);
-  const chartAd = data ? chartDateAd(data, adDateStr) : adDateStr;
-  const todayAd = todayAdStringInTimezone(new Date(), effectiveTimezone);
+  const { page, location, setLocation, ready, date, setDate, clock, adDateStr, commitCalendar } = useAppPanchangaPage();
+  const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
   const headerToolbar = useMemo(
     () => (
       <View className="flex-row flex-wrap items-center justify-end gap-1.5">
         <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} />
-        <LocationSelector
-          location={location}
-          onLocationChange={setLocation}
-          className="max-w-[8rem]"
-        />
+        <LocationSelector location={location} onLocationChange={setLocation} className="max-w-[8rem]" />
       </View>
     ),
-    [dayCycleMode, location, setLocation],
+    [dayCycleMode, setDayCycleMode, location, setLocation],
   );
 
   const headerMobileToolbar = useMemo(
     () => <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} />,
-    [dayCycleMode],
+    [dayCycleMode, setDayCycleMode],
   );
 
-  const clockSyncedKeyRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    setClockUserAdjusted(false);
-  }, [adDateStr]);
-
-  const handleClockChange = useCallback(
-    (next: string) => {
-      setClockUserAdjusted(true);
-      setClock(next);
-    },
-    [setClock],
-  );
-
-  useEffect(() => {
-    const syncKey = `${adDateStr}|${locationCacheKey(location.params)}`;
-    if (clockSyncedKeyRef.current === syncKey) return;
-    if (clockUserAdjusted) return;
-
-    if (isToday) {
-      clockSyncedKeyRef.current = syncKey;
-      setClock(defaultClockForTimezone(effectiveTimezone));
-      return;
-    }
-
-    const sunriseClock = formatTimeShort(wheelData ? getSunrise(wheelData) : undefined);
-    if (!sunriseClock) return;
-    clockSyncedKeyRef.current = syncKey;
-    setClock(sunriseClock);
-  }, [
-    adDateStr,
-    location.params,
-    isToday,
-    effectiveTimezone,
-    clockUserAdjusted,
-    wheelData,
-    setClock,
-  ]);
-
-  const failed = ready && !wheelData && !data && (udayaQuery.isError || instantQuery.isError);
-  if (failed) {
+  if (page.failed) {
     return (
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{
-          paddingBottom: floatingNavBottomPadding(isTablet),
-          paddingHorizontal: pagePadH,
-          paddingTop: isCompact ? 12 : 16,
-        }}
+        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: isCompact ? 12 : 16 }}
       >
-        <ErrorState
-          message={pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
-          onRetry={() => {
-            void udayaQuery.refetch();
-            void instantQuery.refetch();
-          }}
-        />
+        <ErrorState message={page.copy.error} onRetry={page.retry} />
       </ScrollView>
     );
   }
 
-  if (!ready || (udayaQuery.isLoading && !wheelData)) {
+  if (!ready || page.showWheelSkeleton) {
     return (
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{
-          paddingBottom: floatingNavBottomPadding(isTablet),
-          paddingHorizontal: pagePadH,
-          paddingTop: isCompact ? 12 : 16,
-        }}
+        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: isCompact ? 12 : 16 }}
       >
         <LoadingState />
       </ScrollView>
@@ -244,30 +98,30 @@ export default function PanchangaScreen() {
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}
-            todayAd={todayAd}
+            todayAd={page.todayAd}
             adDateStr={adDateStr}
             wheelData={wheelData}
             clock={clock}
-            onClockChange={handleClockChange}
+            onClockChange={page.changeClock}
             toolbar={headerToolbar}
             mobileToolbar={headerMobileToolbar}
             hideNavLocation={!isCompact}
             location={location}
             onLocationChange={setLocation}
           />
-          {ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} /> : null}
+          {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
             <DayTimeline
               p={wheelData}
               loading={showWheelSkeleton}
               dateAd={adDateStr}
-              isToday={isToday}
-              timezone={effectiveTimezone}
-              needleClock={clockUserAdjusted ? clock : undefined}
-              showNeedle={clockUserAdjusted || isToday}
+              isToday={page.isToday}
+              timezone={page.timeZone}
+              needleClock={page.clockUserAdjusted ? clock : undefined}
+              showNeedle={page.clockUserAdjusted || page.isToday}
               mode={dayCycleMode}
-              civil={civilQuery.data}
-              civilLoading={civilQuery.isLoading}
+              civil={page.civilTimeline}
+              civilLoading={page.civilLoading}
             />
           ) : null}
         </View>
@@ -281,12 +135,14 @@ export default function PanchangaScreen() {
           }
         >
           <PanchangaAsidePanels
-            sunrise={sunrise}
-            sunset={sunset}
-            timezone={effectiveTimezone}
+            sunrise={page.sunrise}
+            sunset={page.sunset}
+            timezone={page.timeZone}
             chartData={data}
-            chartAd={chartAd}
+            jdUt={page.jdUt}
+            refDateAd={page.civilAnchor}
             location={location.params}
+            planetEventsHref="/gochar"
           />
         </View>
       </View>
@@ -300,20 +156,17 @@ export default function PanchangaScreen() {
               bsYear={bs.year}
               bsMonthNe={bs.monthName}
               bsDay={bs.day}
-              isToday={isToday}
-              timezone={effectiveTimezone}
-              locationLabel={locationLabel}
+              isToday={page.isToday}
+              timezone={page.timeZone}
+              locationLabel={page.locationLabel}
               clock={clock}
               calendarPick={{
                 year: bs.year,
                 month: bs.month,
                 day: bs.day,
                 clock,
-                todayAd,
-                onCommit: (year, month, day, nextClock) => {
-                  setDate(bsToAD(year, month, day));
-                  handleClockChange(nextClock);
-                },
+                todayAd: page.todayAd,
+                onCommit: commitCalendar,
               }}
             />
             {wheelData ? (
@@ -323,17 +176,17 @@ export default function PanchangaScreen() {
               >
                 <Ionicons name="calendar-outline" size={16} color={colors.foreground} />
                 <Text className={panchangaPageClasses.page.yearLinkText}>
-                  {t("panchanga.year_link")}
+                  {page.copy.yearLink}
                 </Text>
               </Pressable>
             ) : null}
           </>
         ) : null}
 
-        {isError ? (
+        {page.loadError ? (
           <View className={panchangaPageClasses.page.errorBox}>
             <Text className={panchangaPageClasses.page.errorText}>
-              {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
+              {page.copy.error}
             </Text>
           </View>
         ) : null}
@@ -341,11 +194,11 @@ export default function PanchangaScreen() {
         {data ? (
           <View className={panchangaPageClasses.page.sectionStack}>
             <SunMoonSamvatSection p={data} />
-            <PanchangCoreSection p={data} />
-            <RashiSection p={wheelData ?? data} />
+            <PanchangCoreSection p={angaData ?? data} />
+            <RashiSection p={angaData ?? data} />
             <RituSection p={data} />
-            <BalamSection p={wheelData ?? data} clock={clock} />
-            <PanchakaLagnaSection p={wheelData ?? data} clock={clock} />
+            <BalamSection p={angaData ?? data} clock={clock} />
+            <PanchakaLagnaSection p={angaData ?? data} clock={clock} />
             <NivasShoolSection p={data} fallback={wheelData} />
             <DinVisheshSection p={data} />
             <FestivalsSection p={data} />
@@ -354,8 +207,8 @@ export default function PanchangaScreen() {
 
         <GocharPromoCard />
         <LearnMoreCard
-          heading={t("panchanga.learn_heading")}
-          slugs={["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"]}
+          heading={page.copy.learnHeading}
+          slugs={page.learnSlugs}
         />
       </View>
     </ScrollView>

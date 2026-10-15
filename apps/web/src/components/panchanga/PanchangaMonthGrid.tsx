@@ -11,35 +11,22 @@ import {
   BBS_URL_YEAR_MIN,
 } from "@vedic-patro/domain/patro-year-axis";
 import type { Era } from "@vedic-patro/domain/era";
-import { adToBS, BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, adToBS } from "@vedic-patro/domain/bs-calendar";
 import {
   buildAdCalendarGridDays,
   buildCalendarGridDays,
   getBsMonthsOverlappingAdMonth,
-  getSecondaryCellDate,
   shiftAdMonth,
   uniqueBsMonths,
 } from "@vedic-patro/domain/local-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
-import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/domain/panchanga-format";
-import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
-import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { cn } from "@vedic-patro/domain/utils";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
+import { usePanchangaMonthGrid, type PanchangaMonthCell } from "@vedic-patro/features/home";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { type PakshaPhase, getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
-
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const WEEKDAYS_EN_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function formatTithiLabel(day: CalendarDay, isEn: boolean): string {
-  return isEn ? (day.tithi ?? day.tithi_ne ?? "—") : (day.tithi_ne ?? day.tithi ?? "—");
-}
 
 interface Props {
   date: Date;
@@ -67,9 +54,8 @@ export function PanchangaMonthGrid({
   onPickDay,
   gridEra = "bs",
 }: Props) {
-  const { lang, monoDigits, isEnglish } = useLocale();
+  const { isEnglish } = useLocale();
   const calendarEra = useCalendarEra();
-  const isEn = isEnglish;
   const isAdCalendar = gridEra === "ad" || calendarEra === "ad" || isEnglish;
   const monthFetchEra: Era = isAdCalendar ? "ad" : gridEra === "bbs" ? "bbs" : "bs";
   const bsFromDate = adToBS(date);
@@ -223,11 +209,7 @@ export function PanchangaMonthGrid({
   const hasData = monthQueries.some((q) => q.data);
   const isLoadingFresh = isFetching && (isPlaceholderData || !hasData);
 
-  const cellClass = (day: CalendarDay, phase: PakshaPhase | undefined) => {
-    const isOutside = day.outsideMonth === true;
-    const isToday = day.date_ad === todayAd;
-    const isSel = day.date_ad === selectedAd;
-    const isKrishna = phase === "krishna";
+  const cellClass = ({ isOutside, isToday, isSelected: isSel, isKrishna }: PanchangaMonthCell) => {
     return cn(
       "relative min-h-[118px] p-1.5 text-left cursor-pointer flex flex-col overflow-visible transition-colors border-0",
       "max-md:min-h-0 max-md:h-auto max-md:p-1",
@@ -241,6 +223,13 @@ export function PanchangaMonthGrid({
       isToday && !isOutside && isKrishna && "bg-surface-today ring-2 ring-danger/30 ring-inset",
     );
   };
+
+  const grid = usePanchangaMonthGrid({
+    days,
+    todayAd,
+    selectedAd,
+    primaryDate: isAdCalendar ? "ad" : "bs",
+  });
 
   return (
     <div
@@ -262,11 +251,11 @@ export function PanchangaMonthGrid({
         </div>
       )}
       <div className="grid grid-cols-7 gap-px  border-b border-border">
-        {WEEKDAYS_NE.map((ne, i) => {
-          const weekend = i === 0 || i === 6;
+        {grid.weekdays.map((w) => {
+          const weekend = w.weekend;
           return (
             <div
-              key={ne}
+              key={w.key}
               className="flex min-w-0 items-center justify-center bg-background px-1 py-1.5 min-h-[40px]"
             >
               <span
@@ -275,17 +264,8 @@ export function PanchangaMonthGrid({
                   weekend && "text-danger",
                 )}
               >
-                {isEn ? (
-                  <>
-                    <span className="max-md:hidden">{WEEKDAYS_EN[i]}</span>
-                    <span className="hidden max-md:inline">{WEEKDAYS_EN_SHORT[i]}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="max-md:hidden">{ne}</span>
-                    <span className="hidden max-md:inline">{WEEKDAYS_SHORT_NE[i]}</span>
-                  </>
-                )}
+                <span className="max-md:hidden">{w.label}</span>
+                <span className="hidden max-md:inline">{w.short}</span>
               </span>
             </div>
           );
@@ -293,50 +273,20 @@ export function PanchangaMonthGrid({
       </div>
 
       <div className="grid grid-cols-7 gap-px auto-rows-min">
-          {days.map((day, i) => {
-            const phase = getPakshaPhase(day);
-            const hasSunTimes = Boolean(day.sunrise || day.sunset);
-            const ad = parseCivilIsoToDate(day.date_ad);
-            const primaryDay = isAdCalendar ? civilIsoDayOfMonth(day.date_ad) : day.day;
-            const secondary = getSecondaryCellDate(
-              day,
-              isAdCalendar ? "ad" : "bs",
-              lang,
-              i === 0,
-            );
-            const secondaryLabel = secondary.monthLabel
-              ? `${secondary.monthLabel} ${monoDigits(secondary.day)}`
-              : monoDigits(secondary.day);
-            const secondaryLabelShort = secondary.monthLabelShort
-              ? `${secondary.monthLabelShort} ${monoDigits(secondary.day)}`
-              : monoDigits(secondary.day);
-            const tithiLabel = formatTithiLabel(day, isEn);
-            const tithiIdx = tithiIndexFromCalendarDay(day);
-            const moonTitle = moonPhaseTitle(phase, isEn);
-            const nakshatraLabel = getMonthDayNakshatra(day, lang) ?? "—";
-            const nakshatraLabelMobile =
-              nakshatraShortLabel(nakshatraLabel, lang) ?? nakshatraLabel;
-            const rashiLabel = getMonthDayChandraRashi(day, lang) ?? "—";
-            const yogaLabel =
-              bilingualText(lang, day.yoga_ne ?? day.yoga, day.yoga ?? day.yoga_ne) ?? "—";
-            const karanaLabel =
-              bilingualText(lang, day.karana_ne ?? day.karana, day.karana ?? day.karana_ne) ?? "—";
-            const sunTimesLabel = [
-              day.sunrise ? monoDigits(day.sunrise) : "—",
-              day.sunset ? monoDigits(day.sunset) : "—",
-            ].join(" ");
+          {grid.cells.map((cell) => {
+            const { day, hasSunTimes, tithi: tithiLabel, nakshatra: nakshatraLabel, rashi: rashiLabel, yoga: yogaLabel, karana: karanaLabel, sunTimesLabel } = cell;
 
             return (
               <button
                 key={day.date_ad}
                 type="button"
-                className={cn(cellClass(day, phase), hasSunTimes && "md:px-3.5")}
-                onClick={() => onPickDay(ad)}
+                className={cn(cellClass(cell), hasSunTimes && "md:px-3.5")}
+                onClick={() => onPickDay(cell.date)}
               >
-                {tithiIdx != null ? (
+                {cell.tithiIndex != null ? (
                   <CalendarMoonPhaseIcon
-                    tithiIndex={tithiIdx}
-                    title={moonTitle}
+                    tithiIndex={cell.tithiIndex}
+                    title={cell.moonTitle}
                     className="pointer-events-none absolute right-0.5 top-0.5 z-[2] size-3.5 sm:size-4 max-md:right-0 max-md:top-0 md:right-1 md:top-1"
                   />
                 ) : null}
@@ -345,15 +295,15 @@ export function PanchangaMonthGrid({
                 <div className="flex w-full flex-col items-start gap-px md:hidden">
                   <span className="flex flex-wrap items-baseline gap-x-1 leading-none">
                     <span className="font-num text-sm font-bold tabular-nums">
-                      {monoDigits(primaryDay)}
+                      {cell.primaryDay}
                     </span>
                     <span
                       className={cn(
                         "font-num font-semibold tabular-nums text-muted-foreground",
-                        secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                        cell.secondaryNamed ? "text-diagram-xs" : "text-xs",
                       )}
                     >
-                      {secondaryLabelShort}
+                      {cell.secondaryLabelShort}
                     </span>
                   </span>
                   <div className="flex w-full flex-col items-start gap-px text-xs font-semibold leading-tight">
@@ -362,7 +312,7 @@ export function PanchangaMonthGrid({
                       className="w-full [overflow-wrap:anywhere] whitespace-normal text-panchang dark:text-accent"
                       title={nakshatraLabel !== "—" ? nakshatraLabel : undefined}
                     >
-                      {nakshatraLabelMobile}
+                      {cell.nakshatraShort}
                     </span>
                     <span className="w-full [overflow-wrap:anywhere] whitespace-normal text-panchang dark:text-accent">{rashiLabel}</span>
                     <span className="w-full [overflow-wrap:anywhere] whitespace-normal text-foreground">{yogaLabel}</span>
@@ -375,16 +325,16 @@ export function PanchangaMonthGrid({
 
                 {/* Desktop: centered layout with vertical sun times */}
                 <div className="hidden w-full flex-col gap-0.5 md:flex">
-                  {day.sunrise ? (
+                  {cell.sunrise ? (
                     <VerticalEdgeLabel
-                      text={monoDigits(day.sunrise)}
+                      text={cell.sunrise}
                       side="left"
                       className="font-normal tabular-nums text-muted-foreground"
                     />
                   ) : null}
-                  {day.sunset ? (
+                  {cell.sunset ? (
                     <VerticalEdgeLabel
-                      text={monoDigits(day.sunset)}
+                      text={cell.sunset}
                       side="right"
                       className="font-normal tabular-nums text-muted-foreground"
                     />
@@ -399,15 +349,15 @@ export function PanchangaMonthGrid({
 
                   <div className="flex flex-wrap items-baseline justify-center gap-x-1 px-0.5 py-0.5">
                     <span className="font-num text-lg font-bold leading-none tabular-nums sm:text-lg">
-                      {monoDigits(primaryDay)}
+                      {cell.primaryDay}
                     </span>
                     <span
                       className={cn(
                         "font-num font-semibold leading-none text-muted-foreground",
-                        secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                        cell.secondaryNamed ? "text-diagram-xs" : "text-xs",
                       )}
                     >
-                      {secondaryLabel}
+                      {cell.secondaryLabel}
                     </span>
                   </div>
 

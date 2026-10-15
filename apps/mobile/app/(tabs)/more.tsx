@@ -34,6 +34,7 @@ import {
   resolveElementDrawerIcon,
   type DrawerIconName,
 } from "@/lib/drawer-icons";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function ActionRow({
   onPress,
@@ -82,12 +83,12 @@ function RouteRow({
 }
 
 const GROUP_TITLE: Record<SitemapRoute["group"], { ne: string; en: string }> = {
-  main: { ne: "मुख्य", en: "Main" },
-  panchanga: { ne: "पञ्चाङ्ग", en: "Panchanga" },
-  jyotish: { ne: "ज्योतिष", en: "Jyotish" },
-  learn: { ne: "सिकाइ", en: "Learn" },
-  sait: { ne: "शुभ साइत", en: "Ceremony muhurta" },
-  tools: { ne: "उपकरण", en: "Tools" },
+  main: { get ne() { return tFor("ne", "ui.navigation.main"); }, get en() { return tFor("en", "ui.navigation.main"); } },
+  panchanga: { get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); }, get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); } },
+  jyotish: { get ne() { return tFor("ne", "nav.jyotish"); }, get en() { return tFor("en", "nav.jyotish"); } },
+  learn: { get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); } },
+  sait: { get ne() { return tFor("ne", "ui.more.ceremony_muhurta"); }, get en() { return tFor("en", "ui.more.ceremony_muhurta"); } },
+  tools: { get ne() { return tFor("ne", "ui.more.tools"); }, get en() { return tFor("en", "ui.more.tools"); } },
 };
 
 function routesByGroup(group: SitemapRoute["group"]) {
@@ -95,7 +96,7 @@ function routesByGroup(group: SitemapRoute["group"]) {
 }
 
 export default function MoreScreen() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const { isTablet } = useBreakpoint();
 
   const learnExtra = SITEMAP_LEARN_SLUGS.map((slug) => {
@@ -129,7 +130,7 @@ export default function MoreScreen() {
   const { isCalendarWide } = useBreakpoint();
 
   return (
-    <AppShell title={pick("थप", "More")} showHeader={false}>
+    <AppShell title={t("ui.more.more")} showHeader={false}>
       <View className={isTablet ? "flex-row flex-wrap gap-4" : "gap-4"}>
         {(["main", "panchanga", "jyotish", "tools"] as const).map((group) => {
           const routes = routesByGroup(group);
@@ -144,7 +145,7 @@ export default function MoreScreen() {
                 <RouteRow key={r.path} path={r.path} label={pick(r.ne, r.en)} icon={r.icon} />
               ))}
               {group === "tools" ? (
-                <RouteRow path="/account" label={pick("खाता", "Account")} icon="user" />
+                <RouteRow path="/account" label={t("ui.common.account")} icon="user" />
               ) : null}
             </Card>
           );
@@ -152,7 +153,7 @@ export default function MoreScreen() {
 
         <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("पञ्चाङ्ग तत्त्व", "Panchanga elements")}
+            {t("ui.more.panchanga_elements")}
           </Text>
           {elementRoutes.map((r) => (
             <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
@@ -161,11 +162,11 @@ export default function MoreScreen() {
 
         <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("सिकाइ लेख", "Learn articles")}
+            {t("ui.more.learn_articles")}
           </Text>
           <RouteRow
             path="/learn/history"
-            label={pick("इतिहास", "History")}
+            label={t("ui.more.history")}
             icon="calendar-clock"
           />
           {learnExtra.map((r) => (
@@ -175,7 +176,7 @@ export default function MoreScreen() {
 
         <Card className={isTablet ? "w-full" : ""}>
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("शुभ साइत", "Ceremony muhurta")}
+            {t("ui.more.ceremony_muhurta")}
           </Text>
           {saitRoutes.map((r) => (
             <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
@@ -184,19 +185,19 @@ export default function MoreScreen() {
 
         <Card>
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("सेटिङ", "Settings")}
+            {t("ui.more.settings")}
           </Text>
           <View className="flex-row items-center justify-between gap-3 border-b border-border/40 py-3">
-            <Text className="text-body font-medium text-foreground">{pick("थिम", "Theme")}</Text>
+            <Text className="text-body font-medium text-foreground">{t("ui.common.theme")}</Text>
             <ThemeSwitcher showLabel />
           </View>
           <ActionRow
-            label={pick("एप रेट गर्नुहोस्", "Rate Vedic Patro")}
+            label={t("ui.more.rate_vedic_patro")}
             icon="star"
             onPress={() => void Linking.openURL(reviewUrl(Platform.OS)).catch(() => {})}
           />
           <ActionRow
-            label={pick("प्रतिक्रिया पठाउनुहोस्", "Send feedback")}
+            label={t("ui.more.send_feedback")}
             icon="heart"
             onPress={() =>
               void Linking.openURL(
@@ -205,14 +206,11 @@ export default function MoreScreen() {
             }
           />
           <ActionRow
-            label={pick("एप साझा गर्नुहोस्", "Share the app")}
+            label={t("ui.more.share_the_app")}
             icon="sparkles"
             onPress={() =>
               void Share.share({
-                message: pick(
-                  `वैदिक पात्रो — नेपाली पात्रो र पञ्चाङ्ग: ${storeListingUrl(Platform.OS)}`,
-                  `Vedic Patro — Nepali calendar & panchanga: ${storeListingUrl(Platform.OS)}`,
-                ),
+                message: t("ui.more.vedic_patro_nepali_calendar_panchanga_os", { OS: storeListingUrl(Platform.OS) }),
               }).catch(() => {})
             }
           />
@@ -220,15 +218,15 @@ export default function MoreScreen() {
 
         <Card>
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("कानुनी", "Legal")}
+            {t("ui.more.legal")}
           </Text>
-          <RouteRow path="/privacy" label={pick("गोपनीयता नीति", "Privacy Policy")} icon="shield" />
-          <RouteRow path="/terms" label={pick("प्रयोगका सर्त", "Terms of Use")} icon="file-text" />
+          <RouteRow path="/privacy" label={t("auth.privacy")} icon="shield" />
+          <RouteRow path="/terms" label={t("auth.terms")} icon="file-text" />
         </Card>
 
         <Card>
           <Text className="text-body mb-1 font-semibold text-foreground">
-            {pick("संस्करण", "Version")} {APP_VERSION}
+            {t("ui.more.version")} {APP_VERSION}
           </Text>
           <Text className="text-caption font-mono text-muted-foreground">{API_BASE}</Text>
           <Text className="text-caption mt-2 text-muted-foreground">{SUPPORT_EMAIL}</Text>

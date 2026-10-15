@@ -11,7 +11,7 @@
  * a rule with hour ticks, events as dots on it, and the reading underneath.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* The figures that still call bilingualText are the ones whose text is built
    around a formatted number, so they are not single catalogue strings. */
@@ -19,6 +19,7 @@ import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const INK = "currentColor";
 const SUN = illustration.amber43;
 const MOON = illustration.sky84;
@@ -145,11 +146,11 @@ export function SiderealSolarDay() {
         strokeWidth={1.3}
       />
       <text x={panels[1]!.cx + 54} y={cy - 46} className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `अझै ~${n(1)}° बाँकी`, `~${n(1)}° still to go`)}
+        {tFor(lang, "ui.learn.value_still_to_go", { value: n(1) })}
       </text>
 
       <text x={W / 2} y={H - 26} textAnchor="middle" className="text-diagram-xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `त्यो ~${n(1)}° = ~${n(4)} मिनेट थप घुर्णन`, `that ~${n(1)}° = ~${n(4)} more minutes of spin`)}
+        {tFor(lang, "ui.learn.that_value_value2_more_minutes_of", { value: n(1), value2: n(4) })}
       </text>
       <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-80">
         {t("learn.diagrams.sidereal_day_total")}
@@ -226,7 +227,7 @@ export function DayLengthHourAngle() {
             {t("learn.diagrams.sunset")}
           </text>
           <text x={noon} y={r.y + 17} textAnchor="middle" className="fill-current text-diagram-2xs opacity-55">
-            {bilingualText(lang, `२H = ${n(r.len)}`, `2H = ${r.len}`)}
+            {bilingualText(lang, tFor(undefined, "ui.learn.x_56eaf2db", { v0: n(r.len) }), `2H = ${r.len}`)}
           </text>
         </g>
       ))}
@@ -298,7 +299,7 @@ export function MoonriseSlip() {
       {days.map((row, i) => (
         <g key={row.d}>
           <text x={L - 8} y={rowY(i) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-60">
-            {bilingualText(lang, `दिन ${n(row.d)}`, `day ${row.d}`)}
+            {bilingualText(lang, tFor(undefined, "ui.learn.x_ca6354ee", { v0: n(row.d) }), `day ${row.d}`)}
           </text>
           <line x1={L} y1={rowY(i)} x2={Rr} y2={rowY(i)} stroke={INK} strokeOpacity={0.16} strokeWidth={0.8} />
           {row.rises.map((h) => (
@@ -325,7 +326,7 @@ export function MoonriseSlip() {
       ))}
 
       <text x={L} y={H - 12} className="fill-current text-diagram-2xs font-semibold opacity-70">
-        {bilingualText(lang, `हरेक दिन ~${n(50)} मिनेट ढिलो →`, `~${n(50)} minutes later each day →`)}
+        {tFor(lang, "ui.learn.value_minutes_later_each_day", { value: n(50) })}
       </text>
     </Frame>
   );
@@ -391,14 +392,14 @@ export function SunriseSamplesTithi() {
       ))}
       <line x1={x(4.5)} y1={barY - 6} x2={x(4.5)} y2={barY + 32} stroke={WARN} strokeWidth={1.3} />
       <text x={x(4.5)} y={barY - 12} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
-        {bilingualText(lang, `तिथि बदलियो ०४:३०`, `tithi changes ${n("04:30")}`)}
+        {bilingualText(lang, tFor(undefined, "ui.learn.tithi_changes_04_30"), `tithi changes ${n("04:30")}`)}
       </text>
 
       {/* the sampling instant */}
       <line x1={x(6.17)} y1={barY + 34} x2={x(6.17)} y2={barY + 56} stroke={MARK} strokeWidth={1.4} />
       <circle cx={x(6.17)} cy={barY + 34} r={3.6} fill={MARK} />
       <text x={x(6.17)} y={barY + 70} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `सूर्योदय ०५:४५ — यहाँ नमुना लिइन्छ`, `sunrise ${n("05:45")} — sampled here`)}
+        {bilingualText(lang, tFor(undefined, "ui.learn.x_388cd0a9"), `sunrise ${n("05:45")} — sampled here`)}
       </text>
 
       <text x={L} y={30} className="fill-current text-diagram-2xs opacity-55">
@@ -450,7 +451,7 @@ export function TithiAcrossZones() {
       caption={t("learn.diagrams.tithi_zones_caption")}
     >
       <text x={W / 2} y={20} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-75">
-        {bilingualText(lang, `तिथि सकिने क्षण — ${n("22:00")} UTC`, `tithi ends — ${n("22:00")} UTC`)}
+        {tFor(lang, "ui.learn.tithi_ends_value_utc", { value: n("22:00") })}
       </text>
 
       {places.map((p, i) => {

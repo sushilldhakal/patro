@@ -24,6 +24,7 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 /**
  * Headless render target for the Open Graph share image. The backend points
  * Playwright at this route and screenshots the #og-capture element to produce
@@ -52,10 +53,7 @@ const CHART_NATURAL_W = 1000;
 const PANEL_MIN_W = 330;
 const COL_GAP = 18;
 
-const AD_MONTHS_NE = [
-  "जनवरी", "फेब्रुअरी", "मार्च", "अप्रिल", "मे", "जुन",
-  "जुलाई", "अगस्ट", "सेप्टेम्बर", "अक्टोबर", "नोभेम्बर", "डिसेम्बर",
-];
+const AD_MONTHS_NE = lazyList("ne", "ui.panchanga_og_preview.x_483e5df7");
 
 type AngaLike = { name?: string; name_ne?: string; end_local_time?: string } | undefined;
 
@@ -169,7 +167,7 @@ export function PanchangaOgPreview() {
     <div className="flex items-end justify-between" style={{ height: 46, flex: "0 0 auto" }}>
       <div className="flex items-baseline gap-3">
         <span className="text-3xl font-extrabold tracking-tight text-ill-brand-blue">
-          वैदिक पात्रो
+          {tFor(undefined, "app_name")}
         </span>
         <span className="text-lg font-bold text-ill-brand-saffron">{placeLabel}</span>
       </div>
@@ -277,20 +275,20 @@ function SummaryPanel({ p }: { p: PanchangaDay | undefined }) {
     if (!a) return { value: "—", upto: "" };
     const name = bilingualText(lang, a.name_ne ?? a.name ?? "—", a.name ?? a.name_ne ?? "—");
     const end = formatTimeShort(a.end_local_time);
-    return { value: name, upto: end ? `${toNepaliDigits(end)} ${bilingualText(lang, "सम्म", "until")}` : "" };
+    return { value: name, upto: end ? `${toNepaliDigits(end)} ${tFor(lang, "sections.until")}` : "" };
   };
 
   const rows: { label: string; value: string; upto?: string }[] = [
-    { label: bilingualText(lang, "तिथि", "Tithi"), ...angaRow("tithi") },
-    { label: bilingualText(lang, "नक्षत्र", "Nakshatra"), ...angaRow("nakshatra") },
-    { label: bilingualText(lang, "योग", "Yoga"), ...angaRow("yoga") },
-    { label: bilingualText(lang, "करण", "Karana"), ...angaRow("karana") },
+    { label: tFor(lang, "tithi"), ...angaRow("tithi") },
+    { label: tFor(lang, "nakshatra"), ...angaRow("nakshatra") },
+    { label: tFor(lang, "kundali.yoga"), ...angaRow("yoga") },
+    { label: tFor(lang, "kundali.karana"), ...angaRow("karana") },
     {
-      label: bilingualText(lang, "सूर्योदय", "Sunrise"),
+      label: tFor(lang, "kundali.sunrise"),
       value: (p && getSunriseDisplay(p)) || "—",
     },
     {
-      label: bilingualText(lang, "सूर्यास्त", "Sunset"),
+      label: tFor(lang, "kundali.sunset"),
       value: (p && getSunsetDisplay(p)) || "—",
     },
   ];

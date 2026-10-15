@@ -1,11 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useMemo, useRef, useState } from "react";
 import { ZoomIn, ZoomOut } from "lucide-react";
-import { AVAKAHADA, type Gana,} from "@vedic-patro/domain/avakahada-data";
-import {
-  localizeGana,
-  localizeRashi,
-} from "@vedic-patro/domain/avakahada-locale";
+import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
 import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import { GANA_PILL_CLASS, GANA_SWATCH_CLASS } from "@/lib/patro-classes";
 import {
@@ -27,7 +22,9 @@ import {
 import { wheelIconBtn } from "@/lib/wheel-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
-import { CX, CY, R, ATTR_RINGS, type AttrRingId, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { AVAKAHADA_ZOOM, sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
+import { useLocale } from "@vedic-patro/i18n/react";
 import { midnight, wheel } from "@vedic-patro/design-tokens";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
 const HUB_ICON_SVG = "inline-block h-full w-full [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current";
@@ -45,13 +42,7 @@ const GANA_FILL: Record<Gana, string> = {
   नर: "var(--av-gana-nar)",
   राक्षस: "var(--av-gana-rak)",
 };
-type HubRing = AttrRingId | "nakshatra" | "pada";
-
-type HubFocus = {
-  index: number;
-  ring: HubRing;
-  padaIndex?: number;
-};
+type HubFocus = AvakahadaHubFocus;
 
 function RadialText({
   deg,
@@ -84,29 +75,8 @@ function RadialText({
   );
 }
 
-function hubRingLabel(ring: HubRing, t: (key: string) => string): string {
-  if (ring === "nakshatra") return t("avakahada.col_nakshatra");
-  if (ring === "pada") return t("avakahada.col_akshara");
-  return t(`avakahada.col_${ring}`);
-}
-
-function hubRingValue(
-  ring: HubRing,
-  row: AvakahadaWheelRow,
-  lang: string,
-  padaIndex?: number,
-): string {
-  if (ring === "nakshatra") return row.nakshatraLabel;
-  if (ring === "pada") return padaIndex != null ? (row.aksharas[padaIndex] ?? "") : "";
-  return attrValue(ring, row, lang);
-}
-
-function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow }) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const { ring, padaIndex } = focus;
-  const label = hubRingLabel(ring, t);
-  const value = hubRingValue(ring, row, lang, padaIndex);
+function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>; row: AvakahadaWheelRow }) {
+  const { ring, label, value } = hub;
   const icon = findNakshatraIcon(row.en);
 
   if (ring === "nakshatra") {
@@ -127,7 +97,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
           {row.index}. {row.nakshatraLabel}
         </p>
         <dl className={avakahadaClasses.hubAttrList}>
-          {ATTR_RINGS.map((attr) => (
+          {hub.attrs.map((attr) => (
             <div
               key={attr.id}
               className={cn(
@@ -135,19 +105,19 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
                 "grid grid-cols-[52px_1fr] border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] max-sm:grid-cols-[44px_1fr]",
               )}
             >
-              <dt className={cn(avakahadaClasses.hubAttrName, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>{t(`avakahada.col_${attr.id}`)}</dt>
-              <dd className={cn(avakahadaClasses.hubAttrValue, `text-[var(--w-ink,${midnight.foam})]`)}>{attrValue(attr.id, row, lang)}</dd>
+              <dt className={cn(avakahadaClasses.hubAttrName, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>{attr.label}</dt>
+              <dd className={cn(avakahadaClasses.hubAttrValue, `text-[var(--w-ink,${midnight.foam})]`)}>{attr.value}</dd>
             </div>
           ))}
         </dl>
         <p className={avakahadaClasses.hubVairi}>
-          {t("avakahada.wheel_vairi", { yoni: row.vairiYoni })}
+          {hub.vairi}
         </p>
       </div>
     );
   }
 
-  if (ring === "pada" && padaIndex != null) {
+  if (ring === "pada" && hub.charan) {
     return (
       <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
         <p className={cn(avakahadaClasses.hubLabel, "text-[var(--w-accent,var(--color-danger))]")}>
@@ -155,10 +125,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
         </p>
         <p className={cn(avakahadaClasses.hubValue, `text-[var(--w-ink,${midnight.foam})]`)}>{value}</p>
         <p className={cn(avakahadaClasses.hubSub, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>
-          {t("avakahada.charan_title", {
-            n: String(padaIndex + 1),
-            rashi: localizeRashi(row.charanRashis[padaIndex]!, lang),
-          })}
+          {hub.charan}
         </p>
         <p className={cn(avakahadaClasses.hubSub, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>
           {row.index}. {row.nakshatraLabel}
@@ -184,7 +151,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       </p>
       {ring === "yoni" ? (
         <p className={avakahadaClasses.hubVairi}>
-          {t("avakahada.wheel_vairi", { yoni: row.vairiYoni })}
+          {hub.vairi}
         </p>
       ) : null}
     </div>
@@ -195,102 +162,43 @@ type Props = {
   highlighted?: Pick<AvakahadaWheelRow, "index">[];
 };
 
-const ZOOM_MIN = 0.6;
-const ZOOM_MAX = 3.5;
-const ZOOM_STEP = 1.35;
+const ZOOM_MIN = AVAKAHADA_ZOOM.min;
 
 export function AvakahadaWheel({ highlighted }: Props) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const [selected, setSelected] = useState<HubFocus | null>(null);
-  const [hovered, setHovered] = useState<HubFocus | null>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const v = useAvakahadaWheel({ highlighted });
+  const { lang } = useLocale();
+  const { zoom, pan, setPan, allRows, highlightSet, hasFilter, activeFocus, activeRow, selectFocus, attrRings, copy } = v;
+  const setHover = v.setHovered;
+  const resetView = v.resetView;
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
 
-  const handleZoom = useCallback((z: number) => {
-    const next = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
-    setZoom(next);
-    if (next <= 1) setPan({ x: 0, y: 0 });
-  }, []);
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (zoom <= 1) return;
+    dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
 
-  const resetView = useCallback(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
-
-  const onPointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (zoom <= 1) return;
-      dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
-      setIsDragging(true);
-      e.currentTarget.setPointerCapture(e.pointerId);
-    },
-    [zoom, pan.x, pan.y],
-  );
-
-  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = dragRef.current;
     if (!d) return;
     setPan({ x: d.px + (e.clientX - d.x), y: d.py + (e.clientY - d.y) });
-  }, []);
+  };
 
-  const endDrag = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     dragRef.current = null;
     setIsDragging(false);
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
-  }, []);
+  };
 
-  const onWheel = useCallback(
-    (e: React.WheelEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
-      handleZoom(zoom * factor);
-    },
-    [handleZoom, zoom],
-  );
-
-  const allRows = useMemo(() => AVAKAHADA.map((r) => toWheelRow(r, lang)), [lang]);
-
-  const attrRings = useMemo(
-    () =>
-      ATTR_RINGS.map((ring) => ({
-        ...ring,
-        label: t(`avakahada.col_${ring.id}`),
-      })),
-    [t],
-  );
-
-  const activeFocus = selected ?? hovered;
-
-  const highlightSet = useMemo(
-    () => new Set((highlighted ?? allRows).map((r) => r.index)),
-    [highlighted, allRows],
-  );
-  const hasFilter = highlighted !== undefined && highlighted.length < allRows.length;
-
-  const activeRow = useMemo(
-    () => (activeFocus != null ? allRows.find((r) => r.index === activeFocus.index) : undefined),
-    [activeFocus, allRows],
-  );
-
-  const selectFocus = useCallback((focus: HubFocus) => {
-    setSelected((s) =>
-      s?.index === focus.index && s?.ring === focus.ring && s?.padaIndex === focus.padaIndex
-        ? null
-        : focus,
-    );
-  }, []);
-
-  const setHover = useCallback((focus: HubFocus | null) => {
-    setHovered(focus);
-  }, []);
-
-  const isSameFocus = (a: HubFocus | null | undefined, b: HubFocus) =>
-    a?.index === b.index && a?.ring === b.ring && a?.padaIndex === b.padaIndex;
+  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.deltaY < 0) v.zoomIn();
+    else v.zoomOut();
+  };
 
   const nakLayers = useMemo(() => {
     const segs: React.ReactNode[] = [];
@@ -331,7 +239,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
       attrRings.forEach((ring) => {
         const val = attrValue(ring.id, row, lang);
         const ringFocus: HubFocus = { index: row.index, ring: ring.id };
-        const isRingSel = isSameFocus(activeFocus, ringFocus);
+        const isRingSel = sameAvakahadaFocus(activeFocus, ringFocus);
 
         segs.push(
           <path
@@ -394,7 +302,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
         const mid = (a0 + a1) / 2;
         const isDim = hasFilter && !highlightSet.has(row.index);
         const padaFocus: HubFocus = { index: row.index, ring: "pada", padaIndex: pi };
-        const isPadaSel = isSameFocus(activeFocus, padaFocus);
+        const isPadaSel = sameAvakahadaFocus(activeFocus, padaFocus);
 
         return (
           <g key={`pada-${i}`}>
@@ -442,13 +350,12 @@ export function AvakahadaWheel({ highlighted }: Props) {
     [],
   );
 
-  const ganas: Gana[] = ["देव", "नर", "राक्षस"];
 
   return (
-    <section className={cn(avWheelTheme, "pn-wheel", avakahadaClasses.wheelSection)} aria-label={t("avakahada.wheel_aria")}>
+    <section className={cn(avWheelTheme, "pn-wheel", avakahadaClasses.wheelSection)} aria-label={copy.aria}>
       <div className={avakahadaClasses.wheelHead}>
-        <h2 className={avakahadaClasses.wheelTitle}>{t("avakahada.wheel_title")}</h2>
-        <p className={avakahadaClasses.wheelSubtitle}>{t("avakahada.wheel_subtitle")}</p>
+        <h2 className={avakahadaClasses.wheelTitle}>{copy.title}</h2>
+        <p className={avakahadaClasses.wheelSubtitle}>{copy.subtitle}</p>
       </div>
 
       <div className={cn(
@@ -459,18 +366,18 @@ export function AvakahadaWheel({ highlighted }: Props) {
           <button
             type="button"
             className={wheelIconBtn}
-            title={t("avakahada.wheel_zoom_in")}
-            aria-label={t("avakahada.wheel_zoom_in")}
-            onClick={() => handleZoom(zoom * ZOOM_STEP)}
+            title={copy.zoomIn}
+            aria-label={copy.zoomIn}
+            onClick={v.zoomIn}
           >
             <ZoomIn className="size-4" strokeWidth={2} />
           </button>
           <button
             type="button"
             className={wheelIconBtn}
-            title={t("avakahada.wheel_zoom_out")}
-            aria-label={t("avakahada.wheel_zoom_out")}
-            onClick={() => handleZoom(zoom / ZOOM_STEP)}
+            title={copy.zoomOut}
+            aria-label={copy.zoomOut}
+            onClick={v.zoomOut}
             disabled={zoom <= ZOOM_MIN}
           >
             <ZoomOut className="size-4" strokeWidth={2} />
@@ -479,7 +386,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
             <button
               type="button"
               className={cn(wheelIconBtn, "px-1.5 text-sm")}
-              title={t("avakahada.wheel_zoom_reset")}
+              title={copy.zoomReset}
               onClick={resetView}
             >
               1:1
@@ -510,7 +417,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
               transition: isDragging ? "none" : "transform 0.12s ease-out",
             }}
           >
-        <svg viewBox="0 0 620 620" className={WHEEL_SVG} role="img" aria-label={t("avakahada.wheel_svg_aria")}>
+        <svg viewBox="0 0 620 620" className={WHEEL_SVG} role="img" aria-label={copy.svgAria}>
           <defs>
             <radialGradient id="av-hub-glow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="var(--av-hub-center)" />
@@ -540,14 +447,14 @@ export function AvakahadaWheel({ highlighted }: Props) {
           <foreignObject x={CX - R.hub + 10} y={CY - R.hub + 10} width={R.hub * 2 - 20} height={R.hub * 2 - 20}>
             <div className={HUB_FRAME}>
               {activeRow && activeFocus ? (
-                <HubContent focus={activeFocus} row={activeRow} />
+                <HubContent hub={v.hub(activeFocus, activeRow)} row={activeRow} />
               ) : (
                 <div>
                   <p className={cn(avakahadaClasses.hubIdleTitle, "text-[var(--w-accent,var(--color-danger))]")}>
-                    {t("avakahada.wheel_hub_title")}
+                    {copy.hubTitle}
                   </p>
                   <p className={cn(avakahadaClasses.hubIdleHint, `text-[var(--w-ink,${midnight.foam})]`)}>
-                    {t("avakahada.wheel_hub_hint")}
+                    {copy.hubHint}
                   </p>
                 </div>
               )}
@@ -559,21 +466,21 @@ export function AvakahadaWheel({ highlighted }: Props) {
       </div>
 
       <div className={cn(avakahadaClasses.legend, "flex")}>
-        <span className={avakahadaClasses.legendLabel}>{t("avakahada.wheel_legend_gana")}</span>
-        {ganas.map((g) => (
-          <span key={g} className={cn(avakahadaClasses.legendItem, "inline-flex")}>
+        <span className={avakahadaClasses.legendLabel}>{copy.legendGana}</span>
+        {v.ganas.map(({ gana, label }) => (
+          <span key={gana} className={cn(avakahadaClasses.legendItem, "inline-flex")}>
             <span
-              className={cn(avakahadaClasses.legendSwatch, GANA_SWATCH_CLASS[g])}
+              className={cn(avakahadaClasses.legendSwatch, GANA_SWATCH_CLASS[gana])}
               aria-hidden
             />
-            {localizeGana(g, lang)}
+            {label}
           </span>
         ))}
-        <span>{t("avakahada.wheel_legend_rings")}</span>
-        <span>· {t("avakahada.wheel_pan_hint")}</span>
+        <span>{copy.legendRings}</span>
+        <span>· {copy.panHint}</span>
         {hasFilter && (
           <span>
-            {t("avakahada.wheel_legend_filter", { count: String(highlightSet.size) })}
+            {copy.filter}
           </span>
         )}
       </div>

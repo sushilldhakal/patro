@@ -12,6 +12,7 @@ import { AD_DISPLAY, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { cn } from "@vedic-patro/domain/utils";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Today's hora wheel for the Hora chapter — fetches today's panchanga for the chosen place. */
 export function HoraLiveDiagram() {
   const { lang } = useLocale();
@@ -31,7 +32,7 @@ export function HoraLiveDiagram() {
   if (!p) {
     return (
       <div className={cn(tmCardPadLg, "flex min-h-[200px] items-center justify-center text-sm")}>
-        {lang === "en" ? "Loading…" : "लोड हुँदैछ…"}
+        {tFor(lang, "rashifal.profile.loading")}
       </div>
     );
   }

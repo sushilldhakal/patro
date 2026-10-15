@@ -14,7 +14,7 @@ import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { nepaliLineHeight } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
 import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { useThemeColors } from "@/lib/theme-context";
@@ -36,6 +36,7 @@ import {
 } from "@/lib/wheel-classes";
 import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { brand, illustration, midnight, nativeShadow, neutral, radius, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
 
 export type { YearWheelScrub };
 
@@ -91,11 +92,6 @@ const headTitleStyle = {
 const headSubStyle = {
   color: W_INK_DIM,
 };
-
-function bsMonthEnOf(ne: string): string {
-  const i = BS_MONTHS_NE.indexOf(ne);
-  return i >= 0 ? BS_MONTH_NAMES[i]! : ne;
-}
 
 type PanchangaWheelProps = {
   p?: PanchangaDay;
@@ -172,6 +168,7 @@ function WheelCalendarModal({
   todayAd?: string;
   onCommit: (year: number, month: number, day: number, clock: string) => void;
 }) {
+  const copy = usePanchangaWheelCopy();
   const colors = useThemeColors();
   const yearOptions = useMemo(() => windowedBrowseYears("bs", year), [year]);
   const draftRef = useRef({ year, month, day, clock });
@@ -200,9 +197,9 @@ function WheelCalendarModal({
               lineHeight: nepaliLineHeight(16),
             }}
           >
-            {pick("मिति र समय", "Date and time")}
+            {copy.labels.dateAndTime}
           </Text>
-          <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}>
+          <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={copy.labels.close}>
             <Ionicons name="close" size={20} color={colors.foreground} />
           </Pressable>
         </View>
@@ -216,14 +213,14 @@ function WheelCalendarModal({
           onSelectDate={(y, m, d) => {
             draftRef.current = { ...draftRef.current, year: y, month: m, day: d };
           }}
-          monthAriaLabel={pick("महिना", "Month")}
-          yearAriaLabel={pick("वर्ष", "Year")}
+          monthAriaLabel={copy.labels.month}
+          yearAriaLabel={copy.labels.year}
           clock={clock}
           onClockChange={(next) => {
             draftRef.current = { ...draftRef.current, clock: next };
           }}
-          hourAriaLabel={pick("घण्टा", "Hour")}
-          minuteAriaLabel={pick("मिनेट", "Minute")}
+          hourAriaLabel={copy.labels.hour}
+          minuteAriaLabel={copy.labels.minute}
           showTime
           onDone={() => {
             const next = draftRef.current;
@@ -251,6 +248,7 @@ function WheelChrome({
   onToggleFullscreen: () => void;
   onOpenDatePicker: () => void;
 }) {
+  const copy = usePanchangaWheelCopy();
   return (
     <View
       pointerEvents="box-none"
@@ -267,14 +265,14 @@ function WheelChrome({
       <Pressable
         onPress={onOpenDatePicker}
         style={wheelCornerBtnStyle}
-        accessibilityLabel={pick("मिति र समय", "Date and time")}
+        accessibilityLabel={copy.labels.pickDateTime}
       >
         <Ionicons name="calendar-outline" size={16} color={W_INK} />
       </Pressable>
       <Pressable
         onPress={onReset}
         style={wheelCornerBtnStyle}
-        accessibilityLabel={pick("रिलोड · जुम रिसेट · सूर्योदय", "Reload · reset zoom · sunrise")}
+        accessibilityLabel={copy.labels.reload}
       >
         <Ionicons name="refresh-outline" size={16} color={W_INK} />
       </Pressable>
@@ -282,7 +280,7 @@ function WheelChrome({
         onPress={onToggleFullscreen}
         style={wheelCornerBtnStyle}
         accessibilityLabel={
-          expanded ? pick("सामान्य दृश्य", "Exit full screen") : pick("पूर्ण स्क्रिन", "Full screen")
+          expanded ? copy.labels.exitFullWidth : copy.labels.fullWidth
         }
       >
         <Ionicons name={expanded ? "contract-outline" : "expand-outline"} size={16} color={W_INK} />
@@ -309,6 +307,7 @@ function WheelRangeDock({
   onSelectPlanet: (index: number) => void;
   bottomInset: number;
 }) {
+  const copy = usePanchangaWheelCopy();
   const playing = scrub.direction !== 0;
   const dayLabel = scrub.dayInYear ?? scrub.day;
   const totalLabel = scrub.daysInYear ?? scrub.totalDays;
@@ -345,14 +344,14 @@ function WheelRangeDock({
             wheelDockIconStyle,
             scrub.direction === -1 ? { backgroundColor: W_ACCENT } : null,
           ]}
-          accessibilityLabel={pick("पछाडि चलाउनुहोस्", "Play backward")}
+          accessibilityLabel={copy.labels.playBackward}
         >
           <Ionicons name="play-back" size={15} color={W_INK} />
         </Pressable>
         <Pressable
           onPress={playing ? scrub.onPause : scrub.onForward}
           style={wheelDockIconStyle}
-          accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+          accessibilityLabel={playing ? copy.labels.pause : copy.labels.play}
         >
           <Ionicons name={playing ? "pause" : "play"} size={15} color={W_INK} />
         </Pressable>
@@ -362,7 +361,7 @@ function WheelRangeDock({
             wheelDockIconStyle,
             scrub.direction === 1 ? { backgroundColor: W_ACCENT } : null,
           ]}
-          accessibilityLabel={pick("अगाडि चलाउनुहोस्", "Play forward")}
+          accessibilityLabel={copy.labels.playForward}
         >
           <Ionicons name="play-forward" size={15} color={W_INK} />
         </Pressable>
@@ -414,6 +413,7 @@ function WheelDock({
   scrubTrackWidth: number;
   bottomInset?: number;
 }) {
+  const copy = usePanchangaWheelCopy();
   return (
     <View
       pointerEvents="box-none"
@@ -442,7 +442,7 @@ function WheelDock({
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0 }}>
-          <Text className="text-sm" style={{ color: W_INK_DIM, flexShrink: 0 }}>{pick("समय", "Time")}</Text>
+          <Text className="text-sm" style={{ color: W_INK_DIM, flexShrink: 0 }}>{copy.labels.time}</Text>
           <GhatiScrubber value={scrubG} onChange={onScrubChange} trackWidth={scrubTrackWidth} />
           <Text className="text-sm" style={{ color: W_INK, minWidth: 52, textAlign: "center", fontWeight: "600" }}>
             {digits(scrubClock)}
@@ -462,9 +462,9 @@ function WheelDock({
                 backgroundColor: W_ACCENT,
                 justifyContent: "center",
               }}
-              accessibilityLabel={pick("अहिलेको समय", "Current time")}
+              accessibilityLabel={copy.labels.currentTime}
             >
-              <Text className="text-sm" style={{ fontWeight: "700", color: neutral.white }}>{pick("आज", "Now")}</Text>
+              <Text className="text-sm" style={{ fontWeight: "700", color: neutral.white }}>{copy.labels.now}</Text>
             </Pressable>
           ) : null}
           <PlanetSelectMenu
@@ -495,6 +495,7 @@ function WheelBody({
   fullscreenOverlay,
   stageHeight,
 }: Omit<PanchangaWheelProps, "loading" | "p"> & { p: PanchangaDay }) {
+  const copy = usePanchangaWheelCopy();
   const { pick, digits } = useLocale();
   const { width: screenW, height: screenH, isTablet, isLandscape } = useBreakpoint();
   const insets = useSafeAreaInsets();
@@ -762,18 +763,21 @@ function WheelBody({
         }}
       >
         {!compactHead ? (
-          <Text className="text-sm font-semibold uppercase" style={eyebrow}>{pick("पञ्चाङ्ग चक्र", "Nepali Patro · Panchanga Wheel")}</Text>
+          <Text className="text-sm font-semibold uppercase" style={eyebrow}>{copy.eyebrow}</Text>
         ) : null}
         <Text className={compactHead ? "mt-1.5 text-lg font-bold leading-tight" : "mt-1.5 text-xl font-bold leading-tight"} style={title}>
-          {isToday && !scrubPinned ? `${pick("आजको", "Today's")} ` : ""}
-          {pick("ग्रह–नक्षत्र · तिथि–करण चक्र", "Graha–Nakshatra · Tithi–Karana wheel")}
+          {copy.title(Boolean(isToday && !scrubPinned))}
         </Text>
         <Text className="mt-1.5 text-base" style={sub} numberOfLines={compactHead ? 2 : 3}>
-          {pick(bsMonthNe, bsMonthEnOf(bsMonthNe))} {digits(bsDay)}, {digits(bsYear)} · {digits(pickerClock)}
-          {" · "}
-          {pick(det.weekday.ne, det.weekday.en)}
-          {" · "}
-          {pick(tithiNe, tithiEn)}
+          {copy.sub({
+            weekday: det.weekday,
+            bsMonthNe,
+            bsDay,
+            bsYear,
+            clock: pickerClock,
+            tithi: { ne: tithiNe, en: tithiEn },
+            location: locationLabel ?? p?.location?.name,
+          })}
         </Text>
         {yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
           <Text
@@ -858,23 +862,23 @@ function WheelBody({
         <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
           <View className={wheelLegendDot} style={{ backgroundColor: W_ACCENT }} />
           <Text className="text-sm" style={{ color: W_INK_DIM }}>
-            {pick("वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
+            {copy.labels.currentNakTithi}
           </Text>
         </View>
         {!isTablet && !fullscreen ? (
           <Text className="text-sm" style={{ color: W_INK_FAINT }}>
-            {pick("घुमाउन तान्नुहोस् · जुम गर्नुहोस् · दुई औंलाले सार्नुहोस्", "Drag to rotate · pinch to zoom · two fingers to pan")}
+            {copy.labels.dragHint}
           </Text>
         ) : null}
         {isTablet || fullscreen ? (
           <>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: illustration.orange53b }} />
-              <Text className="text-sm" style={{ color: W_INK_DIM }}>{pick("सूर्य राशि", "Sun sign")}</Text>
+              <Text className="text-sm" style={{ color: W_INK_DIM }}>{copy.labels.sunSign}</Text>
             </View>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: illustration.sky84 }} />
-              <Text className="text-sm" style={{ color: W_INK_DIM }}>{pick("चन्द्र राशि", "Moon sign")}</Text>
+              <Text className="text-sm" style={{ color: W_INK_DIM }}>{copy.labels.moonSign}</Text>
             </View>
           </>
         ) : null}
@@ -962,14 +966,7 @@ function WheelBody({
   );
 }
 
-function WheelSkeleton({
-  bsYear,
-  bsMonthNe,
-  bsDay,
-  locationLabel,
-}: Pick<PanchangaWheelProps, "bsYear" | "bsMonthNe" | "bsDay" | "locationLabel">) {
-  const { pick, digits } = useLocale();
-  const locLabel = locationLabel ?? pick("काठमाडौं", "Kathmandu");
+function WheelSkeleton(_props: Pick<PanchangaWheelProps, "bsYear" | "bsMonthNe" | "bsDay" | "locationLabel">) {
 
   return (
     <Card className="overflow-hidden p-0" style={{ backgroundColor: W_BG }}>

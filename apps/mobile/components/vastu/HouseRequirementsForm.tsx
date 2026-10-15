@@ -14,20 +14,10 @@ import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { normalizeExtras } from "@/lib/vastu-storage";
-import {
-  ESSENTIAL_SPACES,
-  FLOOR_SPACES,
-  OPTIONAL_SPACES,
-  clampStoreys,
-  type FloorPref,
-  type HousePlan,
-  type SpaceKind,
-  type VastuMode,
-} from "@vedic-patro/domain/vastu-plan";
+import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import { useHouseRequirements } from "@vedic-patro/features/vastu";
 import { cn } from "@vedic-patro/domain/utils";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
@@ -97,190 +87,73 @@ export function HouseRequirementsForm({
   plan: HousePlan;
   onChange: (plan: HousePlan) => void;
 }) {
-  const { t, digits } = useLocale();
   const colors = useThemeColors();
-
-  function commit(next: HousePlan) {
-    const masterBedroom = Math.min(next.masterBedroom, next.bedrooms);
-    onChange({ ...next, masterBedroom, extras: normalizeExtras(next.extras) });
-  }
-
-  function toggleExtra(id: SpaceKind) {
-    const adding = !plan.extras.includes(id);
-    const extras = adding ? [...plan.extras, id] : plan.extras.filter((x) => x !== id);
-    // A staircase with nothing to climb to is never actually built — see
-    // vastu-plan's wantStair. Checking it while on a single storey must bump
-    // storeys, not silently no-op.
-    const storeys = adding && id === "staircase" && plan.storeys === 1 ? 2 : plan.storeys;
-    commit({ ...plan, extras, storeys });
-  }
-
-  // kitchen_dining is mutually exclusive with separate kitchen+dining — one dedicated
-  // checkbox swaps between the two rather than living alongside them as a third,
-  // independently-toggleable extra.
-  const combineKitchenDining = plan.extras.includes("kitchen_dining");
-  function toggleKitchenDining() {
-    const extras: SpaceKind[] = combineKitchenDining
-      ? [...plan.extras.filter((x) => x !== "kitchen_dining"), "kitchen", "dining"]
-      : [...plan.extras.filter((x) => x !== "kitchen" && x !== "dining"), "kitchen_dining"];
-    commit({ ...plan, extras });
-  }
-
-  const counts = (min: number, max: number) =>
-    Array.from({ length: max - min + 1 }, (_, i) => {
-      const n = min + i;
-      return { id: String(n), label: digits(n) };
-    });
-
-  const storeys = clampStoreys(plan.storeys);
-  const floorChoices: FloorPref[] =
-    storeys >= 3
-      ? ["any", "ground", "first", "third"]
-      : storeys === 2
-        ? ["any", "ground", "first"]
-        : ["any", "ground"];
-  const floorFields = FLOOR_SPACES.filter((id) => id === "master_bedroom" || plan.extras.includes(id));
+  const v = useHouseRequirements({ plan, onChange });
+  const combined = v.combine.checked;
 
   return (
     <View className="gap-4">
       <View>
         <Text className={vastuClasses.requirementsHeading} style={nepaliTextStyle(14)}>
-          {t("vastu.plan.requirements_heading")}
+          {v.copy.heading}
         </Text>
         <Text className={vastuClasses.requirementsBlurb} style={nepaliTextStyle(13)}>
-          {t("vastu.plan.requirements_blurb")}
+          {v.copy.blurb}
         </Text>
       </View>
 
       <View className="flex-row flex-wrap gap-3">
-        <Field
-          label={t("vastu.plan.bedrooms")}
-          value={String(plan.bedrooms)}
-          options={counts(1, 5)}
-          onChange={(v) => commit({ ...plan, bedrooms: Number(v) })}
-        />
-        <Field
-          label={t("vastu.plan.master_bedroom")}
-          value={String(plan.masterBedroom)}
-          options={Array.from({ length: plan.bedrooms }, (_, i) => ({
-            id: String(i + 1),
-            label: t("vastu.plan.bedroom_n", { n: digits(i + 1) }),
-          }))}
-          onChange={(v) => commit({ ...plan, masterBedroom: Number(v) })}
-        />
-        <Field
-          label={t("vastu.plan.toilets")}
-          value={String(plan.toilets)}
-          options={counts(1, 5)}
-          onChange={(v) => commit({ ...plan, toilets: Number(v) })}
-        />
-        <Field
-          label={t("vastu.plan.bathrooms")}
-          value={String(plan.bathrooms)}
-          options={counts(1, 5)}
-          onChange={(v) => commit({ ...plan, bathrooms: Number(v) })}
-        />
-        <Field
-          label={t("vastu.plan.combined")}
-          value={String(plan.combined)}
-          options={counts(0, 5)}
-          onChange={(v) => commit({ ...plan, combined: Number(v) })}
-        />
-        <Field
-          label={t("vastu.plan.mode_label")}
-          value={plan.mode}
-          options={(["flexible", "strict"] as VastuMode[]).map((mode) => ({
-            id: mode,
-            label: t(`vastu.plan.mode.${mode}`),
-          }))}
-          onChange={(v) => commit({ ...plan, mode: v as VastuMode })}
-        />
-        <Field
-          label={t("vastu.plan.storeys")}
-          value={String(storeys)}
-          options={[1, 2, 3].map((n) => ({
-            id: String(n),
-            label: t(`vastu.plan.storeys_${n}`),
-          }))}
-          onChange={(v) => commit({ ...plan, storeys: clampStoreys(Number(v)) })}
-        />
+        {v.fields.map((f) => (
+          <Field key={f.id} label={f.label} value={f.value} options={f.options} onChange={f.onChange} />
+        ))}
       </View>
 
       <View>
-        <Text
-          className={vastuClasses.groupLabel}
-          style={nepaliTextStyle(12)}
-        >
-          {t("vastu.plan.essential")}
+        <Text className={vastuClasses.groupLabel} style={nepaliTextStyle(12)}>
+          {v.copy.essential}
         </Text>
         <View className={vastuClasses.chipRow}>
-          {ESSENTIAL_SPACES.map((id) => (
-            <SpaceChip
-              key={id}
-              label={t(`vastu.plan.space.${id}`)}
-              on={plan.extras.includes(id)}
-              onPress={() => toggleExtra(id)}
-            />
+          {v.essential.map((chip) => (
+            <SpaceChip key={chip.id} label={chip.label} on={chip.on} onPress={chip.toggle} />
           ))}
         </View>
 
         <Pressable
           accessibilityRole="checkbox"
-          accessibilityState={{ checked: combineKitchenDining }}
-          onPress={toggleKitchenDining}
+          accessibilityState={{ checked: combined }}
+          onPress={v.combine.toggle}
           className={vastuClasses.checkboxRow}
         >
           <Ionicons
-            name={combineKitchenDining ? "checkbox" : "square-outline"}
+            name={combined ? "checkbox" : "square-outline"}
             size={18}
-            color={combineKitchenDining ? colors.secondary : colors.mutedForeground}
+            color={combined ? colors.secondary : colors.mutedForeground}
           />
           <View className="min-w-0 flex-1">
             <Text className={vastuClasses.checkboxTitle} style={nepaliTextStyle(12)}>
-              {t("vastu.plan.combine_kitchen_dining")}
+              {v.combine.title}
             </Text>
             <Text className={vastuClasses.checkboxNote} style={nepaliTextStyle(12)}>
-              {t("vastu.plan.combine_kitchen_dining_note")}
+              {v.combine.note}
             </Text>
           </View>
         </Pressable>
 
-        <Text
-          className={cn(vastuClasses.groupLabel, "mt-3")}
-          style={nepaliTextStyle(12)}
-        >
-          {t("vastu.plan.optional")}
+        <Text className={cn(vastuClasses.groupLabel, "mt-3")} style={nepaliTextStyle(12)}>
+          {v.copy.optional}
         </Text>
         <View className={vastuClasses.chipRow}>
-          {OPTIONAL_SPACES.map((id) => (
-            <SpaceChip
-              key={id}
-              label={t(`vastu.plan.space.${id}`)}
-              on={plan.extras.includes(id)}
-              onPress={() => toggleExtra(id)}
-            />
+          {v.optional.map((chip) => (
+            <SpaceChip key={chip.id} label={chip.label} on={chip.on} onPress={chip.toggle} />
           ))}
         </View>
       </View>
 
-      {storeys > 1 && floorFields.length > 0 && (
+      {v.floorFields.length > 0 && (
         <View className="flex-row flex-wrap gap-3">
-          {floorFields.map((id) => {
-            const value = plan.floors?.[id] ?? "any";
-            const safe = floorChoices.includes(value) ? value : "any";
-            return (
-              <Field
-                key={id}
-                label={`${t(`vastu.plan.space.${id}`)} · ${t("vastu.plan.floor_heading")}`}
-                value={safe}
-                options={floorChoices.map((floor) => ({
-                  id: floor,
-                  label: t(`vastu.plan.floor.${floor}`),
-                }))}
-                onChange={(v) => commit({ ...plan, floors: { ...plan.floors, [id]: v as FloorPref } })}
-              />
-            );
-          })}
+          {v.floorFields.map((f) => (
+            <Field key={f.id} label={f.label} value={f.value} options={f.options} onChange={f.onChange} />
+          ))}
         </View>
       )}
     </View>

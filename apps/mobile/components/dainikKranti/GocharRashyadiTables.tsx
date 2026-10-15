@@ -1,28 +1,15 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { TableHeader, TableRow, TableScrollShell } from "@/components/ui/DataTable";
-import type { GocharGraha } from "@/lib/api";
-import {
-  mergeKundaliRashi,
-  RASHYADI_PLANET_ABBREV,
-  RASHYADI_PLANET_KEYS,
-  RASHYADI_ROW_KEYS,
-  RASHYADI_ROW_LABEL,
-  rashyadiCellValue,
-  type RashyadiRowKey,
-  type RashyadiSegment,
-} from "@vedic-patro/domain/dainikKranti/rashyadi";
+import type { RashyadiSegment } from "@vedic-patro/domain/dainikKranti/rashyadi";
+import { useGocharRashyadiTable, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { rowLabelFor } from "@vedic-patro/domain/dainikKranti/gochar-rows";
-
-type GrahaRow = GocharGraha & { key: string };
 
 type TableProps = {
   segment: RashyadiSegment;
-  kundaliGrahas?: GrahaRow[];
+  kundaliGrahas?: GocharGrahaRow[];
   kundaliDateAd?: string | null;
   loading?: boolean;
   className?: string;
@@ -38,14 +25,7 @@ export function GocharRashyadiTable({
   className,
   hideVersionHeader,
 }: TableProps) {
-  const { pick, digits } = useLocale();
-  const planets =
-    kundaliGrahas &&
-    kundaliDateAd &&
-    segment.anchorDateAd === kundaliDateAd &&
-    segment.anchor === "start"
-      ? mergeKundaliRashi(segment.planets, kundaliGrahas)
-      : segment.planets;
+  const table = useGocharRashyadiTable({ segment, kundaliGrahas, kundaliDateAd });
 
   if (loading) {
     return (
@@ -56,7 +36,7 @@ export function GocharRashyadiTable({
           className,
         )}
       >
-        <Text className="text-sm" style={nepaliTextStyle()}>{pick("लोड हुँदैछ…", "Loading…")}</Text>
+        <Text className="text-sm" style={nepaliTextStyle()}>{table.loadingText}</Text>
       </View>
     );
   }
@@ -66,23 +46,22 @@ export function GocharRashyadiTable({
       <View className={dainikKrantiClasses.rashyadiHead}>
         {!hideVersionHeader ? (
           <Text className={dainikKrantiClasses.rashyadiVersion} style={nepaliTextStyle()}>
-            {segment.versionNe}
+            {table.version}
           </Text>
         ) : null}
         <Text className={cn(dainikKrantiClasses.rashyadiLabel, "mt-0", !hideVersionHeader && "mt-0.5")} style={nepaliTextStyle()}>
-          {segment.labelNe}
-          {segment.bsDay != null ? (
+          {table.label}
+          {table.day ? (
             <Text className={dainikKrantiClasses.rashyadiDay} style={nepaliTextStyle()}>
               {" "}
-              ({digits(segment.bsDay)}
-              {pick(" गते", "")})
+              {table.day}
             </Text>
           ) : null}
         </Text>
-        {segment.moonRashiNe ? (
+        {table.moon ? (
           <Text className={dainikKrantiClasses.rashyadiMoon} style={nepaliTextStyle()}>
-            {pick("च.रा.", "Moon")}:{" "}
-            <Text className={dainikKrantiClasses.rashyadiMoonValue}>{segment.moonRashiNe}</Text>
+            {table.moon.label}{" "}
+            <Text className={dainikKrantiClasses.rashyadiMoonValue}>{table.moon.value}</Text>
           </Text>
         ) : null}
       </View>
@@ -91,10 +70,10 @@ export function GocharRashyadiTable({
         <View className="min-w-full">
           <TableHeader>
             <View className="w-10" />
-            {RASHYADI_PLANET_KEYS.map((key) => (
-              <View key={key} className="min-w-[2.25rem]">
+            {table.columns.map((col) => (
+              <View key={col.key} className="min-w-[2.25rem]">
                 <Text className={dainikKrantiClasses.rashyadiTh} style={nepaliTextStyle()}>
-                  {RASHYADI_PLANET_ABBREV[key]}
+                  {col.label}
                 </Text>
               </View>
             ))}
@@ -102,45 +81,39 @@ export function GocharRashyadiTable({
 
           <View className="flex-row border-b border-border/60">
             <View className="w-10 items-center justify-center">
-              <Text className={dainikKrantiClasses.rashyadiTdPaksha} style={nepaliTextStyle()}>{digits(segment.pakshaDayCount)}</Text>
+              <Text className={dainikKrantiClasses.rashyadiTdPaksha} style={nepaliTextStyle()}>{table.pakshaDays}</Text>
             </View>
-            {RASHYADI_PLANET_KEYS.map((key) => (
-              <View key={`${segment.id}-hdr-${key}`} className="min-w-[2.25rem]" />
+            {table.columns.map((col) => (
+              <View key={`hdr-${col.key}`} className="min-w-[2.25rem]" />
             ))}
           </View>
 
-          {RASHYADI_ROW_KEYS.map((rowKey, rowIndex) => (
+          {table.rows.map((row, rowIndex) => (
             <TableRow
-              key={rowKey}
+              key={row.key}
               rowIndex={rowIndex}
               borderTop={false}
               className="border-b border-border/60 last:border-b-0"
             >
               <View className="w-10 items-center justify-center">
                 <Text className={dainikKrantiClasses.rashyadiTdLabel} style={nepaliTextStyle()}>
-                  {rowLabelFor(segment, rowKey)}
+                  {row.label}
                 </Text>
               </View>
-              {RASHYADI_PLANET_KEYS.map((key) => {
-                const row = planets[key];
-                return (
-                  <View key={`${segment.id}-${key}-${rowKey}`} className="min-w-[2.25rem]">
-                    <Text className={dainikKrantiClasses.rashyadiTdValue} style={nepaliTextStyle()}>
-                      {row ? rashyadiCellValue(row, rowKey) : "—"}
-                    </Text>
-                  </View>
-                );
-              })}
+              {row.cells.map((cell) => (
+                <View key={cell.key} className="min-w-[2.25rem]">
+                  <Text className={dainikKrantiClasses.rashyadiTdValue} style={nepaliTextStyle()}>
+                    {cell.value}
+                  </Text>
+                </View>
+              ))}
             </TableRow>
           ))}
         </View>
       </TableScrollShell>
 
       <Text className={dainikKrantiClasses.rashyadiFoot} style={nepaliTextStyle()}>
-        {pick(
-          "अं=अंश · ग=कला · वि=विकला · प्र=तटपरा · त्र=प्रतितत्परा",
-          "Deg=degree · Ka=kala · Vi=vikala · Pr=prati-tatpara · Tr=prati-vikala",
-        )}
+        {table.footnote}
       </Text>
     </View>
   );

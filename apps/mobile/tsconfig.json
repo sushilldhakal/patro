@@ -5,7 +5,10 @@
     "jsx": "react-jsx",
     "moduleSuffixes": [".web", ".native", ""],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // Only the app installs these; the native half of @vedic-patro/ui imports them from packages/ui.
+      "react-native-svg": ["./node_modules/react-native-svg"],
+      "nativewind": ["./node_modules/nativewind"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]

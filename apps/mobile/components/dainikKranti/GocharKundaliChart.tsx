@@ -1,19 +1,16 @@
-import { View } from "react-native"
-import { Text } from "@/components/ui/Text"
-import type { GocharGraha } from "@/lib/api";
-import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { useGocharKundaliChart, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useThemeColors } from "@/lib/theme-context";
 
-type GrahaRow = GocharGraha & { key: string };
-
 type Props = {
-  grahas: GrahaRow[];
+  grahas: GocharGrahaRow[];
   papanshaLine?: string;
   gapanshaLine?: string;
   dateBs?: string | null;
@@ -24,19 +21,9 @@ type Props = {
   hideTitle?: boolean;
 };
 
-export function GocharKundaliChart({
-  grahas,
-  papanshaLine = "",
-  gapanshaLine = "",
-  dateBs,
-  dateAd,
-  loading,
-  className,
-  hideTitle,
-}: Props) {
-  const { pick } = useLocale();
+export function GocharKundaliChart({ className, hideTitle, ...props }: Props) {
   const colors = useThemeColors();
-  const dateLabel = formatGocharBsLabel(dateBs, dateAd);
+  const chart = useGocharKundaliChart(props);
 
   return (
     <View className={cn(dainikKrantiClasses.chartCard, className)}>
@@ -44,39 +31,34 @@ export function GocharKundaliChart({
         <View className={dainikKrantiClasses.chartTitle}>
           <Ionicons name="sparkles-outline" size={16} color={colors.secondary} />
           <Text className={dainikKrantiClasses.chartTitleText} style={nepaliTextStyle()}>
-            {pick("गोचर कुण्डली", "Transit Chart")}
+            {chart.title}
           </Text>
         </View>
       ) : null}
 
       <View className={cn("gap-2", hideTitle ? undefined : dainikKrantiClasses.chartLines)}>
-        <View className={dainikKrantiClasses.chartLine}>
-          <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>
-            {papanshaLine || pick("पापाशाः—", "Papashah —")}
-          </Text>
-        </View>
-        {gapanshaLine ? (
-          <View className={dainikKrantiClasses.chartLine}>
-            <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>{gapanshaLine}</Text>
+        {chart.lines.map((line, i) => (
+          <View key={i} className={dainikKrantiClasses.chartLine}>
+            <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>
+              {line}
+            </Text>
           </View>
-        ) : null}
+        ))}
       </View>
 
-      {loading ? (
-        <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
-          {pick("लोड हुँदैछ…", "Loading…")}
-        </Text>
-      ) : grahas.length === 0 ? (
-        <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
-          {pick("विवरण उपलब्ध छैन।", "No details available.")}
-        </Text>
+      {chart.houses ? (
+        <D1Chart houses={chart.houses} />
       ) : (
-        <D1Chart houses={buildGocharBhavaHouses(grahas)} />
+        <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
+          {chart.stateText}
+        </Text>
       )}
 
-      {dateLabel ? (
+      {chart.showStatusLegend ? <GrahaStatusLegend className="mt-2" /> : null}
+
+      {chart.dateLine ? (
         <Text className={dainikKrantiClasses.chartDate} style={nepaliTextStyle()}>
-          {pick(`${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}
+          {chart.dateLine}
         </Text>
       ) : null}
     </View>

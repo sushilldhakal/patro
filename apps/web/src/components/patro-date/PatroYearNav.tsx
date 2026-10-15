@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useCallback, useMemo, useRef } from "react";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
@@ -16,7 +16,7 @@ import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { usePatroDateSheet } from "./use-patro-date-sheet";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step";
-import { patroBrowseTodayEra, patroBrowseTodayYear } from "@/hooks/use-patro-year-browse";
+import { patroBrowseTodayYear } from "@vedic-patro/domain/patro-browse-params";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import {
   patroMonthChipButton,
@@ -32,6 +32,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import {
   getLanguageForEra,
+  patroBrowseTodayEra,
   type Era,
 } from "@vedic-patro/domain/era";
 import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";

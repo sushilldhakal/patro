@@ -3,13 +3,10 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { SuitabilityBadge } from "@/components/sait/SaitSuitability";
 import { Text } from "@/components/ui/Text";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
-import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { useLocale } from "@/lib/i18n";
+import { useSaitDayCard } from "@vedic-patro/features/sait";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/domain/utils";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -18,8 +15,6 @@ import { useThemeColors } from "@/lib/theme-context";
  * panchāṅga that made the day survive the rules. When a profile is selected the
  * card also carries the native verdict and the reason behind it.
  */
-const SHUDDHI_PLANET_TO_GRAHA: Record<string, string> = { guru: "jupiter", shukra: "venus" };
-
 export function SaitDayCard({
   d,
   width,
@@ -31,43 +26,12 @@ export function SaitDayCard({
   suitability?: SaitSuitability;
   personalize?: SaitPersonalizeDay;
 }) {
-  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width: screenWidth } = useBreakpoint();
-
-  const shuddhi = personalize?.shuddhi ?? null;
-  const kumbha = personalize?.kumbha ?? null;
-  const annaMonth = personalize?.anna_month ?? null;
-
-  const overnight = d.window_end < d.window_start;
-  const monthLabel = pick(d.bs_month_name_ne, BS_MONTH_NAMES[d.bs_month - 1] ?? d.bs_month_name_ne);
-  const paksha = pick(
-    d.paksha_ne ?? "",
-    d.paksha === "shukla" ? "Shukla" : d.paksha === "krishna" ? "Krishna" : (d.paksha_ne ?? ""),
-  );
-
-  const rows: { label: string; value: string }[] = [
-    { label: pick("तिथि", "Tithi"), value: `${paksha} ${pick(d.tithi_ne, d.tithi_en)}`.trim() },
-    { label: pick("नक्षत्र", "Nakshatra"), value: pick(d.nakshatra_ne, d.nakshatra_en) },
-    { label: pick("योग", "Yoga"), value: pick(d.yoga_ne ?? "—", d.yoga_en ?? "—") },
-    { label: pick("करण", "Karana"), value: pick(d.karana_ne ?? "—", d.karana_en ?? "—") },
-    {
-      label: pick("लग्न", "Lagna"),
-      value:
-        formatRashiDisplay(d.lagna_ne, d.lagna_en, lang) ??
-        pick(d.lagna_ne ?? "—", d.lagna_en ?? "—"),
-    },
-    {
-      label: pick("चान्द्र मास", "Lunar month"),
-      value: pick(d.lunar_month_ne ?? "—", d.lunar_month_en ?? "—"),
-    },
-  ];
+  const card = useSaitDayCard({ d, personalize });
 
   return (
-    <View
-      style={{ width: width as never }}
-      className={cn(saitClasses.card, suitability ? saitClasses.suitability[suitability].frame : null)}
-    >
+    <View style={{ width: width as never }} className={cn(saitClasses.card, suitability ? saitClasses.suitability[suitability].frame : null)}>
       {suitability ? (
         <View className={saitClasses.cardBadgeRow}>
           <SuitabilityBadge suitability={suitability} />
@@ -77,30 +41,29 @@ export function SaitDayCard({
       <View className={saitClasses.cardHead}>
         <View className={saitClasses.dateBox}>
           <Text className={saitClasses.dateMonth} style={nepaliTextStyle()}>
-            {monthLabel}
+            {card.month}
           </Text>
           <Text className={saitClasses.dateDay} style={nepaliTextStyle()}>
-            {digits(d.bs_day)}
+            {card.day}
           </Text>
         </View>
 
         <View className={saitClasses.headBody}>
           <View className={saitClasses.titleRow}>
             <Text className={saitClasses.weekday} style={nepaliTextStyle()}>
-              {pick(d.weekday_ne, d.weekday_en)}
+              {card.weekday}
             </Text>
-            <Text className={saitClasses.gregorian}>{d.gregorian}</Text>
+            <Text className={saitClasses.gregorian}>{card.gregorian}</Text>
           </View>
 
           <View className={cn(saitClasses.windowChip, "self-start")}>
             <Ionicons name="time-outline" size={14} color={colors.secondary} style={{ opacity: 0.8 }} />
             <Text className={cn(saitClasses.windowText, saitClasses.windowTime)} style={nepaliTextStyle()}>
-              {digits(d.window_start)} – {digits(d.window_end)}
-              {overnight ? ` (${t("sait.1")})` : ""}
+              {card.window}
             </Text>
             {screenWidth >= 640 ? (
               <Text className={saitClasses.windowNote} style={nepaliTextStyle()}>
-                {t("sait.lagna_window")}
+                {card.windowNote}
               </Text>
             ) : null}
           </View>
@@ -108,119 +71,77 @@ export function SaitDayCard({
       </View>
 
       <View className={cn("flex-row flex-wrap", saitClasses.facts)}>
-        {rows.map((r) => (
+        {card.facts.map((r) => (
           <View key={r.label} style={{ width: screenWidth >= 640 ? "33.333%" : "50%" }} className={cn(saitClasses.factItem, "pb-2 pr-4")}>
             <Text className={saitClasses.factLabel} style={nepaliTextStyle()}>
               {r.label}
             </Text>
-            <Text
-              numberOfLines={1}
-              className={saitClasses.factValue}
-              style={nepaliTextStyle()}
-            >
+            <Text numberOfLines={1} className={saitClasses.factValue} style={nepaliTextStyle()}>
               {r.value}
             </Text>
           </View>
         ))}
       </View>
 
-      {shuddhi && shuddhi.planets.length > 0 ? (
+      {card.shuddhi ? (
         <View className={saitClasses.block}>
           <View className={saitClasses.blockRow}>
             <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-              {pick("ग्रह शुद्धि", "Graha Śuddhi")}
+              {card.shuddhi.label}
             </Text>
-            {shuddhi.planets.map((p) => {
-              const name = GRAHA_NAME[(SHUDDHI_PLANET_TO_GRAHA[p.planet] ?? p.planet) as GrahaKey];
-              return (
-                <View
-                  key={p.planet}
-                  className={cn(saitClasses.chip, saitClasses.chipGap, saitClasses.toneChip[p.tone])}
-                >
-                  <Text
-                    style={nepaliTextStyle()}
-                    className={cn(saitClasses.chipText, saitClasses.toneChipText[p.tone])}
-                  >
-                    {pick(name?.ne ?? p.planet, name?.en ?? p.planet)}
-                  </Text>
-                  <Text className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[p.tone])}>
-                    {digits(p.house)}
-                  </Text>
-                </View>
-              );
-            })}
+            {card.shuddhi.planets.map((p) => (
+              <View key={p.key} className={cn(saitClasses.chip, saitClasses.chipGap, saitClasses.toneChip[p.tone])}>
+                <Text style={nepaliTextStyle()} className={cn(saitClasses.chipText, saitClasses.toneChipText[p.tone])}>
+                  {p.name}
+                </Text>
+                <Text className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[p.tone])}>{p.house}</Text>
+              </View>
+            ))}
           </View>
-          <Text
-            style={nepaliTextStyle()}
-            className={cn(saitClasses.summary, saitClasses.toneText[shuddhi.tone])}
-          >
-            {t(`sait.x.shuddhi_${shuddhi.tone}`)}
-            <Text className={saitClasses.summaryNote}>
-              {" "}
-              {pick("(जन्म राशिबाट भाव)", "(house from janma rāśi)")}
-            </Text>
+          <Text style={nepaliTextStyle()} className={cn(saitClasses.summary, saitClasses.toneText[card.shuddhi.tone])}>
+            {card.shuddhi.summary}
+            <Text className={saitClasses.summaryNote}> {card.shuddhi.note}</Text>
           </Text>
         </View>
       ) : null}
 
-      {kumbha ? (
+      {card.kumbha ? (
         <View className={saitClasses.block}>
           <View className={saitClasses.blockRowLoose}>
             <View className={saitClasses.blockIconLabel}>
               <Ionicons name="compass-outline" size={13} color={colors.mutedForeground} />
               <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-                {pick("कुम्भ चक्र", "Kumbha Chakra")}
+                {card.kumbha.label}
               </Text>
             </View>
-            <View className={cn(saitClasses.chip, saitClasses.toneChip[kumbha.tone])}>
-              <Text
-                style={nepaliTextStyle()}
-                className={cn(saitClasses.chipText, saitClasses.toneChipText[kumbha.tone])}
-              >
-                {pick(kumbha.zone_ne, kumbha.zone_en)}
+            <View className={cn(saitClasses.chip, saitClasses.toneChip[card.kumbha.tone])}>
+              <Text style={nepaliTextStyle()} className={cn(saitClasses.chipText, saitClasses.toneChipText[card.kumbha.tone])}>
+                {card.kumbha.zone}
               </Text>
             </View>
           </View>
-          <Text
-            style={nepaliTextStyle()}
-            className={cn(saitClasses.summary, saitClasses.toneText[kumbha.tone])}
-          >
-            {pick(kumbha.effect_ne, kumbha.effect_en)}
-            <Text className={saitClasses.summaryNote}>
-              {" "}
-              {pick("(सूर्यबाट गनिएको)", "(counted from the Sun)")}
-            </Text>
+          <Text style={nepaliTextStyle()} className={cn(saitClasses.summary, saitClasses.toneText[card.kumbha.tone])}>
+            {card.kumbha.effect}
+            <Text className={saitClasses.summaryNote}> {card.kumbha.note}</Text>
           </Text>
         </View>
       ) : null}
 
-      {annaMonth ? (
+      {card.anna ? (
         <View className={saitClasses.block}>
           <View className={saitClasses.blockRowLoose}>
             <View className={saitClasses.blockIconLabel}>
               <Ionicons name="happy-outline" size={13} color={colors.mutedForeground} />
               <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-                {pick("अन्नप्राशन उमेर महिना", "Annaprāśana age month")}
+                {card.anna.label}
               </Text>
             </View>
-            <View className={cn(saitClasses.chip, saitClasses.toneChip[annaMonth.tone])}>
-              <Text
-                className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[annaMonth.tone])}
-              >
-                {pick(
-                  `${digits(annaMonth.ordinal_month)} औँ महिना`,
-                  `month ${annaMonth.ordinal_month}`,
-                )}
-              </Text>
+            <View className={cn(saitClasses.chip, saitClasses.toneChip[card.anna.tone])}>
+              <Text className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[card.anna.tone])}>{card.anna.month}</Text>
             </View>
           </View>
-          <Text
-            style={nepaliTextStyle()}
-            className={cn(saitClasses.summary, saitClasses.toneText[annaMonth.tone])}
-          >
-            {annaMonth.matches
-              ? pick("बच्चाको सही उमेर महिना", "The child's right age month")
-              : pick("यो बच्चाको उमेर महिना होइन", "Not this child's age month")}
+          <Text style={nepaliTextStyle()} className={cn(saitClasses.summary, saitClasses.toneText[card.anna.tone])}>
+            {card.anna.summary}
           </Text>
         </View>
       ) : null}

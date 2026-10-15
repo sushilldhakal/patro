@@ -60,6 +60,8 @@ import {
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
+import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type Focus = "solar" | "lunar" | "both";
 
 export type SceneClock = {
@@ -153,20 +155,6 @@ const CANVAS_BG = midnight.popover;
 const TRAIL_DAYS = SYNODIC_MONTH * 2;
 const TRAIL_STEPS = 260;
 
-const RASHI_NE = [
-  "मेष",
-  "वृष",
-  "मिथुन",
-  "कर्कट",
-  "सिंह",
-  "कन्या",
-  "तुला",
-  "वृश्चिक",
-  "धनु",
-  "मकर",
-  "कुम्भ",
-  "मीन",
-];
 
 function vec(lon: number, lat: number, r: number) {
   return new THREE.Vector3(...eclipticToVec3(lon, lat, r));
@@ -917,12 +905,12 @@ export function TwoSystemsScene({
           i + 1,
         );
       }
-      project("b-sun", "body", "सूर्य", new THREE.Vector3(0, SUN_R * 2.1, 0), false);
-      project("b-earth", "body", "पृथ्वी", earthPos.clone().setY(EARTH_R * 3.4), false);
+      project("b-sun", "body", tFor("ne", "kundali.report.meta_sun"), new THREE.Vector3(0, SUN_R * 2.1, 0), false);
+      project("b-earth", "body", tFor("ne", "vastu.element.earth"), earthPos.clone().setY(EARTH_R * 3.4), false);
       project(
         "b-moon",
         "body",
-        "चन्द्र",
+        tFor("ne", "kundali.graha_name_moon"),
         moonAt(sLon, dAu, mLon, mLat).setY(MOON_R * 4.5),
         lunarW.current < 0.5,
       );

@@ -1,7 +1,7 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import ne from "@vedic-patro/i18n/ne.json";
-import en from "@vedic-patro/i18n/en.json";
+import { setupI18n } from "@vedic-patro/i18n/setup";
+import { i18n } from "@vedic-patro/i18n/react";
+import ne from "@vedic-patro/i18n/web/ne.json";
+import en from "@vedic-patro/i18n/web/en.json";
 
 let initialized = false;
 
@@ -9,19 +9,6 @@ let initialized = false;
 export function initSsrI18n() {
   if (initialized) return i18n;
   initialized = true;
-
-  void i18n.use(initReactI18next).init({
-    resources: {
-      ne: { translation: ne },
-      en: { translation: en },
-    },
-    lng: "ne",
-    supportedLngs: ["en", "ne"],
-    fallbackLng: "ne",
-    load: "languageOnly",
-    interpolation: { escapeValue: false },
-    react: { useSuspense: false },
-  });
-
+  setupI18n({ bundles: { ne, en }, language: "ne" });
   return i18n;
 }

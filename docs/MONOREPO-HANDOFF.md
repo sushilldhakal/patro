@@ -5,18 +5,20 @@ Branch: `monorepo` was merged to `main` on 2026-10-13 and `main` is now the prod
 Rule the owner set: **web is the source of truth.** Where the website and the app differ, the web version wins and the app adopts it. One copy of anything shared, in `packages/`.
 
 ## Layout
-`apps/api` (FastAPI) · `apps/web` (React+Vite) · `apps/mobile` (Expo) · `packages/{domain,i18n,design-tokens,icons,api-client}`. npm workspaces + Turborepo, one root lockfile.
+`apps/api` (FastAPI) · `apps/web` (React+Vite) · `apps/mobile` (Expo) · `packages/{features,ui,domain,i18n,design-tokens,icons,api-client}`. npm workspaces + Turborepo, one root lockfile.
 
 Package manager: **npm workspaces** stay. The brief suggested pnpm "where appropriate"; it is not: EAS builds and the VM deploy (`scripts/deploy.sh`) install with npm from `package-lock.json`, and Metro/Expo need extra hoisting config under pnpm's symlinked layout. Switching would touch the iOS build pipeline while a release is in review, for no gain over the current single lockfile.
 
 What each app shares (and what stays per platform):
-- **Design values** — `packages/design-tokens` (README): colours/roles/themes, type scales, spacing, radii, shadows, sizes, motion, breakpoints. Web reads generated CSS variables; the app reads typed TS values and a generated Tailwind JSON. UI components stay per platform.
+- **Pages** — `packages/features` (README): one hook per page holds data loading, state, row building and copy; each app only draws it. Holidays is the first page moved; the rest still have a copy per app and move page by page.
+- **UI kit** — `packages/ui` (README): Box, Text, Pressable, Card, Button, Icon, Table, Sheet with one props contract, drawn with HTML + Tailwind on the website and React Native + NativeWind in the app. New and migrated screens use it; the apps' older primitives (`components/ui/*`) are still there for the rest.
+- **Design values** — `packages/design-tokens` (README): colours/roles/themes, type scales, spacing, radii, shadows, sizes, motion, breakpoints. Web reads generated CSS variables; the app reads typed TS values and a generated Tailwind JSON.
 - **Icons** — `packages/icons` (README): which Lucide icon means what, sizes, stroke; web renders lucide-react, the app react-native-svg.
 - **API** — `packages/api-client` (README): all request functions, accounts, documents, errors, timeouts, query keys, response contracts; checked against the URL golden and FastAPI's OpenAPI document.
 - **Logic and copy** — `packages/domain`, `packages/i18n`.
 
 - `packages/domain` — plain TS shared logic/data, imported as `@vedic-patro/domain/<path>`. Lint (`npm run lint -w @vedic-patro/domain`) allows imports only from the package, `import type` from `@vedic-patro/api-client`, and `clsx`, `tailwind-merge`, `three`, `healpix-ts`. No React / browser / React Native.
-- Language and copy: each app calls `configureLocale` once (`domain/locale.ts`); web in `apps/web/src/i18n/index.ts`, mobile in `apps/mobile/lib/i18n.tsx`. Copy lives in `packages/i18n/src/strings.ts` (run `npm run generate -w @vedic-patro/i18n` after editing).
+- Language and copy: one translator for both apps, `@vedic-patro/i18n` (README) — `useTranslation`/`useLocale`/`<Trans>` from `@vedic-patro/i18n/react`; each app calls `setupI18n` once (web `apps/web/src/i18n/index.ts`, mobile `apps/mobile/lib/i18n.tsx`). The website no longer uses i18next. Copy lives in `packages/i18n/src/strings.ts` (run `npm run i18n` after editing); `npm run check:copy` (CI) stops new inline Nepali text in `apps/*` — 2,258 inline texts remain in 204 files (`npm run check:copy -- --report`), down from 3,886.
 - Learn chapters are data (`domain/src/learn/articles/**`), rendered by `apps/web/src/lib/learn/article-render.tsx` and `apps/mobile/components/learn/article-render.tsx`. Inline markup: `**strong**`, `*teal*`, `~amber~`, `` `num` ``, `[[slug|label]]` link. A literal tilde in prose is written `∼`.
 
 ## Checks before every push
@@ -24,7 +26,9 @@ What each app shares (and what stays per platform):
 npx turbo run typecheck
 npx turbo run lint --filter=./packages/*      # domain portability, i18n + token output up to date
 npx turbo run test --filter=./packages/*      # unit tests, URL golden, OpenAPI contract
-npm run check:shared                          # both apps still use the shared client, tokens, icons
+npm run check:shared                          # both apps still use the shared client, tokens, icons, translator, page hooks
+npm run check:copy                            # no new inline Nepali text in apps/*
+npm run check:design && npm run check:classes
 npm run build -w @vedic-patro/web             # prerenders 63 pages
 cd apps/mobile && npx expo export --platform all --clear
 cd apps/api && python scripts/export_openapi.py --check

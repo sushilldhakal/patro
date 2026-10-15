@@ -25,7 +25,7 @@ export function PlanetSelectMenu({
   compact = false,
 }: Props) {
   const resolvedIconSize = iconSize ?? (compact ? 18 : 22);
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top?: number; bottom?: number; right: number }>({ right: 8 });
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -63,8 +63,8 @@ export function PlanetSelectMenu({
         onClick={openMenu}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={pick("ग्रह छान्नुहोस्", "Select a planet")}
-        title={`${pick("ग्रह छान्नुहोस्", "Select a planet")} · ${pick(selectedLabel.ne, selectedLabel.en)}`}
+        aria-label={t("kundali.select_a_planet")}
+        title={`${t("kundali.select_a_planet")} · ${pick(selectedLabel.ne, selectedLabel.en)}`}
         className={
           className ??
           "flex h-9 w-9 items-center justify-center rounded-full border"
@@ -87,7 +87,7 @@ export function PlanetSelectMenu({
             <>
               <button
                 type="button"
-                aria-label={pick("बन्द गर्नुहोस्", "Close")}
+                aria-label={t("ui.common.close")}
                 className="fixed inset-0 z-[80] cursor-default bg-transparent"
                 onClick={() => setOpen(false)}
               />

@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { useKundaliHubPage } from "@vedic-patro/features/kundali";
 import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { ActivityIndicator, View } from "react-native";
@@ -14,24 +15,16 @@ import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
 export default function KundaliScreen() {
-  const { pick, t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const { status, authDialog, canAddProfile, copy } = useKundaliHubPage({ isAuthenticated, authLoading });
   const pickerRef = useRef<KundaliProfilePickerHandle>(null);
-
-  const openAuth = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setAuthOpen(true);
-  };
 
   const onSelectProfile = (profile: Profile) => {
     router.push(`/kundali/${profile.id}` as never);
@@ -40,43 +33,38 @@ export default function KundaliScreen() {
   return (
     <>
       <KundaliPageShell
-        eyebrow={t("kundali.eyebrow")}
+        eyebrow={copy.eyebrow}
         icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
-        title={t("kundali.title")}
-        subtitle={isAuthenticated ? t("kundali.subtitle_auth") : t("kundali.login_required")}
+        title={copy.title}
+        subtitle={copy.subtitle}
         headerRight={
-          isAuthenticated ? (
+          canAddProfile ? (
             <Button
-              label={t("kundali.add_profile")}
+              label={copy.addProfile}
               size="sm"
               onPress={() => pickerRef.current?.openAdd()}
             />
           ) : undefined
         }
       >
-        {authLoading ? (
+        {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
             <ActivityIndicator />
             <Text className={cn("mt-2", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-              {pick("लोड हुँदै…", "Loading…")}
+              {copy.loading}
             </Text>
           </View>
-        ) : !isAuthenticated ? (
+        ) : status === "login" ? (
           <KundaliLoginPrompt
-            titleNe={t("kundali.login_prompt_title")}
-            titleEn={t("kundali.login_prompt_title")}
-            bodyNe={t("kundali.login_prompt_body")}
-            bodyEn={t("kundali.login_prompt_body")}
-            onLogin={() => openAuth("login")}
-            onSignup={() => openAuth("signup")}
+            title={copy.loginTitle}
+            body={copy.loginBody}
+            onLogin={authDialog.openLogin}
+            onSignup={authDialog.openSignup}
           />
         ) : (
           <View className="gap-4">
             <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
-              {pick(
-                "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
-                "Select a profile or add a new one.",
-              )}
+              {copy.profileHint}
             </Text>
             <KundaliProfilePicker ref={pickerRef} selectedId={null} onSelect={onSelectProfile} />
           </View>
@@ -84,10 +72,10 @@ export default function KundaliScreen() {
       </KundaliPageShell>
 
       <AuthDialog
-        key={authMode}
-        open={authOpen}
-        onOpenChange={setAuthOpen}
-        initialMode={authMode}
+        key={authDialog.mode}
+        open={authDialog.open}
+        onOpenChange={authDialog.setOpen}
+        initialMode={authDialog.mode}
       />
     </>
   );

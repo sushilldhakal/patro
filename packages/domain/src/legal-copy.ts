@@ -2,7 +2,7 @@
  * Canonical URLs: https://www.vedicpatro.com/privacy and /terms
  */
 export const LEGAL_UPDATED = "27 August 2026";
-export const LEGAL_CONTACT_EMAIL = "support@vedicpatro.com";
+export const LEGAL_CONTACT_EMAIL = "vedicnepalpatro@gmail.com";
 export const LEGAL_SITE = "https://www.vedicpatro.com";
 
 export type LegalSection = { heading: { ne: string; en: string }; body: { ne: string; en: string }[] };
@@ -116,8 +116,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
         en: "Location sent for a panchanga calculation is used to fulfil that request. A birth place saved on a profile is removed when you delete the account.",
       },
       {
-        ne: "मेटाउन नसकेमा support@vedicpatro.com। प्रमाणित अनुरोध ३० दिनभित्र पूरा गर्छौं।",
-        en: "If you cannot use in-app deletion, email support@vedicpatro.com. We complete verified requests within 30 days.",
+        ne: "मेटाउन नसकेमा vedicnepalpatro@gmail.com। प्रमाणित अनुरोध ३० दिनभित्र पूरा गर्छौं।",
+        en: "If you cannot use in-app deletion, email vedicnepalpatro@gmail.com. We complete verified requests within 30 days.",
       },
     ],
   },
@@ -143,8 +143,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     heading: { ne: "सम्पर्क", en: "Contact" },
     body: [
       {
-        ne: "प्रश्न वा डेटा अनुरोध: support@vedicpatro.com — Vedic Patro, https://www.vedicpatro.com",
-        en: "Questions or data requests: support@vedicpatro.com — Vedic Patro, https://www.vedicpatro.com",
+        ne: "प्रश्न वा डेटा अनुरोध: vedicnepalpatro@gmail.com — Vedic Patro, https://www.vedicpatro.com",
+        en: "Questions or data requests: vedicnepalpatro@gmail.com — Vedic Patro, https://www.vedicpatro.com",
       },
     ],
   },
@@ -223,8 +223,8 @@ export const TERMS_SECTIONS: LegalSection[] = [
     heading: { ne: "सम्पर्क", en: "Contact" },
     body: [
       {
-        ne: "support@vedicpatro.com — https://www.vedicpatro.com",
-        en: "support@vedicpatro.com — https://www.vedicpatro.com",
+        ne: "vedicnepalpatro@gmail.com — https://www.vedicpatro.com",
+        en: "vedicnepalpatro@gmail.com — https://www.vedicpatro.com",
       },
     ],
   },

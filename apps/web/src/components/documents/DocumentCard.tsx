@@ -1,8 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { BookOpen, ChevronRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { bilingualText, useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { useDocumentCard } from "@vedic-patro/features/documents";
 import { documentsListSearch, type DocumentCategoryTab, type DocumentSummary } from "@/lib/documents-api";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -16,12 +14,7 @@ interface Props {
 }
 
 export function DocumentCard({ doc, category, topic }: Props) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const num = (n: number) => (lang === "ne" ? toNepaliDigits(String(n)) : String(n));
-  const title = bilingualText(lang, doc.title_ne, doc.title_en);
-  const subtitle = bilingualText(lang, doc.subtitle_ne, doc.subtitle_en);
-  const description = bilingualText(lang, doc.description_ne, doc.description_en);
+  const { title, subtitle, description, meta } = useDocumentCard(doc);
 
   return (
     <Link
@@ -44,10 +37,9 @@ export function DocumentCard({ doc, category, topic }: Props) {
         <p className={cn(documentsClasses.cardDescription, "line-clamp-2")}>{description}</p>
       ) : null}
       <div className={cn(documentsClasses.cardMeta, documentsClasses.cardMetaText, "mt-auto")}>
-        {doc.has_chapters ? (
-          <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
-        ) : null}
-        <span>{t("documents.shlokas_count", { count: num(doc.shloka_count) })}</span>
+        {meta.map((m) => (
+          <span key={m}>{m}</span>
+        ))}
       </div>
     </Link>
   );

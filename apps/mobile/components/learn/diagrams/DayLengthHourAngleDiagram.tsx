@@ -9,10 +9,11 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const ROWS = [
-  { ne: "ग्रीष्म अयनान्त", en: "Summer solstice", h: 6.92, len: "~13h 50m", color: DIAGRAM_COLOR.sun, z: -0.18 },
-  { ne: "शीत अयनान्त", en: "Winter solstice", h: 5.21, len: "~10h 25m", color: DIAGRAM_COLOR.equator, z: 0.18 },
+  { get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, h: 6.92, len: "~13h 50m", color: DIAGRAM_COLOR.sun, z: -0.18 },
+  { get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, h: 5.21, len: "~10h 25m", color: DIAGRAM_COLOR.equator, z: 0.18 },
 ];
 const PX_PER_HOUR = 0.09;
 
@@ -63,12 +64,12 @@ const DayLengthHourAngleScene = memo(function DayLengthHourAngleScene({ onLabels
 });
 
 export function DayLengthHourAngleDiagram() {
-  const { pick, digits } = useLocale();
-  const copy = { noon: pick("स्थानीय मध्याह्न", "Local noon"), sunrise: pick("सूर्योदय", "Sunrise"), sunset: pick("सूर्यास्त", "Sunset") };
+  const { t, pick, digits } = useLocale();
+  const copy = { noon: t("ui.learn.local_noon"), sunrise: t("kundali.sunrise"), sunset: t("kundali.sunset") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — दिनमान = 2H", "3D — day length = 2H")}
+      title={t("ui.learn.n3d_day_length_2h")}
       height={220}
       camera={{ yaw: 0.2, pitch: 0.6 }}
       frame={{ width: 1.4, height: 0.5 }}
@@ -76,12 +77,9 @@ export function DayLengthHourAngleDiagram() {
       legend={ROWS.map((r) => ({ color: r.color, label: pick(`${r.ne} — ${r.len}`, `${r.en} — ${r.len}`) }))}
       readouts={ROWS.map((r) => ({
         k: pick(r.ne, r.en),
-        v: `${pick("H", "H")} ≈ ${digits(r.h.toFixed(2))}h → 2H = ${r.len}`,
+        v: `${t("ui.learn.h")} ≈ ${digits(r.h.toFixed(2))}h → 2H = ${r.len}`,
       }))}
-      caption={pick(
-        "सूर्योदय समीकरणबाट आउने घण्टा-कोण H दिनको आधा हो — स्थानीय मध्याह्न बीचमा, सूर्योदय मध्याह्न−H मा, सूर्यास्त मध्याह्न+H मा पर्छ। त्यसैले दिनमान ठ्याक्कै 2H हुन्छ। काठमाडौँको अक्षांशमा ग्रीष्म अयनान्तमा H ठूलो (लामो दिन), शीत अयनान्तमा सानो (छोटो दिन)।",
-        "The hour angle H from the sunrise equation is half a day — local noon sits in the middle, sunrise at noon−H, sunset at noon+H. So day length is exactly 2H. At Kathmandu's latitude, H is large at the summer solstice (long day) and small at the winter solstice (short day).",
-      )}
+      caption={t("ui.learn.the_hour_angle_h_from_the")}
     >
       {({ onLabels }) => <DayLengthHourAngleScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

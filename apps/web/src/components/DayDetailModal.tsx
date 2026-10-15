@@ -37,6 +37,7 @@ import { patroAsideLink } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 interface Props {
   day: CalendarDay | null;
   bsYear: number;
@@ -65,7 +66,7 @@ function DinVisheshSection({ p, day }: { p: PanchangaDay; day: CalendarDay }) {
 
   return (
     <>
-      <h4 className={sectionTitle}>{bilingualText(lang, "दिन विशेष", "Day highlights")}</h4>
+      <h4 className={sectionTitle}>{tFor(lang, "panchanga.day_highlights")}</h4>
       <ul className="m-0 list-none p-0">
         {labels.map((name) => (
           <li key={name} className="border-b border-border py-2 text-sm text-base last:border-b-0">
@@ -84,7 +85,7 @@ function MuhurtaSection({ p }: { p: PanchangaDay }) {
 
   return (
     <>
-      <h4 className={sectionTitle}>{bilingualText(lang, "मुहूर्त", "Moment")}</h4>
+      <h4 className={sectionTitle}>{tFor(lang, "panchanga.moment")}</h4>
       <div className="mb-4 overflow-hidden rounded-lg border border-border">
         {rows.map((row) => (
           <div
@@ -110,7 +111,7 @@ function PlanetsSection({ p }: { p: PanchangaDay }) {
 
   return (
     <>
-      <h4 className={sectionTitle}>{bilingualText(lang, "उदयकालिक स्पष्टग्रह", "Planets at sunrise")}</h4>
+      <h4 className={sectionTitle}>{tFor(lang, "panchanga.planets_at_sunrise")}</h4>
       <div className="grid grid-cols-2 gap-2">
         {planets.map(({ key, label, labelEn, rashiNe, rashiEn, coords, isRetrograde, isCombust }) => (
           <div
@@ -171,7 +172,7 @@ function CelestialTimesRow({ p, day }: { p: PanchangaDay; day: CalendarDay }) {
         <span className="inline-flex items-center gap-1.5">
           <Sunrise size={16} strokeWidth={1.8} />
           <span>
-            {bilingualText(lang, "सूर्योदय", "Sunrise")} {sunrise}
+            {tFor(lang, "kundali.sunrise")} {sunrise}
           </span>
         </span>
       )}
@@ -179,7 +180,7 @@ function CelestialTimesRow({ p, day }: { p: PanchangaDay; day: CalendarDay }) {
         <span className="inline-flex items-center gap-1.5">
           <Sunset size={16} strokeWidth={1.8} />
           <span>
-            {bilingualText(lang, "सूर्यास्त", "Sunset")} {sunset}
+            {tFor(lang, "kundali.sunset")} {sunset}
           </span>
         </span>
       )}
@@ -187,7 +188,7 @@ function CelestialTimesRow({ p, day }: { p: PanchangaDay; day: CalendarDay }) {
         <span className="inline-flex items-center gap-1.5">
           <Moon size={16} strokeWidth={1.8} />
           <span>
-            {bilingualText(lang, "चन्द्रोदय", "Moonrise")} {moonrise}
+            {tFor(lang, "sections.moonrise")} {moonrise}
           </span>
         </span>
       )}
@@ -195,7 +196,7 @@ function CelestialTimesRow({ p, day }: { p: PanchangaDay; day: CalendarDay }) {
         <span className="inline-flex items-center gap-1.5">
           <Moon size={16} strokeWidth={1.8} />
           <span>
-            {bilingualText(lang, "चन्द्रास्त", "Moonset")} {moonset}
+            {tFor(lang, "sections.moonset")} {moonset}
           </span>
         </span>
       )}
@@ -236,15 +237,15 @@ function DaySummary({
 
       <CelestialTimesRow p={p} day={day} />
 
-      <h4 className={sectionTitle}>{bilingualText(lang, "पञ्चाङ्ग", "Panchanga")}</h4>
+      <h4 className={sectionTitle}>{tFor(lang, "learn.diagrams.hierarchy_converge")}</h4>
       <PanchangaTable
         rows={[
-          { label: bilingualText(lang, "पक्ष", "Paksha"), value: pakshaDisplay },
-          { label: bilingualText(lang, "वार", "Day"), value: vaara },
-          { label: bilingualText(lang, "तिथि", "Tithi"), value: angaVal(tithi, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) },
-          { label: bilingualText(lang, "नक्षत्र", "Nakshatra"), value: angaVal(nakshatra, day.nakshatra_ne ?? day.nakshatra, day.nakshatra ?? day.nakshatra_ne) },
-          { label: bilingualText(lang, "योग", "Yog"), value: angaVal(yoga, day.yoga_ne ?? day.yoga, day.yoga ?? day.yoga_ne) },
-          { label: bilingualText(lang, "करण", "Karan"), value: angaVal(karana, day.karana_ne ?? day.karana, day.karana ?? day.karana_ne) },
+          { label: tFor(lang, "sections.paksha"), value: pakshaDisplay },
+          { label: tFor(lang, "panchanga.hora.day"), value: vaara },
+          { label: tFor(lang, "tithi"), value: angaVal(tithi, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) },
+          { label: tFor(lang, "nakshatra"), value: angaVal(nakshatra, day.nakshatra_ne ?? day.nakshatra, day.nakshatra ?? day.nakshatra_ne) },
+          { label: tFor(lang, "ui.day_detail_modal.yog"), value: angaVal(yoga, day.yoga_ne ?? day.yoga, day.yoga ?? day.yoga_ne) },
+          { label: tFor(lang, "ui.day_detail_modal.karan"), value: angaVal(karana, day.karana_ne ?? day.karana, day.karana ?? day.karana_ne) },
         ]}
       />
 
@@ -252,7 +253,7 @@ function DaySummary({
       <DinVisheshSection p={p} day={day} />
 
       <button type="button" className={cn(patroAsideLink, "mb-4 inline-block cursor-pointer border-none bg-transparent p-0 text-sm")} onClick={onFullPanchanga}>
-        {bilingualText(lang, "पूर्ण पञ्चाङ्ग हेर्नुहोस् →", "See full panchanga →")}
+        {tFor(lang, "ui.day_detail_modal.see_full_panchanga")}
       </button>
     </>
   );
@@ -313,22 +314,22 @@ function PanchangaFull({
     <div>
       <div className="mb-4 grid grid-cols-2 gap-2.5">
         <div className={metaCard}>
-          <div className={metaLabel}>{bilingualText(lang, "वि.सं.", "BS")}</div>
+          <div className={metaLabel}>{tFor(lang, "patro_date.era_bs")}</div>
           <div className="text-sm font-semibold">{bsLine}</div>
         </div>
         <div className={metaCard}>
-          <div className={metaLabel}>{bilingualText(lang, "इ.सन्", "AD")}</div>
+          <div className={metaLabel}>{tFor(lang, "panchanga.ad_era")}</div>
           <div className="text-sm font-semibold">{formatAdShort(p, day.date_ad, lang)}</div>
         </div>
         {formatShakaYear(p) && (
           <div className={metaCard}>
-            <div className={metaLabel}>{bilingualText(lang, "शक संवत्", "Shaka Samvat")}</div>
+            <div className={metaLabel}>{tFor(lang, "panchanga.shaka_samvat")}</div>
             <div className="text-sm font-semibold">{formatShakaYear(p)}</div>
           </div>
         )}
         {formatNepalSambatDisplay(p, lang) && (
           <div className={metaCard}>
-            <div className={metaLabel}>{bilingualText(lang, "नेपाल संवत्", "Nepal Samvat")}</div>
+            <div className={metaLabel}>{tFor(lang, "panchanga.nepal_samvat")}</div>
             <div className="text-sm font-semibold">{formatNepalSambatDisplay(p, lang)}</div>
           </div>
         )}
@@ -336,26 +337,26 @@ function PanchangaFull({
 
       <PanchangaTable
         rows={[
-          { label: bilingualText(lang, "उत्तरायण", "Sun's course"), value: aayan },
-          { label: bilingualText(lang, "ऋतु", "Season"), value: ritu },
-          { label: bilingualText(lang, "वार", "Day"), value: vaara },
-          { label: bilingualText(lang, "पक्ष", "Paksha"), value: paksha },
-          { label: bilingualText(lang, "तिथि", "Tithi"), value: angaVal(tithi) },
-          { label: bilingualText(lang, "नक्षत्र", "Nakshatra"), value: angaVal(nakshatra) },
-          { label: bilingualText(lang, "योग", "Yoga"), value: angaVal(yoga) },
-          { label: bilingualText(lang, "करण", "Karana"), value: angaVal(karana) },
-          { label: bilingualText(lang, "चन्द्रराशि", "Moon sign"), value: chandraNe },
-          { label: bilingualText(lang, "दिनमान", "Day length"), value: formatDinamaanShort(p) },
-          { label: bilingualText(lang, "सूर्योदय", "Sunrise"), value: getSunriseDisplay(p) ?? formatClockNepali(day.sunrise) },
-          { label: bilingualText(lang, "सूर्यास्त", "Sunset"), value: getSunsetDisplay(p) ?? formatClockNepali(day.sunset) },
-          { label: bilingualText(lang, "चन्द्रोदय", "Moonrise"), value: getMoonriseDisplay(p, lang) },
-          { label: bilingualText(lang, "चन्द्रास्त", "Moonset"), value: getMoonsetDisplay(p, lang) },
+          { label: tFor(lang, "panchanga.sun_course"), value: aayan },
+          { label: tFor(lang, "sections.ritu"), value: ritu },
+          { label: tFor(lang, "panchanga.hora.day"), value: vaara },
+          { label: tFor(lang, "sections.paksha"), value: paksha },
+          { label: tFor(lang, "tithi"), value: angaVal(tithi) },
+          { label: tFor(lang, "nakshatra"), value: angaVal(nakshatra) },
+          { label: tFor(lang, "kundali.yoga"), value: angaVal(yoga) },
+          { label: tFor(lang, "kundali.karana"), value: angaVal(karana) },
+          { label: tFor(lang, "ui.day_detail_modal.moon_sign"), value: chandraNe },
+          { label: tFor(lang, "panchanga.day_length"), value: formatDinamaanShort(p) },
+          { label: tFor(lang, "kundali.sunrise"), value: getSunriseDisplay(p) ?? formatClockNepali(day.sunrise) },
+          { label: tFor(lang, "kundali.sunset"), value: getSunsetDisplay(p) ?? formatClockNepali(day.sunset) },
+          { label: tFor(lang, "sections.moonrise"), value: getMoonriseDisplay(p, lang) },
+          { label: tFor(lang, "sections.moonset"), value: getMoonsetDisplay(p, lang) },
         ]}
       />
 
       {dinVishesh.length > 0 && (
         <p className="mb-4 text-sm text-base">
-          {bilingualText(lang, "दिन विशेष", "Day highlights")} : {dinVishesh.join(" · ")}
+          {tFor(lang, "panchanga.day_highlights")} : {dinVishesh.join(" · ")}
         </p>
       )}
 
@@ -412,13 +413,13 @@ export function DayDetailModal({ day, bsYear, bsMonth, location, onClose }: Prop
                     onClick={() => setShowPanchanga(false)}
                   >
                     <ChevronLeft size={16} strokeWidth={1.8} />
-                    {bilingualText(lang, "फर्कनुहोस्", "Back")}
+                    {tFor(lang, "ui.day_detail_modal.back")}
                   </button>
-                  <Dialog.Title className="m-0 text-lg font-bold">{bilingualText(lang, "पञ्चाङ्ग", "Panchanga")}</Dialog.Title>
+                  <Dialog.Title className="m-0 text-lg font-bold">{tFor(lang, "learn.diagrams.hierarchy_converge")}</Dialog.Title>
                 </div>
                 <Dialog.Close
                   className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-card hover:bg-surface-inset hover:text-foreground"
-                  aria-label={bilingualText(lang, "बन्द", "Close")}
+                  aria-label={tFor(lang, "common.close")}
                 >
                   <X size={16} strokeWidth={1.8} />
                 </Dialog.Close>
@@ -451,7 +452,7 @@ export function DayDetailModal({ day, bsYear, bsMonth, location, onClose }: Prop
                 </div>
                 <Dialog.Close
                   className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-card hover:bg-surface-inset hover:text-foreground"
-                  aria-label={bilingualText(lang, "बन्द", "Close")}
+                  aria-label={tFor(lang, "common.close")}
                 >
                   <X size={16} strokeWidth={1.8} />
                 </Dialog.Close>
@@ -470,7 +471,7 @@ export function DayDetailModal({ day, bsYear, bsMonth, location, onClose }: Prop
 
             {q.isError && (
               <p className="text-sm text-danger">
-                {bilingualText(lang, "दिन विवरण लोड गर्न सकिएन।", "Failed to load day details.")}
+                {tFor(lang, "panchanga.day_load_error")}
               </p>
             )}
 

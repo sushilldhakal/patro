@@ -1,6 +1,2 @@
-import type { DocumentCategoryId } from "@vedic-patro/domain/document-categories";
-import type { DocumentSummary } from "@/lib/documents-api";
-
-export function documentsInGroup(documents: DocumentSummary[], groupId: DocumentCategoryId) {
-  return documents.filter((doc) => doc.category === groupId);
-}
+/** One copy for both apps: @vedic-patro/features/documents. */
+export { documentsInGroup } from "@vedic-patro/features/documents";

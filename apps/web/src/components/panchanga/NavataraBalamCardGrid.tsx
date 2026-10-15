@@ -1,6 +1,5 @@
 import type { BalamCardItem } from "@vedic-patro/domain/balam-cards";
-import { findCurrentBalamCard } from "@vedic-patro/domain/balam-cards";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
+import { useNavataraBalamCards } from "@vedic-patro/features/panchanga";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { panchangaCardGrid } from "@vedic-patro/design-tokens";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
@@ -19,42 +18,37 @@ export function NavataraBalamCardGrid({
   lang?: string;
   variant?: "chandrabala" | "tarabala";
 }) {
-  const current = findCurrentBalamCard(cards, clock);
-  if (!cards.length) return null;
+  const items = useNavataraBalamCards({ cards, clock, formatName, lang });
+  if (!items.length) return null;
 
   return (
     <div className={panchangaCardGrid}>
-      {cards.map((card) => {
-        const subtitle = `${formatNavataraTara(card.tara, lang)}/${formatNavataraQuality(card.quality, lang)}`;
-        const name = formatName(card);
-        const titleLine = (
-          <>
-            {name}
-            {card.timeRange ? (
-              <>
-                {" "}
-                <span className={panchangaPageClasses.sections.monoTabular}>{card.timeRange}</span>
-              </>
-            ) : null}
-          </>
-        );
-        return (
-          <PanchangaBalamCard
-            key={card.key}
-            titleLine={titleLine}
-            subtitleLine={subtitle}
-            tone={card.tone}
-            isCurrent={current?.key === card.key}
-            icon={
-              variant === "tarabala" ? (
-                <NakshatraGlyphIcon name={card.name} number={card.number} size={24} />
-              ) : (
-                <RashiGlyphIcon name={card.name} number={card.number} size={24} />
-              )
-            }
-          />
-        );
-      })}
+      {items.map((card) => (
+        <PanchangaBalamCard
+          key={card.key}
+          titleLine={
+            <>
+              {card.name}
+              {card.timeRange ? (
+                <>
+                  {" "}
+                  <span className={panchangaPageClasses.sections.monoTabular}>{card.timeRange}</span>
+                </>
+              ) : null}
+            </>
+          }
+          subtitleLine={card.subtitle}
+          tone={card.tone}
+          isCurrent={card.isCurrent}
+          icon={
+            variant === "tarabala" ? (
+              <NakshatraGlyphIcon name={card.glyph.name} number={card.glyph.number} size={24} />
+            ) : (
+              <RashiGlyphIcon name={card.glyph.name} number={card.glyph.number} size={24} />
+            )
+          }
+        />
+      ))}
     </div>
   );
 }

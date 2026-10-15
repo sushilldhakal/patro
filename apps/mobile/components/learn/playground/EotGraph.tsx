@@ -87,7 +87,7 @@ export interface EotGraphProps {
 }
 
 export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGraphProps) {
-  const { lang, pick } = useLocale();
+  const { t, lang } = useLocale();
   const ne = lang !== "en";
   const num = (v: number | string) => (ne ? toNepaliDigits(String(v)) : String(v));
 
@@ -131,9 +131,9 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
   }, [markerT, monthStarts]);
 
   const legend = [
-    { color: NOW, label: pick("अहिले", "Now") },
-    { color: LATE, label: pick("घाम पछाडि", "Sundial Late") },
-    { color: EARLY, label: pick("घाम अगाडि", "Sundial Early") },
+    { color: NOW, label: t("panchanga.day_cycle.now") },
+    { color: LATE, label: t("learn.study.eot.sundial_late") },
+    { color: EARLY, label: t("learn.study.eot.sundial_early") },
   ];
 
   return (
@@ -164,10 +164,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
           width="100%"
           height="100%"
           accessibilityRole="image"
-          accessibilityLabel={pick(
-            "समयको समीकरण — वर्षभरि साँचो सौर समय र माध्य सौर समयबीचको फरक",
-            "The equation of time — true solar time minus mean solar time across a year",
-          )}
+          accessibilityLabel={t("learn.study.eot.aria")}
         >
           {ticks.map((tick) => {
             const px = x(tick.minutes);
@@ -246,10 +243,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
         className="text-caption mt-1.5"
         style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.5) }]}
       >
-        {pick(
-          "घडीभन्दा घामको समय कति अगाडि/पछाडि छ। उत्केन्द्रता शून्य पार्नुहोस् — एउटा लहर बाँकी रहन्छ; अक्ष झुकाव शून्य पार्नुहोस् — अर्को।",
-          "How far a sundial runs ahead of or behind a clock. Zero the eccentricity and one wave survives; zero the tilt and the other does.",
-        )}
+        {t("learn.study.eot.caption")}
       </Text>
     </View>
   );

@@ -4,15 +4,8 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { Text } from "@/components/ui/Text";
 import type { GocharGraha } from "@/lib/api";
-import { grahaRashiNe } from "@vedic-patro/domain/dainikKranti/gochar-display";
-import {
-  formatGocharPatroDate,
-  grahaExalted,
-  grahaNakshatraLine,
-  motionLabel,
-} from "@vedic-patro/domain/gochar-page-utils";
-import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { useLocale } from "@/lib/i18n";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { useGocharSkyCards } from "@vedic-patro/features/gochar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
@@ -51,8 +44,7 @@ export function GocharSkySection({
   dateLabel: string;
   onSelectPlanet?: (key: GrahaKey) => void;
 }) {
-  const { lang, pick, digits } = useLocale();
-  const colors = useThemeColors();
+  const { cards, copy } = useGocharSkyCards(gochar);
   const { width } = useBreakpoint();
   const cols = width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
@@ -61,10 +53,10 @@ export function GocharSkySection({
     <View className={cn(gocharClasses.skyCard, "border border-border")}>
       <View className={gocharClasses.skyHead}>
         <Text className={gocharClasses.skyEyebrow} style={nepaliTextStyle()}>
-          {pick("आकाश एक नजरमा", "The sky at a glance")}
+          {copy.eyebrow}
         </Text>
         <Text className={gocharClasses.skyTitle} style={nepaliTextStyle()}>
-          {pick("प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
+          {copy.title}
         </Text>
         <Text className={gocharClasses.skyDate} style={nepaliTextStyle()}>
           {dateLabel}
@@ -72,16 +64,8 @@ export function GocharSkySection({
       </View>
 
       <View className={cn("flex-row flex-wrap", gocharClasses.skyGrid)}>
-        {GRAHA_DETAIL_ORDER.map((key) => {
-          const g = gochar[key];
-          if (!g) return null;
-          const name = pick(GRAHA_NAME[key].ne, GRAHA_NAME[key].en);
-          const rashi = lang === "en" ? (g.rashi ?? "") : (grahaRashiNe(g) ?? g.rashi_ne ?? "");
-          const deg =
-            g.deg_in_rashi != null ? `${digits(g.deg_in_rashi.toFixed(1))}°` : "—";
-          const exalted = grahaExalted(key, g);
-          const untilAd = g.next_rashi_entry?.entry_time_local?.slice(0, 10);
-
+        {cards.map((card) => {
+          const key = card.key;
           return (
             <Pressable
               key={key}
@@ -98,45 +82,40 @@ export function GocharSkySection({
                 <GrahaPlanetIcon graha={key} size={32} />
                 <View className={cn("min-w-0 flex-1 flex-row", gocharClasses.planetTitleWrap)}>
                   <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>
-                    {name}
+                    {card.name}
                   </Text>
                   <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>
-                    {rashi}
+                    {card.rashi}
                   </Text>
-                  <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>{deg}</Text>
+                  <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>{card.deg}</Text>
                   <GrahaStatusBadges
                     planetKey={key}
-                    isRetrograde={g.is_retrograde}
-                    isCombust={g.is_combust}
+                    isRetrograde={card.isRetrograde}
+                    isCombust={card.isCombust}
                     size={13}
                   />
                 </View>
-                {exalted ? (
+                {card.exalted ? (
                   <View className={gocharClasses.exaltedBadge}>
                     <Text
                       className={gocharClasses.exaltedBadgeText}
                       style={nepaliTextStyle()}
                     >
-                      {pick("उच्च", "Exalted")}
+                      {copy.exalted}
                     </Text>
                   </View>
                 ) : null}
               </View>
 
               <View className={gocharClasses.planetBody}>
-                <MetaRow
-                  label={pick("नक्षत्र", "Nakshatra")}
-                  value={grahaNakshatraLine(g, lang, digits)}
-                />
-                <MetaRow label={pick("गति", "Motion")} value={motionLabel(g, lang)} />
+                <MetaRow label={copy.nakshatra} value={card.nakshatra} />
+                <MetaRow label={copy.motion} value={card.motion} />
               </View>
 
-              {untilAd ? (
+              {card.footer ? (
                 <View className={gocharClasses.planetFooter}>
                   <Text className={gocharClasses.planetFooterText} style={nepaliTextStyle()}>
-                    {lang === "en"
-                      ? `In ${rashi} until ${formatGocharPatroDate(untilAd, lang)}`
-                      : `${rashi} मा ${formatGocharPatroDate(untilAd, lang)} सम्म`}
+                    {card.footer}
                   </Text>
                 </View>
               ) : null}

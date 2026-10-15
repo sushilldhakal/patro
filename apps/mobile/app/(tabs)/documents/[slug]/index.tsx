@@ -1,85 +1,55 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useDocumentDetail, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
 import { DocumentJumpForm } from "@/components/documents/DocumentJumpForm";
 import { DocumentReader } from "@/components/documents/DocumentReader";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
-import {
-  DOCUMENTS_STALE_TIME,
-  documentsKeys,
-  fetchDocumentDetail,
-  flattenShlokas,
-  isNotFound,
-  type DocumentChapter,
-  type DocumentDetail,
-} from "@/lib/documents/api";
-import { inlineChapterRows, versesToRows } from "@/lib/documents/rows";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
-import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
-function DocHeader({
-  doc,
-  chapterPills,
-  onJumpChapter,
-}: {
-  doc: DocumentDetail;
-  chapterPills?: number[];
-  onJumpChapter?: (n: number) => void;
-}) {
-  const { t, lang, digits } = useLocale();
-  const title = lang === "ne" ? doc.title_ne || doc.title_en : doc.title_en || doc.title_ne;
-  const subtitle = lang === "ne" ? doc.subtitle_ne || doc.subtitle_en : doc.subtitle_en || doc.subtitle_ne;
-  const description = lang === "ne" ? doc.description_ne || doc.description_en : doc.description_en || doc.description_ne;
-  const source = lang === "ne" ? doc.source_ne || doc.source_en : doc.source_en || doc.source_ne;
+function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpChapter?: (anchor: string) => void }) {
+  const { header, copy } = page;
+  if (!header) return null;
   return (
     <View className="gap-8">
-      <DocumentBackLink href="/documents" label={t("documents.back_to_list")} />
+      <DocumentBackLink href="/documents" label={copy.backToList} />
       <View className={documentsClasses.header}>
-        <Text className={documentsClasses.headerSanskrit}>{doc.title_sa}</Text>
-        <Text className={documentsClasses.headerTitle}>{title}</Text>
-        {subtitle ? <Text className={documentsClasses.headerSubtitle}>{subtitle}</Text> : null}
-        {description ? <Text className={documentsClasses.headerDescription}>{description}</Text> : null}
-        {source ? (
-          <Text className={documentsClasses.headerSource}>
-            {t("documents.source")}: {source}
-          </Text>
-        ) : null}
+        <Text className={documentsClasses.headerSanskrit}>{header.sanskrit}</Text>
+        <Text className={documentsClasses.headerTitle}>{header.title}</Text>
+        {header.subtitle ? <Text className={documentsClasses.headerSubtitle}>{header.subtitle}</Text> : null}
+        {header.description ? <Text className={documentsClasses.headerDescription}>{header.description}</Text> : null}
+        {header.source ? <Text className={documentsClasses.headerSource}>{header.source}</Text> : null}
       </View>
-      {doc.has_chapters ? (
+      {page.stats ? (
         <View className={documentsClasses.statsRow}>
-          <Text className={documentsClasses.statsText}>
-            {t("documents.chapters_count", { count: digits(doc.chapter_count) })}
-          </Text>
+          <Text className={documentsClasses.statsText}>{page.stats[0]}</Text>
           <Text className={documentsClasses.statsText}>·</Text>
-          <Text className={documentsClasses.statsText}>
-            {t("documents.shlokas_count", { count: digits(doc.shloka_count) })}
-          </Text>
+          <Text className={documentsClasses.statsText}>{page.stats[1]}</Text>
         </View>
       ) : null}
-      {chapterPills && chapterPills.length > 1 ? (
+      {onJumpChapter && page.chapterPills.length > 0 ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           className="grow-0"
           contentContainerClassName="gap-1.5 pb-1"
-          accessibilityLabel={t("documents.chapter_nav")}
+          accessibilityLabel={copy.chapterNav}
         >
-          {chapterPills.map((n) => (
+          {page.chapterPills.map((pill) => (
             <Pressable
-              key={n}
-              onPress={() => onJumpChapter?.(n)}
+              key={pill.number}
+              onPress={() => onJumpChapter(pill.anchor)}
               accessibilityRole="button"
               className={cn(documentsClasses.chapterPill, "active:opacity-70")}
             >
-              <Text className={documentsClasses.chapterPillText}>{digits(n)}</Text>
+              <Text className={documentsClasses.chapterPillText}>{pill.label}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -88,106 +58,77 @@ function DocHeader({
   );
 }
 
-function ChapterRow({ slug, chapter }: { slug: string; chapter: DocumentChapter }) {
-  const { t, lang, digits } = useLocale();
+function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard }) {
   const router = useRouter();
   const colors = useThemeColors();
-  if (chapter.number == null) return null;
-  const title = lang === "ne" ? chapter.title_ne || chapter.title_en : chapter.title_en || chapter.title_ne;
   return (
     <Pressable
-      onPress={() => router.push(`/documents/${slug}/${chapter.number}` as never)}
+      onPress={() => router.push(`/documents/${slug}/${card.number}` as never)}
       accessibilityRole="button"
       className={cn(documentsClasses.chapterRow, "mb-2 active:opacity-80")}
     >
       <View className={documentsClasses.chapterRowNumber}>
-        <Text className={documentsClasses.chapterRowNumberText}>{digits(chapter.number)}</Text>
+        <Text className={documentsClasses.chapterRowNumberText}>{card.numberLabel}</Text>
       </View>
       <View className={documentsClasses.fill}>
         <Text className={documentsClasses.chapterRowTitle} numberOfLines={1}>
-          {t("documents.chapter_label", { number: digits(chapter.number) })}
+          {card.heading}
         </Text>
-        {title ? (
+        {card.title ? (
           <Text className={documentsClasses.chapterRowSub} numberOfLines={1}>
-            {title}
+            {card.title}
           </Text>
         ) : null}
-        {chapter.shloka_count != null ? (
-          <Text className={documentsClasses.chapterRowCount}>
-            {t("documents.shlokas_count", { count: digits(chapter.shloka_count) })}
-          </Text>
-        ) : null}
+        {card.count ? <Text className={documentsClasses.chapterRowCount}>{card.count}</Text> : null}
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
     </Pressable>
   );
 }
 
+/** A document — the app's drawing of `useDocumentDetail` (@vedic-patro/features). */
 export default function DocumentDetailScreen() {
-  const { t, lang } = useLocale();
   const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
-
-  const docQ = useQuery({
-    queryKey: documentsKeys.detail(slug ?? ""),
-    queryFn: () => fetchDocumentDetail(slug!),
-    enabled: Boolean(slug),
-    staleTime: DOCUMENTS_STALE_TIME,
-    retry: (count, error) => !isNotFound(error) && count < 2,
-  });
-  const doc = docQ.data;
-
-  const shlokas = useMemo(() => (doc ? flattenShlokas(doc) : []), [doc]);
-  const audio = useDocumentAudio(shlokas, doc?.full_audio_url);
+  const page = useDocumentDetail(slug);
+  const { doc, copy } = page;
+  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl);
   const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
 
-  const inlineChapters = useMemo(
-    () => (doc?.inline_chapters ? doc.chapters.filter((c) => (c.shlokas?.length ?? 0) > 0) : []),
-    [doc],
-  );
-  const rows = useMemo(() => {
-    if (!doc) return [];
-    if (inlineChapters.length > 1) return inlineChapterRows(inlineChapters);
-    return versesToRows(shlokas);
-  }, [doc, inlineChapters, shlokas]);
-
-  if (docQ.isLoading) {
+  if (page.status === "loading") {
     return (
       <View className={cn("flex-1 bg-background", documentsClasses.frame)}>
-        <DocumentBackLink href="/documents" label={t("documents.back_to_list")} />
+        <DocumentBackLink href="/documents" label={copy.backToList} />
         <LoadingState />
       </View>
     );
   }
-  if (docQ.isError || !doc) {
+  if (page.status !== "ready" || !doc) {
     return (
       <View className={cn("flex-1 bg-background", documentsClasses.frame)}>
-        <DocumentBackLink href="/documents" label={t("documents.back_to_list")} />
-        {isNotFound(docQ.error) ? (
-          <Text className={documentsClasses.notFound}>{t("documents.not_found")}</Text>
+        <DocumentBackLink href="/documents" label={copy.backToList} />
+        {page.status === "error" ? (
+          <ErrorState message={copy.loadError} onRetry={page.retry} />
         ) : (
-          <ErrorState message={t("documents.load_error")} onRetry={() => void docQ.refetch()} />
+          <Text className={documentsClasses.notFound}>{copy.notFound}</Text>
         )}
       </View>
     );
   }
 
-  const title = lang === "ne" ? doc.title_ne || doc.title_en : doc.title_en || doc.title_ne;
-
   // Paginated books (Gita, Ashtavakra): chapter cards, verses on their own screen.
-  if (doc.has_chapters && !doc.inline_chapters) {
-    const numbers = doc.chapters.map((c) => c.number).filter((n): n is number => n != null);
+  if (page.layout === "chapters") {
     return (
       <View className="flex-1 bg-background">
         <FlatList
-          data={doc.chapters}
-          keyExtractor={(c) => String(c.number ?? "single")}
-          renderItem={({ item }) => <ChapterRow slug={doc.slug} chapter={item} />}
+          data={page.chapters}
+          keyExtractor={(c) => String(c.number)}
+          renderItem={({ item }) => <ChapterRow slug={doc.slug} card={item} />}
           ListHeaderComponent={
             <View className="gap-8 pb-8">
-              <DocHeader doc={doc} />
+              <DocHeader page={page} />
               <DocumentJumpForm
-                chapterNumbers={numbers}
+                chapterNumbers={page.chapterNumbers}
                 onJump={(chapter, verse) => {
                   router.push(
                     (verse
@@ -203,7 +144,7 @@ export default function DocumentDetailScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />
-        <PlaybackBar audio={audio} documentTitle={title} />
+        <PlaybackBar audio={audio} documentTitle={page.title} />
       </View>
     );
   }
@@ -211,21 +152,13 @@ export default function DocumentDetailScreen() {
   return (
     <View className="flex-1 bg-background">
       <DocumentReader
-        rows={rows}
+        rows={page.rows}
         audio={audio}
-        documentTitle={title}
+        documentTitle={page.title}
         scrollToKey={jumpKey}
         header={
           <View className="pb-8">
-          <DocHeader
-            doc={doc}
-            chapterPills={
-              inlineChapters.length > 1
-                ? inlineChapters.map((c) => c.number).filter((n): n is number => n != null)
-                : undefined
-            }
-            onJumpChapter={(n) => setJumpKey({ key: `chapter-${n}`, nonce: Date.now() })}
-          />
+            <DocHeader page={page} onJumpChapter={(anchor) => setJumpKey({ key: anchor, nonce: Date.now() })} />
           </View>
         }
       />

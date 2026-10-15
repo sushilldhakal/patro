@@ -1,8 +1,7 @@
 import type { MouseEvent, PointerEvent } from "react";
-import { useTranslation } from "react-i18next";
-import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/era";
 import { cn } from "@vedic-patro/domain/utils";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
+import { usePatroYearEraToggle } from "@vedic-patro/features/patro-date";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 /**
@@ -45,13 +44,9 @@ export function PatroYearEraToggle({
   comfortable?: boolean;
   variant?: "inline" | "dropdown";
 }) {
-  const { t } = useTranslation();
-  if (!isPatroBrowseEraPair(era)) return null;
-
-  const targetEra = togglePatroBrowseEra(era);
-  if (targetEra == null) return null;
-
-  const targetLabel = patroEraShortLabel(targetEra);
+  const toggle = usePatroYearEraToggle(era);
+  if (!toggle) return null;
+  const { targetEra, label: targetLabel, ariaLabel } = toggle;
 
   if (variant === "dropdown") {
     return (
@@ -67,10 +62,7 @@ export function PatroYearEraToggle({
             "flex w-full cursor-pointer items-center justify-center rounded-md border border-border bg-card px-2 py-1.5 text-xs font-semibold text-muted-foreground transition-colors",
             "hover:bg-muted hover:text-foreground",
           )}
-          aria-label={t("patro_date.switch_to_era", {
-            era: targetLabel,
-            defaultValue: `Switch to ${targetLabel}`,
-          })}
+          aria-label={ariaLabel}
           title={targetLabel}
           onClick={(e) => {
             stopBubble(e);
@@ -102,7 +94,7 @@ export function PatroYearEraToggle({
           : cn(patroDateClasses.eraToggleRegular, patroDateClasses.eraToggleLabelRegular),
         className,
       )}
-      aria-label={t("patro_date.switch_to_era", { era: targetLabel, defaultValue: `Switch to ${targetLabel}` })}
+      aria-label={ariaLabel}
       title={targetLabel}
       onPointerDown={stopBubble}
       onMouseDown={stopBubbleMouse}

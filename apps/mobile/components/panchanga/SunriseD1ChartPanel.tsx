@@ -1,12 +1,9 @@
-import { useMemo } from "react";
-import { View } from "react-native"
-import { Text } from "@/components/ui/Text"
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import type { PanchangaDay } from "@/lib/api";
 import { D1Chart } from "@/components/panchanga/D1Chart";
-import { useLocale } from "@/lib/i18n";
-import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1";
-import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
-
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
+import { useSunriseD1Chart } from "@vedic-patro/features/panchanga";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 type Props = {
@@ -14,20 +11,16 @@ type Props = {
 };
 
 export function SunriseD1ChartPanel({ p }: Props) {
-  const { pick } = useLocale();
-  const houses = useMemo(() => buildPanchangaD1Houses(p), [p]);
-  const anchor = getPlanetsAnchorLabel(p);
-
-  if (!houses) return null;
+  const chart = useSunriseD1Chart(p);
+  if (!chart) return null;
 
   return (
     <View className={panchangaPageClasses.aside.card}>
-      <Text className={panchangaPageClasses.aside.eyebrow}>
-        {pick("D1 चक्र", "D1 chart")}
-      </Text>
-      <Text className={panchangaPageClasses.aside.anchor}>{anchor}</Text>
+      <Text className={panchangaPageClasses.aside.eyebrow}>{chart.title}</Text>
+      <Text className={panchangaPageClasses.aside.anchor}>{chart.anchor}</Text>
       <View className={panchangaPageClasses.aside.body}>
-        <D1Chart houses={houses} />
+        <D1Chart houses={chart.houses} />
+        {chart.showStatusLegend ? <GrahaStatusLegend className="mt-1" /> : null}
       </View>
     </View>
   );

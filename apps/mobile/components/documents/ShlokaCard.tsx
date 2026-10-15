@@ -1,9 +1,9 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import { formatVedaCite, type Shloka } from "@/lib/documents/api";
-import { useLocale, useTranslation } from "@/lib/i18n";
+import type { Shloka } from "@/lib/documents/api";
+import { useShlokaCard } from "@vedic-patro/features/documents";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
@@ -36,37 +36,9 @@ function ShlokaCardImpl({
   onPlay,
   onToggleMeaning,
 }: Props) {
-  const { t } = useTranslation();
-  const { lang, pick } = useLocale();
   const colors = useThemeColors();
-  const canPlay = Boolean(shloka.audio_url) || playsFromFull;
-  const meaning = (lang === "ne" ? shloka.meaning_ne || shloka.meaning_en : shloka.meaning_en || shloka.meaning_ne) ?? "";
-  const isClosing = shloka.verse_label.startsWith("इति") || shloka.verse_label === "ध्यानम्";
-  // Procedure text (टीका / सामग्री) is instructions, not a mantra.
-  const isNote = /^(टीका|सामग्री)/.test(shloka.verse_label);
-  const vedaCite = formatVedaCite(shloka.veda_cite, lang);
-
-  const tokens = useMemo(() => shloka.sanskrit.split(/(\s+)/), [shloka.sanskrit]);
-  const wordIdx = useMemo(
-    () => tokens.map((tok, i) => (tok.trim() ? i : -1)).filter((i) => i >= 0),
-    [tokens],
-  );
-  // Estimated word highlight, weighted by character count (no forced alignment).
-  const wordStarts = useMemo(() => {
-    const lengths = wordIdx.map((i) => tokens[i]!.length);
-    const total = lengths.reduce((a, b) => a + b, 0) || 1;
-    let acc = 0;
-    return lengths.map((len) => {
-      const start = acc / total;
-      acc += len;
-      return start;
-    });
-  }, [tokens, wordIdx]);
-  const activeWord =
-    isPlaying && !isNote
-      ? wordStarts.reduce((best, start, i) => (start <= progress ? i : best), -1)
-      : -1;
-  const activeToken = activeWord >= 0 ? wordIdx[activeWord]! : -1;
+  const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress });
+  const { canPlay, isClosing, isNote, vedaCite, meaning } = card;
 
   return (
     <View
@@ -83,7 +55,7 @@ function ShlokaCardImpl({
           <Pressable
             onPress={() => onPlay(shloka)}
             accessibilityRole="button"
-            accessibilityLabel={t(isPlaying ? "documents.pause_verse" : "documents.play_verse")}
+            accessibilityLabel={card.copy.play}
             hitSlop={6}
             className={cn(
               documentsClasses.versePlay,
@@ -123,8 +95,8 @@ function ShlokaCardImpl({
             className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "text-foreground")}
             style={nepaliTextStyle()}
           >
-            {tokens.map((tok, i) =>
-              i === activeToken ? (
+            {card.tokens.map((tok, i) =>
+              i === card.activeTokenIndex ? (
                 <Text
                   key={i}
                   className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "mt-0 text-foreground")}
@@ -137,15 +109,15 @@ function ShlokaCardImpl({
               ),
             )}
           </Text>
-          {lang !== "ne" && shloka.transliteration ? (
-            <Text className={documentsClasses.verseTranslit}>{shloka.transliteration}</Text>
+          {card.transliteration ? (
+            <Text className={documentsClasses.verseTranslit}>{card.transliteration}</Text>
           ) : null}
 
           {/* Always mounted: mounting it on play would grow the card and shift the list. */}
           <View className={documentsClasses.verseProgress} style={{ opacity: isActive ? 1 : 0 }}>
             <View
               className={documentsClasses.verseProgressFill}
-              style={{ width: `${isActive ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : 0}%` }}
+              style={{ width: `${card.progressPct}%` }}
             />
           </View>
 
@@ -157,11 +129,11 @@ function ShlokaCardImpl({
                 accessibilityState={{ expanded: meaningOpen }}
                 className={cn(documentsClasses.verseMeaningToggle, "flex-row items-center self-start")}
               >
-                <Text className={documentsClasses.verseMeaningToggleText}>{t("documents.meaning")}</Text>
+                <Text className={documentsClasses.verseMeaningToggleText}>{card.copy.meaning}</Text>
                 <Ionicons name={meaningOpen ? "chevron-up" : "chevron-down"} size={16} color={colors.secondary} />
               </Pressable>
               {meaningOpen ? (
-                <Text selectable className={documentsClasses.verseMeaning} style={lang === "ne" ? nepaliTextStyle() : undefined}>
+                <Text selectable className={documentsClasses.verseMeaning} style={card.meaningIsNepali ? nepaliTextStyle() : undefined}>
                   {meaning}
                 </Text>
               ) : null}

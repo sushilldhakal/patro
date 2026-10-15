@@ -1,9 +1,6 @@
-import { useState, type MouseEvent } from "react";
-import { useTranslation } from "react-i18next";
+import type { MouseEvent } from "react";
 import type { CalendarDay } from "@/lib/api";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { cn } from "@vedic-patro/domain/utils";
 import {
   Dialog,
@@ -14,59 +11,34 @@ import {
 } from "@/components/ui/dialog";
 import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
-import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { moonPhaseTitle, getPakshaPhase } from "@vedic-patro/domain/month-grid-moon";
 import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
-
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const WEEKDAYS_SHORT = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
+import { useBsCalendarGrid, type BsCalendarFestivalDialog } from "@vedic-patro/features/home";
 
 const TODAY_AD = new Date().toISOString().split("T")[0];
 
-function fmtAdDay(iso: string): number {
-  return civilIsoDayOfMonth(iso);
-}
-
 function FestivalListDialog({
-  open,
-  onOpenChange,
-  day,
-  festivals,
+  dialog,
+  onClose,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  day: CalendarDay | null;
-  festivals: string[];
+  dialog: BsCalendarFestivalDialog | null;
+  onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-
-  if (!day) return null;
-
-  const weekday = bilingualText(lang, day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday);
-  const adDate = parseCivilIsoToDate(day.date_ad).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!dialog) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>{t("calendar.festivals_dialog_title")}</DialogTitle>
-          <DialogDescription>
-            {t("calendar.festivals_dialog_desc", {
-              weekday,
-              bsDay: digits(day.day),
-              adDate,
-            })}
-          </DialogDescription>
+          <DialogTitle>{dialog.title}</DialogTitle>
+          <DialogDescription>{dialog.description}</DialogDescription>
         </DialogHeader>
         <ul className="max-h-[min(60vh,20rem)] space-y-2 overflow-y-auto pr-1">
-          {festivals.map((name, i) => (
+          {dialog.festivals.map((name, i) => (
             <li
               key={`${name}-${i}`}
               className={cn(calendarClasses.festivalItem, calendarClasses.festivalItemText)}
@@ -100,34 +72,31 @@ export function BsCalendarGrid({
   todayAd = TODAY_AD,
   primaryDate: primaryDateProp = "bs",
 }: Props) {
-  const { t } = useTranslation();
-  const { lang, monoDigits } = useLocale();
-  const isEn = lang === "en";
   const calendarEra = useCalendarEra();
-  const primaryDate =
-    primaryDateProp === "ad" || calendarEra === "ad" || lang === "en" ? "ad" : "bs";
-  const [festivalDialog, setFestivalDialog] = useState<{
-    day: CalendarDay;
-    festivals: string[];
-  } | null>(null);
-  const cells: (CalendarDay | null)[] = [...days];
-  while (cells.length % 7 !== 0) cells.push(null);
+  const grid = useBsCalendarGrid({
+    days,
+    publicHolidayDates,
+    selectedAdDate,
+    todayAd,
+    primaryDate: primaryDateProp === "ad" || calendarEra === "ad" ? "ad" : "bs",
+  });
+  const { primaryDate } = grid;
 
   return (
     <div className={cn(calendarClasses.grid, calendarClasses.gridWide, "shadow-ring-soft max-md:rounded-none max-md:shadow-none")}>
       <div className="grid grid-cols-7 gap-px">
-        {WEEKDAYS_NE.map((ne, i) => {
-          const weekend = i === 0 || i === 6;
+        {grid.weekdays.map((w) => {
+          const weekend = w.weekend;
           return (
             <div
-              key={ne}
+              key={w.key}
               className={cn("flex flex-col gap-px max-md:items-center max-md:px-0 max-md:py-1", calendarClasses.weekdayCell, calendarClasses.weekdayCellWide)}
             >
-              {lang === "en" ? (
-                <span className={calendarClasses.weekdayEn}>{WEEKDAYS_EN[i]}</span>
+              {w.label === w.short ? (
+                <span className={calendarClasses.weekdayEn}>{w.label}</span>
               ) : (
                 <>
-                  <span className={cn(calendarClasses.weekdayNe, "max-md:hidden", weekend && calendarClasses.weekdayWeekend)}>{ne}</span>
+                  <span className={cn(calendarClasses.weekdayNe, "max-md:hidden", weekend && calendarClasses.weekdayWeekend)}>{w.label}</span>
                   <span
                     className={cn(
                       "hidden max-md:block",
@@ -135,7 +104,7 @@ export function BsCalendarGrid({
                       weekend && calendarClasses.weekdayWeekend,
                     )}
                   >
-                    {WEEKDAYS_SHORT[i]}
+                    {w.short}
                   </span>
                 </>
               )}
@@ -143,8 +112,8 @@ export function BsCalendarGrid({
           );
         })}
 
-        {cells.map((day, i) => {
-          if (!day) {
+        {grid.cells.map((cell, i) => {
+          if (!cell) {
             return (
               <div
                 key={`empty-${i}`}
@@ -154,38 +123,26 @@ export function BsCalendarGrid({
             );
           }
 
-          const col = i % 7;
-          const isOutside = day.outsideMonth === true;
-          const isToday = day.date_ad === todayAd;
-          const isSelected = day.date_ad === selectedAdDate && !isToday;
-          const isWeekend = col === 0 || col === 6;
-          const isPublicHoliday = !isOutside && publicHolidayDates.has(day.date_ad);
-          const festivals = !isOutside ? day.festivals.filter(Boolean) : [];
-          const hasFestival = festivals.length > 0 && !isPublicHoliday;
-          const mainFest = festivals[0];
-          const leftFest = festivals[1];
-          const rightFest = festivals[2];
-          const tithi = bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne);
-          const tithiIdx = tithiIndexFromCalendarDay(day);
-          const moonTitle = moonPhaseTitle(getPakshaPhase(day), isEn);
-          const extraFestCount = festivals.length > 2 ? festivals.length - 2 : 0;
-          const festCount = festivals.length;
-          /** BS patro on phones: tint + count badge only — no festival labels in the cell. */
-          const mobileBsFestCompact = primaryDate === "bs" && festCount > 0;
-          const adDayNum = fmtAdDay(day.date_ad);
-          const primaryDayNum = primaryDate === "ad" ? adDayNum : day.day;
-          const secondary = getSecondaryCellDate(day, primaryDate, lang, i === 0);
-          const secondaryLabel = secondary.monthLabel
-            ? `${secondary.monthLabel} ${monoDigits(secondary.day)}`
-            : monoDigits(secondary.day);
-          const secondaryLabelShort = secondary.monthLabelShort
-            ? `${secondary.monthLabelShort} ${monoDigits(secondary.day)}`
-            : monoDigits(secondary.day);
+          const {
+            day,
+            isOutside,
+            isToday,
+            isSelected,
+            isWeekend,
+            isPublicHoliday,
+            festivals,
+            hasFestival,
+            mainFest,
+            leftFest,
+            rightFest,
+            tithi,
+            extraFestCount,
+          } = cell;
 
           const openFestivalDialog = (e: MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
-            setFestivalDialog({ day, festivals });
+            grid.openFestivals(cell);
           };
 
           return (
@@ -212,14 +169,14 @@ export function BsCalendarGrid({
                   isToday && "hover:bg-surface-today-hover",
                   !isToday && !isOutside && !isPublicHoliday && !hasFestival && "hover:bg-surface-hover",
                 )}
-                aria-label={`${monoDigits(primaryDayNum)} (${secondaryLabel}), ${day.date_ad}`}
+                aria-label={cell.ariaLabel}
                 onClick={() => onSelectDay?.(day)}
               />
 
-              {tithiIdx != null ? (
+              {cell.tithiIndex != null ? (
                 <CalendarMoonPhaseIcon
-                  tithiIndex={tithiIdx}
-                  title={moonTitle}
+                  tithiIndex={cell.tithiIndex}
+                  title={cell.moonTitle}
                   className="pointer-events-none absolute right-0.5 top-0.5 z-[2] size-3.5 sm:size-4 max-md:right-0 max-md:top-0 md:right-1 md:top-1"
                 />
               ) : null}
@@ -266,7 +223,7 @@ export function BsCalendarGrid({
               <span className="flex flex-1 flex-col items-center justify-center gap-0.5">
                 {isToday && (
                   <span className={cn(calendarClasses.todayBadge, calendarClasses.todayBadgeText, "max-md:px-1")}>
-                    {t("calendar.today_badge")}
+                    {grid.todayBadge}
                   </span>
                 )}
                 <span className="flex flex-wrap items-baseline justify-center gap-x-1 leading-none">
@@ -279,7 +236,7 @@ export function BsCalendarGrid({
                       !isOutside && (isWeekend || isPublicHoliday) && calendarClasses.dayNumberDanger,
                     )}
                   >
-                    {monoDigits(primaryDayNum)}
+                    {cell.primaryDay}
                   </span>
                   {/* Counterpart date — carries its month name where the month
                       turns over, so July 17 reads as "Shrawan 1". The named
@@ -289,17 +246,17 @@ export function BsCalendarGrid({
                     className={cn(
                       "font-num whitespace-nowrap md:text-sm",
                       calendarClasses.secondaryDate,
-                      secondary.monthLabel ? calendarClasses.secondaryDateNamed : calendarClasses.secondaryDatePlain,
+                      cell.secondaryNamed ? calendarClasses.secondaryDateNamed : calendarClasses.secondaryDatePlain,
                     )}
                   >
-                    <span className="md:hidden">{secondaryLabelShort}</span>
-                    <span className="max-md:hidden">{secondaryLabel}</span>
+                    <span className="md:hidden">{cell.secondaryLabelShort}</span>
+                    <span className="max-md:hidden">{cell.secondaryLabel}</span>
                   </span>
                   {extraFestCount > 0 && primaryDate !== "bs" ? (
                     <button
                       type="button"
-                      title={festivals.join(" · ")}
-                      aria-label={t("calendar.festivals_more", { count: extraFestCount })}
+                      title={cell.festivalsTitle}
+                      aria-label={cell.extraFestAria}
                       className={cn(
                         "pointer-events-auto shrink-0 border-none",
                         calendarClasses.countBadge,
@@ -309,17 +266,17 @@ export function BsCalendarGrid({
                       )}
                       onClick={openFestivalDialog}
                     >
-                      +{monoDigits(extraFestCount)}
+                      {cell.extraFestLabel}
                     </button>
                   ) : null}
                 </span>
               </span>
 
-              {mobileBsFestCompact ? (
+              {cell.bsFestCompact ? (
                 <button
                   type="button"
-                  title={festivals.join(" · ")}
-                  aria-label={t("calendar.festivals_more", { count: festCount })}
+                  title={cell.festivalsTitle}
+                  aria-label={cell.festCountAria}
                   className={cn(
                     "pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden",
                     calendarClasses.countBadgeCompact,
@@ -328,7 +285,7 @@ export function BsCalendarGrid({
                   )}
                   onClick={openFestivalDialog}
                 >
-                  +{monoDigits(festCount)}
+                  {cell.festCountLabel}
                 </button>
               ) : null}
 
@@ -365,14 +322,7 @@ export function BsCalendarGrid({
         })}
       </div>
 
-      <FestivalListDialog
-        open={festivalDialog !== null}
-        onOpenChange={(open) => {
-          if (!open) setFestivalDialog(null);
-        }}
-        day={festivalDialog?.day ?? null}
-        festivals={festivalDialog?.festivals ?? []}
-      />
+      <FestivalListDialog dialog={grid.festivalDialog} onClose={grid.closeFestivals} />
     </div>
   );
 }

@@ -64,7 +64,7 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
 });
 
 export function EquinoxPrecessionDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const { clock, value: year, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 2082,
     min: 0,
@@ -75,11 +75,11 @@ export function EquinoxPrecessionDiagram() {
   const eqSid = (((BS_AYAN_ZERO - year) * RATE) % 360 + 360) % 360;
   const rashiIdx = Math.floor(eqSid / 30);
   const ayanamsha = (year - BS_AYAN_ZERO) * RATE;
-  const copy = { equinox: pick("वसन्त विषुव बिन्दु", "Spring equinox point"), ring: pick("निरयन राशि (स्थिर)", "Sidereal rashi (fixed)") };
+  const copy = { equinox: t("ui.learn.spring_equinox_point"), ring: t("ui.learn.sidereal_rashi_fixed") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — विषुव बिन्दुको अयन चलन", "3D — precession of the equinox")}
+      title={t("ui.learn.n3d_precession_of_the_equinox")}
       height={280}
       camera={{ yaw: 0.3, pitch: 0.9 }}
       frame={{ width: 1.4, height: 0.75 }}
@@ -88,30 +88,27 @@ export function EquinoxPrecessionDiagram() {
         { color: DIAGRAM_LABEL_COLOR.warn, label: copy.equinox },
       ]}
       readouts={[
-        { k: pick("वि.सं. वर्ष", "BS year"), v: digits(Math.round(year)), tone: "accent" },
-        { k: pick("विषुव अहिले", "Equinox now in"), v: getRashiName(rashiIdx + 1, lang), tone: "warn" },
-        { k: pick("अयनांश (मेषबाट)", "Ayanamsha (from Mesha)"), v: `${digits(ayanamsha < 0 ? (-ayanamsha).toFixed(1) : ayanamsha.toFixed(1))}°` },
+        { k: t("holidays.bs_year"), v: digits(Math.round(year)), tone: "accent" },
+        { k: t("ui.learn.equinox_now_in"), v: getRashiName(rashiIdx + 1, lang), tone: "warn" },
+        { k: t("ui.learn.ayanamsha_from_mesha"), v: `${digits(ayanamsha < 0 ? (-ayanamsha).toFixed(1) : ayanamsha.toFixed(1))}°` },
       ]}
       slider={{
         value: year,
         min: 0,
         max: CYCLE,
-        label: pick(`वि.सं. ${digits(Math.round(year))}`, `BS ${digits(Math.round(year))}`),
+        label: t("ui.learn.bs_year_2", { year: digits(Math.round(year)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("वि.सं. ०", "BS 0"), value: 0 },
-        { label: pick("अहिले", "Now"), value: 2082 },
+        { label: t("ui.learn.bs_0"), value: 0 },
+        { label: t("panchanga.day_cycle.now"), value: 2082 },
       ]}
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={200}
-      caption={pick(
-        "निरयन राशिचक्र (बाहिरी घेरा) ताराहरूसँग स्थिर बाँधिएको छ। तर वसन्त विषुव बिन्दु — सायन शून्य — यो घेराको सापेक्ष बिस्तारै पछाडि सर्छ, प्रति वर्ष करिब ५०.३″, अर्थात् हरेक ~७२ वर्षमा १°। एक पूरा फेरो ~२५,७७२ वर्षमा हुन्छ। यही सरणले अयनांश बढाउँछ र ऋतुलाई निरयन महिनाको सापेक्ष सार्छ।",
-        "The sidereal zodiac (outer ring) is fixed to the stars. But the spring equinox point — the tropical zero — slowly regresses relative to this ring, about 50.3″ per year, or 1° every ~72 years. One full loop takes ~25,772 years. This drift is what grows the ayanamsha and shifts the seasons relative to the sidereal months.",
-      )}
+      caption={t("ui.learn.the_sidereal_zodiac_outer_ring_is")}
     >
       {({ onLabels }) => <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

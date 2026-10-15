@@ -14,8 +14,7 @@
  * name a voiceover that has not been recorded.
  */
 
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useChapterStill, useChapterTip } from "@vedic-patro/features/learn";
 import { X } from "lucide-react";
 
 import { cn } from "@vedic-patro/domain/utils";
@@ -37,10 +36,9 @@ export function ChapterStill({
   captionKey?: string;
   onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const [broken, setBroken] = useState(false);
+  const still = useChapterStill(src, captionKey);
 
-  if (!src || broken) return null;
+  if (!still.visible) return null;
   return (
     <figure
       className={cn(
@@ -53,20 +51,20 @@ export function ChapterStill({
       <button
         type="button"
         onClick={onClose}
-        aria-label={t("common.close")}
+        aria-label={still.closeLabel}
         className="absolute right-1 top-1 z-10 grid size-6 cursor-pointer place-items-center rounded-full bg-black/60 text-white/70 hover:text-white"
       >
         <X size={12} />
       </button>
       <img
         src={`${import.meta.env.BASE_URL}${src}`}
-        alt={captionKey ? t(captionKey) : ""}
-        onError={() => setBroken(true)}
+        alt={still.caption}
+        onError={still.onError}
         className="block w-full object-contain"
       />
-      {captionKey ? (
+      {still.caption ? (
         <figcaption className="px-2 py-1.5 text-xs leading-snug text-white/70">
-          {t(captionKey)}
+          {still.caption}
         </figcaption>
       ) : null}
     </figure>
@@ -82,18 +80,12 @@ export function ChapterStill({
  * for the next hint.
  */
 export function ChapterTip({ tipKey }: { tipKey: string }) {
-  const { t } = useTranslation();
-  const [done, setDone] = useState(false);
+  const tip = useChapterTip(tipKey);
 
-  useEffect(() => {
-    const id = setTimeout(() => setDone(true), 6000);
-    return () => clearTimeout(id);
-  }, []);
-
-  if (!tipKey || done) return null;
+  if (!tip) return null;
   return (
     <div className="pointer-events-none absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/20 bg-black/75 px-3.5 py-1.5 text-xs font-semibold text-white/85 backdrop-blur">
-      {t(tipKey)}
+      {tip}
     </div>
   );
 }

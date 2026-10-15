@@ -1,4 +1,5 @@
 import { FEATURE_ICON } from "@vedic-patro/icons";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /**
  * Primary floating bottom nav — matches web header sections, सिकाइ last.
@@ -10,12 +11,12 @@ import { FEATURE_ICON } from "@vedic-patro/icons";
  * bottom nav, which has always used these.
  */
 export const FLOATING_NAV = [
-  { href: "/", ne: "गृह", en: "Home", icon: FEATURE_ICON.home },
-  { href: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: FEATURE_ICON.panchanga },
-  { href: "/kundali", ne: "कुण्डली", en: "Kundali", icon: FEATURE_ICON.kundali },
-  { href: "/dainikkranti", ne: "दैनिक", en: "Transit", icon: FEATURE_ICON.dainikkranti },
-  { href: "/vastu", ne: "वास्तु", en: "Vastu", icon: FEATURE_ICON.vastu },
-  { href: "/learn", ne: "सिकाइ", en: "Learn", icon: FEATURE_ICON.learn },
+  { href: "/", get ne() { return tFor("ne", "ui.mobile_bottom_nav.home"); }, get en() { return tFor("en", "ui.mobile_bottom_nav.home"); }, icon: FEATURE_ICON.home },
+  { href: "/panchanga", get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); }, get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); }, icon: FEATURE_ICON.panchanga },
+  { href: "/kundali", get ne() { return tFor("ne", "nav.jyotish_kundali"); }, get en() { return tFor("en", "nav.jyotish_kundali"); }, icon: FEATURE_ICON.kundali },
+  { href: "/dainikkranti", get ne() { return tFor("ne", "ui.mobile_nav.transit"); }, get en() { return tFor("en", "ui.mobile_nav.transit"); }, icon: FEATURE_ICON.dainikkranti },
+  { href: "/vastu", get ne() { return tFor("ne", "nav.vastu"); }, get en() { return tFor("en", "nav.vastu"); }, icon: FEATURE_ICON.vastu },
+  { href: "/learn", get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); }, icon: FEATURE_ICON.learn },
 ] as const;
 
 export const FLOATING_NAV_BOTTOM_PADDING = 84;

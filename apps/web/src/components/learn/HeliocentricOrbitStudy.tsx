@@ -3,7 +3,7 @@ import { edScrub } from "@/lib/diagram-classes";
 import { tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";
 import { Pause, Play } from "lucide-react";
 import { HeliocentricOrbitDiagram } from "./HeliocentricOrbitDiagram";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale } from "@/i18n/locale";
 import {
   ORBIT_MARKERS,

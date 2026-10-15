@@ -73,7 +73,7 @@ const EarthRotationScene = memo(function EarthRotationScene({ clock, onSample, o
 });
 
 export function EarthRotationDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const { clock, value: hour, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 6,
     min: 0,
@@ -81,47 +81,44 @@ export function EarthRotationDiagram() {
     speed: 3,
   });
 
-  const copy = { sun: pick("सूर्य", "Sun"), observer: pick("अवलोकक", "Observer") };
+  const copy = { sun: t("kundali.report.meta_sun"), observer: t("ui.learn.observer") };
   const angle = Math.round((hour / 24) * 360);
 
   return (
     <LearnDiagram3D
-      title={pick("३D — पृथ्वीको घूर्णन", "3D — Earth's rotation")}
+      title={t("ui.learn.n3d_earth_s_rotation")}
       height={260}
       camera={{ yaw: 0.5, pitch: 0.55 }}
       frame={{ width: 1.1, height: 0.85 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्यको दिशा", "Direction of the Sun") },
-        { color: DIAGRAM_COLOR.node, label: pick("अवलोककको बिन्दु", "Observer's point") },
-        { color: DIAGRAM_COLOR.axis, label: pick("अक्ष", "Axis") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.direction_of_the_sun") },
+        { color: DIAGRAM_COLOR.node, label: t("ui.learn.observer_s_point") },
+        { color: DIAGRAM_COLOR.axis, label: t("ui.learn.axis") },
       ]}
       readouts={[
-        { k: pick("घण्टा", "Hour"), v: `${digits(hour.toFixed(1))} / ${digits(24)}`, tone: "accent" },
-        { k: pick("घुर्णन कोण", "Rotation angle"), v: `${digits(angle)}°` },
+        { k: t("panchanga.hour_aria"), v: `${digits(hour.toFixed(1))} / ${digits(24)}`, tone: "accent" },
+        { k: t("ui.learn.rotation_angle"), v: `${digits(angle)}°` },
       ]}
       slider={{
         value: hour,
         min: 0,
         max: 24,
-        label: pick(`घण्टा ${digits(hour.toFixed(1))}`, `Hour ${digits(hour.toFixed(1))}`),
+        label: t("ui.learn.hour_value", { value: digits(hour.toFixed(1)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("मध्यरात", "Midnight"), value: 0 },
-        { label: pick("बिहान ६", "6 AM"), value: 6 },
-        { label: pick("मध्याह्न", "Noon"), value: 12 },
-        { label: pick("साँझ ६", "6 PM"), value: 18 },
+        { label: t("ui.learn.midnight"), value: 0 },
+        { label: t("ui.learn.n6_am"), value: 6 },
+        { label: t("ui.learn.noon"), value: 12 },
+        { label: t("ui.learn.n6_pm"), value: 18 },
       ]}
       onPreset={scrubTo}
       presetValue={hour}
       presetTolerance={0.3}
-      caption={pick(
-        "पृथ्वी आफ्नै अक्षमा पश्चिमबाट पूर्वतर्फ घुम्छ — एक पूरा फेरो लगभग २४ घण्टामा। बिन्दुले एउटा अवलोककको ठाउँ देखाउँछ; त्यो बिन्दु सूर्यतिर फर्कँदा दिन, विपरीत भए रात।",
-        "Earth spins on its own axis from west to east — one full turn takes about 24 hours. The marker traces one observer's spot; when it faces the Sun that is day there, and night when it faces away.",
-      )}
+      caption={t("ui.learn.earth_spins_on_its_own_axis")}
     >
       {({ onLabels }) => <EarthRotationScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

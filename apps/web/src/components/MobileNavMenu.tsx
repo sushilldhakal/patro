@@ -5,36 +5,22 @@ import {
   Sprout,
   type LucideIcon,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { DrawerClose } from "@/components/ui/drawer";
 import { NavDrawerLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { parseEraFromUrl } from "@vedic-patro/domain/era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCurrentRitu } from "@/lib/ritu-display";
-import { elementTitle } from "@vedic-patro/domain/panchanga-i18n";
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import { resolveSidebarLinkPath } from "@/lib/panchanga-route-preload";
-import {
-  getPanchangaSidebarSections,
-  type PanchangaSidebarItem,
-} from "@/lib/panchanga-sidebar-nav";
+import type { PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
+import { useMobileNavMenu } from "@vedic-patro/features/common";
 import {
   currentPatroYearLinkSearch,
   patroRouteLinkSearch,
 } from "@/lib/url-state";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { featureIcon, navEntryIcon } from "@/lib/nav-icons";
-
-/** Promoted into the Main row so they are not repeated in later groups. */
-const DRAWER_MAIN_PROMOTED_IDS = new Set([
-  "kundali",
-  "dainikkranti",
-  "kundali-milan",
-  "rashifal",
-  "panchanga-year",
-]);
 
 function itemSearch(
   item: PanchangaSidebarItem,
@@ -122,72 +108,53 @@ function DrawerNavLink({
 }
 
 export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
-  const { t } = useTranslation();
-  const { digits, lang } = useLocale();
+  const menu = useMobileNavMenu();
+  const { lang } = useLocale();
   const era = useCalendarEra();
   const { location } = usePanchangaLocation();
   const rawSearch = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
-  const fallbackLang = lang === "en" ? "en" : "ne";
-  const urlBrowse = parseEraFromUrl(rawSearch, fallbackLang);
+  const urlBrowse = parseEraFromUrl(rawSearch, lang === "en" ? "en" : "ne");
   const { current: ritu, loading: rituLoading } = useCurrentRitu(location);
-  const sections = getPanchangaSidebarSections();
-  const panchakYear = defaultPanchakPatroYear();
-
-  const labelForItem = (item: PanchangaSidebarItem) => {
-    if (item.id === "panchak-patro") {
-      return t("panchak.title", { year: digits(panchakYear) });
-    }
-    if (item.to === "/panchanga/element/$name" && item.params?.name) {
-      return elementTitle(item.params.name);
-    }
-    if (item.to === "/sait/$category" && item.params?.category) {
-      return t(`sait.categories.${item.params.category}`);
-    }
-    return t(item.labelKey);
-  };
+  const mainLabel = Object.fromEntries(menu.main.map((m) => [m.id, m.label])) as Record<string, string>;
 
   return (
-    <nav className="flex flex-col gap-1 pb-3 pt-2" aria-label={t("sidebar_nav.nav_aria")}>
-      <NavSection title={bilingualText(lang, "मुख्य", "Main")}>
+    <nav className="flex flex-col gap-1 pb-3 pt-2" aria-label={menu.navAria}>
+      <NavSection title={menu.mainTitle}>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/" label={t("home")} icon={featureIcon("home")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/" label={mainLabel.home} icon={featureIcon("home")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/panchanga" search={patroRouteLinkSearch("/panchanga", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("nav.surya_panchanga")} icon={featureIcon("panchanga")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/panchanga" search={patroRouteLinkSearch("/panchanga", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={mainLabel.panchanga} icon={featureIcon("panchanga")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/kundali" label={t("sidebar_nav.items.kundali.label")} icon={featureIcon("kundali")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/kundali" label={mainLabel.kundali} icon={featureIcon("kundali")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/dainikkranti" search={patroRouteLinkSearch("/dainikkranti", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.dainikkranti.label")} icon={featureIcon("dainikkranti")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/dainikkranti" search={patroRouteLinkSearch("/dainikkranti", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={mainLabel.dainikkranti} icon={featureIcon("dainikkranti")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/jyotish/kundali-milan" label={t("sidebar_nav.items.kundali-milan.label")} icon={featureIcon("kundali-milan")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/jyotish/kundali-milan" label={mainLabel["kundali-milan"]} icon={featureIcon("kundali-milan")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/jyotish/rashifal" label={t("nav.jyotish_rashifal")} icon={featureIcon("rashifal")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/jyotish/rashifal" label={mainLabel.rashifal} icon={featureIcon("rashifal")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/panchanga/year" search={patroRouteLinkSearch("/panchanga/year", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.panchanga-year.label")} icon={featureIcon("panchanga-year")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/panchanga/year" search={patroRouteLinkSearch("/panchanga/year", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={mainLabel["panchanga-year"]} icon={featureIcon("panchanga-year")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/vastu" label={t("nav.vastu")} icon={featureIcon("vastu")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/vastu" label={mainLabel.vastu} icon={featureIcon("vastu")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/learn" label={t("nav.learn")} icon={featureIcon("learn")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/learn" label={mainLabel.learn} icon={featureIcon("learn")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/documents" label={t("nav.documents")} icon={featureIcon("documents")} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/documents" label={mainLabel.documents} icon={featureIcon("documents")} onClick={onNavigate} />
         </DrawerClose>
       </NavSection>
 
-      {sections.map((section) => {
-        const items = section.items.filter((item) => !DRAWER_MAIN_PROMOTED_IDS.has(item.id));
-        if (items.length === 0) return null;
-        return (
-          <NavSection key={section.id} title={t(section.titleKey)}>
-          {items.map((item) => {
-            const label = labelForItem(item);
+      {menu.sections.map((section) => (
+          <NavSection key={section.id} title={section.title}>
+          {section.items.map(({ item, label }) => {
             const search = itemSearch(item, location, era, {
               year: urlBrowse.year,
               month: urlBrowse.month,
@@ -229,8 +196,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
             );
           })}
           </NavSection>
-        );
-      })}
+      ))}
     </nav>
   );
 }

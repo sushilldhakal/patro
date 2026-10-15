@@ -1,172 +1,27 @@
-import { useMemo } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { View } from "react-native";
+import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
+import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
+import { illustration } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { Text } from "@/components/ui/Text";
-import { fetchPanchakYear, panchakKeys } from "@/lib/api";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { mapPanchakPeriod, type PanchakPeriod } from "@vedic-patro/domain/panchak/panchak-patro-data";
-import { PANCHAK_VARIETIES, panchakVarietyFromStartAd } from "@vedic-patro/domain/panchak/panchak-types";
-import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
-import { eraToApi } from "@vedic-patro/domain/era";
-import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
 import { patroNoteBox } from "@/lib/patro-classes";
-import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { cn } from "@vedic-patro/domain/utils";
-import { illustration } from "@vedic-patro/design-tokens";
 
-function fmtAdShort(iso: string, lang: "ne" | "en"): string {
-  const d = new Date(`${iso}T12:00:00`);
-  return d.toLocaleDateString(lang === "en" ? "en-US" : "ne-NP", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function PanchakPeriodCard({
-  index,
-  period,
-  width,
-}: {
-  index: number;
-  period: PanchakPeriod;
-  width: string;
-}) {
-  const { lang, pick, digits } = useLocale();
-  const { width: screenWidth } = useBreakpoint();
-  const en = lang === "en";
-  const variety = panchakVarietyFromStartAd(period.start.ad);
-
-  const bsStart = formatBsMonthDayPatro(period.start.bsYear, period.start.bsMonth, period.start.bsDay);
-  const bsEnd = formatBsMonthDayPatro(period.end.bsYear, period.end.bsMonth, period.end.bsDay);
-
-  const Boundary = ({ label, bs, time, ad }: { label: string; bs: string; time: string; ad: string }) => (
-    <View
-      className={cn(pc.boundary, "flex-1")}
-    >
-      <Text className={pc.boundaryLabel} style={nepaliTextStyle()}>
-        {label}
-      </Text>
-      <Text className={pc.boundaryValue} style={nepaliTextStyle()}>
-        {digits(bs)}, {time}
-      </Text>
-      <Text className={pc.boundaryAd} style={nepaliTextStyle()}>{ad}</Text>
-    </View>
-  );
-
-  return (
-    <View
-      style={{ width: width as never }}
-      className={pc.periodCard}
-    >
-      <View className={pc.periodHead}>
-        <Text className={pc.periodTitle} style={nepaliTextStyle()}>
-          {pick(`पञ्चक ${digits(index + 1)}`, `Panchak ${index + 1}`)}
-        </Text>
-        {variety ? (
-          <View className={pc.varietyBadge}>
-            <Text className={pc.varietyText} style={nepaliTextStyle()}>
-              {en ? variety.labelEn : variety.labelNe}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-
-      <View className={screenWidth >= 640 ? "flex-row gap-4" : "gap-4"}>
-        <Boundary
-          label={pick("सुरु हुने मिति", "Start")}
-          bs={bsStart}
-          time={en ? period.start.timeEn : period.start.timeNe}
-          ad={fmtAdShort(period.start.ad, lang)}
-        />
-        <Boundary
-          label={pick("समाप्त हुने मिति", "End")}
-          bs={bsEnd}
-          time={en ? period.end.timeEn : period.end.timeNe}
-          ad={fmtAdShort(period.end.ad, lang)}
-        />
-      </View>
-
-      <Text className={pc.duration} style={nepaliTextStyle()}>
-        {pick("अवधि", "Duration")}:{" "}
-        <Text className={pc.durationValue}>{en ? period.durationEn : period.durationNe}</Text>
-      </Text>
-    </View>
-  );
-}
-
-const PROHIBITED_ITEMS = [
-  {
-    key: "south_travel",
-    titleNe: "दक्षिण यात्रा",
-    titleEn: "Travel south",
-    descNe: "यमराजको दिशाबाट बच्न (Avoiding the direction of Yamaraj)",
-    descEn: "Avoiding the direction of Yama (south)",
-  },
-  {
-    key: "roof",
-    titleNe: "घर छाउनु",
-    titleEn: "Roofing a house",
-    descNe: "नयाँ घरमा छत हाल्नु (Putting the roof on a new house)",
-    descEn: "Placing the roof on a new house",
-  },
-  {
-    key: "bed",
-    titleNe: "खाट/छपरी बुन्नु",
-    titleEn: "Weaving a bed or cot",
-    descNe: "खाट वा कोक्रो बुन्नु वा बनाउनु (Weaving or constructing a bed/cot)",
-    descEn: "Weaving or constructing a bed/cot (charpai)",
-  },
-  {
-    key: "fuel",
-    titleNe: "काठ-दाउरा सञ्चय",
-    titleEn: "Gathering firewood or grass",
-    descNe: "दाउरा वा घाँस जम्मा गर्नु (Gathering firewood or grass)",
-    descEn: "Stockpiling fuel or fodder",
-  },
-  {
-    key: "last_rites",
-    titleNe: "दाह संस्कार",
-    titleEn: "Last rites",
-    descNe: "अन्तिम संस्कार गर्नु (Performing last rites)",
-    descEn: "Performing cremation or final funeral rites",
-  },
-] as const;
-
+/** Panchak patro — the app's drawing of `usePanchakPage` (@vedic-patro/features). */
 export default function PanchakPatroScreen() {
-  const { lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
-  const en = lang === "en";
-  const apiEra = eraToApi(era);
-
-  const yearLabel = useMemo(
-    () => formatBrowsePatroYear(era, year, lang, digits),
-    [era, year, lang, digits],
-  );
-
-  const query = useQuery({
-    queryKey: panchakKeys.year(year, location.params, apiEra),
-    queryFn: () => fetchPanchakYear(year, location.params, apiEra),
-    staleTime: 1000 * 60 * 60,
-    placeholderData: keepPreviousData,
-  });
-
-  const periods = useMemo(
-    () => query.data?.periods.map(mapPanchakPeriod) ?? [],
-    [query.data?.periods],
-  );
+  const page = usePanchakPage({ year, era, location: location.params });
   const cardWidth = width >= 1024 ? "49%" : "100%";
 
   return (
@@ -174,11 +29,8 @@ export default function PanchakPatroScreen() {
       <View className="mb-4">
         <PageHeader
           icon={<Ionicons name="calendar-outline" size={28} color={colors.secondary} />}
-          title={pick(`पञ्चक पात्रो ${yearLabel}`, `Panchak Patro ${yearLabel}`)}
-          subtitle={pick(
-            "वैदिक ज्योतिष र सूर्य सिद्धान्तमा आधारित पञ्चक काल र मुहूर्त विवरण",
-            "Panchak periods and moment details based on Vedic jyotish and Surya Siddhanta",
-          )}
+          title={page.copy.title}
+          subtitle={page.copy.subtitle}
         />
       </View>
 
@@ -187,51 +39,40 @@ export default function PanchakPatroScreen() {
         onEraChange={setEra}
         year={year}
         onYearChange={setYear}
-        gregorianRange={query.data?.gregorian_range}
+        gregorianRange={page.gregorianRange}
         location={location}
         onLocationChange={setLocation}
       />
 
       <View className={cn(patroNoteBox, "mt-4")}>
         <Text className={pc.introText} style={nepaliTextStyle()}>
-          {pick(
-            "पञ्चक भन्नाले चन्द्रमाले पाँच विशेष नक्षत्रहरू (धनिष्ठाको उत्तरार्ध, शतभिषा, पूर्वाभाद्रपद, उत्तराभाद्रपद र रेवती) पार गर्ने पाँच दिनको अवधिलाई बुझिन्छ। वैदिक ज्योतिष अनुसार, यस अवधिमा केही निश्चित कार्यहरू नगर्न सल्लाह दिइन्छ किनभने पञ्चक कालमा गरिएका कार्यहरू पाँच पटक दोहोरिने धार्मिक विश्वास रहेको छ।",
-            "Panchak is the roughly five-day span while the Moon transits the last half of Dhanishta, Shatabhisha, Purva Bhadrapada, Uttara Bhadrapada, and Revati. Many traditions advise avoiding certain acts during Panchak, believing work done then may repeat fivefold.",
-          )}
+          {page.copy.intro}
         </Text>
       </View>
 
-      {query.isLoading && !query.data ? (
+      {page.status === "loading" ? (
         <Text className={pc.noData} style={nepaliTextStyle()}>
-          {pick("लोड हुँदै…", "Loading…")}
+          {page.copy.loading}
         </Text>
-      ) : query.isError ? (
+      ) : page.status === "error" ? (
         <Text className={pc.errorText} style={nepaliTextStyle()}>
-          {pick("पञ्चक विवरण लोड गर्न सकिएन।", "Could not load Panchak details.")}
+          {page.copy.error}
         </Text>
-      ) : !periods.length ? (
+      ) : !page.cards.length ? (
         <Text className={pc.noData} style={nepaliTextStyle()}>
-          {pick(
-            `${yearLabel} का लागि पञ्चक विवरण उपलब्ध छैन।`,
-            `Panchak details for ${yearLabel} are not available yet.`,
-          )}
+          {page.copy.noData}
         </Text>
       ) : (
         <View className={pc.windows}>
           <View className={pc.windowsHeading}>
             <Ionicons name="warning-outline" size={16} color={illustration.amber67} />
             <Text className={pc.sectionTitle} style={nepaliTextStyle()}>
-              {pick(`${yearLabel} का पञ्चक अवधिहरू`, `Panchak windows for ${yearLabel}`)}
+              {page.copy.periodsTitle}
             </Text>
           </View>
           <View className="flex-row flex-wrap gap-3">
-            {periods.map((period, i) => (
-              <PanchakPeriodCard
-                key={`${period.start.ad}-${period.end.ad}`}
-                index={i}
-                period={period}
-                width={cardWidth}
-              />
+            {page.cards.map((card) => (
+              <PeriodCard key={card.key} card={card} width={cardWidth} durationLabel={page.copy.duration} />
             ))}
           </View>
         </View>
@@ -239,22 +80,16 @@ export default function PanchakPatroScreen() {
 
       <View className={cn(pc.panel, "mt-4")}>
         <Text className={pc.panelTitleSpaced} style={nepaliTextStyle()}>
-          {pick("पञ्चकमा वर्जित गरिएका कार्यहरू", "Acts discouraged during Panchak")}
+          {page.copy.prohibitedTitle}
         </Text>
         <View className={pc.prohibitedList}>
-          {PROHIBITED_ITEMS.map((item, i) => (
-            <View
-              key={item.key}
-              className={cn(
-                pc.prohibitedItem,
-                i === PROHIBITED_ITEMS.length - 1 && "border-b-0 pb-0",
-              )}
-            >
+          {page.prohibited.map((item, i) => (
+            <View key={item.key} className={cn(pc.prohibitedItem, i === page.prohibited.length - 1 && "border-b-0 pb-0")}>
               <Text className={pc.itemTitle} style={nepaliTextStyle()}>
-                {pick(item.titleNe, item.titleEn)}
+                {item.title}
               </Text>
               <Text className={pc.itemDesc} style={nepaliTextStyle()}>
-                {pick(item.descNe, item.descEn)}
+                {item.desc}
               </Text>
             </View>
           ))}
@@ -263,48 +98,71 @@ export default function PanchakPatroScreen() {
 
       <View className={cn(pc.panelLearn, "mt-4")}>
         <Text className={pc.panelTitle} style={nepaliTextStyle()}>
-          {pick("पञ्चकको बारेमा बुझ्नुहोस्", "Understanding Panchak")}
+          {page.copy.learnTitle}
         </Text>
-
-        <View>
-          <Text className={pc.learnHeading} style={nepaliTextStyle()}>
-            {pick("पञ्चक के हो?", "What is Panchak?")}
-          </Text>
-          <Text className={pc.learnBody} style={nepaliTextStyle()}>
-            {pick(
-              "पञ्चक भन्नाले चन्द्रमाले पाँच विशेष नक्षत्रहरू (धनिष्ठाको उत्तरार्ध, शतभिषा, पूर्वाभाद्रपद, उत्तराभाद्रपद र रेवती) पार गर्ने पाँच दिनको अवधिलाई बुझिन्छ। यस अवधिमा दक्षिण यात्रा, तृण सङ्ग्रह, वा घरको छत हाल्ने जस्ता कार्यहरू नगर्न सल्लाह दिइन्छ।",
-              "Panchak is the five-day lunar window through five special nakshatras (second half of Dhanishta through Revati). Travel south, gathering grass or firewood, and roofing a home are commonly avoided.",
-            )}
-          </Text>
-        </View>
-
-        <View>
-          <Text className={pc.learnHeading} style={nepaliTextStyle()}>
-            {pick("पञ्चक रहित मुहूर्तको महत्त्व", "Why Panchaka-rahita moment matters")}
-          </Text>
-          <Text className={pc.learnBody} style={nepaliTextStyle()}>
-            {pick(
-              "पञ्चक रहित विधिको प्रयोगले विवाह वा मुण्डन जस्ता शुभ कार्यहरू यी 'दोषयुक्त' समयभन्दा बाहिर तय भएको सुनिश्चित गर्दछ, जसले गर्दा कार्यहरू निर्विघ्न सम्पन्न हुन्छन्।",
-              "Scheduling auspicious rites (vivaha, mundana, etc.) in Panchaka-rahita windows keeps them outside these inauspicious spans so the work may proceed smoothly.",
-            )}
-          </Text>
-        </View>
-
+        {page.learn.map((block) => (
+          <View key={block.title}>
+            <Text className={pc.learnHeading} style={nepaliTextStyle()}>
+              {block.title}
+            </Text>
+            <Text className={pc.learnBody} style={nepaliTextStyle()}>
+              {block.body}
+            </Text>
+          </View>
+        ))}
         <View>
           <Text className={pc.learnHeadingSpaced} style={nepaliTextStyle()}>
-            {pick("पञ्चकका प्रकारहरू", "Types of Panchak by start weekday")}
+            {page.copy.typesTitle}
           </Text>
           <View className={pc.typesList}>
-            {PANCHAK_VARIETIES.map((v) => (
+            {page.varieties.map((v) => (
               <Text key={v.id} className={pc.typeItem} style={nepaliTextStyle()}>
-                <Text className={pc.typeName}>{en ? v.labelEn : v.labelNe}</Text>
+                <Text className={pc.typeName}>{v.name}</Text>
                 {" — "}
-                {en ? v.noteEn : v.noteNe}
+                {v.note}
               </Text>
             ))}
           </View>
         </View>
       </View>
     </AppShell>
+  );
+}
+
+function PeriodCard({ card, width, durationLabel }: { card: PanchakCardView; width: string; durationLabel: string }) {
+  const { width: screenWidth } = useBreakpoint();
+  return (
+    <View style={{ width: width as never }} className={pc.periodCard}>
+      <View className={pc.periodHead}>
+        <Text className={pc.periodTitle} style={nepaliTextStyle()}>
+          {card.title}
+        </Text>
+        {card.variety ? (
+          <View className={pc.varietyBadge}>
+            <Text className={pc.varietyText} style={nepaliTextStyle()}>
+              {card.variety}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+      <View className={screenWidth >= 640 ? "flex-row gap-4" : "gap-4"}>
+        {[card.start, card.end].map((b) => (
+          <View key={b.label} className={cn(pc.boundary, "flex-1")}>
+            <Text className={pc.boundaryLabel} style={nepaliTextStyle()}>
+              {b.label}
+            </Text>
+            <Text className={pc.boundaryValue} style={nepaliTextStyle()}>
+              {b.bs}
+            </Text>
+            <Text className={pc.boundaryAd} style={nepaliTextStyle()}>
+              {b.ad}
+            </Text>
+          </View>
+        ))}
+      </View>
+      <Text className={pc.duration} style={nepaliTextStyle()}>
+        {durationLabel}: <Text className={pc.durationValue}>{card.duration}</Text>
+      </Text>
+    </View>
   );
 }

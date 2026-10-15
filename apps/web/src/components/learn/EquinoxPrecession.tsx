@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";
 import { motSliderLabel, motSliderRow, tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap, edSvg } from "@/lib/learn-classes";
 import { Pause, Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";

@@ -4,14 +4,9 @@ import { Text } from "@/components/ui/Text";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { Button } from "@/components/ui/Button";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
-import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
 import { afterProfileSaved } from "@/lib/notifications/triggers";
-import {
-  createProfile,
-  updateProfile,
-  type Profile,
-  type ProfileInput,
-} from "@/lib/auth/client";
+import type { Profile, ProfileInput } from "@/lib/auth/client";
+import { useProfileForm } from "@vedic-patro/features/account";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {
@@ -21,42 +16,9 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
-export const EMPTY_PROFILE: ProfileInput = {
-  full_name: "",
-  phone: "",
-  email: "",
-  gender: "",
-  country: "",
-  city: "",
-  location_label: "",
-  latitude: null,
-  longitude: null,
-  timezone: "",
-  birth_date: "",
-  birth_time: "",
-  birth_era: "bs",
-  is_default: false,
-};
-
-export function profileToInput(p: Profile): ProfileInput {
-  return {
-    full_name: p.full_name,
-    phone: p.phone ?? "",
-    email: p.email ?? "",
-    gender: p.gender ?? "",
-    country: p.country ?? "",
-    city: p.city ?? "",
-    location_label: p.location_label ?? "",
-    latitude: p.latitude,
-    longitude: p.longitude,
-    timezone: p.timezone ?? "",
-    birth_date: p.birth_date ? formatDateInput(p.birth_date) : "",
-    birth_time: p.birth_time ? formatTimeInput(p.birth_time) : "",
-    birth_era: p.birth_era ?? "bs",
-    is_default: p.is_default,
-  };
-}
+export { EMPTY_PROFILE, profileToInput } from "@vedic-patro/features/account";
 
 function inputToLocation(form: ProfileInput): PanchangaLocation {
   if (form.latitude != null && form.longitude != null) {
@@ -73,7 +35,7 @@ function inputToLocation(form: ProfileInput): PanchangaLocation {
 }
 
 function pickLabel(form: ProfileInput): string {
-  return form.location_label || form.city || "जन्म स्थान";
+  return form.location_label || form.city || tFor("ne", "ui.auth.birth_place");
 }
 
 function FieldLabel({ children }: { children: string }) {
@@ -150,68 +112,35 @@ export function ProfileForm({
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
 }) {
-  const { pick, lang } = useLocale();
+  const { lang } = useLocale();
   const colors = useThemeColors();
-  const [form, setForm] = useState<ProfileInput>(initial);
+  const f = useProfileForm({
+    initial,
+    existing,
+    onSaved,
+    afterSave: (isNew) => void afterProfileSaved(lang === "en" ? "en" : "ne", isNew),
+  });
+  const { form, copy } = f;
   const [birthLocation, setBirthLocation] = useState<PanchangaLocation>(() => inputToLocation(initial));
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  function set<K extends keyof ProfileInput>(key: K, val: ProfileInput[K]) {
-    setForm((f) => ({ ...f, [key]: val }));
-  }
 
   function onLocationChange(loc: PanchangaLocation) {
     setBirthLocation(loc);
-    const parts = loc.label.split(",").map((s) => s.trim());
-    setForm((f) => ({
-      ...f,
-      city: parts[0] ?? f.city,
-      country: parts.length > 1 ? parts[parts.length - 1] : f.country,
-      location_label: loc.label,
-      latitude: loc.params.lat,
-      longitude: loc.params.lon,
-      timezone: loc.params.timezone ?? f.timezone,
-    }));
-  }
-
-  async function onSubmit() {
-    if (!form.full_name.trim()) {
-      setError(pick("नाम अनिवार्य छ", "Name is required"));
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      const payload = Object.fromEntries(
-        Object.entries(form).map(([k, v]) => [k, v === "" ? null : v]),
-      ) as ProfileInput;
-      payload.full_name = form.full_name.trim();
-      const saved = existing
-        ? await updateProfile(existing.id, payload)
-        : await createProfile(payload);
-      void afterProfileSaved(lang === "en" ? "en" : "ne", !existing);
-      onSaved(saved);
-    } catch {
-      setError(pick("प्रोफाइल सेभ गर्न सकिएन", "Could not save profile"));
-    } finally {
-      setBusy(false);
-    }
+    f.selectPlaceByLabel(loc.label, loc.params.lat, loc.params.lon, loc.params.timezone);
   }
 
   return (
     <View className={accountClasses.profileForm}>
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("पूरा नाम", "Full name")}</FieldLabel>
-          <FieldInput value={form.full_name} onChangeText={(v) => set("full_name", v)} />
+          <FieldLabel>{copy.fullName}</FieldLabel>
+          <FieldInput value={form.full_name} onChangeText={f.setName} />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("फोन", "Phone")}</FieldLabel>
+          <FieldLabel>{copy.phone}</FieldLabel>
           <FieldInput
             value={form.phone ?? ""}
-            onChangeText={(v) => set("phone", v)}
-            placeholder="+977…"
+            onChangeText={f.setPhone}
+            placeholder={copy.phonePlaceholder}
             keyboardType="phone-pad"
           />
         </View>
@@ -219,112 +148,86 @@ export function ProfileForm({
 
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("इमेल", "Email")}</FieldLabel>
+          <FieldLabel>{copy.email}</FieldLabel>
           <EmailTextInput
             value={form.email ?? ""}
-            onChangeText={(v) => set("email", v)}
-            placeholder="you@example.com"
+            onChangeText={f.setEmail}
+            placeholder={copy.emailPlaceholder}
             placeholderTextColor={colors.mutedForeground}
             className={accountClasses.input}
             style={nepaliTextStyle(14)}
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("लिङ्ग", "Gender")}</FieldLabel>
+          <FieldLabel>{copy.gender}</FieldLabel>
           <View className="flex-row flex-wrap gap-2">
-            <OptionChip
-              label={pick("पुरुष", "Male")}
-              active={form.gender === "male"}
-              onPress={() => set("gender", "male")}
-            />
-            <OptionChip
-              label={pick("महिला", "Female")}
-              active={form.gender === "female"}
-              onPress={() => set("gender", "female")}
-            />
-            <OptionChip
-              label={pick("अन्य", "Other")}
-              active={form.gender === "other"}
-              onPress={() => set("gender", "other")}
-            />
+            {f.genders.map((g) => (
+              <OptionChip key={g.value} label={g.label} active={g.active} onPress={g.select} />
+            ))}
           </View>
         </View>
       </View>
 
       <View className={accountClasses.field}>
-        <FieldLabel>{pick("जन्म स्थान", "Birth place")}</FieldLabel>
+        <FieldLabel>{copy.birthPlace}</FieldLabel>
         <LocationSelector location={birthLocation} onLocationChange={onLocationChange} />
-        {form.country ? (
+        {f.placeHint ? (
           <Text className={accountClasses.hint} style={nepaliTextStyle()}>
-            {form.country}
-            {form.timezone ? ` · ${form.timezone}` : ""}
+            {f.placeHint}
           </Text>
         ) : null}
       </View>
 
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("जन्म मिति", "Birth date")}</FieldLabel>
+          <FieldLabel>{copy.birthDate}</FieldLabel>
           <FieldInput
             value={form.birth_date ?? ""}
-            onChangeText={(v) => set("birth_date", formatDateInput(v))}
-            placeholder={pick("वर्ष-महिना-दिन", "YYYY-MM-DD")}
+            onChangeText={f.setBirthDate}
+            placeholder={copy.birthDatePlaceholder}
             keyboardType="numeric"
             maxLength={10}
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("जन्म समय", "Birth time")}</FieldLabel>
+          <FieldLabel>{copy.birthTime}</FieldLabel>
           <FieldInput
             value={form.birth_time ?? ""}
-            onChangeText={(v) => set("birth_time", formatTimeInput(v))}
-            placeholder={pick("घण्टा:मिनेट", "HH:MM")}
+            onChangeText={f.setBirthTime}
+            placeholder={copy.birthTimePlaceholder}
             keyboardType="numeric"
             maxLength={5}
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("पात्रो", "Calendar")}</FieldLabel>
+          <FieldLabel>{copy.calendar}</FieldLabel>
           <View className="flex-row gap-2">
-            <OptionChip
-              label={pick("वि.सं.", "BS")}
-              active={(form.birth_era ?? "bs") === "bs"}
-              onPress={() => set("birth_era", "bs")}
-            />
-            <OptionChip
-              label={pick("ई.सं.", "AD")}
-              active={form.birth_era === "ad"}
-              onPress={() => set("birth_era", "ad")}
-            />
+            {f.eras.map((era) => (
+              <OptionChip key={era.value} label={era.label} active={era.active} onPress={era.select} />
+            ))}
           </View>
         </View>
       </View>
 
       <View className={cn("flex-row", accountClasses.checkRow)}>
-        <Switch value={!!form.is_default} onValueChange={(v) => set("is_default", v)} />
+        <Switch value={!!form.is_default} onValueChange={f.setDefault} />
         <Text className={accountClasses.checkText} style={nepaliTextStyle()}>
-          {pick("पूर्वनिर्धारित प्रोफाइल", "Set as default profile")}
+          {copy.setDefault}
         </Text>
       </View>
 
-      {error ? (
+      {f.error ? (
         <Text className={accountClasses.formError} style={nepaliTextStyle(14)}>
-          {error}
+          {f.error}
         </Text>
       ) : null}
 
       <View className={cn("flex-row", accountClasses.formActions)}>
-        <Button label={pick("रद्द", "Cancel")} variant="ghost" onPress={onCancel} disabled={busy} />
+        <Button label={copy.cancel} variant="ghost" onPress={onCancel} disabled={f.busy} />
         <Button
-          label={
-            busy
-              ? pick("सेभ हुँदै…", "Saving…")
-              : existing
-                ? pick("परिवर्तन सेभ", "Save changes")
-                : pick("प्रोफाइल बनाउनुहोस्", "Create profile")
-          }
-          onPress={onSubmit}
-          disabled={busy}
+          label={copy.submit}
+          onPress={() => void f.submit()}
+          disabled={f.busy}
         />
       </View>
     </View>

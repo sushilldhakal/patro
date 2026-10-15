@@ -1,0 +1,26 @@
+{
+  "name": "@vedic-patro/features",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Page logic shared by the website and the mobile app: one hook per page holds the data loading, state, row building and copy; each app only draws it.",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*/index.ts"
+  },
+  "scripts": {
+    "lint": "node scripts/check-portable.mjs",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@vedic-patro/api-client": "*",
+    "@vedic-patro/domain": "*",
+    "@vedic-patro/i18n": "*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.101.0",
+    "react": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.8"
+  }
+}

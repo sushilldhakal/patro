@@ -1,5 +1,5 @@
 import { Clock } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   BS_MONTHS_NE,
   BS_SUPPORTED_END_YEAR,

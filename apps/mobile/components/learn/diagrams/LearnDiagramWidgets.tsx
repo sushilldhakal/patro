@@ -50,7 +50,7 @@ const ECLIPSE_TARGET = {
 /* ── Sun · Earth · Moon ───────────────────────────────────────────────── */
 
 export function SunEarthMoonDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 80,
     min: 0,
@@ -66,41 +66,41 @@ export function SunEarthMoonDiagram() {
 
   const names = useMemo(
     () => ({
-      sun: pick("सूर्य", "Sun"),
-      earth: pick("पृथ्वी", "Earth"),
-      moon: pick("चन्द्र", "Moon"),
+      sun: t("kundali.report.meta_sun"),
+      earth: t("vastu.element.earth"),
+      moon: t("kundali.graha_name_moon"),
     }),
     [pick],
   );
 
   return (
     <LearnDiagram3D
-      title={pick("३D — सूर्य, पृथ्वी, चन्द्र", "3D — Sun, Earth, Moon")}
+      title={t("ui.learn.n3d_sun_earth_moon")}
       height={280}
       camera={{ yaw: 0.6, pitch: 0.68 }}
       frame={{ width: 1.95, height: 0.85 }}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्य", "Sun") },
-        { color: DIAGRAM_COLOR.earth, label: pick("पृथ्वी", "Earth") },
-        { color: DIAGRAM_COLOR.moon, label: pick("चन्द्र", "Moon") },
-        { color: DIAGRAM_COLOR.orbit, label: pick("राशि पट्टी", "Rashi belt") },
+        { color: DIAGRAM_COLOR.sun, label: t("kundali.report.meta_sun") },
+        { color: DIAGRAM_COLOR.earth, label: t("vastu.element.earth") },
+        { color: DIAGRAM_COLOR.moon, label: t("kundali.graha_name_moon") },
+        { color: DIAGRAM_COLOR.orbit, label: t("ui.learn.rashi_belt") },
       ]}
       readouts={[
-        { k: pick("सौर महिना", "Solar month"), v: bsMonthLabel(rashi + 1, lang), tone: "accent" },
-        { k: pick("सूर्य राशि", "Sun's rashi"), v: getRashiName(rashi + 1, lang) },
-        { k: pick("सूर्य देशान्तर", "Sun longitude"), v: `${digits(Math.round(sunLon))}°` },
+        { k: t("learn.solar_month"), v: bsMonthLabel(rashi + 1, lang), tone: "accent" },
+        { k: t("ui.learn.sun_s_rashi"), v: getRashiName(rashi + 1, lang) },
+        { k: t("learn.sun_longitude"), v: `${digits(Math.round(sunLon))}°` },
         {
-          k: pick("वर्षको दिन", "Day of year"),
+          k: t("learn.day_of_year"),
           v: `${digits(Math.round(day))} / ${digits(365)}`,
         },
         {
-          k: pick("चन्द्र कोण", "Moon angle"),
+          k: t("ui.learn.moon_angle"),
           v: `${digits(Math.round(elong))}° · ${
-            pakshaFromElongation(elong) === "shukla" ? pick("शुक्ल", "Shukla") : pick("कृष्ण", "Krishna")
+            pakshaFromElongation(elong) === "shukla" ? t("common.paksha_shukla") : t("common.paksha_krishna")
           }`,
         },
         {
-          k: pick("चान्द्र महिना सकिए", "Lunar months done"),
+          k: t("ui.learn.lunar_months_done"),
           v: `${digits(monthsDone)} / ~${digits(12)}`,
           tone: "warn",
         },
@@ -109,27 +109,21 @@ export function SunEarthMoonDiagram() {
         value: day,
         min: 0,
         max: TROPICAL_YEAR,
-        label: pick(
-          `वर्षको दिन ${digits(Math.round(day))}`,
-          `Day of year ${digits(Math.round(day))}`,
-        ),
+        label: t("ui.learn.day_of_year_day", { day: digits(Math.round(day)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("वर्षारम्भ", "Year start"), value: 0 },
-        { label: pick("३ महिना", "+3 months"), value: TROPICAL_YEAR / 4 },
-        { label: pick("६ महिना", "+6 months"), value: TROPICAL_YEAR / 2 },
-        { label: pick("वर्षान्त", "Year end"), value: TROPICAL_YEAR - 2 },
+        { label: t("learn.study.sem.preset_year_start"), value: 0 },
+        { label: t("ui.learn.n3_months"), value: TROPICAL_YEAR / 4 },
+        { label: t("ui.learn.n6_months"), value: TROPICAL_YEAR / 2 },
+        { label: t("ui.learn.year_end"), value: TROPICAL_YEAR - 2 },
       ]}
       onPreset={scrubTo}
       presetValue={day}
       presetTolerance={4}
-      caption={pick(
-        "बाहिरी रङ्गीन पट्टी १२ निरयन राशि हो — पृथ्वीबाट सूर्य कुन राशिमा देखिन्छ, त्यही रेखाले देखाउँछ। सीमा नाघ्दा संक्रान्ति। पृथ्वीले एक फेरो लगाउँदा चन्द्रले ~१२.४ फेरो लगाउँछ, त्यही ~११ दिनको फरकले अधिक मास जन्माउँछ।",
-        "The coloured belt is the 12 sidereal rashis; the ray from Earth shows which one the Sun stands in — crossing a boundary is sankranti. Earth makes one lap while the Moon makes ~12.4, and that ~11-day gap is what adhik maas corrects.",
-      )}
+      caption={t("ui.learn.the_coloured_belt_is_the_12")}
     >
       {({ onLabels }) => (
         <SunEarthMoonScene
@@ -147,7 +141,7 @@ export function SunEarthMoonDiagram() {
 /* ── tithi angle ──────────────────────────────────────────────────────── */
 
 export function TithiAngleDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 8,
     min: 0,
@@ -161,45 +155,45 @@ export function TithiAngleDiagram() {
 
   const copy = useMemo(
     () => ({
-      sun: pick("सूर्य", "Sun"),
-      earth: pick("पृथ्वी", "Earth"),
-      moon: pick("चन्द्र", "Moon"),
-      tithi: pick("तिथि", "Tithi"),
-      totalAngle: pick("कुल कोण", "Total angle"),
+      sun: t("kundali.report.meta_sun"),
+      earth: t("vastu.element.earth"),
+      moon: t("kundali.graha_name_moon"),
+      tithi: t("tithi"),
+      totalAngle: t("ui.learn.total_angle"),
     }),
     [pick],
   );
 
   return (
     <LearnDiagram3D
-      title={pick("३D — तिथि कोण (१२°)", "3D — tithi angle (12°)")}
+      title={t("ui.learn.n3d_tithi_angle_12")}
       height={272}
       camera={{ yaw: 0, pitch: 0.95 }}
       frame={{ width: 1.6, height: 0.75 }}
       target={TITHI_TARGET}
       idleSpin={0.03}
       legend={[
-        { color: DIAGRAM_COLOR.arc, label: pick("पूरा भएका तिथि (१२° each)", "Completed tithis (12° each)") },
-        { color: DIAGRAM_COLOR.sun, label: pick("चालु तिथि", "Tithi in progress") },
-        { color: DIAGRAM_COLOR.moon, label: pick("चन्द्र कक्ष", "Moon's orbit") },
+        { color: DIAGRAM_COLOR.arc, label: t("ui.learn.completed_tithis_12_each") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.tithi_in_progress") },
+        { color: DIAGRAM_COLOR.moon, label: t("ui.learn.moon_s_orbit") },
       ]}
       readouts={[
-        { k: pick("कुल कोण", "Total angle"), v: `${digits(Math.round(elong))}°`, tone: "accent" },
+        { k: t("ui.learn.total_angle"), v: `${digits(Math.round(elong))}°`, tone: "accent" },
         {
-          k: pick("पूरा भएका तिथि", "Tithis completed"),
+          k: t("ui.learn.tithis_completed"),
           v: `${digits(Math.floor(elong / 12))} × ${digits(12)}°`,
         },
-        { k: pick("चालु तिथि", "Tithi running"), v: digits(tithi), tone: "warn" },
+        { k: t("ui.learn.tithi_running"), v: digits(tithi), tone: "warn" },
         {
-          k: pick("पक्ष", "Paksha"),
+          k: t("sections.paksha"),
           v:
             pakshaFromElongation(elong) === "shukla"
-              ? pick("शुक्ल", "Shukla")
-              : pick("कृष्ण", "Krishna"),
+              ? t("common.paksha_shukla")
+              : t("common.paksha_krishna"),
         },
-        { k: pick("उज्यालो भाग", "Lit disc"), v: `${digits(lit)}%` },
+        { k: t("ui.learn.lit_disc"), v: `${digits(lit)}%` },
         {
-          k: pick("चान्द्र दिन", "Lunar day"),
+          k: t("ui.learn.lunar_day"),
           v: `${digits(day.toFixed(1))} / ${digits(29.5)}`,
         },
       ]}
@@ -207,27 +201,21 @@ export function TithiAngleDiagram() {
         value: day,
         min: 0,
         max: SYNODIC_MONTH,
-        label: pick(
-          `चान्द्र दिन ${digits(day.toFixed(1))} · तिथि ${digits(tithi)}`,
-          `Lunar day ${digits(day.toFixed(1))} · tithi ${digits(tithi)}`,
-        ),
+        label: t("ui.learn.lunar_day_value_tithi_tithi", { value: digits(day.toFixed(1)), tithi: digits(tithi) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("अमावस्या", "New moon"), value: 0 },
-        { label: pick("अष्टमी", "First quarter"), value: SYNODIC_MONTH / 4 },
-        { label: pick("पूर्णिमा", "Full moon"), value: SYNODIC_MONTH / 2 },
-        { label: pick("कृष्ण अष्टमी", "Last quarter"), value: (SYNODIC_MONTH * 3) / 4 },
+        { label: t("ui.learn.new_moon_2"), value: 0 },
+        { label: t("ui.learn.first_quarter"), value: SYNODIC_MONTH / 4 },
+        { label: t("ui.learn.full_moon"), value: SYNODIC_MONTH / 2 },
+        { label: t("ui.learn.last_quarter"), value: (SYNODIC_MONTH * 3) / 4 },
       ]}
       onPreset={scrubTo}
       presetValue={day}
       presetTolerance={0.6}
-      caption={pick(
-        "पृथ्वीबाट हेर्दा सूर्य र चन्द्रबीचको कोण नै तिथिको आधार हो। एक तिथि = १२° — सिंगो कोण होइन। चापमा देखिने प्रत्येक हरियो टुक्रा एउटा पूरा भएको तिथि हो; पहेंलो टुक्रा अहिले चलिरहेको तिथि। जस्तै ९८° = ८ × १२° + २°, अर्थात् ८ तिथि सकिएर ९औँ चलिरहेको। ३० तिथिमा एक चान्द्र महिना पूरा हुन्छ।",
-        "Tithi is the Sun–Moon angle seen from Earth, and one tithi is 12° of it — not the whole sweep. Each green block on the arc is one completed tithi; the amber block is the one running now. So 98° = 8 × 12° + 2°: eight tithis closed and the 9th in progress. Thirty of them close a lunar month.",
-      )}
+      caption={t("ui.learn.tithi_is_the_sun_moon_angle")}
     >
       {({ onLabels }) => (
         <TithiAngleScene
@@ -247,7 +235,7 @@ export function TithiAngleDiagram() {
 type EclipseMode = "solar" | "lunar";
 
 export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: mode === "solar" ? 0 : SYNODIC_MONTH / 2,
     min: 0,
@@ -269,11 +257,11 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
 
   const copy = useMemo(
     () => ({
-      sun: pick("सूर्य", "Sun"),
-      earth: pick("पृथ्वी", "Earth"),
-      moon: pick("चन्द्र", "Moon"),
-      node: pick("पात", "Node"),
-      umbra: pick("छायाँ", "Umbra"),
+      sun: t("kundali.report.meta_sun"),
+      earth: t("vastu.element.earth"),
+      moon: t("kundali.graha_name_moon"),
+      node: t("ui.learn.node"),
+      umbra: t("ui.learn.umbra"),
     }),
     [pick],
   );
@@ -283,17 +271,17 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
 
   const status =
     sample?.eclipse === "solar"
-      ? pick("सूर्य ग्रहण", "Solar eclipse")
+      ? t("graha_pages.eclipse_solar.title")
       : sample?.eclipse === "lunar"
-        ? pick("चन्द्र ग्रहण", "Lunar eclipse")
-        : pick("ग्रहण छैन", "No eclipse");
+        ? t("graha_pages.eclipse_lunar.title")
+        : t("learn.study.eclipse.status_none");
 
   return (
     <LearnDiagram3D
       title={
         mode === "solar"
-          ? pick("३D — सूर्य ग्रहण कसरी", "3D — how a solar eclipse happens")
-          : pick("३D — चन्द्र ग्रहण कसरी", "3D — how a lunar eclipse happens")
+          ? t("ui.learn.n3d_how_a_solar_eclipse_happens")
+          : t("ui.learn.n3d_how_a_lunar_eclipse_happens")
       }
       height={290}
       camera={{ yaw: mode === "solar" ? 0.35 : -0.35, pitch: 0.34 }}
@@ -301,18 +289,18 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
       target={ECLIPSE_TARGET[mode]}
       idleSpin={0.035}
       legend={[
-        { color: DIAGRAM_COLOR.moon, label: pick("चन्द्र कक्ष (५.१° झुकाव)", "Moon's orbit (5.1° tilt)") },
-        { color: DIAGRAM_COLOR.orbitFaint, label: pick("क्रान्तिवृत्त", "Ecliptic") },
-        { color: DIAGRAM_COLOR.node, label: pick("पात रेखा", "Line of nodes") },
+        { color: DIAGRAM_COLOR.moon, label: t("ui.learn.moon_s_orbit_5_1_tilt") },
+        { color: DIAGRAM_COLOR.orbitFaint, label: t("ui.learn.ecliptic") },
+        { color: DIAGRAM_COLOR.node, label: t("ui.learn.line_of_nodes") },
       ]}
       readouts={[
-        { k: pick("कोण", "Elongation"), v: `${digits(Math.round(elong))}°` },
+        { k: t("ui.learn.elongation"), v: `${digits(Math.round(elong))}°` },
         {
-          k: pick("क्रान्ति अक्षांश", "Ecliptic latitude"),
+          k: t("ui.learn.ecliptic_latitude"),
           v: `${digits(latDeg.toFixed(2))}°`,
         },
         {
-          k: pick("अवस्था", "Status"),
+          k: t("ui.learn.status"),
           v: status,
           tone: sample?.eclipse && sample.eclipse !== "none" ? "warn" : "accent",
         },
@@ -321,28 +309,25 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
         value: day,
         min: 0,
         max: SYNODIC_MONTH,
-        label: pick(
-          `चान्द्र दिन ${digits(day.toFixed(1))}`,
-          `Lunar day ${digits(day.toFixed(1))}`,
-        ),
+        label: t("ui.learn.lunar_day_value", { value: digits(day.toFixed(1)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("अमावस्या", "New moon"), value: 0 },
-        { label: pick("पूर्णिमा", "Full moon"), value: SYNODIC_MONTH / 2 },
+        { label: t("ui.learn.new_moon_2"), value: 0 },
+        { label: t("ui.learn.full_moon"), value: SYNODIC_MONTH / 2 },
       ]}
       onPreset={scrubTo}
       presetValue={day}
       presetTolerance={0.6}
       extraControls={
         <ChipRow
-          label={pick("पात रेखा", "Line of nodes")}
+          label={t("ui.learn.line_of_nodes")}
           options={[
-            { label: pick("ग्रहण ऋतु (मिलेको)", "Eclipse season (aligned)"), value: 0 },
-            { label: pick("आंशिक", "Halfway"), value: 45 },
-            { label: pick("मिलेको छैन", "Off-season"), value: 90 },
+            { label: t("ui.learn.eclipse_season_aligned"), value: 0 },
+            { label: t("ui.learn.halfway"), value: 45 },
+            { label: t("ui.learn.off_season"), value: 90 },
           ]}
           value={nodeAngle}
           onChange={setNodeAngle}
@@ -350,14 +335,8 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
       }
       caption={
         mode === "solar"
-          ? pick(
-              "अमावस्यामा चन्द्र सूर्य र पृथ्वीको बीचमा पर्छ, तर उसको कक्ष ५.१° झुकेको हुनाले प्रायः छायाँ पृथ्वीभन्दा माथि वा तल जान्छ। पात रेखा सूर्यतिर फर्केको बेला मात्र छायाँ पृथ्वीमा पर्छ — त्यही सूर्य ग्रहण।",
-              "At new moon the Moon passes between Sun and Earth, but its orbit is tilted 5.1°, so its shadow usually sails above or below us. Only when the line of nodes points at the Sun does the shadow land — that is a solar eclipse.",
-            )
-          : pick(
-              "पूर्णिमामा पृथ्वीको छायाँ चन्द्रतिर जान्छ। झुकावका कारण चन्द्र प्रायः त्यो छायाँभन्दा माथि वा तलबाट गुज्रन्छ; पात नजिक परेको पूर्णिमामा मात्र चन्द्र छायाँभित्र पस्छ — चन्द्र ग्रहण।",
-              "At full moon Earth's shadow stretches away from the Sun. The tilt usually carries the Moon clear of it; only at a full moon near a node does the Moon enter the shadow — a lunar eclipse.",
-            )
+          ? t("ui.learn.at_new_moon_the_moon_passes")
+          : t("ui.learn.at_full_moon_earth_s_shadow")
       }
     >
       {({ onLabels }) => (
@@ -376,7 +355,7 @@ export function EclipseDiagram({ mode }: { mode: EclipseMode }) {
 /* ── ayanamsha ────────────────────────────────────────────────────────── */
 
 export function AyanamshaDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { clock, value: year, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 2026,
     min: 1900,
@@ -387,30 +366,30 @@ export function AyanamshaDiagram() {
   const ayan = lahiriAyanamsha(year);
   const copy = useMemo(
     () => ({
-      sidereal: pick("मेष ०° (निरयन)", "Aries 0° (sidereal)"),
-      tropical: pick("विषुव (सायन)", "Equinox (tropical)"),
-      ayanamsha: pick("अयनांश", "Ayanamsha"),
+      sidereal: t("ui.learn.aries_0_sidereal"),
+      tropical: t("ui.learn.equinox_tropical"),
+      ayanamsha: t("kundali.ayanamsha"),
     }),
     [pick],
   );
 
   return (
     <LearnDiagram3D
-      title={pick("३D — अयनांश (लाहिरी)", "3D — ayanamsha (Lahiri)")}
+      title={t("ui.learn.n3d_ayanamsha_lahiri")}
       height={276}
       camera={{ yaw: 0.5, pitch: 0.8 }}
       frame={{ width: 1.7, height: 0.8 }}
       legend={[
-        { color: DIAGRAM_COLOR.sidereal, label: pick("निरयन शून्य", "Sidereal zero") },
-        { color: DIAGRAM_COLOR.tropical, label: pick("सायन विषुव", "Tropical equinox") },
-        { color: DIAGRAM_COLOR.axis, label: pick("अक्ष चलन शंकु", "Precession cone") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.sidereal_zero") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.tropical_equinox") },
+        { color: DIAGRAM_COLOR.axis, label: t("ui.learn.precession_cone") },
       ]}
       readouts={[
-        { k: pick("ई.सं.", "CE"), v: digits(Math.round(year)) },
-        { k: pick("वि.सं.", "BS"), v: digits(Math.round(year) + 57) },
-        { k: pick("अयनांश", "Ayanamsha"), v: `${digits(ayan.toFixed(2))}°`, tone: "accent" },
+        { k: t("ui.learn.ce"), v: digits(Math.round(year)) },
+        { k: t("patro_date.era_bs"), v: digits(Math.round(year) + 57) },
+        { k: t("kundali.ayanamsha"), v: `${digits(ayan.toFixed(2))}°`, tone: "accent" },
         {
-          k: pick("विषुव राशि", "Equinox in rashi"),
+          k: t("ui.learn.equinox_in_rashi"),
           v: getRashiName(rashiIndexFromLon(360 - ayan) + 1, lang),
         },
       ]}
@@ -419,10 +398,7 @@ export function AyanamshaDiagram() {
         min: 1900,
         max: 2100,
         step: 1,
-        label: pick(
-          `ई.सं. ${digits(Math.round(year))} · अयनांश ${digits(ayan.toFixed(2))}°`,
-          `CE ${digits(Math.round(year))} · ayanamsha ${digits(ayan.toFixed(2))}°`,
-        ),
+        label: t("ui.learn.ce_year_ayanamsha_value", { year: digits(Math.round(year)), value: digits(ayan.toFixed(2)) }),
         onChange: scrubTo,
       }}
       playing={playing}
@@ -436,10 +412,7 @@ export function AyanamshaDiagram() {
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={1}
-      caption={pick(
-        "रङ्गीन पट्टी ताराहरूसँग बाँधिएको निरयन राशिचक्र हो। सायन विषुव त्यही पट्टीमा पछाडि सर्दै जान्छ — प्रति ७२ वर्ष लगभग १°। दुईबीचको कोण नै अयनांश, र पञ्चाङ्गले सायन गणनाबाट निरयन स्थान निकाल्न यही घटाउँछ।",
-        "The coloured belt is the sidereal zodiac, pinned to the stars. The tropical equinox creeps backwards through it — roughly 1° every 72 years. The angle between the two is the ayanamsha, and it is exactly what a panchanga subtracts to turn tropical positions into sidereal ones.",
-      )}
+      caption={t("ui.learn.the_coloured_belt_is_the_sidereal")}
     >
       {({ onLabels }) => (
         <AyanamshaScene
@@ -457,7 +430,7 @@ export function AyanamshaDiagram() {
 /* ── seasons / axial tilt ─────────────────────────────────────────────── */
 
 export function SeasonsDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 0,
     min: 0,
@@ -468,19 +441,19 @@ export function SeasonsDiagram() {
   const stations = useMemo(
     () =>
       [
-        pick("वसन्त विषुव", "March equinox"),
-        pick("ग्रीष्म अयनान्त", "June solstice"),
-        pick("शरद् विषुव", "September equinox"),
-        pick("शीत अयनान्त", "December solstice"),
+        t("ui.learn.march_equinox"),
+        t("ui.learn.june_solstice"),
+        t("ui.learn.september_equinox"),
+        t("ui.learn.december_solstice"),
       ] as [string, string, string, string],
     [pick],
   );
 
   const copy = useMemo(
     () => ({
-      sun: pick("सूर्य", "Sun"),
-      earth: pick("पृथ्वी", "Earth"),
-      axis: pick("अक्ष २३.४४°", "Axis 23.44°"),
+      sun: t("kundali.report.meta_sun"),
+      earth: t("vastu.element.earth"),
+      axis: t("ui.learn.axis_23_44"),
     }),
     [pick],
   );
@@ -489,28 +462,25 @@ export function SeasonsDiagram() {
 
   return (
     <LearnDiagram3D
-      title={pick("३D — अक्षीय झुकाव र ऋतु", "3D — axial tilt and the seasons")}
+      title={t("ui.learn.n3d_axial_tilt_and_the_seasons")}
       height={274}
       camera={{ yaw: 0.7, pitch: 0.5 }}
       frame={{ width: 1.4, height: 0.7 }}
       legend={[
-        { color: DIAGRAM_COLOR.axis, label: pick("पृथ्वीको अक्ष", "Earth's axis") },
-        { color: DIAGRAM_COLOR.equator, label: pick("भूमध्य रेखा", "Equator") },
-        { color: DIAGRAM_COLOR.sun, label: pick("विषुव/अयनान्त", "Equinox / solstice") },
+        { color: DIAGRAM_COLOR.axis, label: t("ui.common.earth_s_axis") },
+        { color: DIAGRAM_COLOR.equator, label: t("ui.learn.equator") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.equinox_solstice") },
       ]}
       readouts={[
-        { k: pick("वर्षको दिन", "Day of year"), v: digits(Math.round(day)) },
-        { k: pick("स्थिति", "Station"), v: stations[quarter] ?? stations[0], tone: "accent" },
-        { k: pick("झुकाव", "Tilt"), v: `${digits(23.44)}°` },
+        { k: t("learn.day_of_year"), v: digits(Math.round(day)) },
+        { k: t("ui.learn.station"), v: stations[quarter] ?? stations[0], tone: "accent" },
+        { k: t("ui.learn.tilt"), v: `${digits(23.44)}°` },
       ]}
       slider={{
         value: day,
         min: 0,
         max: TROPICAL_YEAR,
-        label: pick(
-          `वर्षको दिन ${digits(Math.round(day))}`,
-          `Day of year ${digits(Math.round(day))}`,
-        ),
+        label: t("ui.learn.day_of_year_day", { day: digits(Math.round(day)) }),
         onChange: scrubTo,
       }}
       playing={playing}
@@ -519,10 +489,7 @@ export function SeasonsDiagram() {
       onPreset={scrubTo}
       presetValue={day}
       presetTolerance={4}
-      caption={pick(
-        "पृथ्वीको अक्ष वर्षभरि एउटै दिशामा तन्किएको रहन्छ — सूर्यतिर ढल्किने र फर्किने होइन। परिक्रमाका कारण कहिले उत्तरी ध्रुव सूर्यतिर पर्छ (लामो दिन), कहिले पर — यही फेरबदलले ऋतु बनाउँछ, र दुई विषुवमा दिन र रात बराबर हुन्छन्।",
-        "Earth's axis keeps pointing the same way all year — it does not tip toward the Sun and back. As Earth travels, the north pole leans sunward for half the orbit and away for the other half; that is the seasons, and the two equinoxes are where day and night come out equal.",
-      )}
+      caption={t("ui.learn.earth_s_axis_keeps_pointing_the")}
     >
       {({ onLabels }) => (
         <SeasonsScene

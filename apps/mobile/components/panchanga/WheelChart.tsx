@@ -21,21 +21,24 @@ import {
   RASHI_GLYPHS,
   WheelGlyph,
 } from "@/components/panchanga/WheelGlyph";
-import { useLocale } from "@/lib/i18n";
+import {
+  WHEEL_CHART_INNER_R,
+  WHEEL_CHART_R,
+  WHEEL_NAK_GLYPH_SIZE,
+  WHEEL_RASHI_GLYPH_SIZE,
+  useWheelChartLabels,
+  wheelLabelRows,
+  type WheelHover,
+} from "@vedic-patro/features/panchanga-drawing";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { bsMonthsForWheel, GRAHA_META, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { DEG, CX, CY, ORBIT_SCALE, planetHitRadius, planetSvgPosition } from "@vedic-patro/domain/wheel-chart-geometry";
 
-const R_YOGA_I = 140;
-const R_YOGA_O = 178; // shared boundary with rashi inner / core
-const R_KAR_I = 303;
-const R_KAR_O = 327;
-const R_TIT_I = 263;
-const R_TIT_O = 303;
+const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
 
 // Resolved `.pn-wheel` custom properties from the web stylesheet. react-native-svg
 // cannot read CSS vars, so the exact computed values are inlined here — keep them
@@ -75,8 +78,8 @@ const FONT = NOTO_DEVANAGARI_CHART;
  * room to spare than the nakshatra band, whose glyph shares 345–423 with a name
  * that runs to two stacked rows in English.
  */
-const RASHI_GLYPH_SIZE = 30;
-const NAK_GLYPH_SIZE = 26;
+const RASHI_GLYPH_SIZE = WHEEL_RASHI_GLYPH_SIZE;
+const NAK_GLYPH_SIZE = WHEEL_NAK_GLYPH_SIZE;
 
 /** color-mix(in srgb, var(--w-accent) 26%, var(--w-band-alt)) */
 const SEG_HOT = illustration.orange22;
@@ -97,30 +100,9 @@ const TITHI_SHUKLA = illustration.teal15b;
 /** color-mix(in srgb, #2d8a86 14%, #060e10) */
 const TITHI_KRISHNA = midnight.background;
 
-const R = {
-  rimOuter: 497,
-  tickIn: 481,
-  gregOut: 481,
-  gregMid: 467,
-  gregIn: 453,
-  bsOut: 453,
-  bsMid: 438,
-  bsIn: 424,
-  nakOut: 423,
-  nakIcon: 403,
-  nakName: 372,
-  nakIn: 345,
-  padaOut: 345,
-  padaNum: 336,
-  padaIn: 327,
-  rashiOut: 263,
-  rashiGlyph: 246,
-  rashiName: 222,
-  rashiIn: 178,
-  core: 178,
-} as const;
+const R = WHEEL_CHART_R;
 
-export type WheelHover = { type: "nak"; i: number } | { type: "rashi"; i: number };
+export type { WheelHover };
 export type WheelPick = WheelHover;
 
 /** ViewBox is 42 42 916 916; RN-SVG fits it with xMidYMid meet, so a tall
@@ -342,10 +324,7 @@ function segRashiFill(opts: { alt?: boolean; hot?: boolean; sel?: boolean }): st
   return opts.alt ? W_RASHI_ALT : W_RASHI;
 }
 
-/** Split a ring label on whitespace so each word gets its own radial row. */
-function labelRows(label: string): string[] {
-  return label.trim().split(/\s+/).filter(Boolean);
-}
+const labelRows = wheelLabelRows;
 
 interface RingLabelProps {
   L: number;
@@ -450,7 +429,7 @@ function WheelChartImpl({
   lineTarget: lineTargetProp,
   onLineTargetChange,
 }: WheelChartProps) {
-  const { pick } = useLocale();
+  const { pick, gregMonths } = useWheelChartLabels();
   const [innerTarget, setInnerTarget] = useState(1);
   const lineTarget = lineTargetProp ?? innerTarget;
   const setLineTarget = useCallback(
@@ -905,15 +884,15 @@ function WheelChartImpl({
     }
 
     const gregLabels: ReactNode[] = tw.show_greg
-      ? GREG_NE.map((m, i) => (
+      ? gregMonths.map((label, i) => (
           <RingLabel key={`g${i}`} L={(i - 3) * 30 + 5} r={R.gregMid} spin={spin} fill={W_INK_FAINT} size={12}>
-            {m}
+            {label}
           </RingLabel>
         ))
       : [];
 
     return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels };
-  }, [spin, hover, sel, bsYear, tw, pol, arcSeg, pick]);
+  }, [spin, hover, sel, bsYear, tw, pol, arcSeg, pick, gregMonths]);
 
   const dataLayers = useMemo(() => {
     const sunRashiIdx = Math.floor(normDeg(sunLon) / 30);
@@ -1310,7 +1289,14 @@ function WheelChartImpl({
           transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
         }}
       >
-        <Animated.View style={{ flex: 1, transform: [{ rotate: dragRotate }] }} pointerEvents="none">
+        {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
+            rotates that texture. Without it every frame re-draws the whole wheel
+            (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}
+        <Animated.View
+          style={{ flex: 1, transform: [{ rotate: dragRotate }] }}
+          pointerEvents="none"
+          renderToHardwareTextureAndroid
+        >
         <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (

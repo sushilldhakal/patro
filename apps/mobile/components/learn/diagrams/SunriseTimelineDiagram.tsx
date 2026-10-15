@@ -11,11 +11,9 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { AngleArc, Marker } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 
-const TITHI_NE = [
-  "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी",
-  "अष्टमी", "नवमी", "दशमी",
-];
+const TITHI_NE = lazyList("ne", "ui.learn.x_24460e12");
 const TITHI_EN = [
   "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami",
   "Ashtami", "Navami", "Dashami",
@@ -100,7 +98,7 @@ const SunriseTimelineScene = memo(function SunriseTimelineScene({ onLabels, mode
 });
 
 export function SunriseTimelineDiagram({ mode }: { mode: "vriddhi" | "kshaya" }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const data = samples(mode);
   const tithiNames = lang === "en" ? TITHI_EN : TITHI_NE;
   const specialBand = mode === "vriddhi" ? data.dupBand : data.skipBand;
@@ -110,32 +108,26 @@ export function SunriseTimelineDiagram({ mode }: { mode: "vriddhi" | "kshaya" })
     <LearnDiagram3D
       title={
         mode === "vriddhi"
-          ? pick("३D — तिथि वृद्धि (दोहोरिने)", "3D — tithi vriddhi (repeated)")
-          : pick("३D — तिथि क्षय (हराउने)", "3D — tithi kshaya (skipped)")
+          ? t("ui.learn.n3d_tithi_vriddhi_repeated")
+          : t("ui.learn.n3d_tithi_kshaya_skipped")
       }
       height={250}
       camera={{ yaw: 0.4, pitch: 0.85 }}
       frame={{ width: 1.3, height: 0.75 }}
       idleSpin={0.03}
       legend={[
-        { color: DIAGRAM_COLOR.orbit, label: pick("सामान्य तिथि खण्ड", "Normal tithi segment") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: mode === "vriddhi" ? pick("दोहोरिएको तिथि", "Repeated tithi") : pick("हराएको तिथि", "Skipped tithi") },
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्योदयको नमुना (६ दिन)", "Sunrise samples (6 days)") },
+        { color: DIAGRAM_COLOR.orbit, label: t("ui.learn.normal_tithi_segment") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: mode === "vriddhi" ? t("ui.learn.repeated_tithi") : t("ui.learn.skipped_tithi") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.sunrise_samples_6_days") },
       ]}
       readouts={[
-        { k: pick("चन्द्रको गति", "Moon's speed"), v: `${digits(mode === "vriddhi" ? "10.7" : "14.3")}°/${pick("दिन", "day")}`, tone: mode === "vriddhi" ? undefined : "warn" },
-        { k: mode === "vriddhi" ? pick("दोहोरिएको तिथि", "Repeated tithi") : pick("हराएको तिथि", "Skipped tithi"), v: specialName, tone: "accent" },
+        { k: t("ui.learn.moon_s_speed"), v: `${digits(mode === "vriddhi" ? "10.7" : "14.3")}°/${t("common.day")}`, tone: mode === "vriddhi" ? undefined : "warn" },
+        { k: mode === "vriddhi" ? t("ui.learn.repeated_tithi") : t("ui.learn.skipped_tithi"), v: specialName, tone: "accent" },
       ]}
       caption={
         mode === "vriddhi"
-          ? pick(
-              "जब चन्द्र मन्द गतिमा (~१०.७°/दिन) हिँड्छ, एउटै १२° को तिथि–खण्डले लगातार दुई सूर्योदय समेट्छ — त्यो तिथि दुई दिन देखिन्छ (वृद्धि)। यहाँ छ दिनको सूर्योदय–नमुना देखाइएको छ; रातो खण्ड दुईपटक परेको तिथि हो।",
-              "When the Moon moves slowly (~10.7°/day), a single 12° tithi-segment spans two consecutive sunrises — that tithi shows on two days (vriddhi). Six days of sunrise samples are shown here; the red segment is the tithi that got sampled twice.",
-            )
-          : pick(
-              "जब चन्द्र द्रुत गतिमा (~१४.३°/दिन) हिँड्छ, कुनै १२° को तिथि–खण्ड दुई सूर्योदयको बीचमै पूरै सकिन्छ — कुनै पनि सूर्योदयमा नभेटिएकाले त्यो क्षय भई पात्रोबाट हराउँछ। रातो खण्ड कुनै पनि नमुनाले नछोएको तिथि हो।",
-              "When the Moon moves fast (~14.3°/day), a 12° tithi-segment finishes entirely between two sunrises — since no sunrise falls in it, it is skipped (kshaya) and disappears from the calendar. The red segment is the tithi no sample landed on.",
-            )
+          ? t("ui.learn.when_the_moon_moves_slowly_10")
+          : t("ui.learn.when_the_moon_moves_fast_14")
       }
     >
       {({ onLabels }) => <SunriseTimelineScene onLabels={onLabels} mode={mode} tithiNames={tithiNames} />}

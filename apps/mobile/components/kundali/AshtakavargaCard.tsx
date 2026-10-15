@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { RashiInline } from "@/components/kundali/KundaliGlyphLabels";
+import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import {
   TableCell,
   TableHeader,
@@ -11,28 +11,16 @@ import {
   TableScrollShell,
   tableFlexColumn,
 } from "@/components/ui/DataTable";
-import type { AshtakavargaData, AshtakavargaSignRow, ShodhyaPindaRow } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { useLocale } from "@/lib/i18n";
-import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
+import type { AshtakavargaData } from "@/lib/api";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { useAshtakavargaCard } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-const ASHTAKAVARGA_TARGETS = [
-  "lagna",
-  "sun",
-  "moon",
-  "mars",
-  "mercury",
-  "jupiter",
-  "venus",
-  "saturn",
-] as const;
-
-type Target = (typeof ASHTAKAVARGA_TARGETS)[number];
+type Card = ReturnType<typeof useAshtakavargaCard>;
 
 const TABLE_STRETCH = true;
 /** Same flex + minWidth on headers and cells so columns stay aligned while filling screen width. */
@@ -45,33 +33,13 @@ const RASHI_ICON = 26;
 const RASHI_FONT = 13;
 const GRAHA_ICON = 22;
 
-function binduFor(row: AshtakavargaSignRow, target: Target): number {
-  const b = row.bindus;
-  if (!b) return 0;
-  const direct = b[target];
-  if (typeof direct === "number" && Number.isFinite(direct)) return direct;
-  if (target === "lagna") {
-    const legacy = b.Lagna ?? b.ascendant;
-    if (typeof legacy === "number" && Number.isFinite(legacy)) return legacy;
-  }
-  return 0;
-}
-
-function targetLabel(target: Target, lang: "ne" | "en"): string {
-  if (target === "lagna") return lang === "en" ? "Ascendant" : "लग्न";
-  const meta = GRAHA_NAME[target as GrahaKey];
-  return meta ? (lang === "en" ? meta.en : meta.ne) : target;
-}
-
-function AshtakavargaTargetHead({ target }: { target: Target }) {
-  const { lang } = useLocale();
-  const label = targetLabel(target, lang);
-  if (target !== "lagna") {
+function AshtakavargaTargetHead({ target }: { target: Card["targets"][number] }) {
+  if (target.graha) {
     return (
       <View className="items-end gap-1">
-        <GrahaPlanetIcon graha={target as GrahaKey} size={GRAHA_ICON} />
+        <GrahaPlanetIcon graha={target.key as GrahaKey} size={GRAHA_ICON} />
         <TableHeaderLabel fontSize={HEADER_FONT} uppercase={false} numberOfLines={2}>
-          {label}
+          {target.label}
         </TableHeaderLabel>
       </View>
     );
@@ -79,7 +47,7 @@ function AshtakavargaTargetHead({ target }: { target: Target }) {
   return (
     <View className="items-end">
       <TableHeaderLabel fontSize={HEADER_FONT} uppercase={false} numberOfLines={2}>
-        {label}
+        {target.label}
       </TableHeaderLabel>
     </View>
   );
@@ -101,26 +69,21 @@ function numCell(value: string, bold?: boolean) {
   );
 }
 
-function MatrixHeader({ showSarvashtaka }: { showSarvashtaka?: boolean }) {
-  const { lang } = useLocale();
+function MatrixHeader({ card, showSarvashtaka }: { card: Card; showSarvashtaka?: boolean }) {
   return (
     <TableHeader>
       <TableHeaderCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth}>
-        <TableHeaderLabel fontSize={HEADER_FONT}>{kundaliLabel("rashi", lang)}</TableHeaderLabel>
+        <TableHeaderLabel fontSize={HEADER_FONT}>{card.rashiHeader}</TableHeaderLabel>
       </TableHeaderCell>
-      {ASHTAKAVARGA_TARGETS.map((t) => (
-        <TableHeaderCell
-          key={t}
-          flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
-          className="items-end"
-        >
-          <AshtakavargaTargetHead target={t} />
+      {card.targets.map((tg) => (
+        <TableHeaderCell key={tg.key} flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth} className="items-end">
+          <AshtakavargaTargetHead target={tg} />
         </TableHeaderCell>
       ))}
       {showSarvashtaka ? (
         <TableHeaderCell flex={SARV_COL.flex} minWidth={SARV_COL.minWidth} className="items-end">
           <TableHeaderLabel fontSize={HEADER_FONT} numberOfLines={1}>
-            {kundaliLabel("sarv", lang)}
+            {card.sarvHeader}
           </TableHeaderLabel>
         </TableHeaderCell>
       ) : null}
@@ -129,48 +92,42 @@ function MatrixHeader({ showSarvashtaka }: { showSarvashtaka?: boolean }) {
 }
 
 function AshtakavargaMatrix({
-  title,
-  rows,
+  card,
+  matrix,
   showSarvashtaka = true,
 }: {
-  title: string;
-  rows: AshtakavargaSignRow[];
+  card: Card;
+  matrix: Card["matrices"][number];
   showSarvashtaka?: boolean;
 }) {
-  const { lang, digits } = useLocale();
   const colors = useThemeColors();
 
   return (
     <View>
       <Text className={av.blockTitle} style={nepaliTextStyle(15)}>
-        {title}
+        {matrix.title}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
         <View className="w-full">
-          <MatrixHeader showSarvashtaka={showSarvashtaka} />
-          {rows.map((row, rowIndex) => (
+          <MatrixHeader card={card} showSarvashtaka={showSarvashtaka} />
+          {matrix.rows.map((row, rowIndex) => (
             <TableRow key={row.rashi} rowIndex={rowIndex}>
               <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
-                <RashiInline
-                  rashiNum={row.rashi}
-                  nameNe={row.rashiNe}
-                  lang={lang}
-                  size={RASHI_ICON}
-                  textSize={RASHI_FONT}
-                />
+                <View className="flex-row items-center gap-1.5">
+                  <RashiGlyphIcon name={row.rashiNe} number={row.rashi} size={RASHI_ICON} />
+                  <Text className="text-sm text-foreground" style={nepaliTextStyle(RASHI_FONT)}>
+                    {row.name}
+                  </Text>
+                </View>
               </TableCell>
-              {ASHTAKAVARGA_TARGETS.map((t) => (
-                <TableCell
-                  key={t}
-                  flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
-                  align="right"
-                >
-                  {numCell(digits(binduFor(row, t)))}
+              {row.values.map((v, i) => (
+                <TableCell key={card.targets[i]!.key} flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth} align="right">
+                  {numCell(v)}
                 </TableCell>
               ))}
               {showSarvashtaka ? (
                 <TableCell flex={SARV_COL.flex} minWidth={SARV_COL.minWidth} align="right">
-                  {numCell(digits(row.sarvashtaka), true)}
+                  {numCell(row.sarvashtaka, true)}
                 </TableCell>
               ) : null}
             </TableRow>
@@ -181,21 +138,17 @@ function AshtakavargaMatrix({
           >
             <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
               <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(CELL_FONT)}>
-                {kundaliLabel("sarvashtaka", lang)}
+                {card.totalLabel}
               </Text>
             </TableCell>
-            {ASHTAKAVARGA_TARGETS.map((t) => (
-              <TableCell
-                key={t}
-flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
-                align="right"
-              >
-                {numCell(digits(rows.reduce((s, r) => s + binduFor(r, t), 0)))}
+            {matrix.totals.map((v, i) => (
+              <TableCell key={card.targets[i]!.key} flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth} align="right">
+                {numCell(v)}
               </TableCell>
             ))}
             {showSarvashtaka ? (
               <TableCell flex={SARV_COL.flex} minWidth={SARV_COL.minWidth} align="right">
-                {numCell(digits(rows.reduce((s, r) => s + r.sarvashtaka, 0)))}
+                {numCell(matrix.sarvTotal)}
               </TableCell>
             ) : null}
           </View>
@@ -205,22 +158,11 @@ flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
   );
 }
 
-function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
-  const { lang, digits } = useLocale();
-  const metricRows: {
-    key: keyof Pick<ShodhyaPindaRow, "rashiPinda" | "grahaPinda" | "shodhyaPinda">;
-    ne: string;
-    en: string;
-  }[] = [
-    { key: "rashiPinda", ne: "राशि", en: "Rashi" },
-    { key: "grahaPinda", ne: "ग्रह", en: "Graha" },
-    { key: "shodhyaPinda", ne: "शोध्य", en: "Shodhya" },
-  ];
-
+function ShodhyaPindaTable({ card }: { card: Card }) {
   return (
     <View>
       <Text className={av.blockTitle} style={nepaliTextStyle(15)}>
-        {kundaliLabel("shodhya_pinda", lang)}
+        {card.shodhya.title}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
         <View className="w-full">
@@ -228,45 +170,26 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
             <TableHeaderCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth}>
               <View />
             </TableHeaderCell>
-            {ASHTAKAVARGA_TARGETS.map((t) => (
-              <TableHeaderCell
-                key={t}
-                flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
-                className="items-end"
-              >
-                <AshtakavargaTargetHead target={t} />
+            {card.targets.map((tg) => (
+              <TableHeaderCell key={tg.key} flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth} className="items-end">
+                <AshtakavargaTargetHead target={tg} />
               </TableHeaderCell>
             ))}
           </TableHeader>
-          {metricRows.map((metric, rowIndex) => {
-            const emphasize = metric.key === "shodhyaPinda";
-            return (
-              <TableRow
-                key={metric.key}
-                rowIndex={rowIndex}
-                highlight={emphasize}
-              >
-                <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
-                  <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(CELL_FONT)}>
-                    {lang === "en" ? metric.en : metric.ne}
-                  </Text>
+          {card.shodhya.rows.map((metric, rowIndex) => (
+            <TableRow key={metric.key} rowIndex={rowIndex} highlight={metric.emphasize}>
+              <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
+                <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(CELL_FONT)}>
+                  {metric.label}
+                </Text>
+              </TableCell>
+              {metric.values.map((v, i) => (
+                <TableCell key={card.targets[i]!.key} flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth} align="right">
+                  {numCell(v, metric.emphasize)}
                 </TableCell>
-                {ASHTAKAVARGA_TARGETS.map((t) => {
-                  const row = rows.find((r) => r.target === t);
-                  const val = row?.[metric.key];
-                  return (
-                    <TableCell
-                      key={t}
-                      flex={GRAHA_COL.flex} minWidth={GRAHA_COL.minWidth}
-                      align="right"
-                    >
-                      {numCell(val != null ? digits(val) : "—", emphasize)}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
+              ))}
+            </TableRow>
+          ))}
         </View>
       </TableScrollShell>
     </View>
@@ -280,7 +203,7 @@ export function AshtakavargaCard({
   data: AshtakavargaData;
   compactHeader?: boolean;
 }) {
-  const { lang } = useLocale();
+  const card = useAshtakavargaCard(data);
 
   if (!data.raw?.length && !data.reduced?.length) return null;
 
@@ -288,25 +211,18 @@ export function AshtakavargaCard({
     <View className={av.root}>
       {!compactHeader ? (
         <Text className={av.heading} style={nepaliTextStyle(13)}>
-          {kundaliLabel("ashtakavarga", lang)}
+          {card.title}
         </Text>
       ) : null}
       <Text className={av.intro} style={nepaliTextStyle(14)}>
-        {kundaliLabel("ashtakavarga_intro", lang)}
+        {card.intro}
       </Text>
 
-      {data.raw?.length ? (
-        <AshtakavargaMatrix title={kundaliLabel("ashtakavarga", lang)} rows={data.raw} />
-      ) : null}
+      {card.matrices.map((m) =>
+        m.rows.length ? <AshtakavargaMatrix key={m.key} card={card} matrix={m} /> : null,
+      )}
 
-      {data.reduced?.length ? (
-        <AshtakavargaMatrix
-          title={kundaliLabel("reduced_ashtakavarga", lang)}
-          rows={data.reduced}
-        />
-      ) : null}
-
-      {data.shodhyaPinda?.length ? <ShodhyaPindaTable rows={data.shodhyaPinda} /> : null}
+      {card.shodhya.hasRows ? <ShodhyaPindaTable card={card} /> : null}
     </View>
   );
 }

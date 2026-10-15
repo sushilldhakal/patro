@@ -1,12 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import {
-  AYANAMSHA_MODES,
-  getAyanamshaModeInfo,
-  matchesPanchangaAngas,
-  type AyanamshaMode,
-} from "@vedic-patro/domain/ayanamsha";
-import { useLocale } from "@/lib/i18n";
+import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import { useAyanamshaSelector } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
@@ -16,9 +11,8 @@ type Props = {
   onModeChange: (mode: AyanamshaMode) => void;
 };
 
-export function AyanamshaSelector({ mode, onModeChange }: Props) {
-  const { pick } = useLocale();
-  const current = getAyanamshaModeInfo(mode);
+export function AyanamshaSelector(props: Props) {
+  const sel = useAyanamshaSelector(props);
 
   return (
     <View className={cn(kundaliDetailClasses.ayanamsha.card, "mb-4 overflow-hidden border border-border")}>
@@ -27,45 +21,36 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
           className={kundaliDetailClasses.ayanamsha.heading}
           style={nepaliTextStyle(12)}
         >
-          {pick("अयनांश", "Ayanamsha")}
+          {sel.heading}
         </Text>
       </View>
       <View className={kundaliDetailClasses.ayanamsha.body}>
         <View className={kundaliDetailClasses.ayanamsha.chips}>
-          {AYANAMSHA_MODES.map((m) => {
-            const active = mode === m.id;
-            return (
-              <Pressable
-                key={m.id}
-                onPress={() => onModeChange(m.id)}
+          {sel.chips.map((m) => (
+            <Pressable
+              key={m.id}
+              onPress={m.select}
+              accessibilityHint={m.title}
+              className={cn(
+                kundaliDetailClasses.ayanamsha.chip,
+                "active:opacity-80",
+                m.active ? kundaliDetailClasses.ayanamsha.chipActive : kundaliDetailClasses.ayanamsha.chipIdle,
+              )}
+            >
+              <Text
+                style={nepaliTextStyle(13)}
                 className={cn(
-                  kundaliDetailClasses.ayanamsha.chip,
-                  "active:opacity-80",
-                  active ? kundaliDetailClasses.ayanamsha.chipActive : kundaliDetailClasses.ayanamsha.chipIdle,
+                  kundaliDetailClasses.ayanamsha.chipText,
+                  m.active ? kundaliDetailClasses.ayanamsha.chipActiveText : kundaliDetailClasses.ayanamsha.chipIdleText,
                 )}
               >
-                <Text
-                  style={nepaliTextStyle(13)}
-                  className={cn(
-                    kundaliDetailClasses.ayanamsha.chipText,
-                    active ? kundaliDetailClasses.ayanamsha.chipActiveText : kundaliDetailClasses.ayanamsha.chipIdleText,
-                  )}
-                >
-                  {pick(m.labelNe, m.label)}
-                  {m.id === "nepal" ? " ⭐" : ""}
-                </Text>
-              </Pressable>
-            );
-          })}
+                {m.label}
+              </Text>
+            </Pressable>
+          ))}
         </View>
         <Text className={kundaliDetailClasses.ayanamsha.note} style={nepaliTextStyle(13)}>
-          {pick(current.labelNe, current.label)} — {pick(current.taglineNe, current.tagline)}
-          {!matchesPanchangaAngas(mode)
-            ? pick(
-                " यस अयनांशमा ग्रह, लग्न र नक्षत्र पुनः गणना हुन्छ।",
-                " Grahas, lagna and nakshatra are recomputed in this ayanamsha.",
-              )
-            : ""}
+          {sel.note}
         </Text>
       </View>
     </View>

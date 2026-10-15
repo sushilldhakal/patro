@@ -13,10 +13,10 @@ import { cn } from "@vedic-patro/domain/utils";
  */
 export function ThemeSwitcher({ className, showLabel }: { className?: string; showLabel?: boolean }) {
   const { isDark, setPreference, colors } = useTheme();
-  const { pick } = useLocale();
+  const { t } = useLocale();
 
   const target = isDark ? "light" : "dark";
-  const targetLabel = isDark ? pick("उज्यालो", "Light") : pick("अँध्यारो", "Dark");
+  const targetLabel = isDark ? t("theme_light") : t("theme_dark");
 
   return (
     <Pressable
@@ -27,7 +27,7 @@ export function ThemeSwitcher({ className, showLabel }: { className?: string; sh
         className,
       )}
       accessibilityRole="button"
-      accessibilityLabel={pick(`${targetLabel} थिममा बदल्नुहोस्`, `Switch to ${targetLabel} theme`)}
+      accessibilityLabel={t("ui.theme_switcher.switch_to_targetlabel_theme", { targetLabel })}
     >
       <Ionicons name={isDark ? "sunny-outline" : "moon-outline"} size={16} color={colors.foreground} />
       {showLabel ? <Text className="text-xs font-semibold">{targetLabel}</Text> : null}

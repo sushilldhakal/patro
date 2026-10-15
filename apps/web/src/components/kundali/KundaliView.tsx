@@ -3,16 +3,13 @@ import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useKundaliChart } from "@vedic-patro/features/kundali";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { Clock, Flame, MapPin } from "lucide-react";
 import {
-  fetchKundaliDetail,
-  kundaliDetailKeys,
   locationCacheKey,
   type BilingualValue,
-  type KundaliDetailResponse,
   type LocationParams,
   type PanchangaDay,
   type PlanetInfo,
@@ -57,6 +54,7 @@ import {
 } from "@/components/kundali/KundaliSectionNav";
 import { KundaliSubTabs } from "@/components/kundali/KundaliSubTabs";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GrahaAstroTable = lazy(() =>
   import("@/components/kundali/GrahaAstroTable").then((m) => ({ default: m.GrahaAstroTable })),
 );
@@ -186,16 +184,9 @@ export function KundaliView({
   const { lang, digits } = useLocale();
   const [janmaPhalaTab, setJanmaPhalaTab] = useState<"male" | "female">("male");
 
-  const detailQ = useQuery({
-    queryKey: kundaliDetailKeys.atTime(birthMoment, locationParams, ayanamshaMode),
-    queryFn: () =>
-      fetchKundaliDetail(birthMoment, locationParams, { ayanamsha: ayanamshaMode }),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const detail: KundaliDetailResponse | undefined = detailQ.data;
-  const isLoading = detailQ.isLoading;
-  const isError = detailQ.isError;
+  const { detail, status: chartStatus } = useKundaliChart(birthMoment, locationParams, ayanamshaMode);
+  const isLoading = chartStatus === "loading";
+  const isError = chartStatus === "error";
 
   const data = useMemo(
     () => (detail?.panchanga ? normalizeEphemerisDay(detail.panchanga) : undefined),
@@ -463,7 +454,7 @@ export function KundaliView({
             {panchangSummary?.nakshatra ? (
               <DetailTraitRow
                 label={t("kundali.nakshatra")}
-                value={`${bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en)} · ${bilingualText(lang, `पद ${digits(panchangSummary.nakshatra.pada)}`, `Pada ${digits(panchangSummary.nakshatra.pada)}`)}`}
+                value={`${bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en)} · ${tFor(lang, "ui.kundali.pada_pada", { pada: digits(panchangSummary.nakshatra.pada) })}`}
               />
             ) : null}
             {panchangSummary?.yoga ? (
@@ -476,9 +467,9 @@ export function KundaliView({
               <DetailTraitRow
                 label={t("kundali.choghadiya")}
                 value={bilingualText(lang, `${choghadiyaAtBirth.nameNe} (${choghadiyaAtBirth.quality})`, `${choghadiyaAtBirth.nameEn ?? choghadiyaAtBirth.nameNe} (${
-                    choghadiyaAtBirth.quality === "शुभ"
+                    choghadiyaAtBirth.quality === /* copy-ok */ "शुभ"
                       ? "auspicious"
-                      : choghadiyaAtBirth.quality === "अशुभ"
+                      : choghadiyaAtBirth.quality === /* copy-ok */ "अशुभ"
                         ? "inauspicious"
                         : "neutral"
                   })`)}
@@ -537,7 +528,7 @@ export function KundaliView({
             {suryaMeta?.nakshatra ? (
               <DetailTraitRow
                 label={t("kundali.surya_nakshatra")}
-                value={bilingualText(lang, `${suryaMeta.nakshatra.ne} · पद ${digits(suryaMeta.nakshatra.pada)}`, `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
+                value={bilingualText(lang, tFor(undefined, "ui.kundali.x_b8d3d3cc", { v0: suryaMeta.nakshatra.ne, v1: digits(suryaMeta.nakshatra.pada) }), `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
               />
             ) : null}
           </div>
@@ -550,7 +541,7 @@ export function KundaliView({
                 <span className={kundaliDetailClasses.birth.avakahadaName}>
                   {pickBi(janmaAvakahada.nakshatra)}
                   <span className="mx-1">·</span>
-                  {bilingualText(lang, `पद ${digits(janmaAvakahada.pada)}`, `Pada ${digits(janmaAvakahada.pada)}`)}
+                  {tFor(lang, "ui.kundali.pada_pada", { pada: digits(janmaAvakahada.pada) })}
                 </span>
               </p>
               <div className={cn(kundaliDetailClasses.birth.traits, "flex")}>
@@ -594,7 +585,7 @@ export function KundaliView({
           <StatTile
             label={t("kundali.nakshatra_moon")}
             value={panchangSummary.nakshatra ? bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en) : "—"}
-            sub={panchangSummary.nakshatra ? bilingualText(lang, `पद ${digits(panchangSummary.nakshatra.pada)}`, `Pada ${digits(panchangSummary.nakshatra.pada)}`) : undefined}
+            sub={panchangSummary.nakshatra ? tFor(lang, "ui.kundali.pada_pada", { pada: digits(panchangSummary.nakshatra.pada) }) : undefined}
           />
           <StatTile
             label={t("kundali.tithi")}
@@ -608,7 +599,7 @@ export function KundaliView({
 
       {showSection("kundali-overview") && d1Rows.length > 0 && (
         <div id="kundali-charts" className="scroll-mt-24">
-          <PanchangaSection titleNe="कुण्डली चक्र" titleEn="Divisional Charts">
+          <PanchangaSection titleNe={tFor(undefined, "ui.kundali.divisional_charts_2")} titleEn={tFor("en", "ui.kundali.divisional_charts_2")}>
             <DivisionalChartCompare
               vargaCharts={detail.vargaCharts}
               combustion={detail.combustion}
@@ -620,7 +611,7 @@ export function KundaliView({
       {/* Graha details — astronomical readout for the birth instant (D1), with upagraha (shadow points) as a separate table in the same section */}
       {showSection("kundali-graha") && d1Rows.length > 0 && (
         <div id="kundali-graha" className="scroll-mt-24">
-          <PanchangaSection titleNe="ग्रह विवरण" titleEn="Graha Details">
+          <PanchangaSection titleNe={tFor(undefined, "kundali.nav_graha_details")} titleEn={tFor("en", "kundali.nav_graha_details")}>
             <Suspense fallback={<SectionLoading />}>
               <GrahaAstroTable
                 planets={astroPlanets}
@@ -646,7 +637,7 @@ export function KundaliView({
           so no combination appears twice. */}
       {showSection("kundali-yoga") && (
         <div id="kundali-yoga" className="scroll-mt-24 space-y-6">
-          <PanchangaSection titleNe="कुण्डली योग" titleEn="Kundali Yoga">
+          <PanchangaSection titleNe={tFor(undefined, "kundali.nav_yoga")} titleEn={tFor("en", "kundali.nav_yoga")}>
             <Suspense fallback={<SectionLoading />}>
               {detail.yogas.some((y) => y.present) && <YogaList yogas={detail.yogas} />}
               <div className="px-3.5 pb-3.5">
@@ -660,7 +651,7 @@ export function KundaliView({
 
       {showSection("kundali-dasha") && (dasha || tribhagiDasha || yoginiDasha) && (
         <div id="kundali-dasha" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe="दशा" titleEn="Dasha">
+        <PanchangaSection titleNe={tFor(undefined, "kundali.nav_dasha")} titleEn={tFor("en", "kundali.nav_dasha")}>
           <div className="p-4">
             <Suspense fallback={<SectionLoading />}>
               <DashaSystemPanel
@@ -779,7 +770,7 @@ export function KundaliView({
 
       {showSection("kundali-shanti") && showShanti && (
         <div id="kundali-shanti" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe="शान्ति विधि" titleEn="Navagraha Shanti">
+        <PanchangaSection titleNe={tFor(undefined, "ui.kundali.navagraha_shanti")} titleEn={tFor("en", "ui.kundali.navagraha_shanti")}>
           <div className="p-4">
             <div className={kundaliDetailClasses.view.shantiNote}>
               <Flame className="h-4 w-4 text-secondary" />

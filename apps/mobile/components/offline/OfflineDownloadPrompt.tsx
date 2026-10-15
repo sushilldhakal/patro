@@ -26,7 +26,7 @@ import type { MonthBrowseEra } from "@/lib/api";
 const PROMPT_DISMISSED_KEY = "device:offline_prompt_dismissed";
 
 export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthBrowseEra }) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const { isOnline, isYearAvailableOffline, downloadYear } = useOfflineData();
   const [dismissedYears, setDismissedYears] = useState<Set<number>>(new Set());
@@ -64,10 +64,7 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
       >
         <Ionicons name="cloud-offline-outline" size={18} color={colors.mutedForeground} style={{ marginTop: space.hair / 2 }} />
         <Text className="text-caption flex-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-          {pick(
-            "तपाईं अफलाइन हुनुहुन्छ र यो वर्षको पात्रो पहिले डाउनलोड गरिएको छैन। इन्टरनेटमा जोडिनुहोस्, वा अनलाइन हुँदा भविष्यको लागि डाउनलोड गर्नुहोस्।",
-            "You're offline and this year's calendar hasn't been downloaded yet. Connect to the internet, or download it in advance next time you're online.",
-          )}
+          {t("ui.offline.you_re_offline_and_this_year")}
         </Text>
         <Pressable onPress={dismiss} hitSlop={8}>
           <Ionicons name="close" size={16} color={colors.mutedForeground} />
@@ -85,14 +82,11 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
     >
       <Ionicons name="download-outline" size={18} color={colors.secondary} />
       <Text className="text-caption flex-1 text-foreground" style={nepaliTextStyle(12)}>
-        {pick(
-          "यो वर्षको पात्रो अफलाइन प्रयोगको लागि डाउनलोड गर्ने हो?",
-          "Download this year's calendar for offline use?",
-        )}
+        {t("ui.offline.download_this_year_s_calendar_for")}
       </Text>
       {downloadError === year ? (
         <Text className="text-caption text-destructive" style={nepaliTextStyle(12)}>
-          {pick("असफल", "Failed")}
+          {t("ui.offline.failed")}
         </Text>
       ) : null}
       {downloading ? (
@@ -114,12 +108,12 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
             className="rounded-lg bg-primary px-3 py-1.5 active:opacity-80"
           >
             <Text className="text-caption font-semibold text-primary-foreground" style={nepaliTextStyle(12)}>
-              {pick("डाउनलोड", "Download")}
+              {t("ui.offline.download")}
             </Text>
           </Pressable>
           <Pressable onPress={later} hitSlop={8} className="px-1">
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick("पछि", "Later")}
+              {t("ui.offline.later")}
             </Text>
           </Pressable>
         </>

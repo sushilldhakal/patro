@@ -1,14 +1,14 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { useLocale } from "@/lib/i18n";
+import { useGrahaStatusLabels } from "@vedic-patro/features/graha";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 export function GrahaStatusLegend({ className }: { className?: string }) {
-  const { pick } = useLocale();
+  const labels = useGrahaStatusLabels();
   const colors = useThemeColors();
 
   return (
@@ -16,13 +16,13 @@ export function GrahaStatusLegend({ className }: { className?: string }) {
       <View className={cn("flex-row", grahaClasses.statusLegendItem)}>
         <Ionicons name="refresh" size={14} color={colors.secondary} />
         <Text className={grahaClasses.statusLegendText} style={nepaliTextStyle(13)}>
-          {pick("वक्री", "Retrograde")}
+          {labels.retrograde}
         </Text>
       </View>
       <View className={cn("flex-row", grahaClasses.statusLegendItem)}>
         <Ionicons name="flame" size={14} color={colors.danger} />
         <Text className={grahaClasses.statusLegendText} style={nepaliTextStyle(13)}>
-          {pick("अस्त", "Combust")}
+          {labels.combust}
         </Text>
       </View>
     </View>

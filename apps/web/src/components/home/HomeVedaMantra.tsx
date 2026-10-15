@@ -1,29 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Pause, Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import {
-  DOCUMENTS_STALE_TIME,
-  fetchVedaDaily,
-  vedaDailyKeys,
-  type VedaDaily,
-} from "@/lib/documents-api";
-import { pickLocale, useLocale } from "@/i18n/locale";
+import { useHomeVedaMantra } from "@vedic-patro/features/home";
 import { setMediaHandlers, setMediaMetadata, setMediaPlaybackState } from "@/lib/media-session";
 import { patroCard, patroSecBand } from "@/lib/patro-classes";
-import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-
-function sourceLine(data: VedaDaily, lang: string, digits: (v: string | number) => string): string {
-  const parts = data.source_parts.map((part) => {
-    const label = (lang === "en" ? part.label_en : part.label_ne) ?? "";
-    // A chapter title carries its own number ("मण्डल 3"); the others pair a label with a value.
-    return part.value == null ? label.replace(/\d+/g, (m) => digits(m)) : `${label} ${digits(part.value)}`;
-  });
-  return [lang === "en" ? data.veda.name_en : data.veda.name_ne, ...parts].join(" » ");
-}
 
 /**
  * One recording. `progress` (0..1) is read on every animation frame while it
@@ -111,38 +93,28 @@ function MantraPlayButton({
 
 /** Today's Veda mantra — Sanskrit, meaning where there is one, audio, and a link to the passage. */
 export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefined; className?: string }) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const { data } = useQuery({
-    queryKey: vedaDailyKeys.day(dateAd ?? ""),
-    queryFn: () => fetchVedaDaily(dateAd!),
-    enabled: Boolean(dateAd),
-    staleTime: DOCUMENTS_STALE_TIME,
-  });
-  const mantraAudio = useMantraAudio(data?.shloka.audio_url);
-  const wordTrack = useMemo(() => buildWordTrack(data?.shloka.sanskrit ?? ""), [data?.shloka.sanskrit]);
-  if (!data) return null;
+  const mantra = useHomeVedaMantra(dateAd);
+  const mantraAudio = useMantraAudio(mantra.audioUrl);
+  if (!mantra.ready) return null;
 
-  const { shloka } = data;
-  const activeToken = activeTokenAt(wordTrack, mantraAudio.progress);
-  const meaning = (lang === "en" ? shloka.meaning_en : shloka.meaning_ne) ?? shloka.meaning_en ?? shloka.meaning_ne;
-  const anchor = `shloka-${data.read_verse.trim().replace(/\s+/g, "-")}`;
+  const { copy, meaning } = mantra;
+  const activeToken = mantra.activeTokenAt(mantraAudio.progress);
 
   return (
-    <section className={cn(patroCard, className)} aria-label={t("home_veda.title")}>
+    <section className={cn(patroCard, className)} aria-label={copy.title}>
       <div className={patroSecBand}>
-        <h2 className={homeClasses.vedaTitle}>{t("home_veda.title")}</h2>
-        {shloka.audio_url ? (
+        <h2 className={homeClasses.vedaTitle}>{copy.title}</h2>
+        {mantra.audioUrl ? (
           <MantraPlayButton
             playing={mantraAudio.playing}
             onToggle={mantraAudio.toggle}
-            label={{ play: t("home_veda.play"), pause: t("home_veda.pause") }}
+            label={{ play: copy.play, pause: copy.pause }}
           />
         ) : null}
       </div>
       <div className={homeClasses.vedaBody}>
         <p lang="sa" className={homeClasses.vedaSanskrit}>
-          {wordTrack.tokens.map((tok, i) =>
+          {mantra.tokens.map((tok, i) =>
             i === activeToken ? (
               <span
                 key={i}
@@ -157,20 +129,20 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
         </p>
         {meaning ? (
           <div className={homeClasses.vedaMeaning}>
-            <span className={homeClasses.vedaMeaningLabel}>{t("home_veda.meaning")}</span>
+            <span className={homeClasses.vedaMeaningLabel}>{copy.meaning}</span>
             <p className={homeClasses.vedaMeaningText}>{meaning}</p>
           </div>
         ) : null}
         <div className={homeClasses.vedaFooter}>
           <Link
             to="/documents/$slug/$chapter"
-            params={{ slug: data.read_slug, chapter: String(data.read_chapter) }}
-            hash={anchor}
+            params={{ slug: mantra.read.slug, chapter: mantra.read.chapter }}
+            hash={mantra.read.anchor}
             className={cn(homeClasses.vedaMore, "no-underline hover:underline")}
           >
-            {pickLocale(lang, "थप पढ्नुहोस् →", "Read more →")}
+            {copy.readMore}
           </Link>
-          <span className={homeClasses.vedaSource}>{sourceLine(data, lang, digits)}</span>
+          <span className={homeClasses.vedaSource}>{mantra.source}</span>
         </div>
       </div>
     </section>

@@ -2,10 +2,11 @@ name: CI
 
 # Type-checks both apps and checks the shared packages (portable domain code,
 # generated i18n bundles and design-token output up to date, unit tests, the
-# request URL contract and the OpenAPI contract) on every push and pull request.
+# request URL contract and the OpenAPI contract) and that no inline copy is
+# added to the apps, on every push and pull request.
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
 
 jobs:
@@ -24,6 +25,7 @@ jobs:
       - run: npm run check:shared
       - run: npm run check:design
       - run: npm run check:classes
+      - run: npm run check:copy
 
   api-contract:
     # The TypeScript client is checked against contracts/openapi.json; this

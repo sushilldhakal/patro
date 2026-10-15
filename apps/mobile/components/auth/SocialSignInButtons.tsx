@@ -36,7 +36,7 @@ type Props = {
 
 export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, disabled }: Props) {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const [busy, setBusy] = useState<"google" | "facebook" | "apple" | null>(null);
   const [appleAvailable, setAppleAvailable] = useState(false);
 
@@ -92,16 +92,16 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
         )
           .then((tokens) => {
             if (tokens.idToken) onGoogle(tokens.idToken);
-            else onError?.(pick("गुगल लग-इन असफल", "Google sign-in failed"));
+            else onError?.(t("auth.google_error"));
           })
           .catch((err) => {
             console.warn("[Google OAuth] code exchange failed:", err);
-            onError?.(pick("गुगल लग-इन असफल", "Google sign-in failed"));
+            onError?.(t("auth.google_error"));
           })
           .finally(() => setBusy(null));
         return;
       } else {
-        onError?.(pick("गुगल लग-इन असफल", "Google sign-in failed"));
+        onError?.(t("auth.google_error"));
       }
     } else if (googleResponse.type === "error") {
       const err = String(googleResponse.error ?? googleResponse.errorCode ?? "");
@@ -109,7 +109,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
       if (/redirect_uri_mismatch/i.test(err) || /invalid_request/i.test(err)) {
         onError?.(googleSignInSetupMessage());
       } else {
-        onError?.(err || pick("गुगल लग-इन असफल", "Google sign-in failed"));
+        onError?.(err || t("auth.google_error"));
       }
     }
     if (googleResponse.type !== "success") setBusy(null);
@@ -122,9 +122,9 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
       const token =
         fbResponse.authentication?.accessToken ?? fbResponse.params?.access_token;
       if (token) onFacebook(token);
-      else onError?.(pick("फेसबुक लग-इन असफल", "Facebook sign-in failed"));
+      else onError?.(t("auth.facebook_error"));
     } else if (fbResponse.type === "error") {
-      onError?.(pick("फेसबुक लग-इन असफल", "Facebook sign-in failed"));
+      onError?.(t("auth.facebook_error"));
     }
     if (fbResponse.type !== "success") setBusy(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -148,14 +148,14 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
         ],
       });
       if (!credential.identityToken) {
-        onError?.(pick("एपल लग-इन असफल", "Apple sign-in failed"));
+        onError?.(t("ui.auth.apple_sign_in_failed"));
         return;
       }
       onApple(credential.identityToken, credential.email);
     } catch (err) {
       const code = (err as { code?: string }).code;
       if (code !== "ERR_REQUEST_CANCELED") {
-        onError?.(pick("एपल लग-इन असफल", "Apple sign-in failed"));
+        onError?.(t("ui.auth.apple_sign_in_failed"));
       }
     } finally {
       setBusy(null);
@@ -213,7 +213,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
             <Ionicons name="logo-google" size={18} color={illustration.red56} />
           )}
           <Text className={accountClasses.socialButtonText}>
-            {pick("गुगलबाट जारी राख्नुहोस्", "Continue with Google")}
+            {t("auth.continue_with_google")}
           </Text>
         </Pressable>
       ) : null}
@@ -224,7 +224,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
           onPress={() => {
             setBusy("facebook");
             fbPrompt().catch(() => {
-              onError?.(pick("फेसबुक लग-इन असफल", "Facebook sign-in failed"));
+              onError?.(t("auth.facebook_error"));
               setBusy(null);
             });
           }}
@@ -237,7 +237,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
             <Ionicons name="logo-facebook" size={18} color={illustration.sky52} />
           )}
           <Text className={accountClasses.socialButtonText}>
-            {pick("फेसबुकबाट जारी राख्नुहोस्", "Continue with Facebook")}
+            {t("auth.continue_with_facebook")}
           </Text>
         </Pressable>
       ) : null}
@@ -245,7 +245,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
       {showGoogle || facebookSignInEnabled || showApple ? (
         <View className={cn("flex-row", accountClasses.socialDividerRow)}>
           <View className={accountClasses.socialDividerLine} />
-          <Text className={accountClasses.socialDividerText}>{pick("वा", "or")}</Text>
+          <Text className={accountClasses.socialDividerText}>{t("auth.or")}</Text>
           <View className={accountClasses.socialDividerLine} />
         </View>
       ) : null}

@@ -1,70 +1,38 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { ChevronRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import type { AshtakutaResult, KutaRow } from "@/lib/api";
-import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import type { AshtakutaResult } from "@/lib/api";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { useKundaliMilanResult } from "@vedic-patro/features/kundali";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const m = kundaliDetailClasses.milanResult;
 
-const KUTA_LABELS: Record<KutaRow["id"], { en: string; ne: string }> = {
-  varna: { en: "Varna", ne: "वर्ण" },
-  vashya: { en: "Vashya", ne: "वश्य" },
-  tara: { en: "Tara", ne: "तारा" },
-  yoni: { en: "Yoni", ne: "योनि" },
-  maitri: { en: "Maitri", ne: "मैत्री" },
-  gana: { en: "Gana", ne: "गण" },
-  bhakuta: { en: "Bhakuta", ne: "भकूट" },
-  nadi: { en: "Nadi", ne: "नाडी" },
+const RECOMMENDATION_TONE: Record<AshtakutaResult["recommendation"], string> = {
+  excellent: m.recExcellent,
+  very_good: m.recVeryGood,
+  middling: m.recMiddling,
+  inauspicious: m.recInauspicious,
 };
 
-function formatObtained(n: number): string {
-  return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, "");
-}
+type Kuta = ReturnType<typeof useKundaliMilanResult>["kutas"][number];
 
-function KutaDetailPanel({
-  kuta,
-  boyName,
-  girlName,
-  en,
-}: {
-  kuta: KutaRow;
-  boyName: string;
-  girlName: string;
-  en: boolean;
-}) {
-  const label = KUTA_LABELS[kuta.id];
+function KutaDetailPanel({ detail }: { detail: Kuta["detail"] }) {
   return (
     <div className={m.panel}>
-      <p className={m.panelTitle}>
-        {label ? (en ? label.en : label.ne) : kuta.id} {en ? "Kuta Details" : "कूट विवरण"}
-      </p>
+      <p className={m.panelTitle}>{detail.title}</p>
       <p className={m.panelPoints}>
-        {en ? label?.en : label?.ne} {en ? "Kuta Points" : "कूट अङ्क"}:{" "}
-        <span className={m.panelPointsValue}>
-          {formatObtained(kuta.obtained)}/{kuta.max}
-        </span>
+        {detail.pointsLabel} <span className={m.panelPointsValue}>{detail.points}</span>
       </p>
       <div className={cn(m.panelPeople, "grid sm:grid-cols-2")}>
-        <div className={m.panelPerson}>
-          <p className={m.panelPersonName}>{boyName}</p>
-          <p className={m.panelPersonValue}>{kuta.boyValue}</p>
-        </div>
-        <div className={m.panelPerson}>
-          <p className={m.panelPersonName}>{girlName}</p>
-          <p className={m.panelPersonValue}>{kuta.girlValue}</p>
-        </div>
+        {detail.people.map((p, i) => (
+          <div key={i} className={m.panelPerson}>
+            <p className={m.panelPersonName}>{p.who}</p>
+            <p className={m.panelPersonValue}>{p.value}</p>
+          </div>
+        ))}
       </div>
-      <p className={m.panelInfo}>{en ? kuta.info : kuta.infoNe}</p>
+      <p className={m.panelInfo}>{detail.info}</p>
     </div>
   );
 }
@@ -73,94 +41,52 @@ interface Props {
   boyName: string;
   girlName: string;
   result: AshtakutaResult;
-  lang?: string;
 }
 
-export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
-  const { t } = useTranslation();
-  const en = isEnglishLocale(lang);
-  const [openId, setOpenId] = useState<KutaRow["id"] | null>(null);
-
-  const recClass =
-    result.recommendation === "excellent"
-      ? m.recExcellent
-      : result.recommendation === "very_good"
-        ? m.recVeryGood
-        : result.recommendation === "middling"
-          ? m.recMiddling
-          : m.recInauspicious;
+export function KundaliMilanResult({ boyName, girlName, result }: Props) {
+  const view = useKundaliMilanResult({ boyName, girlName, result });
 
   return (
     <div className={m.root}>
       <section className={cn(m.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]")}>
         <div className={m.totalRow}>
           <div>
-            <p className={m.eyebrow}>
-              {t("milan.total_guna")}
-            </p>
-            <p className={cn(m.recommendation, recClass)}>
-              {en ? result.recommendationLabel : result.recommendationLabelNe}
-            </p>
+            <p className={m.eyebrow}>{view.copy.totalGuna}</p>
+            <p className={cn(m.recommendation, RECOMMENDATION_TONE[view.recommendation])}>{view.recommendationLabel}</p>
           </div>
           <div className="text-right">
             <p className={m.totalValue}>
-              {formatObtained(result.totalObtained)}
-              <span className={m.totalMax}> / {result.totalMax}</span>
+              {view.total}
+              <span className={m.totalMax}>{view.totalMax}</span>
             </p>
-            <p className={m.gunaLabel}>{t("milan.guna")}</p>
+            <p className={m.gunaLabel}>{view.copy.guna}</p>
           </div>
         </div>
         <div className={cn(m.partners, m.partnerText)}>
-          <span className={m.partner}>
-            <span>{t("milan.boy")}:</span>{" "}
-            <span className={m.partnerName}>{boyName}</span>
-          </span>
-          <span className={m.partner}>
-            <span>{t("milan.girl")}:</span>{" "}
-            <span className={m.partnerName}>{girlName}</span>
-          </span>
+          {view.partners.map((p) => (
+            <span key={p.label} className={m.partner}>
+              <span>{p.label}:</span> <span className={m.partnerName}>{p.name}</span>
+            </span>
+          ))}
         </div>
-        {(result.nadiDoshaAdvisory || result.nadiDoshaAdvisoryNe) ? (
-          <div
-            className={cn(m.advisory, m.advisoryText)}
-            role="note"
-          >
-            <p className={m.advisoryTitle}>
-              {t("milan.nadi_dosha_advisory_title")}
-            </p>
-            <p>{en ? result.nadiDoshaAdvisory : result.nadiDoshaAdvisoryNe}</p>
+        {view.advisory ? (
+          <div className={cn(m.advisory, m.advisoryText)} role="note">
+            <p className={m.advisoryTitle}>{view.advisory.title}</p>
+            <p>{view.advisory.text}</p>
           </div>
         ) : null}
       </section>
 
       <section className={m.card}>
-        <h3 className={cn(m.cardTitle, "mb-4")}>{t("milan.dosha_analysis_title")}</h3>
+        <h3 className={cn(m.cardTitle, "mb-4")}>{view.copy.doshaTitle}</h3>
         <ul className="divide-y divide-border/70">
-          {result.doshaAnalysis.map((dosha) => (
-            <li
-              key={dosha.id}
-              className={cn(m.doshaRow, "first:pt-0 last:pb-0")}
-            >
+          {view.doshas.map((dosha) => (
+            <li key={dosha.id} className={cn(m.doshaRow, "first:pt-0 last:pb-0")}>
               <span className={m.doshaLabel}>
-                {en ? (
-                  dosha.labelEn
-                ) : (
-                  <>
-                    {dosha.labelNe}{" "}
-                    <span className={m.doshaLabelAlt}>
-                      ({dosha.labelEn.replace(" Dosha", "")})
-                    </span>
-                  </>
-                )}
+                {dosha.label}
+                {dosha.alt && <span className={m.doshaLabelAlt}> {dosha.alt}</span>}
               </span>
-              <span
-                className={cn(
-                  m.doshaVerdict,
-                  dosha.present ? m.doshaPresent : m.doshaAbsent,
-                )}
-              >
-                {dosha.present ? t("milan.dosha_present") : t("milan.dosha_absent")}
-              </span>
+              <span className={cn(m.doshaVerdict, dosha.present ? m.doshaPresent : m.doshaAbsent)}>{dosha.verdict}</span>
             </li>
           ))}
         </ul>
@@ -171,61 +97,45 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="w-8" />
-              <TableHead>{en ? "Guna" : "गुण"}</TableHead>
-              <TableHead className="text-center">{en ? "Max" : "अधिकतम"}</TableHead>
-              <TableHead className="text-center">{en ? "Obt" : "प्राप्त"}</TableHead>
-              <TableHead>{boyName}</TableHead>
-              <TableHead>{girlName}</TableHead>
-              <TableHead>{en ? "Area of Life" : "जीवन क्षेत्र"}</TableHead>
+              {view.columns.map((c, i) => (
+                <TableHead key={i} className={cn((i === 1 || i === 2) && "text-center")}>
+                  {c}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.kutas.map((kuta) => {
-              const label = KUTA_LABELS[kuta.id];
-              const isOpen = openId === kuta.id;
-              return (
-                <Fragment key={kuta.id}>
-                  <TableRow
-                    className="cursor-pointer"
-                    onClick={() => setOpenId(isOpen ? null : kuta.id)}
-                  >
-                    <TableCell className="py-2">
-                      <ChevronRight
-                        className={cn("size-4 transition-transform", isOpen && "rotate-90")}
-                      />
-                    </TableCell>
-                    <TableCell className="text-base">{label ? (en ? label.en : label.ne) : kuta.id}</TableCell>
-                    <TableCell className="text-center tabular-nums">{kuta.max}</TableCell>
-                    <TableCell className="text-center tabular-nums font-semibold">
-                      {formatObtained(kuta.obtained)}
-                    </TableCell>
-                    <TableCell>{kuta.boyValue}</TableCell>
-                    <TableCell>{kuta.girlValue}</TableCell>
-                    <TableCell>
-                      {en ? kuta.areaOfLife : kuta.areaOfLifeNe}
+            {view.kutas.map((kuta) => (
+              <Fragment key={kuta.id}>
+                <TableRow className="cursor-pointer" onClick={kuta.toggle}>
+                  <TableCell className="py-2">
+                    <ChevronRight className={cn("size-4 transition-transform", kuta.open && "rotate-90")} />
+                  </TableCell>
+                  <TableCell className="text-base">{kuta.label}</TableCell>
+                  <TableCell className="text-center tabular-nums">{kuta.max}</TableCell>
+                  <TableCell className="text-center tabular-nums font-semibold">{kuta.obtained}</TableCell>
+                  <TableCell>{kuta.boyValue}</TableCell>
+                  <TableCell>{kuta.girlValue}</TableCell>
+                  <TableCell>{kuta.area}</TableCell>
+                </TableRow>
+                {kuta.open ? (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={7} className="p-3 pt-0">
+                      <KutaDetailPanel detail={kuta.detail} />
                     </TableCell>
                   </TableRow>
-                  {isOpen ? (
-                    <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={7} className="p-3 pt-0">
-                        <KutaDetailPanel kuta={kuta} boyName={boyName} girlName={girlName} en={en} />
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                </Fragment>
-              );
-            })}
+                ) : null}
+              </Fragment>
+            ))}
           </TableBody>
         </Table>
-        <p className={m.tableFootnote}>
-          *{en ? "Max — Maximum Point · Obt — Obtained Point" : "अधिकतम — अधिकतम अङ्क · प्राप्त — प्राप्त अङ्क"}
-        </p>
+        <p className={m.tableFootnote}>{view.footnote}</p>
       </section>
 
       <section className={m.card}>
-        <h3 className={cn(m.cardTitle, "mb-3")}>{t("milan.notes_title")}</h3>
+        <h3 className={cn(m.cardTitle, "mb-3")}>{view.copy.notesTitle}</h3>
         <ul className={cn("space-y-2", m.noteText, "list-disc pl-5")}>
-          {(en ? result.notes : result.notesNe).map((note) => (
+          {view.notes.map((note) => (
             <li key={note.slice(0, 40)}>{note}</li>
           ))}
         </ul>

@@ -21,32 +21,9 @@ function formatBytes(bytes: number): string {
   return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB`;
 }
 
-const GROUP_LABELS: Record<PackGroupId, { ne: string; en: string; hintNe: string; hintEn: string }> = {
-  calendar: {
-    ne: "पात्रो, चाडपर्व र साइत",
-    en: "Calendar, festivals & sait",
-    hintNe: "महिनाको पात्रो, बिदा, चाडपर्व, साइत, अधिक मास",
-    hintEn: "Month calendar, holidays, festivals, sait, special months",
-  },
-  sky: {
-    ne: "ग्रह, ग्रहण र समय तालिका",
-    en: "Planets, eclipses & timings",
-    hintNe: "गोचर, अस्त/वक्री, ग्रहण, पञ्चक, सूर्य समय, तिथि/नक्षत्र अवधि",
-    hintEn: "Gochar, asta/vakri, eclipses, panchak, sun times, tithi/nakshatra spans",
-  },
-  daily: {
-    ne: "दैनिक विवरण",
-    en: "Daily detail",
-    hintNe: "हरेक दिनको पञ्चाङ्ग, मुहूर्त, गोचर र राशिफल (धेरै ठूलो हुन सक्छ)",
-    hintEn: "Every day's panchanga, muhurta, gochar and rashifal (can be very large)",
-  },
-  documents: {
-    ne: "स्तोत्र र शास्त्र पाठ",
-    en: "Scripture texts",
-    hintNe: "सबै पाठ (अडियो समावेश छैन)",
-    hintEn: "All texts (audio is not included)",
-  },
-};
+/** Copy keys for each download group (`offline.group.<id>.name` / `.hint`). */
+const groupName = (id: PackGroupId) => `offline.group.${id}.name`;
+const groupHint = (id: PackGroupId) => `offline.group.${id}.hint`;
 
 function parseYear(raw: string): number | null {
   const n = Number(raw.trim());
@@ -87,7 +64,7 @@ function YearInput({
 }
 
 export default function OfflineDataScreen() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const colors = useThemeColors();
   const {
     isOnline,
@@ -126,18 +103,12 @@ export default function OfflineDataScreen() {
   const endYear = parseYear(to);
   const bounds = clampToSupportedBsRange({ startYear: 1, endYear: 99999 });
   const rangeProblem: string | null = (() => {
-    if (startYear == null || endYear == null) return pick("दुवै वर्ष लेख्नुहोस्।", "Enter both years.");
-    if (startYear > endYear) return pick("सुरु वर्ष अन्तिम वर्षभन्दा पहिले हुनुपर्छ।", "The first year must not be after the last.");
+    if (startYear == null || endYear == null) return t("ui.account.enter_both_years");
+    if (startYear > endYear) return t("ui.account.the_first_year_must_not_be");
     if (startYear < bounds.startYear || endYear > bounds.endYear)
-      return pick(
-        `वि.सं. ${digits(bounds.startYear)} देखि ${digits(bounds.endYear)} सम्म मात्र उपलब्ध छ।`,
-        `Only BS ${bounds.startYear}–${bounds.endYear} is available.`,
-      );
+      return t("offline.range_unavailable", { start: digits(bounds.startYear), end: digits(bounds.endYear) });
     if (endYear - startYear > maxSpan)
-      return pick(
-        `बढीमा ${digits(maxSpan)} वर्षको अन्तर मात्र डाउनलोड गर्न सकिन्छ।`,
-        `You can download at most a ${maxSpan}-year span.`,
-      );
+      return t("offline.span_too_long", { max: digits(maxSpan) });
     return null;
   })();
 
@@ -181,15 +152,12 @@ export default function OfflineDataScreen() {
 
   const onClear = () => {
     Alert.alert(
-      pick("अफलाइन डाटा हटाउने?", "Clear offline data?"),
-      pick(
-        "डाउनलोड गरिएको सबै डाटा यो यन्त्रबाट हटाइनेछ। तपाईं पुनः डाउनलोड गर्न सक्नुहुन्छ।",
-        "All downloaded data will be removed from this device. You can download it again later.",
-      ),
+      t("ui.account.clear_offline_data"),
+      t("ui.account.all_downloaded_data_will_be_removed"),
       [
-        { text: pick("रद्द", "Cancel"), style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: pick("हटाउनुहोस्", "Clear"),
+          text: t("ui.account.clear"),
           style: "destructive",
           onPress: async () => {
             setBusy("clearing");
@@ -210,14 +178,11 @@ export default function OfflineDataScreen() {
 
   if (!OFFLINE_STORE_SUPPORTED) {
     return (
-      <AppShell title={pick("अफलाइन डाटा", "Offline Data")}>
+      <AppShell title={t("ui.account.offline_data")}>
         <View className="items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12">
           <Ionicons name="phone-portrait-outline" size={36} color={colors.mutedForeground} />
           <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick(
-              "अफलाइन डाउनलोड यो प्लेटफर्ममा उपलब्ध छैन। एन्ड्रोइड वा आईओएस एपमा प्रयोग गर्नुहोस्।",
-              "Offline downloads aren't available on this platform. Use the Android or iOS app.",
-            )}
+            {t("ui.account.offline_downloads_aren_t_available_on")}
           </Text>
         </View>
       </AppShell>
@@ -228,11 +193,8 @@ export default function OfflineDataScreen() {
 
   return (
     <AppShell
-      title={pick("अफलाइन डाटा", "Offline Data")}
-      subtitle={pick(
-        "इन्टरनेट बिना सबै सार्वजनिक पेजहरू चलाउन वर्षहरू छान्नुहोस्।",
-        "Pick the years to keep on this device so every public page works without internet.",
-      )}
+      title={t("ui.account.offline_data")}
+      subtitle={t("ui.account.pick_the_years_to_keep_on")}
     >
       {!isOnline ? (
         <View
@@ -241,33 +203,30 @@ export default function OfflineDataScreen() {
         >
           <Ionicons name="cloud-offline-outline" size={16} color={colors.primary} />
           <Text className="text-caption flex-1" style={{ color: colors.primary, ...nepaliTextStyle(12) }}>
-            {pick("तपाईं अफलाइन हुनुहुन्छ। डाउनलोड गर्न इन्टरनेट चाहिन्छ।", "You're offline. Downloading needs an internet connection.")}
+            {t("ui.account.you_re_offline_downloading_needs_an")}
           </Text>
         </View>
       ) : null}
 
       <View className="rounded-xl border border-border bg-card p-4">
         <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {pick("हाल यो यन्त्रमा", "Currently on this device")}
+          {t("ui.account.currently_on_this_device")}
         </Text>
         {summary.years.length > 0 ? (
           <>
             <Text className="text-display mt-1 font-bold text-foreground" style={nepaliTextStyle(24)}>
               {digits(summary.minYear!)} – {digits(summary.maxYear!)}{" "}
               <Text className="text-body font-medium text-muted-foreground" style={nepaliTextStyle(13)}>
-                {pick("वि.सं.", "BS")}
+                {t("patro_date.era_bs")}
               </Text>
             </Text>
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                `${digits(summary.years.length)} वर्ष · ${formatBytes(summary.bytes)} भण्डारण`,
-                `${digits(summary.years.length)} years · ${formatBytes(summary.bytes)} stored`,
-              )}
+              {t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatBytes(summary.bytes) })}
             </Text>
           </>
         ) : (
           <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick("अझै केही डाउनलोड गरिएको छैन।", "Nothing downloaded yet.")}
+            {t("ui.account.nothing_downloaded_yet")}
           </Text>
         )}
         {unfinished && !running ? (
@@ -277,7 +236,7 @@ export default function OfflineDataScreen() {
             className="mt-3 self-start rounded-lg border border-border px-3 py-2 active:opacity-80 disabled:opacity-50"
           >
             <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-              {pick("अधुरो डाउनलोड जारी राख्नुहोस्", "Resume unfinished download")}
+              {t("ui.account.resume_unfinished_download")}
             </Text>
           </Pressable>
         ) : null}
@@ -285,17 +244,14 @@ export default function OfflineDataScreen() {
 
       <View className="mt-5 rounded-xl border border-border bg-card p-4">
         <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {pick("कुन वर्षदेखि कुन वर्षसम्म?", "Which years do you need?")}
+          {t("ui.account.which_years_do_you_need")}
         </Text>
         <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-          {pick(
-            `वि.सं. मा वर्ष छान्नुहोस्। बढीमा ${digits(maxSpan)} वर्षको अन्तर (जस्तै २००० देखि २०९० सम्म)।`,
-            `Choose BS years. At most a ${maxSpan}-year span (for example 2000 to 2090).`,
-          )}
+          {t("offline.pick_years_hint", { max: digits(maxSpan) })}
         </Text>
         <View className="mt-3 flex-row gap-3">
-          <YearInput label={pick("देखि (वि.सं.)", "From (BS)")} value={from} onChange={(v) => { setFrom(v); setMeasured(null); }} invalid={rangeProblem != null} />
-          <YearInput label={pick("सम्म (वि.सं.)", "To (BS)")} value={to} onChange={(v) => { setTo(v); setMeasured(null); }} invalid={rangeProblem != null} />
+          <YearInput label={t("ui.account.from_bs")} value={from} onChange={(v) => { setFrom(v); setMeasured(null); }} invalid={rangeProblem != null} />
+          <YearInput label={t("ui.account.to_bs")} value={to} onChange={(v) => { setTo(v); setMeasured(null); }} invalid={rangeProblem != null} />
         </View>
         {rangeProblem ? (
           <Text className="text-caption mt-2 text-destructive" style={nepaliTextStyle(12)}>
@@ -303,19 +259,15 @@ export default function OfflineDataScreen() {
           </Text>
         ) : (
           <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {pick(
-              `${digits(endYear! - startYear! + 1)} वर्ष छानिएको छ।`,
-              `${endYear! - startYear! + 1} years selected.`,
-            )}
+            {t("offline.years_selected", { count: digits(endYear! - startYear! + 1) })}
           </Text>
         )}
 
         <Text className="text-caption mb-1 mt-4 font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
-          {pick("के-के डाउनलोड गर्ने?", "What to include")}
+          {t("ui.account.what_to_include")}
         </Text>
         {PACK_GROUPS.map((g) => {
           const on = groups.includes(g.id);
-          const label = GROUP_LABELS[g.id];
           return (
             <Pressable
               key={g.id}
@@ -333,10 +285,10 @@ export default function OfflineDataScreen() {
               />
               <View className="flex-1">
                 <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
-                  {pick(label.ne, label.en)}
+                  {t(groupName(g.id))}
                 </Text>
                 <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-                  {pick(label.hintNe, label.hintEn)}
+                  {t(groupHint(g.id))}
                 </Text>
               </View>
               {est?.perGroup[g.id] ? (
@@ -351,16 +303,13 @@ export default function OfflineDataScreen() {
         {est ? (
           <View className="mt-3 rounded-lg border border-border bg-background p-3">
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick("डाउनलोड गर्नुपर्ने कुल डाटा", "Total to download")}
+              {t("ui.account.total_to_download")}
             </Text>
             <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
               {formatBytes(est.totalBytes)}
             </Text>
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                `${digits(est.years)} वर्षको लागि। एउटा नमूना वर्ष (${digits(est.sampleYear)}) नापेर अनुमान गरिएको; वास्तविक आकार थोरै फरक पर्न सक्छ।`,
-                `For ${est.years} years, estimated from a measured sample year (${est.sampleYear}); the real size can differ a little.`,
-              )}
+              {t("offline.estimate_note", { years: digits(est.years), sample: digits(est.sampleYear) })}
             </Text>
           </View>
         ) : null}
@@ -379,7 +328,7 @@ export default function OfflineDataScreen() {
           >
             {running ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="download-outline" size={18} color={neutral.white} />}
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-              {pick(`ठीक छ, ${formatBytes(est.totalBytes)} डाउनलोड गर्नुहोस्`, `OK — download ${formatBytes(est.totalBytes)}`)}
+              {t("ui.account.ok_download_totalbytes", { totalBytes: formatBytes(est.totalBytes) })}
             </Text>
           </Pressable>
         ) : (
@@ -391,8 +340,8 @@ export default function OfflineDataScreen() {
             {measuring ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="speedometer-outline" size={18} color={neutral.white} />}
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
               {measuring
-                ? pick("आकार नापिँदैछ…", "Measuring size…")
-                : pick("डाउनलोडको आकार हेर्नुहोस्", "Check download size")}
+                ? t("ui.account.measuring_size")
+                : t("ui.account.check_download_size")}
             </Text>
           </Pressable>
         )}
@@ -403,10 +352,10 @@ export default function OfflineDataScreen() {
           <View className="flex-row items-center justify-between">
             <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(12)}>
               {progress.status === "error"
-                ? pick("त्रुटि भयो", "Something went wrong")
+                ? t("ui.account.something_went_wrong")
                 : progress.status === "paused"
-                  ? pick("रोकिएको छ — इन्टरनेट/वाइफाइ फर्किँदा जारी हुन्छ", "Paused — continues when the connection is back")
-                  : pick("डाउनलोड हुँदैछ…", "Downloading…")}
+                  ? t("ui.account.paused_continues_when_the_connection_is")
+                  : t("ui.account.downloading")}
             </Text>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {digits(progress.completed)}/{digits(progress.total)}
@@ -423,15 +372,12 @@ export default function OfflineDataScreen() {
           </View>
           <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
             {progress.currentYear != null ? `${digits(progress.currentYear)} · ` : ""}
-            {progress.currentGroup ? pick(GROUP_LABELS[progress.currentGroup].ne, GROUP_LABELS[progress.currentGroup].en) : ""}
+            {progress.currentGroup ? t(groupName(progress.currentGroup)) : ""}
             {progress.bytes > 0 ? ` · ${formatBytes(progress.bytes)}` : ""}
           </Text>
           {progress.skippedRequests > 0 ? (
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                `${digits(progress.skippedRequests)} अनुरोध सर्भरले उपलब्ध गराएन र छोडियो।`,
-                `${progress.skippedRequests} requests the server couldn't answer were skipped.`,
-              )}
+              {t("offline.skipped", { count: digits(progress.skippedRequests) })}
             </Text>
           ) : null}
           {running ? (
@@ -440,7 +386,7 @@ export default function OfflineDataScreen() {
               className="mt-3 self-start rounded-lg border border-border px-3 py-2 active:opacity-80"
             >
               <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-                {pick("रोक्नुहोस्", "Stop")}
+                {t("vastu.compass.stop")}
               </Text>
             </Pressable>
           ) : null}
@@ -449,7 +395,7 @@ export default function OfflineDataScreen() {
         <View className="mt-4 flex-row items-center gap-2 rounded-xl border border-border bg-card p-4">
           <Ionicons name="checkmark-circle" size={18} color={colors.secondary} />
           <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
-            {pick("डाउनलोड पूरा भयो। अब इन्टरनेट बिना पनि चल्छ।", "Download complete. These years now work without internet.")}
+            {t("ui.account.download_complete_these_years_now_work")}
           </Text>
         </View>
       ) : null}
@@ -460,13 +406,10 @@ export default function OfflineDataScreen() {
       >
         <View className="flex-1 pr-3">
           <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
-            {pick("वाइफाइमा मात्र डाउनलोड गर्नुहोस्", "Download over Wi-Fi only")}
+            {t("ui.account.download_over_wi_fi_only")}
           </Text>
           <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {pick(
-              "मोबाइल डाटा बचत गर्न डाउनलोडले वाइफाइको पर्खनेछ।",
-              "Waits for Wi-Fi before downloading, to save mobile data.",
-            )}
+            {t("ui.account.waits_for_wi_fi_before_downloading")}
           </Text>
         </View>
         <View
@@ -492,7 +435,7 @@ export default function OfflineDataScreen() {
             <Ionicons name="trash-outline" size={16} color={colors.destructive} />
           )}
           <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(14)}>
-            {pick("अफलाइन डाटा हटाउनुहोस्", "Clear offline data")}
+            {t("ui.account.clear_offline_data_2")}
           </Text>
         </Pressable>
       </View>

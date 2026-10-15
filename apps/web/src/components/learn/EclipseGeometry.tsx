@@ -20,6 +20,7 @@ import {
 } from "./eclipse-math";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 interface Props {
   u: number;
   omega: number;
@@ -172,14 +173,14 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
 
   const statusLabel =
     status === "total"
-      ? "पूर्ण ग्रहण"
+      ? tFor(undefined, "learn.study.eclipse.status_total")
       : status === "partial"
-        ? "खण्डग्रास"
+        ? tFor(undefined, "learn.study.eclipse.status_partial")
         : status === "penumbral"
-          ? "उपछायाँ ग्रहण"
+          ? tFor(undefined, "ui.learn.x_0793f232")
           : solar
-            ? "सूर्यग्रहण रेखा"
-            : "ग्रहण छैन";
+            ? tFor(undefined, "ui.learn.x_7d7d699d")
+            : tFor(undefined, "learn.study.eclipse.status_none");
 
   const showShadow =
     status !== "none" || solar || (g.xEc > 0.3 && Math.abs(g.radial) < TH_PENUMBRAL_VIS);
@@ -236,7 +237,7 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
         {rays}
         <circle cx={sun.x} cy={sun.y} r={ECL.sunR} fill="url(#ecl-sun)" className={eclSunDisc} />
         <text x={sun.x} y={sun.y + ECL.sunR + 28} className={eclBodyLabel} textAnchor="middle">
-          सूर्य
+          {tFor(undefined, "kundali.report.meta_sun")}
         </text>
 
         {/* Earth's orbital path around the Sun (क्रान्तिवृत्त) */}
@@ -290,27 +291,27 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
         <NodeCallout
           px={asc.x}
           py={asc.y}
-          label="राहु · उत्तरी पात"
+          label={tFor(undefined, "ui.learn.x_47c24036")}
           side={asc.x < earth.x ? "left" : "right"}
         />
         <NodeCallout
           px={desc.x}
           py={desc.y}
-          label="केतु · दक्षिणी पात"
+          label={tFor(undefined, "ui.learn.x_fd9918e5")}
           side={desc.x < earth.x ? "left" : "right"}
         />
 
         {moonAbove && moonGroup}
 
         <text x={earth.x} y={earth.y + ECL.earthR + 30} className={eclBodyLabel} textAnchor="middle">
-          पृथ्वी
+          {tFor(undefined, "vastu.element.earth")}
         </text>
 
         <text x={ECL.W / 2} y={ECL.H - 52} className={eclPlaneCaption} textAnchor="middle">
-          क्रान्तिवृत्त — पृथ्वीको सूर्याङ्को कक्ष (ठोस वृत्त)
+          {tFor(undefined, "ui.learn.x_f915ca7c")}
         </text>
         <text x={ECL.W / 2} y={ECL.H - 28} className={eclTiltNote} textAnchor="middle">
-          चन्द्र-कक्ष ~{fmt(5)}° झुकेको (टुट्टेदार) · राहु–केतु घडीको दिशामा ~{fmt(19)} वर्षे चक्र
+          {tFor(undefined, "ui.learn.x_28614245")}{fmt(5)}{tFor(undefined, "ui.learn.x_a415b0a7")}{fmt(19)}{tFor(undefined, "ui.learn.x_4d6a4881")}
         </text>
       </g>
 
@@ -325,7 +326,7 @@ export function EclipseGeometry({ u, omega, omegaInertial, earthLon, onU }: Prop
           {statusLabel}
         </text>
         <text textAnchor="end" y={26} className={eclStatusSub}>
-          अक्षांश β = {fmt(Math.abs(realBeta(g.betaDeg)).toFixed(1))}° · कोण {fmt(Math.round(g.E))}°
+          {tFor(undefined, "ui.learn.x_05739f5a")}{fmt(Math.abs(realBeta(g.betaDeg)).toFixed(1))}{tFor(undefined, "ui.learn.x_09ff5cb3")}{fmt(Math.round(g.E))}°
         </text>
       </g>
     </svg>

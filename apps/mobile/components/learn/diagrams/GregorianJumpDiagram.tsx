@@ -8,14 +8,15 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const BEFORE = [1, 2, 3, 4];
 const AFTER = [15, 16, 17, 18];
 const ADOPTERS = [
-  { ne: "इटाली · स्पेन · पोर्तुगाल", en: "Italy · Spain · Portugal", year: 1582, days: 10 },
-  { ne: "बेलायत", en: "Britain", year: 1752, days: 11 },
-  { ne: "रुस", en: "Russia", year: 1918, days: 13 },
-  { ne: "ग्रीस", en: "Greece", year: 1923, days: 13 },
+  { get ne() { return tFor("ne", "ui.learn.italy_spain_portugal"); }, get en() { return tFor("en", "ui.learn.italy_spain_portugal"); }, year: 1582, days: 10 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_britain"); }, get en() { return tFor("en", "learn.diagrams.country_britain"); }, year: 1752, days: 11 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_russia"); }, get en() { return tFor("en", "learn.diagrams.country_russia"); }, year: 1918, days: 13 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_greece"); }, get en() { return tFor("en", "learn.diagrams.country_greece"); }, year: 1923, days: 13 },
 ];
 
 const TILE = 0.16;
@@ -59,27 +60,24 @@ const GregorianJumpScene = memo(function GregorianJumpScene({ onLabels, digits }
 });
 
 export function GregorianJumpDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — अक्टोबर १५८२ को १० दिन हराए", "3D — the 10 lost days of October 1582")}
+      title={t("ui.learn.n3d_the_10_lost_days_of")}
       height={220}
       camera={{ yaw: 0, pitch: 0.6 }}
       frame={{ width: 1.3, height: 0.4 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.orbit, label: pick("जुलियन मिति", "Julian date") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("ग्रेगोरियन मिति (हप्ता नबदली)", "Gregorian date (weekday unbroken)") },
+        { color: DIAGRAM_COLOR.orbit, label: t("ui.learn.julian_date") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.gregorian_date_weekday_unbroken") },
       ]}
       readouts={ADOPTERS.map((a) => ({
         k: pick(a.ne, a.en),
-        v: pick(`${digits(a.year)} — ${digits(a.days)} दिन`, `${digits(a.year)} — ${digits(a.days)} days`),
+        v: t("ui.learn.year_days_days", { year: digits(a.year), days: digits(a.days) }),
       }))}
-      caption={pick(
-        "पोप ग्रेगोरी १३ ले १५८२ मा अक्टोबर ४ पछि सिधै अक्टोबर १५ लागू गरे — बीचका १० दिन क्यालेन्डरबाट हराए (हप्ताको क्रम भने अटुट रह्यो — बिहीबार पछि सिधै शुक्रबार)। हरेक देशले फरक-फरक समयमा अपनायो, र जति ढिलो अपनायो त्यति धेरै दिन हराउनुपर्‍यो — किनकि जुलियन र ग्रेगोरियनबीचको फरक हरेक शताब्दीको हिसाबले बढ्दै गयो।",
-        "Pope Gregory XIII decreed that October 4, 1582 was followed directly by October 15 — the ten days in between vanished from the calendar (the weekday sequence stayed unbroken — Thursday was followed straight by Friday). Different countries adopted the reform at different times, and the later they switched, the more days they had to drop — the Julian–Gregorian gap kept growing with every century.",
-      )}
+      caption={t("ui.learn.pope_gregory_xiii_decreed_that_october")}
     >
       {({ onLabels }) => <GregorianJumpScene onLabels={onLabels} digits={digits} />}
     </LearnDiagram3D>

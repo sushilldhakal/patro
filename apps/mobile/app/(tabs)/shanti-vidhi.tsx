@@ -2,13 +2,12 @@ import { useMemo, useState } from "react";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { useQuery } from "@tanstack/react-query";
+import { useShantiPage } from "@vedic-patro/features/shanti";
 import { AppShell } from "@/components/AppShell";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
-import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { instantFromCivilIso } from "@vedic-patro/domain/instant-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -26,7 +25,7 @@ function toAdStr(d: Date): string {
 }
 
 export default function ShantiVidhiScreen() {
-  const { pick, t, digits } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const timezone = resolveTimeZone(undefined, location.params.timezone);
@@ -41,32 +40,28 @@ export default function ShantiVidhiScreen() {
     [adDateStr, clock],
   );
 
-  const detailQ = useQuery({
-    queryKey: kundaliDetailKeys.atTime(birthMoment, location.params),
-    queryFn: () => fetchKundaliDetail(birthMoment, location.params),
-    staleTime: 1000 * 60 * 5,
-  });
+  const page = useShantiPage(birthMoment, location.params);
 
   return (
-    <AppShell title={pick("शान्ति विधि", "Shanti Vidhi")} showHeader={false}>
+    <AppShell title={t("nav.shanti_vidhi")} showHeader={false}>
       <PatroPageHeader
         icon={<Ionicons name="flame-outline" size={28} color={colors.secondary} />}
-        title={t("shanti_vidhi.title")}
-        subtitle={t("shanti_vidhi.subtitle")}
+        title={page.copy.title}
+        subtitle={page.copy.subtitle}
       />
 
       <View className={cn(sc.card, "overflow-hidden")}>
         <View className={sc.header}>
           <Ionicons name="person-outline" size={16} color={colors.secondary} />
           <Text className={sc.headerTitle} style={nepaliTextStyle(14)}>
-            {t("shanti_vidhi.birth_section")}
+            {page.copy.birthSection}
           </Text>
           <Text
             className={sc.headerMeta}
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >
-            {t("shanti_vidhi.birth_meta")}
+            {page.copy.birthMeta}
           </Text>
         </View>
 
@@ -82,7 +77,7 @@ export default function ShantiVidhiScreen() {
             adDateStr={adDateStr}
           />
 
-          <ShantiVidhiPanel grahaShanti={detailQ.data?.grahaShanti} isError={detailQ.isError} />
+          <ShantiVidhiPanel grahaShanti={page.grahaShanti} isError={page.isError} />
         </View>
       </View>
     </AppShell>

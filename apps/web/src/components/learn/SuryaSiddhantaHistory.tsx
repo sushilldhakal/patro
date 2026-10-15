@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ExternalLink, History as HistoryIcon, ScrollText, Video } from "lucide-react";
 import {
   Accordion,

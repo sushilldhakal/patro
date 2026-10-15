@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import {
   DOCUMENT_CATEGORY_GROUPS,

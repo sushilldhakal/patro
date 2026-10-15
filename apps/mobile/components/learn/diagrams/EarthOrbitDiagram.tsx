@@ -71,7 +71,7 @@ const EarthOrbitScene = memo(function EarthOrbitScene({ clock, onSample, onLabel
 });
 
 export function EarthOrbitDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 0,
     min: 0,
@@ -82,48 +82,45 @@ export function EarthOrbitDiagram() {
   const mean = yearAngleFromDay(day);
   const { r } = earthOrbitFromMeanAnomaly(mean);
   const copy = {
-    sun: pick("सूर्य", "Sun"),
-    earth: pick("पृथ्वी", "Earth"),
-    peri: pick("उपसौर (जनवरी)", "Perihelion (January)"),
-    aphe: pick("अपसौर (जुलाई)", "Aphelion (July)"),
+    sun: t("kundali.report.meta_sun"),
+    earth: t("vastu.element.earth"),
+    peri: t("ui.learn.perihelion_january"),
+    aphe: t("ui.learn.aphelion_july"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — पृथ्वीको अण्डाकार कक्ष", "3D — Earth's elliptical orbit")}
+      title={t("ui.learn.n3d_earth_s_elliptical_orbit")}
       height={270}
       camera={{ yaw: 0.6, pitch: 0.7 }}
       frame={{ width: 1.7, height: 0.85 }}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्य", "Sun") },
-        { color: DIAGRAM_COLOR.earth, label: pick("पृथ्वी", "Earth") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("उपसौर — सबैभन्दा नजिक", "Perihelion — closest") },
-        { color: DIAGRAM_LABEL_COLOR.rashi, label: pick("अपसौर — सबैभन्दा टाढा", "Aphelion — farthest") },
+        { color: DIAGRAM_COLOR.sun, label: t("kundali.report.meta_sun") },
+        { color: DIAGRAM_COLOR.earth, label: t("vastu.element.earth") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.perihelion_closest") },
+        { color: DIAGRAM_LABEL_COLOR.rashi, label: t("ui.learn.aphelion_farthest") },
       ]}
       readouts={[
-        { k: pick("वर्षको दिन", "Day of year"), v: `${digits(Math.round(day))} / ${digits(365)}`, tone: "accent" },
-        { k: pick("सूर्यसम्म दूरी (सापेक्ष)", "Distance from Sun (relative)"), v: digits(r.toFixed(3)) },
+        { k: t("learn.day_of_year"), v: `${digits(Math.round(day))} / ${digits(365)}`, tone: "accent" },
+        { k: t("ui.learn.distance_from_sun_relative"), v: digits(r.toFixed(3)) },
       ]}
       slider={{
         value: day,
         min: 0,
         max: TROPICAL_YEAR,
-        label: pick(`वर्षको दिन ${digits(Math.round(day))}`, `Day of year ${digits(Math.round(day))}`),
+        label: t("ui.learn.day_of_year_day", { day: digits(Math.round(day)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("उपसौर", "Perihelion"), value: 0 },
-        { label: pick("अपसौर", "Aphelion"), value: TROPICAL_YEAR / 2 },
+        { label: t("ui.learn.perihelion"), value: 0 },
+        { label: t("ui.learn.aphelion"), value: TROPICAL_YEAR / 2 },
       ]}
       onPreset={scrubTo}
       presetValue={day}
       presetTolerance={4}
-      caption={pick(
-        "पृथ्वीको कक्ष पूरा वृत्त होइन, हल्का अण्डाकार हो (कक्ष यहाँ स्पष्ट देखिनका लागि बढाइचढाइ गरिएको)। पृथ्वी जनवरीतिर सूर्यको सबैभन्दा नजिक (उपसौर) र जुलाईतिर सबैभन्दा टाढा (अपसौर) हुन्छ — अर्थात् उत्तरी गोलार्धको जाडोमा नजिक। त्यसैले दूरीले ऋतु बनाउँदैन — दूरीले ऋतु बनाएको भए ठीक उल्टो हुनुपर्थ्यो; साँचो कारण अक्ष झुकाव हो।",
-        "Earth's orbit is not a perfect circle but a gentle ellipse (exaggerated here to be visible). Earth is closest to the Sun (perihelion) around January and farthest (aphelion) around July — that is, closest during the northern hemisphere's winter. So distance does not make the seasons — if it did, they'd run backwards; the real cause is the axial tilt.",
-      )}
+      caption={t("ui.learn.earth_s_orbit_is_not_a")}
     >
       {({ onLabels }) => <EarthOrbitScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

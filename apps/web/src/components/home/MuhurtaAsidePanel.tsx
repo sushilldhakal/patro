@@ -1,229 +1,9 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Info } from "lucide-react";
-import type { ApiHoraSlot, NavataraRow, PanchangaDay, UdayaLagnaRow } from "@/lib/api";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import {
-  buildDayTimelineData,
-  ghatiToCivilClockLabel,
-} from "@vedic-patro/domain/day-timeline-data";
-import {
-  choghadiyaName,
-  choghadiyaTone,
-  choghadiyaToneLabel,
-} from "@vedic-patro/domain/choghadiya-display";
-import {
-  formatClockNepali,
-  formatTimeRangeShort,
-  getChandrabalamTable,
-  getHoraDaySlots,
-  getSunrise,
-  getTarabalaTable,
-  getUdayaLagna,
-} from "@vedic-patro/domain/panchanga-format";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
+import type { PanchangaDay } from "@/lib/api";
+import { useMuhurtaAside } from "@vedic-patro/features/home";
 import { patroNavataraRow } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-
-type MuhurtaSubTab = "tarabal" | "chandrabal" | "choghadiya" | "hora" | "pushkara";
-
-const SUB_TABS: { id: MuhurtaSubTab; labelKey: string }[] = [
-  { id: "tarabal", labelKey: "muhurta_aside.tarabal" },
-  { id: "chandrabal", labelKey: "muhurta_aside.chandrabal" },
-  { id: "choghadiya", labelKey: "muhurta_aside.choghadiya" },
-  { id: "hora", labelKey: "muhurta_aside.hora" },
-  { id: "pushkara", labelKey: "muhurta_aside.pushkara" },
-];
-
-const SUB_TAB_HINT_KEY: Record<MuhurtaSubTab, string> = {
-  tarabal: "muhurta_aside.hint_tarabal",
-  chandrabal: "muhurta_aside.hint_chandrabal",
-  choghadiya: "muhurta_aside.hint_choghadiya",
-  hora: "muhurta_aside.hint_hora",
-  pushkara: "muhurta_aside.hint_pushkara",
-};
-
-function parseTimeToMinutes(time?: string | null): number | null {
-  if (!time) return null;
-  const m = time.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return null;
-  return Number(m[1]) * 60 + Number(m[2]);
-}
-
-function NavataraAsideList({
-  moonLabel,
-  moonLabelEn,
-  moonIdx,
-  moonRefKey,
-  rows,
-}: {
-  moonLabel: string | null;
-  moonLabelEn?: string | null;
-  moonIdx: number | null;
-  moonRefKey: string;
-  rows: NavataraRow[];
-}) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-
-  if (!rows.length) {
-    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.unavailable")}</p>;
-  }
-
-  return (
-    <div>
-      {moonLabel || moonLabelEn ? (
-        <p className={cn("m-0", homeClasses.muhurtaMoonRef)}>
-          {t(moonRefKey)}:{" "}
-          <strong className={homeClasses.muhurtaMoonRefStrong}>
-            {bilingualText(lang, moonLabel ?? moonLabelEn ?? "", moonLabelEn ?? moonLabel ?? "")}
-          </strong>
-        </p>
-      ) : null}
-      <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">
-        {rows.map((row) => {
-          const isMoon = moonIdx != null && row.index === moonIdx;
-          return (
-            <li key={row.name} className={patroNavataraRow(row.tone, isMoon)}>
-              <span className={homeClasses.muhurtaSlotTitle}>
-                {bilingualText(lang, row.name, row.name_en ?? row.name)}
-              </span>
-              <span className={homeClasses.muhurtaSlotValue}>
-                {formatNavataraTara(row.tara, lang)}
-                <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
-                {formatNavataraQuality(row.quality, lang)}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
-function ChoghadiyaList({ p }: { p: PanchangaDay }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const timeline = buildDayTimelineData(p);
-  const sunriseMin = parseTimeToMinutes(getSunrise(p));
-
-  if (!timeline?.choghadiya.length || sunriseMin == null) {
-    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.choghadiya_unavailable")}</p>;
-  }
-
-  return (
-    <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">
-      {timeline.choghadiya.map((seg, i) => {
-        const tone = choghadiyaTone(seg.name, seg.bad);
-        const qualityNe = choghadiyaToneLabel(seg.name, "ne", seg.bad);
-        const qualityEn = choghadiyaToneLabel(seg.name, "en", seg.bad);
-        const range = `${ghatiToCivilClockLabel(seg.startG, sunriseMin)} – ${ghatiToCivilClockLabel(seg.endG, sunriseMin)}`;
-        return (
-          <li key={`${seg.name}-${i}`} className={patroNavataraRow(tone === "good" ? "good" : tone === "bad" ? "bad" : "neutral")}>
-            <span className={homeClasses.muhurtaSlotTitle}>
-              {bilingualText(lang, seg.name, choghadiyaName(seg.name, "en"))}
-            </span>
-            <span className={homeClasses.muhurtaSlotValue}>
-              {range}
-              <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
-              {bilingualText(lang, qualityNe, qualityEn)}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function HoraList({ p }: { p: PanchangaDay }) {
-  const { t } = useTranslation();
-  const slots = getHoraDaySlots(p);
-
-  if (!slots.length) {
-    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.hora_unavailable")}</p>;
-  }
-
-  return (
-    <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">
-      {slots.map((slot, i) => (
-        <HoraSlot key={`${slot.phase}-${slot.index}-${i}`} slot={slot} />
-      ))}
-    </ul>
-  );
-}
-
-function HoraSlot({ slot }: { slot: ApiHoraSlot }) {
-  const { lang } = useLocale();
-  const start = formatClockNepali(slot.start_local_time_short) ?? slot.start_local_time_short;
-  const end = formatClockNepali(slot.end_local_time_short) ?? slot.end_local_time_short;
-  const tone = slot.tone === "bad" ? "bad" : "good";
-
-  return (
-    <li className={patroNavataraRow(tone)}>
-      <span className={homeClasses.muhurtaSlotTitle}>
-        {bilingualText(lang, 
-          slot.planet_ne,
-          GRAHA_NAME[slot.planet as GrahaKey]?.en ?? slot.planet_en ?? slot.planet ?? slot.planet_ne,
-        )}
-      </span>
-      <span className={homeClasses.muhurtaSlotValue}>
-        {start} – {end}
-        <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
-        {bilingualText(lang, slot.quality_ne, slot.tone === "bad" ? "Inauspicious" : "Auspicious")}
-      </span>
-    </li>
-  );
-}
-
-function PushkaraList({ p }: { p: PanchangaDay }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const rows = getUdayaLagna(p);
-
-  if (!rows?.length) {
-    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.pushkara_unavailable")}</p>;
-  }
-
-  const pushkaraLabel = bilingualText(lang, "पुष्कर", "Pushkara");
-
-  return (
-    <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">
-      {rows.map((row, i) => (
-        <PushkaraSlot key={`${row.name}-${i}`} row={row} pushkaraLabel={pushkaraLabel} />
-      ))}
-    </ul>
-  );
-}
-
-function PushkaraSlot({ row, pushkaraLabel }: { row: UdayaLagnaRow; pushkaraLabel: string }) {
-  const { lang } = useLocale();
-  const hits = row.pushkara_navamsha ?? [];
-  const times = hits
-    .map((hit) => formatClockNepali(hit.local_time_short ?? hit.local_time) ?? hit.local_time_short)
-    .filter(Boolean)
-    .join(", ");
-  const range =
-    formatTimeRangeShort(
-      row.start_local_time_short ?? row.start_local_time,
-      row.end_local_time_short ?? row.end_local_time,
-    ) ?? "—";
-  const hasPushkara = hits.length > 0;
-
-  return (
-    <li className={patroNavataraRow(hasPushkara ? "good" : "neutral")}>
-      <span className={homeClasses.muhurtaSlotTitle}>
-        {bilingualText(lang, row.name_ne ?? row.name, row.name ?? row.name_ne)}
-      </span>
-      <span className={homeClasses.muhurtaSlotValue}>
-        {hasPushkara ? times : range}
-        <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
-        {hasPushkara ? pushkaraLabel : "—"}
-      </span>
-    </li>
-  );
-}
 
 type Props = {
   p: PanchangaDay;
@@ -231,15 +11,13 @@ type Props = {
 };
 
 export function MuhurtaAsidePanel({ p }: Props) {
-  const { t } = useTranslation();
-  const [subTab, setSubTab] = useState<MuhurtaSubTab>("tarabal");
-  const tara = getTarabalaTable(p);
-  const chandra = getChandrabalamTable(p);
+  const aside = useMuhurtaAside(p);
+  const { panel } = aside;
 
   return (
     <div className={homeClasses.muhurtaStack}>
-      <div className="grid grid-cols-5 gap-1" role="tablist" aria-label={t("muhurta_aside.tabs_label")}>
-        {SUB_TABS.map((tab) => (
+      <div className="grid grid-cols-5 gap-1" role="tablist" aria-label={aside.tabsLabel}>
+        {aside.tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -248,45 +26,47 @@ export function MuhurtaAsidePanel({ p }: Props) {
               "cursor-pointer transition-colors",
               homeClasses.muhurtaSubTab,
               homeClasses.muhurtaSubTabLabel,
-              subTab === tab.id
+              tab.active
                 ? cn(homeClasses.muhurtaSubTabActive, homeClasses.muhurtaSubTabLabelActive)
                 : cn(homeClasses.muhurtaSubTabIdle, "hover:bg-tab-hover hover:text-foreground"),
             )}
-            aria-selected={subTab === tab.id}
-            onClick={() => setSubTab(tab.id)}
+            aria-selected={tab.active}
+            onClick={tab.select}
           >
-            {t(tab.labelKey)}
+            {tab.label}
           </button>
         ))}
       </div>
 
       <p className={cn("m-0", homeClasses.muhurtaHint, homeClasses.muhurtaHintText)}>
         <Info size={13} strokeWidth={2} className={homeClasses.muhurtaHintIcon} aria-hidden />
-        <span>{t(SUB_TAB_HINT_KEY[subTab])}</span>
+        <span>{aside.hint}</span>
       </p>
 
       <div role="tabpanel">
-        {subTab === "tarabal" ? (
-          <NavataraAsideList
-            moonLabel={tara?.moon_label ?? null}
-            moonLabelEn={tara?.moon_label_en ?? null}
-            moonIdx={tara?.moon_index ?? null}
-            moonRefKey="muhurta_aside.moon_ref_tarabal"
-            rows={tara?.rows ?? []}
-          />
-        ) : null}
-        {subTab === "chandrabal" ? (
-          <NavataraAsideList
-            moonLabel={chandra?.moon_label ?? null}
-            moonLabelEn={chandra?.moon_label_en ?? null}
-            moonIdx={chandra?.moon_index ?? null}
-            moonRefKey="muhurta_aside.moon_ref_chandrabal"
-            rows={chandra?.rows ?? []}
-          />
-        ) : null}
-        {subTab === "choghadiya" ? <ChoghadiyaList p={p} /> : null}
-        {subTab === "hora" ? <HoraList p={p} /> : null}
-        {subTab === "pushkara" ? <PushkaraList p={p} /> : null}
+        {panel.empty ? (
+          <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{panel.empty}</p>
+        ) : (
+          <div>
+            {panel.moonRef ? (
+              <p className={cn("m-0", homeClasses.muhurtaMoonRef)}>
+                {panel.moonRef.label} <strong className={homeClasses.muhurtaMoonRefStrong}>{panel.moonRef.value}</strong>
+              </p>
+            ) : null}
+            <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">
+              {panel.slots.map((slot) => (
+                <li key={slot.key} className={patroNavataraRow(slot.tone, slot.isMoon)}>
+                  <span className={homeClasses.muhurtaSlotTitle}>{slot.title}</span>
+                  <span className={homeClasses.muhurtaSlotValue}>
+                    {slot.value}
+                    <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
+                    {slot.quality}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

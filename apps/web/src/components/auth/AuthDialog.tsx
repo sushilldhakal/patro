@@ -1,6 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,13 +9,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { apiForgotPassword } from "@/lib/auth/client";
+import { useAuthDialog, type AuthDialogMode } from "@vedic-patro/features/account";
 import { GoogleSignInButton, googleSignInEnabled } from "./GoogleSignInButton";
 import { FacebookSignInButton, facebookSignInEnabled } from "./FacebookSignInButton";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
-
-type Mode = "login" | "signup" | "forgot";
 
 const labelClass = accountClasses.label;
 const fieldWrap = cn("flex flex-col", accountClasses.field);
@@ -29,136 +25,52 @@ export function AuthDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialMode?: Mode;
+  initialMode?: AuthDialogMode;
 }) {
-  const { t } = useTranslation();
-  const { login, signup, loginWithGoogle, loginWithFacebook } = useAuth();
-  const [mode, setMode] = useState<Mode>(initialMode);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  function reset(next: Mode) {
-    setMode(next);
-    setError(null);
-    setNotice(null);
-    setPassword("");
-    setConfirm("");
-  }
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setNotice(null);
-
-    if (mode === "signup" && password !== confirm) {
-      setError(t("auth.passwords_mismatch"));
-      return;
-    }
-    if ((mode === "signup" || mode === "login") && password.length < 8 && mode === "signup") {
-      setError(t("auth.password_min"));
-      return;
-    }
-
-    setBusy(true);
-    try {
-      if (mode === "login") {
-        await login(email.trim(), password);
-        onOpenChange(false);
-      } else if (mode === "signup") {
-        await signup(email.trim(), password);
-        setNotice(t("auth.signup_notice"));
-        // Close shortly after so the notice is seen.
-        setTimeout(() => onOpenChange(false), 1200);
-      } else {
-        await apiForgotPassword(email.trim());
-        setNotice(t("auth.forgot_notice"));
-      }
-    } catch {
-      setError(t("auth.generic_error"));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const onGoogle = useCallback(
-    async (idToken: string) => {
-      setError(null);
-      setBusy(true);
-      try {
-        await loginWithGoogle(idToken);
-        onOpenChange(false);
-      } catch {
-        setError(t("auth.google_error"));
-      } finally {
-        setBusy(false);
-      }
-    },
-    [loginWithGoogle, onOpenChange, t],
-  );
-
-  const onFacebook = useCallback(
-    async (accessToken: string) => {
-      setError(null);
-      setBusy(true);
-      try {
-        await loginWithFacebook(accessToken);
-        onOpenChange(false);
-      } catch {
-        setError(t("auth.facebook_error"));
-      } finally {
-        setBusy(false);
-      }
-    },
-    [loginWithFacebook, onOpenChange, t],
-  );
+  const auth = useAuth();
+  const d = useAuthDialog({ open, onOpenChange, initialMode, auth });
+  const { copy, mode } = d;
 
   const socialEnabled = googleSignInEnabled || facebookSignInEnabled;
-
-  const title =
-    mode === "login" ? t("auth.sign_in") : mode === "signup" ? t("auth.create_account") : t("auth.reset_password");
-  const desc =
-    mode === "login"
-      ? t("auth.sign_in_desc")
-      : mode === "signup"
-        ? t("auth.signup_desc")
-        : t("auth.forgot_desc");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{desc}</DialogDescription>
+          <DialogTitle>{copy.title}</DialogTitle>
+          <DialogDescription>{copy.description}</DialogDescription>
         </DialogHeader>
 
-        {mode !== "forgot" && socialEnabled && (
+        {d.showSocial && socialEnabled && (
           <div className={cn("flex flex-col items-center", accountClasses.socialStack)}>
             {googleSignInEnabled && (
-              <GoogleSignInButton onCredential={onGoogle} onError={setError} />
+              <GoogleSignInButton onCredential={d.onGoogle} onError={d.setError} />
             )}
             {facebookSignInEnabled && (
               <FacebookSignInButton
-                onAccessToken={onFacebook}
-                onError={setError}
-                disabled={busy}
+                onAccessToken={d.onFacebook}
+                onError={d.setError}
+                disabled={d.busy}
               />
             )}
             <div className={cn("flex", accountClasses.socialDividerRow)}>
               <span className={accountClasses.socialDividerLine} />
-              {t("auth.or")}
+              {copy.or}
               <span className={accountClasses.socialDividerLine} />
             </div>
           </div>
         )}
 
-        <form onSubmit={onSubmit} className={cn("flex flex-col", accountClasses.dialogForm)}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void d.submit();
+          }}
+          className={cn("flex flex-col", accountClasses.dialogForm)}
+        >
           <div className={fieldWrap}>
             <label className={labelClass} htmlFor="auth-email">
-              {t("auth.email")}
+              {copy.email}
             </label>
             <Input
               id="auth-email"
@@ -168,105 +80,99 @@ export function AuthDialog({
               autoCapitalize="none"
               spellCheck={false}
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("auth.email_placeholder")}
+              value={d.email}
+              onChange={(e) => d.setEmail(e.target.value)}
+              placeholder={copy.emailPlaceholder}
             />
           </div>
 
-          {mode !== "forgot" && (
+          {d.showPassword && (
             <div className={fieldWrap}>
               <label className={labelClass} htmlFor="auth-password">
-                {t("auth.password")}
+                {copy.password}
               </label>
               <Input
                 id="auth-password"
                 type="password"
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                autoComplete={d.passwordAutoComplete}
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={mode === "signup" ? t("auth.password_hint") : "••••••••"}
+                value={d.password}
+                onChange={(e) => d.setPassword(e.target.value)}
+                placeholder={copy.passwordPlaceholder}
               />
             </div>
           )}
 
-          {mode === "signup" && (
+          {d.showConfirm && (
             <div className={fieldWrap}>
               <label className={labelClass} htmlFor="auth-confirm">
-                {t("auth.confirm_password")}
+                {copy.confirmPassword}
               </label>
               <Input
                 id="auth-confirm"
                 type="password"
                 autoComplete="new-password"
                 required
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
+                value={d.confirm}
+                onChange={(e) => d.setConfirm(e.target.value)}
               />
             </div>
           )}
 
-          {error && <p className={accountClasses.formError}>{error}</p>}
-          {notice && <p className={accountClasses.formNotice}>{notice}</p>}
+          {d.error && <p className={accountClasses.formError}>{d.error}</p>}
+          {d.notice && <p className={accountClasses.formNotice}>{d.notice}</p>}
 
-          <Button type="submit" size="lg" disabled={busy} className={accountClasses.submit}>
-            {busy
-              ? t("auth.please_wait")
-              : mode === "login"
-                ? t("auth.sign_in")
-                : mode === "signup"
-                  ? t("auth.create_account")
-                  : t("auth.send_reset")}
+          <Button type="submit" size="lg" disabled={d.busy} className={accountClasses.submit}>
+            {copy.submit}
           </Button>
         </form>
 
         <div className={cn("flex flex-col", accountClasses.switchStack)}>
           {mode === "login" && (
             <>
-              <button type="button" className="hover:text-foreground" onClick={() => reset("forgot")}>
-                {t("auth.forgot_password")}
+              <button type="button" className="hover:text-foreground" onClick={() => d.switchMode("forgot")}>
+                {copy.forgotPassword}
               </button>
               <span>
-                {t("auth.new_here")}{" "}
+                {copy.newHere}{" "}
                 <button
                   type="button"
                   className={cn("hover:underline", accountClasses.switchLink)}
-                  onClick={() => reset("signup")}
+                  onClick={() => d.switchMode("signup")}
                 >
-                  {t("auth.create_account")}
+                  {copy.createAccount}
                 </button>
               </span>
             </>
           )}
           {mode === "signup" && (
             <span>
-              {t("auth.already_have")}{" "}
+              {copy.alreadyHave}{" "}
               <button
                 type="button"
                 className={cn("hover:underline", accountClasses.switchLink)}
-                onClick={() => reset("login")}
+                onClick={() => d.switchMode("login")}
               >
-                {t("auth.sign_in")}
+                {copy.signIn}
               </button>
             </span>
           )}
           {mode === "forgot" && (
-            <button type="button" className="hover:text-foreground" onClick={() => reset("login")}>
-              {t("auth.back_to_sign_in")}
+            <button type="button" className="hover:text-foreground" onClick={() => d.switchMode("login")}>
+              {copy.backToSignIn}
             </button>
           )}
         </div>
 
-        {mode !== "forgot" ? (
+        {d.showLegal ? (
           <p className={accountClasses.legal}>
-            {t("auth.legal_agree")}{" "}
+            {copy.legalAgree}{" "}
             <Link to="/privacy" className={cn("hover:underline", accountClasses.legalLink)} onClick={() => onOpenChange(false)}>
-              {t("auth.privacy")}
+              {copy.privacy}
             </Link>
             {" · "}
             <Link to="/terms" className={cn("hover:underline", accountClasses.legalLink)} onClick={() => onOpenChange(false)}>
-              {t("auth.terms")}
+              {copy.terms}
             </Link>
           </p>
         ) : null}

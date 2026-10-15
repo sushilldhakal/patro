@@ -2,8 +2,7 @@ import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { Profile } from "@/lib/auth/client";
-import { useLocale } from "@/lib/i18n";
-import { formatProfileBirthLabel } from "@vedic-patro/domain/kundali/profile-chart";
+import type { KundaliMetaItem } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
@@ -42,15 +41,20 @@ function MetaItem({
   );
 }
 
-type Props = {
-  profile: Profile;
-  birthDateLabel: string;
-  birthTime: string;
-  place: string;
+const META_ICONS: Record<KundaliMetaItem["key"], keyof typeof Ionicons.glyphMap> = {
+  birthDate: "calendar-outline",
+  time: "time-outline",
+  place: "location-outline",
+  timezone: "globe-outline",
 };
 
-export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place }: Props) {
-  const { pick } = useLocale();
+type Props = {
+  profile: Profile;
+  eyebrow: string;
+  meta: KundaliMetaItem[];
+};
+
+export function KundaliProfileHeader({ profile, eyebrow, meta }: Props) {
   const colors = useThemeColors();
 
   return (
@@ -65,7 +69,7 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
               className={kundaliClasses.profileEyebrow}
               style={nepaliTextStyle(12)}
             >
-              {pick("जन्मकुण्डली", "Birth chart")}
+              {eyebrow}
             </Text>
             <View className={kundaliClasses.profileNameRow}>
               <Text className={kundaliClasses.profileName} style={nepaliTextStyle(18)}>
@@ -84,30 +88,7 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
         </View>
 
         <ScrollViewMetaRow
-          items={[
-            {
-              icon: "calendar-outline" as const,
-              label: pick("जन्म मिति", "Birth date"),
-              value: birthDateLabel,
-            },
-            {
-              icon: "time-outline" as const,
-              label: pick("समय", "Time"),
-              value: birthTime,
-              mono: true,
-            },
-            {
-              icon: "location-outline" as const,
-              label: pick("स्थान", "Place"),
-              value: place,
-            },
-            {
-              icon: "globe-outline" as const,
-              label: pick("समय क्षेत्र", "Timezone"),
-              value: profile.timezone || "—",
-              mono: true,
-            },
-          ]}
+          items={meta.map((item) => ({ icon: META_ICONS[item.key], label: item.label, value: item.value, mono: item.mono }))}
         />
       </View>
     </View>
@@ -141,13 +122,4 @@ function ScrollViewMetaRow({
       ))}
     </ScrollView>
   );
-}
-
-export function formatProfileBirthDateLabel(
-  profile: Profile,
-  _birthDate: Date | null,
-  lang: string,
-  digits: (v: string | number) => string,
-): string {
-  return formatProfileBirthLabel(profile, lang, digits);
 }

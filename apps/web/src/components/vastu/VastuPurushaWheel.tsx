@@ -1,10 +1,7 @@
 import { useId, type ReactNode } from "react";
 import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
-import { useTranslation } from "react-i18next";
-import { useLocale } from "@/i18n/locale";
 import {
   VASTU_DIR16,
-  VASTU_DIR16_ATTR,
   VASTU_ELEMENT_COLOR,
   VASTU_ELEMENT_ORDER,
   VASTU_GUNA_COLOR,
@@ -13,7 +10,6 @@ import {
   VASTU_PADAS,
   VASTU_WHEEL_DIRECTIONS,
   annularSectorPath as annularSectorPathAt,
-  evenBearings,
   isDir16,
   isInner4,
   isPada,
@@ -22,50 +18,59 @@ import {
   vastuElementAtBearing,
   vastuPada,
   vastuWheelPoint,
-  type VastuGunaId,
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu";
 import { cn } from "@vedic-patro/domain/utils";
 import { CX, CY, annulusPath } from "@vedic-patro/domain/vastu-purusha-wheel";
 
-import { illustration } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
+import {
+  VASTU_COMPASS_16,
+  VASTU_GUNA_BANDS,
+  VASTU_STATUS_MARK,
+  VASTU_WHEEL_GEOMETRY,
+  useVastuPurushaWheel,
+} from "@vedic-patro/features/vastu";
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
  * CX/CY rather than taking them as props, so anything reusing them has to
  * share this exact centre, not merely this size. */
 export { WHEEL_SIZE };
-const PURUSHA_OPACITY = 0.2;
-
-/**
- * Concentric bands, outside → in. Each ring is its own hit target:
- * guna + 16-dir (ENE / आनन्द), pada codes (E1), deities (शिखी / सूर्य),
- * eight house wedges, inner-four, Brahmasthan. E1 and शिखी are the same pada.
- */
-const DEG_OUTER = 304;
-const DEG_INNER = 288;
-const GUNA_OUTER = 288;
-const GUNA_INNER = 268;
-const DIR16_OUTER = 268;
-const DIR16_INNER = 214;
-const CODE_OUTER = 214;
-const CODE_INNER = 192;
-const DEITY_OUTER = 192;
-const DEITY_INNER = 162;
-const WEDGE_OUTER = 162;
-const WEDGE_INNER = 104;
-const INNER4_OUTER = 104;
-const INNER4_INNER = 66;
-const CENTER_R = 60;
-/** Diagonal figure — head/feet are the square corners, so keep those inside the rim. */
-const PURUSHA_SIZE = Math.round(DEG_INNER * Math.SQRT2 * 0.82);
-
-const DEG_LABEL_R = (DEG_OUTER + DEG_INNER) / 2;
-const GUNA_LABEL_R = (GUNA_OUTER + GUNA_INNER) / 2;
-const DIR16_LABEL_R = (DIR16_OUTER + DIR16_INNER) / 2;
-const CODE_LABEL_R = (CODE_OUTER + CODE_INNER) / 2;
-const DEITY_LABEL_R = (DEITY_OUTER + DEITY_INNER) / 2;
-const WEDGE_LABEL_R = (WEDGE_OUTER + WEDGE_INNER) / 2;
-const INNER4_LABEL_R = (INNER4_OUTER + INNER4_INNER) / 2;
+const {
+  PURUSHA_OPACITY,
+  DEG_OUTER,
+  DEG_INNER,
+  GUNA_OUTER,
+  GUNA_INNER,
+  DIR16_OUTER,
+  DIR16_INNER,
+  CODE_OUTER,
+  CODE_INNER,
+  DEITY_OUTER,
+  DEITY_INNER,
+  WEDGE_OUTER,
+  WEDGE_INNER,
+  INNER4_OUTER,
+  INNER4_INNER,
+  CENTER_R,
+  PURUSHA_SIZE,
+  DEG_LABEL_R,
+  GUNA_LABEL_R,
+  DIR16_LABEL_R,
+  CODE_LABEL_R,
+  DEITY_LABEL_R,
+  WEDGE_LABEL_R,
+  INNER4_LABEL_R,
+  PADA_HALF,
+  RING_DIVIDERS,
+  GUNA_BOUNDARIES,
+  DIR16_BOUNDARIES,
+  PADA_BOUNDARIES,
+  DIR8_BOUNDARIES,
+  INNER4_BOUNDARIES,
+} = VASTU_WHEEL_GEOMETRY;
+const STATUS_MARK = VASTU_STATUS_MARK;
+const GUNA_BANDS = VASTU_GUNA_BANDS;
+const COMPASS_16 = VASTU_COMPASS_16;
 
 function normBearing(bearing: number): number {
   return ((bearing % 360) + 360) % 360;
@@ -75,78 +80,6 @@ function normBearing(bearing: number): number {
 function annularSectorPath(bearing: number, halfAngle: number, outerR: number, innerR: number): string {
   return annularSectorPathAt(bearing, halfAngle, outerR, innerR, CX, CY);
 }
-
-const COMPASS_16 = VASTU_DIR16.map((d) => ({
-  bearing: d.bearing,
-  abbr: d.abbr,
-  zone: d.id,
-  nameKey: `vastu.dir16.${d.id}.name`,
-}));
-
-type GunaId = VastuGunaId;
-
-/** Door-pada +/− marks only — sector fills use the five elements. */
-const STATUS_MARK = {
-  good: illustration.green30,
-  ok: VASTU_INK.line,
-  bad: illustration.red36,
-} as const;
-
-/**
- * 16-direction status from Viśvakarmā Prakāśa (Shodasha-Griha). Mixed
- * "good-if-used-as-designated" corners (SE kitchen, SW master bedroom) stay
- * शुभ; zones headed "bad for living" stay अशुभ.
- */
-const DIR16_STATUS = [
-  "good",
-  "good",
-  "good",
-  "good",
-  "good",
-  "bad",
-  "good",
-  "good",
-  "ok",
-  "bad",
-  "good",
-  "good",
-  "good",
-  "bad",
-  "good",
-  "ok",
-] as const satisfies readonly ("good" | "ok" | "bad")[];
-
-/**
- * Triguna zones on the compass — Sattva 337.5°→112.5°, Rajas at SE (112.5°–157.5°)
- * and NW (292.5°–337.5°), Tamas 157.5°→292.5°.
- */
-const GUNA_BANDS: { id: GunaId; key: string; bearing: number; halfAngle: number }[] = [
-  { id: "sattva", key: "sattva", bearing: 45, halfAngle: 67.5 },
-  { id: "rajas", key: "rajas-se", bearing: 135, halfAngle: 22.5 },
-  { id: "tamas", key: "tamas", bearing: 225, halfAngle: 67.5 },
-  { id: "rajas", key: "rajas-nw", bearing: 315, halfAngle: 22.5 },
-];
-
-const ATTR_16 = VASTU_DIR16_ATTR;
-
-const PADA_HALF = 5.625;
-
-const RING_DIVIDERS = [
-  DEG_OUTER,
-  DEG_INNER,
-  GUNA_INNER,
-  DIR16_INNER,
-  CODE_INNER,
-  DEITY_INNER,
-  WEDGE_INNER,
-  INNER4_INNER,
-] as const;
-
-const GUNA_BOUNDARIES = [112.5, 157.5, 292.5, 337.5] as const;
-const DIR16_BOUNDARIES = evenBearings(16, 11.25);
-const PADA_BOUNDARIES = evenBearings(32, 0);
-const DIR8_BOUNDARIES = evenBearings(8, 22.5);
-const INNER4_BOUNDARIES = evenBearings(4, 45);
 
 export function RingSeparators({
   bearings,
@@ -427,8 +360,8 @@ export function VastuPurushaWheel({
   /** Compass heading (0 = north, clockwise). The facing wall sits at the top. */
   headingDeg?: number | null;
 }) {
-  const { t } = useTranslation();
-  const { digits } = useLocale();
+  const w = useVastuPurushaWheel();
+  const digits = w.digits;
   const clipId = `vastu-purusha-${useId().replace(/:/g, "")}`;
 
   return (
@@ -438,7 +371,7 @@ export function VastuPurushaWheel({
       className="mx-auto block h-auto w-full"
       overflow="visible"
       role="group"
-      aria-label={t("vastu.wheel.heading")}
+      aria-label={w.heading}
     >
       <defs>
         <clipPath id={clipId}>
@@ -458,14 +391,14 @@ export function VastuPurushaWheel({
         const labelFill = band.id === "tamas" ? VASTU_INK.background : VASTU_INK.text;
         return (
           <g key={band.key} aria-hidden="true">
-            <title>{t(`vastu.wheel.organ.${band.id}`)}</title>
+            <title>{w.organ(band.id)}</title>
             <path
               d={annularSectorPath(band.bearing, band.halfAngle, GUNA_OUTER, GUNA_INNER)}
               fill={color}
               fillOpacity={0.92}
             />
             <ArcLabel bearing={band.bearing} radius={GUNA_LABEL_R} fontSize={10} className="font-bold" fill={labelFill}>
-              {t(`vastu.wheel.organ.${band.id}`)}
+              {w.organ(band.id)}
             </ArcLabel>
           </g>
         );
@@ -473,13 +406,12 @@ export function VastuPurushaWheel({
 
       {/* 16 compass + life attribute — coloured by tattva */}
       {COMPASS_16.map((point, i) => {
-        const status = DIR16_STATUS[i]!;
         const color = VASTU_ELEMENT_COLOR[vastuElementAtBearing(point.bearing)];
-        const attr = t(ATTR_16[i]!);
+        const attr = w.dir16[i]!.attr;
         const active = point.zone === selected;
         return (
           <g key={point.abbr} aria-hidden="true">
-            <title>{`${t(point.nameKey)} · ${attr} · ${t(`vastu.element.${vastuElementAtBearing(point.bearing)}`)} · ${t(`vastu.wheel.status.${status}`)}`}</title>
+            <title>{w.dir16[i]!.title}</title>
             <path
               d={annularSectorPath(point.bearing, 11.25, DIR16_OUTER, DIR16_INNER)}
               fill={color}
@@ -500,7 +432,7 @@ export function VastuPurushaWheel({
         const active = selected === pada.id;
         return (
           <g key={`code-${pada.code}`} aria-hidden="true">
-            <title>{`${pada.code} · ${t(`vastu.pada.${pada.id}.name`)} · ${t(`vastu.element.${pada.element}`)} · ${t(`vastu.wheel.status.${pada.status}`)}`}</title>
+            <title>{w.padaCodeTitle(pada)}</title>
             <path
               d={annularSectorPath(pada.bearing, PADA_HALF, CODE_OUTER, CODE_INNER)}
               fill={color}
@@ -509,7 +441,7 @@ export function VastuPurushaWheel({
             <PadaCodeLabel
               bearing={pada.bearing}
               radius={CODE_LABEL_R}
-              code={`${pada.wall}${digits(pada.index)}`}
+              code={w.padaCode(pada)}
               status={pada.status}
             />
           </g>
@@ -521,14 +453,14 @@ export function VastuPurushaWheel({
         const active = selected === pada.id;
         return (
           <g key={`deity-${pada.id}`} aria-hidden="true">
-            <title>{`${t(`vastu.pada.${pada.id}.name`)} · ${t(`vastu.element.${pada.element}`)} · ${t(`vastu.wheel.status.${pada.status}`)}`}</title>
+            <title>{w.padaDeityTitle(pada)}</title>
             <path
               d={annularSectorPath(pada.bearing, PADA_HALF, DEITY_OUTER, DEITY_INNER)}
               fill={color}
               fillOpacity={active ? 0.7 : 0.34}
             />
             <ArcLabel bearing={pada.bearing} radius={DEITY_LABEL_R} fontSize={9} className="font-semibold">
-              {t(`vastu.pada.${pada.id}.name`)}
+              {w.padaName(pada.id)}
             </ArcLabel>
           </g>
         );
@@ -555,7 +487,7 @@ export function VastuPurushaWheel({
               fillOpacity={0.88}
               fontSize={12}
             >
-              {t(`vastu.pada.${devata.id}.name`)}
+              {w.padaName(devata.id)}
             </text>
           </g>
         );
@@ -624,7 +556,7 @@ export function VastuPurushaWheel({
             fillOpacity={active ? 1 : 0.82}
             fontSize={11}
           >
-            {t(`vastu.dir.${dir.id}.name`)}
+            {w.dirName(dir.id)}
           </text>
         );
       })}
@@ -642,7 +574,7 @@ export function VastuPurushaWheel({
           fillOpacity={0.9}
           fontSize={16}
         >
-          {t("vastu.dir.center.deity")}
+          {w.centerDeity}
         </text>
       )}
 
@@ -650,7 +582,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-guna-${dir.id}`}
           d={annularSectorPath(dir.bearing, 11.25, GUNA_OUTER, GUNA_INNER)}
-          label={t(`vastu.dir16.${dir.id}.name`)}
+          label={w.dir16Name(dir.id)}
           active={dir.id === selected}
           color={VASTU_ELEMENT_COLOR[dir.element]}
           onSelect={() => onSelect(dir.id)}
@@ -661,7 +593,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-16-${dir.id}`}
           d={annularSectorPath(dir.bearing, 11.25, DIR16_OUTER, DIR16_INNER)}
-          label={`${t(`vastu.dir16.${dir.id}.name`)} · ${t(dir.attrKey)}`}
+          label={w.dir16Hit(dir.id, dir.attrKey)}
           active={dir.id === selected}
           color={VASTU_ELEMENT_COLOR[dir.element]}
           onSelect={() => onSelect(dir.id)}
@@ -672,7 +604,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-code-${pada.id}`}
           d={annularSectorPath(pada.bearing, PADA_HALF, CODE_OUTER, CODE_INNER)}
-          label={`${pada.code} · ${t(`vastu.pada.${pada.id}.name`)}`}
+          label={w.padaHit(pada)}
           active={selected === pada.id}
           color={VASTU_ELEMENT_COLOR[pada.element]}
           onSelect={() => onSelect(pada.id)}
@@ -683,7 +615,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-deity-${pada.id}`}
           d={annularSectorPath(pada.bearing, PADA_HALF, DEITY_OUTER, DEITY_INNER)}
-          label={t(`vastu.pada.${pada.id}.name`)}
+          label={w.padaName(pada.id)}
           active={selected === pada.id}
           color={VASTU_ELEMENT_COLOR[pada.element]}
           onSelect={() => onSelect(pada.id)}
@@ -694,7 +626,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-8-${dir.id}`}
           d={annularSectorPath(dir.bearing, 22.5, WEDGE_OUTER, WEDGE_INNER)}
-          label={t(`vastu.dir.${dir.id}.name`)}
+          label={w.dirName(dir.id)}
           active={dir.id === selected}
           color={VASTU_ELEMENT_COLOR[dir.element]}
           onSelect={() => onSelect(dir.id)}
@@ -705,7 +637,7 @@ export function VastuPurushaWheel({
         <HitSector
           key={`hit-inner4-${devata.id}`}
           d={annularSectorPath(devata.bearing, 45, INNER4_OUTER, INNER4_INNER)}
-          label={t(`vastu.pada.${devata.id}.name`)}
+          label={w.padaName(devata.id)}
           active={selected === devata.id}
           color={VASTU_ELEMENT_COLOR[devata.element]}
           onSelect={() => onSelect(devata.id)}
@@ -716,7 +648,7 @@ export function VastuPurushaWheel({
         role="button"
         tabIndex={0}
         aria-pressed={selected === "center"}
-        aria-label={t("vastu.dir.center.name")}
+        aria-label={w.centerName}
         cx={CX}
         cy={CY}
         r={CENTER_R}
@@ -789,7 +721,7 @@ export function VastuPurushaWheel({
       {VASTU_ELEMENT_ORDER.map((element) => (
         <li key={element} className={cn(vastuClasses.wheelLegendItem, "inline-flex")}>
           <span className={vastuClasses.wheelLegendDot} style={{ backgroundColor: VASTU_ELEMENT_COLOR[element] }} aria-hidden />
-          {t(`vastu.element.${element}`)}
+          {w.elementName(element)}
         </li>
       ))}
     </ul>
@@ -797,7 +729,7 @@ export function VastuPurushaWheel({
       {(["sattva", "rajas", "tamas"] as const).map((guna) => (
         <li key={guna} className={cn(vastuClasses.wheelLegendItem, "inline-flex")}>
           <span className={vastuClasses.wheelLegendDot} style={{ backgroundColor: VASTU_GUNA_COLOR[guna] }} aria-hidden />
-          {t(`vastu.wheel.organ.${guna}`)}
+          {w.organ(guna)}
         </li>
       ))}
     </ul>

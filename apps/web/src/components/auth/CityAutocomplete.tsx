@@ -5,6 +5,7 @@ import { searchCities, type City } from "@/lib/api";
 import { nepalCityToCity, searchNepalCities } from "@vedic-patro/domain/cities/nepal-cities";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 export interface CitySelection {
   city: string;
   country: string;
@@ -25,7 +26,7 @@ export function CityAutocomplete({
   placeholder?: string;
 }) {
   const { lang } = useLocale();
-  const resolvedPlaceholder = placeholder ?? bilingualText(lang, "सहर खोज्नुहोस्…", "Search a city…");
+  const resolvedPlaceholder = placeholder ?? tFor(lang, "profile.search_city");
   const [query, setQuery] = useState(value ?? "");
   const [prevValue, setPrevValue] = useState(value);
   if (value !== prevValue) {

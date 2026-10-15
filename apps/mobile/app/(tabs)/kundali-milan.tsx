@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { ActivityIndicator, Modal, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -9,163 +9,152 @@ import { EMPTY_PROFILE, ProfileForm } from "@/components/auth/ProfileForm";
 import {
   ProfileFormModal,
 } from "@/components/kundali/KundaliProfilePicker";
+import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
-import { useLocale } from "@/lib/i18n";
+import { getStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
-import { fetchKundaliMilan, milanKeys, type MilanPersonQuery } from "@/lib/api";
-import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
+import { useKundaliMilanPage, type MilanDetails, type MilanRole } from "@vedic-patro/features/kundali";
 import { space } from "@vedic-patro/design-tokens";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+const ayanamshaStorage = { load: getStoredAyanamshaMode };
+
 export default function KundaliMilanScreen() {
-  const { lang, pick, t } = useLocale();
   const colors = useThemeColors();
   const queryClient = useQueryClient();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const page = useKundaliMilanPage({ isAuthenticated, authLoading, ayanamshaStorage });
+  const { status, authDialog, copy, boyProfile, girlProfile, matchStatus, milan } = page;
   const [addOpen, setAddOpen] = useState(false);
-  const [boyProfile, setBoyProfile] = useState<Profile | null>(null);
-  const [girlProfile, setGirlProfile] = useState<Profile | null>(null);
-  const [pickRole, setPickRole] = useState<"boy" | "girl" | null>(null);
-
-  const boyQuery = useMemo(() => milanPersonQuery(boyProfile), [boyProfile]);
-  const girlQuery = useMemo(() => milanPersonQuery(girlProfile), [girlProfile]);
-
-  const milanQuery = useQuery({
-    queryKey:
-      boyQuery && girlQuery
-        ? milanKeys.match(boyQuery, girlQuery, undefined, lang)
-        : ["kundali", "milan", "idle", lang],
-    queryFn: () => fetchKundaliMilan(boyQuery!, girlQuery!, { lang }),
-    enabled: Boolean(boyQuery && girlQuery),
-    staleTime: 1000 * 60 * 10,
-    placeholderData: keepPreviousData,
-  });
-
-  const openAuth = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setAuthOpen(true);
-  };
+  const [pickRole, setPickRole] = useState<MilanRole | null>(null);
 
   return (
     <>
       <KundaliPageShell
-        eyebrow={t("milan.eyebrow")}
+        eyebrow={copy.eyebrow}
         icon={<AppNavIcon name="heart" size={28} color={colors.secondary} />}
-        title={t("milan.title")}
-        subtitle={isAuthenticated ? t("milan.subtitle_auth") : t("milan.login_required")}
+        title={copy.title}
+        subtitle={copy.subtitle}
         headerRight={
-          isAuthenticated ? (
+          page.canAddProfile ? (
             <Button
-              label={t("kundali.add_profile")}
+              label={copy.addProfile}
               size="sm"
               onPress={() => setAddOpen(true)}
             />
           ) : undefined
         }
       >
-        {authLoading ? (
+        {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
             <ActivityIndicator />
           </View>
-        ) : !isAuthenticated ? (
+        ) : status === "login" ? (
           <KundaliLoginPrompt
             icon="heart-outline"
-            titleNe={t("milan.login_prompt_title")}
-            titleEn={t("milan.login_prompt_title")}
-            bodyNe={t("milan.login_prompt_body")}
-            bodyEn={t("milan.login_prompt_body")}
-            onLogin={() => openAuth("login")}
-            onSignup={() => openAuth("signup")}
+            title={copy.loginTitle}
+            body={copy.loginBody}
+            onLogin={authDialog.openLogin}
+            onSignup={authDialog.openSignup}
           />
         ) : (
           <View className="gap-6">
             <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
-              {pick("वर र कन्याका प्रोफाइल छान्नुहोस्।", "Select profiles for groom and bride.")}
+              {copy.profileHint}
             </Text>
 
             <View className="gap-3 sm:flex-row">
               <MilanSlot
                 role="boy"
-                label={pick("वर", "Groom")}
+                label={copy.slot.boy}
+                pickLabel={copy.pick.boy}
                 profile={boyProfile}
                 onPress={() => setPickRole("boy")}
-                onClear={() => setBoyProfile(null)}
+                onClear={() => page.setBoyProfile(null)}
               />
               <MilanSlot
                 role="girl"
-                label={pick("कन्या", "Bride")}
+                label={copy.slot.girl}
+                pickLabel={copy.pick.girl}
                 profile={girlProfile}
                 onPress={() => setPickRole("girl")}
-                onClear={() => setGirlProfile(null)}
+                onClear={() => page.setGirlProfile(null)}
               />
             </View>
 
             {boyProfile && girlProfile ? (
-              !boyQuery || !girlQuery ? (
-                <View className={cn(kundaliClasses.warnBox, "items-center")}>
-                  <Text className={kundaliClasses.warnText} style={nepaliTextStyle(14)}>
-                    {pick(
-                      "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
-                      "Both profiles need a birth date — add one in your account.",
-                    )}
-                  </Text>
-                </View>
-              ) : milanQuery.isLoading && !milanQuery.data ? (
-                <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-                  <ActivityIndicator />
-                  <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-                    {pick("मिलान गणना हुँदै…", "Matching the charts…")}
-                  </Text>
-                </View>
-              ) : milanQuery.data ? (
-                <KundaliMilanResult
-                  boyName={boyProfile.full_name}
-                  girlName={girlProfile.full_name}
-                  result={milanQuery.data.result}
-                />
-              ) : (
-                <View className={cn(kundaliClasses.errorBox, "items-center")}>
-                  <Text className={kundaliClasses.errorText} style={nepaliTextStyle(14)}>
-                    {pick(
-                      "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
-                      "Could not load the match. Please try again shortly.",
-                    )}
-                  </Text>
-                </View>
-              )
-            ) : null}
+              <>
+                <AyanamshaSelector mode={page.ayanamsha} onModeChange={page.setAyanamsha} />
+                {matchStatus === "missing-birth" ? (
+                  <View className={cn(kundaliClasses.warnBox, "items-center")}>
+                    <Text className={kundaliClasses.warnText} style={nepaliTextStyle(14)}>
+                      {copy.missingBirth}
+                    </Text>
+                  </View>
+                ) : matchStatus === "loading" ? (
+                  <View className={cn(kundaliClasses.emptyBox, "items-center")}>
+                    <ActivityIndicator />
+                    <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
+                      {copy.loading}
+                    </Text>
+                  </View>
+                ) : milan ? (
+                  <View className="gap-6">
+                    {page.details.map((details) => (
+                      <BirthDetailsCard key={details.role} details={details} />
+                    ))}
+                    <KundaliMilanResult
+                      boyName={boyProfile.full_name}
+                      girlName={girlProfile.full_name}
+                      result={milan.result}
+                    />
+                  </View>
+                ) : (
+                  <View className={cn(kundaliClasses.errorBox, "items-center")}>
+                    <Text className={kundaliClasses.errorText} style={nepaliTextStyle(14)}>
+                      {copy.error}
+                    </Text>
+                  </View>
+                )}
+              </>
+            ) : (
+              <View className={cn(kundaliClasses.emptyBoxShort, "items-center")}>
+                <Text className={kundaliClasses.emptyText} style={nepaliTextStyle(14)}>
+                  {copy.needTwoProfiles}
+                </Text>
+              </View>
+            )}
           </View>
         )}
       </KundaliPageShell>
 
       <ProfilePickModal
         open={pickRole !== null}
-        role={pickRole}
+        title={pickRole ? copy.pickTitle[pickRole] : ""}
+        emptyLabel={copy.noProfilesTitle}
         onClose={() => setPickRole(null)}
         onPick={(profile) => {
-          if (pickRole === "boy") setBoyProfile(profile);
-          if (pickRole === "girl") setGirlProfile(profile);
+          if (pickRole === "boy") page.setBoyProfile(profile);
+          if (pickRole === "girl") page.setGirlProfile(profile);
           setPickRole(null);
         }}
       />
 
       <ProfileFormModal
         open={addOpen}
-        title={pick("प्रोफाइल थप्नुहोस्", "Add profile")}
-        subtitle={pick("जन्म मिति, समय र स्थान सही राख्नुहोस्।", "Enter accurate birth date, time, and place.")}
+        title={copy.addProfile}
+        subtitle={copy.profileFormHint}
         onClose={() => setAddOpen(false)}
       >
         <ProfileForm
@@ -179,29 +168,52 @@ export default function KundaliMilanScreen() {
       </ProfileFormModal>
 
       <AuthDialog
-        key={authMode}
-        open={authOpen}
-        onOpenChange={setAuthOpen}
-        initialMode={authMode}
+        key={authDialog.mode}
+        open={authDialog.open}
+        onOpenChange={authDialog.setOpen}
+        initialMode={authDialog.mode}
       />
     </>
+  );
+}
+
+function BirthDetailsCard({ details }: { details: MilanDetails }) {
+  return (
+    <View className={kundaliClasses.detailsCard}>
+      <View className={kundaliClasses.detailsHeader}>
+        <Text className={kundaliClasses.detailsHeading} style={nepaliTextStyle(16)}>
+          {details.heading}
+        </Text>
+      </View>
+      {details.rows.map((row, i) => (
+        <View key={row.label} className={cn("flex-row gap-3 px-4 py-2.5", i > 0 && "border-t border-border")}>
+          <Text className="w-[40%] text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            {row.label}
+          </Text>
+          <Text className="flex-1 text-base text-foreground" style={nepaliTextStyle(14)}>
+            {row.value}
+          </Text>
+        </View>
+      ))}
+    </View>
   );
 }
 
 function MilanSlot({
   role,
   label,
+  pickLabel,
   profile,
   onPress,
   onClear,
 }: {
-  role: "boy" | "girl";
+  role: MilanRole;
   label: string;
+  pickLabel: string;
   profile: Profile | null;
   onPress: () => void;
   onClear: () => void;
 }) {
-  const { pick } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -238,7 +250,7 @@ function MilanSlot({
           </Text>
         </Pressable>
       ) : (
-        <Button label={pick("प्रोफाइल छान्नुहोस्", "Choose profile")} variant="outline" onPress={onPress} />
+        <Button label={pickLabel} variant="outline" onPress={onPress} />
       )}
     </Card>
   );
@@ -246,24 +258,20 @@ function MilanSlot({
 
 function ProfilePickModal({
   open,
-  role,
+  title,
+  emptyLabel,
   onClose,
   onPick,
 }: {
   open: boolean;
-  role: "boy" | "girl" | null;
+  title: string;
+  emptyLabel: string;
   onClose: () => void;
   onPick: (profile: Profile) => void;
 }) {
   const insets = useSafeAreaInsets();
-  const { pick } = useLocale();
   const { data: profiles, isLoading } = useProfilesQuery(open);
   const colors = useThemeColors();
-
-  const title =
-    role === "boy"
-      ? pick("वरको प्रोफाइल", "Groom profile")
-      : pick("कन्याको प्रोफाइल", "Bride profile");
 
   return (
     <Modal visible={open} animationType="slide" onRequestClose={onClose}>
@@ -281,7 +289,7 @@ function ProfilePickModal({
             <ActivityIndicator />
           ) : (profiles ?? []).length === 0 ? (
             <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
-              {pick("कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।", "No profiles — add one first.")}
+              {emptyLabel}
             </Text>
           ) : (
             <View className="gap-2">
@@ -305,17 +313,4 @@ function ProfilePickModal({
       </View>
     </Modal>
   );
-}
-
-/** A profile becomes a milan query only once it carries a usable birth moment. */
-function milanPersonQuery(profile: Profile | null): MilanPersonQuery | null {
-  if (!profile) return null;
-  const chart = profileChartParams(profile);
-  if (!chart) return null;
-  return {
-    moment: chart.moment,
-    lat: chart.location.params.lat,
-    lon: chart.location.params.lon,
-    timezone: profile.timezone ?? chart.location.params.timezone,
-  };
 }

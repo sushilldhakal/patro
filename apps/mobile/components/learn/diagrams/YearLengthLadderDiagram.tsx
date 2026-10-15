@@ -8,11 +8,12 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { useLocale } from "@/lib/i18n";
 import { memo, useEffect } from "react";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const ROWS = [
-  { ne: "जुलियन वर्ष", en: "Julian year", len: "365.2500", excess: 0.0078, color: DIAGRAM_LABEL_COLOR.warn },
-  { ne: "ग्रेगोरियन वर्ष", en: "Gregorian year", len: "365.2425", excess: 0.0003, color: DIAGRAM_COLOR.arc },
-  { ne: "साँचो (उष्णकटिबन्धीय) वर्ष", en: "True (tropical) year", len: "365.2422", excess: 0, color: DIAGRAM_LABEL_COLOR.body },
+  { get ne() { return tFor("ne", "ui.learn.julian_year"); }, get en() { return tFor("en", "ui.learn.julian_year"); }, len: "365.2500", excess: 0.0078, color: DIAGRAM_LABEL_COLOR.warn },
+  { get ne() { return tFor("ne", "ui.learn.gregorian_year"); }, get en() { return tFor("en", "ui.learn.gregorian_year"); }, len: "365.2425", excess: 0.0003, color: DIAGRAM_COLOR.arc },
+  { get ne() { return tFor("ne", "ui.learn.true_tropical_year"); }, get en() { return tFor("en", "ui.learn.true_tropical_year"); }, len: "365.2422", excess: 0, color: DIAGRAM_LABEL_COLOR.body },
 ];
 
 const BAR_SCALE = 40;
@@ -55,11 +56,11 @@ const YearLengthLadderScene = memo(function YearLengthLadderScene({ onLabels }: 
 });
 
 export function YearLengthLadderDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — वर्षको लम्बाइ तुलना", "3D — year-length comparison")}
+      title={t("ui.learn.n3d_year_length_comparison")}
       height={230}
       camera={{ yaw: 0.5, pitch: 0.4 }}
       frame={{ width: 1.2, height: 0.55 }}
@@ -67,13 +68,10 @@ export function YearLengthLadderDiagram() {
       legend={ROWS.map((r) => ({ color: r.color, label: pick(r.ne, r.en) }))}
       readouts={ROWS.map((r) => ({
         k: pick(r.ne, r.en),
-        v: `${digits(r.len)} ${pick("दिन", "days")}`,
+        v: `${digits(r.len)} ${t("common.days")}`,
         tone: r.excess === 0 ? undefined : r.excess > 0.005 ? "warn" : "accent",
       }))}
-      caption={pick(
-        "साँचो उष्णकटिबन्धीय वर्ष ३६५.२४२२ दिनको छ। जुलियन क्यालेन्डर (हरेक ४ वर्षमा लिप वर्ष) ले वर्षको ०.००७८ दिन बढी मान्छ — त्यसैले शताब्दीयौँमा मिति चढ्दै जान्छ। ग्रेगोरियन सुधार (शताब्दी वर्ष ४०० ले भाग नखाए लिप वर्ष हैन) ले यो त्रुटि ०.०००३ दिनमा झार्यो — करिब ३,००० वर्षमा मात्र १ दिन चुक्ने।",
-        "The true tropical year is 365.2422 days. The Julian calendar (a leap year every 4 years) overshoots by 0.0078 days a year — so the date slowly drifts across centuries. The Gregorian correction (no leap year on century years not divisible by 400) cut that error to 0.0003 days — about 1 day off every ~3,000 years.",
-      )}
+      caption={t("ui.learn.the_true_tropical_year_is_365")}
     >
       {({ onLabels }) => <YearLengthLadderScene onLabels={onLabels} />}
     </LearnDiagram3D>

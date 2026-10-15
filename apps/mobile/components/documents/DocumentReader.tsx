@@ -5,8 +5,7 @@ import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
-import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
-import type { ReaderRow } from "@/lib/documents/rows";
+import { playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -43,7 +42,7 @@ export function DocumentReader({
   scrollNonce,
   scrollToKey,
 }: Props) {
-  const { t, lang, digits } = useLocale();
+  const { lang } = useLocale();
   const listRef = useRef<FlatList<ReaderRow>>(null);
   const hasFull = audio.full.available;
 
@@ -93,34 +92,27 @@ export function DocumentReader({
   const renderItem = useCallback(
     ({ item }: { item: ReaderRow }) => {
       if (item.kind === "chapter") {
-        const n = item.chapter.number!;
-        const title = lang === "ne" ? item.chapter.title_ne || item.chapter.title_en : item.chapter.title_en || item.chapter.title_ne;
         return (
           <View className={cn(documentsClasses.statsRow, "mb-3 mt-10")}>
             <View className={documentsClasses.chapterBubble}>
-              <Text className={documentsClasses.chapterBubbleText}>{digits(n)}</Text>
+              <Text className={documentsClasses.chapterBubbleText}>{item.numberLabel}</Text>
             </View>
             <View className={documentsClasses.fill}>
-              <Text className={documentsClasses.chapterHeading}>{t("documents.chapter_label", { number: digits(n) })}</Text>
-              {title ? <Text className={documentsClasses.chapterHeadingSub}>{title}</Text> : null}
+              <Text className={documentsClasses.chapterHeading}>{item.heading}</Text>
+              {item.title ? <Text className={documentsClasses.chapterHeadingSub}>{item.title}</Text> : null}
             </View>
           </View>
         );
       }
       if (item.kind === "sukta") {
-        const parts = [
-          item.rishi ? `${t("documents.sukta_rishi")}: ${suktaAttribution(lang, item.rishi)}` : null,
-          item.devata ? `${t("documents.sukta_devata")}: ${suktaAttribution(lang, item.devata)}` : null,
-          item.chhanda ? `${t("documents.sukta_chhanda")}: ${suktaAttribution(lang, item.chhanda)}` : null,
-        ].filter(Boolean);
         return (
           <View className="mb-3 mt-3">
             <Text className={documentsClasses.suktaLabel} style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
-              {t("documents.sukta_label", { number: digits(item.number) })}
+              {item.heading}
             </Text>
-            {parts.length ? (
+            {item.meta ? (
               <Text className={documentsClasses.suktaMeta} style={lang === "ne" ? nepaliTextStyle(13) : undefined}>
-                {parts.join(" · ")}
+                {item.meta}
               </Text>
             ) : null}
           </View>
@@ -135,13 +127,13 @@ export function DocumentReader({
           isPlaying={isActive && audio.activePlaying}
           progress={isActive ? audio.activeProgress : 0}
           meaningOpen={audio.openMeaningIds.has(shloka.id)}
-          playsFromFull={!shloka.audio_url && hasFull && shloka.full_audio_start != null}
+          playsFromFull={playsFromFullRecording(shloka, hasFull)}
           onPlay={onPlay}
           onToggleMeaning={audio.toggleMeaning}
         />
       );
     },
-    [audio, hasFull, lang, t, digits, onPlay],
+    [audio, hasFull, lang, onPlay],
   );
 
   return (

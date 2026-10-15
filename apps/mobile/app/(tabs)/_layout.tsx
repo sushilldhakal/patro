@@ -54,6 +54,10 @@ export default function TabsLayout() {
       tabBar={() => <FloatingNavBar />}
       screenOptions={{
         headerShown: false,
+        // Tab screens stay mounted once visited, and each one's shell reads the
+        // pathname — so without this every navigation re-rendered every page
+        // seen so far, and the app got slower the more of it was opened.
+        freezeOnBlur: true,
         sceneStyle: { backgroundColor: "transparent", flex: 1 },
         tabBarStyle: {
           position: "absolute",

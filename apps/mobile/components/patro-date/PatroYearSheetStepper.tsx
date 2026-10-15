@@ -21,6 +21,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroEraShortLabel } from "./patro-era-labels";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const YEAR_ROW_HEIGHT = 44;
 /** Max height for manual pin + scrollable years (below modal title bar). */
@@ -52,7 +53,7 @@ export function PatroYearSheetStepper({
   onYearInputFocus,
 }: Props) {
   const colors = useThemeColors();
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   const clamped = clampBrowseYear(era, year);
   const yearMin = 1;
   const yearMax = maxBrowseYearForEra(era);
@@ -163,10 +164,10 @@ export function PatroYearSheetStepper({
 
   const targetEra = toggleEraForLanguage(era, lang);
   const targetLabel = patroEraShortLabel(targetEra, lang);
-  const manualLabel = pick("हातले लेख्नुहोस्", "Enter manually");
+  const manualLabel = t("ui.patro_date.enter_manually");
   const eraShort = patroEraShortLabel(era, lang);
   const rangeHint = pick(
-    `${digits(yearWindowStart)}–${digits(yearWindowEnd)} (${digits(clamped)} छानिएको)`,
+    tFor(undefined, "ui.patro_date.x_855271e0", { v0: digits(yearWindowStart), v1: digits(yearWindowEnd), v2: digits(clamped) }),
     `${yearWindowStart}–${yearWindowEnd} (${clamped} selected)`,
   );
 
@@ -204,7 +205,7 @@ export function PatroYearSheetStepper({
           >
             <Pressable onPress={commitManual} hitSlop={8}>
               <Text className={patroDateClasses.stepperDone} style={nepaliTextStyle(16)}>
-                {pick("भयो", "Done")}
+                {t("common.done")}
               </Text>
             </Pressable>
           </View>
@@ -215,7 +216,7 @@ export function PatroYearSheetStepper({
         className={cn("flex-row", patroDateClasses.stepperSwitch, "active:bg-muted")}
       >
         <Text className={patroDateClasses.stepperSwitchLabel} style={nepaliTextStyle(12)}>
-          {pick(`${targetLabel} मा जानुहोस्`, `Switch to ${targetLabel}`)}
+          {t("ui.patro_date.switch_to_targetlabel", { targetLabel })}
         </Text>
       </Pressable>
 
@@ -234,7 +235,7 @@ export function PatroYearSheetStepper({
 
         <Pressable
           onPress={openPicker}
-          accessibilityLabel={pick("वर्ष छान्नुहोस्", "Choose year")}
+          accessibilityLabel={t("ui.patro_date.choose_year")}
           className={cn("flex-row", patroDateClasses.stepperValue, "active:bg-muted")}
         >
           <Text className={patroDateClasses.stepperValueText} style={nepaliTextStyle(16)}>
@@ -270,17 +271,17 @@ export function PatroYearSheetStepper({
       >
             <View className={cn("flex-row", patroDateClasses.sheetHead)}>
               <Pressable onPress={() => setPickerOpen(false)} hitSlop={8}>
-                <Text className={patroDateClasses.sheetCancel}>{pick("रद्द", "Cancel")}</Text>
+                <Text className={patroDateClasses.sheetCancel}>{t("common.cancel")}</Text>
               </Pressable>
               <Text className={patroDateClasses.sheetTitle} style={nepaliTextStyle(16)}>
-                {pick("वर्ष", "Year")}
+                {t("common.year")}
               </Text>
               <Pressable
                 onPress={manualMode ? commitManual : () => setPickerOpen(false)}
                 hitSlop={8}
               >
                 <Text className={patroDateClasses.stepperDone}>
-                  {manualMode ? pick("भयो", "Done") : " "}
+                  {manualMode ? t("common.done") : " "}
                 </Text>
               </Pressable>
             </View>
@@ -288,7 +289,7 @@ export function PatroYearSheetStepper({
             {manualMode ? (
               <View className={patroDateClasses.manualBody}>
                 <Text className={patroDateClasses.manualHint} style={nepaliTextStyle(14)}>
-                  {pick("वर्ष नम्बर टाइप गर्नुहोस्", "Type the year number")}
+                  {t("ui.patro_date.type_the_year_number")}
                 </Text>
                 <TextInput
                   value={manualText}
@@ -308,7 +309,7 @@ export function PatroYearSheetStepper({
                     { color: colors.foreground, borderColor: colors.border },
                     nepaliTextStyle(20),
                   ]}
-                  placeholder={pick("जस्तै २०८२", "e.g. 2082")}
+                  placeholder={t("ui.patro_date.e_g_2082")}
                   placeholderTextColor={colors.mutedForeground}
                 />
               </View>

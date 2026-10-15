@@ -73,29 +73,26 @@ const SolarMonthLengthsScene = memo(function SolarMonthLengthsScene({ onLabels, 
 });
 
 export function SolarMonthLengthsDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const lengths = useMonthLengths();
   const monthNames = lang === "en" ? ([...BS_MONTH_NAMES] as string[]) : BS_MONTHS_NE;
 
   return (
     <LearnDiagram3D
-      title={pick("३D — सौर महिनाको लम्बाइ", "3D — solar month lengths")}
+      title={t("ui.learn.n3d_solar_month_lengths")}
       height={220}
       camera={{ yaw: 0.3, pitch: 0.5 }}
       frame={{ width: 1.4, height: 0.5 }}
       idleSpin={0.02}
       legend={[
-        { color: DIAGRAM_LABEL_COLOR.rashi, label: `${pick(monthNames[SHORTEST]!, monthNames[SHORTEST]!)} — ${pick("सबैभन्दा छोटो (उपसौर)", "shortest (perihelion)")}` },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: `${pick(monthNames[LONGEST]!, monthNames[LONGEST]!)} — ${pick("सबैभन्दा लामो (अपसौर)", "longest (aphelion)")}` },
+        { color: DIAGRAM_LABEL_COLOR.rashi, label: `${pick(monthNames[SHORTEST]!, monthNames[SHORTEST]!)} — ${t("ui.learn.shortest_perihelion")}` },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: `${pick(monthNames[LONGEST]!, monthNames[LONGEST]!)} — ${t("ui.learn.longest_aphelion")}` },
       ]}
       readouts={[
-        { k: pick("न्यूनतम", "Shortest"), v: `${digits(lengths[SHORTEST]!.toFixed(1))} ${pick("दिन", "days")}` },
-        { k: pick("अधिकतम", "Longest"), v: `${digits(lengths[LONGEST]!.toFixed(1))} ${pick("दिन", "days")}`, tone: "warn" },
+        { k: t("ui.learn.shortest"), v: `${digits(lengths[SHORTEST]!.toFixed(1))} ${t("common.days")}` },
+        { k: t("ui.learn.longest"), v: `${digits(lengths[LONGEST]!.toFixed(1))} ${t("common.days")}`, tone: "warn" },
       ]}
-      caption={pick(
-        "सौर महिना दिनको गन्ती होइन — यो राशि पट्टीमा सूर्यको ३०° यात्रा हो। पृथ्वीको कक्ष अण्डाकार भएकाले उपसौर (पुष–माघ) नजिक सूर्यको देखिने गति छिटो हुन्छ, त्यसैले त्यो ३०° छिटो पार हुन्छ — छोटो महिना। अपसौर (असार) नजिक गति सुस्त हुन्छ — लामो महिना। यो तथ्याङ्क पात्रोले नै प्रयोग गर्ने तालिकाबाटै आएको हो।",
-        "A solar month is not a count of days — it is 30° of the Sun's travel along the rashi belt. Because Earth's orbit is elliptical, the Sun's apparent motion is fastest near perihelion (Poush–Magh), so that 30° passes quickly — a short month. Near aphelion (Asar) it crawls — a long month. This data comes from the same table the patro itself uses.",
-      )}
+      caption={t("ui.learn.a_solar_month_is_not_a")}
     >
       {({ onLabels }) => <SolarMonthLengthsScene onLabels={onLabels} lengths={lengths} monthNames={monthNames} />}
     </LearnDiagram3D>

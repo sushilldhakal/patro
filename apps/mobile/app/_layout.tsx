@@ -8,7 +8,12 @@ import { Platform, StyleSheet, View } from "react-native";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  deserializeQueryCache,
+  queryCacheRestoreStats,
+  queryCacheStorage,
+  serializeQueryCache,
+} from "@/lib/query-cache-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
@@ -26,6 +31,7 @@ import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
 import { loadCalendarEraPreference } from "@/lib/patro-era-preference";
+import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 
@@ -51,9 +57,25 @@ const queryClient = new QueryClient({
   },
 });
 
+/** JS start, for the one-line cache-restore timing logged after restore. */
+const JS_START = Date.now();
+
+function logQueryCacheRestore() {
+  const { bytes, readMs, parseMs } = queryCacheRestoreStats;
+  console.info(
+    `[query-cache] restored ${Math.round(bytes / 1024)} KB, ${queryClient.getQueryCache().getAll().length} queries — ` +
+      `read ${readMs} ms, parse ${parseMs} ms, ready ${Date.now() - JS_START} ms after JS start`,
+  );
+}
+
 const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+  // A file on iOS/Android — AsyncStorage rows over ~2 MB are unreadable on Android.
+  storage: queryCacheStorage,
   key: "vedic-patro-query-cache",
+  serialize: serializeQueryCache,
+  deserialize: deserializeQueryCache,
+  // Serializing the whole cache runs on the JS thread; batch writes while browsing.
+  throttleTime: 3000,
 });
 
 // The bulk BS-year/month calendar payloads have their own dedicated, much more
@@ -93,7 +115,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([isOnboardingComplete(), loadCalendarEraPreference()]).then(([done]) => {
+    // The saved place is read here too, so the first screen fetches it rather than Kathmandu.
+    Promise.all([isOnboardingComplete(), loadCalendarEraPreference(), loadStoredLocation()]).then(([done]) => {
       if (active) setOnboarded(done);
     });
     return () => {
@@ -114,8 +137,8 @@ export default function RootLayout() {
     const done = () => active && setWebFontReady(true);
     const timeout = setTimeout(done, 3000);
     Promise.all([
-      document.fonts.load('400 16px "Noto Sans Devanagari"', "अआक"),
-      document.fonts.load('700 16px "Noto Sans Devanagari"', "अआक"),
+      document.fonts.load('400 16px "Noto Sans Devanagari"', /* copy-ok */ "अआक"),
+      document.fonts.load('700 16px "Noto Sans Devanagari"', /* copy-ok */ "अआक"),
     ])
       .then(done, done);
     return () => {
@@ -148,6 +171,7 @@ export default function RootLayout() {
                 maxAge: QUERY_GC_TIME,
                 dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
               }}
+              onSuccess={logQueryCacheRestore}
             >
               <OfflineDataProvider>
                 <AuthProvider>

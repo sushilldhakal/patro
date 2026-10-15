@@ -8,14 +8,15 @@
  * just a number; drawn to scale it becomes an argument.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* The figures that still call bilingualText are the ones whose text is built
    around a formatted number, so they are not single catalogue strings. */
-import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
+import { useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const INK = "currentColor";
 const MARK = illustration.orange50;
 const WARN = illustration.red60;
@@ -210,7 +211,7 @@ export function YearLengthLadder() {
       })}
 
       <text x={zero} y={H - 26} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
-        {bilingualText(lang, `जुलियन: ~१ दिन प्रति ${n(128)} वर्ष → ${n(1582)} सम्ममा १० दिन`, `Julian: ~1 day per ${n(128)} years → ten days by ${n(1582)}`)}
+        {tFor(lang, "ui.learn.julian_1_day_per_value_years", { value: n(128), value2: n(1582) })}
       </text>
       <text x={zero} y={H - 10} className="text-diagram-2xs font-semibold" style={{ fill: GOOD }}>
         {t("learn.diagrams.year_length_gregorian_drift")}
@@ -340,7 +341,7 @@ export function EclipseSeasonWindow() {
     >
       <rect x={L} y={54} width={Rr - L} height={30} fill={MARK} opacity={0.16} rx={3} />
       <text x={(L + Rr) / 2} y={44} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `ग्रहण ऋतु — ~${n(34)} दिन`, `eclipse season — ~${n(34)} days`)}
+        {tFor(lang, "ui.learn.eclipse_season_value_days", { value: n(34) })}
       </text>
       {[L, Rr].map((v) => (
         <line key={v} x1={v} y1={50} x2={v} y2={88} stroke={MARK} strokeWidth={1.3} />
@@ -376,7 +377,7 @@ export function EclipseSeasonWindow() {
         <line key={d} x1={x(d)} y1={130} x2={x(d)} y2={138} stroke={COOL} strokeWidth={1} opacity={0.7} />
       ))}
       <text x={(x(9) + x(23)) / 2} y={150} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: COOL }}>
-        {bilingualText(lang, `~${n(14)} दिन`, `~${n(14)} days`)}
+        {tFor(lang, "ui.learn.value_days", { value: n(14) })}
       </text>
     </Frame>
   );
@@ -456,7 +457,7 @@ export function SunRayAngle() {
           <text x={p.cx} y={ground + 20} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
             {lang === "en"
               ? `footprint ×${(p.b.foot / 74).toFixed(1)}`
-              : `क्षेत्रफल ×${digits(lang, (p.b.foot / 74).toFixed(1))}`}
+              : tFor(undefined, "ui.learn.x_89e72363", { v0: digits(lang, (p.b.foot / 74).toFixed(1)) })}
           </text>
           <text x={p.cx} y={ground + 36} textAnchor="middle" className="fill-current text-diagram-2xs opacity-70">
             {t(p.result)}

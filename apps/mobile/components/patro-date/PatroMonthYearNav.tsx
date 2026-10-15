@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
-import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
 import { PatroDateNav } from "./PatroDateNav";
 import type { PatroDateNavProps } from "./types";
+import { usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 
 type MonthYearNavProps = Omit<
   Extract<PatroDateNavProps, { mode: "year-month" }>,
@@ -31,9 +31,17 @@ export function PatroMonthYearNav({
   className,
   location,
   onLocationChange,
+  crossEraSubtitle: crossEraOverride,
   ...navProps
 }: MonthYearNavProps) {
   const { isCompact } = useBreakpoint();
+  const { crossEraSubtitle } = usePatroMonthYearNav({
+    era: navProps.era,
+    year: navProps.year,
+    month: navProps.month,
+    location,
+    crossEraSubtitle: crossEraOverride,
+  });
 
   const locationControl = (
     <LocationSelector
@@ -54,6 +62,7 @@ export function PatroMonthYearNav({
       <PatroDateNav
         mode="year-month"
         {...navProps}
+        crossEraSubtitle={crossEraSubtitle}
         location={location}
         onLocationChange={onLocationChange}
         mobileToolbar={mobileToolbar}
@@ -69,6 +78,7 @@ export function PatroMonthYearNav({
         <PatroDateNav
           mode="year-month"
           {...navProps}
+          crossEraSubtitle={crossEraSubtitle}
           location={location}
           onLocationChange={onLocationChange}
           hideNavLocation

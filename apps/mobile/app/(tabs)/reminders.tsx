@@ -43,9 +43,11 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
+import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
-const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
+const WEEKDAYS_EN = WEEKDAYS_SHORT;
 
 function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
@@ -78,9 +80,9 @@ function SectionTitle({ children }: { children: string }) {
 
 function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
   const rows: { label: string; lines: string[]; tone: string }[] = [
-    { label: lang === "ne" ? "गर्नुहोस्" : "Do", lines: lang === "ne" ? day.do_ne : day.do_en, tone: illustration.green36 },
-    { label: lang === "ne" ? "नगर्नुहोस्" : "Don't", lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: illustration.red46 },
-    { label: lang === "ne" ? "सावधानी" : "Careful", lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: illustration.orange45b },
+    { label: tFor(lang, "ui.reminders.do"), lines: lang === "ne" ? day.do_ne : day.do_en, tone: illustration.green36 },
+    { label: tFor(lang, "ui.reminders.don_t"), lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: illustration.red46 },
+    { label: tFor(lang, "ui.reminders.careful"), lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: illustration.orange45b },
   ];
   return (
     <View className="gap-2">
@@ -104,7 +106,7 @@ function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
 
 /** Daily rashifal notification: personal when signed in, the chosen rashi's general rashifal for guests. */
 function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; onChanged: () => void }) {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const [settings, setSettings] = useState<RashifalSettings>(DEFAULT_RASHIFAL_SETTINGS);
   const [permission, setPermission] = useState<NotifPermission>("undetermined");
@@ -140,17 +142,17 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
 
   return (
     <View>
-      <SectionTitle>{pick("दैनिक राशिफल सूचना", "Daily rashifal notification")}</SectionTitle>
+      <SectionTitle>{t("ui.reminders.daily_rashifal_notification")}</SectionTitle>
       <Card className="gap-4">
         <View className="flex-row items-center justify-between gap-3">
           <View className="min-w-0 flex-1">
             <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
-              {pick("हरेक दिन बिहान ७ बजे आजको राशिफल", "Today's rashifal every day at 7 am")}
+              {t("ui.reminders.today_s_rashifal_every_day_at")}
             </Text>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
               {signedIn
-                ? pick("तपाईंको प्रोफाइलको व्यक्तिगत राशिफल।", "Personal rashifal from your default profile.")
-                : pick("तलबाट आफ्नो राशि छान्नुहोस्।", "Pick your rashi below.")}
+                ? t("ui.reminders.personal_rashifal_from_your_default_profile")
+                : t("ui.reminders.pick_your_rashi_below")}
             </Text>
           </View>
           <Switch value={settings.enabled} disabled={busy} onValueChange={(on) => save({ ...settings, enabled: on })} />
@@ -161,7 +163,7 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
             {!signedIn ? (
               <View className="flex-row flex-wrap gap-2">
                 <Chip
-                  label={pick("आजको चन्द्र राशि", "Today's moon sign")}
+                  label={t("muhurta_aside.moon_ref_chandrabal")}
                   active={settings.guestSignId == null}
                   onPress={() => save({ ...settings, guestSignId: null })}
                 />
@@ -179,7 +181,7 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
         ) : null}
 
         {showOff ? (
-          <Button label={pick("सेटिङ खोल्नुहोस्", "Open Settings")} onPress={() => void Linking.openSettings()} />
+          <Button label={t("ui.reminders.open_settings")} onPress={() => void Linking.openSettings()} />
         ) : null}
       </Card>
     </View>
@@ -187,7 +189,7 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
 }
 
 export default function RemindersScreen() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const colors = useThemeColors();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -276,16 +278,16 @@ export default function RemindersScreen() {
       await notifStore.setReminders(next);
       await afterRemindersChanged(l, false);
     } catch {
-      Alert.alert(pick("परिवर्तन सेभ भएन", "Could not save change"), pick("इन्टरनेट जाँच गर्नुहोस्।", "Check your connection."));
+      Alert.alert(t("ui.reminders.could_not_save_change"), t("ui.reminders.check_your_connection"));
     }
     await reload();
   };
 
   const removeRule = (rule: ReminderRule) => {
-    Alert.alert(pick("रिमाइन्डर हटाउने?", "Delete reminder?"), undefined, [
-      { text: pick("रद्द", "Cancel"), style: "cancel" },
+    Alert.alert(t("ui.reminders.delete_reminder"), undefined, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: pick("हटाउनुहोस्", "Delete"),
+        text: t("ui.reminders.delete"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -293,7 +295,7 @@ export default function RemindersScreen() {
             await notifStore.setReminders(rules.filter((r) => r.id !== rule.id));
             await afterRemindersChanged(l, false);
           } catch {
-            Alert.alert(pick("हटाउन सकिएन", "Could not delete"), pick("इन्टरनेट जाँच गर्नुहोस्।", "Check your connection."));
+            Alert.alert(t("ui.reminders.could_not_delete"), t("ui.reminders.check_your_connection"));
           }
           await reload();
         },
@@ -309,37 +311,32 @@ export default function RemindersScreen() {
   const ruleTitle = (rule: ReminderRule) => {
     const opt = WINDOW_OPTIONS.find((o) => o.key === rule.window_key);
     const name = opt ? pick(opt.ne, opt.en) : rule.window_key;
-    const lead = rule.lead_minutes === 0 ? pick("सुरुमा", "at start") : pick(`${rule.lead_minutes} मि. अघि`, `${rule.lead_minutes} min before`);
+    const lead = rule.lead_minutes === 0 ? t("ui.reminders.at_start") : t("ui.reminders.lead_minutes_min_before", { lead_minutes: rule.lead_minutes });
     return `${name} · ${lead}`;
   };
 
   const ruleSub = (rule: ReminderRule) => {
     const days =
       rule.weekdays.length === 0
-        ? pick("हरेक दिन", "Every day")
+        ? t("ui.reminders.every_day")
         : rule.weekdays.map((d) => (l === "ne" ? WEEKDAYS_NE[d] : WEEKDAYS_EN[d])).join(", ");
     const who = profiles.find((p) => p.id === rule.profile_id)?.full_name;
     return who ? `${days} · ${who}` : days;
   };
 
   return (
-    <AppShell title={pick("रिमाइन्डर", "Reminders")} showHeader={false}>
+    <AppShell title={t("ui.reminders.reminders")} showHeader={false}>
       <PatroPageHeader
         icon={<Ionicons name="notifications-outline" size={24} color={colors.secondary} />}
-        title={pick("रिमाइन्डर र दैनिक सूचना", "Reminders & daily guidance")}
-        subtitle={pick(
-          "शुभ/अशुभ समयको सम्झना र प्रत्येक प्रोफाइलका लागि दैनिक गर्ने/नगर्ने कुरा",
-          "Alerts for शुभ / अशुभ windows, and each profile's daily do / don't",
-        )}
+        title={t("ui.reminders.reminders_daily_guidance")}
+        subtitle={t("ui.reminders.alerts_for_windows_and_each_profile")}
       />
 
       {authLoading ? null : !isAuthenticated ? (
         <>
           <KundaliLoginPrompt
-            titleNe="रिमाइन्डरका लागि लगइन"
-            titleEn="Log in for reminders"
-            bodyNe="रिमाइन्डर र दैनिक सूचना सेट गर्न साइन इन गर्नुहोस्।"
-            bodyEn="Sign in to set reminders and daily guidance notifications."
+            title={t("reminders.login_prompt_title")}
+            body={t("reminders.login_prompt_body")}
             onLogin={() => setAuthOpen(true)}
             onSignup={() => setAuthOpen(true)}
           />
@@ -354,11 +351,11 @@ export default function RemindersScreen() {
             <Card className="gap-3">
               <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                 {permission === "denied"
-                  ? pick("सूचना बन्द छ। सेटिङमा गएर खोल्नुहोस्।", "Notifications are off. Turn them on in Settings.")
-                  : pick("रिमाइन्डर र दैनिक सूचना पाउन सूचना अनुमति दिनुहोस्।", "Allow notifications to receive reminders and the daily briefing.")}
+                  ? t("ui.reminders.notifications_are_off_turn_them_on")
+                  : t("ui.reminders.allow_notifications_to_receive_reminders_and")}
               </Text>
               <Button
-                label={permission === "denied" ? pick("सेटिङ खोल्नुहोस्", "Open Settings") : pick("सूचना खोल्नुहोस्", "Enable notifications")}
+                label={permission === "denied" ? t("ui.reminders.open_settings") : t("ui.reminders.enable_notifications")}
                 onPress={enableNotifications}
               />
             </Card>
@@ -367,7 +364,7 @@ export default function RemindersScreen() {
           <RashifalNotificationCard signedIn onChanged={() => void reload()} />
 
           <View>
-            <SectionTitle>{pick("दैनिक सूचना", "Daily briefing")}</SectionTitle>
+            <SectionTitle>{t("ui.reminders.daily_briefing")}</SectionTitle>
             <Card className="gap-4">
               <View className="flex-row flex-wrap gap-2">
                 {BRIEFING_TIMES.map((time) => (
@@ -376,7 +373,7 @@ export default function RemindersScreen() {
               </View>
               {profiles.length === 0 ? (
                 <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-                  {pick("प्रोफाइल थपेपछि यहाँ देखिन्छ।", "Profiles appear here once you add one.")}
+                  {t("ui.reminders.profiles_appear_here_once_you_add")}
                 </Text>
               ) : (
                 profiles.map((p) => (
@@ -397,14 +394,14 @@ export default function RemindersScreen() {
           <View>
             <View className="mb-2 flex-row items-center justify-between">
               <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
-                {pick("मेरा रिमाइन्डर", "My reminders")}
+                {t("ui.reminders.my_reminders")}
               </Text>
-              <Button label={pick("+ थप्नुहोस्", "+ Add")} size="sm" onPress={() => setSheetOpen(true)} />
+              <Button label={t("ui.reminders.add")} size="sm" onPress={() => setSheetOpen(true)} />
             </View>
             {rules.length === 0 ? (
               <Card>
                 <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-                  {pick("कुनै रिमाइन्डर छैन। राहु काल वा अभिजित् मुहूर्तजस्ता समयका लागि थप्नुहोस्।", "No reminders yet. Add one for a window like Rahu Kaal or Abhijit Muhurta.")}
+                  {t("ui.reminders.no_reminders_yet_add_one_for")}
                 </Text>
               </Card>
             ) : (
@@ -422,7 +419,7 @@ export default function RemindersScreen() {
                       <Text className="text-caption text-muted-foreground">{ruleSub(rule)}</Text>
                     </View>
                     <Switch value={rule.enabled} onValueChange={(on) => toggleRule(rule, on)} />
-                    <Pressable onPress={() => removeRule(rule)} accessibilityLabel={pick("हटाउनुहोस्", "Delete")} hitSlop={8}>
+                    <Pressable onPress={() => removeRule(rule)} accessibilityLabel={t("ui.reminders.delete")} hitSlop={8}>
                       <Ionicons name="trash-outline" size={20} color={colors.danger} />
                     </Pressable>
                   </Card>
@@ -436,7 +433,7 @@ export default function RemindersScreen() {
             if (!day) return null;
             return (
               <View key={p.id}>
-                <SectionTitle>{`${p.full_name} · ${pick("आजको मार्गदर्शन", "Today's guidance")}`}</SectionTitle>
+                <SectionTitle>{`${p.full_name} · ${t("ui.reminders.today_s_guidance")}`}</SectionTitle>
                 <Card>
                   <GuidanceLines day={day} lang={l} />
                 </Card>
@@ -446,11 +443,11 @@ export default function RemindersScreen() {
 
           <Card className="gap-2">
             <Text className="text-caption text-muted-foreground">
-              {pick(`${pending} सूचना तालिकामा छन्`, `${pending} notifications scheduled`)}
-              {online ? "" : pick(" · अफलाइन — सुरक्षित डेटाबाट", " · offline — using saved data")}
+              {t("ui.reminders.pending_notifications_scheduled", { pending })}
+              {online ? "" : t("ui.reminders.offline_using_saved_data")}
             </Text>
             <Button
-              label={busy ? pick("ताजा गर्दै…", "Refreshing…") : pick("अहिले ताजा गर्नुहोस्", "Refresh now")}
+              label={busy ? t("ui.reminders.refreshing") : t("ui.reminders.refresh_now")}
               variant="outline"
               size="sm"
               disabled={busy}
@@ -491,7 +488,7 @@ function AddReminderSheet({
   initialKey?: string;
   onCreated: () => Promise<void>;
 }) {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const [kind, setKind] = useState<WindowKind>("ashubh");
   const [windowKey, setWindowKey] = useState("rahu_kalam");
@@ -510,7 +507,7 @@ function AddReminderSheet({
 
   const selectOptions = WINDOW_OPTIONS.map((o) => ({
     value: o.key,
-    label: `${o.kind === "shubh" ? pick("शुभ", "Shubh") : pick("अशुभ", "Ashubh")} · ${pick(o.ne, o.en)}`,
+    label: `${o.kind === "shubh" ? t("ui.reminders.shubh") : t("ui.reminders.ashubh")} · ${pick(o.ne, o.en)}`,
   }));
 
   const pickWindow = (key: string) => {
@@ -522,7 +519,7 @@ function AddReminderSheet({
 
   const save = async () => {
     if (!online) {
-      Alert.alert(pick("इन्टरनेट चाहिन्छ", "Connection needed"), pick("रिमाइन्डर बनाउन इन्टरनेट चाहिन्छ। बनेपछि अफलाइन पनि चल्छ।", "Creating a reminder needs a connection. Once created it works offline."));
+      Alert.alert(t("ui.reminders.connection_needed"), t("ui.reminders.creating_a_reminder_needs_a_connection"));
       return;
     }
     setSaving(true);
@@ -540,7 +537,7 @@ function AddReminderSheet({
       await notifStore.setReminders(refreshed);
       await onCreated();
     } catch {
-      Alert.alert(pick("बनाउन सकिएन", "Could not create"), pick("फेरि प्रयास गर्नुहोस्।", "Please try again."));
+      Alert.alert(t("ui.reminders.could_not_create"), t("ui.reminders.please_try_again"));
     } finally {
       setSaving(false);
     }
@@ -553,32 +550,32 @@ function AddReminderSheet({
     <BottomSheetModal visible={visible} onClose={onClose} maxHeight="88%">
       <View className="gap-4 p-4">
         <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
-          {pick("नयाँ रिमाइन्डर", "New reminder")}
+          {t("ui.reminders.new_reminder")}
         </Text>
 
         <View>
-          <Text className="text-caption mb-1.5 text-muted-foreground">{pick("शुभ / अशुभ समय", "Shubh / Ashubh window")}</Text>
+          <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.shubh_ashubh_window")}</Text>
           <NativeStringSelect
             value={windowKey}
             options={selectOptions}
             onChange={pickWindow}
-            ariaLabel={pick("समय छान्नुहोस्", "Choose a window")}
+            ariaLabel={t("ui.reminders.choose_a_window")}
             minWidth={240}
           />
         </View>
 
         <View>
-          <Text className="text-caption mb-1.5 text-muted-foreground">{pick("कति अघि सम्झाउने", "Remind me")}</Text>
+          <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.remind_me")}</Text>
           <View className="flex-row flex-wrap gap-2">
             {LEAD_MINUTE_OPTIONS.map((m) => (
-              <Chip key={m} label={m === 0 ? pick("सुरुमा", "At start") : pick(`${m} मि.`, `${m} min`)} active={lead === m} onPress={() => setLead(m)} />
+              <Chip key={m} label={m === 0 ? t("ui.reminders.at_start_2") : t("ui.reminders.m_min", { m })} active={lead === m} onPress={() => setLead(m)} />
             ))}
           </View>
         </View>
 
         <View>
           <Text className="text-caption mb-1.5 text-muted-foreground">
-            {pick("कुन दिन (खाली = हरेक दिन)", "Days (none = every day)")}
+            {t("ui.reminders.days_none_every_day")}
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {(l === "ne" ? WEEKDAYS_NE : WEEKDAYS_EN).map((label, d) => (
@@ -589,9 +586,9 @@ function AddReminderSheet({
 
         {profiles.length > 0 ? (
           <View>
-            <Text className="text-caption mb-1.5 text-muted-foreground">{pick("प्रोफाइल (ऐच्छिक)", "Profile (optional)")}</Text>
+            <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.profile_optional")}</Text>
             <View className="flex-row flex-wrap gap-2">
-              <Chip label={pick("कुनै होइन", "None")} active={profileId === null} onPress={() => setProfileId(null)} />
+              <Chip label={t("ui.reminders.none")} active={profileId === null} onPress={() => setProfileId(null)} />
               {profiles.map((p) => (
                 <Chip key={p.id} label={p.full_name} active={profileId === p.id} onPress={() => setProfileId(p.id)} />
               ))}
@@ -599,7 +596,7 @@ function AddReminderSheet({
           </View>
         ) : null}
 
-        <Button label={saving ? pick("सेभ हुँदै…", "Saving…") : pick("रिमाइन्डर बनाउनुहोस्", "Create reminder")} disabled={saving} onPress={save} />
+        <Button label={saving ? t("ui.common.saving") : t("ui.reminders.create_reminder")} disabled={saving} onPress={save} />
       </View>
     </BottomSheetModal>
   );

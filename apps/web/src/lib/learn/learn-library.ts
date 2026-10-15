@@ -41,7 +41,8 @@ import {
 export type { TopicStatus };
 export { topicPath };
 
-const ICONS: Record<LearnIconKey, LucideIcon> = {
+/** Library icon key → this app's icon. */
+export const LEARN_ICONS: Record<LearnIconKey, LucideIcon> = {
   ArrowLeftRight,
   Axis3d,
   Calculator,
@@ -74,12 +75,12 @@ export type LibrarySection = DomainSection<LucideIcon>;
 
 export const LEARN_SECTIONS: LibrarySection[] = DOMAIN_SECTIONS.map((s) => ({
   ...s,
-  icon: ICONS[s.icon],
+  icon: LEARN_ICONS[s.icon],
 }));
 
 export const LEARN_LIBRARY: LibraryTopic[] = DOMAIN_LIBRARY.map((t) => ({
   ...t,
-  icon: ICONS[t.icon],
+  icon: LEARN_ICONS[t.icon],
 }));
 
 const views = buildLearnViews(LEARN_SECTIONS, LEARN_LIBRARY);

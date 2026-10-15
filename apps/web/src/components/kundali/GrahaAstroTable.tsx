@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { VargaChartEntry } from "@/lib/api";

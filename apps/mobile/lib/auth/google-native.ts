@@ -1,11 +1,4 @@
-import {
-  GoogleSignin,
-  isCancelledResponse,
-  isErrorWithCode,
-  isSuccessResponse,
-  statusCodes,
-  type SignInResponse,
-} from "@react-native-google-signin/google-signin";
+import type { SignInResponse } from "@react-native-google-signin/google-signin";
 import { googleNativeServerClientId } from "@/lib/auth/oauth-config";
 
 /**
@@ -18,9 +11,15 @@ import { googleNativeServerClientId } from "@/lib/auth/oauth-config";
  * *same* Google Cloud project — which the API accepts via GOOGLE_CLIENT_IDS.
  *
  * Resolves the ID token, or null when the user cancelled.
+ *
+ * The SDK is a native module, loaded only here: a top-level import throws in
+ * any binary without it (Expo Go, an older dev client) and took down every
+ * route that renders the sign-in buttons.
  */
 export async function signInWithGoogleNative(): Promise<string | null> {
   if (!googleNativeServerClientId) throw new Error("Google sign-in is not configured");
+  const { GoogleSignin, isCancelledResponse, isErrorWithCode, isSuccessResponse, statusCodes } =
+    await import("@react-native-google-signin/google-signin");
   GoogleSignin.configure({ webClientId: googleNativeServerClientId });
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });

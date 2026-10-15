@@ -26,6 +26,7 @@ import {
 } from "@/components/learn/sun-earth-moon-math";
 
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 interface Props {
   day: number;
   onDay?: (v: number) => void;
@@ -96,7 +97,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
         textAnchor="middle"
         dominantBaseline="central"
       >
-        {isNew ? "नयाँ" : isFull ? "पूर्ण" : fmt(k + 1)}
+        {isNew ? tFor(undefined, "ui.learn.x_71469f61") : isFull ? tFor(undefined, "kundali.x.grade_full") : fmt(k + 1)}
       </text>
     );
   });
@@ -168,7 +169,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
       <circle cx={SEM.cx} cy={SEM.cy} r={SEM.sunR + 30} fill="url(#sem-sunglow)" />
       <circle cx={SEM.cx} cy={SEM.cy} r={SEM.sunR} fill="url(#sem-sun)" />
       <text x={SEM.cx} y={SEM.cy + SEM.sunR + 26} className={edBodyLabel} textAnchor="middle">
-        सूर्य
+        {tFor(undefined, "kundali.report.meta_sun")}
       </text>
 
       <g className={hoEarthGroup} transform={`translate(${ex} ${ey})`}>
@@ -182,7 +183,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
         />
         <line x1={southX} y1={southY} x2={northX} y2={northY} className={hoPoleAxis} />
         <text y={SEM.earthR + 22} className={edBodyLabel} textAnchor="middle">
-          पृथ्वी
+          {tFor(undefined, "vastu.element.earth")}
         </text>
       </g>
 
@@ -200,7 +201,7 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
       })()}
 
       <text x={SEM.cx} y={SEM.H - 18} className={hoOrbitDir} textAnchor="middle">
-        ↺ वामावर्त — पृथ्वी १ वर्षमा १ फेरो, चन्द्र सोही समयमा ~{fmt(12)}.{fmt(4)} फेरो
+        {tFor(undefined, "ui.learn.x_2ccb2c5f")}{fmt(12)}.{fmt(4)}{tFor(undefined, "ui.learn.x_02f5808c")}
       </text>
     </svg>
   );

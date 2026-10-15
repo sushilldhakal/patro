@@ -1,321 +1,138 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import { getRouteApi } from "@tanstack/react-router";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  flexRender,
-  createColumnHelper,
-  type SortingState,
-} from "@tanstack/react-table";
-import { PartyPopper, Flag, Search, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
-import {
-  fetchHolidays,
-  fetchFestivals,
-  holidayKeys,
-  type Holiday,
-  type Festival,
-} from "../lib/api";
+import { __iconNode as flag } from "lucide-react/dist/esm/icons/flag.mjs";
+import { __iconNode as partyPopper } from "lucide-react/dist/esm/icons/party-popper.mjs";
+import { __iconNode as searchIcon } from "lucide-react/dist/esm/icons/search.mjs";
+import { useHolidaysPage, type HolidayColumnKey, type HolidayRow } from "@vedic-patro/features/holidays";
+import { Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
+import { cn } from "@vedic-patro/domain/utils";
+import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { SeoContentSection } from "../components/seo/SeoContentSection";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { useRouteLoading } from "@/lib/route-loading";
-import { formatLocaleDigits } from "@/i18n/digits";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
-import { cn } from "@vedic-patro/domain/utils";
-import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/holidays");
 
-type Tab = "holidays" | "festivals";
-
-const holidayCol = createColumnHelper<Holiday>();
-const festivalCol = createColumnHelper<Festival>();
-
-function useHolidayColumns() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  return useMemo(
-    () => [
-      holidayCol.accessor(r => bilingualText(lang, r.name_ne ?? r.name_en, r.name_en ?? r.name_ne) ?? "—", {
-        id: "name",
-        header: t("holidays.col_name"),
-        cell: i => <span className={holidaysClasses.cellName}>{i.getValue()}</span>,
-      }),
-      holidayCol.accessor(
-        (r) => (r.start_date ? formatHolidayBsDisplay({ ...r, start_date: r.start_date }, lang) : undefined),
-        {
-          id: "bs_start_date",
-          header: t("holidays.col_bs_date"),
-          cell: i => <span className={holidaysClasses.cellMono}>{i.getValue() ?? "—"}</span>,
-        },
-      ),
-      holidayCol.accessor("start_date", {
-        header: t("holidays.col_ad_date"),
-        cell: i => <span className={holidaysClasses.cellMono}>{i.getValue()}</span>,
-      }),
-      holidayCol.accessor("duration_days", {
-        header: t("holidays.col_days"),
-        cell: i => i.getValue() ?? 1,
-      }),
-      holidayCol.accessor("type", {
-        header: t("holidays.col_type"),
-        cell: i => (
-          <span className={cn(holidaysClasses.typeBadge, holidaysClasses.typeBadgeText)}>
-            {i.getValue() ?? "—"}
-          </span>
-        ),
-      }),
-    ],
-    [t, lang],
-  );
-}
-
-function useFestivalColumns() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  return useMemo(
-    () => [
-      festivalCol.accessor(r => bilingualText(lang, r.name_ne ?? r.name_en, r.name_en ?? r.name_ne) ?? "—", {
-        id: "name",
-        header: t("holidays.col_name"),
-        cell: i => <span className={holidaysClasses.cellName}>{i.getValue()}</span>,
-      }),
-      festivalCol.accessor(
-        (r) => (r.start_date ? formatHolidayBsDisplay({ ...r, start_date: r.start_date }, lang) : undefined),
-        {
-          id: "bs_start_date",
-          header: t("holidays.col_bs_date"),
-          cell: i => <span className={holidaysClasses.cellMono}>{i.getValue() ?? "—"}</span>,
-        },
-      ),
-      festivalCol.accessor("start_date", {
-        header: t("holidays.col_ad_date"),
-        cell: i => <span className={holidaysClasses.cellMono}>{i.getValue()}</span>,
-      }),
-      festivalCol.accessor("type", {
-        header: t("holidays.col_type"),
-        cell: i => (
-          <span className={cn(holidaysClasses.typeBadge, holidaysClasses.typeBadgeText)}>
-            {i.getValue() ?? "—"}
-          </span>
-        ),
-      }),
-      festivalCol.accessor("is_public_holiday", {
-        header: t("holidays.col_govt"),
-        cell: i =>
-          i.getValue() ? (
-            <span className={cn("flex", holidaysClasses.govtFlag, holidaysClasses.govtFlagText)}>
-              <Flag className="w-3 h-3" /> {t("common.yes")}
-            </span>
-          ) : null,
-      }),
-    ],
-    [t, lang],
-  );
-}
-
-function DataTable<T>({
-  data,
-  columns,
-  globalFilter,
-  emptyMessage,
-}: {
-  data: T[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: any[];
-  globalFilter: string;
-  emptyMessage: string;
-}) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, globalFilter },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
-
-  return (
-    <div className={cn("overflow-x-auto", holidaysClasses.table)}>
-      <table className="w-full text-sm">
-        <thead className={holidaysClasses.tableHead}>
-          {table.getHeaderGroups().map(hg => (
-            <tr key={hg.id}>
-              {hg.headers.map(h => (
-                <th
-                  key={h.id}
-                  onClick={h.column.getToggleSortingHandler()}
-                  className={cn(
-                    "text-left whitespace-nowrap",
-                    holidaysClasses.headCell,
-                    holidaysClasses.headText,
-                    h.column.getCanSort() && "cursor-pointer select-none hover:text-foreground"
-                  )}
-                >
-                  <span className="flex items-center gap-1">
-                    {flexRender(h.column.columnDef.header, h.getContext())}
-                    {h.column.getCanSort() && (
-                      h.column.getIsSorted() === "asc" ? <ChevronUp className="w-3 h-3" /> :
-                      h.column.getIsSorted() === "desc" ? <ChevronDown className="w-3 h-3" /> :
-                      <ChevronsUpDown className="w-3 h-3 opacity-40" />
-                    )}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className={cn(holidaysClasses.emptyCell, holidaysClasses.emptyText)}>
-                {emptyMessage}
-              </td>
-            </tr>
-          ) : (
-            table.getRowModel().rows.map(row => (
-              <tr key={row.id} className={cn(holidaysClasses.row, "hover:bg-muted/30 transition-colors")}>
-                {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className={cn(holidaysClasses.cell, "text-foreground")}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
+/**
+ * Holidays — the website's drawing of `useHolidaysPage` (@vedic-patro/features).
+ * What is fetched, the columns, rows, search, sort and copy are shared with the
+ * app; this file only lays it out. The year and era live in the URL here.
+ */
 export function Holidays() {
-  const { t } = useTranslation();
   const search = routeApi.useSearch();
   const navigate = routeApi.useNavigate();
   const { location, setLocation, yearBrowse } = usePatroYearDataPage(search, navigate);
-  const [tab, setTab] = useState<Tab>("holidays");
-  const [filter, setFilter] = useState("");
-  const holidayColumns = useHolidayColumns();
-  const festivalColumns = useFestivalColumns();
+  const page = useHolidaysPage({ year: yearBrowse.year, era: yearBrowse.era });
 
-  const holidaysQ = useQuery({
-    queryKey: holidayKeys.holidays(yearBrowse.year, yearBrowse.era),
-    queryFn: () => fetchHolidays(yearBrowse.year, yearBrowse.era),
-    staleTime: 1000 * 60 * 60,
-  });
-
-  const festivalsQ = useQuery({
-    queryKey: holidayKeys.festivals(yearBrowse.year, yearBrowse.era),
-    queryFn: () => fetchFestivals(yearBrowse.year, { era: yearBrowse.era }),
-    staleTime: 1000 * 60 * 60,
-  });
-
-  const loading = tab === "holidays" ? holidaysQ.isLoading : festivalsQ.isLoading;
-  const error = tab === "holidays" ? holidaysQ.isError : festivalsQ.isError;
-
-  const holidays = holidaysQ.data?.holidays ?? [];
-  const festivals = festivalsQ.data?.festivals ?? [];
-
-  const gregorianRange = (tab === "holidays" ? holidaysQ.data : festivalsQ.data)?.gregorian_range;
-
-  useRouteLoading(loading);
+  useRouteLoading(page.status === "loading");
 
   return (
     <PageShell>
-      <PageHeader
-        icon={<PartyPopper className="w-6 h-6 text-secondary" />}
-        title={t("holidays.page_title")}
-        subtitle={t("holidays.page_subtitle")}
-      />
+      <PageHeader icon={<Icon node={partyPopper} size="2xl" tone="secondary" />} title={page.copy.title} subtitle={page.copy.subtitle} />
 
       <PatroYearNavBlock
         era={yearBrowse.era}
         year={yearBrowse.year}
         onYearChange={yearBrowse.setYear}
         onEraChange={yearBrowse.setEra}
-        gregorianRange={
-          gregorianRange?.start && gregorianRange?.end ? gregorianRange : undefined
-        }
+        gregorianRange={page.gregorianRange}
         location={location}
         onLocationChange={setLocation}
         className=""
       />
 
-      {/* Tabs */}
-      <div className={cn("flex", holidaysClasses.tabBar)}>
-        {([
-          { id: "holidays" as const, labelKey: "holidays.tab_holidays", icon: Flag, count: holidays.length },
-          { id: "festivals" as const, labelKey: "holidays.tab_festivals", icon: PartyPopper, count: festivals.length },
-        ]).map(tItem => (
-          <button
-            key={tItem.id}
-            onClick={() => setTab(tItem.id)}
-            className={cn(
-              "flex transition-colors",
-              holidaysClasses.tab,
-              holidaysClasses.tabLabel,
-              tab === tItem.id
-                ? cn(holidaysClasses.tabActive, holidaysClasses.tabLabelActive)
-                : cn(holidaysClasses.tabIdle, "hover:text-foreground")
-            )}
+      <Box className={cn("flex", holidaysClasses.tabBar)} label={page.copy.title}>
+        {page.tabs.map((tab) => (
+          <Pressable
+            key={tab.id}
+            role="tab"
+            selected={tab.active}
+            onPress={() => page.setTab(tab.id)}
+            className={cn("flex", holidaysClasses.tab, tab.active ? holidaysClasses.tabActive : holidaysClasses.tabIdle)}
+            webClassName={cn("transition-colors", !tab.active && "hover:text-foreground")}
           >
-            <tItem.icon className="w-4 h-4" />
-            {t(tItem.labelKey)}
-            {tItem.count > 0 && (
-              <span className={cn(holidaysClasses.tabCount, holidaysClasses.tabCountText)}>
-                {formatLocaleDigits(tItem.count)}
+            <Icon node={tab.id === "holidays" ? flag : partyPopper} size="md" tone={tab.active ? "secondary" : "foreground"} />
+            <Text className={cn(holidaysClasses.tabLabel, tab.active ? holidaysClasses.tabLabelActive : holidaysClasses.tabLabelIdle)}>
+              {tab.label}
+            </Text>
+            {tab.count > 0 && (
+              <span className={holidaysClasses.tabCount}>
+                <Text className={holidaysClasses.tabCountText}>{tab.countLabel}</Text>
               </span>
             )}
-          </button>
+          </Pressable>
         ))}
-      </div>
+      </Box>
 
-      {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Icon node={searchIcon} size="md" className="absolute left-3 top-1/2 -translate-y-1/2" />
         <input
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-          placeholder={t("holidays.search_placeholder")}
+          value={page.search}
+          onChange={(e) => page.setSearch(e.target.value)}
+          placeholder={page.copy.searchPlaceholder}
           className={cn("w-full pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-primary/40", holidaysClasses.searchBox, holidaysClasses.searchInput)}
         />
       </div>
 
-      {error && (
-        <div className={cn(holidaysClasses.errorBox, holidaysClasses.errorText)}>
-          {t("holidays.error")}
-        </div>
+      {page.status === "error" && (
+        <Box className={holidaysClasses.errorBox}>
+          <Text className={holidaysClasses.errorText}>{page.copy.error}</Text>
+        </Box>
       )}
 
-      {!loading && !error && tab === "holidays" && (
-        <DataTable
-          data={holidays}
-          columns={holidayColumns}
-          globalFilter={filter}
-          emptyMessage={t("common.no_results")}
-        />
-      )}
-
-      {!loading && !error && tab === "festivals" && (
-        <DataTable
-          data={festivals}
-          columns={festivalColumns}
-          globalFilter={filter}
-          emptyMessage={t("common.no_results")}
+      {page.status === "ready" && (
+        <Table<HolidayRow>
+          columns={page.columns.map((col) => ({
+            key: col.key,
+            header: col.label,
+            width: col.width,
+            sorted: col.sorted,
+            onPress: () => page.toggleSort(col.key),
+          }))}
+          rows={page.rows}
+          rowKey={(row) => row.key}
+          renderCell={(row, col) => <HolidayCell row={row} column={col.key as HolidayColumnKey} yes={page.copy.yes} />}
+          empty={page.copy.empty}
+          classes={{
+            root: holidaysClasses.table,
+            head: holidaysClasses.tableHead,
+            headCell: holidaysClasses.headCell,
+            headText: holidaysClasses.headText,
+            row: holidaysClasses.row,
+            cell: cn(holidaysClasses.cell, "text-foreground"),
+            emptyCell: holidaysClasses.emptyCell,
+            emptyText: holidaysClasses.emptyText,
+          }}
         />
       )}
 
       <SeoContentSection route="holidays" />
     </PageShell>
   );
+}
+
+function HolidayCell({ row, column, yes }: { row: HolidayRow; column: HolidayColumnKey; yes: string }) {
+  switch (column) {
+    case "name":
+      return <Text className={holidaysClasses.cellName}>{row.name}</Text>;
+    case "bsDate":
+    case "adDate":
+      return <Text className={holidaysClasses.cellMono}>{row[column]}</Text>;
+    case "type":
+      return (
+        <span className={cn("inline-block", holidaysClasses.typeBadge)}>
+          <Text className={holidaysClasses.typeBadgeText}>{row.type}</Text>
+        </span>
+      );
+    case "isPublic":
+      return row.isPublic ? (
+        <span className={cn("flex", holidaysClasses.govtFlag)}>
+          <Icon node={flag} size="xs" tone="destructive" />
+          <Text className={holidaysClasses.govtFlagText}>{yes}</Text>
+        </span>
+      ) : null;
+    default:
+      return <Text className={holidaysClasses.cellText}>{row.days}</Text>;
+  }
 }

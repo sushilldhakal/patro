@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -13,8 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { apiForgotPassword } from "@/lib/auth/client";
-import { useLocale } from "@/lib/i18n";
+import { useAuthDialog, type AuthDialogMode } from "@vedic-patro/features/account";
 import { useThemeColors } from "@/lib/theme-context";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
@@ -25,7 +23,6 @@ import { SocialSignInButtons } from "./SocialSignInButtons";
 import { neutral, space } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
-type Mode = "login" | "signup" | "forgot";
 
 export function AuthDialog({
   open,
@@ -34,148 +31,21 @@ export function AuthDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialMode?: Mode;
+  initialMode?: AuthDialogMode;
 }) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { pick } = useLocale();
   const router = useRouter();
-  const { login, signup, loginWithGoogle, loginWithFacebook, loginWithApple } = useAuth();
-  const [mode, setMode] = useState<Mode>(initialMode);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open) setMode(initialMode);
-  }, [open, initialMode]);
-
-  function reset(next: Mode) {
-    setMode(next);
-    setError(null);
-    setNotice(null);
-    setPassword("");
-    setConfirm("");
-  }
-
-  function close() {
-    Keyboard.dismiss();
-    onOpenChange(false);
-    setTimeout(() => reset("login"), 200);
-    setEmail("");
-  }
-
-  async function onSubmit() {
-    setError(null);
-    setNotice(null);
-
-    if (mode === "signup" && password !== confirm) {
-      setError(pick("पासवर्ड मिलेन", "Passwords do not match"));
-      return;
-    }
-    if (mode === "signup" && password.length < 8) {
-      setError(pick("पासवर्ड कम्तीमा ८ अक्षर हुनुपर्छ", "Password must be at least 8 characters"));
-      return;
-    }
-
-    setBusy(true);
-    try {
-      if (mode === "login") {
-        await login(email.trim(), password);
-        close();
-      } else if (mode === "signup") {
-        await signup(email.trim(), password);
-        setNotice(
-          pick(
-            "खाता बनियो! इमेल प्रमाणीकरणको लागि इनबक्स हेर्नुहोस्।",
-            "Account created! Check your email to verify your address.",
-          ),
-        );
-        setTimeout(close, 1400);
-      } else {
-        await apiForgotPassword(email.trim());
-        setNotice(
-          pick(
-            "यदि त्यो इमेल छ भने, रिसेट लिङ्क पठाइएको छ",
-            "If that email exists, a reset link has been sent",
-          ),
-        );
-      }
-    } catch {
-      setError(pick("केही गडबड भयो। पुनः प्रयास गर्नुहोस्।", "Something went wrong. Try again."));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function onGoogle(idToken: string) {
-    setError(null);
-    setBusy(true);
-    try {
-      await loginWithGoogle(idToken);
-      close();
-    } catch (err) {
-      const detail = err instanceof Error ? err.message : "";
-      setError(detail || pick("गुगल लग-इन असफल", "Google sign-in failed"));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function onFacebook(accessToken: string) {
-    setError(null);
-    setBusy(true);
-    try {
-      await loginWithFacebook(accessToken);
-      close();
-    } catch {
-      setError(pick("फेसबुक लग-इन असफल", "Facebook sign-in failed"));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function onApple(identityToken: string, email?: string | null) {
-    setError(null);
-    setBusy(true);
-    try {
-      await loginWithApple(identityToken, email);
-      close();
-    } catch {
-      setError(pick("एपल लग-इन असफल", "Apple sign-in failed"));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const title =
-    mode === "login"
-      ? pick("लग-इन", "Sign in")
-      : mode === "signup"
-        ? pick("खाता खोल्नुहोस्", "Create account")
-        : pick("पासवर्ड रिसेट", "Reset password");
-  const desc =
-    mode === "login"
-      ? pick("वैदिक पात्रोमा फेरि स्वागत छ।", "Welcome back to Vedic Patro.")
-      : mode === "signup"
-        ? pick(
-            "आफ्ना कुण्डली प्रोफाइलहरू उपकरणहरूमा सुरक्षित राख्नुहोस्।",
-            "Save your kundali profiles across devices.",
-          )
-        : pick(
-            "हामी तपाईंलाई नयाँ पासवर्ड सेट गर्न लिङ्क इमेल गर्छौं।",
-            "We'll email you a link to set a new password.",
-          );
-  const submitLabel = busy
-    ? pick("कृपया पर्खनुहोस्…", "Please wait…")
-    : mode === "login"
-      ? pick("लग-इन", "Sign in")
-      : mode === "signup"
-        ? pick("खाता खोल्नुहोस्", "Create account")
-        : pick("रिसेट लिङ्क पठाउनुहोस्", "Send reset link");
+  const auth = useAuth();
+  const d = useAuthDialog({
+    open,
+    onOpenChange,
+    initialMode,
+    auth,
+    onClose: Keyboard.dismiss,
+    resetBetweenOpens: true,
+  });
+  const { copy, mode, close } = d;
 
   return (
     <Modal visible={open} animationType="slide" onRequestClose={close}>
@@ -199,11 +69,11 @@ export function AuthDialog({
           }}
         >
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-            <Text className="text-lg text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+            <Text className="text-lg text-muted-foreground">{copy.cancel}</Text>
           </Pressable>
-          <Text className="flex-1 text-center text-lg font-semibold text-foreground">{title}</Text>
+          <Text className="flex-1 text-center text-lg font-semibold text-foreground">{copy.title}</Text>
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-            <Text className="text-lg font-semibold text-primary">{pick("भयो", "Done")}</Text>
+            <Text className="text-lg font-semibold text-primary">{copy.done}</Text>
           </Pressable>
         </View>
 
@@ -218,48 +88,46 @@ export function AuthDialog({
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           >
-            <Text className="text-sm text-muted-foreground">{desc}</Text>
+            <Text className="text-sm text-muted-foreground">{copy.description}</Text>
 
-            {mode !== "forgot" ? (
+            {d.showSocial ? (
               <View className="mt-4">
                 <SocialSignInButtons
-                  onGoogle={onGoogle}
-                  onFacebook={onFacebook}
-                  onApple={onApple}
-                  onError={setError}
-                  disabled={busy}
+                  onGoogle={d.onGoogle}
+                  onFacebook={d.onFacebook}
+                  onApple={d.onApple}
+                  onError={d.setError}
+                  disabled={d.busy}
                 />
               </View>
             ) : null}
 
             <Field
               email
-              label={pick("इमेल", "Email")}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@example.com"
+              label={copy.email}
+              value={d.email}
+              onChangeText={d.setEmail}
+              placeholder={copy.emailPlaceholder}
             />
 
-            {mode !== "forgot" ? (
+            {d.showPassword ? (
               <Field
-                label={pick("पासवर्ड", "Password")}
-                value={password}
-                onChangeText={setPassword}
-                placeholder={
-                  mode === "signup" ? pick("कम्तीमा ८ अक्षर", "At least 8 characters") : "••••••••"
-                }
+                label={copy.password}
+                value={d.password}
+                onChangeText={d.setPassword}
+                placeholder={copy.passwordPlaceholder}
                 secureTextEntry
                 autoCapitalize="none"
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                autoComplete={d.passwordAutoComplete}
                 textContentType={mode === "login" ? "password" : "newPassword"}
               />
             ) : null}
 
-            {mode === "signup" ? (
+            {d.showConfirm ? (
               <Field
-                label={pick("पासवर्ड पुष्टि", "Confirm password")}
-                value={confirm}
-                onChangeText={setConfirm}
+                label={copy.confirmPassword}
+                value={d.confirm}
+                onChangeText={d.setConfirm}
                 placeholder="••••••••"
                 secureTextEntry
                 autoCapitalize="none"
@@ -268,55 +136,52 @@ export function AuthDialog({
               />
             ) : null}
 
-            {error ? <Text className={cn("mt-3", accountClasses.formError)}>{error}</Text> : null}
-            {notice ? <Text className={cn("mt-3", accountClasses.formNotice)}>{notice}</Text> : null}
+            {d.error ? <Text className={cn("mt-3", accountClasses.formError)}>{d.error}</Text> : null}
+            {d.notice ? <Text className={cn("mt-3", accountClasses.formNotice)}>{d.notice}</Text> : null}
 
             <Button
-              label={submitLabel}
+              label={copy.submit}
               size="lg"
-              onPress={onSubmit}
-              disabled={busy}
+              onPress={() => void d.submit()}
+              disabled={d.busy}
               className="mt-4"
-              icon={busy ? <ActivityIndicator color={neutral.white} size="small" /> : undefined}
+              icon={d.busy ? <ActivityIndicator color={neutral.white} size="small" /> : undefined}
             />
 
             <View className={cn("mt-4 items-center pb-4", accountClasses.switchStack)}>
               {mode === "login" ? (
                 <>
-                  <Pressable onPress={() => reset("forgot")}>
+                  <Pressable onPress={() => d.switchMode("forgot")}>
                     <Text className={accountClasses.switchText}>
-                      {pick("पासवर्ड बिर्सनुभयो?", "Forgot your password?")}
+                      {copy.forgotPassword}
                     </Text>
                   </Pressable>
                   <Text className={accountClasses.switchText}>
-                    {pick("नयाँ हुनुहुन्छ?", "New here?")}{" "}
-                    <Text className={accountClasses.switchLink} onPress={() => reset("signup")}>
-                      {pick("खाता खोल्नुहोस्", "Create account")}
+                    {copy.newHere}{" "}
+                    <Text className={accountClasses.switchLink} onPress={() => d.switchMode("signup")}>
+                      {copy.createAccount}
                     </Text>
                   </Text>
                 </>
               ) : null}
               {mode === "signup" ? (
                 <Text className={accountClasses.switchText}>
-                  {pick("पहिले नै खाता छ?", "Already have an account?")}{" "}
-                  <Text className={accountClasses.switchLink} onPress={() => reset("login")}>
-                    {pick("लग-इन", "Sign in")}
+                  {copy.alreadyHave}{" "}
+                  <Text className={accountClasses.switchLink} onPress={() => d.switchMode("login")}>
+                    {copy.signIn}
                   </Text>
                 </Text>
               ) : null}
               {mode === "forgot" ? (
-                <Pressable onPress={() => reset("login")}>
+                <Pressable onPress={() => d.switchMode("login")}>
                   <Text className={accountClasses.switchText}>
-                    {pick("लग-इनमा फर्कनुहोस्", "Back to sign in")}
+                    {copy.backToSignIn}
                   </Text>
                 </Pressable>
               ) : null}
-              {mode !== "forgot" ? (
+              {d.showLegal ? (
                 <Text className={cn("mt-2 px-4", accountClasses.legal)}>
-                  {pick(
-                    "जारी राखेर तपाईं गोपनीयता नीति र प्रयोगका सर्त मान्नुहुन्छ।",
-                    "By continuing you agree to the Privacy Policy and Terms of Use.",
-                  )}{" "}
+                  {copy.legalAgree}{" "}
                   <Text
                     className={accountClasses.legalLink}
                     onPress={() => {
@@ -324,7 +189,7 @@ export function AuthDialog({
                       router.push("/privacy" as never);
                     }}
                   >
-                    {pick("गोपनीयता", "Privacy")}
+                    {copy.privacy}
                   </Text>
                   {" · "}
                   <Text
@@ -334,7 +199,7 @@ export function AuthDialog({
                       router.push("/terms" as never);
                     }}
                   >
-                    {pick("सर्त", "Terms")}
+                    {copy.terms}
                   </Text>
                 </Text>
               ) : null}

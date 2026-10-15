@@ -7,18 +7,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import type { Era } from "@vedic-patro/domain/era";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 
-export {
-  PAGE_LEARN_SLUGS,
-  RELATED_LEARN_LIMIT,
-  RELATED_LINK_LIMIT,
-  SITE_LINK_BLURB_KEY,
-  SITE_LINK_GROUPS,
-  SITE_LINK_LABEL_KEY,
-  getRelatedLearnSlugs,
-  getRelatedSiteLinkIds,
-  primaryGroup,
-  type SiteLinkGroupKey,
-} from "@vedic-patro/domain/related-page-links";
+import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/related-page-links";
 
 /** Static route for a site link id (dynamic ids use `element:` / `sait:` prefixes). */
 export const SITE_LINK_PATH: Record<string, string> = {
@@ -53,41 +42,15 @@ const EXCLUDED_PATH_PREFIXES = [
 ];
 
 export function shouldShowRelatedLinks(pathname: string): boolean {
-  const path = pathname.replace(/\/$/, "") || "/";
+  const path = normalizeSitePath(pathname);
   if (path === "/") return false;
   if (path === "/panchanga/details") return false;
   return !EXCLUDED_PATH_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 }
 
 export function resolveSitePageId(pathname: string, params: Record<string, string>): string | null {
-  const path = pathname.replace(/\/$/, "") || "/";
-  if (!shouldShowRelatedLinks(path)) return null;
-
-  if (path === "/panchanga") return "panchanga";
-  if (path === "/aakash-gochar") return "aakash-gochar";
-  if (path === "/learn") return "learn-hub";
-  if (path === "/shanti-vidhi") return "shanti-vidhi";
-  if (path === "/vivah-sait") return "vivah-sait";
-
-  if (path.startsWith("/learn/")) {
-    const slug = params.slug ?? path.split("/")[2];
-    return slug ? `learn:${slug}` : "learn-hub";
-  }
-
-  if (path.startsWith("/panchanga/element/")) {
-    const name = params.name ?? path.split("/").pop();
-    return name ? `element:${name}` : null;
-  }
-
-  if (path.startsWith("/sait/")) {
-    const category = params.category ?? path.split("/").pop();
-    return category ? `sait:${category}` : null;
-  }
-
-  const staticEntry = Object.entries(SITE_LINK_PATH).find(([, p]) => p === path);
-  if (staticEntry) return staticEntry[0];
-
-  return null;
+  if (!shouldShowRelatedLinks(pathname)) return null;
+  return resolveSitePageIdForPath(pathname, params, SITE_LINK_PATH);
 }
 
 export function siteLinkRouteProps(

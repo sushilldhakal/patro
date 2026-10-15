@@ -75,28 +75,25 @@ const MoonriseSlipScene = memo(function MoonriseSlipScene({ onLabels, copy }: Sc
 });
 
 export function MoonriseSlipDiagram() {
-  const { pick, digits } = useLocale();
-  const copy = { day: pick("दिन", "Day"), none: pick("यो दिन चन्द्रोदय छैन", "No moonrise this day") };
+  const { t, digits } = useLocale();
+  const copy = { day: t("panchanga.view_day"), none: t("ui.learn.no_moonrise_this_day") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — चन्द्रोदय ढिलो हुँदै जाने क्रम", "3D — moonrise slipping later")}
+      title={t("ui.learn.n3d_moonrise_slipping_later")}
       height={240}
       camera={{ yaw: 0.15, pitch: 0.75 }}
       frame={{ width: 1.4, height: 0.7 }}
       idleSpin={0}
       legend={[
-        { color: illustration.sky84, label: pick("चन्द्रोदयको समय", "Moonrise time") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("चन्द्रोदय नभएको दिन", "Day with no moonrise") },
+        { color: illustration.sky84, label: t("ui.learn.moonrise_time") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.day_with_no_moonrise") },
       ]}
       readouts={[
-        { k: pick("दैनिक ढिलाइ", "Daily slip"), v: `~${digits(50)} ${pick("मिनेट", "min")}`, tone: "accent" },
-        { k: pick("दिन ३", "Day 3"), v: pick("चन्द्रोदय छैन", "no moonrise"), tone: "warn" },
+        { k: t("ui.learn.daily_slip"), v: `~${digits(50)} ${t("common.minutes")}`, tone: "accent" },
+        { k: t("ui.learn.day_3"), v: t("ui.learn.no_moonrise"), tone: "warn" },
       ]}
-      caption={pick(
-        "चन्द्रमा प्रत्येक दिन ~५० मिनेट ढिलो उदाउँछ — किनभने पृथ्वी घुम्दा चन्द्र आफ्नै कक्षमा ~१३° अघि बढिसकेको हुन्छ। लगातार दुई चन्द्रोदयबीचको फरक (~२४ घण्टा ५० मिनेट) सधैँ एक नागरिक दिनभन्दा बढी हुन्छ — त्यसैले कहिलेकाहीँ कुनै दिनमा चन्द्रोदय नै पर्दैन (यहाँ दिन ३)।",
-        "The Moon rises about 50 minutes later each day — because while Earth turns, the Moon has moved ~13° further along its own orbit. The gap between two successive moonrises (~24h50m) is always more than one civil day — so occasionally a day gets no moonrise at all (here, day 3).",
-      )}
+      caption={t("ui.learn.the_moon_rises_about_50_minutes")}
     >
       {({ onLabels }) => <MoonriseSlipScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

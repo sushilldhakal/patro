@@ -4,7 +4,7 @@ Use these strings in App Store Connect and Google Play Console. Keep the privacy
 
 **Privacy:** https://www.vedicpatro.com/privacy  
 **Terms:** https://www.vedicpatro.com/terms  
-**Support:** support@vedicpatro.com  
+**Support:** vedicnepalpatro@gmail.com  
 **Marketing:** https://www.vedicpatro.com
 
 ## English (default)

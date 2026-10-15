@@ -102,7 +102,7 @@ export function LearnDiagram3D({
   extraControls,
   children,
 }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
@@ -154,7 +154,7 @@ export function LearnDiagram3D({
             {title}
           </Text>
           <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(10)}>
-            {pick("घुमाउन तान्नुहोस्", "Drag to rotate")}
+            {t("ui.learn.drag_to_rotate")}
           </Text>
         </View>
       ) : null}
@@ -265,22 +265,22 @@ export function LearnDiagram3D({
         <View className="absolute right-2.5 gap-2" style={{ top: overlayTop }}>
           <RoundButton
             icon="add"
-            label={pick("नजिक", "Zoom in")}
+            label={t("ui.learn.zoom_in")}
             onPress={() => gesture.zoomBy(0.8)}
           />
           <RoundButton
             icon="remove"
-            label={pick("टाढा", "Zoom out")}
+            label={t("ui.learn.zoom_out")}
             onPress={() => gesture.zoomBy(1.25)}
           />
           <RoundButton
             icon="refresh"
-            label={pick("पूर्ववत्", "Reset view")}
+            label={t("ui.learn.reset_view")}
             onPress={gesture.reset}
           />
           <RoundButton
             icon={fullscreen ? "close" : "expand"}
-            label={fullscreen ? pick("बन्द गर्नुहोस्", "Exit fullscreen") : pick("पूरा स्क्रिन", "Fullscreen")}
+            label={fullscreen ? t("ui.learn.exit_fullscreen") : t("ui.learn.fullscreen")}
             onPress={() => setFullscreen((f) => !f)}
           />
         </View>
@@ -295,10 +295,7 @@ export function LearnDiagram3D({
                   { color: DIAGRAM_LABEL_COLOR.dim, opacity: 0.68 },
                 ]}
               >
-                {pick(
-                  "एक औंलाले घुमाउनुहोस् · दुई औंलाले जुम",
-                  "One finger rotates · pinch to zoom",
-                )}
+                {t("ui.learn.one_finger_rotates_pinch_to_zoom")}
               </Text>
             </View>
           </View>
@@ -368,7 +365,7 @@ export function LearnDiagram3D({
                 <Pressable
                   onPress={onPlayToggle}
                   accessibilityRole="button"
-                  accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+                  accessibilityLabel={playing ? t("panchanga.hora.pause") : t("panchanga.hora.play")}
                   className="h-8 w-8 items-center justify-center rounded-full border border-border bg-muted/40"
                 >
                   <Ionicons

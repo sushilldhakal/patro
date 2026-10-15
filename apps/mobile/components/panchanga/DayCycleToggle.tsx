@@ -8,6 +8,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
 import { space } from "@vedic-patro/design-tokens";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export type DayCycleMode = "Day-Night" | "Calendar Day";
 
@@ -17,8 +18,8 @@ type Props = {
 };
 
 const OPTIONS: Array<{ value: DayCycleMode; ne: string; en: string }> = [
-  { value: "Day-Night", ne: "अहोरात्र", en: "Day-Night" },
-  { value: "Calendar Day", ne: "दिन-रात", en: "Calendar Day" },
+  { value: "Day-Night", get ne() { return tFor("ne", "ui.panchanga.day_night"); }, get en() { return tFor("en", "ui.panchanga.day_night"); } },
+  { value: "Calendar Day", get ne() { return tFor("ne", "ui.panchanga.calendar_day"); }, get en() { return tFor("en", "ui.panchanga.calendar_day"); } },
 ];
 
 function toggleLabelStyle(metrics: ReturnType<typeof dayCycleToggleMetrics>): TextStyle {
@@ -52,7 +53,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
     return (
       <Pressable
         onPress={() => onModeChange?.(inactive.value)}
-        accessibilityLabel={pick(`${inactive.ne} मा बदल्नुहोस्`, `Switch to ${inactive.en}`)}
+        accessibilityLabel={pick(tFor(undefined, "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${inactive.en}`)}
         className={cn("items-center justify-center active:bg-muted", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleSingle)}
         style={[shell, { paddingHorizontal: padX }]}
       >

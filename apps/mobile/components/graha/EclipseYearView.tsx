@@ -1,92 +1,57 @@
-import { useQuery } from "@tanstack/react-query";
 import { View } from "react-native";
+import { useEclipsePage, type EclipseKind } from "@vedic-patro/features/graha";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { cn } from "@vedic-patro/domain/utils";
 import { AppShell } from "@/components/AppShell";
-import {
-  AllElementsLink,
-  GrahaBanner,
-  GrahaDescription,
-} from "@/components/graha/GrahaPageParts";
+import { AllElementsLink, GrahaBanner, GrahaDescription } from "@/components/graha/GrahaPageParts";
 import { EclipseCard, EmptyHint } from "@/components/graha/GrahaEventCards";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
-import { fetchEclipseYear, grahaDetailKeys } from "@/lib/api";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
-import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
-import { cn } from "@vedic-patro/domain/utils";
 
-const CONFIG = {
-  solar: {
-    pageId: "surya-grahan" as const,
-    icon: "sunny-outline" as const,
-    titleNe: "सूर्य ग्रहण",
-    titleEn: "Solar eclipse",
-    blurbNe:
-      "वर्षभरका सूर्य ग्रहण — प्रकार, चरम समय र नेपालबाट देखिने/नदेखिने।",
-    blurbEn:
-      "Solar eclipses for the year — type, maximum time, and visibility from Nepal.",
-  },
-  lunar: {
-    pageId: "chandra-grahan" as const,
-    icon: "moon-outline" as const,
-    titleNe: "चन्द्र ग्रहण",
-    titleEn: "Lunar eclipse",
-    blurbNe:
-      "वर्षभरका चन्द्र ग्रहण — प्रकार, चरम समय र नेपालबाट देखिने/नदेखिने।",
-    blurbEn:
-      "Lunar eclipses for the year — type, maximum time, and visibility from Nepal.",
-  },
-};
-
-export function EclipseYearView({ kind }: { kind: "solar" | "lunar" }) {
-  const { pick } = useLocale();
+/** Solar / lunar eclipses — the app's drawing of `useEclipsePage` (@vedic-patro/features). */
+export function EclipseYearView({ kind }: { kind: EclipseKind }) {
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
-  const cfg = CONFIG[kind];
-
-  const query = useQuery({
-    queryKey: grahaDetailKeys.eclipse(kind, year, location.params, era),
-    queryFn: () => fetchEclipseYear(kind, year, location.params, era),
-    staleTime: 1000 * 60 * 30,
-  });
-
+  const page = useEclipsePage(kind, { year, era, location: location.params });
   const cols = width >= 768 ? 2 : 1;
 
   return (
-    <AppShell title={pick(cfg.titleNe, cfg.titleEn)} showHeader={false}>
-      <GrahaBanner icon={cfg.icon} title={pick(cfg.titleNe, cfg.titleEn)} blurb={pick(cfg.blurbNe, cfg.blurbEn)} />
+    <AppShell title={page.copy.title} showHeader={false}>
+      <GrahaBanner icon={kind === "solar" ? "sunny-outline" : "moon-outline"} title={page.copy.title} blurb={page.copy.blurb} />
 
       <PatroYearNavBlock
         era={era}
         onEraChange={setEra}
         year={year}
         onYearChange={setYear}
+        gregorianRange={page.gregorianRange}
         location={location}
         onLocationChange={setLocation}
         onToday={() => setYear(getCurrentBs().year)}
       />
 
-      {query.isLoading && !query.data ? (
+      {page.status === "loading" ? (
         <LoadingState />
-      ) : query.isError ? (
+      ) : page.status === "error" ? (
         <ErrorState />
-      ) : !query.data?.events?.length ? (
-        <EmptyHint ne="यो वर्षमा ग्रहण छैन" en="No eclipses this year" />
+      ) : !page.cards.length ? (
+        <EmptyHint text={page.copy.none} />
       ) : (
         <View className={cn("flex-row flex-wrap", grahaClasses.eclipseGrid)}>
-          {query.data.events.map((ev, i) => (
-            <View key={`${ev.date_ad ?? ev.date_jd_date ?? i}-${i}`} style={{ width: cols === 2 ? "48%" : "100%" }}>
-              <EclipseCard ev={ev} pageId={cfg.pageId} />
+          {page.cards.map((card) => (
+            <View key={card.key} style={{ width: cols === 2 ? "48%" : "100%" }}>
+              <EclipseCard card={card} />
             </View>
           ))}
         </View>
       )}
 
-      <GrahaDescription pageId={cfg.pageId} />
+      <GrahaDescription pageId={page.descriptionPageId} />
       <AllElementsLink />
     </AppShell>
   );

@@ -1,16 +1,13 @@
-import { useMemo } from "react";
 import { Pause, Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { bilingualText, useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
-import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
+import { playsFromFullRecording, useShlokaCard } from "@vedic-patro/features/documents";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { formatVedaCite, type Shloka } from "@/lib/documents-api";
+import type { Shloka } from "@/lib/documents-api";
 import type { ShlokaPlayerState } from "@/hooks/use-shloka-player";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
@@ -31,40 +28,24 @@ interface Props {
  * scrolled into view and highlighted while its audio plays.
  */
 export function ShlokaCard({ shloka, player, fullRecording }: Props) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
   const isActive = player.activeId === shloka.id;
-  const playsFromFull =
-    !shloka.audio_url && fullRecording != null && shloka.full_audio_start != null;
-  const canPlay = Boolean(shloka.audio_url) || playsFromFull;
+  const playsFromFull = fullRecording != null && playsFromFullRecording(shloka, true);
   const isPlaying = isActive && (playsFromFull ? fullRecording!.playing : player.playing);
-  const meaningOpen = player.openMeaningIds.has(shloka.id);
-  const meaning = bilingualText(lang, shloka.meaning_ne, shloka.meaning_en, "");
-  const accordionValue = meaningOpen ? "meaning" : "";
-  const isClosing =
-    shloka.verse_label.startsWith("इति") || shloka.verse_label === "ध्यानम्";
-  // Procedure text (Nepali टीका / सामग्री lists) rather than a mantra — e.g. the
-  // Agni Sthapana Vidhi. Rendered as readable instructions, not as a verse.
-  const isNote = /^(टीका|सामग्री)/.test(shloka.verse_label);
-  const vedaCite = formatVedaCite(shloka.veda_cite, lang);
-  const shlokaDomId = `shloka-${shloka.verse_label.replace(/\s+/g, "-")}`;
-
-  // Estimated word timing — see lib/word-tracking.ts.
-  const wordTrack = useMemo(() => buildWordTrack(shloka.sanskrit), [shloka.sanskrit]);
-  const { tokens } = wordTrack;
-  // From the full recording there is no per-clip time/duration, only the
-  // verse's progress between its start and end timestamps.
-  const verseFraction = playsFromFull
-    ? player.progress
-    : player.duration > 0
-      ? player.currentTime / player.duration
-      : -1;
-  const activeTokenIndex = isPlaying ? activeTokenAt(wordTrack, verseFraction) : -1;
+  const card = useShlokaCard({
+    shloka,
+    isActive,
+    isPlaying,
+    playsFromFull,
+    progress: player.progress,
+    clip: { currentTime: player.currentTime, duration: player.duration },
+  });
+  const { canPlay, isClosing, isNote, vedaCite, meaning } = card;
+  const accordionValue = player.openMeaningIds.has(shloka.id) ? "meaning" : "";
 
   return (
     <section
       ref={(el) => player.registerItemRef(shloka.id, el)}
-      id={shlokaDomId}
+      id={card.domId}
       className={cn(
         documentsClasses.verse,
         "scroll-mt-24 min-w-0 max-w-full [overflow-wrap:anywhere] transition-colors",
@@ -80,7 +61,7 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
             onClick={() =>
               playsFromFull ? fullRecording!.toggleAt(shloka.id) : player.toggle(shloka.id)
             }
-            aria-label={t(isPlaying ? "documents.pause_verse" : "documents.play_verse")}
+            aria-label={card.copy.play}
             className={cn(
               documentsClasses.versePlay,
               "transition-colors",
@@ -127,8 +108,8 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
               isNote && "whitespace-pre-line",
             )}
           >
-            {tokens.map((tok, i) =>
-              i === activeTokenIndex ? (
+            {card.tokens.map((tok, i) =>
+              i === card.activeTokenIndex ? (
                 <span
                   key={i}
                   className={cn(documentsClasses.verseWord, "transition-colors duration-150")}
@@ -140,15 +121,15 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
               ),
             )}
           </p>
-          {lang !== "ne" && shloka.transliteration ? (
-            <p className={documentsClasses.verseTranslit}>{shloka.transliteration}</p>
+          {card.transliteration ? (
+            <p className={documentsClasses.verseTranslit}>{card.transliteration}</p>
           ) : null}
 
           {isActive ? (
             <div className={documentsClasses.verseProgress}>
               <div
                 className={cn(documentsClasses.verseProgressFill, "transition-[width]")}
-                style={{ width: `${Math.round(player.progress * 100)}%` }}
+                style={{ width: `${card.progressPct}%` }}
               />
             </div>
           ) : null}
@@ -163,7 +144,7 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
             >
               <AccordionItem value="meaning" className="border-none">
                 <AccordionTrigger className={cn(documentsClasses.verseMeaningToggle, documentsClasses.verseMeaningToggleText, "w-fit hover:no-underline")}>
-                  {t("documents.meaning")}
+                  {card.copy.meaning}
                 </AccordionTrigger>
                 <AccordionContent className={cn(documentsClasses.verseMeaning, "whitespace-pre-line")}>
                   {meaning}

@@ -7,39 +7,13 @@ import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
+import { useBhavaDetail, useBhavaDialogCopy } from "@vedic-patro/features/kundali";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { BhavaReferencePayload } from "@/lib/api";
-import {
-  HOUSE_ORDINAL_NE,
-  HOUSE_ORDINAL_EN,
-  HOUSE_LORD_TITLE_NE,
-  computeAspectedBy,
-  splitList,
-} from "@vedic-patro/domain/kundali/bhava-detail";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { subsetsOf3 } from "@vedic-patro/domain/kundali/bhava-detail";
 import { space, spaceUnit } from "@vedic-patro/design-tokens";
-
-function grahaName(key: string, pick: (ne: string, en: string) => string): string {
-  const entry = GRAHA_NAME[key as GrahaKey];
-  return entry ? pick(entry.ne, entry.en) : key;
-}
-
-function joinNames(keys: string[], pick: (ne: string, en: string) => string): string {
-  if (keys.length === 0) return pick("कोही छैन", "None");
-  return keys.map((k) => grahaName(k, pick)).join(", ");
-}
-
-function yutiKey(keys: string[]): string {
-  return [...keys].sort().join("+");
-}
-
-type TabId = "summary" | "lord" | "drishti" | "rules";
 
 /** A compact, always-visible card within a tab. The `right` slot carries the
  * headline fact (a count, a badge) right in the card header. */
@@ -145,95 +119,40 @@ function Collapsible({
   );
 }
 
-function GrahaKarakatvaCard({
-  grahaKey,
-  house,
-  reference,
-  pick,
-  digits,
-  small,
-}: {
-  grahaKey: string;
-  house: number;
-  reference: BhavaReferencePayload;
-  pick: (ne: string, en: string) => string;
-  digits: (v: string | number) => string;
-  small: ReturnType<typeof nepaliTextStyle> | undefined;
-}) {
-  const k = reference.grahaKarakatva[grahaKey];
-  if (!k) return null;
-  const saravali = reference.grahaHouseSaravali[grahaKey]?.[house];
+type Karakatva = ReturnType<typeof useBhavaDetail>["lord"]["karakatva"][number];
+type Small = ReturnType<typeof nepaliTextStyle> | undefined;
 
+function GrahaKarakatvaCard({ card, small }: { card: Karakatva; small: Small }) {
   return (
     <View className="gap-2">
-      <Text className={kundaliDetailClasses.prose.headingBold}>
-        {GRAHA_ICON[grahaKey as GrahaKey] ?? "🪐"} {grahaName(grahaKey, pick)}
-      </Text>
-
-      <ShlokaCard
-        label={pick("कारकत्व श्लोक", "Karakatva shloka")}
-        source={pick(k.shlokaSourceNe, k.shlokaSourceEn)}
-        shloka={k.shloka}
-        small={small}
-      />
-
+      <Text className={kundaliDetailClasses.prose.headingBold} style={small}>{card.title}</Text>
+      <ShlokaCard {...card.shloka} small={small} />
       <View>
-        <Text className={kundaliDetailClasses.prose.heading}>📋 {pick("कारकत्व विषयहरू", "Karakatva subjects")}</Text>
-        <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
-          {pick(k.subjectsNe, k.subjectsEn)}।
-        </Text>
+        <Text className={kundaliDetailClasses.prose.heading}>📋 {card.subjectsLabel}</Text>
+        <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{card.subjects}</Text>
       </View>
-
       <View>
-        <Text className={kundaliDetailClasses.prose.heading}>💡 {pick("ग्रहको महत्व", "Significance")}</Text>
-        <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
-          {pick(k.significanceNe, k.significanceEn)}
-        </Text>
+        <Text className={kundaliDetailClasses.prose.heading}>💡 {card.significanceLabel}</Text>
+        <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{card.significance}</Text>
       </View>
-
       <View className={kundaliDetailClasses.prose.quote}>
         <View className="flex-row items-center justify-between gap-2">
-          <Text className="text-body flex-1 font-semibold text-foreground" style={small}>
-            ⬡ {pick(
-              `भाव ${digits(house)}${house === 1 ? " (लग्न)" : ""} मा ${grahaName(grahaKey, pick)}को फल`,
-              `${grahaName(grahaKey, pick)} in house ${digits(house)}${house === 1 ? " (Lagna)" : ""}`,
-            )}
-          </Text>
-          {saravali && (
-            <View className={cn(kundaliDetailClasses.bhavaDialog.pill, ratingBadgeCls[saravali.rating])}>
-              <Text className={cn("text-body font-semibold", ratingTextCls[saravali.rating])}>
-                {pick(reference.ratingLabel[saravali.rating].ne, reference.ratingLabel[saravali.rating].en)}
-              </Text>
+          <Text className="text-body flex-1 font-semibold text-foreground" style={small}>⬡ {card.placementTitle}</Text>
+          {card.rating ? (
+            <View className={cn(kundaliDetailClasses.bhavaDialog.pill, ratingBadgeCls[card.rating.kind])}>
+              <Text className={cn("text-body font-semibold", ratingTextCls[card.rating.kind])}>{card.rating.label}</Text>
             </View>
-          )}
+          ) : null}
         </View>
-
-        {saravali ? (
-          /* एक भावमा जति ग्रन्थ (सारावली, फलदीपिका, होरासार, जातक पारिजात, ...)
-              उद्धृत छन् ती सबैका श्लोकहरू पहिले लगातार देखाइन्छ (प्रत्येकको आफ्नै
-              ग्रन्थ-सन्दर्भसहित, तर छुट्टै अर्थ/व्याख्या बिना), अनि अन्त्यमा एकपटक
-              मात्र समग्र अर्थ र व्याख्या (`summaryNe`/`summaryEn`) — हरेक ग्रहको
-              लागि सधैं यही एउटै ढाँचा। */
+        {card.summary != null ? (
           <View className="mt-2 gap-2.5">
-            {saravali.entries.map((citation, i) => (
-              <ShlokaCard
-                key={i}
-                source={pick(citation.shlokaSourceNe, citation.shlokaSourceEn)}
-                shloka={citation.shloka}
-                small={small}
-              />
+            {card.citations.map((citation, i) => (
+              <ShlokaCard key={i} {...citation} small={small} />
             ))}
-            <Text className={kundaliDetailClasses.bhavaDialog.summary} style={small}>
-              💡 {pick(saravali.summaryNe, saravali.summaryEn)}
-            </Text>
+            <Text className={kundaliDetailClasses.bhavaDialog.summary} style={small}>💡 {card.summary}</Text>
           </View>
         ) : (
-          <Text className={kundaliDetailClasses.prose.mutedMt15} style={small}>
-            {pick(
-              "यो भाव-ग्रह संयोजनको लागि शास्त्रीय श्लोक अहिले उपलब्ध छैन।",
-              "No classical shloka is available for this house-graha combination yet.",
-            )}
-          </Text>
+          <Text className={kundaliDetailClasses.prose.mutedMt15} style={small}>{card.noShloka}</Text>
         )}
       </View>
     </View>
@@ -248,7 +167,7 @@ type Props = {
 };
 
 export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: Props) {
-  const { pick } = useLocale();
+  const copy = useBhavaDialogCopy();
   const house = houseNumber != null ? houses.find((h) => h.house === houseNumber) : undefined;
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
@@ -275,7 +194,7 @@ export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: P
           <BhavaDetailBody key={house.house} house={house} houses={houses} reference={reference} onClose={onClose} />
         ) : (
           <View className="px-4 py-6">
-            <Text className={kundaliDetailClasses.prose.muted}>{pick("लोड हुँदैछ…", "Loading…")}</Text>
+            <Text className={kundaliDetailClasses.prose.muted}>{copy.loading}</Text>
           </View>
         )
       ) : null}
@@ -294,72 +213,14 @@ function BhavaDetailBody({
   reference: BhavaReferencePayload;
   onClose: () => void;
 }) {
-  const { pick, digits, lang } = useLocale();
-  const colors = useThemeColors();
+  const { lang } = useLocale();
+  const d = useBhavaDetail({ house, houses, reference });
+  const { header, summary, lord, drishti, rules, tab } = d;
   const body = lang === "en" ? undefined : nepaliTextStyle(13);
   const small = lang === "en" ? undefined : nepaliTextStyle(12);
-
-  const info = reference.houseInfo[house.house];
-  const lordKey = reference.rashiLord[house.rashi];
-  const lordHouse = houses.find((h) => h.planets.some((p) => p.key === lordKey))?.house;
-  const bhaveshEntry = lordHouse != null ? reference.bhaveshPhala[house.house]?.[lordHouse] : undefined;
-  const lordTitle = pick(HOUSE_LORD_TITLE_NE[house.house - 1], `Lord of house ${digits(house.house)}`);
-
-  const occupants = house.planets;
-  const aspectedBy = computeAspectedBy(houses, house.house);
-
-  const beneficPresent = [...occupants.map((p) => p.key), ...aspectedBy].some(
-    (k) => reference.grahaDrishti[k]?.isMalefic === false,
-  );
-  const maleficPresent = [...occupants.map((p) => p.key), ...aspectedBy].some(
-    (k) => reference.grahaDrishti[k]?.isMalefic === true,
-  );
-  const verdictLabel = maleficPresent
-    ? pick("⚠️ ध्यान दिनुपर्ने", "⚠️ Needs attention")
-    : pick("✅ सामान्यतया ठीक", "✅ Generally fine");
-  const verdictCls = maleficPresent
-    ? "border-destructive/30 bg-destructive/10"
-    : "border-emerald-500/30 bg-emerald-500/15";
-  const verdictTextCls = maleficPresent ? "text-destructive" : "text-emerald-700 dark:text-emerald-300";
-
-  const badge = houseBadge(house.house);
-  const ordinal = pick(HOUSE_ORDINAL_NE[house.house - 1], HOUSE_ORDINAL_EN[house.house - 1]);
-  const rashiName = formatRashiByNumber(house.rashi, lang);
-  const lalKitabFixedLord = reference.lalKitabFixedLord[house.house] ?? [];
-
-  const occupantKeys = occupants.map((p) => p.key);
-  const yuti2Entry = occupantKeys.length === 2 ? reference.grahaYuti2[yutiKey(occupantKeys)] : undefined;
-  const yuti3Entries =
-    occupantKeys.length >= 3
-      ? subsetsOf3(occupantKeys)
-          .map((triple) => reference.grahaYuti3[yutiKey(triple)])
-          .filter((e): e is NonNullable<typeof e> => Boolean(e))
-      : [];
-  const showYutiSection = occupantKeys.length >= 2;
-
-  const applicableSutras = reference.naadiSutras
-    .filter((s) => s.grahas.every((g) => occupantKeys.includes(g)))
-    .sort((a, b) => a.number - b.number);
-  const lalKitabEntries = occupants
-    .map((p) => ({ key: p.key, entry: reference.lalKitabHouse[p.key]?.[house.house] }))
-    .filter((e): e is { key: string; entry: NonNullable<typeof e.entry> } => Boolean(e.entry));
-  const lalKitabYutiMatch =
-    occupantKeys.length >= 2 && occupantKeys.length <= 3
-      ? reference.lalKitabYuti.find((y) => yutiKey(y.grahas) === yutiKey(occupantKeys))
-      : undefined;
-
-  const themes = splitList(pick(info.themeNe, info.themeEn));
-  const classicalName = reference.houseClassicalName[house.house];
-  const bodyPart = reference.houseBodyPart[house.house];
-  const houseDetail = reference.houseDetail[house.house];
-
-  const tabs: { id: TabId; icon: string; label: string }[] = [
-    { id: "summary", icon: "📋", label: pick("सारांश", "Summary") },
-    { id: "lord", icon: "👑", label: pick("स्वामी र फल", "Lord & results") },
-    { id: "drishti", icon: "👁️", label: pick("दृष्टि", "Aspects") },
-    { id: "rules", icon: "📚", label: pick("नियम", "Rules") },
-  ];
-  const [tab, setTab] = useState<TabId>("summary");
+  const attention = summary.health.tone === "attention";
+  const verdictCls = attention ? "border-destructive/30 bg-destructive/10" : "border-emerald-500/30 bg-emerald-500/15";
+  const verdictTextCls = attention ? "text-destructive" : "text-emerald-700 dark:text-emerald-300";
 
   return (
     <>
@@ -367,46 +228,41 @@ function BhavaDetailBody({
         <View className="flex-row items-center justify-between">
           <View className="flex-1 flex-row flex-wrap items-center gap-2">
             <View className={kundaliDetailClasses.bhavaDialog.headerBadge}>
-              <Text className={kundaliDetailClasses.bhavaDialog.headerBadgeText}>{digits(house.house)}</Text>
+              <Text className={kundaliDetailClasses.bhavaDialog.headerBadgeText}>{header.number}</Text>
             </View>
             <Text className={kundaliDetailClasses.prose.headingBold} style={lang === "en" ? undefined : nepaliTextStyle(16)}>
-              {ordinal} {pick("भाव", "house")}
-              {classicalName && (
-                <Text className="text-body font-normal text-muted-foreground">
-                  {" "}· {pick(classicalName.ne, classicalName.en)}
-                </Text>
-              )}
+              {header.title}
+              {header.classicalName ? (
+                <Text className="text-body font-normal text-muted-foreground"> · {header.classicalName}</Text>
+              ) : null}
             </Text>
           </View>
           <Pressable
             onPress={onClose}
             accessibilityRole="button"
-            accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+            accessibilityLabel={d.close}
             className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-muted/60"
           >
             <Text className={kundaliDetailClasses.prose.muted}>✕</Text>
           </Pressable>
         </View>
-        <Text className={kundaliDetailClasses.prose.muted} style={small}>
-          {themes.join(" · ")}
-        </Text>
+        <Text className={kundaliDetailClasses.prose.muted} style={small}>{header.themes}</Text>
       </View>
 
-      {/* Tabs replace the old single long stacked-section list — only one
-          group is on screen at a time. */}
+      {/* Only one group is on screen at a time. */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        /* A ScrollView grows by default; in the now fixed-height sheet that
+        /* A ScrollView grows by default; in the fixed-height sheet that
            stretched the tab row to fill it. Pin it to its content height. */
         style={{ flexGrow: 0, flexShrink: 0 }}
         className={kundaliDetailClasses.bhavaDialog.tabBar}
         contentContainerStyle={{ paddingHorizontal: space.md, paddingVertical: space.sm, gap: space.xs, alignItems: "center" }}
       >
-        {tabs.map((t) => (
+        {d.tabs.map((t) => (
           <Pressable
             key={t.id}
-            onPress={() => setTab(t.id)}
+            onPress={() => d.setTab(t.id)}
             className={cn(
               kundaliDetailClasses.bhavaDialog.tab,
               tab === t.id ? kundaliDetailClasses.bhavaDialog.tabActive : kundaliDetailClasses.bhavaDialog.tabIdle,
@@ -422,397 +278,242 @@ function BhavaDetailBody({
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spaceUnit * 3.5, gap: space.md }}>
         {tab === "summary" && (
           <>
-            {/* यस भावमा — occupying grahas, condensed */}
             <Block
               icon="🪐"
-              title={pick("यस भावमा", "Occupants")}
-              right={
-                occupants.length === 0 ? (
-                  <Text className={kundaliDetailClasses.prose.muted}>{pick("रिक्त", "Empty")}</Text>
-                ) : undefined
-              }
+              title={summary.occupantsTitle}
+              right={summary.occupantsRight ? <Text className={kundaliDetailClasses.prose.muted}>{summary.occupantsRight}</Text> : undefined}
             >
               <View className={cn(kundaliDetailClasses.bhavaDialog.rowWrap, "flex-row")}>
                 <Text className="text-body" style={small}>
-                  <Text className={kundaliDetailClasses.prose.heading}>
-                    {digits(house.rashi)} {rashiName}
-                  </Text>{" "}
-                  {pick("राशि", "sign")}
+                  <Text className={kundaliDetailClasses.prose.heading}>{summary.sign}</Text> {summary.signLabel}
                 </Text>
                 <Text className="text-border">·</Text>
                 <Text className="text-body" style={small}>
-                  {pick("स्वामी", "Lord")} <Text className="text-body font-semibold text-secondary">{grahaName(lordKey, pick)}</Text>
+                  {summary.lordLabel} <Text className="text-body font-semibold text-secondary">{summary.lord}</Text>
                 </Text>
-                {badge && (
+                {summary.badge ? (
                   <>
                     <Text className="text-border">·</Text>
-                    <Text className={kundaliDetailClasses.prose.muted}>{formatHouseBadge(badge, lang)}</Text>
+                    <Text className={kundaliDetailClasses.prose.muted}>{summary.badge}</Text>
                   </>
-                )}
+                ) : null}
               </View>
-              {occupants.length > 0 ? (
+              {summary.occupants.length > 0 ? (
                 <View className="gap-1.5">
-                  {occupants.map((p) => {
-                    const k = reference.grahaKarakatva[p.key];
-                    const subjects = k ? splitList(pick(k.subjectsNe, k.subjectsEn)).slice(0, 3).join(" · ") : "";
-                    return (
-                      <View key={p.key}>
-                        <Text className={kundaliDetailClasses.prose.heading} style={small}>{grahaName(p.key, pick)}</Text>
-                        {subjects ? (
-                          <Text className={kundaliDetailClasses.prose.muted} style={small}>{subjects}</Text>
-                        ) : null}
-                      </View>
-                    );
-                  })}
+                  {summary.occupants.map((p) => (
+                    <View key={p.key}>
+                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{p.name}</Text>
+                      {p.subjects ? <Text className={kundaliDetailClasses.prose.muted} style={small}>{p.subjects}</Text> : null}
+                    </View>
+                  ))}
                 </View>
               ) : (
-                <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>
-                  {pick(
-                    `कुनै ग्रह छैन — राशि स्वामी ${grahaName(lordKey, pick)}को स्थिति हेर्नुहोस्।`,
-                    `No graha here — see the placement of ${grahaName(lordKey, pick)}, this house's ruling graha.`,
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>{summary.noOccupants}</Text>
               )}
             </Block>
 
-            {/* स्वास्थ्य संकेत — the headline verdict */}
             <Block
               icon="🩺"
-              title={pick("स्वास्थ्य संकेत", "Health signals")}
+              title={summary.health.title}
               right={
                 <View className={cn(kundaliDetailClasses.bhavaDialog.pillInline, "flex-row", verdictCls)}>
-                  <Text className={cn("text-body font-semibold", verdictTextCls)}>{verdictLabel}</Text>
+                  <Text className={cn("text-body font-semibold", verdictTextCls)}>{summary.health.verdict}</Text>
                 </View>
               }
             >
               <Text className={kundaliDetailClasses.prose.body} style={small}>
-                <Text className={kundaliDetailClasses.prose.heading}>{pick("अंग:", "Parts:")}</Text>{" "}
-                {pick(info.medicalNe, info.medicalEn)}
+                <Text className={kundaliDetailClasses.prose.heading}>{summary.health.partsLabel}</Text> {summary.health.parts}
               </Text>
-              {bodyPart && (
-                <Text className={kundaliDetailClasses.prose.mutedMt1} style={small}>
-                  {pick(bodyPart.ne, bodyPart.en)}
-                </Text>
-              )}
-              {!maleficPresent && !beneficPresent && (
-                <Text className={kundaliDetailClasses.prose.mutedMt1} style={small}>
-                  {pick("यस भावमा कुनै ग्रहको दृष्टि वा उपस्थिति छैन।", "No graha occupies or aspects this house.")}
-                </Text>
-              )}
+              {summary.health.bodyPart ? (
+                <Text className={kundaliDetailClasses.prose.mutedMt1} style={small}>{summary.health.bodyPart}</Text>
+              ) : null}
+              {summary.health.quiet ? (
+                <Text className={kundaliDetailClasses.prose.mutedMt1} style={small}>{summary.health.quiet}</Text>
+              ) : null}
             </Block>
 
-            {/* भावको स्थायी जानकारी — the full house-by-house reference notes */}
-            {houseDetail && (
-              <Block icon="📖" title={pick("भावको स्थायी जानकारी", "General house reference")}>
-                <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                  {pick(houseDetail.titlesNe, houseDetail.titlesEn)}
-                </Text>
+            {summary.reference ? (
+              <Block icon="📖" title={summary.reference.title}>
+                <Text className={kundaliDetailClasses.prose.muted} style={small}>{summary.reference.titles}</Text>
                 <Text className="text-body mt-1.5" style={small}>
-                  {pick("स्वाभाविक कारक", "Natural significator")}:{" "}
-                  <Text className={kundaliDetailClasses.prose.heading}>
-                    {pick(houseDetail.naturalNe, houseDetail.naturalEn)}
-                  </Text>
+                  {summary.reference.naturalLabel}: <Text className={kundaliDetailClasses.prose.heading}>{summary.reference.natural}</Text>
                 </Text>
-                <Text className={kundaliDetailClasses.prose.bodyMt2} style={body}>
-                  {pick(houseDetail.descriptionNe, houseDetail.descriptionEn)}
-                </Text>
-                {/* कालपुरुष कुण्डली अनुसार — यो सधैं मेष लग्न मानेर गणना गरिएको आदर्श/सैद्धान्तिक
-                    राशि-स्वामी हो, यस जातकको वास्तविक राशि/स्वामी होइन (त्यो माथि हेडरमा
-                    देखिन्छ)। दुवैलाई एउटै लेबलमा नराखिएकाले यहाँ छुट्टै र स्पष्ट चिनो दिइएको छ। */}
-                <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                  {pick(
-                    `कालपुरुष कुण्डली अनुसार यो भाव ${houseDetail.signNe} राशिसँग मेल खान्छ (राशि स्वामी ${houseDetail.lordNe}) — यो यस जातकको वास्तविक राशि होइन, माथिको भावको वास्तविक राशि/स्वामी हेर्नुहोस्।`,
-                    `In the Kalapurusha (natural zodiac) chart this house corresponds to ${houseDetail.signEn} (ruled by ${houseDetail.lordEn}) — that's not this native's actual sign; see the real sign/lord for this house above.`,
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.bodyMt2} style={body}>{summary.reference.description}</Text>
+                {/* The Kalapurusha (natural zodiac, Mesha lagna) sign/lord — not this native's own. */}
+                <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>{summary.reference.kalapurusha}</Text>
                 <View className="mt-2">
-                  <ShlokaCard
-                    label={pick("शास्त्रीय प्रमाण", "Classical citation")}
-                    source={pick(houseDetail.shlokaSourceNe, houseDetail.shlokaSourceEn)}
-                    shloka={houseDetail.shloka}
-                    small={small}
-                  />
+                  <ShlokaCard {...summary.reference.shloka} small={small} />
                 </View>
-                <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                  {pick(
-                    "ग्रहको वास्तविक प्रभाव यसको भावेशत्व, बल, दृष्टि, संयोजन, अस्त/वक्री जस्ता अवस्थामा भर पर्छ — तल दिइएको सामान्य शुभ/पाप वर्गीकरण एउटा आधारभूत सिद्धान्त मात्र हो, अनिवार्य नियम होइन।",
-                    "A graha's actual effect depends on its lordship, strength, aspects, conjunctions, combustion/retrogression and more — the general benefic/malefic classification below is only a baseline classical principle, not an unconditional rule.",
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>{summary.reference.effectNote}</Text>
                 <Text className={kundaliDetailClasses.prose.bodyMt15} style={small}>
-                  <Text className="text-body font-semibold text-emerald-600 dark:text-emerald-400">
-                    {pick("शुभ ग्रह", "Benefic grahas")} ({pick(houseDetail.beneficGrahasNe, houseDetail.beneficGrahasEn)}):
-                  </Text>{" "}
-                  {pick(houseDetail.beneficEffectNe, houseDetail.beneficEffectEn)}
+                  <Text className="text-body font-semibold text-emerald-600 dark:text-emerald-400">{summary.reference.benefic.label}</Text>{" "}
+                  {summary.reference.benefic.text}
                 </Text>
                 <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
-                  <Text className="text-body font-semibold text-destructive">
-                    {pick("पापग्रह", "Malefic grahas")} ({pick(houseDetail.maleficGrahasNe, houseDetail.maleficGrahasEn)}):
-                  </Text>{" "}
-                  {pick(houseDetail.maleficEffectNe, houseDetail.maleficEffectEn)}
+                  <Text className="text-body font-semibold text-destructive">{summary.reference.malefic.label}</Text>{" "}
+                  {summary.reference.malefic.text}
                 </Text>
               </Block>
-            )}
+            ) : null}
           </>
         )}
 
         {tab === "lord" && (
           <>
-            {/* ग्रह फलादेश */}
             <Block
               icon="🪐"
-              title={pick("ग्रह फलादेश", "Graha in this house")}
-              right={occupants.length > 0 ? <Text className={kundaliDetailClasses.prose.muted}>{digits(occupants.length)}</Text> : undefined}
+              title={lord.grahasTitle}
+              right={lord.grahasCount ? <Text className={kundaliDetailClasses.prose.muted}>{lord.grahasCount}</Text> : undefined}
             >
-              {occupants.length > 0 ? (
+              {lord.karakatva.length > 0 ? (
                 <View className="gap-4">
-                  {occupants.map((p) => (
-                    <GrahaKarakatvaCard
-                      key={p.key}
-                      grahaKey={p.key}
-                      house={house.house}
-                      reference={reference}
-                      pick={pick}
-                      digits={digits}
-                      small={small}
-                    />
+                  {lord.karakatva.map((card) => (
+                    <GrahaKarakatvaCard key={card.key} card={card} small={small} />
                   ))}
                 </View>
               ) : (
-                <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                  {pick(
-                    "यस भावमा कुनै ग्रह नभएकाले ग्रह फलादेश छैन।",
-                    "No graha occupies this house, so there's no graha-in-house reading.",
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.muted} style={small}>{lord.noGrahas}</Text>
               )}
             </Block>
 
-            {/* भावेश सम्बन्ध — this house's real lord and where it sits */}
             <Block
               icon="👑"
-              title={pick("भावेश सम्बन्ध", "Lord placement")}
-              right={
-                lordHouse != null ? (
-                  <Text className={kundaliDetailClasses.prose.muted}>{pick(`${digits(lordHouse)}औँ भाव`, `house ${digits(lordHouse)}`)}</Text>
-                ) : undefined
-              }
+              title={lord.placementTitle}
+              right={lord.placementRight ? <Text className={kundaliDetailClasses.prose.muted}>{lord.placementRight}</Text> : undefined}
             >
-              {lordHouse != null ? (
+              {lord.placement ? (
                 <Text className="text-body" style={small}>
-                  <Text className={kundaliDetailClasses.prose.heading}>{lordTitle}</Text>{" "}
-                  <Text className="text-body font-semibold text-secondary">{grahaName(lordKey, pick)}</Text> →{" "}
-                  {pick(`${digits(lordHouse)}औँ भाव`, `house ${digits(lordHouse)}`)}
+                  <Text className={kundaliDetailClasses.prose.heading}>{lord.placement.title}</Text>{" "}
+                  <Text className="text-body font-semibold text-secondary">{lord.placement.lord}</Text> → {lord.placement.where}
                 </Text>
               ) : (
-                <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                  {pick(
-                    `राशि स्वामी ${grahaName(lordKey, pick)} यो D1 चार्टमा फेला परेन।`,
-                    `Sign lord ${grahaName(lordKey, pick)} wasn't found placed in this D1 chart.`,
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.muted} style={small}>{lord.lordMissing}</Text>
               )}
-              {lordHouse != null &&
-                (bhaveshEntry ? (
-                  <View className="mt-2 gap-1.5">
-                    {bhaveshEntry.shloka && (
-                      <ShlokaCard
-                        source={pick("बृ.पा.हो.शा. (भावेशफलाध्याय)", "BPHS (ch. 13)")}
-                        shloka={bhaveshEntry.shloka}
-                        small={small}
-                      />
-                    )}
-                    <Text className={kundaliDetailClasses.prose.body} style={small}>{pick(bhaveshEntry.ne, bhaveshEntry.en)}</Text>
-                    <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                      {pick(`स्रोत: ${reference.bhaveshPhalaSource}`, `Source: ${reference.bhaveshPhalaSource}`)}
-                    </Text>
-                  </View>
+              {lord.bhavesh ? (
+                "comingSoon" in lord.bhavesh ? (
+                  <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>🚧 {lord.bhavesh.comingSoon}</Text>
                 ) : (
-                  <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                    🚧 {pick("चाँडै आउँदैछ", "Coming soon")}
-                  </Text>
-                ))}
+                  <View className="mt-2 gap-1.5">
+                    {lord.bhavesh.shloka ? <ShlokaCard {...lord.bhavesh.shloka} small={small} /> : null}
+                    <Text className={kundaliDetailClasses.prose.body} style={small}>{lord.bhavesh.text}</Text>
+                    <Text className={kundaliDetailClasses.prose.muted} style={small}>{lord.bhavesh.source}</Text>
+                  </View>
+                )
+              ) : null}
             </Block>
 
-            {/* ग्रह युति फल — shown only when 2+ grahas share this house */}
-            {showYutiSection && (
-              <Block icon="👥" title={pick("ग्रह युति फल", "Graha conjunction (yuti) result")}>
+            {lord.yuti ? (
+              <Block icon="👥" title={lord.yuti.title}>
                 <View className="gap-3">
-                  {yuti2Entry && (
+                  {lord.yuti.pair ? (
                     <View className={kundaliDetailClasses.prose.quote}>
                       <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                        {joinNames(occupantKeys, pick)}
-                        {yuti2Entry.yogaNameNe && (
-                          <Text className="text-body font-normal text-muted-foreground">
-                            {" "}
-                            ({pick(yuti2Entry.yogaNameNe, yuti2Entry.yogaNameEn ?? yuti2Entry.yogaNameNe)})
-                          </Text>
-                        )}
+                        {lord.yuti.pair.names}
+                        {lord.yuti.pair.yoga ? (
+                          <Text className="text-body font-normal text-muted-foreground"> ({lord.yuti.pair.yoga})</Text>
+                        ) : null}
                       </Text>
-                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{pick(yuti2Entry.textNe, yuti2Entry.textEn)}</Text>
+                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{lord.yuti.pair.text}</Text>
                     </View>
-                  )}
-                  {yuti3Entries.map((entry) => (
-                    <View key={yutiKey(entry.grahas)} className={kundaliDetailClasses.prose.quote}>
-                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{joinNames(entry.grahas, pick)}</Text>
-                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{pick(entry.textNe, entry.textEn)}</Text>
+                  ) : null}
+                  {lord.yuti.triples.map((entry) => (
+                    <View key={entry.key} className={kundaliDetailClasses.prose.quote}>
+                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{entry.names}</Text>
+                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{entry.text}</Text>
                     </View>
                   ))}
-                  {occupantKeys.length >= 3 && (
-                    <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>
-                      {pick(reference.grahaYutiGeneralRule.ne, reference.grahaYutiGeneralRule.en)}
-                    </Text>
-                  )}
-                  {!yuti2Entry && yuti3Entries.length === 0 && occupantKeys.length < 3 && (
-                    <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                      {pick(
-                        "यो विशेष ग्रह-युतिको लागि सन्दर्भ अहिले उपलब्ध छैन।",
-                        "No reference is available for this specific graha combination yet.",
-                      )}
-                    </Text>
-                  )}
+                  {lord.yuti.generalRule ? (
+                    <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>{lord.yuti.generalRule}</Text>
+                  ) : null}
+                  {lord.yuti.none ? <Text className={kundaliDetailClasses.prose.muted} style={small}>{lord.yuti.none}</Text> : null}
                 </View>
               </Block>
-            )}
+            ) : null}
           </>
         )}
 
         {tab === "drishti" && (
-          <Block icon="👁️" title={pick("दृष्टि", "Aspects")}>
-            {occupants.length > 0 ? (
+          <Block icon="👁️" title={drishti.title}>
+            {drishti.outgoing.length > 0 ? (
               <View className="gap-1.5">
-                {occupants.map((p) => {
-                  const targets = drishtiTargetHouses(p.key, house.house);
-                  return (
-                    <Text key={p.key} className="text-body" style={small}>
-                      <Text className={kundaliDetailClasses.prose.heading}>{grahaName(p.key, pick)}</Text>
-                      {" → "}
-                      {targets.map((t) => pick(`${digits(t)}औँ`, digits(t))).join(" · ")} {pick("भाव", "house")}
-                    </Text>
-                  );
-                })}
+                {drishti.outgoing.map((p) => (
+                  <Text key={p.key} className="text-body" style={small}>
+                    <Text className={kundaliDetailClasses.prose.heading}>{p.name}</Text>
+                    {" → "}
+                    {p.targets}
+                  </Text>
+                ))}
               </View>
             ) : (
-              <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                {pick(
-                  "यस भावमा कुनै ग्रह नभएकाले यहाँबाट बाहिर दृष्टि पर्दैन।",
-                  "No graha occupies this house, so it casts no aspect outward.",
-                )}
-              </Text>
+              <Text className={kundaliDetailClasses.prose.muted} style={small}>{drishti.noOutgoing}</Text>
             )}
             <View className={kundaliDetailClasses.prose.divider}>
-              <Text className={kundaliDetailClasses.prose.headingMb15} style={small}>
-                {pick("सबै दृष्टि", "All aspects")}
-              </Text>
-              {aspectedBy.length > 0 ? (
+              <Text className={kundaliDetailClasses.prose.headingMb15} style={small}>{drishti.allTitle}</Text>
+              {drishti.incoming.length > 0 ? (
                 <View className="gap-2">
-                  <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                    {pick("यस भावमा दृष्टि गर्ने ग्रहहरू:", "Grahas aspecting this house:")}
-                  </Text>
-                  {aspectedBy.map((k) => {
-                    const d = reference.grahaDrishti[k];
-                    return (
-                      <View key={k}>
-                        <Text className={kundaliDetailClasses.prose.heading} style={small}>{grahaName(k, pick)}</Text>
-                        {d && (
-                          <Text className={kundaliDetailClasses.prose.bodyMutedMt05} style={small}>
-                            {pick(d.summaryNe, d.summaryEn)}
-                          </Text>
-                        )}
-                      </View>
-                    );
-                  })}
+                  <Text className={kundaliDetailClasses.prose.heading} style={small}>{drishti.incomingTitle}</Text>
+                  {drishti.incoming.map((g) => (
+                    <View key={g.key}>
+                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{g.name}</Text>
+                      {g.summary ? <Text className={kundaliDetailClasses.prose.bodyMutedMt05} style={small}>{g.summary}</Text> : null}
+                    </View>
+                  ))}
                 </View>
               ) : (
-                <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                  {pick("यस भावमा कुनै ग्रहको दृष्टि पर्दैन।", "No graha aspects this house.")}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.muted} style={small}>{drishti.noIncoming}</Text>
               )}
             </View>
           </Block>
         )}
 
         {tab === "rules" && (
-          <Block icon="📚" title={pick("सम्बन्धित नियम", "Related rules")}>
-            <Collapsible title={pick("भृगु नाडी सूत्र", "Brighu Naadi sutras")} right={digits(applicableSutras.length)}>
-              {applicableSutras.length > 0 ? (
+          <Block icon="📚" title={rules.title}>
+            <Collapsible title={rules.sutrasTitle} right={rules.sutrasCount}>
+              {rules.sutras.length > 0 ? (
                 <View className="gap-3">
-                  {applicableSutras.map((s) => (
-                    <View key={s.number} className={kundaliDetailClasses.prose.quote}>
-                      <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                        {pick(`सूत्र ${digits(s.number)} — ${s.titleNe}`, `Sutra ${digits(s.number)} — ${s.titleEn}`)}
-                      </Text>
-                      <Text className={kundaliDetailClasses.prose.muted} style={small}>{pick(s.categoryNe, s.categoryEn)}</Text>
-                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{pick(s.bodyNe, s.bodyEn)}</Text>
+                  {rules.sutras.map((s) => (
+                    <View key={s.key} className={kundaliDetailClasses.prose.quote}>
+                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{s.title}</Text>
+                      <Text className={kundaliDetailClasses.prose.muted} style={small}>{s.category}</Text>
+                      <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{s.body}</Text>
                     </View>
                   ))}
                 </View>
               ) : (
-                <Text className={kundaliDetailClasses.prose.muted} style={small}>
-                  {pick(
-                    "यस भावमा कुनै ग्रह नभएकाले लागू हुने भृगु नाडी सूत्र देखिएका छैनन्।",
-                    "No Brighu Naadi sutras apply, since no graha occupies this house.",
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.muted} style={small}>{rules.noSutras}</Text>
               )}
-              <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                {pick(`स्रोत: ${reference.naadiSutraSource}`, `Source: ${reference.naadiSutraSource}`)}
-              </Text>
+              <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>{rules.sutraSource}</Text>
             </Collapsible>
 
-            <Collapsible title={pick("लाल किताब", "Lal Kitab")} right={digits(lalKitabEntries.length)}>
-              {lalKitabEntries.length > 0 ? (
+            <Collapsible title={rules.lalKitabTitle} right={rules.lalKitabCount}>
+              {rules.lalKitab.length > 0 ? (
                 <View className="gap-3">
-                  {lalKitabEntries.map(({ key, entry }) => {
-                    const tip = reference.lalKitabSafetyTips[key];
-                    return (
-                      <View key={key}>
-                        <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                          {GRAHA_ICON[key as GrahaKey] ?? "🪐"} {grahaName(key, pick)} — {pick(`भाव ${digits(house.house)}`, `house ${digits(house.house)}`)}
-                        </Text>
-                        <Text className={kundaliDetailClasses.prose.bodyMt05} style={small}>{pick(entry.ne, entry.en)}</Text>
-                        {tip && (
-                          <Text className={kundaliDetailClasses.prose.bodyMutedMt1} style={small}>
-                            {pick("सुरक्षित व्यवहार:", "Safe practice:")} {pick(tip.ne, tip.en)}
-                          </Text>
-                        )}
-                      </View>
-                    );
-                  })}
+                  {rules.lalKitab.map((e) => (
+                    <View key={e.key}>
+                      <Text className={kundaliDetailClasses.prose.heading} style={small}>{e.title}</Text>
+                      <Text className={kundaliDetailClasses.prose.bodyMt05} style={small}>{e.text}</Text>
+                      {e.tip ? <Text className={kundaliDetailClasses.prose.bodyMutedMt1} style={small}>{e.tip}</Text> : null}
+                    </View>
+                  ))}
                 </View>
               ) : (
-                <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>
-                  {pick(
-                    `यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी ${joinNames(lalKitabFixedLord, pick)}को स्थिति हेर्नुहोस्।`,
-                    `This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of ${joinNames(lalKitabFixedLord, pick)}, this house's fixed (pakka ghar) lord.`,
-                  )}
-                </Text>
+                <Text className={kundaliDetailClasses.prose.bodyMuted} style={small}>{rules.noLalKitab}</Text>
               )}
-              {lalKitabYutiMatch && (
+              {rules.lalKitabYuti ? (
                 <View className={kundaliDetailClasses.prose.quoteTop}>
-                  <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                    {pick("👥 ग्रह युति —", "👥 Graha yuti —")} {joinNames(lalKitabYutiMatch.grahas, pick)}
-                  </Text>
-                  <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
-                    {pick(lalKitabYutiMatch.textNe, lalKitabYutiMatch.textEn)}
-                  </Text>
+                  <Text className={kundaliDetailClasses.prose.heading} style={small}>{rules.lalKitabYuti.title}</Text>
+                  <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{rules.lalKitabYuti.text}</Text>
                 </View>
-              )}
-              <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                {pick("स्रोत: लाल किताब — भाग २–११", "Source: Lal Kitab, parts 2–11")}
-              </Text>
+              ) : null}
+              <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>{rules.lalKitabSource}</Text>
               <View className="mt-2">
-                <Collapsible title={pick("लाल किताबको सुस्थ/दुःस्थ नियम के हो?", "What is Lal Kitab's sustha/dustha rule?")}>
+                <Collapsible title={rules.susthaTitle}>
                   <View className="gap-1.5">
-                    {reference.lalKitabSusthaDustha.map((rule, i) => (
-                      <Text key={i} className={kundaliDetailClasses.prose.body} style={small}>
-                        {pick(rule.ne, rule.en)}
-                      </Text>
+                    {rules.sustha.map((rule, i) => (
+                      <Text key={i} className={kundaliDetailClasses.prose.body} style={small}>{rule}</Text>
                     ))}
                   </View>
-                  <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
-                    {pick(`स्रोत: ${reference.lalKitabRevisionSource}`, `Source: ${reference.lalKitabRevisionSource}`)}
-                  </Text>
+                  <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>{rules.susthaSource}</Text>
                 </Collapsible>
               </View>
             </Collapsible>
@@ -821,7 +522,7 @@ function BhavaDetailBody({
       </ScrollView>
 
       <View className={kundaliDetailClasses.bhavaDialog.footer}>
-        <Button label={pick("बन्द गर्नुहोस्", "Close")} variant="outline" onPress={onClose} />
+        <Button label={d.close} variant="outline" onPress={onClose} />
       </View>
     </>
   );

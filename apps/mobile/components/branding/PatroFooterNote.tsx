@@ -17,20 +17,14 @@ export function PatroFooterNote({
   className?: string;
   paddingHorizontal?: number;
 }) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const place = locationLabel?.trim();
 
   return (
     <Text className={className} style={paddingHorizontal ? { paddingHorizontal } : undefined}>
       {place
-        ? pick(
-            `वैदिक पात्रो · नेपाल पञ्चाङ्ग · गणना स्थान: ${place}`,
-            `Powered by Vedic Patro · Nepal Panchanga · Location ${place}`,
-          )
-        : pick(
-            "वैदिक पात्रो · नेपाल पञ्चाङ्ग · गणना स्थान: काठमाडौं",
-            "Powered by Vedic Patro · Nepal Panchanga · Default location Kathmandu",
-          )}
+        ? t("ui.branding.powered_by_vedic_patro_nepal_panchanga", { place })
+        : t("ui.branding.powered_by_vedic_patro_nepal_panchanga_2")}
     </Text>
   );
 }

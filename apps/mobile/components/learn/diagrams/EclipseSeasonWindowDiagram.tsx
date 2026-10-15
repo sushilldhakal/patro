@@ -61,34 +61,31 @@ const EclipseSeasonWindowScene = memo(function EclipseSeasonWindowScene({ onLabe
 });
 
 export function EclipseSeasonWindowDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const copy = {
-    newMoon: pick("औंसी", "New moon"),
-    fullMoon: pick("पूर्णिमा", "Full moon"),
-    solar: pick("सूर्यग्रहण", "Solar eclipse"),
-    lunar: pick("चन्द्रग्रहण", "Lunar eclipse"),
-    window: pick("ग्रहण ऋतु — करिब ३४ दिन", "Eclipse season — about 34 days"),
+    newMoon: t("ui.learn.new_moon"),
+    fullMoon: t("ui.learn.full_moon"),
+    solar: t("learn.study.eclipse.status_solar"),
+    lunar: t("ui.learn.lunar_eclipse"),
+    window: t("ui.learn.eclipse_season_about_34_days"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — ग्रहण ऋतुको झ्याल", "3D — the eclipse-season window")}
+      title={t("ui.learn.n3d_the_eclipse_season_window")}
       height={210}
       camera={{ yaw: 0, pitch: 0.5 }}
       frame={{ width: 1.4, height: 0.4 }}
       idleSpin={0}
       legend={[
-        { color: midnight.card, label: pick("औंसी → सूर्यग्रहणको सम्भावना", "New moon → possible solar eclipse") },
-        { color: wheel.ink, label: pick("पूर्णिमा → चन्द्रग्रहणको सम्भावना", "Full moon → possible lunar eclipse") },
+        { color: midnight.card, label: t("ui.learn.new_moon_possible_solar_eclipse") },
+        { color: wheel.ink, label: t("ui.learn.full_moon_possible_lunar_eclipse") },
       ]}
       readouts={[
-        { k: pick("झ्यालको लम्बाइ", "Window length"), v: `~${digits(34)} ${pick("दिन", "days")}`, tone: "accent" },
-        { k: pick("औंसी–पूर्णिमा अन्तर", "New-to-full gap"), v: `${digits(FULL_MOON_DAY - NEW_MOON_DAY)} ${pick("दिन", "days")}` },
+        { k: t("ui.learn.window_length"), v: `~${digits(34)} ${t("common.days")}`, tone: "accent" },
+        { k: t("ui.learn.new_to_full_gap"), v: `${digits(FULL_MOON_DAY - NEW_MOON_DAY)} ${t("common.days")}` },
       ]}
-      caption={pick(
-        "जब पात रेखा (राहु–केतु) सूर्यको नजिक पर्छ, त्यसको वरिपरि करिब ३४ दिनको एउटा \"ग्रहण ऋतु\" खुल्छ — यो झ्याल एउटा चान्द्र मासभन्दा अलि लामो भएकाले भित्र प्रायः एउटा औंसी (सूर्यग्रहणको सम्भावना दिने) र एउटा पूर्णिमा (चन्द्रग्रहणको सम्भावना दिने) दुवै पर्छन्, लगभग दुई हप्ता छाडेर।",
-        "When the line of nodes (Rahu–Ketu) is near the Sun, an \"eclipse season\" of about 34 days opens around it. Because this window runs slightly longer than a lunar month, it usually contains both a new moon (a possible solar eclipse) and a full moon (a possible lunar eclipse), roughly two weeks apart.",
-      )}
+      caption={t("ui.learn.when_the_line_of_nodes_rahu")}
     >
       {({ onLabels }) => <EclipseSeasonWindowScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

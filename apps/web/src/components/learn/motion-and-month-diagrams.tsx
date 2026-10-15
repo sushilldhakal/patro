@@ -7,14 +7,15 @@
  * really about proportion, which box characters cannot hold.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* PakshaStrip still calls bilingualText for its one caption built around a
    formatted number; everything else now comes from the catalogue. */
-import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
+import { useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const INK = "currentColor";
 const MARK = illustration.orange50;
 const WARN = illustration.red60;
@@ -317,7 +318,7 @@ export function PakshaStrip() {
       ))}
 
       <text x={W / 2} y={H - 6} textAnchor="middle" className="fill-current text-diagram-2xs opacity-45">
-        {bilingualText(lang, `एक चान्द्र मास — ${n("29.53")} दिन`, `one lunation — ${n("29.53")} days`)}
+        {tFor(lang, "ui.learn.one_lunation_value_days", { value: n("29.53") })}
       </text>
     </Frame>
   );

@@ -187,3 +187,45 @@ export function getRelatedLearnSlugs(pageId: string, limit = RELATED_LEARN_LIMIT
   return [];
 }
 
+
+/** Trailing slash dropped; the root stays "/". */
+export function normalizeSitePath(pathname: string): string {
+  return pathname.replace(/\/$/, "") || "/";
+}
+
+/**
+ * Page id for a path (learn articles, element and sait pages, then each app's
+ * static route table) — the website's resolution, shared with the app. Callers
+ * check their own excluded paths first.
+ */
+export function resolveSitePageIdForPath(
+  pathname: string,
+  params: Record<string, string | undefined>,
+  sitePaths: Record<string, string>,
+): string | null {
+  const path = normalizeSitePath(pathname);
+
+  if (path === "/panchanga") return "panchanga";
+  if (path === "/aakash-gochar") return "aakash-gochar";
+  if (path === "/learn") return "learn-hub";
+  if (path === "/shanti-vidhi") return "shanti-vidhi";
+  if (path === "/vivah-sait") return "vivah-sait";
+
+  if (path.startsWith("/learn/")) {
+    const slug = params.slug ?? path.split("/")[2];
+    return slug ? `learn:${slug}` : "learn-hub";
+  }
+
+  if (path.startsWith("/panchanga/element/")) {
+    const name = params.name ?? path.split("/").pop();
+    return name ? `element:${name}` : null;
+  }
+
+  if (path.startsWith("/sait/")) {
+    const category = params.category ?? path.split("/").pop();
+    return category ? `sait:${category}` : null;
+  }
+
+  const staticEntry = Object.entries(sitePaths).find(([, p]) => p === path);
+  return staticEntry ? staticEntry[0] : null;
+}

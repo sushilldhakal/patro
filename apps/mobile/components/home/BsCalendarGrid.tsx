@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { CalendarDay } from "@/lib/api";
@@ -7,11 +6,9 @@ import { FestivalListSheet } from "@/components/home/FestivalListSheet";
 import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
-import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
-import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
+import { useBsCalendarGrid } from "@vedic-patro/features/home";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { cn } from "@vedic-patro/domain/utils";
 import {
   CALENDAR_GRID_GAP,
@@ -19,18 +16,8 @@ import {
   selectionRingStyle,
   useCalendarGridWidth,
 } from "./calendar-grid-layout";
-import { moonPhaseTitle, getPakshaPhase } from "@vedic-patro/domain/month-grid-moon";
 import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_SHORT = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
-
-function chunk<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = [];
-  for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size));
-  return rows;
-}
 
 type Props = {
   days: CalendarDay[];
@@ -49,11 +36,18 @@ export function BsCalendarGrid({
   publicHolidayDates = new Set(),
   onSelectDay,
   isEnriching,
-  primaryDate = "bs",
+  primaryDate: primaryDateProp = "bs",
 }: Props) {
   const theme = useThemeColors();
-  const { pick, digits, lang } = useLocale();
-  const isEn = lang === "en";
+  const { lang } = useLocale();
+  const grid = useBsCalendarGrid({
+    days,
+    publicHolidayDates,
+    selectedAdDate: selectedAd,
+    todayAd,
+    primaryDate: primaryDateProp,
+  });
+  const { primaryDate } = grid;
   const { isCompact, isPhone, isTablet, width } = useBreakpoint();
   const { onLayout, colWidth } = useCalendarGridWidth();
   const col = (extra?: object) => calendarColStyle(colWidth, extra);
@@ -65,15 +59,7 @@ export function BsCalendarGrid({
   const moonInset = isCompact ? 0 : 4;
   const cellMinH = isPhone ? 80 : isCompact ? 84 : isTablet ? 104 : 96;
 
-  const [festivalDialog, setFestivalDialog] = useState<{
-    day: CalendarDay;
-    festivals: string[];
-  } | null>(null);
-
-  const cells: (CalendarDay | null)[] = [...days];
-  while (cells.length % 7 !== 0) cells.push(null);
-  const rows = chunk(cells, 7);
-  const weekdayLabels = lang === "en" ? WEEKDAYS_EN : isCompact ? WEEKDAYS_SHORT : WEEKDAYS_NE;
+  const weekdays = grid.weekdays;
 
   return (
     <>
@@ -86,8 +72,9 @@ export function BsCalendarGrid({
         style={{ backgroundColor: theme.border, gap: CALENDAR_GRID_GAP }}
       >
         <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
-          {weekdayLabels.map((label, i) => {
-            const weekend = i === 0 || i === 6;
+          {weekdays.map((w) => {
+            const label = isCompact ? w.short : w.label;
+            const weekend = w.weekend;
             return (
               <View
                 key={label}
@@ -112,12 +99,12 @@ export function BsCalendarGrid({
           })}
         </View>
 
-        {rows.map((row, rowIndex) => (
+        {grid.rows.map((row, rowIndex) => (
           <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
-            {row.map((day, colIndex) => {
+            {row.map((cell, colIndex) => {
               const cellIndex = rowIndex * 7 + colIndex;
 
-              if (!day) {
+              if (!cell) {
                 return (
                   <View
                     key={`empty-${cellIndex}`}
@@ -127,32 +114,22 @@ export function BsCalendarGrid({
                 );
               }
 
-              const isOutside = day.outsideMonth === true;
-              const isToday = day.date_ad === todayAd;
-              const isSelected = day.date_ad === selectedAd && !isToday;
-              const isWeekend = colIndex === 0 || colIndex === 6;
-              const isPublicHoliday = !isOutside && publicHolidayDates.has(day.date_ad);
-              const festivals = !isOutside ? day.festivals.filter(Boolean) : [];
-              const hasFestival = festivals.length > 0 && !isPublicHoliday;
-              const mainFest = festivals[0];
-              const leftFest = festivals[1];
-              const rightFest = festivals[2];
-              const festCount = festivals.length;
-              const extraFestCount = festivals.length > 2 ? festivals.length - 2 : 0;
-              const mobileBsFestCompact = primaryDate === "bs" && festCount > 0 && isCompact;
-
-              const tithi = pick(day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne);
-              const tithiIdx = tithiIndexFromCalendarDay(day);
-              const moonTitle = moonPhaseTitle(getPakshaPhase(day), isEn);
-              const adDayNum = civilIsoDayOfMonth(day.date_ad);
-              const primaryDayNum = primaryDate === "ad" ? adDayNum : day.day;
-          const secondary = getSecondaryCellDate(day, primaryDate, lang, cellIndex === 0);
-          const secondaryLabel = secondary.monthLabel
-            ? `${secondary.monthLabel} ${digits(secondary.day)}`
-            : digits(secondary.day);
-          const secondaryLabelShort = secondary.monthLabelShort
-            ? `${secondary.monthLabelShort} ${digits(secondary.day)}`
-            : digits(secondary.day);
+              const {
+                day,
+                isOutside,
+                isToday,
+                isSelected,
+                isWeekend,
+                isPublicHoliday,
+                festivals,
+                hasFestival,
+                mainFest,
+                leftFest,
+                rightFest,
+                extraFestCount,
+                tithi,
+              } = cell;
+              const mobileBsFestCompact = cell.bsFestCompact && isCompact;
 
               const bgClass = isOutside
                 ? calendarClasses.cellOutside
@@ -169,7 +146,7 @@ export function BsCalendarGrid({
                     ? calendarClasses.cellTextOutside
                     : calendarClasses.cellText;
 
-              const openFestivals = () => setFestivalDialog({ day, festivals });
+              const openFestivals = () => grid.openFestivals(cell);
 
               return (
                 <Pressable
@@ -186,12 +163,12 @@ export function BsCalendarGrid({
                 >
                   {isSelected ? <View style={selectionRingStyle(theme.primary)} /> : null}
 
-                  {tithiIdx != null ? (
+                  {cell.tithiIndex != null ? (
                     <View
                       pointerEvents="none"
                       style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2 }}
                     >
-                      <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={moonSize} title={moonTitle} />
+                      <CalendarMoonPhaseIcon tithiIndex={cell.tithiIndex} size={moonSize} title={cell.moonTitle} />
                     </View>
                   ) : null}
 
@@ -224,7 +201,7 @@ export function BsCalendarGrid({
                     {isToday ? (
                       <View className={cn(calendarClasses.todayBadge, isCompact && calendarClasses.todayBadgePhone)}>
                         <Text className={calendarClasses.todayBadgeText}>
-                          {pick("आज", "Today")}
+                          {grid.todayBadge}
                         </Text>
                       </View>
                     ) : null}
@@ -237,17 +214,17 @@ export function BsCalendarGrid({
                           dayColorClass,
                         )}
                       >
-                        {digits(primaryDayNum)}
+                        {cell.primaryDay}
                       </Text>
                       <Text
                         className={cn(
                           calendarClasses.secondaryDate,
                           lang === "en" && "font-num",
-                          secondary.monthLabel ? calendarClasses.secondaryDateNamed : calendarClasses.secondaryDatePlain,
+                          cell.secondaryNamed ? calendarClasses.secondaryDateNamed : calendarClasses.secondaryDatePlain,
                           isTablet && calendarClasses.secondaryDateWide,
                         )}
                       >
-                        {isPhone ? secondaryLabelShort : secondaryLabel}
+                        {isPhone ? cell.secondaryLabelShort : cell.secondaryLabel}
                       </Text>
                       {extraFestCount > 0 && primaryDate !== "bs" ? (
                         <Pressable
@@ -258,7 +235,7 @@ export function BsCalendarGrid({
                           className={cn(calendarClasses.countBadge, isCompact && calendarClasses.countBadgePhone)}
                         >
                           <Text className={calendarClasses.countBadgeText}>
-                            +{digits(extraFestCount)}
+                            {cell.extraFestLabel}
                           </Text>
                         </Pressable>
                       ) : null}
@@ -274,7 +251,7 @@ export function BsCalendarGrid({
                       className={cn("mx-auto mt-auto", calendarClasses.countBadgeCompact)}
                     >
                       <Text className={calendarClasses.countBadgeText}>
-                        +{digits(festCount)}
+                        {cell.festCountLabel}
                       </Text>
                     </Pressable>
                   ) : null}
@@ -318,10 +295,9 @@ export function BsCalendarGrid({
       </View>
 
       <FestivalListSheet
-        visible={festivalDialog !== null}
-        day={festivalDialog?.day ?? null}
-        festivals={festivalDialog?.festivals ?? []}
-        onClose={() => setFestivalDialog(null)}
+        visible={grid.festivalDialog !== null}
+        dialog={grid.festivalDialog}
+        onClose={grid.closeFestivals}
       />
     </>
   );
