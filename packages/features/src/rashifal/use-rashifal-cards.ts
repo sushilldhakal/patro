@@ -1,8 +1,7 @@
 /**
- * One rashifal card, shared by the website's and the app's
- * `components/rashifal/RashifalSignCard.tsx` and `RashifalPersonalCard.tsx`:
- * the header, strength meter, life areas, prediction, lucky cells and the
- * "why this reading" details. Each app draws the icons and bars.
+ * One rashifal card, drawn by `@vedic-patro/ui/kit/jyotish` RashifalSignCard
+ * and RashifalPersonalCard: the header, strength meter, life areas, prediction,
+ * lucky cells and the "why this reading" details.
  */
 import { useState } from "react";
 import type {

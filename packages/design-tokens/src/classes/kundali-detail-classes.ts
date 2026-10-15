@@ -570,6 +570,11 @@ export const kundaliDetailClasses = {
   parts: {
     pill: "rounded-full border px-2 py-0.5",
     statusBadge: "items-center rounded-full border px-2 py-0.5 text-sm font-semibold",
+    statusExceptional: "border-emerald-500/30 bg-emerald-500/15 text-emerald-500",
+    statusStrong: "border-sky-500/30 bg-sky-500/15 text-sky-500",
+    statusAdequate: "border-amber-500/30 bg-amber-500/15 text-amber-500",
+    statusBorderline: "border-orange-500/30 bg-orange-500/15 text-orange-500",
+    statusWeak: "border-destructive/30 bg-destructive/15 text-destructive",
     aspectCard: "rounded-lg border border-border bg-card/40 p-3",
     aspectHead: "mb-1.5 items-center justify-between gap-2",
     selectControl: "h-9 rounded-lg border border-border bg-card px-2.5 text-sm text-foreground",

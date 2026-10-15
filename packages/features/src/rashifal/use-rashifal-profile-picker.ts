@@ -1,6 +1,6 @@
 /**
- * The rashifal page's profile picker, shared by the website's and the app's
- * `components/rashifal/RashifalProfilePicker.tsx`: pick a saved profile to
+ * The rashifal page's profile picker, drawn by `@vedic-patro/ui/kit/jyotish`
+ * RashifalProfilePicker: pick a saved profile to
  * narrow the grid to that person's janma rashi (the caller resolves it).
  */
 import type { Profile } from "@vedic-patro/api-client";
