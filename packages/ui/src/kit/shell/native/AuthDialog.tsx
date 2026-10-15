@@ -7,7 +7,7 @@ import type { AuthDialogViewProps } from "../contract";
 export function AuthDialog(props: AuthDialogViewProps) {
   const { switchCopy: sw } = props;
   return (
-    <Sheet open={props.open} onClose={props.onClose} title={props.title} closeLabel={props.closeLabel}>
+    <Sheet open={props.open} onClose={props.onClose} title={props.title} closeLabel={props.closeLabel} placement="top">
       <Text className="mb-3 text-sm text-muted-foreground">{props.description}</Text>
       {props.social}
       <Box className={cn("flex flex-col", account.dialogForm)}>

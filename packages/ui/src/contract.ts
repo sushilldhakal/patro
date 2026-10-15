@@ -195,6 +195,8 @@ export type SheetProps = StyleProps & {
   closeLabel?: string;
   /** Tallest the panel may grow, as a percentage of the screen height (default 85). */
   maxHeightPercent?: number;
+  /** Edge the panel starts from (default "bottom"). */
+  placement?: "bottom" | "top";
   children?: ReactNode;
 };
 

@@ -9,8 +9,9 @@ import { Icon } from "./Icon";
  * A panel over the page: rises from the bottom on phones, centred from `sm` up.
  * Escape and a tap on the backdrop close it.
  */
-export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, children, className, webClassName, testID }: SheetProps) {
+export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, placement, children, className, webClassName, testID }: SheetProps) {
   const titleId = useId();
+  const top = placement === "top";
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -23,7 +24,7 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, chil
   /* Drawn into <body>: a sticky header with backdrop-filter, or any transformed ancestor,
      would otherwise become the containing block of `fixed` and pin the sheet to its top. */
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" data-testid={testID}>
+    <div className=cn("fixed inset-0 z-50 flex justify-center", top ? "items-start" : "items-end sm:items-center") data-testid={testID}>
       <div className={cn("absolute inset-0", sheetClass.backdrop)} onClick={onClose} aria-hidden />
       <div
         role="dialog"
@@ -32,12 +33,12 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, chil
         style={{ maxHeight: `${maxHeightPercent ?? 85}dvh` }}
         className={cn(
           "relative w-full overflow-y-auto sm:max-w-lg sm:rounded-2xl",
-          sheetClass.panel,
+          top ? cn(sheetClass.panelTop, "sm:mt-16") : sheetClass.panel,
           className,
           webClassName,
         )}
       >
-        <div className={cn(sheetClass.handle, "sm:hidden")} />
+        {top ? null : <div className={cn(sheetClass.handle, "sm:hidden")} />}
         {title || closeLabel ? (
           <div className={cn("flex", sheetClass.header)}>
             {title ? (

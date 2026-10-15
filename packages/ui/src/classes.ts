@@ -84,6 +84,7 @@ export const tableClass: Required<TableClasses> = {
 export const sheetClass = {
   backdrop: "bg-foreground/40",
   panel: "rounded-t-2xl border border-border bg-card px-4 pb-6 pt-3",
+  panelTop: "rounded-b-2xl border border-border bg-card px-4 pb-6 pt-3",
   handle: "mx-auto mb-3 h-1 w-10 rounded-full bg-muted",
   header: "mb-3 flex-row items-center justify-between gap-3",
   title: "text-base font-semibold text-foreground",
