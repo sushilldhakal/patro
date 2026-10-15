@@ -1,7 +1,7 @@
 import { cn } from "@vedic-patro/domain/utils";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
-import { Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
 import type { PatroDayTimePanelProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -100,7 +100,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
       ) : null}
 
       {h.view === "months" ? (
-        <Box className="grid grid-cols-3 gap-2">
+        <Grid cols={3} gap={8}>
           {h.months.map((m) => (
             <Pressable
               key={m.month}
@@ -113,7 +113,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               <Text className={cn(cls.monthChipLabel, m.selected ? cls.monthChipLabelActive : cls.monthChipLabelIdle)}>{m.label}</Text>
             </Pressable>
           ))}
-        </Box>
+        </Grid>
       ) : null}
 
       {h.view === "years" ? (
@@ -143,7 +143,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               <Icon node={shellIcons.chevronRight} size="sm" tone="secondary" />
             </Pressable>
           </Box>
-          <Box className="grid grid-cols-3 gap-2">
+          <Grid cols={3} gap={8}>
             {h.years.map((y) => (
               <Pressable
                 key={y.year}
@@ -156,7 +156,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
                 <Text className={cn(cls.monthChipLabel, y.selected ? cls.monthChipLabelActive : cls.monthChipLabelIdle)}>{y.label}</Text>
               </Pressable>
             ))}
-          </Box>
+          </Grid>
         </>
       ) : null}
     </>

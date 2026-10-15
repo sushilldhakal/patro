@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/domain/utils";
-import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { RelatedPageLinksProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -14,7 +14,7 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
           {heading}
         </Text>
       </Box>
-      <Box className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <Grid cols={{ base: 1, sm: 2, lg: 3 }} gap={8}>
         {items.map((item) => (
           <Pressable
             key={item.key}
@@ -33,7 +33,7 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
             <Icon node={shellIcons.chevronRight} size="sm" tone="muted" />
           </Pressable>
         ))}
-      </Box>
+      </Grid>
     </Box>
   );
 }

@@ -3,7 +3,7 @@ import { Trans } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useShantiVidhiPanel } from "@vedic-patro/features/shanti";
-import { Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
 import type { ShantiVidhiPanelProps } from "../contract";
 import { iconBookOpen, iconCalendarClock, iconChevronDown, iconChevronUp, iconClock, iconCoins, iconCompass, iconFlame, iconSparkles, iconStar, iconUserRound } from "../icons";
 
@@ -36,7 +36,7 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha }: 
             <Icon node={group.open ? iconChevronUp : iconChevronDown} size={16} tone="muted" />
           </button>
           {group.open ? (
-            <Box className="grid gap-3 sm:grid-cols-2">
+            <Grid cols={{ base: 1, sm: 2 }} gap={12}>
               {group.cards.map((card) => (
                 <Box key={card.key} className={sh.finding}>
                   <Text className={sh.findingStep}>{card.step}</Text>
@@ -47,20 +47,20 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha }: 
                   <Pressable onPress={() => panel.selectFinding(card.graha)} className={sh.findingButton}><Text>{card.viewLabel}</Text></Pressable>
                 </Box>
               ))}
-            </Box>
+            </Grid>
           ) : null}
         </Box>
       )) : null}
       {panel.status !== "error" && panel.status !== "findings" ? <Text className={cn(sh.emptyBox, sh.emptyText)}>{copy.empty}</Text> : null}
       <Text className={sh.basisNote}>{copy.basisNote}</Text>
-      <Box className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-9">
+      <Grid cols={{ base: 3, sm: 5, lg: 9 }} gap={8}>
         {panel.selector.map((g) => (
           <Pressable key={g.key} onPress={() => panel.select(g.key)} className={cn(sh.selector, g.active ? cn(sh.selectorActive, sh.selectorTextActive) : cn(sh.selectorIdle, sh.selectorTextIdle))}>
             {renderGraha({ graha: g.key, size: 28 })}
             <Text className={sh.selectorText}>{g.name}</Text>
           </Pressable>
         ))}
-      </Box>
+      </Grid>
       <div ref={detailRef} className={cn(sh.detail, "scroll-mt-20")}>
         <Box className={sh.detailHead} webClassName="flex">
           {renderGraha({ graha: detail.key, size: 40 })}
@@ -86,10 +86,10 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha }: 
           <Text className={sh.stotram}>{detail.stotram}</Text>
         </Box>
         <Text className={sh.yantraLabel}>{copy.yantraHeading}</Text>
-        <Box className="grid w-32 grid-cols-3 gap-1">
+        <Grid cols={3} gap={4} className="w-32">
           {detail.yantra.map((n, i) => <Text key={i} className={cn(sh.yantraCell, sh.yantraText)}>{n}</Text>)}
-        </Box>
-        <Box className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        </Grid>
+        <Grid cols={{ base: 1, sm: 2, lg: 3 }} gap={12}>
           {detail.tiles.map((tile) => (
             <Box key={tile.key} className={sh.tile} webClassName="flex">
               <Icon node={TILE[tile.key]} size={16} tone="secondary" />
@@ -97,7 +97,7 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha }: 
               <Text className={sh.tileValue}>{tile.value}</Text>
             </Box>
           ))}
-        </Box>
+        </Grid>
         <Text className={cn(sh.noteBox, sh.noteText)}><Text className={sh.noteLabel}>{copy.gemDetailLabel}</Text> {detail.gemDetail}</Text>
         <Text className={sh.donationTitle}><Icon node={iconCoins} size={16} tone="secondary" /> {copy.donationItems}</Text>
         <Box className={sh.donationList}>

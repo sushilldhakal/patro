@@ -3,7 +3,7 @@ import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { useBsCalendarGrid, type BsCalendarCell } from "@vedic-patro/features/home";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { Box, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { Grid, Box, Pressable, Sheet, Text } from "@vedic-patro/ui";
 import type { BsCalendarGridProps } from "../contract";
 
 const TODAY_AD = new Date().toISOString().split("T")[0];
@@ -38,7 +38,7 @@ export function BsCalendarGrid({
 
   return (
     <Box className={cn(cal.grid, cal.gridWide, cal.gridWeb, className)}>
-      <Box className={cal.gridCols}>
+      <Grid cols={7} gap={1}>
         {grid.weekdays.map((w) => (
           <Box key={w.key} className={cn("flex-col gap-px max-md:items-center max-md:px-0 max-md:py-1", cal.weekdayCell, cal.weekdayCellWide)}>
             {w.label === w.short ? (
@@ -67,7 +67,7 @@ export function BsCalendarGrid({
             />
           );
         })}
-      </Box>
+      </Grid>
 
       <Sheet
         open={grid.festivalDialog != null}

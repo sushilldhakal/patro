@@ -1,7 +1,7 @@
 import { cn } from "@vedic-patro/domain/utils";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
-import { Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
 import type { PatroCalendarHeaderProps, PatroMonthYearNavProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
@@ -114,7 +114,7 @@ export function PatroCalendarHeader({
               </Box>
               {yearInput.invalid ? <Text className={cls.yearError}>{labels.yearInvalid}</Text> : null}
               <Text className={cls.panelLabel}>{labels.monthSection}</Text>
-              <Box className="grid grid-cols-3 gap-2">
+              <Grid cols={3} gap={8}>
                 {header.months.map((m) => (
                   <Pressable
                     key={m.month}
@@ -126,7 +126,7 @@ export function PatroCalendarHeader({
                     <Text className={cn(cls.monthChipLabel, m.selected ? cls.monthChipLabelActive : cls.monthChipLabelIdle)}>{m.label}</Text>
                   </Pressable>
                 ))}
-              </Box>
+              </Grid>
             </Box>
           ) : null}
         </Box>

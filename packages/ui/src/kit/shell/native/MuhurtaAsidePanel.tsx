@@ -2,7 +2,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { patroNavataraRow } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useMuhurtaAside } from "@vedic-patro/features/home";
-import { Box, Button, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Button, Pressable, Text } from "@vedic-patro/ui";
 import type { MuhurtaAsidePanelProps } from "../contract";
 
 /** Muhurta sub-tabs and slots. The hint icon and the full-table route come from the app. */
@@ -11,7 +11,7 @@ export function MuhurtaAsidePanel({ p, hintIcon, onOpenTable, className }: Muhur
   const { panel } = aside;
   return (
     <Box className={cn(home.muhurtaStack, className)}>
-      <Box className="grid grid-cols-5 gap-1" label={aside.tabsLabel}>
+      <Grid cols={5} gap={4} label={aside.tabsLabel}>
         {aside.tabs.map((tab) => (
           <Pressable
             key={tab.id}
@@ -29,7 +29,7 @@ export function MuhurtaAsidePanel({ p, hintIcon, onOpenTable, className }: Muhur
             <Text className={cn(home.muhurtaSubTabLabel, tab.active && home.muhurtaSubTabLabelActive)}>{tab.label}</Text>
           </Pressable>
         ))}
-      </Box>
+      </Grid>
       <Box className={home.muhurtaHint}>
         {hintIcon}
         <Text className={cn("min-w-0 flex-1", home.muhurtaHintText)}>{aside.hint}</Text>
@@ -43,7 +43,7 @@ export function MuhurtaAsidePanel({ p, hintIcon, onOpenTable, className }: Muhur
               {panel.moonRef.label} <Text className={home.muhurtaMoonRefStrong}>{panel.moonRef.value}</Text>
             </Text>
           ) : null}
-          <Box className="grid grid-cols-3 gap-1">
+          <Grid cols={3} gap={4}>
             {panel.slots.map((slot) => (
               <Box key={slot.key} className={patroNavataraRow(slot.tone as "best" | "good" | "neutral" | "bad" | "worst", slot.isMoon)}>
                 <Text className={home.muhurtaSlotTitle}>{slot.title}</Text>
@@ -54,7 +54,7 @@ export function MuhurtaAsidePanel({ p, hintIcon, onOpenTable, className }: Muhur
                 </Text>
               </Box>
             ))}
-          </Box>
+          </Grid>
         </Box>
       )}
       {onOpenTable ? (

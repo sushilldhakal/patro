@@ -4,7 +4,7 @@ import { Trans } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { REPORT_CONFIDENCE_LEVELS, useKundaliReport, useReportLabels, type ReportMetaCell } from "@vedic-patro/features/kundali";
-import { Box, Icon, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Text } from "@vedic-patro/ui";
 import type { KundaliReportProps } from "../contract";
 import { iconBookOpen, iconChevronDown, iconChevronUp, iconLoader, iconRotateCcw } from "../icons";
 
@@ -59,9 +59,9 @@ function SectionCard({ section }: { section: ReportSection }) {
       {section.body.map((p, i) => <Text key={i} as="p" className={r.sectionParagraph}>{p}</Text>)}
       {section.confidence ? <Factors factors={section.factors} /> : null}
       {section.items && section.items.length > 0 ? (
-        <Box className={cn("mt-3 grid gap-2.5", head.grid ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2")}>
+        <Grid cols={head.grid ? { base: 1, sm: 2, lg: 3 } : { base: 1, sm: 2 }} gap={10} className="mt-3">
           {section.items.map((it, i) => <ItemCard key={i} item={it} />)}
-        </Box>
+        </Grid>
       ) : null}
     </Box>
   );
@@ -69,7 +69,7 @@ function SectionCard({ section }: { section: ReportSection }) {
 
 function Meta({ cells }: { cells: ReportMetaCell[] }) {
   return (
-    <Box className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <Grid cols={{ base: 2, sm: 4 }} gap={8}>
       {cells.map((c) => (
         <Box key={c.label} className={r.metaCell}>
           <Text as="p" className={r.metaLabel}>{c.label}</Text>
@@ -77,7 +77,7 @@ function Meta({ cells }: { cells: ReportMetaCell[] }) {
           {c.sub ? <Text as="p" className={r.metaSub}>{c.sub}</Text> : null}
         </Box>
       ))}
-    </Box>
+    </Grid>
   );
 }
 

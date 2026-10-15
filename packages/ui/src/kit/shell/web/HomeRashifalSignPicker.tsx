@@ -1,6 +1,6 @@
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
-import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { HomeRashifalSignPickerProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -8,9 +8,9 @@ import { shellIcons } from "../icon-nodes";
 export function HomeRashifalSignPicker({ label, thumbs, onSelect, prevLabel, nextLabel, onPrev, onNext, cards, className }: HomeRashifalSignPickerProps) {
   if (!thumbs.length) return null;
   return (
-    <Box className={cn("grid items-start gap-3 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-4", className)}>
+    <Box className={cn("flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:items-start md:gap-4", className)}>
       <Box as="nav" className={cn("w-full min-w-0 max-w-88 shrink-0 justify-self-start md:sticky md:top-20", home.pickerGrid)} label={label}>
-        <Box className="grid grid-cols-3 gap-2.5">
+        <Grid cols={3} gap={10}>
           {thumbs.map((sign) => (
             <Pressable
               key={sign.id}
@@ -36,7 +36,7 @@ export function HomeRashifalSignPicker({ label, thumbs, onSelect, prevLabel, nex
               </Box>
             </Pressable>
           ))}
-        </Box>
+        </Grid>
       </Box>
       <Box className="min-w-0">
         <Box className={cn(home.pickerCarousel, "relative md:px-10")}>

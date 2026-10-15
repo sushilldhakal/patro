@@ -2,7 +2,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { patroAyanaNorth, patroAyanaSouth } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { usePanchangaVivaran, type VivaranCell } from "@vedic-patro/features/home";
-import { Box, Button, Text } from "@vedic-patro/ui";
+import { Grid, Box, Button, Text } from "@vedic-patro/ui";
 import type { PanchangaVivaranPanelProps } from "../contract";
 
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
@@ -47,7 +47,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
       {view.planets.length > 0 ? (
         <Box className={home.gocharSection}>
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
-          <Box className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+          <Grid cols={{ base: 2, sm: 3 }} gap={6}>
             {view.planets.map((planet) => (
               <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
                 <Text className={cn("flex-row flex-wrap items-center gap-x-1", home.gocharName)}>
@@ -58,19 +58,19 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
                 <Text className={cn(home.gocharDegree, "tabular-nums")}>{planet.degree}</Text>
               </Box>
             ))}
-          </Box>
+          </Grid>
         </Box>
       ) : null}
       {view.solar.length > 0 ? (
         <Box className={view.planets.length > 0 ? home.solarWithPlanets : home.solarAlone}>
-          <Box className="grid grid-cols-3 gap-1.5">
+          <Grid cols={3} gap={6}>
             {view.solar.map((item) => (
               <Box key={item.label} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
                 <Text className={home.gocharName}>{item.label}</Text>
                 <Text className={cn(home.solarValue, "tabular-nums")}>{item.value}</Text>
               </Box>
             ))}
-          </Box>
+          </Grid>
         </Box>
       ) : null}
       {onOpenDetail ? (

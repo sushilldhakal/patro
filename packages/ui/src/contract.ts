@@ -37,6 +37,28 @@ export type BoxProps = StyleProps & {
   widthPercent?: number;
 };
 
+// ─── Grid ────────────────────────────────────────────────────────────────────
+
+/** Columns at the base width and from each breakpoint up (xs 400, compact 480, sm 640, md 768, lg 1024). */
+export type GridColumns = number | { base: number; xs?: number; compact?: number; sm?: number; md?: number; lg?: number };
+
+/**
+ * Equal-width columns. CSS grid on the website; React Native has no grid, so
+ * the app lays the cells out in wrapping rows. Use this, never `grid` classes,
+ * in anything the app also draws.
+ */
+export type GridProps = StyleProps & {
+  children?: ReactNode;
+  cols: GridColumns;
+  /** Space between cells, in px (both directions unless `gapX` / `gapY` is given). */
+  gap?: number;
+  gapX?: number;
+  gapY?: number;
+  as?: BoxTag;
+  /** Accessible name (aria-label / accessibilityLabel). */
+  label?: string;
+};
+
 // ─── Text ────────────────────────────────────────────────────────────────────
 
 /** Text styles from the shared spec (packages/design-tokens/src/specs.ts). */
@@ -205,6 +227,7 @@ export type SheetProps = StyleProps & {
 /** What each platform's index must export. */
 export type UiKit = {
   Box: ComponentType<BoxProps>;
+  Grid: ComponentType<GridProps>;
   Text: ComponentType<TextProps>;
   Pressable: ComponentType<PressableProps>;
   Input: ComponentType<InputProps>;

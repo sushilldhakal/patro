@@ -2,7 +2,7 @@ import type { ShadbalaStatus, VimshopakaGrade } from "@vedic-patro/api-client";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useAshtakavargaCard, useBhavaBalaSelection, useBhavaBalaTable, useGrahaDetailsList, useShadbalaCard, useVimshopakaCard, useYogaReferenceCatalog } from "@vedic-patro/features/kundali";
-import { Box, Icon, Input, Pressable, Table, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Input, Pressable, Table, Text } from "@vedic-patro/ui";
 import type { AshtakavargaCardProps, BhavaBalaCardProps, GrahaDetailsListProps, ShadbalaCardProps, VimshopakaCardProps, YogaReferenceCatalogProps } from "../contract";
 import { iconChevronDown, iconChevronRight, iconLoader, iconRotateCcw } from "../icons";
 import { DashaSystemPanel } from "./DashaSystem";
@@ -219,7 +219,7 @@ export function BhavaBalaCard({ data, vargaCharts, combustion, renderGraha, rend
           <Text as="h3" className={glance.heading}>{table.title}</Text>
           <Text as="p" className={glance.intro}>{table.intro}</Text>
         </Box>
-        <Box className="grid grid-cols-2 gap-3">
+        <Grid cols={2} gap={12}>
           {[table.strongest, table.weakest].map((s) => (
             <Box key={s.label} className={glance.card}>
               <Text as="p" className={glance.label}>{s.label}</Text>
@@ -227,7 +227,7 @@ export function BhavaBalaCard({ data, vargaCharts, combustion, renderGraha, rend
               <Text as="p" className={glance.subTight}>{s.lordLabel} {s.lordName} · {s.percent}</Text>
             </Box>
           ))}
-        </Box>
+        </Grid>
         <Table
           columns={columns}
           rows={table.rows}
@@ -274,7 +274,7 @@ export function ShadbalaCard({ data, yuddha, bhavaBala, renderGraha, renderChart
       <Box>
         <Text as="h3" className={glance.heading}>{card.title}</Text>
         <Text as="p" className={glance.introSpaced}>{card.method}</Text>
-        <Box className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Grid cols={{ base: 2, lg: 4 }} gap={12}>
           {[card.strongest, card.weakest].map((item) => (
             <Box key={item.label} className={glance.card}>
               <Text as="p" className={glance.label}>{item.label}</Text>
@@ -298,7 +298,7 @@ export function ShadbalaCard({ data, yuddha, bhavaBala, renderGraha, renderChart
               ))}
             </Box>
           </Box>
-        </Box>
+        </Grid>
       </Box>
       {renderChart({ planets: card.planets, selectedKey: card.selectedKey, onSelect: card.select, yuddha, scale: card.scale, onScaleChange: card.setScale })}
       <Box>

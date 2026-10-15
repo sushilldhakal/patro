@@ -1,7 +1,7 @@
 import { cn } from "@vedic-patro/domain/utils";
 import { rituClasses as ritu } from "@vedic-patro/design-tokens/classes/ritu-classes";
 import { useRituPage } from "@vedic-patro/features/ritu";
-import { Box, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Pressable, Text } from "@vedic-patro/ui";
 import type { RituSeasonsProps } from "../contract";
 
 /** Six seasons. The why-link route and the header icon come from the app. */
@@ -32,7 +32,7 @@ export function RituSeasons({ location, showHeader = true, placeLabel, headerIco
           {why}
         </Box>
       )}
-      <Box className="grid grid-cols-1 gap-3 compact:grid-cols-2 md:grid-cols-3">
+      <Grid cols={{ base: 1, compact: 2, md: 3 }} gap={12}>
         {page.cards.map((card) => (
           <Box key={card.key} className={cn("flex-col shadow-ring-soft", ritu.card, card.current && ritu.cardCurrent)}>
             <Text className={cn(ritu.kicker, card.current && ritu.kickerCurrent)}>{card.kicker}</Text>
@@ -63,7 +63,7 @@ export function RituSeasons({ location, showHeader = true, placeLabel, headerIco
             ) : null}
           </Box>
         ))}
-      </Box>
+      </Grid>
       {page.south ? <Text className={ritu.southNote}>{page.copy.southNote}</Text> : null}
     </Box>
   );
