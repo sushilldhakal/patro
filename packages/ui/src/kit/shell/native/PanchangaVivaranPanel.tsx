@@ -7,7 +7,7 @@ import type { PanchangaVivaranPanelProps } from "../contract";
 
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
   return (
-    <Box className={cn(home.vivaranTile, "shadow-ring-soft")}>
+    <Box className={cn(home.vivaranTile, "border border-gold/25")}>
       <Text className={home.vivaranLabel}>{label}</Text>
       <Text className={cn(home.vivaranValue, mono && home.vivaranValueMono)}>
         {value ?? "—"}
@@ -23,10 +23,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
   const view = usePanchangaVivaran({ p, selectedDay });
   if (loading || !p || !view) {
     return (
-      <Box className={cn("rounded-lg bg-card shadow-ring-soft", className)}>
+      <Box className={cn("rounded-lg bg-card", className)}>
         <Grid cols={2} gap={8} className={home.vivaranCells}>
           {Array.from({ length: 6 }, (_, i) => (
-            <Box key={i} className={cn(home.vivaranTile, "shadow-ring-soft")}>
+            <Box key={i} className={cn(home.vivaranTile, "border border-gold/25")}>
               <Text className={home.vivaranLabel}>…</Text>
               <Box className="mt-1.5 h-[18px] animate-pulse rounded-full bg-muted-foreground/20" />
             </Box>
@@ -49,9 +49,9 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
           <Grid cols={{ base: 2, sm: 3 }} gap={6}>
             {view.planets.map((planet) => (
-              <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
-                <Box className="flex-row flex-wrap items-center gap-x-1">
-                  <Text className={home.gocharName}>
+              <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
+                <Box className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
+                  <Text className={cn("min-w-0 shrink", home.gocharName)}>
                     {planet.label}
                     {planet.rashi ? ` → ${planet.rashi}` : ""}
                   </Text>
@@ -67,7 +67,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         <Box className={view.planets.length > 0 ? home.solarWithPlanets : home.solarAlone}>
           <Grid cols={3} gap={6}>
             {view.solar.map((item) => (
-              <Box key={item.label} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
+              <Box key={item.label} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
                 <Text className={home.gocharName}>{item.label}</Text>
                 <Text className={cn(home.solarValue, "tabular-nums")}>{item.value}</Text>
               </Box>
