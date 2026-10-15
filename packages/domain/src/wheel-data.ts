@@ -81,6 +81,8 @@ export interface WheelGraha {
   rashi: WheelRashi;
   deg: [number, number, number];
   longitude?: number;
+  /** वक्री — same flag the sky scene uses for the red collar. */
+  retrograde?: boolean;
 }
 
 export interface WheelDetail {
@@ -124,6 +126,8 @@ type PlanetDetail = {
   rashi_ne?: string;
   deg_in_rashi?: number;
   dms_in_rashi?: string;
+  is_retrograde?: boolean;
+  retrograde?: boolean;
 };
 
 function planetDegrees(info: PlanetDetail): [number, number, number] {
@@ -540,12 +544,17 @@ export function buildWheelDetail(p: PanchangaDay): WheelDetail {
     let rashi: WheelRashi | undefined;
     let deg: [number, number, number] = [0, 0, 0];
     let longitude: number | undefined;
+    const node = key === "rahu" || key === "ketu";
+    let retrograde = node;
 
     if (info && typeof info !== "string") {
       rashi = rashiFromNe(info.rashi_ne) ?? rashiFromNumber(info.rashi);
       deg = planetDegrees(info);
       const lon = planetLongitude(info);
       if (lon != null) longitude = lon;
+      if (info.is_retrograde != null || info.retrograde != null) {
+        retrograde = Boolean(info.is_retrograde ?? info.retrograde);
+      }
     }
 
     if (!rashi) {
@@ -559,6 +568,7 @@ export function buildWheelDetail(p: PanchangaDay): WheelDetail {
       rashi,
       deg,
       longitude,
+      retrograde,
     };
   });
 

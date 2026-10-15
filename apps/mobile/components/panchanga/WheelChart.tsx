@@ -1,10 +1,9 @@
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Animated, PanResponder, View } from "react-native";
 import Svg, {
   Circle,
   ClipPath,
   Defs,
-  Ellipse,
   G,
   Image as SvgImage,
   Line,
@@ -36,18 +35,27 @@ import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
+import {
+  earthTop,
+  retroBorder,
+  WHEEL_MERIDIAN,
+  WHEEL_RETRO,
+  wheelMoonShadow,
+  type WheelPlace,
+} from "@vedic-patro/domain/wheel-bodies";
+import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
 
 const WHEEL_NODE_ICONS = [Rahu, Ketu] as const;
-const SKY_JPG = {
-  sun: require("@/assets/sky3d/sun.jpg"),
-  moon: require("@/assets/sky3d/moon.jpg"),
-  mars: require("@/assets/sky3d/mars.jpg"),
-  mercury: require("@/assets/sky3d/mercury.jpg"),
-  jupiter: require("@/assets/sky3d/jupiter.jpg"),
-  venus: require("@/assets/sky3d/venus.jpg"),
-  saturn: require("@/assets/sky3d/saturn.jpg"),
-  earth: require("@/assets/sky3d/earth.jpg"),
+const SKY_TOP = {
+  sun: require("@/assets/sky3d/top/sun.png"),
+  moon: require("@/assets/sky3d/top/moon.png"),
+  mars: require("@/assets/sky3d/top/mars.png"),
+  mercury: require("@/assets/sky3d/top/mercury.png"),
+  jupiter: require("@/assets/sky3d/top/jupiter.png"),
+  venus: require("@/assets/sky3d/top/venus.png"),
+  saturn: require("@/assets/sky3d/top/saturn.png"),
 } as const;
+const EARTH_TOP = require("@/assets/sky3d/top/earth.png");
 const SKY_NAMES = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 
 const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
@@ -325,6 +333,7 @@ interface WheelChartProps {
   onPan: (x: number, y: number) => void;
   lineTarget?: number;
   onLineTargetChange?: (index: number) => void;
+  place?: WheelPlace | null;
 }
 
 function WheelChartImpl({
@@ -344,11 +353,14 @@ function WheelChartImpl({
   pan,
   onPan,
   lineTarget: lineTargetProp,
+  place,
 }: WheelChartProps) {
   const { pick, gregMonths } = useWheelChartLabels();
   const lineTarget = lineTargetProp ?? 1;
   const viewRef = useRef<View>(null);
   const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0, pageX: 0, pageY: 0 });
+  const [layoutBox, setLayoutBox] = useState({ w: 0, h: 0 });
+  const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
   const spinRef = useRef(spin);
   spinRef.current = spin;
   const panRef = useRef(pan);
@@ -861,12 +873,16 @@ function WheelChartImpl({
       );
 
       const planetNames: ReactNode[] = [];
+      const [sunX, sunY] = pol(sunLon, GRAHA_META[0]!.orbit * ORBIT_SCALE);
       det.grahas.forEach((g, i) => {
         const meta = GRAHA_META[i]!;
         const lon = planetLons[i] ?? 0;
         const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
         const planetR = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
         const sky = SKY_NAMES[i];
+        const collar = g.retrograde ? retroBorder(planetR, unitPx) : null;
+        const moonShadow = i === 1 ? wheelMoonShadow(normDeg(moonLon - sunLon), planetR) : null;
+        const moonTurn = i === 1 ? moonSunFacingRotation(px, py, sunX, sunY) : 0;
         if (sky) {
           core.push(
             <G key={`pl${i}`} pointerEvents="none">
@@ -875,20 +891,14 @@ function WheelChartImpl({
                   <Circle cx={px} cy={py} r={planetR} />
                 </ClipPath>
               </Defs>
+              {collar ? (
+                <Circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
+              ) : null}
               {i === 6 ? (
-                <Ellipse
-                  cx={px}
-                  cy={py}
-                  rx={planetR + 7}
-                  ry={planetR * 0.42}
-                  fill="none"
-                  stroke="#e6cf86"
-                  strokeWidth={1.6}
-                  transform={`rotate(-20 ${px} ${py})`}
-                />
+                <Circle cx={px} cy={py} r={planetR * 1.42} fill="none" stroke="#e6cf86" strokeWidth={1.15} />
               ) : null}
               <SvgImage
-                href={SKY_JPG[sky]}
+                href={SKY_TOP[sky]}
                 x={px - planetR}
                 y={py - planetR}
                 width={planetR * 2}
@@ -896,14 +906,28 @@ function WheelChartImpl({
                 preserveAspectRatio="xMidYMid slice"
                 clipPath={`url(#wheel-pl-${i})`}
               />
+              {moonShadow ? (
+                <Path
+                  d={moonShadow}
+                  transform={`translate(${px} ${py}) rotate(${moonTurn})`}
+                  fill="#000"
+                  fillRule="evenodd"
+                  opacity={0.78}
+                />
+              ) : null}
             </G>,
           );
         } else {
           const icon = planetIconSize(i, planetR);
           const Icon = WHEEL_NODE_ICONS[i - 7]!;
           core.push(
-            <G key={`pl${i}`} transform={`translate(${px - icon / 2} ${py - icon / 2})`} pointerEvents="none">
-              <Icon width={icon} height={icon} />
+            <G key={`pl${i}`} pointerEvents="none">
+              {collar ? (
+                <Circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
+              ) : null}
+              <G transform={`translate(${px - icon / 2} ${py - icon / 2})`}>
+                <Icon width={icon} height={icon} />
+              </G>
             </G>,
           );
         }
@@ -929,22 +953,40 @@ function WheelChartImpl({
         );
       });
 
+      const earthR = 13;
+      const globe = place ? earthTop(place.lat, place.lon, place.at) : null;
       core.push(
-        <G key="earth" pointerEvents="none">
+        <G key="earth" pointerEvents="none" transform={`translate(${CX} ${CY}) rotate(${globe?.spin ?? 0})`}>
           <Defs>
             <ClipPath id="wheel-earth">
-              <Circle cx={CX} cy={CY} r={13} />
+              <Circle cx={0} cy={0} r={earthR} />
             </ClipPath>
           </Defs>
           <SvgImage
-            href={SKY_JPG.earth}
-            x={CX - 13}
-            y={CY - 13}
-            width={26}
-            height={26}
-            preserveAspectRatio="xMidYMid slice"
+            href={EARTH_TOP}
+            x={-earthR}
+            y={-earthR}
+            width={earthR * 2}
+            height={earthR * 2}
+            preserveAspectRatio="xMidYMid meet"
             clipPath="url(#wheel-earth)"
           />
+          {globe ? (
+            <Line
+              x1={-globe.dx * earthR}
+              y1={-globe.dy * earthR}
+              x2={globe.dx * earthR}
+              y2={globe.dy * earthR}
+              stroke={WHEEL_MERIDIAN}
+              strokeWidth={1.4}
+            />
+          ) : null}
+          {globe ? (
+            <G>
+              <Circle cx={globe.place.x * earthR} cy={globe.place.y * earthR} r={2.4} fill={WHEEL_MERIDIAN} opacity={0.35} />
+              <Circle cx={globe.place.x * earthR} cy={globe.place.y * earthR} r={1.3} fill={WHEEL_MERIDIAN} />
+            </G>
+          ) : null}
         </G>,
       );
       core.push(...planetNames);
@@ -966,7 +1008,7 @@ function WheelChartImpl({
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom, place, unitPx]);
 
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
@@ -978,6 +1020,7 @@ function WheelChartImpl({
       onLayout={(e) => {
         const { width: w, height: h } = e.nativeEvent.layout;
         layoutRef.current = { ...layoutRef.current, w, h };
+        setLayoutBox({ w, h });
         syncLayout();
       }}
       {...wheelPan.panHandlers}

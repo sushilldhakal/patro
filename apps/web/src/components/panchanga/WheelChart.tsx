@@ -49,6 +49,15 @@ import {
   wYogaLbl,
 } from "@/lib/wheel-svg-classes";
 import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
+import {
+  earthTop,
+  retroBorder,
+  WHEEL_MERIDIAN,
+  WHEEL_RETRO,
+  wheelMoonShadow,
+  type WheelPlace,
+} from "@vedic-patro/domain/wheel-bodies";
+import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
 
 import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
 /**
@@ -137,6 +146,8 @@ interface WheelChartProps {
   onPan: (x: number, y: number) => void;
   lineTarget?: number;
   onLineTargetChange?: (index: number) => void;
+  /** Observer, so the Earth disc can turn their meridian to the front. */
+  place?: WheelPlace | null;
 }
 
 function WheelChartImpl({
@@ -152,6 +163,7 @@ function WheelChartImpl({
   pan,
   onPan,
   lineTarget: lineTargetProp,
+  place,
 }: WheelChartProps) {
   const dragRef = useRef<
     | { mode: "r"; a: number; spin0: number; moved: boolean }
@@ -162,6 +174,19 @@ function WheelChartImpl({
   const [dragMoved, setDragMoved] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [unitPx, setUnitPx] = useState(0);
+  useLayoutEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const measure = () => {
+      const side = Math.min(el.clientWidth, el.clientHeight);
+      if (side > 0) setUnitPx((side / 916) * zoom);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [zoom]);
   /** Active pointer positions for pinch-to-zoom. */
   const ptrRef = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinchRef = useRef<{ dist: number; zoom0: number } | null>(null);
@@ -530,24 +555,30 @@ function WheelChartImpl({
     );
 
     const planetNames: React.ReactNode[] = [];
+    const [sunX, sunY] = pol(sunLon, GRAHA_META[0]!.orbit * ORBIT_SCALE);
     det.grahas.forEach((g, i) => {
       const meta = GRAHA_META[i]!;
       const lon = planetLons[i] ?? 0;
       const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
       const rad = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
       const sky = (["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const)[i];
+      const collar = g.retrograde ? retroBorder(rad, unitPx) : null;
+      const moonShadow = i === 1 ? wheelMoonShadow(normDeg(moonLon - sunLon), rad) : null;
+      const moonTurn = i === 1 ? moonSunFacingRotation(px, py, sunX, sunY) : 0;
       if (sky) {
         core.push(
           <g key={`pl${i}`} style={{ pointerEvents: "none" }}>
             <defs>
               <clipPath id={`wheel-pl-${i}`}><circle cx={px} cy={py} r={rad} /></clipPath>
             </defs>
+            {collar ? (
+              <circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
+            ) : null}
             {i === 6 ? (
-              <ellipse cx={px} cy={py} rx={rad + 7} ry={rad * 0.42} fill="none" stroke="#e6cf86" strokeWidth="1.6"
-                transform={`rotate(-20 ${px} ${py})`} />
+              <circle cx={px} cy={py} r={rad * 1.42} fill="none" stroke="#e6cf86" strokeWidth={1.15} />
             ) : null}
             <image
-              href={`${import.meta.env.BASE_URL}sky3d/${sky}.jpg`}
+              href={`${import.meta.env.BASE_URL}sky3d/top/${sky}.png`}
               x={px - rad}
               y={py - rad}
               width={rad * 2}
@@ -555,21 +586,33 @@ function WheelChartImpl({
               preserveAspectRatio="xMidYMid slice"
               clipPath={`url(#wheel-pl-${i})`}
             />
+            {moonShadow ? (
+              <path
+                d={moonShadow}
+                transform={`translate(${px} ${py}) rotate(${moonTurn})`}
+                fill="#000"
+                fillRule="evenodd"
+                opacity={0.78}
+              />
+            ) : null}
           </g>
         );
       } else {
         const icon = planetIconSize(i, rad);
         const iconKey = i === 7 ? "rahu" : "ketu";
         core.push(
-          <image
-            key={`pl${i}`}
-            href={GRAHA_PLANET_ICON_URL[iconKey]}
-            x={px - icon / 2}
-            y={py - icon / 2}
-            width={icon}
-            height={icon}
-            style={{ pointerEvents: "none" }}
-          />
+          <g key={`pl${i}`} style={{ pointerEvents: "none" }}>
+            {collar ? (
+              <circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
+            ) : null}
+            <image
+              href={GRAHA_PLANET_ICON_URL[iconKey]}
+              x={px - icon / 2}
+              y={py - icon / 2}
+              width={icon}
+              height={icon}
+            />
+          </g>
         );
       }
 
@@ -582,20 +625,38 @@ function WheelChartImpl({
       );
     });
 
+    const earthR = 13;
+    const globe = place ? earthTop(place.lat, place.lon, place.at) : null;
     core.push(
-      <g key="earth" style={{ pointerEvents: "none" }}>
+      <g key="earth" style={{ pointerEvents: "none" }} transform={`translate(${CX} ${CY}) rotate(${globe?.spin ?? 0})`}>
         <defs>
-          <clipPath id="wheel-earth"><circle cx={CX} cy={CY} r="13" /></clipPath>
+          <clipPath id="wheel-earth"><circle cx={0} cy={0} r={earthR} /></clipPath>
         </defs>
         <image
-          href={`${import.meta.env.BASE_URL}sky3d/earth.jpg`}
-          x={CX - 13}
-          y={CY - 13}
-          width={26}
-          height={26}
-          preserveAspectRatio="xMidYMid slice"
+          href={`${import.meta.env.BASE_URL}sky3d/top/earth.png`}
+          x={-earthR}
+          y={-earthR}
+          width={earthR * 2}
+          height={earthR * 2}
+          preserveAspectRatio="xMidYMid meet"
           clipPath="url(#wheel-earth)"
         />
+        {globe ? (
+          <line
+            x1={-globe.dx * earthR}
+            y1={-globe.dy * earthR}
+            x2={globe.dx * earthR}
+            y2={globe.dy * earthR}
+            stroke={WHEEL_MERIDIAN}
+            strokeWidth={1.4}
+          />
+        ) : null}
+        {globe ? (
+          <g>
+            <circle cx={globe.place.x * earthR} cy={globe.place.y * earthR} r={2.4} fill={WHEEL_MERIDIAN} opacity={0.35} />
+            <circle cx={globe.place.x * earthR} cy={globe.place.y * earthR} r={1.3} fill={WHEEL_MERIDIAN} />
+          </g>
+        ) : null}
       </g>
     );
     core.push(...planetNames);
@@ -616,7 +677,7 @@ function WheelChartImpl({
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom, place, unitPx]);
 
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();

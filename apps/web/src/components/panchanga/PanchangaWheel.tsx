@@ -27,6 +27,7 @@ import {
   scrubGToAtTimeQuery,
   type WheelDetail,
 } from "@vedic-patro/domain/wheel-data";
+import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
 import { WheelChart, type WheelHover } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { useLocale } from "@/i18n/locale";
@@ -527,6 +528,10 @@ function PanchangaWheelBody({
   const stageRef = useRef<HTMLDivElement>(null);
   const num = (n: number | string) => digits(n);
   const scrubClock = rangeMode && clock ? clock.slice(0, 5) : gClock(scrubG, det.sunriseMin);
+  const place = useMemo(
+    () => wheelPlaceFromClock(p.location, p.panchanga_date_ad ?? p.date_ad, scrubClock, tz),
+    [p.location, p.panchanga_date_ad, p.date_ad, scrubClock, tz],
+  );
   const scrubTithi = atTimeData
     ? (getPanchangaDetail(atTimeData)?.tithi as { name_ne?: string; name?: string } | undefined) ??
       (atTimeData.tithi as { name_ne?: string; name?: string } | undefined)
@@ -659,6 +664,7 @@ function PanchangaWheelBody({
           onPan={handlePan}
           lineTarget={lineTarget}
           onLineTargetChange={setLineTarget}
+          place={place}
         />
 
         {tipNode}

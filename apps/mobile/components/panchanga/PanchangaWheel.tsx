@@ -25,6 +25,7 @@ import {
   computeFullscreenWheelHeight,
   computeInlineWheelStageSize,
 } from "@/lib/wheel-layout";
+import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
@@ -647,6 +648,10 @@ function WheelBody({
   }, [p.date_ad, p.panchanga_date_ad]);
 
   const scrubClock = gClock(effectiveG, det.sunriseMin);
+  const place = useMemo(
+    () => wheelPlaceFromClock(p.location, p.panchanga_date_ad ?? p.date_ad, scrubClock, tz),
+    [p.location, p.panchanga_date_ad, p.date_ad, scrubClock, tz],
+  );
   const scrubTithi = atTimeData
     ? ((getPanchangaDetail(atTimeData)?.tithi as { name_ne?: string; name?: string } | undefined) ??
       (atTimeData.tithi as { name_ne?: string; name?: string } | undefined))
@@ -781,6 +786,7 @@ function WheelBody({
           onPan={handlePan}
           lineTarget={lineTarget}
           onLineTargetChange={setLineTarget}
+          place={place}
         />
       </View>
       <WheelChrome
