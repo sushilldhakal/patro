@@ -1,5 +1,5 @@
 import { useVivahSaitPage } from "@vedic-patro/features/sait";
-import { SaitSources } from "@/components/sait/SaitSources";
+import { SaitSources } from "@vedic-patro/ui/kit/jyotish";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SuitabilityLegend } from "@/components/sait/SaitSuitability";

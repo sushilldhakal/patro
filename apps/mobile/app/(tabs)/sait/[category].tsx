@@ -8,7 +8,7 @@ import { AppShell } from "@/components/AppShell";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SuitabilityLegend } from "@/components/sait/SaitSuitability";
-import { SaitSources } from "@/components/sait/SaitSources";
+import { SaitSources } from "@vedic-patro/ui/kit/jyotish";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";

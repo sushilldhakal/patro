@@ -12,7 +12,7 @@ import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import { SaitSources } from "@/components/sait/SaitSources";
+import { SaitSources } from "@vedic-patro/ui/kit/jyotish";
 import { SuitabilityLegend } from "@/components/sait/sait-suitability";
 
 const routeApi = getRouteApi("/panchanga-shell/sait/$category");
