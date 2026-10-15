@@ -4,7 +4,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useDocumentChapter } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
-import { DocumentJumpForm } from "@/components/documents/DocumentJumpForm";
+import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { DocumentReader } from "@/components/documents/DocumentReader";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";

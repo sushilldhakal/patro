@@ -8,7 +8,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AppShell } from "@/components/AppShell";
-import { DocumentCard } from "@/components/documents/DocumentCard";
+import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 
@@ -69,7 +69,7 @@ export default function DocumentsScreen() {
                   </View>
                   <View className="gap-4">
                     {section.documents.map((doc) => (
-                      <DocumentCard key={doc.slug} doc={doc} />
+                      <DocumentCard key={doc.slug} doc={doc} onPress={() => router.push(`/documents/${doc.slug}` as never)} />
                     ))}
                   </View>
                 </View>

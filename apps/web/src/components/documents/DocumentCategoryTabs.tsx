@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import {
@@ -5,10 +6,10 @@ import {
   type DocumentCategoryGroup,
   type DocumentCategoryId,
 } from "@vedic-patro/domain/document-categories";
-import type { DocumentCategoryTab, DocumentSummary } from "@/lib/documents-api";
+import { documentsListSearch, type DocumentCategoryTab, type DocumentSummary } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
-import { DocumentCard } from "@/components/documents/DocumentCard";
+import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
 export type { DocumentCategoryTab };
@@ -100,6 +101,7 @@ export function DocumentCategorySection({
   documents: DocumentSummary[];
   onSelectGroup: (id: DocumentCategoryId) => void;
 }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { lang } = useLocale();
   const name = bilingualText(lang, group.ne, group.en);
@@ -133,7 +135,18 @@ export function DocumentCategorySection({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => (
-            <DocumentCard key={doc.slug} doc={doc} category={group.id} />
+            <DocumentCard
+              key={doc.slug}
+              doc={doc}
+              category={group.id}
+              onPress={() =>
+                navigate({
+                  to: "/documents/$slug",
+                  params: { slug: doc.slug },
+                  search: documentsListSearch(group.id),
+                })
+              }
+            />
           ))}
         </div>
       )}

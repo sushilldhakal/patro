@@ -4,7 +4,7 @@
  * satisfy `JyotishKit`.
  */
 import type { ComponentType } from "react";
-import type { SaitSuitability } from "@vedic-patro/api-client";
+import type { DocumentSummary, SaitSuitability } from "@vedic-patro/api-client";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 
@@ -36,9 +36,28 @@ export type SaitRulesSectionProps = {
   busy?: boolean;
 };
 
+export type DocumentJumpFormProps = {
+  chapterNumbers: number[];
+  /** On a chapter page the chapter field is hidden and fixed to this. */
+  currentChapter?: number;
+  /** Open the chapter, or scroll to the verse. Return false when it cannot be found. */
+  onJump: (chapter: number, verse: string) => boolean;
+};
+
+export type DocumentCardProps = {
+  doc: DocumentSummary;
+  /** List-page group, carried into the website link so Back returns there. */
+  category?: string;
+  topic?: string;
+  /** App navigation. The website renders a link from `doc.slug`. */
+  onPress?: () => void;
+};
+
 export type JyotishKit = {
   SaitSources: ComponentType<SaitSourcesProps>;
   SuitabilityBadge: ComponentType<SuitabilityBadgeProps>;
   SuitabilityLegend: ComponentType<SuitabilityLegendProps>;
   SaitRulesSection: ComponentType<SaitRulesSectionProps>;
+  DocumentJumpForm: ComponentType<DocumentJumpFormProps>;
+  DocumentCard: ComponentType<DocumentCardProps>;
 };
