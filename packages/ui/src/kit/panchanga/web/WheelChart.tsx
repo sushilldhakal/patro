@@ -1,12 +1,29 @@
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Image as RNImage } from "react-native";
-import Ketu from "@/assets/graha/ketu.svg";
-import Rahu from "@/assets/graha/rahu.svg";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import {
+  bsMonthsForWheel,
+  GRAHA_META,
+  getWheelRashis,
+  normDeg,
+  PADA_AKSHAR,
+  type WheelDetail,
+  type WheelMarkers,
+  type WheelTweaks,
+} from "@vedic-patro/domain/wheel-data";
+import {
+  WHEEL_CHART_INNER_R,
+  WHEEL_CHART_R,
+  WHEEL_NAK_GLYPH_SIZE,
+  WHEEL_RASHI_GLYPH_SIZE,
+  useWheelChartLabels,
+  wheelLabelRows,
+  type WheelHover,
+} from "@vedic-patro/features/panchanga-drawing";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
-import { wheelSvg, wheelSvgWrap } from "@/lib/wheel-classes";
+import { wheelSvg, wheelSvgWrap } from "@vedic-patro/design-tokens/classes/wheel-classes";
+import { cn } from "@vedic-patro/domain/utils";
+import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import {
   wDaytick,
   wKarLbl,
@@ -19,7 +36,6 @@ import {
   wOrbit,
   wPadaAkshar,
   wPlanetName,
-  wRashiGlyph,
   wRashiName,
   wRashiRay,
   wRimCircle,
@@ -29,8 +45,8 @@ import {
   wSegRashi,
   wTwName,
   wYogaLbl,
-} from "@/lib/wheel-svg-classes";
-import { planetVisualRadius, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
+} from "@vedic-patro/design-tokens/classes/wheel-svg-classes";
+import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -42,124 +58,29 @@ import {
 import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
 
 import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { wheelPalette } from "@vedic-patro/ui/kit/panchanga";
-const DEG = Math.PI / 180;
-const CX = 500;
-const CY = 500;
-const WHEEL_NODE_ICONS = [Rahu, Ketu] as const;
-const SKY_TOP = {
-  sun: require("@/assets/sky3d/top/sun.png"),
-  moon: require("@/assets/sky3d/top/moon.png"),
-  mars: require("@/assets/sky3d/top/mars.png"),
-  mercury: require("@/assets/sky3d/top/mercury.png"),
-  jupiter: require("@/assets/sky3d/top/jupiter.png"),
-  venus: require("@/assets/sky3d/top/venus.png"),
-  saturn: require("@/assets/sky3d/top/saturn.png"),
-} as const;
-const EARTH_TOP = require("@/assets/sky3d/top/earth.png");
-const SKY_NAMES = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
+import { wheelPalette } from "../wheel-palette";
+/**
+ * Every inner ring shares a boundary with its neighbour, so no dead band opens
+ * up between them: Yoga → Rashi, Karana → Tithi → Rashi, Karana → pada inner.
+ * The yoga ring's inner edge is pinned just clear of the outermost planet orbit
+ * (216 × ORBIT_SCALE ≈ 125, plus the widest planet body) rather than to a ring.
+ */
+const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
 
-function skyUri(mod: number): string {
-  return RNImage.resolveAssetSource(mod).uri;
-}
+const R = WHEEL_CHART_R;
 
-function clampZoom(z: number): number {
-  return Math.max(0.55, Math.min(14, z));
-}
+/**
+ * Glyph box sizes. Both are "contain" fits, so these are the longer side of the
+ * artwork, not its apparent weight — the rashi band (178–263) has more radial
+ * room to spare than the nakshatra band, whose glyph shares 345–423 with a name
+ * that runs to two stacked rows in English.
+ */
+const RASHI_GLYPH_SIZE = WHEEL_RASHI_GLYPH_SIZE;
+const NAK_GLYPH_SIZE = WHEEL_NAK_GLYPH_SIZE;
 
-type PinchGesture = {
-  dist0: number;
-  zoom0: number;
-  pan0x: number;
-  pan0y: number;
-  focalX: number;
-  focalY: number;
-  centroid0x: number;
-  centroid0y: number;
-};
+export type { WheelHover };
 
-function panForFocalZoom(
-  pan0x: number,
-  pan0y: number,
-  zoom0: number,
-  zoom1: number,
-  focalX: number,
-  focalY: number,
-  w: number,
-  h: number,
-): { x: number; y: number } {
-  const cx = w / 2;
-  const cy = h / 2;
-  const ratio = zoom1 / zoom0;
-  return {
-    x: pan0x + (focalX - pan0x - cx) * (1 - ratio),
-    y: pan0y + (focalY - pan0y - cy) * (1 - ratio),
-  };
-}
-
-function applyPinchTransform(
-  pinch: PinchGesture,
-  dist: number,
-  centroid: { x: number; y: number },
-  w: number,
-  h: number,
-): { zoom: number; pan: { x: number; y: number } } {
-  const zoom = clampZoom(pinch.zoom0 * (dist / pinch.dist0));
-  const p = panForFocalZoom(
-    pinch.pan0x,
-    pinch.pan0y,
-    pinch.zoom0,
-    zoom,
-    pinch.focalX,
-    pinch.focalY,
-    w,
-    h,
-  );
-  return {
-    zoom,
-    pan: {
-      x: p.x + (centroid.x - pinch.centroid0x),
-      y: p.y + (centroid.y - pinch.centroid0y),
-    },
-  };
-}
-
-/** Scale factor applied to all planet orbit radii to leave room for the inner yoga/karana/tithi rings. */
-const ORBIT_SCALE = 0.58;
-
-/** Yoga ring stays deep in the core. Karana → Tithi now sit between the rashi and nakshatra rings, sharing boundaries. */
-const R_YOGA_I = 140;
-const R_YOGA_O = 158;
-const R_KAR_I  = 303;
-const R_KAR_O  = 327; // shared boundary with pada inner
-const R_TIT_I  = 263; // shared boundary with rashi outer
-const R_TIT_O  = 303; // shared boundary with karana inner
-
-const R = {
-  rimOuter: 497,
-  tickIn: 481,
-  gregOut: 481,
-  gregMid: 467,
-  gregIn: 453,
-  bsOut: 453,
-  bsMid: 438,
-  bsIn: 424,
-  nakOut: 423,
-  nakIcon: 403,
-  nakName: 372,
-  nakIn: 345,
-  padaOut: 345,
-  padaNum: 336,
-  padaIn: 327,
-  rashiOut: 263,
-  rashiGlyph: 246,
-  rashiName: 222,
-  rashiIn: 178,
-  core: 178,
-} as const;
-
-export type WheelHover = { type: "nak"; i: number } | { type: "rashi"; i: number };
-export type WheelPick = WheelHover;
+const labelRows = wheelLabelRows;
 
 interface RingLabelProps {
   L: number;
@@ -167,12 +88,20 @@ interface RingLabelProps {
   cls: string;
   spin: number;
   size?: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  /**
+   * Stack the label radially instead of running it along the ring. Long
+   * English names ("Uttara Bhadrapada") overrun their segment's arc on one
+   * line, so they get split a word per row.
+   */
+  rows?: readonly string[];
 }
 
-function RingLabel({ L, r, cls, spin, size, children }: RingLabelProps) {
+function RingLabel({ L, r, cls, spin, size, children, rows }: RingLabelProps) {
   const a = normDeg(L + spin);
   const flip = a > 90 && a < 270;
+  // Flipping rotates the stack too, so reverse the rows to keep reading order.
+  const stack = rows && rows.length > 1 ? (flip ? [...rows].reverse() : rows) : null;
   return (
     <g transform={`rotate(${-(L + spin)} ${CX} ${CY})`}>
       <text
@@ -184,8 +113,37 @@ function RingLabel({ L, r, cls, spin, size, children }: RingLabelProps) {
         style={size ? { fontSize: size } : undefined}
         transform={flip ? `rotate(180 ${CX} ${CY - r})` : undefined}
       >
-        {children}
+        {stack
+          ? stack.map((row, i) => (
+              <tspan
+                key={`${row}-${i}`}
+                x={CX}
+                dy={i === 0 ? `${(-0.55 * (stack.length - 1)).toFixed(2)}em` : "1.1em"}
+              >
+                {row}
+              </tspan>
+            ))
+          : (children ?? rows?.[0])}
       </text>
+    </g>
+  );
+}
+
+
+function WheelGlyph({ art, size, cx, cy, className, opacity = 1, title }: { art: GlyphArt | undefined; size: number; cx: number; cy: number; className?: string; opacity?: number; title?: string }) {
+  if (!art) return null;
+  const [minX, minY, w, h] = art.vb;
+  const scale = size / Math.max(w, h);
+  const tx = cx - (minX + w / 2) * scale;
+  const ty = cy - (minY + h / 2) * scale;
+  return (
+    <g transform={`translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${scale.toFixed(4)})`} className={className} opacity={opacity}>
+      <title>{title}</title>
+      <g transform={art.transform} fill="currentColor" stroke="currentColor" strokeWidth={art.strokeWidth}>
+        {art.paths.map((p, i) => (
+          <path key={i} d={p.d} />
+        ))}
+      </g>
     </g>
   );
 }
@@ -196,11 +154,9 @@ interface WheelChartProps {
   spin: number;
   tw: WheelTweaks;
   bsYear: number;
-  sel: WheelPick | null;
   hover: WheelHover | null;
   onHover: (h: WheelHover) => void;
   onLeave: () => void;
-  onPick: (p: WheelPick) => void;
   onSpin: (deg: number) => void;
   zoom: number;
   onZoom: (z: number) => void;
@@ -208,7 +164,11 @@ interface WheelChartProps {
   onPan: (x: number, y: number) => void;
   lineTarget?: number;
   onLineTargetChange?: (index: number) => void;
+  /** Observer, so the Earth disc can turn their meridian to the front. */
   place?: WheelPlace | null;
+  /** Vite base and the rahu/ketu image URLs. The kit does not import assets. */
+  skyBase: string;
+  nodeIcon: { rahu: string; ketu: string };
 }
 
 function WheelChartImpl({
@@ -217,7 +177,6 @@ function WheelChartImpl({
   spin,
   tw,
   bsYear,
-  sel,
   hover,
   onSpin,
   zoom,
@@ -226,12 +185,16 @@ function WheelChartImpl({
   onPan,
   lineTarget: lineTargetProp,
   place,
+  skyBase,
+  nodeIcon,
 }: WheelChartProps) {
   const dragRef = useRef<
     | { mode: "r"; a: number; spin0: number; moved: boolean }
     | { mode: "p"; x0: number; y0: number; pan0x: number; pan0y: number; moved: boolean }
     | null
   >(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragMoved, setDragMoved] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [unitPx, setUnitPx] = useState(0);
@@ -249,8 +212,17 @@ function WheelChartImpl({
   }, [zoom]);
   /** Active pointer positions for pinch-to-zoom. */
   const ptrRef = useRef<Map<number, { x: number; y: number }>>(new Map());
-  const pinchRef = useRef<PinchGesture | null>(null);
+  const pinchRef = useRef<{ dist: number; zoom0: number } | null>(null);
+  const zoomRef = useRef(zoom);
+  useLayoutEffect(() => {
+    zoomRef.current = zoom;
+  });
+  const onZoomRef = useRef(onZoom);
+  useLayoutEffect(() => {
+    onZoomRef.current = onZoom;
+  });
   const lineTarget = lineTargetProp ?? 1;
+  const { pick, gregMonths } = useWheelChartLabels();
 
   const pol = useCallback(
     (L: number, r: number): [number, number] => {
@@ -280,6 +252,7 @@ function WheelChartImpl({
   // here means scrubbing the year slider (which only changes `det`/`markers`)
   // never rebuilds these ~600 nodes; only the data layers below re-render.
   const staticLayers = useMemo(() => {
+    const rashis = getWheelRashis();
     const nakSegs: React.ReactNode[] = [];
     const nakDecor: React.ReactNode[] = [];
     for (let i = 0; i < 27; i++) {
@@ -288,24 +261,36 @@ function WheelChartImpl({
       const Lm = (L0 + L1) / 2;
       const ico = NAKSHATRA_ICONS[i]!;
       const isHot = hover?.type === "nak" && hover.i === i;
-      const isSel = sel?.type === "nak" && sel.i === i;
       nakSegs.push(
         <path
           key={`ns${i}`}
           d={arcSeg(L0, L1, R.nakIn, R.nakOut)}
-          className={wSegNak({ alt: i % 2 === 1, hot: isHot, sel: isSel })}
+          className={wSegNak({ alt: i % 2 === 1, hot: isHot })}
         />
       );
+      // The name used to sit alone at the band's midpoint; it moves in to
+      // R.nakName so the glyph can take R.nakIcon, the slot already reserved for
+      // it out near the rim. Both stay — the icon reads at a glance, the name
+      // is what you actually look up.
+      const [nx, ny] = pol(Lm, R.nakIcon);
       nakDecor.push(
-        <RingLabel
-          key={`ni${i}`}
-          L={Lm}
-          r={(R.nakIn + R.nakOut) / 2}
-          cls={wNakName(isSel || isHot)}
-          spin={spin}
-        >
-          {ico.ne}
-        </RingLabel>
+        <g key={`ni${i}`}>
+          <WheelGlyph
+            art={NAKSHATRA_GLYPHS[i]}
+            size={NAK_GLYPH_SIZE}
+            cx={nx}
+            cy={ny}
+            className={wNakName(isHot)}
+            title={pick(ico.ne, ico.en)}
+          />
+          <RingLabel
+            L={Lm}
+            r={R.nakName}
+            cls={wNakName(isHot)}
+            spin={spin}
+            rows={labelRows(pick(ico.ne, ico.en))}
+          />
+        </g>
       );
     }
 
@@ -315,31 +300,32 @@ function WheelChartImpl({
       const L0 = i * 30;
       const L1 = (i + 1) * 30;
       const Lm = L0 + 15;
-      const rs = getWheelRashis()[i]!;
+      const rs = rashis[i]!;
       const isHot = hover?.type === "rashi" && hover.i === i;
-      const isSel = sel?.type === "rashi" && sel.i === i;
       rashiSegs.push(
         <path
           key={`rs${i}`}
           d={arcSeg(L0, L1, R.rashiIn, R.rashiOut)}
-          className={wSegRashi({ alt: i % 2 === 1, hot: isHot, sel: isSel })}
+          className={wSegRashi({ alt: i % 2 === 1, hot: isHot })}
         />
       );
       const [gx, gy] = pol(Lm, R.rashiGlyph);
       rashiDecor.push(
         <g key={`rd${i}`}>
-          <text
-            x={gx}
-            y={gy}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className={wRashiGlyph}
-            style={{ fontSize: webTypeScale["3xl"].size }}
-          >
-            {rs.sym}
-          </text>
-          <RingLabel L={Lm} r={R.rashiName} cls={wRashiName(isSel || isHot)} spin={spin}>
-            {rs.ne}
+          {/* Left upright rather than rotated with the ring: a crab or a pair of
+              scales is only recognisable the right way up, and the Unicode symbol
+              this replaced sat upright too. */}
+          {/* Same class as the name, so hovering a sign tints its glyph too. */}
+          <WheelGlyph
+            art={RASHI_GLYPHS[i]}
+            size={RASHI_GLYPH_SIZE}
+            cx={gx}
+            cy={gy}
+            className={wRashiName(isHot)}
+            title={pick(rs.ne, rs.en)}
+          />
+          <RingLabel L={Lm} r={R.rashiName} cls={wRashiName(isHot)} spin={spin}>
+            {pick(rs.ne, rs.en)}
           </RingLabel>
         </g>
       );
@@ -398,15 +384,15 @@ function WheelChartImpl({
     }
 
     const gregLabels: React.ReactNode[] = tw.show_greg
-      ? GREG_NE.map((m, i) => (
+      ? gregMonths.map((label, i) => (
           <RingLabel key={`g${i}`} L={(i - 3) * 30 + 5} r={R.gregMid} cls={wMonthGreg} spin={spin}>
-            {m}
+            {label}
           </RingLabel>
         ))
       : [];
 
     return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels };
-  }, [spin, hover, sel, bsYear, tw, pol, arcSeg]);
+  }, [spin, hover, bsYear, tw, pol, arcSeg, pick, gregMonths]);
 
   // The data layers — current-time markers, the inner tithi/karana/yoga rings
   // and the planet core — are the only parts that depend on the panchanga data
@@ -500,9 +486,17 @@ function WheelChartImpl({
           r={(R_YOGA_I + R_YOGA_O) / 2}
           cls={wYogaLbl(isCur)}
           spin={spin}
-          size={isCur ? 7 : 5.5}
+          // One size for every segment, current included. A 13.3° segment holds
+          // ~37 units of arc at this radius and the longest name (आयुष्मान्) runs
+          // 32 of them at 8 — enlarging just the current label would overflow on
+          // whichever days that yoga is the current one. The highlight reads from
+          // the brighter fill, stroke and text colour instead.
+          size={8}
         >
-          {yName.length > 4 ? yName.slice(0, 4) : yName}
+          {/* The band is 38 wide now, not 18, so the type grew with it — else the
+              ring reads as a bigger empty gap. Full names, no truncation: slicing
+              to 4 chars cut mid-conjunct and left a dangling virama ("अतिगण्"). */}
+          {yName}
         </RingLabel>
       );
     }
@@ -516,7 +510,7 @@ function WheelChartImpl({
       const Lm = sunL + k * 6 + 3;
       const kd = KARANA_SEQ[k]!;
       const isCur = k === curKarIdx;
-      const kName = kd.ne;
+      const kName = pick(kd.ne, kd.en);
       innerRings.push(
         <path
           key={`kar${k}`}
@@ -547,7 +541,7 @@ function WheelChartImpl({
       const Lm = sunL + i * 12 + 6;
       const isCur = i === curTithiIdx;
       const shukla = i < 15;
-      const tName = WHEEL_TITHIS[i]!.ne;
+      const tName = pick(WHEEL_TITHIS[i]!.ne, WHEEL_TITHIS[i]!.en);
       innerRings.push(
         <g key={`tit${i}`}>
           <path
@@ -590,7 +584,7 @@ function WheelChartImpl({
       const lon = planetLons[i] ?? 0;
       const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
       const rad = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
-      const sky = SKY_NAMES[i];
+      const sky = (["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const)[i];
       const collar = g.retrograde ? retroBorder(rad, unitPx) : null;
       const moonShadow = i === 1 ? wheelMoonShadow(normDeg(moonLon - sunLon), rad) : null;
       const moonTurn = i === 1 ? moonSunFacingRotation(px, py, sunX, sunY) : 0;
@@ -607,7 +601,7 @@ function WheelChartImpl({
               <circle cx={px} cy={py} r={rad * 1.42} fill="none" stroke={wheelPalette.saturnRing} strokeWidth={1.15} />
             ) : null}
             <image
-              href={skyUri(SKY_TOP[sky])}
+              href={`${skyBase}sky3d/top/${sky}.png`}
               x={px - rad}
               y={py - rad}
               width={rad * 2}
@@ -628,15 +622,19 @@ function WheelChartImpl({
         );
       } else {
         const icon = planetIconSize(i, rad);
-        const Icon = WHEEL_NODE_ICONS[i - 7]!;
+        const iconKey = i === 7 ? "rahu" : "ketu";
         core.push(
           <g key={`pl${i}`} style={{ pointerEvents: "none" }}>
             {collar ? (
               <circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
             ) : null}
-            <g transform={`translate(${px - icon / 2} ${py - icon / 2})`}>
-              <Icon width={icon} height={icon} />
-            </g>
+            <image
+              href={nodeIcon[iconKey]}
+              x={px - icon / 2}
+              y={py - icon / 2}
+              width={icon}
+              height={icon}
+            />
           </g>
         );
       }
@@ -644,7 +642,7 @@ function WheelChartImpl({
       planetNames.push(
         <g key={`pn${i}`} transform={`translate(${px} ${py}) scale(${1 / zoom})`} style={{ pointerEvents: "none" }}>
           <text x={0} y={0} textAnchor="middle" dominantBaseline="central" className={wPlanetName}>
-            {g.ne}
+            {pick(g.ne, g.en)}
           </text>
         </g>
       );
@@ -658,7 +656,7 @@ function WheelChartImpl({
           <clipPath id="wheel-earth"><circle cx={0} cy={0} r={earthR} /></clipPath>
         </defs>
         <image
-          href={skyUri(EARTH_TOP)}
+          href={`${skyBase}sky3d/top/earth.png`}
           x={-earthR}
           y={-earthR}
           width={earthR * 2}
@@ -696,13 +694,13 @@ function WheelChartImpl({
             cls={wMonthNe(tw.show_today && i === sunRashiIdx)}
             spin={spin}
           >
-            {m.ne}
+            {pick(m.ne, m.en)}
           </RingLabel>
         ))
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, zoom, place, unitPx]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom, place, unitPx]);
 
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();
@@ -720,37 +718,37 @@ function WheelChartImpl({
     return Math.hypot(pts[1]!.x - pts[0]!.x, pts[1]!.y - pts[0]!.y);
   };
 
-  const pointerCentroidInWrap = () => {
-    const rect = wrapRef.current?.getBoundingClientRect();
-    if (!rect || ptrRef.current.size < 2) return null;
-    const pts = [...ptrRef.current.values()];
-    return {
-      x: (pts[0]!.x + pts[1]!.x) / 2 - rect.left,
-      y: (pts[0]!.y + pts[1]!.y) / 2 - rect.top,
+  // Desktop mouse / trackpad: zoom only when the cursor is on the circular
+  // disc. The stage box is a tall rectangle — capturing scroll there blocked
+  // the page. Touch-only phones keep page scroll.
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      const finePointer = window.matchMedia("(pointer: fine)").matches;
+      if (!finePointer && !e.ctrlKey) return;
+      const box = el.getBoundingClientRect();
+      const cx = box.left + box.width / 2;
+      const cy = box.top + box.height / 2;
+      const radius = Math.min(box.width, box.height) / 2;
+      if (Math.hypot(e.clientX - cx, e.clientY - cy) > radius) return;
+      e.preventDefault();
+      e.stopPropagation();
+      let dy = e.deltaY;
+      if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) dy *= 16;
+      else if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) dy *= 400;
+      onZoomRef.current(zoomRef.current * Math.exp(-dy * 0.0016));
     };
-  };
-
-  const startPinch = () => {
-    const rect = wrapRef.current?.getBoundingClientRect();
-    const centroid = pointerCentroidInWrap();
-    const dist = pinchDist();
-    if (!rect || !centroid || dist <= 0) return;
-    pinchRef.current = {
-      dist0: dist,
-      zoom0: zoom,
-      pan0x: pan.x,
-      pan0y: pan.y,
-      focalX: centroid.x,
-      focalY: centroid.y,
-      centroid0x: centroid.x,
-      centroid0y: centroid.y,
-    };
-  };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   const onDown = (e: React.PointerEvent<SVGSVGElement>) => {
     ptrRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     e.currentTarget.setPointerCapture(e.pointerId);
     if (ptrRef.current.size === 1) {
+      setIsDragging(true);
+      setDragMoved(false);
       if (zoom > 1) {
         dragRef.current = { mode: "p", x0: e.clientX, y0: e.clientY, pan0x: pan.x, pan0y: pan.y, moved: false };
       } else {
@@ -759,26 +757,18 @@ function WheelChartImpl({
     } else {
       // Two fingers: cancel single-finger gesture, start pinch
       dragRef.current = null;
-      startPinch();
+      pinchRef.current = { dist: pinchDist(), zoom0: zoom };
     }
   };
   const onMove = (e: React.PointerEvent<SVGSVGElement>) => {
     ptrRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (ptrRef.current.size >= 2) {
-      const rect = wrapRef.current?.getBoundingClientRect();
-      const centroid = pointerCentroidInWrap();
-      const d = pinchDist();
-      if (!pinchRef.current) startPinch();
-      if (pinchRef.current && rect && centroid && d > 0) {
-        const next = applyPinchTransform(
-          pinchRef.current,
-          d,
-          centroid,
-          rect.width,
-          rect.height,
-        );
-        onZoom(next.zoom);
-        onPan(next.pan.x, next.pan.y);
+      if (pinchRef.current) {
+        const d = pinchDist();
+        if (d > 0) {
+          const next = Math.max(0.55, Math.min(14, pinchRef.current.zoom0 * (d / pinchRef.current.dist)));
+          onZoom(next);
+        }
       }
       return;
     }
@@ -786,11 +776,17 @@ function WheelChartImpl({
     if (dragRef.current.mode === "p") {
       const dx = e.clientX - dragRef.current.x0;
       const dy = e.clientY - dragRef.current.y0;
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) dragRef.current.moved = true;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+        dragRef.current.moved = true;
+        setDragMoved(true);
+      }
       onPan(dragRef.current.pan0x + dx, dragRef.current.pan0y + dy);
     } else {
       const d = angleAt(e) - dragRef.current.a;
-      if (Math.abs(d) > 1.2) dragRef.current.moved = true;
+      if (Math.abs(d) > 1.2) {
+        dragRef.current.moved = true;
+        setDragMoved(true);
+      }
       onSpin(dragRef.current.spin0 + d);
     }
   };
@@ -798,6 +794,7 @@ function WheelChartImpl({
     e.currentTarget.releasePointerCapture(e.pointerId);
     ptrRef.current.delete(e.pointerId);
     dragRef.current = null;
+    setIsDragging(false);
     if (ptrRef.current.size < 2) pinchRef.current = null;
   };
 
@@ -807,14 +804,14 @@ function WheelChartImpl({
 
   return (
     <div
-      className={wheelSvgWrap}
+      className={cn(wheelSvgWrap, "transition-[padding] duration-200 ease-out")}
       ref={wrapRef}
-      style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "center", transition: dragRef.current ? "none" : "transform 0.12s ease-out" }}
+      style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "center", transition: isDragging ? "none" : "transform 0.12s ease-out" }}
     >
       <svg
         ref={svgRef}
         viewBox="42 42 916 916"
-        className={wheelSvg(!!dragRef.current?.moved)}
+        className={wheelSvg(dragMoved)}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}

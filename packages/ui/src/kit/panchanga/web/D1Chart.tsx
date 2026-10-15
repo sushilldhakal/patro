@@ -1,11 +1,6 @@
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import { useD1Chart, type D1DrishtiPanel } from "@vedic-patro/features/kundali";
-import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
-import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
-
-type Props = {
-  houses: BhavaHouse[];
-};
+import { GrahaStatusMarksSvg } from "./GrahaStatusBadges";
+import type { D1ChartProps } from "../d1-contract";
 
 function DrishtiPanel({ panel, onClose }: { panel: D1DrishtiPanel; onClose: () => void }) {
   const badgeCls = panel.isMalefic
@@ -38,7 +33,7 @@ function DrishtiPanel({ panel, onClose }: { panel: D1DrishtiPanel; onClose: () =
   );
 }
 
-export function D1Chart({ houses }: Props) {
+export function D1Chart({ houses, renderHouseDetail }: D1ChartProps) {
   const chart = useD1Chart(houses);
 
   return (
@@ -139,12 +134,12 @@ export function D1Chart({ houses }: Props) {
         ))}
       </svg>
       {chart.drishti ? <DrishtiPanel panel={chart.drishti} onClose={chart.clearSelected} /> : null}
-      <BhavaDetailDialog
-        houses={houses}
-        houseNumber={chart.openHouse}
-        reference={chart.reference}
-        onClose={chart.closeHouse}
-      />
+      {renderHouseDetail?.({
+        houses,
+        houseNumber: chart.openHouse,
+        reference: chart.reference,
+        onClose: chart.closeHouse,
+      })}
     </div>
   );
 }

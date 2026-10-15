@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { PageShell } from "@/components/PageShell";
-import { GrahaBanner, GrahaDescription } from "@/components/graha/GrahaPageParts";
+import { GrahaBanner, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 
 type GrahaDetailPageFrameProps = {

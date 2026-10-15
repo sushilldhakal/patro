@@ -2,7 +2,7 @@ import { getRouteApi, Navigate, useParams } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 import { useElementPage, type ElementPage as ElementPageView, type SpanBoundaryView, type SpanCard, type ToneRowView } from "@vedic-patro/features/panchanga-element";
 import { PageShell, PageHeader } from "@/components/PageShell";
-import { GrahaBanner, ElementDescription } from "@/components/graha/GrahaPageParts";
+import { GrahaBanner, ElementDescription } from "@vedic-patro/ui/kit/panchanga";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { useLocale } from "@/i18n/locale";
