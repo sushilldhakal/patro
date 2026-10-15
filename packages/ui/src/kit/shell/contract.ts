@@ -394,6 +394,16 @@ export type RituSeasonsProps = {
   className?: string;
 };
 
+export type VerticalEdgeLabelProps = {
+  text: string;
+  side: "left" | "right";
+  className?: string;
+  /** Tailwind inset override, for example `inset-y-2`. */
+  insetClass?: string;
+  /** App callers pass a theme colour. The website uses `className`. */
+  color?: string;
+};
+
 export type MatrixCell = {
   key: string;
   children?: ReactNode;
@@ -450,6 +460,7 @@ export type ShellKit = {
   PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
   PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
   RituSeasons: ComponentType<RituSeasonsProps>;
+  VerticalEdgeLabel: ComponentType<VerticalEdgeLabelProps>;
   MatrixTable: ComponentType<MatrixTableProps>;
   SunTimesYearGrid: ComponentType<SunTimesYearGridProps>;
 };
