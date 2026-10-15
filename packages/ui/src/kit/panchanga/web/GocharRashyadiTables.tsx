@@ -1,6 +1,7 @@
 import type { RashyadiSegment } from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { useGocharRashyadiTable, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
+import { Box, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 
 type TableProps = {
@@ -9,6 +10,8 @@ type TableProps = {
   kundaliDateAd?: string | null;
   loading?: boolean;
   className?: string;
+  /** Accepted so the app and the website share one props contract. The website always shows the version line. */
+  hideVersionHeader?: boolean;
 };
 
 export function GocharRashyadiTable({
@@ -17,31 +20,34 @@ export function GocharRashyadiTable({
   kundaliDateAd,
   loading,
   className,
+  hideVersionHeader,
 }: TableProps) {
   const table = useGocharRashyadiTable({ segment, kundaliGrahas, kundaliDateAd });
 
   if (loading) {
     return (
-      <div className={cn(dainikKrantiClasses.rashyadiLoading, "flex h-full min-h-[280px]", className)}>
-        <p className="text-sm">{table.loadingText}</p>
-      </div>
+      <Box className={cn(dainikKrantiClasses.rashyadiLoading, "flex h-full min-h-[280px]", className)}>
+        <Text as="p" className="text-sm">
+          {table.loadingText}
+        </Text>
+      </Box>
     );
   }
 
   return (
-    <div className={cn(dainikKrantiClasses.rashyadiCard, "h-full overflow-x-auto", className)}>
-      <div className={dainikKrantiClasses.rashyadiHead}>
-        <p className={dainikKrantiClasses.rashyadiVersion}>{table.version}</p>
-        <p className={dainikKrantiClasses.rashyadiLabel}>
+    <Box className={cn(dainikKrantiClasses.rashyadiCard, "h-full overflow-x-auto", className)}>
+      <Box className={dainikKrantiClasses.rashyadiHead}>
+        {hideVersionHeader ? null : <Text as="p" className={dainikKrantiClasses.rashyadiVersion}>{table.version}</Text>}
+        <Text as="p" className={dainikKrantiClasses.rashyadiLabel}>
           {table.label}
-          {table.day ? <span className={dainikKrantiClasses.rashyadiDay}>{table.day}</span> : null}
-        </p>
+          {table.day ? <Text as="span" className={dainikKrantiClasses.rashyadiDay}>{table.day}</Text> : null}
+        </Text>
         {table.moon ? (
-          <p className={dainikKrantiClasses.rashyadiMoon}>
-            {table.moon.label} <span className={dainikKrantiClasses.rashyadiMoonValue}>{table.moon.value}</span>
-          </p>
+          <Text as="p" className={dainikKrantiClasses.rashyadiMoon}>
+            {table.moon.label} <Text as="span" className={dainikKrantiClasses.rashyadiMoonValue}>{table.moon.value}</Text>
+          </Text>
         ) : null}
-      </div>
+      </Box>
 
       <table className="w-full flex-1 border-collapse text-sm">
         <thead>
@@ -73,7 +79,9 @@ export function GocharRashyadiTable({
           ))}
         </tbody>
       </table>
-      <p className={dainikKrantiClasses.rashyadiFoot}>{table.footnote}</p>
-    </div>
+      <Text as="p" className={dainikKrantiClasses.rashyadiFoot}>
+        {table.footnote}
+      </Text>
+    </Box>
   );
 }

@@ -40,6 +40,10 @@ export const rotateCcwIcon: IconNode = [
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
 ];
 
+export const chevronLeftIcon: IconNode = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+
+export const chevronRightIcon: IconNode = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+
 export const sparklesIcon: IconNode = [
   ["path", { d: "M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z", key: "1s2grr" }],
   ["path", { d: "M20 2v4", key: "1rf3ol" }],

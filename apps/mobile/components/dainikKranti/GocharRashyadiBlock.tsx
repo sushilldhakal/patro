@@ -6,8 +6,8 @@ import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
-import { GocharKundaliChart } from "./GocharKundaliChart";
-import { GocharRashyadiTable } from "./GocharRashyadiTables";
+import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GocharKundaliChart, GocharRashyadiTable } from "@vedic-patro/ui/kit/panchanga";
 
 type GrahaRow = GocharGraha & { key: string };
 
@@ -93,6 +93,7 @@ export function GocharRashyadiBlock({
       loading={gocharLoading}
       hideTitle
       className={layout === "three" ? "mx-auto w-full max-w-[300px] shrink-0" : undefined}
+      renderChart={(houses) => <D1Chart houses={houses} />}
     />
   );
 

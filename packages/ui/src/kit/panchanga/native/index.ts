@@ -15,3 +15,8 @@ export { WheelDateSheet } from "./WheelDateSheet";
 export { DayTimeline } from "./DayTimeline";
 export { AllElementsLink, ElementDescription, GrahaBanner, GrahaColumnCard, GrahaDescription } from "./GrahaPageParts";
 export { GrahaStatusBadges, GrahaStatusLegend, GrahaStatusMarksSvg } from "./GrahaStatusBadges";
+export { GocharIngressSection } from "./GocharIngressSection";
+export { GocharKundaliChart } from "./GocharKundaliChart";
+export { GocharPlanetDeepDive } from "./GocharPlanetDeepDive";
+export { GocharRashyadiTable } from "./GocharRashyadiTables";
+export { GocharSkySection } from "./GocharSkySection";
