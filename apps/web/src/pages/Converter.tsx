@@ -3,7 +3,7 @@ import { useConverterPage } from "@vedic-patro/features/converter";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { SeoContentSection } from "../components/seo/SeoContentSection";
 import { useRouteLoading } from "@/lib/route-loading";
-import { StatCard } from "../components/StatCard";
+import { StatCard } from "@vedic-patro/ui/kit/shell";
 import { cn } from "@vedic-patro/domain/utils";
 import { converterClasses } from "@vedic-patro/design-tokens/classes/converter-classes";
 
