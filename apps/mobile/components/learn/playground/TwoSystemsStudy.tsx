@@ -37,8 +37,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@/components/icons/Ionicons";
-import Slider from "@react-native-community/slider";
-
 import { Canvas } from "@/components/learn/diagrams/LearnCanvas";
 import { Text } from "@/components/ui/Text";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
@@ -49,7 +47,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
+import { TwoSystemsPanel } from "@vedic-patro/ui/kit/learn";
 import {
+  TWO_SYSTEMS_SPEEDS,
   buildYearLadders,
   dtFromDate,
   longitudeTravelled,
@@ -74,20 +74,9 @@ import Scene, {
 import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
 import { tFor } from "@vedic-patro/i18n/runtime";
 const CANVAS_BG = midnight.popover;
 const CARD_HEIGHT = 320;
-
-/** Days of simulated time per real second, per speed rung. */
-const SPEEDS = [2, 8, 30];
-
-
-const FOCUS_CHIPS: { id: Focus; ne: string; en: string }[] = [
-  { id: "solar", get ne() { return tFor("ne", "learn.study.two_systems.focus_solar"); }, get en() { return tFor("en", "learn.study.two_systems.focus_solar"); } },
-  { id: "lunar", get ne() { return tFor("ne", "learn.study.two_systems.focus_lunar"); }, get en() { return tFor("en", "learn.study.two_systems.focus_lunar"); } },
-  { id: "both", get ne() { return tFor("ne", "learn.study.two_systems.focus_both"); }, get en() { return tFor("en", "learn.study.two_systems.focus_both"); } },
-];
 
 const MIN_DISTANCE = 9;
 const MAX_DISTANCE = 34;
@@ -143,7 +132,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
 
   const year = useYearLadders();
 
-  const clock = useRef<SceneClock>({ dt: 0, playing: false, daysPerSecond: SPEEDS[0]! });
+  const clock = useRef<SceneClock>({ dt: 0, playing: false, daysPerSecond: TWO_SYSTEMS_SPEEDS[0]! });
   const camera = useRef<CameraState>({ yaw: 0.35, pitch: 0.78, distance: 19 });
   /* The clock cannot be seeded until the ladder names the year's start. */
   const seeded = useRef(false);
@@ -173,7 +162,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
     clock.current.playing = playing;
   }, [playing]);
   useEffect(() => {
-    clock.current.daysPerSecond = SPEEDS[speed]!;
+    clock.current.daysPerSecond = TWO_SYSTEMS_SPEEDS[speed]!;
   }, [speed]);
 
   const onSample = useCallback((s: SceneSample) => {
@@ -264,51 +253,9 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
 
   /** Where the Moon's own sightline lands on the belt. */
   const moonLongitude = siderealLon("moon", dt);
-  const moonRashi = Math.floor(moonLongitude / 30) % 12;
 
   /** True Sun–Earth distance for the instant on screen — the readout's honesty. */
   const distanceAu = geocentricPointAt("sun", dt).distanceAu;
-
-  const chip = (active: boolean, label: string, onPress: () => void, key?: string) => (
-    <Pressable
-      key={key ?? label}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-      className={cn(
-        "rounded-full border px-2.5 py-1",
-        active ? "border-transparent" : "border-white/25",
-      )}
-      style={active ? { backgroundColor: illustration.amber57 } : undefined}
-    >
-      <Text
-        className="text-caption font-semibold"
-        style={[
-          nepaliTextStyle(11),
-          { color: active ? illustration.amber5 : withAlpha(neutral.white, 0.7) },
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-
-  const readout = (k: string, v: string, tone?: string) => (
-    <View key={k} className="rounded-lg border border-white/15 px-2.5 py-1.5">
-      <Text
-        className="text-caption font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(9), { color: withAlpha(neutral.white, 0.5) }]}
-      >
-        {k}
-      </Text>
-      <Text
-        className="text-caption font-bold"
-        style={[nepaliTextStyle(13), { color: tone ?? neutral.white }]}
-      >
-        {v}
-      </Text>
-    </View>
-  );
 
   const body = (
     <View
@@ -466,197 +413,35 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
         </View>
       </View>
 
-      <View
-        className={
-          fullscreen
-            ? "absolute inset-x-0 bottom-0 gap-2 px-3 pt-2"
-            : "gap-2 border-t border-border/60 px-3 py-2.5"
-        }
-        style={
-          fullscreen
-            ? {
-                backgroundColor: withAlpha(wheel.sky2, 0.88),
-                paddingBottom: Math.max(insets.bottom, 10),
-                maxHeight: windowHeight * (detailsOpen ? 0.5 : 0.22),
-              }
-            : { backgroundColor: withAlpha(wheel.sky2, 0.94) }
-        }
-      >
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="items-center gap-1.5"
-        >
-          {FOCUS_CHIPS.map((c) => chip(focus === c.id, pick(c.ne, c.en), () => setFocus(c.id), c.id))}
-          <View className="mx-0.5 h-4 w-px bg-white/20" />
-          {SPEEDS.map((s, i) => chip(speed === i, `${num(s)}×`, () => setSpeed(i), `s-${s}`))}
-        </ScrollView>
-
-        <View className="flex-row items-center gap-2">
-          <Pressable
-            onPress={() => setPlaying((p) => !p)}
-            accessibilityRole="button"
-            accessibilityLabel={playing ? t("panchanga.hora.pause") : t("panchanga.hora.play")}
-            className="h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10"
-          >
-            <Ionicons name={playing ? "pause" : "play"} size={16} color={brand.offWhite} />
-          </Pressable>
-          <Slider
-            style={{ flex: 1, height: 34 }}
-            value={Math.min(Math.max(dayOfYear, 0), year.yearDays)}
-            minimumValue={0}
-            maximumValue={year.yearDays}
-            onValueChange={(v) => {
-              clock.current.dt = year.yearStartDt + v;
-              clock.current.playing = false;
-              setPlaying(false);
-            }}
-            minimumTrackTintColor={illustration.amber57}
-            maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
-            thumbTintColor={illustration.amber57}
-            accessibilityLabel={t("learn.playground.scrub_year")}
-          />
-          <Text
-            className="text-caption"
-            style={{ color: withAlpha(neutral.white, 0.6) }}
-          >
-            {`${num(Math.max(0, Math.floor(dayOfYear)))}/${num(Math.round(year.yearDays))}`}
-          </Text>
-          <Pressable
-            onPress={() => setDetailsOpen((v) => !v)}
-            accessibilityRole="button"
-            accessibilityLabel={
-              detailsOpen ? t("learn.playground.hide_readings") : t("learn.playground.show_readings")
-            }
-            className="h-8 w-8 items-center justify-center rounded-full border border-white/20"
-          >
-            <Ionicons
-              name={detailsOpen ? "chevron-down" : "chevron-up"}
-              size={14}
-              color={withAlpha(neutral.white, 0.75)}
-            />
-          </Pressable>
-        </View>
-
-        {detailsOpen ? (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-2">
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerClassName="items-stretch gap-2"
-            >
-              {readout(
-                t("learn.diagrams.hierarchy_step_solar_month"),
-                `${ne ? solar.monthNameNe : solar.monthName} ${num(solar.gate)}`,
-                illustration.orange60,
-              )}
-              {readout(
-                t("learn.study.two_systems.sun_in_rashi"),
-                `${num(Math.floor(solar.longitude))}° · ${num(solar.rashiIndex + 1)}`,
-              )}
-              {readout(
-                t("learn.study.two_systems.moon_in_rashi"),
-                `${RASHI_NE[moonRashi]} · ${num(Math.floor(moonLongitude))}°`,
-              )}
-              {readout(
-                t("learn.study.two_systems.moon_sun_angle"),
-                `${num(lunar.elongation.toFixed(1))}°`,
-              )}
-              {readout(
-                t("learn.study.two_systems.tithi_paksha"),
-                `${tithiName(lunar)} · ${
-                  lunar.shukla ? t("common.paksha_shukla") : t("common.paksha_krishna")
-                }`,
-              )}
-            </ScrollView>
-
-            {/* The counters that make a month's worth of degrees legible. A
-                longitude wraps at 360° and so can never show that the Moon needs
-                more than one turn; these do not wrap. */}
-            <View className="gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2.5">
-              <View>
-                <Text
-                  className="text-caption font-semibold"
-                  style={[nepaliTextStyle(11), { color: illustration.sky86 }]}
-                >
-                  {t("learn.study.two_systems.moon_travelled")}
-                </Text>
-                <View className="mt-0.5 flex-row flex-wrap items-center gap-1.5">
-                  <Text
-                    className="text-lg font-bold"
-                    style={{ color: neutral.white }}
-                  >
-                    {`${num(travelled.moon.toFixed(1))}°`}
-                  </Text>
-                  <View
-                    className="rounded px-1.5 py-0.5"
-                    style={{
-                      backgroundColor:
-                        travelled.moon >= 360 ? withAlpha(illustration.green52, 0.25) : withAlpha(neutral.white, 0.1),
-                    }}
-                  >
-                    <Text
-                      className="text-caption font-bold"
-                      style={[
-                        nepaliTextStyle(10),
-                        {
-                          color: travelled.moon >= 360 ? illustration.green90 : withAlpha(neutral.white, 0.6),
-                        },
-                      ]}
-                    >
-                      {travelled.moon >= 360
-                        ? pick(
-                            tFor(undefined, "ui.learn.x_c4114654", { v0: num((travelled.moon - 360).toFixed(1)) }),
-                            `sidereal lap done +${(travelled.moon - 360).toFixed(1)}°`,
-                          )
-                        : pick(
-                            tFor(undefined, "ui.learn.x_be4a9c80", { v0: num((360 - travelled.moon).toFixed(1)) }),
-                            `${(360 - travelled.moon).toFixed(1)}° to the 360° lap`,
-                          )}
-                    </Text>
-                  </View>
-                </View>
-                <Text
-                  className="text-caption mt-0.5"
-                  style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
-                >
-                  {t("learn.study.two_systems.sidereal_vs_synodic")}
-                </Text>
-              </View>
-
-              <View className="border-t border-white/10 pt-2">
-                <Text
-                  className="text-caption font-semibold"
-                  style={[nepaliTextStyle(11), { color: illustration.amber77 }]}
-                >
-                  {t("learn.study.two_systems.sun_travelled")}
-                </Text>
-                <Text
-                  className="text-lg mt-0.5 font-bold"
-                  style={{ color: neutral.white }}
-                >
-                  {`${num(travelled.sunThisYear.toFixed(1))}° / ${num(360)}°  ·  ${t("learn.study.two_systems.from_sun")} ${num(distanceAu.toFixed(4))} AU`}
-                </Text>
-                <Text
-                  className="text-caption mt-0.5"
-                  style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
-                >
-                  {t("learn.study.two_systems.belt_pinned_to_stars")}
-                </Text>
-              </View>
-            </View>
-
-            <DriftLadder
-              year={year}
-              dayOfYear={dayOfYear}
-              lunarDone={lunarDone}
-              ne={ne}
-              num={num}
-              pick={pick}
-            />
-          </ScrollView>
-        ) : null}
-      </View>
+      <TwoSystemsPanel
+        focus={focus}
+        onFocus={setFocus}
+        speedIndex={speed}
+        onSpeed={setSpeed}
+        playing={playing}
+        onTogglePlay={() => setPlaying((value) => !value)}
+        dayOfYear={dayOfYear}
+        onSeek={(day) => {
+          clock.current.dt = day;
+          clock.current.playing = false;
+          setPlaying(false);
+        }}
+        year={year}
+        solar={solar}
+        lunar={lunar}
+        moonLongitude={moonLongitude}
+        travelledMoon={travelled.moon}
+        travelledSun={travelled.sunThisYear}
+        distanceAu={distanceAu}
+        lunarDone={lunarDone}
+        playIcon={<Ionicons name="play" size={16} color={brand.offWhite} />}
+        pauseIcon={<Ionicons name="pause" size={16} color={brand.offWhite} />}
+        fullscreen={fullscreen}
+        detailsOpen={detailsOpen}
+        onToggleDetails={() => setDetailsOpen((value) => !value)}
+        expandIcon={<Ionicons name="chevron-up" size={14} color={brand.offWhite} />}
+        collapseIcon={<Ionicons name="chevron-down" size={14} color={brand.offWhite} />}
+      />
     </View>
   );
 
@@ -725,188 +510,6 @@ function Chain({ tone, steps }: { tone: "sun" | "moon"; steps: string[] }) {
  * eleven days short of the upper one, and the marked overhang is the gap an
  * अधिक मास is inserted to close.
  */
-function DriftLadder({
-  year,
-  dayOfYear,
-  lunarDone,
-  ne,
-  num,
-  pick,
-}: {
-  year: Ladders;
-  dayOfYear: number;
-  lunarDone: number;
-  ne: boolean;
-  num: (v: number | string) => string;
-  pick: (a: string, b: string) => string;
-}) {
-  const span = year.yearDays;
-  const pct = (days: number) => `${(days / span) * 100}%` as const;
-  const playhead = Math.min(Math.max(dayOfYear, 0), span);
-  const shortfall = year.lunarShortfall;
-
-  return (
-    <View className="gap-1">
-      <View className="flex-row flex-wrap items-baseline justify-between gap-x-3">
-        <Text
-          className="text-caption"
-          style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.6) }]}
-        >
-          {pick(tFor(undefined, "learn.study.two_systems.one_timeline"), tFor("en", "learn.study.two_systems.one_timeline"))}
-        </Text>
-        <Text
-          className="text-caption"
-          style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.6) }]}
-        >
-          {pick(
-            tFor(undefined, "ui.learn.x_e83f4e4a", { v0: num(span.toFixed(0)), v1: num(
-              year.twelveLunarDays.toFixed(0),
-            ), v2: num(shortfall.toFixed(0)) }),
-            `Solar year ${span.toFixed(0)} d · 12 lunar months ${year.twelveLunarDays.toFixed(
-              0,
-            )} d → a ~${shortfall.toFixed(0)} day gap`,
-          )}
-        </Text>
-      </View>
-
-      <View>
-        {/* Solar months */}
-        <View className="h-6 w-full flex-row overflow-hidden rounded-md">
-          {year.solar.map((m, i) => (
-            <View
-              key={m.index}
-              className="items-center justify-center overflow-hidden"
-              style={{
-                width: pct(m.days),
-                backgroundColor: i % 2 ? withAlpha(illustration.orange50, 0.35) : withAlpha(illustration.orange50, 0.22),
-                borderRightWidth: i === 11 ? 0 : 1,
-                borderRightColor: withAlpha(neutral.black, 0.4),
-              }}
-            >
-              <Text
-                numberOfLines={1}
-                className="text-caption font-semibold"
-                style={[nepaliTextStyle(9), { color: brand.offWhite }]}
-              >
-                {ne ? m.nameNe : m.name}
-              </Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Lunar months, clipped to the same span so the overhang is visible. */}
-        <View className="mt-1 h-5 w-full overflow-hidden rounded-md bg-white/5">
-          {year.lunar.map((m, i) => {
-            const from = m.startDt - year.yearStartDt;
-            if (from >= span) return null;
-            return (
-              <View
-                key={m.index}
-                className="absolute top-0 h-full items-center justify-center"
-                style={{
-                  left: pct(Math.max(0, from)),
-                  width: pct(Math.min(m.days, span - from)),
-                  backgroundColor:
-                    i === 12
-                      ? withAlpha(illustration.green52, 0.45)
-                      : i % 2
-                        ? withAlpha(illustration.teal60, 0.35)
-                        : withAlpha(illustration.teal60, 0.22),
-                  borderRightWidth: 1,
-                  borderRightColor: withAlpha(neutral.black, 0.4),
-                }}
-              >
-                <Text
-                  numberOfLines={1}
-                  className="text-caption font-semibold"
-                  style={{ color: illustration.sky96 }}
-                >
-                  {num(i + 1)}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
-
-        {/*
-          The measurement, stated plainly: twelve whole lunar months laid off
-          from the year's own start, and what is left of the year afterwards. It
-          is a ruler rather than a calendar row — the lunar months above run on
-          their real dates, which begin mid-cycle, so the comparison of *lengths*
-          has to be drawn separately or it is not a comparison.
-        */}
-        <View className="mt-1 h-4 w-full overflow-hidden rounded-md bg-white/5">
-          <View
-            className="absolute inset-y-0 left-0 items-center justify-center"
-            style={{
-              width: pct(year.twelveLunarDays),
-              backgroundColor: withAlpha(illustration.teal60, 0.3),
-              borderRightWidth: 1,
-              borderRightColor: withAlpha(neutral.black, 0.4),
-            }}
-          >
-            <Text
-              numberOfLines={1}
-              className="text-caption px-1 font-semibold"
-              style={[nepaliTextStyle(9), { color: illustration.sky96 }]}
-            >
-              {pick(
-                tFor(undefined, "ui.learn.x_efb4e824", { v0: num(year.twelveLunarDays.toFixed(0)) }),
-                `12 lunar months = ${year.twelveLunarDays.toFixed(0)} d`,
-              )}
-            </Text>
-          </View>
-          {shortfall > 0 ? (
-            <View
-              className="absolute inset-y-0 right-0 items-center justify-center"
-              style={{ width: pct(shortfall), backgroundColor: withAlpha(illustration.green52, 0.35) }}
-            >
-              <Text className="text-caption font-bold" style={{ color: wheel.ink }}>
-                {num(shortfall.toFixed(0))}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-
-        <View
-          pointerEvents="none"
-          className="absolute bottom-0 w-px bg-white"
-          style={{ left: pct(playhead), top: -4 }}
-        />
-      </View>
-
-      <View className="mt-1 gap-1">
-        <LadderKey color={withAlpha(illustration.orange50, 0.6)}>
-          {pick(tFor(undefined, "learn.study.two_systems.legend_solar_months"), tFor("en", "learn.study.two_systems.legend_solar_months"))}
-        </LadderKey>
-        <LadderKey color={withAlpha(illustration.teal60, 0.6)}>
-          {pick(
-            tFor(undefined, "ui.learn.x_d723f1f1", { v0: num(lunarDone) }),
-            `Lunar months — amavasya to amavasya · ${lunarDone} begun so far this year`,
-          )}
-        </LadderKey>
-        <LadderKey color={withAlpha(illustration.green52, 0.7)}>
-          {pick(tFor(undefined, "learn.study.two_systems.legend_remaining_gap"), tFor("en", "learn.study.two_systems.legend_remaining_gap"))}
-        </LadderKey>
-      </View>
-    </View>
-  );
-}
-
-function LadderKey({ color, children }: { color: string; children: React.ReactNode }) {
-  return (
-    <View className="flex-row items-center gap-1.5">
-      <View className="rounded-md" style={{ width: 8, height: 8, backgroundColor: color }} />
-      <Text
-        className="text-caption flex-1"
-        style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
-      >
-        {children}
-      </Text>
-    </View>
-  );
-}
-
 function RoundButton({
   icon,
   label,

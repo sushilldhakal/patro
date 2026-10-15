@@ -277,6 +277,9 @@ export type LunarMonthSpan = {
  * shortfall is the whole reason adhik maas exists — so the lunar ladder is
  * built one month past the year's end, which is where the overhang shows.
  */
+/** Days of simulated time per real second, per speed rung. */
+export const TWO_SYSTEMS_SPEEDS = [2, 8, 30] as const;
+
 export function buildYearLadders(yearStartDt: number) {
   const solar: SolarMonthSpan[] = [];
   let cursor = yearStartDt;

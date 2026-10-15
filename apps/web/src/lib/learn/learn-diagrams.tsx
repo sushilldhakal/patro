@@ -79,7 +79,7 @@ import {
   RashiReferenceTable,
   TithiReferenceTable,
   YogaReferenceTable,
-} from "@/components/learn/PanchangaReferenceGuide";
+} from "@vedic-patro/ui/kit/learn";
 
 export const LEARN_DIAGRAMS = {
   /* Sun / Earth geometry */

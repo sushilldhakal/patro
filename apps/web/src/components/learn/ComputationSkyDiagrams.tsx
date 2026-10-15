@@ -1,10 +1,7 @@
 import { SunEarthMoonStudy } from "@/components/learn/SunEarthMoonStudy";
 import { EquinoxPrecession } from "@/components/learn/EquinoxPrecession";
 import { PrecessionCone } from "@/components/learn/PrecessionCone";
-import {
-  NakshatraReferenceTable,
-  RashiReferenceTable,
-} from "@/components/learn/PanchangaReferenceGuide";
+import { NakshatraReferenceTable, RashiReferenceTable } from "@vedic-patro/ui/kit/learn";
 
 /** Geocentric ecliptic + rashi/nakshatra grid around Earth. */
 export function EclipticBeltStudy() {

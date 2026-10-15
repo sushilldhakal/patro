@@ -212,8 +212,18 @@ export const learnRefTable = cn(
 export const learnRefCaption =
   "border-b border-[var(--tm-border)] px-4 pb-2.5 pt-3.5 text-left text-sm font-semibold text-[var(--tm-ink-dim)] [caption-side:top]";
 
+export const learnRefHeadCell =
+  "whitespace-nowrap border-b border-[var(--tm-border)] bg-[color-mix(in_srgb,var(--tm-card)_92%,var(--tm-teal))] px-3 py-2.5 text-left";
+
+export const learnRefCell =
+  "border-b border-[color-mix(in_srgb,var(--tm-border)_70%,transparent)] px-3 py-2 align-top text-sm text-[var(--tm-ink-dim)]";
+
 export const learnRefHighlightRow =
   "[&_td]:bg-[color-mix(in_srgb,var(--tm-amber)_8%,transparent)] [&_td]:text-base [&_td]:text-[var(--tm-ink)]";
+
+/** Fills one cell when the shared Table cannot take a per-row class. */
+export const learnRefHighlightCell =
+  "bg-[color-mix(in_srgb,var(--tm-amber)_8%,transparent)] text-[var(--tm-ink)]";
 
 export const learnRefSym = "mr-1 text-base opacity-90";
 

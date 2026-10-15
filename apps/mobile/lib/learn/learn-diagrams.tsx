@@ -58,8 +58,8 @@ import {
   TithiReferenceTable,
   YogaReferenceTable,
   KaranaReferenceTable,
-  ComputationReferenceDiagram,
-} from "@/components/learn/diagrams/ReferenceTables";
+} from "@vedic-patro/ui/kit/learn";
+import { ComputationReferenceDiagram } from "@/components/learn/diagrams/ReferenceTables";
 function ServerPipelineDiagram() {
   return <PipelineFigure earthSrc={earthGlobe} />;
 }

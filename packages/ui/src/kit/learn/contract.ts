@@ -6,6 +6,9 @@ import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
+import type { LunarReading, SolarReading, buildYearLadders } from "@vedic-patro/domain/sky3d/two-systems";
+import type { ChapterVolumeLevel, DayChapterPlayer } from "@vedic-patro/features/learn";
+import type { SkyTimeTransport } from "@vedic-patro/features/sky3d";
 
 export type ChapterOverlayProps = {
   onClose: () => void;
@@ -78,6 +81,110 @@ export type EotGraphProps = {
   daysPerYear: number;
 };
 
+export type SkyTimeSheetIcons = {
+  up: ReactNode;
+  down: ReactNode;
+  play: ReactNode;
+  pause: ReactNode;
+  reset: ReactNode;
+  prev: ReactNode;
+  now: ReactNode;
+  next: ReactNode;
+};
+
+export type SkyTimeSheetProps = {
+  timeMs: number;
+  zoneOffsetMs: number;
+  /** Simulated seconds per real second. The speed row shows when this and its handlers are set. */
+  timeRate?: number;
+  onClose: () => void;
+  onApplyMs: (ms: number) => void;
+  onTimeRate?: (rate: number) => void;
+  onTogglePlay?: () => void;
+  onResetRate?: () => void;
+  /** Wins over the rate props. Used by the wheel's year playback. */
+  transport?: SkyTimeTransport;
+  /** A card in the middle of the screen instead of a sheet at the bottom. */
+  centered?: boolean;
+  icons: SkyTimeSheetIcons;
+};
+
+export type TwoSystemsFocus = "solar" | "lunar" | "both";
+
+export type TwoSystemsPanelProps = {
+  focus: TwoSystemsFocus;
+  onFocus: (focus: TwoSystemsFocus) => void;
+  speedIndex: number;
+  onSpeed: (index: number) => void;
+  playing: boolean;
+  onTogglePlay: () => void;
+  dayOfYear: number;
+  onSeek: (day: number) => void;
+  year: ReturnType<typeof buildYearLadders>;
+  solar: SolarReading;
+  lunar: LunarReading;
+  moonLongitude: number;
+  travelledMoon: number;
+  travelledSun: number;
+  distanceAu: number;
+  lunarDone: number;
+  playIcon: ReactNode;
+  pauseIcon: ReactNode;
+  fullscreen?: boolean;
+  detailsOpen: boolean;
+  onToggleDetails?: () => void;
+  expandIcon?: ReactNode;
+  collapseIcon?: ReactNode;
+};
+
+export type DayChapterWelcomeProps = {
+  player: DayChapterPlayer;
+  /** The big play glyph on the opening card. */
+  playIcon: ReactNode;
+};
+
+export type DayChapterBarProps = {
+  player: DayChapterPlayer;
+  icons: {
+    play: ReactNode;
+    pause: ReactNode;
+    replay: ReactNode;
+    prev: ReactNode;
+    next: ReactNode;
+    /** Points up while the contents are open. */
+    chevron: ReactNode;
+    close: ReactNode;
+    volume: (level: ChapterVolumeLevel) => ReactNode;
+    /** The app's year-orbit glyph, drawn only when `onOrbitToggle` is set. */
+    orbit?: ReactNode;
+  };
+  /** App playground: the year is orbiting, not a chapter clock. */
+  orbitPlaying?: boolean;
+  onOrbitToggle?: () => void;
+  /**
+   * Website only. The contents list is drawn over the page, outside the
+   * scrolling details panel. The site passes `createPortal`.
+   */
+  portal?: (node: ReactNode) => ReactNode;
+};
+
+export type CompassControlProps = {
+  /** Degrees, 0 = north, clockwise. */
+  heading: number;
+  onHeadingChange: (heading: number) => void;
+  gyroMode: boolean;
+  cameraOn: boolean;
+  onTap: () => void;
+  onManualDrag: () => void;
+  /** Distance from the bottom of the sky, px. Default 12. */
+  bottom?: number;
+  visible?: boolean;
+  /** Centre glyph before a sensor is driving the dial. Receives the ink colour. */
+  renderNeedle: (color: string) => ReactNode;
+  /** Centre glyph once the device tilt has taken over. */
+  renderCamera: (color: string) => ReactNode;
+};
+
 export type LearnKit = {
   ArticleBody: (props: ArticleBodyProps) => ReactNode;
   ChapterOverlay: (props: ChapterOverlayProps) => ReactNode;
@@ -88,4 +195,15 @@ export type LearnKit = {
   EotGraph: (props: EotGraphProps) => ReactNode;
   EarthRotationDiagram: (props: EarthRotationDiagramProps) => ReactNode;
   ServerPipelineDiagram: (props: ServerPipelineDiagramProps) => ReactNode;
+  CompassControl: (props: CompassControlProps) => ReactNode;
+  SkyTimeSheet: (props: SkyTimeSheetProps) => ReactNode;
+  DayChapterWelcome: (props: DayChapterWelcomeProps) => ReactNode;
+  DayChapterBar: (props: DayChapterBarProps) => ReactNode;
+  TwoSystemsPanel: (props: TwoSystemsPanelProps) => ReactNode;
+  RashiReferenceTable: () => ReactNode;
+  GrahaReferenceTable: () => ReactNode;
+  NakshatraReferenceTable: () => ReactNode;
+  TithiReferenceTable: () => ReactNode;
+  YogaReferenceTable: () => ReactNode;
+  KaranaReferenceTable: () => ReactNode;
 };

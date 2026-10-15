@@ -6,6 +6,18 @@ import { LearnMoreCard, LearnTopicCard } from "./LearnCards";
 import { EotGraph } from "./EotGraph";
 import { EarthRotationDiagram } from "./EarthRotationDiagram";
 import { ServerPipelineDiagram } from "./ServerPipelineDiagram";
+import { CompassControl } from "./CompassControl";
+import { SkyTimeSheet } from "./SkyTimeSheet";
+import {
+  GrahaReferenceTable,
+  KaranaReferenceTable,
+  NakshatraReferenceTable,
+  RashiReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+} from "./ReferenceTables";
+import { DayChapterBar, DayChapterWelcome } from "./DayChapterChrome";
+import { TwoSystemsPanel } from "./TwoSystemsPanel";
 
 export type {
   ArticleBodyProps,
@@ -17,6 +29,11 @@ export type {
   EotGraphProps,
   EarthRotationDiagramProps,
   ServerPipelineDiagramProps,
+  CompassControlProps,
+  SkyTimeSheetProps,
+  DayChapterWelcomeProps,
+  DayChapterBarProps,
+  TwoSystemsPanelProps,
 } from "../contract";
 export {
   ArticleBody,
@@ -28,6 +45,17 @@ export {
   EotGraph,
   EarthRotationDiagram,
   ServerPipelineDiagram,
+  CompassControl,
+  SkyTimeSheet,
+  RashiReferenceTable,
+  GrahaReferenceTable,
+  NakshatraReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+  KaranaReferenceTable,
+  DayChapterWelcome,
+  DayChapterBar,
+  TwoSystemsPanel,
 };
 
 export const learnKit = {
@@ -40,4 +68,15 @@ export const learnKit = {
   EotGraph,
   EarthRotationDiagram,
   ServerPipelineDiagram,
+  CompassControl,
+  SkyTimeSheet,
+  RashiReferenceTable,
+  GrahaReferenceTable,
+  NakshatraReferenceTable,
+  TithiReferenceTable,
+  YogaReferenceTable,
+  KaranaReferenceTable,
+  DayChapterWelcome,
+  DayChapterBar,
+  TwoSystemsPanel,
 } satisfies LearnKit;
