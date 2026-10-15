@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import { type ReactNode } from "react";
+import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { Text } from "@/components/ui/Text";
-import Animated, { useSharedValue } from "react-native-reanimated";
 import Svg, {
   Circle,
   G,
@@ -12,22 +12,12 @@ import Svg, {
 } from "react-native-svg";
 import { useVedicPatroLoader } from "@vedic-patro/features/common";
 import { Defs } from "@/lib/svg-defs";
-import {
-  AnimatedG,
-  useOpacityOscillation,
-  useOpacityPulse,
-  usePivotTransform,
-  useReduceMotionEnabled,
-  useScalePulse,
-  useSpin,
-} from "./svg-motion";
-
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
+import { useBrandMotionEnabled, useOpacityPulse, useRotate, useScalePulse } from "./svg-motion";
+
 export const PAGE_LOADER_SIZE = 120;
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-/** Center of inner 100×100 artboard — matches web `transform-origin: 50px 50px`. */
+/** Center of the inner 100×100 artboard — web `transform-origin: 50px 50px`. */
 const PIVOT = { x: 50, y: 50 };
 
 const WRAYS = [
@@ -54,102 +44,120 @@ const DOTS = [
   [15.36, 30, 2.33], [21.72, 21.72, 2.5], [30, 15.36, 2.67], [39.65, 11.36, 2.83],
 ] as const;
 
+/** The inner 100×100 artboard, placed exactly as in web `loader.svg`. */
+const ART = "translate(26, 26) scale(4.6)";
+
+/**
+ * Web `loader.svg` motion. CSS inside the SVG does not run in react-native-svg,
+ * and animated props on SVG nodes freeze Android, so each moving part is a
+ * separate SVG wrapped in a native animated view. The artboard center lands on
+ * the view center, so those view transforms match the web file.
+ */
+function Layer({
+  size,
+  id,
+  style,
+  fade,
+  children,
+}: {
+  size: number;
+  id: string;
+  style?: StyleProp<ViewStyle>;
+  fade?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Animated.View
+      pointerEvents="none"
+      collapsable={false}
+      needsOffscreenAlphaCompositing={fade}
+      style={[StyleSheet.absoluteFill, style]}
+    >
+      <Svg width={size} height={size} viewBox="0 0 512 512">
+        <Defs>
+          <LinearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor={illustration.amber77} />
+            <Stop offset="0.5" stopColor={illustration.amber60} />
+            <Stop offset="1" stopColor={illustration.orange46} />
+          </LinearGradient>
+          <RadialGradient id={`${id}-sun`} cx="0.38" cy="0.34" r="0.75">
+            <Stop offset="0" stopColor={illustration.amber85} />
+            <Stop offset="0.55" stopColor={midnight.gold} />
+            <Stop offset="1" stopColor={illustration.orange46} />
+          </RadialGradient>
+          <RadialGradient id={`${id}-halo`} cx="0.5" cy="0.5" r="0.5">
+            <Stop offset="0" stopColor={illustration.amber81} stopOpacity={0.9} />
+            <Stop offset="0.55" stopColor={illustration.amber66} stopOpacity={0.35} />
+            <Stop offset="1" stopColor={illustration.amber66} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <G transform={ART}>{children}</G>
+      </Svg>
+    </Animated.View>
+  );
+}
+
 function LoaderSvg({ size }: { size: number }) {
-  const reduceMotion = useReduceMotionEnabled();
-
-  const wraysRotation = useSharedValue(0);
-  const dotsRotation = useSharedValue(0);
-  const ringRotation = useSharedValue(0);
-  const sunScale = useSharedValue(1);
-  const haloOpacity = useSharedValue(0.4);
-
-  useSpin(wraysRotation, -360, 30_000, reduceMotion);
-  useSpin(dotsRotation, 360, 48_000, reduceMotion);
-  useSpin(ringRotation, -360, 60_000, reduceMotion);
-  useScalePulse(sunScale, 1.05, 1700, reduceMotion);
-  useOpacityOscillation(haloOpacity, 0.85, 0.4, 1700, reduceMotion);
-
-  const wraysProps = usePivotTransform(PIVOT, wraysRotation, null);
-  const dotsProps = usePivotTransform(PIVOT, dotsRotation, null);
-  const ringProps = usePivotTransform(PIVOT, ringRotation, null);
-  const sunProps = usePivotTransform(PIVOT, null, sunScale);
-  const haloProps = useOpacityPulse(haloOpacity);
+  const motion = useBrandMotionEnabled();
+  const wrays = useRotate(-360, 30_000, motion);
+  const dots = useRotate(360, 48_000, motion);
+  const ring = useRotate(-360, 60_000, motion);
+  const sun = useScalePulse(1.05, 1_700, motion);
+  const halo = useOpacityPulse(0.4, 0.85, 1_700, motion, 1);
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 512 512">
-      <Defs>
-        <LinearGradient id="vpl-g" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={illustration.amber77} />
-          <Stop offset="0.5" stopColor={illustration.amber60} />
-          <Stop offset="1" stopColor={illustration.orange46} />
-        </LinearGradient>
-        <RadialGradient id="vpl-sun" cx="0.38" cy="0.34" r="0.75">
-          <Stop offset="0" stopColor={illustration.amber85} />
-          <Stop offset="0.55" stopColor={midnight.gold} />
-          <Stop offset="1" stopColor={illustration.orange46} />
-        </RadialGradient>
-        <RadialGradient id="vpl-halo" cx="0.5" cy="0.5" r="0.5">
-          <Stop offset="0" stopColor={illustration.amber81} stopOpacity={0.9} />
-          <Stop offset="0.55" stopColor={illustration.amber66} stopOpacity={0.35} />
-          <Stop offset="1" stopColor={illustration.amber66} stopOpacity={0} />
-        </RadialGradient>
-        <LinearGradient id="vpl-bg" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={illustration.teal25} />
-          <Stop offset="1" stopColor={brand.bluePressed} />
-        </LinearGradient>
-      </Defs>
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size} viewBox="0 0 512 512">
+        <Defs>
+          <LinearGradient id="vpl-g" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor={illustration.amber77} />
+            <Stop offset="0.5" stopColor={illustration.amber60} />
+            <Stop offset="1" stopColor={illustration.orange46} />
+          </LinearGradient>
+          <LinearGradient id="vpl-bg" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor={illustration.teal25} />
+            <Stop offset="1" stopColor={brand.bluePressed} />
+          </LinearGradient>
+        </Defs>
+        <Rect width={512} height={512} rx={116} fill="url(#vpl-bg)" />
+        <G transform={ART}>
+          <Circle cx={PIVOT.x} cy={PIVOT.y} r={33} fill="none" stroke="url(#vpl-g)" strokeWidth={1.4} opacity={0.5} />
+        </G>
+      </Svg>
 
-      <Rect width={512} height={512} rx={116} fill="url(#vpl-bg)" />
-
-      <G transform="translate(26, 26) scale(4.6)">
-        <AnimatedG animatedProps={ringProps}>
-          <Circle
-            cx={PIVOT.x}
-            cy={PIVOT.y}
-            r={44}
-            fill="none"
-            stroke="url(#vpl-g)"
-            strokeWidth={1.4}
-            opacity={0.5}
-          />
-        </AnimatedG>
-
+      <Layer size={size} id="vpl-ring" style={{ transform: [{ rotate: ring }] }}>
         <Circle
           cx={PIVOT.x}
           cy={PIVOT.y}
-          r={33}
+          r={44}
           fill="none"
-          stroke="url(#vpl-g)"
+          stroke="url(#vpl-ring-g)"
           strokeWidth={1.4}
           opacity={0.5}
         />
+      </Layer>
 
-        <AnimatedG animatedProps={dotsProps}>
-          {DOTS.map(([cx, cy, r], i) => (
-            <Circle key={i} cx={cx} cy={cy} r={r} fill="url(#vpl-g)" />
-          ))}
-        </AnimatedG>
+      <Layer size={size} id="vpl-dots" style={{ transform: [{ rotate: dots }] }}>
+        {DOTS.map(([cx, cy, r], i) => (
+          <Circle key={i} cx={cx} cy={cy} r={r} fill="url(#vpl-dots-g)" />
+        ))}
+      </Layer>
 
-        <AnimatedCircle
-          animatedProps={haloProps}
-          cx={PIVOT.x}
-          cy={PIVOT.y}
-          r={24}
-          fill="url(#vpl-halo)"
-        />
+      <Layer size={size} id="vpl-halo" fade style={{ opacity: halo }}>
+        <Circle cx={PIVOT.x} cy={PIVOT.y} r={24} fill="url(#vpl-halo-halo)" />
+      </Layer>
 
-        <AnimatedG animatedProps={wraysProps}>
-          {WRAYS.map((d, i) => (
-            <Path key={i} d={d} fill="url(#vpl-g)" />
-          ))}
-        </AnimatedG>
+      <Layer size={size} id="vpl-wrays" style={{ transform: [{ rotate: wrays }] }}>
+        {WRAYS.map((d, i) => (
+          <Path key={i} d={d} fill="url(#vpl-wrays-g)" />
+        ))}
+      </Layer>
 
-        <AnimatedG animatedProps={sunProps}>
-          <Circle cx={PIVOT.x} cy={PIVOT.y} r={16} fill="url(#vpl-sun)" />
-          <Circle cx={PIVOT.x} cy={PIVOT.y} r={4.4} fill={brand.bluePressed} opacity={0.8} />
-        </AnimatedG>
-      </G>
-    </Svg>
+      <Layer size={size} id="vpl-sun" style={{ transform: [{ scale: sun }] }}>
+        <Circle cx={PIVOT.x} cy={PIVOT.y} r={16} fill="url(#vpl-sun-sun)" />
+        <Circle cx={PIVOT.x} cy={PIVOT.y} r={4.4} fill={brand.bluePressed} opacity={0.8} />
+      </Layer>
+    </View>
   );
 }
 
