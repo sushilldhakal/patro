@@ -8,7 +8,11 @@ import { Platform, StyleSheet, View } from "react-native";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  deserializeQueryCache,
+  queryCacheRestoreStats,
+  queryCacheStorage,
+} from "@/lib/query-cache-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
@@ -51,9 +55,24 @@ const queryClient = new QueryClient({
   },
 });
 
+/** JS start, for the one-line cache-restore timing logged after restore. */
+const JS_START = Date.now();
+
+function logQueryCacheRestore() {
+  const { bytes, readMs, parseMs } = queryCacheRestoreStats;
+  console.info(
+    `[query-cache] restored ${Math.round(bytes / 1024)} KB, ${queryClient.getQueryCache().getAll().length} queries — ` +
+      `read ${readMs} ms, parse ${parseMs} ms, ready ${Date.now() - JS_START} ms after JS start`,
+  );
+}
+
 const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+  // A file on iOS/Android — AsyncStorage rows over ~2 MB are unreadable on Android.
+  storage: queryCacheStorage,
   key: "vedic-patro-query-cache",
+  deserialize: deserializeQueryCache,
+  // Serializing the whole cache runs on the JS thread; batch writes while browsing.
+  throttleTime: 3000,
 });
 
 // The bulk BS-year/month calendar payloads have their own dedicated, much more
@@ -148,6 +167,7 @@ export default function RootLayout() {
                 maxAge: QUERY_GC_TIME,
                 dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
               }}
+              onSuccess={logQueryCacheRestore}
             >
               <OfflineDataProvider>
                 <AuthProvider>

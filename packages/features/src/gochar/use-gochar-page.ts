@@ -13,6 +13,7 @@ import {
   fetchGocharIngress,
   fetchGocharJd,
   gocharKeys,
+  locationCacheKey,
   type GocharResponse,
   type LocationParams,
   type MonthCalendar,
@@ -135,8 +136,20 @@ export function useGocharPage({
   }, [gregorianBrowse, gregorian, vikram, input]);
 
   const monthQ = useQuery({
-    queryKey: ["panchanga", "month", era, browse?.year ?? 0, browse?.month ?? 0, params, "gochar-ingress"] as const,
-    queryFn: () => fetchMonth(browse!.year, browse!.month, params, { era, full: true }),
+    // Only each day's date_ad / day and the month's limits are read here, so the
+    // lite month (~1 KB/day) is enough — the full one is ~79 KB/day (~2.4 MB a
+    // month). Same key as the home calendar's month, so the two share one entry.
+    queryKey: [
+      "panchanga",
+      "month",
+      era,
+      browse?.year ?? 0,
+      browse?.month ?? 0,
+      locationCacheKey(params),
+      "lite",
+      "intl",
+    ] as const,
+    queryFn: () => fetchMonth(browse!.year, browse!.month, params, { era, full: false }),
     enabled: browse != null,
     staleTime: HALF_HOUR,
     placeholderData: keepPreviousData,
