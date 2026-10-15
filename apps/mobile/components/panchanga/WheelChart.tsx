@@ -1,20 +1,19 @@
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Animated, PanResponder, Pressable, StyleSheet, View } from "react-native";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
+import { Animated, PanResponder, View } from "react-native";
 import Svg, {
   Circle,
   ClipPath,
   Defs,
   Ellipse,
   G,
+  Image as SvgImage,
   Line,
   Path,
-  RadialGradient,
-  Rect,
-  Stop,
   Text as SvgText,
   TSpan,
 } from "react-native-svg";
-import { MoonPhaseIcon } from "./MoonPhaseIcon";
+import Ketu from "@/assets/graha/ketu.svg";
+import Rahu from "@/assets/graha/rahu.svg";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   NAKSHATRA_GLYPHS,
@@ -36,7 +35,20 @@ import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { DEG, CX, CY, ORBIT_SCALE, planetHitRadius, planetSvgPosition } from "@vedic-patro/domain/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
+
+const WHEEL_NODE_ICONS = [Rahu, Ketu] as const;
+const SKY_JPG = {
+  sun: require("@/assets/sky3d/sun.jpg"),
+  moon: require("@/assets/sky3d/moon.jpg"),
+  mars: require("@/assets/sky3d/mars.jpg"),
+  mercury: require("@/assets/sky3d/mercury.jpg"),
+  jupiter: require("@/assets/sky3d/jupiter.jpg"),
+  venus: require("@/assets/sky3d/venus.jpg"),
+  saturn: require("@/assets/sky3d/saturn.jpg"),
+  earth: require("@/assets/sky3d/earth.jpg"),
+} as const;
+const SKY_NAMES = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 
 const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
 
@@ -104,49 +116,6 @@ const R = WHEEL_CHART_R;
 
 export type { WheelHover };
 export type WheelPick = WheelHover;
-
-/** ViewBox is 42 42 916 916; RN-SVG fits it with xMidYMid meet, so a tall
- *  fullscreen stage letterboxes. Stretching locationX/W would miss every graha. */
-function svgCoords(
-  locationX: number,
-  locationY: number,
-  layoutW: number,
-  layoutH: number,
-): { x: number; y: number; dist: number; L: number } {
-  if (layoutW <= 0 || layoutH <= 0) {
-    return { x: CX, y: CY, dist: 0, L: 0 };
-  }
-  const vb = 916;
-  const scale = Math.min(layoutW / vb, layoutH / vb);
-  const offsetX = (layoutW - vb * scale) / 2;
-  const offsetY = (layoutH - vb * scale) / 2;
-  const x = 42 + (locationX - offsetX) / scale;
-  const y = 42 + (locationY - offsetY) / scale;
-  const dx = x - CX;
-  const dy = y - CY;
-  const dist = Math.hypot(dx, dy);
-  const L = normDeg(Math.atan2(-dx, -dy) / DEG);
-  return { x, y, dist, L };
-}
-
-function svgToView(
-  svgX: number,
-  svgY: number,
-  layoutW: number,
-  layoutH: number,
-): { x: number; y: number; scale: number } {
-  const vb = 916;
-  const scale = Math.min(layoutW / vb, layoutH / vb) || 1;
-  return {
-    x: (layoutW - vb * scale) / 2 + (svgX - 42) * scale,
-    y: (layoutH - vb * scale) / 2 + (svgY - 42) * scale,
-    scale,
-  };
-}
-
-function wheelLFromTouch(L: number, spin: number): number {
-  return normDeg(L - spin);
-}
 
 function untransformTouch(
   x: number,
@@ -260,58 +229,6 @@ function touchPageDistance(touches: readonly { pageX: number; pageY: number }[])
   return Math.hypot(t1.pageX - t0.pageX, t1.pageY - t0.pageY);
 }
 
-const WHEEL_TAP_SLOP_PX = 14;
-/** Taps inside the rashi inner edge belong to grahas, never the rashi sheet. */
-const PLANET_CORE_R = R.rashiIn + 12;
-/** View-px radius that still counts as "on" a graha, even in a conjunction. */
-const PLANET_TAP_PX = 44;
-/** View-px: other grahas this close to the nearest hit are the same cluster. */
-const PLANET_CLUSTER_PX = 52;
-
-type PlanetHit = { i: number; d: number; vx: number; vy: number };
-
-function planetHitsAtLocal(
-  localX: number,
-  localY: number,
-  w: number,
-  h: number,
-  spinDeg: number,
-  lons: readonly number[],
-  grahaCount: number,
-): PlanetHit[] {
-  const hits: PlanetHit[] = [];
-  for (let i = 0; i < grahaCount; i++) {
-    const meta = GRAHA_META[i]!;
-    const [sx, sy] = planetSvgPosition(lons[i] ?? 0, meta.orbit, spinDeg);
-    const { x, y } = svgToView(sx, sy, w, h);
-    hits.push({ i, d: Math.hypot(localX - x, localY - y), vx: x, vy: y });
-  }
-  return hits.sort((a, b) => a.d - b.d);
-}
-
-function clusterAtTap(hits: PlanetHit[], w: number, h: number, grahaCount: number): PlanetHit[] {
-  if (hits.length === 0) return [];
-  const nearest = hits[0]!;
-  const { scale } = svgToView(CX, CY, w, h);
-  const reach = Math.max(PLANET_TAP_PX, planetHitRadius(nearest.i) * scale + 16);
-  if (nearest.d > reach && nearest.d > PLANET_CLUSTER_PX) return [];
-  const cluster = hits.filter((h) => h.d <= Math.max(PLANET_CLUSTER_PX, reach + 8));
-  /* Also pull in grahas sitting on the same stack as the nearest, even if
-     the finger landed slightly off the group. */
-  const stacked = hits.filter((h) => Math.hypot(h.vx - nearest.vx, h.vy - nearest.vy) <= PLANET_CLUSTER_PX);
-  const byIdx = new Map<number, PlanetHit>();
-  for (const h of [...cluster, ...stacked]) byIdx.set(h.i, h);
-  return [...byIdx.values()].sort((a, b) => (a.d !== b.d ? a.d - b.d : a.i - b.i)).slice(0, grahaCount);
-}
-
-function pickFromCluster(cluster: PlanetHit[], current: number): number {
-  if (cluster.length === 0) return -1;
-  if (cluster.length === 1) return cluster[0]!.i;
-  const at = cluster.findIndex((h) => h.i === current);
-  if (at >= 0) return cluster[(at + 1) % cluster.length]!.i;
-  return cluster[0]!.i;
-}
-
 function segNakFill(opts: { alt?: boolean; hot?: boolean; sel?: boolean }): string {
   if (opts.sel) return SEG_SEL;
   if (opts.hot) return SEG_HOT;
@@ -420,27 +337,16 @@ function WheelChartImpl({
   hover,
   onHover: _onHover,
   onLeave: _onLeave,
-  onPick,
+  onPick: _onPick,
   onSpin,
   zoom,
   onZoom,
   pan,
   onPan,
   lineTarget: lineTargetProp,
-  onLineTargetChange,
 }: WheelChartProps) {
   const { pick, gregMonths } = useWheelChartLabels();
-  const [innerTarget, setInnerTarget] = useState(1);
-  const lineTarget = lineTargetProp ?? innerTarget;
-  const setLineTarget = useCallback(
-    (index: number) => {
-      if (lineTargetProp === undefined) setInnerTarget(index);
-      onLineTargetChange?.(index);
-    },
-    [lineTargetProp, onLineTargetChange],
-  );
-  const lineTargetRef = useRef(lineTarget);
-  lineTargetRef.current = lineTarget;
+  const lineTarget = lineTargetProp ?? 1;
   const viewRef = useRef<View>(null);
   const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0, pageX: 0, pageY: 0 });
   const spinRef = useRef(spin);
@@ -451,7 +357,6 @@ function WheelChartImpl({
   zoomRef.current = zoom;
   const pinchRef = useRef<PinchGesture | null>(null);
   const pinchingRef = useRef(false);
-  const [box, setBox] = useState({ w: 0, h: 0 });
   /* Live drag rotation, degrees, applied as a transform on the drawing — the
      wheel is ~900 SVG nodes, so re-rendering it per finger-move (what setting
      `spin` state did) starved the JS thread and made the wheel lag and drop
@@ -503,89 +408,12 @@ function WheelChartImpl({
     return (Math.atan2(locationY - cy, locationX - cx) * 180) / Math.PI;
   }, []);
 
-  const pickPlanetAtLocal = useCallback(
-    (localX: number, localY: number): number => {
-      if (!tw.show_planets) return -1;
-      const { w, h } = layoutRef.current;
-      if (w <= 0 || h <= 0) return -1;
-      const { dist } = svgCoords(localX, localY, w, h);
-      if (dist > R.rashiOut + 36) return -1;
-
-      const hits = planetHitsAtLocal(
-        localX,
-        localY,
-        w,
-        h,
-        spinRef.current,
-        markers.planetLons,
-        det.grahas.length,
-      );
-      const cluster = clusterAtTap(hits, w, h, det.grahas.length);
-      if (cluster.length > 0) return pickFromCluster(cluster, lineTargetRef.current);
-
-      /* Deep in the planet well with no close hit: still take the nearest
-         graha so a conjunction off-centre does not fall through to a ring. */
-      if (dist <= PLANET_CORE_R && hits[0]) return hits[0].i;
-      return -1;
-    },
-    [det.grahas.length, markers.planetLons, tw.show_planets],
-  );
-
-  const pickPlanetAt = useCallback(
-    (rawX: number, rawY: number): number => {
-      const { w, h } = layoutRef.current;
-      if (w <= 0 || h <= 0) return -1;
-      const { x, y } = untransformTouch(rawX, rawY, w, h, panRef.current, zoomRef.current);
-      return pickPlanetAtLocal(x, y);
-    },
-    [pickPlanetAtLocal],
-  );
-
-  const pickRingAtLocal = useCallback(
-    (localX: number, localY: number) => {
-      const { w, h } = layoutRef.current;
-      if (w <= 0 || h <= 0) return;
-      const planetIdx = pickPlanetAtLocal(localX, localY);
-      if (planetIdx >= 0) {
-        setLineTarget(planetIdx);
-        return;
-      }
-      const { dist, L } = svgCoords(localX, localY, w, h);
-      const wheelL = wheelLFromTouch(L, spinRef.current);
-      if (dist <= PLANET_CORE_R) return;
-      if (dist >= R.nakIn && dist <= R.nakOut) {
-        onPick({ type: "nak", i: Math.floor(wheelL / (360 / 27)) % 27 });
-        return;
-      }
-      if (dist >= R.rashiIn && dist <= R.rashiOut) {
-        onPick({ type: "rashi", i: Math.floor(wheelL / 30) % 12 });
-      }
-    },
-    [onPick, pickPlanetAtLocal],
-  );
-
-  const pickFromTouch = useCallback(
-    (rawX: number, rawY: number) => {
-      const { w, h } = layoutRef.current;
-      if (w <= 0 || h <= 0) return;
-      const { x, y } = untransformTouch(rawX, rawY, w, h, panRef.current, zoomRef.current);
-      const planetIdx = pickPlanetAt(rawX, rawY);
-      if (planetIdx >= 0) {
-        setLineTarget(planetIdx);
-        return;
-      }
-      pickRingAtLocal(x, y);
-    },
-    [pickPlanetAt, pickRingAtLocal],
-  );
-
   const wheelPan = useMemo(
     () =>
       PanResponder.create({
-        /* Do not claim on finger-down. A tap must reach the native Pressable
-           over each graha — SVG onPress is not a mobile touch target, and
-           capturing here used to swallow every planet tap. Spin/pinch only
-           start after the finger has actually moved. */
+        /* Spin and pinch start after the finger has actually moved. A tap on a
+           graha, rashi, or nakshatra does not select anything — that lives in
+           the planet toolbar. */
         onStartShouldSetPanResponder: () => false,
         onStartShouldSetPanResponderCapture: () => false,
         onMoveShouldSetPanResponder: (evt, gs) =>
@@ -670,18 +498,13 @@ function WheelChartImpl({
              is clockwise — hence the sign. */
           dragRot.setValue(-delta);
         },
-        onPanResponderRelease: (evt, gestureState) => {
+        onPanResponderRelease: () => {
           const drag = dragRef.current;
           const wasPinching = pinchingRef.current;
           if (drag?.mode === "r" && drag.moved && !wasPinching) onSpin(drag.latest);
           dragRef.current = null;
           pinchRef.current = null;
           pinchingRef.current = false;
-          const touch = touchFromEvent(evt);
-          const dist = Math.hypot(gestureState.dx, gestureState.dy);
-          const moved = wasPinching || dist >= WHEEL_TAP_SLOP_PX || Boolean(drag?.moved);
-          if (moved) return;
-          pickFromTouch(touch.x, touch.y);
         },
         onPanResponderTerminate: () => {
           const drag = dragRef.current;
@@ -692,7 +515,7 @@ function WheelChartImpl({
           pinchingRef.current = false;
         },
       }),
-    [angleAt, dragRot, onPan, onSpin, onZoom, pickFromTouch, pickPlanetAt, syncLayout, touchFromEvent],
+    [angleAt, dragRot, onPan, onSpin, onZoom, syncLayout, touchFromEvent],
   );
 
   const pol = useCallback(
@@ -848,32 +671,6 @@ function WheelChartImpl({
       }
     }
 
-    const hits: ReactNode[] = [];
-    for (let i = 0; i < 27; i++) {
-      const L0 = i * (360 / 27);
-      const L1 = (i + 1) * (360 / 27);
-      hits.push(
-        <Path
-          key={`hn${i}`}
-          d={arcSeg(L0, L1, R.nakIn, R.nakOut)}
-          fill="transparent"
-          pointerEvents="none"
-        />,
-      );
-    }
-    for (let i = 0; i < 12; i++) {
-      const L0 = i * 30;
-      const L1 = (i + 1) * 30;
-      hits.push(
-        <Path
-          key={`hr${i}`}
-          d={arcSeg(L0, L1, R.rashiIn, R.rashiOut)}
-          fill="transparent"
-          pointerEvents="none"
-        />,
-      );
-    }
-
     const rashiRays: ReactNode[] = [];
     for (let i = 0; i < 12; i++) {
       const [x1, y1] = pol(i * 30, 12);
@@ -891,7 +688,7 @@ function WheelChartImpl({
         ))
       : [];
 
-    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels };
+    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels };
   }, [spin, hover, sel, bsYear, tw, pol, arcSeg, pick, gregMonths]);
 
   const dataLayers = useMemo(() => {
@@ -1057,167 +854,100 @@ function WheelChartImpl({
 
     const core: ReactNode[] = [];
     if (tw.show_planets) {
-      core.push(
-        // @ts-expect-error react-native-svg Defs children typing
-        <Defs key="pdefs">
-          <RadialGradient id="pg0" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.amber89} />
-            <Stop offset="35%" stopColor={illustration.amber49} />
-            <Stop offset="75%" stopColor={brand.saffron} />
-            <Stop offset="100%" stopColor={illustration.orange27b} />
-          </RadialGradient>
-          <RadialGradient id="pg1" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={brand.offWhite} />
-            <Stop offset="55%" stopColor={illustration.sky76b} />
-            <Stop offset="100%" stopColor={illustration.gray46} />
-          </RadialGradient>
-          <RadialGradient id="pg2" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.orange72} />
-            <Stop offset="55%" stopColor={illustration.red49} />
-            <Stop offset="100%" stopColor={illustration.red22} />
-          </RadialGradient>
-          <RadialGradient id="pg3" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={neutral.silverBase} />
-            <Stop offset="55%" stopColor={illustration.gray58} />
-            <Stop offset="100%" stopColor={neutral.slateInput} />
-          </RadialGradient>
-          <RadialGradient id="pg4" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.amber77c} />
-            <Stop offset="50%" stopColor={illustration.orange52} />
-            <Stop offset="100%" stopColor={illustration.orange27} />
-          </RadialGradient>
-          <RadialGradient id="pg5" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.amber92} />
-            <Stop offset="50%" stopColor={illustration.amber67b} />
-            <Stop offset="100%" stopColor={illustration.amber38} />
-          </RadialGradient>
-          <RadialGradient id="pg6" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.amber82} />
-            <Stop offset="50%" stopColor={illustration.orange57} />
-            <Stop offset="100%" stopColor={illustration.orange32} />
-          </RadialGradient>
-          <RadialGradient id="pg7" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.blue56} />
-            <Stop offset="55%" stopColor={illustration.blue25} />
-            <Stop offset="100%" stopColor={midnight.popover} />
-          </RadialGradient>
-          <RadialGradient id="pg8" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.pink53} />
-            <Stop offset="55%" stopColor={illustration.red24} />
-            <Stop offset="100%" stopColor={illustration.red6} />
-          </RadialGradient>
-          <RadialGradient id="pg-earth" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor={illustration.green80} />
-            <Stop offset="45%" stopColor={illustration.teal34} />
-            <Stop offset="100%" stopColor={illustration.green13} />
-          </RadialGradient>
-        </Defs>,
-      );
-
       [44, 70, 96, 120, 150, 178, 204, 216].forEach((rad, k) =>
         core.push(
           <Circle key={`orb${k}`} cx={CX} cy={CY} r={rad * ORBIT_SCALE} fill="none" stroke={ORBIT_STROKE} strokeWidth={1} />,
         ),
       );
 
+      const planetNames: ReactNode[] = [];
       det.grahas.forEach((g, i) => {
         const meta = GRAHA_META[i]!;
         const lon = planetLons[i] ?? 0;
         const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
         const planetR = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
-
-        core.push(<Circle key={`pg${i}`} cx={px} cy={py} r={planetR + 6} fill={meta.color} opacity={0.55} pointerEvents="none" />);
-
-        if (i === 0) {
-          const rays: ReactNode[] = [];
-          for (let r = 0; r < 12; r++) {
-            const ang = r * 30 * DEG;
-            const r1 = planetR + 3;
-            const r2 = planetR + (r % 2 === 0 ? 11 : 7);
-            rays.push(
-              <Line
-                key={r}
-                x1={px + r1 * Math.sin(ang)}
-                y1={py - r1 * Math.cos(ang)}
-                x2={px + r2 * Math.sin(ang)}
-                y2={py - r2 * Math.cos(ang)}
-                stroke={illustration.amber49}
-                strokeWidth={2.2}
-                strokeLinecap="round"
-                opacity={0.9}
-              />,
-            );
-          }
-          core.push(<G key="sun-rays" pointerEvents="none">{rays}</G>);
-        }
-
-        if ("ring" in meta && meta.ring) {
+        const sky = SKY_NAMES[i];
+        if (sky) {
           core.push(
-            <Ellipse
-              key={`ring${i}`}
-              cx={px}
-              cy={py}
-              rx={planetR + 8}
-              ry={planetR * 0.45}
-              fill="none"
-              stroke={meta.color}
-              strokeWidth={2.4}
-              opacity={0.88}
-              transform={`rotate(-20 ${px} ${py})`}
-              pointerEvents="none"
-            />,
-          );
-        }
-
-        if (i !== 1) {
-          core.push(<Circle key={`pl${i}`} cx={px} cy={py} r={planetR} fill={`url(#pg${i})`} pointerEvents="none" />);
-        } else {
-          const moonElongation = normDeg(markers.moonLon - markers.sunLon);
-          core.push(
-            <G key="moon-phase" transform={`translate(${px},${py})`} pointerEvents="none">
-              <MoonPhaseIcon elongation={moonElongation} r={planetR} />
-            </G>,
-          );
-        }
-
-        if (i === 4) {
-          const clipId = `jclip${i}`;
-          core.push(
-            <G key={`jbands${i}`} pointerEvents="none">
-              {/* @ts-expect-error react-native-svg Defs children typing */}
+            <G key={`pl${i}`} pointerEvents="none">
               <Defs>
-                <ClipPath id={clipId}>
-                  <Circle cx={px} cy={py} r={planetR - 0.5} />
+                <ClipPath id={`wheel-pl-${i}`}>
+                  <Circle cx={px} cy={py} r={planetR} />
                 </ClipPath>
               </Defs>
-              {[-planetR * 0.3, planetR * 0.05, planetR * 0.36].map((oy, bi) => (
-                <Rect
-                  key={bi}
-                  x={px - planetR}
-                  y={py + oy - 1.8}
-                  width={planetR * 2}
-                  height={3.2}
-                  fill={withAlpha(illustration.orange17, 0.42)}
-                  clipPath={`url(#${clipId})`}
+              {i === 6 ? (
+                <Ellipse
+                  cx={px}
+                  cy={py}
+                  rx={planetR + 7}
+                  ry={planetR * 0.42}
+                  fill="none"
+                  stroke="#e6cf86"
+                  strokeWidth={1.6}
+                  transform={`rotate(-20 ${px} ${py})`}
                 />
-              ))}
+              ) : null}
+              <SvgImage
+                href={SKY_JPG[sky]}
+                x={px - planetR}
+                y={py - planetR}
+                width={planetR * 2}
+                height={planetR * 2}
+                preserveAspectRatio="xMidYMid slice"
+                clipPath={`url(#wheel-pl-${i})`}
+              />
+            </G>,
+          );
+        } else {
+          const icon = planetIconSize(i, planetR);
+          const Icon = WHEEL_NODE_ICONS[i - 7]!;
+          core.push(
+            <G key={`pl${i}`} transform={`translate(${px - icon / 2} ${py - icon / 2})`} pointerEvents="none">
+              <Icon width={icon} height={icon} />
             </G>,
           );
         }
 
-        core.push(
-          <SvgText key={`pn${i}`} x={px} y={py + planetR + 9} textAnchor="middle" fill={W_INK_DIM} fontSize={15} fontFamily={FONT} pointerEvents="none">
-            {g.ne}
-          </SvgText>,
+        planetNames.push(
+          <G key={`pn${i}`} transform={`translate(${px} ${py}) scale(${1 / zoom})`} pointerEvents="none">
+            <SvgText
+              x={0}
+              y={0}
+              textAnchor="middle"
+              fill={W_INK}
+              stroke="rgba(6,31,33,0.92)"
+              strokeWidth={1.6}
+              paintOrder="stroke"
+              fontSize={13}
+              fontWeight="600"
+              fontFamily={FONT}
+              {...nepaliSvgTextCenter}
+            >
+              {pick(g.ne, g.en)}
+            </SvgText>
+          </G>,
         );
       });
 
       core.push(
         <G key="earth" pointerEvents="none">
-          <Circle cx={CX} cy={CY} r={13} fill="url(#pg-earth)" />
-          <Circle cx={CX} cy={CY} r={13} fill="none" stroke={illustration.green75} strokeWidth={0.8} opacity={0.5} />
+          <Defs>
+            <ClipPath id="wheel-earth">
+              <Circle cx={CX} cy={CY} r={13} />
+            </ClipPath>
+          </Defs>
+          <SvgImage
+            href={SKY_JPG.earth}
+            x={CX - 13}
+            y={CY - 13}
+            width={26}
+            height={26}
+            preserveAspectRatio="xMidYMid slice"
+            clipPath="url(#wheel-earth)"
+          />
         </G>,
       );
+      core.push(...planetNames);
     }
 
     const bsLabels: ReactNode[] = tw.show_lunar
@@ -1236,40 +966,10 @@ function WheelChartImpl({
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom]);
 
-  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels } = staticLayers;
+  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
-
-  const planetTouchTargets = useMemo(() => {
-    if (!tw.show_planets || box.w <= 0 || box.h <= 0) return null;
-    /* One pad per graha so TalkBack/VoiceOver can still name them. The
-       actual pick is done on the shared overlay so a conjunction does not
-       let the top pad steal every tap. */
-    return det.grahas.map((g, i) => {
-      const meta = GRAHA_META[i]!;
-      const lon = planetLons[i] ?? 0;
-      const [sx, sy] = planetSvgPosition(lon, meta.orbit, spin);
-      const { x, y, scale } = svgToView(sx, sy, box.w, box.h);
-      const r = Math.max(22, planetHitRadius(i) * scale * 0.55);
-      return (
-        <View
-          key={`ptap${i}`}
-          accessible
-          accessibilityRole="button"
-          accessibilityLabel={g.ne}
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            left: x - r,
-            top: y - r,
-            width: r * 2,
-            height: r * 2,
-          }}
-        />
-      );
-    });
-  }, [box.h, box.w, det.grahas, planetLons, spin, tw.show_planets]);
 
   return (
     <View
@@ -1278,7 +978,6 @@ function WheelChartImpl({
       onLayout={(e) => {
         const { width: w, height: h } = e.nativeEvent.layout;
         layoutRef.current = { ...layoutRef.current, w, h };
-        setBox({ w, h });
         syncLayout();
       }}
       {...wheelPan.panHandlers}
@@ -1318,16 +1017,8 @@ function WheelChartImpl({
         {innerRings}
         {core}
         {markerNodes}
-        {hits}
       </Svg>
         </Animated.View>
-        <Pressable
-          onPressIn={(e) => pickRingAtLocal(e.nativeEvent.locationX, e.nativeEvent.locationY)}
-          style={[StyleSheet.absoluteFill, { zIndex: 1 }]}
-        />
-        <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: 8 }]}>
-          {planetTouchTargets}
-        </View>
       </View>
     </View>
   );

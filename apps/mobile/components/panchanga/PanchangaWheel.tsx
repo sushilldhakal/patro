@@ -28,7 +28,7 @@ import {
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
-import { BsDateTimePicker } from "./BsDateTimePicker";
+import { WheelDateSheet } from "./WheelDateSheet";
 import { parseClockParts } from "./use-panchanga-mode";
 import {
   wheelLegendDot,
@@ -147,89 +147,34 @@ function GhatiScrubber({
   );
 }
 
+/** The wheel's date + time dialog: the sky's time sheet in a transparent modal. */
 function WheelCalendarModal({
   open,
   onClose,
-  pick,
   year,
   month,
   day,
   clock,
-  todayAd,
+  timeZone,
+  playback,
   onCommit,
 }: {
   open: boolean;
   onClose: () => void;
-  pick: (ne: string, en: string) => string;
   year: number;
   month: number;
   day: number;
   clock: string;
-  todayAd?: string;
+  timeZone?: string;
+  playback?: YearWheelScrub;
   onCommit: (year: number, month: number, day: number, clock: string) => void;
 }) {
-  const copy = usePanchangaWheelCopy();
-  const colors = useThemeColors();
-  const yearOptions = useMemo(() => windowedBrowseYears("bs", year), [year]);
-  const draftRef = useRef({ year, month, day, clock });
-
-  useEffect(() => {
-    if (!open) return;
-    draftRef.current = { year, month, day, clock };
-  }, [open, year, month, day, clock]);
-
   return (
-    <BottomSheetModal visible={open} onClose={onClose} variant="center" maxHeight="92%">
-      <View style={{ backgroundColor: colors.card }}>
-        <View
-          className="px-4 pb-2 pt-3.5"
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text
-            className="text-lg"
-            style={{
-              color: colors.foreground,
-              fontWeight: "700",
-              lineHeight: nepaliLineHeight(16),
-            }}
-          >
-            {copy.labels.dateAndTime}
-          </Text>
-          <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={copy.labels.close}>
-            <Ionicons name="close" size={20} color={colors.foreground} />
-          </Pressable>
-        </View>
-        <BsDateTimePicker
-          key={`${year}-${month}-${day}-${clock}-${open}`}
-          year={year}
-          month={month}
-          day={day}
-          yearOptions={yearOptions}
-          todayAd={todayAd}
-          onSelectDate={(y, m, d) => {
-            draftRef.current = { ...draftRef.current, year: y, month: m, day: d };
-          }}
-          monthAriaLabel={copy.labels.month}
-          yearAriaLabel={copy.labels.year}
-          clock={clock}
-          onClockChange={(next) => {
-            draftRef.current = { ...draftRef.current, clock: next };
-          }}
-          hourAriaLabel={copy.labels.hour}
-          minuteAriaLabel={copy.labels.minute}
-          showTime
-          onDone={() => {
-            const next = draftRef.current;
-            onCommit(next.year, next.month, next.day, next.clock);
-            onClose();
-          }}
-        />
+    <Modal visible={open} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={{ flex: 1 }}>
+        {open ? <WheelDateSheet year={year} month={month} day={day} clock={clock} timeZone={timeZone} playback={playback} onCommit={onCommit} onClose={onClose} /> : null}
       </View>
-    </BottomSheetModal>
+    </Modal>
   );
 }
 
@@ -954,12 +899,12 @@ function WheelBody({
       <WheelCalendarModal
         open={calendarOpen}
         onClose={() => setCalendarOpen(false)}
-        pick={pick}
         year={pickerYear}
         month={pickerMonth}
         day={pickerDay}
         clock={pickerClock}
-        todayAd={calendarPick?.todayAd}
+        timeZone={tz}
+        playback={yearScrub}
         onCommit={handleCalendarCommit}
       />
     </>

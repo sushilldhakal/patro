@@ -19,6 +19,8 @@ export type YearWheelScrub = {
   onBackward: () => void;
   /** Stop playback (resets speed). */
   onPause: () => void;
+  /** Set the playback direction and speed (1 | 2 | 4 | 8) directly — the date sheet's speed slider. */
+  onSetPlayback?: (direction: -1 | 0 | 1, speed: number) => void;
   /** Receives the global day index; the page maps it back to (year, day). */
   onDayChange: (day: number) => void;
   /** Jump straight to a day-in-year (1-based) within the active year; pauses playback. */

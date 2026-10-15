@@ -96,4 +96,9 @@ export const patroDateClasses = {
   locationItemActive: "bg-secondary/10",
   locationName: "text-sm font-semibold text-foreground",
   locationSub: "text-xs text-muted-foreground",
+
+  // ── Website nav rows (PatroDateNavCore) ────────────────────────────────────
+  navMobileColumn: "flex min-w-0 flex-1 flex-col gap-1.5 md:hidden",
+  navLocationAside: "flex h-full shrink-0 flex-col items-end justify-between",
+  navDesktopRow: "hidden min-w-0 flex-1 items-start gap-3 md:flex",
 } as const;

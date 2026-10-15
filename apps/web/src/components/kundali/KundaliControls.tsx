@@ -9,7 +9,7 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 
@@ -187,12 +187,7 @@ export function KundaliControls({
         />
       </label>
 
-      <LocationSelector
-        compact
-        className="h-9 flex-[2] min-w-[10rem] max-w-none w-auto"
-        location={location}
-        onLocationChange={onLocationChange}
-      />
+      <PatroHeaderLocation className="min-w-40 flex-[2]" location={location} onLocationChange={onLocationChange} />
     </div>
   );
 }

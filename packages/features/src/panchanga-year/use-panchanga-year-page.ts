@@ -324,6 +324,7 @@ export function usePanchangaYearPage({ era, location, date, setDate, setClock, e
       onForward: () => step(1),
       onBackward: () => step(-1),
       onPause: pausePlay,
+      onSetPlayback: (dir: -1 | 0 | 1, speed: number) => setPlay(dir === 0 ? { dir: 0, speed: 1 } : { dir, speed: Math.min(Math.max(1, speed), WHEEL_MAX_PLAY_SPEED) }),
       onDayChange: (d: number) => {
         pausePlay();
         jumpToIndex(d);

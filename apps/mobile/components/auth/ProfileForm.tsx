@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, Switch, TextInput, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { Button } from "@/components/ui/Button";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
 import { afterProfileSaved } from "@/lib/notifications/triggers";
@@ -170,7 +170,7 @@ export function ProfileForm({
 
       <View className={accountClasses.field}>
         <FieldLabel>{copy.birthPlace}</FieldLabel>
-        <LocationSelector location={birthLocation} onLocationChange={onLocationChange} />
+        <PatroHeaderLocation location={birthLocation} onLocationChange={onLocationChange} />
         {f.placeHint ? (
           <Text className={accountClasses.hint} style={nepaliTextStyle()}>
             {f.placeHint}

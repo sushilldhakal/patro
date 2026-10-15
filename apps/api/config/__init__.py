@@ -4,13 +4,23 @@ from __future__ import annotations
 
 import os
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
 from engine.astronomy.paths import PROJECT_ROOT
 
 load_dotenv(PROJECT_ROOT / ".env")
 # Optional overrides for local dev (e.g. PATRO_LOCAL_DEV=true) — not committed.
 load_dotenv(PROJECT_ROOT / ".env.local", override=True)
+
+# Local dev keeps R2_PUBLIC_BASE_URL in the repo-root .env, two levels above
+# apps/api. Without it every mantra audio_url is null and the play button hides.
+if not (os.getenv("R2_PUBLIC_BASE_URL") or "").strip():
+    _repo_root = PROJECT_ROOT.parent.parent
+    for _name in (".env.local", ".env"):
+        _r2 = (dotenv_values(_repo_root / _name).get("R2_PUBLIC_BASE_URL") or "").strip()
+        if _r2:
+            os.environ["R2_PUBLIC_BASE_URL"] = _r2
+            break
 
 
 def cors_origins() -> list[str] | None:

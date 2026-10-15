@@ -13,7 +13,7 @@
 import { View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
 import { fetchPanchanga } from "@/lib/api";
@@ -85,7 +85,7 @@ export function OwnerCompatibility() {
                 <Text className={vastuClasses.fieldLabel} style={nepaliTextStyle(12)}>
                   {v.copy.placeLabel}
                 </Text>
-                <LocationSelector location={v.plotLocation} onLocationChange={v.setPlotLocation} />
+                <PatroHeaderLocation location={v.plotLocation} onLocationChange={v.setPlotLocation} />
               </View>
             </View>
 

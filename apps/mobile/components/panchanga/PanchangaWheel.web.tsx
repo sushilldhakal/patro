@@ -24,8 +24,7 @@ import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
-import { BsDateTimePicker } from "./BsDateTimePicker";
-import { windowedBrowseYears } from "@/lib/patro-browse-years";
+import { WheelDateSheet } from "./WheelDateSheet";
 import { useLocale } from "@/lib/i18n";
 import { patroSkel, patroWheelShell } from "@/lib/patro-classes";
 import {
@@ -493,13 +492,6 @@ function PanchangaWheelBody({
   const pickerMonth = calendarPick?.month ?? (BS_MONTHS_NE.indexOf(bsMonthNe) + 1 || 1);
   const pickerDay = calendarPick?.day ?? bsDay;
   const pickerClock = calendarPick?.clock ?? clock ?? scrubClock;
-  const pickerYears = useMemo(() => windowedBrowseYears("bs", pickerYear), [pickerYear]);
-  const calendarDraftRef = useRef({
-    year: pickerYear,
-    month: pickerMonth,
-    day: pickerDay,
-    clock: pickerClock,
-  });
 
   const openCalendar = useCallback(() => {
     yearScrub?.onPause();
@@ -507,14 +499,8 @@ function PanchangaWheelBody({
       onOpenDatePicker();
       return;
     }
-    calendarDraftRef.current = {
-      year: pickerYear,
-      month: pickerMonth,
-      day: pickerDay,
-      clock: pickerClock,
-    };
     setCalendarOpen(true);
-  }, [calendarPick, onOpenDatePicker, pickerClock, pickerDay, pickerMonth, pickerYear, yearScrub]);
+  }, [calendarPick, onOpenDatePicker, yearScrub]);
 
   const handleCalendarCommit = useCallback(
     (year: number, month: number, day: number, nextClock: string) => {
@@ -769,48 +755,17 @@ function PanchangaWheelBody({
   );
 
   const calendarDialog = calendarOpen ? (
-    <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/70 p-4">
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default"
-        aria-label={t("ui.common.close")}
-        onClick={() => setCalendarOpen(false)}
+    <div className="fixed inset-0 z-[140]">
+      <WheelDateSheet
+        year={pickerYear}
+        month={pickerMonth}
+        day={pickerDay}
+        clock={pickerClock}
+        timeZone={tz}
+        playback={yearScrub}
+        onCommit={handleCalendarCommit}
+        onClose={() => setCalendarOpen(false)}
       />
-      <div className="relative z-[141] w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-        <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
-          <h2 className="text-sm font-bold text-foreground">{t("ui.panchanga.date_and_time")}</h2>
-          <button
-            type="button"
-            className="text-sm text-muted-foreground"
-            onClick={() => setCalendarOpen(false)}
-          >
-            {t("common.close")}
-          </button>
-        </div>
-        <BsDateTimePicker
-          year={pickerYear}
-          month={pickerMonth}
-          day={pickerDay}
-          yearOptions={pickerYears}
-          todayAd={calendarPick?.todayAd}
-          onSelectDate={(y, m, d) => {
-            calendarDraftRef.current = { ...calendarDraftRef.current, year: y, month: m, day: d };
-          }}
-          monthAriaLabel={t("common.month")}
-          yearAriaLabel={t("common.year")}
-          clock={pickerClock}
-          onClockChange={(next) => {
-            calendarDraftRef.current = { ...calendarDraftRef.current, clock: next };
-          }}
-          hourAriaLabel={t("panchanga.hour_aria")}
-          minuteAriaLabel={t("panchanga.minute_aria")}
-          showTime
-          onDone={() => {
-            const next = calendarDraftRef.current;
-            handleCalendarCommit(next.year, next.month, next.day, next.clock);
-          }}
-        />
-      </div>
     </div>
   ) : null;
 

@@ -18,6 +18,15 @@ export function planetVisualRadius(index: number): number {
   return 8;
 }
 
+/** Disc radius inside each 48×48 graha artwork file. */
+const GRAHA_ART_BODY = [14.4, 17.28, 17.28, 17.28, 17.28, 17.28, 14.4, 16.8, 16.8];
+
+/** Edge length of the graha artwork so its disc matches `radius` in wheel units. */
+export function planetIconSize(index: number, radius: number): number {
+  const body = GRAHA_ART_BODY[index] ?? 17.28;
+  return (radius * 48) / body;
+}
+
 export function planetHitRadius(index: number): number {
   const r = planetVisualRadius(index);
   if (index === 0) return r + 26;

@@ -5,7 +5,6 @@ import { usePanchangaYearPage } from "@vedic-patro/features/panchanga-year";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
@@ -101,17 +100,6 @@ export function PanchangaYear() {
         onClockChange={page.changeClock}
         location={location}
         onLocationChange={setLocation}
-        toolbar={
-          <LocationSelector
-            compact
-            location={location}
-            onLocationChange={setLocation}
-            className="h-[30px] min-w-0 w-auto max-w-[10rem] shrink-0 px-1.5 md:h-8 md:max-w-[12.5rem] md:px-3"
-          />
-        }
-        /* `toolbar` is desktop-only; on mobile the nav adds its own location
-           chip, so `false` (not `undefined`) keeps the city from showing twice. */
-        mobileToolbar={false}
       />
 
       <div className={cn(panchangaYearClasses.body, "flex flex-col")}>

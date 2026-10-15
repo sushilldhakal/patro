@@ -19,7 +19,7 @@ import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { useSkyTimeSheet, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
+import { useSkyTimeSheet, type SkyTimeFieldView, type SkyTimeTransport } from "@vedic-patro/features/sky3d";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
@@ -52,25 +52,33 @@ export function SkyTimeSheet({
   onRate,
   onTogglePlay,
   onResetRate,
+  transport: transportProp,
   onApplyMs,
   onClose,
 }: {
   timeMs: number;
   zoneOffsetMs: number;
-  /** Bipolar rung: negative runs backwards, 0 is paused. */
-  rateValue: number;
-  rateMax: number;
-  onRate: (value: number) => void;
-  onTogglePlay: () => void;
-  onResetRate: () => void;
+  /** Bipolar rung: negative runs backwards, 0 is paused. The speed controls show only with the four rate props (the 3D sky); the wheel's date dialog has none. */
+  rateValue?: number;
+  rateMax?: number;
+  onRate?: (value: number) => void;
+  onTogglePlay?: () => void;
+  onResetRate?: () => void;
+  /** The same speed row for a clock on its own ladder (the wheel's year playback); wins over the rate props. */
+  transport?: SkyTimeTransport;
   onApplyMs: (ms: number) => void;
   onClose: () => void;
 }) {
   /* The app's rate is a rung on the speed ladder; the sheet reads it as the
      simulated seconds per second it stands for. */
-  const rung = Math.round(rateValue);
+  const rung = Math.round(rateValue ?? 0);
   const timeRate = rung === 0 ? 0 : Math.sign(rung) * (TIME_STEPS[Math.min(Math.abs(rung), TIME_STEPS.length) - 1]?.seconds ?? 1);
   const v = useSkyTimeSheet({ timeMs, zoneOffsetMs, timeRate, onApplyMs });
+  const transport: (SkyTimeTransport & { playing: boolean }) | null = transportProp
+    ? { ...transportProp, playing: transportProp.rung !== 0 }
+    : rateValue !== undefined && rateMax !== undefined && onRate && onTogglePlay && onResetRate
+      ? { rung: rateValue, max: rateMax, label: v.speedLabel, playing: v.playing, onRung: onRate, onTogglePlay, onReset: onResetRate }
+      : null;
 
   const stepper = (f: SkyTimeFieldView) => (
     <View key={f.field} className="items-center" style={{ width: f.wide ? 62 : 42 }}>
@@ -154,34 +162,36 @@ export function SkyTimeSheet({
           <View className="flex-row items-center">{withSeps(v.clockFields, ":")}</View>
         </View>
 
+        {transport ? (
+          <>
         <Text
           className="text-body mb-1 mt-4 text-center font-semibold"
           style={[nepaliTextStyle(13, { dense: true }), { color: withAlpha(neutral.white, 0.9) }]}
         >
-          {v.speedLabel}
+          {transport.label}
         </Text>
         <View className="flex-row items-center gap-2">
           <Pressable
-            onPress={onTogglePlay}
+            onPress={transport.onTogglePlay}
             accessibilityRole="button"
-            accessibilityLabel={v.playing ? v.labels.pause : v.labels.play}
+            accessibilityLabel={transport.playing ? v.labels.pause : v.labels.play}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
-            <Ionicons name={v.playing ? "pause" : "play"} size={22} color={neutral.white} />
+            <Ionicons name={transport.playing ? "pause" : "play"} size={22} color={neutral.white} />
           </Pressable>
           <Slider
             style={{ flex: 1, height: 32 }}
-            minimumValue={-rateMax}
-            maximumValue={rateMax}
+            minimumValue={-transport.max}
+            maximumValue={transport.max}
             step={1}
-            value={rateValue}
-            onValueChange={onRate}
+            value={transport.rung}
+            onValueChange={transport.onRung}
             minimumTrackTintColor={withAlpha(neutral.white, 0.75)}
             maximumTrackTintColor={withAlpha(neutral.white, 0.2)}
             thumbTintColor={neutral.white}
           />
           <Pressable
-            onPress={onResetRate}
+            onPress={transport.onReset}
             accessibilityRole="button"
             accessibilityLabel={v.labels.realtime}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
@@ -189,6 +199,8 @@ export function SkyTimeSheet({
             <Ionicons name="refresh" size={20} color={neutral.white} />
           </Pressable>
         </View>
+          </>
+        ) : null}
 
         <View className="mt-3 flex-row">
           {v.jumps.map((jump) => navAction(jump.id, JUMP_ICONS[jump.id], jump.label, jump.run))}

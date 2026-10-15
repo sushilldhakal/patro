@@ -91,13 +91,13 @@ function MantraPlayButton({
   );
 }
 
-/** Today's Veda mantra — Sanskrit, meaning where there is one, audio, and a link to the passage. */
+/** Today's Veda mantra — Sanskrit, audio, and a link to the passage. */
 export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefined; className?: string }) {
   const mantra = useHomeVedaMantra(dateAd);
   const mantraAudio = useMantraAudio(mantra.audioUrl);
   if (!mantra.ready) return null;
 
-  const { copy, meaning } = mantra;
+  const { copy } = mantra;
   const activeToken = mantra.activeTokenAt(mantraAudio.progress);
 
   return (
@@ -127,12 +127,6 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
             ),
           )}
         </p>
-        {meaning ? (
-          <div className={homeClasses.vedaMeaning}>
-            <span className={homeClasses.vedaMeaningLabel}>{copy.meaning}</span>
-            <p className={homeClasses.vedaMeaningText}>{meaning}</p>
-          </div>
-        ) : null}
         <div className={homeClasses.vedaFooter}>
           <Link
             to="/documents/$slug/$chapter"

@@ -133,4 +133,4 @@ export const wOrbit =
 export const wPlanetGlow = "blur-[5px] opacity-55";
 
 export const wPlanetName =
-  "fill-[var(--w-ink-dim)] text-[8.5px] text-base [font-family:var(--pn-font)]";
+  "fill-[var(--w-ink)] text-[13px] font-semibold [font-family:var(--pn-font)] [paint-order:stroke_fill] stroke-[rgba(6,31,33,0.92)] [stroke-width:1.6px]";

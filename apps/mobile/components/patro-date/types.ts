@@ -1,13 +1,17 @@
 import { type Era } from "@vedic-patro/domain/era";
 
-import type { SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
-
 /** The only three date chrome variants — used across phone and tablet. */
 export type PatroDateNavMode = "year" | "year-month" | "year-month-time";
 
 export type PatroDateNavModeProps =
   | { mode: "year" }
-  | { mode: "year-month"; month: number; onMonthChange: (month: number) => void }
+  | {
+      mode: "year-month";
+      month: number;
+      onMonthChange: (month: number) => void;
+      /** Year and month together (a step across a year boundary changes both). */
+      onBrowse?: (next: { year: number; month: number }) => void;
+    }
   | {
       mode: "year-month-time";
       month: number;
@@ -18,6 +22,8 @@ export type PatroDateNavModeProps =
       clock?: string;
       onClockChange?: (clock: string) => void;
       todayAd?: string;
+      /** Weekday of the selected day (0 = Sunday); computed from the date when omitted. */
+      weekday?: number;
     };
 
 export type PatroDateNavBaseProps = {
@@ -33,16 +39,9 @@ export type PatroDateNavBaseProps = {
   prevDisabled?: boolean;
   nextDisabled?: boolean;
   crossEraSubtitle?: string;
-  /** Resolved Vikram parts from API (`date_parts.vikram`) — headline + samvatsara era. */
-  vikramEra?: Era;
-  samvatsara?: SamvatsaraPayload | null;
-  toolbar?: React.ReactNode;
-  /** Phone row 1 right slot (e.g. day-cycle toggle on panchanga). */
-  mobileToolbar?: React.ReactNode;
-  /** Phone row 2 right slot — location chip (web `mobileToolbarLower`). */
-  mobileToolbarLower?: React.ReactNode;
-  /** Hide location in the nav row when it lives in `mobileToolbarLower` / desktop aside. */
-  hideNavLocation?: boolean;
+  /** Toggle beside the date picker (BS | panchanga, day-night | calendar day, paksha …); one phone button when it has two options. */
+  tabs?: import("./PatroHeaderTabs").PatroHeaderTab[];
+  tabsLabel?: string;
   className?: string;
 };
 

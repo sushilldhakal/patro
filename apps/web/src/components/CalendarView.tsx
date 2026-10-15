@@ -7,7 +7,6 @@ import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
 import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PanchangaMonthGrid } from "@/components/panchanga/PanchangaMonthGrid";
 import { buildPatroDaySearch } from "@/lib/url-state";
 import { getLanguageForEra } from "@vedic-patro/domain/era";
@@ -16,7 +15,7 @@ import {
   patroDayFetchFromApiDateAd,
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
-import { PatroMonthYearNav } from "@/components/patro-date";
+import { PatroCalendarHeader } from "@/components/patro-date";
 import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
@@ -26,10 +25,8 @@ import { DayDetailModal } from "./DayDetailModal";
 import { useLocale } from "@/i18n/locale";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@vedic-patro/domain/utils";
-import { patroMdRail, patroSegBtn } from "@/lib/patro-classes";
-import { ArrowLeftRight } from "lucide-react";
+import { patroMdRail } from "@/lib/patro-classes";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
-import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 
@@ -176,24 +173,6 @@ export function CalendarView({
     });
   }
 
-  function prev() {
-    setSelected(null);
-    onDaySelect?.(null);
-    monthBrowse.stepMonth(-1);
-  }
-
-  function nextMonth() {
-    setSelected(null);
-    onDaySelect?.(null);
-    monthBrowse.stepMonth(1);
-  }
-
-  function goToday() {
-    monthBrowse.goToday(todayAd);
-    setSelected(null);
-    onDaySelect?.(null);
-  }
-
   const calendarBlock = isPanchangaPatro ? (
     <PanchangaMonthGrid
       date={panchangaGridDate}
@@ -249,110 +228,39 @@ export function CalendarView({
     </>
   );
 
-  const nextPatroView: HomePatroView = patroView === "calendar" ? "panchanga" : "calendar";
   const calendarTabLabel = isGregorian
     ? t("calendar.mode_ad")
     : patroEraShortLabel(era);
-  const nextPatroLabel =
-    nextPatroView === "panchanga" ? t("calendar.mode_panchanga") : calendarTabLabel;
-
-  const patroModeMobileBtn = enablePatroToggle ? (
-    <button
-      type="button"
-      className={cn("inline-flex cursor-pointer transition-colors hover:text-foreground active:bg-muted", calendarClasses.viewSwap, calendarClasses.viewSwapText)}
-      onClick={() => switchPatroView(nextPatroView)}
-      aria-label={t("calendar.patro_mode_switch")}
-    >
-      <ArrowLeftRight className="size-3.5" aria-hidden />
-      {nextPatroLabel}
-    </button>
-  ) : null;
-
-  const patroModeDesktop = enablePatroToggle ? (
-    <div
-      className={cn("hidden md:inline-flex", calendarClasses.viewSegGroup)}
-      role="radiogroup"
-      aria-label={t("calendar.patro_mode_aria")}
-    >
-      <button
-        type="button"
-        role="radio"
-        aria-checked={patroView === "calendar"}
-        className={patroSegBtn(patroView === "calendar")}
-        onClick={() => switchPatroView("calendar")}
-      >
-        {calendarTabLabel}
-      </button>
-      <button
-        type="button"
-        role="radio"
-        aria-checked={patroView === "panchanga"}
-        className={patroSegBtn(patroView === "panchanga")}
-        onClick={() => switchPatroView("panchanga")}
-      >
-        {t("calendar.mode_panchanga")}
-      </button>
-    </div>
-  ) : (
-    <div className="hidden text-xs text-base uppercase tracking-eyebrow md:block md:text-right">
-      {t("calendar.eyebrow")}
-    </div>
-  );
-
-  const locationControlDesktop =
-    location && onLocationChange ? (
-      <LocationSelector
-        compact
-        location={location}
-        onLocationChange={onLocationChange}
-        className="h-8 min-w-0 w-auto max-w-[12.5rem]"
-      />
-    ) : null;
-
-  const mobileHeaderToolbar = patroModeMobileBtn ?? undefined;
-
-  const headerToolbarDesktop = (
-    <>
-      {patroModeDesktop}
-      {locationControlDesktop}
-    </>
-  );
-
-  function changeMonth(nextMonthValue: number) {
-    setSelected(null);
-    onDaySelect?.(null);
-    monthBrowse.setYearMonth(monthBrowse.year, nextMonthValue);
-  }
-
-  function changeYear(nextYearValue: number) {
-    setSelected(null);
-    onDaySelect?.(null);
-    monthBrowse.setYearMonth(nextYearValue, monthBrowse.month);
-  }
 
   const headerPrevDisabled = homeMonth.prevDisabled;
   const headerNextDisabled = homeMonth.nextDisabled;
 
   const monthHeader = showMonthHeader ? (
     <div className={cn(patroMdRail, "mb-4 mt-2 max-md:pt-3 md:pt-0")}>
-      <PatroMonthYearNav
-        era={era}
-        year={year}
-        month={month}
-        todayAd={todayAd}
-        onToday={goToday}
-        onMonthChange={changeMonth}
-        onYearChange={changeYear}
-        onBrowseCommit={monthBrowse.commitEraYear}
-        onPrev={prev}
-        onNext={nextMonth}
-        prevDisabled={headerPrevDisabled}
-        nextDisabled={headerNextDisabled}
-        mobileToolbar={mobileHeaderToolbar}
-        location={location}
-        onLocationChange={onLocationChange}
-        desktopToolbar={headerToolbarDesktop}
-      />
+      <PatroCalendarHeader
+      era={era}
+          year={year}
+          month={month}
+          onChange={(next) => {
+            setSelected(null);
+            onDaySelect?.(null);
+            monthBrowse.setYearMonth(next.year, next.month);
+          }}
+          onEraChange={(nextEra) => monthBrowse.commitEraYear(nextEra, year)}
+          segments={
+            enablePatroToggle
+              ? [
+                  { key: "calendar", label: calendarTabLabel, active: patroView === "calendar", onPress: () => switchPatroView("calendar") },
+                  { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => switchPatroView("panchanga") },
+                ]
+              : undefined
+          }
+          segmentsLabel={t("calendar.patro_mode_aria")}
+          prevDisabled={headerPrevDisabled}
+          nextDisabled={headerNextDisabled}
+          location={location}
+          onLocationChange={onLocationChange}
+        />
     </div>
   ) : null;
 

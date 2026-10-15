@@ -33,7 +33,7 @@ function PlayButton({
   );
 }
 
-/** Today's Veda mantra — Sanskrit, meaning when there is one, audio, and a link to where it comes from. */
+/** Today's Veda mantra — Sanskrit, audio, and a link to where it comes from. */
 export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
   const router = useRouter();
   const mantra = useHomeVedaMantra(dateAd, { offlineDays: 6 });
@@ -68,7 +68,7 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
 
   const progress = status.playing && status.duration > 0 ? status.currentTime / status.duration : -1;
   const activeToken = mantra.activeTokenAt(progress);
-  const { copy, meaning, read } = mantra;
+  const { copy, read } = mantra;
 
   const openSource = () =>
     router.push({
@@ -97,13 +97,6 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
             ),
           )}
         </Text>
-
-        {meaning ? (
-          <View className={homeClasses.vedaMeaning}>
-            <Text className={homeClasses.vedaMeaningLabel}>{copy.meaning}</Text>
-            <Text className={homeClasses.vedaMeaningText}>{meaning}</Text>
-          </View>
-        ) : null}
 
         <View className={homeClasses.vedaFooter}>
           <Pressable onPress={openSource} accessibilityRole="link" hitSlop={8} className="active:opacity-70">

@@ -64,13 +64,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import type { Era } from "@vedic-patro/domain/era";
 import type { LocationParams } from "@/lib/api";
-import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { WheelDateSheet } from "@/components/panchanga/WheelDateSheet";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
@@ -119,6 +113,8 @@ export type YearWheelScrub = {
   onBackward: () => void;
   /** Stop playback (resets speed). */
   onPause: () => void;
+  /** Set the playback direction and speed (1 | 2 | 4 | 8) directly — the date sheet's speed slider. */
+  onSetPlayback?: (direction: -1 | 0 | 1, speed: number) => void;
   /** Receives the global day index; the page maps it back to (year, day). */
   onDayChange: (day: number) => void;
   /** Jump straight to a day-in-year (1-based) within the active year; pauses playback. */
@@ -741,53 +737,18 @@ function PanchangaWheelBody({
         </div>
       </div>
 
-      {activeCalendar ? (
-        <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <DialogContent
-            overlayClassName="z-[125] bg-black/70"
-            className="z-[130] max-w-[22rem] border-ill-teal30 bg-ill-wheel-sky0 p-4 text-ill-wheel-ink shadow-2xl"
-            onCloseAutoFocus={(e) => e.preventDefault()}
-            onPointerDownOutside={(e) => {
-              const t = e.target as HTMLElement | null;
-              if (t?.closest("[data-slot='popover-content']")) e.preventDefault();
-            }}
-            onFocusOutside={(e) => {
-              const t = e.target as HTMLElement | null;
-              if (t?.closest("[data-slot='popover-content']")) e.preventDefault();
-            }}
-            onInteractOutside={(e) => {
-              const t = e.target as HTMLElement | null;
-              if (t?.closest("[data-slot='popover-content']")) e.preventDefault();
-            }}
-          >
-            <DialogHeader>
-              <DialogTitle className="text-ill-wheel-ink">
-                {copy.labels.dateAndTime}
-              </DialogTitle>
-            </DialogHeader>
-            <BsDateTimePicker
-              gridEra={activeCalendar.gridEra ?? "bs"}
-              displayEra={activeCalendar.era}
-              onEraChange={activeCalendar.onEraChange}
-              year={activeCalendar.year}
-              month={activeCalendar.month}
-              day={activeCalendar.day}
-              yearOptions={activeCalendar.yearOptions}
-              todayAd={activeCalendar.todayAd}
-              onSelectDate={() => {}}
-              monthAriaLabel={copy.labels.month}
-              yearAriaLabel={copy.labels.year}
-              clock={activeCalendar.clock}
-              hourAriaLabel={copy.labels.hour}
-              minuteAriaLabel={copy.labels.minute}
-              showTime
-              locationParams={activeCalendar.locationParams}
-              onCommitDateTime={commitCalendarJump}
-              afterCommit={() => setCalendarOpen(false)}
-              solidSurface
-            />
-          </DialogContent>
-        </Dialog>
+      {activeCalendar && calendarOpen ? (
+        <WheelDateSheet
+          era={activeCalendar.era}
+          year={activeCalendar.year}
+          month={activeCalendar.month}
+          day={activeCalendar.day}
+          clock={activeCalendar.clock ?? clock ?? "00:00"}
+          timeZone={tz}
+          playback={yearScrub}
+          onCommit={commitCalendarJump}
+          onClose={() => setCalendarOpen(false)}
+        />
       ) : null}
     </div>
   );

@@ -2,7 +2,7 @@ import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Sprout } from "lucide-react";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { PageHeader, PageShell } from "@/components/PageShell";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date";
 import { RituSeasons } from "@/components/RituSeasons";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePatroLocationUrlBrowse } from "@/hooks/use-patro-url-browse";
@@ -30,7 +30,7 @@ export function Ritu() {
           title={ritu.title}
           subtitle={ritu.subtitle}
         />
-        <LocationSelector compact location={location} onLocationChange={setLocation} />
+        <PatroHeaderLocation location={location} onLocationChange={setLocation} />
       </div>
 
       <RituSeasons location={location} showHeader={false} />

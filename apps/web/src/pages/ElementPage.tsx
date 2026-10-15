@@ -215,17 +215,12 @@ export function ElementPage() {
 
       {page.kind === "span" ? (
         <PatroMonthYearNav
+          onBrowse={(next) => monthBrowse.setYearMonth(next.year, next.month)}
+          onEraChange={(e) => monthBrowse.commitEraYear(e, monthBrowse.year)}
           era={monthBrowse.era}
           year={monthBrowse.year}
           month={monthBrowse.month}
           displayLanguage={lang}
-          onMonthChange={(m) => monthBrowse.setYearMonth(monthBrowse.year, m)}
-          onYearChange={(y) => monthBrowse.setYearMonth(y, monthBrowse.month)}
-          onBrowseCommit={monthBrowse.commitEraYear}
-          onPrev={() => monthBrowse.stepMonth(-1)}
-          onNext={() => monthBrowse.stepMonth(1)}
-          onToday={() => monthBrowse.goToday(page.todayAd)}
-          todayAd={page.todayAd}
           location={location}
           onLocationChange={setLocation}
         />

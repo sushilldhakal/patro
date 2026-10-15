@@ -12,6 +12,11 @@ interface BsHeadlineProps {
   bsClassName?: string;
   samvatsaraClassName?: string;
   gregorianClassName?: string;
+  /**
+   * Phone header: one line each, spread to the month-chip height.
+   * Desktop keeps the single wrapping row.
+   */
+  stacked?: boolean;
 }
 
 /**
@@ -31,7 +36,29 @@ export function BsHeadline({
   bsClassName,
   samvatsaraClassName,
   gregorianClassName,
+  stacked = false,
 }: BsHeadlineProps) {
+  if (stacked) {
+    return (
+      <h1
+        className={cn(
+          "m-0 flex h-full min-w-0 flex-col justify-between font-bold leading-tight tracking-tight",
+          className,
+        )}
+      >
+        <span className={cn("min-w-0 whitespace-nowrap", bsClassName)}>{bs}</span>
+        {samvatsara ? (
+          <span className={cn("whitespace-nowrap font-semibold text-foreground/90", samvatsaraClassName)}>
+            {samvatsara}
+          </span>
+        ) : null}
+        {gregorian ? (
+          <span className={cn("whitespace-nowrap", gregorianClassName)}>{gregorian}</span>
+        ) : null}
+      </h1>
+    );
+  }
+
   return (
     <h1
       className={cn(

@@ -17,7 +17,7 @@ type Props = {
 };
 
 /**
- * Read-only month/day chip — matches {@link PatroDateNavCore} left chip styling
+ * Read-only month/day chip — matches the date nav's left chip styling
  * (secondary month band + bordered card day cell).
  */
 export function PatroDayMonthChip({ month, day, className, size = "default" }: Props) {

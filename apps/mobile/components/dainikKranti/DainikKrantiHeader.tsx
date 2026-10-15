@@ -1,14 +1,8 @@
 import { useMemo } from "react";
-import { Pressable, View } from "react-native";
-import { Text } from "@/components/ui/Text";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { View } from "react-native";
 import { PatroMonthYearNav } from "@/components/patro-date/PatroMonthYearNav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@vedic-patro/domain/utils";
-import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
-import { patroSegBtn } from "@/lib/patro-classes";
-import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import type { SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { type PanchangaLocation } from "@/lib/use-panchanga-location";
@@ -37,71 +31,19 @@ type Props = {
   pakshaAria: string;
 };
 
-function PakshaSegToggle({
-  value,
-  onChange,
-  options,
-  className,
-  buttonClassName,
-  ariaLabel,
-}: {
-  ariaLabel: string;
-  value: PakshaFilter | "krishna" | "shukla";
-  onChange: (v: PakshaFilter) => void;
-  options: readonly (readonly [PakshaFilter, string])[];
-  className?: string;
-  buttonClassName?: string;
-}) {
-  return (
-    <View
-      className={cn(
-        "h-[30px] shrink-0 flex-row",
-        dainikKrantiClasses.segToggle,
-        className,
-      )}
-      accessibilityRole="radiogroup"
-      accessibilityLabel={ariaLabel}
-    >
-      {options.map(([opt, label]) => (
-        <Pressable
-          key={opt}
-          onPress={() => onChange(opt)}
-          accessibilityRole="radio"
-          accessibilityState={{ selected: value === opt }}
-          className={cn(patroSegBtn(value === opt), buttonClassName)}
-        >
-          <Text
-            className={cn(
-              "text-xs font-semibold",
-              value === opt ? "text-secondary-foreground" : "text-foreground",
-            )}
-            style={nepaliTextStyle()}
-          >
-            {label}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
-/** Dainik Kranti — web `PatroMonthYearNav` + paksha / location slots. */
+/** Dainik Kranti — the month + year header with the paksha filter as its toggle. */
 export function DainikKrantiHeader({
   year,
   month,
   paksha,
   onPakshaChange,
   mobilePakshaDisplay,
-  onToday,
   onMonthChange,
   onYearChange,
-  onPrev,
-  onNext,
   prevDisabled,
   nextDisabled,
   location,
   onLocationChange,
-  samvatsara,
   pakshaOptions,
   pakshaAria,
 }: Props) {
@@ -113,37 +55,14 @@ export function DainikKrantiHeader({
     [year, month, lang, digits],
   );
 
-  const pakshaOptionsMobile = pakshaOptions.filter(([value]) => value !== "all");
-
-  const pakshaToggleDesktop = (
-    <PakshaSegToggle ariaLabel={pakshaAria} value={paksha} onChange={onPakshaChange} options={pakshaOptions} />
-  );
-
-  const pakshaToggleMobile = (
-    <PakshaSegToggle
-      ariaLabel={pakshaAria}
-      value={mobilePakshaDisplay}
-      onChange={onPakshaChange}
-      options={pakshaOptionsMobile}
-      className="shrink-0"
-      buttonClassName="px-2.5"
-    />
-  );
-
-  const locationControl = (
-    <LocationSelector
-      location={location}
-      onLocationChange={onLocationChange}
-      className="max-w-[12.5rem]"
-    />
-  );
-
-  const desktopAside = (
-    <View className="items-end gap-2">
-      {pakshaToggleDesktop}
-      {locationControl}
-    </View>
-  );
+  // Phones show Krishna | Shukla only (two options become one swap button).
+  const options = isCompact ? pakshaOptions.filter(([value]) => value !== "all") : pakshaOptions;
+  const tabs = options.map(([value, label]) => ({
+    key: value,
+    label,
+    active: (isCompact ? mobilePakshaDisplay : paksha) === value,
+    onPress: () => onPakshaChange(value),
+  }));
 
   return (
     <View>
@@ -154,17 +73,13 @@ export function DainikKrantiHeader({
         month={month}
         onMonthChange={onMonthChange}
         onYearChange={onYearChange}
-        onToday={onToday}
-        onPrev={onPrev}
-        onNext={onNext}
         prevDisabled={prevDisabled}
         nextDisabled={nextDisabled}
         crossEraSubtitle={crossEraSubtitle}
-        samvatsara={samvatsara}
         location={location}
         onLocationChange={onLocationChange}
-        mobileToolbar={isCompact ? pakshaToggleMobile : undefined}
-        desktopAside={desktopAside}
+        tabs={tabs}
+        tabsLabel={pakshaAria}
       />
     </View>
   );

@@ -1,91 +1,9 @@
-import type { ReactNode } from "react";
-import { View } from "react-native";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
-import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@vedic-patro/domain/utils";
 import { PatroDateNav } from "./PatroDateNav";
 import type { PatroDateNavProps } from "./types";
-import { usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 
-type MonthYearNavProps = Omit<
-  Extract<PatroDateNavProps, { mode: "year-month" }>,
-  "mode" | "toolbar" | "mobileToolbar" | "mobileToolbarLower" | "hideNavLocation"
-> & {
-  mobileToolbar?: ReactNode;
-  /** Phone row 2 right — e.g. dainik kranti paksha + location (web `mobileToolbarLower`). */
-  mobileToolbarLower?: ReactNode;
-  /** Tablet+ right column (paksha + location on dainik kranti). */
-  desktopAside?: ReactNode;
-  className?: string;
-};
+type MonthYearNavProps = Omit<Extract<PatroDateNavProps, { mode: "year-month" }>, "mode">;
 
-/**
- * Month + year navigation — home calendar, dainik kranti (web `PatroMonthYearNav`).
- * Phone: date nav + optional row-1 toolbar; location on row 2 right.
- * Tablet+: date nav left; `desktopAside` right (paksha, location, …).
- */
-export function PatroMonthYearNav({
-  mobileToolbar,
-  mobileToolbarLower,
-  desktopAside,
-  className,
-  location,
-  onLocationChange,
-  crossEraSubtitle: crossEraOverride,
-  ...navProps
-}: MonthYearNavProps) {
-  const { isCompact } = useBreakpoint();
-  const { crossEraSubtitle } = usePatroMonthYearNav({
-    era: navProps.era,
-    year: navProps.year,
-    month: navProps.month,
-    location,
-    crossEraSubtitle: crossEraOverride,
-  });
-
-  const locationControl = (
-    <LocationSelector
-      location={location}
-      onLocationChange={onLocationChange}
-      className="max-w-[12.5rem]"
-    />
-  );
-
-  const aside =
-    desktopAside ??
-    (!isCompact ? (
-      <View className="items-end">{locationControl}</View>
-    ) : null);
-
-  if (isCompact) {
-    return (
-      <PatroDateNav
-        mode="year-month"
-        {...navProps}
-        crossEraSubtitle={crossEraSubtitle}
-        location={location}
-        onLocationChange={onLocationChange}
-        mobileToolbar={mobileToolbar}
-        mobileToolbarLower={mobileToolbarLower}
-        className={className}
-      />
-    );
-  }
-
-  return (
-    <View className={cn("w-full flex-row items-start gap-3", className)}>
-      <View className="min-w-0 flex-1">
-        <PatroDateNav
-          mode="year-month"
-          {...navProps}
-          crossEraSubtitle={crossEraSubtitle}
-          location={location}
-          onLocationChange={onLocationChange}
-          hideNavLocation
-          className="mb-0"
-        />
-      </View>
-      {aside ? <View className="shrink-0 items-end pt-0.5">{aside}</View> : null}
-    </View>
-  );
+/** Month + year navigation — home calendar, dainik kranti, month-browse pages (web `PatroMonthYearNav`). */
+export function PatroMonthYearNav(props: MonthYearNavProps) {
+  return <PatroDateNav mode="year-month" {...props} />;
 }

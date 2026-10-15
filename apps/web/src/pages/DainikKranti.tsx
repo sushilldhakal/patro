@@ -14,7 +14,6 @@ import {
   type DainikDayRow,
   type DainikPakshaFilter,
 } from "@vedic-patro/features/dainik-kranti";
-import type { Phase } from "@vedic-patro/domain/dainikKranti/day-helpers";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "@/components/PageShell";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
@@ -27,13 +26,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import {
   searchToLocation,
 } from "@/lib/url-state";
 import {
-  patroSegBtn,
   patroStickyHeadCell,
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
@@ -75,50 +72,6 @@ function useMobilePakshaLayout(): boolean {
     return () => mq.removeEventListener("change", sync);
   }, []);
   return isMobile;
-}
-
-type PakshaSegToggleProps = {
-  value: PakshaFilter;
-  onChange: (v: PakshaFilter) => void;
-  options: readonly (readonly [PakshaFilter, string])[];
-  className?: string;
-  buttonClassName?: string;
-};
-
-function PakshaSegToggle({
-  value,
-  onChange,
-  options,
-  className,
-  buttonClassName,
-  ariaLabel,
-}: {
-  ariaLabel: string;
-} & PakshaSegToggleProps) {
-  return (
-    <div
-      className={cn(
-        "inline-flex shrink-0",
-        dainikKrantiClasses.segToggle,
-        className,
-      )}
-      role="radiogroup"
-      aria-label={ariaLabel}
-    >
-      {options.map(([optionValue, label]) => (
-        <button
-          key={optionValue}
-          type="button"
-          role="radio"
-          aria-checked={value === optionValue}
-          className={cn(patroSegBtn(value === optionValue), buttonClassName)}
-          onClick={() => onChange(optionValue)}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
 }
 
 const th = cn(dainikKrantiClasses.th, "whitespace-nowrap align-middle");
@@ -343,31 +296,14 @@ export function DainikKranti() {
 
   useRouteLoading(status.pageLoading);
 
-  // Paksha filter + location controls are shared between the desktop header
-  // (md+, right column) and the mobile drawer header slots (below md), so the
-  // month/year picker matches the home page: a bottom sheet on mobile.
-  const pakshaToggleDesktop = (
-    <PakshaSegToggle ariaLabel={copy.pakshaAria} value={paksha} onChange={setPaksha} options={copy.pakshaOptions} />
-  );
-
-  const pakshaToggleMobile = (
-    <PakshaSegToggle
-      ariaLabel={copy.pakshaAria}
-      value={page.compactPaksha satisfies Phase}
-      onChange={setPaksha}
-      options={copy.pakshaOptions.filter(([value]) => value !== "all")}
-      className="w-full max-w-[10rem]"
-      buttonClassName="flex-1 min-w-0 px-2"
-    />
-  );
-
-  const locationControlDesktop = (
-    <LocationSelector
-      compact
-      location={location}
-      onLocationChange={setLocation}
-      className="w-auto max-w-[11rem] sm:max-w-[12.5rem]"
-    />
+  // Paksha filter rides in the header toggle (one phone button when it has two options).
+  const pakshaSegments = (isMobilePaksha ? copy.pakshaOptions.filter(([value]) => value !== "all") : copy.pakshaOptions).map(
+    ([value, label]) => ({
+      key: value,
+      label,
+      active: (isMobilePaksha ? page.compactPaksha : paksha) === value,
+      onPress: () => setPaksha(value),
+    }),
   );
 
   return (
@@ -376,22 +312,12 @@ export function DainikKranti() {
         era={monthBrowse.era}
         year={monthBrowse.year}
         month={monthBrowse.month}
-        todayAd={nowKey}
-        onToday={() => monthBrowse.goToday(nowKey)}
-        onMonthChange={(m) => monthBrowse.setYearMonth(monthBrowse.year, m)}
-        onYearChange={(y) => monthBrowse.setYearMonth(y, monthBrowse.month)}
-        onBrowseCommit={monthBrowse.commitEraYear}
-        onPrev={() => monthBrowse.stepMonth(-1)}
-        onNext={() => monthBrowse.stepMonth(1)}
+        onBrowse={(next) => monthBrowse.setYearMonth(next.year, next.month)}
+        onEraChange={(e) => monthBrowse.commitEraYear(e, monthBrowse.year)}
         location={location}
         onLocationChange={setLocation}
-        mobileToolbar={pakshaToggleMobile}
-        desktopToolbar={
-          <>
-            {pakshaToggleDesktop}
-            {locationControlDesktop}
-          </>
-        }
+        segments={pakshaSegments}
+        segmentsLabel={copy.pakshaAria}
       />
 
       <div className={dainikKrantiClasses.monthHead}>

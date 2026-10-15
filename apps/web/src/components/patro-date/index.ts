@@ -5,10 +5,10 @@
  * - {@link PatroDayTimeNav} — day + month + year, optional time (panchanga)
  * - {@link PatroYearNav} — year only (graha yearly pages)
  */
-export { PatroDateNavCore, type PatroDateNavCoreProps } from "./PatroDateNavCore";
 export { PatroMonthYearNav, type PatroMonthYearNavProps } from "./PatroMonthYearNav";
 export { PatroDayTimeNav, type PatroDayTimeNavProps } from "./PatroDayTimeNav";
 export { PatroYearNav, type PatroYearNavProps } from "./PatroYearNav";
+export { PatroCalendarHeader, type PatroCalendarHeaderProps } from "./PatroCalendarHeader";
 export { PatroDayMonthChip } from "./PatroDayMonthChip";
 
 export {
@@ -18,3 +18,5 @@ export {
   isAtMinBsDay,
   isAtMaxBsDay,
 } from "@/lib/patro-date-options";
+export { PatroHeaderLocation } from "./PatroHeaderLocation";
+export { PatroHeaderSwap, PatroHeaderTabs, type PatroHeaderTab } from "./PatroHeaderTabs";

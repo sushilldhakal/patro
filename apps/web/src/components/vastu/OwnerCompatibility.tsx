@@ -1,6 +1,6 @@
 import { CalendarClock } from "lucide-react";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date";
 import { fetchPanchangaDay } from "@/lib/api";
 import { patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
@@ -43,7 +43,7 @@ export function OwnerCompatibility() {
               </div>
               <div>
                 <p className={vastuClasses.fieldLabel}>{v.copy.placeLabel}</p>
-                <LocationSelector compact location={v.plotLocation} onLocationChange={v.setPlotLocation} />
+                <PatroHeaderLocation location={v.plotLocation} onLocationChange={v.setPlotLocation} />
               </div>
             </div>
 

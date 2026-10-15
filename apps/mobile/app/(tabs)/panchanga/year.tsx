@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePanchangaYearPage } from "@vedic-patro/features/panchanga-year";
 import { AppShell } from "@/components/AppShell";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { Text } from "@/components/ui/Text";
 import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
@@ -37,10 +36,6 @@ export default function PanchangaYearScreen() {
   const fallbackStageHeight = computeYearWheelStageHeight({ screenH, safeAreaTop: insets.top, dateNavHeight, isTablet });
   const stageHeight = Math.max(500, bodyHeight > 80 ? bodyHeight - 32 : fallbackStageHeight);
 
-  const headerToolbar = !isCompact ? (
-    <LocationSelector location={location} onLocationChange={setLocation} className="max-w-[8rem]" />
-  ) : undefined;
-
   return (
     <AppShell title="" showHeader={false} scroll={false}>
       <View onLayout={(e) => setDateNavHeight(e.nativeEvent.layout.height)}>
@@ -54,8 +49,6 @@ export default function PanchangaYearScreen() {
           onClockChange={page.changeClock}
           location={location}
           onLocationChange={setLocation}
-          toolbar={headerToolbar}
-          hideNavLocation={!isCompact}
         />
       </View>
 

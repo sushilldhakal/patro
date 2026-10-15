@@ -1,17 +1,15 @@
-import type { ReactNode } from "react";
 import { useCallback, useMemo } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "./PatroHeaderLocation";
+import { PatroHeaderSwap, PatroHeaderTabs, type PatroHeaderTab } from "./PatroHeaderTabs";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { calendarPickerClasses as pickerClasses } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import {
-  buildAdDayOptions,
-  buildBsDayOptions,
   isAtMaxAdDay,
   isAtMaxBsDay,
   isAtMinAdDay,
@@ -23,7 +21,7 @@ import {
 import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { PatroDateNavCore } from "./PatroDateNavCore";
+import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 
 export type PatroDayTimeNavProps = {
   date: Date;
@@ -50,9 +48,9 @@ export type PatroDayTimeNavProps = {
   onClockChange?: (clock: string) => void;
   location?: PanchangaLocation;
   onLocationChange?: (location: PanchangaLocation) => void;
-  toolbar?: ReactNode;
-  mobileToolbar?: ReactNode;
-  mobileToolbarLower?: ReactNode;
+  /** Tabs beside the header (e.g. day-night | calendar day); on a phone they become one swap button. */
+  tabs?: PatroHeaderTab[];
+  tabsLabel?: string;
   className?: string;
   /**
    * Replaces the computed single-day subtitle (normally "११ अगस्त २०२६") with
@@ -95,14 +93,12 @@ export function PatroDayTimeNav({
   onClockChange,
   location,
   onLocationChange,
-  toolbar,
-  mobileToolbar,
-  mobileToolbarLower,
+  tabs,
+  tabsLabel,
   className,
   subtitleOverride,
   stepOverride,
 }: PatroDayTimeNavProps) {
-  const { t } = useTranslation();
   const { lang, digits } = usePatroDisplayLocale(displayLanguage);
   const langEra = useCalendarEra();
   const era = eraProp ?? defaultEraFromUi(langEra);
@@ -122,19 +118,6 @@ export function PatroDayTimeNav({
    * display toggle updates immediately; `vikram` catches up on the next fetch.
    */
   const resolvedEra: Era = isGregorian ? era : (vikram?.era ?? era);
-
-  /**
-   * Era for the headline, which must match the number sitting next to it.
-   *
-   * The year shown comes from `vikram` once the day resolves, and from `adToBS`
-   * before then — and `adToBS` only ever speaks BS. Labelling that fallback with
-   * the URL's browse era printed a BS year under a BBS heading ("२०८३ पू.वि.सं."
-   * beside 1 August 2026), which is true in no calendar. The nav *controls*
-   * still follow `era`, so switching BS↔BBS stays instant.
-   */
-  const headlineVikramEra: Era | undefined = isGregorian
-    ? undefined
-    : (vikram?.era ?? "bs");
 
   const navYear = isGregorian ? civil.year : (bsFromDate?.year ?? civil.year);
   const navMonth = isGregorian ? civil.month : (bsFromDate?.month ?? civil.month);
@@ -174,10 +157,6 @@ export function PatroDayTimeNav({
     lang,
     digits,
   ]);
-
-  const dayOptions = isGregorian
-    ? buildAdDayOptions(navYear, navMonth, digits)
-    : buildBsDayOptions(signedNavYear, navMonth, digits);
 
   const pickDate = (y: number, m: number, d: number) =>
     isGregorian
@@ -224,92 +203,51 @@ export function PatroDayTimeNav({
     [onEraChange, isGregorian, civil.year, civil.month, civil.day, navYear, navMonth, navDay],
   );
 
-  const handleBrowseCommit = useCallback(
-    (nextEra: Era, nextYear: number) => {
-      commitBrowseDay(nextEra, nextYear, navMonth, navDay);
-    },
-    [commitBrowseDay, navMonth, navDay],
+
+  const todayParts = useMemo(() => {
+    if (!todayAd) return null;
+    const d = parseCivilIsoToDate(todayAd);
+    if (isGregorian) {
+      const c = civilPartsFromPickerDate(d);
+      return { year: c.year, month: c.month, day: c.day };
+    }
+    return era === "bs" ? adToBS(d) : null;
+  }, [todayAd, isGregorian, era]);
+
+  const header = (
+        <PatroDayTimeHeader
+            className="contents"
+            era={era}
+            year={navYear}
+            month={navMonth}
+            day={navDay}
+            weekday={date.getDay()}
+            today={todayParts}
+            clock={clock}
+            onClockChange={onClockChange}
+            onEraChange={onEraChange ? handleEraChange : undefined}
+            onSelect={pickDate}
+            onStepDay={(delta) => (stepOverride ? (delta < 0 ? stepOverride.onPrev() : stepOverride.onNext()) : stepDay(delta))}
+            onToday={() => onDateChange(todayAd ? parseCivilIsoToDate(todayAd) : new Date())}
+            prevDisabled={
+              stepOverride ? false : isGregorian ? isAtMinAdDay(navYear, navMonth, navDay) : isAtMinBsDay(signedNavYear, navMonth, navDay)
+            }
+            nextDisabled={
+              stepOverride ? false : isGregorian ? isAtMaxAdDay(navYear, navMonth, navDay) : isAtMaxBsDay(signedNavYear, navMonth, navDay)
+            }
+            subtitle={subtitleOverride}
+            crossEraText={crossEraSubtitle ?? undefined}
+          />
   );
 
-  const locationDesktop =
-    toolbar ??
-    (location && onLocationChange ? (
-      <LocationSelector
-        compact
-        location={location}
-        onLocationChange={onLocationChange}
-        className="h-8 min-w-0 w-auto max-w-[12.5rem]"
-      />
-    ) : null);
-
-  const resolvedMobileToolbar = mobileToolbar;
-
   return (
-    <div
-      className={cn(
-        "w-full flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-3",
-        className,
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <PatroDateNavCore
-          era={era}
-          vikramEra={headlineVikramEra}
-          crossEraSubtitle={subtitleOverride ?? crossEraSubtitle}
-          displayLanguage={displayLanguage}
-          year={navYear}
-          month={navMonth}
-          day={navDay}
-          dayOptions={dayOptions}
-          onDayChange={(nextDay) => pickDate(navYear, navMonth, nextDay)}
-          onSelectDate={(y, m, d) => pickDate(y, m, d)}
-          dayAriaLabel={t("calendar.day_aria")}
-          todayAd={todayAd}
-          onToday={() =>
-            onDateChange(todayAd ? parseCivilIsoToDate(todayAd) : new Date())
-          }
-          todayAriaLabel={t("calendar.today_btn")}
-          onMonthChange={(nextMonth) => pickDate(navYear, nextMonth, navDay)}
-          onYearChange={(nextYear) => pickDate(nextYear, navMonth, navDay)}
-          onEraChange={handleEraChange}
-          onBrowseCommit={onEraChange ? handleBrowseCommit : undefined}
-          onCommitBrowseDay={onEraChange ? commitBrowseDay : undefined}
-          monthAriaLabel={t("calendar.month_aria")}
-          yearAriaLabel={t("calendar.year_aria")}
-          onPrev={stepOverride?.onPrev ?? (() => stepDay(-1))}
-          onNext={stepOverride?.onNext ?? (() => stepDay(1))}
-          prevDisabled={
-            stepOverride
-              ? false
-              : isGregorian
-                ? isAtMinAdDay(navYear, navMonth, navDay)
-                : isAtMinBsDay(signedNavYear, navMonth, navDay)
-          }
-          nextDisabled={
-            stepOverride
-              ? false
-              : isGregorian
-                ? isAtMaxAdDay(navYear, navMonth, navDay)
-                : isAtMaxBsDay(signedNavYear, navMonth, navDay)
-          }
-          prevAriaLabel={t("calendar.prev_day")}
-          nextAriaLabel={t("calendar.next_day")}
-          clock={clock}
-          onClockChange={onClockChange}
-          hourAriaLabel={clock ? t("panchanga.hour_aria") : undefined}
-          minuteAriaLabel={clock ? t("panchanga.minute_aria") : undefined}
-          mobileDateTimeDrawer
-          mobileToolbar={resolvedMobileToolbar ?? toolbar}
-          mobileToolbarLower={mobileToolbarLower}
-          location={location}
-          onLocationChange={onLocationChange}
-        />
+      <div className={cn(pickerClasses.webDtGrid, className)}>
+        {header}
+        {tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} className={pickerClasses.webDtTabs} /> : null}
+        {tabs ? <PatroHeaderSwap tabs={tabs} className={pickerClasses.webDtSwap} /> : null}
+        {location && onLocationChange ? (
+          <PatroHeaderLocation location={location} onLocationChange={onLocationChange} className={tabs ? pickerClasses.webDtLocation : pickerClasses.webDtLocationSolo} />
+        ) : null}
       </div>
-      {locationDesktop ? (
-        <div className="hidden shrink-0 md:flex md:w-auto md:flex-col md:items-end md:pt-0.5">
-          {locationDesktop}
-        </div>
-      ) : null}
-    </div>
   );
 }

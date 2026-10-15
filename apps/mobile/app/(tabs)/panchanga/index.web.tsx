@@ -3,11 +3,10 @@ import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
-import { DayCycleToggle } from "@/components/panchanga/DayCycleToggle";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PanchangaAsidePanels } from "@/components/panchanga/PanchangaAsidePanels";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
+import { useDayCycleTabs } from "@/components/panchanga/use-day-cycle-tabs";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
 import {
@@ -37,14 +36,7 @@ export default function PanchangaScreen() {
   const { page, location, setLocation, date, setDate, clock, adDateStr, commitCalendar } = useAppPanchangaPage();
   const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
-  const headerToolbar = (
-    <View className="flex-row flex-wrap items-center justify-end gap-1.5">
-      <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} />
-      <LocationSelector location={location} onLocationChange={setLocation} className="max-w-[8rem]" />
-    </View>
-  );
-
-  const headerMobileToolbar = <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} />;
+  const dayCycleTabs = useDayCycleTabs(dayCycleMode, setDayCycleMode);
 
   return (
     <ScrollView
@@ -68,9 +60,8 @@ export default function PanchangaScreen() {
             wheelData={wheelData}
             clock={clock}
             onClockChange={page.changeClock}
-            toolbar={headerToolbar}
-            mobileToolbar={headerMobileToolbar}
-            hideNavLocation={!isCompact}
+            tabs={dayCycleTabs.tabs}
+            tabsLabel={dayCycleTabs.label}
             location={location}
             onLocationChange={setLocation}
           />

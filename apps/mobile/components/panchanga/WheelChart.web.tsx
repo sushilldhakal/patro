@@ -1,5 +1,7 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { MoonPhaseIcon } from "./MoonPhaseIcon";
+import { memo, useCallback, useMemo, useRef } from "react";
+import { Image as RNImage } from "react-native";
+import Ketu from "@/assets/graha/ketu.svg";
+import Rahu from "@/assets/graha/rahu.svg";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
@@ -7,7 +9,6 @@ import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi
 import { wheelSvg, wheelSvgWrap } from "@/lib/wheel-classes";
 import {
   wDaytick,
-  wHit,
   wKarLbl,
   wLabel,
   wLagnaCap,
@@ -17,7 +18,6 @@ import {
   wNakName,
   wOrbit,
   wPadaAkshar,
-  wPlanetGlow,
   wPlanetName,
   wRashiGlyph,
   wRashiName,
@@ -30,12 +30,28 @@ import {
   wTwName,
   wYogaLbl,
 } from "@/lib/wheel-svg-classes";
-import { planetVisualRadius, planetHitRadius } from "@vedic-patro/domain/wheel-chart-geometry";
+import { planetVisualRadius, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
 
-import { brand, illustration, midnight, neutral, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const DEG = Math.PI / 180;
 const CX = 500;
 const CY = 500;
+const WHEEL_NODE_ICONS = [Rahu, Ketu] as const;
+const SKY_JPG = {
+  sun: require("@/assets/sky3d/sun.jpg"),
+  moon: require("@/assets/sky3d/moon.jpg"),
+  mars: require("@/assets/sky3d/mars.jpg"),
+  mercury: require("@/assets/sky3d/mercury.jpg"),
+  jupiter: require("@/assets/sky3d/jupiter.jpg"),
+  venus: require("@/assets/sky3d/venus.jpg"),
+  saturn: require("@/assets/sky3d/saturn.jpg"),
+  earth: require("@/assets/sky3d/earth.jpg"),
+} as const;
+const SKY_NAMES = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
+
+function skyUri(mod: number): string {
+  return RNImage.resolveAssetSource(mod).uri;
+}
 
 function clampZoom(z: number): number {
   return Math.max(0.55, Math.min(14, z));
@@ -192,16 +208,12 @@ function WheelChartImpl({
   bsYear,
   sel,
   hover,
-  onHover,
-  onLeave,
-  onPick,
   onSpin,
   zoom,
   onZoom,
   pan,
   onPan,
   lineTarget: lineTargetProp,
-  onLineTargetChange,
 }: WheelChartProps) {
   const dragRef = useRef<
     | { mode: "r"; a: number; spin0: number; moved: boolean }
@@ -212,17 +224,7 @@ function WheelChartImpl({
   /** Active pointer positions for pinch-to-zoom. */
   const ptrRef = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinchRef = useRef<PinchGesture | null>(null);
-  /**
-   * Graha the alignment needle points at (0..8 in GRAHA order). Defaults to
-   * the Moon; tapping a planet moves the needle to it so you can read which
-   * rashi / nakshatra that planet falls in.
-   */
-  const [innerTarget, setInnerTarget] = useState(1);
-  const lineTarget = lineTargetProp ?? innerTarget;
-  const setLineTarget = (index: number) => {
-    if (lineTargetProp === undefined) setInnerTarget(index);
-    onLineTargetChange?.(index);
-  };
+  const lineTarget = lineTargetProp ?? 1;
 
   const pol = useCallback(
     (L: number, r: number): [number, number] => {
@@ -360,36 +362,6 @@ function WheelChartImpl({
       }
     }
 
-    const hits: React.ReactNode[] = [];
-    for (let i = 0; i < 27; i++) {
-      const L0 = i * (360 / 27);
-      const L1 = (i + 1) * (360 / 27);
-      hits.push(
-        <path
-          key={`hn${i}`}
-          d={arcSeg(L0, L1, R.nakIn, R.nakOut)}
-          className={wHit}
-          onMouseEnter={() => onHover({ type: "nak", i })}
-          onMouseLeave={onLeave}
-          onClick={() => onPick({ type: "nak", i })}
-        />
-      );
-    }
-    for (let i = 0; i < 12; i++) {
-      const L0 = i * 30;
-      const L1 = (i + 1) * 30;
-      hits.push(
-        <path
-          key={`hr${i}`}
-          d={arcSeg(L0, L1, R.rashiIn, R.rashiOut)}
-          className={wHit}
-          onMouseEnter={() => onHover({ type: "rashi", i })}
-          onMouseLeave={onLeave}
-          onClick={() => onPick({ type: "rashi", i })}
-        />
-      );
-    }
-
     const rashiRays: React.ReactNode[] = [];
     for (let i = 0; i < 12; i++) {
       const [x1, y1] = pol(i * 30, 12);
@@ -407,8 +379,8 @@ function WheelChartImpl({
         ))
       : [];
 
-    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels };
-  }, [spin, hover, sel, bsYear, tw, pol, arcSeg, onHover, onLeave, onPick]);
+    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels };
+  }, [spin, hover, sel, bsYear, tw, pol, arcSeg]);
 
   // The data layers — current-time markers, the inner tithi/karana/yoga rings
   // and the planet core — are the only parts that depend on the panchanga data
@@ -581,176 +553,74 @@ function WheelChartImpl({
   // ── Planet core ───────────────────────────────────────────────────────────
   const core: React.ReactNode[] = [];
   if (tw.show_planets) {
-    // Radial gradients giving each planet a 3D sphere appearance
-    core.push(
-      <defs key="pdefs">
-        {/* 0 Sun */}
-        <radialGradient id="pg0" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.amber89}/><stop offset="35%" stopColor={illustration.amber49}/>
-          <stop offset="75%" stopColor={brand.saffron}/><stop offset="100%" stopColor={illustration.orange27b}/>
-        </radialGradient>
-        {/* 1 Moon */}
-        <radialGradient id="pg1" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={brand.offWhite}/><stop offset="55%" stopColor={illustration.sky76b}/>
-          <stop offset="100%" stopColor={illustration.gray46}/>
-        </radialGradient>
-        {/* 2 Mars */}
-        <radialGradient id="pg2" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.orange72}/><stop offset="55%" stopColor={illustration.red49}/>
-          <stop offset="100%" stopColor={illustration.red22}/>
-        </radialGradient>
-        {/* 3 Mercury */}
-        <radialGradient id="pg3" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={neutral.silverBase}/><stop offset="55%" stopColor={illustration.gray58}/>
-          <stop offset="100%" stopColor={neutral.slateInput}/>
-        </radialGradient>
-        {/* 4 Jupiter */}
-        <radialGradient id="pg4" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.amber77c}/><stop offset="50%" stopColor={illustration.orange52}/>
-          <stop offset="100%" stopColor={illustration.orange27}/>
-        </radialGradient>
-        {/* 5 Venus */}
-        <radialGradient id="pg5" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.amber92}/><stop offset="50%" stopColor={illustration.amber67b}/>
-          <stop offset="100%" stopColor={illustration.amber38}/>
-        </radialGradient>
-        {/* 6 Saturn */}
-        <radialGradient id="pg6" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.amber82}/><stop offset="50%" stopColor={illustration.orange57}/>
-          <stop offset="100%" stopColor={illustration.orange32}/>
-        </radialGradient>
-        {/* 7 Rahu */}
-        <radialGradient id="pg7" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.blue56}/><stop offset="55%" stopColor={illustration.blue25}/>
-          <stop offset="100%" stopColor={midnight.popover}/>
-        </radialGradient>
-        {/* 8 Ketu */}
-        <radialGradient id="pg8" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.pink53}/><stop offset="55%" stopColor={illustration.red24}/>
-          <stop offset="100%" stopColor={illustration.red6}/>
-        </radialGradient>
-        {/* Earth */}
-        <radialGradient id="pg-earth" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor={illustration.green80}/><stop offset="45%" stopColor={illustration.teal34}/>
-          <stop offset="100%" stopColor={illustration.green13}/>
-        </radialGradient>
-      </defs>
-    );
-
     [44, 70, 96, 120, 150, 178, 204, 216].forEach((r, k) =>
       core.push(<circle key={`orb${k}`} cx={CX} cy={CY} r={r * ORBIT_SCALE} className={wOrbit} />)
     );
 
+    const planetNames: React.ReactNode[] = [];
     det.grahas.forEach((g, i) => {
       const meta = GRAHA_META[i]!;
       const lon = planetLons[i] ?? 0;
       const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
       const rad = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
-
-      // Ambient glow
-      core.push(
-        <circle key={`pg${i}`} cx={px} cy={py} r={rad + 6} fill={meta.color}
-          className={wPlanetGlow} style={{ pointerEvents: "none" }} />
-      );
-
-      // Sun: radiating spikes
-      if (i === 0) {
-        const rays: React.ReactNode[] = [];
-        for (let r = 0; r < 12; r++) {
-          const ang = (r * 30) * DEG;
-          const r1 = rad + 3, r2 = rad + (r % 2 === 0 ? 11 : 7);
-          rays.push(<line key={r}
-            x1={px + r1 * Math.sin(ang)} y1={py - r1 * Math.cos(ang)}
-            x2={px + r2 * Math.sin(ang)} y2={py - r2 * Math.cos(ang)}
-            stroke={illustration.amber49} strokeWidth="2.2" strokeLinecap="round" opacity="0.9" />);
-        }
-        core.push(<g key="sun-rays" style={{ pointerEvents: "none" }}>{rays}</g>);
-      }
-
-      // Saturn ring (behind planet body)
-      if ("ring" in meta && meta.ring) {
+      const sky = SKY_NAMES[i];
+      if (sky) {
         core.push(
-          <ellipse key={`ring${i}`} cx={px} cy={py} rx={rad + 8} ry={rad * 0.45}
-            fill="none" stroke={meta.color} strokeWidth="2.4" opacity="0.88"
-            transform={`rotate(-20 ${px} ${py})`} style={{ pointerEvents: "none" }} />
-        );
-      }
-
-      // Planet sphere with gradient (moon uses phase disc instead)
-      if (i !== 1) {
-        core.push(
-          <circle key={`pl${i}`} cx={px} cy={py} r={rad} fill={`url(#pg${i})`}
-            style={{ pointerEvents: "none" }} />
+          <g key={`pl${i}`} style={{ pointerEvents: "none" }}>
+            <defs>
+              <clipPath id={`wheel-pl-${i}`}><circle cx={px} cy={py} r={rad} /></clipPath>
+            </defs>
+            {i === 6 ? (
+              <ellipse cx={px} cy={py} rx={rad + 7} ry={rad * 0.42} fill="none" stroke="#e6cf86" strokeWidth="1.6"
+                transform={`rotate(-20 ${px} ${py})`} />
+            ) : null}
+            <image
+              href={skyUri(SKY_JPG[sky])}
+              x={px - rad}
+              y={py - rad}
+              width={rad * 2}
+              height={rad * 2}
+              preserveAspectRatio="xMidYMid slice"
+              clipPath={`url(#wheel-pl-${i})`}
+            />
+          </g>
         );
       } else {
-        const elongation = normDeg(markers.moonLon - markers.sunLon);
+        const icon = planetIconSize(i, rad);
+        const Icon = WHEEL_NODE_ICONS[i - 7]!;
         core.push(
-          <g key="moon-phase" transform={`translate(${px},${py})`} style={{ pointerEvents: "none" }}>
-            <MoonPhaseIcon elongation={elongation} r={rad} />
+          <g key={`pl${i}`} transform={`translate(${px - icon / 2} ${py - icon / 2})`} style={{ pointerEvents: "none" }}>
+            <Icon width={icon} height={icon} />
           </g>
         );
       }
 
-      // Jupiter: horizontal dark bands (clipped to sphere)
-      if (i === 4) {
-        const clipId = `jclip${i}`;
-        core.push(
-          <g key={`jbands${i}`} style={{ pointerEvents: "none" }}>
-            <defs>
-              <clipPath id={clipId}><circle cx={px} cy={py} r={rad - 0.5} /></clipPath>
-            </defs>
-            {[-rad * 0.3, rad * 0.05, rad * 0.36].map((oy, bi) => (
-              <rect key={bi} x={px - rad} y={py + oy - 1.8} width={rad * 2} height={3.2}
-                fill={withAlpha(illustration.orange17, 0.42)} clipPath={`url(#${clipId})`} />
-            ))}
-          </g>
-        );
-      }
-
-      // Name label
-      core.push(
-        <text key={`pn${i}`} x={px} y={py + rad + 9} textAnchor="middle"
-          className={wPlanetName} style={{ pointerEvents: "none" }}>
-          {g.ne}
-        </text>
-      );
-
-      // Transparent tap target — moves the alignment needle to this graha.
-      // stopPropagation on pointer-down so tapping a planet never starts a spin.
-      core.push(
-        <circle
-          key={`hit${i}`}
-          cx={px}
-          cy={py}
-          r={planetHitRadius(i)}
-          fill="transparent"
-          style={{ cursor: "pointer" }}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            setLineTarget(i);
-          }}
-          onPointerUp={(e) => {
-            e.stopPropagation();
-            setLineTarget(i);
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setLineTarget(i);
-          }}
-        >
-          <title>{g.ne}</title>
-        </circle>
+      planetNames.push(
+        <g key={`pn${i}`} transform={`translate(${px} ${py}) scale(${1 / zoom})`} style={{ pointerEvents: "none" }}>
+          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" className={wPlanetName}>
+            {g.ne}
+          </text>
+        </g>
       );
     });
 
-    // Earth at center
     core.push(
       <g key="earth" style={{ pointerEvents: "none" }}>
-        <circle cx={CX} cy={CY} r="13" fill="url(#pg-earth)" />
-        <circle cx={CX} cy={CY} r="13" fill="none" stroke={illustration.green75} strokeWidth="0.8" opacity="0.5" />
+        <defs>
+          <clipPath id="wheel-earth"><circle cx={CX} cy={CY} r="13" /></clipPath>
+        </defs>
+        <image
+          href={skyUri(SKY_JPG.earth)}
+          x={CX - 13}
+          y={CY - 13}
+          width={26}
+          height={26}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#wheel-earth)"
+        />
       </g>
     );
+    core.push(...planetNames);
   }
 
     const bsLabels: React.ReactNode[] = tw.show_lunar
@@ -768,7 +638,7 @@ function WheelChartImpl({
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, zoom]);
 
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();
@@ -867,7 +737,7 @@ function WheelChartImpl({
     if (ptrRef.current.size < 2) pinchRef.current = null;
   };
 
-  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels } =
+  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } =
     staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
@@ -905,7 +775,6 @@ function WheelChartImpl({
         {innerRings}
         {core}
         {markerNodes}
-        {hits}
 
       </svg>
     </div>

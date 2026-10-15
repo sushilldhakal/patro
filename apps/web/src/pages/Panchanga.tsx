@@ -7,12 +7,12 @@ import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate } from "@vedic-pa
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
 import { PatroDayTimeNav } from "@/components/patro-date";
+import { useDayCycleToggle } from "@vedic-patro/features/panchanga-drawing";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { GhatiClock } from "@/components/panchanga/GhatiClock";
-import { DayTimeline, DayCycleToggle } from "@/components/panchanga/DayTimeline";
+import { DayTimeline } from "@/components/panchanga/DayTimeline";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { cn } from "@vedic-patro/domain/utils";
@@ -80,6 +80,7 @@ export function Panchanga() {
     },
   });
   const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
+  const dayCycle = useDayCycleToggle(dayCycleMode);
 
   /* The resolved day drives the picker and the URL — but not while
      keepPreviousData still shows the day being left (that undid the jump). */
@@ -145,22 +146,15 @@ export function Panchanga() {
             todayAd={page.todayAd}
             clock={clock}
             onClockChange={page.changeClock}
-            toolbar={
-              <>
-                <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} size="md" />
-                <LocationSelector
-                  compact
-                  location={location}
-                  onLocationChange={setLocation}
-                  className="h-[30px] min-w-0 w-auto max-w-[10rem] shrink-0 px-1.5 md:h-8 md:max-w-[12.5rem] md:px-3"
-                />
-              </>
-            }
+            tabsLabel={dayCycle.groupLabel}
+            tabs={dayCycle.options.map((o) => ({
+              key: o.value,
+              label: o.label,
+              active: dayCycleMode === o.value,
+              onPress: () => setDayCycleMode(o.value),
+            }))}
             location={location}
             onLocationChange={setLocation}
-            mobileToolbar={
-              <DayCycleToggle mode={dayCycleMode} onModeChange={setDayCycleMode} size="md" />
-            }
           />
 
           {page.ephemeris && data && (

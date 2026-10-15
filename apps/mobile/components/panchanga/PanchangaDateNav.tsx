@@ -10,7 +10,7 @@ import {
   patroHeadlineDigits,
 } from "@vedic-patro/domain/patro-headline-subtitle";
 import { type Era } from "@vedic-patro/domain/era";
-import type { ReactNode } from "react";
+import type { PatroHeaderTab } from "@/components/patro-date/PatroHeaderTabs";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -25,8 +25,9 @@ type Props = {
   todayAd: string;
   clock?: string;
   onClockChange?: (clock: string) => void;
-  toolbar?: ReactNode;
-  mobileToolbar?: ReactNode;
+  /** Toggle beside the date picker (day-night | calendar day); one phone button when it has two options. */
+  tabs?: PatroHeaderTab[];
+  tabsLabel?: string;
   className?: string;
   location?: import("@/lib/use-panchanga-location").PanchangaLocation;
   onLocationChange?: (location: import("@/lib/use-panchanga-location").PanchangaLocation) => void;
@@ -36,7 +37,6 @@ type Props = {
   wheelData?: PanchangaDay;
   /** Civil AD for headline fallback; defaults from `date`. */
   adDateStr?: string;
-  hideNavLocation?: boolean;
   /** Override prev/next (e.g. rashifal weekly/monthly window step). */
   onPrev?: () => void;
   onNext?: () => void;
@@ -51,8 +51,8 @@ export function PanchangaDateNav({
   todayAd,
   clock,
   onClockChange,
-  toolbar,
-  mobileToolbar,
+  tabs,
+  tabsLabel,
   className,
   location: locationProp,
   onLocationChange: onLocationChangeProp,
@@ -60,7 +60,6 @@ export function PanchangaDateNav({
   onEraChange,
   wheelData,
   adDateStr: adDateStrProp,
-  hideNavLocation,
   onPrev: onPrevProp,
   onNext: onNextProp,
   crossEraSubtitleOverride,
@@ -92,8 +91,6 @@ export function PanchangaDateNav({
     return formatPatroCivilDayLabel(toAdStr(date), lang, digitFn);
   }, [gregorian, wheelData?.date_ad, adDateStr, date, lang, digitFn]);
 
-  const vikramEra = (vikram?.era as Era | undefined) ?? browseEra;
-
   const stepDay = (delta: number) => {
     const next = new Date(date);
     next.setDate(next.getDate() + delta);
@@ -117,6 +114,7 @@ export function PanchangaDateNav({
         onDateChange(bsToAD(navYear, m, safeDay));
       }}
       day={navDay}
+      weekday={date.getDay()}
       onDayChange={(d) => onDateChange(bsToAD(navYear, navMonth, d))}
       onSelectDate={(y, m, d) => {
         const safeDay = Math.min(d, getBSMonthLength(y, m));
@@ -131,11 +129,8 @@ export function PanchangaDateNav({
       onPrev={onPrevProp ?? (() => stepDay(-1))}
       onNext={onNextProp ?? (() => stepDay(1))}
       crossEraSubtitle={crossEraSubtitleOverride ?? crossEraSubtitle}
-      vikramEra={vikramEra}
-      samvatsara={wheelData?.samvatsara as import("@vedic-patro/domain/samvatsara").SamvatsaraPayload | undefined}
-      toolbar={toolbar}
-      mobileToolbar={mobileToolbar}
-      hideNavLocation={hideNavLocation}
+      tabs={tabs}
+      tabsLabel={tabsLabel}
     />
   );
 }

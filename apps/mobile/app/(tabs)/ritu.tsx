@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { AppShell } from "@/components/AppShell";
-import { LocationSelector } from "@/components/panchanga/LocationSelector";
+import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { RituSeasons } from "@/components/RituSeasons";
@@ -26,7 +26,7 @@ export default function RituScreen() {
           title={ritu.title}
           subtitle={ritu.subtitle}
         />
-        <LocationSelector location={location} onLocationChange={setLocation} />
+        <PatroHeaderLocation location={location} onLocationChange={setLocation} />
       </View>
 
       <View className="mb-8">

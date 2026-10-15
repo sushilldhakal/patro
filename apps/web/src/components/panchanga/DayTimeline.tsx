@@ -74,6 +74,8 @@ const TRACK = 58;
 const BAND = 34;
 const SUNLINE_Y = RULER_H + MOON_BAND_H + 8;
 const MARKER_TIME_Y = SUNLINE_Y + 13;
+/** Sunset glyph hangs below the horizon, so its clock sits just above the icon. */
+const SUNSET_TIME_Y = SUNLINE_Y - 7;
 const SUN_R = 6;
 
 const GHATI_TICKS = Array.from({ length: 16 }, (_, i) => i * 4);
@@ -904,7 +906,7 @@ function EventMarker({
       ) : null}
       <text
         x={labelX}
-        y={isSun ? MARKER_TIME_Y : MOON_TIME_Y}
+        y={kind === "sunset" ? SUNSET_TIME_Y : isSun ? MARKER_TIME_Y : MOON_TIME_Y}
         textAnchor={anchor}
         className={pgTlEventTimeMoon(!isSun)}
       >

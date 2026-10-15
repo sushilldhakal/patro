@@ -22,7 +22,7 @@ import {
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { cn } from "@vedic-patro/domain/utils";
 import { effect, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
-import { SKY_TIME_FIELDS, useSkyTimeSheet, type SkyTimeField, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
+import { SKY_TIME_FIELDS, useSkyTimeSheet, type SkyTimeField, type SkyTimeFieldView, type SkyTimeTransport } from "@vedic-patro/features/sky3d";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
@@ -50,12 +50,17 @@ const JUMP_ICONS: Record<"prev" | "now" | "next", ReactNode> = {
 type Props = {
   timeMs: number;
   zoneOffsetMs: number;
-  timeRate: number;
+  /** The speed controls show only when the sheet is given the rate and its handlers (the 3D sky); the wheel's date dialog has none. */
+  timeRate?: number;
   onClose: () => void;
   onApplyMs: (ms: number) => void;
-  onTimeRate: (rate: number) => void;
-  onTogglePlay: () => void;
-  onResetRate: () => void;
+  onTimeRate?: (rate: number) => void;
+  onTogglePlay?: () => void;
+  onResetRate?: () => void;
+  /** The same speed row for a clock that runs on its own ladder (the wheel's year playback): rung −max..max, 0 paused. */
+  transport?: SkyTimeTransport;
+  /** A card in the middle of the screen instead of a sheet at the bottom (the wheel's date dialog). */
+  centered?: boolean;
 };
 
 export function SkyTimeSheet({
@@ -67,8 +72,23 @@ export function SkyTimeSheet({
   onTimeRate,
   onTogglePlay,
   onResetRate,
+  centered = false,
+  transport: transportProp,
 }: Props) {
-  const v = useSkyTimeSheet({ timeMs, zoneOffsetMs, timeRate, onApplyMs });
+  const v = useSkyTimeSheet({ timeMs, zoneOffsetMs, timeRate: timeRate ?? 0, onApplyMs });
+  const transport: (SkyTimeTransport & { playing: boolean }) | null = transportProp
+    ? { ...transportProp, playing: transportProp.rung !== 0 }
+    : timeRate !== undefined && onTimeRate && onTogglePlay && onResetRate
+      ? {
+          rung: Math.round(rateToSlider(timeRate)),
+          max: RATE_NOTCHES,
+          label: v.speedLabel,
+          playing: v.playing,
+          onRung: (n) => onTimeRate(sliderToRate(n)),
+          onTogglePlay,
+          onReset: onResetRate,
+        }
+      : null;
   const inputRefs = useRef<Partial<Record<SkyTimeField, HTMLInputElement | null>>>({});
 
   const focusField = (field: SkyTimeField) => {
@@ -124,7 +144,7 @@ export function SkyTimeSheet({
     fields.flatMap((f, i) => (i === 0 ? [stepper(f)] : [<Sep key={`sep-${f.field}`}>{glyph}</Sep>, stepper(f)]));
 
   return (
-    <div className="absolute inset-0 z-50 flex flex-col justify-end">
+    <div className={cn("absolute inset-0 z-50 flex flex-col", centered ? "justify-center px-3" : "justify-end")}>
       <button
         type="button"
         aria-label={v.labels.close}
@@ -133,7 +153,10 @@ export function SkyTimeSheet({
       />
       <div
         data-sky-controls
-        className="relative mx-auto w-full max-w-lg rounded-t-3xl border border-white/12 bg-ill-gray11/88 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-white backdrop-blur-md"
+        className={cn(
+          "relative mx-auto w-full max-w-lg border border-white/12 bg-ill-gray11/88 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-white backdrop-blur-md",
+          centered ? "rounded-3xl" : "rounded-t-3xl",
+        )}
         style={{ boxShadow: effect.sheetLift }}
         onPointerDown={(e) => e.stopPropagation()}
       >
@@ -144,30 +167,29 @@ export function SkyTimeSheet({
           <div className="flex items-center gap-0.5">{withSeps(v.clockFields, ":")}</div>
         </div>
 
-        <p className="mt-4 mb-1 text-center text-sm font-semibold tracking-wide text-white/90">
-          {v.speedLabel}
-        </p>
-        <div className="flex items-center gap-2">
-          <IconRound
-            label={v.playing ? v.labels.pause : v.labels.play}
-            onPress={onTogglePlay}
-          >
-            {v.playing ? <Pause className="size-5 fill-white" /> : <Play className="size-5 fill-white" />}
-          </IconRound>
-          <input
-            type="range"
-            min={-RATE_NOTCHES}
-            max={RATE_NOTCHES}
-            step={1}
-            value={Math.round(rateToSlider(timeRate))}
-            aria-label={v.labels.rate}
-            className="sky-time-slider sky-time-slider--thin min-w-0 flex-1"
-            onChange={(e) => onTimeRate(sliderToRate(Number(e.target.value)))}
-          />
-          <IconRound label={v.labels.realtime} onPress={onResetRate}>
-            <RotateCcw className="size-5" />
-          </IconRound>
-        </div>
+        {transport ? (
+          <>
+            <p className="mt-4 mb-1 min-h-5 text-center text-sm font-semibold tracking-wide text-white/90">{transport.label}</p>
+            <div className="flex items-center gap-2">
+              <IconRound label={transport.playing ? v.labels.pause : v.labels.play} onPress={transport.onTogglePlay}>
+                {transport.playing ? <Pause className="size-5 fill-white" /> : <Play className="size-5 fill-white" />}
+              </IconRound>
+              <input
+                type="range"
+                min={-transport.max}
+                max={transport.max}
+                step={1}
+                value={transport.rung}
+                aria-label={v.labels.rate}
+                className="sky-time-slider sky-time-slider--thin min-w-0 flex-1"
+                onChange={(e) => transport.onRung(Number(e.target.value))}
+              />
+              <IconRound label={v.labels.realtime} onPress={transport.onReset}>
+                <RotateCcw className="size-5" />
+              </IconRound>
+            </div>
+          </>
+        ) : null}
 
         <div className="mt-4 grid grid-cols-3 gap-2">
           {v.jumps.map((jump) => (
