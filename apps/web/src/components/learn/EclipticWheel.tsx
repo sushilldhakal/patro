@@ -13,14 +13,7 @@ import { useEffect, useLayoutEffect, useMemo, type Ref } from "react";
 import * as THREE from "three";
 import { MONTH_R, NAK_OUTER, COLOR, ellipseGeometry, makeLine, diagramLine, buildRashiBelt, buildGuideGrid, buildRashiHighlight, buildNakBelt, buildNakHighlight, disposeObject } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
 export { MONTH_R, BELT_INNER, BELT_OUTER, NAK_INNER, NAK_OUTER } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
-export const BELT_MID = 23;
-export const NAK_MID = 29;
-
-/**
- * The grid's own blue, for a scene that wants the ecliptic disc filled in a
- * colour that actually shows rather than the near-black `COLOR.gridPlane`.
- */
-export const ECLIPTIC_GRID_COLOR = 0x2761a1;
+export { BELT_MID, NAK_MID, ECLIPTIC_GRID_COLOR } from "@vedic-patro/domain/sky3d/ecliptic-position";
 
 function buildMonthRing() {
   return diagramLine(makeLine(ellipseGeometry(MONTH_R, MONTH_R), 0xe3d9a8, 0.5));

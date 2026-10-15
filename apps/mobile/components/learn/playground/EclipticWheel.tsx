@@ -18,22 +18,23 @@
 import { useEffect, useLayoutEffect, useMemo, type Ref } from "react";
 import * as THREE from "three";
 import { makeLine, ellipseGeometry, disposeObject } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
+import { atLonInto, BELT_MID, ECLIPTIC_GRID_COLOR, NAK_MID } from "@vedic-patro/domain/sky3d/ecliptic-position";
+
+export { atLonInto, BELT_MID, NAK_MID };
 
 const PI2 = Math.PI * 2;
 
 export const MONTH_R = 17.5;
 export const BELT_INNER = 20;
-export const BELT_MID = 23;
 export const BELT_OUTER = 26;
 export const NAK_INNER = BELT_OUTER;
-export const NAK_MID = 29;
 export const NAK_OUTER = 32;
 
 const COLOR = {
   solar: 0xdddd00,
   belt: 0x8a7c2e,
   nakshatra: 0x4a6b8a,
-  grid: 0x2761a1,
+  grid: ECLIPTIC_GRID_COLOR,
   gridPlane: 0x001b3d,
 } as const;
 
@@ -41,11 +42,6 @@ const COLOR = {
 export function atLon(lonDeg: number, radius: number) {
   const a = lonDeg * (Math.PI / 180);
   return new THREE.Vector3(radius * Math.cos(a), 0, -radius * Math.sin(a));
-}
-
-export function atLonInto(out: THREE.Vector3, lonDeg: number, radius: number) {
-  const a = lonDeg * (Math.PI / 180);
-  return out.set(radius * Math.cos(a), 0, -radius * Math.sin(a));
 }
 
 /**
