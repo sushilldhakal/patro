@@ -24,7 +24,7 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
   /* Drawn into <body>: a sticky header with backdrop-filter, or any transformed ancestor,
      would otherwise become the containing block of `fixed` and pin the sheet to its top. */
   return createPortal(
-    <div className=cn("fixed inset-0 z-50 flex justify-center", top ? "items-start" : "items-end sm:items-center") data-testid={testID}>
+    <div className={cn("fixed inset-0 z-50 flex justify-center", top ? "items-start" : "items-end sm:items-center")} data-testid={testID}>
       <div className={cn("absolute inset-0", sheetClass.backdrop)} onClick={onClose} aria-hidden />
       <div
         role="dialog"
