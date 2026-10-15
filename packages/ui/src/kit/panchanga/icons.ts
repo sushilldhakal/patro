@@ -40,6 +40,26 @@ export const rotateCcwIcon: IconNode = [
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
 ];
 
+export const clockIcon: IconNode = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
+];
+
+export const globeIcon: IconNode = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }],
+];
+
+export const navigationIcon: IconNode = [["polygon", { points: "3 11 22 2 13 21 11 13 3 11", key: "1ltx0t" }]];
+
+export const layoutGridIcon: IconNode = [
+  ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1", key: "1g98yp" }],
+  ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1", key: "6d4xhi" }],
+  ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1", key: "nxv5o0" }],
+  ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }],
+];
+
 export const chevronLeftIcon: IconNode = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
 
 export const chevronRightIcon: IconNode = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];

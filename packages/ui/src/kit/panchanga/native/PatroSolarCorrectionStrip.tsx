@@ -1,11 +1,10 @@
 import { View } from "react-native";
-import { Text } from "@/components/ui/Text";
-import { Ionicons } from "@/components/icons/Ionicons";
-import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import type { IconNode } from "../../../contract";
 import { usePatroSolarCorrection, type PatroSolarKey } from "@vedic-patro/features/dainik-kranti";
+import { cn } from "@vedic-patro/domain/utils";
+import { Box, Icon, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
+import { clockIcon, globeIcon, navigationIcon } from "../icons";
 
 type Props = {
   deshaantar?: string;
@@ -14,19 +13,18 @@ type Props = {
   className?: string;
 };
 
-const SOLAR_ICON: Record<PatroSolarKey, keyof typeof Ionicons.glyphMap> = {
-  deshaantar: "globe-outline",
-  akshamsha: "navigate-outline",
-  belaantar: "time-outline",
+const SOLAR_ICON: Record<PatroSolarKey, IconNode> = {
+  deshaantar: globeIcon,
+  akshamsha: navigationIcon,
+  belaantar: clockIcon,
 };
 
 export function PatroSolarCorrectionStrip({ deshaantar, akshamsha, belaantar, className }: Props) {
-  const colors = useThemeColors();
   const items = usePatroSolarCorrection({ deshaantar, akshamsha, belaantar });
   if (items.length === 0) return null;
 
   return (
-    <View className={cn(dainikKrantiClasses.solarStrip, className)}>
+    <Box className={cn(dainikKrantiClasses.solarStrip, className)}>
       {items.map((item) => (
         <View
           key={item.key}
@@ -36,27 +34,20 @@ export function PatroSolarCorrectionStrip({ deshaantar, akshamsha, belaantar, cl
           )}
           style={{ maxWidth: "48%" }}
         >
-          <View className={dainikKrantiClasses.solarLabel}>
-            <Ionicons
-              name={SOLAR_ICON[item.key]}
-              size={14}
-              color={item.highlight ? colors.secondary : colors.mutedForeground}
-            />
-            <Text className={dainikKrantiClasses.solarLabelText} style={nepaliTextStyle()}>
-              {item.label}
-            </Text>
-          </View>
+          <Box className={dainikKrantiClasses.solarLabel}>
+            <Icon node={SOLAR_ICON[item.key]} size={14} tone={item.highlight ? "secondary" : "muted"} />
+            <Text className={dainikKrantiClasses.solarLabelText}>{item.label}</Text>
+          </Box>
           <Text
             className={cn(
               dainikKrantiClasses.solarValue,
               item.highlight ? dainikKrantiClasses.solarValueBela : dainikKrantiClasses.solarValuePlain,
             )}
-            style={nepaliTextStyle()}
           >
             {item.value}
           </Text>
         </View>
       ))}
-    </View>
+    </Box>
   );
 }

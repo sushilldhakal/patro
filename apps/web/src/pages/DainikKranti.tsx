@@ -42,12 +42,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { DayPatroExpandPanel } from "@/components/dainikKranti/DayPatroExpandPanel";
+import { DayPatroExpandPanel, MonthCalcNotes, MonthGrahaSpashta, MonthLagnaMatrix } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { GocharKundaliChart, GocharRashyadiTable } from "@vedic-patro/ui/kit/panchanga";
-import { MonthLagnaMatrix } from "@/components/dainikKranti/MonthLagnaMatrix";
-import { MonthGrahaSpashta } from "@/components/dainikKranti/MonthGrahaSpashta";
-import { MonthCalcNotes } from "@/components/dainikKranti/MonthCalcNotes";
 import {
   DainikKrantiMobileLoading,
   DainikKrantiTableLoading,
