@@ -3,7 +3,8 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { Text } from "@/components/ui/Text";
-import { useLearnHub, type LearnTopicCard } from "@vedic-patro/features/learn";
+import { useLearnHub, type LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
+import { LearnTopicCard } from "@vedic-patro/ui/kit/learn";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -62,42 +63,16 @@ function Chip({
   );
 }
 
-function TopicCard({ topic, readMore, onOpen }: { topic: LearnTopicCard; readMore: string; onOpen: (slug: string) => void }) {
+function TopicCard({ topic, readMore, onOpen }: { topic: LearnTopic; readMore: string; onOpen: (slug: string) => void }) {
   const colors = useThemeColors();
-  const chip = learnPageClasses.sectionChip[topic.section];
   return (
-    <Pressable
-      onPress={() => onOpen(topic.slug)}
-      accessibilityRole="button"
-      className={cn(learnPageClasses.topicCard, "w-full active:opacity-90")}
-    >
-      <View className={learnPageClasses.topicHead}>
-        <View className={learnPageClasses.topicIcon}>
-          <Ionicons name={LEARN_ICONS[topic.icon]} size={20} color={colors.secondary} />
-        </View>
-        <View className={learnPageClasses.topicTitleWrap}>
-          <Text className={learnPageClasses.topicTitle}>{topic.title}</Text>
-        </View>
-        {topic.sectionLabel ? (
-          <View className={cn(learnPageClasses.topicBadge, "shrink", chip ?? "border-border bg-muted")}>
-            <Text
-              className={cn(
-                learnPageClasses.topicBadgeText,
-                chip ? chip.split(" ").filter((c) => c.includes("text-")).join(" ") : "text-foreground",
-              )}
-              numberOfLines={1}
-            >
-              {topic.sectionLabel}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-      <Text className={learnPageClasses.topicSummary}>{topic.summary}</Text>
-      <View className={learnPageClasses.topicFooter}>
-        <Text className={learnPageClasses.topicFooterText}>{readMore}</Text>
-        <Ionicons name="arrow-forward" size={16} color={colors.secondary} />
-      </View>
-    </Pressable>
+    <LearnTopicCard
+      topic={topic}
+      readMore={readMore}
+      icon={<Ionicons name={LEARN_ICONS[topic.icon]} size={20} color={colors.secondary} />}
+      href={`/learn/${topic.slug}`}
+      onOpen={() => onOpen(topic.slug)}
+    />
   );
 }
 

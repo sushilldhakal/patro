@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { BookOpen, ArrowRight, Search, X, GraduationCap } from "lucide-react";
-import { useLearnHub, type LearnTopicCard } from "@vedic-patro/features/learn";
+import { useNavigate } from "@tanstack/react-router";
+import { BookOpen, Search, X, GraduationCap } from "lucide-react";
+import { useLearnHub, type LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import { learnHero, learnStatPill } from "@/lib/learn-classes";
 import { useRouteLoading } from "@/lib/route-loading";
@@ -8,68 +8,24 @@ import { PageShell } from "../components/PageShell";
 import { Input } from "@/components/ui/input";
 import { cn } from "@vedic-patro/domain/utils";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
+import { LearnTopicCard } from "@vedic-patro/ui/kit/learn";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
-
-/**
- * Hover ring per library section (web only). The badge colours are the shared
- * `learnPageClasses.sectionChip`; icons come from the library itself.
- */
-const SECTION_RING: Record<string, string> = {
-  start: "group-hover:ring-emerald-500/25",
-  foundation: "group-hover:ring-emerald-500/25",
-  sun: "group-hover:ring-amber-500/25",
-  moon: "group-hover:ring-sky-500/25",
-  "five-limbs": "group-hover:ring-teal-500/25",
-  "earth-sky": "group-hover:ring-lime-500/25",
-  zodiac: "group-hover:ring-indigo-500/25",
-  "vedic-time": "group-hover:ring-slate-500/25",
-  panchanga: "group-hover:ring-teal-500/25",
-  "bs-construction": "group-hover:ring-red-500/25",
-  eclipses: "group-hover:ring-violet-500/25",
-  calculation: "group-hover:ring-cyan-500/25",
-  comparison: "group-hover:ring-orange-500/25",
-  deeper: "group-hover:ring-rose-500/25",
-};
 
 function LibIcon({ icon, className }: { icon?: LearnIconKey; className?: string }) {
   const Icon = icon ? LEARN_ICONS[icon] : BookOpen;
   return <Icon className={className} />;
 }
 
-function TopicCard({ topic, readMore }: { topic: LearnTopicCard; readMore: string }) {
-  const ring = SECTION_RING[topic.section];
-  const chip = learnPageClasses.sectionChip[topic.section];
-
+function TopicCard({ topic, readMore }: { topic: LearnTopic; readMore: string }) {
+  const navigate = useNavigate();
   return (
-    <Link
-      to="/learn/$slug"
-      params={{ slug: topic.slug }}
-      className={cn(
-        learnPageClasses.topicCard,
-        "group relative h-full transition-all hover:-translate-y-0.5 hover:border-secondary/45 hover:shadow-md",
-        ring && `hover:ring-2 ${ring}`,
-      )}
-    >
-      {/* Icon, title and category read as one line, so the card opens with its identity. */}
-      <div className={learnPageClasses.topicHead}>
-        <span className={cn(learnPageClasses.topicIcon, "text-secondary transition-colors group-hover:bg-secondary/15")}>
-          <LibIcon icon={topic.icon} className="h-5 w-5" />
-        </span>
-        <div className={learnPageClasses.topicTitleWrap}>
-          <h3 className={learnPageClasses.topicTitle}>{topic.title}</h3>
-        </div>
-        {topic.sectionLabel && chip && (
-          <span className={cn(learnPageClasses.topicBadge, learnPageClasses.topicBadgeText, chip)}>{topic.sectionLabel}</span>
-        )}
-      </div>
-
-      <p className={cn(learnPageClasses.topicSummary, "flex-1")}>{topic.summary}</p>
-
-      <div className={learnPageClasses.topicFooter}>
-        <span className={learnPageClasses.topicFooterText}>{readMore}</span>
-        <ArrowRight className="h-4 w-4 text-secondary transition-transform group-hover:translate-x-0.5" />
-      </div>
-    </Link>
+    <LearnTopicCard
+      topic={topic}
+      readMore={readMore}
+      icon={<LibIcon icon={topic.icon} className="h-5 w-5" />}
+      href={`/learn/${topic.slug}`}
+      onOpen={() => navigate({ to: "/learn/$slug", params: { slug: topic.slug } })}
+    />
   );
 }
 
