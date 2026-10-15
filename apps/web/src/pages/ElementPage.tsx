@@ -12,7 +12,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { NavataraBalamCardGrid } from "@/components/panchanga/NavataraBalamCardGrid";
+import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";

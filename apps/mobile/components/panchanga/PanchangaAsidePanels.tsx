@@ -4,7 +4,7 @@ import type { LocationParams, PanchangaDay } from "@/lib/api";
 import { PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/panchanga/D1Chart";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
-import { GhatiClock } from "@/components/panchanga/GhatiClock";
+import { GhatiClock } from "@vedic-patro/ui/kit/panchanga";
 
 type Props = {
   sunrise?: string;

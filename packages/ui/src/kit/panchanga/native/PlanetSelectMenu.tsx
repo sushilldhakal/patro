@@ -1,38 +1,29 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
-import { Ionicons } from "@/components/icons/Ionicons";
-import { Text } from "@/components/ui/Text";
-import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
-import { nepaliLineHeight } from "@/lib/nepali-text";
+import { brand, nativeShadow, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { Text } from "@vedic-patro/ui";
+import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 
-import { brand, midnight, nativeShadow, wheel, withAlpha } from "@vedic-patro/design-tokens";
-const W_INK = midnight.foam;
-const W_DOCK_BG = withAlpha(wheel.surface, 0.96);
-const W_DOCK_BORDER = withAlpha(wheel.line, 0.32);
-const W_ROW_HOT = withAlpha(brand.vermilion, 0.28);
-const MENU_W = 228;
-
-type PlanetSelectMenuProps = {
+export type PlanetSelectMenuProps = {
   grahas: WheelGraha[];
   selected: number;
   onSelect: (index: number) => void;
-  /** Match the bottom dock icon buttons (32×32). */
+  className?: string;
+  iconSize?: number;
   compact?: boolean;
 };
 
-export function PlanetSelectMenu({
-  grahas,
-  selected,
-  onSelect,
-  compact = false,
-}: PlanetSelectMenuProps) {
+const MENU_W = 228;
+
+export function PlanetSelectMenu({ grahas, selected, onSelect, compact = false, iconSize }: PlanetSelectMenuProps) {
   const menu = usePlanetSelectMenu({ grahas, selected, onSelect });
   const { open, setOpen } = menu;
   const { width: sw, height: sh } = useWindowDimensions();
   const [anchor, setAnchor] = useState({ x: 0, y: 0, w: 36, h: 36 });
   const btnRef = useRef<View>(null);
+  const size = compact ? 32 : 36;
 
   const openMenu = useCallback(() => {
     btnRef.current?.measureInWindow((x, y, w, h) => {
@@ -54,27 +45,18 @@ export function PlanetSelectMenu({
         accessibilityRole="button"
         accessibilityLabel={menu.label}
         accessibilityHint={menu.selectedName}
-        className="rounded-full"
+        className="items-center justify-center rounded-full"
         style={{
-          width: compact ? 32 : 36,
-          height: compact ? 32 : 36,
+          width: size,
+          height: size,
           borderWidth: 1,
-          borderColor: W_DOCK_BORDER,
-          backgroundColor: compact ? "transparent" : W_DOCK_BG,
-          alignItems: "center",
-          justifyContent: "center",
+          borderColor: withAlpha(wheel.line, 0.32),
+          backgroundColor: compact ? "transparent" : withAlpha(wheel.surface, 0.96),
         }}
       >
-        <GrahaPlanetIcon graha={menu.selectedKey} size={compact ? 18 : 22} />
+        <GrahaPlanetIcon graha={menu.selectedKey} size={iconSize ?? (compact ? 18 : 22)} />
       </Pressable>
-
-      <Modal
-        visible={open}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-        onRequestClose={menu.close}
-      >
+      <Modal visible={open} transparent animationType="fade" statusBarTranslucent onRequestClose={menu.close}>
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
           <Pressable style={StyleSheet.absoluteFill} onPress={menu.close} accessibilityLabel={menu.closeLabel} />
           <View
@@ -86,8 +68,8 @@ export function PlanetSelectMenu({
               width: MENU_W,
               maxHeight: menuH,
               borderWidth: 1,
-              borderColor: W_DOCK_BORDER,
-              backgroundColor: W_DOCK_BG,
+              borderColor: withAlpha(wheel.line, 0.32),
+              backgroundColor: withAlpha(wheel.surface, 0.96),
               ...nativeShadow("lg"),
             }}
           >
@@ -97,35 +79,15 @@ export function PlanetSelectMenu({
                 onPress={o.choose}
                 accessibilityRole="button"
                 accessibilityState={{ selected: o.active }}
-                className="px-3 py-2"
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                  backgroundColor: o.active ? W_ROW_HOT : "transparent",
-                }}
+                className="flex-row items-center gap-2.5 px-3 py-2"
+                style={{ backgroundColor: o.active ? withAlpha(brand.vermilion, 0.28) : "transparent" }}
               >
                 <GrahaPlanetIcon graha={o.key} size={22} />
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 7,
-                    height: 7,
-                    backgroundColor: o.color,
-                  }}
-                />
-                <Text
-                  className="text-lg"
-                  style={{
-                    flex: 1,
-                    color: W_INK,
-                    fontWeight: o.active ? "700" : "500",
-                    lineHeight: nepaliLineHeight(15),
-                  }}
-                >
+                <View className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: o.color }} />
+                <Text className="flex-1 text-base text-ill-midnight-foam" nativeClassName={o.active ? "font-bold" : "font-medium"}>
                   {o.name}
                 </Text>
-                {o.active ? <Ionicons name="checkmark" size={16} color={W_INK} /> : null}
+                {o.active ? <Text className="text-base text-ill-midnight-foam">{String.fromCharCode(0x2713)}</Text> : null}
               </Pressable>
             ))}
           </View>

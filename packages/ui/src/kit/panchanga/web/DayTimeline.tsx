@@ -1,28 +1,27 @@
-import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
-import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { useEffect, useMemo, useState } from "react";
-import type { CivilTimeline, PanchangaDay } from "@/lib/api";
-import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLagnaRow } from "@vedic-patro/domain/panchanga-format";
-import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
+import type { ReactNode } from "react";
+import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
+import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
-  buildCivilTimelineData,
-  buildDayTimelineData,
+  formatDegreeInRashi,
+  getPlanetsAnchorLabel,
+} from "@vedic-patro/domain/panchanga-format";
+import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
+import {
   dualTimeAtGhati,
-  needleGhatiOnVedicChart,
-  type TimelineRowData,
 } from "@vedic-patro/domain/day-timeline-data";
-import { useLocale } from "@/lib/i18n";
-import { patroCard, patroMono, patroSecBand, patroSkel } from "@/lib/patro-classes";
+import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
+import { useLocale } from "@vedic-patro/i18n/react";
+import { bilingualText } from "@vedic-patro/domain/locale";
+import { patroCard, patroMono, patroSecBand, patroSkel } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
-import { DayCycleToggle, type DayCycleMode } from "@/components/panchanga/DayCycleToggle";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
+import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import {
   pgTlAxis,
   pgTlEventTimeMoon,
-  pgTlMoonEmoji,
   pgTlRowline,
   pgTlSunDisc,
   pgTlTick,
@@ -47,26 +46,21 @@ import {
   pgxSunhair,
   pgxSunline,
   pgxTimeLagna,
-} from "@/lib/timeline-classes";
-import { type ChartSegment, assignLanes, segmentsFromRow, minutesOnVedicChart } from "@vedic-patro/domain/day-timeline-layout";
-import { tFor } from "@vedic-patro/i18n/runtime";
+} from "@vedic-patro/design-tokens/classes/timeline-classes";
+import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/domain/day-timeline-layout";
+
+import { useDayCycleToggle, useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
+const GRAHA_KEYS = new Set<string>([
+  "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
+]);
 
 function isGrahaKey(key: string): key is GrahaKey {
-  return (
-    key === "sun" ||
-    key === "moon" ||
-    key === "mars" ||
-    key === "mercury" ||
-    key === "jupiter" ||
-    key === "venus" ||
-    key === "saturn" ||
-    key === "rahu" ||
-    key === "ketu"
-  );
+  return GRAHA_KEYS.has(key);
 }
 
 const W = 1000;
-/** Start of the ghati grid. Matches the website (65px label column). */
+/** Start of the ghati grid in viewBox units. Was 120 when the frozen label column
+ *  was 85px wide; narrowed to 65px (−20px) so the chart begins 20px further left. */
 const X0 = 100;
 const X1 = 994;
 const RULER_H = 58;
@@ -88,15 +82,15 @@ const SUN_R = 6;
 const GHATI_TICKS = Array.from({ length: 16 }, (_, i) => i * 4);
 
 const TRACK_CLS: Record<string, string> = {
-  तिथि: "tithi",
-  नक्षत्र: "nak",
-  योग: "yoga",
-  करण: "karana",
-  चौघडिया: "cho",
-  होरा: "hora",
-  लग्न: "lagna",
-  अशुभ: "ashubha",
-  शुभ: "shubha",
+  Tithi: "tithi",
+  Nakshatra: "nak",
+  Yoga: "yoga",
+  Karana: "karana",
+  Choghadiya: "cho",
+  Hora: "hora",
+  Lagna: "lagna",
+  Inauspicious: "ashubha",
+  Auspicious: "shubha",
 };
 
 function gx(g: number) {
@@ -105,6 +99,22 @@ function gx(g: number) {
 
 function clampX(x: number, pad: number) {
   return Math.max(X0 + pad, Math.min(X1 - pad, x));
+}
+
+const MOON_ICON = 14;
+
+function MoonMarkerIcon({ x, y, tithiIndex }: { x: number; y: number; tithiIndex: number }) {
+  return (
+    <foreignObject
+      x={x - MOON_ICON / 2}
+      y={y - MOON_ICON / 2}
+      width={MOON_ICON}
+      height={MOON_ICON}
+      className="overflow-visible"
+    >
+      <CalendarMoonPhaseIcon tithiIndex={tithiIndex} className="size-3.5" />
+    </foreignObject>
+  );
 }
 
 interface Props {
@@ -121,11 +131,82 @@ interface Props {
   /** Day boundary: "Day-Night" = sunrise→sunrise (default), "Calendar Day" = midnight→midnight. */
   mode?: DayCycleMode;
   onModeChange?: (mode: DayCycleMode) => void;
+  /** Hide the in-chart mode toggle when a page-level tab already drives it. */
+  showToggle?: boolean;
   /** Civil (midnight→midnight) timeline — only used in Calendar Day mode. */
   civil?: CivilTimeline;
   civilLoading?: boolean;
-  /** Hide in-chart toggle when the page header already has one. */
-  showToggle?: boolean;
+  /** Render only the horizontal chart — skip the अशुभ/शुभ period cards and the
+   *  planets grid below it. Used by the OG share-image preview. */
+  chartOnly?: boolean;
+  renderStatus?: (mark: { planetKey: string; isRetrograde?: boolean; isCombust?: boolean; size?: number }) => ReactNode;
+}
+
+export type DayCycleMode = "Day-Night" | "Calendar Day";
+
+export function DayCycleToggle({
+  mode,
+  onModeChange,
+  size = "sm",
+}: {
+  mode: DayCycleMode;
+  onModeChange?: (mode: DayCycleMode) => void;
+  /** "sm" = compact chart toolbar toggle; "md" = prominent page-level tab. */
+  size?: "sm" | "md";
+}) {
+  const { options, inactive, switchLabel, groupLabel } = useDayCycleToggle(mode);
+  const padCls = size === "md" ? "px-3.5 py-1.5 text-sm" : "px-2 py-0.5 text-sm";
+  const roundCls = size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm;
+  return (
+    <>
+      {/* Mobile (<768px): single "switch to …" toggle. */}
+      <button
+        type="button"
+        onClick={() => onModeChange?.(inactive.value)}
+        aria-label={switchLabel}
+        className={cn(
+          "inline-flex items-center justify-center transition-colors hover:bg-surface-hover md:hidden",
+          panchangaPageClasses.dayCycle.toggleSingle,
+          panchangaPageClasses.dayCycle.toggleLabel,
+          padCls,
+          roundCls,
+        )}
+      >
+        {inactive.label}
+      </button>
+
+      {/* Desktop (≥768px): full segmented control. */}
+      <div
+        className={cn(
+          "hidden md:inline-flex",
+          panchangaPageClasses.dayCycle.toggleGroup,
+          size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm,
+        )}
+        role="radiogroup"
+        aria-label={groupLabel}
+      >
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={mode === o.value}
+            onClick={() => onModeChange?.(o.value)}
+            className={cn(
+              panchangaPageClasses.dayCycle.toggleLabel,
+              "transition-colors !py-1 h-7",
+              padCls,
+              mode === o.value
+                ? panchangaPageClasses.dayCycle.toggleActive
+                : cn(panchangaPageClasses.dayCycle.toggleIdle, "hover:bg-surface-hover"),
+            )}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </>
+  );
 }
 
 function DayTimelineBand({
@@ -137,27 +218,24 @@ function DayTimelineBand({
   onModeChange?: (mode: DayCycleMode) => void;
   showToggle?: boolean;
 }) {
-  const { t, pick } = useLocale();
-  const subtitle =
-    mode === "Calendar Day"
-      ? t("ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
-      : t("ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise");
+  const { copy } = useDayTimeline({ mode });
+  const subtitle = copy.subtitle;
   return (
     <div className={patroSecBand}>
-      <h2 className={cn("m-0", "text-sm", "font-bold")}>{t("panchanga.day_cycle.title")}</h2>
-      <span className="text-sm uppercase tracking-wider">
+      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{copy.title}</h2>
+      <span className={panchangaPageClasses.dayCycle.bandSubtitle}>
         {subtitle}
       </span>
-      <span className="ml-auto inline-flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm normal-case tracking-normal">
-        <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-2.5 rounded-md bg-success/34 not-italic" />
-          {t("panchanga.day_cycle.good")}
-          <i className="inline-block h-2.5 w-2.5 rounded-md bg-danger/30 not-italic" />
-          {t("panchanga.day_cycle.bad")}
-          <i className="inline-block h-2.5 w-2.5 rounded-md bg-secondary/22 not-italic" />
-          {t("panchanga.day_cycle.night")}
+      <span className={cn("inline-flex", panchangaPageClasses.dayCycle.bandLegend, "normal-case tracking-normal")}>
+        <span className={cn("inline-flex", panchangaPageClasses.dayCycle.legendItem)}>
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-success/34 not-italic")} />
+          {copy.good}
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-danger/30 not-italic")} />
+          {copy.bad}
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-secondary/22 not-italic")} />
+          {copy.night}
         </span>
-        {showToggle ? <DayCycleToggle mode={mode} onModeChange={onModeChange} /> : null}
+        {showToggle && <DayCycleToggle mode={mode} onModeChange={onModeChange} />}
       </span>
     </div>
   );
@@ -173,37 +251,21 @@ export function DayTimeline({
   loading = false,
   mode = "Day-Night",
   onModeChange,
+  showToggle = true,
   civil,
   civilLoading = false,
-  showToggle = true,
+  chartOnly = false,
+  renderStatus,
 }: Props) {
-  const { t, pick, digits, lang } = useLocale();
-  const isCivil = mode === "Calendar Day";
-  const data = useMemo(() => {
-    if (isCivil) return civil ? buildCivilTimelineData(civil, p) : null;
-    return p ? buildDayTimelineData(p) : null;
-  }, [isCivil, civil, p, dateAd]);
-  const planets = useMemo(() => {
-    if (!p) return [];
-    const rows = getPlanetRows(p);
-    const lagna = getSunriseLagnaRow(p);
-    return lagna ? [lagna, ...rows] : rows;
-  }, [p]);
-  const timeZone = resolveTimeZone(p?.location?.timezone, timezone);
-
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    if (!isToday) return;
-    const id = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(id);
-  }, [isToday]);
-
-  const busy = loading || (isCivil ? civilLoading || !civil : !p) || !data;
-  if (busy) {
+  const { digits, lang } = useLocale();
+  const tl = useDayTimeline({ p, dateAd, isToday, timezone, needleClock, showNeedle, loading, mode, civil, civilLoading });
+  const { isCivil, data, planets, busy, nowG, nowLabel, copy } = tl;
+  const tithiIdx = p ? tithiIndexFromPanchanga(p) : null;
+  if (busy || !data) {
     return (
       <div className={cn(patroCard, "w-full")} aria-busy={busy}>
         <DayTimelineBand mode={mode} onModeChange={onModeChange} showToggle={showToggle} />
-        <div className={cn("w-full", "max-w-full", "overflow-hidden", "pl-1", "pr-2", "pt-3", "pb-1")}>
+        <div className={cn("w-full", "max-w-full", "overflow-hidden", "px-0", "pt-3", "pb-1")}>
           <div className={cn(patroSkel, "w-full")} style={{ minHeight: 320 }} />
         </div>
       </div>
@@ -213,7 +275,7 @@ export function DayTimeline({
   const tracks = data.rows
     .filter((row) => row.kind !== "graha")
     .map((row) => {
-      const cls = TRACK_CLS[row.label] ?? "tithi";
+      const cls = TRACK_CLS[row.en] ?? "tithi";
       const segs: ChartSegment[] =
         row.kind === "choghadiya"
           ? data.choghadiya.map((c) => ({
@@ -258,52 +320,13 @@ export function DayTimeline({
                       detailEn: s.nameEn,
                     })),
                   )
-              : segmentsFromRow(row);
+                : segmentsFromRow(row);
       return { key: row.label, ne: row.label, en: row.en, cls, segs };
     });
 
-  const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
-
-  let nowG: number | null = null;
-  let nowLabel = t("panchanga.day_cycle.now");
-  const anchorAd = p?.panchanga_date_ad ?? p?.date_ad ?? dateAd;
-  const chartMins = minutesOnVedicChart(p?.query_instant_local, anchorAd ?? "", needleClock);
-
-  if (isCivil) {
-    // Civil axis: position = minutes-from-midnight / 24 (no sunrise offset).
-    let mins: number | null = null;
-    if (showNeedle && needleClock) {
-      const [hh, mm] = needleClock.split(":").map(Number);
-      if (!Number.isNaN(hh) && !Number.isNaN(mm)) {
-        mins = hh * 60 + mm;
-        nowLabel = pick(tFor(undefined, "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
-      }
-    } else if (showNeedle && isToday) {
-      mins = minutesSinceMidnightInTimezone(now, timeZone);
-    } else if (showNeedle && chartMins != null) {
-      mins = chartMins % (24 * 60);
-      nowLabel = t("panchanga.day_cycle.chosen_time");
-    }
-    if (mins != null) nowG = Math.max(0, Math.min(60, mins / 24));
-  } else if (showNeedle && needleClock && chartMins != null) {
-    // The needle overlays a marker on the civil date's udaya (sunrise-to-sunrise)
-    // day so it stays aligned with the wheel. Priority: an explicitly chosen
-    // clock pins the needle; otherwise on today it tracks the live current time
-    // ("अहिले"); otherwise it falls back to the ephemeris query instant.
-    nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) {
-      nowLabel = pick(tFor(undefined, "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
-    }
-  } else if (showNeedle && isToday) {
-    const minsNow = minutesSinceMidnightInTimezone(now, timeZone);
-    nowG = needleGhatiOnVedicChart(minsNow, data.sunriseMin);
-  } else if (showNeedle && chartMins != null) {
-    nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) {
-      nowLabel = t("panchanga.day_cycle.chosen_time");
-    }
-  }
-
+  // Laned rows (अशुभ / शुभ) can stack several overlapping windows into vertical
+  // lanes; give them extra height so the number badges stay legible instead of
+  // colliding inside the fixed band. Other rows keep the standard band height.
   const LANE_MIN = 15;
   const ROW_GAP = TRACK - BAND;
   const rowBands = tracks.map((tr) =>
@@ -323,6 +346,7 @@ export function DayTimeline({
   const H = (rowTops[lastIdx] ?? T0) + (rowBands[lastIdx] ?? BAND) + 6;
   const trackY = (i: number) => rowTops[i] ?? T0;
   const rowBandAt = (i: number) => rowBands[i] ?? BAND;
+  const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
   const nightBands = data.nightBands ?? [[data.dayG, 60]];
   const sunriseG = isCivil ? data.sunriseG ?? 0 : 0;
@@ -340,7 +364,7 @@ export function DayTimeline({
           className={cn("block", "h-auto", "w-full", "min-w-[768px]")}
           preserveAspectRatio="xMinYMid meet"
           role="img"
-          aria-label={t("ui.panchanga.full_panchanga_day_chart")}
+          aria-label={copy.chartAria}
         >
           {nightBands.map(([a, b], i) => (
             <rect
@@ -354,11 +378,11 @@ export function DayTimeline({
           ))}
 
           <text x={X0 - 10} y={isCivil ? 34 : 20} className={pgxScaleLabelDim()} textAnchor="end">
-            {t("panchanga.hour_aria")}
+            {copy.hour}
           </text>
           {!isCivil && (
             <text x={X0 - 10} y={47} className={pgxScaleLabelDim(true)} textAnchor="end">
-              {t("panchanga.day_cycle.ghati")}
+              {copy.ghati}
             </text>
           )}
           <line x1={X0} y1={30} x2={X1} y2={30} className={pgTlAxis} />
@@ -385,10 +409,22 @@ export function DayTimeline({
           <EventMarker g={sunriseG} sunriseMin={data.sunriseMin} kind="sunrise" anchor={isCivil ? "middle" : "start"} />
           <EventMarker g={sunsetG} sunriseMin={data.sunriseMin} kind="sunset" anchor="middle" />
           {data.moonsetG != null && (
-            <EventMarker g={data.moonsetG} sunriseMin={data.sunriseMin} kind="moonset" anchor="middle" />
+            <EventMarker
+              g={data.moonsetG}
+              sunriseMin={data.sunriseMin}
+              kind="moonset"
+              anchor="middle"
+              tithiIndex={tithiIdx}
+            />
           )}
           {data.moonriseG != null && (
-            <EventMarker g={data.moonriseG} sunriseMin={data.sunriseMin} kind="moonrise" anchor="middle" />
+            <EventMarker
+              g={data.moonriseG}
+              sunriseMin={data.sunriseMin}
+              kind="moonrise"
+              anchor="middle"
+              tithiIndex={tithiIdx}
+            />
           )}
           {!isCivil && (
             <EventMarker g={60} sunriseMin={data.sunriseMin} kind="next-sunrise" anchor="end" />
@@ -434,13 +470,13 @@ export function DayTimeline({
                   });
                   const midX = clampX((x + x2) / 2, 26);
                   const narrow = w < 64;
-                  const segText = pick(s.ne, s.en);
+                  const segText = bilingualText(lang, s.ne, s.en);
                   const [mainName, paksha] = segText.includes(", ")
                     ? [segText.split(", ")[0]!, segText.split(", ").slice(1).join(", ")]
                     : [segText, ""];
 
-                  // Overlapping अशुभ windows are split into vertical lanes so their
-                  // number badges never sit on top of one another.
+                  // Overlapping अशुभ / शुभ windows are split into vertical lanes
+                  // so their number badges never sit on top of one another.
                   const laned = tr.cls === "ashubha" || tr.cls === "shubha";
                   const laneCount = laned ? Math.max(1, s.laneCount ?? 1) : 1;
                   const laneGap = laneCount > 1 ? 1.5 : 0;
@@ -472,7 +508,7 @@ export function DayTimeline({
                         rx={4}
                         className={segCls}
                       >
-                        <title>{`${pick(tr.ne, tr.en)}: ${s.detailNe ? pick(s.detailNe, s.detailEn ?? s.detailNe) : segText} · ${tLabel(s.fromG)} – ${tLabel(s.toG)}`}</title>
+                        <title>{`${bilingualText(lang, tr.ne, tr.en)}: ${s.detailNe ? bilingualText(lang, s.detailNe, s.detailEn ?? s.detailNe) : segText} · ${tLabel(s.fromG)} – ${tLabel(s.toG)}`}</title>
                       </rect>
                       {tr.cls === "cho" || tr.cls === "hora" ? (
                         w > 20 && (
@@ -481,7 +517,6 @@ export function DayTimeline({
                             y={y + rowBand / 2 + 4}
                             className={pgxSegnameCho(s.bad)}
                             textAnchor="middle"
-                            dominantBaseline="central"
                           >
                             {segText}
                           </text>
@@ -499,19 +534,27 @@ export function DayTimeline({
                         )
                       ) : (
                         w >= 20 && (
-                          <text
-                            x={midX}
-                            y={labelY}
-                            className={narrow ? cn(pgxSegname, pgxSegnameSm) : pgxSegname}
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                            clipPath={`url(#${clipId})`}
-                          >
-                            {mainName}
-                            {!narrow && paksha ? (
-                              <tspan className={pgxPaksha}>{` · ${paksha}`}</tspan>
+                          <>
+                            {tr.cls === "tithi" && si === 0 && tithiIdx != null && w >= 30 ? (
+                              <MoonMarkerIcon
+                                x={x + MOON_ICON / 2 + 2}
+                                y={labelY}
+                                tithiIndex={tithiIdx}
+                              />
                             ) : null}
-                          </text>
+                            <text
+                              x={midX + (tr.cls === "tithi" && si === 0 && tithiIdx != null && w >= 30 ? 8 : 0)}
+                              y={labelY}
+                              className={narrow ? cn(pgxSegname, pgxSegnameSm) : pgxSegname}
+                              textAnchor="middle"
+                              clipPath={`url(#${clipId})`}
+                            >
+                              {mainName}
+                              {!narrow && paksha ? (
+                                <tspan className={pgxPaksha}>{` · ${paksha}`}</tspan>
+                              ) : null}
+                            </text>
+                          </>
                         )
                       )}
                     </g>
@@ -525,9 +568,9 @@ export function DayTimeline({
             <line
               key={`hour-grid-${hour}-${g}`}
               x1={gx(g)}
-              y1={T0}
+              y1={T0 -100}
               x2={gx(g)}
-              y2={H - 4}
+              y2={H - 26}
               className={pgTlVgridMajor}
             />
           ))}
@@ -579,7 +622,7 @@ export function DayTimeline({
                 className={pgxNowPill}
               />
               <text x={clampX(gx(nowG), 30)} y={RULER_H - 10} textAnchor="middle" className={pgxNowText}>
-                {nowLabel} {tLabel(nowG)}
+                {[nowLabel, tLabel(nowG)].filter(Boolean).join(" ")}
               </text>
             </g>
           )}
@@ -591,6 +634,7 @@ export function DayTimeline({
             घण्टा/घडी scale keeps scrolling; only the track rows get an opaque
             backing. Positioned by % of the SVG height, so it tracks the chart's
             scaling on every screen size. */}
+            
         <div
           aria-hidden
           className="pointer-events-none absolute left-1 top-3 bottom-1 z-10 w-[65px] lg:w-[104px]"
@@ -602,46 +646,48 @@ export function DayTimeline({
           {tracks.map((tr, ti) => (
             <span
               key={tr.key}
-              className="absolute right-1.5 -translate-y-1/2 whitespace-nowrap text-xs font-bold leading-none text-foreground sm:text-xs lg:text-sm"
+              className="absolute right-1.5 -translate-y-1/2 whitespace-nowrap text-xs font-bold leading-none text-foreground [font-family:var(--pn-font)] sm:text-xs lg:text-sm"
               style={{ top: `${((trackY(ti) + rowBandAt(ti) / 2) / H) * 100}%` }}
             >
-              {pick(tr.ne, tr.en ?? tr.ne)}
+              {bilingualText(lang, tr.ne, tr.en ?? tr.ne)}
             </span>
           ))}
         </div>
       </div>
 
-      {data.ashubhaAll.length > 0 && (
+      {!chartOnly && data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
-          title={t("panchanga.day_cycle.inauspicious_periods")}
+          title={copy.inauspicious}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
-            label: pick(a.detailNe, a.detailEn),
+            label: bilingualText(lang, a.detailNe, a.detailEn),
             time: `${tLabel(a.startG)} – ${tLabel(a.endG)}`,
           }))}
         />
       )}
 
-      {data.shubha.length > 0 && (
+      {!chartOnly && data.shubha.length > 0 && (
         <PeriodCards
           tone="success"
-          title={t("panchanga.day_cycle.auspicious_periods")}
+          title={copy.auspicious}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
-            label: pick(s.name, s.nameEn),
+            label: bilingualText(lang, s.name, s.nameEn),
             time: `${tLabel(s.startG)} – ${tLabel(s.endG)}`,
           }))}
         />
       )}
 
-      {p && planets.length > 0 && (
-        <div className="flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5">
+      {!chartOnly && p && planets.length > 0 && (
+        <div className={cn("flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5")}>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-sm font-bold leading-tight">{t("panchanga.day_cycle.planets")}</span>
-            <span className="min-w-0 text-sm leading-snug break-words [overflow-wrap:anywhere]">{getPlanetsAnchorLabel(p, lang)}</span>
+            <span className="text-sm font-bold leading-tight">{copy.planets}</span>
+            <span className="min-w-0 text-sm leading-snug break-words [overflow-wrap:anywhere]">
+              {getPlanetsAnchorLabel(p, lang)}
+            </span>
           </div>
-          <div className="grid grid-cols-2 xs:grid-cols-3 gap-1.5 sm:grid-cols-3 md:grid-cols-4">
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
             {planets.map(
               ({
                 key: planetKey,
@@ -661,89 +707,82 @@ export function DayTimeline({
                 isRetrograde,
                 isCombust,
               }) => {
-                const labelL = pick(label, labelEn);
-                const isLagna = planetKey === "lagna";
-                const rashiL = pick(
-                  rashiNe ?? "—",
-                  rashiEn ?? (rashiNe ? formatRashiDisplay(rashiNe, undefined, "en") : undefined) ?? rashiNe ?? "—",
-                );
-                const coordText =
-                  siderealLongitude != null
-                    ? formatDegreeInRashi(siderealLongitude, rashiL)
-                    : coords;
-                const nakName =
-                  nakshatraNe || nakshatraEn
-                    ? pick(nakshatraNe ?? nakshatraEn ?? "", nakshatraEn ?? nakshatraNe ?? "")
-                    : undefined;
-                const nakWithPada =
-                  nakName && pada != null ? `${nakName} (${digits(pada)})` : nakName ?? undefined;
-                const lordL =
-                  nakshatraLordNe || nakshatraLordEn
-                    ? pick(
-                        nakshatraLordNe ?? nakshatraLordEn ?? "",
-                        nakshatraLordEn ?? nakshatraLordNe ?? "",
-                      )
-                    : undefined;
-                const subLordL =
-                  nakshatraSubLordNe || nakshatraSubLordEn
-                    ? pick(
-                        nakshatraSubLordNe ?? nakshatraSubLordEn ?? "",
-                        nakshatraSubLordEn ?? nakshatraSubLordNe ?? "",
-                      )
-                    : undefined;
-                const lordText = lordL ? (subLordL ? `${lordL}/${subLordL}` : lordL) : undefined;
-                return (
-                  <div
-                    key={planetKey}
-                    className={cn(
-                      "flex w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1.5 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
-                      isLagna ? "bg-secondary/12" : "bg-foreground/4",
-                    )}
-                    title={[
-                      labelL,
-                      coordText,
-                      nakWithPada,
-                      lordText && `${t("panchanga.day_cycle.lord_sub")} ${lordText}`,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  >
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                        <span className="flex items-center gap-1 text-sm font-bold leading-tight">
-                          {planetKey !== "lagna" && isGrahaKey(planetKey) ? (
-                            <GrahaPlanetIcon graha={planetKey} size={18} />
-                          ) : null}
-                          {labelL}
-                          <GrahaStatusBadges
-                            planetKey={planetKey}
-                            isRetrograde={isRetrograde}
-                            isCombust={isCombust}
-                            size={13}
-                          />
-                        </span>
-                        <span className={cn(patroMono, "min-w-0 break-all text-sm tabular-nums leading-tight [overflow-wrap:anywhere]")}>{coordText}</span>
-                      </div>
-                    {(nakWithPada || lordText) && (
-                      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm leading-tight">
-                        {nakWithPada ? (
-                          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{nakWithPada}</span>
-                        ) : null}
-                        {lordText ? (
-                          <span
-                            className="min-w-0 break-words font-semibold text-secondary [overflow-wrap:anywhere]"
-                            title={t("panchanga.day_cycle.lord_sub_title")}
-                          >
-                            {lordText}
-                          </span>
-                        ) : null}
-                      </div>
-                    )}
-                    </div>
+              const labelL = bilingualText(lang, label, labelEn);
+              const isLagna = planetKey === "lagna";
+              // English readers get the western sign (Leo), not the Sanskrit
+              // romanization the API sends in `rashiEn` (Simha).
+              const rashiL =
+                formatRashiDisplay(rashiNe, rashiEn, lang) ??
+                resolveRashiDisplay(rashiNe, rashiEn, lang) ??
+                "—";
+              // `07° सिंह 10′ 28″` when the longitude is known, else the |-cells fallback.
+              const coordText =
+                siderealLongitude != null
+                  ? formatDegreeInRashi(siderealLongitude, rashiL)
+                  : coords;
+              const nakName = bilingualText(lang, nakshatraNe, nakshatraEn ?? nakshatraNe);
+              const nakWithPada =
+                nakName && pada != null ? `${nakName} (${digits(pada)})` : nakName ?? undefined;
+              const lordL = bilingualText(lang, nakshatraLordNe, nakshatraLordEn ?? nakshatraLordNe);
+              const subLordL = bilingualText(lang, nakshatraSubLordNe, nakshatraSubLordEn ?? nakshatraSubLordNe);
+              const lordText = lordL
+                ? subLordL
+                  ? `${lordL}/${subLordL}`
+                  : lordL
+                : undefined;
+              return (
+              <div
+                key={planetKey}
+                className={cn(
+                  "flex w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1.5 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
+                  isLagna ? "bg-secondary/12" : "bg-foreground/4",
+                )}
+                title={[
+                  labelL,
+                  coordText,
+                  nakWithPada,
+                  lordText && `${copy.lordSub} ${lordText}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              >
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                    <span className="flex items-center gap-1 text-sm font-bold leading-tight">
+                      {isGrahaKey(planetKey) ? (
+                        <GrahaPlanetIcon graha={planetKey} size={18} className="-my-0.5" />
+                      ) : null}
+                      {labelL}
+                      {renderStatus?.({ planetKey, isRetrograde, isCombust, size: 13 })}
+                    </span>
+                    <span
+                      className={cn(
+                        patroMono,
+                        "min-w-0 text-sm tabular-nums leading-tight break-all [overflow-wrap:anywhere]",
+                      )}
+                    >
+                      {coordText}
+                    </span>
                   </div>
-                );
-              },
-            )}
+                  {(nakWithPada || lordText) && (
+                    <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm leading-tight">
+                      {nakWithPada ? (
+                        <span className="min-w-0 break-words [overflow-wrap:anywhere]">{nakWithPada}</span>
+                      ) : null}
+                      {lordText ? (
+                        <span
+                          className="min-w-0 break-words font-semibold text-secondary [overflow-wrap:anywhere]"
+                          title={copy.lordSubTitle}
+                        >
+                          {lordText}
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -767,32 +806,34 @@ function PeriodCards({
 }) {
   const accent = tone === "danger" ? "var(--color-danger)" : "var(--color-success)";
   return (
-    <div className="flex flex-col gap-2 border-t border-border px-4 py-3">
-      <span className="text-sm font-bold leading-tight" style={{ color: accent }}>
+    <div className={cn("flex flex-col", panchangaPageClasses.dayCycle.periodGroup)}>
+      <span className={panchangaPageClasses.dayCycle.periodTitle} style={{ color: accent }}>
         {title}
       </span>
       <ol className="grid grid-cols-2 gap-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {items.map((it, i) => (
           <li
             key={`${it.time}-${i}`}
-            className="flex min-w-0 flex-col gap-1.5 rounded-lg border px-2.5 py-2"
+            className={cn("flex flex-col", panchangaPageClasses.dayCycle.periodCard)}
             style={{
               borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
               background: `color-mix(in srgb, ${accent} 7%, transparent)`,
             }}
           >
-            <div className="flex min-w-0 items-start gap-1.5">
+            <div className={cn("flex", panchangaPageClasses.dayCycle.periodHead)}>
               <span
-                className="mt-px inline-flex h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1 text-sm font-bold text-white"
+                className={cn("inline-flex", panchangaPageClasses.dayCycle.periodBadge, panchangaPageClasses.dayCycle.periodBadgeText)}
                 style={{ background: accent }}
               >
                 {it.n}
               </span>
-              <span className="min-w-0 break-words text-sm font-semibold leading-snug [overflow-wrap:anywhere]">
+              <span className={cn(panchangaPageClasses.dayCycle.periodLabel, "break-words [overflow-wrap:anywhere] [font-family:var(--pn-font)]")}>
                 {it.label}
               </span>
             </div>
-            <span className="mt-auto text-sm font-semibold tabular-nums">{it.time}</span>
+            <span className={cn("mt-auto", panchangaPageClasses.dayCycle.periodTime, "[font-family:var(--pn-font)]")}>
+              {it.time}
+            </span>
           </li>
         ))}
       </ol>
@@ -824,16 +865,10 @@ function SunHalfIcon({ x, y, variant }: { x: number; y: number; variant: "rise" 
   const top = variant === "rise" ? y - h : y;
   const cx = vbW / 2;
   const cy = vbH / 2;
-  const inner =
-    variant === "set"
-      ? `rotate(180 ${cx} ${cy})`
-      : undefined;
+  const inner = variant === "set" ? `rotate(180 ${cx} ${cy})` : undefined;
 
   return (
-    <g
-      aria-hidden
-      transform={`translate(${left}, ${top}) scale(${scale})`}
-    >
+    <g aria-hidden transform={`translate(${left}, ${top}) scale(${scale})`}>
       <g transform={inner}>
         <path d={SUNRISE_ICON_PATH} className={pgTlSunDisc} />
       </g>
@@ -846,35 +881,27 @@ function EventMarker({
   sunriseMin,
   kind,
   anchor,
+  tithiIndex,
 }: {
   g: number;
   sunriseMin: number;
   kind: "sunrise" | "sunset" | "moonrise" | "moonset" | "next-sunrise";
   anchor: "start" | "middle" | "end";
+  tithiIndex?: number | null;
 }) {
   const { clock } = dualTimeAtGhati(g, sunriseMin);
   const x = gx(g);
   const labelX = anchor === "start" ? x : anchor === "end" ? x : x;
   const isSun = kind === "sunrise" || kind === "sunset" || kind === "next-sunrise";
   const sunVariant = kind === "sunset" ? "set" : "rise";
-  const moonEmoji = kind === "moonset" ? "🌘" : "🌒";
 
   return (
     <g>
       {isSun ? (
         <SunHalfIcon x={x} y={SUNLINE_Y} variant={sunVariant} />
-      ) : (
-        <text
-          x={x}
-          y={MOON_EMOJI_Y}
-          textAnchor="middle"
-          className={pgTlMoonEmoji}
-          dominantBaseline="central"
-          aria-hidden
-        >
-          {moonEmoji}
-        </text>
-      )}
+      ) : tithiIndex != null ? (
+        <MoonMarkerIcon x={x} y={MOON_EMOJI_Y} tithiIndex={tithiIndex} />
+      ) : null}
       <text
         x={labelX}
         y={kind === "sunset" ? SUNSET_TIME_Y : isSun ? MARKER_TIME_Y : MOON_TIME_Y}

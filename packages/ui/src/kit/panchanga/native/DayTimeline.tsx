@@ -1,38 +1,50 @@
+import { useState, type ReactNode } from "react";
+import { Platform, ScrollView, Text, View, useWindowDimensions, type LayoutChangeEvent, type TextStyle, type ViewStyle } from "react-native";
+import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
+import { useColorScheme } from "nativewind";
 import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { useState } from "react";
 import { cn } from "@vedic-patro/domain/utils";
-import { patroSecBand } from "@/lib/patro-classes";
-import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { ScrollView, View, type LayoutChangeEvent, type ViewStyle } from "react-native"
-import { fillGridCell } from "@/lib/fill-grid";
-import { Text } from "@/components/ui/Text"
-import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
-import type { CivilTimeline, PanchangaDay } from "@/lib/api";
-import type { DayCycleMode } from "@/components/panchanga/DayCycleToggle";
-import { Card } from "@/components/ui/Card";
-import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
-import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { SunTimelineMarker } from "@/components/panchanga/SunriseSunsetIcon";
-import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
+import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { useLocale } from "@/lib/i18n";
-import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
-import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
-import {
-  formatDegreeInRashi,
-  getPlanetsAnchorLabel,
-} from "@vedic-patro/domain/panchanga-format";
-import {
-  dualTimeAtGhati,
-  type TimelineRowData,
-} from "@vedic-patro/domain/day-timeline-data";
-import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
-import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_CHART_SM } from "@/lib/fonts";
-import { useTheme } from "@/lib/theme-context";
-
-import { brand, illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { formatDegreeInRashi, getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
+import { dualTimeAtGhati, type TimelineRowData } from "@vedic-patro/domain/day-timeline-data";
+import { useLocale } from "@vedic-patro/i18n/react";
+import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
 import { useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
+import { Box, Card } from "@vedic-patro/ui";
+import { brand, breakpoints, dark, fontFamily, illustration, light, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { patroSecBand } from "@vedic-patro/design-tokens/classes/patro-classes";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
+
+type DayCycleMode = "Day-Night" | "Calendar Day";
+const FONT = fontFamily.native.semibold;
+const FONT_SM = fontFamily.native.medium;
+const PAGE_HORIZONTAL_PADDING = 16;
+const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
+function nepaliTextStyle(): TextStyle {
+  return { fontFamily: fontFamily.native.regular, ...(Platform.OS === "android" ? { includeFontPadding: true } : {}) };
+}
+function fillGridCell(rowWidth: number, cols: number, gap: number): ViewStyle {
+  if (rowWidth <= 0) return { flexBasis: `${Math.floor(100 / cols) - 4}%`, flexGrow: 1, minWidth: 0 };
+  const share = (rowWidth - gap * (cols - 1)) / cols;
+  return { flexBasis: Math.max(0, Math.floor(share) - 1), flexGrow: 1, flexShrink: 1, minWidth: 0 };
+}
+function SunTimelineMarker({ x, y, variant, fill, width = 22 }: { x: number; y: number; variant: "rise" | "set"; fill: string; width?: number }) {
+  const { w: vbW, h: vbH } = SUNRISE_ICON_VIEWBOX;
+  const scale = width / vbW;
+  const h = vbH * scale;
+  const left = x - width / 2;
+  const top = variant === "rise" ? y - h : y;
+  return (
+    <G transform={`translate(${left}, ${top}) scale(${scale})`}>
+      <G transform={variant === "set" ? `rotate(180 ${vbW / 2} ${vbH / 2})` : undefined}>
+        <Path d={SUNRISE_ICON_PATH} fill={fill} />
+      </G>
+    </G>
+  );
+}
 const W = 1000;
 /**
  * The width the scrolling chart is drawn at — its own coordinate width, so
@@ -71,8 +83,6 @@ const SUNSET_TIME_Y = SUNLINE_Y - 7;
 const SUN_R = 6;
 const GHATI_TICKS = Array.from({ length: 16 }, (_, i) => i * 4);
 
-const FONT = NOTO_DEVANAGARI_CHART;
-const FONT_SM = NOTO_DEVANAGARI_CHART_SM;
 
 function isGrahaKey(key: string): key is GrahaKey {
   return (
@@ -92,28 +102,28 @@ const PERIOD_CARD_GAP = 8;
 const PLANET_CARD_GAP = 6;
 
 function periodGridCols(width: number): number {
-  if (width >= BREAKPOINTS.lg) return 5;
-  if (width >= BREAKPOINTS.md) return 4;
+  if (width >= breakpoints.lg) return 5;
+  if (width >= breakpoints.md) return 4;
   if (width >= 420) return 3;
   return 2;
 }
 
 function planetGridCols(width: number): number {
-  if (width >= BREAKPOINTS.md) return 4;
+  if (width >= breakpoints.md) return 4;
   if (width >= 380) return 3;
   return 2;
 }
 
 const TRACK_CLS: Record<string, string> = {
-  तिथि: "tithi",
-  नक्षत्र: "nak",
-  योग: "yoga",
-  करण: "karana",
-  चौघडिया: "cho",
-  होरा: "hora",
-  लग्न: "lagna",
-  अशुभ: "ashubha",
-  शुभ: "shubha",
+  Tithi: "tithi",
+  Nakshatra: "nak",
+  Yoga: "yoga",
+  Karana: "karana",
+  Choghadiya: "cho",
+  Hora: "hora",
+  Lagna: "lagna",
+  Inauspicious: "ashubha",
+  Auspicious: "shubha",
 };
 
 const C_BASE = {
@@ -132,7 +142,8 @@ const C_BASE = {
 } as const;
 
 function useTimelineColors() {
-  const { colors, isDark } = useTheme();
+  const isDark = useColorScheme().colorScheme === "dark";
+  const colors = isDark ? dark : light;
   return {
     ...C_BASE,
     fg: colors.foreground,
@@ -235,8 +246,12 @@ type Props = {
    *  nothing downstream read, so switching it did nothing on native — the
    *  whole civil branch existed only in the `.web` timeline. */
   mode?: DayCycleMode;
+  onModeChange?: (mode: DayCycleMode) => void;
+  showToggle?: boolean;
+  chartOnly?: boolean;
   /** Civil (midnight→midnight) timeline — only used in Calendar Day mode. */
   civil?: CivilTimeline;
+  renderStatus?: (mark: { planetKey: string; isRetrograde?: boolean; isCombust?: boolean; size?: number }) => ReactNode;
   civilLoading?: boolean;
 };
 
@@ -321,9 +336,10 @@ export function DayTimeline({
   mode = "Day-Night",
   civil,
   civilLoading = false,
+  renderStatus,
 }: Props) {
   const { pick, digits, lang } = useLocale();
-  const { width: windowWidth } = useBreakpoint();
+  const { width: windowWidth } = useWindowDimensions();
   const [containerWidth, setContainerWidth] = useState(0);
   const C = useTimelineColors();
   const tl = useDayTimeline({ p, dateAd, isToday, timezone, needleClock, showNeedle, loading, mode, civil, civilLoading });
@@ -338,7 +354,7 @@ export function DayTimeline({
             {copy.subtitle}
           </Text>
         </View>
-        <SkeletonPulse className="mx-3 my-3 h-[320px] rounded-lg bg-muted/40" />
+        <Box className="mx-3 my-3 h-[320px] animate-pulse rounded-lg bg-muted/40" />
       </Card>
     );
   }
@@ -346,7 +362,7 @@ export function DayTimeline({
   const tracks = data.rows
     .filter((row) => row.kind !== "graha")
     .map((row) => {
-      const cls = TRACK_CLS[row.label] ?? "tithi";
+      const cls = TRACK_CLS[row.en] ?? "tithi";
       const segs: ChartSegment[] =
         row.kind === "choghadiya"
           ? data.choghadiya.map((c) => ({
@@ -611,13 +627,14 @@ export function DayTimeline({
   );
 
   return (
-    <Card
-      className="w-full overflow-hidden p-0"
+    <View
+      className="w-full"
       onLayout={(e: LayoutChangeEvent) => {
         const w = e.nativeEvent.layout.width;
         if (w > 0) setContainerWidth(w);
       }}
     >
+    <Card className="w-full overflow-hidden p-0">
       <View className={cn("flex-row", patroSecBand)}>
         <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{copy.title}</Text>
         <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
@@ -765,23 +782,18 @@ export function DayTimeline({
                       <Text
                         className="shrink-0 text-sm font-bold leading-tight text-foreground"
                         numberOfLines={1}
-                        style={nepaliTextStyle(14)}
+                        style={nepaliTextStyle()}
                       >
                         {labelL}
                       </Text>
-                      <GrahaStatusBadges
-                        planetKey={planetKey}
-                        isRetrograde={isRetrograde}
-                        isCombust={isCombust}
-                        size={13}
-                      />
+{renderStatus?.({ planetKey, isRetrograde, isCombust, size: 13 })}
                     </View>
                     <Text className="font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={1}>
                       {coordText}
                     </Text>
                     {(nakWithPada || lordText) && (
                       <View className="flex-row items-baseline justify-between gap-1.5">
-                        <Text className="text-sm min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+                        <Text className="text-sm min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle()}>
                           {nakWithPada}
                         </Text>
                         {lordText ? (
@@ -799,6 +811,7 @@ export function DayTimeline({
         </View>
       ) : null}
     </Card>
+    </View>
   );
 }
 
@@ -836,7 +849,7 @@ function PeriodCards({
               >
                 <Text className={panchangaPageClasses.dayCycle.periodBadgeText}>{it.n}</Text>
               </View>
-              <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle(14)}>
+              <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle()}>
                 {it.label}
               </Text>
             </View>

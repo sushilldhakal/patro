@@ -1,11 +1,11 @@
 import { Circle, G, Path } from "react-native-svg";
 import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@vedic-patro/domain/moon-phase-svg";
-
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
-interface MoonPhaseIconProps {
+
+export type MoonPhaseIconProps = {
   elongation: number;
   r: number;
-}
+};
 
 export function MoonPhaseIcon({ elongation, r }: MoonPhaseIconProps) {
   const e = normElongation(elongation);

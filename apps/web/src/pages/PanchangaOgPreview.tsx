@@ -6,7 +6,8 @@ import { fetchPanchangaDay, panchangaKeys, type PanchangaDay } from "@/lib/api";
 import { parsePatroDayUrl } from "@/lib/patro-day-url";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { searchToLocation } from "@/lib/url-state";
-import { DayTimeline } from "@/components/panchanga/DayTimeline";
+import { DayTimeline } from "@vedic-patro/ui/kit/panchanga";
+import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { D1Card, PeriodsCard } from "@/components/panchanga/OgShareCards";
 import { ogAppLinkFromUrl, ogCardFromUrl } from "@/lib/og-card";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
@@ -160,6 +161,9 @@ export function PanchangaOgPreview() {
       chartOnly
       showNeedle={Boolean("time" in search && search.time)}
       needleClock={"time" in search ? search.time : undefined}
+      renderStatus={(mark) => (
+        <GrahaStatusBadges planetKey={mark.planetKey} isRetrograde={mark.isRetrograde} isCombust={mark.isCombust} size={mark.size} />
+      )}
     />
   );
 

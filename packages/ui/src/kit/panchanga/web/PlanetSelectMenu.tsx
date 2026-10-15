@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+// Resolved from the repo root, where react-dom has no bundled declarations.
+// @ts-expect-error the website app supplies the react-dom types at its own import sites
 import { createPortal } from "react-dom";
-import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
+import { panchangaPageClasses as pg } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 
-type Props = {
+export type PlanetSelectMenuProps = {
   grahas: WheelGraha[];
   selected: number;
   onSelect: (index: number) => void;
   className?: string;
   iconSize?: number;
+  compact?: boolean;
 };
 
-export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSize = 22 }: Props) {
+export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSize = 22 }: PlanetSelectMenuProps) {
   const menu = usePlanetSelectMenu({ grahas, selected, onSelect });
   const { open, setOpen } = menu;
   const [anchor, setAnchor] = useState<{ top?: number; bottom?: number; right: number }>({ right: 8 });
@@ -24,11 +28,8 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
     if (r) {
       const right = Math.max(8, window.innerWidth - r.right);
       const spaceBelow = window.innerHeight - r.bottom;
-      if (spaceBelow < 320) {
-        setAnchor({ bottom: window.innerHeight - r.top + 8, right });
-      } else {
-        setAnchor({ top: r.bottom + 8, right });
-      }
+      if (spaceBelow < 320) setAnchor({ bottom: window.innerHeight - r.top + 8, right });
+      else setAnchor({ top: r.bottom + 8, right });
     }
     setOpen(true);
   }, [setOpen]);
@@ -52,28 +53,15 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
         aria-expanded={open}
         aria-label={menu.label}
         title={menu.title}
-        className={
-          className ??
-          "flex h-9 w-9 items-center justify-center rounded-full border border-wheel-control-border bg-wheel-control shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
-        }
+        className={className ?? pg.planetMenu.trigger}
       >
         <GrahaPlanetIcon graha={menu.selectedKey} size={iconSize} />
       </button>
-
       {open
         ? createPortal(
             <>
-              <button
-                type="button"
-                aria-label={menu.closeLabel}
-                className="fixed inset-0 z-[80] cursor-default bg-transparent"
-                onClick={menu.close}
-              />
-              <ul
-                role="listbox"
-                className="fixed z-[81] w-[228px] overflow-hidden rounded-2xl border border-wheel-control-border bg-wheel-control py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                style={{ top: anchor.top, bottom: anchor.bottom, right: anchor.right }}
-              >
+              <button type="button" aria-label={menu.closeLabel} className="fixed inset-0 z-[80] cursor-default bg-transparent" onClick={menu.close} />
+              <ul role="listbox" className={pg.planetMenu.list} style={{ top: anchor.top, bottom: anchor.bottom, right: anchor.right }}>
                 {menu.options.map((o) => (
                   <li key={o.key}>
                     <button
@@ -81,17 +69,14 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
                       role="option"
                       aria-selected={o.active}
                       onClick={o.choose}
-                      className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-base text-ill-midnight-foam"
+                      className={pg.planetMenu.option}
                       style={{
                         background: o.active ? withAlpha(brand.vermilion, 0.28) : "transparent",
                         fontWeight: o.active ? 700 : 500,
                       }}
                     >
                       <GrahaPlanetIcon graha={o.key} size={22} />
-                      <span
-                        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ background: o.color }}
-                      />
+                      <span className={pg.planetMenu.swatch} style={{ background: o.color }} />
                       <span className="flex-1">{o.name}</span>
                       {o.active ? <span aria-hidden>✓</span> : null}
                     </button>
