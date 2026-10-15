@@ -116,3 +116,44 @@ export const iconRotateCcw: IconNode = [
 export const iconFlame: IconNode = [
   ["path", { d: "M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" }],
 ];
+
+export const iconClock3: IconNode = [
+  ["circle", { cx: "12", cy: "12", r: "10" }],
+  ["path", { d: "M12 6v6h4" }],
+];
+
+export const iconBaby: IconNode = [
+  ["path", { d: "M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5" }],
+  ["path", { d: "M15 12h.01" }],
+  ["path", { d: "M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1" }],
+  ["path", { d: "M9 12h.01" }],
+];
+
+export const iconPlay: IconNode = [["path", { d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" }]];
+
+export const iconPause: IconNode = [
+  ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1" }],
+  ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1" }],
+];
+
+export const iconSkipBack: IconNode = [
+  ["path", { d: "M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z" }],
+  ["path", { d: "M3 20V4" }],
+];
+
+export const iconSkipForward: IconNode = [
+  ["path", { d: "M21 4v16" }],
+  ["path", { d: "M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" }],
+];
+
+export const iconHeadphones: IconNode = [
+  ["path", { d: "M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" }],
+];
+
+export const iconListMusic: IconNode = [
+  ["path", { d: "M16 5H3" }],
+  ["path", { d: "M11 12H3" }],
+  ["path", { d: "M11 19H3" }],
+  ["path", { d: "M21 16V5" }],
+  ["circle", { cx: "18", cy: "16", r: "3" }],
+];

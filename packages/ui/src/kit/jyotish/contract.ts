@@ -5,13 +5,18 @@
  */
 import type { ComponentType, ReactNode } from "react";
 import type {
+  BratabandhaNakshatraMode,
   DocumentSummary,
+  LocationParams,
   Profile,
   RashifalGocharRow,
   RashifalPeriod,
   RashifalPersonal,
   RashifalSignBlock,
+  SaitDetailDay,
+  SaitPersonalizeDay,
   SaitSuitability,
+  Shloka,
 } from "@vedic-patro/api-client";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
@@ -104,6 +109,112 @@ export type RashifalProfilePickerProps = {
   renderAuth: (props: { open: boolean; onOpenChange: (open: boolean) => void }) => ReactNode;
 };
 
+export type SaitDayCardProps = {
+  d: SaitDetailDay;
+  /** Staggers the website's entrance animation. */
+  index?: number;
+  suitability?: SaitSuitability;
+  personalize?: SaitPersonalizeDay;
+};
+
+export type SaitProfilePickerProps = {
+  selectedId: string | null;
+  onSelect: (profile: Profile | null) => void;
+  isAuthenticated: boolean;
+  renderAuth: (props: { open: boolean; onOpenChange: (open: boolean) => void }) => ReactNode;
+};
+
+export type SaitCeremonyLayoutProps = {
+  year: number;
+  method?: { ne?: string; en?: string } | null;
+  rules?: SaitRule[] | null;
+  engineVersion?: string;
+  enabledRuleIds?: Set<string> | null;
+  onToggleRule?: (id: string, enabled: boolean) => void;
+  rulesBusy?: boolean;
+  nakshatraMode?: BratabandhaNakshatraMode | null;
+  onNakshatraModeChange?: (mode: BratabandhaNakshatraMode) => void;
+  days?: SaitDetailDay[];
+  count?: number;
+  profileControl?: ReactNode;
+  suitabilityByDay?: Map<string, SaitSuitability>;
+  personalizeByDay?: Map<string, SaitPersonalizeDay>;
+  loading: boolean;
+  notice?: ReactNode;
+  children?: ReactNode;
+  emptyLabel?: string;
+  countLabel?: (count: number, year: number) => string;
+  footer?: ReactNode;
+  /** Page shell (website PageShell, app AppShell). */
+  renderShell: (children: ReactNode) => ReactNode;
+  renderHeader: () => ReactNode;
+  /** Year and place controls. Those widgets stay in the app. */
+  renderYearNav: () => ReactNode;
+  /** Link back to every ceremony. */
+  renderBack: () => ReactNode;
+};
+
+export type SaitAsideLinkArgs = { id: string; className: string; children: ReactNode };
+
+export type SaitAsidePanelProps = {
+  year: number;
+  month: number;
+  highlightDay?: number;
+  adYear?: number;
+  adMonth?: number;
+  location?: LocationParams;
+  renderLink: (args: SaitAsideLinkArgs) => ReactNode;
+};
+
+export type ShlokaCardProps = {
+  shloka: Shloka;
+  isActive: boolean;
+  isPlaying: boolean;
+  progress: number;
+  meaningOpen: boolean;
+  playsFromFull: boolean;
+  clip?: { currentTime: number; duration: number };
+  onPlay: () => void;
+  onToggleMeaning: () => void;
+  /** Website scroll-into-view registration. The app list does not use it. */
+  registerRef?: (node: unknown) => void;
+};
+
+export type PlaybackSeekArgs = {
+  value: number;
+  max: number;
+  fillPct: number;
+  label: string;
+  onChange: (value: number) => void;
+};
+
+export type PlaybackBarProps = {
+  mode: "full" | "verse" | null;
+  hasFullRecording: boolean;
+  documentTitle: string;
+  onStartFull: () => void;
+  onPlayThrough?: () => void;
+  fullPlaying: boolean;
+  fullCurrentTime: number;
+  fullDuration: number;
+  onToggleFull: () => void;
+  onSeekFull: (time: number) => void;
+  activeShloka: Shloka | null;
+  versePlaying: boolean;
+  verseCurrentTime: number;
+  verseDuration: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  onToggleVerse: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  onSwitchToFull: () => void;
+  /** App: distance from the bottom of the screen, above the tab bar. */
+  dockBottom?: number;
+  /** App slider. The website draws a range input. */
+  renderSeek?: (args: PlaybackSeekArgs) => ReactNode;
+};
+
 export type JyotishKit = {
   SaitSources: ComponentType<SaitSourcesProps>;
   SuitabilityBadge: ComponentType<SuitabilityBadgeProps>;
@@ -120,4 +231,10 @@ export type JyotishKit = {
   RashifalSignCard: ComponentType<RashifalSignCardProps>;
   RashifalPersonalCard: ComponentType<RashifalPersonalCardProps>;
   RashifalProfilePicker: ComponentType<RashifalProfilePickerProps>;
+  SaitDayCard: ComponentType<SaitDayCardProps>;
+  SaitProfilePicker: ComponentType<SaitProfilePickerProps>;
+  SaitCeremonyLayout: ComponentType<SaitCeremonyLayoutProps>;
+  SaitAsidePanel: ComponentType<SaitAsidePanelProps>;
+  ShlokaCard: ComponentType<ShlokaCardProps>;
+  PlaybackBar: ComponentType<PlaybackBarProps>;
 };

@@ -1,4 +1,5 @@
 import type { JyotishKit } from "../contract";
+import { PlaybackBar, ShlokaCard } from "./Documents";
 import { DocumentCard } from "./DocumentCard";
 import { DocumentJumpForm } from "./DocumentJumpForm";
 import {
@@ -12,6 +13,7 @@ import {
   RashifalSignCard,
   RashifalWhyButton,
 } from "./Rashifal";
+import { SaitAsidePanel, SaitCeremonyLayout, SaitDayCard, SaitProfilePicker } from "./Sait";
 import { SaitRulesSection } from "./SaitRulesSection";
 import { SaitSources } from "./SaitSources";
 import { SuitabilityBadge, SuitabilityLegend } from "./SaitSuitability";
@@ -30,6 +32,14 @@ export type {
   RashifalProfilePickerProps,
   RashifalSignCardProps,
   RashifalWhyButtonProps,
+  PlaybackBarProps,
+  PlaybackSeekArgs,
+  SaitAsideLinkArgs,
+  SaitAsidePanelProps,
+  SaitCeremonyLayoutProps,
+  SaitDayCardProps,
+  SaitProfilePickerProps,
+  ShlokaCardProps,
   SaitRule,
   SaitRulesSectionProps,
   SaitSourcesProps,
@@ -48,6 +58,12 @@ export {
   RashifalProfilePicker,
   RashifalSignCard,
   RashifalWhyButton,
+  PlaybackBar,
+  SaitAsidePanel,
+  SaitCeremonyLayout,
+  SaitDayCard,
+  SaitProfilePicker,
+  ShlokaCard,
   SaitRulesSection,
   SaitSources,
   SuitabilityBadge,
@@ -70,4 +86,10 @@ export const jyotishKit = {
   RashifalSignCard,
   RashifalPersonalCard,
   RashifalProfilePicker,
+  SaitDayCard,
+  SaitProfilePicker,
+  SaitCeremonyLayout,
+  SaitAsidePanel,
+  ShlokaCard,
+  PlaybackBar,
 } satisfies JyotishKit;
