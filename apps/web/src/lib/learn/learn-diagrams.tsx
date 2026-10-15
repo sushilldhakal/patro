@@ -15,7 +15,13 @@ import {
 } from "@/components/tithi-mechanics/tithi-mechanics-diagrams";
 import { AyanamshaWheel } from "@/components/learn/AyanamshaWheel";
 import { HoraLiveDiagram } from "@/components/learn/HoraLiveDiagram";
-import { ServerPipelineDiagram } from "@/components/learn/ServerPipelineDiagram";
+import earthUrl from "@/assets/earth.svg?url";
+import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
+import { ServerPipelineDiagram as PipelineFigure } from "@vedic-patro/ui/kit/learn";
+
+function ServerPipelineDiagram() {
+  return <PipelineFigure earthSrc={earthUrl} grahaSrc={GRAHA_PLANET_ICON_URL} />;
+}
 import {
   ComputationReferenceTables,
   EclipticBeltStudy,

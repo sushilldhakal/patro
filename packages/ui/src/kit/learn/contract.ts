@@ -62,6 +62,12 @@ export type EarthRotationDiagramProps = {
   globeSrc: string;
 };
 
+export type ServerPipelineDiagramProps = {
+  earthSrc: string;
+  /** Graha pictures keyed by sun, moon, mars, mercury, jupiter, venus, saturn. */
+  grahaSrc?: Record<string, string | undefined>;
+};
+
 export type EotGraphProps = {
   eccentricity: number;
   /** Axial tilt in radians. */
@@ -81,4 +87,5 @@ export type LearnKit = {
   LearnTopicCard: (props: LearnTopicCardProps) => ReactNode;
   EotGraph: (props: EotGraphProps) => ReactNode;
   EarthRotationDiagram: (props: EarthRotationDiagramProps) => ReactNode;
+  ServerPipelineDiagram: (props: ServerPipelineDiagramProps) => ReactNode;
 };

@@ -12,7 +12,7 @@ import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
 
 import type { ComponentType } from "react";
 import { Image } from "react-native";
-import { EarthRotationDiagram as EarthRotationFigure } from "@vedic-patro/ui/kit/learn";
+import { EarthRotationDiagram as EarthRotationFigure, ServerPipelineDiagram as PipelineFigure } from "@vedic-patro/ui/kit/learn";
 import { HoraTodayDiagram } from "@/components/learn/diagrams/HoraTodayDiagram";
 
 const earthGlobe = Image.resolveAssetSource(require("@/assets/sky3d/earth.jpg")).uri;
@@ -60,7 +60,9 @@ import {
   KaranaReferenceTable,
   ComputationReferenceDiagram,
 } from "@/components/learn/diagrams/ReferenceTables";
-import { ServerPipelineDiagram } from "@/components/learn/diagrams/ServerPipelineDiagram";
+function ServerPipelineDiagram() {
+  return <PipelineFigure earthSrc={earthGlobe} />;
+}
 import {
   SunEarthMoonDiagram,
   AyanamshaDiagram,

@@ -5,6 +5,7 @@ import { ChapterStill, ChapterTip } from "./ChapterAsides";
 import { LearnMoreCard, LearnTopicCard } from "./LearnCards";
 import { EotGraph } from "./EotGraph";
 import { EarthRotationDiagram } from "./EarthRotationDiagram";
+import { ServerPipelineDiagram } from "./ServerPipelineDiagram";
 
 export type {
   ArticleBodyProps,
@@ -15,6 +16,7 @@ export type {
   LearnTopicCardProps,
   EotGraphProps,
   EarthRotationDiagramProps,
+  ServerPipelineDiagramProps,
 } from "../contract";
 export {
   ArticleBody,
@@ -25,6 +27,7 @@ export {
   LearnTopicCard,
   EotGraph,
   EarthRotationDiagram,
+  ServerPipelineDiagram,
 };
 
 export const learnKit = {
@@ -36,4 +39,5 @@ export const learnKit = {
   LearnTopicCard,
   EotGraph,
   EarthRotationDiagram,
+  ServerPipelineDiagram,
 } satisfies LearnKit;
