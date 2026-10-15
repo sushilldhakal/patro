@@ -1,8 +1,10 @@
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import type { LocationParams, PanchangaDay } from "@/lib/api";
+import { PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
+import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { GhatiClock } from "@/components/panchanga/GhatiClock";
-import { PlanetEventsPanel } from "@/components/panchanga/PlanetEventsPanel";
-import { SunriseD1ChartPanel } from "@/components/panchanga/SunriseD1ChartPanel";
 
 type Props = {
   sunrise?: string;
@@ -28,12 +30,24 @@ export function PanchangaAsidePanels({
   location,
   planetEventsHref,
 }: Props) {
+  const router = useRouter();
   return (
     <View className="gap-4">
       <GhatiClock sunrise={sunrise} sunset={sunset} timezone={timezone} />
-      {chartData ? <SunriseD1ChartPanel p={chartData} /> : null}
+      {chartData ? (
+        <SunriseD1ChartPanel
+          p={chartData}
+          renderChart={(houses) => <D1Chart houses={houses} />}
+          renderLegend={() => <GrahaStatusLegend className="mt-1" />}
+        />
+      ) : null}
       {jdUt != null && refDateAd ? (
-        <PlanetEventsPanel jdUt={jdUt} refDateAd={refDateAd} location={location} viewMoreHref={planetEventsHref} />
+        <PlanetEventsPanel
+          jdUt={jdUt}
+          refDateAd={refDateAd}
+          location={location}
+          onViewMore={planetEventsHref ? () => router.push(planetEventsHref as never) : undefined}
+        />
       ) : null}
     </View>
   );

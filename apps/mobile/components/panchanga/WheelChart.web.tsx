@@ -42,6 +42,7 @@ import {
 import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
 
 import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { wheelPalette } from "@vedic-patro/ui/kit/panchanga";
 const DEG = Math.PI / 180;
 const CX = 500;
 const CY = 500;
@@ -603,7 +604,7 @@ function WheelChartImpl({
               <circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
             ) : null}
             {i === 6 ? (
-              <circle cx={px} cy={py} r={rad * 1.42} fill="none" stroke="#e6cf86" strokeWidth={1.15} />
+              <circle cx={px} cy={py} r={rad * 1.42} fill="none" stroke={wheelPalette.saturnRing} strokeWidth={1.15} />
             ) : null}
             <image
               href={skyUri(SKY_TOP[sky])}
@@ -618,7 +619,7 @@ function WheelChartImpl({
               <path
                 d={moonShadow}
                 transform={`translate(${px} ${py}) rotate(${moonTurn})`}
-                fill="#000"
+                fill={wheelPalette.moonShadow}
                 fillRule="evenodd"
                 opacity={0.78}
               />

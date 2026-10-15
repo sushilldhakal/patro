@@ -6,7 +6,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PanchangaAsidePanels } from "@/components/panchanga/PanchangaAsidePanels";
-import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
+import { EphemerisModeBanner } from "@vedic-patro/ui/kit/panchanga";
 import { useDayCycleTabs } from "@/components/panchanga/use-day-cycle-tabs";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
@@ -21,7 +21,7 @@ import {
   RituSection,
   SunMoonSamvatSection,
 } from "@/components/panchanga/PanchangaSections";
-import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
+import { GocharPromoCard } from "@vedic-patro/ui/kit/panchanga";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
@@ -192,7 +192,7 @@ export default function PanchangaScreen() {
           </View>
         ) : null}
 
-        <GocharPromoCard />
+        <GocharPromoCard onPress={() => router.push("/gochar" as never)} />
         <LearnMoreCard
           heading={page.copy.learnHeading}
           slugs={page.learnSlugs}

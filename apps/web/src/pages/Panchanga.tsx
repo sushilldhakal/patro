@@ -17,13 +17,12 @@ import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { PlanetEventsPanel } from "@/components/panchanga/PlanetEventsPanel";
-import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
+import { EphemerisModeBanner, GocharPromoCard, PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
+import { D1Chart } from "@/components/kundali/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
-import { EphemerisModeBanner } from "@/components/panchanga/MuhurtaNowPanel";
-import { SunriseD1ChartPanel } from "@/components/panchanga/SunriseD1ChartPanel";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { currentPatroYearRangeLinkSearch, searchToLocation } from "@/lib/url-state";
+import { currentPatroYearRangeLinkSearch, patroRouteLinkSearch, searchToLocation } from "@/lib/url-state";
 import {
   DinVisheshSection,
   FestivalsSection,
@@ -187,13 +186,24 @@ export function Panchanga() {
 
         <aside className={cn("flex flex-col", panchangaPageClasses.page.aside, "xl:sticky xl:top-[76px] xl:self-start")}>
           <GhatiClock sunrise={page.sunrise} sunset={page.sunset} timezone={page.timeZone} />
-          {data && <SunriseD1ChartPanel p={data} />}
+          {data ? (
+            <SunriseD1ChartPanel
+              p={data}
+              renderChart={(houses) => <D1Chart houses={houses} />}
+              renderLegend={() => <GrahaStatusLegend className="mt-1" />}
+            />
+          ) : null}
           {page.jdUt != null && page.civilAnchor ? (
             <PlanetEventsPanel
               jdUt={page.jdUt}
               refDateAd={page.civilAnchor}
               location={location.params}
-              browseLocation={location}
+              onViewMore={() =>
+                navigate({
+                  to: "/gochar",
+                  search: patroRouteLinkSearch("/gochar", location, langEra) as never,
+                })
+              }
             />
           ) : null}
         </aside>
@@ -268,7 +278,15 @@ export function Panchanga() {
         )}
       </div>
 
-      <GocharPromoCard location={location} className="mt-7 max-sm:px-2.5" />
+      <GocharPromoCard
+        className="mt-7 max-sm:px-2.5"
+        onPress={() =>
+          navigate({
+            to: "/gochar",
+            search: patroRouteLinkSearch("/gochar", location, langEra) as never,
+          })
+        }
+      />
 
       <LearnMoreCard
         className="mt-7 max-sm:px-2.5"
