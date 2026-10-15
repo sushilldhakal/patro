@@ -38,7 +38,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
   }
 
   return (
-    <Box className={cn("min-h-full rounded-lg bg-card", className)}>
+    <Box className={cn("rounded-lg bg-card", className)}>
       <Grid cols={2} gap={8} className={home.vivaranCells}>
         {view.cells.map((cell) => (
           <Cell key={cell.label} {...cell} />
