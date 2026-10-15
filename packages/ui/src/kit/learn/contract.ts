@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
+import type { SkyTimeTransport } from "@vedic-patro/features/sky3d";
 
 export type ChapterOverlayProps = {
   onClose: () => void;
@@ -78,6 +79,51 @@ export type EotGraphProps = {
   daysPerYear: number;
 };
 
+export type SkyTimeSheetIcons = {
+  up: ReactNode;
+  down: ReactNode;
+  play: ReactNode;
+  pause: ReactNode;
+  reset: ReactNode;
+  prev: ReactNode;
+  now: ReactNode;
+  next: ReactNode;
+};
+
+export type SkyTimeSheetProps = {
+  timeMs: number;
+  zoneOffsetMs: number;
+  /** Simulated seconds per real second. The speed row shows when this and its handlers are set. */
+  timeRate?: number;
+  onClose: () => void;
+  onApplyMs: (ms: number) => void;
+  onTimeRate?: (rate: number) => void;
+  onTogglePlay?: () => void;
+  onResetRate?: () => void;
+  /** Wins over the rate props. Used by the wheel's year playback. */
+  transport?: SkyTimeTransport;
+  /** A card in the middle of the screen instead of a sheet at the bottom. */
+  centered?: boolean;
+  icons: SkyTimeSheetIcons;
+};
+
+export type CompassControlProps = {
+  /** Degrees, 0 = north, clockwise. */
+  heading: number;
+  onHeadingChange: (heading: number) => void;
+  gyroMode: boolean;
+  cameraOn: boolean;
+  onTap: () => void;
+  onManualDrag: () => void;
+  /** Distance from the bottom of the sky, px. Default 12. */
+  bottom?: number;
+  visible?: boolean;
+  /** Centre glyph before a sensor is driving the dial. Receives the ink colour. */
+  renderNeedle: (color: string) => ReactNode;
+  /** Centre glyph once the device tilt has taken over. */
+  renderCamera: (color: string) => ReactNode;
+};
+
 export type LearnKit = {
   ArticleBody: (props: ArticleBodyProps) => ReactNode;
   ChapterOverlay: (props: ChapterOverlayProps) => ReactNode;
@@ -88,4 +134,6 @@ export type LearnKit = {
   EotGraph: (props: EotGraphProps) => ReactNode;
   EarthRotationDiagram: (props: EarthRotationDiagramProps) => ReactNode;
   ServerPipelineDiagram: (props: ServerPipelineDiagramProps) => ReactNode;
+  CompassControl: (props: CompassControlProps) => ReactNode;
+  SkyTimeSheet: (props: SkyTimeSheetProps) => ReactNode;
 };

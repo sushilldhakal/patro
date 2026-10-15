@@ -6,6 +6,8 @@ import { LearnMoreCard, LearnTopicCard } from "./LearnCards";
 import { EotGraph } from "./EotGraph";
 import { EarthRotationDiagram } from "./EarthRotationDiagram";
 import { ServerPipelineDiagram } from "./ServerPipelineDiagram";
+import { CompassControl } from "./CompassControl";
+import { SkyTimeSheet } from "./SkyTimeSheet";
 
 export type {
   ArticleBodyProps,
@@ -17,6 +19,8 @@ export type {
   EotGraphProps,
   EarthRotationDiagramProps,
   ServerPipelineDiagramProps,
+  CompassControlProps,
+  SkyTimeSheetProps,
 } from "../contract";
 export {
   ArticleBody,
@@ -28,6 +32,8 @@ export {
   EotGraph,
   EarthRotationDiagram,
   ServerPipelineDiagram,
+  CompassControl,
+  SkyTimeSheet,
 };
 
 export const learnKit = {
@@ -40,4 +46,6 @@ export const learnKit = {
   EotGraph,
   EarthRotationDiagram,
   ServerPipelineDiagram,
+  CompassControl,
+  SkyTimeSheet,
 } satisfies LearnKit;

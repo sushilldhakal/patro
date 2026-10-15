@@ -92,7 +92,9 @@ import {
   type ViewState,
 } from "@/components/sky3d/AakashGocharScene";
 import CompassNeedle from "@/assets/compass.svg";
-import { CompassControl, DIAL_SIZE } from "@/components/sky3d/CompassControl";
+import CameraGlyph from "@/assets/camera.svg";
+import { COMPASS_DIAL_SIZE } from "@vedic-patro/features/sky3d";
+import { CompassControl } from "@vedic-patro/ui/kit/learn";
 import { useDeviceOrientation } from "@/lib/sky3d/device-orientation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
@@ -1250,7 +1252,7 @@ export function AakashGocharSky({
      has to clear the same fullscreen strip they do. */
   const compassBottom = fullscreen ? fullscreenStripClearance : 12;
   /** The FOV pill rides just above the dial, so it follows it up in fullscreen. */
-  const fovBadgeBottom = compassBottom + DIAL_SIZE + 12;
+  const fovBadgeBottom = compassBottom + COMPASS_DIAL_SIZE + 12;
   /** Where a panel hanging off the adjust button starts — clear of it. */
   const adjustPanelBottom = adjustBottom + ADJUST_SIZE + ADJUST_GAP;
   const simDate = sample ? new Date(sample.timeMs) : date;
@@ -1990,6 +1992,8 @@ export function AakashGocharSky({
           onManualDrag={stopSensorMode}
           bottom={compassBottom}
           visible={mode === "horizon"}
+          renderNeedle={(color) => <CompassNeedle width={20} height={20} color={color} />}
+          renderCamera={(color) => <CameraGlyph width={20} height={20} color={color} />}
         />
 
         {/* क्षितिज's field of view — named only while it is actually moving,

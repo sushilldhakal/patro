@@ -101,9 +101,10 @@ import {
   type ViewState,
 } from "@/components/sky3d/AakashGocharScene";
 import { HIPS_ATTRIBUTION, readHipsDebugSnapshot, type HipsDebugSnapshot } from "@vedic-patro/domain/sky3d/hips";
-import { CompassControl } from "@/components/sky3d/CompassControl";
+import { CompassControl } from "@vedic-patro/ui/kit/learn";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import compassNeedle from "@/assets/compass.svg?raw";
+import cameraGlyph from "@/assets/camera.svg?raw";
 import { useDeviceOrientation, type OrientationSample } from "@/lib/sky3d/device-orientation";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
@@ -1859,6 +1860,8 @@ export function AakashGocharSky({
           onTap={onCompassTap}
           onManualDrag={stopSensorMode}
           visible={mode === "horizon"}
+          renderNeedle={() => <span className="block h-full w-full" dangerouslySetInnerHTML={{ __html: compassNeedle }} />}
+          renderCamera={() => <span className="block h-full w-full" dangerouslySetInnerHTML={{ __html: cameraGlyph }} />}
         />
 
         {/* "फोन माथि उठाउनुहोस्" — the window between asking for the gyro and
