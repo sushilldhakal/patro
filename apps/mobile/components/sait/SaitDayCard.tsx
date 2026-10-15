@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { SuitabilityBadge } from "@/components/sait/SaitSuitability";
+import { SuitabilityBadge } from "@vedic-patro/ui/kit/jyotish";
 import { Text } from "@/components/ui/Text";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
 import { useSaitDayCard } from "@vedic-patro/features/sait";

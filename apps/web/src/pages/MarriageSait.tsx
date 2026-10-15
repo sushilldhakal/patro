@@ -4,8 +4,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import { SaitSources } from "@vedic-patro/ui/kit/jyotish";
-import { SuitabilityLegend } from "@/components/sait/sait-suitability";
+import { SaitSources, SuitabilityLegend } from "@vedic-patro/ui/kit/jyotish";
 
 const routeApi = getRouteApi("/vivah-sait");
 
