@@ -301,6 +301,26 @@ export type VedicPatroLoaderProps = {
   className?: string;
 };
 
+export type MobileNavItem = {
+  key: string;
+  label: string;
+  icon?: ReactNode;
+  active?: boolean;
+  onPress: () => void;
+};
+
+export type MobileNavSection = {
+  id: string;
+  title: string;
+  items: MobileNavItem[];
+};
+
+export type MobileNavMenuProps = {
+  label: string;
+  sections: MobileNavSection[];
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -324,4 +344,5 @@ export type ShellKit = {
   AuthDialog: ComponentType<AuthDialogViewProps>;
   RelatedPageLinks: ComponentType<RelatedPageLinksProps>;
   VedicPatroLoader: ComponentType<VedicPatroLoaderProps>;
+  MobileNavMenu: ComponentType<MobileNavMenuProps>;
 };

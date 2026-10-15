@@ -13,9 +13,6 @@ import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const QUICK_LINK_ICON_SIZE = 28;
 const QUICK_LINK_ICON_STROKE = 1.75;
-const NAV_DRAWER_ICON_SIZE = 28;
-const NAV_DRAWER_ICON_STROKE = 1.75;
-
 /** Phone: content-sized row chips. md+: the original square tiles. */
 const quickLinkCardClass = cn(
   homeClasses.quickChip,
@@ -23,9 +20,6 @@ const quickLinkCardClass = cn(
 );
 
 /** Flat drawer tile — 3 per row under 540px, 4 per row above. */
-export const navDrawerCardClass =
-  "group flex h-[6.25rem] w-[calc((100%-1.25rem)/3)] compact:w-[calc((100%-1.875rem)/4)] flex-col items-center justify-center gap-1.5 bg-transparent px-0.5 py-1 text-center no-underline shadow-none transition-colors duration-200 hover:text-secondary active:scale-[0.98] [&.active]:text-secondary";
-
 export const quickLinkIconClass = "shrink-0 text-danger dark:text-danger";
 
 export function QuickLinkCard({
@@ -61,47 +55,6 @@ export function QuickLinkCard({
           {description}
         </span>
       ) : null}
-    </Link>
-  );
-}
-
-export function NavDrawerLinkCard({
-  label,
-  icon: Icon,
-  iconNode,
-  className,
-  onClick,
-  ...linkProps
-}: {
-  label: string;
-  icon?: LucideIcon;
-  iconNode?: ReactNode;
-  className?: string;
-  onClick?: () => void;
-} & Omit<LinkProps, "className" | "children" | "onClick">) {
-  return (
-    <Link
-      {...linkProps}
-      onClick={onClick}
-      className={cn(navDrawerCardClass, className)}
-      activeProps={{ className: "active" }}
-    >
-      <span
-        className="flex size-12 items-center justify-center rounded-full bg-muted/80 group-hover:bg-secondary/10 group-[.active]:bg-secondary/15"
-        aria-hidden
-      >
-        {iconNode ??
-          (Icon ? (
-            <Icon
-              size={NAV_DRAWER_ICON_SIZE}
-              strokeWidth={NAV_DRAWER_ICON_STROKE}
-              className={cn(quickLinkIconClass, "group-hover:text-secondary group-[.active]:text-secondary")}
-            />
-          ) : null)}
-      </span>
-      <span className="w-full min-w-0 px-0.5 text-diagram-sm font-bold leading-tight text-foreground line-clamp-2 group-[.active]:text-secondary">
-        {label}
-      </span>
     </Link>
   );
 }

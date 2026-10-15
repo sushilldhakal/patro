@@ -5,6 +5,7 @@ import { HomeQuickLinks } from "./HomeQuickLinks";
 import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
 import { HomeVedaMantra } from "./HomeVedaMantra";
 import { LanguageButton } from "./LanguageButton";
+import { MobileNavMenu } from "./MobileNavMenu";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
@@ -26,6 +27,7 @@ export {
   HomeRashifalSignPicker,
   HomeVedaMantra,
   LanguageButton,
+  MobileNavMenu,
   PatroCalendarHeader,
   PatroDayTimeHeader,
   PatroDayTimePanel,
@@ -54,6 +56,9 @@ export type {
   HomeRashifalThumbView,
   HomeVedaMantraProps,
   LanguageButtonProps,
+  MobileNavItem,
+  MobileNavMenuProps,
+  MobileNavSection,
   PatroCalendarHeaderProps,
   PatroDayTimeHeaderProps,
   PatroDayTimeModel,
@@ -99,4 +104,5 @@ export const shellKit = {
   AuthDialog,
   RelatedPageLinks,
   VedicPatroLoader,
+  MobileNavMenu,
 } satisfies ShellKit;

@@ -1,14 +1,13 @@
-import { View } from "react-native";
 import { usePathname } from "expo-router";
 import { useMobileNavMenu } from "@vedic-patro/features/common";
 import type { PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
+import { MobileNavMenu as MobileNavMenuView, type MobileNavItem, type MobileNavSection } from "@vedic-patro/ui/kit/shell";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { resolveDrawerIcon, type DrawerIconName } from "@/lib/drawer-icons";
 import { elementHref } from "@/lib/element-routes";
 import { isNavActive, normalizeMobilePathname } from "@/lib/mobile-nav";
 import { siteLinkHref } from "@/lib/related-page-links";
-import { DrawerNavSection, NavDrawerLinkCard } from "./NavDrawerLinkCard";
-
-type Tile = { id: string; href: string; label: string; icon: DrawerIconName };
+import { useThemeColors } from "@/lib/theme-context";
 
 /** Main row routes in this app (ids from the shared menu). */
 const MAIN_HREF: Record<string, string> = {
@@ -32,7 +31,6 @@ const ITEM_HREF: Record<string, string> = {
   rashifal: "/rashifal",
 };
 
-/** Icon each Main tile is drawn with (the website's drawer icons). */
 const MAIN_ICON_SECTION: Record<string, string> = {
   kundali: "jyotish",
   dainikkranti: "patro",
@@ -53,61 +51,46 @@ function itemActive(pathname: string, href: string): boolean {
   return isNavActive(pathname, href);
 }
 
-export function MobileNavMenu({
-  onNavigate,
-}: {
-  onNavigate: (href: string) => void;
-}) {
+/** Drawer tiles. The drawing is `@vedic-patro/ui/kit/shell`; this file supplies the route and the icon. */
+export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => void }) {
   const menu = useMobileNavMenu();
   const pathname = usePathname();
+  const colors = useThemeColors();
 
-  const mainTiles: Tile[] = [...menu.main, ...menu.appOnly.mainExtra].map(({ id, label }) => ({
-    id,
-    label,
-    href: MAIN_HREF[id] ?? "/",
-    icon: resolveDrawerIcon(MAIN_ICON_SECTION[id] ?? "main", id),
-  }));
+  const tile = (id: string, label: string, href: string, icon: DrawerIconName): MobileNavItem => {
+    const active = itemActive(pathname, href);
+    return {
+      key: id,
+      label,
+      active,
+      icon: <AppNavIcon name={icon} size={28} color={active ? colors.secondary : colors.danger} />,
+      onPress: () => onNavigate(href),
+    };
+  };
 
-  const renderTile = (tile: Tile) => (
-    <NavDrawerLinkCard
-      key={tile.id}
-      label={tile.label}
-      icon={tile.icon}
-      active={itemActive(pathname, tile.href)}
-      onPress={() => onNavigate(tile.href)}
-    />
-  );
+  const main: MobileNavSection = {
+    id: "main",
+    title: menu.mainTitle,
+    items: [...menu.main, ...menu.appOnly.mainExtra].map(({ id, label }) =>
+      tile(id, label, MAIN_HREF[id] ?? "/", resolveDrawerIcon(MAIN_ICON_SECTION[id] ?? "main", id)),
+    ),
+  };
 
-  return (
-    <View className="gap-1 pb-2 pt-2">
-      <DrawerNavSection first title={menu.mainTitle}>
-        {mainTiles.map(renderTile)}
-      </DrawerNavSection>
-      {menu.sections.map((section) => {
-        const tiles: Tile[] = section.items.map(({ item, label }) => ({
-          id: item.id,
-          label,
-          href: itemHref(item),
-          icon: resolveDrawerIcon(section.id, item.id),
-        }));
-        // Tiles only the app has.
-        if (section.id === "patro") {
-          tiles.push({ id: "reminders", label: menu.appOnly.reminders, href: "/reminders", icon: "calendar-clock" });
-        }
-        if (section.id === "graha") {
-          tiles.unshift({
-            id: "aakash-gochar",
-            label: menu.appOnly.aakashGochar,
-            href: "/aakash-gochar",
-            icon: resolveDrawerIcon("graha", "aakash-gochar"),
-          });
-        }
-        return (
-          <DrawerNavSection key={section.id} title={section.title}>
-            {tiles.map(renderTile)}
-          </DrawerNavSection>
-        );
-      })}
-    </View>
-  );
+  const sections: MobileNavSection[] = [
+    main,
+    ...menu.sections.map((section) => {
+      const items = section.items.map(({ item, label }) =>
+        tile(item.id, label, itemHref(item), resolveDrawerIcon(section.id, item.id)),
+      );
+      if (section.id === "patro") {
+        items.push(tile("reminders", menu.appOnly.reminders, "/reminders", "calendar-clock"));
+      }
+      if (section.id === "graha") {
+        items.unshift(tile("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar")));
+      }
+      return { id: section.id, title: section.title, items };
+    }),
+  ];
+
+  return <MobileNavMenuView label={menu.navAria} sections={sections} />;
 }
