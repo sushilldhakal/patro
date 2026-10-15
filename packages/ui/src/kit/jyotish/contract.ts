@@ -39,10 +39,10 @@ import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPan
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
-import type { VastuSelectionId } from "@vedic-patro/domain/vastu";
+import type { CardinalWall, VastuSelectionId } from "@vedic-patro/domain/vastu";
+import type { HousePlan, PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import type { FetchCivilDay, VastuPlannerStorage, VastuSketchOffline } from "@vedic-patro/features/vastu";
 import type { ProfilePlace } from "@vedic-patro/features/account";
-import type { FetchCivilDay } from "@vedic-patro/features/vastu";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import type { useRashifalSignCard } from "@vedic-patro/features/rashifal";
 
@@ -352,6 +352,35 @@ export type BhavaBalaChartProps = {
   renderGraha: GrahaSlot;
 };
 
+export type HouseSketchProps = {
+  plot: PlotSize;
+  facing: CardinalWall;
+  assignments: SpaceAssignment[];
+  ink: VastuInk;
+  center: VastuCenter;
+  marks: VastuMarks;
+  /** App edge length. The website stretches the drawing to its container. */
+  size?: number;
+};
+
+export type PlotSelectArgs = {
+  value: string;
+  label: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+};
+
+export type PlotPlannerProps = {
+  storage: VastuPlannerStorage;
+  offline?: VastuSketchOffline;
+  /** App picker. The website draws a `<select>`. */
+  renderSelect?: (args: PlotSelectArgs) => ReactNode;
+  /** App sketch edge in points. The website fills the container. */
+  sketchSize?: number;
+  renderOwner: () => ReactNode;
+  renderRequirements: (args: { plan: HousePlan; onChange: (plan: HousePlan) => void }) => ReactNode;
+};
+
 export type VastuPurushaWheelProps = {
   selected: VastuSelectionId;
   onSelect: (id: VastuSelectionId) => void;
@@ -504,6 +533,8 @@ export type JyotishKit = {
   ShadbalaChart: ComponentType<ShadbalaChartProps>;
   VastuPurushaWheel: ComponentType<VastuPurushaWheelProps>;
   VastuCompassRing: ComponentType<VastuCompassRingProps>;
+  HouseSketch: ComponentType<HouseSketchProps>;
+  PlotPlanner: ComponentType<PlotPlannerProps>;
   DashaTree: ComponentType<DashaTreeProps>;
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;

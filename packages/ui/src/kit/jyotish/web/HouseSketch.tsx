@@ -1,17 +1,15 @@
 import { useId } from "react";
 import {
   VASTU_ELEMENT_COLOR,
-  VASTU_INK,
   vastuDirection,
   vastuElementTint,
-  type CardinalWall,
 } from "@vedic-patro/domain/vastu";
 import { RING_SIZE } from "@vedic-patro/domain/vastu-ring";
 import { useHouseSketch } from "@vedic-patro/features/vastu";
 import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
-import type { PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
 import { cn } from "@vedic-patro/domain/utils";
-import { VastuCompassRing } from "./VastuCompassRing";
+import type { HouseSketchProps } from "../contract";
+import { VastuCompassRing } from "./VastuCompass";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
@@ -41,7 +39,7 @@ function roomTint(room: TemplateRoom): string {
 }
 
 /** Stair treads, so a staircase reads as one rather than as an empty room. */
-function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
+function StairTreads({ rect, px, stroke }: { rect: Rect; px: PxFn; stroke: string }) {
   const along = rect.h >= rect.w;
   const steps = 7;
   return (
@@ -55,7 +53,7 @@ function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
             y1={px(rect.y + rect.h * f)}
             x2={px(rect.x + rect.w)}
             y2={px(rect.y + rect.h * f)}
-            stroke={VASTU_INK.text}
+            stroke={stroke}
             strokeOpacity={0.3}
             strokeWidth={0.7}
           />
@@ -66,7 +64,7 @@ function StairTreads({ rect, px }: { rect: Rect; px: PxFn }) {
             y1={px(rect.y)}
             x2={px(rect.x + rect.w * f)}
             y2={px(rect.y + rect.h)}
-            stroke={VASTU_INK.text}
+            stroke={stroke}
             strokeOpacity={0.3}
             strokeWidth={0.7}
           />
@@ -111,15 +109,8 @@ function FlowArrow({
   );
 }
 
-export function HouseSketch({
-  plot,
-  facing,
-  assignments,
-}: {
-  plot: PlotSize;
-  facing: CardinalWall;
-  assignments: SpaceAssignment[];
-}) {
+export function HouseSketch({ plot, facing, assignments, ink, center, marks, size }: HouseSketchProps) {
+  void size;
   const hatchId = `vastu-court-${useId().replace(/:/g, "")}`;
   const sketch = useHouseSketch({ plot, facing, assignments });
   const {
@@ -148,7 +139,7 @@ export function HouseSketch({
   return (
     <figure className="m-0">
       <div className="relative mx-auto aspect-square w-full max-w-[900px]">
-        <VastuCompassRing className="absolute inset-0 h-full w-full" />
+        <VastuCompassRing className="absolute inset-0 h-full w-full" center={center} ink={ink} marks={marks} />
 
         <svg
           viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
@@ -187,7 +178,7 @@ export function HouseSketch({
                 width={px(room.rect.w)}
                 height={px(room.rect.h)}
                 fill={roomTint(room)}
-                stroke={VASTU_INK.text}
+                stroke={ink.text}
                 strokeOpacity={0.55}
                 strokeWidth={0.9}
               />
@@ -198,7 +189,7 @@ export function HouseSketch({
               d={`M ${px(outer.x)} ${px(outer.y)} h ${px(outer.w)} v ${px(outer.h)} h ${-px(outer.w)} Z M ${px(court.x)} ${px(court.y)} h ${px(court.w)} v ${px(court.h)} h ${-px(court.w)} Z`}
               fillRule="evenodd"
               fill={vastuElementTint("space", 0.16)}
-              stroke={VASTU_INK.text}
+              stroke={ink.text}
               strokeOpacity={0.45}
               strokeWidth={0.9}
             />
@@ -218,7 +209,7 @@ export function HouseSketch({
 
             {plan.rooms.map((room) =>
               room.kind === "staircase" ? (
-                <StairTreads key={`${room.id}-tread`} rect={room.rect} px={px} />
+                <StairTreads key={`${room.id}-tread`} rect={room.rect} px={px} stroke={ink.text} />
               ) : null,
             )}
 
@@ -240,7 +231,7 @@ export function HouseSketch({
                     y={cy - (tight ? 0 : 5 * fs)}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fill={VASTU_INK.text}
+                    fill={ink.text}
                     fontSize={(tight ? 7.5 : 9.5) * fs}
                     fontWeight={700}
                   >
@@ -251,7 +242,7 @@ export function HouseSketch({
                       x={cx}
                       y={cy + 7 * fs}
                       textAnchor="middle"
-                      fill={VASTU_INK.text}
+                      fill={ink.text}
                       fillOpacity={0.7}
                       fontSize={7.5 * fs}
                     >
@@ -268,7 +259,7 @@ export function HouseSketch({
                 x={courtCx}
                 y={courtCy - 7 * fs}
                 textAnchor="middle"
-                fill={VASTU_INK.text}
+                fill={ink.text}
                 fontSize={10 * fs}
                 fontWeight={700}
               >
@@ -278,7 +269,7 @@ export function HouseSketch({
                 x={courtCx}
                 y={courtCy + 4 * fs}
                 textAnchor="middle"
-                fill={VASTU_INK.text}
+                fill={ink.text}
                 fillOpacity={0.75}
                 fontSize={8 * fs}
               >
@@ -303,7 +294,7 @@ export function HouseSketch({
               width={px(plot.width)}
               height={px(plot.height)}
               fill="none"
-              stroke={VASTU_INK.text}
+              stroke={ink.text}
               strokeWidth={3}
             />
 
@@ -367,4 +358,3 @@ export function HouseSketch({
   );
 }
 
-export default HouseSketch;
