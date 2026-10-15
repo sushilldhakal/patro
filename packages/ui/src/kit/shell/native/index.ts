@@ -1,17 +1,49 @@
 import type { ShellKit } from "../contract";
 import { LanguageButton } from "./LanguageButton";
+import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
+import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
+import { PatroDayTimePanel } from "./PatroDayTimePanel";
+import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
+import { PatroYearHeader } from "./PatroYearHeader";
+import { PatroYearNav, PatroYearNavBlock } from "./PatroYearNav";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 
-export { LanguageButton, PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, SiteFooter, StatCard, TodayHighlightCard };
+export {
+  LanguageButton,
+  PatroCalendarHeader,
+  PatroDayTimeHeader,
+  PatroDayTimePanel,
+  PatroHeaderLocation,
+  PatroHeaderSwap,
+  PatroHeaderTabs,
+  PatroMonthYearNav,
+  PatroYearHeader,
+  PatroYearNav,
+  PatroYearNavBlock,
+  SeoContentSection,
+  SiteFooter,
+  StatCard,
+  TodayHighlightCard,
+};
 export type {
+  CalendarHeaderSegment,
   LanguageButtonProps,
+  PatroCalendarHeaderProps,
+  PatroDayTimeHeaderProps,
+  PatroDayTimeModel,
+  PatroDayTimePanelProps,
+  PatroHeaderLocationProps,
   PatroHeaderSwapProps,
   PatroHeaderTab,
   PatroHeaderTabsProps,
+  PatroMonthYearNavProps,
+  PatroYearHeaderProps,
+  PatroYearNavBlockProps,
+  PatroYearNavProps,
   SeoContentSectionProps,
   SiteFooterProps,
   StatCardProps,
@@ -27,4 +59,12 @@ export const shellKit = {
   SiteFooter,
   LanguageButton,
   TodayHighlightCard,
+  PatroHeaderLocation,
+  PatroCalendarHeader,
+  PatroMonthYearNav,
+  PatroDayTimePanel,
+  PatroDayTimeHeader,
+  PatroYearHeader,
+  PatroYearNav,
+  PatroYearNavBlock,
 } satisfies ShellKit;

@@ -1,11 +1,8 @@
-import { useMemo } from "react";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
-import { useLocale } from "@/lib/i18n";
-import { formatPatroYearGregorianRange, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
-import { type Era } from "@vedic-patro/domain/era";
+import { locateDevice } from "@/components/panchanga/locate-device";
+import type { Era } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { PatroDateNav } from "./PatroDateNav";
+import { PatroYearNav } from "@vedic-patro/ui/kit/shell";
 import type { PatroHeaderTab } from "./PatroHeaderTabs";
 
 export type PatroYearBrowseNavProps = {
@@ -21,18 +18,18 @@ export type PatroYearBrowseNavProps = {
   tabs?: PatroHeaderTab[];
   tabsLabel?: string;
   className?: string;
-  /** Override the badge's "go to this year"; default sets the current BS year. */
+  /** Override the badge's "go to this year". */
   onToday?: () => void;
 };
 
-/** Year-only browse header (web `PatroYearNav`): badge, title, year picker and location. */
+/** Year-only browse header. Draws the website year nav. */
 export function PatroYearBrowseNav({
   era,
   onEraChange,
   year,
   onYearChange,
   gregorianRange,
-  crossEraSubtitle: crossEraSubtitleProp,
+  crossEraSubtitle,
   location: locationProp,
   onLocationChange: onLocationChangeProp,
   tabs,
@@ -40,32 +37,20 @@ export function PatroYearBrowseNav({
   className,
   onToday,
 }: PatroYearBrowseNavProps) {
-  const { lang } = useLocale();
   const fallback = usePanchangaLocation();
-  const location = locationProp ?? fallback.location;
-  const onLocationChange = onLocationChangeProp ?? fallback.setLocation;
-  const digitFn = patroHeadlineDigits(lang);
-
-  const crossEraSubtitle = useMemo(() => {
-    if (crossEraSubtitleProp?.trim()) return crossEraSubtitleProp;
-    if (gregorianRange?.start && gregorianRange?.end) {
-      return formatPatroYearGregorianRange(gregorianRange.start, gregorianRange.end, lang, digitFn);
-    }
-    return undefined;
-  }, [crossEraSubtitleProp, gregorianRange, lang, digitFn]);
-
   return (
-    <PatroDateNav
-      mode="year"
+    <PatroYearNav
       className={className}
       era={era}
       onEraChange={onEraChange}
       year={year}
       onYearChange={onYearChange}
-      crossEraSubtitle={crossEraSubtitle}
-      onToday={onToday ?? (() => onYearChange(getCurrentBs().year))}
-      location={location}
-      onLocationChange={onLocationChange}
+      gregorianRange={gregorianRange}
+      rangeLabel={crossEraSubtitle}
+      onToday={onToday}
+      location={locationProp ?? fallback.location}
+      onLocationChange={onLocationChangeProp ?? fallback.setLocation}
+      locate={locateDevice}
       tabs={tabs}
       tabsLabel={tabsLabel}
     />
