@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-// Resolved from the repo root, where react-dom has no bundled declarations.
-// @ts-expect-error the website app supplies the react-dom types at its own import sites
 import { createPortal } from "react-dom";
 import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";

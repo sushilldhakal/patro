@@ -1,4 +1,5 @@
 import { useEffect, useId } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@vedic-patro/domain/utils";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
@@ -18,15 +19,17 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, chil
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
-  if (!open) return null;
-  return (
+  if (!open || typeof document === "undefined") return null;
+  /* Drawn into <body>: a sticky header with backdrop-filter, or any transformed ancestor,
+     would otherwise become the containing block of `fixed` and pin the sheet to its top. */
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" data-testid={testID}>
       <div className={cn("absolute inset-0", sheetClass.backdrop)} onClick={onClose} aria-hidden />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
-        style={{ maxHeight: `${maxHeightPercent ?? 85}vh` }}
+        style={{ maxHeight: `${maxHeightPercent ?? 85}dvh` }}
         className={cn(
           "relative w-full overflow-y-auto sm:max-w-lg sm:rounded-2xl",
           sheetClass.panel,
@@ -53,6 +56,7 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, chil
         ) : null}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -1,4 +1,4 @@
-import { Modal, Pressable, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
 import { cn } from "@vedic-patro/domain/utils";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
@@ -9,7 +9,7 @@ import { Text } from "./Text";
 export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, children, className, nativeClassName, testID }: SheetProps) {
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose} testID={testID}>
-      <View className="flex-1 justify-end">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1 justify-end">
         <Pressable
           className={cn("absolute bottom-0 left-0 right-0 top-0", sheetClass.backdrop)}
           onPress={onClose}
@@ -34,9 +34,11 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, chil
               ) : null}
             </View>
           ) : null}
-          <ScrollView>{children}</ScrollView>
+          <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+            {children}
+          </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
