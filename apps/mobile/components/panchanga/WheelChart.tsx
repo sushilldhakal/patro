@@ -1289,7 +1289,14 @@ function WheelChartImpl({
           transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
         }}
       >
-        <Animated.View style={{ flex: 1, transform: [{ rotate: dragRotate }] }} pointerEvents="none">
+        {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
+            rotates that texture. Without it every frame re-draws the whole wheel
+            (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}
+        <Animated.View
+          style={{ flex: 1, transform: [{ rotate: dragRotate }] }}
+          pointerEvents="none"
+          renderToHardwareTextureAndroid
+        >
         <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (

@@ -5,6 +5,13 @@ import type { PanchangaDay } from "@/lib/api";
 import { timeShort } from "@/lib/api";
 import { Card } from "./ui/Card";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import {
+  formatPakshaLabel,
+  getMoonrise,
+  getMoonset,
+  getSunrise,
+  getSunset,
+} from "@vedic-patro/domain/panchanga-format";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -44,12 +51,19 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
         <Row label={pick(tFor("ne", "kundali.karana"), tFor("en", "kundali.karana"))} value={t(data.karana?.name_ne, data.karana?.name)} />
         <Row
           label={pick(tFor("ne", "sections.paksha"), tFor("en", "sections.paksha"))}
-          value={t(data.paksha?.label_ne, data.paksha?.label_en)}
+          value={
+            formatPakshaLabel(
+              data,
+              lang,
+              data.paksha_ne,
+              typeof (data.paksha as unknown) === "string" ? (data.paksha as unknown as string) : undefined,
+            ) ?? "—"
+          }
         />
-        <Row label={pick(tFor("ne", "kundali.sunrise"), tFor("en", "kundali.sunrise"))} value={timeShort(data.sunrise)} />
-        <Row label={pick(tFor("ne", "kundali.sunset"), tFor("en", "kundali.sunset"))} value={timeShort(data.sunset)} />
-        <Row label={pick(tFor("ne", "sections.moonrise"), tFor("en", "sections.moonrise"))} value={timeShort(data.moonrise)} />
-        <Row label={pick(tFor("ne", "sections.moonset"), tFor("en", "sections.moonset"))} value={timeShort(data.moonset)} />
+        <Row label={pick(tFor("ne", "kundali.sunrise"), tFor("en", "kundali.sunrise"))} value={timeShort(getSunrise(data))} />
+        <Row label={pick(tFor("ne", "kundali.sunset"), tFor("en", "kundali.sunset"))} value={timeShort(getSunset(data))} />
+        <Row label={pick(tFor("ne", "sections.moonrise"), tFor("en", "sections.moonrise"))} value={timeShort(getMoonrise(data))} />
+        <Row label={pick(tFor("ne", "sections.moonset"), tFor("en", "sections.moonset"))} value={timeShort(getMoonset(data))} />
       </View>
       {data.muhurta ? (
         <View className="border-t border-border/60 px-4 py-2">

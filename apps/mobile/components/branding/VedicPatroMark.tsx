@@ -65,10 +65,17 @@ function useMarkMotion(reduceMotion: boolean) {
   };
 }
 
-/** Animated brand mark — Reanimated port of web `favicon.svg` CSS motion. */
-export function VedicPatroMark({ size = 42 }: { size?: number }) {
+/**
+ * Brand mark — Reanimated port of web `favicon.svg` CSS motion.
+ *
+ * Still by default: it sits in the persistent header, and four endless SVG
+ * animations there redraw the whole masked/gradient SVG every frame on
+ * Android, so the app never goes idle and every scroll janks. Pass
+ * `animated` only where it is shown briefly.
+ */
+export function VedicPatroMark({ size = 42, animated = false }: { size?: number; animated?: boolean }) {
   const reduceMotion = useReduceMotionEnabled();
-  const { raysProps, sunProps, haloProps, crescentProps } = useMarkMotion(reduceMotion);
+  const { raysProps, sunProps, haloProps, crescentProps } = useMarkMotion(reduceMotion || !animated);
 
   return (
     <Svg width={size} height={size} viewBox="0 0 512 512" accessibilityLabel="Vedic Patro">
