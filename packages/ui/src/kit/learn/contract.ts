@@ -4,6 +4,8 @@
  */
 import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
+import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
+import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
 
 export type ChapterOverlayProps = {
   onClose: () => void;
@@ -35,9 +37,31 @@ export type ArticleBodyProps = {
   renderDiagram?: (id: string) => ReactNode;
 };
 
+export type LearnMoreCardProps = {
+  slugs: string[];
+  heading?: string;
+  className?: string;
+  /** Book glyph beside the heading. Each app supplies its own icon set. */
+  headingIcon: ReactNode;
+  renderIcon: (icon: LearnIconKey) => ReactNode;
+  /** Website anchor. A normal click calls `onOpen`; modified clicks follow the href. */
+  hrefFor: (slug: string) => string;
+  onOpen: (slug: string) => void;
+};
+
+export type LearnTopicCardProps = {
+  topic: LearnTopic;
+  readMore: string;
+  icon: ReactNode;
+  href: string;
+  onOpen: () => void;
+};
+
 export type LearnKit = {
   ArticleBody: (props: ArticleBodyProps) => ReactNode;
   ChapterOverlay: (props: ChapterOverlayProps) => ReactNode;
   ChapterStill: (props: ChapterStillProps) => ReactNode;
   ChapterTip: (props: ChapterTipProps) => ReactNode;
+  LearnMoreCard: (props: LearnMoreCardProps) => ReactNode;
+  LearnTopicCard: (props: LearnTopicCardProps) => ReactNode;
 };
