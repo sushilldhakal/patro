@@ -1,6 +1,8 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
 import { PatroCalendarHeader as View, type CalendarHeaderSegment, type PatroCalendarHeaderProps } from "@vedic-patro/ui/kit/shell";
 
+export { calendarHeaderClasses } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
+
 export type { CalendarHeaderSegment, PatroCalendarHeaderProps };
 
 /** Supplies the browser geolocation. The drawing is `@vedic-patro/ui/kit/shell`. */

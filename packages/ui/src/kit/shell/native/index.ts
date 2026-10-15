@@ -1,5 +1,7 @@
 import type { ShellKit } from "../contract";
 import { AccountMenu } from "./AccountMenu";
+import { BsCalendarGrid } from "./BsCalendarGrid";
+import { BsNativeSelect } from "./BsNativeSelect";
 import { AuthDialog } from "./AuthDialog";
 import { HomeQuickLinks } from "./HomeQuickLinks";
 import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
@@ -22,6 +24,8 @@ import { VedicPatroLoader } from "./VedicPatroLoader";
 
 export {
   AccountMenu,
+  BsCalendarGrid,
+  BsNativeSelect,
   AuthDialog,
   HomeQuickLinks,
   HomeRashifalSignPicker,
@@ -47,6 +51,10 @@ export {
 };
 export type {
   AccountMenuProps,
+  BsCalendarGridProps,
+  BsCalendarMoon,
+  BsNativeSelectOption,
+  BsNativeSelectProps,
   AuthDialogViewProps,
   CalendarHeaderSegment,
   HomeQuickLinkGroup,
@@ -105,4 +113,6 @@ export const shellKit = {
   RelatedPageLinks,
   VedicPatroLoader,
   MobileNavMenu,
+  BsCalendarGrid,
+  BsNativeSelect,
 } satisfies ShellKit;

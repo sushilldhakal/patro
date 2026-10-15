@@ -19,7 +19,8 @@ import { PatroCalendarHeader } from "@/components/patro-date";
 import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
-import { BsCalendarGrid } from "./BsCalendarGrid";
+import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
+import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { VedicPatroLoader } from "./VedicPatroLoader";
 import { DayDetailModal } from "./DayDetailModal";
 import { useLocale } from "@/i18n/locale";
@@ -27,6 +28,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroMdRail } from "@/lib/patro-classes";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
+import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 
@@ -209,6 +211,8 @@ export function CalendarView({
           isEnriching={isEnriching}
           todayAd={todayAd}
           primaryDate={isGregorian ? "ad" : "bs"}
+          className={calendarClasses.gridWide}
+          moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} className="size-full" />}
         />
       </div>
 

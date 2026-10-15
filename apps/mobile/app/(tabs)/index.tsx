@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
-import { BsCalendarGrid } from "@/components/home/BsCalendarGrid";
+import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
+import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
 import { HomeAuspiciousTimes } from "@/components/home/HomeAuspiciousTimes";
 import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
@@ -239,12 +240,13 @@ export default function HomeScreen() {
       ) : (
         <BsCalendarGrid
           days={gridDays}
-          selectedAd={aside.highlightAd}
+          selectedAdDate={aside.highlightAd}
           todayAd={todayAd}
           publicHolidayDates={publicHolidayDates}
           onSelectDay={handleSelectDay}
           isEnriching={monthFetching}
           primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
+          moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
         />
       )}
     </View>

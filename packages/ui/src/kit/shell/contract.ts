@@ -321,6 +321,37 @@ export type MobileNavMenuProps = {
   className?: string;
 };
 
+export type BsCalendarMoon = { tithiIndex: number; title?: string };
+
+export type BsCalendarGridProps = {
+  days: CalendarDay[];
+  publicHolidayDates?: Set<string>;
+  selectedAdDate?: string;
+  onSelectDay?: (day: CalendarDay) => void;
+  isEnriching?: boolean;
+  todayAd?: string;
+  primaryDate?: "bs" | "ad";
+  /** Moon artwork stays in each app (it is a panchanga drawing). */
+  moon?: (info: BsCalendarMoon) => ReactNode;
+  className?: string;
+};
+
+export type BsNativeSelectOption = {
+  value: number;
+  label: string;
+  /** Closed control below `md` when the full label is too wide. */
+  shortLabel?: string;
+};
+
+export type BsNativeSelectProps = {
+  value: number;
+  options: BsNativeSelectOption[];
+  onChange: (value: number) => void;
+  ariaLabel: string;
+  className?: string;
+  comfortable?: boolean;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -345,4 +376,6 @@ export type ShellKit = {
   RelatedPageLinks: ComponentType<RelatedPageLinksProps>;
   VedicPatroLoader: ComponentType<VedicPatroLoaderProps>;
   MobileNavMenu: ComponentType<MobileNavMenuProps>;
+  BsCalendarGrid: ComponentType<BsCalendarGridProps>;
+  BsNativeSelect: ComponentType<BsNativeSelectProps>;
 };
