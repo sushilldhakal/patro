@@ -33,9 +33,23 @@ export type PatroHeaderSwapProps = {
   className?: string;
 };
 
+export type SiteFooterProps = {
+  /** Opens an in-app page (`/privacy`, `/terms`). Each app supplies its router. */
+  onOpenPage: (path: string) => void;
+  className?: string;
+};
+
+export type LanguageButtonProps = {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
   PatroHeaderTabs: ComponentType<PatroHeaderTabsProps>;
   PatroHeaderSwap: ComponentType<PatroHeaderSwapProps>;
+  SiteFooter: ComponentType<SiteFooterProps>;
 };
