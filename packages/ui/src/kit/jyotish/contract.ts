@@ -40,6 +40,7 @@ import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import type { VastuSelectionId } from "@vedic-patro/domain/vastu";
 import type { ProfilePlace } from "@vedic-patro/features/account";
 import type { FetchCivilDay } from "@vedic-patro/features/vastu";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
@@ -326,6 +327,12 @@ export type BhavaBalaCardProps = {
   }) => ReactNode;
 };
 
+export type VastuCenter = { cx: number; cy: number };
+
+export type VastuInk = { text: string; background: string };
+
+export type VastuMarks = { good: string; bad: string };
+
 export type ShadbalaChartProps = {
   planets: ShadbalaPlanet[];
   selectedKey: string;
@@ -343,6 +350,29 @@ export type BhavaBalaChartProps = {
   vargaCharts?: VargaCharts;
   combustion?: Record<string, boolean | null>;
   renderGraha: GrahaSlot;
+};
+
+export type VastuPurushaWheelProps = {
+  selected: VastuSelectionId;
+  onSelect: (id: VastuSelectionId) => void;
+  centerContent?: ReactNode;
+  /** Compass heading (0 = north, clockwise). The facing wall sits at the top. */
+  headingDeg?: number | null;
+  /** Wheel centre in the shared viewBox. The ring passes the same point. */
+  center: VastuCenter;
+  ink: VastuInk;
+  marks: VastuMarks;
+  /** App edge length. The website stretches with `className`. */
+  size?: number;
+  className?: string;
+};
+
+export type VastuCompassRingProps = {
+  center: VastuCenter;
+  ink: VastuInk;
+  marks: VastuMarks;
+  size?: number;
+  className?: string;
 };
 
 export type ShadbalaCardProps = {
@@ -472,6 +502,8 @@ export type JyotishKit = {
   BhavaBalaChart: ComponentType<BhavaBalaChartProps>;
   ShadbalaCard: ComponentType<ShadbalaCardProps>;
   ShadbalaChart: ComponentType<ShadbalaChartProps>;
+  VastuPurushaWheel: ComponentType<VastuPurushaWheelProps>;
+  VastuCompassRing: ComponentType<VastuCompassRingProps>;
   DashaTree: ComponentType<DashaTreeProps>;
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;

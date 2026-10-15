@@ -5,6 +5,8 @@ import { KundaliReport } from "./Report";
 import { KundaliSectionNav, KundaliSidebarSubnav } from "./Structure";
 import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
 import { BhavaBalaChart, ShadbalaChart } from "./StrengthCharts";
+import { VastuCompassRing } from "./VastuCompass";
+import { VastuPurushaWheel } from "./VastuWheel";
 import { DashaTree } from "./DashaTree";
 import { ShantiVidhiPanel } from "./Shanti";
 import {
@@ -115,6 +117,8 @@ export {
   GrahaDetailsList,
   ShadbalaCard,
   ShadbalaChart,
+  VastuCompassRing,
+  VastuPurushaWheel,
   ShantiVidhiPanel,
   VimshopakaCard,
   YogaReferenceCatalog,
@@ -164,6 +168,8 @@ export const jyotishKit = {
   BhavaBalaChart,
   ShadbalaCard,
   ShadbalaChart,
+  VastuCompassRing,
+  VastuPurushaWheel,
   DashaTree,
   DashaSystemPanel,
   ShantiVidhiPanel,
