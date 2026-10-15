@@ -6,6 +6,8 @@ import { Text } from "./Text";
 
 export function Button({
   label,
+  children,
+  ariaLabel,
   onPress,
   variant = "default",
   size = "md",
@@ -19,6 +21,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label ? undefined : ariaLabel}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
@@ -34,7 +37,7 @@ export function Button({
       )}
     >
       {icon ? <View>{icon}</View> : null}
-      <Text className={cn(buttonClass.label, buttonClass.text[variant], textClassName)}>{label}</Text>
+      {children ?? <Text className={cn(buttonClass.label, buttonClass.text[variant], textClassName)}>{label}</Text>}
     </Pressable>
   );
 }

@@ -8,7 +8,7 @@ import { Icon } from "./Icon";
  * A panel over the page: rises from the bottom on phones, centred from `sm` up.
  * Escape and a tap on the backdrop close it.
  */
-export function Sheet({ open, onClose, title, closeLabel, children, className, webClassName, testID }: SheetProps) {
+export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, children, className, webClassName, testID }: SheetProps) {
   const titleId = useId();
   useEffect(() => {
     if (!open) return;
@@ -26,8 +26,9 @@ export function Sheet({ open, onClose, title, closeLabel, children, className, w
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
+        style={{ maxHeight: `${maxHeightPercent ?? 85}vh` }}
         className={cn(
-          "relative max-h-[85vh] w-full overflow-y-auto sm:max-w-lg sm:rounded-2xl",
+          "relative w-full overflow-y-auto sm:max-w-lg sm:rounded-2xl",
           sheetClass.panel,
           className,
           webClassName,

@@ -111,7 +111,12 @@ export type ButtonVariant = "default" | "outline" | "ghost" | "secondary" | "des
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = StyleProps & {
-  label: string;
+  /** Visible text. Give `children` instead for custom content; then set `ariaLabel`. */
+  label?: string;
+  /** Custom content in place of `label`. */
+  children?: ReactNode;
+  /** Accessible name when there is no `label`. */
+  ariaLabel?: string;
   onPress?: () => void;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -188,6 +193,8 @@ export type SheetProps = StyleProps & {
   title?: string;
   /** Accessible name for the close button. */
   closeLabel?: string;
+  /** Tallest the panel may grow, as a percentage of the screen height (default 85). */
+  maxHeightPercent?: number;
   children?: ReactNode;
 };
 

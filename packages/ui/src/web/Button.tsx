@@ -16,6 +16,8 @@ export const buttonWebClass = {
 
 export function Button({
   label,
+  children,
+  ariaLabel,
   onPress,
   variant = "default",
   size = "md",
@@ -32,6 +34,7 @@ export function Button({
       type={type}
       disabled={disabled}
       onClick={onPress}
+      aria-label={label ? undefined : ariaLabel}
       data-testid={testID}
       className={cn(
         buttonClass.base,
@@ -47,7 +50,7 @@ export function Button({
       )}
     >
       {icon}
-      <span className={textClassName}>{label}</span>
+      {children ?? <span className={textClassName}>{label}</span>}
     </button>
   );
 }

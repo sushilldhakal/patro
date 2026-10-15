@@ -6,7 +6,7 @@ import { Icon } from "./Icon";
 import { Text } from "./Text";
 
 /** A panel that rises from the bottom; the back button and a tap on the backdrop close it. */
-export function Sheet({ open, onClose, title, closeLabel, children, className, nativeClassName, testID }: SheetProps) {
+export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, children, className, nativeClassName, testID }: SheetProps) {
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose} testID={testID}>
       <View className="flex-1 justify-end">
@@ -16,7 +16,7 @@ export function Sheet({ open, onClose, title, closeLabel, children, className, n
           accessibilityRole="button"
           accessibilityLabel={closeLabel}
         />
-        <View className={cn("max-h-[85%] pb-10", sheetClass.panel, className, nativeClassName)} accessibilityViewIsModal>
+        <View className={cn("pb-10", sheetClass.panel, className, nativeClassName)} accessibilityViewIsModal style={{ maxHeight: `${maxHeightPercent ?? 85}%` }}>
           <View className={sheetClass.handle} />
           {title || closeLabel ? (
             <View className={sheetClass.header}>
