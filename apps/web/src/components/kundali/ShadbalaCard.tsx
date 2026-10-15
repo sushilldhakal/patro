@@ -1,8 +1,11 @@
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { ShadbalaChart } from "@/components/kundali/ShadbalaChart";
 import type { BhavaBalaData, ShadbalaResponse, YuddhaData } from "@/lib/api";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { ShadbalaCard as Shared } from "@vedic-patro/ui/kit/jyotish";
+import { ShadbalaCard as Shared, ShadbalaChart } from "@vedic-patro/ui/kit/jyotish";
+
+function graha({ graha, size }: { graha: string; size?: number }) {
+  return <GrahaPlanetIcon graha={graha as GrahaKey} size={size} />;
+}
 
 export function ShadbalaCard({
   data,
@@ -18,8 +21,8 @@ export function ShadbalaCard({
       data={data}
       yuddha={yuddha}
       bhavaBala={bhavaBala}
-      renderGraha={({ graha, size }) => <GrahaPlanetIcon graha={graha as GrahaKey} size={size} />}
-      renderChart={(chart) => <ShadbalaChart {...chart} />}
+      renderGraha={graha}
+      renderChart={(chart) => <ShadbalaChart {...chart} renderGraha={graha} />}
     />
   );
 }

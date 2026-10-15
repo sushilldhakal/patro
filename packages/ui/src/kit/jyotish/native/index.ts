@@ -4,6 +4,7 @@ import { DivisionalChartCompare } from "./Compare";
 import { KundaliReport } from "./Report";
 import { KundaliSectionNav, KundaliSidebarSubnav } from "./Structure";
 import { AshtakavargaCard, BhavaBalaCard, DashaSystemPanel, GrahaDetailsList, ShadbalaCard, VimshopakaCard, YogaReferenceCatalog } from "./Cards";
+import { BhavaBalaChart, ShadbalaChart } from "./StrengthCharts";
 import { DashaTree } from "./DashaTree";
 import { ShantiVidhiPanel } from "./Shanti";
 import {
@@ -65,11 +66,13 @@ export type {
   ProfileFormProps,
   AshtakavargaCardProps,
   BhavaBalaCardProps,
+  BhavaBalaChartProps,
   BhavaDetailDialogProps,
   DashaSystemPanelProps,
   DashaTreeProps,
   GrahaDetailsListProps,
   ShadbalaCardProps,
+  ShadbalaChartProps,
   ShantiVidhiPanelProps,
   VimshopakaCardProps,
   YogaReferenceCatalogProps,
@@ -105,11 +108,13 @@ export {
   ProfileForm,
   AshtakavargaCard,
   BhavaBalaCard,
+  BhavaBalaChart,
   BhavaDetailDialog,
   DashaSystemPanel,
   DashaTree,
   GrahaDetailsList,
   ShadbalaCard,
+  ShadbalaChart,
   ShantiVidhiPanel,
   VimshopakaCard,
   YogaReferenceCatalog,
@@ -156,7 +161,9 @@ export const jyotishKit = {
   GrahaDetailsList,
   AshtakavargaCard,
   BhavaBalaCard,
+  BhavaBalaChart,
   ShadbalaCard,
+  ShadbalaChart,
   DashaTree,
   DashaSystemPanel,
   ShantiVidhiPanel,

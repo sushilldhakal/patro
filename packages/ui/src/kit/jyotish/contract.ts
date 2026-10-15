@@ -326,6 +326,25 @@ export type BhavaBalaCardProps = {
   }) => ReactNode;
 };
 
+export type ShadbalaChartProps = {
+  planets: ShadbalaPlanet[];
+  selectedKey: string;
+  onSelect: (key: string) => void;
+  yuddha?: YuddhaData;
+  scale: ShadbalaScale;
+  onScaleChange: (scale: ShadbalaScale) => void;
+  renderGraha: GrahaSlot;
+};
+
+export type BhavaBalaChartProps = {
+  data: BhavaBalaData;
+  selectedHouse: number;
+  onSelectHouse: (house: number) => void;
+  vargaCharts?: VargaCharts;
+  combustion?: Record<string, boolean | null>;
+  renderGraha: GrahaSlot;
+};
+
 export type ShadbalaCardProps = {
   data: ShadbalaResponse;
   yuddha?: YuddhaData;
@@ -450,7 +469,9 @@ export type JyotishKit = {
   GrahaDetailsList: ComponentType<GrahaDetailsListProps>;
   AshtakavargaCard: ComponentType<AshtakavargaCardProps>;
   BhavaBalaCard: ComponentType<BhavaBalaCardProps>;
+  BhavaBalaChart: ComponentType<BhavaBalaChartProps>;
   ShadbalaCard: ComponentType<ShadbalaCardProps>;
+  ShadbalaChart: ComponentType<ShadbalaChartProps>;
   DashaTree: ComponentType<DashaTreeProps>;
   DashaSystemPanel: ComponentType<DashaSystemPanelProps>;
   ShantiVidhiPanel: ComponentType<ShantiVidhiPanelProps>;
