@@ -10,6 +10,7 @@ import { LanguageButton } from "./LanguageButton";
 import { MobileNavMenu } from "./MobileNavMenu";
 import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
+import { PatroYearEraToggle } from "./PatroYearEraToggle";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
@@ -36,6 +37,7 @@ export {
   MobileNavMenu,
   MuhurtaAsidePanel,
   PanchangaVivaranPanel,
+  PatroYearEraToggle,
   PatroCalendarHeader,
   PatroDayTimeHeader,
   PatroDayTimePanel,
@@ -72,6 +74,7 @@ export type {
   MuhurtaAsidePanelProps,
   PanchangaVivaranPanelProps,
   VivaranPlanetStatus,
+  PatroYearEraToggleProps,
   MobileNavMenuProps,
   MobileNavSection,
   PatroCalendarHeaderProps,
@@ -124,4 +127,5 @@ export const shellKit = {
   BsNativeSelect,
   MuhurtaAsidePanel,
   PanchangaVivaranPanel,
+  PatroYearEraToggle,
 } satisfies ShellKit;

@@ -374,6 +374,15 @@ export type PanchangaVivaranPanelProps = {
   className?: string;
 };
 
+export type PatroYearEraToggleProps = {
+  era: Era;
+  onEraChange: (era: Era) => void;
+  className?: string;
+  compact?: boolean;
+  comfortable?: boolean;
+  variant?: "inline" | "dropdown";
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -402,4 +411,5 @@ export type ShellKit = {
   BsNativeSelect: ComponentType<BsNativeSelectProps>;
   MuhurtaAsidePanel: ComponentType<MuhurtaAsidePanelProps>;
   PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
+  PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
 };
