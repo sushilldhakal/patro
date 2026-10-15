@@ -1,5 +1,7 @@
-import type { PanchangaDay } from "@/lib/api";
-import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
+import { cn } from "@vedic-patro/domain/utils";
+import { View } from "react-native";
+import { Text } from "@vedic-patro/ui";
+import type { PanchangaDay } from "@vedic-patro/api-client";
 import {
   useBalamSection,
   useDinVisheshSection,
@@ -26,17 +28,20 @@ import {
   PanchangaTimingCard,
   TimingRange,
   UptoValue,
+  panchangaCardGrid,
+  panchangaSectionNote,
 } from "./PanchangaLayout";
-import { panchangaCardGrid, panchangaSectionNote } from "@vedic-patro/design-tokens";
-import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
 import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
-import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
+import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
+import { GrahaStatusBadges } from "./GrahaStatusBadges";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 const sc = panchangaPageClasses.sections;
 
 function AngaCell({ anga }: { anga: AngaValue | null }) {
-  if (!anga) return <span>—</span>;
+  if (!anga) return <Text>—</Text>;
   return (
     <>
       <UptoValue name={anga.name} endTime={anga.endTime} />
@@ -56,48 +61,48 @@ export function SunMoonSamvatSection({ p }: { p: PanchangaDay }) {
     <PanchangaSection titleKey="sections.sun_moon_samvat">
       <PanchangaTableBody>
         <PanchangaFieldCell labelKey="sections.sunrise" nowrap>
-          <span>🌅</span>
-          <span className={sc.mono}>{s.sunrise}</span>
+          <Text>🌅</Text>
+          <Text className={sc.mono}>{s.sunrise}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.sunset" nowrap>
-          <span>🌇</span>
-          <span className={sc.mono}>{s.sunset}</span>
+          <Text>🌇</Text>
+          <Text className={sc.mono}>{s.sunset}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.moonrise" nowrap>
-          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} className="size-4 shrink-0" />
-          <span className={sc.mono}>{s.moonrise}</span>
+          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} size={16} />
+          <Text className={sc.mono}>{s.moonrise}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.moonset" nowrap>
-          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} className="size-4 shrink-0" />
-          <span className={sc.mono}>{s.moonset}</span>
+          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} size={16} />
+          <Text className={sc.mono}>{s.moonset}</Text>
         </PanchangaFieldCell>
         {s.belaantar ? (
           <PanchangaFieldCell labelKey="sections.equation_of_time" nowrap>
-            <span className={sc.mono}>{s.belaantar}</span>
+            <Text className={sc.mono}>{s.belaantar}</Text>
           </PanchangaFieldCell>
         ) : null}
         {s.deshaantar ? (
           <PanchangaFieldCell labelKey="sections.longitude_correction" nowrap>
-            <span className={sc.mono}>{s.deshaantar}</span>
+            <Text className={sc.mono}>{s.deshaantar}</Text>
           </PanchangaFieldCell>
         ) : null}
         <PanchangaFieldCell labelKey="sections.paksha" nowrap>
-          <span className={sc.strong}>{s.paksha}</span>
+          <Text className={sc.strong}>{s.paksha}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.vikram" nowrap>
-          <span className={sc.strong}>{s.vikram}</span>
+          <Text className={sc.strong}>{s.vikram}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.samvatsara" nowrap>
-          <span className={sc.strong}>{s.samvatsara}</span>
+          <Text className={sc.strong}>{s.samvatsara}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.shaka" nowrap>
-          <span className={sc.strong}>{s.shaka}</span>
+          <Text className={sc.strong}>{s.shaka}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.nepal_sambat" nowrap>
-          <span className={sc.strong}>{s.nepalSambat}</span>
+          <Text className={sc.strong}>{s.nepalSambat}</Text>
         </PanchangaFieldCell>
       </PanchangaTableBody>
-      {s.note ? <p className={panchangaSectionNote}>{s.note}</p> : null}
+      {s.note ? <Text className={panchangaSectionNote}>{s.note}</Text> : null}
     </PanchangaSection>
   );
 }
@@ -121,13 +126,11 @@ export function PanchangCoreSection({ p }: { p: PanchangaDay }) {
           <AngaCell anga={s.karana} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.weekday" nowrap>
-          {/* The full weekday is wide for a half-width card; the short one on phones. */}
-          <span className={cn(sc.strong, "sm:hidden")}>{s.weekdayShort}</span>
-          <span className={cn("hidden", sc.strong, "sm:inline")}>{s.weekday}</span>
+          <Text className={sc.strong}>{s.weekday}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.paksha" nowrap>
-          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} className="size-4 shrink-0" />
-          <span className={sc.strong}>{s.paksha}</span>
+          <CalendarMoonPhaseIcon tithiIndex={s.tithiIndex} size={16} />
+          <Text className={sc.strong}>{s.paksha}</Text>
         </PanchangaFieldCell>
       </PanchangaTableBody>
     </PanchangaSection>
@@ -143,7 +146,7 @@ export function RashiSection({ p }: { p: PanchangaDay }) {
       <PanchangaTableBody>
         {rows.map((row) => (
           <PanchangaFieldCell key={row.key} label={row.label} nowrap>
-            <span className={sc.mono}>{row.value}</span>
+            <Text className={sc.mono}>{row.value}</Text>
           </PanchangaFieldCell>
         ))}
       </PanchangaTableBody>
@@ -158,11 +161,17 @@ export function BalamSection({ p, clock }: { p: PanchangaDay; clock?: string }) 
   return (
     <PanchangaSection titleKey="sections.balam">
       {balam.blocks.map((block) => (
-        <div key={block.kind} className={cn("flex flex-col", sc.balamBlock)}>
+        <View key={block.kind} className={cn("flex flex-col", sc.balamBlock)}>
           <PanchangaGroupLabel className="px-0 pt-0">{block.label}</PanchangaGroupLabel>
-          {block.moonRef ? <p className={sc.moonRef}>{block.moonRef}</p> : null}
-          <NavataraBalamCardGrid cards={block.cards} clock={clock} formatName={block.formatName} lang={balam.lang} />
-        </div>
+          {block.moonRef ? <Text className={sc.moonRef}>{block.moonRef}</Text> : null}
+          <NavataraBalamCardGrid
+            cards={block.cards}
+            clock={clock}
+            formatName={block.formatName}
+            lang={balam.lang}
+            variant={block.kind}
+          />
+        </View>
       ))}
     </PanchangaSection>
   );
@@ -188,32 +197,27 @@ export function PanchakaLagnaSection({ p, clock }: { p: PanchangaDay; clock?: st
             <PanchangaGroupLabel className={s.panchaka.length > 0 ? "pt-3" : undefined}>
               {s.copy.lagna}
             </PanchangaGroupLabel>
-            <div className={panchangaCardGrid}>
+            <View className={panchangaCardGrid}>
               {s.lagna.map((lg) => (
                 <PanchangaLagnaCard
                   key={lg.key}
                   isCurrent={lg.isCurrent}
                   titleLine={
-                    <>
+                    <Text>
                       {lg.rashi}
-                      {lg.time ? (
-                        <>
-                          {" "}
-                          <span className={sc.monoTabular}>{lg.time}</span>
-                        </>
-                      ) : null}
-                    </>
+                      {lg.time ? <Text className={sc.monoTabular}> {lg.time}</Text> : null}
+                    </Text>
                   }
                   footerLine={
                     lg.pushkara ? (
-                      <>
-                        {s.copy.pushkara} <span className={sc.monoPlain}>{lg.pushkara}</span>
-                      </>
+                      <Text>
+                        {s.copy.pushkara} <Text className={sc.monoPlain}>{lg.pushkara}</Text>
+                      </Text>
                     ) : undefined
                   }
                 />
               ))}
-            </div>
+            </View>
           </>
         ) : null}
       </PanchangaTableBody>
@@ -222,12 +226,12 @@ export function PanchakaLagnaSection({ p, clock }: { p: PanchangaDay; clock?: st
 }
 
 function DualValueDisplay({ value }: { value: DualValue | null }) {
-  if (!value) return <span>—</span>;
+  if (!value) return <Text>—</Text>;
   return (
-    <div className={cn("flex flex-col", sc.dual)}>
-      {value.struck ? <span className={sc.strike}>{value.struck}</span> : null}
-      <span className={sc.strong}>{value.value}</span>
-    </div>
+    <View className={cn("flex flex-col", sc.dual)}>
+      {value.struck ? <Text className={sc.strike}>{value.struck}</Text> : null}
+      <Text className={sc.strong}>{value.value}</Text>
+    </View>
   );
 }
 
@@ -244,13 +248,13 @@ export function RituSection({ p }: { p: PanchangaDay }) {
           <DualValueDisplay value={s.ayana} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.dinamana" nowrap>
-          <span className={sc.mono}>{s.dinamana}</span>
+          <Text className={sc.mono}>{s.dinamana}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.ratrimana" nowrap>
-          <span className={sc.mono}>{s.ratrimana}</span>
+          <Text className={sc.mono}>{s.ratrimana}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.madhyahna" nowrap>
-          <span className={sc.mono}>{s.madhyahna}</span>
+          <Text className={sc.mono}>{s.madhyahna}</Text>
         </PanchangaFieldCell>
       </PanchangaTableBody>
     </PanchangaSection>
@@ -262,13 +266,19 @@ function MuhurtaTimingValue({ timing, variant }: { timing: MuhurtaTiming; varian
     return <TimingRange start={timing.range.start} end={timing.range.end} variant={variant} />;
   }
   return (
-    <div className={cn("flex flex-col", variant === "good" ? sc.timingGood : sc.timingBad)}>
+    <View className={cn("flex flex-col", variant === "good" ? sc.timingGood : sc.timingBad)}>
       {timing.lines.map((line) => (
-        <span key={line} className={sc.timingLine}>
+        <Text
+          key={line}
+          className={cn(
+            sc.timingLine,
+            variant === "good" ? "text-emerald-800 dark:text-emerald-300" : "text-rose-800 dark:text-rose-300",
+          )}
+        >
           {line}
-        </span>
+        </Text>
       ))}
-    </div>
+    </View>
   );
 }
 
@@ -322,22 +332,22 @@ export function MuhurtaTimingsSection({ p }: { p: PanchangaDay }) {
 }
 
 function NivasTimedSegments({ segments }: { segments: NivasSegmentRow[] }) {
-  if (!segments.length) return <span>—</span>;
+  if (!segments.length) return <Text>—</Text>;
   return (
-    <div className={cn("flex flex-col", sc.nivasList)}>
+    <View className={cn("flex flex-col", sc.nivasList)}>
       {segments.map((seg) => (
-        <div key={seg.key} className={sc.nivasItem}>
+        <View key={seg.key} className={sc.nivasItem}>
           {seg.fromNight ? (
-            <span className={sc.strong}>
-              {seg.name} <span className={sc.nivasTime}>{seg.fromNight}</span>
-            </span>
+            <Text className={sc.strong}>
+              {seg.name} <Text className={sc.nivasTime}>{seg.fromNight}</Text>
+            </Text>
           ) : (
             <UptoValue name={seg.name} endTime={seg.endTime} badge={seg.badge} />
           )}
-          {seg.fullNightNote ? <span className={sc.nivasTime}>{seg.fullNightNote}</span> : null}
-        </div>
+          {seg.fullNightNote ? <Text className={sc.nivasTime}>{seg.fullNightNote}</Text> : null}
+        </View>
       ))}
-    </div>
+    </View>
   );
 }
 
@@ -357,7 +367,7 @@ export function NivasShoolSection({
         {rows.map((row) => (
           <PanchangaFieldCell key={row.key} labelKey={row.labelKey} nowrap={row.nowrap}>
             {row.kind === "direction" ? (
-              row.value ? <span className={sc.strong}>{row.value}</span> : <span>—</span>
+              row.value ? <Text className={sc.strong}>{row.value}</Text> : <Text>—</Text>
             ) : (
               <NivasTimedSegments segments={row.segments} />
             )}
@@ -374,13 +384,13 @@ export function DinVisheshSection({ p }: { p: PanchangaDay }) {
 
   return (
     <PanchangaSection titleKey="sections.special_observances">
-      <div className={panchangaCardGrid}>
+      <View className={panchangaCardGrid}>
         {labels.map((label) => (
-          <span key={label} className={sc.chipFestival}>
+          <Text key={label} className={sc.chipFestival} >
             {label}
-          </span>
+          </Text>
         ))}
-      </div>
+      </View>
     </PanchangaSection>
   );
 }
@@ -390,51 +400,37 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
   if (!panel) return null;
 
   return (
-    <div
-      className={cn(
-        sc.planetsPanel,
-        "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
-      )}
-    >
-      <div className={cn("flex flex-col", sc.planetsHead)}>
-        <h2 className={sc.planetsTitle}>{panel.title}</h2>
-        <span className={cn(sc.planetsAnchor, "break-words [overflow-wrap:anywhere]")}>{panel.anchor}</span>
-      </div>
-      <div className={cn("flex", sc.planetsList)}>
+    <View className={sc.planetsPanel}>
+      <View className={cn("flex flex-col", sc.planetsHead)}>
+        <Text className={sc.planetsTitle}>{panel.title}</Text>
+        <Text className={sc.planetsAnchor}>{panel.anchor}</Text>
+      </View>
+      <View className={cn("flex", sc.planetsList)}>
         {panel.lagna && (
-          <div className={cn("flex", sc.lagnaRow)}>
-            <span
-              className={cn(
-                "flex",
-                sc.lagnaBadge,
-                "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
-              )}
-            >
-              {panel.lagna.badge}
-            </span>
-            <div className={sc.lagnaBody}>
-              <div className={sc.lagnaTitle}>{panel.lagna.title}</div>
-              <div className={sc.lagnaSign}>{panel.lagna.sign}</div>
-            </div>
-            {panel.lagna.degree && (
-              <span className={cn(sc.planetCoords, "break-all [overflow-wrap:anywhere]")}>{panel.lagna.degree}</span>
-            )}
-          </div>
+          <View className={cn("flex", sc.lagnaRow)}>
+            <Text className={cn("flex", sc.lagnaBadge)}>{panel.lagna.badge}</Text>
+            <View className={sc.lagnaBody}>
+              <Text className={sc.lagnaTitle}>{panel.lagna.title}</Text>
+              <Text className={sc.lagnaSign}>{panel.lagna.sign}</Text>
+            </View>
+            {panel.lagna.degree && <Text className={sc.planetCoords}>{panel.lagna.degree}</Text>}
+          </View>
         )}
         {panel.planets.map((planet) => (
-          <div key={planet.key} className={cn("flex", sc.planetRow)}>
-            <div className={sc.planetBody}>
-              <div className={cn("flex", sc.planetNameRow, sc.planetName, "break-words")}>
-                {planet.name}
+          <View key={planet.key} className={cn("flex", sc.planetRow)}>
+            <GrahaPlanetIcon graha={planet.key as GrahaKey} size={32} />
+            <View className={sc.planetBody}>
+              <View className={sc.planetNameRow}>
+                <Text className={sc.planetName}>{planet.name}</Text>
                 <GrahaStatusBadges planetKey={planet.key} isRetrograde={planet.isRetrograde} isCombust={planet.isCombust} />
-              </div>
-              {planet.rashi && <div className={cn(sc.planetRashi, "break-words")}>{planet.rashi}</div>}
-            </div>
-            <span className={cn(sc.planetCoords, "break-all [overflow-wrap:anywhere]")}>{planet.coords}</span>
-          </div>
+              </View>
+              {planet.rashi ? <Text className={sc.planetRashi}>{planet.rashi}</Text> : null}
+            </View>
+            <Text className={sc.nivasTime}>{planet.coords}</Text>
+          </View>
         ))}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }
 
@@ -444,13 +440,13 @@ export function FestivalsSection({ p }: { p: PanchangaDay }) {
 
   return (
     <PanchangaSection titleKey="sections.festivals">
-      <div className={panchangaCardGrid}>
+      <View className={panchangaCardGrid}>
         {festivals.map((f) => (
-          <span key={f.id} className={f.holiday ? sc.chipHoliday : sc.chipFestival}>
+          <Text key={f.id} className={f.holiday ? sc.chipHoliday : sc.chipFestival} >
             {f.name}
-          </span>
+          </Text>
         ))}
-      </div>
+      </View>
     </PanchangaSection>
   );
 }

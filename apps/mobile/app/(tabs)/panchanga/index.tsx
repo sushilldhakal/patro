@@ -20,7 +20,7 @@ import {
   RashiSection,
   RituSection,
   SunMoonSamvatSection,
-} from "@/components/panchanga/PanchangaSections";
+} from "@vedic-patro/ui/kit/panchanga";
 import { GocharPromoCard } from "@vedic-patro/ui/kit/panchanga";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";

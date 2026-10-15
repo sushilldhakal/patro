@@ -150,6 +150,8 @@ export const panchangaPageClasses = {
       "border-b border-border px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground",
     navBody: "p-1",
     link: "rounded-xl px-3 py-2",
+    linkOn: "bg-secondary/12 text-secondary ring-1 ring-secondary/25",
+    linkOff: "text-foreground hover:bg-muted",
     linkLabel: "text-sm leading-snug",
     linkLabelActive: "font-medium text-secondary",
     linkLabelIdle: "font-medium text-foreground",

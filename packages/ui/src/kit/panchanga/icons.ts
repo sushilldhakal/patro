@@ -60,6 +60,8 @@ export const layoutGridIcon: IconNode = [
   ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1", key: "1bb6yr" }],
 ];
 
+export const chevronDownIcon: IconNode = [["path", { d: "m6 9 6 6 6-6", key: "1bl5f8" }]];
+
 export const chevronLeftIcon: IconNode = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
 
 export const chevronRightIcon: IconNode = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
@@ -69,6 +71,57 @@ export const sparklesIcon: IconNode = [
   ["path", { d: "M20 2v4", key: "1rf3ol" }],
   ["path", { d: "M22 4h-4", key: "gwowj6" }],
   ["circle", { cx: "4", cy: "20", r: "2", key: "6kqj1y" }],
+];
+
+export const playIcon: IconNode = [["polygon", { points: "6 3 20 12 6 21 6 3", key: "1oa8hb" }]];
+
+export const pauseIcon: IconNode = [
+  ["rect", { x: "14", y: "4", width: "4", height: "16", rx: "1", key: "zuxfzm" }],
+  ["rect", { x: "6", y: "4", width: "4", height: "16", rx: "1", key: "d3p5t7" }],
+];
+
+export const rewindIcon: IconNode = [
+  ["polygon", { points: "11 19 2 12 11 5 11 19", key: "1w9z7w" }],
+  ["polygon", { points: "22 19 13 12 22 5 22 19", key: "1wgc3b" }],
+];
+
+export const fastForwardIcon: IconNode = [
+  ["polygon", { points: "13 19 22 12 13 5 13 19", key: "1y8d0s" }],
+  ["polygon", { points: "2 19 11 12 2 5 2 19", key: "1x1g1p" }],
+];
+
+export const calendarIcon: IconNode = [
+  ["path", { d: "M8 2v4", key: "1cmpym" }],
+  ["path", { d: "M16 2v4", key: "4m81vk" }],
+  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
+  ["path", { d: "M3 10h18", key: "8toen8" }],
+];
+
+export const fullscreenIcon: IconNode = [
+  ["path", { d: "M8 3H5a2 2 0 0 0-2 2v3", key: "1q7m4d" }],
+  ["path", { d: "M21 8V5a2 2 0 0 0-2-2h-3", key: "1p1z7w" }],
+  ["path", { d: "M3 16v3a2 2 0 0 0 2 2h3", key: "wsl5sc" }],
+  ["path", { d: "M16 21h3a2 2 0 0 0 2-2v-3", key: "1rxko1" }],
+];
+
+export const minimizeIcon: IconNode = [
+  ["path", { d: "M4 14h6v6", key: "1k6q1d" }],
+  ["path", { d: "M20 10h-6V4", key: "1p0w3w" }],
+  ["path", { d: "m14 10 7-7", key: "1w8w5w" }],
+  ["path", { d: "m3 21 7-7", key: "1w8w6w" }],
+];
+
+export const zoomInIcon: IconNode = [
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }],
+  ["path", { d: "M11 8v6", key: "vctjf8" }],
+  ["path", { d: "M8 11h6", key: "1s9jgl" }],
+];
+
+export const zoomOutIcon: IconNode = [
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }],
+  ["path", { d: "M8 11h6", key: "1s9jgl" }],
 ];
 
 export const flameIcon: IconNode = [

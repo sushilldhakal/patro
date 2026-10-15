@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
 import { useElementPage, type ElementPage, type SpanBoundaryView, type SpanCard, type ToneRowView } from "@vedic-patro/features/panchanga-element";
 import { AppShell } from "@/components/AppShell";
-import { AllElementsLink, ElementDescription, GrahaBanner } from "@/components/graha/GrahaPageParts";
+import { AllElementsLink, ElementDescription, GrahaBanner } from "@vedic-patro/ui/kit/panchanga";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
 import {
   ElementDayRowIcon,

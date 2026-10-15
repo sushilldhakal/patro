@@ -5,7 +5,7 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { AppShell } from "@/components/AppShell";
-import { AllElementsLink, GrahaBanner, GrahaDescription } from "@/components/graha/GrahaPageParts";
+import { AllElementsLink, GrahaBanner, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
 import { EclipseCard, EmptyHint } from "@/components/graha/GrahaEventCards";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
