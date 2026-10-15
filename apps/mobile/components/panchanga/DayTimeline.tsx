@@ -754,29 +754,29 @@ export function DayTimeline({
                     )}
                     style={planetCell}
                   >
-                    <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                      <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
-                        {isGrahaKey(planetKey) ? (
-                          <GrahaPlanetIcon graha={planetKey} size={18} />
-                        ) : null}
-                        <Text
-                          className="shrink-0 text-sm font-bold leading-tight text-foreground"
-                          numberOfLines={1}
-                          style={nepaliTextStyle(14)}
-                        >
-                          {labelL}
-                        </Text>
-                        <GrahaStatusBadges
-                          planetKey={planetKey}
-                          isRetrograde={isRetrograde}
-                          isCombust={isCombust}
-                          size={13}
-                        />
-                      </View>
-                      <Text className="min-w-0 font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={1}>
-                        {coordText}
+                    {/* Name on its own line: sharing a row with the position let a long
+                        position squeeze the name to zero width on narrow cards. */}
+                    <View className="flex-row flex-wrap items-center gap-1">
+                      {isGrahaKey(planetKey) ? (
+                        <GrahaPlanetIcon graha={planetKey} size={18} />
+                      ) : null}
+                      <Text
+                        className="shrink-0 text-sm font-bold leading-tight text-foreground"
+                        numberOfLines={1}
+                        style={nepaliTextStyle(14)}
+                      >
+                        {labelL}
                       </Text>
+                      <GrahaStatusBadges
+                        planetKey={planetKey}
+                        isRetrograde={isRetrograde}
+                        isCombust={isCombust}
+                        size={13}
+                      />
                     </View>
+                    <Text className="font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={1}>
+                      {coordText}
+                    </Text>
                     {(nakWithPada || lordText) && (
                       <View className="flex-row items-baseline justify-between gap-1.5">
                         <Text className="text-sm min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>

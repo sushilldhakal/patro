@@ -3,7 +3,7 @@ import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
-import { tintColorMix, type TintName } from "@vedic-patro/design-tokens";
+import { withAlpha } from "@vedic-patro/design-tokens";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { TableHeader, TableRow } from "@/components/ui/DataTable";
@@ -22,14 +22,6 @@ import {
   panchangaSectionNote,
   panchangaSectionTitle,
 } from "@vedic-patro/design-tokens";
-
-const TONE_TINT = {
-  best: "toneBest",
-  good: "toneGood",
-  neutral: "toneNeutral",
-  bad: "toneBad",
-  worst: "toneWorst",
-} as const satisfies Record<string, TintName>;
 
 /** Website current-card ring is `accent`. RN does not paint `ring-*`, so the border carries it. */
 function currentCardStyle(accent: string, on: boolean | undefined) {
@@ -153,7 +145,9 @@ export function PanchangaBalamCard({
         isCurrent && "border-2 border-accent",
         className,
       )}
-      style={{ backgroundColor: tintColorMix(TONE_TINT[tone]), ...currentCardStyle(colors.accent, isCurrent) }}
+      // Background comes from patroNavataraToneBg. An inline CSS color-mix() string here
+      // is invalid on native: it painted nothing and overrode the class.
+      style={currentCardStyle(colors.accent, isCurrent)}
     >
       <View className="flex-row items-start gap-2">
         {icon ? <View className="shrink-0 pt-0.5">{icon}</View> : null}
@@ -190,7 +184,7 @@ export function PanchangaLagnaCard({
         isCurrent && "border-2 border-accent",
         className,
       )}
-      style={{ backgroundColor: tintColorMix("toneNeutral"), ...currentCardStyle(colors.accent, isCurrent) }}
+      style={currentCardStyle(colors.accent, isCurrent)}
     >
       <Text className={panchangaCardTitle}>{titleLine}</Text>
       {footerLine ? (
@@ -214,6 +208,7 @@ export function PanchangaTimingCard({
   highlight?: boolean;
   className?: string;
 }) {
+  const colors = useThemeColors();
   return (
     <View
       className={cn(
@@ -225,8 +220,9 @@ export function PanchangaTimingCard({
       style={
         highlight
           ? {
-              borderColor: "color-mix(in srgb, var(--color-success) 45%, transparent)",
-              backgroundColor: "color-mix(in srgb, var(--color-success) 6%, transparent)",
+              // Web: color-mix(success 45% / 6%, transparent) — native needs plain rgba.
+              borderColor: withAlpha(colors.success, 0.45),
+              backgroundColor: withAlpha(colors.success, 0.06),
             }
           : undefined
       }
