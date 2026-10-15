@@ -56,6 +56,8 @@ export const iconToneClass: Record<IconTone, string> = {
   success: "text-success",
   warning: "text-warning",
   info: "text-info",
+  onPrimary: "text-primary-foreground",
+  onSecondary: "text-secondary-foreground",
 };
 
 /** Theme role per icon tone (the app passes an explicit colour to react-native-svg). */
@@ -68,6 +70,8 @@ export const iconToneRole = {
   success: "success",
   warning: "warning",
   info: "info",
+  onPrimary: "primaryForeground",
+  onSecondary: "secondaryForeground",
 } as const satisfies Record<IconTone, string>;
 
 export const tableClass: Required<TableClasses> = {

@@ -47,7 +47,7 @@ export function BsMonthHeaderTitle({
   const calendarTabLabel = isGregorianEra(browseEra) ? t("calendar.mode_ad") : patroEraShortLabel(browseEra, lang);
 
   return (
-    <View>
+    <View className="mb-3">
       <PatroCalendarHeader
         era={browseEra}
         onEraChange={(e) => onBrowseEraChange?.(e as MonthBrowseEra)}

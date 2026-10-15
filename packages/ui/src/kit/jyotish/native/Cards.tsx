@@ -278,7 +278,7 @@ export function ShadbalaCard({ data, yuddha, bhavaBala, renderGraha, renderChart
           {[card.strongest, card.weakest].map((item) => (
             <Box key={item.label} className={glance.card}>
               <Text as="p" className={glance.label}>{item.label}</Text>
-              <Text as="p" className={glance.name}>{renderGraha({ graha: item.key, size: 28 })} {item.name}</Text>
+              <Box className="flex-row items-center gap-1">{renderGraha({ graha: item.key, size: 28 })}<Text as="p" className={glance.name}>{item.name}</Text></Box>
               <Text className={cn(kundaliDetailClasses.parts.statusBadge, STATUS[item.status])}>{card.statusLabel(item.status)}</Text>
               <Text className={glance.sub}>{item.sub}</Text>
             </Box>

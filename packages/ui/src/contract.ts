@@ -165,7 +165,9 @@ export type IconTone =
   | "destructive"
   | "success"
   | "warning"
-  | "info";
+  | "info"
+  | "onPrimary"
+  | "onSecondary";
 
 export type IconProps = StyleProps & {
   node: IconNode;

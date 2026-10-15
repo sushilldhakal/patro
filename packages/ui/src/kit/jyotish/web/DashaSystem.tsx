@@ -28,7 +28,7 @@ export function DashaSystemPanel({ timeZone, renderGraha, ...input }: DashaSyste
       {panel.birth ? (
         <Box className={cn(d.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_5%,transparent)]")}>
           <Text className={d.cardLabel}>{panel.birth.label}</Text>
-          <Text className={d.lord}>{panel.birth.grahaKey ? renderGraha({ graha: panel.birth.grahaKey, size: 28 }) : null} {panel.birth.lord}</Text>
+          <Box className="flex-row items-center gap-1">{panel.birth.grahaKey ? renderGraha({ graha: panel.birth.grahaKey, size: 28 }) : null}<Text className={d.lord}>{panel.birth.lord}</Text></Box>
           <Text className={d.balance}>{panel.birth.balance}</Text>
         </Box>
       ) : null}

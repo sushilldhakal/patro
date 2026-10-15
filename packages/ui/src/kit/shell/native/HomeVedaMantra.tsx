@@ -27,7 +27,7 @@ export function HomeVedaMantra({
         </Text>
         {onToggle ? (
           <Pressable label={playing ? pauseLabel : playLabel} onPress={onToggle} className={home.vedaPlay} webClassName="transition-opacity hover:opacity-90 active:scale-95">
-            <Icon node={playing ? shellIcons.pause : shellIcons.play} size="sm" tone="secondary" className="text-secondary-foreground" />
+            <Icon node={playing ? shellIcons.pause : shellIcons.play} size="sm" tone="onSecondary" />
           </Pressable>
         ) : null}
       </Box>

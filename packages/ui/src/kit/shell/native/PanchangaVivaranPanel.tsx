@@ -50,11 +50,13 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
           <Grid cols={{ base: 2, sm: 3 }} gap={6}>
             {view.planets.map((planet) => (
               <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
-                <Text className={cn("flex-row flex-wrap items-center gap-x-1", home.gocharName)}>
-                  {planet.label}
-                  {planet.rashi ? ` → ${planet.rashi}` : ""}
+                <Box className="flex-row flex-wrap items-center gap-x-1">
+                  <Text className={home.gocharName}>
+                    {planet.label}
+                    {planet.rashi ? ` → ${planet.rashi}` : ""}
+                  </Text>
                   {renderPlanetStatus?.({ key: planet.key, isRetrograde: planet.isRetrograde, isCombust: planet.isCombust })}
-                </Text>
+                </Box>
                 <Text className={cn(home.gocharDegree, "tabular-nums")}>{planet.degree}</Text>
               </Box>
             ))}
