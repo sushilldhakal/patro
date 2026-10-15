@@ -1,3 +1,4 @@
+export { wheelPalette } from "../wheel-palette";
 export type { GocharPromoCardProps, MuhurtaNowPanelProps, PlanetEventsPanelProps, SunriseD1ChartPanelProps } from "../contract";
 export { GocharPromoCard } from "./GocharPromoCard";
 export { EphemerisModeBanner, MuhurtaNowPanel } from "./MuhurtaNowPanel";

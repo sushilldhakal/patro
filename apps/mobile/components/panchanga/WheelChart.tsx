@@ -34,6 +34,7 @@ import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { wheelPalette } from "@vedic-patro/ui/kit/panchanga";
 import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
 import {
   earthTop,
@@ -895,7 +896,7 @@ function WheelChartImpl({
                 <Circle cx={px} cy={py} r={collar.r} fill="none" stroke={WHEEL_RETRO} strokeWidth={collar.width} opacity={0.9} />
               ) : null}
               {i === 6 ? (
-                <Circle cx={px} cy={py} r={planetR * 1.42} fill="none" stroke="#e6cf86" strokeWidth={1.15} />
+                <Circle cx={px} cy={py} r={planetR * 1.42} fill="none" stroke={wheelPalette.saturnRing} strokeWidth={1.15} />
               ) : null}
               <SvgImage
                 href={SKY_TOP[sky]}
@@ -910,7 +911,7 @@ function WheelChartImpl({
                 <Path
                   d={moonShadow}
                   transform={`translate(${px} ${py}) rotate(${moonTurn})`}
-                  fill="#000"
+                  fill={wheelPalette.moonShadow}
                   fillRule="evenodd"
                   opacity={0.78}
                 />
@@ -939,7 +940,7 @@ function WheelChartImpl({
               y={0}
               textAnchor="middle"
               fill={W_INK}
-              stroke="rgba(6,31,33,0.92)"
+              stroke={wheelPalette.nameHalo}
               strokeWidth={1.6}
               paintOrder="stroke"
               fontSize={13}
