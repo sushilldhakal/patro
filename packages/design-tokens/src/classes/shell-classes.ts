@@ -40,4 +40,7 @@ export const shellClasses = {
   footer: "mt-12 border-t border-border",
   footerRow: "mx-auto max-w-page items-center justify-center gap-x-4 gap-y-2 px-4 py-6",
   footerLink: "text-sm text-muted-foreground",
+
+  langButton: "h-9 min-w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card px-2.5",
+  langLabel: "text-xs font-semibold text-foreground",
 } as const;

@@ -52,4 +52,5 @@ export type ShellKit = {
   PatroHeaderTabs: ComponentType<PatroHeaderTabsProps>;
   PatroHeaderSwap: ComponentType<PatroHeaderSwapProps>;
   SiteFooter: ComponentType<SiteFooterProps>;
+  LanguageButton: ComponentType<LanguageButtonProps>;
 };

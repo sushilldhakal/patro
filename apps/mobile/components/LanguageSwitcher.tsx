@@ -1,27 +1,11 @@
-import { Pressable } from "react-native";
-import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { useLanguageSwitcher } from "@vedic-patro/features/common";
-import { cn } from "@vedic-patro/domain/utils";
-
-const BTN =
-  "h-9 items-center justify-center rounded-lg border border-border bg-card active:bg-muted shrink-0";
+import { LanguageButton } from "@vedic-patro/ui/kit/shell";
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const { setLang } = useLocale();
-  // Always names the language being switched to, in that language.
   const { next, label } = useLanguageSwitcher();
-
-  return (
-    <Pressable
-      onPress={() => void setLang(next)}
-      className={cn(BTN, "min-w-[2.25rem] px-2.5", className)}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-    >
-      <Text className="text-caption font-semibold text-foreground">{label}</Text>
-    </Pressable>
-  );
+  return <LanguageButton label={label} onPress={() => void setLang(next)} className={className} />;
 }
 
 /** @deprecated Use LanguageSwitcher */

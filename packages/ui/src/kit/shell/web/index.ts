@@ -1,11 +1,13 @@
 import type { ShellKit } from "../contract";
+import { LanguageButton } from "./LanguageButton";
 import { PatroHeaderSwap, PatroHeaderTabs } from "./PatroHeaderTabs";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
 
-export { PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, SiteFooter, StatCard };
+export { LanguageButton, PatroHeaderSwap, PatroHeaderTabs, SeoContentSection, SiteFooter, StatCard };
 export type {
+  LanguageButtonProps,
   PatroHeaderSwapProps,
   PatroHeaderTab,
   PatroHeaderTabsProps,
@@ -21,4 +23,5 @@ export const shellKit = {
   PatroHeaderTabs,
   PatroHeaderSwap,
   SiteFooter,
+  LanguageButton,
 } satisfies ShellKit;
