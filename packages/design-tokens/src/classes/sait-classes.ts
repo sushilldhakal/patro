@@ -140,6 +140,12 @@ export const saitClasses = {
   ruleGloss: "text-sm leading-relaxed text-muted-foreground",
   engine: "flex flex-row items-center gap-1.5 pt-4",
   engineText: "text-xs text-muted-foreground",
+  ruleSwitch: "relative h-4 w-6 shrink-0 rounded-full",
+  ruleSwitchOn: "bg-primary",
+  ruleSwitchOff: "bg-input",
+  ruleSwitchThumb: "absolute top-0.5 size-3 rounded-full bg-background",
+  ruleSwitchThumbOn: "left-2.5",
+  ruleSwitchThumbOff: "left-0.5",
 
   // ── Sources ───────────────────────────────────────────────────────────────
   sourcesCard: "rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5",

@@ -4,7 +4,7 @@ import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetail
 import type { Era } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
-import { SaitRulesSection, type SaitRule } from "@/components/sait/SaitRulesSection";
+import { SaitRulesSection, type SaitRule } from "@vedic-patro/ui/kit/jyotish";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { saitDayKey, useSaitCeremonyList } from "@vedic-patro/features/sait";
 import type {

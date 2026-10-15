@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Link, Navigate, useParams, useSearch } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { useDocumentChapter } from "@vedic-patro/features/documents";
+import { shlokaAnchor, useDocumentChapter } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
-import { DocumentJumpForm } from "@/components/documents/DocumentJumpForm";
+import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
 import { useDocumentPlayback } from "@/hooks/use-document-playback";
@@ -20,6 +20,7 @@ const pagerLink = cn(documentsClasses.pagerButton, "inline-flex transition-color
  * `useDocumentChapter` (@vedic-patro/features): verses for this chapter alone.
  */
 export function DocumentChapterDetail() {
+  const navigate = useNavigate();
   const { slug, chapter: chapterParam } = useParams({ strict: false }) as { slug?: string; chapter?: string };
   const chapterNumber = chapterParam != null ? Number(chapterParam) : NaN;
   const { category, topic } = useSearch({ strict: false }) as DocumentDetailSearch;
@@ -106,7 +107,26 @@ export function DocumentChapterDetail() {
         </div>
       </header>
 
-      <DocumentJumpForm slug={slug!} category={category} topic={topic} chapterNumbers={page.chapterNumbers} currentChapter={chapterNumber} />
+      <DocumentJumpForm
+        chapterNumbers={page.chapterNumbers}
+        currentChapter={chapterNumber}
+        onJump={(chapter, verse) => {
+          const hash = verse ? shlokaAnchor(verse) : undefined;
+          if (chapter === chapterNumber) {
+            const el = hash ? document.getElementById(hash) : null;
+            if (!el) return false;
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            return true;
+          }
+          navigate({
+            to: "/documents/$slug/$chapter",
+            params: { slug: slug!, chapter: String(chapter) },
+            search,
+            hash,
+          });
+          return true;
+        }}
+      />
 
       <ReaderRows rows={page.rows} versePlayer={versePlayer} />
 

@@ -4,7 +4,7 @@ import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
 import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 import { useSaitDayCard } from "@vedic-patro/features/sait";
-import { SuitabilityBadge } from "@/components/sait/sait-suitability";
+import { SuitabilityBadge } from "@vedic-patro/ui/kit/jyotish";
 
 /**
  * One qualifying muhūrta day: the representative clean window plus the

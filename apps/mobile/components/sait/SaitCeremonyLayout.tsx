@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
-import { SaitRulesSection } from "@/components/sait/SaitRulesSection";
+import { SaitRulesSection } from "@vedic-patro/ui/kit/jyotish";
 import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import { Text } from "@/components/ui/Text";
 import type {

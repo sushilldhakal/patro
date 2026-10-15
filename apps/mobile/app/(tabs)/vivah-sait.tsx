@@ -1,8 +1,7 @@
 import { useVivahSaitPage } from "@vedic-patro/features/sait";
-import { SaitSources } from "@/components/sait/SaitSources";
+import { SaitSources, SuitabilityLegend } from "@vedic-patro/ui/kit/jyotish";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import { SuitabilityLegend } from "@/components/sait/SaitSuitability";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { Link, useParams, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useDocumentDetail } from "@vedic-patro/features/documents";
+import { shlokaAnchor, useDocumentDetail } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
 import { ChapterCard } from "@/components/documents/ChapterCard";
-import { DocumentJumpForm } from "@/components/documents/DocumentJumpForm";
+import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
 import { useDocumentPlayback } from "@/hooks/use-document-playback";
@@ -17,6 +17,7 @@ const SHELL = "min-w-0 max-w-full [overflow-wrap:anywhere]";
 
 /** A document — the website's drawing of `useDocumentDetail` (@vedic-patro/features). */
 export function DocumentDetail() {
+  const navigate = useNavigate();
   const { slug } = useParams({ strict: false }) as { slug?: string };
   // Which list-page tab this document was opened from (see DocumentCard) — so
   // "back to list" returns there instead of always resetting to "all".
@@ -94,7 +95,18 @@ export function DocumentDetail() {
         {backLink}
         {headerBlock}
         {stats}
-        <DocumentJumpForm slug={doc.slug} category={category} topic={topic} chapterNumbers={page.chapterNumbers} />
+        <DocumentJumpForm
+          chapterNumbers={page.chapterNumbers}
+          onJump={(chapter, verse) => {
+            navigate({
+              to: "/documents/$slug/$chapter",
+              params: { slug: doc.slug, chapter: String(chapter) },
+              search: category ? documentsListSearch(category, topic) : undefined,
+              hash: verse ? shlokaAnchor(verse) : undefined,
+            });
+            return true;
+          }}
+        />
         <div className="space-y-2">
           {page.chapters.map((card) => (
             <ChapterCard key={card.number} slug={doc.slug} card={card} category={category} topic={topic} />
