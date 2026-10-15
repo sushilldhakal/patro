@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
+import type { ChapterVolumeLevel, DayChapterPlayer } from "@vedic-patro/features/learn";
 import type { SkyTimeTransport } from "@vedic-patro/features/sky3d";
 
 export type ChapterOverlayProps = {
@@ -107,6 +108,37 @@ export type SkyTimeSheetProps = {
   icons: SkyTimeSheetIcons;
 };
 
+export type DayChapterWelcomeProps = {
+  player: DayChapterPlayer;
+  /** The big play glyph on the opening card. */
+  playIcon: ReactNode;
+};
+
+export type DayChapterBarProps = {
+  player: DayChapterPlayer;
+  icons: {
+    play: ReactNode;
+    pause: ReactNode;
+    replay: ReactNode;
+    prev: ReactNode;
+    next: ReactNode;
+    /** Points up while the contents are open. */
+    chevron: ReactNode;
+    close: ReactNode;
+    volume: (level: ChapterVolumeLevel) => ReactNode;
+    /** The app's year-orbit glyph, drawn only when `onOrbitToggle` is set. */
+    orbit?: ReactNode;
+  };
+  /** App playground: the year is orbiting, not a chapter clock. */
+  orbitPlaying?: boolean;
+  onOrbitToggle?: () => void;
+  /**
+   * Website only. The contents list is drawn over the page, outside the
+   * scrolling details panel. The site passes `createPortal`.
+   */
+  portal?: (node: ReactNode) => ReactNode;
+};
+
 export type CompassControlProps = {
   /** Degrees, 0 = north, clockwise. */
   heading: number;
@@ -136,6 +168,8 @@ export type LearnKit = {
   ServerPipelineDiagram: (props: ServerPipelineDiagramProps) => ReactNode;
   CompassControl: (props: CompassControlProps) => ReactNode;
   SkyTimeSheet: (props: SkyTimeSheetProps) => ReactNode;
+  DayChapterWelcome: (props: DayChapterWelcomeProps) => ReactNode;
+  DayChapterBar: (props: DayChapterBarProps) => ReactNode;
   RashiReferenceTable: () => ReactNode;
   GrahaReferenceTable: () => ReactNode;
   NakshatraReferenceTable: () => ReactNode;

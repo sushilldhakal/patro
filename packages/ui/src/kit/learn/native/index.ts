@@ -16,6 +16,7 @@ import {
   TithiReferenceTable,
   YogaReferenceTable,
 } from "./ReferenceTables";
+import { DayChapterBar, DayChapterWelcome } from "./DayChapterChrome";
 
 export type {
   ArticleBodyProps,
@@ -29,6 +30,8 @@ export type {
   ServerPipelineDiagramProps,
   CompassControlProps,
   SkyTimeSheetProps,
+  DayChapterWelcomeProps,
+  DayChapterBarProps,
 } from "../contract";
 export {
   ArticleBody,
@@ -48,6 +51,8 @@ export {
   TithiReferenceTable,
   YogaReferenceTable,
   KaranaReferenceTable,
+  DayChapterWelcome,
+  DayChapterBar,
 };
 
 export const learnKit = {
@@ -68,4 +73,6 @@ export const learnKit = {
   TithiReferenceTable,
   YogaReferenceTable,
   KaranaReferenceTable,
+  DayChapterWelcome,
+  DayChapterBar,
 } satisfies LearnKit;
