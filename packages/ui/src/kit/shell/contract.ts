@@ -3,7 +3,7 @@
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
 import type { ComponentType, ReactNode } from "react";
-import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
+import type { CalendarDay, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
@@ -383,6 +383,16 @@ export type PatroYearEraToggleProps = {
   variant?: "inline" | "dropdown";
 };
 
+export type RituSeasonsProps = {
+  location?: LocationParams;
+  /** Title row. The ritu page uses the toolbar (`false`). */
+  showHeader?: boolean;
+  placeLabel?: string;
+  headerIcon?: ReactNode;
+  onWhyPress?: () => void;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -412,4 +422,5 @@ export type ShellKit = {
   MuhurtaAsidePanel: ComponentType<MuhurtaAsidePanelProps>;
   PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
   PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
+  RituSeasons: ComponentType<RituSeasonsProps>;
 };
