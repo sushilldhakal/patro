@@ -35,6 +35,7 @@ import {
   type DrawerIconName,
 } from "@/lib/drawer-icons";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
 
 function ActionRow({
   onPress,
@@ -50,10 +51,10 @@ function ActionRow({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className="flex-row items-center gap-3 border-b border-border/40 py-3 active:opacity-80"
+      className={msc.moreRow}
     >
       <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className="text-body flex-1 font-medium text-foreground">{label}</Text>
+      <Text className={msc.moreRowLabel}>{label}</Text>
       <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
     </Pressable>
   );
@@ -73,10 +74,10 @@ function RouteRow({
   return (
     <Pressable
       onPress={() => router.push(path as never)}
-      className="flex-row items-center gap-3 border-b border-border/40 py-3 active:opacity-80"
+      className={msc.moreRow}
     >
       <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className="text-body flex-1 font-medium text-foreground">{label}</Text>
+      <Text className={msc.moreRowLabel}>{label}</Text>
       <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
     </Pressable>
   );
@@ -131,14 +132,14 @@ export default function MoreScreen() {
 
   return (
     <AppShell title={t("ui.more.more")} showHeader={false}>
-      <View className={isTablet ? "flex-row flex-wrap gap-4" : "gap-4"}>
+      <View className={isTablet ? msc.moreTabletStack : msc.moreStack}>
         {(["main", "panchanga", "jyotish", "tools"] as const).map((group) => {
           const routes = routesByGroup(group);
           if (!routes.length) return null;
           const title = GROUP_TITLE[group];
           return (
-            <Card key={group} className={isTablet ? "min-w-[45%] flex-1" : ""}>
-              <Text className="text-body mb-2 font-semibold text-foreground">
+            <Card key={group} className={isTablet ? msc.moreTabletCard : undefined}>
+              <Text className={msc.moreGroupTitle}>
                 {pick(title.ne, title.en)}
               </Text>
               {routes.map((r) => (
@@ -151,8 +152,8 @@ export default function MoreScreen() {
           );
         })}
 
-        <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
-          <Text className="text-body mb-2 font-semibold text-foreground">
+        <Card className={isTablet ? msc.moreTabletCard : undefined}>
+          <Text className={msc.moreGroupTitle}>
             {t("ui.more.panchanga_elements")}
           </Text>
           {elementRoutes.map((r) => (
@@ -160,8 +161,8 @@ export default function MoreScreen() {
           ))}
         </Card>
 
-        <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
-          <Text className="text-body mb-2 font-semibold text-foreground">
+        <Card className={isTablet ? msc.moreTabletCard : undefined}>
+          <Text className={msc.moreGroupTitle}>
             {t("ui.more.learn_articles")}
           </Text>
           <RouteRow
@@ -174,8 +175,8 @@ export default function MoreScreen() {
           ))}
         </Card>
 
-        <Card className={isTablet ? "w-full" : ""}>
-          <Text className="text-body mb-2 font-semibold text-foreground">
+        <Card className={isTablet ? msc.moreWideCard : undefined}>
+          <Text className={msc.moreGroupTitle}>
             {t("ui.more.ceremony_muhurta")}
           </Text>
           {saitRoutes.map((r) => (
@@ -184,10 +185,10 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="text-body mb-2 font-semibold text-foreground">
+          <Text className={msc.moreGroupTitle}>
             {t("ui.more.settings")}
           </Text>
-          <View className="flex-row items-center justify-between gap-3 border-b border-border/40 py-3">
+          <View className={msc.moreSettingRow}>
             <Text className="text-body font-medium text-foreground">{t("ui.common.theme")}</Text>
             <ThemeSwitcher showLabel />
           </View>
@@ -217,7 +218,7 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="text-body mb-2 font-semibold text-foreground">
+          <Text className={msc.moreGroupTitle}>
             {t("ui.more.legal")}
           </Text>
           <RouteRow path="/privacy" label={t("auth.privacy")} icon="shield" />
@@ -225,11 +226,11 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="text-body mb-1 font-semibold text-foreground">
+          <Text className={msc.moreVersionTitle}>
             {t("ui.more.version")} {APP_VERSION}
           </Text>
-          <Text className="text-caption font-mono text-muted-foreground">{API_BASE}</Text>
-          <Text className="text-caption mt-2 text-muted-foreground">{SUPPORT_EMAIL}</Text>
+          <Text className={msc.moreMeta}>{API_BASE}</Text>
+          <Text className={msc.moreMetaGap}>{SUPPORT_EMAIL}</Text>
         </Card>
       </View>
     </AppShell>

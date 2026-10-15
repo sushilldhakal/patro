@@ -45,6 +45,8 @@ import { cn } from "@vedic-patro/domain/utils";
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
+
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
 const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
 const WEEKDAYS_EN = WEEKDAYS_SHORT;
@@ -56,12 +58,12 @@ function Chip({ label, active, onPress }: { label: string; active: boolean; onPr
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       className={cn(
-        "rounded-full border px-3 py-1.5 active:opacity-80",
+        msc.reminderChip,
         active ? "border-secondary bg-secondary" : "border-border bg-card",
       )}
     >
       <Text
-        className={cn("text-body font-semibold", active ? "text-secondary-foreground" : "text-foreground")}
+        className={cn(msc.reminderChipLabel, active ? "text-secondary-foreground" : "text-foreground")}
         style={nepaliTextStyle(13)}
       >
         {label}
@@ -72,7 +74,7 @@ function Chip({ label, active, onPress }: { label: string; active: boolean; onPr
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <Text className="text-body mb-2 font-bold text-foreground" style={nepaliTextStyle(16)}>
+    <Text className={msc.reminderSection} style={nepaliTextStyle(16)}>
       {children}
     </Text>
   );

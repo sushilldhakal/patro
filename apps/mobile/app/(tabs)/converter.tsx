@@ -6,7 +6,7 @@ import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
-import { StatCard } from "@/components/ui/StatCard";
+import { StatCard } from "@vedic-patro/ui/kit/shell";
 import { Text } from "@/components/ui/Text";
 import { convertAdToBs, convertBsToAd } from "@/lib/offline/convert-fallback";
 import { nepaliTextStyle } from "@/lib/nepali-text";

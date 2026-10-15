@@ -1,7 +1,7 @@
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
-import { ensureEnglishBundle } from "@/i18n";
 import { useLanguageSwitcher } from "@vedic-patro/features/common";
+import { LanguageButton } from "@vedic-patro/ui/kit/shell";
+import { ensureEnglishBundle } from "@/i18n";
 import { setStoredLanguage } from "@/lib/user-preferences";
 
 function notifyLangPrefChange() {
@@ -13,8 +13,7 @@ function notifyLangPrefChange() {
 export function LanguageSwitcher({ className }: { className?: string }) {
   const { i18n: i18nInstance, ready } = useTranslation();
   // English resources load on demand, so i18next keeps `resolvedLanguage` on the
-  // Nepali fallback even while the UI is English — reading it raw left the
-  // button offering "English" in English, with no way back. `useLocale` (behind `useLanguageSwitcher`) applies
+  // Nepali fallback even while the UI is English. `useLocale` (behind `useLanguageSwitcher`) applies
   // the stored preference the same way the rest of the app does.
   const { next, label } = useLanguageSwitcher();
 
@@ -33,18 +32,5 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     void i18nInstance.changeLanguage("ne");
   };
 
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      disabled={!ready}
-      className={cn(
-        "h-9 px-2.5 rounded-lg border border-border bg-card text-xs font-semibold hover:text-foreground hover:bg-muted transition-colors shrink-0 disabled:opacity-60",
-        className,
-      )}
-      aria-label={label}
-    >
-      {ready ? label : "…"}
-    </button>
-  );
+  return <LanguageButton label={ready ? label : "…"} onPress={toggle} disabled={!ready} className={className} />;
 }

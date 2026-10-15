@@ -14,21 +14,12 @@ import { clampToSupportedBsRange } from "@/lib/offline/offline-range";
 import { PACK_GROUPS, type PackGroupId, type PackSizeEstimate } from "@/lib/offline/offline-pack";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
-function formatBytes(bytes: number): string {
-  if (bytes <= 0) return "0 MB";
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
-  return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB`;
-}
+import { formatByteSize, parsePositiveYear } from "@vedic-patro/features/common";
+import { mobileShellClasses as msc } from "../../../../packages/design-tokens/src/classes/shell/mobile-shell-classes";
 
 /** Copy keys for each download group (`offline.group.<id>.name` / `.hint`). */
 const groupName = (id: PackGroupId) => `offline.group.${id}.name`;
 const groupHint = (id: PackGroupId) => `offline.group.${id}.hint`;
-
-function parseYear(raw: string): number | null {
-  const n = Number(raw.trim());
-  return Number.isInteger(n) && n > 0 ? n : null;
-}
 
 function YearInput({
   label,
@@ -44,7 +35,7 @@ function YearInput({
   const colors = useThemeColors();
   return (
     <View className="flex-1">
-      <Text className="text-caption mb-1 font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className={msc.offlineYearLabel} style={nepaliTextStyle(12)}>
         {label}
       </Text>
       <TextInput
@@ -57,7 +48,7 @@ function YearInput({
           color: colors.foreground,
           backgroundColor: colors.card,
         }}
-        className="text-body rounded-lg border px-3 py-2.5"
+        className={msc.offlineYearInput}
       />
     </View>
   );
@@ -99,8 +90,8 @@ export default function OfflineDataScreen() {
     setTo(String(summary.maxYear));
   }, [summary.minYear, summary.maxYear]);
 
-  const startYear = parseYear(from);
-  const endYear = parseYear(to);
+  const startYear = parsePositiveYear(from);
+  const endYear = parsePositiveYear(to);
   const bounds = clampToSupportedBsRange({ startYear: 1, endYear: 99999 });
   const rangeProblem: string | null = (() => {
     if (startYear == null || endYear == null) return t("ui.account.enter_both_years");
@@ -179,7 +170,7 @@ export default function OfflineDataScreen() {
   if (!OFFLINE_STORE_SUPPORTED) {
     return (
       <AppShell title={t("ui.account.offline_data")}>
-        <View className="items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12">
+        <View className={msc.offlineEmpty}>
           <Ionicons name="phone-portrait-outline" size={36} color={colors.mutedForeground} />
           <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {t("ui.account.offline_downloads_aren_t_available_on")}
@@ -199,7 +190,7 @@ export default function OfflineDataScreen() {
       {!isOnline ? (
         <View
           style={{ borderColor: withAlpha(illustration.orange50, 0.5), backgroundColor: withAlpha(illustration.orange50, 0.12) }}
-          className="mb-5 flex-row items-center gap-2.5 rounded-lg border p-3"
+          className={msc.offlineBanner}
         >
           <Ionicons name="cloud-offline-outline" size={16} color={colors.primary} />
           <Text className="text-caption flex-1" style={{ color: colors.primary, ...nepaliTextStyle(12) }}>
@@ -208,20 +199,20 @@ export default function OfflineDataScreen() {
         </View>
       ) : null}
 
-      <View className="rounded-xl border border-border bg-card p-4">
+      <View className={msc.offlineCard}>
         <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("ui.account.currently_on_this_device")}
         </Text>
         {summary.years.length > 0 ? (
           <>
-            <Text className="text-display mt-1 font-bold text-foreground" style={nepaliTextStyle(24)}>
+            <Text className={msc.offlineStat} style={nepaliTextStyle(24)}>
               {digits(summary.minYear!)} – {digits(summary.maxYear!)}{" "}
               <Text className="text-body font-medium text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t("patro_date.era_bs")}
               </Text>
             </Text>
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatBytes(summary.bytes) })}
+              {t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatByteSize(summary.bytes) })}
             </Text>
           </>
         ) : (
@@ -233,7 +224,7 @@ export default function OfflineDataScreen() {
           <Pressable
             onPress={() => void resumeDownload()}
             disabled={!isOnline}
-            className="mt-3 self-start rounded-lg border border-border px-3 py-2 active:opacity-80 disabled:opacity-50"
+            className={msc.offlineGhost}
           >
             <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
               {t("ui.account.resume_unfinished_download")}
@@ -242,7 +233,7 @@ export default function OfflineDataScreen() {
         ) : null}
       </View>
 
-      <View className="mt-5 rounded-xl border border-border bg-card p-4">
+      <View className={msc.offlineCardLoose}>
         <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("ui.account.which_years_do_you_need")}
         </Text>
@@ -263,7 +254,7 @@ export default function OfflineDataScreen() {
           </Text>
         )}
 
-        <Text className="text-caption mb-1 mt-4 font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={msc.offlineFieldLabel} style={nepaliTextStyle(12)}>
           {t("ui.account.what_to_include")}
         </Text>
         {PACK_GROUPS.map((g) => {
@@ -276,7 +267,7 @@ export default function OfflineDataScreen() {
                 setMeasured(null);
               }}
               disabled={g.required || running}
-              className="flex-row items-start gap-3 py-2 active:opacity-80"
+              className={msc.offlineOption}
             >
               <Ionicons
                 name={on ? "checkbox" : "square-outline"}
@@ -293,7 +284,7 @@ export default function OfflineDataScreen() {
               </View>
               {est?.perGroup[g.id] ? (
                 <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-                  {formatBytes(est.perGroup[g.id]!.bytes)}
+                  {formatByteSize(est.perGroup[g.id]!.bytes)}
                 </Text>
               ) : null}
             </Pressable>
@@ -301,12 +292,12 @@ export default function OfflineDataScreen() {
         })}
 
         {est ? (
-          <View className="mt-3 rounded-lg border border-border bg-background p-3">
+          <View className={msc.offlineEstimate}>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {t("ui.account.total_to_download")}
             </Text>
             <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
-              {formatBytes(est.totalBytes)}
+              {formatByteSize(est.totalBytes)}
             </Text>
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
               {t("offline.estimate_note", { years: digits(est.years), sample: digits(est.sampleYear) })}
@@ -324,18 +315,18 @@ export default function OfflineDataScreen() {
           <Pressable
             disabled={!valid || running || !isOnline}
             onPress={() => void onDownload()}
-            className="mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50"
+            className={msc.offlinePrimary}
           >
             {running ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="download-outline" size={18} color={neutral.white} />}
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-              {t("ui.account.ok_download_totalbytes", { totalBytes: formatBytes(est.totalBytes) })}
+              {t("ui.account.ok_download_totalbytes", { totalBytes: formatByteSize(est.totalBytes) })}
             </Text>
           </Pressable>
         ) : (
           <Pressable
             disabled={!valid || measuring || running || !isOnline}
             onPress={() => void onMeasure()}
-            className="mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50"
+            className={msc.offlinePrimary}
           >
             {measuring ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="speedometer-outline" size={18} color={neutral.white} />}
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
@@ -348,7 +339,7 @@ export default function OfflineDataScreen() {
       </View>
 
       {running || progress.status === "paused" || progress.status === "error" ? (
-        <View className="mt-4 rounded-xl border border-border bg-card p-4">
+        <View className={msc.offlineCardAfter}>
           <View className="flex-row items-center justify-between">
             <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(12)}>
               {progress.status === "error"
@@ -361,7 +352,7 @@ export default function OfflineDataScreen() {
               {digits(progress.completed)}/{digits(progress.total)}
             </Text>
           </View>
-          <View className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+          <View className={msc.offlineTrack}>
             <View
               style={{
                 width: `${progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0}%`,
@@ -373,7 +364,7 @@ export default function OfflineDataScreen() {
           <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
             {progress.currentYear != null ? `${digits(progress.currentYear)} · ` : ""}
             {progress.currentGroup ? t(groupName(progress.currentGroup)) : ""}
-            {progress.bytes > 0 ? ` · ${formatBytes(progress.bytes)}` : ""}
+            {progress.bytes > 0 ? ` · ${formatByteSize(progress.bytes)}` : ""}
           </Text>
           {progress.skippedRequests > 0 ? (
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
@@ -383,7 +374,7 @@ export default function OfflineDataScreen() {
           {running ? (
             <Pressable
               onPress={cancelDownload}
-              className="mt-3 self-start rounded-lg border border-border px-3 py-2 active:opacity-80"
+              className={msc.offlineGhost}
             >
               <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
                 {t("vastu.compass.stop")}
@@ -392,7 +383,7 @@ export default function OfflineDataScreen() {
           ) : null}
         </View>
       ) : progress.status === "done" ? (
-        <View className="mt-4 flex-row items-center gap-2 rounded-xl border border-border bg-card p-4">
+        <View className={msc.offlineResume}>
           <Ionicons name="checkmark-circle" size={18} color={colors.secondary} />
           <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
             {t("ui.account.download_complete_these_years_now_work")}
@@ -402,7 +393,7 @@ export default function OfflineDataScreen() {
 
       <Pressable
         onPress={() => setWifiOnly(!wifiOnly)}
-        className="mt-5 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
+        className={msc.offlineWifi}
       >
         <View className="flex-1 pr-3">
           <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
@@ -414,20 +405,20 @@ export default function OfflineDataScreen() {
         </View>
         <View
           style={{ backgroundColor: wifiOnly ? colors.secondary : colors.border }}
-          className="h-6 w-11 justify-center rounded-full px-0.5"
+          className={msc.offlineSwitch}
         >
           <View
             style={{ transform: [{ translateX: wifiOnly ? 20 : 0 }] }}
-            className="h-5 w-5 rounded-full bg-white shadow"
+            className={msc.offlineKnob}
           />
         </View>
       </Pressable>
 
-      <View className="mt-8 border-t border-border pt-5">
+      <View className={msc.offlineDangerZone}>
         <Pressable
           disabled={busy !== "idle" || running || summary.bytes === 0}
           onPress={onClear}
-          className="flex-row items-center gap-2 self-start rounded-lg border border-destructive px-4 py-2.5 active:opacity-80 disabled:opacity-50"
+          className={msc.offlineDanger}
         >
           {busy === "clearing" ? (
             <ActivityIndicator size="small" color={colors.destructive} />
