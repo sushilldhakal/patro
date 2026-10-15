@@ -201,7 +201,7 @@ function DayCell({
                 className={cn("pointer-events-auto shrink-0 border-none max-md:px-0.5", cal.countBadge, cal.countBadgeText)}
                 webClassName="transition-opacity hover:opacity-90"
               >
-                {cell.extraFestLabel}
+                <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
               </Pressable>
             ) : null}
           </Text>
@@ -214,7 +214,7 @@ function DayCell({
             className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden", cal.countBadgeCompact, cal.countBadgeText)}
             webClassName="transition-opacity hover:opacity-90"
           >
-            {cell.festCountLabel}
+            <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
           </Pressable>
         ) : null}
 

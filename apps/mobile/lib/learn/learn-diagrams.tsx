@@ -11,11 +11,11 @@ import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
  */
 
 import type { ComponentType } from "react";
-import { Image } from "react-native";
+import { Asset } from "expo-asset";
 import { EarthRotationDiagram as EarthRotationFigure, ServerPipelineDiagram as PipelineFigure } from "@vedic-patro/ui/kit/learn";
 import { HoraTodayDiagram } from "@/components/learn/diagrams/HoraTodayDiagram";
 
-const earthGlobe = Image.resolveAssetSource(require("@/assets/sky3d/earth.jpg")).uri;
+const earthGlobe = Asset.fromModule(require("@/assets/sky3d/earth.jpg")).uri;
 function EarthRotationDiagram() {
   return <EarthRotationFigure globeSrc={earthGlobe} />;
 }
