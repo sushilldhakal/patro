@@ -5,7 +5,7 @@ import { Trans } from "@vedic-patro/i18n/react";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
-import { SunTimesYearGrid } from "@/components/suryakranti/SunTimesYearGrid";
+import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { Text } from "@/components/ui/Text";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";

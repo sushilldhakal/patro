@@ -7,6 +7,7 @@ import type { CalendarDay, LocationParams, PanchangaDay } from "@vedic-patro/api
 import type { Era, Language } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
+import type { SunTimesPage } from "@vedic-patro/features/sun-times";
 import type { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";
 
 export type StatCardProps = {
@@ -393,6 +394,32 @@ export type RituSeasonsProps = {
   className?: string;
 };
 
+export type MatrixCell = {
+  key: string;
+  children?: ReactNode;
+  className?: string;
+  colSpan?: number;
+  /** `row` makes the body cell a row header. */
+  scope?: "col" | "row";
+  title?: string;
+};
+
+export type MatrixRow = { key: string; className?: string; cells: MatrixCell[] };
+
+export type MatrixTableProps = {
+  label?: string;
+  headerRows: MatrixRow[];
+  rows: MatrixRow[];
+  className?: string;
+  tableClassName?: string;
+};
+
+export type SunTimesYearGridProps = {
+  page: SunTimesPage;
+  hideHeader?: boolean;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
@@ -423,4 +450,6 @@ export type ShellKit = {
   PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
   PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
   RituSeasons: ComponentType<RituSeasonsProps>;
+  MatrixTable: ComponentType<MatrixTableProps>;
+  SunTimesYearGrid: ComponentType<SunTimesYearGridProps>;
 };

@@ -12,6 +12,8 @@ import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { PatroYearEraToggle } from "./PatroYearEraToggle";
 import { RituSeasons } from "./RituSeasons";
+import { MatrixTable } from "./MatrixTable";
+import { SunTimesYearGrid } from "./SunTimesYearGrid";
 import { PatroCalendarHeader, PatroMonthYearNav } from "./PatroCalendarHeader";
 import { PatroDayTimeHeader } from "./PatroDayTimeHeader";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
@@ -40,6 +42,8 @@ export {
   PanchangaVivaranPanel,
   PatroYearEraToggle,
   RituSeasons,
+  MatrixTable,
+  SunTimesYearGrid,
   PatroCalendarHeader,
   PatroDayTimeHeader,
   PatroDayTimePanel,
@@ -78,6 +82,10 @@ export type {
   VivaranPlanetStatus,
   PatroYearEraToggleProps,
   RituSeasonsProps,
+  MatrixCell,
+  MatrixRow,
+  MatrixTableProps,
+  SunTimesYearGridProps,
   MobileNavMenuProps,
   MobileNavSection,
   PatroCalendarHeaderProps,
@@ -132,4 +140,6 @@ export const shellKit = {
   PanchangaVivaranPanel,
   PatroYearEraToggle,
   RituSeasons,
+  MatrixTable,
+  SunTimesYearGrid,
 } satisfies ShellKit;

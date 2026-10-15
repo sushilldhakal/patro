@@ -2,7 +2,7 @@ import { Link, getRouteApi } from "@tanstack/react-router";
 import { Trans } from "@vedic-patro/i18n/react";
 import { ArrowLeft, CalendarRange } from "lucide-react";
 import { useSunTimesPage } from "@vedic-patro/features/sun-times";
-import { SunTimesYearGrid } from "@/components/SunTimesYearGrid";
+import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PageShell } from "@/components/PageShell";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
