@@ -7,8 +7,8 @@ import type { PanchangaVivaranPanelProps } from "../contract";
 
 /* iOS paints a one-sided border (`border-t`) as a stretched image, and once the
    view grows after its first layout that image can fill the whole box (the
-   dark band behind the planet tiles). A 1px view draws the same rule safely. */
-const NO_TOP_BORDER = "border-t-0 pt-0";
+   dark band behind the planet tiles). So these sections carry no border at all
+   (not even a border colour) and a 1px view draws the rule. */
 
 function Rule({ className }: { className?: string }) {
   return <Box className={cn("h-px bg-foreground/10", className)} />;
@@ -54,7 +54,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         ))}
       </Grid>
       {view.planets.length > 0 ? (
-        <Box className={cn(home.gocharSection, NO_TOP_BORDER)}>
+        <Box className="mt-2.5">
           <Rule className="mb-2" />
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
           <Grid cols={5} minCellWidth={96} gap={6}>
@@ -74,7 +74,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         </Box>
       ) : null}
       {view.solar.length > 0 ? (
-        <Box className={cn(view.planets.length > 0 ? home.solarWithPlanets : home.solarAlone, NO_TOP_BORDER)}>
+        <Box className={view.planets.length > 0 ? "mt-1.5" : "mt-2.5"}>
           <Rule className="mb-2" />
           <Grid cols={3} gap={6}>
             {view.solar.map((item) => (
@@ -87,7 +87,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         </Box>
       ) : null}
       {onOpenDetail ? (
-        <Box className={cn(home.vivaranFooter, NO_TOP_BORDER)}>
+        <Box className="mt-2.5">
           <Rule className="mb-2.5" />
           {view.abhijit ? (
             <Text className={home.vivaranFooterText}>

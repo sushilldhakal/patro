@@ -1,0 +1,53 @@
+name: EAS Update (development)
+
+# Publishes the app's JavaScript to the EAS `development` channel on every push
+# to main that touches the app or the shared packages, so a development build
+# installed anywhere can open the latest code without Metro running locally.
+#
+# Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access
+# tokens). Only builds made after expo-updates was added, with the
+# `development` profile (channel "development"), can load these updates; a
+# change to native code still needs a new build.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/**"
+      - "package-lock.json"
+  workflow_dispatch:
+
+concurrency:
+  group: eas-update-development
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Publish update
+        working-directory: apps/mobile
+        env:
+          # Through the environment, so quotes in a commit message can't break the command.
+          MESSAGE: ${{ github.event.head_commit.message || 'Manual run' }}
+        run: >
+          eas update
+          --channel development
+          --environment development
+          --message "$MESSAGE"
+          --platform all
+          --non-interactive

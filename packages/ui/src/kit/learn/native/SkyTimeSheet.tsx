@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { Text } from "@vedic-patro/ui";
-import { fontFamily, illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { fontFamily, illustration, neutral, webTypeScale, withAlpha } from "@vedic-patro/design-tokens";
 import { DAYLIGHT_STOPS } from "@vedic-patro/design-tokens/classes/learn/daylight-stops";
 import { skySheetTransport, useSkyTimeSheet, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 import type { SkyTimeSheetProps } from "../contract";
@@ -51,8 +51,8 @@ export function SkyTimeSheet({
           padding: 0,
           textAlign: "center",
           color: neutral.white,
-          fontSize: 20,
-          lineHeight: 26,
+          fontSize: webTypeScale.xl.size,
+          lineHeight: webTypeScale.xl.lineHeight,
           fontFamily: fontFamily.native.semibold,
           fontVariant: ["tabular-nums"],
         }}

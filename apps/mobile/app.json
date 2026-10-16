@@ -16,6 +16,9 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
+    "updates": {
+      "url": "https://u.expo.dev/875bd091-9544-4881-9b60-7a268c11a7ac"
+    },
     "locales": {
       "en": "./store/locales/en.json",
       "ne": "./store/locales/ne.json"

@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { DainikDayRow, useDainikKrantiPage } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
+import { space } from "@vedic-patro/design-tokens";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -30,7 +31,7 @@ function CardField({
   columns: number;
 }) {
   return (
-    <View className={dainikKrantiClasses.field} style={{ width: `${100 / columns}%`, paddingRight: 12 }}>
+    <View className={dainikKrantiClasses.field} style={{ width: `${100 / columns}%`, paddingRight: space.md }}>
       <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>{label}</Text>
       <View>{typeof value === "string" ? <Text className={dainikKrantiClasses.fieldValue} style={nepaliTextStyle()}>{value}</Text> : value}</View>
       {sub ? <Text className={dainikKrantiClasses.fieldSub} style={nepaliTextStyle()}>{sub}</Text> : null}
@@ -95,9 +96,9 @@ export function DayPatroCard({ row, copy }: { row: DainikDayRow; copy: PageCopy 
 
       <View
         className={cn(dainikKrantiClasses.fieldGridCompact, "flex-row flex-wrap")}
-        style={{ marginRight: -12 }}
+        style={{ marginRight: -space.md }}
         onLayout={(e) => {
-          const next = gridColumns(e.nativeEvent.layout.width - 12);
+          const next = gridColumns(e.nativeEvent.layout.width - space.md);
           if (next !== columns) setColumns(next);
         }}
       >
