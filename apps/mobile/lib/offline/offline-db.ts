@@ -36,6 +36,11 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
       value TEXT NOT NULL
     );
   `);
+  // Large responses live in files (see offline-http.ts); the row keeps the file name.
+  const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(offline_http)");
+  if (!columns.some((c) => c.name === "file")) {
+    await db.execAsync("ALTER TABLE offline_http ADD COLUMN file TEXT");
+  }
   return db;
 }
 

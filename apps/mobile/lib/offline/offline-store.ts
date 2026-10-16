@@ -21,11 +21,34 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function getCachedYear(
-  year: number,
-  location?: LocationParams,
-): Promise<YearWheelCalendar | null> {
-  if (!OFFLINE_STORE_SUPPORTED) return null;
+/**
+ * The last few years read back, parsed. Offline, every month the user browses
+ * slices its days out of the year payload; without this each month step read
+ * and JSON-parsed the whole multi-megabyte year again on the JS thread.
+ */
+const PARSED_YEARS_KEPT = 2;
+const parsedYears = new Map<string, Promise<YearWheelCalendar | null>>();
+
+export function getCachedYear(year: number, location?: LocationParams): Promise<YearWheelCalendar | null> {
+  if (!OFFLINE_STORE_SUPPORTED) return Promise.resolve(null);
+  const key = `${year}:${locationCacheKey(location)}`;
+  let hit = parsedYears.get(key);
+  if (hit) {
+    // Most recently used goes last, so the oldest is evicted first.
+    parsedYears.delete(key);
+  } else {
+    hit = readCachedYear(year, location);
+    // A miss is not remembered: the year may be downloaded a moment later.
+    hit.then((y) => {
+      if (!y) parsedYears.delete(key);
+    }, () => parsedYears.delete(key));
+  }
+  parsedYears.set(key, hit);
+  while (parsedYears.size > PARSED_YEARS_KEPT) parsedYears.delete(parsedYears.keys().next().value!);
+  return hit;
+}
+
+async function readCachedYear(year: number, location?: LocationParams): Promise<YearWheelCalendar | null> {
   // Current store: the raw response saved by an offline pack.
   const saved = await getOfflineResponse(yearWheelRequestPath(year, location));
   if (saved) {
@@ -109,6 +132,7 @@ export async function clearDownloadedYears(location?: LocationParams): Promise<v
   if (!OFFLINE_STORE_SUPPORTED) return;
   const db = await getOfflineDb();
   await db.runAsync("DELETE FROM bs_year_cache WHERE location_key = ?", [locationCacheKey(location)]);
+  parsedYears.clear();
 }
 
 export type DownloadRangeStatus = "idle" | "running" | "paused" | "done" | "error" | "cancelled";
