@@ -4,6 +4,7 @@ import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { Grid } from "@vedic-patro/ui";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { StatCard } from "@vedic-patro/ui/kit/shell";
@@ -27,8 +28,6 @@ export default function ConverterScreen() {
 
   // Web grid: grid-cols-2 / sm:grid-cols-3 / lg:grid-cols-4
   const cols = width >= 1024 ? 4 : width >= 640 ? 3 : 2;
-  /* percent widths + a 12px gap: leave ~4% per gap or the last tile wraps. */
-  const tileWidth = `${((100 - 4 * (cols - 1)) / cols).toFixed(2)}%`;
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
@@ -96,11 +95,12 @@ export default function ConverterScreen() {
             <Ionicons name="arrow-forward" size={20} color={colors.foreground} />
             <Text className={converterClasses.resultValue}>{page.result.to}</Text>
           </View>
-          <View className="flex-row flex-wrap gap-3">
+          {/* Measured cells: percent widths plus gaps wrapped the last tile on narrow phones. */}
+          <Grid cols={cols} gap={12}>
             {page.result.cards.map((card) => (
-              <StatCard key={card.labelKey} width={tileWidth} highlight={card.highlight} label={card.label} value={card.value} />
+              <StatCard key={card.labelKey} width="100%" highlight={card.highlight} label={card.label} value={card.value} />
             ))}
-          </View>
+          </Grid>
         </View>
       ) : null}
       <SeoContentSection route="converter" />
