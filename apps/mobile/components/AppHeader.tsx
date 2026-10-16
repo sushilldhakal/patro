@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { useRouter } from "expo-router";
+import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
@@ -34,13 +34,13 @@ function BrandMark({ onPress, centered }: { onPress: () => void; centered?: bool
 export function AppHeader() {
   const { t, pick } = useLocale();
   const colors = useThemeColors();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navPress = useNavPress();
 
   const go = (href: string) => {
     setMenuOpen(false);
-    router.push(href as never);
+    navPress(href);
   };
 
   return (

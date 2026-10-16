@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { useRouter, usePathname } from "expo-router";
+import { usePathname } from "expo-router";
+import { useNavPress } from "@/lib/use-nav-press";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
@@ -13,7 +14,7 @@ import { brand, nativeShadow } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 export function FloatingNavBar() {
-  const router = useRouter();
+  const navPress = useNavPress();
   const pathname = usePathname();
   const { pick } = useLocale();
   const colors = useThemeColors();
@@ -38,7 +39,7 @@ export function FloatingNavBar() {
           return (
             <Pressable
               key={item.href}
-              onPress={() => router.push(item.href as never)}
+              onPress={() => navPress(item.href)}
               className={cn(
                 "min-w-0 justify-center",
                 shellClasses.navItem,

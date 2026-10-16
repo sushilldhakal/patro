@@ -1,0 +1,40 @@
+import { useCallback } from "react";
+import { usePathname, useRouter } from "expo-router";
+import { isNavActive, normalizeMobilePathname } from "@/lib/mobile-nav";
+import { scrollPageToTop } from "@/lib/page-scroll";
+
+/** Tabs that host their own stack: a sub-page sits on top of the tab's root page. */
+const STACK_TABS = new Set(["/panchanga", "/kundali", "/learn", "/documents"]);
+
+/**
+ * What a top-level nav button (floating nav, header logo) does when pressed.
+ *
+ * `router.push` on the page already showing pushed a second copy of it inside
+ * the tab's stack, so the same page slid in again. Now:
+ * - already on that page → scroll it to the top, no navigation;
+ * - on a sub-page of that tab → back to the tab's root (pops, no push animation);
+ * - anywhere else → switch to it.
+ */
+export function useNavPress() {
+  const router = useRouter();
+  const pathname = normalizeMobilePathname(usePathname());
+  return useCallback(
+    (href: string) => {
+      const here = pathname === "/index" ? "/" : pathname;
+      if (here === href) {
+        scrollPageToTop(true);
+        return;
+      }
+      if (STACK_TABS.has(href) && here.startsWith(`${href}/`)) {
+        router.dismissTo(href as never);
+        return;
+      }
+      if (isNavActive(here, href)) {
+        router.navigate(href as never);
+        return;
+      }
+      router.push(href as never);
+    },
+    [pathname, router],
+  );
+}
