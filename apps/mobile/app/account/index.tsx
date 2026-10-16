@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Pressable, Switch, View } from "react-native";
+import { Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { inkOn } from "@/lib/theme";
@@ -16,6 +16,7 @@ import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { brand, illustration } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 export default function AccountScreen() {
   const { t, lang } = useLocale();
@@ -34,7 +35,7 @@ export default function AccountScreen() {
     return (
       <AppShell title={copy.title}>
         <View className="items-center py-12">
-          <ActivityIndicator />
+          <VedicPatroLoader />
         </View>
       </AppShell>
     );
@@ -144,7 +145,7 @@ export default function AccountScreen() {
         />
       ) : page.listStatus === "loading" ? (
         <View className={cn("items-center", accountClasses.loadingBox)}>
-          <ActivityIndicator />
+          <VedicPatroLoader label={null} size={72} />
         </View>
       ) : page.listStatus === "empty" ? (
         <View className={accountClasses.emptyBox}>

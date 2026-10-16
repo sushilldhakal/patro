@@ -3,11 +3,19 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
-export function LoadingState({ label }: { label?: string }) {
-  const { t, pick } = useLocale();
+/** Smallest height a loading block keeps, so it never collapses to nothing in a scroll view. */
+const LOADING_MIN_HEIGHT = 200;
+
+/**
+ * The page-level "loading" block: the animated Vedic Patro mark, centred. It
+ * keeps a fixed minimum height, so the cards below sit where they will be once
+ * the data arrives instead of sliding up under (or over) it.
+ */
+export function LoadingState({ label }: { label?: string | null }) {
+  const { t } = useLocale();
   return (
-    <View className="flex-1 items-center justify-center py-12">
-      <VedicPatroLoader label={label ?? t("rashifal.profile.loading")} size={88} />
+    <View className="flex-1 items-center justify-center py-10" style={{ minHeight: LOADING_MIN_HEIGHT }}>
+      <VedicPatroLoader label={label === undefined ? t("rashifal.profile.loading") : label} size={88} />
     </View>
   );
 }

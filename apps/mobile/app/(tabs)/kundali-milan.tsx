@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { ActivityIndicator, Modal, Pressable, ScrollView, View } from "react-native";
+import { Modal, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,6 +25,7 @@ import { useKundaliMilanPage, type MilanDetails, type MilanRole } from "@vedic-p
 import { space } from "@vedic-patro/design-tokens";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 const ayanamshaStorage = { load: getStoredAyanamshaMode };
 
@@ -56,7 +57,7 @@ export default function KundaliMilanScreen() {
       >
         {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-            <ActivityIndicator />
+            <VedicPatroLoader size={72} />
           </View>
         ) : status === "login" ? (
           <KundaliLoginPrompt
@@ -102,7 +103,7 @@ export default function KundaliMilanScreen() {
                   </View>
                 ) : matchStatus === "loading" ? (
                   <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-                    <ActivityIndicator />
+                    <VedicPatroLoader label={null} size={72} />
                     <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
                       {copy.loading}
                     </Text>
@@ -280,7 +281,7 @@ function ProfilePickModal({
         </View>
         <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: Math.max(insets.bottom, space.lg) }}>
           {isLoading ? (
-            <ActivityIndicator />
+            <VedicPatroLoader label={null} size={56} className="py-6" />
           ) : (profiles ?? []).length === 0 ? (
             <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
               {emptyLabel}

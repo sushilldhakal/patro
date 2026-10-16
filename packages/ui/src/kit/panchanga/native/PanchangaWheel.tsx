@@ -145,6 +145,8 @@ const headSubStyle = {
 type PanchangaWheelProps = {
   p?: PanchangaDay;
   loading?: boolean;
+  /** Drawn in the middle of the wheel's placeholder while it loads (the app's animated loader). */
+  loadingMark?: ReactNode;
   bsYear: number;
   bsMonthNe: string;
   bsDay: number;
@@ -498,7 +500,7 @@ function WheelBody({
   renderScrubber,
   safeTop,
   safeBottom,
-}: Omit<PanchangaWheelProps, "loading" | "p"> & { p: PanchangaDay }) {
+}: Omit<PanchangaWheelProps, "loading" | "loadingMark" | "p"> & { p: PanchangaDay }) {
   const copy = usePanchangaWheelCopy();
   const { pick, digits } = useLocale();
   const { width: screenW, height: screenH } = useWindowDimensions();
@@ -979,11 +981,13 @@ function WheelBody({
   );
 }
 
-function WheelSkeleton(_props: Pick<PanchangaWheelProps, "bsYear" | "bsMonthNe" | "bsDay" | "locationLabel">) {
-
+/** Same footprint as the wheel, so nothing below moves or overlaps when it arrives. */
+function WheelSkeleton({ loadingMark }: Pick<PanchangaWheelProps, "loadingMark">) {
   return (
     <View className="overflow-hidden rounded-2xl" style={{ backgroundColor: W_BG }}>
-      <View className="mx-auto bg-muted/20" style={{ width: 320, height: 320 }} />
+      <View className="mx-auto items-center justify-center bg-muted/20" style={{ width: 320, height: 320 }}>
+        {loadingMark}
+      </View>
     </View>
   );
 }
@@ -991,6 +995,7 @@ function WheelSkeleton(_props: Pick<PanchangaWheelProps, "bsYear" | "bsMonthNe" 
 function PanchangaWheelImpl({
   p,
   loading = false,
+  loadingMark,
   bsYear,
   bsMonthNe,
   bsDay,
@@ -1013,7 +1018,7 @@ function PanchangaWheelImpl({
   safeBottom,
 }: PanchangaWheelProps) {
   if (loading || !p) {
-    return <WheelSkeleton bsYear={bsYear} bsMonthNe={bsMonthNe} bsDay={bsDay} locationLabel={locationLabel} />;
+    return <WheelSkeleton loadingMark={loadingMark} />;
   }
   return (
     <WheelBody

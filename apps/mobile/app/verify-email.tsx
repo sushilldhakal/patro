@@ -1,4 +1,4 @@
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useVerifyEmailPage } from "@vedic-patro/features/account";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
@@ -11,6 +11,7 @@ import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 /** Confirm an email address — the app's drawing of `useVerifyEmailPage` (@vedic-patro/features). */
 function VerifyEmailScreenBody() {
@@ -24,7 +25,7 @@ function VerifyEmailScreenBody() {
     <AppShell title={page.copy.okTitle} showHeader={false}>
       <View className={cn("w-full py-12", accountClasses.panelCentered)}>
         {page.status === "loading" ? (
-          <ActivityIndicator />
+          <VedicPatroLoader />
         ) : page.status === "ok" ? (
           <>
             <Ionicons name="checkmark-circle" size={48} color={colors.success} />

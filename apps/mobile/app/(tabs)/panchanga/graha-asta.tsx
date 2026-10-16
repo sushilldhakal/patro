@@ -15,6 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { LoadingState } from "@/components/ui/States";
 
 /** Graha asta — the app's drawing of `useGrahaAstaPage` (@vedic-patro/features). */
 export default function GrahaAstaScreen() {
@@ -44,9 +45,7 @@ export default function GrahaAstaScreen() {
       />
 
       {page.status === "loading" ? (
-        <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
-          {t("common.loading")}
-        </Text>
+        <LoadingState label={t("common.loading")} />
       ) : page.status === "ready" ? (
         <Grid cols={cols} gapX={12} className={grahaClasses.columns}>
           {page.groups.map((g) => (

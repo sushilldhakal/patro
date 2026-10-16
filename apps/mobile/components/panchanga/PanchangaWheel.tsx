@@ -6,6 +6,7 @@ import Ketu from "@/assets/graha/ketu.svg";
 import Rahu from "@/assets/graha/rahu.svg";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { WheelPanel } from "@/components/panchanga/WheelPanel";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
 import { PanchangaWheel as KitWheel, type WheelAtTimeClient, type WheelChartAssets } from "@vedic-patro/ui/kit/panchanga";
@@ -30,7 +31,10 @@ const atTime: WheelAtTimeClient = {
   queryFn: (query) => fetchPanchangaAtTime(query.datetime ?? "", query.locationParams),
 };
 
-type Props = Omit<ComponentProps<typeof KitWheel>, "chartAssets" | "atTime" | "renderSkySheet" | "renderRashiPanel" | "renderScrubber" | "safeTop" | "safeBottom">;
+type Props = Omit<
+  ComponentProps<typeof KitWheel>,
+  "chartAssets" | "atTime" | "renderSkySheet" | "renderRashiPanel" | "renderScrubber" | "safeTop" | "safeBottom" | "loadingMark"
+>;
 
 function PanchangaWheelImpl(props: Props) {
   const insets = useSafeAreaInsets();
@@ -39,6 +43,8 @@ function PanchangaWheelImpl(props: Props) {
       {...props}
       chartAssets={chartAssets}
       atTime={atTime}
+      // The screen's status line already says what is loading.
+      loadingMark={<VedicPatroLoader label={null} size={88} />}
       safeTop={insets.top}
       safeBottom={insets.bottom}
       renderScrubber={({ value, onChange, trackWidth }) => (

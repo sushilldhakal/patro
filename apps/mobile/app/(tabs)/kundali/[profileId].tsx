@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { space } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 const ayanamshaStorage = { load: getStoredAyanamshaMode, save: setStoredAyanamshaMode };
 
@@ -81,7 +82,7 @@ export default function KundaliDetailScreen() {
     if (status === "loading") {
       return (
         <View className={cn(kundaliClasses.emptyBoxTall, "items-center")}>
-          <ActivityIndicator />
+          <VedicPatroLoader label={null} size={72} />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {copy.loading}
           </Text>
@@ -133,7 +134,7 @@ export default function KundaliDetailScreen() {
     if (chartStatus === "loading") {
       return (
         <View className={cn(kundaliClasses.computingBox, "items-center")}>
-          <ActivityIndicator />
+          <VedicPatroLoader label={null} size={72} />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {copy.computing}
           </Text>

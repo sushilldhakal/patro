@@ -16,6 +16,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { LoadingState } from "@/components/ui/States";
 
 /** Graha vakri — the app's drawing of `useGrahaVakriPage` (@vedic-patro/features). */
 export default function GrahaVakriScreen() {
@@ -45,9 +46,7 @@ export default function GrahaVakriScreen() {
       />
 
       {page.status === "loading" ? (
-        <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
-          {t("common.loading")}
-        </Text>
+        <LoadingState label={t("common.loading")} />
       ) : page.status === "ready" ? (
         <Grid cols={cols} gapX={12} className={grahaClasses.columns}>
           {page.groups.map((g) => (

@@ -14,6 +14,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { LoadingState } from "@/components/ui/States";
 
 /** Panchak patro — the app's drawing of `usePanchakPage` (@vedic-patro/features). */
 export default function PanchakPatroScreen() {
@@ -51,9 +52,7 @@ export default function PanchakPatroScreen() {
       </View>
 
       {page.status === "loading" ? (
-        <Text className={pc.noData} style={nepaliTextStyle()}>
-          {page.copy.loading}
-        </Text>
+        <LoadingState label={page.copy.loading} />
       ) : page.status === "error" ? (
         <Text className={pc.errorText} style={nepaliTextStyle()}>
           {page.copy.error}

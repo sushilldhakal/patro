@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useKundaliHubPage } from "@vedic-patro/features/kundali";
 import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -18,6 +18,7 @@ import { type Profile } from "@/lib/auth/client";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 export default function KundaliScreen() {
   const colors = useThemeColors();
@@ -49,7 +50,7 @@ export default function KundaliScreen() {
       >
         {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-            <ActivityIndicator />
+            <VedicPatroLoader label={null} size={72} />
             <Text className={cn("mt-2", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
               {copy.loading}
             </Text>

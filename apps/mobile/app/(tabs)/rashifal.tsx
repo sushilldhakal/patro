@@ -16,8 +16,7 @@ import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
 import { RashifalProfilePicker } from "@/components/rashifal/RashifalProfilePicker";
-import { ErrorState } from "@/components/ui/States";
-import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
+import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useLocale } from "@/lib/i18n";
 import { RASHIFAL_PERIOD_ICON } from "@/lib/rashifal-ui";
 import { useBreakpoint } from "@/lib/responsive";
@@ -111,9 +110,7 @@ export default function RashifalScreen() {
         </View>
 
         {loading ? (
-          <View className="mt-6 py-16">
-            <VedicPatroLoader />
-          </View>
+          <LoadingState />
         ) : error ? (
           <ErrorState message={page.copy.error} onRetry={page.profile ? page.personal.retry : page.general.retry} />
         ) : page.profile && page.personal.data ? (
