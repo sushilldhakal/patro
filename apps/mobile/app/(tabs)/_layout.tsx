@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
+import { goBackInHistory, useTrackNavHistory } from "@/lib/nav-history";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -15,7 +16,7 @@ const EDGE_SWIPE_WIDTH = 20;
 /**
  * Tab screens have no stack of their own, so there's no native swipe-back.
  * A drag that starts at the left edge and travels right goes back to the page
- * it came from (tabs keep history), or home when there's nothing to go back to.
+ * that was open before (lib/nav-history), or home when there's nothing earlier.
  */
 function useEdgeSwipeBack() {
   const router = useRouter();
@@ -26,8 +27,7 @@ function useEdgeSwipeBack() {
     .failOffsetY([-40, 40])
     .onEnd((e) => {
       if (e.translationX < 60 && e.velocityX < 500) return;
-      if (router.canGoBack()) router.back();
-      else if (pathname !== "/") router.replace("/");
+      goBackInHistory(router, pathname);
     });
 }
 
@@ -49,6 +49,7 @@ function EdgeSwipeStrip({ bottom }: { bottom: number }) {
 }
 
 export default function TabsLayout() {
+  useTrackNavHistory();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();

@@ -29,7 +29,10 @@ export function useNavPress() {
         router.dismissTo(href as never);
         return;
       }
-      if (isNavActive(here, href)) {
+      /* A tab with its own stack may still hold a sub-page left there by a
+         swipe-back to another tab; navigate pops it back to the tab's root
+         page, where push would have stacked a second copy on top. */
+      if (isNavActive(here, href) || STACK_TABS.has(href)) {
         router.navigate(href as never);
         return;
       }
