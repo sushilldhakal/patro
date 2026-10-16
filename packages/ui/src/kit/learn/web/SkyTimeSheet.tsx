@@ -198,9 +198,15 @@ export function SkyTimeSheet({
             })}
           </div>
         </div>
+        {/* One rule per engine: a selector list holding an unknown pseudo-element
+            is dropped whole, so a shared -webkit-/-moz- rule drew no track anywhere. */}
         <style>{`
           .sky-time-slider--day { height: 32px; }
-          .sky-time-slider--day::-webkit-slider-runnable-track,
+          .sky-time-slider--day::-webkit-slider-runnable-track {
+            height: 14px;
+            border-radius: 999px;
+            background: ${daylightGradient()};
+          }
           .sky-time-slider--day::-moz-range-track {
             height: 14px;
             border-radius: 999px;

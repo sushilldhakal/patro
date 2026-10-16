@@ -69,8 +69,9 @@ import type { Era } from "@vedic-patro/domain/era";
 import { illustration } from "@vedic-patro/design-tokens";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
 /* The wheel is always night-dark, so its icons take a light ink: the theme's
-   `foreground` is near-black in light mode and left them invisible. */
-const wheelIconInk = "text-white";
+   `foreground` is near-black in light mode and left them invisible. Important,
+   so the ink wins over the tone class whatever order the stylesheet lands in. */
+const wheelIconInk = "!text-white";
 const wheelDockIcon = cn(wheelIconInk, "h-3.5 w-3.5 max-compact:h-3 max-compact:w-3");
 
 function gFromClock(clock: string, sunriseMin: number): number {

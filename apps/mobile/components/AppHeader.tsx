@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Easing, Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useNavPress } from "@/lib/use-nav-press";
@@ -9,6 +9,7 @@ import { AccountMenu } from "@/components/auth/AccountMenu";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
+import { useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -37,6 +38,7 @@ export function AppHeader() {
   const insets = useSafeAreaInsets();
   const [menuOpen, setMenuOpen] = useState(false);
   const navPress = useNavPress();
+  useOpenMenuRequest(useCallback(() => setMenuOpen(true), []));
 
   const go = (href: string) => {
     setMenuOpen(false);

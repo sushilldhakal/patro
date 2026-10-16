@@ -149,6 +149,7 @@ export function SkyTimeSheet({
               </View>
             }
             thumb={illustration.amber92}
+            fill={false}
           />
           <View className="relative mt-1.5 h-4">
             {v.dayPeriods.map((band) => {
@@ -178,6 +179,7 @@ function Scrub({
   onChange,
   track,
   thumb,
+  fill = true,
 }: {
   min: number;
   max: number;
@@ -186,6 +188,9 @@ function Scrub({
   onChange: (value: number) => void;
   track: ReactNode;
   thumb: string;
+  /** Grow to fill a row (the speed slider). Off for the full-width day slider: in a
+      column, flex-1 collapsed its height and the period labels sat on the band. */
+  fill?: boolean;
 }) {
   const width = useRef(1);
   /* Where the press began, inside the track and on the screen. A move is read as
@@ -202,7 +207,7 @@ function Scrub({
   const left = `${((value - min) / Math.max(1, max - min)) * 100}%` as `${number}%`;
   return (
     <View
-      className="h-8 flex-1 justify-center"
+      className={fill ? "h-8 flex-1 justify-center" : "h-8 w-full justify-center"}
       onLayout={(event) => {
         width.current = event.nativeEvent.layout.width || 1;
       }}
