@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { Pressable, View } from "react-native";
-import { Input, Text } from "@vedic-patro/ui";
-import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { Pressable, TextInput, View } from "react-native";
+import { Text } from "@vedic-patro/ui";
+import { fontFamily, illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { DAYLIGHT_STOPS } from "@vedic-patro/design-tokens/classes/learn/daylight-stops";
 import { skySheetTransport, useSkyTimeSheet, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 import type { SkyTimeSheetProps } from "../contract";
@@ -31,20 +31,31 @@ export function SkyTimeSheet({
   });
 
   const stepper = (f: SkyTimeFieldView) => (
-    <View key={f.field} className="items-center" style={{ width: f.wide ? 62 : 42 }}>
+    <View key={f.field} className="items-center" style={{ width: f.wide ? 52 : 36 }}>
       <Hold label={f.upLabel} onStep={f.up}>
         {icons.up}
       </Hold>
-      <Input
+      {/* The website's field: semibold digits in the app font, committed when editing ends (return or blur). */}
+      <TextInput
         value={f.value}
-        label={f.label}
-        type={f.allowMinus ? "text" : "number"}
-        onChange={(raw) => {
-          v.startEdit(f.field);
-          v.setDraft(f.field, raw);
+        accessibilityLabel={f.label}
+        keyboardType={f.allowMinus ? "numbers-and-punctuation" : "number-pad"}
+        returnKeyType="done"
+        selectTextOnFocus
+        selectionColor={neutral.white}
+        onFocus={() => v.startEdit(f.field)}
+        onChangeText={(raw) => v.setDraft(f.field, raw)}
+        onEndEditing={(e) => v.commitField(f.field, e.nativeEvent.text)}
+        style={{
+          width: "100%",
+          padding: 0,
+          textAlign: "center",
+          color: neutral.white,
+          fontSize: 20,
+          lineHeight: 26,
+          fontFamily: fontFamily.native.semibold,
+          fontVariant: ["tabular-nums"],
         }}
-        onSubmit={() => v.commitField(f.field, v.draft)}
-        className="w-full bg-transparent p-0 text-center text-lg font-semibold text-white"
       />
       <Hold label={f.downLabel} onStep={f.down}>
         {icons.down}
@@ -57,7 +68,7 @@ export function SkyTimeSheet({
       i === 0
         ? [stepper(f)]
         : [
-            <Text key={`sep-${f.field}`} className="text-lg font-semibold text-white/80">
+            <Text key={`sep-${f.field}`} className="w-2.5 text-center text-xl font-semibold text-white/80">
               {glyph}
             </Text>,
             stepper(f),
@@ -146,9 +157,9 @@ export function SkyTimeSheet({
                 <View
                   key={band.id}
                   className="absolute"
-                  style={edge === "left" ? { left: 0 } : edge === "right" ? { right: 0 } : { left: `${band.at}%`, marginLeft: -24 }}
+                  style={edge === "left" ? { left: 0 } : edge === "right" ? { right: 0 } : { left: `${band.at}%`, width: 96, marginLeft: -48, alignItems: "center" }}
                 >
-                  <Text className={band.active ? "text-diagram-xs font-semibold text-white" : "text-diagram-xs font-medium text-white/55"}>{band.label}</Text>
+                  <Text numberOfLines={1} className={band.active ? "text-diagram-xs font-semibold text-white" : "text-diagram-xs font-medium text-white/55"}>{band.label}</Text>
                 </View>
               );
             })}
@@ -177,6 +188,11 @@ function Scrub({
   thumb: string;
 }) {
   const width = useRef(1);
+  /* Where the press began, inside the track and on the screen. A move is read as
+     a page-x delta from there: `locationX` is relative to whichever view is under
+     the finger, so once it slid onto the thumb the value jumped and the drag stalled. */
+  const startX = useRef(0);
+  const startPageX = useRef(0);
   const place = (x: number) => {
     const span = Math.max(1, max - min);
     const raw = min + Math.min(1, Math.max(0, x / width.current)) * span;
@@ -192,11 +208,23 @@ function Scrub({
       }}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
-      onResponderGrant={(event) => place(event.nativeEvent.locationX)}
-      onResponderMove={(event) => place(event.nativeEvent.locationX)}
+      /* Keep the drag: a parent scroll view or the sheet must not take it over mid-swipe. */
+      onResponderTerminationRequest={() => false}
+      onResponderGrant={(event) => {
+        startX.current = event.nativeEvent.locationX;
+        startPageX.current = event.nativeEvent.pageX;
+        place(startX.current);
+      }}
+      onResponderMove={(event) => place(startX.current + event.nativeEvent.pageX - startPageX.current)}
     >
-      {track}
-      <View className="absolute h-5 w-5 rounded-full" style={{ left, marginLeft: -10, backgroundColor: thumb }} />
+      <View pointerEvents="none">
+        {track}
+      </View>
+      <View
+        pointerEvents="none"
+        className="absolute h-5 w-5 rounded-full"
+        style={{ left, marginLeft: -10, backgroundColor: thumb, borderWidth: 2, borderColor: withAlpha(neutral.black, 0.35) }}
+      />
     </View>
   );
 }

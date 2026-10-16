@@ -973,10 +973,11 @@ function GrahaBody({
 
       {graha === "saturn" ? <SaturnRing texture={textures.saturnring} radius={radius} /> : null}
 
-      {/* Vakri collar — shown only while the graha is actually retrograde. */}
+      {/* Vakri collar — shown only while the graha is actually retrograde. It
+          sits right at the globe's edge rather than out in a halo around it. */}
       <group ref={retroRef} visible={false}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[radius * 1.7, radius * 2.05, 32]} />
+          <ringGeometry args={[radius * 1.06, radius * 1.22, 48]} />
           <meshBasicMaterial color={RETRO} transparent opacity={0.9} side={THREE.DoubleSide} />
         </mesh>
       </group>

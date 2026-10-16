@@ -747,6 +747,21 @@ function WheelBody({
     [calendarPick, det.sunriseMin, rangeMode],
   );
 
+  const calendarModal = (
+    <WheelCalendarModal
+      open={calendarOpen}
+      onClose={() => setCalendarOpen(false)}
+      year={pickerYear}
+      month={pickerMonth}
+      day={pickerDay}
+      clock={pickerClock}
+      timeZone={tz}
+      playback={yearScrub}
+      onCommit={handleCalendarCommit}
+      renderSkySheet={renderSkySheet}
+    />
+  );
+
   const renderHeader = (fullscreen?: boolean) => {
     const eyebrow = compactHead
       ? { ...headEyebrowStyle, letterSpacing: 1.2 }
@@ -962,21 +977,12 @@ function WheelBody({
               would open behind it, and closing fullscreen to pick a date is
               exactly what the calendar button exists to avoid. */}
           {fullscreenOverlay}
+          {/* The date sheet too: a modal opened from the page would sit behind this one. */}
+          {expanded ? calendarModal : null}
         </View>
       </Modal>
 
-      <WheelCalendarModal
-        open={calendarOpen}
-        onClose={() => setCalendarOpen(false)}
-        year={pickerYear}
-        month={pickerMonth}
-        day={pickerDay}
-        clock={pickerClock}
-        timeZone={tz}
-        playback={yearScrub}
-        onCommit={handleCalendarCommit}
-        renderSkySheet={renderSkySheet}
-      />
+      {expanded ? null : calendarModal}
     </>
   );
 }

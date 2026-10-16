@@ -29,14 +29,10 @@ import type { GocharGraha, VedicStarPosition } from "@/lib/api";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
-  adToBS,
   bsMonthLabel,
-  bsToAD,
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
 } from "@vedic-patro/domain/bs-calendar";
-import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
-import { windowedBrowseYears } from "@/lib/patro-browse-years";
 import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
@@ -259,8 +255,6 @@ export function AakashGocharSky({
   date,
   onDateChange,
   clock,
-  onClockChange,
-  todayAd,
   observer = KATHMANDU,
   timeZone = "Asia/Kathmandu",
   height = 460,
@@ -707,8 +701,6 @@ export function AakashGocharSky({
      the sky can have the entire screen when you just want to watch it. */
   /* The transport row's own date picker — the date nav above the canvas is
      unreachable once fullscreen, so this is the only way to jump dates there. */
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const dateBs = useMemo(() => adToBS(date), [date]);
 
   // Following the date nav above the canvas keeps the two in step.
   useEffect(() => {
@@ -1425,10 +1417,10 @@ export function AakashGocharSky({
         <IconButton
           name="calendar-outline"
           label={t("ui.sky3d.choose_a_date")}
-          active={datePickerOpen}
+          active={sheet === "time"}
           overlay={fullscreen}
           compact={fullscreen}
-          onPress={() => setDatePickerOpen(true)}
+          onPress={() => setSheet("time")}
         />
       ) : null}
     </>
@@ -2311,41 +2303,6 @@ export function AakashGocharSky({
         </ScrollView>
       </View>
 
-      {/* An in-tree overlay, not its own Modal: a second RN-Web Modal stacked on
-          top of the fullscreen one let taps punch through to whatever sat at the
-          same screen position underneath (Done landing on the ✕ button or a view
-          chip beneath it). Living inside `body` instead, it shares the
-          fullscreen modal's own theme context, so nothing needs re-applying. */}
-      {datePickerOpen ? (
-        <View
-          className="absolute inset-0 items-center justify-center bg-black/60 px-4"
-          style={{ zIndex: 50 }}
-        >
-          <Pressable
-            className="absolute inset-0"
-            onPress={() => setDatePickerOpen(false)}
-            accessibilityLabel={t("ui.common.close")}
-          />
-          <View className="w-full max-w-sm rounded-2xl border border-border bg-card p-4">
-            <BsDateTimePicker
-              year={dateBs.year}
-              month={dateBs.month}
-              day={dateBs.day}
-              yearOptions={windowedBrowseYears("bs", dateBs.year)}
-              todayAd={todayAd}
-              onSelectDate={(y, m, d) => onDateChange?.(bsToAD(y, m, d))}
-              monthAriaLabel={t("common.month")}
-              yearAriaLabel={t("common.year")}
-              clock={clock}
-              onClockChange={onClockChange}
-              hourAriaLabel={t("panchanga.hour_aria")}
-              minuteAriaLabel={t("panchanga.minute_aria")}
-              showTime={Boolean(onClockChange)}
-              onDone={() => setDatePickerOpen(false)}
-            />
-          </View>
-        </View>
-      ) : null}
     </View>
   );
 

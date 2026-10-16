@@ -87,7 +87,9 @@ export default function PanchangaScreen() {
         className="gap-4"
         style={splitSidebar ? { flexDirection: "row", alignItems: "flex-start", gap: 20 } : undefined}
       >
-        <View className={cn("flex-1", panchangaPageClasses.page.mainColumn)}>
+        {/* flex-1 only beside the sidebar: stacked in the scroll column it has a zero
+            basis and was squeezed under the aside when that mounted. */}
+        <View className={cn(splitSidebar && "flex-1", panchangaPageClasses.page.mainColumn)}>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}

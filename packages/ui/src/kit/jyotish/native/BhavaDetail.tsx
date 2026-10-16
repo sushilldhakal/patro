@@ -1,165 +1,430 @@
-import { useRef, useState } from "react";
+import { useState, type ReactNode } from "react";
+import { Modal, Pressable, ScrollView, View } from "react-native";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { space, spaceUnit } from "@vedic-patro/design-tokens";
 import { useBhavaDetail, useBhavaDialogCopy, type BhavaShloka } from "@vedic-patro/features/kundali";
-import { Box, Button, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { Button, Icon, Text } from "@vedic-patro/ui";
+import { kitIcons, sheetClass } from "../../../classes";
 import type { BhavaDetailDialogProps } from "../contract";
 
 const b = kundaliDetailClasses.bhavaDialog;
 const prose = kundaliDetailClasses.prose;
-const RATING: Record<string, string> = {
-  uttam: "border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  shubh: "border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  mishrit: "border-amber-500/30 bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  kamjor: "border-destructive/20 bg-destructive/10 text-destructive",
+
+const ratingBadgeCls: Record<string, string> = {
+  uttam: "border-emerald-500/30 bg-emerald-500/15",
+  shubh: "border-emerald-500/30 bg-emerald-500/15",
+  mishrit: "border-amber-500/30 bg-amber-500/15",
+  kamjor: "border-destructive/20 bg-destructive/10",
 };
 
-function Citation({ label, source, shloka }: BhavaShloka) {
+const ratingTextCls: Record<string, string> = {
+  uttam: "text-emerald-700 dark:text-emerald-300",
+  shubh: "text-emerald-700 dark:text-emerald-300",
+  mishrit: "text-amber-700 dark:text-amber-300",
+  kamjor: "text-destructive",
+};
+
+/** A compact card within a tab; `right` carries the headline fact (a count, a badge). */
+function Block({ icon, title, right, children }: { icon: string; title: string; right?: ReactNode; children: ReactNode }) {
   return (
-    <Box className={b.citationBox}>
-      <Text className={prose.heading}>{label ? label : source}</Text>
-      <Text className="text-sm text-secondary">{source}</Text>
-      <Text className="whitespace-pre-line text-base font-bold text-foreground">{shloka}</Text>
-    </Box>
+    <View className={b.block}>
+      <View className={b.blockHead}>
+        <Text>{icon}</Text>
+        <Text className={prose.headingBold}>{title}</Text>
+        {right != null ? <View className="ml-auto shrink-0">{right}</View> : null}
+      </View>
+      {children}
+    </View>
   );
 }
 
-function Block({ icon, title, right, children }: { icon: string; title: string; right?: string; children: React.ReactNode }) {
+/** A classical citation as a quote card: its kind, the book as a badge, then the shloka. */
+function ShlokaCard({ label, source, shloka }: BhavaShloka) {
   return (
-    <Box className={b.block}>
-      <Box className={b.blockHead} webClassName="flex">
-        <Text>{icon}</Text>
-        <Text className={prose.headingBold}>{title}</Text>
-        {right ? <Text className={b.blockRight}>{right}</Text> : null}
-      </Box>
-      {children}
-    </Box>
+    <View className={b.citationBox}>
+      <View className={cn(b.citationRow, "flex-row")}>
+        {label ? <Text className={prose.heading}>📜 {label}</Text> : null}
+        <View className="rounded-full bg-secondary/15 px-2 py-0.5">
+          <Text className="text-body font-medium text-secondary">{label ? source : `📜 ${source}`}</Text>
+        </View>
+      </View>
+      <Text className="text-body font-bold leading-relaxed text-foreground">{shloka}</Text>
+    </View>
+  );
+}
+
+function Collapsible({ title, right, children }: { title: string; right?: ReactNode; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View className="border-b border-border/60 py-1.5 last:border-b-0">
+      <Pressable
+        onPress={() => setOpen((v) => !v)}
+        className="flex-row items-center justify-between gap-2 py-1.5 active:opacity-80"
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+      >
+        <Text className="text-body flex-1 font-semibold text-foreground">{title}</Text>
+        {right != null ? <Text className={prose.muted}>{right}</Text> : null}
+        <Icon node={open ? kitIcons.chevronUp : kitIcons.chevronDown} size="sm" tone="muted" />
+      </Pressable>
+      {open ? <View className="pb-2 pt-1">{children}</View> : null}
+    </View>
+  );
+}
+
+type Karakatva = ReturnType<typeof useBhavaDetail>["lord"]["karakatva"][number];
+
+function GrahaKarakatvaCard({ card }: { card: Karakatva }) {
+  return (
+    <View className="gap-2">
+      <Text className={prose.headingBold}>{card.title}</Text>
+      <ShlokaCard {...card.shloka} />
+      <View>
+        <Text className={prose.heading}>📋 {card.subjectsLabel}</Text>
+        <Text className={prose.bodyMt1}>{card.subjects}</Text>
+      </View>
+      <View>
+        <Text className={prose.heading}>💡 {card.significanceLabel}</Text>
+        <Text className={prose.bodyMt1}>{card.significance}</Text>
+      </View>
+      <View className={prose.quote}>
+        <View className="flex-row items-center justify-between gap-2">
+          <Text className="text-body flex-1 font-semibold text-foreground">⬡ {card.placementTitle}</Text>
+          {card.rating ? (
+            <View className={cn(b.pill, ratingBadgeCls[card.rating.kind])}>
+              <Text className={cn("text-body font-semibold", ratingTextCls[card.rating.kind])}>{card.rating.label}</Text>
+            </View>
+          ) : null}
+        </View>
+        {card.summary != null ? (
+          <View className="mt-2 gap-2.5">
+            {card.citations.map((citation, i) => (
+              <ShlokaCard key={i} {...citation} />
+            ))}
+            <Text className={b.summary}>💡 {card.summary}</Text>
+          </View>
+        ) : (
+          <Text className={prose.mutedMt15}>{card.noShloka}</Text>
+        )}
+      </View>
+    </View>
   );
 }
 
 function Body({ house, houses, reference, onClose }: { house: BhavaHouse; houses: BhavaHouse[]; reference: NonNullable<BhavaDetailDialogProps["reference"]>; onClose: () => void }) {
   const d = useBhavaDetail({ house, houses, reference });
-  const [open, setOpen] = useState<Record<string, boolean>>({ naadi: true });
-  const toggle = (key: string) => setOpen((v) => ({ ...v, [key]: !v[key] }));
-  const verdict = d.summary.health.tone === "attention" ? "border-destructive/30 bg-destructive/10 text-destructive" : RATING.uttam;
+  const { header, summary, lord, drishti, rules, tab } = d;
+  const attention = summary.health.tone === "attention";
+  const verdictCls = attention ? "border-destructive/30 bg-destructive/10" : "border-emerald-500/30 bg-emerald-500/15";
+  const verdictTextCls = attention ? "text-destructive" : "text-emerald-700 dark:text-emerald-300";
+
   return (
-    <Box className="gap-3">
-      <Text className={prose.muted}>{d.header.themes}</Text>
-      <Box className={b.tabBar} webClassName="flex">
-        {d.tabs.map((tab) => (
-          <Pressable key={tab.id} role="tab" selected={d.tab === tab.id} onPress={() => d.setTab(tab.id)} className={cn(b.tab, b.tabText, d.tab === tab.id ? cn(b.tabActive, b.tabActiveText) : cn(b.tabIdle, b.tabIdleText))}>
-            <Text>{tab.icon} {tab.label}</Text>
+    <>
+      <View className={b.header}>
+        <View className="flex-row items-center justify-between">
+          <View className="flex-1 flex-row flex-wrap items-center gap-2">
+            <View className={b.headerBadge}>
+              <Text className={b.headerBadgeText}>{header.number}</Text>
+            </View>
+            <Text className={prose.headingBold}>
+              {header.title}
+              {header.classicalName ? <Text className="text-body font-normal text-muted-foreground"> · {header.classicalName}</Text> : null}
+            </Text>
+          </View>
+          <Pressable
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={d.close}
+            className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-muted/60"
+          >
+            <Icon node={kitIcons.x} size="sm" tone="muted" />
+          </Pressable>
+        </View>
+        <Text className={prose.muted}>{header.themes}</Text>
+      </View>
+
+      {/* Pinned to its content height: a ScrollView grows by default and would stretch the tab row. */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0, flexShrink: 0 }}
+        className={b.tabBar}
+        contentContainerStyle={{ paddingHorizontal: space.md, paddingVertical: space.sm, gap: space.xs, alignItems: "center" }}
+      >
+        {d.tabs.map((t) => (
+          <Pressable
+            key={t.id}
+            onPress={() => d.setTab(t.id)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: tab === t.id }}
+            className={cn(b.tab, tab === t.id ? b.tabActive : b.tabIdle)}
+          >
+            <Text className={cn(b.tabText, tab === t.id ? b.tabActiveText : b.tabIdleText)}>
+              {t.icon} {t.label}
+            </Text>
           </Pressable>
         ))}
-      </Box>
-      {d.tab === "summary" ? (
-        <Box className="gap-3">
-          <Block icon="🪐" title={d.summary.occupantsTitle} right={d.summary.occupantsRight ?? undefined}>
-            <Text>{d.summary.sign} {d.summary.signLabel} · {d.summary.lordLabel} {d.summary.lord}{d.summary.badge ? ` · ${d.summary.badge}` : ""}</Text>
-            {d.summary.occupants.length > 0 ? d.summary.occupants.map((p) => <Text key={p.key} className={prose.heading}>{p.name}{p.subjects ? ` — ${p.subjects}` : ""}</Text>) : <Text className={prose.bodyMuted}>{d.summary.noOccupants}</Text>}
-          </Block>
-          <Block icon="🩺" title={d.summary.health.title} right={d.summary.health.verdict}>
-            <Text className={verdict}>{d.summary.health.partsLabel} {d.summary.health.parts}</Text>
-            {d.summary.health.bodyPart ? <Text className={prose.muted}>{d.summary.health.bodyPart}</Text> : null}
-            {d.summary.health.quiet ? <Text className={prose.muted}>{d.summary.health.quiet}</Text> : null}
-          </Block>
-          {d.summary.reference ? (
-            <Block icon="📖" title={d.summary.reference.title}>
-              <Text className={prose.muted}>{d.summary.reference.titles}</Text>
-              <Text>{d.summary.reference.naturalLabel}: {d.summary.reference.natural}</Text>
-              <Text>{d.summary.reference.description}</Text>
-              <Text className={prose.muted}>{d.summary.reference.kalapurusha}</Text>
-              <Citation {...d.summary.reference.shloka} />
-              <Text className={prose.muted}>{d.summary.reference.effectNote}</Text>
-              <Text>{d.summary.reference.benefic.label} {d.summary.reference.benefic.text}</Text>
-              <Text>{d.summary.reference.malefic.label} {d.summary.reference.malefic.text}</Text>
+      </ScrollView>
+
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spaceUnit * 3.5, gap: space.md }}>
+        {tab === "summary" ? (
+          <>
+            <Block icon="🪐" title={summary.occupantsTitle} right={summary.occupantsRight ? <Text className={prose.muted}>{summary.occupantsRight}</Text> : undefined}>
+              <View className={cn(b.rowWrap, "flex-row")}>
+                <Text>
+                  <Text className={prose.heading}>{summary.sign}</Text> {summary.signLabel}
+                </Text>
+                <Text className="text-border">·</Text>
+                <Text>
+                  {summary.lordLabel} <Text className="text-body font-semibold text-secondary">{summary.lord}</Text>
+                </Text>
+                {summary.badge ? (
+                  <>
+                    <Text className="text-border">·</Text>
+                    <Text className={prose.muted}>{summary.badge}</Text>
+                  </>
+                ) : null}
+              </View>
+              {summary.occupants.length > 0 ? (
+                <View className="gap-1.5">
+                  {summary.occupants.map((p) => (
+                    <View key={p.key}>
+                      <Text className={prose.heading}>{p.name}</Text>
+                      {p.subjects ? <Text className={prose.muted}>{p.subjects}</Text> : null}
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text className={prose.bodyMuted}>{summary.noOccupants}</Text>
+              )}
             </Block>
-          ) : null}
-        </Box>
-      ) : null}
-      {d.tab === "lord" ? (
-        <Box className="gap-3">
-          <Block icon="🪐" title={d.lord.grahasTitle} right={d.lord.grahasCount ?? undefined}>
-            {d.lord.karakatva.length > 0 ? d.lord.karakatva.map((card) => (
-              <Box key={card.key} className="gap-2 py-3">
-                <Text className={prose.headingBold}>{card.title}</Text>
-                <Citation {...card.shloka} />
-                <Text className={prose.heading}>{card.subjectsLabel}</Text>
-                <Text>{card.subjects}</Text>
-                <Text className={prose.heading}>{card.significanceLabel}</Text>
-                <Text>{card.significance}</Text>
-                <Text className={prose.heading}>{card.placementTitle}</Text>
-                {card.rating ? <Text className={cn(b.pill, RATING[card.rating.kind])}>{card.rating.label}</Text> : null}
-                {card.summary != null ? card.citations.map((citation, i) => <Citation key={i} {...citation} />) : <Text className={prose.muted}>{card.noShloka}</Text>}
-                {card.summary != null ? <Text>{card.summary}</Text> : null}
-              </Box>
-            )) : <Text className={prose.muted}>{d.lord.noGrahas}</Text>}
-          </Block>
-          <Block icon="👑" title={d.lord.placementTitle} right={d.lord.placementRight ?? undefined}>
-            {d.lord.placement ? <Text>{d.lord.placement.title} {d.lord.placement.lord} → {d.lord.placement.where}</Text> : <Text className={prose.muted}>{d.lord.lordMissing}</Text>}
-            {d.lord.bhavesh && "comingSoon" in d.lord.bhavesh ? <Text className={prose.muted}>{d.lord.bhavesh.comingSoon}</Text> : null}
-            {d.lord.bhavesh && !("comingSoon" in d.lord.bhavesh) ? (
-              <Box>
-                {d.lord.bhavesh.shloka ? <Citation {...d.lord.bhavesh.shloka} /> : null}
-                <Text>{d.lord.bhavesh.text}</Text>
-                <Text className={prose.muted}>{d.lord.bhavesh.source}</Text>
-              </Box>
+
+            <Block
+              icon="🩺"
+              title={summary.health.title}
+              right={
+                <View className={cn(b.pillInline, "flex-row", verdictCls)}>
+                  <Text className={cn("text-body font-semibold", verdictTextCls)}>{summary.health.verdict}</Text>
+                </View>
+              }
+            >
+              <Text className={prose.body}>
+                <Text className={prose.heading}>{summary.health.partsLabel}</Text> {summary.health.parts}
+              </Text>
+              {summary.health.bodyPart ? <Text className={prose.mutedMt1}>{summary.health.bodyPart}</Text> : null}
+              {summary.health.quiet ? <Text className={prose.mutedMt1}>{summary.health.quiet}</Text> : null}
+            </Block>
+
+            {summary.reference ? (
+              <Block icon="📖" title={summary.reference.title}>
+                <Text className={prose.muted}>{summary.reference.titles}</Text>
+                <Text className="text-body mt-1.5">
+                  {summary.reference.naturalLabel}: <Text className={prose.heading}>{summary.reference.natural}</Text>
+                </Text>
+                <Text className={prose.bodyMt2}>{summary.reference.description}</Text>
+                {/* The Kalapurusha (natural zodiac, Mesha lagna) sign/lord — not this native's own. */}
+                <Text className={prose.mutedMt2}>{summary.reference.kalapurusha}</Text>
+                <View className="mt-2">
+                  <ShlokaCard {...summary.reference.shloka} />
+                </View>
+                <Text className={prose.mutedMt2}>{summary.reference.effectNote}</Text>
+                <Text className={prose.bodyMt15}>
+                  <Text className="text-body font-semibold text-emerald-600 dark:text-emerald-400">{summary.reference.benefic.label}</Text> {summary.reference.benefic.text}
+                </Text>
+                <Text className={prose.bodyMt1}>
+                  <Text className="text-body font-semibold text-destructive">{summary.reference.malefic.label}</Text> {summary.reference.malefic.text}
+                </Text>
+              </Block>
             ) : null}
-          </Block>
-          {d.lord.yuti ? (
-            <Block icon="👥" title={d.lord.yuti.title}>
-              {d.lord.yuti.pair ? <Text>{d.lord.yuti.pair.names} {d.lord.yuti.pair.yoga ?? ""} {d.lord.yuti.pair.text}</Text> : null}
-              {d.lord.yuti.triples.map((entry) => <Text key={entry.key}>{entry.names} {entry.text}</Text>)}
-              {d.lord.yuti.generalRule ? <Text className={prose.bodyMuted}>{d.lord.yuti.generalRule}</Text> : null}
-              {d.lord.yuti.none ? <Text className={prose.muted}>{d.lord.yuti.none}</Text> : null}
+          </>
+        ) : null}
+
+        {tab === "lord" ? (
+          <>
+            <Block icon="🪐" title={lord.grahasTitle} right={lord.grahasCount ? <Text className={prose.muted}>{lord.grahasCount}</Text> : undefined}>
+              {lord.karakatva.length > 0 ? (
+                <View className="gap-4">
+                  {lord.karakatva.map((card) => (
+                    <GrahaKarakatvaCard key={card.key} card={card} />
+                  ))}
+                </View>
+              ) : (
+                <Text className={prose.muted}>{lord.noGrahas}</Text>
+              )}
             </Block>
-          ) : null}
-        </Box>
-      ) : null}
-      {d.tab === "drishti" ? (
-        <Block icon="👁" title={d.drishti.title}>
-          {d.drishti.outgoing.length > 0 ? d.drishti.outgoing.map((p) => <Text key={p.key}>{p.name} → {p.targets}</Text>) : <Text className={prose.muted}>{d.drishti.noOutgoing}</Text>}
-          <Text className={prose.heading}>{d.drishti.allTitle}</Text>
-          <Text className={prose.heading}>{d.drishti.incomingTitle}</Text>
-          {d.drishti.incoming.length > 0 ? d.drishti.incoming.map((item) => <Text key={item.key}>{item.name}{item.summary ? ` — ${item.summary}` : ""}</Text>) : <Text className={prose.muted}>{d.drishti.noIncoming}</Text>}
-        </Block>
-      ) : null}
-      {d.tab === "rules" ? (
-        <Block icon="📚" title={d.rules.title}>
-          <Pressable onPress={() => toggle("naadi")}><Text>{d.rules.sutrasTitle} {d.rules.sutrasCount}</Text></Pressable>
-          {open.naadi ? (
-            <Box>
-              {d.rules.sutras.length > 0 ? d.rules.sutras.map((s) => <Text key={s.key}>{s.title} {s.category} {s.body}</Text>) : <Text className={prose.muted}>{d.rules.noSutras}</Text>}
-              <Text className={prose.muted}>{d.rules.sutraSource}</Text>
-            </Box>
-          ) : null}
-          <Pressable onPress={() => toggle("lal")}><Text>{d.rules.lalKitabTitle} {d.rules.lalKitabCount}</Text></Pressable>
-          {open.lal ? (
-            <Box>
-              {d.rules.lalKitab.length > 0 ? d.rules.lalKitab.map((e) => <Text key={e.key}>{e.title} {e.text} {e.tip ?? ""}</Text>) : <Text className={prose.bodyMuted}>{d.rules.noLalKitab}</Text>}
-              {d.rules.lalKitabYuti ? <Text>{d.rules.lalKitabYuti.title} {d.rules.lalKitabYuti.text}</Text> : null}
-              <Text className={prose.muted}>{d.rules.lalKitabSource}</Text>
-              <Pressable onPress={() => toggle("sustha")}><Text>{d.rules.susthaTitle}</Text></Pressable>
-              {open.sustha ? d.rules.sustha.map((rule, i) => <Text key={i}>{rule}</Text>) : null}
-              {open.sustha ? <Text className={prose.muted}>{d.rules.susthaSource}</Text> : null}
-            </Box>
-          ) : null}
-        </Block>
-      ) : null}
-      <Button label={d.close} onPress={onClose} variant="outline" />
-    </Box>
+
+            <Block icon="👑" title={lord.placementTitle} right={lord.placementRight ? <Text className={prose.muted}>{lord.placementRight}</Text> : undefined}>
+              {lord.placement ? (
+                <Text>
+                  <Text className={prose.heading}>{lord.placement.title}</Text> <Text className="text-body font-semibold text-secondary">{lord.placement.lord}</Text> → {lord.placement.where}
+                </Text>
+              ) : (
+                <Text className={prose.muted}>{lord.lordMissing}</Text>
+              )}
+              {lord.bhavesh ? (
+                "comingSoon" in lord.bhavesh ? (
+                  <Text className={prose.mutedMt2}>🚧 {lord.bhavesh.comingSoon}</Text>
+                ) : (
+                  <View className="mt-2 gap-1.5">
+                    {lord.bhavesh.shloka ? <ShlokaCard {...lord.bhavesh.shloka} /> : null}
+                    <Text className={prose.body}>{lord.bhavesh.text}</Text>
+                    <Text className={prose.muted}>{lord.bhavesh.source}</Text>
+                  </View>
+                )
+              ) : null}
+            </Block>
+
+            {lord.yuti ? (
+              <Block icon="👥" title={lord.yuti.title}>
+                <View className="gap-3">
+                  {lord.yuti.pair ? (
+                    <View className={prose.quote}>
+                      <Text className={prose.heading}>
+                        {lord.yuti.pair.names}
+                        {lord.yuti.pair.yoga ? <Text className="text-body font-normal text-muted-foreground"> ({lord.yuti.pair.yoga})</Text> : null}
+                      </Text>
+                      <Text className={prose.bodyMt1}>{lord.yuti.pair.text}</Text>
+                    </View>
+                  ) : null}
+                  {lord.yuti.triples.map((entry) => (
+                    <View key={entry.key} className={prose.quote}>
+                      <Text className={prose.heading}>{entry.names}</Text>
+                      <Text className={prose.bodyMt1}>{entry.text}</Text>
+                    </View>
+                  ))}
+                  {lord.yuti.generalRule ? <Text className={prose.bodyMuted}>{lord.yuti.generalRule}</Text> : null}
+                  {lord.yuti.none ? <Text className={prose.muted}>{lord.yuti.none}</Text> : null}
+                </View>
+              </Block>
+            ) : null}
+          </>
+        ) : null}
+
+        {tab === "drishti" ? (
+          <Block icon="👁️" title={drishti.title}>
+            {drishti.outgoing.length > 0 ? (
+              <View className="gap-1.5">
+                {drishti.outgoing.map((p) => (
+                  <Text key={p.key}>
+                    <Text className={prose.heading}>{p.name}</Text>
+                    {" → "}
+                    {p.targets}
+                  </Text>
+                ))}
+              </View>
+            ) : (
+              <Text className={prose.muted}>{drishti.noOutgoing}</Text>
+            )}
+            <View className={prose.divider}>
+              <Text className={prose.headingMb15}>{drishti.allTitle}</Text>
+              {drishti.incoming.length > 0 ? (
+                <View className="gap-2">
+                  <Text className={prose.heading}>{drishti.incomingTitle}</Text>
+                  {drishti.incoming.map((g) => (
+                    <View key={g.key}>
+                      <Text className={prose.heading}>{g.name}</Text>
+                      {g.summary ? <Text className={prose.bodyMutedMt05}>{g.summary}</Text> : null}
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text className={prose.muted}>{drishti.noIncoming}</Text>
+              )}
+            </View>
+          </Block>
+        ) : null}
+
+        {tab === "rules" ? (
+          <Block icon="📚" title={rules.title}>
+            <Collapsible title={rules.sutrasTitle} right={rules.sutrasCount}>
+              {rules.sutras.length > 0 ? (
+                <View className="gap-3">
+                  {rules.sutras.map((s) => (
+                    <View key={s.key} className={prose.quote}>
+                      <Text className={prose.heading}>{s.title}</Text>
+                      <Text className={prose.muted}>{s.category}</Text>
+                      <Text className={prose.bodyMt1}>{s.body}</Text>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text className={prose.muted}>{rules.noSutras}</Text>
+              )}
+              <Text className={prose.mutedMt2}>{rules.sutraSource}</Text>
+            </Collapsible>
+
+            <Collapsible title={rules.lalKitabTitle} right={rules.lalKitabCount}>
+              {rules.lalKitab.length > 0 ? (
+                <View className="gap-3">
+                  {rules.lalKitab.map((e) => (
+                    <View key={e.key}>
+                      <Text className={prose.heading}>{e.title}</Text>
+                      <Text className={prose.bodyMt05}>{e.text}</Text>
+                      {e.tip ? <Text className={prose.bodyMutedMt1}>{e.tip}</Text> : null}
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text className={prose.bodyMuted}>{rules.noLalKitab}</Text>
+              )}
+              {rules.lalKitabYuti ? (
+                <View className={prose.quoteTop}>
+                  <Text className={prose.heading}>{rules.lalKitabYuti.title}</Text>
+                  <Text className={prose.bodyMt1}>{rules.lalKitabYuti.text}</Text>
+                </View>
+              ) : null}
+              <Text className={prose.mutedMt2}>{rules.lalKitabSource}</Text>
+              <View className="mt-2">
+                <Collapsible title={rules.susthaTitle}>
+                  <View className="gap-1.5">
+                    {rules.sustha.map((rule, i) => (
+                      <Text key={i} className={prose.body}>{rule}</Text>
+                    ))}
+                  </View>
+                  <Text className={prose.mutedMt2}>{rules.susthaSource}</Text>
+                </Collapsible>
+              </View>
+            </Collapsible>
+          </Block>
+        ) : null}
+      </ScrollView>
+
+      <View className={cn(b.footer, "pb-8")}>
+        <Button label={d.close} variant="outline" onPress={onClose} />
+      </View>
+    </>
   );
 }
 
-/** House detail. The website's dialog and the app's drawer are both the shared sheet. */
+/** House detail as a bottom drawer: numbered header, tab chips, the chosen tab scrolling, and a close footer. */
 export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: BhavaDetailDialogProps) {
   const copy = useBhavaDialogCopy();
   const house = houseNumber != null ? houses.find((h) => h.house === houseNumber) : undefined;
-  const title = house && reference ? `${house.house}` : copy.loading;
   return (
-    <Sheet open={Boolean(house)} onClose={onClose} title={title}>
-      {house && reference ? <Body house={house} houses={houses} reference={reference} onClose={onClose} /> : <Text>{copy.loading}</Text>}
-    </Sheet>
+    <Modal visible={Boolean(house)} transparent animationType="slide" onRequestClose={onClose}>
+      <View className="flex-1 justify-end">
+        <Pressable
+          className={cn("absolute bottom-0 left-0 right-0 top-0", sheetClass.backdrop)}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={copy.close}
+        />
+        {/* A definite height: the body is a flex-1 ScrollView, which collapses inside a max-height-only panel. */}
+        <View className="overflow-hidden rounded-t-2xl border border-border bg-card" style={{ height: "88%" }} accessibilityViewIsModal>
+          <View className={cn(sheetClass.handle, "mt-2 mb-0")} />
+          {house ? (
+            reference ? (
+              <Body key={house.house} house={house} houses={houses} reference={reference} onClose={onClose} />
+            ) : (
+              <View className="px-4 py-6">
+                <Text className={prose.muted}>{copy.loading}</Text>
+              </View>
+            )
+          ) : null}
+        </View>
+      </View>
+    </Modal>
   );
 }

@@ -68,7 +68,10 @@ import type { Era } from "@vedic-patro/domain/era";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
-const wheelDockIcon = "h-3.5 w-3.5 max-compact:h-3 max-compact:w-3";
+/* The wheel is always night-dark, so its icons take a light ink: the theme's
+   `foreground` is near-black in light mode and left them invisible. */
+const wheelIconInk = "text-white";
+const wheelDockIcon = cn(wheelIconInk, "h-3.5 w-3.5 max-compact:h-3 max-compact:w-3");
 
 function gFromClock(clock: string, sunriseMin: number): number {
   const { hour, minute } = parseClockParts(clock);
@@ -616,7 +619,7 @@ function PanchangaWheelBody({
               aria-label={copy.labels.pickDateTime}
               onClick={openYearCalendar}
             >
-              <Icon node={calendarIcon} size={16} tone="foreground" />
+              <Icon node={calendarIcon} size={16} tone="foreground" className={wheelIconInk} />
             </button>
           ) : null}
           <button
@@ -626,7 +629,7 @@ function PanchangaWheelBody({
             aria-label={copy.labels.reload}
             onClick={resetToSunrise}
           >
-            <Icon node={rotateCcwIcon} size={16} tone="foreground" />
+            <Icon node={rotateCcwIcon} size={16} tone="foreground" className={wheelIconInk} />
           </button>
           <button
             type="button"
@@ -645,9 +648,9 @@ function PanchangaWheelBody({
             onClick={toggleExpanded}
           >
             {expanded ? (
-              <Icon node={minimizeIcon} size={16} tone="foreground" />
+              <Icon node={minimizeIcon} size={16} tone="foreground" className={wheelIconInk} />
             ) : (
-              <Icon node={fullscreenIcon} size={16} tone="foreground" />
+              <Icon node={fullscreenIcon} size={16} tone="foreground" className={wheelIconInk} />
             )}
           </button>
         </div>
