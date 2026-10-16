@@ -1,0 +1,60 @@
+name: TestFlight build (preview channel)
+
+# Builds the iOS app with the `testflight` profile and submits it to
+# TestFlight. That build follows the EAS `preview` channel, which
+# eas-update.yml publishes every push to main to, and it switches to a new
+# update as soon as it opens (lib/use-preview-auto-update.ts). So a native
+# build is only needed when something native changes: config, dependencies,
+# icons and splash, or a manual run from the Actions tab.
+#
+# Never release a `testflight` build to the App Store: it follows `preview`,
+# not `production`. Store releases still use the `production` profile.
+#
+# Needs the EXPO_TOKEN repository secret. Submission uses the App Store
+# Connect API key already stored in the project's EAS credentials.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/app.json"
+      - "apps/mobile/app.config.js"
+      - "apps/mobile/eas.json"
+      - "apps/mobile/package.json"
+      - "apps/mobile/assets/icon*"
+      - "apps/mobile/assets/splash*"
+      - "apps/mobile/plugins/**"
+  workflow_dispatch:
+
+concurrency:
+  group: testflight-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci --no-audit --no-fund
+
+      # Queues the cloud build and its TestFlight submission, then returns;
+      # follow both on expo.dev (Builds / Submissions).
+      - name: Build and submit to TestFlight
+        working-directory: apps/mobile
+        run: >
+          eas build
+          --platform ios
+          --profile testflight
+          --auto-submit-with-profile testflight
+          --non-interactive
+          --no-wait
