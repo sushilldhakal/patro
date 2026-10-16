@@ -3,7 +3,7 @@
  * confirm the email address — shared by the website and the app. Each app
  * reads the `token` from its own URL and passes it in.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiResetPassword, apiVerifyEmail } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
 
@@ -25,6 +25,16 @@ export function useResetPasswordPage(token: string | null | undefined, onDone: (
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
+  // Leave the confirmation up for a moment, then go home — unless the page was
+  // left first (a stray timer used to navigate away from wherever the user was).
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+  useEffect(() => {
+    if (!done) return;
+    const timer = setTimeout(() => onDoneRef.current(), 2000);
+    return () => clearTimeout(timer);
+  }, [done]);
+
   async function submit() {
     setError(null);
     const problem = resetPasswordProblem(password, confirm, token);
@@ -36,8 +46,6 @@ export function useResetPasswordPage(token: string | null | undefined, onDone: (
     try {
       await apiResetPassword(token!, password);
       setDone(true);
-      // Leave the confirmation up for a moment, then go home.
-      setTimeout(onDone, 2000);
     } catch {
       setError(t("auth.reset_failed"));
     } finally {

@@ -105,6 +105,11 @@ export function AppShell({
         paddingTop: pagePadTop,
       }}
       keyboardShouldPersistTaps="handled"
+      // iOS does not resize the window for the keyboard (Android does, via
+      // softwareKeyboardLayoutMode "resize"), so without this a focused field
+      // low on the page — converter, password, profile forms — sat under it.
+      automaticallyAdjustKeyboardInsets
+      keyboardDismissMode="interactive"
       showsVerticalScrollIndicator={false}
     >
       {header}

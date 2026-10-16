@@ -19,6 +19,7 @@ import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zo
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { LoadingState } from "@/components/ui/States";
 
 function toAdStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -101,9 +102,7 @@ export default function GocharScreen() {
             {page.copy.error}
           </Text>
         ) : (
-          <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>
-            {page.copy.loading}
-          </Text>
+          <LoadingState label={page.copy.loading} />
         )}
 
         <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>

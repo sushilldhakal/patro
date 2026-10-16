@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { offlineAwareGet } from "@/lib/offline/offline-http";
+import { isCapturing, offlineAwareGet } from "@/lib/offline/offline-http";
 import Constants from "expo-constants";
 import {
   appendBirthInstantParams,
@@ -23,6 +23,7 @@ import {
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
   apiErrorFrom,
+  DEFAULT_TIMEOUT_MS,
   fetchWithTimeout,
   apiBases,
   DEFAULT_API_VERSION,
@@ -397,10 +398,22 @@ function networkPath(path: string): string {
 
 // Every public read goes through here, so a response saved by the offline
 // download (lib/offline) answers the same request when there is no network.
+/**
+ * How long a screen waits for the server before falling back to the saved copy
+ * or showing its error. The shared default (120 s) suits the website on a fast
+ * line; on a weak phone signal it kept a screen on its loader for minutes. 45 s
+ * still covers the slowest first-time server build (a cold year, ~25 s). An
+ * offline download keeps the long default — nobody is waiting on one screen.
+ */
+const SCREEN_TIMEOUT_MS = 45_000;
+
 async function offlineAwareJson<T>(path: string): Promise<T> {
   return offlineAwareGet<T>(
     path,
-    () => fetchWithTimeout(`${DATA_BASE}${networkPath(path)}`, path),
+    () =>
+      fetchWithTimeout(`${DATA_BASE}${networkPath(path)}`, path, {
+        timeoutMs: isCapturing() ? DEFAULT_TIMEOUT_MS : SCREEN_TIMEOUT_MS,
+      }),
     (res) => apiErrorFrom(res, path),
   );
 }

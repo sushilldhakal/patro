@@ -14,6 +14,7 @@ import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { Staged } from "@/components/ui/Deferred";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { LoadingState } from "@/components/ui/States";
 
 /**
  * Holidays — the app's drawing of `useHolidaysPage` (@vedic-patro/features).
@@ -86,7 +87,7 @@ export default function HolidaysScreen() {
           <Text className={holidaysClasses.errorText}>{page.copy.error}</Text>
         </Box>
       ) : page.status === "loading" ? (
-        <Text className="mb-8 text-sm text-muted-foreground">{page.copy.loading}</Text>
+        <LoadingState label={page.copy.loading} />
       ) : (
         // A year is a few hundred rows; the first screenful draws with the page.
         <Staged items={page.rows} first={30}>

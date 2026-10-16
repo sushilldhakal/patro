@@ -63,6 +63,11 @@ export function beginCapture(options?: { skipExisting?: boolean }): () => { byte
   };
 }
 
+/** True while an offline download is saving responses (its requests may wait longer). */
+export function isCapturing(): boolean {
+  return captureDepth > 0;
+}
+
 export function resetCaptureCounters(): void {
   captureBytes = 0;
   captureCount = 0;
@@ -277,10 +282,13 @@ export async function offlineAwareGet<T>(
 
   if (captureDepth > 0) {
     const text = await res.text();
+    // Parse before saving: a captive portal (hotel / airport Wi-Fi) answers 200
+    // with an HTML login page, which must not be stored as the day's data.
+    const parsed = JSON.parse(text) as T;
     await putOfflineResponse(path, text);
     captureBytes += utf8Length(text);
     captureCount += 1;
-    return JSON.parse(text) as T;
+    return parsed;
   }
   return res.json();
 }

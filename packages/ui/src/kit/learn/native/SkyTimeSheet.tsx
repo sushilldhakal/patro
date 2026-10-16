@@ -214,6 +214,14 @@ function Hold({ label, onStep, children }: { label: string; onStep: () => void; 
     hold.current = null;
     repeat.current = null;
   };
+  // The sheet can close mid-hold; onPressOut never fires then, so the repeat would run on forever.
+  useEffect(
+    () => () => {
+      if (hold.current) clearTimeout(hold.current);
+      if (repeat.current) clearInterval(repeat.current);
+    },
+    [],
+  );
   return (
     <Pressable
       accessibilityRole="button"

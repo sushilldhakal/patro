@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
 import type { PersistedClient } from "@tanstack/react-query-persist-client";
+import { relinkDayDetail, unlinkDayDetail } from "@vedic-patro/api-client";
 
 /**
  * Storage for the persisted React Query cache.
@@ -116,7 +117,8 @@ function jsonOfData(data: unknown): string {
   if (data === null || typeof data !== "object") return JSON.stringify(data) ?? "null";
   let text = dataJson.get(data);
   if (text === undefined) {
-    text = JSON.stringify(data);
+    // A day's panchanga is written slim (shared blocks once); read back, it is re-linked.
+    text = JSON.stringify(unlinkDayDetail(data));
     dataJson.set(data, text);
   }
   return text;
@@ -152,6 +154,10 @@ export function serializeQueryCache(client: PersistedClient): string {
 export function deserializeQueryCache(text: string) {
   const started = Date.now();
   const parsed = JSON.parse(text);
+  for (const query of parsed?.clientState?.queries ?? []) {
+    const data = query?.state?.data;
+    if (data && typeof data === "object" && Array.isArray(data.detail_shared)) relinkDayDetail(data);
+  }
   queryCacheRestoreStats.parseMs = Date.now() - started;
   return parsed;
 }

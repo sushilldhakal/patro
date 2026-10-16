@@ -987,19 +987,40 @@ export function grahaSthitiRequestForDisplay(
  * Day payloads are requested `slim=true`: the server leaves out the per-day
  * rashifal block (the rashifal screens load their own) and every `detail` key
  * identical to the top-level one, naming those in `detail_shared` — about half
- * the bytes to download, parse and persist. This copies them back (same object,
- * no extra memory), so `detail.muhurta` etc. read exactly as before. A payload
- * without `detail_shared` (an older offline download) passes through as is.
+ * the bytes to download and parse. This copies them back (same objects, no
+ * extra memory), so `detail.muhurta` etc. read exactly as before. The list is
+ * kept so a persisted copy can be written slim again ({@link unlinkDayDetail})
+ * and re-linked when read back. A payload without it (an older offline
+ * download) passes through as is. Safe to call more than once.
  */
 export function relinkDayDetail<T extends PanchangaDay>(day: T): T {
-  const shared = (day as T & { detail_shared?: unknown }).detail_shared;
-  if (!Array.isArray(shared)) return day;
-  delete (day as T & { detail_shared?: unknown }).detail_shared;
-  if (!day.detail) return day;
+  const shared = sharedDetailKeys(day);
+  if (!shared || !day.detail) return day;
   const source = day as unknown as Record<string, unknown>;
   const detail = day.detail as Record<string, unknown>;
-  for (const key of shared) if (typeof key === "string" && key in source) detail[key] = source[key];
+  for (const key of shared) if (key in source) detail[key] = source[key];
   return day;
+}
+
+/**
+ * The slim form of a re-linked day, for writing to disk: `JSON.stringify` would
+ * otherwise write every shared block twice (top level and `detail`). Returns
+ * the day itself when it was not re-linked.
+ */
+export function unlinkDayDetail<T>(day: T): T {
+  const shared = sharedDetailKeys(day);
+  const d = day as unknown as { detail?: Record<string, unknown> };
+  if (!shared || !d.detail || typeof d.detail !== "object") return day;
+  const drop = new Set(shared);
+  const detail: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(d.detail)) if (!drop.has(k)) detail[k] = v;
+  return { ...day, detail };
+}
+
+function sharedDetailKeys(day: unknown): string[] | null {
+  if (!day || typeof day !== "object") return null;
+  const shared = (day as { detail_shared?: unknown }).detail_shared;
+  return Array.isArray(shared) ? shared.filter((k): k is string => typeof k === "string") : null;
 }
 
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>

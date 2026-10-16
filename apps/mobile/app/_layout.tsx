@@ -6,6 +6,9 @@ import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, View } from "react-native";
 import { QueryClient } from "@tanstack/react-query";
+import { ApiError, TimeoutError } from "@vedic-patro/api-client";
+import { OfflineMissError } from "@/lib/offline/offline-http";
+import { OfflineUnavailableError } from "@/lib/offline/offline-store";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
@@ -54,11 +57,25 @@ const queryClient = new QueryClient({
       gcTime: QUERY_GC_TIME,
       // Two retries with the default backoff (1 s, 2 s) kept a failed screen on its
       // loader for 3+ s before showing the error or the offline copy.
-      retry: 1,
+      retry: (failureCount, error) => failureCount < 1 && isWorthRetrying(error),
       retryDelay: 800,
     },
   },
 });
+
+/**
+ * One retry helps a dropped connection; it only doubles the wait for a timeout
+ * on a weak signal (another 45 s on the loader), for an answer the server gave
+ * on purpose (4xx: unsupported year, bad date), or for data that is simply not
+ * downloaded while offline.
+ */
+function isWorthRetrying(error: unknown): boolean {
+  if (error instanceof TimeoutError || error instanceof OfflineMissError || error instanceof OfflineUnavailableError) {
+    return false;
+  }
+  if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false;
+  return true;
+}
 
 /** JS start, for the one-line cache-restore timing logged after restore. */
 const JS_START = Date.now();
