@@ -4,6 +4,7 @@ import { usePathname } from "expo-router";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import {
   floatingNavBottomPadding,
+  pageTopPadding,
   normalizeMobilePathname,
   PAGE_HORIZONTAL_PADDING,
 } from "@/lib/mobile-nav";
@@ -15,7 +16,6 @@ import { useBreakpoint } from "@/lib/responsive";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import { PANCHANGA_SIDEBAR_RAIL_WIDTH, useShowPanchangaSidebar } from "./PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
-import { space } from "@vedic-patro/design-tokens";
 
 /** Matches web `PanchangaShellLayout` `gap-6` between sidebar and main column. */
 const SHELL_SIDEBAR_GAP = 24;
@@ -89,7 +89,7 @@ export function PanchangaTabsShell({
         : `/${routeName}`
       : livePathname;
   const colors = useThemeColors();
-  const { isTablet } = useBreakpoint();
+  const { isTablet, isCompact } = useBreakpoint();
   const wideEnough = useShowPanchangaSidebar();
   const shellRoute = isPanchangaShellRoute(pathname);
   const showRail = shellRoute && wideEnough;
@@ -161,7 +161,7 @@ export function PanchangaTabsShell({
           <ShellMainScroll
             contentContainerStyle={{
               paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-              paddingTop: space.md,
+              paddingTop: pageTopPadding(isCompact),
               paddingBottom: scrollBottom,
             }}
           >

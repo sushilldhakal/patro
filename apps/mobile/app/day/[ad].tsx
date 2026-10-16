@@ -6,8 +6,8 @@ import { PanchangaDetailCard } from "@/components/PanchangaDetailCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { apiKeys, fetchPanchanga } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FLOATING_NAV_BOTTOM_PADDING_TABLET, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
+import { StandaloneChrome } from "@/components/StandaloneChrome";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 export default function DayDetailScreen() {
@@ -21,12 +21,13 @@ export default function DayDetailScreen() {
   });
 
   return (
-    <SafeAreaView className={msc.dayScreen}>
+    <StandaloneChrome>
+    <View className={msc.dayScreen}>
       <View className={msc.dayHeader} style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
         <Text className={msc.dayTitle}>{t("ui.day.day_detail")}</Text>
         <Text className={msc.daySubtitle}>{ad}</Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING }}>
+      <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING, paddingBottom: FLOATING_NAV_BOTTOM_PADDING_TABLET }}>
         {query.isLoading ? (
           <LoadingState />
         ) : query.isError ? (
@@ -35,6 +36,7 @@ export default function DayDetailScreen() {
           <PanchangaDetailCard data={query.data} />
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </View>
+    </StandaloneChrome>
   );
 }

@@ -6,13 +6,14 @@ import { cn } from "@vedic-patro/domain/utils";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { AppShell } from "@/components/AppShell";
+import { StandaloneChrome } from "@/components/StandaloneChrome";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
 /** Set a new password — the app's drawing of `useResetPasswordPage` (@vedic-patro/features). */
-export default function ResetPasswordScreen() {
+function ResetPasswordScreenBody() {
   const colors = useThemeColors();
   const router = useRouter();
   const { token } = useLocalSearchParams<{ token?: string }>();
@@ -76,5 +77,13 @@ export default function ResetPasswordScreen() {
         </View>
       </View>
     </AppShell>
+  );
+}
+
+export default function ResetPasswordScreen() {
+  return (
+    <StandaloneChrome>
+      <ResetPasswordScreenBody />
+    </StandaloneChrome>
   );
 }

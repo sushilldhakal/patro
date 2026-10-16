@@ -3,6 +3,7 @@ import { ScrollView, View } from "react-native";
 import { PanchangaSplitShell, useShowPanchangaSidebar } from "@/components/panchanga/PanchangaSplitShell";
 import type { KundaliSectionId } from "@vedic-patro/features/kundali";
 import { Text } from "@/components/ui/Text";
+import { Deferred } from "@/components/ui/Deferred";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -76,7 +77,8 @@ export function KundaliPageShell({
         </View>
       ) : null}
 
-      {children}
+      {/* Header first; the chart cards mount right after it has drawn. */}
+      <Deferred>{children}</Deferred>
     </View>
   );
 

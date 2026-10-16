@@ -14,6 +14,7 @@ import {
 import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { Card } from "@/components/ui/Card";
+import { Grid } from "@vedic-patro/ui";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -27,12 +28,15 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
-/** Item width matching the web grid column count at each breakpoint. */
-function useGridWidth(phone: number, tablet: number, desktop = tablet): string {
-  const { width } = useBreakpoint();
-  const cols = width >= 1024 ? desktop : width >= 640 ? tablet : phone;
-  return cols === 1 ? "100%" : `${(100 / cols - 1).toFixed(2)}%`;
-}
+/*
+ * Column counts match the web grid at each breakpoint. `Grid` measures the
+ * column it sits in, so tiles keep exact widths beside the iPad sidebar rail
+ * (percent widths plus gaps wrapped the last tile onto its own row there).
+ */
+const SPAN_COLS = { base: 1, sm: 2, lg: 4 } as const;
+const ROW_COLS = { base: 1, sm: 2, lg: 3 } as const;
+const BALA_COLS = { base: 1, sm: 2, lg: 4 } as const;
+const LEGEND_COLS = { base: 1, sm: 2 } as const;
 
 /* ── span (begin→end) view ─────────────────────────────────────────────── */
 
@@ -57,11 +61,10 @@ function SpanBoundary({ view, tone }: { view: SpanBoundaryView; tone: "begin" | 
 }
 
 function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }) {
-  const width = useGridWidth(1, 2, 4);
   return (
-    <View className="flex-row flex-wrap gap-2.5">
+    <Grid cols={SPAN_COLS} gap={10}>
       {spans.map((s) => (
-        <Card key={s.key} style={{ width: width as never }} className="gap-2 p-3">
+        <Card key={s.key} className="gap-2 p-3">
           <View className="flex-row items-center gap-2.5">
             <ElementSpanIcon elementId={elementId} span={s.span} size={34} />
             <View className="min-w-0 flex-1">
@@ -83,13 +86,13 @@ function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }
           </View>
         </Card>
       ))}
-    </View>
+    </Grid>
   );
 }
 
 /* ── table (per-day) view ──────────────────────────────────────────────── */
 
-function ToneRow({ row, elementId, width }: { row: ToneRowView; elementId: string; width: string }) {
+function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
   const colors = useThemeColors();
   const tone = row.bad
     ? { bg: undefined, cls: "bg-danger/10", fg: colors.danger }
@@ -108,7 +111,7 @@ function ToneRow({ row, elementId, width }: { row: ToneRowView; elementId: strin
 
   return (
     <View
-      style={{ width: width as never, backgroundColor: tone.bg }}
+      style={{ backgroundColor: tone.bg }}
       className={cn("flex-row items-center justify-between gap-2 rounded-lg px-3 py-2", tone.cls)}
     >
       <View className="min-w-0 flex-1 flex-row items-center gap-2">
@@ -134,10 +137,6 @@ function ToneRow({ row, elementId, width }: { row: ToneRowView; elementId: strin
 }
 
 function TableView({ table, elementId }: { table: NonNullable<ElementPage["table"]>; elementId: string }) {
-  const gridWidth = useGridWidth(1, 2, 3);
-  const balaWidth = useGridWidth(1, 2, 4);
-  const legendWidth = useGridWidth(1, 2, 2);
-
   if (table.kind === "message") {
     return (
       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
@@ -145,12 +144,12 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
       </Text>
     );
   }
-  const rows = (width: string) => (
-    <View className="flex-row flex-wrap gap-1.5">
+  const rows = (cols: typeof ROW_COLS | typeof BALA_COLS) => (
+    <Grid cols={cols} gap={6}>
       {table.rows.map((row) => (
-        <ToneRow key={row.key} row={row} elementId={elementId} width={width} />
+        <ToneRow key={row.key} row={row} elementId={elementId} />
       ))}
-    </View>
+    </Grid>
   );
   if (table.kind === "strength") {
     return (
@@ -160,25 +159,25 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
             {table.anchor.label}: <Text className="font-bold text-foreground">{table.anchor.value}</Text>
           </Text>
         ) : null}
-        {rows(balaWidth)}
+        {rows(BALA_COLS)}
       </View>
     );
   }
   if (table.kind === "choghadiya") {
     return (
       <>
-        <View className="mb-3 flex-row flex-wrap gap-x-4 gap-y-1">
+        <Grid cols={LEGEND_COLS} gapX={16} gapY={4} className="mb-3">
           {table.legend.map((item) => (
-            <Text key={item.key} style={{ width: legendWidth as never, ...nepaliTextStyle(14) }} className="text-sm text-muted-foreground">
+            <Text key={item.key} style={nepaliTextStyle(14)} className="text-sm text-muted-foreground">
               {item.text}
             </Text>
           ))}
-        </View>
-        {rows(gridWidth)}
+        </Grid>
+        {rows(ROW_COLS)}
       </>
     );
   }
-  return rows(gridWidth);
+  return rows(ROW_COLS);
 }
 
 function BalamView({ balam, clock }: { balam: NonNullable<ElementPage["balam"]>; clock?: string }) {

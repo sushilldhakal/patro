@@ -11,6 +11,7 @@ import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
+import { Staged } from "@/components/ui/Deferred";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 
@@ -87,6 +88,9 @@ export default function HolidaysScreen() {
       ) : page.status === "loading" ? (
         <Text className="mb-8 text-sm text-muted-foreground">{page.copy.loading}</Text>
       ) : (
+        // A year is a few hundred rows; the first screenful draws with the page.
+        <Staged items={page.rows} first={30}>
+          {(rows) => (
         <Table<HolidayRow>
           className="mb-8"
           columns={page.columns.map((col) => ({
@@ -96,7 +100,7 @@ export default function HolidaysScreen() {
             sorted: col.sorted,
             onPress: () => page.toggleSort(col.key),
           }))}
-          rows={page.rows}
+          rows={rows}
           rowKey={(row) => row.key}
           renderCell={(row, col) => <HolidayCell row={row} column={col.key as HolidayColumnKey} yes={page.copy.yes} />}
           empty={page.copy.empty}
@@ -111,6 +115,8 @@ export default function HolidaysScreen() {
             emptyText: holidaysClasses.emptyText,
           }}
         />
+          )}
+        </Staged>
       )}
       <SeoContentSection route="holidays" />
     </AppShell>

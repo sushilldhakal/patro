@@ -27,7 +27,7 @@ import { resolveLocationTimezone } from "@vedic-patro/domain/panchanga-location"
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset } from "@/lib/mobile-nav";
+import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, pageTopPadding } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
@@ -43,7 +43,7 @@ const ASIDE_MAX_WIDTH = 400;
 export default function HomeScreen() {
   const belowFoldReady = useDeferredMount();
   const { t, digits, lang } = useLocale();
-  const { width, isTablet, isPhone } = useBreakpoint();
+  const { width, isTablet, isPhone, isCompact } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const {
     era: browseEra,
@@ -170,7 +170,7 @@ export default function HomeScreen() {
   const cardInset = isPhone ? HOME_CARD_INSET : contentInset;
 
   const monthHeaderBlock = (
-    <View className={isPhone ? "mt-2 pt-3" : "mt-2"} style={{ paddingHorizontal: contentInset }}>
+    <View style={{ paddingHorizontal: contentInset }}>
       <BsMonthHeaderTitle
         year={year}
         month={month}
@@ -309,7 +309,7 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingBottom: floatingNavBottomPadding(isTablet),
           paddingHorizontal: isPhone ? 0 : contentInset,
-          paddingTop: isPhone ? 0 : 16,
+          paddingTop: pageTopPadding(isCompact),
         }}
       >
         <View className={splitAside ? "flex-row items-start gap-4" : "gap-4"}>

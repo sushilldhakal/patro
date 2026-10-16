@@ -5,6 +5,7 @@ import { accountClasses } from "@vedic-patro/design-tokens/classes/account-class
 import { cn } from "@vedic-patro/domain/utils";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
+import { StandaloneChrome } from "@/components/StandaloneChrome";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -12,7 +13,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
 /** Confirm an email address — the app's drawing of `useVerifyEmailPage` (@vedic-patro/features). */
-export default function VerifyEmailScreen() {
+function VerifyEmailScreenBody() {
   const colors = useThemeColors();
   const router = useRouter();
   const { refreshUser } = useAuth();
@@ -49,5 +50,13 @@ export default function VerifyEmailScreen() {
         )}
       </View>
     </AppShell>
+  );
+}
+
+export default function VerifyEmailScreen() {
+  return (
+    <StandaloneChrome>
+      <VerifyEmailScreenBody />
+    </StandaloneChrome>
   );
 }

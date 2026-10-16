@@ -9,10 +9,11 @@ import {
   floatingNavBottomPadding,
   PAGE_HORIZONTAL_PADDING,
   PAGE_HORIZONTAL_PADDING_WIDE,
-  PAGE_PADDING_Y,
+  pageTopPadding,
 } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
+import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { spec } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -38,12 +39,17 @@ export function AppShell({
   /** @deprecated Sidebar comes from `PanchangaTabsShell` for shell routes. */
   panchangaSidebar?: boolean;
 }) {
-  const { isTablet, isNarrow } = useBreakpoint();
+  const { isTablet, isNarrow, isCompact } = useBreakpoint();
   const pageScrollRef = useScrollToTopOnRouteChange();
   const inShell = useInPanchangaTabsShell();
   const shellScrollHost = usePanchangaTabsShellScrollHost();
+  /* A tab switch or push waits for the new screen's whole first render before
+     anything moves, so a heavy page felt like a frozen tap. The frame (padding,
+     header) draws at once and the page body mounts right after it. */
+  const bodyReady = useDeferredMount();
+  const body = bodyReady ? children : null;
   const pagePadH = inShell ? 0 : isNarrow ? PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING_WIDE;
-  const pagePadTop = inShell ? 0 : PAGE_PADDING_Y;
+  const pagePadTop = inShell ? 0 : pageTopPadding(isCompact);
   const header = showHeader ? (
     <View className={cn("flex-row", shellClasses.pageHeaderRow)}>
       <View className="min-w-0 flex-1">
@@ -64,7 +70,7 @@ export function AppShell({
     return (
       <View className="min-h-0 w-full">
         {header}
-        {children}
+        {body}
       </View>
     );
   }
@@ -80,7 +86,7 @@ export function AppShell({
         }}
       >
         {header}
-        <View className="min-h-0 flex-1">{children}</View>
+        <View className="min-h-0 flex-1">{body}</View>
       </View>
     );
   }
@@ -102,9 +108,13 @@ export function AppShell({
       showsVerticalScrollIndicator={false}
     >
       {header}
-      {children}
-      <RelatedPageLinks />
-      <SiteFooter />
+      {body}
+      {bodyReady ? (
+        <>
+          <RelatedPageLinks />
+          <SiteFooter />
+        </>
+      ) : null}
     </ScrollView>
   );
 }

@@ -31,7 +31,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { useDeferredMount } from "@/lib/use-deferred-mount";
+import { Deferred, useStagedList } from "@/components/ui/Deferred";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
@@ -104,11 +104,6 @@ export default function DainikKrantiScreen() {
   };
 
   const firstLoad = status.pageLoading && !status.hasMonth;
-  // A month is ~30 day cards/rows plus the long legend. Mounting them all in one
-  // frame held the screen blank for seconds on mid-range phones, so the first
-  // screenful draws at once and the rest follows once the screen has settled.
-  const settled = useDeferredMount();
-  const shownRows = settled ? rows : rows.slice(0, FIRST_PAINT_ROWS);
 
   return (
     <AppShell title={t("sidebar_nav.items.dainikkranti.label")} showHeader={false}>
@@ -192,20 +187,11 @@ export default function DainikKrantiScreen() {
                   </Text>
                 </View>
               ) : (
-                shownRows.map((row) => (
-                  <Fragment key={row.key}>
-                    {row.segLabel ? (
-                      <Text className={dainikKrantiClasses.segLabel} style={nepaliTextStyle()}>
-                        {row.segLabel}
-                      </Text>
-                    ) : null}
-                    <DayPatroCard row={row} copy={copy} />
-                  </Fragment>
-                ))
+                <StagedDayCards rows={rows} copy={copy} />
               )}
             </View>
           ) : (
-            <DesktopPatroTable rows={shownRows} copy={copy} isError={status.monthError} />
+            <DesktopPatroTable rows={rows} copy={copy} isError={status.monthError} />
           )}
 
           <PatroAccordion>
@@ -320,7 +306,8 @@ export default function DainikKrantiScreen() {
         </View>
       )}
 
-      {!firstLoad && settled ? (
+      {!firstLoad ? (
+        <Deferred>
         <View className={dainikKrantiClasses.legendCard}>
           <View className={dainikKrantiClasses.legendHead}>
             <Ionicons name="sparkles-outline" size={16} color={colors.secondary} />
@@ -436,6 +423,7 @@ export default function DainikKrantiScreen() {
             </View>
           </View>
         </View>
+        </Deferred>
       ) : null}
       </View>
     </AppShell>
@@ -451,7 +439,31 @@ function AngaCell({ anga, width }: { anga: DainikDayRow["moon"]; width: number }
   );
 }
 
-function DesktopPatroTable({ rows, copy, isError }: { rows: DainikDayRow[]; copy: PageCopy; isError: boolean }) {
+/**
+ * A month is ~30 day cards plus the long legend. Mounting them all in one frame
+ * held the screen blank on mid-range phones, so the first screenful draws at
+ * once and the rest follows as soon as it has.
+ */
+function StagedDayCards({ rows, copy }: { rows: DainikDayRow[]; copy: PageCopy }) {
+  const shown = useStagedList(rows, FIRST_PAINT_ROWS);
+  return (
+    <>
+      {shown.map((row) => (
+        <Fragment key={row.key}>
+          {row.segLabel ? (
+            <Text className={dainikKrantiClasses.segLabel} style={nepaliTextStyle()}>
+              {row.segLabel}
+            </Text>
+          ) : null}
+          <DayPatroCard row={row} copy={copy} />
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
+function DesktopPatroTable({ rows: allRows, copy, isError }: { rows: DainikDayRow[]; copy: PageCopy; isError: boolean }) {
+  const rows = useStagedList(allRows, FIRST_PAINT_ROWS);
   const colors = useThemeColors();
   const th = cn(dainikKrantiClasses.th, "text-foreground");
   const thWrap = cn(dainikKrantiClasses.thWrap, "text-foreground");

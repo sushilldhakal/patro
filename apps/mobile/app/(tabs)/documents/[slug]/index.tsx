@@ -140,7 +140,7 @@ export default function DocumentDetailScreen() {
               />
             </View>
           }
-          contentContainerClassName="mx-auto w-full max-w-page px-4 pb-48 pt-8 sm:px-6"
+          contentContainerClassName="mx-auto w-full max-w-page px-4 pb-48 pt-3 sm:px-6 md:pt-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />

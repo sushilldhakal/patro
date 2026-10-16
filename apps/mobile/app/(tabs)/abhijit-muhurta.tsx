@@ -7,6 +7,7 @@ import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit
 import { cn } from "@vedic-patro/domain/utils";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { Grid } from "@vedic-patro/ui";
 import { AppShell } from "@/components/AppShell";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
 import { SunriseSunsetIcon } from "@/components/panchanga/SunriseSunsetIcon";
@@ -42,7 +43,6 @@ export default function AbhijitMuhurtaScreen() {
 
   // Same column steps as the website's grid (3 / sm:4 / md:6 / lg:7 / xl:8).
   const cols = width >= 1280 ? 8 : width >= 1024 ? 7 : width >= 768 ? 6 : width >= 640 ? 4 : 3;
-  const cardWidth = `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (
     <AppShell title={t("nav.abhijit_muhurta")} showHeader={false}>
@@ -145,20 +145,21 @@ export default function AbhijitMuhurtaScreen() {
         </Text>
       ) : (
         <View className={cn(ac.gridWrap, "mt-6")}>
-          <View className="flex-row flex-wrap gap-2">
+          {/* Measured cells: percent widths plus gaps overflowed a 375pt phone (3rd card wrapped). */}
+          <Grid cols={cols} gap={8}>
             {page.days.map((d) => (
-              <DayCard key={d.key} day={d} width={cardWidth} todayBadge={page.copy.todayBadge} noonLabel={page.copy.noon} />
+              <DayCard key={d.key} day={d} todayBadge={page.copy.todayBadge} noonLabel={page.copy.noon} />
             ))}
-          </View>
+          </Grid>
         </View>
       )}
     </AppShell>
   );
 }
 
-function DayCard({ day, width, todayBadge, noonLabel }: { day: AbhijitDayView; width: string; todayBadge: string; noonLabel: string }) {
+function DayCard({ day, todayBadge, noonLabel }: { day: AbhijitDayView; todayBadge: string; noonLabel: string }) {
   return (
-    <View style={{ width: width as never }} className={cn(ac.dayCard, day.isToday ? ac.dayCardToday : ac.dayCardIdle)}>
+    <View className={cn(ac.dayCard, day.isToday ? ac.dayCardToday : ac.dayCardIdle)}>
       <View className={ac.dayHead}>
         <Text numberOfLines={1} className={cn(ac.dayWeekday, "shrink")} style={nepaliTextStyle()}>
           {day.weekday}

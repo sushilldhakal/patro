@@ -148,6 +148,8 @@ function Months({ page }: { page: SunTimesPage }) {
 
 /** Year sun matrix from `lg`, and a month list below that. */
 export function SunTimesYearGrid({ page, hideHeader, className }: SunTimesYearGridProps) {
+  // Before the early return: a hook after it changes the hook count when a load fails and then succeeds.
+  const { width } = useWindowDimensions();
   if (page.status === "error") {
     return (
       <Box className={cn(sun.card, sun.cardClip, className)}>
@@ -155,7 +157,6 @@ export function SunTimesYearGrid({ page, hideHeader, className }: SunTimesYearGr
       </Box>
     );
   }
-  const { width } = useWindowDimensions();
   const wide = width >= 1024;
   return (
     <Box className={cn("max-w-full shadow-ring-soft", sun.card, sun.cardClip, className)}>

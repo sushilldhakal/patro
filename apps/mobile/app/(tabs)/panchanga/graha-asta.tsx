@@ -6,6 +6,7 @@ import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { AppShell } from "@/components/AppShell";
 import { AllElementsLink, GrahaBanner, GrahaColumnCard, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
+import { Grid } from "@vedic-patro/ui";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -26,7 +27,6 @@ export default function GrahaAstaScreen() {
   const page = useGrahaAstaPage({ year, era, location: location.params });
 
   const cols = width >= 1024 ? 3 : width >= 640 ? 2 : 1;
-  const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
@@ -48,9 +48,9 @@ export default function GrahaAstaScreen() {
           {t("common.loading")}
         </Text>
       ) : page.status === "ready" ? (
-        <View className={cn("flex-row flex-wrap", grahaClasses.columns)}>
+        <Grid cols={cols} gapX={12} className={grahaClasses.columns}>
           {page.groups.map((g) => (
-            <GrahaColumnCard key={g.graha} width={cardWidth} name={g.name} note={g.note} count={g.count}>
+            <GrahaColumnCard key={g.graha} width="100%" name={g.name} note={g.note} count={g.count}>
               {g.items.length ? (
                 g.items.map((p, i) => <PeriodCard key={i} period={p} />)
               ) : (
@@ -60,7 +60,7 @@ export default function GrahaAstaScreen() {
               )}
             </GrahaColumnCard>
           ))}
-        </View>
+        </Grid>
       ) : (
         <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
           {t("common.load_error")}

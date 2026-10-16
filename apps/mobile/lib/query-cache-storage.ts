@@ -97,20 +97,55 @@ export const queryCacheStorage: PersistStorage = Platform.OS === "web" ? AsyncSt
  */
 const PERSIST_BUDGET_CHARS = 2_000_000;
 
+/**
+ * A query's `state.data` keeps its identity until the query refetches, so its
+ * JSON is remembered here and a save re-serializes only what changed. Without
+ * this every save (every few seconds while screens are loading) stringified the
+ * whole cache twice on the JS thread — megabytes of work competing with the
+ * screen that was trying to render.
+ */
+const dataJson = new WeakMap<object, string>();
+
+/** Stands in for `state.data` while the rest of the query is stringified. */
+const DATA_SLOT = "\u0000vp-data";
+const DATA_SLOT_JSON = JSON.stringify(DATA_SLOT);
+const QUERIES_SLOT = "\u0000vp-queries";
+const QUERIES_SLOT_JSON = JSON.stringify(QUERIES_SLOT);
+
+function jsonOfData(data: unknown): string {
+  if (data === null || typeof data !== "object") return JSON.stringify(data) ?? "null";
+  let text = dataJson.get(data);
+  if (text === undefined) {
+    text = JSON.stringify(data);
+    dataJson.set(data, text);
+  }
+  return text;
+}
+
+function jsonOfQuery(query: PersistedClient["clientState"]["queries"][number]): string {
+  const data = query.state.data;
+  if (data === undefined) return JSON.stringify(query);
+  const shell = JSON.stringify({ ...query, state: { ...query.state, data: DATA_SLOT } });
+  const at = shell.indexOf(DATA_SLOT_JSON);
+  return shell.slice(0, at) + jsonOfData(data) + shell.slice(at + DATA_SLOT_JSON.length);
+}
+
 /** `JSON.stringify` of the most recently updated queries that fit {@link PERSIST_BUDGET_CHARS}. */
 export function serializeQueryCache(client: PersistedClient): string {
   const newestFirst = [...client.clientState.queries].sort(
     (a, b) => (b.state.dataUpdatedAt ?? 0) - (a.state.dataUpdatedAt ?? 0),
   );
-  const kept: typeof newestFirst = [];
+  const kept: string[] = [];
   let used = 0;
   for (const query of newestFirst) {
-    const size = JSON.stringify(query).length;
-    if (used + size > PERSIST_BUDGET_CHARS) continue;
-    kept.push(query);
-    used += size;
+    const text = jsonOfQuery(query);
+    if (used + text.length > PERSIST_BUDGET_CHARS) continue;
+    kept.push(text);
+    used += text.length;
   }
-  return JSON.stringify({ ...client, clientState: { ...client.clientState, queries: kept } });
+  const shell = JSON.stringify({ ...client, clientState: { ...client.clientState, queries: QUERIES_SLOT } });
+  const at = shell.indexOf(QUERIES_SLOT_JSON);
+  return `${shell.slice(0, at)}[${kept.join(",")}]${shell.slice(at + QUERIES_SLOT_JSON.length)}`;
 }
 
 /** `JSON.parse`, timed for {@link queryCacheRestoreStats}. */

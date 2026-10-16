@@ -26,8 +26,9 @@ import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { useThemeColors } from "@/lib/theme-context";
-import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
+import { floatingNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
+import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
@@ -39,6 +40,10 @@ export default function PanchangaScreen() {
   const inShell = useInPanchangaTabsShell();
   const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
   const splitSidebar = width >= PANCHANGA_SIDEBAR_SPLIT;
+  /* The wheel, the nine sections and the aside's chart are below the fold on a
+     phone; drawing them with the date bar and timeline in one frame is what held
+     the screen blank on open. They follow as soon as the screen has drawn. */
+  const belowFold = useDeferredMount();
   const { page, location, setLocation, ready, date, setDate, clock, adDateStr, commitCalendar } = useAppPanchangaPage();
   const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
@@ -48,7 +53,7 @@ export default function PanchangaScreen() {
     return (
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: isCompact ? 12 : 16 }}
+        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
         <ErrorState message={page.copy.error} onRetry={page.retry} />
       </ScrollView>
@@ -61,7 +66,7 @@ export default function PanchangaScreen() {
     return (
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: isCompact ? 12 : 16 }}
+        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
         <LoadingState />
       </ScrollView>
@@ -73,7 +78,7 @@ export default function PanchangaScreen() {
       className="mx-auto w-full max-w-page flex-1 bg-background"
       contentContainerStyle={{
         paddingBottom: floatingNavBottomPadding(isTablet),
-        paddingTop: isCompact ? 12 : 16,
+        paddingTop: pageTopPadding(isCompact),
         paddingHorizontal: pagePadH,
       }}
       showsVerticalScrollIndicator={false}
@@ -116,6 +121,7 @@ export default function PanchangaScreen() {
           ) : null}
         </View>
 
+        {splitSidebar || belowFold ? (
         <View
           className={panchangaPageClasses.page.aside}
           style={
@@ -135,8 +141,10 @@ export default function PanchangaScreen() {
             planetEventsHref="/gochar"
           />
         </View>
+        ) : null}
       </View>
 
+      {belowFold ? (
       <View className={panchangaPageClasses.page.sections}>
         {wheelData || showWheelSkeleton ? (
           <>
@@ -201,6 +209,7 @@ export default function PanchangaScreen() {
           slugs={page.learnSlugs}
         />
       </View>
+      ) : null}
     </ScrollView>
   );
 }

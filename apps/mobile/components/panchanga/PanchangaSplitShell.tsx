@@ -54,7 +54,7 @@ export function PanchangaSplitShell({
         <ScrollView
           ref={pageScrollRef}
           className="flex-1 bg-background"
-          contentContainerClassName="mx-auto w-full max-w-page-wide pt-4"
+          contentContainerClassName="mx-auto w-full max-w-page-wide pt-3 md:pt-4"
           contentContainerStyle={mainPadding}
           showsVerticalScrollIndicator={false}
         >
@@ -63,7 +63,7 @@ export function PanchangaSplitShell({
       );
     }
     return (
-      <View className="mx-auto w-full max-w-page-wide flex-1 bg-background pt-4" style={mainPadding}>
+      <View className="mx-auto w-full max-w-page-wide flex-1 bg-background pt-3 md:pt-4" style={mainPadding}>
         {mainInner}
       </View>
     );
@@ -73,14 +73,14 @@ export function PanchangaSplitShell({
     <ScrollView
       ref={pageScrollRef}
       className="flex-1 bg-background"
-      contentContainerClassName="mx-auto w-full max-w-page-wide pt-4"
+      contentContainerClassName="mx-auto w-full max-w-page-wide pt-3 md:pt-4"
       contentContainerStyle={mainPadding}
       showsVerticalScrollIndicator={false}
     >
       {mainInner}
     </ScrollView>
   ) : (
-    <View className="min-w-0 flex-1 bg-background pt-4" style={mainPadding}>
+    <View className="min-w-0 flex-1 bg-background pt-3 md:pt-4" style={mainPadding}>
       {mainInner}
     </View>
   );

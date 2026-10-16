@@ -1,5 +1,5 @@
-import { useWindowDimensions } from "react-native";
-import type { ReactNode } from "react";
+import { InteractionManager, useWindowDimensions } from "react-native";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/domain/utils";
 import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
@@ -11,6 +11,32 @@ import type { SaitAsidePanelProps, SaitCeremonyLayoutProps, SaitDayCardProps, Sa
 import { iconBaby, iconChevronDown, iconChevronRight, iconChevronUp, iconClock3, iconCompass, iconUserRound } from "../icons";
 import { SuitabilityBadge } from "./SaitSuitability";
 import { SaitRulesSection } from "./SaitRulesSection";
+
+/**
+ * A year of muhurta days is often 100+ cards. Mounting every month in one frame
+ * held the screen blank, so the first months draw at once and the rest follow
+ * once they have (or after a short cap, if an interaction never settles).
+ */
+function useStagedMonths<T>(months: T[], first: number): T[] {
+  const [all, setAll] = useState(false);
+  useEffect(() => {
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setAll(true);
+      }
+    };
+    const task = InteractionManager.runAfterInteractions(finish);
+    const fallback = setTimeout(finish, 400);
+    return () => {
+      done = true;
+      task.cancel();
+      clearTimeout(fallback);
+    };
+  }, []);
+  return all ? months : months.slice(0, first);
+}
 
 function columnsFor(width: number) {
   return width >= 1024 ? 3 : width >= 640 ? 2 : 1;
@@ -178,6 +204,7 @@ export function SaitCeremonyLayout(props: SaitCeremonyLayoutProps) {
     personalizeByDay, loading, notice, children, emptyLabel, countLabel, footer, renderShell, renderHeader, renderYearNav, renderBack,
   } = props;
   const list = useSaitCeremonyList({ days, count, year, emptyLabel, countLabel });
+  const months = useStagedMonths(list.months, 2);
   return renderShell(
     <>
       {renderHeader()}
@@ -214,7 +241,7 @@ export function SaitCeremonyLayout(props: SaitCeremonyLayoutProps) {
             ))}
           </DayGrid>
         ) : days.length > 0 ? (
-          list.months.map((month) => (
+          months.map((month) => (
             <Box key={month.month} className={saitClasses.monthBlock}>
               <Box className={saitClasses.monthHeader}>
                 <Text className={saitClasses.monthTitle}>{month.label}</Text>

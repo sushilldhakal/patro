@@ -145,7 +145,7 @@ export function DocumentReader({
         renderItem={renderItem}
         ListHeaderComponent={<View>{header}</View>}
         ListFooterComponent={<View>{footer}</View>}
-        contentContainerClassName="mx-auto w-full max-w-page px-4 pt-8 sm:px-6"
+        contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
         contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"

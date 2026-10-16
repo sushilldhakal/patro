@@ -45,6 +45,15 @@ export const PAGE_HORIZONTAL_PADDING_WIDE = 24;
 /** Website `PageShell` / page top: `py-8`. */
 export const PAGE_PADDING_Y = 32;
 
+/**
+ * Gap between the app header and the first thing on a page. One value for every
+ * screen (home and the daily panchanga set it), so page headers sit at the same
+ * height wherever you navigate: 12 on phones, 16 from 768 up.
+ */
+export function pageTopPadding(isCompact: boolean): number {
+  return isCompact ? 12 : 16;
+}
+
 /** Home month rail on a phone — website `calc(100% - 2rem)`. */
 export const HOME_PHONE_INSET = 16;
 
