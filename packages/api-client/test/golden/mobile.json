@@ -15,7 +15,7 @@
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city_id=1283240"
  ],
  "fetchPanchanga#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaAtTime#0": [
   "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city_id=1283240"
@@ -129,7 +129,7 @@
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city_id=1283240"
  ],
  "fetchPanchanga#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaAtTime#1": [
   "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city_id=1283240"
@@ -243,7 +243,7 @@
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchanga#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaAtTime#2": [
   "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -357,7 +357,7 @@
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchanga#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaAtTime#3": [
   "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=28.2&lon=83.98"

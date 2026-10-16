@@ -451,7 +451,7 @@ export const fetchMonthCalendar = async (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { era?: MonthBrowseEra },
+  options?: { era?: MonthBrowseEra; full?: boolean; slim?: boolean },
 ): Promise<MonthCalendar> => {
   const data = await fetchMonthCalendarRaw(year, month, location, options);
   return { ...data, calendar: data.calendar.map(normalizeMonthDay) };

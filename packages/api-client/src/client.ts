@@ -777,7 +777,7 @@ export const fetchMonthCalendarRaw = (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { era?: Era; full?: boolean; clock?: string; excludeInternational?: boolean },
+  options?: { era?: Era; full?: boolean; clock?: string; excludeInternational?: boolean; slim?: boolean },
 ) => {
   const era = options?.era ?? "bs";
   const language = era === "ad" || era === "bc" ? "en" : "ne";
@@ -789,6 +789,8 @@ export const fetchMonthCalendarRaw = (
   params.set("language", language);
   if (options?.clock) params.set("clock", options.clock);
   if (options?.excludeInternational) params.set("exclude_international", "true");
+  // With the full embed: only the per-day blocks a month view reads (see apps/api/services/payload_slim.py).
+  if (options?.slim && options?.full !== false) params.set("slim", "true");
   const base =
     era === "ad"
       ? `/panchanga/ad/${year}/${month}`
@@ -981,13 +983,32 @@ export function grahaSthitiRequestForDisplay(
   return { dateKey: dateAd, apiEra: displayEra };
 }
 
+/**
+ * Day payloads are requested `slim=true`: the server leaves out the per-day
+ * rashifal block (the rashifal screens load their own) and every `detail` key
+ * identical to the top-level one, naming those in `detail_shared` — about half
+ * the bytes to download, parse and persist. This copies them back (same object,
+ * no extra memory), so `detail.muhurta` etc. read exactly as before. A payload
+ * without `detail_shared` (an older offline download) passes through as is.
+ */
+export function relinkDayDetail<T extends PanchangaDay>(day: T): T {
+  const shared = (day as T & { detail_shared?: unknown }).detail_shared;
+  if (!Array.isArray(shared)) return day;
+  delete (day as T & { detail_shared?: unknown }).detail_shared;
+  if (!day.detail) return day;
+  const source = day as unknown as Record<string, unknown>;
+  const detail = day.detail as Record<string, unknown>;
+  for (const key of shared) if (typeof key === "string" && key in source) detail[key] = source[key];
+  return day;
+}
+
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
   get<PanchangaDay>(
     appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true`),
+      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&slim=true`),
       location,
     ),
-  );
+  ).then(relinkDayDetail);
 
 /**
  * The same day with its moving angas (tithi, nakshatra, yoga, karana, rashi,
@@ -997,10 +1018,10 @@ export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?:
 export const fetchPanchangaAtMidnight = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
   get<PanchangaDay>(
     appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&reference=midnight`),
+      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&reference=midnight&slim=true`),
       location,
     ),
-  );
+  ).then(relinkDayDetail);
 
 export function timeShort(v: PanchangaDay["sunrise"]): string {
   if (!v) return "—";

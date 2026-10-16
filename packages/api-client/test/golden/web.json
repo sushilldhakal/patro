@@ -6,10 +6,10 @@
   "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchTodayPanchanga#0": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703"
  ],
  "fetchPanchangaDay0#0": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00"
  ],
  "fetchRashifal0#0": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703"
@@ -21,7 +21,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703"
  ],
  "fetchPanchangaDay1#0": [
-  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00"
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00"
  ],
  "fetchRashifal1#0": [
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703"
@@ -33,7 +33,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703"
  ],
  "fetchPanchangaDay2#0": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00"
  ],
  "fetchRashifal2#0": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703"
@@ -45,7 +45,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703"
  ],
  "fetchPanchangaCivilDay#0": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&slim=true&cv=4703&reference=midnight"
  ],
  "fetchNepalPanchanga#0": [
   "/api/v1/nepal/panchanga/2026-10-10?era=ad"
@@ -144,10 +144,10 @@
   "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchTodayPanchanga#1": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&city_id=1283240"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaDay0#1": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city_id=1283240"
  ],
  "fetchRashifal0#1": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city_id=1283240"
@@ -159,7 +159,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaDay1#1": [
-  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city_id=1283240"
  ],
  "fetchRashifal1#1": [
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city_id=1283240"
@@ -171,7 +171,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaDay2#1": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city_id=1283240"
  ],
  "fetchRashifal2#1": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city_id=1283240"
@@ -183,7 +183,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaCivilDay#1": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&city_id=1283240"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&slim=true&cv=4703&reference=midnight&city_id=1283240"
  ],
  "fetchNepalPanchanga#1": [
   "/api/v1/nepal/panchanga/2026-10-10?era=ad&city_id=1283240"
@@ -282,10 +282,10 @@
   "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchTodayPanchanga#2": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaDay0#2": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchRashifal0#2": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -297,7 +297,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaDay1#2": [
-  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchRashifal1#2": [
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -309,7 +309,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaDay2#2": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchRashifal2#2": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -321,7 +321,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaCivilDay#2": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&slim=true&cv=4703&reference=midnight&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchNepalPanchanga#2": [
   "/api/v1/nepal/panchanga/2026-10-10?era=ad&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -420,10 +420,10 @@
   "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchTodayPanchanga#3": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&city=Pokhara"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaDay0#3": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city=Pokhara"
  ],
  "fetchRashifal0#3": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city=Pokhara"
@@ -435,7 +435,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaDay1#3": [
-  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city=Pokhara"
  ],
  "fetchRashifal1#3": [
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city=Pokhara"
@@ -447,7 +447,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaDay2#3": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&city=Pokhara"
  ],
  "fetchRashifal2#3": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city=Pokhara"
@@ -459,7 +459,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaCivilDay#3": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&city=Pokhara"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&slim=true&cv=4703&reference=midnight&city=Pokhara"
  ],
  "fetchNepalPanchanga#3": [
   "/api/v1/nepal/panchanga/2026-10-10?era=ad&city=Pokhara"
@@ -558,10 +558,10 @@
   "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchTodayPanchanga#4": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaDay0#4": [
-  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
  ],
  "fetchRashifal0#4": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=28.2&lon=83.98"
@@ -573,7 +573,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaDay1#4": [
-  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
  ],
  "fetchRashifal1#4": [
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=28.2&lon=83.98"
@@ -585,7 +585,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaDay2#4": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&slim=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
  ],
  "fetchRashifal2#4": [
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=28.2&lon=83.98"
@@ -597,7 +597,7 @@
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaCivilDay#4": [
-  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&slim=true&cv=4703&reference=midnight&lat=28.2&lon=83.98"
  ],
  "fetchNepalPanchanga#4": [
   "/api/v1/nepal/panchanga/2026-10-10?era=ad&lat=28.2&lon=83.98"

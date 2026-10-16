@@ -23,7 +23,7 @@ export async function fetchMonthCalendarOffline(
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { era?: MonthBrowseEra },
+  options?: { era?: MonthBrowseEra; full?: boolean; slim?: boolean },
 ): Promise<MonthCalendar> {
   const era = options?.era ?? "bs";
   if (era !== "bs") return fetchMonthCalendar(year, month, location, options);

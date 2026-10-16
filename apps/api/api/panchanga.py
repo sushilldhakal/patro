@@ -41,9 +41,15 @@ from services.panchanga_api import (
     build_year_calendar,
 )
 from app.day_resolver import greg_date_for_date_key
+from services.payload_slim import slim_day_payload, slim_month_payload
 from services.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
+
+
+def _slimmed(build, slim):
+    """``build`` with its payload passed through a ``services.payload_slim`` trim."""
+    return lambda: slim(build())
 
 
 def _cached_year_response(
@@ -125,7 +131,7 @@ def panchanga_year(
     signed = _signed_bs_year_from_browse(era, bs_year)
     _validate_bs_year(signed)
     if wheel:
-        variant = "wheel3"
+        variant = "wheel4"
         build = lambda: build_year_calendar(signed, location, full=True, shape="wheel")
     else:
         variant = "full" if full else "lite"
@@ -155,6 +161,11 @@ def panchanga_day_jd(
         "sunrise",
         description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
     ),
+    slim: bool = Query(
+        False,
+        description="Leave out what the apps never read here: the per-day rashifal block "
+        "(use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+    ),
 ):
     """Daily panchanga keyed by civil-day Julian Day (0h UT) — the canonical form.
 
@@ -162,7 +173,7 @@ def panchanga_day_jd(
     calendar, and both reach pre-1 CE civil days.
     """
     return _day_payload_for_jd(
-        jd_ut, location, festivals=festivals, detail=detail, reference=reference
+        jd_ut, location, festivals=festivals, detail=detail, reference=reference, slim=slim
     )
 
 
@@ -294,6 +305,11 @@ def panchanga_month(
         False,
         description="Drop international 'World day' observances (panchanga month grid)",
     ),
+    slim: bool = Query(
+        False,
+        description="With full=true: leave out the per-day blocks no month view reads "
+        "(rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+    ),
 ):
     """BS month calendar — Patro grid as structured JSON.
 
@@ -305,7 +321,7 @@ def panchanga_month(
 
     bs_signed = _signed_bs_year_from_browse(era, bs_year)
     _validate_bs_month(bs_month)
-    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}"
+    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}{'_slim' if full and slim else ''}"
     key = f"month_{bs_signed}_{bs_month}_{variant}_{location_cache_key(location)}"
 
     def build():
@@ -319,6 +335,8 @@ def panchanga_month(
             exclude_international=exclude_international,
         )
 
+    if full and slim:
+        build = _slimmed(build, slim_month_payload)
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_signed))
 
 
@@ -334,6 +352,11 @@ def panchanga_ad_month(
         False,
         description="Drop international 'World day' observances (panchanga month grid)",
     ),
+    slim: bool = Query(
+        False,
+        description="With full=true: leave out the per-day blocks no month view reads "
+        "(rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+    ),
 ):
     """Gregorian (AD) month calendar — Jan–Dec boundaries for English UI."""
     from services.panchanga_api import build_ad_month_calendar
@@ -347,7 +370,7 @@ def panchanga_ad_month(
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
 
-    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}"
+    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}{'_slim' if full and slim else ''}"
     key = f"admonth_{ad_year}_{ad_month}_{variant}_{location_cache_key(location)}"
 
     def build():
@@ -358,6 +381,8 @@ def panchanga_ad_month(
             exclude_international=exclude_international,
         )
 
+    if full and slim:
+        build = _slimmed(build, slim_month_payload)
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(ad_year + 56))
 
 
@@ -371,6 +396,11 @@ def panchanga_bc_month(
     exclude_international: bool = Query(
         False,
         description="Drop international 'World day' observances (panchanga month grid)",
+    ),
+    slim: bool = Query(
+        False,
+        description="With full=true: leave out the per-day blocks no month view reads "
+        "(rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
     ),
 ):
     """Gregorian BCE month calendar — positive ``bc_year`` is ``N`` BC (``era=bc``)."""
@@ -387,7 +417,7 @@ def panchanga_bc_month(
         raise HTTPException(status_code=400, detail="bc_month must be 1..12")
     validated_year_span_jd(request, "bc", bc_year)
 
-    variant = f"{'full' if full else 'lite'}_{'_nointl' if exclude_international else ''}"
+    variant = f"{'full' if full else 'lite'}_{'_nointl' if exclude_international else ''}{'_slim' if full and slim else ''}"
     key = f"bcmont_{bc_year}_{bc_month}_{variant}_{location_cache_key(location)}"
 
     def build():
@@ -400,6 +430,8 @@ def panchanga_bc_month(
             exclude_international=exclude_international,
         )
 
+    if full and slim:
+        build = _slimmed(build, slim_month_payload)
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(-bc_year))
 
 
@@ -439,6 +471,7 @@ def _day_payload_for_jd(
     civil: bool = False,
     reference: str = "sunrise",
     bs_triple: tuple[int, int, int] | None = None,
+    slim: bool = False,
 ) -> JSONResponse:
     """The one body behind every day route. Julian Day in, rendered day out.
 
@@ -470,6 +503,8 @@ def _day_payload_for_jd(
             bs_triple=bs_triple,
         )
         payload["jd_ut"] = canonical
+        if slim:
+            payload = slim_day_payload(payload)
         return JSONResponse(content=payload, headers=headers)
 
     if reference == "midnight":
@@ -492,6 +527,8 @@ def _day_payload_for_jd(
 
     payload["jd_ut"] = canonical
     payload["date_ad"] = format_civil_iso(civil_day.year, civil_day.month, civil_day.day)
+    if slim:
+        payload = slim_day_payload(payload)
     return JSONResponse(content=payload, headers=headers)
 
 
@@ -504,6 +541,7 @@ def _panchanga_day_impl(
     detail: bool,
     civil: bool,
     reference: str,
+    slim: bool = False,
 ):
     """Shared handler for ``/panchanga/today``, ``/panchanga/{date_key}`` and ``?jd=``."""
     from app.day_resolver import DayResolutionError, day_jd_for_request
@@ -533,6 +571,7 @@ def _panchanga_day_impl(
         civil=civil,
         reference=reference,
         bs_triple=bs_triple,
+        slim=slim,
     )
 
 
@@ -551,6 +590,11 @@ def panchanga_day_query(
         "sunrise",
         description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
     ),
+    slim: bool = Query(
+        False,
+        description="Leave out what the apps never read here: the per-day rashifal block "
+        "(use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+    ),
 ):
     """Daily panchanga addressed by ``?jd=`` or by ``?era=&year=&month=&day=``.
 
@@ -565,6 +609,7 @@ def panchanga_day_query(
         detail=detail,
         civil=civil,
         reference=reference,
+        slim=slim,
     )
 
 
@@ -583,6 +628,11 @@ def panchanga_day_today(
         "sunrise",
         description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
     ),
+    slim: bool = Query(
+        False,
+        description="Leave out what the apps never read here: the per-day rashifal block "
+        "(use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+    ),
 ):
     """Observer-local today → JD → panchanga.
 
@@ -597,6 +647,7 @@ def panchanga_day_today(
         detail=detail,
         civil=civil,
         reference=reference,
+        slim=slim,
     )
 
 
@@ -671,6 +722,11 @@ def panchanga_day(
         "sunrise",
         description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
     ),
+    slim: bool = Query(
+        False,
+        description="Leave out what the apps never read here: the per-day rashifal block "
+        "(use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+    ),
 ):
     """Daily panchanga for a ``Y-M-D`` path segment.
 
@@ -686,6 +742,7 @@ def panchanga_day(
         detail=detail,
         civil=civil,
         reference=reference,
+        slim=slim,
     )
 
 

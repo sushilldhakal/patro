@@ -886,6 +886,9 @@ _WHEEL_DAY_DROP_KEYS = frozenset(
         "solar_corrections",
         "lunar_calendar",
         "planets_anchor",
+        # ~17 KB a day (two thirds of the whole year payload). The rashifal
+        # screens load their own /panchanga/rashifal; nothing reads it here.
+        "rashifal",
     }
 )
 

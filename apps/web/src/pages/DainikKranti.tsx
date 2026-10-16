@@ -280,11 +280,12 @@ export function DainikKranti() {
         monthBrowse.year,
         monthBrowse.month,
         location.params,
-        "full",
+        "full-slim",
       ] as const,
       queryFn: () =>
         fetchMonthCalendar(monthBrowse.year, monthBrowse.month, location.params, {
           era: monthBrowse.era,
+          slim: true,
         }),
     },
   });

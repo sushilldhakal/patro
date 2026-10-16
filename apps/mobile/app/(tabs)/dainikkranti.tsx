@@ -85,8 +85,9 @@ export default function DainikKrantiScreen() {
     setPaksha,
     compact: isCompact,
     monthSource: {
-      queryKey: apiKeys.month(year, month, location.params),
-      queryFn: () => fetchMonthCalendarOffline(year, month, location.params),
+      // Full per-day embed, trimmed to what this page reads (`slim`).
+      queryKey: [...apiKeys.month(year, month, location.params), "full-slim"] as const,
+      queryFn: () => fetchMonthCalendarOffline(year, month, location.params, { slim: true }),
     },
   });
   const { status, copy, rows, tables, gochar, header } = page;

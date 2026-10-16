@@ -19,6 +19,7 @@ import {
   fetchPersonalRashifalForDay,
   fetchRashifalForDay,
   get,
+  relinkDayDetail,
   requestJson,
   apiBases,
   DEFAULT_API_VERSION,
@@ -488,6 +489,7 @@ export function fetchPanchangaDay(
   const qs = buildPatroDayApiQuery(state, {
     festivals: "true",
     detail: "true",
+    slim: "true",
     cv: PANCHANGA_CACHE_VERSION,
     ...extra,
   }).toString();
@@ -495,7 +497,7 @@ export function fetchPanchangaDay(
     state.kind === "jd"
       ? `/panchanga/jd/${state.jd}`
       : `/panchanga/${PANCHANGA_TODAY_SEGMENT}`;
-  return get<PanchangaDay>(appendLocation(`${path}?${qs}`, location));
+  return get<PanchangaDay>(appendLocation(`${path}?${qs}`, location)).then(relinkDayDetail);
 }
 
 export function fetchRashifal(
@@ -640,7 +642,7 @@ export const fetchMonthCalendar = async (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { clock?: string; full?: boolean; excludeInternational?: boolean; era?: Era },
+  options?: { clock?: string; full?: boolean; excludeInternational?: boolean; era?: Era; slim?: boolean },
 ): Promise<MonthCalendar> => {
   const data = await fetchMonthCalendarRaw(year, month, location, options);
   return { ...data, calendar: data.calendar.map(normalizeMonthDay) };

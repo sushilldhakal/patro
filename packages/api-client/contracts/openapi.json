@@ -10548,6 +10548,18 @@
       }
      },
      {
+      "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+       "title": "Slim",
+       "type": "boolean"
+      }
+     },
+     {
       "description": "Observer latitude (−90 to 90)",
       "in": "query",
       "name": "lat",
@@ -10835,6 +10847,18 @@
        "default": false,
        "description": "Drop international 'World day' observances (panchanga month grid)",
        "title": "Exclude International",
+       "type": "boolean"
+      }
+     },
+     {
+      "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+       "title": "Slim",
        "type": "boolean"
       }
      },
@@ -11190,6 +11214,18 @@
        "default": false,
        "description": "Drop international 'World day' observances (panchanga month grid)",
        "title": "Exclude International",
+       "type": "boolean"
+      }
+     },
+     {
+      "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+       "title": "Slim",
        "type": "boolean"
       }
      },
@@ -11851,6 +11887,18 @@
        ],
        "title": "Reference",
        "type": "string"
+      }
+     },
+     {
+      "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+       "title": "Slim",
+       "type": "boolean"
       }
      },
      {
@@ -12812,6 +12860,18 @@
       }
      },
      {
+      "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+       "title": "Slim",
+       "type": "boolean"
+      }
+     },
+     {
       "description": "Observer latitude (−90 to 90)",
       "in": "query",
       "name": "lat",
@@ -13417,6 +13477,18 @@
       }
      },
      {
+      "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "With full=true: leave out the per-day blocks no month view reads (rashifal, muhurta, hora, choghadiya, navatara tables, nivas/shool, embedded festivals)",
+       "title": "Slim",
+       "type": "boolean"
+      }
+     },
+     {
       "description": "Observer latitude (−90 to 90)",
       "in": "query",
       "name": "lat",
@@ -13594,6 +13666,18 @@
        ],
        "title": "Reference",
        "type": "string"
+      }
+     },
+     {
+      "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+      "in": "query",
+      "name": "slim",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "Leave out what the apps never read here: the per-day rashifal block (use /panchanga/rashifal) and `detail` keys identical to the top-level ones",
+       "title": "Slim",
+       "type": "boolean"
       }
      },
      {

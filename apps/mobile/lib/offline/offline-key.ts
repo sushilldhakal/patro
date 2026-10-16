@@ -5,10 +5,13 @@
  *
  * Cache-busting query params (`cv`, `sv`, `gv`, `v`) are dropped — they change
  * whenever the app ships a new engine version and must not orphan data the
- * user already downloaded. Everything else (location, era, language, dates)
- * stays, with the remaining params sorted so order never matters.
+ * user already downloaded. `slim` is dropped too: a slim response is the full
+ * one minus blocks the screens never read (the day's `detail` keys come back
+ * via `relinkDayDetail`), so either answers the same screen. Everything else
+ * (location, era, language, dates) stays, with the remaining params sorted so
+ * order never matters.
  */
-const VOLATILE_PARAMS = new Set(["cv", "sv", "gv", "v"]);
+const VOLATILE_PARAMS = new Set(["cv", "sv", "gv", "v", "slim"]);
 
 export function normalizeOfflineKey(path: string): string {
   const q = path.indexOf("?");
