@@ -21,7 +21,7 @@ export function HomeVedaMantra({
 }: HomeVedaMantraProps) {
   return (
     <Box as="section" className={cn(patroCard, className)} label={title}>
-      <Box className={patroSecBand}>
+      <Box className={cn(patroSecBand, "flex-row flex-nowrap items-center")}>
         <Text as="h2" className={home.vedaTitle}>
           {title}
         </Text>

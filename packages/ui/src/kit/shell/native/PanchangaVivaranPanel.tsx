@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { patroAyanaNorth, patroAyanaSouth } from "@vedic-patro/design-tokens/classes/patro-classes";
@@ -14,16 +15,27 @@ function Rule({ className }: { className?: string }) {
   return <Box className={cn("h-px bg-foreground/10", className)} />;
 }
 
+/* The tiles' gold outline is drawn the same way: a 1px frame of fill around the
+   tile, not a border. Bordered, the planet tiles' outline colour spread into a
+   gold band behind the gochar title and the first row in the light theme. */
+function Tile({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <Box className="rounded-lg bg-gold/25 p-px">
+      <Box className={cn(home.vivaranTile, "rounded-md", className)}>{children}</Box>
+    </Box>
+  );
+}
+
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
   return (
-    <Box className={cn(home.vivaranTile, "border border-gold/25")}>
+    <Tile>
       <Text className={home.vivaranLabel}>{label}</Text>
       <Text className={cn(home.vivaranValue, mono && home.vivaranValueMono)}>
         {value ?? "—"}
         {ayana ? <Text className={cn(ayana.north ? patroAyanaNorth : patroAyanaSouth, "mb-0 ml-1.5")}>{ayana.mark}</Text> : null}
       </Text>
       {hint ? <Text className={cn(home.vivaranHint, "break-words")}>{hint}</Text> : null}
-    </Box>
+    </Tile>
   );
 }
 
@@ -35,10 +47,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
       <Box className={cn("rounded-lg bg-card", className)}>
         <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
           {Array.from({ length: 6 }, (_, i) => (
-            <Box key={i} className={cn(home.vivaranTile, "border border-gold/25")}>
+            <Tile key={i}>
               <Text className={home.vivaranLabel}>…</Text>
               <Box className="mt-1.5 h-[18px] animate-pulse rounded-full bg-muted-foreground/20" />
-            </Box>
+            </Tile>
           ))}
         </Grid>
         <Box className="mt-2.5 h-[120px] animate-pulse rounded-md bg-muted" />
@@ -59,7 +71,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
           <Grid cols={5} minCellWidth={96} gap={6}>
             {view.planets.map((planet) => (
-              <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
+              <Tile key={planet.key} className={cn("flex-col", home.gocharTile)}>
                 <Box className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
                   <Text className={cn("min-w-0 shrink", home.gocharName)}>
                     {planet.label}
@@ -68,7 +80,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
                   {renderPlanetStatus?.({ key: planet.key, isRetrograde: planet.isRetrograde, isCombust: planet.isCombust })}
                 </Box>
                 <Text className={cn(home.gocharDegree, "tabular-nums")}>{planet.degree}</Text>
-              </Box>
+              </Tile>
             ))}
           </Grid>
         </Box>
@@ -78,10 +90,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
           <Rule className="mb-2" />
           <Grid cols={3} gap={6}>
             {view.solar.map((item) => (
-              <Box key={item.label} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
+              <Tile key={item.label} className={cn("flex-col", home.gocharTile)}>
                 <Text className={home.gocharName}>{item.label}</Text>
                 <Text className={cn(home.solarValue, "tabular-nums")}>{item.value}</Text>
-              </Box>
+              </Tile>
             ))}
           </Grid>
         </Box>

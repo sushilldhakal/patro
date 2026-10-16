@@ -115,7 +115,7 @@ export const homeClasses = {
 
   // ── Veda mantra ───────────────────────────────────────────────────────────
   vedaTitle: "min-w-0 flex-1 text-base font-bold text-secondary",
-  vedaPlay: "h-11 w-11 items-center justify-center rounded-full bg-secondary",
+  vedaPlay: "flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary",
   vedaBody: "flex flex-col gap-3 px-4 py-4",
   vedaSanskrit: "text-xl leading-relaxed text-foreground",
   vedaWord: "rounded bg-yellow-300/70 dark:bg-yellow-400/30",
