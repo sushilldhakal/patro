@@ -34,6 +34,7 @@ import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 const ASIDE_SIDEBAR_SPLIT = 1280;
@@ -42,6 +43,7 @@ const ASIDE_MAX_WIDTH = 400;
 
 export default function HomeScreen() {
   const belowFoldReady = useDeferredMount();
+  const refreshControl = usePageRefreshControl();
   const { t, digits, lang } = useLocale();
   const { width, isTablet, isPhone, isCompact } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -306,6 +308,7 @@ export default function HomeScreen() {
     <>
       <ScrollView
         ref={setPageScroller}
+        refreshControl={refreshControl}
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-page"
         contentContainerStyle={{

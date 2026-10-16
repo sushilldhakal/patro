@@ -16,6 +16,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import { PANCHANGA_SIDEBAR_RAIL_WIDTH, useShowPanchangaSidebar } from "./PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 
 /** Matches web `PanchangaShellLayout` `gap-6` between sidebar and main column. */
 const SHELL_SIDEBAR_GAP = 24;
@@ -41,8 +42,10 @@ function ShellMainScroll({
   contentContainerStyle?: object;
 }) {
   const pageScrollRef = useScrollToTopOnRouteChange();
+  const refreshControl = usePageRefreshControl();
   return (
     <ScrollView
+      refreshControl={refreshControl}
       ref={pageScrollRef}
       className="min-h-0 min-w-0 flex-1 bg-background"
       contentContainerStyle={contentContainerStyle}

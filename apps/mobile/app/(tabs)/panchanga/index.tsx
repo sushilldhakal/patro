@@ -31,6 +31,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 export default function PanchangaScreen() {
@@ -44,6 +45,7 @@ export default function PanchangaScreen() {
      phone; drawing them with the date bar and timeline in one frame is what held
      the screen blank on open. They follow as soon as the screen has drawn. */
   const belowFold = useDeferredMount();
+  const refreshControl = usePageRefreshControl();
   const { page, location, setLocation, ready, date, setDate, clock, adDateStr, commitCalendar } = useAppPanchangaPage();
   const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
@@ -52,6 +54,7 @@ export default function PanchangaScreen() {
   if (page.failed) {
     return (
       <ScrollView
+        refreshControl={refreshControl}
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
@@ -65,6 +68,7 @@ export default function PanchangaScreen() {
   if (!ready) {
     return (
       <ScrollView
+        refreshControl={refreshControl}
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
@@ -75,6 +79,7 @@ export default function PanchangaScreen() {
 
   return (
     <ScrollView
+      refreshControl={refreshControl}
       className="mx-auto w-full max-w-page flex-1 bg-background"
       contentContainerStyle={{
         paddingBottom: floatingNavBottomPadding(isTablet),

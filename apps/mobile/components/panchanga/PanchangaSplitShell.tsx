@@ -6,6 +6,7 @@ import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { useThemeColors } from "@/lib/theme-context";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import type { KundaliSectionId } from "@vedic-patro/features/kundali";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 
 export const PANCHANGA_SIDEBAR_RAIL_WIDTH = 224;
 
@@ -38,6 +39,7 @@ export function PanchangaSplitShell({
   const { isTablet } = useBreakpoint();
   const showSidebar = useShowPanchangaSidebar();
   const pageScrollRef = useScrollToTopOnRouteChange();
+  const refreshControl = usePageRefreshControl();
 
   const mainInner = (
     <View className={mainScroll ? "gap-4" : "min-h-0 flex-1"}>{children}</View>
@@ -53,6 +55,7 @@ export function PanchangaSplitShell({
       return (
         <ScrollView
           ref={pageScrollRef}
+          refreshControl={refreshControl}
           className="flex-1 bg-background"
           contentContainerClassName="mx-auto w-full max-w-page-wide pt-3 md:pt-4"
           contentContainerStyle={mainPadding}
@@ -72,6 +75,7 @@ export function PanchangaSplitShell({
   const mainColumn = mainScroll ? (
     <ScrollView
       ref={pageScrollRef}
+      refreshControl={refreshControl}
       className="flex-1 bg-background"
       contentContainerClassName="mx-auto w-full max-w-page-wide pt-3 md:pt-4"
       contentContainerStyle={mainPadding}

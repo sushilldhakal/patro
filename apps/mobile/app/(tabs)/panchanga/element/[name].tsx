@@ -282,6 +282,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
         />
       ) : (
         <PanchangaDateNav
+          className="mb-4"
           date={date}
           onDateChange={setDate}
           todayAd={todayAd}

@@ -17,6 +17,7 @@ import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { spec } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 
 export function AppShell({
   title,
@@ -41,6 +42,7 @@ export function AppShell({
 }) {
   const { isTablet, isNarrow, isCompact } = useBreakpoint();
   const pageScrollRef = useScrollToTopOnRouteChange();
+  const refreshControl = usePageRefreshControl();
   const inShell = useInPanchangaTabsShell();
   const shellScrollHost = usePanchangaTabsShellScrollHost();
   /* A tab switch or push waits for the new screen's whole first render before
@@ -105,6 +107,7 @@ export function AppShell({
         paddingTop: pagePadTop,
       }}
       keyboardShouldPersistTaps="handled"
+      refreshControl={refreshControl}
       // iOS does not resize the window for the keyboard (Android does, via
       // softwareKeyboardLayoutMode "resize"), so without this a focused field
       // low on the page — converter, password, profile forms — sat under it.

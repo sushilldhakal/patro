@@ -36,6 +36,7 @@ export default function PanchakPatroScreen() {
       </View>
 
       <PatroYearNavBlock
+        className="mb-0"
         era={era}
         onEraChange={setEra}
         year={year}

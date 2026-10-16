@@ -10,30 +10,45 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
 /** Width of the left-edge strip that starts a swipe-back, in points. */
-const EDGE_SWIPE_WIDTH = 28;
+const EDGE_SWIPE_WIDTH = 20;
 
 /**
  * Tab screens have no stack of their own, so there's no native swipe-back.
- * A drag that starts at the left edge and travels right goes back one step
- * (or home when there's nothing to go back to).
+ * A drag that starts at the left edge and travels right goes back to the page
+ * it came from (tabs keep history), or home when there's nothing to go back to.
  */
 function useEdgeSwipeBack() {
   const router = useRouter();
   const pathname = usePathname();
   return Gesture.Pan()
     .runOnJS(true)
-    .hitSlop({ left: 0, width: EDGE_SWIPE_WIDTH })
-    .activeOffsetX(16)
-    .failOffsetY([-24, 24])
+    .activeOffsetX(10)
+    .failOffsetY([-40, 40])
     .onEnd((e) => {
-      if (e.translationX < 72 && e.velocityX < 600) return;
+      if (e.translationX < 60 && e.velocityX < 500) return;
       if (router.canGoBack()) router.back();
       else if (pathname !== "/") router.replace("/");
     });
 }
 
-export default function TabsLayout() {
+/**
+ * The swipe gets a strip of its own on top of the page. Attached to the whole
+ * page instead, a drag at the edge landed on whatever scroll view was there
+ * (a row of chips, the page itself) and that took it, so back never fired.
+ */
+function EdgeSwipeStrip({ bottom }: { bottom: number }) {
   const swipeBack = useEdgeSwipeBack();
+  return (
+    <GestureDetector gesture={swipeBack}>
+      <View
+        collapsable={false}
+        style={{ position: "absolute", left: 0, top: 0, bottom, width: EDGE_SWIPE_WIDTH, zIndex: 50 }}
+      />
+    </GestureDetector>
+  );
+}
+
+export default function TabsLayout() {
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
@@ -43,12 +58,13 @@ export default function TabsLayout() {
     <Tabs
       backBehavior="history"
       layout={({ children }) => (
-        <GestureDetector gesture={swipeBack}>
-          <View className="flex-1 bg-background" style={{ flex: 1 }}>
-            <AppHeader />
-            <View className="min-h-0 flex-1">{children}</View>
+        <View className="flex-1 bg-background" style={{ flex: 1 }}>
+          <AppHeader />
+          <View className="min-h-0 flex-1">
+            {children}
+            <EdgeSwipeStrip bottom={tabBarHeight} />
           </View>
-        </GestureDetector>
+        </View>
       )}
       screenLayout={({ route, children }) => (
         <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>

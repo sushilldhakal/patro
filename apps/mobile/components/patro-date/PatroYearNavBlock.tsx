@@ -23,7 +23,7 @@ export function PatroYearNavBlock({
   const fallback = usePanchangaLocation();
   return (
     <View
-      className={className}
+      className={className ?? "mb-4"}
       era={era}
       year={year}
       onYearChange={onYearChange}
