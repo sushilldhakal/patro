@@ -19,3 +19,6 @@ __pycache__/
 
 # Vite dev cache
 **/.vite/
+
+# Expo CLI local state (logs can carry client IDs)
+.expo/
