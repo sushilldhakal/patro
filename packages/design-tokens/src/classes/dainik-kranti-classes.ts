@@ -40,6 +40,8 @@ export const dainikKrantiClasses = {
   fieldGridMuted: "mt-3 gap-x-4 gap-y-2.5 rounded-xl bg-muted/40 p-3",
   /** Compact day card: every value in one grid whose column count follows the card width. */
   fieldGridCompact: "mt-2.5 gap-y-2.5 border-t border-border/60 pt-2.5",
+  /** Website columns for the compact grid, by the card's own width (`@container`). */
+  fieldGridCompactCols: "grid grid-cols-2 gap-x-3 gap-y-2.5 @[19rem]:grid-cols-3 @[34rem]:grid-cols-6",
   /** Festivals beside the date instead of in a box of their own. */
   festivalInline: "min-w-0 flex-1 flex-row items-start gap-1.5",
   /** Transits as one wrapped line of entries. */

@@ -188,7 +188,7 @@ function DayPatroCard({ row, copy }: { row: DainikDayRow; copy: PageCopy }) {
       {/* Columns follow the card's own width: 2 on a narrow phone, 3 on most
           phones, all 6 in one row once the card is tablet-wide. */}
       <div className={cn(dainikKrantiClasses.fieldGridCompact, "@container")}>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 @[19rem]:grid-cols-3 @[34rem]:grid-cols-6">
+        <div className={dainikKrantiClasses.fieldGridCompactCols}>
           <CardField label={copy.tithi} value={row.tithi.value} sub={row.tithi.until} />
           <CardField label={copy.nakshatra} value={row.nakshatra.value} sub={row.nakshatra.until} />
           <CardField label={copy.yoga} value={row.yoga.value} sub={row.yoga.until} />
