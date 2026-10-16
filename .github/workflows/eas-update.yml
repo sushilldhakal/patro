@@ -1,13 +1,13 @@
-name: EAS Update (development)
+name: EAS Update (preview)
 
-# Publishes the app's JavaScript to the EAS `development` channel on every push
-# to main that touches the app or the shared packages, so a development build
-# installed anywhere can open the latest code without Metro running locally.
+# Publishes the app's JavaScript to the EAS `preview` channel on every push to
+# main that touches the app or the shared packages. A preview build installs
+# it by itself (lib/use-preview-auto-update.ts); a development build can open
+# it from the dev launcher's update list.
 #
 # Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access
-# tokens). Only builds made after expo-updates was added, with the
-# `development` profile (channel "development"), can load these updates; a
-# change to native code still needs a new build.
+# tokens). Only builds made after expo-updates was added can load these
+# updates; a change to native code still needs a new build.
 on:
   push:
     branches: [main]
@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: eas-update-development
+  group: eas-update-preview
   cancel-in-progress: true
 
 jobs:
@@ -46,8 +46,8 @@ jobs:
           MESSAGE: ${{ github.event.head_commit.message || 'Manual run' }}
         run: >
           eas update
-          --channel development
-          --environment development
+          --channel preview
+          --environment preview
           --message "$MESSAGE"
           --platform all
           --non-interactive

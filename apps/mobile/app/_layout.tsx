@@ -37,6 +37,7 @@ import { loadCalendarEraPreference } from "@/lib/patro-era-preference";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
+import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* Expo Go / hot reload may not register a native splash view controller. */
@@ -119,6 +120,7 @@ function ThemedStatusBar() {
 }
 
 export default function RootLayout() {
+  usePreviewAutoUpdate();
   const [loaded] = useFonts({
     /* Semi-condensed (width 87.5%), the width the website loads. See assets/fonts/README.md. */
     NotoSansDevanagari_400Regular: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-400.ttf"),
