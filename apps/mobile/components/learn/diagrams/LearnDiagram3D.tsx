@@ -27,6 +27,7 @@ import { DIAGRAM_CANVAS_BG, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-them
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme } from "@/lib/theme-context";
+import { useStaggeredMount } from "@/lib/use-staggered-mount";
 import { cn } from "@vedic-patro/domain/utils";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
@@ -111,6 +112,8 @@ export function LearnDiagram3D({
   const [labels, setLabels] = useState<DiagramLabel[]>([]);
   const [ready, setReady] = useState(false);
   const [hinted, setHinted] = useState(false);
+  const canvasTurn = useStaggeredMount();
+  const showCanvas = canvasTurn || fullscreen;
 
   const gesture = useDiagramGesture({
     yaw: camera?.yaw,
@@ -164,6 +167,7 @@ export function LearnDiagram3D({
         onTouchStart={() => setHinted(true)}
         {...gesture.panHandlers}
       >
+        {showCanvas ? (
         <Canvas
           camera={{ position: [0, 2.2, 4], fov: camera?.fov ?? 46, near: 0.05, far: 200 }}
           gl={{ antialias: true }}
@@ -184,6 +188,7 @@ export function LearnDiagram3D({
             {scene}
           </Suspense>
         </Canvas>
+        ) : null}
 
         {/* Real Devanagari over the canvas, placed from the scene's own projection. */}
         <View pointerEvents="none" className="absolute inset-0">

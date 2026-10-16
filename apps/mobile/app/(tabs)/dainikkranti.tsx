@@ -31,6 +31,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
@@ -50,6 +51,9 @@ const DAINIK_SUN_COL_W = 116;
 const DAINIK_MOON_COL_W = 88;
 const DAINIK_COL_TRANSIT = 218;
 const DAINIK_FESTIVAL_COL_W = 330;
+
+/** Day rows drawn before the screen has settled. */
+const FIRST_PAINT_ROWS = 8;
 
 const DAINIK_TABLE_WIDTH =
   DAINIK_COL_EXPAND +
@@ -100,6 +104,11 @@ export default function DainikKrantiScreen() {
   };
 
   const firstLoad = status.pageLoading && !status.hasMonth;
+  // A month is ~30 day cards/rows plus the long legend. Mounting them all in one
+  // frame held the screen blank for seconds on mid-range phones, so the first
+  // screenful draws at once and the rest follows once the screen has settled.
+  const settled = useDeferredMount();
+  const shownRows = settled ? rows : rows.slice(0, FIRST_PAINT_ROWS);
 
   return (
     <AppShell title={t("sidebar_nav.items.dainikkranti.label")} showHeader={false}>
@@ -183,7 +192,7 @@ export default function DainikKrantiScreen() {
                   </Text>
                 </View>
               ) : (
-                rows.map((row) => (
+                shownRows.map((row) => (
                   <Fragment key={row.key}>
                     {row.segLabel ? (
                       <Text className={dainikKrantiClasses.segLabel} style={nepaliTextStyle()}>
@@ -196,7 +205,7 @@ export default function DainikKrantiScreen() {
               )}
             </View>
           ) : (
-            <DesktopPatroTable rows={rows} copy={copy} isError={status.monthError} />
+            <DesktopPatroTable rows={shownRows} copy={copy} isError={status.monthError} />
           )}
 
           <PatroAccordion>
@@ -311,7 +320,7 @@ export default function DainikKrantiScreen() {
         </View>
       )}
 
-      {!firstLoad ? (
+      {!firstLoad && settled ? (
         <View className={dainikKrantiClasses.legendCard}>
           <View className={dainikKrantiClasses.legendHead}>
             <Ionicons name="sparkles-outline" size={16} color={colors.secondary} />
