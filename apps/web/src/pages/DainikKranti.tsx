@@ -163,13 +163,21 @@ function DayPatroCard({ row, copy }: { row: DainikDayRow; copy: PageCopy }) {
           : dainikKrantiClasses.dayCardPlain,
       )}
     >
-      <div className={dainikKrantiClasses.cardHead}>
-        <div className={dainikKrantiClasses.cardDateCol}>
+      <div className="flex items-start gap-3">
+        <div className={cn(dainikKrantiClasses.cardDateCol, "shrink-0")}>
           <DayLabel row={row} />
           <span className={cn(dainikKrantiClasses.weekday, row.isSaturday && dainikKrantiClasses.saturday)}>
             {row.weekday}
           </span>
         </div>
+        {row.festivals ? (
+          <div className={cn(dainikKrantiClasses.festivalInline, "flex")}>
+            <span aria-hidden className={dainikKrantiClasses.festivalDot} />
+            <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-3")}>{row.festivals}</div>
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
         {row.isToday ? (
           <span className={cn(dainikKrantiClasses.todayBadge, dainikKrantiClasses.todayBadgeText)}>
             {copy.today}
@@ -177,33 +185,29 @@ function DayPatroCard({ row, copy }: { row: DainikDayRow; copy: PageCopy }) {
         ) : null}
       </div>
 
-      {row.festivals ? (
-        <div className={cn(dainikKrantiClasses.festivalBox, "flex items-start gap-2")}>
-          <span aria-hidden className={dainikKrantiClasses.festivalDot} />
-          <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-3")}>{row.festivals}</div>
-        </div>
-      ) : null}
-
-      <div className={cn(dainikKrantiClasses.fieldGrid, "grid grid-cols-2")}>
-        <CardField label={copy.tithi} value={row.tithi.value} sub={row.tithi.until} />
-        <CardField label={copy.nakshatra} value={row.nakshatra.value} sub={row.nakshatra.until} />
-        <CardField label={copy.yoga} value={row.yoga.value} sub={row.yoga.until} />
-        <CardField label={copy.karana} value={row.karana.value} sub={row.karana.until} />
-      </div>
-
-      <div className={cn(dainikKrantiClasses.fieldGridMuted, "grid grid-cols-2")}>
-        <div className="col-span-2">
+      {/* Columns follow the card's own width: 2 on a narrow phone, 3 on most
+          phones, all 6 in one row once the card is tablet-wide. */}
+      <div className={cn(dainikKrantiClasses.fieldGridCompact, "@container")}>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 @[19rem]:grid-cols-3 @[34rem]:grid-cols-6">
+          <CardField label={copy.tithi} value={row.tithi.value} sub={row.tithi.until} />
+          <CardField label={copy.nakshatra} value={row.nakshatra.value} sub={row.nakshatra.until} />
+          <CardField label={copy.yoga} value={row.yoga.value} sub={row.yoga.until} />
+          <CardField label={copy.karana} value={row.karana.value} sub={row.karana.until} />
+          <CardField label={copy.moonSign} value={row.moon.value} sub={row.moon.until} />
           <CardField label={copy.sunRiseSetSign} value={<SunRiseSetSignValue sun={row.sun} />} />
         </div>
-        <CardField label={copy.moonSign} value={<AngaValue anga={row.moon} />} />
       </div>
 
       {row.transits.length > 0 ? (
-        <div className={dainikKrantiClasses.transitsBlock}>
-          <div className={dainikKrantiClasses.fieldLabel}>{copy.transits}</div>
-          <div className={cn(dainikKrantiClasses.transitsList, "space-y-0.5")}>
-            <TransitList row={row} />
-          </div>
+        <div className={cn(dainikKrantiClasses.transitsInline, "flex")}>
+          <span className={dainikKrantiClasses.fieldLabel}>{copy.transits}</span>
+          {row.transits.map((ev, i) => (
+            <span key={i} className={cn(dainikKrantiClasses.transitRow, "whitespace-nowrap")}>
+              <span className={dainikKrantiClasses.transitName}>{ev.label}</span>{" "}
+              <span className={dainikKrantiClasses.transitPlanet}>{ev.planet}</span>
+              {ev.time ? <span> {ev.time}</span> : null}
+            </span>
+          ))}
         </div>
       ) : null}
 

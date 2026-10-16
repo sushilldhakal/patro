@@ -10,15 +10,28 @@ const SM = ["", "sm:grid-cols-1", "sm:grid-cols-2", "sm:grid-cols-3", "sm:grid-c
 const MD = ["", "md:grid-cols-1", "md:grid-cols-2", "md:grid-cols-3", "md:grid-cols-4", "md:grid-cols-5", "md:grid-cols-6", "md:grid-cols-7", "md:grid-cols-8", "md:grid-cols-9", "md:grid-cols-10", "md:grid-cols-11", "md:grid-cols-12"];
 const LG = ["", "lg:grid-cols-1", "lg:grid-cols-2", "lg:grid-cols-3", "lg:grid-cols-4", "lg:grid-cols-5", "lg:grid-cols-6", "lg:grid-cols-7", "lg:grid-cols-8", "lg:grid-cols-9", "lg:grid-cols-10", "lg:grid-cols-11", "lg:grid-cols-12"];
 
-export function Grid({ cols, gap, gapX, gapY, as: Tag = "div", label, className, webClassName, children, testID }: GridProps) {
+function mostColumns(cols: GridProps["cols"]): number {
+  if (typeof cols === "number") return cols;
+  return Math.max(cols.base, cols.xs ?? 0, cols.compact ?? 0, cols.sm ?? 0, cols.md ?? 0, cols.lg ?? 0);
+}
+
+export function Grid({ cols, minCellWidth, gap, gapX, gapY, as: Tag = "div", label, className, webClassName, children, testID }: GridProps) {
   const c = typeof cols === "number" ? { base: cols } : cols;
-  const columns = cn("grid", BASE[c.base], c.xs && XS[c.xs], c.compact && COMPACT[c.compact], c.sm && SM[c.sm], c.md && MD[c.md], c.lg && LG[c.lg]);
   const x = gapX ?? gap;
   const y = gapY ?? gap;
+  /* Fit to the container: auto-fit cells no narrower than `minCellWidth`, and
+     never so narrow that more than `cols` share a row. */
+  const fit = minCellWidth
+    ? {
+        gridTemplateColumns: `repeat(auto-fit, minmax(max(${minCellWidth}px, calc((100% - ${(mostColumns(cols) - 1) * (x ?? 0)}px) / ${mostColumns(cols)})), 1fr))`,
+      }
+    : undefined;
+  const columns = fit ? "grid" : cn("grid", BASE[c.base], c.xs && XS[c.xs], c.compact && COMPACT[c.compact], c.sm && SM[c.sm], c.md && MD[c.md], c.lg && LG[c.lg]);
+  const gaps = x === undefined && y === undefined ? undefined : { columnGap: x, rowGap: y };
   return (
     <Tag
       className={cn(columns, className, webClassName)}
-      style={x === undefined && y === undefined ? undefined : { columnGap: x, rowGap: y }}
+      style={fit || gaps ? { ...fit, ...gaps } : undefined}
       aria-label={label}
       data-testid={testID}
     >

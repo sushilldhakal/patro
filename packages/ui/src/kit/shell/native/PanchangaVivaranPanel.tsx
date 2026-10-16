@@ -5,6 +5,15 @@ import { usePanchangaVivaran, type VivaranCell } from "@vedic-patro/features/hom
 import { Grid, Box, Button, Text } from "@vedic-patro/ui";
 import type { PanchangaVivaranPanelProps } from "../contract";
 
+/* iOS paints a one-sided border (`border-t`) as a stretched image, and once the
+   view grows after its first layout that image can fill the whole box (the
+   dark band behind the planet tiles). A 1px view draws the same rule safely. */
+const NO_TOP_BORDER = "border-t-0 pt-0";
+
+function Rule({ className }: { className?: string }) {
+  return <Box className={cn("h-px bg-foreground/10", className)} />;
+}
+
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
   return (
     <Box className={cn(home.vivaranTile, "border border-gold/25")}>
@@ -24,7 +33,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
   if (loading || !p || !view) {
     return (
       <Box className={cn("rounded-lg bg-card", className)}>
-        <Grid cols={2} gap={8} className={home.vivaranCells}>
+        <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
           {Array.from({ length: 6 }, (_, i) => (
             <Box key={i} className={cn(home.vivaranTile, "border border-gold/25")}>
               <Text className={home.vivaranLabel}>…</Text>
@@ -39,15 +48,16 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
 
   return (
     <Box className={cn("rounded-lg bg-card", className)}>
-      <Grid cols={2} gap={8} className={home.vivaranCells}>
+      <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
         {view.cells.map((cell) => (
           <Cell key={cell.label} {...cell} />
         ))}
       </Grid>
       {view.planets.length > 0 ? (
-        <Box className={home.gocharSection}>
+        <Box className={cn(home.gocharSection, NO_TOP_BORDER)}>
+          <Rule className="mb-2" />
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
-          <Grid cols={{ base: 2, sm: 3 }} gap={6}>
+          <Grid cols={5} minCellWidth={96} gap={6}>
             {view.planets.map((planet) => (
               <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
                 <Box className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
@@ -64,7 +74,8 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         </Box>
       ) : null}
       {view.solar.length > 0 ? (
-        <Box className={view.planets.length > 0 ? home.solarWithPlanets : home.solarAlone}>
+        <Box className={cn(view.planets.length > 0 ? home.solarWithPlanets : home.solarAlone, NO_TOP_BORDER)}>
+          <Rule className="mb-2" />
           <Grid cols={3} gap={6}>
             {view.solar.map((item) => (
               <Box key={item.label} className={cn("flex-col", home.vivaranTile, home.gocharTile, "border border-gold/25")}>
@@ -76,7 +87,8 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
         </Box>
       ) : null}
       {onOpenDetail ? (
-        <Box className={home.vivaranFooter}>
+        <Box className={cn(home.vivaranFooter, NO_TOP_BORDER)}>
+          <Rule className="mb-2.5" />
           {view.abhijit ? (
             <Text className={home.vivaranFooterText}>
               <Text className={home.vivaranFooterStrong}>{view.abhijit.title}</Text>{" "}

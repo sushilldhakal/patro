@@ -24,7 +24,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
   if (loading || !p || !view) {
     return (
       <Box className={cn("rounded-lg bg-card shadow-ring-soft", className)}>
-        <Grid cols={2} gap={8} className={home.vivaranCells}>
+        <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
           {Array.from({ length: 6 }, (_, i) => (
             <Box key={i} className={cn(home.vivaranTile, "shadow-ring-soft")}>
               <Text className={home.vivaranLabel}>…</Text>
@@ -39,7 +39,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
 
   return (
     <Box className={cn("min-h-full rounded-lg bg-card", className)}>
-      <Grid cols={2} gap={8} className={home.vivaranCells}>
+      <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
         {view.cells.map((cell) => (
           <Cell key={cell.label} {...cell} />
         ))}
@@ -47,7 +47,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
       {view.planets.length > 0 ? (
         <Box className={home.gocharSection}>
           <Text className={home.gocharTitle}>{view.gocharTitle}</Text>
-          <Grid cols={{ base: 2, sm: 3 }} gap={6}>
+          <Grid cols={5} minCellWidth={96} gap={6}>
             {view.planets.map((planet) => (
               <Box key={planet.key} className={cn("flex-col", home.vivaranTile, home.gocharTile, "shadow-ring-soft")}>
                 <Box className="flex-row flex-wrap items-center gap-x-1">

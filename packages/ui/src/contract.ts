@@ -50,6 +50,11 @@ export type GridColumns = number | { base: number; xs?: number; compact?: number
 export type GridProps = StyleProps & {
   children?: ReactNode;
   cols: GridColumns;
+  /**
+   * Fit columns to the grid's own width instead of the screen's: as many as
+   * leave each cell at least this many px, up to `cols` (read as the most).
+   */
+  minCellWidth?: number;
   /** Space between cells, in px (both directions unless `gapX` / `gapY` is given). */
   gap?: number;
   gapX?: number;

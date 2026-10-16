@@ -38,6 +38,12 @@ export const dainikKrantiClasses = {
   todayBadgeText: "text-xs font-semibold text-secondary-foreground",
   fieldGrid: "mt-3 gap-x-4 gap-y-3 border-t border-border/60 pt-3",
   fieldGridMuted: "mt-3 gap-x-4 gap-y-2.5 rounded-xl bg-muted/40 p-3",
+  /** Compact day card: every value in one grid whose column count follows the card width. */
+  fieldGridCompact: "mt-2.5 gap-y-2.5 border-t border-border/60 pt-2.5",
+  /** Festivals beside the date instead of in a box of their own. */
+  festivalInline: "min-w-0 flex-1 flex-row items-start gap-1.5",
+  /** Transits as one wrapped line of entries. */
+  transitsInline: "mt-2.5 flex-row flex-wrap items-baseline gap-x-3 gap-y-0.5",
   field: "min-w-0",
   fieldLabel: "text-[11px] font-medium uppercase tracking-wide",
   fieldValue: "text-[15px] font-semibold leading-snug text-foreground",
