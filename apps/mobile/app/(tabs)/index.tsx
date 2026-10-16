@@ -113,7 +113,9 @@ export default function HomeScreen() {
     month,
     location: location.params,
     fetchMonth: fetchMonthCalendarOffline,
-    panchangaView: patroView === "panchanga",
+    // Not `panchangaView`: that mode skips the neighbouring months and hands back the
+    // month's bare days, so day 1 always sat under Sunday. The panchanga grid
+    // takes the same week-aligned days as the calendar (as the website builds it).
     onLimits: applyPatroApiLimits,
   });
   const { gridDays, publicHolidayDates } = homeMonth;
