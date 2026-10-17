@@ -27,7 +27,8 @@ function familyFor(className: string): string {
 
 const ANDROID_PADDING = Platform.OS === "android" ? { includeFontPadding: true } : undefined;
 
-const DEVANAGARI = /[\u0900-\u097F]/;
+/** Devanagari letters and marks; the digits ०–९ (U+0966–096F) carry no marks to crop or space. */
+const DEVANAGARI = /[\u0900-\u0965\u0970-\u097F]/;
 
 /** True when a direct string child is Devanagari. */
 function hasDevanagari(children: unknown): boolean {
@@ -40,6 +41,10 @@ function hasDevanagari(children: unknown): boolean {
    conjuncts and matras apart ("न क्ष त्र"). The browser keeps clusters whole. */
 const NO_TRACKING = { letterSpacing: 0 };
 
+/* A line box of 1–1.25× the size crops the marks above and below a Devanagari
+   line on iOS (असोज drew as "असाज", चैत as "चत"). The browser paints overflow. */
+const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
+
 /**
  * Text in the app. React Native does not inherit size or colour from a parent
  * View, so every run gets the body size and foreground colour unless its
@@ -48,11 +53,13 @@ const NO_TRACKING = { letterSpacing: 0 };
 export function Text({ variant, numberOfLines, as, className, nativeClassName, children, testID }: TextProps) {
   const merged = cn(variant && textVariantClass[variant], className, nativeClassName);
   const sized = TYPE_SCALE.test(merged) ? merged : cn("text-body", merged);
-  const colored = /\btext-/.test(sized.replace(TEXT_NOT_COLOR, "")) ? sized : cn("text-foreground", sized);
+  const tinted = /\btext-/.test(sized.replace(TEXT_NOT_COLOR, "")) ? sized : cn("text-foreground", sized);
+  const devanagari = hasDevanagari(children);
+  const colored = devanagari ? tinted.replace(TIGHT_LEADING, "leading-normal") : tinted;
   return (
     <RNText
       className={cn("font-sans", colored)}
-      style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING, hasDevanagari(children) ? NO_TRACKING : undefined]}
+      style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING, devanagari ? NO_TRACKING : undefined]}
       numberOfLines={numberOfLines}
       accessibilityRole={as && /^h\d$/.test(as) ? "header" : undefined}
       testID={testID}

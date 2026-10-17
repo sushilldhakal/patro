@@ -2,7 +2,7 @@
   "expo": {
     "name": "Vedic Patro",
     "slug": "vedic-patro-mobile",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": [
@@ -257,7 +257,17 @@
           "faceIDPermission": "Vedic Patro uses Face ID so you can open the app and your saved account without typing a password. Your face data never leaves the device."
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/NotoSansDevanagariSemiCondensed-Regular.ttf",
+            "./assets/fonts/NotoSansDevanagariSemiCondensed-Medium.ttf",
+            "./assets/fonts/NotoSansDevanagariSemiCondensed-SemiBold.ttf",
+            "./assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"
+          ]
+        }
+      ],
       "expo-asset",
       [
         "expo-audio",

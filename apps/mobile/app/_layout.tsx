@@ -20,6 +20,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
+import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -119,14 +120,20 @@ function ThemedStatusBar() {
   return <StatusBar style={isDark ? "light" : "dark"} />;
 }
 
+const WEB_NOTO_FONTS = {
+  [NOTO_DEVANAGARI_REGULAR]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Regular.ttf"),
+  [NOTO_DEVANAGARI_MEDIUM]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Medium.ttf"),
+  [NOTO_DEVANAGARI_SEMIBOLD]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-SemiBold.ttf"),
+  [NOTO_DEVANAGARI_BOLD]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
+};
+
 export default function RootLayout() {
   usePreviewAutoUpdate();
   const [loaded] = useFonts({
-    /* Semi-condensed (width 87.5%), the width the website loads. See assets/fonts/README.md. */
-    NotoSansDevanagari_400Regular: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-400.ttf"),
-    NotoSansDevanagari_500Medium: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-500.ttf"),
-    NotoSansDevanagari_600SemiBold: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-600.ttf"),
-    NotoSansDevanagari_700Bold: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-700.ttf"),
+    /* Noto (semi-condensed, see assets/fonts/README.md) is built into the iOS and Android apps by the
+       expo-font plugin and registered by the OS at launch. Registered here at runtime instead, the
+       weights could drop back to regular after the app reloaded into an update. Web still loads them. */
+    ...(Platform.OS === "web" ? WEB_NOTO_FONTS : {}),
     FiraCode_400Regular,
     FiraCode_700Bold,
     ...Ionicons.font,

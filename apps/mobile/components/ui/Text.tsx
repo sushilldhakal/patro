@@ -83,7 +83,8 @@ function withoutInlineType(style: RNTextProps["style"]): RNTextProps["style"] {
   return rest;
 }
 
-const DEVANAGARI = /[\u0900-\u097F]/;
+/** Devanagari letters and marks; the digits ०–९ (U+0966–096F) carry no marks to crop or space. */
+const DEVANAGARI = /[\u0900-\u0965\u0970-\u097F]/;
 
 /* iOS spaces each glyph of a shaped Devanagari cluster, so `tracking-*` pulled
    conjuncts and matras apart. The browser keeps clusters whole. */
@@ -93,11 +94,17 @@ function hasDevanagari(children: unknown): boolean {
   return false;
 }
 
+/* A line box of 1–1.25× the size crops the marks above and below a Devanagari
+   line on iOS. The browser paints the overflow. */
+const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
+
 /** Default Text. Size comes from `variant` or a type class; colour comes from the class only. */
 export function Text({ className, style, variant, ...props }: Props) {
   const merged = cn(variant ? spec[variant] : undefined, className);
   const sized = TYPE_SCALE.test(merged) ? merged : cn("text-body", merged);
-  const colored = hasTextColor(sized) ? sized : cn("text-foreground", sized);
+  const devanagari = hasDevanagari(props.children);
+  const tinted = hasTextColor(sized) ? sized : cn("text-foreground", sized);
+  const colored = devanagari ? tinted.replace(TIGHT_LEADING, "leading-normal") : tinted;
   const typeStyle = withoutInlineType(style);
   const flat = StyleSheet.flatten(typeStyle) as { fontFamily?: string; fontWeight?: string | number } | undefined;
   const family = !flat?.fontFamily || NOTO_FAMILIES.has(flat.fontFamily)
@@ -111,7 +118,7 @@ export function Text({ className, style, variant, ...props }: Props) {
       style={[
         typeStyle,
         family ? { fontFamily: family, fontWeight: "normal" } : undefined,
-        hasDevanagari(props.children) ? { letterSpacing: 0 } : undefined,
+        devanagari ? { letterSpacing: 0 } : undefined,
       ]}
     />
   );

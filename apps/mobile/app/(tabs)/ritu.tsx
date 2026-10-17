@@ -26,7 +26,10 @@ export default function RituScreen() {
           title={ritu.title}
           subtitle={ritu.subtitle}
         />
-        <PatroHeaderLocation location={location} onLocationChange={setLocation} />
+        {/* Right-hand side, also when the row wraps: the place picker is always on the right. */}
+        <View className="ml-auto">
+          <PatroHeaderLocation location={location} onLocationChange={setLocation} />
+        </View>
       </View>
 
       <View className="mb-8">

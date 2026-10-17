@@ -23,10 +23,10 @@ export const fontFamily = {
   },
   /** Loaded font names (app — expo-google-fonts registers one family per weight). */
   native: {
-    regular: "NotoSansDevanagari_400Regular",
-    medium: "NotoSansDevanagari_500Medium",
-    semibold: "NotoSansDevanagari_600SemiBold",
-    bold: "NotoSansDevanagari_700Bold",
+    regular: "NotoSansDevanagariSemiCondensed-Regular",
+    medium: "NotoSansDevanagariSemiCondensed-Medium",
+    semibold: "NotoSansDevanagariSemiCondensed-SemiBold",
+    bold: "NotoSansDevanagariSemiCondensed-Bold",
     mono: "FiraCode_400Regular",
   },
 } as const;

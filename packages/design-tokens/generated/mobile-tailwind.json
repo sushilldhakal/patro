@@ -123,25 +123,25 @@
   },
   "fontFamily": {
     "sans": [
-      "NotoSansDevanagari_400Regular"
+      "NotoSansDevanagariSemiCondensed-Regular"
     ],
     "medium": [
-      "NotoSansDevanagari_500Medium"
+      "NotoSansDevanagariSemiCondensed-Medium"
     ],
     "semibold": [
-      "NotoSansDevanagari_600SemiBold"
+      "NotoSansDevanagariSemiCondensed-SemiBold"
     ],
     "bold": [
-      "NotoSansDevanagari_700Bold"
+      "NotoSansDevanagariSemiCondensed-Bold"
     ],
     "mono": [
       "FiraCode_400Regular"
     ],
     "num": [
-      "NotoSansDevanagari_400Regular"
+      "NotoSansDevanagariSemiCondensed-Regular"
     ],
     "num-bold": [
-      "NotoSansDevanagari_700Bold"
+      "NotoSansDevanagariSemiCondensed-Bold"
     ]
   },
   "borderRadius": {
