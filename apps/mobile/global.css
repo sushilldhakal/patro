@@ -8,6 +8,9 @@
 @layer base {
   :root {
     --tw-input: 74 69 64;
+    /* tab-active / tab-hover: saffron at 12% / 6% over the card (web: color-mix). */
+    --tw-tab-active-fill: 250 239 225;
+    --tw-tab-hover-fill: 253 247 240;
     /* tokens:light:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 248 246 242;
     --tw-foreground: 26 20 16;
@@ -48,6 +51,8 @@
 
   .dark {
     --tw-input: 63 66 82;
+    --tw-tab-active-fill: 50 44 51;
+    --tw-tab-hover-fill: 36 36 54;
     /* tokens:dark:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 15 18 32;
     --tw-foreground: 243 239 232;

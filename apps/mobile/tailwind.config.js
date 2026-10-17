@@ -87,8 +87,10 @@ module.exports = {
         input: "rgb(var(--tw-input) / <alpha-value>)",
         "surface-inset": "rgb(var(--tw-surface-inset) / <alpha-value>)",
         "surface-muted": "rgb(var(--tw-surface-muted) / <alpha-value>)",
-        "tab-active": "rgba(var(--tw-tab-active) / 0.12)",
-        "tab-hover": "rgba(var(--tw-tab-active) / 0.06)",
+        /* The website's color-mix(saffron 12% / 6%, card), mixed ahead of time in
+           global.css: a fixed alpha here ignored `/70` and drew a solid orange tab. */
+        "tab-active": "rgb(var(--tw-tab-active-fill) / <alpha-value>)",
+        "tab-hover": "rgb(var(--tw-tab-hover-fill) / <alpha-value>)",
       },
       fontFamily: tokens.fontFamily,
       spacing: { ...quarterSteps, ...tokens.spacing },

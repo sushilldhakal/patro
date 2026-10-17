@@ -67,10 +67,10 @@ export function BsCalendarGrid({
           {grid.weekdays.map((w) => {
             const label = isCompact ? w.short : w.label;
             return (
-              <View key={w.key} style={colStyle(col)} className={cn(cal.weekdayCell, isCompact ? cal.weekdayCellPhone : cal.weekdayCellWide)}>
+              <View key={w.key} style={colStyle(col)} className={cn(cal.weekdayCell, isCompact ? "items-start px-1 py-1" : cal.weekdayCellWide)}>
                 <Text
                   className={cn(
-                    lang === "en" ? cal.weekdayEn : isCompact ? cal.weekdayNeShort : cal.weekdayNe,
+                    lang === "en" ? cal.weekdayEn : isCompact ? cn(cal.weekdayNeShort, "text-left") : cal.weekdayNe,
                     w.weekend && lang !== "en" && cal.weekdayWeekend,
                   )}
                 >
@@ -113,25 +113,25 @@ export function BsCalendarGrid({
                   {!isCompact && leftFest ? <VerticalEdgeLabel text={leftFest} side="left" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
                   {!isCompact && rightFest ? <VerticalEdgeLabel text={rightFest} side="right" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
 
-                  <View className="w-full flex-row items-start justify-center" style={{ minHeight: tithiRowMinH }}>
+                  <View className="w-full flex-row items-start justify-start" style={{ minHeight: tithiRowMinH }}>
                     {tithi ? (
-                      <Text numberOfLines={1} className={cn("flex-1", cal.tithi, isTablet ? "text-sm" : cal.tithiPhone)}>
+                      <Text numberOfLines={1} className={cn("flex-1", cal.tithi, "text-left", isTablet ? "text-sm" : cal.tithiPhone)}>
                         {tithi}
                       </Text>
                     ) : isEnriching && !isOutside ? (
-                      <View className={cn("mx-auto", cal.tithiPending)} />
+                      <View className={cal.tithiPending} />
                     ) : (
                       <View className="min-w-0 flex-1" />
                     )}
                   </View>
 
-                  <View className="flex-1 items-center justify-center gap-0.5 py-0.5">
+                  <View className="flex-1 items-start justify-center gap-0.5 py-0.5">
                     {isToday ? (
                       <View className={cn(cal.todayBadge, isCompact && cal.todayBadgePhone)}>
                         <Text className={cal.todayBadgeText}>{grid.todayBadge}</Text>
                       </View>
                     ) : null}
-                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1">
+                    <View className="flex-row flex-wrap items-baseline justify-start gap-x-1">
                       <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
                       <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
                         {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
@@ -145,26 +145,26 @@ export function BsCalendarGrid({
                   </View>
 
                   {compactBsFest ? (
-                    <RNPressable onPress={openFestivals} className={cn("mx-auto mt-auto", cal.countBadgeCompact)}>
+                    <RNPressable onPress={openFestivals} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
                       <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
                     </RNPressable>
                   ) : null}
 
                   {mainFest && !isOutside && !compactBsFest ? (
                     <View className={cn("w-full min-w-0", cal.festivalExtraStack)}>
-                      <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                      <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
                         {mainFest}
                       </Text>
                       {isCompact && festivals.length > 1 && extraFestCount === 0
                         ? festivals.slice(1, 3).map((name, fi) => (
-                            <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-center", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                            <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-left", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
                               {name}
                             </Text>
                           ))
                         : null}
                     </View>
                   ) : null}
-                  {hasFestival && !mainFest ? <View className="mx-auto mt-0.5 h-1 w-1 rounded-full bg-accent" /> : null}
+                  {hasFestival && !mainFest ? <View className="mt-0.5 h-1 w-1 rounded-full bg-accent" /> : null}
                 </RNPressable>
               );
             })}

@@ -27,6 +27,19 @@ function familyFor(className: string): string {
 
 const ANDROID_PADDING = Platform.OS === "android" ? { includeFontPadding: true } : undefined;
 
+const DEVANAGARI = /[\u0900-\u097F]/;
+
+/** True when a direct string child is Devanagari. */
+function hasDevanagari(children: unknown): boolean {
+  if (typeof children === "string") return DEVANAGARI.test(children);
+  if (Array.isArray(children)) return children.some((child) => typeof child === "string" && DEVANAGARI.test(child));
+  return false;
+}
+
+/* iOS spaces each glyph of a shaped Devanagari cluster, so `tracking-*` pulled
+   conjuncts and matras apart ("न क्ष त्र"). The browser keeps clusters whole. */
+const NO_TRACKING = { letterSpacing: 0 };
+
 /**
  * Text in the app. React Native does not inherit size or colour from a parent
  * View, so every run gets the body size and foreground colour unless its
@@ -39,7 +52,7 @@ export function Text({ variant, numberOfLines, as, className, nativeClassName, c
   return (
     <RNText
       className={cn("font-sans", colored)}
-      style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING]}
+      style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING, hasDevanagari(children) ? NO_TRACKING : undefined]}
       numberOfLines={numberOfLines}
       accessibilityRole={as && /^h\d$/.test(as) ? "header" : undefined}
       testID={testID}

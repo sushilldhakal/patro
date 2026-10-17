@@ -345,7 +345,7 @@ export default function HomeScreen() {
             </View>
 
             <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
-              <HomeQuickLinks />
+              <HomeQuickLinks location={location} />
             </View>
 
             <View className="mt-8" style={{ paddingHorizontal: cardInset }}>

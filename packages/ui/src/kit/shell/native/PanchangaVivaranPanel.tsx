@@ -29,7 +29,7 @@ function Tile({ className, children }: { className?: string; children: ReactNode
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
   return (
     <Tile>
-      <Text className={home.vivaranLabel}>{label}</Text>
+      <Text className={cn(home.vivaranLabel, "tracking-normal")}>{label}</Text>
       <Text className={cn(home.vivaranValue, mono && home.vivaranValueMono)}>
         {value ?? "—"}
         {ayana ? <Text className={cn(ayana.north ? patroAyanaNorth : patroAyanaSouth, "mb-0 ml-1.5")}>{ayana.mark}</Text> : null}
@@ -44,7 +44,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
   const view = usePanchangaVivaran({ p, selectedDay });
   if (loading || !p || !view) {
     return (
-      <Box className={cn("rounded-lg bg-card", className)}>
+      <Box key="loading" className={cn("rounded-lg bg-card", className)}>
         <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
           {Array.from({ length: 6 }, (_, i) => (
             <Tile key={i}>
@@ -58,8 +58,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, loading, renderPlanetSta
     );
   }
 
+  /* Its own key: reused, the placeholder's 120px bg-muted pulse block kept its
+     height and colour under the gochar title (the beige band). */
   return (
-    <Box className={cn("rounded-lg bg-card", className)}>
+    <Box key="ready" className={cn("rounded-lg bg-card", className)}>
       <Grid cols={3} minCellWidth={96} gap={8} className={home.vivaranCells}>
         {view.cells.map((cell) => (
           <Cell key={cell.label} {...cell} />

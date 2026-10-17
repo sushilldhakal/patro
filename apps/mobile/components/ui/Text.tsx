@@ -83,6 +83,16 @@ function withoutInlineType(style: RNTextProps["style"]): RNTextProps["style"] {
   return rest;
 }
 
+const DEVANAGARI = /[\u0900-\u097F]/;
+
+/* iOS spaces each glyph of a shaped Devanagari cluster, so `tracking-*` pulled
+   conjuncts and matras apart. The browser keeps clusters whole. */
+function hasDevanagari(children: unknown): boolean {
+  if (typeof children === "string") return DEVANAGARI.test(children);
+  if (Array.isArray(children)) return children.some((child) => typeof child === "string" && DEVANAGARI.test(child));
+  return false;
+}
+
 /** Default Text. Size comes from `variant` or a type class; colour comes from the class only. */
 export function Text({ className, style, variant, ...props }: Props) {
   const merged = cn(variant ? spec[variant] : undefined, className);
@@ -98,7 +108,11 @@ export function Text({ className, style, variant, ...props }: Props) {
     <RNText
       {...props}
       className={cn("font-sans", colored)}
-      style={[typeStyle, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
+      style={[
+        typeStyle,
+        family ? { fontFamily: family, fontWeight: "normal" } : undefined,
+        hasDevanagari(props.children) ? { letterSpacing: 0 } : undefined,
+      ]}
     />
   );
 }

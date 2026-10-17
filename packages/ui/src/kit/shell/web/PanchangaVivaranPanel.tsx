@@ -7,7 +7,7 @@ import type { PanchangaVivaranPanelProps } from "../contract";
 
 function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
   return (
-    <Box className={cn(home.vivaranTile, "shadow-ring-soft")}>
+    <Box className={cn("flex flex-col", home.vivaranTile, "shadow-ring-soft")}>
       <Text className={home.vivaranLabel}>{label}</Text>
       <Text className={cn(home.vivaranValue, mono && home.vivaranValueMono)}>
         {value ?? "—"}
