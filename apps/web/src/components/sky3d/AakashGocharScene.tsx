@@ -165,8 +165,8 @@ import {
 import earthToonUrl from "@/assets/graha/earth-orig.png";
 import milkyWayUrl from "@/assets/milkyway.png";
 import kathmanduUrl from "@/assets/kathmandu.jpeg?url";
-import { eclipseNow } from "@vedic-patro/domain/sky3d/eclipse-geometry";
-import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeEclipseShadow, placeEclipseShadow, disposeEclipseShadow, faceOrigin, spinAngle, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
+import { eclipseNow, lunarShadowRadiiDeg } from "@vedic-patro/domain/sky3d/eclipse-geometry";
+import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeEclipseShadow, placeEclipseShadow, disposeEclipseShadow, faceOrigin, spinAngle, makeLunarShadowMaterial, setLunarShadow, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
 import { illustration, neutral, wheel } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 export { type ScreenLabel } from "@vedic-patro/domain/sky3d/scene-builders";
@@ -823,23 +823,21 @@ function eclipseOf(sky: Record<GrahaKey, GeoBody>): NonNullable<EclipseState> | 
 function MoonEclipseFx({
   eclipse,
   radius,
+  lunarShadow,
 }: {
   eclipse: React.RefObject<{ kind: "solar" | "lunar" | null; mag: number }>;
   radius: number;
+  /** The Earth's shadow on the Moon ({@link makeLunarShadowMaterial}), aimed each frame by the scene. */
+  lunarShadow?: THREE.ShaderMaterial;
 }) {
   const veilRef = useRef<THREE.Mesh>(null);
   const coronaRef = useRef<THREE.Mesh>(null);
   useFrame(() => {
     const e = eclipse.current;
     const veil = veilRef.current;
-    if (veil) {
-      /* The copper "blood moon" only once the umbra is on the disc; a penumbral eclipse
-         barely dims the Moon at all. */
-      const umbral = e.kind === "lunar" ? (e.mag - 0.35) / 0.65 : 0;
-      const on = umbral > 0;
-      veil.visible = on;
-      if (on) (veil.material as THREE.MeshBasicMaterial).opacity = 0.15 + 0.75 * umbral;
-    }
+    /* The shadow itself decides how much of the disc is dark and how deep — the shell
+       only has to be on while the Moon is anywhere in the penumbra. */
+    if (veil) veil.visible = e.kind === "lunar" && Boolean(lunarShadow);
     const corona = coronaRef.current;
     if (corona) {
       /* The corona only shows near totality, when the shadow axis meets the Earth. */
@@ -854,10 +852,11 @@ function MoonEclipseFx({
   });
   return (
     <>
-      <mesh ref={veilRef} visible={false} renderOrder={7}>
-        <sphereGeometry args={[radius * 1.04, 32, 24]} />
-        <meshBasicMaterial color={illustration.red27} transparent depthWrite={false} />
-      </mesh>
+      {lunarShadow ? (
+        <mesh ref={veilRef} visible={false} renderOrder={7} material={lunarShadow}>
+          <sphereGeometry args={[radius * 1.01, 48, 32]} />
+        </mesh>
+      ) : null}
       <mesh ref={coronaRef} visible={false} renderOrder={8}>
         <ringGeometry args={[radius * 1.08, radius * 1.7, 48]} />
         <meshBasicMaterial
@@ -882,6 +881,7 @@ function GrahaBody({
   sunLit,
   phaseMaterial,
   eclipse,
+  lunarShadow,
 }: {
   graha: GrahaKey;
   textures: Record<SkyTextureKey, THREE.Texture>;
@@ -897,6 +897,7 @@ function GrahaBody({
    */
   phaseMaterial?: MoonMaterial;
   eclipse?: React.RefObject<{ kind: "solar" | "lunar" | null; mag: number }>;
+  lunarShadow?: THREE.ShaderMaterial;
 }) {
   const texKey = BODY_TEXTURE[graha];
   const radius = BODY_RADIUS[graha];
@@ -961,7 +962,7 @@ function GrahaBody({
           />
         </mesh>
       )}
-      {graha === "moon" && eclipse ? <MoonEclipseFx eclipse={eclipse} radius={radius} /> : null}
+      {graha === "moon" && eclipse ? <MoonEclipseFx eclipse={eclipse} radius={radius} lunarShadow={lunarShadow} /> : null}
 
       {graha === "saturn" ? <SaturnRing texture={textures.saturnring} radius={radius} /> : null}
 
@@ -1451,12 +1452,18 @@ export function AakashGocharScene({
   const umbraAxis = useRef(new THREE.Vector3());
   const umbraFrom = useRef(new THREE.Vector3());
   const umbraTo = useRef(new THREE.Vector3());
+  const shadowMoonAt = useRef(new THREE.Vector3());
+  const shadowSunAt = useRef(new THREE.Vector3());
+  const shadowOrigin = useRef(new THREE.Vector3());
+  const shadowScale = useRef(new THREE.Vector3());
   /** Body → the ecliptic plane below or above it: the शर, drawn. */
   const sharaLine = useMemo(() => makeDynamicLine(2, neutral.white, 0.55), []);
   /* Earth's shadow is red-brown at its core (sunlight bent through the atmosphere); the
      Moon's is plain dark. Both sit in a fainter penumbra. */
   const lunarUmbra = useMemo(() => makeEclipseShadow(0x3d0d08, 0x0d1220), []);
   const solarUmbra = useMemo(() => makeEclipseShadow(0x020308, 0x0b0f1c), []);
+  const lunarShadowMat = useMemo(() => makeLunarShadowMaterial(), []);
+  useEffect(() => () => lunarShadowMat.dispose(), [lunarShadowMat]);
   useEffect(
     () => () => {
       disposeEclipseShadow(lunarUmbra);
@@ -3177,20 +3184,36 @@ export function AakashGocharScene({
     moonEclipse.current.kind = ecl.kind;
     moonEclipse.current.mag = ecl.mag;
     const moonG = bodyRefs.current.moon;
+    /* The Earth's shadow on the Moon, in every view: the shading needs only the Moon, the
+       Sun and where they are seen from — the Earth's centre, or the observer in the dome,
+       both at the origin. */
+    if (moonG && ecl.kind === "lunar") {
+      const shadowRadii = lunarShadowRadiiDeg(sky.sun, sky.moon);
+      const sunG = bodyRefs.current.sun;
+      if (shadowRadii && sunG) {
+        moonG.getWorldPosition(shadowMoonAt.current);
+        sunG.getWorldPosition(shadowSunAt.current);
+        const moonWorldR = BODY_RADIUS.moon * moonG.getWorldScale(shadowScale.current).x;
+        setLunarShadow(lunarShadowMat, shadowMoonAt.current, shadowSunAt.current, shadowOrigin.current, moonWorldR, shadowRadii);
+      }
+    }
     if (space && moonG && ecl.kind === "lunar") {
       umbraFrom.current.set(0, 0, 0);
       umbraTo.current.copy(moonG.position);
-      /* Earth's umbra narrows towards the Moon but still swallows it whole at totality;
-         the penumbra widens around it. */
       const moonR = BODY_RADIUS.moon * moonG.scale.x;
+      /* The Moon's own shading is the true geometry (see makeLunarShadowMaterial). The
+         cone through space only hints at it — the Moon is drawn far larger than its
+         distance allows — so the umbra narrows from the Earth and the penumbra opens out. */
+      const radii = lunarShadowRadiiDeg(sky.sun, sky.moon);
+      const degToWorld = radii ? moonR / radii.moon : 1;
       placeEclipseShadow(
         lunarUmbra,
         umbraFrom.current,
         umbraTo.current,
         {
-          umbra: [EARTH_RADIUS * 0.92, moonR * 1.35],
-          penumbra: [EARTH_RADIUS * 1.08, moonR * 2.3],
-          strength: 0.75 * ecl.mag,
+          umbra: [EARTH_RADIUS * 0.95, Math.min(radii ? radii.umbra * degToWorld : moonR * 1.35, EARTH_RADIUS * 0.8)],
+          penumbra: [EARTH_RADIUS * 1.05, Math.max(radii ? radii.penumbra * degToWorld : moonR * 2.3, EARTH_RADIUS * 1.3)],
+          strength: 0.18 + 0.4 * ecl.mag,
         },
         umbraAxis.current,
       );
@@ -4949,6 +4972,7 @@ export function AakashGocharScene({
           sunLit={mode === "space"}
           phaseMaterial={key === "moon" ? moonPhaseMat : undefined}
           eclipse={key === "moon" ? moonEclipse : undefined}
+          lunarShadow={key === "moon" ? lunarShadowMat : undefined}
         />
       ))}
 

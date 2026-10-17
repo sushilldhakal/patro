@@ -35,6 +35,21 @@ function separationDeg(lon1: number, lat1: number, lon2: number, lat2: number): 
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
+/**
+ * The Moon's apparent radius and the radii of the Earth's umbra and penumbra where the
+ * Moon is, all in degrees — what the Moon's own eclipse shading measures against.
+ */
+export function lunarShadowRadiiDeg(sun: Body, moon: Body): { moon: number; umbra: number; penumbra: number } | null {
+  const moonKm = moon.distanceAu * AU_KM;
+  const sunKm = sun.distanceAu * AU_KM;
+  if (!(moonKm > 0) || !(sunKm > 0)) return null;
+  const sMoon = Math.asin(MOON_RADIUS_KM / moonKm) / DEG;
+  const sSun = Math.asin(SUN_RADIUS_KM / sunKm) / DEG;
+  const piMoon = Math.asin(EARTH_RADIUS_KM / moonKm) / DEG;
+  const piSun = Math.asin(EARTH_RADIUS_KM / sunKm) / DEG;
+  return { moon: sMoon, umbra: 1.02 * (piMoon + piSun - sSun), penumbra: 1.02 * (piMoon + piSun + sSun) };
+}
+
 export function eclipseNow(sun: Body, moon: Body): EclipseNow {
   const moonKm = moon.distanceAu * AU_KM;
   const sunKm = sun.distanceAu * AU_KM;

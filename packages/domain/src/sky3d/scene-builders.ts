@@ -1013,3 +1013,98 @@ export function spinAngle(key: GrahaKey, dtDays: number): number {
   const turns = (dtDays / period) % 1;
   return (turns < 0 ? turns + 1 : turns) * Math.PI * 2;
 }
+
+/*
+ * The Earth's shadow on the Moon. A shell just outside the Moon multiplies what is under
+ * it: each fragment is measured, in degrees, from the centre of the shadow (the point
+ * opposite the Sun) and darkened by where that lands — gradually across the penumbra, then
+ * copper inside the umbra, deepest at its centre. The Moon in the scene is drawn far larger
+ * than its true size against its distance, so the fragment's offset from the Moon's centre
+ * is converted at the Moon's *true* apparent radius (`uDegPerUnit`); the shadow edge then
+ * crosses the disc exactly as it does in the sky, and totality is the whole disc copper.
+ */
+const LUNAR_SHADOW_VERT = `
+varying vec3 vWorld;
+void main() {
+  vec4 w = modelMatrix * vec4(position, 1.0);
+  vWorld = w.xyz;
+  gl_Position = projectionMatrix * viewMatrix * w;
+}
+`;
+
+const LUNAR_SHADOW_FRAG = `
+uniform vec3 uMoon;
+uniform vec3 uView;
+uniform vec3 uToShadow;
+uniform float uSep;
+uniform float uDegPerUnit;
+uniform float uUmbra;
+uniform float uPenumbra;
+varying vec3 vWorld;
+void main() {
+  vec3 d = vWorld - uMoon;
+  vec3 q = (d - uView * dot(d, uView)) * uDegPerUnit;
+  float r = length(q - uToShadow * uSep);
+  float edge = 0.035 * uUmbra;
+  float inUmbra = 1.0 - smoothstep(uUmbra - edge, uUmbra + edge, r);
+  float pen = clamp((uPenumbra - r) / max(uPenumbra - uUmbra, 1e-4), 0.0, 1.0);
+  vec3 penumbral = vec3(1.0 - 0.5 * pen * pen);
+  float depth = clamp(1.0 - r / uUmbra, 0.0, 1.0);
+  vec3 umbral = mix(vec3(0.66, 0.30, 0.17), vec3(0.30, 0.09, 0.05), depth);
+  gl_FragColor = vec4(mix(penumbral, umbral, inUmbra), 1.0);
+}
+`;
+
+/** The Earth's shadow on the Moon, drawn as a multiplying shell. Hidden until set. */
+export function makeLunarShadowMaterial(): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uMoon: { value: new THREE.Vector3() },
+      uView: { value: new THREE.Vector3(0, 0, 1) },
+      uToShadow: { value: new THREE.Vector3(1, 0, 0) },
+      uSep: { value: 90 },
+      uDegPerUnit: { value: 1 },
+      uUmbra: { value: 0.7 },
+      uPenumbra: { value: 1.25 },
+    },
+    vertexShader: LUNAR_SHADOW_VERT,
+    fragmentShader: LUNAR_SHADOW_FRAG,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.CustomBlending,
+    blendEquation: THREE.AddEquation,
+    blendSrc: THREE.DstColorFactor,
+    blendDst: THREE.ZeroFactor,
+  });
+}
+
+const shadowSun = new THREE.Vector3();
+const shadowAxis = new THREE.Vector3();
+
+/**
+ * Aim the shadow for this frame. `origin` is where the shadow is seen from (the Earth's
+ * centre, or the observer in the dome); `radii` are degrees, from `lunarShadowRadiiDeg`.
+ */
+export function setLunarShadow(
+  material: THREE.ShaderMaterial,
+  moonWorld: THREE.Vector3,
+  sunWorld: THREE.Vector3,
+  origin: THREE.Vector3,
+  moonWorldRadius: number,
+  radii: { moon: number; umbra: number; penumbra: number },
+) {
+  const u = material.uniforms;
+  const view = u.uView!.value as THREE.Vector3;
+  view.copy(moonWorld).sub(origin).normalize();
+  /* The shadow's centre is the direction opposite the Sun. */
+  shadowAxis.copy(shadowSun.copy(sunWorld).sub(origin)).normalize().negate();
+  const cos = Math.min(1, Math.max(-1, view.dot(shadowAxis)));
+  u.uSep!.value = Math.acos(cos) / DEG;
+  const toShadow = u.uToShadow!.value as THREE.Vector3;
+  toShadow.copy(shadowAxis).addScaledVector(view, -cos);
+  if (toShadow.lengthSq() > 1e-12) toShadow.normalize();
+  (u.uMoon!.value as THREE.Vector3).copy(moonWorld);
+  u.uDegPerUnit!.value = radii.moon / Math.max(moonWorldRadius, 1e-6);
+  u.uUmbra!.value = radii.umbra;
+  u.uPenumbra!.value = radii.penumbra;
+}
