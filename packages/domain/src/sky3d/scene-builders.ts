@@ -787,42 +787,133 @@ export function setVertex(
   attr.setXYZ(i, v[0], v[1], v[2]);
 }
 
-export function makeUmbra(color: number, opacity: number, earthEnd = 0.12, moonEnd = 1) {
+export const Y_UP = new THREE.Vector3(0, 1, 0);
+
+/*
+ * Eclipse shadow: two open cones on one axis — the dark umbra inside a wider, fainter
+ * penumbra. A unit cylinder is reshaped in the vertex shader (radius `uR0` at the near end
+ * `y = 0`, `uR1` at the far end `y = 1`), and the fragment shader fades it the way a
+ * shadow in thin haze reads: densest looking through the core, gone at the silhouette,
+ * eased in at the source and thinning towards the far end. No hard rim, no flat disc.
+ */
+const SHADOW_VERT = `
+uniform float uR0;
+uniform float uR1;
+varying float vT;
+varying vec3 vNormalV;
+varying vec3 vPosV;
+void main() {
+  vT = position.y + 0.5;
+  float r = mix(uR0, uR1, vT);
+  vec3 p = vec3(position.x * r, position.y, position.z * r);
+  vec3 n = normalize(vec3(position.x, 0.0, position.z));
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  vPosV = mv.xyz;
+  vNormalV = normalize(normalMatrix * n);
+  gl_Position = projectionMatrix * mv;
+}
+`;
+
+const SHADOW_FRAG = `
+uniform vec3 uColor;
+uniform float uOpacity;
+uniform float uSoft;
+uniform float uTail;
+varying float vT;
+varying vec3 vNormalV;
+varying vec3 vPosV;
+void main() {
+  float facing = abs(dot(normalize(vNormalV), normalize(-vPosV)));
+  float body = pow(facing, uSoft);
+  float ends = smoothstep(0.0, 0.12, vT) * (1.0 - uTail * vT);
+  float a = uOpacity * body * ends;
+  if (a < 0.002) discard;
+  gl_FragColor = vec4(uColor, a);
+}
+`;
+
+type ShadowLayer = THREE.Mesh<THREE.CylinderGeometry, THREE.ShaderMaterial>;
+
+function makeShadowLayer(color: number, soft: number, tail: number, renderOrder: number): ShadowLayer {
   const mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(earthEnd, moonEnd, 1, 20, 1, true),
-    new THREE.MeshBasicMaterial({
-      color,
+    new THREE.CylinderGeometry(1, 1, 1, 48, 16, true),
+    new THREE.ShaderMaterial({
+      uniforms: {
+        uColor: { value: new THREE.Color(color) },
+        uOpacity: { value: 0 },
+        uSoft: { value: soft },
+        uTail: { value: tail },
+        uR0: { value: 1 },
+        uR1: { value: 1 },
+      },
+      vertexShader: SHADOW_VERT,
+      fragmentShader: SHADOW_FRAG,
       transparent: true,
-      opacity,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
   );
-  mesh.visible = false;
   mesh.frustumCulled = false;
-  mesh.renderOrder = 3;
+  mesh.renderOrder = renderOrder;
   return mesh;
 }
 
-export const Y_UP = new THREE.Vector3(0, 1, 0);
+export type EclipseShadow = THREE.Group & { userData: { umbra: ShadowLayer; penumbra: ShadowLayer } };
 
-export function placeUmbra(
-  mesh: THREE.Mesh,
+/** An eclipse shadow (umbra + penumbra), hidden until {@link placeEclipseShadow} shows it. */
+export function makeEclipseShadow(umbraColor: number, penumbraColor: number): EclipseShadow {
+  const group = new THREE.Group() as EclipseShadow;
+  const penumbra = makeShadowLayer(penumbraColor, 2.2, 0.35, 3);
+  const umbra = makeShadowLayer(umbraColor, 1.1, 0.2, 4);
+  group.add(penumbra, umbra);
+  group.userData = { umbra, penumbra };
+  group.visible = false;
+  return group;
+}
+
+export type EclipseShadowShape = {
+  /** Umbra radius at the body casting the shadow, and where it lands. */
+  umbra: [number, number];
+  /** Penumbra radius at the body casting the shadow, and where it lands. */
+  penumbra: [number, number];
+  /** Peak opacity of the umbra's core; the penumbra gets a share of it. */
+  strength: number;
+};
+
+/** Run the shadow from the body casting it (`from`) to where it falls (`to`). */
+export function placeEclipseShadow(
+  shadow: EclipseShadow,
   from: THREE.Vector3,
   to: THREE.Vector3,
-  base: number,
+  shape: EclipseShadowShape,
   axis: THREE.Vector3,
 ) {
   axis.copy(to).sub(from);
   const len = axis.length();
-  if (len < 0.2) {
-    mesh.visible = false;
+  if (len < 0.2 || shape.strength <= 0) {
+    shadow.visible = false;
     return;
   }
-  mesh.position.copy(from).add(to).multiplyScalar(0.5);
-  mesh.quaternion.setFromUnitVectors(Y_UP, axis.multiplyScalar(1 / len));
-  mesh.scale.set(base, len, base);
-  mesh.visible = true;
+  shadow.position.copy(from).add(to).multiplyScalar(0.5);
+  /* The cylinder's -y end is `from`, so the shader's `vT = 0` is the casting body. */
+  shadow.quaternion.setFromUnitVectors(Y_UP, axis.multiplyScalar(1 / len));
+  shadow.scale.set(1, len, 1);
+  const { umbra, penumbra } = shadow.userData;
+  umbra.material.uniforms.uR0!.value = shape.umbra[0];
+  umbra.material.uniforms.uR1!.value = shape.umbra[1];
+  umbra.material.uniforms.uOpacity!.value = shape.strength;
+  penumbra.material.uniforms.uR0!.value = shape.penumbra[0];
+  penumbra.material.uniforms.uR1!.value = shape.penumbra[1];
+  penumbra.material.uniforms.uOpacity!.value = shape.strength * 0.45;
+  shadow.visible = true;
+}
+
+/** Free both cones' geometry and shaders. */
+export function disposeEclipseShadow(shadow: EclipseShadow) {
+  for (const layer of [shadow.userData.umbra, shadow.userData.penumbra]) {
+    layer.geometry.dispose();
+    layer.material.dispose();
+  }
 }
 
 /**
@@ -876,4 +967,49 @@ export function cullOverlappingNames(labels: ScreenLabel[], minDist = 36): Scree
     kept.push(label);
   }
   return [...rest, ...kept];
+}
+
+const faceX = new THREE.Vector3();
+const faceY = new THREE.Vector3();
+const faceZ = new THREE.Vector3();
+const faceBasis = new THREE.Matrix4();
+
+/**
+ * Tidal lock: turn a body so its texture's centre (local +X on a three.js sphere, where an
+ * equirectangular map's longitude 0 lands) faces the scene origin — the Earth — with its
+ * north along `up`. Called every frame, it makes exactly one rotation per orbit, which is
+ * why the Moon always shows us the same face.
+ */
+export function faceOrigin(object: THREE.Object3D, at: readonly [number, number, number], up: THREE.Vector3) {
+  faceX.set(-at[0], -at[1], -at[2]);
+  if (faceX.lengthSq() < 1e-12) return;
+  faceX.normalize();
+  faceZ.crossVectors(faceX, up);
+  if (faceZ.lengthSq() < 1e-12) return;
+  faceZ.normalize();
+  faceY.crossVectors(faceZ, faceX);
+  faceBasis.makeBasis(faceX, faceY, faceZ);
+  object.quaternion.setFromRotationMatrix(faceBasis);
+}
+
+/**
+ * Sidereal rotation periods, in days. Negative turns the other way (Venus is retrograde).
+ * The Sun's is its equator's (it does not turn as one body); the Moon is tidally locked
+ * and set by {@link faceOrigin} instead; राहु / केतु are points and do not turn.
+ */
+export const ROTATION_PERIOD_DAYS: Partial<Record<GrahaKey, number>> = {
+  sun: 25.38,
+  mercury: 58.646,
+  venus: -243.025,
+  mars: 1.02596,
+  jupiter: 0.41354,
+  saturn: 0.444,
+};
+
+/** Spin about the body's own axis at `dtDays` since J2000, radians in [0, 2π). */
+export function spinAngle(key: GrahaKey, dtDays: number): number {
+  const period = ROTATION_PERIOD_DAYS[key];
+  if (!period) return 0;
+  const turns = (dtDays / period) % 1;
+  return (turns < 0 ? turns + 1 : turns) * Math.PI * 2;
 }

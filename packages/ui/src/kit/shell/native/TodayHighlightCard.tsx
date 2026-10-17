@@ -22,9 +22,11 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
         if (next !== wide) setWide(next);
       }}
     >
-      <Box className={cn(cls.highlightTop, wide && "shrink-0")}>
+      {/* Side by side, the date column sizes to its text (capped): a `flex-1` there makes
+          Yoga stretch it over the whole card and leaves the festival block no width. */}
+      <Box className={cn(cls.highlightTop, wide && "max-w-[60%] shrink")}>
         <Text className={cls.highlightDay}>{h.day}</Text>
-        <Box className={cls.highlightDate}>
+        <Box className={wide ? "min-w-0 shrink" : cls.highlightDate}>
           {/* Month and weekday on one line, the other era (and Nepal Sambat) under it. */}
           <Text className={cls.highlightMonth}>
             {h.month}

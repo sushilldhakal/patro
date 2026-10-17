@@ -132,7 +132,7 @@ export function PanchangaTabsShell({
                     backgroundColor: colors.background,
                   }}
                 >
-                  <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
+                  <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scrollBottom }}>
                     <PanchangaSidebarNav className="w-full border-0" />
                   </ScrollView>
                 </View>
@@ -194,7 +194,7 @@ export function PanchangaTabsShell({
                 backgroundColor: colors.background,
               }}
             >
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
+              <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scrollBottom }}>
                 <PanchangaSidebarNav className="w-full border-0" />
               </ScrollView>
             </View>

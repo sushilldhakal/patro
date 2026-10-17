@@ -48,17 +48,25 @@ export const PADA_AKSHAR: readonly (readonly string[])[] = [
   ["से", "सो", "दा", "दी"], ["दू", "थ", "झ", "ञ"], ["दे", "दो", "चा", "ची"],
 ] as const;
 
+/**
+ * Orbit radius before ORBIT_SCALE, in graha order:
+ * Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu.
+ * Inner → outer: Moon + Rahu + Ketu (one orbit), Venus, Mars, Mercury, Sun, Jupiter, Saturn.
+ */
 export const GRAHA_META = [
-  { orbit: 120, color: "#f2a81d", big: true },
-  { orbit: 44, color: "#d3dce4" },
-  { orbit: 150, color: "#d0552e" },
-  { orbit: 70, color: "#9aa69e" },
-  { orbit: 178, color: "#dcae54" },
-  { orbit: 96, color: "#e6cd86" },
+  { orbit: 160, color: "#f2a81d", big: true },
+  { orbit: 64, color: "#d3dce4" },
+  { orbit: 112, color: "#d0552e" },
+  { orbit: 136, color: "#9aa69e" },
+  { orbit: 182, color: "#dcae54" },
+  { orbit: 88, color: "#e6cd86" },
   { orbit: 204, color: "#c6a14b", ring: true },
-  { orbit: 216, color: "#7b8aa0" },
-  { orbit: 216, color: "#7b8aa0" },
+  { orbit: 64, color: "#7b8aa0" },
+  { orbit: 64, color: "#7b8aa0" },
 ] as const;
+
+/** Distinct orbit rings, inner to outer. */
+export const WHEEL_ORBIT_RADII = [64, 88, 112, 136, 160, 182, 204] as const;
 
 const GRAHA_KEYS = [
   "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",

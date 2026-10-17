@@ -101,7 +101,13 @@ export function PanchangaSplitShell({
           backgroundColor: colors.background,
         }}
       >
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
+        {/* The floating tab bar sits over the bottom of the rail too, so the list needs the
+            same bottom room as the main column or its last entries can never scroll clear. */}
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet) }}
+        >
           <PanchangaSidebarNav
             className="w-full border-0"
             compact={compact}

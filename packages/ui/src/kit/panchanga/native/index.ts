@@ -12,7 +12,7 @@ export { GhatiClock } from "./GhatiClock";
 export { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 export { PlanetSelectMenu } from "./PlanetSelectMenu";
 export { WheelDateSheet } from "./WheelDateSheet";
-export { DayTimeline } from "./DayTimeline";
+export { DayTimeline, type TimelinePeriod } from "./DayTimeline";
 export { AllElementsLink, ElementDescription, GrahaBanner, GrahaColumnCard, GrahaDescription } from "./GrahaPageParts";
 export { GrahaStatusBadges, GrahaStatusLegend, GrahaStatusMarksSvg } from "./GrahaStatusBadges";
 export { GocharIngressSection } from "./GocharIngressSection";

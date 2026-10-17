@@ -32,6 +32,9 @@ import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
+import { useWindowReminder } from "@/components/reminders/use-window-reminder";
+import { resolveWindowKey } from "@/lib/notifications/window-key";
+import { useLocale } from "@/lib/i18n";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 export default function PanchangaScreen() {
@@ -50,6 +53,8 @@ export default function PanchangaScreen() {
   const { wheelData, data, angaData, bs, showWheelSkeleton, dayCycleMode, setDayCycleMode } = page;
 
   const dayCycleTabs = useDayCycleTabs(dayCycleMode, setDayCycleMode);
+  const { t, pick } = useLocale();
+  const reminder = useWindowReminder();
 
   if (page.failed) {
     return (
@@ -121,6 +126,13 @@ export default function PanchangaScreen() {
               mode={dayCycleMode}
               civil={page.civilTimeline}
               civilLoading={page.civilLoading}
+              remindLabel={t("ui.home.set_a_reminder")}
+              onRemind={(period) =>
+                void reminder.open({
+                  windowKey: resolveWindowKey(period),
+                  subtitle: `${pick(period.ne, period.en)} · ${period.time}`,
+                })
+              }
               renderStatus={(mark) => (
                 <GrahaStatusBadges planetKey={mark.planetKey} isRetrograde={mark.isRetrograde} isCombust={mark.isCombust} size={mark.size} />
               )}
@@ -217,6 +229,7 @@ export default function PanchangaScreen() {
         />
       </View>
       ) : null}
+      {reminder.element}
     </ScrollView>
   );
 }

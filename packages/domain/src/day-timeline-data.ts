@@ -153,6 +153,8 @@ export interface HoraSegment {
  * the hover tooltip.
  */
 export interface AshubhaSegment {
+  /** The window's API key ("rahu_kalam", "varjyam" …), so a reminder can name it. */
+  key?: string;
   name: string;
   nameEn: string;
   detailNe: string;
@@ -167,6 +169,8 @@ export interface AshubhaSegment {
  * Amrit Kalam, Abhijit, Vijaya … — keeps its own name and number badge.
  */
 export interface ShubhaSegment {
+  /** The window's API key ("abhijit", "amrit_kalam" …). */
+  key?: string;
   name: string;
   nameEn: string;
   startG: number;
@@ -436,6 +440,7 @@ function buildAshubhaAllSegments(
     const span = windowToSpan(w, toG);
     if (!span) continue;
     segs.push({
+      key: w.key,
       name: w.nameNe,
       nameEn: w.nameEn,
       detailNe: w.nameNe,
@@ -475,7 +480,7 @@ function buildShubhaSegments(
     }
     endG = Math.min(endG, 60);
     if (endG <= startG) continue;
-    segs.push({ name: w.nameNe, nameEn: w.nameEn, startG, endG });
+    segs.push({ key: w.key, name: w.nameNe, nameEn: w.nameEn, startG, endG });
   }
   segs.sort((a, b) => a.startG - b.startG);
   return segs;

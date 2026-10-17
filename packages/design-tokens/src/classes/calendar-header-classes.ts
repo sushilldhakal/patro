@@ -25,6 +25,10 @@ export const calendarHeaderClasses = {
 
   segment: "flex flex-row rounded-xl border border-border bg-muted p-0.5",
   segmentItem: "flex min-h-8 flex-1 items-center justify-center rounded-xl px-2.5",
+  /** App, segment inside a header row: sized to its label. A `flex-1` item makes Yoga
+      grow the segment to the whole row and squeeze the title, stepper and location out. */
+  nativeSegmentRow: "shrink-0",
+  nativeSegmentRowItem: "flex min-h-8 min-w-20 items-center justify-center rounded-xl px-3.5",
   segmentItemActive: "bg-secondary",
   segmentLabel: "whitespace-nowrap text-sm font-semibold",
   segmentLabelActive: "text-secondary-foreground",

@@ -5,7 +5,7 @@ import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
-import { HomeAuspiciousTimes } from "@/components/home/HomeAuspiciousTimes";
+import { HomeReminderCard } from "@/components/home/HomeReminderCard";
 import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
@@ -27,7 +27,7 @@ import { resolveLocationTimezone } from "@vedic-patro/domain/panchanga-location"
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, pageTopPadding } from "@/lib/mobile-nav";
+import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZONTAL_PADDING_WIDE, pageTopPadding } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
@@ -170,8 +170,12 @@ export default function HomeScreen() {
   const monthError = Boolean(homeMonth.currentError);
   const monthFetching = homeMonth.enriching;
 
-  const contentInset = homeContentInset(isPhone);
-  const cardInset = isPhone ? HOME_CARD_INSET : contentInset;
+  /* One page inset on a tablet, given by the scroll view, so the header, the month grid
+     and the cards share an edge. A phone pads each block itself: the grid runs edge to edge
+     there and the cards sit at their own inset (as on the website). */
+  const pageInset = isPhone ? 0 : PAGE_HORIZONTAL_PADDING_WIDE;
+  const contentInset = isPhone ? homeContentInset(true) : 0;
+  const cardInset = isPhone ? HOME_CARD_INSET : 0;
 
   const monthHeaderBlock = (
     <View style={{ paddingHorizontal: contentInset }}>
@@ -299,6 +303,7 @@ export default function HomeScreen() {
       <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
         <AakashGocharEntryCard />
         <HomeVedaMantra dateAd={todayAd} />
+        <HomeReminderCard p={aside.p} />
         <OfflineDownloadPrompt year={year} era={browseEra} />
       </View>
     </View>
@@ -313,7 +318,7 @@ export default function HomeScreen() {
         contentContainerClassName="mx-auto w-full max-w-page"
         contentContainerStyle={{
           paddingBottom: floatingNavBottomPadding(isTablet),
-          paddingHorizontal: isPhone ? 0 : contentInset,
+          paddingHorizontal: pageInset,
           paddingTop: pageTopPadding(isCompact),
         }}
       >
@@ -327,10 +332,6 @@ export default function HomeScreen() {
             {asideBlock}
           </View>
         )}
-
-        <View className="mt-6" style={{ paddingHorizontal: cardInset }}>
-          <HomeAuspiciousTimes p={aside.p} />
-        </View>
 
         {/* Below the fold: drawn after the first screen, so the calendar and
             today's panchanga appear first and their requests go out first. */}

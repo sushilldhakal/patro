@@ -4,6 +4,7 @@ import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import {
   bsMonthsForWheel,
   GRAHA_META,
+  WHEEL_ORBIT_RADII,
   getWheelRashis,
   normDeg,
   PADA_AKSHAR,
@@ -46,7 +47,7 @@ import {
   wTwName,
   wYogaLbl,
 } from "@vedic-patro/design-tokens/classes/wheel-svg-classes";
-import { DEG, CX, CY, ORBIT_SCALE, planetIconSize } from "@vedic-patro/domain/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -62,8 +63,8 @@ import { wheelPalette } from "../wheel-palette";
 /**
  * Every inner ring shares a boundary with its neighbour, so no dead band opens
  * up between them: Yoga → Rashi, Karana → Tithi → Rashi, Karana → pada inner.
- * The yoga ring's inner edge is pinned just clear of the outermost planet orbit
- * (216 × ORBIT_SCALE ≈ 125, plus the widest planet body) rather than to a ring.
+ * The yoga ring's inner edge is pinned just clear of Saturn, the outermost
+ * orbit (204 × ORBIT_SCALE ≈ 142, plus Saturn's ring) rather than to a ring.
  */
 const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
 
@@ -71,7 +72,7 @@ const R = WHEEL_CHART_R;
 
 /**
  * Glyph box sizes. Both are "contain" fits, so these are the longer side of the
- * artwork, not its apparent weight — the rashi band (178–263) has more radial
+ * artwork, not its apparent weight — the rashi band (202–263) has more radial
  * room to spare than the nakshatra band, whose glyph shares 345–423 with a name
  * that runs to two stacked rows in English.
  */
@@ -573,7 +574,7 @@ function WheelChartImpl({
   // ── Planet core ───────────────────────────────────────────────────────────
   const core: React.ReactNode[] = [];
   if (tw.show_planets) {
-    [44, 70, 96, 120, 150, 178, 204, 216].forEach((r, k) =>
+    WHEEL_ORBIT_RADII.forEach((r, k) =>
       core.push(<circle key={`orb${k}`} cx={CX} cy={CY} r={r * ORBIT_SCALE} className={wOrbit} />)
     );
 
@@ -583,7 +584,7 @@ function WheelChartImpl({
       const meta = GRAHA_META[i]!;
       const lon = planetLons[i] ?? 0;
       const [px, py] = pol(lon, meta.orbit * ORBIT_SCALE);
-      const rad = "big" in meta && meta.big ? 15 : i === 1 ? 10 : 8;
+      const rad = planetVisualRadius(i);
       const sky = (["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const)[i];
       const collar = g.retrograde ? retroBorder(rad, unitPx) : null;
       const moonShadow = i === 1 ? wheelMoonShadow(normDeg(moonLon - sunLon), rad) : null;

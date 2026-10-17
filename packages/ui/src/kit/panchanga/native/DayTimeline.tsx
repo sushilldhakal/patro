@@ -3,6 +3,7 @@ import { Platform, ScrollView, Text, View, useWindowDimensions, type LayoutChang
 import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
+import { horaShortName } from "@vedic-patro/domain/hora-short-name";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/domain/utils";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
@@ -12,7 +13,8 @@ import { dualTimeAtGhati, type TimelineRowData } from "@vedic-patro/domain/day-t
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
 import { useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
-import { Box, Card } from "@vedic-patro/ui";
+import { Box, Card, Icon, Pressable } from "@vedic-patro/ui";
+import { alarmClockIcon } from "../icons";
 import { brand, breakpoints, dark, fontFamily, illustration, light, neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { patroSecBand } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
@@ -126,6 +128,17 @@ const TRACK_CLS: Record<string, string> = {
   Auspicious: "shubha",
 };
 
+/** Rough width of a band label at fontSize 15, in viewBox units (Devanagari runs ~7.5 per code unit). */
+function labelWidth(text: string): number {
+  return text.length * 7.5;
+}
+
+/** The full name when it fits the band, else its short form. */
+function fitHoraName(name: string, bandWidth: number): string {
+  if (labelWidth(name) <= bandWidth - 4) return name;
+  return horaShortName(name);
+}
+
 const C_BASE = {
   sun: illustration.orange53b,
   danger: illustration.red60,
@@ -148,6 +161,7 @@ function useTimelineColors() {
     ...C_BASE,
     fg: colors.foreground,
     muted: colors.mutedForeground,
+    card: colors.card,
     axis: isDark ? withAlpha(neutral.white, 0.45) : withAlpha(brand.ink, 0.45),
     tick: isDark ? withAlpha(neutral.white, 0.4) : withAlpha(brand.ink, 0.35),
     night: isDark ? withAlpha(neutral.white, 0.06) : withAlpha(brand.blue, 0.06),
@@ -253,7 +267,13 @@ type Props = {
   civil?: CivilTimeline;
   renderStatus?: (mark: { planetKey: string; isRetrograde?: boolean; isCombust?: boolean; size?: number }) => ReactNode;
   civilLoading?: boolean;
+  /** Adds an alarm button to each शुभ / अशुभ period card; the app opens its reminder sheet. */
+  onRemind?: (period: TimelinePeriod) => void;
+  remindLabel?: string;
 };
+
+/** A शुभ / अशुभ window as the period cards list it. */
+export type TimelinePeriod = { kind: "shubh" | "ashubh"; key?: string; ne: string; en: string; time: string };
 
 function SunHalfIcon({
   x,
@@ -337,6 +357,8 @@ export function DayTimeline({
   civil,
   civilLoading = false,
   renderStatus,
+  onRemind,
+  remindLabel,
 }: Props) {
   const { pick, digits, lang } = useLocale();
   const { width: windowWidth } = useWindowDimensions();
@@ -542,7 +564,7 @@ export function DayTimeline({
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
                       >
-                        {segText}
+                        {tr.cls === "hora" ? fitHoraName(segText, w) : segText}
                       </SvgText>
                     ) : null
                   ) : tr.cls === "ashubha" || tr.cls === "shubha" ? (
@@ -626,6 +648,39 @@ export function DayTimeline({
     </>
   );
 
+  /* Row names and the hour/ghati captions, drawn again in a fixed column over the left
+     edge while the chart scrolls sideways — the website's sticky first column. */
+  const labelColumn = (
+    <>
+      <Rect x={0} y={0} width={X0} height={H} fill={C.card} />
+      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end">
+        {copy.hour}
+      </SvgText>
+      {!isCivil && (
+        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end" opacity={0.75}>
+          {copy.ghati}
+        </SvgText>
+      )}
+      {tracks.map((tr, ti) => (
+        <SvgText
+          key={tr.key}
+          x={8}
+          y={trackY(ti) + BAND / 2 + 4}
+          fill={C.fg}
+          fontSize={15}
+          fontFamily={FONT}
+          fontWeight="700"
+          {...nepaliSvgTextCenter}
+        >
+          {tr.ne}
+        </SvgText>
+      ))}
+      <Line x1={X0 - 0.5} y1={T0 - 4} x2={X0 - 0.5} y2={H - 4} stroke={C.sunLine} strokeWidth={1} />
+    </>
+  );
+  /* Same transform as the chart's Svg (uniform `meet` scale), so the column lines up. */
+  const labelScale = Math.min(MIN_CHART_WIDTH / W, 1);
+
   return (
     <View
       className="w-full"
@@ -666,6 +721,22 @@ export function DayTimeline({
               {chartContent}
             </Svg>
           </ScrollView>
+        ) : null}
+        {scrollChart ? (
+          <View
+            pointerEvents="none"
+            className="absolute bottom-0 left-0 top-0 overflow-hidden py-3 pl-1"
+            style={{ width: X0 * labelScale + 4, backgroundColor: C.card }}
+          >
+            <Svg
+              width={MIN_CHART_WIDTH}
+              height={H}
+              viewBox={`0 0 ${W} ${H}`}
+              preserveAspectRatio="xMinYMid meet"
+            >
+              {labelColumn}
+            </Svg>
+          </View>
         ) : (
           <View className="w-full py-3 pl-1 pr-2">
             <Svg
@@ -685,11 +756,16 @@ export function DayTimeline({
           tone="danger"
           title={copy.inauspicious}
           cellStyle={periodCell}
-          items={data.ashubhaAll.map((a, i) => ({
-            n: digits(i + 1),
-            label: pick(a.detailNe, a.detailEn),
-            time: `${tLabel(a.startG)} – ${tLabel(a.endG)}`,
-          }))}
+          remindLabel={remindLabel}
+          items={data.ashubhaAll.map((a, i) => {
+            const time = `${tLabel(a.startG)} – ${tLabel(a.endG)}`;
+            return {
+              n: digits(i + 1),
+              label: pick(a.detailNe, a.detailEn),
+              time,
+              onRemind: onRemind ? () => onRemind({ kind: "ashubh", key: a.key, ne: a.detailNe, en: a.detailEn, time }) : undefined,
+            };
+          })}
         />
       )}
 
@@ -698,11 +774,16 @@ export function DayTimeline({
           tone="success"
           title={copy.auspicious}
           cellStyle={periodCell}
-          items={data.shubha.map((s, i) => ({
-            n: digits(i + 1),
-            label: pick(s.name, s.nameEn),
-            time: `${tLabel(s.startG)} – ${tLabel(s.endG)}`,
-          }))}
+          remindLabel={remindLabel}
+          items={data.shubha.map((s, i) => {
+            const time = `${tLabel(s.startG)} – ${tLabel(s.endG)}`;
+            return {
+              n: digits(i + 1),
+              label: pick(s.name, s.nameEn),
+              time,
+              onRemind: onRemind ? () => onRemind({ kind: "shubh", key: s.key, ne: s.name, en: s.nameEn, time }) : undefined,
+            };
+          })}
         />
       )}
 
@@ -820,11 +901,13 @@ function PeriodCards({
   title,
   items,
   cellStyle,
+  remindLabel,
 }: {
   tone: "danger" | "success";
   title: string;
-  items: { n: string; label: string; time: string }[];
+  items: { n: string; label: string; time: string; onRemind?: () => void }[];
   cellStyle: ViewStyle;
+  remindLabel?: string;
 }) {
   const accent = tone === "danger" ? illustration.red60 : illustration.green40;
   const borderColor = tone === "danger" ? withAlpha(illustration.red57, 0.28) : withAlpha(illustration.green40, 0.28);
@@ -852,6 +935,15 @@ function PeriodCards({
               <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle()}>
                 {it.label}
               </Text>
+              {it.onRemind ? (
+                <Pressable
+                  label={remindLabel ?? it.label}
+                  onPress={it.onRemind}
+                  className="-my-1 -mr-1 size-8 shrink-0 items-center justify-center rounded-full"
+                >
+                  <Icon node={alarmClockIcon} size="sm" tone={tone === "danger" ? "destructive" : "success"} />
+                </Pressable>
+              ) : null}
             </View>
             <Text className={cn(panchangaPageClasses.dayCycle.periodTime, "text-foreground")}>{it.time}</Text>
           </View>

@@ -165,7 +165,8 @@ import {
 import earthToonUrl from "@/assets/graha/earth-orig.png";
 import milkyWayUrl from "@/assets/milkyway.png";
 import kathmanduUrl from "@/assets/kathmandu.jpeg?url";
-import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeUmbra, placeUmbra, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
+import { eclipseNow } from "@vedic-patro/domain/sky3d/eclipse-geometry";
+import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeEclipseShadow, placeEclipseShadow, disposeEclipseShadow, faceOrigin, spinAngle, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
 import { illustration, neutral, wheel } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 export { type ScreenLabel } from "@vedic-patro/domain/sky3d/scene-builders";
@@ -369,7 +370,7 @@ export type ViewState = {
 
 export type EclipseState = {
   kind: "solar" | "lunar";
-  /** 0–1, 1 is exact node + exact syzygy. */
+  /** 0–1. Lunar: up to 0.35 penumbral only, 1 at totality. Solar: 0.75 and up once the shadow axis meets the Earth. */
   mag: number;
   node: "rahu" | "ketu";
 } | null;
@@ -802,32 +803,20 @@ function SaturnRing({ texture, radius }: { texture: THREE.Texture; radius: numbe
   );
 }
 
-/** How close a new/full moon must be to a node before it is an eclipse. */
-const ECLIPSE_NODE_DEG = 16;
-/** How close to conjunction/opposition. */
-const ECLIPSE_SYZ_DEG = 12;
+/** Scratch: the Moon's north for {@link faceOrigin}. */
+const moonUp = new THREE.Vector3();
 
-function circSep(a: number, b: number) {
-  return Math.abs(deltaLongitude(a, b));
-}
-
+/**
+ * The eclipse under way at this instant, if any, from the real Sun–Moon geometry
+ * ({@link eclipseNow}): it starts at first contact and ends at last, so the shadow shows
+ * for the eclipse's actual few hours. `node` names the node it happens at.
+ */
 function eclipseOf(sky: Record<GrahaKey, GeoBody>): NonNullable<EclipseState> | { kind: null; mag: number; node: "rahu" | "ketu" } {
-  const elong = normalizeDeg(sky.moon.longitude - sky.sun.longitude);
-  const toRahu = circSep(sky.moon.longitude, sky.rahu.longitude);
-  const toKetu = circSep(sky.moon.longitude, sky.ketu.longitude);
-  const nodeSep = Math.min(toRahu, toKetu);
+  const toRahu = Math.abs(deltaLongitude(sky.moon.longitude, sky.rahu.longitude));
+  const toKetu = Math.abs(deltaLongitude(sky.moon.longitude, sky.ketu.longitude));
   const node: "rahu" | "ketu" = toRahu <= toKetu ? "rahu" : "ketu";
-  const nearNode = nodeSep < ECLIPSE_NODE_DEG;
-  const nodeMag = nearNode ? 1 - nodeSep / ECLIPSE_NODE_DEG : 0;
-  const conj = Math.min(elong, 360 - elong);
-  const opp = Math.abs(elong - 180);
-  if (nearNode && conj <= ECLIPSE_SYZ_DEG) {
-    return { kind: "solar", mag: nodeMag * (1 - conj / ECLIPSE_SYZ_DEG), node };
-  }
-  if (nearNode && opp <= ECLIPSE_SYZ_DEG) {
-    return { kind: "lunar", mag: nodeMag * (1 - opp / ECLIPSE_SYZ_DEG), node };
-  }
-  return { kind: null, mag: 0, node };
+  const now = eclipseNow(sky.sun, sky.moon);
+  return now.kind ? { kind: now.kind, mag: now.mag, node } : { kind: null, mag: 0, node };
 }
 
 /** Blood-moon veil + solar corona, sitting on the Moon itself. */
@@ -844,16 +833,21 @@ function MoonEclipseFx({
     const e = eclipse.current;
     const veil = veilRef.current;
     if (veil) {
-      const on = e.kind === "lunar";
+      /* The copper "blood moon" only once the umbra is on the disc; a penumbral eclipse
+         barely dims the Moon at all. */
+      const umbral = e.kind === "lunar" ? (e.mag - 0.35) / 0.65 : 0;
+      const on = umbral > 0;
       veil.visible = on;
-      if (on) (veil.material as THREE.MeshBasicMaterial).opacity = 0.28 + 0.62 * e.mag;
+      if (on) (veil.material as THREE.MeshBasicMaterial).opacity = 0.15 + 0.75 * umbral;
     }
     const corona = coronaRef.current;
     if (corona) {
-      const on = e.kind === "solar";
+      /* The corona only shows near totality, when the shadow axis meets the Earth. */
+      const central = e.kind === "solar" ? (e.mag - 0.75) / 0.25 : 0;
+      const on = central > 0;
       corona.visible = on;
       if (on) {
-        (corona.material as THREE.MeshBasicMaterial).opacity = 0.45 + 0.5 * e.mag;
+        (corona.material as THREE.MeshBasicMaterial).opacity = 0.3 + 0.65 * central;
         corona.lookAt(0, 0, 0);
       }
     }
@@ -1459,14 +1453,14 @@ export function AakashGocharScene({
   const umbraTo = useRef(new THREE.Vector3());
   /** Body → the ecliptic plane below or above it: the शर, drawn. */
   const sharaLine = useMemo(() => makeDynamicLine(2, neutral.white, 0.55), []);
-  const lunarUmbra = useMemo(() => makeUmbra(0x5a140e, 0.32), []);
-  const solarUmbra = useMemo(() => makeUmbra(0x000000, 0.78, 0.72, 1.05), []);
+  /* Earth's shadow is red-brown at its core (sunlight bent through the atmosphere); the
+     Moon's is plain dark. Both sit in a fainter penumbra. */
+  const lunarUmbra = useMemo(() => makeEclipseShadow(0x3d0d08, 0x0d1220), []);
+  const solarUmbra = useMemo(() => makeEclipseShadow(0x020308, 0x0b0f1c), []);
   useEffect(
     () => () => {
-      lunarUmbra.geometry.dispose();
-      (lunarUmbra.material as THREE.Material).dispose();
-      solarUmbra.geometry.dispose();
-      (solarUmbra.material as THREE.Material).dispose();
+      disposeEclipseShadow(lunarUmbra);
+      disposeEclipseShadow(solarUmbra);
     },
     [lunarUmbra, solarUmbra],
   );
@@ -3025,8 +3019,18 @@ export function AakashGocharScene({
       }
 
       const spin = spinRefs.current[key];
-      // Slow signature spin so each body reads as a globe, not a disc.
-      if (spin) spin.rotation.y = (dtDays * (key === "sun" ? 0.25 : 1.6) * Math.PI * 2) % (Math.PI * 2);
+      if (spin && key === "moon") {
+        /* The Moon is tidally locked: one turn per orbit, the same face always towards
+           the Earth at the origin. Its north follows the ecliptic pole in space (tilted
+           with the ecliptic there) and the scene's up axis in the dome and on the globe. */
+        if (space) moonUp.set(0, Math.cos(eps * DEG), Math.sin(eps * DEG));
+        else moonUp.set(0, 1, 0);
+        faceOrigin(spin, at, moonUp);
+      } else if (spin) {
+        /* Each body's real sidereal rotation (Jupiter ~10 h, Mercury ~59 days, Venus
+           backwards in 243) — the same clock the Earth turns on. */
+        spin.rotation.y = spinAngle(key, dtDays);
+      }
 
       const retro = retroRefs.current[key];
       if (retro) retro.visible = body.retrograde;
@@ -3176,28 +3180,40 @@ export function AakashGocharScene({
     if (space && moonG && ecl.kind === "lunar") {
       umbraFrom.current.set(0, 0, 0);
       umbraTo.current.copy(moonG.position);
-      placeUmbra(
+      /* Earth's umbra narrows towards the Moon but still swallows it whole at totality;
+         the penumbra widens around it. */
+      const moonR = BODY_RADIUS.moon * moonG.scale.x;
+      placeEclipseShadow(
         lunarUmbra,
         umbraFrom.current,
         umbraTo.current,
-        EARTH_RADIUS * 0.55,
+        {
+          umbra: [EARTH_RADIUS * 0.92, moonR * 1.35],
+          penumbra: [EARTH_RADIUS * 1.08, moonR * 2.3],
+          strength: 0.75 * ecl.mag,
+        },
         umbraAxis.current,
       );
-      (lunarUmbra.material as THREE.MeshBasicMaterial).opacity = 0.16 + 0.28 * ecl.mag;
     } else {
       lunarUmbra.visible = false;
     }
     if (space && moonG && ecl.kind === "solar") {
       umbraFrom.current.copy(moonG.position);
       umbraTo.current.set(0, 0, 0);
-      placeUmbra(
+      /* The Moon's umbra tapers to a small spot on the Earth (the path of totality);
+         the penumbra opens out over a wide patch around it (the partial eclipse). */
+      const moonR = BODY_RADIUS.moon * moonG.scale.x;
+      placeEclipseShadow(
         solarUmbra,
         umbraFrom.current,
         umbraTo.current,
-        BODY_RADIUS.moon * moonG.scale.x * 1.85,
+        {
+          umbra: [moonR * 0.95, EARTH_RADIUS * 0.16],
+          penumbra: [moonR * 1.05, Math.max(EARTH_RADIUS * 1.1, moonR * 1.6)],
+          strength: 0.2 + 0.6 * ecl.mag,
+        },
         umbraAxis.current,
       );
-      (solarUmbra.material as THREE.MeshBasicMaterial).opacity = 0.72 + 0.22 * ecl.mag;
     } else {
       solarUmbra.visible = false;
     }

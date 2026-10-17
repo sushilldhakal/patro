@@ -1,21 +1,26 @@
-/** Shared by apps/web/src/components/panchanga/WheelChart.tsx and apps/mobile/components/panchanga/WheelChart.tsx (moved here from both, unchanged). */
-import { GRAHA_META } from "./wheel-data";
-
+/** Shared by the web and mobile panchanga wheel charts. */
 export const DEG = Math.PI / 180;
 
 export const CX = 500;
 
 export const CY = 500;
 
-/** Scale factor applied to all planet orbit radii to leave room for the inner yoga/karana/tithi rings. */
-export const ORBIT_SCALE = 0.58;
+/**
+ * Scale factor applied to all planet orbit radii. 20% above the previous 0.58
+ * so each ring has more room and the discs sit on their own circles.
+ */
+export const ORBIT_SCALE = 0.696;
+
+/**
+ * Disc radius in wheel units, sun → ketu.
+ * Rahu and Ketu are smaller than the Moon. Saturn, the outermost orbit, is at
+ * 204 × ORBIT_SCALE ≈ 142; its ring (1.42× the disc) stays inside the yoga
+ * ring. Moon, Rahu and Ketu share the inner orbit and stay clear of Earth.
+ */
+const PLANET_VISUAL_RADIUS = [26, 11, 17, 15, 20, 16, 13, 8, 8] as const;
 
 export function planetVisualRadius(index: number): number {
-  const meta = GRAHA_META[index];
-  if (!meta) return 8;
-  if ("big" in meta && meta.big) return 15;
-  if (index === 1) return 10;
-  return 8;
+  return PLANET_VISUAL_RADIUS[index] ?? 15;
 }
 
 /** Disc radius inside each 48×48 graha artwork file. */

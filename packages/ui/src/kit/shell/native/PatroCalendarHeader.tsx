@@ -88,9 +88,9 @@ export function PatroCalendarHeader({
 
   const segment =
     segments && segments.length > 0 ? (
-      <Box className={cls.segment} label={segmentsLabel}>
+      <Box className={cn(cls.segment, cls.nativeSegmentRow)} label={segmentsLabel}>
         {segments.map((seg) => (
-          <Pressable key={seg.key} label={seg.label} role="tab" selected={seg.active} onPress={seg.onPress} className={cn(cls.segmentItem, seg.active && cls.segmentItemActive)}>
+          <Pressable key={seg.key} label={seg.label} role="tab" selected={seg.active} onPress={seg.onPress} className={cn(cls.nativeSegmentRowItem, seg.active && cls.segmentItemActive)}>
             <Text className={cn(cls.segmentLabel, seg.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{seg.label}</Text>
           </Pressable>
         ))}

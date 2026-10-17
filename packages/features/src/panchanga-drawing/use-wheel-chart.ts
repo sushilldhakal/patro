@@ -29,17 +29,19 @@ export const WHEEL_CHART_R = {
   rashiOut: 263,
   rashiGlyph: 246,
   rashiName: 222,
-  rashiIn: 178,
-  core: 178,
+  rashiIn: 202,
+  core: 202,
 } as const;
 
 /**
  * Yoga, karana and tithi rings. Yoga's inner edge is pinned just clear of the
  * outermost planet orbit; karana meets the pada ring and tithi the rashi ring.
+ * The planet orbits are 20% larger than before, so yoga and the rashi inner
+ * edge move out with them. Yoga keeps its 38-unit width.
  */
 export const WHEEL_CHART_INNER_R = {
-  yogaIn: 140,
-  yogaOut: 178,
+  yogaIn: 164,
+  yogaOut: 202,
   karanaIn: 303,
   karanaOut: 327,
   tithiIn: 263,
