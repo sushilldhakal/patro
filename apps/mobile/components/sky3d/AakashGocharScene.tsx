@@ -3093,7 +3093,18 @@ export function AakashGocharScene({
            stay colinear — the line runs through the selected planet. */
         setPoint(ray, 0, place(body.longitude, body.latitude, EARTH_RADIUS));
         setPoint(ray, 1, place(body.longitude, body.latitude, NAK_OUTER));
+      } else if (globe) {
+        /* From the graha down to the spot on the ground it stands over — the sub-graha
+           dot — not from the Earth's centre. A line from the centre is drawn over the
+           globe, so its visible end sat wherever the centre happened to project and slid
+           across the map as the view turned. Same normalise-and-drop as the dot. */
+        const footLen = Math.hypot(at[0], at[1], at[2]) || 1;
+        const foot = (GLOBE_R * 1.01) / footLen;
+        setPoint(ray, 0, [at[0] * foot, at[1] * foot, at[2] * foot]);
+        setPoint(ray, 1, at);
       } else {
+        /* क्षितिज: the camera *is* the origin, so a ray from it is the observer's own
+           line of sight and has nothing to pass through. */
         setPoint(ray, 0, [0, 0, 0]);
         setPoint(ray, 1, at);
       }
