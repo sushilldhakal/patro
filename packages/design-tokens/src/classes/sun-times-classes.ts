@@ -50,7 +50,7 @@ export const sunTimesClasses = {
 
   accordion: "px-3 pb-3",
   accordionItem: "border-border",
-  accordionTrigger: "px-1",
+  accordionTrigger: "min-h-12 px-1 py-3",
   accordionTriggerText: "text-base font-semibold",
   accordionDays: "text-sm font-normal",
   accordionContent: "px-0",
