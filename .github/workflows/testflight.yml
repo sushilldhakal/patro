@@ -23,6 +23,8 @@ on:
       - "apps/mobile/assets/icon*"
       - "apps/mobile/assets/splash*"
       - "apps/mobile/plugins/**"
+      # Fonts are what a fresh install draws before any update has downloaded.
+      - "apps/mobile/assets/fonts/**"
       # A change to how the build is made gets a build to prove it.
       - ".github/workflows/testflight.yml"
   workflow_dispatch:
