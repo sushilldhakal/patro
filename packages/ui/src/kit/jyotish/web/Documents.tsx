@@ -31,10 +31,10 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
             className={cn(
               documentsClasses.versePlay,
               "transition-colors",
-              isActive ? cn(documentsClasses.versePlayActive, "text-secondary-foreground") : cn(documentsClasses.versePlayIdle, "text-secondary hover:border-secondary/60 hover:bg-secondary/10"),
+              isActive ? documentsClasses.versePlayActive : cn(documentsClasses.versePlayIdle, "hover:opacity-90"),
             )}
           >
-            <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="foreground" filled className={isPlaying ? undefined : "ml-0.5"} />
+            <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="onSecondary" filled className={isPlaying ? undefined : "ml-0.5"} />
           </button>
         ) : (
           <Text as="span" className={cn(documentsClasses.verseLabelSlot, documentsClasses.verseLabelSlotText)}>{shloka.verse_label}</Text>

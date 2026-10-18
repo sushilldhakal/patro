@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
+import { isAudioAvailable } from "@vedic-patro/api-client";
 
 export type AudioMode = "full" | "verse" | null;
 
@@ -43,6 +44,9 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
     }).catch(() => {});
   }, []);
 
+  /** Verses whose recording turned out not to be in storage; skipped from then on. */
+  const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
+
   const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
   const byId = useMemo(() => new Map(shlokas.map((s) => [s.id, s])), [shlokas]);
 
@@ -51,11 +55,11 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
       const i = order.indexOf(id);
       for (let j = i + 1; j < order.length; j++) {
         const candidate = byId.get(order[j]!);
-        if (candidate?.audio_url) return candidate;
+        if (candidate?.audio_url && !missingIds.has(candidate.id)) return candidate;
       }
       return null;
     },
-    [order, byId],
+    [order, byId, missingIds],
   );
 
   /** Load the verse after `id` into `player` (paused) so it is ready the instant the current clip ends. */
@@ -77,10 +81,13 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
     [nextAudioAfter],
   );
 
+  /* The latest `playVerse`, for the availability check that resolves after a render. */
+  const playVerseRef = useRef<(id: number) => void>(() => {});
+
   const playVerse = useCallback(
     (id: number) => {
       const shloka = byId.get(id);
-      if (!shloka?.audio_url) return;
+      if (!shloka?.audio_url || missingIds.has(id)) return;
       fullPlayer.pause();
       standbyPlayer.pause();
       setMode("verse");
@@ -88,9 +95,25 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
       versePlayer.replace({ uri: shloka.audio_url });
       versePlayer.play();
       preloadAfter(id, standbyPlayer);
+      /* Started straight away; checked alongside. A recording that was never uploaded
+         plays nothing, so mark it, drop its button and carry on with the next verse. */
+      const url = shloka.audio_url;
+      void isAudioAvailable(url).then((ok) => {
+        if (ok) return;
+        setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+        const i = order.indexOf(id);
+        for (let j = i + 1; j < order.length; j++) {
+          const candidate = byId.get(order[j]!);
+          if (candidate?.audio_url && candidate.id !== id) {
+            playVerseRef.current(candidate.id);
+            return;
+          }
+        }
+      });
     },
-    [byId, fullPlayer, standbyPlayer, versePlayer, preloadAfter],
+    [byId, order, missingIds, fullPlayer, standbyPlayer, versePlayer, preloadAfter],
   );
+  playVerseRef.current = playVerse;
 
   const toggleVerse = useCallback(
     (id: number) => {
@@ -112,13 +135,13 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
       const i = activeVerseId == null ? -1 : order.indexOf(activeVerseId);
       for (let j = i + delta; j >= 0 && j < order.length; j += delta) {
         const candidate = byId.get(order[j]!);
-        if (candidate?.audio_url) {
+        if (candidate?.audio_url && !missingIds.has(candidate.id)) {
           playVerse(candidate.id);
           return;
         }
       }
     },
-    [activeVerseId, order, byId, playVerse],
+    [activeVerseId, order, byId, missingIds, playVerse],
   );
 
   // When a clip ends, hand straight over to the pre-loaded next verse — unless the
@@ -248,6 +271,7 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
   const verseIndex = activeVerseId == null ? -1 : order.indexOf(activeVerseId);
 
   return {
+    missingIds,
     mode,
     activeId,
     activeProgress,

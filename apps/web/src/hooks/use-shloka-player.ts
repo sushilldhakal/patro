@@ -45,6 +45,8 @@ export interface ShlokaPlayerState {
    * verse's own clip means this engine should genuinely take over.
    */
   setDisplayOverride: (override: { id: number; progress: number } | null) => void;
+  /** Verses whose recording is missing from storage; their play button should go. */
+  missingIds: ReadonlySet<number>;
 }
 
 /**
@@ -76,6 +78,9 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
     null,
   );
 
+  /** Verses whose recording failed to load (never uploaded); skipped from then on. */
+  const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
+
   const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
   const indexOf = useCallback((id: number | null) => (id == null ? -1 : order.indexOf(id)), [order]);
 
@@ -102,17 +107,26 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
         setEngineProgress(d > 0 ? t / d : 0);
       },
       shouldHoldAtEnd: (id) => openMeaningIds.has(id),
-      onError: (id, err) => {
-        console.error(`Shloka audio failed to load (verse ${id})`, err);
+      onError: (id) => {
+        /* A recording that was never uploaded: mark it, drop its button, and go on to the
+           next verse that has one rather than stopping dead on a silent play button. */
+        setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+        const i = shlokas.findIndex((s) => s.id === id);
+        const next = shlokas.slice(i + 1).find((s) => s.audio_url && !missingIds.has(s.id));
+        if (next) engine.play(next.id);
       },
     });
-  }, [engine, openMeaningIds]);
+  }, [engine, openMeaningIds, shlokas, missingIds]);
 
   useEffect(() => {
     engine.setTracks(
-      shlokas.map((s) => ({ id: s.id, audioUrl: s.audio_url ?? null, title: s.verse_label })),
+      shlokas.map((s) => ({
+        id: s.id,
+        audioUrl: missingIds.has(s.id) ? null : (s.audio_url ?? null),
+        title: s.verse_label,
+      })),
     );
-  }, [engine, shlokas]);
+  }, [engine, shlokas, missingIds]);
 
   useEffect(() => {
     return () => engine.dispose();
@@ -207,5 +221,6 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
     hasNext: activeIndex >= 0 && activeIndex < order.length - 1,
     hasPrev: activeIndex > 0,
     setDisplayOverride,
+    missingIds,
   };
 }

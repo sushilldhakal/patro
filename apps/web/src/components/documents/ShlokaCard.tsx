@@ -16,7 +16,8 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
   const isPlaying = isActive && (playsFromFull ? fullRecording.playing : player.playing);
   return (
     <Shared
-      shloka={shloka}
+      /* A verse whose recording is missing from storage loses its play button. */
+      shloka={player.missingIds.has(shloka.id) ? { ...shloka, audio_url: null } : shloka}
       isActive={isActive}
       isPlaying={isPlaying}
       progress={player.progress}

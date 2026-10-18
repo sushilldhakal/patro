@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useHomeVedaMantra } from "@vedic-patro/features/home";
+import { useAudioAvailable, useHomeVedaMantra } from "@vedic-patro/features/home";
 import { HomeVedaMantra as HomeVedaMantraView } from "@vedic-patro/ui/kit/shell";
 import { setMediaHandlers, setMediaMetadata, setMediaPlaybackState } from "@/lib/media-session";
 
@@ -69,6 +69,7 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
   const navigate = useNavigate();
   const mantra = useHomeVedaMantra(dateAd);
   const audio = useMantraAudio(mantra.audioUrl);
+  const hasRecording = useAudioAvailable(mantra.audioUrl);
   if (!mantra.ready) return null;
   const { copy, read } = mantra;
   return (
@@ -82,7 +83,7 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
       playLabel={copy.play}
       pauseLabel={copy.pause}
       playing={audio.playing}
-      onToggle={mantra.audioUrl ? audio.toggle : undefined}
+      onToggle={mantra.audioUrl && hasRecording ? audio.toggle : undefined}
       onOpenPassage={() =>
         navigate({
           to: "/documents/$slug/$chapter",

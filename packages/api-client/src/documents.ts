@@ -174,3 +174,25 @@ export const fetchVedaDaily = (dateAd: string) =>
 export function isNotFound(error: unknown): boolean {
   return error instanceof ApiError && error.status === 404;
 }
+
+// ─── Recording availability ──────────────────────────────────────────────────
+
+const audioAvailability = new Map<string, Promise<boolean>>();
+
+/**
+ * Whether a verse recording is actually in storage. Some verses carry an `audio_url`
+ * whose file was never uploaded (a 404 from the bucket); a play button on one of those
+ * did nothing at all. One HEAD request per URL, remembered for the session. When the
+ * check itself cannot answer — offline, or a CORS refusal on a dev origin — it reports
+ * `true`, so a working button is never hidden by a failed check.
+ */
+export function isAudioAvailable(url: string): Promise<boolean> {
+  let known = audioAvailability.get(url);
+  if (!known) {
+    known = fetch(url, { method: "HEAD" })
+      .then((res) => res.status !== 404 && res.status !== 403 && res.status !== 410)
+      .catch(() => true);
+    audioAvailability.set(url, known);
+  }
+  return known;
+}

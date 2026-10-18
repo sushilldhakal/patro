@@ -95,8 +95,10 @@ export const documentsClasses = {
   verseNote: "border-dashed bg-muted/30",
   verseRow: "flex flex-row items-start gap-3",
   versePlay: "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border",
+  /* Same solid teal button as the home page's mantra card, playing or not; the playing
+     verse is told apart by its highlighted card. */
   versePlayActive: "border-secondary bg-secondary",
-  versePlayIdle: "border-border",
+  versePlayIdle: "border-secondary bg-secondary",
   verseLabelSlot: "mt-0.5 flex size-9 shrink-0 items-center justify-center",
   verseLabelSlotText: "text-xs font-semibold tabular-nums text-muted-foreground/50",
   verseBody: "min-w-0 flex-1",

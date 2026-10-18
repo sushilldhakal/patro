@@ -22,7 +22,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
       <Box className={documentsClasses.verseRow} nativeClassName="flex-row">
         {canPlay ? (
           <Pressable onPress={onPlay} label={card.copy.play} className={cn(documentsClasses.versePlay, isActive ? documentsClasses.versePlayActive : documentsClasses.versePlayIdle)}>
-            <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone={isActive ? "foreground" : "secondary"} filled />
+            <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="onSecondary" filled />
           </Pressable>
         ) : (
           <Box className={documentsClasses.verseLabelSlot}>

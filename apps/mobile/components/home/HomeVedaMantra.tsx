@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { useHomeVedaMantra } from "@vedic-patro/features/home";
+import { useAudioAvailable, useHomeVedaMantra } from "@vedic-patro/features/home";
 import { HomeVedaMantra as HomeVedaMantraView } from "@vedic-patro/ui/kit/shell";
 
 /** Today's Veda mantra. The player stays here; the card is `@vedic-patro/ui/kit/shell`. */
@@ -11,6 +11,8 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
   const audioUrl = mantra.audioUrl;
   const player = useAudioPlayer(audioUrl ? { uri: audioUrl } : null, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
+  /* Some days' recordings were never uploaded; no button beats one that does nothing. */
+  const hasRecording = useAudioAvailable(audioUrl);
 
   useEffect(() => {
     void setAudioModeAsync({
@@ -37,7 +39,7 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
       pauseLabel={copy.pause}
       playing={status.playing}
       onToggle={
-        audioUrl
+        audioUrl && hasRecording
           ? () => {
               if (status.playing) {
                 player.pause();
