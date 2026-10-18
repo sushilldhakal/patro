@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFestivals, fetchMonthCalendarRaw, locationCacheKey } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { formatLocaleDigits, normalizeLang } from "@vedic-patro/domain/locale";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { canonicalCivilIso } from "@vedic-patro/domain/patro-day";
 import {
   formatPatroAdRangeHeadlineSubtitle,

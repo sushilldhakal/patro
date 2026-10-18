@@ -1,11 +1,7 @@
 import type { PanchangaDay } from "@vedic-patro/api-client";
-import { buildBhavaChart, type BhavaHouse } from "./bhava";
-import type { GrahaKey } from "./graha-details";
-import {
-  getInstantLagna,
-  getPlanetRows,
-  resolveLagnaSiderealLongitude,
-} from "./panchanga-format";
+import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { getInstantLagna, getPlanetRows, resolveLagnaSiderealLongitude } from "./panchanga-format";
 
 function lagnaRashiNumber(p: PanchangaDay): number | undefined {
   const lagna = getInstantLagna(p);

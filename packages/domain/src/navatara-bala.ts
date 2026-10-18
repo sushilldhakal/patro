@@ -1,8 +1,5 @@
-import type { NavataraRow } from "@vedic-patro/api-client";
 import type { NavataraTone } from "./vocabulary";
 import { normalizeLang } from "./locale";
-
-export type { NavataraRow, NavataraTableBlock, NavataraTone } from "@vedic-patro/api-client";
 
 export function navataraSlotTone(tone: NavataraTone): "good" | "bad" | "neutral" {
   if (tone === "best" || tone === "good") return "good";
@@ -60,7 +57,7 @@ export function formatNavataraQuality(quality: string, lang?: string): string {
   return translateToken(quality, QUALITY_NE_TO_EN);
 }
 
-const NAVATARA_TYPES: Array<{
+export const NAVATARA_TYPES: Array<{
   id: number;
   tara: string;
   quality: string;
@@ -77,19 +74,8 @@ const NAVATARA_TYPES: Array<{
   { id: 9, tara: "परम मित्र", quality: "अति शुभ", tone: "best" },
 ];
 
-function computeNavataraNumber(moonIdx: number, targetIdx: number, cycleSize: number): number {
+export function computeNavataraNumber(moonIdx: number, targetIdx: number, cycleSize: number): number {
   const diff = (targetIdx - moonIdx + cycleSize) % cycleSize;
   if (diff === 0) return 1;
   return ((9 - (diff % 9)) % 9) + 1;
-}
-
-/** Navatara tara/quality/tone for a janma rashi or nakshatra vs moon reference. */
-export function computeNavataraMeta(
-  moonIdx: number,
-  targetIdx: number,
-  cycleSize: number,
-): Pick<NavataraRow, "tara" | "quality" | "tone" | "tara_num"> {
-  const taraNum = computeNavataraNumber(moonIdx, targetIdx, cycleSize);
-  const row = NAVATARA_TYPES.find((t) => t.id === taraNum) ?? NAVATARA_TYPES[0];
-  return { tara: row.tara, quality: row.quality, tone: row.tone, tara_num: taraNum };
 }

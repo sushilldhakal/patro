@@ -12,7 +12,7 @@ import {
   choghadiyaRowLabel,
   choghadiyaTone,
 } from "@vedic-patro/domain/choghadiya-display";
-import { formatElementStampDisplay } from "@vedic-patro/domain/panchanga-format";
+import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga-format";
 import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/time-format";
 import type { TFunction } from "@vedic-patro/i18n/react";
 

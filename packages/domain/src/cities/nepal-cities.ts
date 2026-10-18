@@ -1,5 +1,3 @@
-import type { City } from "@vedic-patro/api-client";
-
 /**
  * Curated list of Nepal's district headquarters (the traditional 75-district,
  * 14-zone scheme) used for panchanga locations. Coordinates come from the
@@ -133,7 +131,7 @@ export const NEPAL_CITIES: NepalCity[] = [
 ];
 
 /** Nepal district HQs are computed from coordinates in Nepal Standard Time. */
-const NEPAL_TIMEZONE = "Asia/Kathmandu";
+export const NEPAL_TIMEZONE = "Asia/Kathmandu";
 
 /**
  * Beyond this distance from any district HQ we assume the point is outside
@@ -150,28 +148,6 @@ export function nepalCityEnglishLabel(city: NepalCity): string {
 /** Locale-aware primary label. */
 export function nepalCityLabel(city: NepalCity, lang: string): string {
   return lang === "ne" ? city.name_ne : nepalCityEnglishLabel(city);
-}
-
-/**
- * Adapt a curated Nepal city to the shared `City` shape so it flows through the
- * same combobox/rendering as backend results. Marked `local` so the location is
- * built from lat/lon (not a backend city_id). Keep `ascii_name` English so API
- * resolve never receives Devanagari; `name` is locale-aware for display.
- */
-export function nepalCityToCity(city: NepalCity, lang: string): City {
-  const en = nepalCityEnglishLabel(city);
-  return {
-    id: city.id,
-    name: nepalCityLabel(city, lang),
-    ascii_name: en,
-    lat: city.lat,
-    lon: city.lon,
-    country: "NP",
-    population: 0,
-    timezone: NEPAL_TIMEZONE,
-    admin1_name: lang === "ne" ? city.zone_ne : city.zone_en,
-    local: true,
-  };
 }
 
 function normalize(value: string): string {

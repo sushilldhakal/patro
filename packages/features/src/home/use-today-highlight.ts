@@ -16,10 +16,10 @@ import {
   formatTimeShort,
   getSunrise,
   getSunset,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { civilIsoWeekday, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
-import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { lazyList } from "@vedic-patro/i18n/runtime";
 

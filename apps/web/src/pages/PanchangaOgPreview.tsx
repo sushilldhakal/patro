@@ -22,7 +22,7 @@ import {
   getVaaraEn,
   getVaaraNe,
   toNepaliDigits,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
 import { tFor, lazyList } from "@vedic-patro/i18n/runtime";

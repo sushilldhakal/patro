@@ -15,6 +15,7 @@ const ALLOWED = [
   "@tanstack/react-query",
   "@vedic-patro/api-client",
   "@vedic-patro/domain/",
+  "@vedic-patro/read-models/",
   "@vedic-patro/i18n/runtime",
   "@vedic-patro/i18n/react",
   "@vedic-patro/design-tokens",

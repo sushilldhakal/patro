@@ -18,7 +18,7 @@ import {
   getBsMonthsOverlappingAdMonth,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@vedic-patro/domain/local-calendar";
+} from "@vedic-patro/read-models/local-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@/i18n/locale";

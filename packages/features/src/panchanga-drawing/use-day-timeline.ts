@@ -7,9 +7,9 @@
  */
 import { useEffect, useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
-import { buildCivilTimelineData, buildDayTimelineData, needleGhatiOnVedicChart } from "@vedic-patro/domain/day-timeline-data";
+import { buildCivilTimelineData, buildDayTimelineData, needleGhatiOnVedicChart } from "@vedic-patro/read-models/day-timeline-data";
 import { minutesOnVedicChart } from "@vedic-patro/domain/day-timeline-layout";
-import { getPlanetRows, getSunriseLagnaRow } from "@vedic-patro/domain/panchanga-format";
+import { getPlanetRows, getSunriseLagnaRow } from "@vedic-patro/read-models/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 

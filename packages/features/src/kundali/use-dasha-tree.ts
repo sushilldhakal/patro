@@ -18,7 +18,7 @@ import {
   formatDashaDurationParts,
   type DashaLord,
 } from "@vedic-patro/domain/dasha";
-import { toSpan, type SpanWithChildren } from "@vedic-patro/domain/kundali/dasha-tree";
+import { toSpan, type SpanWithChildren } from "@vedic-patro/read-models/kundali/dasha-tree";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Catalogue keys, outermost dasha level first. */

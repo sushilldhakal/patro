@@ -18,7 +18,7 @@ import {
   type SaitPersonalizeDay,
   type SaitSuitability,
 } from "@vedic-patro/api-client";
-import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
 import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { useLocale } from "@vedic-patro/i18n/react";

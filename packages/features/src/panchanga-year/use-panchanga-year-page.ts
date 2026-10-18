@@ -23,8 +23,8 @@ import {
   BS_SUPPORTED_START_YEAR,
 } from "@vedic-patro/domain/bs-calendar";
 import type { Era } from "@vedic-patro/domain/era";
-import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
-import { formatTimeShort, getSunrise } from "@vedic-patro/domain/panchanga-format";
+import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
+import { formatTimeShort, getSunrise } from "@vedic-patro/read-models/panchanga-format";
 import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
 import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
@@ -35,7 +35,7 @@ import {
   wheelWindowBounds,
   yearWheelIndexOfAdDate,
   type YearWheelDay,
-} from "@vedic-patro/domain/panchanga-year-wheel";
+} from "@vedic-patro/read-models/panchanga-year-wheel";
 import { formatWheelPlaybackRate, WHEEL_MAX_PLAY_SPEED, WHEEL_PLAY_BASE_MS } from "@vedic-patro/domain/wheel-year-playback";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";

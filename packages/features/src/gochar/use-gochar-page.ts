@@ -30,9 +30,9 @@ import {
   ingressGrahaLabel,
   relativeDayLabel,
   type IngressFilter,
-} from "@vedic-patro/domain/gochar-page-utils";
+} from "@vedic-patro/read-models/gochar-page-utils";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
 import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";

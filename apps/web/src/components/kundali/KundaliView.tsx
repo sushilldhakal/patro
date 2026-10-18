@@ -14,7 +14,7 @@ import {
   type PanchangaDay,
   type PlanetInfo,
 } from "@/lib/api";
-import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
+import { normalizeEphemerisDay } from "@vedic-patro/read-models/ephemeris-adapters";
 import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/instant-query";
 import { formatMomentDateLabel } from "@vedic-patro/domain/kundali/profile-chart";
 import {
@@ -26,7 +26,7 @@ import {
   getSuryaRashi,
   getVaaraNe,
   formatTithiWithPaksha,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 // DivisionalChartCompare stays a static import: it belongs to the default
@@ -37,9 +37,9 @@ import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { DivisionalChartCompare } from "@/components/kundali/DivisionalChartCompare";
 import type { GrahaAstroPoint } from "@/components/kundali/GrahaAstroTable";
 import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/bhava";
-import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
+import { buildPresentYogaRefIds } from "@vedic-patro/read-models/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
-import { formatGhadiPalaVipala } from "@vedic-patro/domain/birth-panchanga-meta";
+import { formatGhadiPalaVipala } from "@vedic-patro/read-models/birth-panchanga-meta";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";

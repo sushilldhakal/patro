@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchYearSunTimes, sunYearKeys } from "@vedic-patro/api-client";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
-import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 import { buildSunGrid, buildSunLayout, buildSunMatrix, buildSunMonths, type SunMatrixRow, type SunMonth } from "./model";

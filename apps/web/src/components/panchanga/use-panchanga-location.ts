@@ -8,7 +8,7 @@ import {
   DEFAULT_PANCHANGA_LOCATION,
   healStoredLocation,
   type PanchangaLocation,
-} from "@vedic-patro/domain/panchanga-location";
+} from "@vedic-patro/read-models/panchanga-location";
 
 export {
   DEFAULT_PANCHANGA_LOCATION,
@@ -17,7 +17,7 @@ export {
   displayLocationLabel,
   resolveLocationTimezone,
   type PanchangaLocation,
-} from "@vedic-patro/domain/panchanga-location";
+} from "@vedic-patro/read-models/panchanga-location";
 
 function readStoredLocation(): PanchangaLocation {
   if (!isBrowser) return DEFAULT_PANCHANGA_LOCATION;

@@ -1,4 +1,3 @@
-/** Shared by apps/web/src/components/panchanga/MuhurtaNowPanel.tsx and apps/mobile/components/panchanga/MuhurtaNowPanel.tsx (moved here from both, unchanged). */
 import type { MuhurtaNowBlock } from "@vedic-patro/api-client";
 import { formatTimeShort } from "./panchanga-format";
 

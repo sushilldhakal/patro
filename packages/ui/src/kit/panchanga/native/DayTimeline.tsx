@@ -8,7 +8,7 @@ import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { formatDegreeInRashi, getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
+import { formatDegreeInRashi, getPlanetsAnchorLabel } from "@vedic-patro/read-models/panchanga-format";
 import { dualTimeAtGhati, type TimelineRowData } from "@vedic-patro/domain/day-timeline-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";

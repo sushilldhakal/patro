@@ -5,8 +5,8 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatGhadiPalaVipala } from "@vedic-patro/domain/birth-panchanga-meta";
-import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
+import { formatGhadiPalaVipala } from "@vedic-patro/read-models/birth-panchanga-meta";
+import { normalizeEphemerisDay } from "@vedic-patro/read-models/ephemeris-adapters";
 import {
   formatChoghadiyaAtBirth,
   kundaliLabel,
@@ -27,7 +27,7 @@ import {
   getSuryaRashi,
   getVaaraEn,
   getVaaraNe,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { tFor } from "@vedic-patro/i18n/runtime";

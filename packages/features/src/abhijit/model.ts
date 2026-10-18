@@ -1,7 +1,7 @@
 /** Abhijit muhurta — one card per day of the month, and today's hero. */
 import type { CalendarDay } from "@vedic-patro/api-client";
 import { bilingualText, formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
-import { abhijitFromCalendarDay, formatClockNepali } from "@vedic-patro/domain/panchanga-format";
+import { abhijitFromCalendarDay, formatClockNepali } from "@vedic-patro/read-models/panchanga-format";
 import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 
 export type AbhijitDayView = {

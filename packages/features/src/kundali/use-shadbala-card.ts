@@ -15,7 +15,7 @@ import {
   grahaDisplayName,
   orderShadbalaPlanets,
   yuddhaVirupasForPlanet,
-} from "@vedic-patro/domain/kundali/shadbala-display";
+} from "@vedic-patro/read-models/kundali/shadbala-display";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

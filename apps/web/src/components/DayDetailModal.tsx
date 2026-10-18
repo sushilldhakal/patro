@@ -31,7 +31,7 @@ import {
   getSunsetDisplay,
   getVaaraNe,
   relativeDayLabel,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroAsideLink } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";

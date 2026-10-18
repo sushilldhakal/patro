@@ -68,7 +68,7 @@ import {
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { SkySearch } from "@/components/sky3d/SkySearch";
-import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/domain/sky3d/sky-catalogue";
+import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/read-models/sky3d/sky-catalogue";
 import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";

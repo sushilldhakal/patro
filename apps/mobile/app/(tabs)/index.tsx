@@ -23,7 +23,7 @@ import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
 import { OfflineDownloadPrompt } from "@/components/offline/OfflineDownloadPrompt";
 import { applyPatroApiLimits } from "@/lib/patro-browse-years";
-import { resolveLocationTimezone } from "@vedic-patro/domain/panchanga-location";
+import { resolveLocationTimezone } from "@vedic-patro/read-models/panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";

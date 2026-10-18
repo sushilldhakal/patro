@@ -1,6 +1,6 @@
 import type { DashaSystem } from "@vedic-patro/api-client";
 import type { DashaLord } from "@vedic-patro/domain/dasha";
-import type { SpanWithChildren } from "@vedic-patro/domain/kundali/dasha-tree";
+import type { SpanWithChildren } from "@vedic-patro/read-models/kundali/dasha-tree";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { DASHA_MAX_LEVEL, useDashaNode, useDashaTree, type DashaChainRow } from "@vedic-patro/features/kundali";

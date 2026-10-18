@@ -1,0 +1,17 @@
+{
+  "name": "@vedic-patro/read-models",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Read models over the API contract, shared by the website and the mobile app: helpers that turn @vedic-patro/api-client responses into the rows, labels and figures a page shows. Domain logic itself stays in @vedic-patro/domain.",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "lint": "node scripts/check-portable.mjs"
+  },
+  "dependencies": {
+    "@vedic-patro/api-client": "*",
+    "@vedic-patro/domain": "*"
+  }
+}

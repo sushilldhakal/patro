@@ -5,7 +5,7 @@
  * chart draws, whether the retro / combust legend applies, and the date line.
  * Each app keeps drawing the chart itself.
  */
-import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
+import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/read-models/dainikKranti/gochar-display";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { GocharGrahaRow } from "./use-gochar-rashyadi-table";
 

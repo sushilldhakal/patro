@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import type { LocationParams } from "@vedic-patro/api-client";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type PatroSheetTabId = "date" | "location";

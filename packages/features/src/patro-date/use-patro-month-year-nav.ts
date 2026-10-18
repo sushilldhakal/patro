@@ -4,7 +4,7 @@
  * the headline and the nav's button labels.
  */
 import type { Era, Language } from "@vedic-patro/domain/era";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { usePatroMonthHeadlineSubtitle } from "./use-patro-month-headline-subtitle";
 

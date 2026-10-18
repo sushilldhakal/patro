@@ -37,7 +37,7 @@ import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import type { ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
 import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPanelConfig } from "@vedic-patro/features/kundali";
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import type { CardinalWall, VastuSelectionId } from "@vedic-patro/domain/vastu";
 import type { HousePlan, PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";

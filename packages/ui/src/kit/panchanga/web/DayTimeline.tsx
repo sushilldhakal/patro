@@ -5,7 +5,7 @@ import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   formatDegreeInRashi,
   getPlanetsAnchorLabel,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import {
   dualTimeAtGhati,
@@ -17,7 +17,7 @@ import { patroCard, patroMono, patroSecBand, patroSkel } from "@vedic-patro/desi
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
-import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import {
   pgTlAxis,

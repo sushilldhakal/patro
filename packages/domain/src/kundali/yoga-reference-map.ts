@@ -1,5 +1,3 @@
-import type { KundaliYoga } from "@vedic-patro/api-client";
-
 /**
  * Maps a computed yoga key (from `full_yoga_catalog`) to its id in Raman's 162
  * reference list. Used to keep the two views in sync: any computed yoga that is
@@ -50,13 +48,3 @@ export const ENGINE_KEY_TO_REF_ID: Record<string, string> = {
   parijata: "49",
   dhana_2_11: "122-132",
 };
-
-/** 162-reference ids that are formed in the chart (hidden from the reference catalog). */
-export function buildPresentYogaRefIds(yogas: readonly KundaliYoga[]): Set<string> {
-  const ids = new Set<string>();
-  for (const y of yogas) {
-    const refId = ENGINE_KEY_TO_REF_ID[y.key];
-    if (y.present && refId) ids.add(refId);
-  }
-  return ids;
-}

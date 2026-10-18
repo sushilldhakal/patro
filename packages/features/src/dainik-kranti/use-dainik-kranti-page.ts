@@ -36,10 +36,10 @@ import {
   phaseOf,
   weekdayLabel,
   type Phase,
-} from "@vedic-patro/domain/dainikKranti/day-helpers";
-import { buildGapanshaLine, buildPapanshaDisplayLine } from "@vedic-patro/domain/dainikKranti/gapansha";
-import { formatGocharBsLabel, grahaRashiNe } from "@vedic-patro/domain/dainikKranti/gochar-display";
-import { ingressEventBsDayForMonth } from "@vedic-patro/domain/dainikKranti/ingress-day-match";
+} from "@vedic-patro/read-models/dainikKranti/day-helpers";
+import { buildGapanshaLine, buildPapanshaDisplayLine } from "@vedic-patro/read-models/dainikKranti/gapansha";
+import { formatGocharBsLabel, grahaRashiNe } from "@vedic-patro/read-models/dainikKranti/gochar-display";
+import { ingressEventBsDayForMonth } from "@vedic-patro/read-models/dainikKranti/ingress-day-match";
 import {
   buildCalcNotes,
   buildGrahaSpashtaMatrix,
@@ -47,12 +47,12 @@ import {
   type CalcNote,
   type GrahaSpashtaRow,
   type LagnaMatrixRow,
-} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { buildRashyadiRangeTables } from "@vedic-patro/domain/dainikKranti/rashyadi-segments";
+} from "@vedic-patro/read-models/dainikKranti/month-patro-tables";
+import { buildRashyadiRangeTables } from "@vedic-patro/read-models/dainikKranti/rashyadi-segments";
 import type { Era } from "@vedic-patro/domain/era";
 import { getLanguageForEra } from "@vedic-patro/domain/era";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@vedic-patro/domain/panchanga-format";
+import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@vedic-patro/read-models/panchanga-format";
 import { formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import { getRashiName, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";

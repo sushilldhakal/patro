@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Profile } from "@vedic-patro/api-client";
 import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/domain/kundali/profile-chart";
+import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/read-models/kundali/profile-chart";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useAuthDialog } from "./use-kundali-hub-page";
 

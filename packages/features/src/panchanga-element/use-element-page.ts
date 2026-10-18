@@ -18,11 +18,11 @@ import {
   PANCHANGA_CACHE_VERSION,
   type PanchangaDay,
 } from "@vedic-patro/api-client";
-import { getChandraBalamCards, getTaraBalamCards, type BalamCardItem } from "@vedic-patro/domain/balam-cards";
+import { getChandraBalamCards, getTaraBalamCards, type BalamCardItem } from "@vedic-patro/read-models/balam-cards";
 import type { Era } from "@vedic-patro/domain/era";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
-import { getChandrabalamTable, getTarabalaTable } from "@vedic-patro/domain/panchanga-format";
-import type { PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+import { getChandrabalamTable, getTarabalaTable } from "@vedic-patro/read-models/panchanga-format";
+import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";

@@ -3,9 +3,9 @@ import { useMemo, type ReactNode } from "react";
 import type { PanchangaDay } from "@/lib/api";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
-import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1";
-import { buildDayTimelineData, dualTimeAtGhati } from "@vedic-patro/domain/day-timeline-data";
-import { getPlanetRows, getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
+import { buildPanchangaD1Houses } from "@vedic-patro/read-models/panchanga-sunrise-d1";
+import { buildDayTimelineData, dualTimeAtGhati } from "@vedic-patro/read-models/day-timeline-data";
+import { getPlanetRows, getPlanetsAnchorLabel } from "@vedic-patro/read-models/panchanga-format";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
 

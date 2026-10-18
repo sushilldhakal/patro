@@ -19,7 +19,7 @@ import {
   type RashifalSignBlock,
 } from "@vedic-patro/api-client";
 import { instantCacheKey } from "@vedic-patro/domain/instant-query";
-import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
 import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { rashifalRangeLabel, rashifalStepDate } from "@vedic-patro/domain/rashifal-ui";

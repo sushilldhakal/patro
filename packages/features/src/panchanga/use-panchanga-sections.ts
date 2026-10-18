@@ -12,7 +12,7 @@ import {
   getChandraBalamCards,
   getTaraBalamCards,
   type BalamCardItem,
-} from "@vedic-patro/domain/balam-cards";
+} from "@vedic-patro/read-models/balam-cards";
 import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import {
@@ -55,10 +55,10 @@ import {
   getVaaraEn,
   getVaaraNe,
   toNepaliDigits,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/read-models/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/samvatsara";
-import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type AngaEnd = { name_ne?: string; name?: string; end_local_time?: string; end_ghati_clock?: string; end_hours_clock?: string };

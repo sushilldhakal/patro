@@ -25,7 +25,7 @@ import {
   mergeEnrichedDays,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@vedic-patro/domain/local-calendar";
+} from "@vedic-patro/read-models/local-calendar";
 import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { BBS_URL_YEAR_MAX, BBS_URL_YEAR_MIN, BS_FESTIVAL_STACK_MIN_YEAR, getPatroLimits, maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";

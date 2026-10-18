@@ -24,7 +24,8 @@
   "dependencies": {
     "@vedic-patro/design-tokens": "*",
     "@vedic-patro/domain": "*",
-    "@vedic-patro/icons": "*"
+    "@vedic-patro/icons": "*",
+    "@vedic-patro/read-models": "*"
   },
   "peerDependencies": {
     "nativewind": "*",

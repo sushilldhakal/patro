@@ -7,7 +7,7 @@
  */
 import type { PanchangaDay } from "@vedic-patro/api-client";
 import { formatBsDateLong } from "@vedic-patro/domain/bs-calendar";
-import { windowLabel } from "@vedic-patro/domain/muhurta-now";
+import { windowLabel } from "@vedic-patro/read-models/muhurta-now";
 import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
 import { useLocale } from "@vedic-patro/i18n/react";
 

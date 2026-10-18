@@ -6,8 +6,8 @@
  */
 import { useMemo } from "react";
 import type { PanchangaDay } from "@vedic-patro/api-client";
-import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
-import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1";
+import { getPlanetsAnchorLabel } from "@vedic-patro/read-models/panchanga-format";
+import { buildPanchangaD1Houses } from "@vedic-patro/read-models/panchanga-sunrise-d1";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function useSunriseD1Chart(p: PanchangaDay) {

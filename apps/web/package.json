@@ -34,6 +34,7 @@
     "@vedic-patro/features": "*",
     "@vedic-patro/i18n": "*",
     "@vedic-patro/icons": "*",
+    "@vedic-patro/read-models": "*",
     "@vedic-patro/ui": "*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

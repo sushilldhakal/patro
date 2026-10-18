@@ -24,7 +24,7 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import type { Era } from "@vedic-patro/domain/era";
 import { formatClockParts } from "@vedic-patro/domain/panchanga-mode";
-import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/domain/panchanga-location";
+import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/panchanga-location";
 import { civilIsoFromDate, civilIsoWeekday } from "@vedic-patro/domain/patro-day";
 import {
   bbsFromSigned,

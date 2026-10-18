@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
-import type { BalamCardItem } from "@vedic-patro/domain/balam-cards";
+import type { BalamCardItem } from "@vedic-patro/read-models/balam-cards";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useNavataraBalamCards } from "@vedic-patro/features/panchanga";
 import { Box, Text } from "@vedic-patro/ui";

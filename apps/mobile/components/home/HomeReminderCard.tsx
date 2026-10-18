@@ -11,7 +11,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { resolveWindowKey } from "@/lib/notifications/window-key";
 import { useThemeColors } from "@/lib/theme-context";
-import { getMuhurtaRows } from "@vedic-patro/domain/panchanga-format";
+import { getMuhurtaRows } from "@vedic-patro/read-models/panchanga-format";
 import { illustration } from "@vedic-patro/design-tokens";
 
 const GOOD = illustration.green36;

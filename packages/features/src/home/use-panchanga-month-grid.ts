@@ -7,13 +7,13 @@
  */
 import type { CalendarDay } from "@vedic-patro/api-client";
 import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
-import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
+import { getSecondaryCellDate } from "@vedic-patro/read-models/local-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
+import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/read-models/month-grid-moon";
 import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
-import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/domain/panchanga-format";
+import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/read-models/panchanga-format";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/read-models/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type PanchangaMonthWeekday = { key: string; label: string; short: string; weekend: boolean };

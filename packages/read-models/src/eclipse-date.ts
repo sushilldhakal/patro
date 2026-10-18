@@ -1,4 +1,3 @@
-/** Shared by apps/web/src/pages/EclipsePage.tsx and apps/mobile/components/graha/GrahaEventCards.tsx (moved here from both, unchanged). */
 import type { EclipseEvent } from "@vedic-patro/api-client";
 
 export function renderedEclipseDate(ev: EclipseEvent): string {

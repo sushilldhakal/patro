@@ -76,7 +76,7 @@ import {
   vedicStarTargets,
   type SkyTarget,
   type SkyTargetKind,
-} from "@vedic-patro/domain/sky3d/sky-catalogue";
+} from "@vedic-patro/read-models/sky3d/sky-catalogue";
 import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import {
   AakashGocharScene,

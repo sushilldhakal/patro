@@ -14,7 +14,7 @@ import {
 } from "../icons";
 import type { WheelAtTimeClient, WheelAtTimeQuery } from "../wheel-clock";
 import type { WheelDateSheetSlot } from "./WheelDateSheet";
-import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
+import { getPanchangaDetail } from "@vedic-patro/read-models/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { parseClockParts } from "../wheel-clock";
 import {
@@ -26,7 +26,7 @@ import {
   gClock,
   scrubGToAtTimeQuery,
   type WheelDetail,
-} from "@vedic-patro/domain/wheel-data";
+} from "@vedic-patro/read-models/wheel-data";
 import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
 import { WheelChart, type WheelHover } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";

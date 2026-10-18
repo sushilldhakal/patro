@@ -13,14 +13,8 @@
  */
 
 import { GRAHA_NAME, type GrahaKey } from "../graha-details";
-import type { VedicStarPosition } from "@vedic-patro/api-client";
 import { GEO_BODY_ORDER } from "./orbital-model";
-import {
-  equatorialToeclipticJ2000,
-  NAKSHATRA_ASTERISMS,
-  skyStarCommonName,
-  skyStarNameNe,
-} from "./nakshatra-stars";
+import { equatorialToeclipticJ2000, NAKSHATRA_ASTERISMS, skyStarCommonName, skyStarNameNe } from "./nakshatra-stars";
 import { NEBULAE } from "./nebulae";
 
 /**
@@ -186,7 +180,7 @@ export const SKY_BY_ID = new Map(SKY_CATALOGUE.map((t) => [t.id, t]));
  * modern name. The API stores `ne` in Devanagari and `en` as Canopus / Vega /
  * … — without these, typing "Agastya" or "Abhijit" would miss.
  */
-const VEDIC_LATIN: Record<string, string> = {
+export const VEDIC_LATIN: Record<string, string> = {
   Canopus: "Agastya",
   Sirius: "Mrgavyadha Lubdhaka",
   Elnath: "Agni Hutabhuk",
@@ -226,7 +220,7 @@ const VEDIC_LATIN: Record<string, string> = {
 };
 
 /** Extra search names that sit on an already-drawn वैदिक तारा. No extra dots. */
-const VEDIC_ALIASES: { matchNe: string; ne: string; en: string; hintEn: string }[] = [
+export const VEDIC_ALIASES: { matchNe: string; ne: string; en: string; hintEn: string }[] = [
   { matchNe: "दिति", ne: "सोम", en: "Soma", hintEn: "Pollux" },
   { matchNe: "दिति", ne: "चन्द्र", en: "Chandra", hintEn: "Pollux" },
   { matchNe: "दिति", ne: "मिथुनस्य १", en: "Mithunasya 1", hintEn: "Pollux" },
@@ -234,53 +228,6 @@ const VEDIC_ALIASES: { matchNe: string; ne: string; en: string; hintEn: string }
   { matchNe: "अदिति", ne: "मिथुनस्य २", en: "Mithunasya 2", hintEn: "Castor" },
   { matchNe: "मिथुन", ne: "मिथुन मण्डल", en: "Mithuna Mandala", hintEn: "Gemini" },
 ];
-
-/**
- * अश्विनौ are the Aśvins — the pair that names अश्विनी (β/γ Arietis), not
- * a third star between दिति and अदिति. An older gochar catalogue sat that
- * name on the Castor–Pollux midpoint; drop it here so a stale payload cannot
- * draw or search it.
- */
-export function displayVedicStars(stars: VedicStarPosition[]): VedicStarPosition[] {
-  return stars.filter((s) => s.ne !== "अश्विनौ" && s.en !== "Ashvinau");
-}
-
-/** Live server positions → search/aim targets. Ids are stable for one payload. */
-export function vedicStarTargets(stars: VedicStarPosition[]): SkyTarget[] {
-  const primary = displayVedicStars(stars).map((star, index) => {
-    const latin = VEDIC_LATIN[star.en] ?? "";
-    const hint = [latin, star.en].filter(Boolean).join(" · ");
-    return {
-      id: `vedic:${index}`,
-      kind: "star" as const,
-      ne: star.ne,
-      en: star.en,
-      hintNe: hint,
-      hintEn: hint,
-      at: "sky" as const,
-      lon: star.lon,
-      lat: star.lat,
-      /* Already the current, live sidereal longitude the server computed for
-         this exact date — not a J2000 tropical value. See {@link
-         SkyTargetAt}'s own doc comment for why this has to be marked. */
-      sidereal: true,
-    };
-  });
-  const aliases: SkyTarget[] = [];
-  for (const alias of VEDIC_ALIASES) {
-    const host = primary.find((t) => t.ne.split(/[ /]/)[0] === alias.matchNe || t.ne === alias.matchNe);
-    if (!host) continue;
-    aliases.push({
-      ...host,
-      id: `vedic-alias:${alias.en}`,
-      ne: alias.ne,
-      en: alias.en,
-      hintNe: host.ne,
-      hintEn: alias.hintEn,
-    });
-  }
-  return [...primary, ...aliases];
-}
 
 /** Everything of one kind, for the browse tree. */
 export function skyTargetsOfKind(kind: SkyTargetKind, extra: SkyTarget[] = []): SkyTarget[] {

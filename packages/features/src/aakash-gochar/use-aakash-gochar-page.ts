@@ -18,7 +18,7 @@ import {
   displayLocationLabel,
   resolveLocationTimezone,
   type PanchangaLocation,
-} from "@vedic-patro/domain/panchanga-location";
+} from "@vedic-patro/read-models/panchanga-location";
 import { toAdStr } from "@vedic-patro/domain/patro-day";
 import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import { clockStringInTimezone, todayAdStringInTimezone, zonedWallTimeToInstant } from "@vedic-patro/domain/zoned-time";

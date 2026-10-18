@@ -13,7 +13,7 @@ import {
   RASHYADI_ROW_KEYS,
   rashyadiCellValue,
   type RashyadiSegment,
-} from "@vedic-patro/domain/dainikKranti/rashyadi";
+} from "@vedic-patro/read-models/dainikKranti/rashyadi";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type GocharGrahaRow = GocharGraha & { key: string };

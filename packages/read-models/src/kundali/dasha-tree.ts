@@ -1,6 +1,5 @@
-/** Shared by apps/web/src/components/kundali/DashaTree.tsx and apps/mobile/components/kundali/DashaTree.tsx (moved here from both, unchanged). */
 import type { DashaTreeNode } from "@vedic-patro/api-client";
-import type { DashaLord, DashaSpan } from "../dasha";
+import type { DashaLord, DashaSpan } from "@vedic-patro/domain/dasha";
 
 /** Span with the pre-computed children the API embedded (down to pratyantar). */
 export type SpanWithChildren = DashaSpan & { childNodes?: DashaTreeNode[]; lordNe: string };

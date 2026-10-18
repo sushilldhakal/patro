@@ -14,8 +14,8 @@ import {
   nearestNepalCity,
   nepalCityToCity,
   searchNepalCities,
-} from "@vedic-patro/domain/cities/nepal-cities";
-import { cityToLocation, displayLocationLabel, type PanchangaLocation } from "@vedic-patro/domain/panchanga-location";
+} from "@vedic-patro/read-models/cities/nepal-cities";
+import { cityToLocation, displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function cityLabel(city: City): string {
