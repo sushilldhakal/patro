@@ -7,8 +7,9 @@ predate Phase 1's extraction and were never sourced. Porting them faithfully
 would recreate exactly the drifting second rule table Phase 1 exists to
 avoid. This module derives the same *shape* of answer (preferred/acceptable/
 avoid dir8 zones per subject; a ranked entrance pada per wall) from the
-already-extracted, cross-referenced ``data/vastu_room_index.json`` instead —
-see ``services/vastu_rules_db.py``.
+already-extracted, cross-referenced ``data/vastu_room_index.json`` instead,
+read through a :class:`ZoneRuleIndex` (``services/vastu_rules_db.py`` is the
+one in production; ``services/wiring.py`` plugs it in at startup).
 
 A subject with no room-index entry gets an all-acceptable result — "no
 verified rule available", never an invented default (user's own instruction).
@@ -17,15 +18,38 @@ verified rule available", never an invented default (user's own instruction).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
-
-from services import vastu_rules_db as db
+from typing import Any, Literal, Protocol
 
 from . import spatial
 
 Mode = Literal["strict", "balanced", "flexible"]
 
 _DIR8_ORDER = ("north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest")
+
+
+class ZoneRuleIndex(Protocol):
+    """Where room-index rows come from: each row has at least ``zone``
+    (e.g. ``"pada32:N3"``) and ``polarity`` (``"best"`` / ``"avoid"``)."""
+
+    def get_by_subject(self, subject: str) -> list[dict[str, Any]]: ...
+
+
+_index: ZoneRuleIndex | None = None
+
+
+def use_zone_rule_index(index: ZoneRuleIndex) -> None:
+    """Plug in the room-index source (``services.wiring.configure`` does, at startup)."""
+    global _index
+    _index = index
+
+
+def _rule_index() -> ZoneRuleIndex:
+    if _index is None:
+        raise RuntimeError(
+            "engine.vedic.vastu.zone_rules has no ZoneRuleIndex; "
+            "call services.wiring.configure() at startup"
+        )
+    return _index
 
 
 def _bearing_of(zone_ref: str) -> float | None:
@@ -66,7 +90,7 @@ class ZoneCosts:
 # correct for a subject nobody wrote about, but "kitchen_dining" is a
 # *combined* modern room, not an unmapped one: the classical sources talk
 # about kitchen and about dining separately, never about a merged room, so
-# `db.get_by_subject("kitchen_dining")` is always empty and this combined
+# `get_by_subject("kitchen_dining")` is always empty and this combined
 # room ended up with zero placement preference at all — free to land in a
 # zone kitchen's own data explicitly avoids (e.g. north), silently losing
 # the fire-corner constraint entirely instead of inheriting it. Alias it to
@@ -78,7 +102,7 @@ _SUBJECT_ALIAS: dict[str, str] = {"kitchen_dining": "kitchen"}
 
 def zone_costs_for_subject(subject: str) -> ZoneCosts:
     subject = _SUBJECT_ALIAS.get(subject, subject)
-    mappings = db.get_by_subject(subject)
+    mappings = _rule_index().get_by_subject(subject)
     if not mappings:
         return ZoneCosts(frozenset(), frozenset(_DIR8_ORDER), frozenset(), has_data=False)
 
@@ -120,7 +144,7 @@ def entrance_padas_for_wall(wall: Literal["N", "E", "S", "W"]) -> list[str]:
     """Pada ids on `wall` that main_door's room-index data marks best, ranked
     by pada index (closest to the wall's first corner first) — replaces the
     hardcoded DOOR_PADA table."""
-    mappings = db.get_by_subject("main_door")
+    mappings = _rule_index().get_by_subject("main_door")
     candidates: list[tuple[int, str]] = []
     for m in mappings:
         if m["polarity"] != "best":

@@ -4,7 +4,7 @@ Source of truth: ``data/vastu_room_sizes.json`` — see that file's own
 ``_comment`` for how its ``minimum`` tier relates to the placement engine's
 previous hardcoded sizes, and how ``comfortable``/``preferred`` are meant to
 be used (growth only, never to reject a placement). This is small, static
-reference data read once and cached in memory — unlike ``vastu_rules_db.py``
+reference data read once and cached in memory — unlike ``services/vastu_rules_db.py``
 there's no SQLite seed step, just a JSON load.
 """
 

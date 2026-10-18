@@ -11,7 +11,7 @@ classical claim.
 ``IDEAL_SIZE`` (the placement gate's minimum) and ``ROOM_SIZE_TIERS``
 (minimum/comfortable/preferred, the latter two used only by layout.py's
 leftover-space growth, never to reject a placement) are both sourced from
-``data/vastu_room_sizes.json`` via ``services.vastu_room_sizes_db`` — one
+``data/vastu_room_sizes.json`` via ``engine.vedic.vastu.room_sizes`` — one
 table, not two drifting copies. ``IDEAL_SIZE``'s numbers are unchanged from
 the original hardcoded port (see that JSON's own ``_comment`` for how its
 ``minimum`` tier was derived from the old ``min_side``/``min_area`` pairs).
@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from services import vastu_room_sizes_db as sizes_db
+from engine.vedic.vastu import room_sizes as sizes_db
 
 from .rooms import HouseRequirement, PlannedSpace
 

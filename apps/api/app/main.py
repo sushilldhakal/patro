@@ -15,6 +15,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 import config
 from services.startup import warm_holiday_cache
+from services.wiring import configure as configure_ports
 
 logging.basicConfig(level=config.log_level())
 logger = logging.getLogger(__name__)
@@ -94,6 +95,9 @@ async def lifespan(app: FastAPI):
     except asyncio.CancelledError:
         pass
 
+
+# At import, not in lifespan: a TestClient used without `with` never runs lifespan.
+configure_ports()
 
 _prefix = config.api_public_prefix()
 

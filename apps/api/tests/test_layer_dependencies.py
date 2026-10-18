@@ -7,9 +7,9 @@ the calculation depend on a cache, a database or a request — which is how a
 cache-aside ended up inside ``get_daily_panchanga`` and a city lookup inside
 ``ObserverLocation`` resolution.
 
-``_ALLOWED`` lists the outward imports that predate this guard, so the test
-passes while they are migrated out. Entries may only be removed: an outward
-import not on the list fails.
+Where the engine needs stored data it declares a ``Protocol`` (a port) and
+``services/wiring.py`` plugs an implementation in — see
+``engine.vedic.vastu.zone_rules.ZoneRuleIndex``.
 """
 
 from __future__ import annotations
@@ -31,13 +31,6 @@ _OUTER = frozenset({
     "sqlalchemy",
     "redis",
 })
-
-# (engine file, imported top-level module) pairs still being migrated out.
-_ALLOWED: frozenset[tuple[str, str]] = frozenset({
-    ("engine/vedic/vastu/architecture.py", "services"),
-    ("engine/vedic/vastu/zone_rules.py", "services"),
-})
-
 
 def _outward_imports() -> set[tuple[str, str]]:
     """Every (file, outer module) import under engine/, at any nesting depth.
@@ -63,19 +56,12 @@ def _outward_imports() -> set[tuple[str, str]]:
 
 
 class TestEngineDependsOnNothingOutward:
-    def test_no_new_outward_import(self):
-        new = sorted(_outward_imports() - _ALLOWED)
-        assert not new, (
+    def test_no_outward_import(self):
+        found = sorted(_outward_imports())
+        assert not found, (
             "engine/ imports an outer layer: "
-            + ", ".join(f"{f} -> {m}" for f, m in new)
+            + ", ".join(f"{f} -> {m}" for f, m in found)
             + ". Pass the value in, or define a Protocol (port) in the engine and "
             "implement it in services/. See docs/DDD-PLAN.md."
         )
 
-    def test_allow_list_has_no_stale_entries(self):
-        """A migrated import must leave the list, so it cannot quietly come back."""
-        stale = sorted(_ALLOWED - _outward_imports())
-        assert not stale, (
-            "remove these from _ALLOWED, they no longer import outward: "
-            + ", ".join(f"{f} -> {m}" for f, m in stale)
-        )
