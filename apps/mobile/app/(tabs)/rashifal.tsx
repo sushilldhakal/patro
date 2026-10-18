@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useRashifalPage } from "@vedic-patro/features/rashifal";
 import { RASHIFAL_PERIODS, type RashifalPeriod } from "@vedic-patro/api-client";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";

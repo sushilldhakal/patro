@@ -8,7 +8,7 @@ import { VastuPurushaWheel } from "@/components/vastu/VastuPurushaWheel";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCompassHeading } from "@/lib/compass-heading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
 function Chip({ chip }: { chip: VastuChip }) {

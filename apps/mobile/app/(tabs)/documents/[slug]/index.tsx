@@ -12,7 +12,7 @@ import { Text } from "@/components/ui/Text";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpChapter?: (anchor: string) => void }) {
   const { header, copy } = page;

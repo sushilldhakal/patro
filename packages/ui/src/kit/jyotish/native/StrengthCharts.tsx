@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Svg, { G, Line, Polygon, Rect, Text as SvgText } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand, mobileRoles } from "@vedic-patro/design-tokens";
 import { kundaliDetailClasses as k } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { clampPct, type StrengthBand } from "@vedic-patro/domain/kundali/bhava-bala-chart";

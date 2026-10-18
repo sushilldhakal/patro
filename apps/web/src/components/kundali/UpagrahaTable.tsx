@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 const th = kundaliDetailClasses.table.th;
 const td = kundaliDetailClasses.table.td;

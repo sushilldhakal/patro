@@ -14,7 +14,7 @@ import { PageShell } from "@/components/PageShell";
 import { preloadPanchangaRoute } from "@/lib/panchanga-route-preload";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useRouteLoading } from "@/lib/route-loading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 export function Kundali() {

@@ -8,7 +8,7 @@ import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { brand, nativeShadow } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";

@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import type { HomeQuickLinksProps } from "../contract";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroSkel } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { sunTimesClasses as sun } from "@vedic-patro/design-tokens/classes/sun-times-classes";
 import type { SunCell, SunTimesPage } from "@vedic-patro/features/sun-times";

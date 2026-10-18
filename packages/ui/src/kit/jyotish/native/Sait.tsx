@@ -1,7 +1,7 @@
 import { InteractionManager, useWindowDimensions } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
-import { cn } from "@vedic-patro/domain/utils";
-import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
+import { cn } from "@vedic-patro/design-tokens/cn";
+import { SUITABILITY_STYLE } from "@vedic-patro/design-tokens/classes/sait-suitability-classes";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useSaitAside } from "@vedic-patro/features/home";

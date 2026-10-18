@@ -16,7 +16,7 @@ import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
 import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";

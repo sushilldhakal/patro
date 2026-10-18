@@ -5,7 +5,7 @@ import {
   NOTO_DEVANAGARI_REGULAR,
   NOTO_DEVANAGARI_SEMIBOLD,
 } from "@/lib/fonts";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
 
 /** Text styles from the shared spec. Colour stays a class, never a JS override. */

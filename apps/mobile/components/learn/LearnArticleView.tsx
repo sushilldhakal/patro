@@ -13,7 +13,7 @@ import { DayPlayground } from "@/components/learn/playground/DayPlayground";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 function TopicNavCard({
   topic,

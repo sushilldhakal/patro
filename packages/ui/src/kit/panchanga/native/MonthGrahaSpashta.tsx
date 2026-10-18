@@ -1,7 +1,7 @@
 import { ScrollView, View } from "react-native";
 import type { GrahaSpashtaRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { useMonthGrahaSpashta } from "@vedic-patro/features/dainik-kranti";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { patroStickyHeadCell, patroStickySubHeadCell } from "@vedic-patro/design-tokens/classes/patro-classes";

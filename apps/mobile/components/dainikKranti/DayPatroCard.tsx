@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { DainikDayRow, useDainikKrantiPage } from "@vedic-patro/features/dainik-kranti";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { space } from "@vedic-patro/design-tokens";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";

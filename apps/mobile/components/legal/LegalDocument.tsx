@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { useLegalPage, type LegalKind } from "@vedic-patro/features/legal";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useThemeColors } from "@/lib/theme-context";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { PageHeader } from "@/components/ui/PageHeader";

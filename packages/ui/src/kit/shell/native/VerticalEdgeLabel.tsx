@@ -1,5 +1,5 @@
 import { Text as RNText } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
 import { Box } from "@vedic-patro/ui";
 import type { VerticalEdgeLabelProps } from "../contract";

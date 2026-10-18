@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { City } from "@vedic-patro/api-client";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { useLocationSelector } from "@vedic-patro/features/common";
 import { Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";

@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { rituClasses as ritu } from "@vedic-patro/design-tokens/classes/ritu-classes";
 import { useRituPage } from "@vedic-patro/features/ritu";
 import { Grid, Box, Pressable, Text } from "@vedic-patro/ui";

@@ -1,5 +1,5 @@
 import type { ReactNode, TdHTMLAttributes, ThHTMLAttributes } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses as c } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 
 /** The website table primitive's classes, drawn here so the kit does not import the app. */

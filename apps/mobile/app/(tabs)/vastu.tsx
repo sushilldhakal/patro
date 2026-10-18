@@ -20,7 +20,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spaceUnit } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 

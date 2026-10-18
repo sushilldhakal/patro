@@ -11,7 +11,7 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { useTheme } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 

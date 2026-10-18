@@ -1,6 +1,6 @@
 import { Icon } from "@vedic-patro/ui";
 import { kitIcons } from "@vedic-patro/ui/classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useChapterStill, useChapterTip } from "@vedic-patro/features/learn";
 import type { ChapterStillProps, ChapterTipProps } from "../contract";
 

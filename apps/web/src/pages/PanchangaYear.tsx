@@ -20,7 +20,7 @@ import {
   searchToLocation,
   type PanchangaSearch,
 } from "@/lib/url-state";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 
 const YEAR_ROUTE_LOADING = false;

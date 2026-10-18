@@ -8,7 +8,7 @@ import { LearnArticleView } from "@/components/learn/LearnArticleView";
 import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 function resolveSlug(raw: string | string[] | undefined): string | undefined {
   if (typeof raw === "string") return raw;

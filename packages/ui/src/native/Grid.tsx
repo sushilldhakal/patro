@@ -1,6 +1,6 @@
 import { Children, useCallback, useState } from "react";
 import { View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { GridColumns, GridProps } from "../contract";
 
 /** Matches the website's breakpoints (`screens` in the design tokens). */

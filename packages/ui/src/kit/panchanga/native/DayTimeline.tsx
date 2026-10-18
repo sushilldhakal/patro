@@ -5,7 +5,7 @@ import { useColorScheme } from "nativewind";
 import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { horaShortName } from "@vedic-patro/domain/hora-short-name";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatDegreeInRashi, getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";

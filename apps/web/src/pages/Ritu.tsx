@@ -8,7 +8,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { usePatroLocationUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useRituScreen } from "@vedic-patro/features/ritu";
 import { useRouteLoading } from "@/lib/route-loading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/ritu");

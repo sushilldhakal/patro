@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { accountClasses as account } from "@vedic-patro/design-tokens/classes/account-classes";
 import { Box, Button, Input, Pressable, Sheet, Text } from "@vedic-patro/ui";
 import type { AuthDialogViewProps } from "../contract";

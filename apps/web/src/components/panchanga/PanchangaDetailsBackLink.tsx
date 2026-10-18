@@ -1,7 +1,7 @@
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 type PanchangaDetailsBackLinkProps = {
   /** i18n key for link label */

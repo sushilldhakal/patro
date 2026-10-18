@@ -7,7 +7,7 @@ import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PageShell } from "@/components/PageShell";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { useRouteLoading } from "@/lib/route-loading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/suryakranti");

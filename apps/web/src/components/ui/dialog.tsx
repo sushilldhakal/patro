@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
 
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@/i18n/locale";
 
 import { tFor } from "@vedic-patro/i18n/runtime";

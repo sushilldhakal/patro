@@ -2,7 +2,7 @@ import { Link, getRouteApi } from "@tanstack/react-router";
 import { AlertTriangle, ArrowLeft, CalendarClock } from "lucide-react";
 import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { RoutePageState } from "@/components/common/RoutePageState";

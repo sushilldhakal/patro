@@ -2,7 +2,7 @@ import type { ReaderRow } from "@vedic-patro/features/documents";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { useDocumentPlayback } from "@/hooks/use-document-playback";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 type Playback = ReturnType<typeof useDocumentPlayback>;
 

@@ -2,7 +2,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { Eclipse, MoonStar } from "lucide-react";
 import { useEclipsePage, type EclipseCardView, type EclipseKind } from "@vedic-patro/features/graha";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";

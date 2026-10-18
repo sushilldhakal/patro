@@ -6,7 +6,7 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, Orbit } from "lucide-react";
 import { useAakashGocharEntryCard } from "@vedic-patro/features/home";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export function AakashGocharEntryCard({ className }: { className?: string }) {
   const card = useAakashGocharEntryCard();

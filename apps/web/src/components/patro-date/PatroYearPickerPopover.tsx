@@ -4,7 +4,7 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";

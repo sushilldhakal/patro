@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { illustration } from "@vedic-patro/design-tokens";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";

@@ -9,7 +9,7 @@ import { useThemeColors } from "@/lib/theme-context";
 
 import { neutral } from "@vedic-patro/design-tokens";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 type Props = {
   icon?: keyof typeof Ionicons.glyphMap;
   title: string;

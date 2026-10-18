@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import type { IconNode } from "../../../contract";
 import { usePatroSolarCorrection, type PatroSolarKey } from "@vedic-patro/features/dainik-kranti";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { clockIcon, globeIcon, navigationIcon } from "../icons";

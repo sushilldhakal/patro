@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroNavataraRow } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useMuhurtaAside } from "@vedic-patro/features/home";

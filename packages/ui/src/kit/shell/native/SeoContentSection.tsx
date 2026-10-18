@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { seoClasses as seo } from "@vedic-patro/design-tokens/classes/seo-classes";
 import { useSeoContentSection } from "@vedic-patro/features/common";
 import { Box, Text } from "@vedic-patro/ui";

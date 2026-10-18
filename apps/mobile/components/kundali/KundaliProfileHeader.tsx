@@ -6,7 +6,7 @@ import type { KundaliMetaItem } from "@vedic-patro/features/kundali";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 function MetaItem({
   icon,

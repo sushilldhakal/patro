@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@vedic-patro/domain/utils"
+import { cn } from "@vedic-patro/design-tokens/cn"
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (

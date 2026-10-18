@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";
 import type { MatrixTableProps } from "../contract";
 

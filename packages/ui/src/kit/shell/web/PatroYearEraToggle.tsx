@@ -1,5 +1,5 @@
 import type { MouseEvent, PointerEvent } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroDateClasses as era } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { usePatroYearEraToggle } from "@vedic-patro/features/patro-date";
 import type { PatroYearEraToggleProps } from "../contract";

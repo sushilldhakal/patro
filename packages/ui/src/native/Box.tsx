@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { BoxProps } from "../contract";
 
 export function Box({ className, nativeClassName, children, label, testID, widthPercent }: BoxProps) {

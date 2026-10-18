@@ -1,5 +1,5 @@
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { TableCell, TableRow } from "@/components/ui/table";
 

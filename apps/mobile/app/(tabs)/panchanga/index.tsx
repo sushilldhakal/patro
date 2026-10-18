@@ -29,7 +29,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { floatingNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 import { useWindowReminder } from "@/components/reminders/use-window-reminder";

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { tithiName, TWO_SYSTEMS_SPEEDS } from "@vedic-patro/domain/sky3d/two-systems";
 import { illustration, wheel, withAlpha } from "@vedic-patro/design-tokens";

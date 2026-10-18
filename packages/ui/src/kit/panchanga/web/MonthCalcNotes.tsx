@@ -1,7 +1,7 @@
 import { Trans } from "@vedic-patro/i18n/react";
 import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { useMonthCalcNotes } from "@vedic-patro/features/dainik-kranti";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { patroStickyHeadCell, patroStickyHeadRow } from "@vedic-patro/design-tokens/classes/patro-classes";

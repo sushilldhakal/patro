@@ -11,7 +11,7 @@ import { Text } from "@/components/ui/Text";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /** One chapter of a chaptered document — the app's drawing of `useDocumentChapter` (@vedic-patro/features). */
 export default function DocumentChapterScreen() {

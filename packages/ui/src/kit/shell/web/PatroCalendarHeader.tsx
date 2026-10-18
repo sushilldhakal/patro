@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 import { Grid, Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";

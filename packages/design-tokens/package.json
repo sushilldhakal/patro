@@ -43,13 +43,16 @@
       "import": "./src/classes/diagram-classes.ts",
       "default": "./src/classes/diagram-classes.ts"
     },
+    "./cn": "./src/cn.ts",
     "./classes/*": {
       "import": "./src/classes/*.ts",
       "default": "./src/classes/*.ts"
     }
   },
   "dependencies": {
-    "@vedic-patro/domain": "*"
+    "@vedic-patro/domain": "*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
   },
   "scripts": {
     "generate": "tsx scripts/generate-css.ts",

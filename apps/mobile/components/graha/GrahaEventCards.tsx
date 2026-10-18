@@ -5,7 +5,7 @@ import { useLocale } from "@/lib/i18n";
 import type { AstaStamp } from "@/lib/api";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import type { EclipseCardView } from "@vedic-patro/features/graha";
 

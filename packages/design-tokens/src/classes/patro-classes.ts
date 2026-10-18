@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "../cn";
 
 /** Tabular monospace numerals (replaces legacy `.mono`). */
 export const patroMono = "font-num tabular-nums";

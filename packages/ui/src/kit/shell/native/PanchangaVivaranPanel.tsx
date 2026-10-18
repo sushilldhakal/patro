@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { patroAyanaNorth, patroAyanaSouth } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { usePanchangaVivaran, type VivaranCell } from "@vedic-patro/features/home";

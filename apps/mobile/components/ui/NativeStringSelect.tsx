@@ -9,7 +9,7 @@ import { radius, space, spaceUnit, webTypeScale } from "@vedic-patro/design-toke
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export type StringSelectOption = { value: string; label: string };
 

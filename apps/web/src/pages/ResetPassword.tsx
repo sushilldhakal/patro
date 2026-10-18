@@ -3,7 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useResetPasswordPage } from "@vedic-patro/features/account";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouteLoading } from "@/lib/route-loading";

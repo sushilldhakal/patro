@@ -63,7 +63,7 @@ import {
   wheelYearScrubSpeed,
   wheelPlayRateBadge,
 } from "@vedic-patro/design-tokens/classes/wheel-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { Era } from "@vedic-patro/domain/era";
 
 import { illustration } from "@vedic-patro/design-tokens";

@@ -21,7 +21,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import type { Era } from "@vedic-patro/domain/era";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /** Canvas height when the page is not fullscreen. */
 const SCENE_HEIGHT = 560;

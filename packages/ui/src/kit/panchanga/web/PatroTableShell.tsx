@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { usePatroTableShell } from "@vedic-patro/features/common";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 

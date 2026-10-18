@@ -5,7 +5,7 @@ import { QuickLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { featureIcon } from "@/lib/nav-icons";
 
 const ICONS: Partial<Record<DirectoryLink["icon"], LucideIcon>> = {

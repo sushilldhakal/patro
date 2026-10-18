@@ -8,7 +8,7 @@ import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetail
 import { useLocale } from "@/i18n/locale";
 import { useElementPageUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";

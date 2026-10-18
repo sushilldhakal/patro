@@ -10,7 +10,7 @@ import { setLocalStorageItem } from "@/lib/browser";
 import { resolveLocationTimezone, usePanchangaLocation, type PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { getLanguageForEra, type Era } from "@vedic-patro/domain/era";

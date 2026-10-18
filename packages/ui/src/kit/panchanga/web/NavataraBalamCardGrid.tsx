@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { BalamCardItem } from "@vedic-patro/domain/balam-cards";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useNavataraBalamCards } from "@vedic-patro/features/panchanga";
 import {
   panchangaCardBase,

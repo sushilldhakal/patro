@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useKundaliSectionNav, useKundaliSidebarSubnav } from "@vedic-patro/features/kundali";
 import { Box, Icon, Text } from "@vedic-patro/ui";

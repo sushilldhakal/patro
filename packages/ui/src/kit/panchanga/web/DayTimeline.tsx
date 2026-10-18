@@ -14,7 +14,7 @@ import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { patroCard, patroMono, patroSecBand, patroSkel } from "@vedic-patro/design-tokens/classes/patro-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
 import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";

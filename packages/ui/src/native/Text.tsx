@@ -1,5 +1,5 @@
 import { Platform, Text as RNText } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { fontFamily } from "@vedic-patro/design-tokens";
 import { textVariantClass } from "../classes";
 import type { TextProps } from "../contract";

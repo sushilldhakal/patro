@@ -1,5 +1,5 @@
 import { Box, Icon, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { isTopicOf, type DocumentCategoryId } from "@vedic-patro/domain/document-categories";
 import { useDocumentCard } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";

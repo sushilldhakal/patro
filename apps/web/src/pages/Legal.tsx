@@ -1,7 +1,7 @@
 import { FileText, Shield } from "lucide-react";
 import { useLegalPage, type LegalKind } from "@vedic-patro/features/legal";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
 

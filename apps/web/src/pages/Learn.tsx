@@ -6,7 +6,7 @@ import { learnHero, learnStatPill } from "@/lib/learn-classes";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "../components/PageShell";
 import { Input } from "@/components/ui/input";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { LearnTopicCard } from "@vedic-patro/ui/kit/learn";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";

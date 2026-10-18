@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 import { Box, Grid, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";

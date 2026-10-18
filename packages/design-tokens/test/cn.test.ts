@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { cn } from "../src/utils.ts";
+import { cn } from "../src/cn.ts";
 
 test("a colour class survives next to a type step", () => {
   assert.equal(cn("text-foreground", "text-body"), "text-foreground text-body");

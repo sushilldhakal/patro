@@ -1,5 +1,5 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
 
 type CardProps = ViewProps & {

@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 
 /** Shared pill button — follows app background/border in light and dark. */

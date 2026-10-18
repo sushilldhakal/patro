@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/i18n";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { nepaliDayNumberStyle, nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand } from "@vedic-patro/design-tokens";
 import { usePanchangaMonthGrid } from "@vedic-patro/features/home";
 import { VerticalEdgeLabel } from "@vedic-patro/ui/kit/shell";

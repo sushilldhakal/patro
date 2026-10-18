@@ -20,7 +20,7 @@ import {
   uniqueBsMonths,
 } from "@vedic-patro/domain/local-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@/i18n/locale";
 import { usePanchangaMonthGrid, type PanchangaMonthCell } from "@vedic-patro/features/home";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

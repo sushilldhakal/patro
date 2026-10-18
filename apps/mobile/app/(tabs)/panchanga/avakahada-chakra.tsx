@@ -2,7 +2,7 @@ import { Pressable, TextInput, View } from "react-native";
 import { useAvakahadaPage, type AvakahadaRow, type AvakahadaColumnKey } from "@vedic-patro/features/avakahada";
 import { webTypeScale } from "@vedic-patro/design-tokens";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";

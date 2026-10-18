@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { View } from "react-native";
 import { Text } from "@vedic-patro/ui";
 import type { PanchangaDay } from "@vedic-patro/api-client";

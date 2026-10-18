@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { Grid, Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { HomeRashifalSignPickerProps } from "../contract";

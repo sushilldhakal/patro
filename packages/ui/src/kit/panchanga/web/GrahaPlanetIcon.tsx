@@ -1,6 +1,6 @@
 import { useId } from "react";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
 
 export type GrahaPlanetIconProps = {

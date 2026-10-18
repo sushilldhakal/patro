@@ -21,7 +21,7 @@ import {
   avWheelTheme,
 } from "@vedic-patro/design-tokens/classes/av-wheel-classes";
 import { wheelIconBtn } from "@vedic-patro/design-tokens/classes/wheel-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
 import { AVAKAHADA_ZOOM, sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";

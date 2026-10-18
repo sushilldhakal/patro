@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Box, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";
 import type { BsNativeSelectProps } from "../contract";

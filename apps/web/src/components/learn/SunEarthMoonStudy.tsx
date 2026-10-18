@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useEffect, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";

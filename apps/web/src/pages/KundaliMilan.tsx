@@ -17,7 +17,7 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import {
   AYANAMSHA_STORAGE_KEY,

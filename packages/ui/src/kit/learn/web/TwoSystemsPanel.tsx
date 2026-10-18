@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import {
   tithiName,

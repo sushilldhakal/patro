@@ -28,7 +28,7 @@ import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme } from "@/lib/theme-context";
 import { useStaggeredMount } from "@/lib/use-staggered-mount";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 export type DiagramReadout = { k: string; v: string; tone?: "accent" | "warn" };

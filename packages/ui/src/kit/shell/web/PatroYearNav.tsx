@@ -1,6 +1,6 @@
 import { patroBrowseTodayEra } from "@vedic-patro/domain/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/patro-browse-params";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { usePatroYearHeadlineSubtitle } from "@vedic-patro/features/common";

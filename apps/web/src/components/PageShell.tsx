@@ -1,6 +1,6 @@
 import { useInPanchangaShell } from "@/components/panchanga/PanchangaShellLayout";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 

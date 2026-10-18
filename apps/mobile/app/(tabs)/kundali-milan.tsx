@@ -18,7 +18,7 @@ import { getStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useQueryClient } from "@tanstack/react-query";
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
 import { useKundaliMilanPage, type MilanDetails, type MilanRole } from "@vedic-patro/features/kundali";

@@ -1,6 +1,6 @@
 import type { NavataraTone } from "@vedic-patro/api-client";
-import { cn } from "@vedic-patro/domain/utils";
-import { rashifalToneBar, rashifalToneText } from "@vedic-patro/domain/rashifal-ui";
+import { cn } from "@vedic-patro/design-tokens/cn";
+import { rashifalToneBar, rashifalToneText } from "@vedic-patro/design-tokens/classes/rashifal-tone-classes";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { useRashifalGocharChips, useRashifalPersonalCard, useRashifalProfilePicker, useRashifalSignCard, type RashifalGocharFlag } from "@vedic-patro/features/rashifal";

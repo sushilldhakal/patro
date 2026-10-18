@@ -23,11 +23,10 @@ import type { RashifalDomainKey, RashifalPeriod } from "@/lib/api";
 export {
   rashifalRangeLabel,
   rashifalStepDate,
-  rashifalToneBar,
-  rashifalToneText,
   toNepaliDigits,
   type RashifalWindowSource,
 } from "@vedic-patro/domain/rashifal-ui";
+export { rashifalToneBar, rashifalToneText } from "@vedic-patro/design-tokens/classes/rashifal-tone-classes";
 
 /**
  * Period tabs are icon-only on the page, so each icon has to carry the whole

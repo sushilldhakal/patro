@@ -7,7 +7,7 @@ import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { featureIcon } from "@/lib/nav-icons";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 

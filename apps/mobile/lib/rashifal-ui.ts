@@ -8,11 +8,8 @@ import {
   type RashifalWindowSource,
 } from "@vedic-patro/domain/rashifal-ui";
 
-export {
-  rashifalStepDate,
-  rashifalToneBar,
-  rashifalToneText,
-} from "@vedic-patro/domain/rashifal-ui";
+export { rashifalStepDate } from "@vedic-patro/domain/rashifal-ui";
+export { rashifalToneBar, rashifalToneText } from "@vedic-patro/design-tokens/classes/rashifal-tone-classes";
 export { rashifalRangeLabel, toNepaliDigits, type RashifalWindowSource };
 
 export type RashifalDomainIcon = ComponentProps<typeof Ionicons>["name"];

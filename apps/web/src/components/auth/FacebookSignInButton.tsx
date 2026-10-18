@@ -11,7 +11,7 @@ import {
   type FacebookAuthResponse,
 } from "@/lib/auth/facebook-sdk";
 import { socialSignInButtonClass } from "./social-sign-in-styles";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export { facebookSignInEnabled };
 

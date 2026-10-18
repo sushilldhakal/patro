@@ -1,6 +1,6 @@
 import { useWindowDimensions } from "react-native";
 import { useDivisionalChartCompare, useDivisionalTableToggle, type DivisionalChartSlot } from "@vedic-patro/features/kundali";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import type { DivisionalChartCompareProps } from "../contract";

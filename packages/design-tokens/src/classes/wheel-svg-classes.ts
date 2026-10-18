@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "../cn";
 
 export const wRimCircle = "fill-none stroke-[var(--w-rim)]";
 

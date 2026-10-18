@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { useColorScheme } from "nativewind";
 import { Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { mobileRoles, withAlpha } from "@vedic-patro/design-tokens";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";

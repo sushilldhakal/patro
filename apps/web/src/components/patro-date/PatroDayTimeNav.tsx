@@ -8,7 +8,7 @@ import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { calendarPickerClasses as pickerClasses } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import {
   isAtMaxAdDay,
   isAtMaxBsDay,

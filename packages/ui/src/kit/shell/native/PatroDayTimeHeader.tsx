@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";

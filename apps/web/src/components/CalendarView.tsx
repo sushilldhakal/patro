@@ -25,7 +25,7 @@ import { VedicPatroLoader } from "./VedicPatroLoader";
 import { DayDetailModal } from "./DayDetailModal";
 import { useLocale } from "@/i18n/locale";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroMdRail } from "@/lib/patro-classes";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
 import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";

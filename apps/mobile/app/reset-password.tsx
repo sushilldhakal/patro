@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useResetPasswordPage } from "@vedic-patro/features/account";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { AppShell } from "@/components/AppShell";

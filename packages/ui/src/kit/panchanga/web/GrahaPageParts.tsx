@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useElementDescription, useGrahaDescription, type AboutCard } from "@vedic-patro/features/graha";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroCard } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 

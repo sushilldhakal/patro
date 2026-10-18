@@ -1,6 +1,6 @@
 import { Pressable, useWindowDimensions, View } from "react-native";
 import { Box, Icon, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useSaitRules } from "@vedic-patro/features/sait";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SaitRulesSectionProps } from "../contract";

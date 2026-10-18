@@ -2,7 +2,7 @@ import { TextInput } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { Box, Button, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { mobileRoles } from "@vedic-patro/design-tokens";
 import { useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";

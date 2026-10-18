@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
 import { Box, Text } from "@vedic-patro/ui";
 import type { StatCardProps } from "../contract";

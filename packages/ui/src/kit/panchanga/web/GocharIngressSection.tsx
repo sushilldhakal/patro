@@ -1,5 +1,5 @@
 import type { GocharPage } from "@vedic-patro/features/gochar";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";

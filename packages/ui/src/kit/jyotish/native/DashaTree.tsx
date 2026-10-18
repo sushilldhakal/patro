@@ -1,7 +1,7 @@
 import type { DashaSystem } from "@vedic-patro/api-client";
 import type { DashaLord } from "@vedic-patro/domain/dasha";
 import type { SpanWithChildren } from "@vedic-patro/domain/kundali/dasha-tree";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { DASHA_MAX_LEVEL, useDashaNode, useDashaTree, type DashaChainRow } from "@vedic-patro/features/kundali";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";

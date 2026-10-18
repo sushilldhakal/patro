@@ -11,7 +11,7 @@ import {
   profileToInput,
 } from "@/components/auth/ProfileForm";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export function Account() {
   const auth = useAuth();

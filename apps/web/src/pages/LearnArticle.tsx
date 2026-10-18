@@ -2,7 +2,7 @@ import { Link, Navigate, useParams } from "@tanstack/react-router";
 import { useLearnArticle } from "@vedic-patro/features/learn";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { DayPlaygroundDiagram } from "@/components/learn/DayPlaygroundDiagram";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "../components/PageShell";
 import { LEARN_TOPICS_BY_SLUG } from "@/lib/learn/learn-topics";

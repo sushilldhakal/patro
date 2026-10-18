@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTodayHora } from "@/lib/learn/hora-live";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 import { illustration } from "@vedic-patro/design-tokens";
 const PLANET_COLOR: Record<string, string> = {

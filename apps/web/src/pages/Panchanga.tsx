@@ -14,7 +14,7 @@ import { DayTimeline, GhatiClock } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { EphemerisModeBanner, GocharPromoCard, PlanetEventsPanel, SunriseD1ChartPanel } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/kundali/D1Chart";

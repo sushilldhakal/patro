@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { KundaliSectionId } from "@vedic-patro/features/kundali";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { KundaliSidebarSubnav as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function KundaliSidebarSubnav({

@@ -1,5 +1,5 @@
 import { ScrollView } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { panchangaPageClasses as pg } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { chevronDownIcon, chevronRightIcon } from "../icons";

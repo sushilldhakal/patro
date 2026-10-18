@@ -39,7 +39,7 @@ import {
   panchangaSectionHeader,
   panchangaSectionTitle,
 } from "@vedic-patro/design-tokens";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
 export function grahaName(key: string, lang: "ne" | "en"): string {

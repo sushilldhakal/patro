@@ -55,7 +55,7 @@ import {
   horaTickline,
   horaVerticalScrub,
 } from "@/lib/hora-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { buildWheelDetail } from "@vedic-patro/domain/wheel-data";
 import { PlanetIcon } from "./hora/PlanetIcon";
 

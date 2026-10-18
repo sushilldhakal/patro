@@ -17,7 +17,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 export default function KundaliScreen() {

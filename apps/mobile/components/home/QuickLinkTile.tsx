@@ -7,7 +7,7 @@ import type { DrawerIconName } from "@/lib/drawer-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 export type QuickLink = {

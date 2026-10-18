@@ -2,7 +2,7 @@ import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchan
 import { createContext, useContext } from "react";
 import { Outlet } from "@tanstack/react-router";
 import { PanchangaSidebarNav } from "@/components/panchanga/PanchangaSidebarNav";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 const PanchangaShellContext = createContext(false);
 

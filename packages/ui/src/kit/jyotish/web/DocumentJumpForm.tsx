@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { Button, Icon, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import type { DocumentJumpFormProps } from "../contract";

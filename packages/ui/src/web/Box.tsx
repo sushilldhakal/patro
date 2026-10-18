@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { BoxProps } from "../contract";
 
 export function Box({ as: Tag = "div", className, webClassName, children, label, testID, widthPercent }: BoxProps) {

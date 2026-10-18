@@ -1,5 +1,5 @@
 import { Children } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { GridProps } from "../contract";
 
 /* Whole class names, so Tailwind finds them. */

@@ -1,5 +1,5 @@
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useDocumentCard } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import type { DocumentCardProps } from "../contract";

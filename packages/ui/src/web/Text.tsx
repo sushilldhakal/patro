@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { textVariantClass } from "../classes";
 import type { TextProps } from "../contract";
 

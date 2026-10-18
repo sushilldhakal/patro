@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";

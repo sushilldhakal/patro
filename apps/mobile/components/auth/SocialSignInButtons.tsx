@@ -23,7 +23,7 @@ import {
 
 import { illustration, space } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 WebBrowser.maybeCompleteAuthSession();
 
 type Props = {

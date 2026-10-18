@@ -5,7 +5,7 @@ import { __iconNode as searchIcon } from "lucide-react/dist/esm/icons/search";
 import { __iconNode as circleX } from "lucide-react/dist/esm/icons/circle-x";
 import { useHolidaysPage, type HolidayColumnKey, type HolidayRow } from "@vedic-patro/features/holidays";
 import { Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";

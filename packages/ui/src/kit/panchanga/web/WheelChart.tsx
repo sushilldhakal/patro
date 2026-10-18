@@ -23,7 +23,7 @@ import {
 } from "@vedic-patro/features/panchanga-drawing";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { wheelSvg, wheelSvgWrap } from "@vedic-patro/design-tokens/classes/wheel-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import {
   wDaytick,

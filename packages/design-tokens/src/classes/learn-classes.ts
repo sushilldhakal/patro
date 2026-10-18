@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "../cn";
 
 /** Theme tokens + dark starfield (::before). Pair with tmPageShell. */
 export const tmPageShell =

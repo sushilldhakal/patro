@@ -1,6 +1,6 @@
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Table, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { learnReferenceTable, type LearnRefKind, type LearnRefTone } from "@vedic-patro/domain/learn/reference-tables";
 import { patroMono } from "@vedic-patro/design-tokens/classes/patro-classes";

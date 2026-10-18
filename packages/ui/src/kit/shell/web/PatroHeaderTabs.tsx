@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { PatroHeaderSwapProps, PatroHeaderTabsProps } from "../contract";

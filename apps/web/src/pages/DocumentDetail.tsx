@@ -11,7 +11,7 @@ import { useDocumentPlayback } from "@/hooks/use-document-playback";
 import { documentsListSearch, type DocumentDetailSearch } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 const SHELL = "min-w-0 max-w-full [overflow-wrap:anywhere]";
 

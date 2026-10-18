@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
 import { Modal, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
 import Svg, { Path, Polygon, Rect } from "react-native-svg";

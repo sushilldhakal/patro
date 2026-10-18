@@ -7,7 +7,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useAakashGocharEntryCard } from "@vedic-patro/features/home";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /** Entry card to the 3D sky — sits directly under the calendar (and today's card) like on the web. */
 export function AakashGocharEntryCard() {

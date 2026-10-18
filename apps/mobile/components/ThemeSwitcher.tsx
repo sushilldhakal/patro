@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /**
  * One button that flips between light and dark, like the website's ThemeToggle:

@@ -14,7 +14,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 
 /**

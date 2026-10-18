@@ -1,7 +1,7 @@
 import { ScrollView } from "react-native";
 import { Box, Icon, Pressable } from "@vedic-patro/ui";
 import { kitIcons } from "@vedic-patro/ui/classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useChapterOverlay } from "@vedic-patro/features/learn";
 import type { ChapterOverlayProps } from "../contract";
 

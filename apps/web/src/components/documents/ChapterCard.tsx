@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import type { DocumentChapterCard } from "@vedic-patro/features/documents";
 import { documentsListSearch, type DocumentCategoryTab } from "@/lib/documents-api";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 interface Props {
   slug: string;

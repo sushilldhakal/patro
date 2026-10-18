@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export function DocumentBackLink({ href, label }: { href: string; label: string }) {
   const router = useRouter();

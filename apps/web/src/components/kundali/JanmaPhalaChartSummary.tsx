@@ -1,6 +1,6 @@
 import type { JanmaPhalaHintPart } from "@vedic-patro/domain/janma-phala-tables";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 export function JanmaPhalaChartSummary({
   parts,

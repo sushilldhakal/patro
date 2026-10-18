@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useVedicPatroLoader } from "@vedic-patro/features/common";
 import { Box, Text } from "@vedic-patro/ui";
 import type { VedicPatroLoaderProps } from "../contract";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { homeClasses as cls } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useTodayHighlight } from "@vedic-patro/features/home";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";

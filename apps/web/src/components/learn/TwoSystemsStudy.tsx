@@ -28,7 +28,7 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { TwoSystemsPanel } from "@vedic-patro/ui/kit/learn";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";

@@ -35,7 +35,7 @@ import {
 } from "@/lib/learn/sun-earth-moon-math";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /* Framing offsets: the Sun sits off to one side in these two scenes, so the
    camera looks between the bodies rather than at the Earth alone. */

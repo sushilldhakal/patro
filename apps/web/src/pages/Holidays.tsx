@@ -4,7 +4,7 @@ import { __iconNode as partyPopper } from "lucide-react/dist/esm/icons/party-pop
 import { __iconNode as searchIcon } from "lucide-react/dist/esm/icons/search.mjs";
 import { useHolidaysPage, type HolidayColumnKey, type HolidayRow } from "@vedic-patro/features/holidays";
 import { Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { SeoContentSection } from "../components/seo/SeoContentSection";

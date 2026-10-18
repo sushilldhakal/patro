@@ -14,7 +14,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { converterClasses } from "@vedic-patro/design-tokens/classes/converter-classes";
 
 /**

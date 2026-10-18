@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/Text";
 import { Deferred } from "@/components/ui/Deferred";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 type SectionNavProps = {
   activeId: KundaliSectionId;

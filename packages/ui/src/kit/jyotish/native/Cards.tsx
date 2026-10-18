@@ -1,5 +1,5 @@
 import type { ShadbalaStatus, VimshopakaGrade } from "@vedic-patro/api-client";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useAshtakavargaCard, useBhavaBalaSelection, useBhavaBalaTable, useGrahaDetailsList, useShadbalaCard, useVimshopakaCard, useYogaReferenceCatalog } from "@vedic-patro/features/kundali";
 import { Grid, Box, Icon, Input, Pressable, Table, Text } from "@vedic-patro/ui";

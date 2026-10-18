@@ -8,7 +8,7 @@ import { RituSeasons } from "@/components/RituSeasons";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useTheme } from "@/lib/theme-context";
 import { useRituScreen } from "@vedic-patro/features/ritu";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
 export default function RituScreen() {

@@ -14,7 +14,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { shantiClasses as sc } from "@vedic-patro/design-tokens/classes/shanti-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 function toAdStr(d: Date): string {

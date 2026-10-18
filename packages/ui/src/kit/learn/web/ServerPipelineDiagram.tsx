@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { tmCardCap, tmCardPadLg, tmDiagramSvg } from "@vedic-patro/design-tokens/classes/learn-classes";
 import {

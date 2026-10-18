@@ -1,6 +1,6 @@
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useGocharSkyCards } from "@vedic-patro/features/gochar";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { patroCard, patroMono } from "@vedic-patro/design-tokens/classes/patro-classes";

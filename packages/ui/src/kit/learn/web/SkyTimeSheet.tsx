@@ -1,7 +1,7 @@
 import { useEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { effect, illustration } from "@vedic-patro/design-tokens";
 import { daylightGradient } from "@vedic-patro/design-tokens/classes/learn/daylight-stops";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { SKY_TIME_FIELDS, skySheetTransport, useSkyTimeSheet, type SkyTimeField, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 import type { SkyTimeSheetProps } from "../contract";
 

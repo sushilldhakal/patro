@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { edBodyLabel, edRay, hoCalloutNe, hoEarthGroup, hoEquator, hoFocusAphelion, hoFocusLabel, hoFocusLine, hoMarkerDetail, hoMarkerDot, hoMarkerNe, hoMarkerTag, hoNorthPole, hoOrbitDir, hoOrbitEllipse, hoOrbitGuide, hoPoleAxis, hoPoleLabel, hoSunRay, hoSweep, hoTiltArc, hoTiltRef } from "@/lib/diagram-classes";

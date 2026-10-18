@@ -1,5 +1,5 @@
 import { Pressable, View } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { buttonClass } from "../classes";
 import type { ButtonProps } from "../contract";
 import { Text } from "./Text";

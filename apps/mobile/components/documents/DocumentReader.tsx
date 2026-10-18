@@ -10,7 +10,7 @@ import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 const LIST_BOTTOM_INSET = 48 * spaceUnit;
 

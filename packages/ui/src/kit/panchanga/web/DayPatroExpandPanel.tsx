@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useDayPatroExpand } from "@vedic-patro/features/dainik-kranti";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { layoutGridIcon, sunriseIcon } from "../icons";

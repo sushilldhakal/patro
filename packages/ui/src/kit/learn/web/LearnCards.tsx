@@ -1,5 +1,5 @@
 import { Box, Icon, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLearnMoreCard } from "@vedic-patro/features/common";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 import type { LearnMoreCardProps, LearnTopicCardProps } from "../contract";

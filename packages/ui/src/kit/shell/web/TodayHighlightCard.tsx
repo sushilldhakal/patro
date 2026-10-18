@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses as cls } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useTodayHighlight } from "@vedic-patro/features/home";
 import { Box, Icon, Text } from "@vedic-patro/ui";

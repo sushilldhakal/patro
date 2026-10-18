@@ -24,7 +24,7 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 /** Daily panchanga (web build of the app) — draws `usePanchangaPage` (@vedic-patro/features). */

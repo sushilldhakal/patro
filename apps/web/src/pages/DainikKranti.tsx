@@ -34,7 +34,7 @@ import {
   patroStickyHeadCell,
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import {
   Accordion,

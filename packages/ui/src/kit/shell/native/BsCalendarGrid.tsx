@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { Pressable as RNPressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { useColorScheme } from "nativewind";
 import { mobileRoles } from "@vedic-patro/design-tokens";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { useBsCalendarGrid } from "@vedic-patro/features/home";
 import { useLocale } from "@vedic-patro/i18n/react";

@@ -2,7 +2,7 @@ import { Link, getRouteApi } from "@tanstack/react-router";
 import { ArrowLeft, Sparkles, Sun } from "lucide-react";
 import { useAbhijitPage, type AbhijitDayView } from "@vedic-patro/features/abhijit";
 import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { fetchMonthCalendar } from "@/lib/api";
 import { PageShell } from "@/components/PageShell";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";

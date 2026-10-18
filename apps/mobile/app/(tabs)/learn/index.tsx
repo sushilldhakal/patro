@@ -9,7 +9,7 @@ import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { inkOn } from "@/lib/theme";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 

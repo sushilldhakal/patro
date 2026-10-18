@@ -1,7 +1,7 @@
 import { View, useWindowDimensions } from "react-native";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useGocharDeepDive } from "@vedic-patro/features/gochar";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import { breakpoints } from "@vedic-patro/design-tokens";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";

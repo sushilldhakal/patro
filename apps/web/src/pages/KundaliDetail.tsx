@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 const ayanamshaStorage = {

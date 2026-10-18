@@ -2,7 +2,7 @@ import { Crosshair, Loader2, Search } from "lucide-react";
 import type { City } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useCitySearch } from "@vedic-patro/features/panchanga";
 import { useLocale } from "@/i18n/locale";
 import { locateDevice } from "./locate-device";

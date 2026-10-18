@@ -18,7 +18,7 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { LoadingState } from "@/components/ui/States";
 
 function toAdStr(d: Date): string {

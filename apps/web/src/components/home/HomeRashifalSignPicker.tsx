@@ -1,5 +1,5 @@
 import type { RashifalSignBlock } from "@vedic-patro/api-client";
-import { rashifalToneBar, rashifalToneText } from "@vedic-patro/domain/rashifal-ui";
+import { rashifalToneBar, rashifalToneText } from "@vedic-patro/design-tokens/classes/rashifal-tone-classes";
 import { useHomeRashifalSignPicker } from "@vedic-patro/features/home";
 import { Box } from "@vedic-patro/ui";
 import { HomeRashifalSignPicker as HomeRashifalSignPickerView } from "@vedic-patro/ui/kit/shell";

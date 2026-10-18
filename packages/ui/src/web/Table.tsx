@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kitIcons, tableClass } from "../classes";
 import type { TableColumn, TableProps } from "../contract";
 import { Icon } from "./Icon";

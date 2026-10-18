@@ -33,7 +33,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { Deferred, useStagedList } from "@/components/ui/Deferred";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { illustration } from "@vedic-patro/design-tokens";

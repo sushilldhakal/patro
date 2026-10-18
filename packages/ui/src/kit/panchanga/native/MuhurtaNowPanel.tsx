@@ -1,5 +1,5 @@
 import { Box, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useEphemerisModeBanner, useMuhurtaNow } from "@vedic-patro/features/panchanga";
 import { panchangaPageClasses as cls } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import type { MuhurtaNowPanelProps } from "../contract";

@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useVerifyEmailPage } from "@vedic-patro/features/account";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useAuth } from "@/lib/auth/AuthContext";

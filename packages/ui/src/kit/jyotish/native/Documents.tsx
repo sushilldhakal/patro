@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";

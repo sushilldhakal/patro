@@ -2,7 +2,7 @@ import { RotateCcw } from "lucide-react";
 import { getRouteApi } from "@tanstack/react-router";
 import { useGrahaVakriPage, type VakriEventView } from "@vedic-patro/features/graha";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { GrahaGroupedEventCards } from "@/components/graha/GrahaGroupedEventCards";

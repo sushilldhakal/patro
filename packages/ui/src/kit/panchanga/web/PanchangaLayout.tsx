@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { usePanchangaLayoutCopy } from "@vedic-patro/features/panchanga-drawing";

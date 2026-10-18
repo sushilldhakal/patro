@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
 
 type Props = PressableProps & {

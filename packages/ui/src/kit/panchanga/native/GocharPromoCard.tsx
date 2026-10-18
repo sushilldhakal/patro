@@ -1,7 +1,7 @@
 import Svg, { Path } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { mobileRoles } from "@vedic-patro/design-tokens";
 import { useGocharPromoCard } from "@vedic-patro/features/gochar";
 import { gocharClasses as g } from "@vedic-patro/design-tokens/classes/gochar-classes";

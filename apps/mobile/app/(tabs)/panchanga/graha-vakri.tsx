@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useGrahaVakriPage, type VakriEventView } from "@vedic-patro/features/graha";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
 import { AllElementsLink, GrahaBanner, GrahaColumnCard, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
 import { Grid } from "@vedic-patro/ui";

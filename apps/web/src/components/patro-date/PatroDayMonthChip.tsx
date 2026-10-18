@@ -1,5 +1,5 @@
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import {
   patroMonthChipDay,
   patroMonthChipHead,

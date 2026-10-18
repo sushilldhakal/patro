@@ -1,6 +1,6 @@
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useD1Chart, type D1DrishtiPanel } from "@vedic-patro/features/kundali";
 import type { D1ChartProps } from "../contract";
 import { iconX } from "../icons";

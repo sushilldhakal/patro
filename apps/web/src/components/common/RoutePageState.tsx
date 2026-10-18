@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { DataUnavailablePanel } from "@/components/common/DataUnavailablePanel";
 
 type RoutePageStateProps<T> = {

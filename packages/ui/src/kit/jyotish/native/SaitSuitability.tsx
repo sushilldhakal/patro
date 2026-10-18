@@ -1,6 +1,6 @@
 import { Box, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
-import { SUITABILITY_ORDER, SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
+import { cn } from "@vedic-patro/design-tokens/cn";
+import { SUITABILITY_ORDER, SUITABILITY_STYLE } from "@vedic-patro/design-tokens/classes/sait-suitability-classes";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SuitabilityBadgeProps, SuitabilityLegendProps } from "../contract";

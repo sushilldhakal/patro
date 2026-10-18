@@ -1,6 +1,6 @@
 import { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
 import { Icon } from "./Icon";

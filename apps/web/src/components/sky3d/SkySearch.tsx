@@ -19,7 +19,7 @@ import {
   type SkyTarget,
   type SkyTargetKind,
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
 /** Which face of the panel is showing, when nothing has been typed. */

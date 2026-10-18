@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Trans } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useShantiVidhiPanel } from "@vedic-patro/features/shanti";
 import { Grid, Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";

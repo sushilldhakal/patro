@@ -20,7 +20,7 @@ import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
 import { HomeRashifalSignPicker } from "@/components/home/HomeRashifalSignPicker";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 /**
  * Monthly rashifal on Home — same API and card components as /jyotish/rashifal

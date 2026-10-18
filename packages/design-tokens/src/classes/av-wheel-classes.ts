@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "../cn";
 
 /** Theme vars for Avakahada hub fills — keep on `.av-wheel` parent. */
 export const avWheelTheme = "av-wheel";

@@ -3,7 +3,7 @@ import { TextInput, View, useWindowDimensions } from "react-native";
 import { useColorScheme } from "nativewind";
 import type { City } from "@vedic-patro/api-client";
 import { mobileRoles } from "@vedic-patro/design-tokens";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { useLocationSelector } from "@vedic-patro/features/common";
 import { Box, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";

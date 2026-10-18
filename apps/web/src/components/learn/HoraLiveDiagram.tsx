@@ -9,7 +9,7 @@ import { useLocale } from "@/i18n/locale";
 import { fetchPanchangaDay, panchangaKeys } from "@/lib/api";
 import { tmCardPadLg } from "@/lib/learn-classes";
 import { AD_DISPLAY, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 import { tFor } from "@vedic-patro/i18n/runtime";

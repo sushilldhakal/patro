@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroDateClasses as era } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { usePatroYearEraToggle } from "@vedic-patro/features/patro-date";
 import { Box, Pressable, Text } from "@vedic-patro/ui";

@@ -4,7 +4,7 @@ import type { CardinalWall } from "@vedic-patro/domain/vastu";
 import { VASTU_INK } from "@vedic-patro/domain/vastu";
 import { CX, CY } from "@vedic-patro/domain/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK, usePlotPlanner } from "@vedic-patro/features/vastu";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import type { PlotPlannerProps } from "../contract";
 import { HouseSketch } from "./HouseSketch";

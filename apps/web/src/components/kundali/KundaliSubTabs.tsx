@@ -1,5 +1,5 @@
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export function KundaliSubTabs<T extends string>({

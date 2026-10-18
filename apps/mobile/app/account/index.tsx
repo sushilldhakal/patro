@@ -15,7 +15,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { brand, illustration } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 export default function AccountScreen() {

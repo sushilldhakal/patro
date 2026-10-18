@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { PageShell } from "@/components/PageShell";
 import { GrahaBanner, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";

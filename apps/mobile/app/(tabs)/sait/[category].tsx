@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useSaitPage } from "@vedic-patro/features/sait";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";

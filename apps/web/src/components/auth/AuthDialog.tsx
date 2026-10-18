@@ -4,7 +4,7 @@ import { useAuthDialog, type AuthDialogMode } from "@vedic-patro/features/accoun
 import { Box, Text } from "@vedic-patro/ui";
 import { AuthDialog as AuthDialogView } from "@vedic-patro/ui/kit/shell";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { GoogleSignInButton, googleSignInEnabled } from "./GoogleSignInButton";
 import { FacebookSignInButton, facebookSignInEnabled } from "./FacebookSignInButton";
 

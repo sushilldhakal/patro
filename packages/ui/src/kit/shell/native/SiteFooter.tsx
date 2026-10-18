@@ -1,5 +1,5 @@
 import { Linking } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { shellClasses as shell } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { useSiteFooter } from "@vedic-patro/features/common";
 import { Box, Pressable, Text } from "@vedic-patro/ui";

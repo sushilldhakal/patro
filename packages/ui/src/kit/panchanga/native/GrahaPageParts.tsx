@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { useAllElementsLink, useElementDescription, useGrahaDescription, type AboutCard } from "@vedic-patro/features/graha";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { Card, Icon, Text } from "@vedic-patro/ui";
 import { moonIcon, rotateCcwIcon, sparklesIcon, sunriseIcon } from "../icons";

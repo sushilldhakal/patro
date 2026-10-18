@@ -7,7 +7,7 @@ import {
   isPanchangaTabRoute,
   isVastuRoute,
 } from "@/lib/app-routes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { featureIcon } from "@/lib/nav-icons";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";

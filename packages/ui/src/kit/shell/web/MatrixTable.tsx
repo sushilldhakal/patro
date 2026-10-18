@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { MatrixTableProps } from "../contract";
 
 /** A table whose header cells can span columns. The website draws a real table. */

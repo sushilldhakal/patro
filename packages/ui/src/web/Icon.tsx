@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { iconSize } from "@vedic-patro/design-tokens";
 import { iconStrokeWidth } from "@vedic-patro/icons";
 import { iconToneClass } from "../classes";

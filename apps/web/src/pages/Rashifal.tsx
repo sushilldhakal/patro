@@ -13,7 +13,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { usePatroDayUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
 import { useRouteLoading } from "@/lib/route-loading";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { RASHIFAL_PERIOD_ICON } from "@/lib/rashifal-ui";

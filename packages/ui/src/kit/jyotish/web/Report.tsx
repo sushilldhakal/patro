@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ReportConfidence, ReportItem, ReportSection } from "@vedic-patro/api-client";
 import { Trans } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { REPORT_CONFIDENCE_LEVELS, useKundaliReport, useReportLabels, type ReportMetaCell } from "@vedic-patro/features/kundali";
 import { Grid, Box, Icon, Text } from "@vedic-patro/ui";

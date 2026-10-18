@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Switch } from "react-native";
 import type { AshtakutaResult } from "@vedic-patro/api-client";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";

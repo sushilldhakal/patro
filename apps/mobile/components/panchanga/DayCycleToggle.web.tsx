@@ -1,7 +1,7 @@
 import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { tFor } from "@vedic-patro/i18n/runtime";
 

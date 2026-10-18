@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { ScrollView } from "react-native";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveArticle, resolveSeeAlso, type ResolvedInline } from "@vedic-patro/domain/learn/article-model";
 import { articleClasses as cls } from "@vedic-patro/design-tokens/classes/learn/article-classes";
 import type { ArticleBodyProps } from "../contract";

@@ -13,7 +13,7 @@ import { searchToLocation } from "@/lib/url-state";
 import { fetchMonthCalendar } from "@/lib/api";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 
 const routeApi = getRouteApi("/panchanga-shell/gochar");
 

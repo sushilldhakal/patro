@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDocumentsPage } from "@vedic-patro/features/documents";
 import { isDocumentCategoryId } from "@vedic-patro/domain/document-categories";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";

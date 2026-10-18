@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { PressableProps } from "../contract";
 
 export function Pressable({ onPress, disabled, label, role = "button", selected, className, webClassName, children, testID }: PressableProps) {

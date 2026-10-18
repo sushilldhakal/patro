@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { useDayChapterBar, useDayChapterWelcome } from "@vedic-patro/features/learn";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { edScrub } from "@vedic-patro/design-tokens/classes/diagram-classes";
 import type { DayChapterBarProps, DayChapterWelcomeProps } from "../contract";
 

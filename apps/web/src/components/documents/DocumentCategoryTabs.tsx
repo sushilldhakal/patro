@@ -8,7 +8,7 @@ import {
 } from "@vedic-patro/domain/document-categories";
 import { documentsListSearch, type DocumentCategoryTab, type DocumentSummary } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 

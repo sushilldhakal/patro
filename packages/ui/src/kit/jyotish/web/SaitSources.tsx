@@ -1,5 +1,5 @@
 import { Box, Text } from "@vedic-patro/ui";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useSaitSources } from "@vedic-patro/features/sait";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SaitSourcesProps } from "../contract";

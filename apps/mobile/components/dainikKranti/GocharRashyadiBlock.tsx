@@ -5,7 +5,7 @@ import type { RashyadiSegment } from "@vedic-patro/domain/dainikKranti/rashyadi"
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { D1Chart } from "@/components/panchanga/D1Chart";
 import { GocharKundaliChart, GocharRashyadiTable } from "@vedic-patro/ui/kit/panchanga";
 

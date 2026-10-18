@@ -5,7 +5,7 @@ import { PageShell, PageHeader } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroStickyHeadCell, patroStickyHeadCorner, patroStickyHeadRow } from "@/lib/patro-classes";
 import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";

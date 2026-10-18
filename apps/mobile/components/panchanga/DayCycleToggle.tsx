@@ -4,7 +4,7 @@ import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useThemeColors } from "@/lib/theme-context";
 import { space } from "@vedic-patro/design-tokens";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";

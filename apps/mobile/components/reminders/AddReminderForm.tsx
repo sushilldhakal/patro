@@ -8,7 +8,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { createReminder, listReminders } from "@/lib/notifications/api";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { LEAD_MINUTE_OPTIONS, WINDOW_OPTIONS, type WindowKind } from "@/lib/notifications/types";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 

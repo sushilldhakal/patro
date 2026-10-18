@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { shellClasses as shell } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { Pressable, Text } from "@vedic-patro/ui";
 import type { LanguageButtonProps } from "../contract";

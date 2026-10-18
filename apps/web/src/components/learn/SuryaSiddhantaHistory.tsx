@@ -31,7 +31,7 @@ import {
   tmSecTitle,
   tmSection,
 } from "@/lib/learn-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import {
   HISTORY_ERA_NOTE,
   HISTORY_MILESTONES,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useBhavaDetail, useBhavaDialogCopy, type BhavaShloka } from "@vedic-patro/features/kundali";
 import { Box, Button, Pressable, Sheet, Text } from "@vedic-patro/ui";

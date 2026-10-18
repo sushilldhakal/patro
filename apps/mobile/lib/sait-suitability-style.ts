@@ -1,5 +1,5 @@
 import type { SaitShuddhiTone, SaitSuitability } from "@/lib/api";
-import { SUITABILITY_STYLE as SUITABILITY_LABELS } from "@vedic-patro/domain/sait-suitability";
+import { SUITABILITY_STYLE as SUITABILITY_LABELS } from "@vedic-patro/design-tokens/classes/sait-suitability-classes";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
 
 type Tone = { dot: string; bg: string; fg: string; ring: string; ne: string; en: string };

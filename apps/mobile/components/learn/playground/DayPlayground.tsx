@@ -55,7 +55,7 @@ import { useLocale } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";

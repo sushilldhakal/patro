@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { Grid, Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { RelatedPageLinksProps } from "../contract";
 import { shellIcons } from "../icon-nodes";

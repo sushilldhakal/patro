@@ -34,7 +34,7 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroAsideLink } from "@/lib/patro-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 
 import { tFor } from "@vedic-patro/i18n/runtime";

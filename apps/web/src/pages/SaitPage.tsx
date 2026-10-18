@@ -1,9 +1,9 @@
 import { getRouteApi, useParams } from "@tanstack/react-router";
 import { CalendarHeart, Info } from "lucide-react";
 import { useSaitPage } from "@vedic-patro/features/sait";
-import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
+import { SUITABILITY_STYLE } from "@vedic-patro/design-tokens/classes/sait-suitability-classes";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroCard } from "@/lib/patro-classes";

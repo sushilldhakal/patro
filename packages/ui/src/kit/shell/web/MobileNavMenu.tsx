@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { navMenuClasses as nav } from "@vedic-patro/design-tokens/classes/shell/nav-menu-classes";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import type { MobileNavMenuProps } from "../contract";

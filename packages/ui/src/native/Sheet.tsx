@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
 import { Icon } from "./Icon";

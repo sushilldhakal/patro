@@ -1,5 +1,5 @@
 import { useWindowDimensions } from "react-native";
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { breakpoints } from "@vedic-patro/design-tokens";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";

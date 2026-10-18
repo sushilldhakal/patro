@@ -1,4 +1,4 @@
-import { cn } from "@vedic-patro/domain/utils";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import type { InputProps } from "../contract";
 
 export function Input({ value, onChange, onSubmit, placeholder, type = "text", multiline, disabled, autoFocus, label, className, webClassName, testID }: InputProps) {
