@@ -30,7 +30,7 @@ def panchanga_at_time(
 ):
     """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_panchanga_at_time
+    from services.panchanga_at_time import build_panchanga_at_time
 
     try:
         instant = instant_for_request(
@@ -189,7 +189,8 @@ def kundali_report(
     from datetime import timezone as _tz
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot, build_panchanga_at_time, resolve_vedic_day_anchor
+    from engine.vedic.at_time import build_planetary_snapshot, resolve_vedic_day_anchor
+    from services.panchanga_at_time import build_panchanga_at_time
     from engine.vedic.interpretation import iter_report
     from engine.vedic.shadbala import compute_shadbala
     from engine.vedic.vimshottari import vimshottari_dasha
@@ -418,7 +419,8 @@ def kundali_detail(
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
-    from engine.vedic.kundali_detail import KUNDALI_DETAIL_VERSION, build_kundali_detail
+    from engine.vedic.kundali_detail import KUNDALI_DETAIL_VERSION
+    from services.kundali_detail_api import build_kundali_detail
     from services.response_cache import location_cache_key, serve_cached_json
 
     try:

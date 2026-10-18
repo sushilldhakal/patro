@@ -508,7 +508,7 @@ def _day_payload_for_jd(
         return JSONResponse(content=payload, headers=headers)
 
     if reference == "midnight":
-        from engine.vedic.at_time import build_panchanga_civil_day
+        from services.panchanga_at_time import build_panchanga_civil_day
 
         payload = build_panchanga_civil_day(greg, location)
         if not detail:

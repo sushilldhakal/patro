@@ -10,7 +10,7 @@ from engine.astronomy.location import ObserverLocation
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
 from engine.vedic.ashtakavarga import compute_ashtakavarga
 from engine.vedic.bhava_bala import compute_bhava_bala
-from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
+from engine.vedic.at_time import build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.ghati_time import seconds_to_ghadi_pala
 from engine.vedic.interpretation import (
@@ -2244,7 +2244,7 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-# Bump when build_kundali_detail's output shape or contents change, so the
+# Bump when assemble_kundali_detail's output shape or contents change, so the
 # response cache (keyed by birth instant + location + ayanamsha) in
 # api/kundali.py stops serving pre-change payloads for already-cached charts.
 # v1: initial cached version — dropped the embedded `bhavaReference` blob
@@ -2292,16 +2292,21 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 KUNDALI_DETAIL_VERSION = 7
 
 
-def build_kundali_detail(
+def assemble_kundali_detail(
     instant_local: datetime,
     location: ObserverLocation,
+    panchanga: dict[str, Any],
     ayanamsha: str | None = None,
 ) -> dict[str, Any]:
-    """Assemble the full /kundali/detail JSON payload."""
+    """Assemble the full /kundali/detail JSON payload around a birth-instant panchanga.
+
+    *panchanga* is ``services.panchanga_at_time.build_panchanga_at_time`` for the
+    same instant, location and ayanamsha; ``services.kundali_detail_api`` builds
+    it and calls this.
+    """
     ayanamsha_label, mode_id = resolve_ayanamsha_mode(ayanamsha)
     instant_utc = instant_local.astimezone(timezone.utc)
 
-    panchanga = build_panchanga_at_time(instant_local, location, ayanamsa=mode_id)
     snapshot = build_planetary_snapshot(
         instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode_id,
     )

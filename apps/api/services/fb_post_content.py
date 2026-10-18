@@ -207,7 +207,7 @@ def anga_transition_lines(
 
 
 def _anga_name_at(key: str, instant: datetime, location: ObserverLocation) -> str | None:
-    from engine.vedic.at_time import build_panchanga_at_time
+    from services.panchanga_at_time import build_panchanga_at_time
 
     block = build_panchanga_at_time(instant, location).get(key) or {}
     return block.get("name_ne") or block.get("name")

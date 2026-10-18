@@ -1,7 +1,8 @@
 """Upagraha positions — sun-based formulas and kāla-velā portion scheme."""
 
 from engine.astronomy.location import ObserverLocation
-from engine.vedic.at_time import build_panchanga_at_time, parse_query_datetime
+from engine.vedic.at_time import parse_query_datetime
+from services.panchanga_at_time import build_panchanga_at_time
 from engine.vedic.upagraha import sun_based_upagrahas
 
 

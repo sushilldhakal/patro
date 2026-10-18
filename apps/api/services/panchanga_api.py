@@ -419,7 +419,7 @@ def build_month_calendar_at_clock(
     exclude_international: bool = False,
 ) -> dict[str, Any]:
     """BS month grid with ephemeris-mode panchanga at a fixed civil clock each day."""
-    from engine.vedic.at_time import instant_row_from_date
+    from services.panchanga_at_time import instant_row_from_date
 
     if not 1 <= bs_month <= 12:
         raise ValueError("bs_month must be 1..12")

@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from engine.astronomy.location import ObserverLocation
 from engine.vedic.at_time import parse_query_datetime
-from engine.vedic.kundali_detail import build_kundali_detail
+from services.kundali_detail_api import build_kundali_detail
 
 
 def test_kundali_detail_endpoint():
