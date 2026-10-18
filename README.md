@@ -14,7 +14,8 @@ packages/
   api-client/     API response types and query keys used by both apps
   design-tokens/  colours, the shared type scale, radii, per-page class maps
   i18n/           the Nepali/English catalogue (strings.ts → ne.json / en.json) and the one translator
-  domain/         pure logic and reference data used by both apps
+  domain/         the domain model: pure logic and reference data, no API types
+  read-models/    helpers that turn API responses into what a page shows
   icons/          which icon means what
 ```
 
@@ -47,7 +48,9 @@ TypeScript source; there is no build step.
 - **Change a colour:** edit `packages/design-tokens/src/index.ts`, then
   `npm run tokens` (writes the CSS blocks in both apps).
 - **Domain code** must stay plain TypeScript with no React, React Native or
-  browser APIs — `npm run lint -w @vedic-patro/domain` checks it.
+  browser APIs, and no API response types — `npm run lint -w @vedic-patro/domain`
+  checks it. Code that reads a response goes in `packages/read-models`; class
+  names go in `packages/design-tokens`. See [docs/DDD-PLAN.md](docs/DDD-PLAN.md).
 
 ## Deploying
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Keeps packages/domain portable between the website and the mobile app:
-// plain TypeScript that imports only from inside this package.
+// Keeps packages/domain portable between the website and the mobile app, and
+// free of the API contract: plain TypeScript that imports only from inside this
+// package (plus a few platform-free maths libraries). Code that reads API
+// responses belongs in packages/read-models; class names in design-tokens.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
@@ -22,12 +24,12 @@ function check(path) {
   for (const m of text.matchAll(/^[ \t]*(import|export)(\s+type)?\s*(?:\{[^}]*\}|\*(?:\s+as\s+[\w$]+)?|[\w$]+(?:\s*,\s*\{[^}]*\})?)\s*from\s*["']([^"']+)["']|^[ \t]*import\s+["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/gm)) {
     const spec = m[3] ?? m[4] ?? m[5];
     if (spec.startsWith("./") || spec.startsWith("../")) continue;
-    // API response types are the one thing domain code may name from outside —
-    // type-only, so there is no runtime edge between the packages.
-    if (spec === "@vedic-patro/api-client" && m[2]) continue;
-    // Pure-JS helpers with no platform code.
-    if (["clsx", "tailwind-merge", "three", "healpix-ts"].includes(spec)) continue;
-    problems.push(`${rel}: imports "${spec}" — domain files may only import from this package (plus \`import type\` from @vedic-patro/api-client)`);
+    // Pure-JS maths with no platform code.
+    if (["three", "healpix-ts"].includes(spec)) continue;
+    const hint = spec.startsWith("@vedic-patro/api-client")
+      ? " — code that reads API responses goes in packages/read-models"
+      : " — domain files may only import from this package";
+    problems.push(`${rel}: imports "${spec}"${hint}`);
   }
   if (/\b(window|document|localStorage|navigator)\.[A-Za-z_]/.test(text)) {
     problems.push(`${rel}: uses a browser API — keep platform code out of packages/domain`);
