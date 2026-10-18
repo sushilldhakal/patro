@@ -12,16 +12,20 @@ from sqlalchemy import select
 from api.deps import LocationDep
 from app.security import CurrentUser, DbSession
 from database.models import Device, Profile, Reminder
+from engine.identity.profiles import ProfileNotFound
+from app.routers.profiles import profile_not_found
+from services.identity.profile_store import SqlProfileRepository
+from services.identity.profiles import get_profile
 from services.daily_guidance import MAX_DAYS, build_guidance_range
 
 router = APIRouter(tags=["guidance"])
 
 
 def _owned_profile(db, user, profile_id: str) -> Profile:
-    profile = db.get(Profile, profile_id)
-    if profile is None or profile.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
-    return profile
+    try:
+        return get_profile(SqlProfileRepository(db), user.id, profile_id)
+    except ProfileNotFound:
+        raise profile_not_found() from None
 
 
 def _natal_for(profile: Profile):
