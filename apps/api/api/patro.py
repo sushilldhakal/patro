@@ -130,7 +130,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
 def generate_panchanga_popular_cities(bs_year: int, force: bool = Query(False)):
     """Precompute panchanga cache for all popular cities."""
     _validate_bs_year(bs_year)
-    from engine.astronomy.location import resolve_location_from_query
+    from services.observer_location import resolve_location_from_query
     from engine.vedic.bikram_sambat import iter_bs_month_days
     from services.cities_db import POPULAR_CITY_IDS
     from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys

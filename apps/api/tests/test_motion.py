@@ -97,7 +97,7 @@ class TestCallSitesAgree:
             assert row["motion"] == ("Vakri" if row["is_retrograde"] else "Margi")
 
     def test_graha_sthiti_matches_gochar(self):
-        from engine.astronomy.location import resolve_location_from_query
+        from services.observer_location import resolve_location_from_query
         from engine.vedic.gochar import get_gochar_table
         from engine.vedic.graha_detail import build_graha_sthiti
 

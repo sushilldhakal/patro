@@ -20,8 +20,8 @@ from engine.astronomy.location import (
     DEFAULT_LOCATION,
     ObserverLocation,
     resolve_location,
-    resolve_location_from_query,
 )
+from services.observer_location import resolve_location_from_query
 from services.fb_post_content import periods_summary, planets_summary
 from services.og_image import og_fields, render_panchanga_og
 from services.panchanga_api import build_daily_state

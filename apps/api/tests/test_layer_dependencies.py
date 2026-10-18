@@ -34,9 +34,7 @@ _OUTER = frozenset({
 
 # (engine file, imported top-level module) pairs still being migrated out.
 _ALLOWED: frozenset[tuple[str, str]] = frozenset({
-    ("engine/astronomy/location.py", "services"),
     ("engine/vedic/at_time.py", "services"),
-    ("engine/vedic/bikram_sambat.py", "app"),
     ("engine/vedic/daily.py", "services"),
     ("engine/vedic/daily_civil.py", "services"),
     ("engine/vedic/vastu/architecture.py", "services"),

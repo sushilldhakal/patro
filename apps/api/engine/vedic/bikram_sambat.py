@@ -501,7 +501,7 @@ def format_bs_date(bs_year: int, bs_month: int, bs_day: int) -> str:
 
 
 def parse_bs_date(value: str) -> tuple[int, int, int]:
-    from app.relative_day import is_relative_day_key
+    from engine.calendar.day_keys import is_relative_day_key
 
     if is_relative_day_key(value):
         key = value.strip().lower()

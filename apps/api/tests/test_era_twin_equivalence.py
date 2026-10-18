@@ -21,7 +21,7 @@ from datetime import date
 import pytest
 
 from engine.astronomy.jd_calendar import CivilDay, civil_iso_from_date
-from engine.astronomy.location import resolve_location_from_query
+from services.observer_location import resolve_location_from_query
 
 # A modern day well inside the .se1 range, and a second one in a different
 # season so a seasonal bug can't pass by coincidence.

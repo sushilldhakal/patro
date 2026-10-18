@@ -7,7 +7,8 @@ from typing import Annotated, Any, Literal
 
 from fastapi import Depends, HTTPException, Query
 
-from engine.astronomy.location import ObserverLocation, resolve_location_from_query
+from engine.astronomy.location import ObserverLocation
+from services.observer_location import resolve_location_from_query
 from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 
 

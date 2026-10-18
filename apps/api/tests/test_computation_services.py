@@ -219,7 +219,7 @@ class TestSunService:
         assert min(values) > -17.0
 
     def test_sunrise_matches_the_day_typed_helper(self):
-        from engine.astronomy.location import resolve_location_from_query
+        from services.observer_location import resolve_location_from_query
         from engine.astronomy.sun import calculate_sunrise
 
         location = resolve_location_from_query(

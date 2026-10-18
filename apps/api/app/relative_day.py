@@ -7,16 +7,7 @@ from typing import Mapping
 from zoneinfo import ZoneInfo
 
 from engine.astronomy.jd_calendar import CivilDay, civil_day_add
-
-RELATIVE_DAY_KEYS = frozenset({"today", "tomorrow", "now", "current"})
-
-
-def normalize_day_key(key: str) -> str:
-    return key.strip().lower()
-
-
-def is_relative_day_key(key: str) -> bool:
-    return normalize_day_key(key) in RELATIVE_DAY_KEYS
+from engine.calendar.day_keys import RELATIVE_DAY_KEYS, is_relative_day_key, normalize_day_key  # noqa: F401
 
 
 def path_relative_day_key(path: str) -> str | None:
@@ -45,7 +36,8 @@ def _as_float(raw: str | None) -> float | None:
 
 
 def observer_timezone_from_params(params: Mapping[str, str]) -> str:
-    from engine.astronomy.location import DEFAULT_LOCATION, resolve_location_from_query
+    from engine.astronomy.location import DEFAULT_LOCATION
+    from services.observer_location import resolve_location_from_query
 
     tz = (params.get("timezone") or params.get("tz") or "").strip() or None
     try:

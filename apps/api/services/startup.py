@@ -160,7 +160,7 @@ def _sait_warm_locations() -> list:
     if count <= 0:
         return locations
     try:
-        from engine.astronomy.location import resolve_location_from_query
+        from services.observer_location import resolve_location_from_query
         from services.cities_db import get_city_by_id
 
         seen = {DEFAULT_LOCATION.cache_key()}
@@ -250,7 +250,7 @@ def _warm_popular_city_caches() -> None:
     if not _warm_popular_cities_enabled():
         return
 
-    from engine.astronomy.location import resolve_location_from_query
+    from services.observer_location import resolve_location_from_query
     from services.cities_db import get_city_by_id
     from services.panchanga_api import build_year_calendar, build_year_sun_times
     from services.year_cache import read_year_cache, write_year_cache

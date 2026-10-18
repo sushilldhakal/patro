@@ -31,8 +31,8 @@ from engine.astronomy.location import (
     MIN_ALTITUDE_M,
     ObserverLocation,
     resolve_location,
-    resolve_location_from_query,
 )
+from services.observer_location import resolve_location_from_query
 
 ROOT = Path(__file__).resolve().parent.parent
 
