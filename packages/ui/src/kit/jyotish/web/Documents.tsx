@@ -96,7 +96,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
           className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow, "text-left backdrop-blur transition-colors hover:border-secondary/60")}
         >
           <span className={cn(documentsClasses.barPlay, "text-secondary-foreground")}>
-            <Icon node={iconPlay} size={20} tone="foreground" filled className="ml-0.5" />
+            <Icon node={iconPlay} size={20} tone="onSecondary" filled className="ml-0.5" />
           </span>
           <span className={documentsClasses.fill}>
             <span className={cn(documentsClasses.barTitle, "block truncate")}>{bar.idle.title}</span>
@@ -112,7 +112,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
       <div className={DOCK}>
         <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow, "backdrop-blur")}>
           <button type="button" onClick={props.onToggleFull} aria-label={bar.full.toggleLabel} className={cn(documentsClasses.barPlay, "text-secondary-foreground")}>
-            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="foreground" filled className={bar.full.playing ? undefined : "ml-0.5"} />
+            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled className={bar.full.playing ? undefined : "ml-0.5"} />
           </button>
           <Box className={documentsClasses.fill}>
             <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{copy.playFull}</Text>
@@ -153,7 +153,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={iconSkipBack} size={16} tone="muted" filled />
           </button>
           <button type="button" onClick={props.onToggleVerse} disabled={!bar.verse.hasClip} aria-label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, "text-secondary-foreground disabled:opacity-40")}>
-            <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="foreground" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
+            <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
           </button>
           <button type="button" onClick={props.onNext} disabled={!props.hasNext} aria-label={copy.nextVerse} className={cn(documentsClasses.barSkip, "text-muted-foreground hover:text-foreground disabled:opacity-30")}>
             <Icon node={iconSkipForward} size={16} tone="muted" filled />

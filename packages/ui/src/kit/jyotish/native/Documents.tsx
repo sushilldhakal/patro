@@ -95,7 +95,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
       <Dock bottom={bottom}>
         <Pressable onPress={bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.()} className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow)}>
           <Box className={documentsClasses.barPlay}>
-            <Icon node={iconPlay} size={20} tone="foreground" filled />
+            <Icon node={iconPlay} size={20} tone="onSecondary" filled />
           </Box>
           <Box className={documentsClasses.fill}>
             <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.idle.title}</Text>
@@ -111,7 +111,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
       <Dock bottom={bottom}>
         <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
           <Pressable onPress={props.onToggleFull} label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
-            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="foreground" filled />
+            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
           </Pressable>
           <Box className={documentsClasses.fill}>
             <Text className={documentsClasses.barKicker} numberOfLines={1}>{copy.playFull}</Text>
@@ -149,7 +149,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={iconSkipBack} size={16} tone="muted" filled />
           </Pressable>
           <Pressable onPress={props.onToggleVerse} disabled={!bar.verse.hasClip} label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, !bar.verse.hasClip && "opacity-40")}>
-            <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="foreground" filled />
+            <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
           </Pressable>
           <Pressable onPress={props.onNext} disabled={!props.hasNext} label={copy.nextVerse} className={cn(documentsClasses.barSkip, !props.hasNext && "opacity-30")}>
             <Icon node={iconSkipForward} size={16} tone="muted" filled />
