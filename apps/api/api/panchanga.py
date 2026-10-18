@@ -66,7 +66,7 @@ def _cached_year_response(
     later one streams the pre-compressed bytes back in milliseconds. Past years
     are served with an immutable long CDN TTL; the live year gets a short one.
     """
-    from services.platform.response_cache import bs_year_cache_control
+    from app.response_cache import bs_year_cache_control
     from services.panchanga.year_cache import read_year_cache, write_year_cache
 
     compressed = read_year_cache(bs_year, location, variant=variant)
@@ -317,7 +317,7 @@ def panchanga_month(
     → served from the gzip response cache; the first request computes (~0.8 s
     cold), later ones stream back in milliseconds.
     """
-    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from app.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     bs_signed = _signed_bs_year_from_browse(era, bs_year)
     _validate_bs_month(bs_month)
@@ -360,7 +360,7 @@ def panchanga_ad_month(
 ):
     """Gregorian (AD) month calendar — Jan–Dec boundaries for English UI."""
     from services.panchanga.panchanga_api import build_ad_month_calendar
-    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from app.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not AD_YEAR_MIN <= ad_year <= AD_YEAR_MAX:
         raise HTTPException(
@@ -406,7 +406,7 @@ def panchanga_bc_month(
     """Gregorian BCE month calendar — positive ``bc_year`` is ``N`` BC (``era=bc``)."""
     from api.deps import validated_year_span_jd
     from services.panchanga.panchanga_api import build_gregorian_browse_month_calendar
-    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from app.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not BC_YEAR_MIN <= bc_year <= BC_YEAR_MAX:
         raise HTTPException(
@@ -480,7 +480,7 @@ def _day_payload_for_jd(
     """
     from engine.astronomy.jd_calendar import format_civil_iso
     from services.panchanga.panchanga_api import resolve_panchanga_jd_ut
-    from services.platform.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
+    from app.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
 
     canonical, civil_day, greg = resolve_panchanga_jd_ut(jd_ut)
 
@@ -673,7 +673,7 @@ def panchanga_rashifal(
     """
     from app.day_resolver import DayResolutionError, day_jd_for_request
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from services.platform.response_cache import (
+    from app.response_cache import (
         DAILY_PANCHANGA_CACHE_CONTROL,
         location_cache_key,
         serve_cached_json,
@@ -936,7 +936,7 @@ def nepal_sait_detail(
     ``liberal`` — switches the nakṣatra tradition without clearing other rules.
     """
     _validate_bs_year(bs_year)
-    from services.platform.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
+    from app.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
     from services.festivals.sait_api import get_sait_detail
 
     exclude_rules = frozenset(
@@ -1001,7 +1001,7 @@ def nepal_sait_personalize(
     from engine.astronomy.timescale import resolve_observer_timezone
 
     _validate_bs_year(bs_year)
-    from services.platform.response_cache import SAIT_CUSTOM_CACHE_CONTROL
+    from app.response_cache import SAIT_CUSTOM_CACHE_CONTROL
     from services.festivals.sait_personalize import compute_janma_from_instant, personalize_sait
 
     birth_date = None
@@ -1371,7 +1371,7 @@ def nepal_special_months(bs_year: int, location: LocationDep, request: Request):
     """Adhik Maas and Kshaya Maas info for a BS year."""
     _validate_bs_year(bs_year)
     from services.festivals.holiday_generator import get_special_months_for_bs_year
-    from services.platform.response_cache import (
+    from app.response_cache import (
         bs_year_cache_control,
         location_cache_key,
         serve_cached_json,

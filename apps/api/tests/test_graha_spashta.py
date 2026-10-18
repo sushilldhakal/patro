@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.ut_instant import as_julian_day
 from engine.calendar.bikram_sambat import bs_to_gregorian

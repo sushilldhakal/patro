@@ -1,1 +1,1 @@
-"""Shared platform: response/blob/Redis caches, payload versions, startup, wiring."""
+"""Shared platform infrastructure: the blob, Redis and cache-metadata stores and payload versions."""

@@ -5,10 +5,10 @@ Retrograde is *not* re-derived here: it delegates to
 service exposes it so routes and builders never have to reach for the raw speed
 and decide for themselves — which is how five inline copies happened.
 
-:func:`spashta_table` is the full स्पष्ट ग्रह row set — every graha with its
-rashi, DMS notation, वक्री flag and अस्त (combustion) flag. It came from
-``swiss_eph.get_all_planetary_positions``; the only change is that it takes a JD
-rather than a ``datetime``.
+:func:`graha_positions` is every graha with its rashi, DMS notation and वक्री
+flag. It came from ``swiss_eph.get_all_planetary_positions``; the only change is
+that it takes a JD rather than a ``datetime``. The अस्त (combustion) flag is a
+siddhantic convention, so ``engine.panchanga.spashta.spashta_table`` adds it.
 
 See docs/computation-architecture-audit.md (sections A3, C, phase 2).
 """
@@ -191,49 +191,13 @@ def _enrich_planet_position(pos: dict[str, Any], *, body: str) -> dict[str, Any]
     }
 
 
-def _annotate_combustion(positions: dict[str, Any]) -> None:
-    """Flag each body ``is_combust`` (अस्त) using the SAME heliacal definition as
-    the standalone /graha-asta page, so the sunrise spashtagraha, D-charts and
-    gochar tables agree with it date-for-date.
-
-    Planets (mars, mercury, jupiter, venus, saturn) reuse the Surya-Siddhanta
-    arcus-visionis orbs from ``engine.jyotish.udayast`` (direction- and
-    retrograde-aware); the Moon uses the चन्द्र तारा अस्त elongation orb from
-    ``engine.jyotish.graha_detail``. The Sun and the shadow nodes (Rahu/Ketu)
-    never combust.
-
-    The orbs live in ``engine.vedic`` and are imported lazily: they are a
-    siddhantic convention, not ephemeris geometry, so they belong above this
-    layer even though the table that consumes them is built here."""
-    from engine.jyotish.graha_detail import MOON_ASTA_ORB
-    from engine.jyotish.udayast import UDAYAST_GRAHAS, combustion_threshold
-
-    sun_lon = positions.get("sun", {}).get("longitude")
-    for key, pos in positions.items():
-        pos["is_combust"] = False
-        if sun_lon is None:
-            continue
-        lon = pos.get("longitude")
-        if lon is None:
-            continue
-        # Geocentric sidereal elongation from the Sun (ayanamsha-independent).
-        diff = (lon - sun_lon) % 360.0
-        separation = min(diff, 360.0 - diff)
-        if key in UDAYAST_GRAHAS:
-            east_of_sun = diff < 180.0
-            retro = bool(pos.get("is_retrograde", False))
-            pos["is_combust"] = separation < combustion_threshold(key, retro, east_of_sun)
-        elif key == "moon":
-            pos["is_combust"] = separation < MOON_ASTA_ORB
-
-
-def spashta_table(
+def graha_positions(
     jd: float,
     *,
     sidereal: bool = True,
     ayanamsa: int = SIDM_LAHIRI,
 ) -> dict[str, Any]:
-    """स्पष्ट ग्रह — every graha at *jd* with rashi, DMS, वक्री and अस्त flags.
+    """Every graha at *jd* with rashi, DMS and वक्री flags (no अस्त flag).
 
     Ketu is derived from Rahu (opposite longitude, negated speed) rather than
     calculated: they are the two ends of one node axis, so computing them
@@ -258,7 +222,6 @@ def spashta_table(
         body="ketu",
     )
 
-    _annotate_combustion(positions)
     return positions
 
 

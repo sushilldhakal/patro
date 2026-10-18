@@ -16,7 +16,7 @@ from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
 from engine.panchanga.angas import panchanga_service
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.panchanga.at_time import (
@@ -64,7 +64,7 @@ def build_panchanga_at_time(
     enrich_snapshot_astro(
         instant_planets, instant_lagna, instant_utc, lat=location.lat, lon=location.lon
     )
-    from engine.jyotish.upagraha import build_upagraha_block
+    from engine.panchanga.upagraha import build_upagraha_block
 
     upagrahas = build_upagraha_block(
         instant_utc,

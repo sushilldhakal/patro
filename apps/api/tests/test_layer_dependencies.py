@@ -8,7 +8,7 @@ cache-aside ended up inside ``get_daily_panchanga`` and a city lookup inside
 ``ObserverLocation`` resolution.
 
 Where the engine needs stored data it declares a ``Protocol`` (a port) and
-``services/platform/wiring.py`` plugs an implementation in — see
+``app/wiring.py`` plugs an implementation in — see
 ``engine.vastu.zone_rules.ZoneRuleIndex``.
 """
 

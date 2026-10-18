@@ -3,7 +3,7 @@
 from engine.astronomy.location import ObserverLocation
 from engine.panchanga.at_time import parse_query_datetime
 from services.panchanga.panchanga_at_time import build_panchanga_at_time
-from engine.jyotish.upagraha import sun_based_upagrahas
+from engine.panchanga.upagraha import sun_based_upagrahas
 
 
 def test_sun_based_upagrahas_classical_arcs():

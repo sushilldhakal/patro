@@ -36,7 +36,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 
 import config
 from services.scripture import documents_db
-from services.platform import response_cache
+from app import response_cache
 
 router = APIRouter(tags=["documents"])
 

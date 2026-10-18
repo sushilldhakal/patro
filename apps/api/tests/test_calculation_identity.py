@@ -35,7 +35,7 @@ class TestLocationIdentityIsSingleSourced:
         """``response_cache.location_cache_key`` must be ``resolve_cache_keys``
         plus filesystem escaping — not a second set of rules. Two independent
         definitions of "same observer" would silently split caches."""
-        from services.platform.response_cache import location_cache_key
+        from app.response_cache import location_cache_key
 
         for name, loc in OBSERVERS:
             canonical = resolve_cache_keys(loc)[0]

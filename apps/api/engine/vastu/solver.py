@@ -377,7 +377,7 @@ def _try_solve(
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = SOLVE_TIME_LIMIT_S
     # Single-threaded and seeded: this response is disk-cached by request
-    # params (services/platform/response_cache.py) and compared for equality in
+    # params (app/response_cache.py) and compared for equality in
     # tests — a multi-worker parallel search can race to different,
     # equally-optimal solutions between runs on the same input, which broke
     # both of those. CP-SAT is deterministic single-threaded.

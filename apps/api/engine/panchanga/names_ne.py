@@ -1,5 +1,8 @@
 """Nepali / Devanagari labels for Panchanga elements."""
 
+from engine.calendar.numerals import NEPALI_DIGITS, to_nepali_digits  # noqa: F401 (re-exported)
+
+
 TITHI_NAMES_NE = [
     "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी",
     "सप्तमी", "अष्टमी", "नवमी", "दशमी", "एकादशी", "द्वादशी",
@@ -52,14 +55,7 @@ LUNAR_MASA_NE: dict[str, str] = {
     "Chaitra": "चैत्र",
 }
 
-NEPALI_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")
-
-
 def lunar_masa_name_ne(name: str | None) -> str | None:
     if not name:
         return None
     return LUNAR_MASA_NE.get(name, name)
-
-
-def to_nepali_digits(value: int | str) -> str:
-    return str(value).translate(NEPALI_DIGITS)

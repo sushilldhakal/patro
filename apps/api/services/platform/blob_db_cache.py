@@ -46,12 +46,12 @@ def load_blob(cache_key: str) -> bytes | None:
         return None
 
 
-def prune_stale_blobs() -> int:
+def prune_stale_blobs(current_version: int) -> int:
     """Delete blob rows from an older payload version; return the count removed.
 
-    Every key embeds ``v{CACHE_PAYLOAD_VERSION}_`` (both the ``year_v24_…`` and
-    ``v24_…`` schemes), so after a version bump the old rows are never read again
-    — they just take up space. This drops them. Safe to call repeatedly (a no-op
+    Every key embeds ``v{current_version}_`` — the panchanga ``CACHE_PAYLOAD_VERSION``,
+    in both the ``year_v24_…`` and ``v24_…`` schemes — so after a version bump the
+    old rows are never read again; they just take up space. This drops them. Safe to call repeatedly (a no-op
     once nothing stale remains) and defensive: a failure is logged, not raised.
     """
     if not db_available():
@@ -61,9 +61,7 @@ def prune_stale_blobs() -> int:
 
         from database.db import db_session
         from database.models import BlobCache
-        from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
-
-        token = f"v{CACHE_PAYLOAD_VERSION}_"
+        token = f"v{current_version}_"
         with db_session() as session:
             keys = session.execute(select(BlobCache.cache_key)).scalars().all()
             stale = [k for k in keys if token not in k]

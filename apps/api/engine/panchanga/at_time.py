@@ -8,7 +8,7 @@ from typing import Any
 from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import UtInstant, as_julian_day
 from engine.panchanga.element_boundaries import (

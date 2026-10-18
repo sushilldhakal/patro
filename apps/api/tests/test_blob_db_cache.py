@@ -42,11 +42,11 @@ def test_prune_drops_only_stale_versions(tmp_path, monkeypatch):
         save_blob(f"v{V}_month_2083_1_ktm", b"current2")    # current (response scheme)
         save_blob("year_v3_2083_full_ktm", b"old")          # stale
         save_blob("v1_month_2083_1_ktm", b"old2")           # stale
-        assert prune_stale_blobs() == 2
+        assert prune_stale_blobs(V) == 2
         # current survives, stale removed, and a second run is a no-op
         assert load_blob(f"year_v{V}_2083_full_ktm") == b"current"
         assert load_blob("year_v3_2083_full_ktm") is None
-        assert prune_stale_blobs() == 0
+        assert prune_stale_blobs(V) == 0
     finally:
         _reset_caches()
 

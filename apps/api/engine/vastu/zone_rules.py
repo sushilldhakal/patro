@@ -9,7 +9,7 @@ avoid. This module derives the same *shape* of answer (preferred/acceptable/
 avoid dir8 zones per subject; a ranked entrance pada per wall) from the
 already-extracted, cross-referenced ``data/vastu_room_index.json`` instead,
 read through a :class:`ZoneRuleIndex` (``services/vastu/vastu_rules_db.py`` is the
-one in production; ``services/platform/wiring.py`` plugs it in at startup).
+one in production; ``app/wiring.py`` plugs it in at startup).
 
 A subject with no room-index entry gets an all-acceptable result — "no
 verified rule available", never an invented default (user's own instruction).
@@ -38,7 +38,7 @@ _index: ZoneRuleIndex | None = None
 
 
 def use_zone_rule_index(index: ZoneRuleIndex) -> None:
-    """Plug in the room-index source (``services.platform.wiring.configure`` does, at startup)."""
+    """Plug in the room-index source (``app.wiring.configure`` does, at startup)."""
     global _index
     _index = index
 
@@ -47,7 +47,7 @@ def _rule_index() -> ZoneRuleIndex:
     if _index is None:
         raise RuntimeError(
             "engine.vastu.zone_rules has no ZoneRuleIndex; "
-            "call services.platform.wiring.configure() at startup"
+            "call app.wiring.configure() at startup"
         )
     return _index
 

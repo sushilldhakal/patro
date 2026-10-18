@@ -515,7 +515,7 @@ def build_day_frame(
     """One :class:`DayFrame` for the sunrise of ``greg`` at ``location``."""
     from engine.astronomy.jd_calendar import civil_day_jd_from_date
     from engine.panchanga.lagna import lagna_service
-    from engine.astronomy.planets import spashta_table
+    from engine.panchanga.spashta import spashta_table
     from engine.astronomy.sun import sun_service
     from engine.astronomy.ut_instant import as_julian_day, local_weekday_py_from_jd
     from engine.jyotish.ashtakavarga import GRAHAS as AV_GRAHAS

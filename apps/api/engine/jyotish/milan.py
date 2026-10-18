@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Any
 
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.ut_instant import as_julian_day
 from engine.jyotish.interpretation import (
     NAKSHATRA_EN,

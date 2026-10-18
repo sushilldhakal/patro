@@ -63,7 +63,7 @@ class TestUniversalTimeContract:
             "engine/astronomy/jd_calendar.py",
             "engine/astronomy/ut_instant.py",
             "engine/astronomy/provenance.py",
-            "services/platform/startup.py",
+            "app/startup.py",
         }, f"swisseph import surface changed: {sorted(importers)}"
 
 

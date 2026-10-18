@@ -18,7 +18,7 @@ from typing import Any
 from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI, default_engine
 from engine.panchanga.lagna import lagna_service
 from engine.panchanga.angas import panchanga_service
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
 from engine.astronomy.ut_instant import as_julian_day
 from engine.jyotish.graha_yuddha import compute_yuddha_bala

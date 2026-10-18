@@ -34,7 +34,7 @@ def ensure_swiss_ephemeris_files() -> bool:
     if extended_ok:
         return True
 
-    api_root = Path(__file__).resolve().parents[2]
+    api_root = Path(__file__).resolve().parent.parent
     script = api_root / "scripts" / "install_ephemeris.py"
     if not script.is_file():
         logger.warning("install_ephemeris.py not found — cannot provision .se1 files")
@@ -135,9 +135,10 @@ def _report_provenance_drift() -> None:
 def _prune_stale_blob_cache() -> None:
     """Drop DB blob rows left over from a previous payload version (once per
     startup, before the warm re-populates the current version)."""
+    from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
     from services.platform.blob_db_cache import prune_stale_blobs
 
-    removed = prune_stale_blobs()
+    removed = prune_stale_blobs(CACHE_PAYLOAD_VERSION)
     if removed:
         logger.info("Pruned %d stale blob-cache rows (old payload version)", removed)
 

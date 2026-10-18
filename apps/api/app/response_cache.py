@@ -28,7 +28,7 @@ from services.platform import redis_cache
 from services.platform.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
-RESPONSE_CACHE_DIR = Path(__file__).resolve().parents[2] / "cache" / "response"
+RESPONSE_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "response"
 
 # Deterministic panchanga for a fixed input is immutable until the engine
 # changes; let browsers (max-age) and shared/CDN caches (s-maxage) hold it too.

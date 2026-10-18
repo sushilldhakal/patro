@@ -30,7 +30,8 @@ from engine.astronomy.engine import default_engine
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.moon import PHASE_NAMES, moon_service
 from engine.panchanga.angas import panchanga_service
-from engine.astronomy.planets import GRAHA_KEYS, planet_service, spashta_table
+from engine.astronomy.planets import GRAHA_KEYS, planet_service
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.rashi import RASHI_NAMES, RITU_DATA, rashi_service
 from engine.astronomy.sun import sun_service
 

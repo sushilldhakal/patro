@@ -125,7 +125,7 @@ class TestGrahaLongitudes:
     DATASET = "graha_longitudes"
 
     def test_matches_published_longitude(self):
-        from engine.astronomy.planets import spashta_table
+        from engine.panchanga.spashta import spashta_table
         from engine.astronomy.sidereal import resolve_ayanamsha_mode
         from engine.astronomy.ut_instant import as_julian_day
         from engine.panchanga.at_time import parse_query_datetime

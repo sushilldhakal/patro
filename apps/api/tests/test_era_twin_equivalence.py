@@ -326,7 +326,7 @@ class TestRetrogradeHasOneAnswer:
     def test_nodes_are_retrograde_by_convention_everywhere(self):
         from datetime import datetime, timezone
 
-        from engine.astronomy.planets import spashta_table
+        from engine.panchanga.spashta import spashta_table
         from engine.astronomy.ut_instant import as_julian_day
         from engine.jyotish.gochar import get_gochar_table
 
@@ -344,7 +344,7 @@ class TestRetrogradeHasOneAnswer:
     def test_planet_retrograde_agrees_between_surfaces(self):
         from datetime import datetime, timezone
 
-        from engine.astronomy.planets import spashta_table
+        from engine.panchanga.spashta import spashta_table
         from engine.astronomy.ut_instant import as_julian_day
         from engine.jyotish.gochar import get_gochar_table
 

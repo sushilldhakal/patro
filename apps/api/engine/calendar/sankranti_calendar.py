@@ -8,7 +8,7 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.calendar.bikram_sambat import _sankranti_start_date, gregorian_to_bs
-from engine.panchanga.names_ne import to_nepali_digits
+from engine.calendar.numerals import to_nepali_digits
 from engine.astronomy.ut_instant import day_instant_utc
 from engine.calendar.sankranti import (
     BS_MONTH_NAMES,

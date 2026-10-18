@@ -16,7 +16,7 @@ from app.security import get_current_user
 from database.db import Base, get_db
 from database.models import Profile, User
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.panchanga.daily_guidance import GUIDANCE_VERSION, build_day_guidance, build_guidance_range
+from services.jyotish.daily_guidance import GUIDANCE_VERSION, build_day_guidance, build_guidance_range
 
 
 def test_day_guidance_shape_and_bilingual_parity():

@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from api.deps import LocationDep
 from app.instant_resolver import instant_for_parts, instant_for_request
 from services.panchanga.panchanga_api import build_kundali
-from services.platform.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
+from app.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
 
 router = APIRouter(tags=["kundali"])
 
@@ -126,7 +126,7 @@ def kundali_vimshottari(
     """Vimshottari Mahadasha from Moon sidereal longitude at birth."""
     from datetime import timezone
 
-    from engine.astronomy.planets import spashta_table
+    from engine.panchanga.spashta import spashta_table
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
     from engine.astronomy.ut_instant import as_julian_day
     from engine.jyotish.vimshottari import vimshottari_dasha
@@ -347,7 +347,7 @@ def kundali_yoga_reference(
     and recreated automatically.
     """
     from services.jyotish.yoga_reference_db import get_all, get_by_id, search
-    from services.platform.response_cache import DEFAULT_CACHE_CONTROL
+    from app.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         if id:
@@ -391,7 +391,7 @@ def kundali_bhava_reference():
     that never calls `/kundali/detail`).
     """
     from engine.jyotish.bhava_reference import bhava_reference_payload
-    from services.platform.response_cache import DEFAULT_CACHE_CONTROL
+    from app.response_cache import DEFAULT_CACHE_CONTROL
 
     return JSONResponse(
         content=bhava_reference_payload(),
@@ -421,7 +421,7 @@ def kundali_detail(
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
     from engine.jyotish.kundali_detail import KUNDALI_DETAIL_VERSION
     from services.jyotish.kundali_detail_api import build_kundali_detail
-    from services.platform.response_cache import location_cache_key, serve_cached_json
+    from app.response_cache import location_cache_key, serve_cached_json
 
     try:
         instant = instant_for_request(

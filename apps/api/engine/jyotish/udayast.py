@@ -19,15 +19,13 @@ from engine.astronomy.motion import is_retrograde
 from engine.astronomy.planets import planet_service
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
+from engine.panchanga.asta import UDAYAST_GRAHAS, combustion_threshold  # noqa: F401 (re-exported)
 from engine.jyotish.gochar import (
     GRAHA_META,
     _attach_local_time,
     _entry_sort_key,
     _longitude_for,
 )
-
-# Slow grahas + inner planets (exclude Sun/Moon/Rahu/Ketu for patro udayast rows).
-UDAYAST_GRAHAS: list[str] = ["mars", "mercury", "jupiter", "venus", "saturn"]
 
 _SCAN_STEP = timedelta(hours=2)
 _TOLERANCE = timedelta(minutes=5)
@@ -42,29 +40,6 @@ def _elongation(graha: str, dt: datetime) -> tuple[float, bool, bool]:
     east_of_sun = diff < 180.0
     speed = planet_service.speed(as_julian_day(dt), graha)
     return separation, east_of_sun, is_retrograde(graha, speed)
-
-
-def combustion_threshold(graha: str, retrograde: bool, east_of_sun: bool) -> float:
-    """
-    Surya Siddhanta udaya/asta arcus visionis (degrees), simplified.
-
-    Mercury & Venus use smaller orbs when retrograde; Venus also differs by hemisphere.
-    """
-    if graha == "mars":
-        return 17.0
-    if graha == "jupiter":
-        return 11.0
-    if graha == "saturn":
-        return 15.0
-    if graha == "venus":
-        if retrograde:
-            return 8.0
-        return 10.0
-    if graha == "mercury":
-        if retrograde:
-            return 12.0
-        return 14.0
-    return 14.0
 
 
 def is_heliacally_visible(graha: str, dt: datetime) -> bool:

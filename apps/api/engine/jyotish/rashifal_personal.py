@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from engine.panchanga.lagna import lagna_service
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day

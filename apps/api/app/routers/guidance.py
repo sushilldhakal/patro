@@ -16,7 +16,7 @@ from engine.identity.profiles import ProfileNotFound
 from app.routers.profiles import profile_not_found
 from services.identity.profile_store import SqlProfileRepository
 from services.identity.profiles import get_profile
-from services.panchanga.daily_guidance import MAX_DAYS, build_guidance_range
+from services.jyotish.daily_guidance import MAX_DAYS, build_guidance_range
 
 router = APIRouter(tags=["guidance"])
 

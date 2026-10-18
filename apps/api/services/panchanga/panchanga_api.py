@@ -28,7 +28,7 @@ from engine.calendar.bikram_sambat import (
 )
 from engine.calendar.samvatsara import samvatsara_payload_for_bs_year
 from services.panchanga.daily_panchanga import get_daily_panchanga
-from services.festivals.patro_generator import collect_bs_year_festivals, festivals_for_day
+from services.panchanga.festival_port import festival_calendar
 
 
 def _panchanga_for_patro_day(
@@ -424,11 +424,11 @@ def build_month_calendar_at_clock(
     if not 1 <= bs_month <= 12:
         raise ValueError("bs_month must be 1..12")
 
-    festivals = collect_bs_year_festivals(bs_year, location)
+    festivals = festival_calendar().collect_bs_year_festivals(bs_year, location)
     calendar: list[dict[str, Any]] = []
 
     for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
-        day_festivals = festivals_for_day(festivals, greg)
+        day_festivals = festival_calendar().festivals_for_day(festivals, greg)
         row = instant_row_from_date(greg, clock, location)
         row["festivals"] = _day_festival_names(day_festivals, exclude_international=exclude_international)
         if not full:
@@ -571,14 +571,14 @@ def build_month_calendar(
 
     festivals: list[dict[str, Any]] = []
     if patro_year_supports_gregorian_festival_rules(bs_year):
-        festivals = collect_bs_year_festivals(bs_year, location)
+        festivals = festival_calendar().collect_bs_year_festivals(bs_year, location)
 
     calendar: list[dict[str, Any]] = []
 
     for bs_day, civil_iso in iter_bs_month_civil_days(bs_year, bs_month):
         civil = parse_civil_iso(civil_iso)
         greg = date_if_supported(civil.year, civil.month, civil.day)
-        day_festivals = festivals_for_day(festivals, greg) if greg is not None else []
+        day_festivals = festival_calendar().festivals_for_day(festivals, greg) if greg is not None else []
         panchanga = _panchanga_for_patro_day(bs_year, bs_month, bs_day, civil_iso, location)
         calendar.append(
             _month_row_from_panchanga(
@@ -665,7 +665,7 @@ def build_gregorian_browse_month_calendar(
     for bs_year in bs_years:
         if not patro_year_supports_gregorian_festival_rules(bs_year):
             continue
-        for f in collect_bs_year_festivals(bs_year, location):
+        for f in festival_calendar().collect_bs_year_festivals(bs_year, location):
             if f["id"] not in seen_ids:
                 seen_ids.add(f["id"])
                 festivals.append(f)
@@ -675,7 +675,7 @@ def build_gregorian_browse_month_calendar(
         civil = CivilDay.from_jd_ut(civil_day_add(jd_start, offset))
         bs_y, bs_m, bs_d = gregorian_to_bs(civil)
         greg = date_if_supported(civil.year, civil.month, civil.day)
-        day_festivals = festivals_for_day(festivals, greg) if greg is not None else []
+        day_festivals = festival_calendar().festivals_for_day(festivals, greg) if greg is not None else []
         if greg is not None:
             panchanga = get_daily_panchanga(greg, location)
             date_ad = greg.isoformat()
@@ -999,8 +999,8 @@ def build_festivals_for_date(
 ) -> dict[str, Any]:
     greg = greg_date_for_date_key(date_key, era)
     bs_year, bs_month, bs_day = gregorian_to_bs(greg)
-    festivals = collect_bs_year_festivals(bs_year, location)
-    active = festivals_for_day(festivals, greg)
+    festivals = festival_calendar().collect_bs_year_festivals(bs_year, location)
+    active = festival_calendar().festivals_for_day(festivals, greg)
 
     return {
         "date_bs": format_bs_date(bs_year, bs_month, bs_day),

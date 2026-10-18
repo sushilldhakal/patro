@@ -27,7 +27,8 @@ from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.motion import is_retrograde
 from engine.astronomy.engine import default_engine
 from engine.panchanga.angas import NAKSHATRA_NAMES
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
+from engine.panchanga.asta import MOON_ASTA_ORB  # noqa: F401 (re-exported)
 from engine.astronomy.rashi import RASHI_NAMES_NE
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
@@ -49,12 +50,6 @@ YEARLY_GRAHAS: list[str] = ["mercury", "venus", "mars", "jupiter", "saturn"]
 # use the Surya-Siddhanta heliacal orbs from engine.jyotish.udayast.
 ASTA_PLANET_GRAHAS: list[str] = ["mercury", "venus", "mars", "jupiter", "saturn"]
 ASTA_GRAHAS: list[str] = ["mercury", "venus", "moon", "mars", "jupiter", "saturn"]
-
-# Moon Tara Asta combustion orb (Sun–Moon longitudinal elongation, degrees). The
-# Moon counts as combust on any civil day it dips below this; the reported window
-# runs from moonrise of the first such day to moonset of the last. Calibrated to
-# the standard Nepali patro चन्द्र तारा अस्त tables (13°).
-MOON_ASTA_ORB = 13.0
 
 
 # ─── formatting helpers ───────────────────────────────────────────────────────

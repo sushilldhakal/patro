@@ -14,7 +14,7 @@ from engine.astronomy.moon import (
     moon_service,
 )
 from engine.panchanga.angas import panchanga_service
-from engine.astronomy.planets import spashta_table
+from engine.panchanga.spashta import spashta_table
 from engine.astronomy.rashi import rashi_service
 from engine.astronomy.sun import sun_service
 from engine.astronomy.timescale import resolve_observer_timezone

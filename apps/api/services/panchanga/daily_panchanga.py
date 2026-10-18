@@ -13,6 +13,7 @@ from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.panchanga.daily import build_daily_panchanga
 from engine.panchanga.daily_civil import build_daily_panchanga_civil
+from services.panchanga.festival_port import festival_calendar
 
 
 def build_daily_panchanga_with_festivals(
@@ -20,10 +21,8 @@ def build_daily_panchanga_with_festivals(
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, Any]:
     """Uncached udaya panchanga for one Gregorian day, with its festival list."""
-    from services.festivals.holiday_generator import festivals_on_date
-
     payload = build_daily_panchanga(target, location)
-    payload["festivals"] = festivals_on_date(target, location)["festivals"]
+    payload["festivals"] = festival_calendar().festivals_on_date(target, location)["festivals"]
     return payload
 
 
@@ -52,9 +51,7 @@ def get_daily_panchanga(
         payload["_from_cache"] = False
 
     if include_festivals:
-        from services.festivals.holiday_generator import festivals_on_date
-
-        day_festivals = festivals_on_date(target, location)
+        day_festivals = festival_calendar().festivals_on_date(target, location)
         payload = {**payload, "festivals": day_festivals["festivals"]}
 
     return payload
