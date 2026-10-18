@@ -62,7 +62,7 @@ from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
-from engine.vedic.navatara import _compute_navatara_number, _navatara_meta
+from engine.vedic.navatara import compute_navatara_number, navatara_meta
 from services.sait_api import get_sait_month_entries
 
 # navatāra tones that make a day inauspicious for the native.
@@ -294,10 +294,10 @@ def _annotate_one(
     t_nak = panchanga_service.nakshatra(sunrise_jd)["number"]
     t_rashi = rashi_service.chandra(sunrise_jd)["number"]
 
-    tara_num = _compute_navatara_number(janma_nak - 1, t_nak - 1, 27)
-    chandra_num = _compute_navatara_number(janma_rashi - 1, t_rashi - 1, 12)
-    tara = _navatara_meta(tara_num)
-    chandra = _navatara_meta(chandra_num)
+    tara_num = compute_navatara_number(janma_nak - 1, t_nak - 1, 27)
+    chandra_num = compute_navatara_number(janma_rashi - 1, t_rashi - 1, 12)
+    tara = navatara_meta(tara_num)
+    chandra = navatara_meta(chandra_num)
 
     moon_house = ((t_rashi - janma_rashi) % 12) + 1
     category_bad = False

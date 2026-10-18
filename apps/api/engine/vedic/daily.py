@@ -85,7 +85,7 @@ def _tithi_name_ne(display: int, paksha: str) -> str:
     return TITHI_NAMES_NE[display - 1]
 
 
-def _paksha_block(lunar: dict, paksha: str) -> dict:
+def paksha_block(lunar: dict, paksha: str) -> dict:
     from engine.vedic.sankranti import BS_MONTH_NAMES
 
     # Nepali patro reckons lunar months pūrṇimānta (pūrṇimā→pūrṇimā), so the
@@ -343,7 +343,7 @@ def _assemble_udaya_panchanga(
         "nakshatra": build_nakshatra_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
         "yoga": build_yoga_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
         "karana": build_karana_block(sunrise_utc, sunrise_utc, location.timezone),
-        "paksha": _paksha_block(lunar, paksha),
+        "paksha": paksha_block(lunar, paksha),
         "chandra_rashi": chandra_rashi,
         # Geometric Moon phase, read at the same sunrise as everything else.
         # Cut from the Sun→Moon elongation — the identical angle the tithi comes

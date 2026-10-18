@@ -23,14 +23,14 @@ _NAVATARA_TYPES: list[dict[str, Any]] = [
 ]
 
 
-def _compute_navatara_number(moon_idx: int, target_idx: int, cycle_size: int) -> int:
+def compute_navatara_number(moon_idx: int, target_idx: int, cycle_size: int) -> int:
     diff = (target_idx - moon_idx + cycle_size) % cycle_size
     if diff == 0:
         return 1
     return ((9 - (diff % 9)) % 9) + 1
 
 
-def _navatara_meta(tara_num: int) -> dict[str, Any]:
+def navatara_meta(tara_num: int) -> dict[str, Any]:
     row = next((t for t in _NAVATARA_TYPES if t["id"] == tara_num), _NAVATARA_TYPES[0])
     return {
         "tara": row["tara"],
@@ -48,8 +48,8 @@ def _build_table(
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for idx, name_ne in enumerate(names_ne):
-        tara_num = _compute_navatara_number(moon_idx, idx, cycle_size)
-        meta = _navatara_meta(tara_num)
+        tara_num = compute_navatara_number(moon_idx, idx, cycle_size)
+        meta = navatara_meta(tara_num)
         rows.append(
             {
                 "index": idx,

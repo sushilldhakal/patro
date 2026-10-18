@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
 from services.holiday_generator import festivals_on_date, load_rules
-from services.patro_generator import _festivals_for_day
+from services.patro_generator import festivals_for_day
 from services.holiday_generator import (
     filter_redundant_day_festivals,
     filter_redundant_year_festivals,
@@ -105,7 +105,7 @@ def test_year_filter_keeps_a_multi_day_festival_covered_on_one_of_its_days():
 def test_janai_purnima_day_drops_generic_purnima_vrata():
     bs_payload = get_bs_festivals(2083, DEFAULT_LOCATION)
     day = date(2026, 8, 28)
-    active = _festivals_for_day(bs_payload["festivals"], day)
+    active = festivals_for_day(bs_payload["festivals"], day)
     ids = {f["id"] for f in active}
 
     assert "janai-purnima" in ids

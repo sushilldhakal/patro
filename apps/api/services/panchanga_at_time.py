@@ -198,8 +198,8 @@ def build_panchanga_civil_day(
         build_udaya_lagna,
     )
     from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
-    from engine.vedic.daily import _paksha_block
-    from services.panchanga_api import _element_state, build_daily_state
+    from engine.vedic.daily import paksha_block
+    from services.panchanga_api import element_state, build_daily_state
 
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
     tz = resolve_observer_timezone(
@@ -230,7 +230,7 @@ def build_panchanga_civil_day(
     )
     nak_block = angas["nakshatra"]
     tithi_info = calculate_tithi(midnight_utc)
-    paksha = _paksha_block(lunar, tithi_info["paksha"])
+    paksha = paksha_block(lunar, tithi_info["paksha"])
     midnight_jd = as_julian_day(midnight_utc)
     chandra_rashi = rashi_service.chandra(midnight_jd)
     surya_rashi = rashi_service.surya(midnight_jd)
@@ -302,10 +302,10 @@ def build_panchanga_civil_day(
             # re-read at local midnight, not at the udaya day's sunrise.
             "anchor": "midnight",
             "panchanga_date_ad": greg.isoformat(),
-            "tithi": _element_state(angas["tithi"], location.timezone),
-            "nakshatra": _element_state(angas["nakshatra"], location.timezone),
-            "yoga": _element_state(angas["yoga"], location.timezone),
-            "karana": _element_state(angas["karana"], location.timezone),
+            "tithi": element_state(angas["tithi"], location.timezone),
+            "nakshatra": element_state(angas["nakshatra"], location.timezone),
+            "yoga": element_state(angas["yoga"], location.timezone),
+            "karana": element_state(angas["karana"], location.timezone),
             "paksha": paksha["label_en"],
             "paksha_ne": paksha["label_ne"],
             "chandra_rashi": chandra_rashi["name"],

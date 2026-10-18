@@ -91,7 +91,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
     import calendar as _cal
     from engine.vedic.bikram_sambat import gregorian_to_bs
     from services.daily_panchanga import get_daily_panchanga
-    from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
+    from services.patro_generator import collect_bs_year_festivals, festivals_for_day
 
     last_day = _cal.monthrange(ad_year, ad_month)[1]
     month_start_ad = date(ad_year, ad_month, 1)
@@ -101,7 +101,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
     all_festivals: list[dict] = []
     seen_ids: set[str] = set()
     for bs_year in bs_years:
-        for f in _collect_bs_year_festivals(bs_year, location):
+        for f in collect_bs_year_festivals(bs_year, location):
             if f["id"] not in seen_ids:
                 seen_ids.add(f["id"])
                 all_festivals.append(f)
@@ -114,7 +114,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
         days.append({
             "date_ad": current.isoformat(),
             **p,
-            "festivals": _festivals_for_day(current, all_festivals),
+            "festivals": festivals_for_day(current, all_festivals),
         })
         current += timedelta(days=1)
 

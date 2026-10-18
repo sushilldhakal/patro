@@ -60,7 +60,7 @@ def save_sait_cache(payload: dict[str, Any], location: ObserverLocation) -> None
         json.dump(payload, fh, ensure_ascii=False, indent=2)
 
 
-def _scan_year(bs_year, category, location, *, use_muhurta, checker, rule) -> dict[str, list[int]]:
+def scan_year(bs_year, category, location, *, use_muhurta, checker, rule) -> dict[str, list[int]]:
     """Days in each BS month that qualify, under an explicit muhūrta ``rule``
     (or the sunrise ``checker`` for the deterministic Vās categories)."""
     by_month: dict[str, list[int]] = {}
@@ -104,7 +104,7 @@ def generate_sait_months(
         raise ValueError(f"Unknown sait category: {category}")
 
     rule = CEREMONY_RULES.get(category) if use_muhurta else None
-    by_month = _scan_year(
+    by_month = scan_year(
         bs_year, category, location, use_muhurta=use_muhurta, checker=checker, rule=rule
     )
     if (
@@ -113,7 +113,7 @@ def generate_sait_months(
         and _day_total(by_month) < rule.fallback_min_days
     ):
         widened = replace(rule, nakshatras=rule.fallback_nakshatras)
-        by_month = _scan_year(
+        by_month = scan_year(
             bs_year, category, location, use_muhurta=True, checker=None, rule=widened
         )
         return by_month, True

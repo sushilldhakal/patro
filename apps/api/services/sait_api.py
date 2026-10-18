@@ -144,12 +144,12 @@ def _custom_year_by_month(
         apply_nakshatra_mode,
         relax_rule,
     )
-    from services.sait_generator import _scan_year
+    from services.sait_generator import scan_year
 
     detail_rule = relax_rule(category, CEREMONY_RULES[category], exclude)
     if nakshatra_mode:
         detail_rule = apply_nakshatra_mode(detail_rule, nakshatra_mode)
-    by_month = _scan_year(
+    by_month = scan_year(
         bs_year, category, location,
         use_muhurta=True, checker=None, rule=detail_rule,
     )

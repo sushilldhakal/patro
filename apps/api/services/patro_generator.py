@@ -18,7 +18,7 @@ from services.cache_meta import stamp_payload
 from services.holiday_generator import filter_redundant_day_festivals, get_bs_festivals
 
 
-def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
+def festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
     active = []
     for holiday in all_holidays:
         start = date.fromisoformat(holiday["start_date"])
@@ -28,7 +28,7 @@ def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
     return filter_redundant_day_festivals(active)
 
 
-def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
+def collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
     payload = get_bs_festivals(bs_year, location)
     return payload["festivals"]
 
@@ -47,7 +47,7 @@ def generate_bs_month_patro(
     month_start = get_bs_month_start(bs_year, bs_month)
     month_length = get_bs_month_length(bs_year, bs_month)
     month_mid = month_start + timedelta(days=min(14, month_length - 1))
-    festivals = _collect_bs_year_festivals(bs_year, location)
+    festivals = collect_bs_year_festivals(bs_year, location)
     mid_panchanga = get_daily_panchanga(month_mid, location)
     lunar = mid_panchanga["lunar_month"]
 
@@ -56,7 +56,7 @@ def generate_bs_month_patro(
         entry: dict[str, Any] = {
             "bs_day": bs_day,
             "date": greg.isoformat(),
-            "festivals": _festivals_for_day(festivals, greg),
+            "festivals": festivals_for_day(festivals, greg),
         }
         if include_panchanga:
             panchanga = get_daily_panchanga(greg, location)
@@ -112,7 +112,7 @@ def generate_patro(
         for m in range(1, 13)
     ]
     year_start, year_end = bs_year_date_range(bs_year)
-    festivals = _collect_bs_year_festivals(bs_year, location)
+    festivals = collect_bs_year_festivals(bs_year, location)
 
     payload = {
         "bs_year": bs_year,
