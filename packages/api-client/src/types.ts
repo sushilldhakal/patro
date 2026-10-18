@@ -7,6 +7,18 @@ import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
 import type { VastuDirectionId } from "@vedic-patro/domain/vastu";
 import type { PlannedSpace, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import type {
+  ElementKind,
+  GrahaDignity,
+  GrahaRelation,
+  NavataraTone,
+  RashifalPeriod,
+  SaitSuitability,
+} from "@vedic-patro/domain/vocabulary";
+
+// Vocabulary the domain owns; re-exported so app code keeps importing it from the API types.
+export { RASHIFAL_PERIODS } from "@vedic-patro/domain/vocabulary";
+export type { ElementKind, GrahaDignity, GrahaRelation, NavataraTone, RashifalPeriod, SaitSuitability };
 
 export const patroCapabilitiesKey = ["meta", "capabilities"] as const;
 // ─── Location ─────────────────────────────────────────────────────────────────
@@ -238,7 +250,6 @@ export interface SaitResponse {
 
 export type BratabandhaNakshatraMode = "classical" | "nepali" | "liberal";
 /** Native (profile-based) verdict overlaid on the general listing. */
-export type SaitSuitability = "favourable" | "neutral" | "avoid";
 export type SaitShuddhiTone = "good" | "shanti" | "avoid";
 /** One planet's Graha Śuddhi: its house from the native's janma rāśi. */
 export interface SaitShuddhiPlanet {
@@ -329,7 +340,6 @@ export interface SaitMonthAllResponse {
 
 // ─── Panchanga elements (per-element addressable pages) ───────────────────────
 
-export type ElementKind = "span" | "table";
 /** A boundary instant — machine ISO plus pre-formatted display strings. */
 export interface ElementStamp {
   iso: string;
@@ -425,15 +435,6 @@ export interface DmsParts {
   sec: number;
 }
 
-export type GrahaRelation = "self" | "friend" | "enemy" | "neutral";
-export type GrahaDignity =
-  | "exalted"
-  | "moolatrikona"
-  | "own"
-  | "friend_house"
-  | "neutral_house"
-  | "enemy_house"
-  | "debilitated";
 export interface VargaChartEntry {
   key: string;
   vargaRashi: number;
@@ -1180,7 +1181,6 @@ export interface BalamBlock {
   set2?: BalamChip[];
 }
 
-export type NavataraTone = "best" | "good" | "neutral" | "bad" | "worst";
 export interface NavataraRow {
   index: number;
   name: string;
@@ -1198,8 +1198,6 @@ export interface NavataraTableBlock {
   rows: NavataraRow[];
 }
 
-export const RASHIFAL_PERIODS = ["daily", "weekly", "monthly", "yearly"] as const;
-export type RashifalPeriod = (typeof RASHIFAL_PERIODS)[number];
 /** The six life areas the server scores from each sign's own houses. */
 export const RASHIFAL_DOMAINS = [
   "career",

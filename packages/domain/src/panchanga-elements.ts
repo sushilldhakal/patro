@@ -4,7 +4,7 @@
  * Titles and blurbs live in ne.json / en.json (`panchanga_elements.*`).
  * Use {@link elementTitle} and {@link elementBlurb} from `@/lib/panchanga-i18n`.
  */
-import type { ElementKind } from "@vedic-patro/api-client";
+import type { ElementKind } from "./vocabulary";
 
 export interface ElementMeta {
   id: string;

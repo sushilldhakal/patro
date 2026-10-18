@@ -4,7 +4,7 @@
  * see /kundali/detail.
  */
 
-import type { GrahaDignity, GrahaRelation } from "@vedic-patro/api-client";
+import type { GrahaDignity, GrahaRelation } from "./vocabulary";
 
 /** Nine grahas keyed the same way as the API planet blocks. */
 export type GrahaKey =

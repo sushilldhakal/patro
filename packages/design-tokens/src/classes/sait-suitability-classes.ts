@@ -1,5 +1,4 @@
-/** Same union as the API's SaitSuitability (api-client), restated so tokens stay contract-free. */
-export type SaitSuitability = "favourable" | "neutral" | "avoid";
+import type { SaitSuitability } from "@vedic-patro/domain/vocabulary";
 
 /** Visual treatment for a native (profile-based) per-day verdict. */
 export const SUITABILITY_STYLE: Record<

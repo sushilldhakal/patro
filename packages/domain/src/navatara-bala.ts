@@ -1,4 +1,5 @@
-import type { NavataraRow, NavataraTone } from "@vedic-patro/api-client";
+import type { NavataraRow } from "@vedic-patro/api-client";
+import type { NavataraTone } from "./vocabulary";
 import { normalizeLang } from "./locale";
 
 export type { NavataraRow, NavataraTableBlock, NavataraTone } from "@vedic-patro/api-client";

@@ -1,4 +1,4 @@
-import type { RashifalPeriod } from "@vedic-patro/api-client";
+import type { RashifalPeriod } from "./vocabulary";
 import { formatBsCivilIsoRange } from "./bs-calendar";
 import { toDevanagariDigits } from "./locale";
 import { addCivilDays, parseCivilIsoToDate } from "./patro-day";

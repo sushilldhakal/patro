@@ -1,7 +1,6 @@
 /** Rashifal tone colours: the score-bar fill and the tone text, per navatara tone. */
 
-/** Same union as the API's NavataraTone (api-client), restated so tokens stay contract-free. */
-export type NavataraTone = "best" | "good" | "neutral" | "bad" | "worst";
+import type { NavataraTone } from "@vedic-patro/domain/vocabulary";
 
 /**
  * Score bar fill per tone. Kept as a separate scale from the tone *background*
