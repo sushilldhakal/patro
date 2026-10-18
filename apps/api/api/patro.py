@@ -90,7 +90,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
     import calendar as _cal
     from engine.vedic.bikram_sambat import gregorian_to_bs
-    from engine.vedic.daily import get_daily_panchanga
+    from services.daily_panchanga import get_daily_panchanga
     from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
     last_day = _cal.monthrange(ad_year, ad_month)[1]

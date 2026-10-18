@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.daily import get_daily_panchanga
+from services.daily_panchanga import get_daily_panchanga
 from engine.vedic.rashifal import build_daily_rashifal
 from engine.vedic.rashifal_engine import (
     DOMAIN_KEYS,

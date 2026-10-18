@@ -20,7 +20,7 @@ from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.vedic.daily import get_daily_panchanga
+from services.daily_panchanga import get_daily_panchanga
 
 DAY_MIN = 1440.0
 

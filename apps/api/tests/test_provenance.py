@@ -406,7 +406,7 @@ class TestCacheStorage:
 
         import services.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import get_daily_panchanga
+        from services.daily_panchanga import get_daily_panchanga
 
         if not pc.cache_enabled():
             # PATRO_LOCAL_DEV=true (.env.local) disables the SQLite cache, so
@@ -623,7 +623,7 @@ class TestPayloadCompression:
 
         import services.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import get_daily_panchanga
+        from services.daily_panchanga import get_daily_panchanga
 
         path = tmp_path / "p.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
@@ -642,7 +642,7 @@ class TestPayloadCompression:
 
         import services.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import get_daily_panchanga
+        from services.daily_panchanga import get_daily_panchanga
 
         path = tmp_path / "p.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)

@@ -182,8 +182,6 @@ def _assemble_udaya_panchanga(
     lunar: dict,
     lunar_calendar: dict,
     solar_corrections: dict,
-    include_festivals: bool,
-    festival_date: date | None,
 ) -> dict[str, Any]:
     from engine.astronomy.ut_instant import UtInstant
 
@@ -389,12 +387,6 @@ def _assemble_udaya_panchanga(
 
     payload["ayanamsa"] = payload["lahiri_ayanamsa"]
 
-    if include_festivals and festival_date is not None:
-        from services.holiday_generator import festivals_on_date
-
-        day_festivals = festivals_on_date(festival_date, location)
-        payload["festivals"] = day_festivals["festivals"]
-
     return payload
 
 
@@ -460,7 +452,6 @@ def build_daily_panchanga_at_jd(
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
     patro_bs: tuple[int, int, int] | None = None,
-    include_festivals: bool = False,
 ) -> dict[str, Any]:
     """Full udaya panchanga for the civil day named by *jd_ut*.
 
@@ -472,7 +463,8 @@ def build_daily_panchanga_at_jd(
 
     ``patro_bs=None``
         Derive everything from the Gregorian day — real lunar month, real Nepal
-        Sambat, festivals. Only possible when ``datetime.date`` can hold the year.
+        Sambat. Only possible when ``datetime.date`` can hold the year (and only
+        then can ``services.daily_panchanga`` attach festivals).
     ``patro_bs=(year, month, day)``
         The caller resolved the day on the signed patro axis. The CE-only
         calendar engines cannot speak to it, so the lunar and NS blocks are
@@ -536,7 +528,6 @@ def build_daily_panchanga_at_jd(
         )
         date_label = target.isoformat()
         solar_anchor_date = target
-        festival_date = target
     else:
         bs_year, bs_month, bs_day = patro_bs
         lunar = _lunar_stub_for_solar_month(bs_month, paksha)
@@ -559,7 +550,6 @@ def build_daily_panchanga_at_jd(
             # only needs the ephemeris instant (sunrise); the date is read for
             # zone meridian / timezone-era metadata, so a fixed probe day serves.
             solar_anchor_date = date(2020, 6, 15)
-        festival_date = None
 
     return _assemble_udaya_panchanga(
         sunrise_utc=sunrise_utc,
@@ -589,53 +579,18 @@ def build_daily_panchanga_at_jd(
             at=sunrise_utc,
             lat=location.lat,
         ),
-        include_festivals=include_festivals,
-        festival_date=festival_date,
     )
 
 
 def build_daily_panchanga(
     target: date,
     location: ObserverLocation = DEFAULT_LOCATION,
-    *,
-    include_festivals: bool = False,
 ) -> dict[str, Any]:
-    """Full udaya panchanga for one Gregorian day. Thin wrapper over the JD builder."""
+    """Full udaya panchanga for one Gregorian day. Thin wrapper over the JD builder.
+
+    Uncached, without festivals: ``services.daily_panchanga`` adds both."""
     return build_daily_panchanga_at_jd(
         civil_day_jd_from_date(target),
         location,
-        include_festivals=include_festivals,
     )
 
-
-def get_daily_panchanga(
-    target: date,
-    location: ObserverLocation = DEFAULT_LOCATION,
-    *,
-    include_festivals: bool = False,
-) -> dict[str, Any]:
-    """
-    Daily panchanga with SQLite cache-aside.
-
-    Cache hit → instant return (no JPL ephemeris work).
-    Cache miss → compute, store, return.
-    """
-    from services.panchanga_cache import get_cached_panchanga, store_panchanga_cache
-
-    cached = get_cached_panchanga(target, location)
-    if cached is not None:
-        payload = dict(cached)
-        payload.pop("_from_cache", None)
-        payload["_from_cache"] = True
-    else:
-        payload = build_daily_panchanga(target, location)
-        store_panchanga_cache(target, location, payload)
-        payload["_from_cache"] = False
-
-    if include_festivals:
-        from services.holiday_generator import festivals_on_date
-
-        day_festivals = festivals_on_date(target, location)
-        payload = {**payload, "festivals": day_festivals["festivals"]}
-
-    return payload

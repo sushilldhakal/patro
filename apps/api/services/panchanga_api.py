@@ -27,7 +27,7 @@ from engine.vedic.bikram_sambat import (
     shaka_year,
 )
 from engine.vedic.samvatsara import samvatsara_payload_for_bs_year
-from engine.vedic.daily import get_daily_panchanga
+from services.daily_panchanga import get_daily_panchanga
 from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
@@ -45,7 +45,7 @@ def _panchanga_for_patro_day(
         # not the solar-BS-month stub used only when the lunar engine is off.
         return get_daily_panchanga(greg, location)
 
-    from engine.vedic.daily_civil import get_daily_panchanga_civil
+    from services.daily_panchanga import get_daily_panchanga_civil
 
     return get_daily_panchanga_civil(
         civil,
@@ -297,7 +297,7 @@ def build_daily_state_civil(
     include_detail: bool = True,
 ) -> dict[str, Any]:
     """Single-day state for BCE civil days on the signed patro axis."""
-    from engine.vedic.daily_civil import get_daily_panchanga_civil
+    from services.daily_panchanga import get_daily_panchanga_civil
 
     raw = get_daily_panchanga_civil(
         civil,
@@ -639,7 +639,7 @@ def build_gregorian_browse_month_calendar(
         format_civil_iso,
     )
     from engine.vedic.bikram_sambat import gregorian_to_bs
-    from engine.vedic.daily_civil import get_daily_panchanga_civil
+    from services.daily_panchanga import get_daily_panchanga_civil
 
     if era not in ("ad", "bc"):
         raise ValueError("era must be ad or bc")

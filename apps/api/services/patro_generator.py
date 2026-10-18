@@ -13,7 +13,7 @@ from engine.vedic.bikram_sambat import (
     get_bs_month_start,
     iter_bs_month_days,
 )
-from engine.vedic.daily import get_daily_panchanga
+from services.daily_panchanga import get_daily_panchanga
 from services.cache_meta import stamp_payload
 from services.holiday_generator import filter_redundant_day_festivals, get_bs_festivals
 

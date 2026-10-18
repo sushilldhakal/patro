@@ -49,6 +49,7 @@ import pytest
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.vedic.daily import build_daily_panchanga, build_daily_panchanga_at_jd
+from services.daily_panchanga import build_daily_panchanga_with_festivals
 
 FIXTURE_DIR = Path(__file__).parent / "data" / "byte_identical"
 
@@ -85,17 +86,17 @@ SCENARIOS: dict[str, Callable[[], dict[str, Any]]] = {
     # representative: lunar-month resolution, solar sankranti anchoring, the
     # Newari calendar, and a deliberately empty day so a rule that starts
     # over-matching is caught too.
-    "festival_dashain": lambda: build_daily_panchanga(
-        date(2026, 10, 20), DEFAULT_LOCATION, include_festivals=True
+    "festival_dashain": lambda: build_daily_panchanga_with_festivals(
+        date(2026, 10, 20), DEFAULT_LOCATION
     ),
-    "festival_new_year": lambda: build_daily_panchanga(
-        date(2026, 4, 14), DEFAULT_LOCATION, include_festivals=True
+    "festival_new_year": lambda: build_daily_panchanga_with_festivals(
+        date(2026, 4, 14), DEFAULT_LOCATION
     ),
-    "festival_tihar": lambda: build_daily_panchanga(
-        date(2026, 11, 8), DEFAULT_LOCATION, include_festivals=True
+    "festival_tihar": lambda: build_daily_panchanga_with_festivals(
+        date(2026, 11, 8), DEFAULT_LOCATION
     ),
-    "festival_quiet_day": lambda: build_daily_panchanga(
-        date(2026, 6, 10), DEFAULT_LOCATION, include_festivals=True
+    "festival_quiet_day": lambda: build_daily_panchanga_with_festivals(
+        date(2026, 6, 10), DEFAULT_LOCATION
     ),
 }
 

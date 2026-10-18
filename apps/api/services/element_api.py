@@ -26,7 +26,7 @@ from engine.astronomy.rashi import rashi_service
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start
-from engine.vedic.daily import get_daily_panchanga
+from services.daily_panchanga import get_daily_panchanga
 from engine.vedic.element_boundaries import (
     find_karana_end,
     find_karana_start,

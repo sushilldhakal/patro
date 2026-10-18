@@ -1326,7 +1326,7 @@ def nepal_panchanga_year(bs_year: int, location: LocationDep):
         format_bs_date, get_bs_month_length, get_bs_month_start,
         iter_bs_month_days, bs_to_gregorian,
     )
-    from engine.vedic.daily import get_daily_panchanga
+    from services.daily_panchanga import get_daily_panchanga
 
     all_greg_days: list[date] = []
     for month in range(1, 13):
