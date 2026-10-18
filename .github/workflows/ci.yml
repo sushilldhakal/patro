@@ -2,8 +2,8 @@ name: CI
 
 # Type-checks both apps and checks the shared packages (portable domain code,
 # generated i18n bundles and design-token output up to date, unit tests, the
-# request URL contract and the OpenAPI contract) and that no inline copy is
-# added to the apps, on every push and pull request.
+# request URL contract and the OpenAPI contract), that no inline copy is
+# added to the apps, and the API's layer guards, on every push and pull request.
 on:
   push:
     branches: [main, dev]
@@ -43,3 +43,24 @@ jobs:
       # The ephemeris download (-e ./ephemeris_provision) is not needed to build the schema.
       - run: grep -v '^-e ' requirements.txt > /tmp/requirements-schema.txt && pip install -r /tmp/requirements-schema.txt
       - run: python scripts/export_openapi.py --check
+
+  api-architecture:
+    # The API's layer and context-map guards (docs/DDD-PLAN.md) and the unit
+    # tests that need neither the ephemeris files nor the city database.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: grep -v '^-e ' requirements.txt > /tmp/requirements-ci.txt && pip install -r /tmp/requirements-ci.txt pytest httpx
+      - run: >-
+          python -m pytest -q
+          tests/test_layer_dependencies.py
+          tests/test_context_map.py
+          tests/test_profile_rules.py
+          tests/test_profiles_api.py
+          tests/test_value_objects.py
