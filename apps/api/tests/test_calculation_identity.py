@@ -17,7 +17,7 @@ import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.provenance import current_provenance
-from services.panchanga_cache import resolve_cache_keys
+from services.panchanga.panchanga_cache import resolve_cache_keys
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -35,7 +35,7 @@ class TestLocationIdentityIsSingleSourced:
         """``response_cache.location_cache_key`` must be ``resolve_cache_keys``
         plus filesystem escaping — not a second set of rules. Two independent
         definitions of "same observer" would silently split caches."""
-        from services.response_cache import location_cache_key
+        from services.platform.response_cache import location_cache_key
 
         for name, loc in OBSERVERS:
             canonical = resolve_cache_keys(loc)[0]
@@ -55,7 +55,7 @@ class TestLocationIdentityIsSingleSourced:
                         offenders.append(f"{path.relative_to(ROOT)}:{lineno}")
         assert not offenders, (
             "a second location-identity key is being built by hand — use "
-            "services.panchanga_cache.resolve_cache_keys: " + ", ".join(offenders)
+            "services.panchanga.panchanga_cache.resolve_cache_keys: " + ", ".join(offenders)
         )
 
     def test_altitude_participates_in_identity(self):
@@ -77,7 +77,7 @@ class TestIdentityStaysSeparateFromProvenance:
         """Ayanamsha varies on this path (5 endpoints accept it as a query
         parameter), so it must be part of identity. Lahiri and KP produce
         genuinely different charts."""
-        from services.kundali_report_cache import make_cache_key
+        from services.jyotish.kundali_report_cache import make_cache_key
 
         a = make_cache_key("1993-06-12T10:30:00", DEFAULT_LOCATION, "lahiri", "ne")
         b = make_cache_key("1993-06-12T10:30:00", DEFAULT_LOCATION, "kp", "ne")
@@ -87,7 +87,7 @@ class TestIdentityStaysSeparateFromProvenance:
         """The mirror-image rule. The daily panchanga path never passes
         ``ayanamsa=`` — every day is Lahiri — so keying it would add a constant
         to every key. Verified by inspection of the builders."""
-        for module in ("engine/vedic/daily.py", "services/panchanga_api.py"):
+        for module in ("engine/panchanga/daily.py", "services/panchanga/panchanga_api.py"):
             source = (ROOT / module).read_text()
             assert "ayanamsa=" not in source, (
                 f"{module} now varies ayanamsha — it must become part of the "
@@ -98,7 +98,7 @@ class TestIdentityStaysSeparateFromProvenance:
 class TestKundaliCacheRecordsProvenance:
     @pytest.fixture()
     def db(self, tmp_path, monkeypatch):
-        import services.kundali_report_cache as kc
+        import services.jyotish.kundali_report_cache as kc
 
         path = tmp_path / "kundali.db"
         monkeypatch.setattr(kc, "kundali_db_path", lambda: path)

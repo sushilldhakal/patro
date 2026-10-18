@@ -5,9 +5,9 @@ from datetime import date, timedelta
 import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.daily_panchanga import get_daily_panchanga
-from engine.vedic.rashifal import build_daily_rashifal
-from engine.vedic.rashifal_engine import (
+from services.panchanga.daily_panchanga import get_daily_panchanga
+from engine.panchanga.rashifal import build_daily_rashifal
+from engine.jyotish.rashifal_engine import (
     DOMAIN_KEYS,
     GRAHA_PERIOD_WEIGHT,
     LAYER_KEYS,
@@ -20,7 +20,7 @@ from engine.vedic.rashifal_engine import (
     house_from,
     tone_for_score,
 )
-from services.rashifal_api import rashifal_for_gregorian, rashifal_window_key
+from services.jyotish.rashifal_api import rashifal_for_gregorian, rashifal_window_key
 
 ANCHOR = date(2026, 7, 15)
 
@@ -144,7 +144,7 @@ def test_signs_do_not_all_score_alike():
 
 
 def test_day_fraction_is_pure_latitude_geometry():
-    from engine.vedic.rashifal_engine import day_fraction_for
+    from engine.jyotish.rashifal_engine import day_fraction_for
 
     # Equinox: twelve hours everywhere.
     assert day_fraction_for(27.7, 0.0) == pytest.approx(0.5)

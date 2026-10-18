@@ -14,8 +14,8 @@ from zoneinfo import ZoneInfo
 
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset
-from engine.vedic.bikram_sambat import iter_bs_month_days
-from services.panchanga_api import build_year_sun_times
+from engine.calendar.bikram_sambat import iter_bs_month_days
+from services.panchanga.panchanga_api import build_year_sun_times
 
 KTM_TZ = ZoneInfo("Asia/Kathmandu")
 

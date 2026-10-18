@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from api.deps import LocationDep
 from app.instant_resolver import instant_for_parts, instant_for_request
-from services.panchanga_api import build_kundali
-from services.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
+from services.panchanga.panchanga_api import build_kundali
+from services.platform.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
 
 router = APIRouter(tags=["kundali"])
 
@@ -30,7 +30,7 @@ def panchanga_at_time(
 ):
     """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from services.panchanga_at_time import build_panchanga_at_time
+    from services.panchanga.panchanga_at_time import build_panchanga_at_time
 
     try:
         instant = instant_for_request(
@@ -75,7 +75,7 @@ def planetary_positions(
     from datetime import timezone
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot
+    from engine.panchanga.at_time import build_planetary_snapshot
 
     try:
         instant = instant_for_request(
@@ -102,7 +102,7 @@ def planetary_positions(
 @router.get("/seasons/tropical")
 def tropical_seasons(location: LocationDep):
     """Six sāyana ऋतु boundaries anchored at equinoxes/solstices."""
-    from engine.vedic.tropical_seasons import build_tropical_seasons_response
+    from engine.calendar.tropical_seasons import build_tropical_seasons_response
     return build_tropical_seasons_response(lat=location.lat, timezone_name=location.timezone)
 
 
@@ -129,7 +129,7 @@ def kundali_vimshottari(
     from engine.astronomy.planets import spashta_table
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
     from engine.astronomy.ut_instant import as_julian_day
-    from engine.vedic.vimshottari import vimshottari_dasha
+    from engine.jyotish.vimshottari import vimshottari_dasha
 
     try:
         instant = instant_for_request(
@@ -189,12 +189,12 @@ def kundali_report(
     from datetime import timezone as _tz
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot, resolve_vedic_day_anchor
-    from services.panchanga_at_time import build_panchanga_at_time
-    from engine.vedic.interpretation import iter_report
-    from engine.vedic.shadbala import compute_shadbala
-    from engine.vedic.vimshottari import vimshottari_dasha
-    from services.kundali_report_cache import (
+    from engine.panchanga.at_time import build_planetary_snapshot, resolve_vedic_day_anchor
+    from services.panchanga.panchanga_at_time import build_panchanga_at_time
+    from engine.jyotish.interpretation import iter_report
+    from engine.jyotish.shadbala import compute_shadbala
+    from engine.jyotish.vimshottari import vimshottari_dasha
+    from services.jyotish.kundali_report_cache import (
         get_cached_report,
         make_cache_key,
         store_report_cache,
@@ -303,7 +303,7 @@ def shadbala(
     """Sixfold planetary strength (Shadbala) in Virupas at an instant."""
     from datetime import timezone
 
-    from engine.vedic.shadbala import compute_shadbala
+    from engine.jyotish.shadbala import compute_shadbala
 
     try:
         instant = instant_for_request(
@@ -346,8 +346,8 @@ def kundali_yoga_reference(
     (the ``.db`` is gitignored). Stale schemas from older deploys are dropped
     and recreated automatically.
     """
-    from services.yoga_reference_db import get_all, get_by_id, search
-    from services.response_cache import DEFAULT_CACHE_CONTROL
+    from services.jyotish.yoga_reference_db import get_all, get_by_id, search
+    from services.platform.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         if id:
@@ -390,8 +390,8 @@ def kundali_bhava_reference():
     callers that only need this content on its own (e.g. a transit chart
     that never calls `/kundali/detail`).
     """
-    from engine.vedic.bhava_reference import bhava_reference_payload
-    from services.response_cache import DEFAULT_CACHE_CONTROL
+    from engine.jyotish.bhava_reference import bhava_reference_payload
+    from services.platform.response_cache import DEFAULT_CACHE_CONTROL
 
     return JSONResponse(
         content=bhava_reference_payload(),
@@ -419,9 +419,9 @@ def kundali_detail(
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
-    from engine.vedic.kundali_detail import KUNDALI_DETAIL_VERSION
-    from services.kundali_detail_api import build_kundali_detail
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.jyotish.kundali_detail import KUNDALI_DETAIL_VERSION
+    from services.jyotish.kundali_detail_api import build_kundali_detail
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     try:
         instant = instant_for_request(
@@ -468,7 +468,7 @@ def kundali_dasha_expand(
     ),
 ):
     """Expand one dasha span into its antardashas."""
-    from engine.vedic.kundali_detail import subdivide_dasha_period, subdivide_yogini_period
+    from engine.jyotish.kundali_detail import subdivide_dasha_period, subdivide_yogini_period
 
     try:
         from datetime import datetime as dt_cls, timezone as tz
@@ -522,7 +522,7 @@ def kundali_milan(
     lang: str = Query("ne", description="Response language for kuta values: ne or en"),
 ):
     """Ashtakoota (Guna Milan) compatibility, computed entirely server-side."""
-    from engine.vedic.milan import build_kundali_milan
+    from engine.jyotish.milan import build_kundali_milan
 
     default_tz = "Asia/Kathmandu"
     try:

@@ -18,8 +18,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from engine.vedic import tradition as T
-from services.holiday_generator import generate_festivals, load_rules
+from engine.festivals import tradition as T
+from services.festivals.holiday_generator import generate_festivals, load_rules
 
 ROOT = Path(__file__).resolve().parent.parent
 TAGGED = {

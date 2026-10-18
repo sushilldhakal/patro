@@ -2,7 +2,7 @@
 
 from database import db as db_mod
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.sait_db_cache import db_available, load_sait_db, save_sait_db
+from services.festivals.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 
 def _use_sqlite(tmp_path, monkeypatch):

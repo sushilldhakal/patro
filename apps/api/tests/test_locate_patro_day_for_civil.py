@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.jd_calendar import CivilDay, civil_day_add  # noqa: E402
-from engine.vedic.bikram_sambat import (  # noqa: E402
+from engine.calendar.bikram_sambat import (  # noqa: E402
     get_bs_month_length,
     get_bs_month_start_civil,
     locate_patro_day_for_civil,

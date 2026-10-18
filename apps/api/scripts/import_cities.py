@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from services.cities_db import (
+from services.geography.cities_db import (
     CITIES_DB_VERSION,
     count_cities,
     ensure_cities_source,

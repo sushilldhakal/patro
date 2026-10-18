@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.bikram_sambat import gregorian_to_bs
-from engine.vedic.lunar_month import (
+from engine.calendar.bikram_sambat import gregorian_to_bs
+from engine.panchanga.lunar_month import (
     _next_masa_name,
     build_purnimant_months,
     clear_lunar_year_cache,
@@ -21,7 +21,7 @@ from engine.vedic.lunar_month import (
     get_lunar_calendar_layers,
     get_lunar_year,
 )
-from engine.vedic.tithi import get_udaya_tithi
+from engine.panchanga.tithi import get_udaya_tithi
 from rules.engine import compute_festival_dates
 import json
 
@@ -99,7 +99,7 @@ def test_janai_purnima_recent_moha_years(bs_year: int, expected: date):
 
 
 def test_merge_lunar_month_purnimanta_adhik_jestha_2026():
-    from engine.vedic.lunar_month import merge_lunar_month_for_day
+    from engine.panchanga.lunar_month import merge_lunar_month_for_day
 
     # Pūrṇimānta splits the Adhik Maas at paksha granularity:
     #   शुद्ध ज्येष्ठ कृष्ण → अधिक ज्येष्ठ शुक्ल → अधिक ज्येष्ठ कृष्ण → शुद्ध ज्येष्ठ शुक्ल
@@ -124,7 +124,7 @@ def test_merge_lunar_month_purnimanta_adhik_jestha_2026():
 
 
 def test_merge_lunar_month_normal_month():
-    from engine.vedic.lunar_month import merge_lunar_month_for_day
+    from engine.panchanga.lunar_month import merge_lunar_month_for_day
 
     normal = merge_lunar_month_for_day(date(2026, 7, 15))
     assert normal["purnimanta_name"] == "Ashadh"
@@ -132,7 +132,7 @@ def test_merge_lunar_month_normal_month():
 
 
 def test_daily_panchanga_includes_purnimanta_fields():
-    from engine.vedic.daily import build_daily_panchanga
+    from engine.panchanga.daily import build_daily_panchanga
 
     payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
     lunar = payload["lunar_month"]
@@ -157,7 +157,7 @@ def test_baishakh_1_2079_is_chaitra_shukla_trayodashi():
     Baishakh — the Mesha Sankranti (2022-04-14) falls in the Shukla Paksha, so
     the Purnima had already crossed into the next solar month.
     """
-    from engine.vedic.lunar_month import merge_lunar_month_for_day
+    from engine.panchanga.lunar_month import merge_lunar_month_for_day
 
     target = date(2022, 4, 14)
     assert gregorian_to_bs(target) == (2079, 1, 1)

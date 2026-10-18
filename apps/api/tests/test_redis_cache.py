@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import config
-from services import redis_cache
+from services.platform import redis_cache
 
 
 def _reset(monkeypatch, url):

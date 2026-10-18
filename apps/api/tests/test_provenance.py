@@ -306,7 +306,7 @@ class TestCacheStorage:
 
     @pytest.fixture()
     def db(self, tmp_path, monkeypatch):
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         path = tmp_path / "panchanga.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
@@ -333,7 +333,7 @@ class TestCacheStorage:
     def test_migration_adds_the_column_to_an_existing_table(self, db):
         import sqlite3
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         self._legacy_table(db)
         conn = sqlite3.connect(db)
@@ -355,7 +355,7 @@ class TestCacheStorage:
         conn.close()
 
     def test_migration_is_idempotent(self, db):
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         self._legacy_table(db)
         pc.ensure_schema()
@@ -369,7 +369,7 @@ class TestCacheStorage:
     def test_index_exists_for_selective_invalidation(self, db):
         import sqlite3
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         pc.ensure_schema()
         conn = sqlite3.connect(db)
@@ -387,7 +387,7 @@ class TestCacheStorage:
         """Pre-provenance rows mean 'written before this existed'. They must not
         be treated as stale — that would be an invalidation, which this phase is
         explicitly not doing."""
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         self._legacy_table(db)
         pc.ensure_schema()
@@ -404,9 +404,9 @@ class TestCacheStorage:
         import sqlite3
         from datetime import date
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from services.daily_panchanga import get_daily_panchanga
+        from services.panchanga.daily_panchanga import get_daily_panchanga
 
         if not pc.cache_enabled():
             # PATRO_LOCAL_DEV=true (.env.local) disables the SQLite cache, so
@@ -427,7 +427,7 @@ class TestCacheStorage:
         bucket?', provenance answers 'how was it produced?'. Keying on it would
         orphan every row whenever any dependency moved."""
         from engine.astronomy.location import DEFAULT_LOCATION
-        from services.panchanga_cache import resolve_cache_keys
+        from services.panchanga.panchanga_cache import resolve_cache_keys
 
         key, _city = resolve_cache_keys(DEFAULT_LOCATION)
         assert key == "city:1283240"
@@ -438,7 +438,7 @@ class TestCacheStorage:
         from datetime import date
 
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import build_daily_panchanga
+        from engine.panchanga.daily import build_daily_panchanga
 
         payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
         assert "provenance_hash" not in payload
@@ -452,7 +452,7 @@ class TestDriftDetection:
     def seeded(self, tmp_path, monkeypatch):
         import sqlite3
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         path = tmp_path / "panchanga.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
@@ -516,7 +516,7 @@ class TestDriftDetection:
     def test_matching_environment_reports_no_drift(self, tmp_path, monkeypatch):
         import sqlite3
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
 
         path = tmp_path / "p.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
@@ -587,7 +587,7 @@ class TestPayloadCompression:
     """
 
     def test_roundtrip(self):
-        from services.panchanga_cache import _decode_payload, _encode_payload
+        from services.panchanga.panchanga_cache import _decode_payload, _encode_payload
 
         payload = {"tithi": {"name": "Dashami"}, "planets": {"sun": 123.456}, "ne": "दशमी"}
         assert _decode_payload(_encode_payload(payload)) == payload
@@ -597,7 +597,7 @@ class TestPayloadCompression:
         migration and no data rewrite — that is what makes this rollback-safe."""
         import json as _json
 
-        from services.panchanga_cache import _decode_payload
+        from services.panchanga.panchanga_cache import _decode_payload
 
         payload = {"tithi": {"name": "Ekadashi"}}
         assert _decode_payload(_json.dumps(payload)) == payload
@@ -609,8 +609,8 @@ class TestPayloadCompression:
         from datetime import date
 
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import build_daily_panchanga
-        from services.panchanga_cache import _encode_payload
+        from engine.panchanga.daily import build_daily_panchanga
+        from services.panchanga.panchanga_cache import _encode_payload
 
         payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
         raw = len(_json.dumps(payload, ensure_ascii=False).encode())
@@ -621,9 +621,9 @@ class TestPayloadCompression:
         import sqlite3
         from datetime import date
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from services.daily_panchanga import get_daily_panchanga
+        from services.panchanga.daily_panchanga import get_daily_panchanga
 
         path = tmp_path / "p.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
@@ -640,9 +640,9 @@ class TestPayloadCompression:
         """Write then read back through the public API — the values must survive."""
         from datetime import date
 
-        import services.panchanga_cache as pc
+        import services.panchanga.panchanga_cache as pc
         from engine.astronomy.location import DEFAULT_LOCATION
-        from services.daily_panchanga import get_daily_panchanga
+        from services.panchanga.daily_panchanga import get_daily_panchanga
 
         path = tmp_path / "p.db"
         monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)

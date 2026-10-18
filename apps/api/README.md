@@ -46,7 +46,7 @@ Offsets in `_gregorian_year_for_bs_month` shift negatives up by one to keep it
 gapless — a uniform offset silently made 58 BCE unreachable and put every BBS
 year one year too early.
 
-Two separate limits, both in `engine/vedic/patro_year_axis.py`:
+Two separate limits, both in `engine/calendar/patro_year_axis.py`:
 
 | | Range | Meaning |
 |---|---|---|

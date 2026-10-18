@@ -1,7 +1,7 @@
 """Ashtakoota (Guna Milan) — server-side compatibility computation."""
 
-from engine.vedic.at_time import parse_query_datetime
-from engine.vedic.milan import (
+from engine.panchanga.at_time import parse_query_datetime
+from engine.jyotish.milan import (
     GANA_OF_NAKSHATRA,
     NADI_OF_NAKSHATRA,
     YONI_OF_NAKSHATRA,

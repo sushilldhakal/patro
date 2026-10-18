@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 import config
-from services import fb_post_content as fpc
+from services.sharing import fb_post_content as fpc
 
 FIELDS = {
     "bs_line": "आश्विन २७, २०८३",

@@ -3,7 +3,7 @@
  * asterism rather than standing alone.
  *
  * The server already sends a single centroid point for the whole figure —
- * सप्तर्षि, प्रजापति, त्रिशङ्कु and so on (`engine/vedic/vedic_stars.py`
+ * सप्तर्षि, प्रजापति, त्रिशङ्कु and so on (`engine/jyotish/vedic_stars.py`
  * `_COMPOSITE_STARS`) — carrying the group's own name, and each member star as
  * its own catalogue entry. That centroid point already is the group's label;
  * the only thing missing on screen is the line between the members that makes

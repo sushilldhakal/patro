@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from services import documents_db
+from services.scripture import documents_db
 
 
 def test_same_date_same_mantra():

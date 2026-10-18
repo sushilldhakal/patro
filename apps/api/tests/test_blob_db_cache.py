@@ -1,7 +1,7 @@
 """Tests for the DB-backed blob cache (panchāṅga year/month/day), on SQLite."""
 
 from database import db as db_mod
-from services.blob_db_cache import db_available, load_blob, save_blob
+from services.platform.blob_db_cache import db_available, load_blob, save_blob
 
 
 def _use_sqlite(tmp_path, monkeypatch):
@@ -33,8 +33,8 @@ def test_blob_roundtrip_and_upsert(tmp_path, monkeypatch):
 
 
 def test_prune_drops_only_stale_versions(tmp_path, monkeypatch):
-    from services.blob_db_cache import prune_stale_blobs
-    from services.panchanga_cache import CACHE_PAYLOAD_VERSION as V
+    from services.platform.blob_db_cache import prune_stale_blobs
+    from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION as V
 
     _use_sqlite(tmp_path, monkeypatch)
     try:
@@ -67,7 +67,7 @@ def test_year_cache_uses_db_when_available(tmp_path, monkeypatch):
     import json
 
     from engine.astronomy.location import DEFAULT_LOCATION
-    from services import year_cache
+    from services.panchanga import year_cache
 
     _use_sqlite(tmp_path, monkeypatch)
     try:

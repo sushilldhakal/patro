@@ -1,0 +1,692 @@
+"""Documents (शोत्र/स्तोत्र) reference data — Sanskrit text, meanings, audio refs.
+
+The source of truth is the hand-authored ``data/documents_source/*.json``
+manifests (see that folder's README for the format). This module seeds them
+into ``data/documents.db`` (gitignored, rebuilt on demand — same pattern as
+``vastu_rules_db.py``) and exposes read-only lookups. It is reference data
+shared by every viewer, kept out of the Postgres user store.
+
+Re-seeding is content-hash versioned: a sha256 over every manifest's raw
+bytes is stored in ``documents_meta``, so editing a shloka or adding a new
+document and redeploying is enough — no manual "bump the version" step.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+
+import hashlib
+import json
+import sqlite3
+import threading
+from string import Formatter
+from pathlib import Path
+from typing import Any
+
+from engine.astronomy.paths import documents_db_path, documents_source_dir
+
+_ADDED_COLUMNS: list[tuple[str, str]] = [
+    ("category", "TEXT NOT NULL DEFAULT 'stotram'"),
+    ("subcategory", "TEXT"),
+    ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
+]
+
+# Same additive/nullable/idempotent pattern as _ADDED_COLUMNS, but for the
+# shlokas table. sukta_number groups a chaptered scripture's verses one level
+# below "chapter" (e.g. the Rigveda: chapter = Mandala, sukta = the group of
+# verses within it) without forcing every document to model suktas — it's
+# simply null for anything that doesn't have them.
+_ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
+    ("sukta_number", "INTEGER"),
+    ("sukta_rishi", "TEXT"),
+    ("sukta_devata", "TEXT"),
+    ("sukta_chhanda", "TEXT"),
+    # Which Veda verse this shloka quotes, e.g. "rigveda:1.1.3". Null when it
+    # isn't a quotation from the four samhitas.
+    ("veda_cite", "TEXT"),
+]
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS documents (
+    slug            TEXT PRIMARY KEY,
+    order_index     INTEGER NOT NULL DEFAULT 0,
+    category        TEXT NOT NULL DEFAULT 'stotram',
+    subcategory     TEXT,
+    title_sa        TEXT NOT NULL,
+    title_ne        TEXT NOT NULL,
+    title_en        TEXT NOT NULL,
+    subtitle_ne     TEXT,
+    subtitle_en     TEXT,
+    description_ne  TEXT,
+    description_en  TEXT,
+    source_ne       TEXT,
+    source_en       TEXT,
+    cover_image     TEXT,
+    has_chapters    INTEGER NOT NULL DEFAULT 0,
+    inline_chapters INTEGER NOT NULL DEFAULT 0,
+    chapter_count   INTEGER NOT NULL DEFAULT 0,
+    shloka_count    INTEGER NOT NULL DEFAULT 0,
+    full_audio_key  TEXT
+);
+
+CREATE TABLE IF NOT EXISTS shlokas (
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    document_slug           TEXT NOT NULL REFERENCES documents(slug),
+    global_order            INTEGER NOT NULL,
+    chapter_number          INTEGER,
+    chapter_title_ne        TEXT,
+    chapter_title_en        TEXT,
+    verse_number            INTEGER NOT NULL,
+    verse_label             TEXT NOT NULL,
+    sukta_number            INTEGER,
+    sukta_rishi             TEXT,
+    sukta_devata            TEXT,
+    sukta_chhanda           TEXT,
+    veda_cite               TEXT,
+    sanskrit                TEXT NOT NULL,
+    transliteration         TEXT,
+    meaning_ne              TEXT,
+    meaning_en              TEXT,
+    audio_key               TEXT,
+    audio_duration_seconds  REAL,
+    full_audio_start        REAL,
+    full_audio_end          REAL
+);
+CREATE INDEX IF NOT EXISTS idx_shlokas_document_order
+    ON shlokas(document_slug, global_order);
+CREATE INDEX IF NOT EXISTS idx_shlokas_document_chapter
+    ON shlokas(document_slug, chapter_number, global_order);
+
+CREATE TABLE IF NOT EXISTS documents_meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+"""
+
+_seed_lock = threading.Lock()
+_seeded = False
+_current_version: str | None = None
+
+
+def _connect() -> sqlite3.Connection:
+    db_path = documents_db_path()
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(db_path, timeout=30)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+
+def _migrate_added_columns(conn: sqlite3.Connection) -> None:
+    """Add missing columns to an existing table. Additive, nullable, idempotent."""
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(documents)")}
+    if existing:
+        for name, coltype in _ADDED_COLUMNS:
+            if name in existing:
+                continue
+            conn.execute(f"ALTER TABLE documents ADD COLUMN {name} {coltype}")
+
+    existing_shloka_cols = {row[1] for row in conn.execute("PRAGMA table_info(shlokas)")}
+    if existing_shloka_cols:
+        for name, coltype in _ADDED_SHLOKA_COLUMNS:
+            if name in existing_shloka_cols:
+                continue
+            conn.execute(f"ALTER TABLE shlokas ADD COLUMN {name} {coltype}")
+
+
+def _manifest_paths() -> list[Path]:
+    src_dir = documents_source_dir()
+    if not src_dir.is_dir():
+        return []
+    # Leading-underscore files (e.g. _example.json) are templates, not content.
+    return sorted(p for p in src_dir.glob("*.json") if not p.name.startswith("_"))
+
+
+def _content_version(paths: list[Path]) -> str:
+    from services.scripture.purana_documents import PURANA_IMPORT_VERSION, purana_source_paths
+
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(path.name.encode("utf-8"))
+        digest.update(path.read_bytes())
+    digest.update(PURANA_IMPORT_VERSION)
+    from services.scripture.shloka_sources import SOURCE_LOGIC_VERSION
+
+    digest.update(SOURCE_LOGIC_VERSION)
+    for path in purana_source_paths():
+        digest.update(path.name.encode("utf-8"))
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+def _default_audio_file(chapter_number: int | None, verse_number: int) -> str:
+    if chapter_number is not None:
+        return f"{chapter_number}_{verse_number}.mp3"
+    return f"{verse_number}.mp3"
+
+
+def _verse_in_sukta(shloka: dict[str, Any]) -> int:
+    """The shloka's place inside its sukta.
+
+    ``verse_number`` runs through the whole chapter (a Rigveda mandala numbers
+    its riks straight through). The human label is ``{sukta}.{verse}`` — ``120.2`` is the
+    second rik of sukta 120 — which is what the audio filenames count.
+    """
+    label = shloka.get("verse_label")
+    if isinstance(label, str) and "." in label:
+        tail = label.rsplit(".", 1)[-1]
+        if tail.isdigit():
+            return int(tail)
+    return int(shloka["verse_number"])
+
+
+def _audio_file_from_template(template: str, shloka: dict[str, Any]) -> str | None:
+    """Fill ``audio_template`` from whichever fields the pattern names.
+
+    Rigveda uses ``{mandala}``, ``{sukta}`` and ``{verse}``. Yajurveda names
+    each mantra ``yajurveda_{adhyaya}_{mantra}.mp3`` (no sukta). Samaveda is
+    one sequence across the whole samhita, ``samaveda_{index:04d}.mp3``.
+    A field is required only when the template actually contains it.
+    """
+    needed = {name for _, name, _, _ in Formatter().parse(template) if name}
+    values: dict[str, int] = {}
+    if "mandala" in needed:
+        mandala = shloka.get("chapter_number")
+        if mandala is None:
+            return None
+        values["mandala"] = int(mandala)
+    if "sukta" in needed:
+        sukta = shloka.get("sukta_number")
+        if sukta is None:
+            return None
+        values["sukta"] = int(sukta)
+    if "verse" in needed:
+        if "verse_number" not in shloka:
+            return None
+        values["verse"] = _verse_in_sukta(shloka)
+    if "index" in needed:
+        index = shloka.get("index")
+        if index is None:
+            return None
+        values["index"] = int(index)
+    try:
+        return template.format(**values)
+    except (KeyError, ValueError, IndexError):
+        return None
+
+
+def _audio_in_coverage(shloka: dict[str, Any], coverage: dict[str, Any] | None) -> bool:
+    """Whether this verse has a clip, when the upload stops partway through.
+
+    ``through_mandala`` includes every earlier chapter in full. ``sukta_caps``
+    shortens individual suktas inside those chapters (a cap of 0 means that
+    sukta has no clips). ``partial`` lists a later chapter sukta by sukta;
+    anything not named there has no clip. Omit coverage to keep every verse.
+    """
+    if not coverage:
+        return True
+    mandala = shloka.get("chapter_number")
+    if mandala is None:
+        return True
+    mandala = int(mandala)
+    sukta = shloka.get("sukta_number")
+    sukta_i = int(sukta) if sukta is not None else None
+    verse = _verse_in_sukta(shloka) if "verse_number" in shloka else None
+
+    partial = coverage.get("partial") or {}
+    if str(mandala) in partial:
+        if sukta_i is None or verse is None:
+            return False
+        cap = partial[str(mandala)].get(str(sukta_i))
+        return cap is not None and verse <= int(cap)
+
+    through = coverage.get("through_mandala")
+    if through is not None and mandala > int(through):
+        return False
+    caps = (coverage.get("sukta_caps") or {}).get(str(mandala)) or {}
+    if sukta_i is not None and str(sukta_i) in caps:
+        if verse is None:
+            return False
+        return verse <= int(caps[str(sukta_i)])
+    return True
+
+
+def _resolve_audio_key(
+    audio_prefix: str | None,
+    shloka: dict[str, Any],
+    audio_template: str | None = None,
+) -> str | None:
+    audio_file: str | None
+    if "audio_file" in shloka and shloka["audio_file"]:
+        audio_file = str(shloka["audio_file"]).strip() or None
+    elif audio_template:
+        # An explicit null audio_file means "no clip" unless the document
+        # names every verse from a template (the Rigveda files in R2).
+        audio_file = _audio_file_from_template(audio_template, shloka)
+    elif "audio_file" in shloka:
+        return None
+    else:
+        audio_file = _default_audio_file(shloka.get("chapter_number"), shloka["verse_number"])
+    if not audio_file:
+        return None
+    if audio_file.startswith("http://") or audio_file.startswith("https://"):
+        return audio_file
+    prefix = (audio_prefix or "").strip().strip("/")
+    return f"{prefix}/{audio_file}" if prefix else audio_file
+
+
+def _resolve_full_audio_key(audio_prefix: str | None, full_audio_file: Any) -> str | None:
+    """Same key-joining rule as a shloka's audio, for the whole-document recording."""
+    if not full_audio_file:
+        return None
+    full_audio_file = str(full_audio_file).strip()
+    if not full_audio_file:
+        return None
+    if full_audio_file.startswith("http://") or full_audio_file.startswith("https://"):
+        return full_audio_file
+    prefix = (audio_prefix or "").strip().strip("/")
+    return f"{prefix}/{full_audio_file}" if prefix else full_audio_file
+
+
+def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> None:
+    slug = manifest["slug"]
+    has_chapters = bool(manifest.get("has_chapters"))
+    inline_chapters = bool(manifest.get("inline_chapters"))
+    audio_prefix = manifest.get("audio_prefix")
+    audio_template = manifest.get("audio_template") or None
+    audio_coverage = manifest.get("audio_coverage") or None
+    full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
+    chapters = manifest.get("chapters") or []
+
+    global_order = 0
+    shloka_count = 0
+    chapter_count = 0
+    rows: list[tuple[Any, ...]] = []
+
+    for chapter in chapters:
+        chapter_number = chapter.get("number") if has_chapters else None
+        if chapter_number is not None:
+            chapter_count += 1
+        for shloka in chapter.get("shlokas") or []:
+            global_order += 1
+            shloka_count += 1
+            positioned = {**shloka, "chapter_number": chapter_number, "index": global_order}
+            audio_key = _resolve_audio_key(audio_prefix, positioned, audio_template)
+            # An explicit audio_file is a real clip. Coverage only limits keys
+            # the template would otherwise invent past the end of the upload.
+            if audio_template and not shloka.get("audio_file") and not _audio_in_coverage(positioned, audio_coverage):
+                audio_key = None
+            rows.append(
+                (
+                    slug,
+                    global_order,
+                    chapter_number,
+                    chapter.get("title_ne"),
+                    chapter.get("title_en"),
+                    shloka["verse_number"],
+                    shloka.get("verse_label") or str(shloka["verse_number"]),
+                    shloka.get("sukta_number"),
+                    shloka.get("sukta_rishi"),
+                    shloka.get("sukta_devata"),
+                    shloka.get("sukta_chhanda"),
+                    shloka.get("veda_cite"),
+                    shloka["sanskrit"],
+                    shloka.get("transliteration"),
+                    shloka.get("meaning_ne"),
+                    shloka.get("meaning_en"),
+                    audio_key,
+                    shloka.get("audio_duration_seconds"),
+                    shloka.get("full_audio_start"),
+                    shloka.get("full_audio_end"),
+                )
+            )
+
+    conn.execute("DELETE FROM shlokas WHERE document_slug = ?", (slug,))
+    conn.execute("DELETE FROM documents WHERE slug = ?", (slug,))
+
+    conn.execute(
+        """
+        INSERT INTO documents
+            (slug, order_index, category, subcategory, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
+             description_ne, description_en, source_ne, source_en, cover_image,
+             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            slug,
+            manifest.get("order_index", 0),
+            manifest.get("category", "stotram"),
+            manifest.get("subcategory") or None,
+            manifest["title_sa"],
+            manifest["title_ne"],
+            manifest["title_en"],
+            manifest.get("subtitle_ne"),
+            manifest.get("subtitle_en"),
+            manifest.get("description_ne"),
+            manifest.get("description_en"),
+            manifest.get("source_ne"),
+            manifest.get("source_en"),
+            manifest.get("cover_image") or None,
+            1 if has_chapters else 0,
+            1 if inline_chapters else 0,
+            chapter_count,
+            shloka_count,
+            full_audio_key,
+        ),
+    )
+    conn.executemany(
+        """
+        INSERT INTO shlokas
+            (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
+             verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
+             veda_cite, sanskrit, transliteration, meaning_ne, meaning_en,
+             audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
+
+
+def ensure_seeded() -> None:
+    global _seeded, _current_version
+    if _seeded:
+        return
+    with _seed_lock:
+        if _seeded:
+            return
+        paths = _manifest_paths()
+        version = _content_version(paths)
+        with _connect() as conn:
+            conn.executescript(_SCHEMA)
+            _migrate_added_columns(conn)
+            current = conn.execute(
+                "SELECT value FROM documents_meta WHERE key = 'version'"
+            ).fetchone()
+            if current is not None and current["value"] == version:
+                _current_version = version
+                _seeded = True
+                return
+
+            for path in paths:
+                manifest = json.loads(path.read_text(encoding="utf-8"))
+                _seed_from_manifest(conn, manifest)
+
+            from services.scripture.purana_documents import seed_puranas
+
+            seed_puranas(conn)
+
+            from services.scripture.shloka_sources import fill_sources
+
+            fill_sources(conn)
+
+            conn.execute(
+                "INSERT INTO documents_meta (key, value) VALUES ('version', ?) "
+                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                (version,),
+            )
+        _current_version = version
+        _seeded = True
+
+
+def content_version() -> str:
+    """Content-hash version of the currently seeded manifests.
+
+    Changes only when a manifest's bytes change, so callers (the response
+    cache) can key off it and get automatic invalidation on content edits
+    without a manual cache-bust step.
+    """
+    ensure_seeded()
+    return _current_version or "0"
+
+
+def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
+    # subcategory is optional on databases created before the library groups.
+    subcategory = row["subcategory"] if "subcategory" in row.keys() else None
+    return {
+        "slug": row["slug"],
+        "order_index": row["order_index"],
+        "category": row["category"],
+        "subcategory": subcategory,
+        "title_sa": row["title_sa"],
+        "title_ne": row["title_ne"],
+        "title_en": row["title_en"],
+        "subtitle_ne": row["subtitle_ne"],
+        "subtitle_en": row["subtitle_en"],
+        "description_ne": row["description_ne"],
+        "description_en": row["description_en"],
+        "cover_image": row["cover_image"],
+        "has_chapters": bool(row["has_chapters"]),
+        "inline_chapters": bool(row["inline_chapters"]) if "inline_chapters" in row.keys() else False,
+        "chapter_count": row["chapter_count"],
+        "shloka_count": row["shloka_count"],
+        "full_audio_key": row["full_audio_key"],
+    }
+
+
+def _document_detail_base(doc_row: sqlite3.Row) -> dict[str, Any]:
+    detail = _row_to_document_summary(doc_row)
+    detail["source_ne"] = doc_row["source_ne"]
+    detail["source_en"] = doc_row["source_en"]
+    return detail
+
+
+def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "id": r["id"],
+        "global_order": r["global_order"],
+        "verse_number": r["verse_number"],
+        "verse_label": r["verse_label"],
+        "sukta_number": r["sukta_number"],
+        "sukta_rishi": r["sukta_rishi"],
+        "sukta_devata": r["sukta_devata"],
+        "sukta_chhanda": r["sukta_chhanda"],
+        "veda_cite": r["veda_cite"] if "veda_cite" in r.keys() else None,
+        "sanskrit": r["sanskrit"],
+        "transliteration": r["transliteration"],
+        "meaning_ne": r["meaning_ne"],
+        "meaning_en": r["meaning_en"],
+        "audio_key": r["audio_key"],
+        "audio_duration_seconds": r["audio_duration_seconds"],
+        "full_audio_start": r["full_audio_start"],
+        "full_audio_end": r["full_audio_end"],
+    }
+
+
+def list_documents() -> list[dict[str, Any]]:
+    ensure_seeded()
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM documents ORDER BY order_index ASC, title_en ASC"
+        ).fetchall()
+    return [_row_to_document_summary(r) for r in rows]
+
+
+def get_document_detail(slug: str) -> dict[str, Any] | None:
+    ensure_seeded()
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+        if doc_row is None:
+            return None
+        shloka_rows = conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? ORDER BY global_order ASC",
+            (slug,),
+        ).fetchall()
+
+    chapters: list[dict[str, Any]] = []
+    chapters_by_key: dict[Any, dict[str, Any]] = {}
+    for r in shloka_rows:
+        key = r["chapter_number"]
+        chapter = chapters_by_key.get(key)
+        if chapter is None:
+            chapter = {
+                "number": r["chapter_number"],
+                "title_ne": r["chapter_title_ne"],
+                "title_en": r["chapter_title_en"],
+                "shlokas": [],
+            }
+            chapters_by_key[key] = chapter
+            chapters.append(chapter)
+        chapter["shlokas"].append(_shloka_row_to_dict(r))
+
+    detail = _document_detail_base(doc_row)
+    detail["chapters"] = chapters
+    return detail
+
+
+def get_document_summary(slug: str) -> dict[str, Any] | None:
+    """Document metadata plus its chapter list, sized to what ``/documents/{slug}``
+    actually returns.
+
+    A paginated chaptered document (``has_chapters`` and not ``inline_chapters``
+    — the Gita) gets its chapter list from a ``GROUP BY`` count, never reading
+    verse text; its chapters are fetched individually via
+    :func:`get_chapter_shlokas`. A document with no chapters, or an
+    ``inline_chapters`` one, embeds every verse here since the whole text is
+    meant to render on one page regardless.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+        if doc_row is None:
+            return None
+        embed_shlokas = (not doc_row["has_chapters"]) or bool(doc_row["inline_chapters"])
+        if embed_shlokas:
+            shloka_rows = conn.execute(
+                "SELECT * FROM shlokas WHERE document_slug = ? ORDER BY global_order ASC",
+                (slug,),
+            ).fetchall()
+            chapters: list[dict[str, Any]] = []
+            chapters_by_key: dict[Any, dict[str, Any]] = {}
+            for r in shloka_rows:
+                key = r["chapter_number"]
+                chapter = chapters_by_key.get(key)
+                if chapter is None:
+                    chapter = {
+                        "number": r["chapter_number"],
+                        "title_ne": r["chapter_title_ne"],
+                        "title_en": r["chapter_title_en"],
+                        "shlokas": [],
+                    }
+                    chapters_by_key[key] = chapter
+                    chapters.append(chapter)
+                chapter["shlokas"].append(_shloka_row_to_dict(r))
+        else:
+            chapter_rows = conn.execute(
+                """
+                SELECT chapter_number, chapter_title_ne, chapter_title_en,
+                       COUNT(*) AS shloka_count
+                FROM shlokas
+                WHERE document_slug = ?
+                GROUP BY chapter_number
+                ORDER BY MIN(global_order) ASC
+                """,
+                (slug,),
+            ).fetchall()
+            chapters = [
+                {
+                    "number": r["chapter_number"],
+                    "title_ne": r["chapter_title_ne"],
+                    "title_en": r["chapter_title_en"],
+                    "shloka_count": r["shloka_count"],
+                }
+                for r in chapter_rows
+            ]
+
+    detail = _document_detail_base(doc_row)
+    detail["chapters"] = chapters
+    return detail
+
+
+def document_summary_lite(slug: str) -> dict[str, Any] | None:
+    """Just the document row as a summary dict — no chapters, no shlokas.
+
+    The base payload for a single-chapter response, where building the full
+    chapter list (or worse, every chapter's verses) would be wasted work.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+    if doc_row is None:
+        return None
+    return _document_detail_base(doc_row)
+
+
+def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None:
+    """One chapter's shlokas, filtered directly in SQL.
+
+    Unlike routing a chapter request through :func:`get_document_detail`, this
+    never reads (or Python-regroups) any other chapter's verse text.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        shloka_rows = conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
+            "ORDER BY global_order ASC",
+            (slug, chapter_number),
+        ).fetchall()
+    if not shloka_rows:
+        return None
+    first = shloka_rows[0]
+    return {
+        "number": first["chapter_number"],
+        "title_ne": first["chapter_title_ne"],
+        "title_en": first["chapter_title_en"],
+        "shlokas": [_shloka_row_to_dict(r) for r in shloka_rows],
+    }
+
+
+VEDA_SLUGS = ("rigveda", "yajurveda", "samaveda", "atharvaveda")
+
+#: Mantras a card can show comfortably — and, being picked only among verses
+#: with a recording, every one of them has audio.
+_DAILY_MIN_CHARS = 20
+_DAILY_MAX_CHARS = 260
+
+
+def daily_veda_shloka(day: "date") -> dict[str, Any] | None:
+    """The mantra of the day: one verse that has audio, the same for everyone.
+
+    The Veda rotates by day (so all four come round evenly); the chapter is
+    drawn in proportion to how many eligible verses it holds, and the verse
+    uniformly within it — from a generator seeded on the date, so a given date
+    always gives the same mantra on every server and every device.
+    """
+    import random
+
+    ensure_seeded()
+    rng = random.Random(f"veda-daily:{day.isoformat()}")
+    slug = VEDA_SLUGS[day.toordinal() % len(VEDA_SLUGS)]
+    eligible = (
+        "document_slug = ? AND audio_key IS NOT NULL AND audio_key != '' "
+        "AND length(sanskrit) BETWEEN ? AND ?"
+    )
+    args = (slug, _DAILY_MIN_CHARS, _DAILY_MAX_CHARS)
+    with _connect() as conn:
+        chapters = conn.execute(
+            f"SELECT chapter_number, COUNT(*) AS n FROM shlokas WHERE {eligible} "
+            "GROUP BY chapter_number ORDER BY chapter_number",
+            args,
+        ).fetchall()
+        total = sum(r["n"] for r in chapters)
+        if total == 0:
+            return None
+        pick = rng.randrange(total)
+        chapter_number = chapters[-1]["chapter_number"]
+        for row in chapters:
+            if pick < row["n"]:
+                chapter_number = row["chapter_number"]
+                break
+            pick -= row["n"]
+        row = conn.execute(
+            f"SELECT * FROM shlokas WHERE {eligible} AND chapter_number = ? "
+            "ORDER BY global_order ASC LIMIT 1 OFFSET ?",
+            (*args, chapter_number, pick),
+        ).fetchone()
+    if row is None:
+        return None
+    shloka = _shloka_row_to_dict(row)
+    shloka["document_slug"] = slug
+    shloka["chapter_number"] = row["chapter_number"]
+    shloka["chapter_title_ne"] = row["chapter_title_ne"]
+    shloka["chapter_title_en"] = row["chapter_title_en"]
+    return shloka

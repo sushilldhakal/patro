@@ -3,7 +3,7 @@
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.sait_personalize import (
+from services.festivals.sait_personalize import (
     _annaprasan_month,
     _kumbha_zone,
     _overall_shuddhi_tone,

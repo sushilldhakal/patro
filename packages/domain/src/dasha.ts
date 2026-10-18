@@ -70,7 +70,7 @@ export interface DashaSpan {
 
 /**
  * Mean Gregorian year — must match the API's `vimshottari.YEAR_DAYS`
- * (engine/vedic/vimshottari.py). Previously 360 (a 360-day "savana year"),
+ * (engine/jyotish/vimshottari.py). Previously 360 (a 360-day "savana year"),
  * which produced duration labels inconsistent with the actual start/end
  * dates the API now returns (e.g. a full, un-balanced 17-year Mercury
  * mahadasha showing as "17y 2m 29d" instead of "17y" — the date range was

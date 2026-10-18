@@ -16,7 +16,7 @@ from engine.astronomy.jd_calendar import (
     format_civil_iso,
     parse_civil_iso,
 )
-from engine.vedic.sankranti import find_sankranti_after_jd, get_sun_rashi_at_jd
+from engine.calendar.sankranti import find_sankranti_after_jd, get_sun_rashi_at_jd
 
 
 def test_civil_day_jd_roundtrip_today():

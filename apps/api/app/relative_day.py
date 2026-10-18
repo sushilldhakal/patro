@@ -37,7 +37,7 @@ def _as_float(raw: str | None) -> float | None:
 
 def observer_timezone_from_params(params: Mapping[str, str]) -> str:
     from engine.astronomy.location import DEFAULT_LOCATION
-    from services.observer_location import resolve_location_from_query
+    from services.geography.observer_location import resolve_location_from_query
 
     tz = (params.get("timezone") or params.get("tz") or "").strip() or None
     try:

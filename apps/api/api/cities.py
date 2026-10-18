@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from services.cities_db import get_popular_cities, nearest_city_global, search_cities
+from services.geography.cities_db import get_popular_cities, nearest_city_global, search_cities
 
 router = APIRouter(tags=["cities"])
 

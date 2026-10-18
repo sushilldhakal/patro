@@ -126,7 +126,7 @@ def _date_error(era: str, year: int | None, exc: Exception) -> str:
             and year is not None
             and year > 0
         ):
-            from engine.vedic.patro_year_axis import (
+            from engine.calendar.patro_year_axis import (
                 PATRO_EPHEMERIS_SIGNED_MAX,
                 PATRO_SIGNED_YEAR_MIN,
                 patro_year_within_ephemeris,

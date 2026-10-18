@@ -1,6 +1,6 @@
 """What astronomical environment produced a calculation.
 
-``ASTRONOMY_VERSION`` (services/payload_version.py) answers *"did an output
+``ASTRONOMY_VERSION`` (services/platform/payload_version.py) answers *"did an output
 change?"* — a human bumps it after judging that a fix moved a number. That is
 useful and stays. It cannot answer the other question:
 

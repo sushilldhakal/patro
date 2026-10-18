@@ -197,16 +197,16 @@ def _annotate_combustion(positions: dict[str, Any]) -> None:
     gochar tables agree with it date-for-date.
 
     Planets (mars, mercury, jupiter, venus, saturn) reuse the Surya-Siddhanta
-    arcus-visionis orbs from ``engine.vedic.udayast`` (direction- and
+    arcus-visionis orbs from ``engine.jyotish.udayast`` (direction- and
     retrograde-aware); the Moon uses the चन्द्र तारा अस्त elongation orb from
-    ``engine.vedic.graha_detail``. The Sun and the shadow nodes (Rahu/Ketu)
+    ``engine.jyotish.graha_detail``. The Sun and the shadow nodes (Rahu/Ketu)
     never combust.
 
     The orbs live in ``engine.vedic`` and are imported lazily: they are a
     siddhantic convention, not ephemeris geometry, so they belong above this
     layer even though the table that consumes them is built here."""
-    from engine.vedic.graha_detail import MOON_ASTA_ORB
-    from engine.vedic.udayast import UDAYAST_GRAHAS, combustion_threshold
+    from engine.jyotish.graha_detail import MOON_ASTA_ORB
+    from engine.jyotish.udayast import UDAYAST_GRAHAS, combustion_threshold
 
     sun_lon = positions.get("sun", {}).get("longitude")
     for key, pos in positions.items():

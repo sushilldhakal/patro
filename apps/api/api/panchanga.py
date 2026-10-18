@@ -17,20 +17,20 @@ from api.deps import (
     _validate_bs_month,
     _validate_bs_year,
 )
-from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN, BC_YEAR_MAX, BC_YEAR_MIN
-from engine.vedic.bikram_sambat import (
+from engine.calendar.constants import AD_YEAR_MAX, AD_YEAR_MIN, BC_YEAR_MAX, BC_YEAR_MIN
+from engine.calendar.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
     format_bs_date,
     gregorian_to_bs,
     parse_bs_date,
 )
-from services.holiday_generator import (
+from services.festivals.holiday_generator import (
     FestivalCacheMissError,
     HolidayCacheMissError,
     get_bs_holidays,
 )
-from services.panchanga_api import (
+from services.panchanga.panchanga_api import (
     build_calendar_header,
     build_daily_state,
     build_daily_state_civil,
@@ -41,14 +41,14 @@ from services.panchanga_api import (
     build_year_calendar,
 )
 from app.day_resolver import greg_date_for_date_key
-from services.payload_slim import slim_day_payload, slim_month_payload
-from services.presentation import render_panchanga, render_panchanga_month
+from services.panchanga.payload_slim import slim_day_payload, slim_month_payload
+from services.panchanga.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
 
 
 def _slimmed(build, slim):
-    """``build`` with its payload passed through a ``services.payload_slim`` trim."""
+    """``build`` with its payload passed through a ``services.panchanga.payload_slim`` trim."""
     return lambda: slim(build())
 
 
@@ -66,8 +66,8 @@ def _cached_year_response(
     later one streams the pre-compressed bytes back in milliseconds. Past years
     are served with an immutable long CDN TTL; the live year gets a short one.
     """
-    from services.response_cache import bs_year_cache_control
-    from services.year_cache import read_year_cache, write_year_cache
+    from services.platform.response_cache import bs_year_cache_control
+    from services.panchanga.year_cache import read_year_cache, write_year_cache
 
     compressed = read_year_cache(bs_year, location, variant=variant)
     if compressed is None:
@@ -102,7 +102,7 @@ def panchanga_year_sun_times(bs_year: int, location: LocationDep, request: Reque
     Purpose-built slim payload: a cold year computes in ~1 s (vs ~30 s for the
     full year build); cached responses return in milliseconds.
     """
-    from services.panchanga_api import build_year_sun_times
+    from services.panchanga.panchanga_api import build_year_sun_times
 
     _validate_bs_year(bs_year)
     return _cached_year_response(
@@ -194,7 +194,7 @@ def panchanga_rashifal_janma(
     The older ``birth=YYYY-MM-DDTHH:MM`` Gregorian form is still accepted.
     """
     from app.instant_resolver import birth_instant_from_query
-    from services.sait_personalize import compute_janma_from_instant
+    from services.festivals.sait_personalize import compute_janma_from_instant
 
     try:
         instant = birth_instant_from_query(
@@ -239,8 +239,8 @@ def panchanga_rashifal_personal(
     from app.day_resolver import DayResolutionError, day_jd_for_request
     from app.instant_resolver import birth_instant_from_query
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from engine.vedic.rashifal_personal import build_natal_chart
-    from services.rashifal_api import personal_rashifal_for_gregorian
+    from engine.jyotish.rashifal_personal import build_natal_chart
+    from services.jyotish.rashifal_api import personal_rashifal_for_gregorian
 
     try:
         jd_ut = day_jd_for_request(request, date_key)
@@ -317,7 +317,7 @@ def panchanga_month(
     → served from the gzip response cache; the first request computes (~0.8 s
     cold), later ones stream back in milliseconds.
     """
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     bs_signed = _signed_bs_year_from_browse(era, bs_year)
     _validate_bs_month(bs_month)
@@ -359,8 +359,8 @@ def panchanga_ad_month(
     ),
 ):
     """Gregorian (AD) month calendar — Jan–Dec boundaries for English UI."""
-    from services.panchanga_api import build_ad_month_calendar
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from services.panchanga.panchanga_api import build_ad_month_calendar
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not AD_YEAR_MIN <= ad_year <= AD_YEAR_MAX:
         raise HTTPException(
@@ -405,8 +405,8 @@ def panchanga_bc_month(
 ):
     """Gregorian BCE month calendar — positive ``bc_year`` is ``N`` BC (``era=bc``)."""
     from api.deps import validated_year_span_jd
-    from services.panchanga_api import build_gregorian_browse_month_calendar
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from services.panchanga.panchanga_api import build_gregorian_browse_month_calendar
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not BC_YEAR_MIN <= bc_year <= BC_YEAR_MAX:
         raise HTTPException(
@@ -444,8 +444,8 @@ def _bce_day_payload(
     knows the patro date (an ``era=bs`` request always does).
     """
     from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
-    from services.panchanga_api import build_daily_state_civil
+    from engine.calendar.bikram_sambat import locate_patro_day_for_civil
+    from services.panchanga.panchanga_api import build_daily_state_civil
 
     patro_year, patro_month, patro_day = bs_triple or locate_patro_day_for_civil(civil)
     payload = build_daily_state_civil(
@@ -479,8 +479,8 @@ def _day_payload_for_jd(
     one the response will be labelled in — the era middleware owns both ends.
     """
     from engine.astronomy.jd_calendar import format_civil_iso
-    from services.panchanga_api import resolve_panchanga_jd_ut
-    from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
+    from services.panchanga.panchanga_api import resolve_panchanga_jd_ut
+    from services.platform.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
 
     canonical, civil_day, greg = resolve_panchanga_jd_ut(jd_ut)
 
@@ -508,7 +508,7 @@ def _day_payload_for_jd(
         return JSONResponse(content=payload, headers=headers)
 
     if reference == "midnight":
-        from services.panchanga_at_time import build_panchanga_civil_day
+        from services.panchanga.panchanga_at_time import build_panchanga_civil_day
 
         payload = build_panchanga_civil_day(greg, location)
         if not detail:
@@ -521,7 +521,7 @@ def _day_payload_for_jd(
         )
 
     if civil:
-        from services.civil_timeline import build_civil_timeline
+        from services.panchanga.civil_timeline import build_civil_timeline
 
         payload["civil_timeline"] = build_civil_timeline(greg, location)
 
@@ -673,7 +673,7 @@ def panchanga_rashifal(
     """
     from app.day_resolver import DayResolutionError, day_jd_for_request
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from services.response_cache import (
+    from services.platform.response_cache import (
         DAILY_PANCHANGA_CACHE_CONTROL,
         location_cache_key,
         serve_cached_json,
@@ -693,11 +693,11 @@ def panchanga_rashifal(
         )
 
     def build():
-        from services.rashifal_api import rashifal_for_gregorian
+        from services.jyotish.rashifal_api import rashifal_for_gregorian
 
         return rashifal_for_gregorian(greg, location, period=period)
 
-    from services.rashifal_api import rashifal_window_key
+    from services.jyotish.rashifal_api import rashifal_window_key
 
     window = rashifal_window_key(greg, period)
     key = f"rashifal_{period}_{window}_{location_cache_key(location)}"
@@ -755,7 +755,7 @@ def festivals_bs_year(
     """All festivals/observances for a BS year (includes regional events)."""
     _validate_bs_year(bs_year)
     try:
-        from services.holiday_generator import get_bs_festivals
+        from services.festivals.holiday_generator import get_bs_festivals
         return get_bs_festivals(bs_year, location, bs_month=month)
     except FestivalCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -859,7 +859,7 @@ def nepal_holidays(
 
     holidays_list = payload["holidays"]
     if month is not None:
-        from services.holiday_generator import filter_holidays_by_bs_month
+        from services.festivals.holiday_generator import filter_holidays_by_bs_month
         holidays_list = filter_holidays_by_bs_month(holidays_list, signed, month)
 
     result: dict[str, Any] = {
@@ -877,28 +877,28 @@ def nepal_holidays(
 @router.get("/nepal/sait/categories", tags=["sait"])
 def nepal_sait_categories():
     """Ceremony types available for sait listings (विवाह, ब्रतबन्ध, …)."""
-    from services.sait_api import list_sait_categories
+    from services.festivals.sait_api import list_sait_categories
     return {"categories": list_sait_categories()}
 
 
 @router.get("/nepal/sait/years", tags=["sait"])
 def nepal_sait_years():
     """BS years available for sait (1700–2200, computed from JPL)."""
-    from services.sait_api import list_sait_years
+    from services.festivals.sait_api import list_sait_years
     return {"years": list_sait_years()}
 
 
 @router.get("/nepal/sait/about", tags=["sait"])
 def nepal_sait_about_all():
     """Explanation metadata for every ceremony type — powers the standalone pages."""
-    from services.sait_api import get_sait_about_all
+    from services.festivals.sait_api import get_sait_about_all
     return get_sait_about_all()
 
 
 @router.get("/nepal/sait/{category}/about", tags=["sait"])
 def nepal_sait_about(category: str):
     """Explanation / how-it's-sourced metadata for one ceremony type."""
-    from services.sait_api import get_sait_about
+    from services.festivals.sait_api import get_sait_about
     try:
         return get_sait_about(category)
     except ValueError as exc:
@@ -910,7 +910,7 @@ def nepal_sait_month_all(bs_year: int, bs_month: int, location: LocationDep):
     """Auspicious days for ALL ceremony types in ONE BS month (home-page list).
     Computes only the requested month rather than the whole year."""
     _validate_bs_year(bs_year)
-    from services.sait_api import get_sait_month_all
+    from services.festivals.sait_api import get_sait_month_all
     try:
         return get_sait_month_all(bs_year, bs_month, location)
     except ValueError as exc:
@@ -936,8 +936,8 @@ def nepal_sait_detail(
     ``liberal`` — switches the nakṣatra tradition without clearing other rules.
     """
     _validate_bs_year(bs_year)
-    from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
-    from services.sait_api import get_sait_detail
+    from services.platform.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
+    from services.festivals.sait_api import get_sait_detail
 
     exclude_rules = frozenset(
         part.strip() for part in (exclude or "").split(",") if part.strip()
@@ -1001,8 +1001,8 @@ def nepal_sait_personalize(
     from engine.astronomy.timescale import resolve_observer_timezone
 
     _validate_bs_year(bs_year)
-    from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL
-    from services.sait_personalize import compute_janma_from_instant, personalize_sait
+    from services.platform.response_cache import SAIT_CUSTOM_CACHE_CONTROL
+    from services.festivals.sait_personalize import compute_janma_from_instant, personalize_sait
 
     birth_date = None
     has_birth_parts = None not in (birth_year, birth_month, birth_day)
@@ -1055,7 +1055,7 @@ def nepal_sait_personalize(
 def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""
     _validate_bs_year(bs_year)
-    from services.sait_api import get_sait_month_entries
+    from services.festivals.sait_api import get_sait_month_entries
     try:
         return get_sait_month_entries(bs_year, category, location)
     except ValueError as exc:
@@ -1070,8 +1070,8 @@ def _apply_tradition(festivals: list, tradition_value: str | None) -> tuple[list
     entries. Keying the cache per tradition would multiply every stored year by
     the number of traditions to remove one festival from each.
     """
-    from engine.vedic import tradition as tradition_module
-    from services.holiday_generator import load_rules
+    from engine.festivals import tradition as tradition_module
+    from services.festivals.holiday_generator import load_rules
 
     try:
         resolved = tradition_module.normalize(tradition_value)
@@ -1097,7 +1097,7 @@ def nepal_festivals(
     """All Nepal festivals (including regional) with both BS and AD dates."""
     # Validate before any lookup: a malformed parameter is a 400 regardless of
     # whether the requested year happens to be cached.
-    from engine.vedic import tradition as _tradition_module
+    from engine.festivals import tradition as _tradition_module
 
     try:
         _tradition_module.normalize(tradition)
@@ -1105,7 +1105,7 @@ def nepal_festivals(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     if era == "ad":
-        from services.holiday_generator import get_bs_festivals
+        from services.festivals.holiday_generator import get_bs_festivals
         seen: dict[str, Any] = {}
         for bs_year in (year + 56, year + 57):
             try:
@@ -1140,7 +1140,7 @@ def nepal_festivals(
         )
 
     signed = _signed_bs_year_from_browse(era, year)
-    from services.holiday_generator import get_bs_festivals
+    from services.festivals.holiday_generator import get_bs_festivals
     try:
         payload = get_bs_festivals(signed, location, bs_month=month)
     except FestivalCacheMissError as exc:
@@ -1167,7 +1167,7 @@ def nepal_upcoming_festivals(
     """Next festivals on/after a date, spanning the BS-year boundary."""
     from zoneinfo import ZoneInfo
 
-    from services.holiday_generator import get_bs_festivals
+    from services.festivals.holiday_generator import get_bs_festivals
 
     if from_date is not None:
         try:
@@ -1219,7 +1219,7 @@ def nepal_panchanga_day(
     """Combined daily panchanga + festivals + public holiday status."""
     from app.day_resolver import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
-    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
+    from engine.calendar.bikram_sambat import locate_patro_day_for_civil
 
     civil = civil_day_for_date_key(date_key, era)
     if civil is None:
@@ -1247,7 +1247,7 @@ def nepal_panchanga_day(
         state = build_daily_state(
             greg, location, include_festivals=True, include_detail=False
         )
-    from services.holiday_generator import is_public_holiday
+    from services.festivals.holiday_generator import is_public_holiday
     festivals = state.get("festivals", [])
     for f in festivals:
         f["is_public_holiday"] = is_public_holiday(f["id"])
@@ -1295,7 +1295,7 @@ def nepal_panchanga_month_formatted(
 @router.get("/nepal/sankranti/year/{ad_year}", tags=["sankranti"])
 def nepal_sankranti_year(ad_year: int, location: LocationDep):
     """All Sankrantis (solar ingresses) in a Gregorian year with exact timestamps."""
-    from engine.vedic.sankranti_calendar import build_sankranti_year_response
+    from engine.calendar.sankranti_calendar import build_sankranti_year_response
     return build_sankranti_year_response(ad_year, location)
 
 
@@ -1310,7 +1310,7 @@ def nepal_sankranti_day(
     era: Literal["bs", "ad"] = Query("bs"),
 ):
     """Sankrantis occurring on or near a given date."""
-    from engine.vedic.sankranti_calendar import build_sankranti_day_response
+    from engine.calendar.sankranti_calendar import build_sankranti_day_response
     try:
         greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
@@ -1322,11 +1322,11 @@ def nepal_sankranti_day(
 def nepal_panchanga_year(bs_year: int, location: LocationDep):
     """Full-year Panchanga summary for a BS year."""
     _validate_bs_year(bs_year)
-    from engine.vedic.bikram_sambat import (
+    from engine.calendar.bikram_sambat import (
         format_bs_date, get_bs_month_length, get_bs_month_start,
         iter_bs_month_days, bs_to_gregorian,
     )
-    from services.daily_panchanga import get_daily_panchanga
+    from services.panchanga.daily_panchanga import get_daily_panchanga
 
     all_greg_days: list[date] = []
     for month in range(1, 13):
@@ -1370,8 +1370,8 @@ def nepal_panchanga_year(bs_year: int, location: LocationDep):
 def nepal_special_months(bs_year: int, location: LocationDep, request: Request):
     """Adhik Maas and Kshaya Maas info for a BS year."""
     _validate_bs_year(bs_year)
-    from services.holiday_generator import get_special_months_for_bs_year
-    from services.response_cache import (
+    from services.festivals.holiday_generator import get_special_months_for_bs_year
+    from services.platform.response_cache import (
         bs_year_cache_control,
         location_cache_key,
         serve_cached_json,

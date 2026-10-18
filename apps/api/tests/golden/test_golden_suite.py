@@ -128,7 +128,7 @@ class TestGrahaLongitudes:
         from engine.astronomy.planets import spashta_table
         from engine.astronomy.sidereal import resolve_ayanamsha_mode
         from engine.astronomy.ut_instant import as_julian_day
-        from engine.vedic.at_time import parse_query_datetime
+        from engine.panchanga.at_time import parse_query_datetime
 
         ds = schema.load(self.DATASET)
         if not ds.is_runnable:
@@ -159,7 +159,7 @@ class TestWeekdayDirectionTables:
 
     def test_matches_published_tables(self):
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import build_daily_panchanga
+        from engine.panchanga.daily import build_daily_panchanga
 
         ds = schema.load(self.DATASET)
         if not ds.is_runnable:
@@ -258,9 +258,9 @@ class TestSankranti:
     DATASET = "sankranti"
 
     def test_production_solver_matches_the_definition(self):
-        """The real check: engine/vedic/sankranti.find_sankranti_after_jd against
+        """The real check: engine/calendar/sankranti.find_sankranti_after_jd against
         an independently-solved sidereal ingress."""
-        from engine.vedic.sankranti import find_sankranti_after_jd
+        from engine.calendar.sankranti import find_sankranti_after_jd
 
         ds = schema.load(self.DATASET)
         if not ds.is_runnable:

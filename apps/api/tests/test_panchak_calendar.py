@@ -3,7 +3,7 @@
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.panchak_calendar import build_panchak_ad_year, build_panchak_bs_year, list_panchak_periods
+from engine.jyotish.panchak_calendar import build_panchak_ad_year, build_panchak_bs_year, list_panchak_periods
 
 
 def test_panchak_bs_2083_count():

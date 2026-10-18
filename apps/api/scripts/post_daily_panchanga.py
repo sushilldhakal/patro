@@ -37,7 +37,7 @@ from datetime import date, datetime
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 import config  # noqa: E402
-from services.fb_post_content import (  # noqa: E402
+from services.sharing.fb_post_content import (  # noqa: E402
     KATHMANDU_TZ,
     anga_transition_lines,
     card_page_url,
@@ -49,8 +49,8 @@ from services.fb_post_content import (  # noqa: E402
     periods_caption,
     sunrise_datetime,
 )
-from services.og_image import og_fields  # noqa: E402
-from services.panchanga_api import build_daily_state  # noqa: E402
+from services.sharing.og_image import og_fields  # noqa: E402
+from services.panchanga.panchanga_api import build_daily_state  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("fb_daily_post")
@@ -162,7 +162,7 @@ def main() -> int:
             print()
         return 0
 
-    from services.fb_page import FacebookPostError, post_link
+    from services.sharing.fb_page import FacebookPostError, post_link
 
     failed = 0
     for i, kind in enumerate(kinds):

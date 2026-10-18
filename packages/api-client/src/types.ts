@@ -545,8 +545,8 @@ export interface YogaReferenceResponse {
 
 // ── Bhava/graha static reference content (drishti, karakatva, Lal Kitab) ──
 // Chart-independent — same for every kundali. Lives server-side as the
-// single source of truth (see nepali-holiday-api's engine/vedic/
-// bhava_reference.py); this app used to duplicate it as local .ts files.
+// single source of truth (see apps/api/engine/jyotish/bhava_reference.py);
+// this app used to duplicate it as local .ts files.
 
 export interface BhavaReferenceGrahaDrishti {
   isMalefic: boolean;

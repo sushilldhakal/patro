@@ -21,7 +21,7 @@ from datetime import date
 import pytest
 
 from engine.astronomy.jd_calendar import CivilDay, civil_iso_from_date
-from services.observer_location import resolve_location_from_query
+from services.geography.observer_location import resolve_location_from_query
 
 # A modern day well inside the .se1 range, and a second one in a different
 # season so a seasonal bug can't pass by coincidence.
@@ -69,7 +69,7 @@ class TestGrahaSthitiIsEraFree:
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
     def test_both_spellings_of_the_day_give_one_payload(self, day: date):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.graha_detail import build_graha_sthiti
+        from engine.jyotish.graha_detail import build_graha_sthiti
 
         from_date = build_graha_sthiti(civil_day_jd_from_date(day), LOCATION)
         from_civil = build_graha_sthiti(civil_of(day).to_jd_ut(), LOCATION)
@@ -79,7 +79,7 @@ class TestGrahaSthitiIsEraFree:
     def test_supplying_the_bs_label_changes_only_that_field(self, day: date):
         """The route passes its own date_bs for pre-CE days; nothing else moves."""
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.graha_detail import build_graha_sthiti
+        from engine.jyotish.graha_detail import build_graha_sthiti
 
         jd = civil_day_jd_from_date(day)
         derived = build_graha_sthiti(jd, LOCATION)
@@ -95,7 +95,7 @@ class TestGocharIsEraFree:
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
     def test_both_spellings_of_the_day_give_one_payload(self, day: date):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.gochar import build_gochar
+        from engine.jyotish.gochar import build_gochar
 
         from_date = build_gochar(
             civil_day_jd_from_date(day), LOCATION, include_next_entry=False
@@ -109,7 +109,7 @@ class TestGocharIsEraFree:
     def test_next_entries_survive_the_merge(self, day: date):
         """The expensive branch — next rashi/nakshatra/pada crossings per graha."""
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.gochar import build_gochar
+        from engine.jyotish.gochar import build_gochar
 
         payload = build_gochar(
             civil_day_jd_from_date(day), LOCATION, include_next_entry=True
@@ -122,7 +122,7 @@ class TestGocharIsEraFree:
     def test_computed_at_is_the_sunrise_anchor(self):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
         from engine.astronomy.sun import sun_service
-        from engine.vedic.gochar import build_gochar
+        from engine.jyotish.gochar import build_gochar
 
         jd = civil_day_jd_from_date(DAY_A)
         payload = build_gochar(jd, LOCATION, include_next_entry=False)
@@ -136,7 +136,7 @@ class TestUdayastTwins:
     """``build_udayast_range`` vs ``build_udayast_range_civil`` — heliacal events."""
 
     def test_events_are_identical(self):
-        from engine.vedic.udayast import build_udayast_range, build_udayast_range_civil
+        from engine.jyotish.udayast import build_udayast_range, build_udayast_range_civil
 
         start, end = date(2026, 1, 1), date(2026, 3, 1)
         ce = build_udayast_range(start, end, LOCATION)
@@ -153,7 +153,7 @@ class TestGrahaAstaSpanIsEraFree:
 
     def test_ad_year_wrapper_matches_the_span_builder(self):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.graha_detail import (
+        from engine.jyotish.graha_detail import (
             build_graha_asta_ad_year,
             build_graha_asta_span,
         )
@@ -167,7 +167,7 @@ class TestGrahaAstaSpanIsEraFree:
         assert strip(wrapped, "ad_year", "era") == span
 
     def test_bs_year_wrapper_only_adds_labels(self):
-        from engine.vedic.graha_detail import build_graha_asta_year
+        from engine.jyotish.graha_detail import build_graha_asta_year
 
         wrapped = build_graha_asta_year(2083, LOCATION)
         assert wrapped["era"] == "bs"
@@ -189,7 +189,7 @@ class TestVakriSpanIsAlreadyEraFree:
 
     def test_ad_year_wrapper_matches_the_span_builder(self):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.graha_detail import (
+        from engine.jyotish.graha_detail import (
             build_graha_vakri_ad_year,
             build_graha_vakri_span,
         )
@@ -217,9 +217,9 @@ class TestDailyPanchangaIsEraFreeWhereItCounts:
 
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
     def test_astronomy_is_identical_whichever_entry_point_is_used(self, day: date):
-        from engine.vedic.bikram_sambat import gregorian_to_bs
-        from engine.vedic.daily import build_daily_panchanga
-        from engine.vedic.daily_civil import build_daily_panchanga_civil
+        from engine.calendar.bikram_sambat import gregorian_to_bs
+        from engine.panchanga.daily import build_daily_panchanga
+        from engine.panchanga.daily_civil import build_daily_panchanga_civil
 
         bs_y, bs_m, bs_d = gregorian_to_bs(day)
         ce = build_daily_panchanga(day, LOCATION)
@@ -240,9 +240,9 @@ class TestDailyPanchangaIsEraFreeWhereItCounts:
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
     def test_only_the_calendar_labels_differ(self, day: date):
         """Everything the CE-only engines feed, and nothing else."""
-        from engine.vedic.bikram_sambat import gregorian_to_bs
-        from engine.vedic.daily import build_daily_panchanga
-        from engine.vedic.daily_civil import build_daily_panchanga_civil
+        from engine.calendar.bikram_sambat import gregorian_to_bs
+        from engine.panchanga.daily import build_daily_panchanga
+        from engine.panchanga.daily_civil import build_daily_panchanga_civil
 
         bs_y, bs_m, bs_d = gregorian_to_bs(day)
         ce = build_daily_panchanga(day, LOCATION)
@@ -267,7 +267,7 @@ class TestDailyPanchangaIsEraFreeWhereItCounts:
 
     def test_the_patro_axis_labels_say_they_are_stubs(self):
         """A stubbed block must announce itself, not look like a real answer."""
-        from engine.vedic.daily_civil import build_daily_panchanga_civil
+        from engine.panchanga.daily_civil import build_daily_panchanga_civil
 
         payload = build_daily_panchanga_civil(
             CivilDay(-100, 7, 31),
@@ -328,7 +328,7 @@ class TestRetrogradeHasOneAnswer:
 
         from engine.astronomy.planets import spashta_table
         from engine.astronomy.ut_instant import as_julian_day
-        from engine.vedic.gochar import get_gochar_table
+        from engine.jyotish.gochar import get_gochar_table
 
         dt = datetime(DAY_A.year, DAY_A.month, DAY_A.day, tzinfo=timezone.utc)
         positions = spashta_table(as_julian_day(dt))
@@ -346,7 +346,7 @@ class TestRetrogradeHasOneAnswer:
 
         from engine.astronomy.planets import spashta_table
         from engine.astronomy.ut_instant import as_julian_day
-        from engine.vedic.gochar import get_gochar_table
+        from engine.jyotish.gochar import get_gochar_table
 
         dt = datetime(DAY_A.year, DAY_A.month, DAY_A.day, tzinfo=timezone.utc)
         positions = spashta_table(as_julian_day(dt))
@@ -367,9 +367,9 @@ class TestDeclaredAnchor:
 
     def test_sunrise_anchored_builders_declare_it(self):
         from engine.astronomy.jd_calendar import civil_day_jd_from_date
-        from engine.vedic.daily import build_daily_panchanga
-        from engine.vedic.gochar import build_gochar
-        from engine.vedic.graha_detail import build_graha_sthiti
+        from engine.panchanga.daily import build_daily_panchanga
+        from engine.jyotish.gochar import build_gochar
+        from engine.jyotish.graha_detail import build_graha_sthiti
 
         jd = civil_day_jd_from_date(DAY_A)
         assert build_daily_panchanga(DAY_A, LOCATION)["anchor"] == "sunrise"
@@ -379,7 +379,7 @@ class TestDeclaredAnchor:
     def test_instant_snapshot_declares_instant(self):
         from datetime import datetime, timezone
 
-        from engine.vedic.at_time import build_planetary_snapshot
+        from engine.panchanga.at_time import build_planetary_snapshot
 
         snap = build_planetary_snapshot(
             datetime(2026, 7, 31, 9, 30, tzinfo=timezone.utc),

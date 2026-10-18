@@ -48,8 +48,8 @@ import pytest
 
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.vedic.daily import build_daily_panchanga, build_daily_panchanga_at_jd
-from services.daily_panchanga import build_daily_panchanga_with_festivals
+from engine.panchanga.daily import build_daily_panchanga, build_daily_panchanga_at_jd
+from services.panchanga.daily_panchanga import build_daily_panchanga_with_festivals
 
 FIXTURE_DIR = Path(__file__).parent / "data" / "byte_identical"
 

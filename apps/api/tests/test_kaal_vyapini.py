@@ -20,10 +20,10 @@ sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset
-from engine.vedic.kaal import kaal_window, vyapini_date
-from engine.vedic.lunar_month import clear_lunar_year_cache, find_festival_in_lunar_month
-from engine.vedic.tithi import get_udaya_tithi
-from engine.vedic.tithi_boundaries import find_next_tithi, find_tithi_end
+from engine.panchanga.kaal import kaal_window, vyapini_date
+from engine.panchanga.lunar_month import clear_lunar_year_cache, find_festival_in_lunar_month
+from engine.panchanga.tithi import get_udaya_tithi
+from engine.panchanga.tithi_boundaries import find_next_tithi, find_tithi_end
 from engine.astronomy.ut_instant import day_instant_utc
 from rules.engine import compute_festival_dates
 

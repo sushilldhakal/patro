@@ -14,8 +14,8 @@ from engine.astronomy.engine import EphemerisError
 from fastapi.middleware.gzip import GZipMiddleware
 
 import config
-from services.startup import warm_holiday_cache
-from services.wiring import configure as configure_ports
+from services.platform.startup import warm_holiday_cache
+from services.platform.wiring import configure as configure_ports
 
 logging.basicConfig(level=config.log_level())
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ async def _warm_holiday_cache_background(app: FastAPI) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.precomputed_bs_years = []
-    from services.startup import ensure_swiss_ephemeris_files
+    from services.platform.startup import ensure_swiss_ephemeris_files
 
     loop = asyncio.get_running_loop()
     try:

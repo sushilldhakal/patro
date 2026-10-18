@@ -3,7 +3,7 @@ from datetime import date
 
 from engine.astronomy.jd_calendar import civil_day_jd_from_date
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.graha_detail import (
+from engine.jyotish.graha_detail import (
     YEARLY_GRAHAS,
     build_eclipse_year,
     build_graha_asta_year,
@@ -70,7 +70,7 @@ def test_asta_year_has_periods_including_moon():
 
 def test_graha_sthiti_early_bs_year():
     from engine.astronomy.jd_calendar import civil_day_add
-    from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil
+    from engine.calendar.bikram_sambat import format_bs_date, get_bs_month_start_civil
 
     start = get_bs_month_start_civil(20, 4)
     jd = civil_day_add(start.to_jd_ut(), 14)

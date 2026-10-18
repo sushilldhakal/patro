@@ -12,7 +12,7 @@ Sukta-equivalent grouping is present in this source), so this script maps
 onto the documents schema's two levels directly: each Adhyaya becomes one
 chapter, and each "।। N ।।"-delimited span of text becomes one shloka.
 ``sukta_number`` is left null throughout — same as every other non-Rigveda
-document (see services/documents_db.py).
+document (see services/scripture/documents_db.py).
 
 Run from the repo root:
 

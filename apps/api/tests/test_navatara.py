@@ -1,9 +1,9 @@
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.daily import build_daily_panchanga
-from engine.vedic.navatara import build_tarabala_table
-from services.panchanga_api import build_daily_state
+from engine.panchanga.daily import build_daily_panchanga
+from engine.panchanga.navatara import build_tarabala_table
+from services.panchanga.panchanga_api import build_daily_state
 
 
 def test_tarabala_table_has_27_rows():

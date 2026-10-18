@@ -1,4 +1,4 @@
-"""Tests for the ported placement engine (engine/vedic/vastu/layout.py and friends).
+"""Tests for the ported placement engine (engine/vastu/layout.py and friends).
 
 Covers the connectivity/merge fixes this exact algorithm shipped with on the
 web client this session, translated to pytest against the Python port.
@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from engine.vedic.vastu.architecture import IDEAL_SIZE, box_fits
-from engine.vedic.vastu.layout import plan_house
-from engine.vedic.vastu.rooms import HouseRequirement, PlannedSpace
-from engine.vedic.vastu.types import SiteInput
+from engine.vastu.architecture import IDEAL_SIZE, box_fits
+from engine.vastu.layout import plan_house
+from engine.vastu.rooms import HouseRequirement, PlannedSpace
+from engine.vastu.types import SiteInput
 
 FACINGS = ["east", "west", "north", "south"]
 
@@ -150,8 +150,8 @@ def test_multi_floor_has_staircase_on_every_floor():
 
 
 def _bedroom_room(w: float, h: float):
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.layout import make_room
+    from engine.vastu.geometry import Rect
+    from engine.vastu.layout import make_room
 
     return make_room(PlannedSpace(id="bedroom_1", kind="bedroom"), Rect(0, 0, w, h), storey=0, region="east")
 
@@ -160,9 +160,9 @@ def test_leftover_growth_refuses_past_preferred_tier():
     """A room already at (or past) its preferred size shouldn't keep
     absorbing leftover mandala cells — data/vastu_room_sizes.json's whole
     point is that excess space should stay usable elsewhere instead."""
-    from engine.vedic.vastu import architecture as arch
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.layout import _growth_priority
+    from engine.vastu import architecture as arch
+    from engine.vastu.geometry import Rect
+    from engine.vastu.layout import _growth_priority
 
     tiers = arch.ROOM_SIZE_TIERS["bedroom"]
     room = _bedroom_room(tiers.preferred.width, tiers.preferred.depth)
@@ -171,9 +171,9 @@ def test_leftover_growth_refuses_past_preferred_tier():
 
 
 def test_leftover_growth_allowed_up_to_preferred_tier():
-    from engine.vedic.vastu import architecture as arch
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.layout import _growth_priority
+    from engine.vastu import architecture as arch
+    from engine.vastu.geometry import Rect
+    from engine.vastu.layout import _growth_priority
 
     tiers = arch.ROOM_SIZE_TIERS["bedroom"]
     room = _bedroom_room(tiers.minimum.width, tiers.minimum.depth)
@@ -184,9 +184,9 @@ def test_leftover_growth_allowed_up_to_preferred_tier():
 def test_below_comfortable_room_outranks_above_comfortable_room():
     """Among willing candidates, a room still short of `comfortable` should
     be favored over one that's already reached it."""
-    from engine.vedic.vastu import architecture as arch
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.layout import _growth_priority
+    from engine.vastu import architecture as arch
+    from engine.vastu.geometry import Rect
+    from engine.vastu.layout import _growth_priority
 
     tiers = arch.ROOM_SIZE_TIERS["bedroom"]
     below_comfortable = _bedroom_room(tiers.minimum.width, tiers.minimum.depth)
@@ -202,8 +202,8 @@ def test_below_comfortable_room_outranks_above_comfortable_room():
 def test_room_with_no_tier_data_keeps_original_uncapped_growth():
     """The mandala's own centre (kind="brahmasthan") carries no size tier —
     it must keep growing exactly as it always did, unbounded."""
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.layout import _growth_priority, open_piece
+    from engine.vastu.geometry import Rect
+    from engine.vastu.layout import _growth_priority, open_piece
 
     center = open_piece("center_0", Rect(0, 0, 20, 20), storey=0, want_court=False)
     cell = Rect(20, 0, 5, 20)
@@ -220,7 +220,7 @@ def test_generous_plot_packs_more_than_eight_majors():
     zone count, not zone size. On a 15x14m plot every zone is ~23 sqm,
     dwarfing any room's minimum, so `pack_into_surplus` should carve the
     overflow out of that surplus instead of reporting it unplaceable."""
-    from engine.vedic.vastu import architecture as arch
+    from engine.vastu import architecture as arch
 
     req = HouseRequirement(
         bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
@@ -246,7 +246,7 @@ def test_kitchen_dining_inherits_kitchens_avoid_zones():
     dropping the fire-corner constraint the combined room is supposed to
     keep. zone_rules.zone_costs_for_subject aliases it to "kitchen" one
     layer up from the db, so this and the raw-db test both hold at once."""
-    from engine.vedic.vastu import zone_rules
+    from engine.vastu import zone_rules
 
     kitchen = zone_rules.zone_costs_for_subject("kitchen")
     combo = zone_rules.zone_costs_for_subject("kitchen_dining")
@@ -273,9 +273,9 @@ def test_carve_falls_back_to_a_strip_when_the_donor_is_too_narrow_for_a_corner_c
     strip, under any real room's own min_side. A full-width strip across
     the donor's short axis is the only shape that still leaves it a valid,
     full-length remainder."""
-    from engine.vedic.vastu import architecture as arch
-    from engine.vedic.vastu.geometry import Rect, largest, split_by
-    from engine.vedic.vastu.layout import extra_rect_candidates
+    from engine.vastu import architecture as arch
+    from engine.vastu.geometry import Rect, largest, split_by
+    from engine.vastu.layout import extra_rect_candidates
 
     narrow_donor = Rect(0.0, 0.0, 2.3, 4.67)
     candidates = extra_rect_candidates(narrow_donor, "combined")
@@ -305,7 +305,7 @@ def test_generous_plot_places_everything_without_overlap():
     rooms legitimately sharing one dir8 bearing bucket is normal, not a
     fragmentation bug — `test_no_room_overlaps` is what actually guards
     against a double-wall artifact now, by construction."""
-    from engine.vedic.vastu import architecture as arch
+    from engine.vastu import architecture as arch
 
     req = HouseRequirement(
         bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
@@ -387,7 +387,7 @@ def test_small_plot_degrades_instead_of_crashing():
         extras=("living", "kitchen", "dining", "puja", "study", "store", "laundry"),
         mode="flexible", storeys=1,
     )
-    from engine.vedic.vastu.architecture import IDEAL_SIZE
+    from engine.vastu.architecture import IDEAL_SIZE
 
     site = SiteInput(width=9, height=8, facing="east")
     concept = plan_house(req, site)  # must not raise
@@ -407,8 +407,8 @@ def test_every_room_touches_the_corridor_spine():
     the corridor cross (`solver.corridor_bands`) — checked directly at the
     geometry level, not just inferred from `validation.all_reachable` (which
     also accepts a room reached only via a door bridge)."""
-    from engine.vedic.vastu.geometry import shared_seg
-    from engine.vedic.vastu.solver import corridor_bands, solve_layout
+    from engine.vastu.geometry import shared_seg
+    from engine.vastu.solver import corridor_bands, solve_layout
 
     width, height = 13.0, 11.0
     h_band, v_band = corridor_bands(width, height, 0.85)
@@ -515,8 +515,8 @@ def test_door_slides_off_a_pada_rather_than_open_into_a_room():
     mid-wall where a room goes. Given the hall it has to open into, the door
     moves to the nearest pada the whole opening fits in and says so, instead
     of claiming a pada it isn't on."""
-    from engine.vedic.vastu.entrance import main_door_point
-    from engine.vedic.vastu.geometry import Rect
+    from engine.vastu.entrance import main_door_point
+    from engine.vastu.geometry import Rect
 
     width, height = 14.0, 15.0
     free = main_door_point("south", width, height)
@@ -561,8 +561,8 @@ def test_shared_cell_gives_every_room_its_minimum_first():
     """A puja (1.8 m min side) beside a study (2.4 m) in a 4.2 x 4.7 m cell.
     Sharing by preferred area alone gave the puja a 1.5 m strip and refused
     the whole split; minimums come off the top first now."""
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.ring import _split_cell
+    from engine.vastu.geometry import Rect
+    from engine.vastu.ring import _split_cell
 
     pieces = _split_cell(Rect(10.8, 4.6, 4.2, 4.7), ["puja", "study"])
     assert pieces is not None, "a 19.7 m2 cell must seat 10 m2 of minimums"
@@ -581,8 +581,8 @@ def test_a_shared_edge_cell_keeps_every_room_on_the_outer_wall(zone, cell):
     that wall leaves the inner strip touching no outside wall at all, and
     building.py can only put a window in a perimeter wall — so that room
     could never have one. The cuts have to run across the wall."""
-    from engine.vedic.vastu.geometry import Rect
-    from engine.vedic.vastu.ring import _split_cell
+    from engine.vastu.geometry import Rect
+    from engine.vastu.ring import _split_cell
 
     rect = Rect(*cell)
     pieces = _split_cell(rect, ["puja", "combined"], zone)
@@ -602,7 +602,7 @@ def test_ring_grid_tiles_the_plot_with_no_dead_slivers(size):
     its own left 0.1 m strips of dead floor where two roundings disagreed —
     and layout.py folded one of those into the Brahmasthāna, growing the
     sacred centre past its own scriptural ninth."""
-    from engine.vedic.vastu.ring import ring_plan
+    from engine.vastu.ring import ring_plan
 
     width, height = size
     plan = ring_plan(width, height, 0.85)
@@ -633,8 +633,8 @@ def test_no_corridor_strip_is_walled_off_between_two_rooms(facing, size):
     its own door (neither can be grown into), so the check is that no
     surviving strip has a merge-eligible room on both sides of it.
     """
-    from engine.vedic.vastu.geometry import shared_seg
-    from engine.vedic.vastu.layout import is_merge_target
+    from engine.vastu.geometry import shared_seg
+    from engine.vastu.layout import is_merge_target
 
     req = HouseRequirement(
         bedrooms=3, master_bedroom_index=1, toilets=1,

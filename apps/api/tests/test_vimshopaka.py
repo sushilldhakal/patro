@@ -1,6 +1,6 @@
 """Vimshopaka Bala (20-point divisional strength) unit tests."""
 
-from engine.vedic.vimshopaka import (
+from engine.jyotish.vimshopaka import (
     SWAVISHWA,
     VARGA_VISHWA,
     _grade,

@@ -10,11 +10,11 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from engine.vedic.patro_year_axis import (  # noqa: E402
+from engine.calendar.patro_year_axis import (  # noqa: E402
     PATRO_EPHEMERIS_SIGNED_MAX,
     PATRO_EPHEMERIS_SIGNED_MIN,
 )
-from engine.vedic.samvatsara import (  # noqa: E402
+from engine.calendar.samvatsara import (  # noqa: E402
     SAMVATSARA_ENTRIES,
     _samvatsara_index_by_walk,
     _samvatsara_table,

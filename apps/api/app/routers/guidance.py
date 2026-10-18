@@ -16,7 +16,7 @@ from engine.identity.profiles import ProfileNotFound
 from app.routers.profiles import profile_not_found
 from services.identity.profile_store import SqlProfileRepository
 from services.identity.profiles import get_profile
-from services.daily_guidance import MAX_DAYS, build_guidance_range
+from services.panchanga.daily_guidance import MAX_DAYS, build_guidance_range
 
 router = APIRouter(tags=["guidance"])
 
@@ -31,7 +31,7 @@ def _owned_profile(db, user, profile_id: str) -> Profile:
 def _natal_for(profile: Profile):
     """The profile's natal chart, or None when it has no usable birth moment."""
     from app.instant_resolver import birth_instant_from_query
-    from engine.vedic.rashifal_personal import build_natal_chart
+    from engine.jyotish.rashifal_personal import build_natal_chart
 
     if not (profile.birth_date and profile.latitude is not None and profile.longitude is not None):
         return None

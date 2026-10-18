@@ -1,7 +1,7 @@
 /**
  * Offline fallback for `POST /vastu/sketch`.
  *
- * The server owns zone placement and the Āyādi check (engine/vedic/vastu/sketch.py)
+ * The server owns zone placement and the Āyādi check (engine/vastu/sketch.py)
  * and the app asks it first. This copy exists only so the Vastu planner still
  * works with no connection, which is the point of offline mode. It is the
  * original client implementation, unchanged; the server's golden test

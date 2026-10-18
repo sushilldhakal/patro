@@ -81,7 +81,7 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // Appended to cacheable URLs so a backend/engine change mints fresh CDN objects
 // instead of serving stale ones. Bump here — one place for both apps.
 
-/** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga_cache.py. */
+/** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga/panchanga_cache.py. */
 export const PANCHANGA_CACHE_VERSION = "4703";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
 export const SAIT_CACHE_VERSION = "14";
@@ -789,7 +789,7 @@ export const fetchMonthCalendarRaw = (
   params.set("language", language);
   if (options?.clock) params.set("clock", options.clock);
   if (options?.excludeInternational) params.set("exclude_international", "true");
-  // With the full embed: only the per-day blocks a month view reads (see apps/api/services/payload_slim.py).
+  // With the full embed: only the per-day blocks a month view reads (see apps/api/services/panchanga/payload_slim.py).
   if (options?.slim && options?.full !== false) params.set("slim", "true");
   const base =
     era === "ad"

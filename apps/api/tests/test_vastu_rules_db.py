@@ -1,8 +1,8 @@
-"""Tests for the Vastu zone-uses / room-index seeding and lookups (services/vastu_rules_db.py)."""
+"""Tests for the Vastu zone-uses / room-index seeding and lookups (services/vastu/vastu_rules_db.py)."""
 
 from __future__ import annotations
 
-from services import vastu_rules_db as db
+from services.vastu import vastu_rules_db as db
 
 
 def test_seed_is_idempotent():

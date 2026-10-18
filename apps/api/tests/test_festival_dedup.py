@@ -10,9 +10,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.holiday_generator import festivals_on_date, load_rules
-from services.patro_generator import festivals_for_day
-from services.holiday_generator import (
+from services.festivals.holiday_generator import festivals_on_date, load_rules
+from services.festivals.patro_generator import festivals_for_day
+from services.festivals.holiday_generator import (
     filter_redundant_day_festivals,
     filter_redundant_year_festivals,
     get_bs_festivals,

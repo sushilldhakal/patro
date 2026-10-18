@@ -7,8 +7,8 @@ from datetime import date
 from starlette.testclient import TestClient
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.og_image import og_fields, render_panchanga_og
-from services.panchanga_api import build_daily_state
+from services.sharing.og_image import og_fields, render_panchanga_og
+from services.panchanga.panchanga_api import build_daily_state
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 

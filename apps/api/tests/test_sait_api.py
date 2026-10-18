@@ -1,12 +1,12 @@
 """Tests for sait API static vs computed paths."""
 
-from services.sait_api import (
+from services.festivals.sait_api import (
     get_sait_detail,
     get_sait_month_entries,
     list_sait_years,
 )
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.muhurta_engine import TOGGLEABLE_RULE_IDS
+from engine.festivals.muhurta_engine import TOGGLEABLE_RULE_IDS
 
 
 def test_list_sait_years_full_range():

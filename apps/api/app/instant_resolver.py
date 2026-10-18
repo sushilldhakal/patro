@@ -100,8 +100,8 @@ def instant_for_request(
     win when more than one is supplied. Raises ``ValueError`` for anything
     unusable, so callers surface a 400 the same way they already do.
     """
-    from engine.vedic.at_time import parse_clock_on_date, parse_query_datetime
-    from services.panchanga_api import resolve_panchanga_jd_ut
+    from engine.panchanga.at_time import parse_clock_on_date, parse_query_datetime
+    from services.panchanga.panchanga_api import resolve_panchanga_jd_ut
 
     day_jd = jd if jd is not None else (_era_jd(request) if request is not None else None)
 
@@ -168,7 +168,7 @@ def birth_instant_from_query(
         )
 
     if birth:
-        from engine.vedic.rashifal_personal import birth_instant_from_local
+        from engine.jyotish.rashifal_personal import birth_instant_from_local
 
         return birth_instant_from_local(birth, birth_tz)
 

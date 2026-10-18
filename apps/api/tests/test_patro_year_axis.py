@@ -10,8 +10,8 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from engine.vedic.bikram_sambat import get_bs_month_start_civil  # noqa: E402
-from engine.vedic.patro_year_axis import (  # noqa: E402
+from engine.calendar.bikram_sambat import get_bs_month_start_civil  # noqa: E402
+from engine.calendar.patro_year_axis import (  # noqa: E402
     PATRO_EPHEMERIS_SIGNED_MAX,
     PATRO_EPHEMERIS_SIGNED_MIN,
     PATRO_SIGNED_YEAR_MAX,

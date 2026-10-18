@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION, resolve_location
-from services.holiday_generator import precompute_range
+from services.festivals.holiday_generator import precompute_range
 
 
 def main() -> None:

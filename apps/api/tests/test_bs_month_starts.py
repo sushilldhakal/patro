@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import pytest
 
-from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
-from engine.vedic.constants import BS_MAX_YEAR, BS_MIN_YEAR
+from engine.calendar.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
+from engine.calendar.constants import BS_MAX_YEAR, BS_MIN_YEAR
 
 # A solar month is the Sun's transit of one rashi: never shorter than ~29.3 days
 # nor longer than ~31.5, so a whole-day length is always in this band.
@@ -108,7 +108,7 @@ class TestOfficialTableIsUntouched:
             previous = start
 
     def test_bs_2083_month_lengths_match_the_table(self):
-        from engine.vedic.constants import get_bs_year_data
+        from engine.calendar.constants import get_bs_year_data
 
         data = get_bs_year_data(2083)
         assert data is not None

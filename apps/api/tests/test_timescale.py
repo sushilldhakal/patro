@@ -13,7 +13,7 @@ from engine.astronomy.timescale import (
     observer_utc_offset_seconds,
     resolve_observer_timezone,
 )
-from engine.vedic.at_time import parse_query_datetime
+from engine.panchanga.at_time import parse_query_datetime
 
 
 def test_resolves_kmt_era_before_1920():

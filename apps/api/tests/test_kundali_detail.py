@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from engine.astronomy.location import ObserverLocation
-from engine.vedic.at_time import parse_query_datetime
-from services.kundali_detail_api import build_kundali_detail
+from engine.panchanga.at_time import parse_query_datetime
+from services.jyotish.kundali_detail_api import build_kundali_detail
 
 
 def test_kundali_detail_endpoint():
@@ -142,7 +142,7 @@ def test_yogini_starting_lord_uses_the_classical_plus_three_mod_eight_rule():
     lines up if the birth mahadasha is Bhramari — matching the classical
     "add 3 to the 1-based nakshatra number, mod 8" rule, i.e.
     `(nakshatra_index + 3) % 8` in 0-based terms."""
-    from engine.vedic.yogini import _yogini_index_for_nakshatra, YOGINI_SEQUENCE
+    from engine.jyotish.yogini import _yogini_index_for_nakshatra, YOGINI_SEQUENCE
 
     assert YOGINI_SEQUENCE[_yogini_index_for_nakshatra(24)] == "bhramari"
 
@@ -159,7 +159,7 @@ def test_yogini_starting_lord_uses_the_classical_plus_three_mod_eight_rule():
 def test_subdivide_yogini_period_returns_eight_children():
     from datetime import datetime, timezone
 
-    from engine.vedic.kundali_detail import subdivide_yogini_period
+    from engine.jyotish.kundali_detail import subdivide_yogini_period
 
     start = datetime(2024, 1, 1, tzinfo=timezone.utc)
     end = datetime(2027, 1, 1, tzinfo=timezone.utc)
@@ -380,7 +380,7 @@ def test_kundali_report_streams_ndjson():
 
 def test_kundali_report_served_from_cache_on_repeat(tmp_path, monkeypatch):
     """Same birth inputs should hit SQLite cache on the second request."""
-    import services.kundali_report_cache as report_cache
+    import services.jyotish.kundali_report_cache as report_cache
 
     db_path = tmp_path / "kundali.db"
     monkeypatch.setattr(report_cache, "kundali_db_path", lambda: db_path)
@@ -445,7 +445,7 @@ def test_kundali_report_nepali_localization():
 
 
 def test_kundali_report_force_bypasses_cache(tmp_path, monkeypatch):
-    import services.kundali_report_cache as report_cache
+    import services.jyotish.kundali_report_cache as report_cache
 
     db_path = tmp_path / "kundali.db"
     monkeypatch.setattr(report_cache, "kundali_db_path", lambda: db_path)

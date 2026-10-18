@@ -112,7 +112,7 @@ def resolve_location(
     # Snap raw coordinates to a ~1.1 km grid (2 decimals) so many phones in one
     # spot collapse to a single cache bucket. This is the coarse fallback for
     # coordinates with no nearby town; requests near a town are snapped to that
-    # town's id upstream (see services.observer_location). 0.01° of longitude is
+    # town's id upstream (see services.geography.observer_location). 0.01° of longitude is
     # ~2.4 s of solar time, so grid-snapping shifts sunrise by only a few seconds.
     resolved_lat = round(resolved_lat, 2)
     resolved_lon = round(resolved_lon, 2)

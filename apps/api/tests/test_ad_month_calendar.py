@@ -1,7 +1,7 @@
 """AD month calendar shape."""
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.panchanga_api import build_ad_month_calendar
+from services.panchanga.panchanga_api import build_ad_month_calendar
 
 
 def test_ad_month_day_uses_bs_gate():

@@ -37,7 +37,7 @@ placement itself, not any one citation of it) while ``entries`` holds one
 object per classical source. Every other graha's existing single citation
 is wrapped as a 1-element ``entries`` list so the shape is uniform across
 ``grahaHouseSaravali`` — only सूर्य gets a second entry per house in this
-pass; the module docstring in ``engine/vedic/bhava_reference.py`` already
+pass; the module docstring in ``engine/jyotish/bhava_reference.py`` already
 notes moon/mercury/jupiter/rahu are still pending from the user for this
 table, unaffected here.
 

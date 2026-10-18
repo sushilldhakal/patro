@@ -13,7 +13,7 @@ deep walk it replaces.
 
 Writes both consumers so they can never disagree:
 
-  * ``engine/vedic/samvatsara_table.json``            (backend)
+  * ``engine/calendar/samvatsara_table.json``         (backend)
   * ``../dhakal-patro/src/lib/samvatsara-table.json`` (frontend)
 
 Run from the repo root:
@@ -30,14 +30,14 @@ from pathlib import Path
 API_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(API_ROOT))
 
-BACKEND_OUT = API_ROOT / "engine" / "vedic" / "samvatsara_table.json"
+BACKEND_OUT = API_ROOT / "engine" / "calendar" / "samvatsara_table.json"
 FRONTEND_OUT = API_ROOT.parent / "dhakal-patro" / "src" / "lib" / "samvatsara-table.json"
 
-from engine.vedic.patro_year_axis import (  # noqa: E402
+from engine.calendar.patro_year_axis import (  # noqa: E402
     PATRO_EPHEMERIS_SIGNED_MAX,
     PATRO_EPHEMERIS_SIGNED_MIN,
 )
-from engine.vedic.samvatsara import (  # noqa: E402
+from engine.calendar.samvatsara import (  # noqa: E402
     ANCHOR_BS_YEAR,
     ANCHOR_INDEX,
     _advance_samvatsara_index,

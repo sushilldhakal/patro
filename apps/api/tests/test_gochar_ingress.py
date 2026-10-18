@@ -7,7 +7,7 @@ from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
-from engine.vedic.gochar import (
+from engine.jyotish.gochar import (
     find_next_nakshatra_entry,
     find_next_pada_entry,
     find_next_rashi_entry,

@@ -1,6 +1,6 @@
 """Nepal samvatsara cycle — true Jupiter with kshaya skips."""
 
-from engine.vedic.samvatsara import samvatsara_for_bs_year
+from engine.calendar.samvatsara import samvatsara_for_bs_year
 
 
 def test_bs_2080_pingala():

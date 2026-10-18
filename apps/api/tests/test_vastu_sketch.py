@@ -14,8 +14,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from engine.vedic.vastu import sketch
-from engine.vedic.vastu.sketch_rules import SPACE_ZONE_RULES
+from engine.vastu import sketch
+from engine.vastu.sketch_rules import SPACE_ZONE_RULES
 
 client = TestClient(app)
 GOLDEN = json.loads((Path(__file__).parent / "data" / "golden_vastu_sketch.json").read_text())
@@ -87,7 +87,7 @@ def test_sketch_route_validates_plot():
 
 
 def test_every_kind_has_rules_and_sizes():
-    from engine.vedic.vastu.sketch_rules import ASSIGN_ORDER, IDEAL_SIZE
+    from engine.vastu.sketch_rules import ASSIGN_ORDER, IDEAL_SIZE
 
     assert set(SPACE_ZONE_RULES) == set(IDEAL_SIZE)
     assert set(ASSIGN_ORDER) <= set(SPACE_ZONE_RULES)

@@ -2,16 +2,16 @@
 
 from datetime import datetime, timedelta, timezone
 
-from engine.vedic.kundali_detail import subdivide_dasha_period
-from engine.vedic.tribhagi import tribhagi_dasha
-from engine.vedic.vimshottari import (
+from engine.jyotish.kundali_detail import subdivide_dasha_period
+from engine.jyotish.tribhagi import tribhagi_dasha
+from engine.jyotish.vimshottari import (
     DASHA_SEQUENCE,
     DASHA_YEARS,
     NAKSHATRA_SPAN_DEG,
     YEAR_DAYS,
     vimshottari_dasha,
 )
-from engine.vedic.yogini import YOGINI_SEQUENCE, YOGINI_YEARS, _yogini_index_for_nakshatra, yogini_dasha
+from engine.jyotish.yogini import YOGINI_SEQUENCE, YOGINI_YEARS, _yogini_index_for_nakshatra, yogini_dasha
 
 BIRTH = datetime(1990, 5, 15, 6, 30, tzinfo=timezone.utc)
 

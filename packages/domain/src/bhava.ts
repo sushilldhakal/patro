@@ -176,7 +176,7 @@ export const RASHI_QUALITIES: { ne: string; en: string }[] = [
 
 /** Graha-drishti offsets (house-distance from the aspecting planet) beyond
  * the universal 7th aspect every planet casts. Mirrors the server's
- * SPECIAL_ASPECTS table (engine/vedic/interpretation.py). */
+ * SPECIAL_ASPECTS table (engine/jyotish/interpretation.py). */
 const SPECIAL_ASPECT_HOUSES: Record<string, number[]> = {
   mars: [4, 7, 8],
   jupiter: [5, 7, 9],

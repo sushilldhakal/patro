@@ -8,8 +8,8 @@ from typing import Annotated, Any, Literal
 from fastapi import Depends, HTTPException, Query
 
 from engine.astronomy.location import ObserverLocation
-from services.observer_location import resolve_location_from_query
-from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+from services.geography.observer_location import resolve_location_from_query
+from engine.calendar.bikram_sambat import format_bs_date, gregorian_to_bs
 
 
 def location_params(
@@ -51,7 +51,7 @@ def validated_year_span_jd(request, era: str, year: int) -> tuple[float, float]:
     actually matters — whether the installed ``.se1`` files cover the span.
     """
     from engine.calendar.era import year_span_jd
-    from engine.vedic.patro_year_axis import (
+    from engine.calendar.patro_year_axis import (
         EPHEMERIS_JD_MAX,
         EPHEMERIS_JD_MIN,
         jd_span_within_ephemeris,
@@ -117,7 +117,7 @@ def stamp_year_era(
 
 
 def _validate_bbs_url_year(url_year: int) -> None:
-    from engine.vedic.patro_year_axis import PATRO_EPHEMERIS_SIGNED_MIN
+    from engine.calendar.patro_year_axis import PATRO_EPHEMERIS_SIGNED_MIN
 
     bbs_max = -PATRO_EPHEMERIS_SIGNED_MIN
     if url_year < 1 or url_year > bbs_max:
@@ -139,7 +139,7 @@ def _signed_bs_year_from_browse(era: Literal["bs", "bbs"], url_year: int) -> int
 
 
 def _validate_bs_year(year: int) -> None:
-    from engine.vedic.patro_year_axis import (
+    from engine.calendar.patro_year_axis import (
         PATRO_SIGNED_YEAR_MAX,
         PATRO_SIGNED_YEAR_MIN,
         validate_patro_signed_year,
@@ -181,7 +181,7 @@ def _nepal_holidays_for_ad_year(
     *,
     cache_only: bool = False,
 ) -> list[dict[str, Any]]:
-    from services.holiday_generator import HolidayCacheMissError, get_bs_holidays
+    from services.festivals.holiday_generator import HolidayCacheMissError, get_bs_holidays
     seen: dict[str, dict[str, Any]] = {}
     for bs_year in (ad_year + 56, ad_year + 57):
         try:

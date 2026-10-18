@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from services.payload_version import (
+from services.platform.payload_version import (
     ASTRONOMY_VERSION,
     _MAX_ASTRONOMY_VERSION,
     compose,
@@ -49,7 +49,7 @@ class TestEveryCacheDerivesFromTheAstronomyAxis:
     """Bumping ASTRONOMY_VERSION must move all four namespaces at once."""
 
     def test_panchanga_response_caches(self):
-        from services.panchanga_cache import (
+        from services.panchanga.panchanga_cache import (
             CACHE_PAYLOAD_VERSION,
             PANCHANGA_PAYLOAD_VERSION,
         )
@@ -62,7 +62,7 @@ class TestEveryCacheDerivesFromTheAstronomyAxis:
         )
 
     def test_kundali_report_cache(self):
-        from services.kundali_report_cache import (
+        from services.jyotish.kundali_report_cache import (
             CACHE_PAYLOAD_VERSION,
             KUNDALI_REPORT_VERSION,
         )
@@ -72,18 +72,19 @@ class TestEveryCacheDerivesFromTheAstronomyAxis:
         )
 
     def test_sait_cache(self):
-        from services.sait_generator import SAIT_ENGINE_VERSION
+        from services.festivals.sait_generator import SAIT_ENGINE_VERSION
 
         assert SAIT_ENGINE_VERSION.endswith(f"+a{ASTRONOMY_VERSION}")
 
     def test_festival_cache(self):
-        from services.cache_meta import ENGINE_VERSION
+        from services.platform.cache_meta import ENGINE_VERSION
 
         assert ENGINE_VERSION.endswith(f"+a{ASTRONOMY_VERSION}")
 
     def test_the_response_layers_share_one_constant(self):
         """response_cache / year_cache / blob_db_cache must not hold their own copy."""
-        from services import panchanga_cache, response_cache, year_cache
+        from services.panchanga import panchanga_cache, year_cache
+        from services.platform import response_cache
 
         assert response_cache.CACHE_PAYLOAD_VERSION is panchanga_cache.CACHE_PAYLOAD_VERSION
         assert year_cache.CACHE_PAYLOAD_VERSION is panchanga_cache.CACHE_PAYLOAD_VERSION
@@ -97,18 +98,18 @@ class TestPreFixRowsAreStale:
     PRE_FIX_KUNDALI = 10
 
     def test_pre_fix_panchanga_rows_lose_the_version_check(self):
-        from services.panchanga_cache import CACHE_PAYLOAD_VERSION
+        from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
 
         assert self.PRE_FIX_PANCHANGA < CACHE_PAYLOAD_VERSION
 
     def test_pre_fix_kundali_rows_lose_the_version_check(self):
-        from services.kundali_report_cache import CACHE_PAYLOAD_VERSION
+        from services.jyotish.kundali_report_cache import CACHE_PAYLOAD_VERSION
 
         assert self.PRE_FIX_KUNDALI < CACHE_PAYLOAD_VERSION
 
     def test_pre_fix_string_versions_no_longer_match(self):
-        from services.cache_meta import ENGINE_VERSION
-        from services.sait_generator import SAIT_ENGINE_VERSION
+        from services.platform.cache_meta import ENGINE_VERSION
+        from services.festivals.sait_generator import SAIT_ENGINE_VERSION
 
         assert SAIT_ENGINE_VERSION != "4.10.0"
         assert ENGINE_VERSION != "1.0.4"
@@ -116,8 +117,8 @@ class TestPreFixRowsAreStale:
     def test_disk_and_blob_keys_carry_the_new_version(self):
         """Old ``v35_…`` files and blobs are orphaned, not read."""
         from engine.astronomy.location import DEFAULT_LOCATION
-        from services.panchanga_cache import CACHE_PAYLOAD_VERSION
-        from services.year_cache import year_cache_path
+        from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
+        from services.panchanga.year_cache import year_cache_path
 
         path = year_cache_path(2083, DEFAULT_LOCATION, variant="full")
         assert f"year_v{CACHE_PAYLOAD_VERSION}_" in path.name

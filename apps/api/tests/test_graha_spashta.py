@@ -8,8 +8,8 @@ from engine.astronomy.location import DEFAULT_LOCATION
 from engine.astronomy.planets import spashta_table
 from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.ut_instant import as_julian_day
-from engine.vedic.bikram_sambat import bs_to_gregorian
-from engine.vedic.daily import build_daily_panchanga
+from engine.calendar.bikram_sambat import bs_to_gregorian
+from engine.panchanga.daily import build_daily_panchanga
 
 
 def test_planets_at_udayakal_sunrise():
@@ -45,7 +45,7 @@ def test_graha_udayakal_uses_deshaantar_sunrise_not_belaantar():
     """Udayakalika spashtagraha: deshaantar in listed sunrise only; belaantar is reference."""
     from datetime import timedelta
 
-    from engine.vedic.solar_corrections import compute_belaantar, compute_deshaantar, standard_meridian_longitude
+    from engine.panchanga.solar_corrections import compute_belaantar, compute_deshaantar, standard_meridian_longitude
 
     target = date(2026, 7, 26)
     loc = DEFAULT_LOCATION

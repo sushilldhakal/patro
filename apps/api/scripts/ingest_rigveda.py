@@ -13,7 +13,7 @@ chaptered scripture one chapter at a time, and the Rigveda's ten Mandalas are
 exactly that scale), and every rik across all of a Mandala's Suktas becomes
 one shloka row carrying a ``sukta_number`` — the UI groups a chapter's
 shlokas back into their Sukta breakdown from that field (see
-``services/documents_db.py``'s ``sukta_number`` column and the frontend's
+``services/scripture/documents_db.py``'s ``sukta_number`` column and the frontend's
 `DocumentChapterDetail` page).
 
 Run from the repo root:

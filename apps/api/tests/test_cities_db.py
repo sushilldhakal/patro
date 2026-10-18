@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from services.cities_db import get_popular_cities, resolve_city, search_cities
+from services.geography.cities_db import get_popular_cities, resolve_city, search_cities
 
 
 pytestmark = pytest.mark.skipif(
@@ -29,7 +29,7 @@ def test_search_orders_by_population():
 
 
 def test_nepal_has_broad_city_coverage():
-    from services.cities_db import count_cities
+    from services.geography.cities_db import count_cities
 
     assert count_cities(country="NP") >= 1000
 
@@ -50,7 +50,7 @@ def test_popular_city_ids_resolve_to_expected_cities():
 
     GeoNames ids are globally stable, so a mismatch means a wrong id was pasted
     (this caught 6 stale ids, e.g. 1282951 pointing at 'Palun' not 'Pokhara')."""
-    from services.cities_db import POPULAR_CITY_IDS, get_city_by_id
+    from services.geography.cities_db import POPULAR_CITY_IDS, get_city_by_id
 
     # (id, expected ascii_name, expected country)
     expected = [
@@ -78,7 +78,7 @@ def test_popular_city_ids_resolve_to_expected_cities():
 
 def test_nearest_city_global_snaps_far_point_to_a_city():
     """A point with no town nearby must still resolve to a named city, not None."""
-    from services.cities_db import nearest_city_global
+    from services.geography.cities_db import nearest_city_global
 
     # Mid-Bay-of-Bengal: no populated place for hundreds of km. The unbounded
     # resolver must still return the nearest coastal city rather than giving up.
@@ -89,7 +89,7 @@ def test_nearest_city_global_snaps_far_point_to_a_city():
 
 
 def test_nearest_city_global_returns_kathmandu_for_ktm_coords():
-    from services.cities_db import nearest_city_global
+    from services.geography.cities_db import nearest_city_global
 
     city = nearest_city_global(27.7017, 85.3206, country="NP")
     assert city is not None
@@ -102,7 +102,7 @@ def test_legacy_cities_schema_without_admin_columns(tmp_path, monkeypatch):
     import sqlite3
 
     from engine.astronomy import paths
-    from services import cities_db
+    from services.geography import cities_db
 
     db_path = tmp_path / "cities.db"
     conn = sqlite3.connect(db_path)
@@ -156,7 +156,7 @@ def test_kanyam_to_kanchanpur_deshaantar_is_about_31_minutes():
     from zoneinfo import ZoneInfo
 
     from engine.astronomy.sun import calculate_sunrise
-    from engine.vedic.bikram_sambat import iter_bs_month_days
+    from engine.calendar.bikram_sambat import iter_bs_month_days
 
     ktm = ZoneInfo("Asia/Kathmandu")
     greg = next(g for d, g in iter_bs_month_days(2083, 3) if d == 24)

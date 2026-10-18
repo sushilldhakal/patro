@@ -32,7 +32,7 @@ from engine.astronomy.location import (
     ObserverLocation,
     resolve_location,
 )
-from services.observer_location import resolve_location_from_query
+from services.geography.observer_location import resolve_location_from_query
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -133,7 +133,7 @@ class TestBackwardCompatibility:
         assert KTM_HIGH.cache_key().endswith("_alt1400.0")
 
     def test_resolve_cache_keys_unchanged_for_every_constructible_observer(self):
-        from services.panchanga_cache import resolve_cache_keys
+        from services.panchanga.panchanga_cache import resolve_cache_keys
 
         assert resolve_cache_keys(DEFAULT_LOCATION) == ("city:1283240", 1283240)
         # Explicit city id
@@ -153,7 +153,7 @@ class TestBackwardCompatibility:
         """Both shortcuts discard lat/lon on purpose. They must not discard
         elevation too — 1400 m moves sunrise ~6.3 minutes, so collapsing an
         elevated observer onto the town row serves them the wrong day."""
-        from services.panchanga_cache import resolve_cache_keys
+        from services.panchanga.panchanga_cache import resolve_cache_keys
 
         key_sea, id_sea = resolve_cache_keys(
             ObserverLocation(lat=26.65, lon=86.20, city_id=1283000)

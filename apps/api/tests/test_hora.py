@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from engine.vedic.hora import build_hora, _lord_at
+from engine.panchanga.hora import build_hora, _lord_at
 
 
 def test_lord_at_sunday_first_hora_is_sun():

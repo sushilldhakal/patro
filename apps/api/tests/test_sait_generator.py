@@ -2,8 +2,8 @@
 
 from datetime import date
 
-from engine.vedic.bikram_sambat import bs_to_gregorian
-from engine.vedic.sait_rules import (
+from engine.calendar.bikram_sambat import bs_to_gregorian
+from engine.festivals.sait_rules import (
     DayPanchanga,
     agni_on_earth,
     build_day_panchanga,
@@ -14,7 +14,7 @@ from engine.vedic.sait_rules import (
     rudra_on_earth,
 )
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.sait_generator import generate_sait_year_category
+from services.festivals.sait_generator import generate_sait_year_category
 
 
 def _day(**overrides) -> DayPanchanga:
@@ -68,7 +68,7 @@ def test_agni_rudra_vas_formulas():
 
 
 def test_check_rudri_jurne_full_filter():
-    from engine.vedic.sait_rules import check_rudri_jurne
+    from engine.festivals.sait_rules import check_rudri_jurne
 
     def _rudri_day(**overrides) -> DayPanchanga:
         # tithi 5 on Thursday (vaara=5): Śiva-vāsa (2*5+5)%7=1 (Kailāsa, ok) and
@@ -184,8 +184,8 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 
 
 def test_engine_version_bumped():
-    from services.payload_version import stamp
-    from services.sait_generator import SAIT_ENGINE_VERSION
+    from services.platform.payload_version import stamp
+    from services.festivals.sait_generator import SAIT_ENGINE_VERSION
 
     # 4.1.0 — Upanayana (bratabandha) tightened (Vishti/Bhadra, Vyatipata/
     # Vaidhriti, Sankranti, eclipse, slot-only Dur-muhurta).
@@ -222,7 +222,7 @@ def test_engine_version_bumped():
 
 
 def test_dagdha_tithi_table():
-    from engine.vedic.sait_rules import is_dagdha
+    from engine.festivals.sait_rules import is_dagdha
 
     # Each weekday (Sun=1 … Sat=7) has one burnt tithi.
     for vaara, tithi in ((1, 12), (2, 11), (3, 5), (4, 3), (5, 6), (6, 8), (7, 9)):
@@ -231,7 +231,7 @@ def test_dagdha_tithi_table():
 
 
 def test_shunya_tithi_table():
-    from engine.vedic.sait_rules import SHUNYA_TITHI_RASHIS
+    from engine.festivals.sait_rules import SHUNYA_TITHI_RASHIS
 
     # Pratipada drains Tula(7)+Makara(10); Trayodashi drains Vrishabha(2)+Meena(12).
     assert SHUNYA_TITHI_RASHIS[1] == frozenset({7, 10})
@@ -242,7 +242,7 @@ def test_shunya_tithi_table():
 
 def test_latta_graha_vedha_counts():
     """Latta count rule — validated by the classic worked example."""
-    from engine.vedic.muhurta_engine import _MALEFIC_LATTA, _latta_target
+    from engine.festivals.muhurta_engine import _MALEFIC_LATTA, _latta_target
 
     # Sun in Ashwini(1) pierces the 12th nakshatra forward → Uttara Phalguni(12).
     assert _latta_target(1, _MALEFIC_LATTA["sun"]) == 12
@@ -267,7 +267,7 @@ def test_shuddha_jestha_krishna_not_flagged_adhik_bs2083():
 
 
 def test_griha_pravesh_four_step_rule():
-    from engine.vedic.sait_rules import check_griha_pravesh
+    from engine.festivals.sait_rules import check_griha_pravesh
 
     # A clean śuddha day: Baishakh, śukla Panchami, Rohini(4), Guru & Śukra udaya.
     ok = _day(lunar_month="Baishakh", paksha="shukla", tithi_display=5, nakshatra=4)
@@ -297,9 +297,9 @@ def test_griha_pravesh_nakshatra_fallback_adds_dates():
     """A scarce griha-pravesh year triggers the widened nakshatra set, which
     yields at least as many days as the strict set."""
 
-    from engine.vedic.muhurta_engine import CEREMONY_RULES, has_muhurta
-    from engine.vedic.bikram_sambat import iter_bs_month_days
-    from services.sait_generator import generate_sait_months
+    from engine.festivals.muhurta_engine import CEREMONY_RULES, has_muhurta
+    from engine.calendar.bikram_sambat import iter_bs_month_days
+    from services.festivals.sait_generator import generate_sait_months
 
     by_month, fallback = generate_sait_months(2081, "griha-pravesh", DEFAULT_LOCATION)
     widened_total = sum(len(v) for v in by_month.values())
@@ -318,7 +318,7 @@ def test_griha_pravesh_nakshatra_fallback_adds_dates():
 def test_personalize_sait_annotates_days():
     """Native (profile-based) overlay tags each general day favourable/neutral/avoid."""
     from engine.astronomy.location import DEFAULT_LOCATION
-    from services.sait_personalize import compute_janma_points, personalize_sait
+    from services.festivals.sait_personalize import compute_janma_points, personalize_sait
 
     janma = compute_janma_points("1995-05-20T08:30", "Asia/Kathmandu")
     assert 1 <= janma["nakshatra"] <= 27
@@ -342,7 +342,7 @@ def test_personalize_sait_annotates_days():
 
 def test_personalize_sait_rejects_bad_janma():
     from engine.astronomy.location import DEFAULT_LOCATION
-    from services.sait_personalize import personalize_sait
+    from services.festivals.sait_personalize import personalize_sait
 
     for nak, rashi in ((0, 5), (28, 5), (10, 0), (10, 13)):
         try:

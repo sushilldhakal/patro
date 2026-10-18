@@ -19,7 +19,7 @@ from engine.astronomy.ut_instant import (  # noqa: E402
     jd_from_expanded_utc_iso,
     parse_ephemeris_instant,
 )
-from services.panchanga_api import build_month_calendar  # noqa: E402
+from services.panchanga.panchanga_api import build_month_calendar  # noqa: E402
 
 EXPANDED_ISO = re.compile(r"^-?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?\+00:00$")
 

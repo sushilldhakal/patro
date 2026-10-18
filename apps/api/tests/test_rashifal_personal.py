@@ -5,8 +5,8 @@ from datetime import date
 import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.rashifal_engine import PERIODS, build_day_frame
-from engine.vedic.rashifal_personal import (
+from engine.jyotish.rashifal_engine import PERIODS, build_day_frame
+from engine.jyotish.rashifal_personal import (
     NATAL_CHAKRA_WEIGHTS,
     PERSONAL_LAYER_WEIGHTS,
     LAYER_KEYS,
@@ -16,7 +16,7 @@ from engine.vedic.rashifal_personal import (
     dasha_block,
     score_personal,
 )
-from services.rashifal_api import personal_rashifal_for_gregorian
+from services.jyotish.rashifal_api import personal_rashifal_for_gregorian
 
 BIRTH = birth_instant_from_local("1995-04-12T06:30", "Asia/Kathmandu")
 ANCHOR = date(2026, 7, 15)
@@ -74,7 +74,7 @@ def test_dasha_block_names_a_running_mahadasha_and_antardasha(natal):
     )
     assert -1.0 <= block["score"] <= 1.0
     # The running mahadasha must actually contain `as_of`.
-    from engine.vedic.rashifal_personal import _parse_iso
+    from engine.jyotish.rashifal_personal import _parse_iso
 
     assert _parse_iso(block["mahadasha"]["start"]) <= as_of < _parse_iso(block["mahadasha"]["end"])
 
@@ -86,7 +86,7 @@ def test_dasha_is_consistent_for_someone_much_older_than_one_cycle(natal):
 
     far_future = dt.datetime(2200, 1, 1, tzinfo=dt.timezone.utc)
     block = dasha_block(natal, far_future)
-    from engine.vedic.rashifal_personal import _parse_iso
+    from engine.jyotish.rashifal_personal import _parse_iso
 
     assert _parse_iso(block["mahadasha"]["start"]) <= far_future < _parse_iso(
         block["mahadasha"]["end"]

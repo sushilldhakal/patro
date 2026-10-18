@@ -13,8 +13,8 @@ OUT_PATH = API_ROOT.parent / "dhakal-patro" / "src" / "lib" / "bs-calendar-data.
 sys.path.insert(0, str(API_ROOT))
 
 from engine.astronomy.jd_calendar import format_civil_iso  # noqa: E402
-from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start_civil  # noqa: E402
-from engine.vedic.constants import BS_CALENDAR_MIN_YEAR, BS_PANCHANGA_MIN_YEAR  # noqa: E402
+from engine.calendar.bikram_sambat import get_bs_month_length, get_bs_month_start_civil  # noqa: E402
+from engine.calendar.constants import BS_CALENDAR_MIN_YEAR, BS_PANCHANGA_MIN_YEAR  # noqa: E402
 
 
 def main() -> None:

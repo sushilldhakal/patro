@@ -20,7 +20,7 @@ no year zero on the BS/BBS axis — BS 1 and BBS 1 are consecutive.
 Julian Day.** Request handling converts once on the way in (:func:`to_jd`,
 :func:`year_span_jd`), the engine works only in JD, and the response layer
 converts once on the way out (:func:`from_jd`, :func:`render_jd`). The year-axis
-bounds themselves live in :mod:`engine.vedic.patro_year_axis`; this module is the
+bounds themselves live in :mod:`engine.calendar.patro_year_axis`; this module is the
 codec on top of them, not a second copy of the rules.
 """
 
@@ -109,8 +109,8 @@ def _astronomical_year(era: str, year: int) -> int:
 
 
 def _signed_patro_year(era: str, year: int) -> int:
-    """Vikram eras → the signed axis in :mod:`engine.vedic.patro_year_axis`."""
-    from engine.vedic.patro_year_axis import validate_patro_signed_year
+    """Vikram eras → the signed axis in :mod:`engine.calendar.patro_year_axis`."""
+    from engine.calendar.patro_year_axis import validate_patro_signed_year
 
     if year < 1:
         raise ValueError(
@@ -123,7 +123,7 @@ def _signed_patro_year(era: str, year: int) -> int:
         # The axis validator speaks in signed years because that is the engine's
         # internal representation. Re-frame it before it reaches a caller: an
         # error is part of the public surface, and no signed year belongs there.
-        from engine.vedic.patro_year_axis import (
+        from engine.calendar.patro_year_axis import (
             PATRO_SIGNED_YEAR_MAX,
             PATRO_SIGNED_YEAR_MIN,
         )
@@ -152,7 +152,7 @@ def to_jd(era: str, year: int, month: int | None = None, day: int | None = None)
     if code in ("ad", "bc"):
         return civil_day_jd_ut(_astronomical_year(code, int(year)), m, d)
 
-    from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
+    from engine.calendar.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
 
     signed = _signed_patro_year(code, int(year))
     length = get_bs_month_length(signed, m)
@@ -169,7 +169,7 @@ def year_span_jd(era: str, year: int) -> tuple[float, float]:
         astro = _astronomical_year(code, int(year))
         return civil_day_jd_ut(astro, 1, 1), civil_day_jd_ut(astro, 12, 31)
 
-    from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
+    from engine.calendar.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
 
     signed = _signed_patro_year(code, int(year))
     start = get_bs_month_start_civil(signed, 1).to_jd_ut()
@@ -180,7 +180,7 @@ def year_span_jd(era: str, year: int) -> tuple[float, float]:
 
 def from_jd(jd_ut: float) -> EraLabels:
     """Julian Day → every era label for that civil day."""
-    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
+    from engine.calendar.bikram_sambat import locate_patro_day_for_civil
 
     year, month, day = civil_parts_from_jd_ut(float(jd_ut))
     civil = CivilDay(year, month, day)

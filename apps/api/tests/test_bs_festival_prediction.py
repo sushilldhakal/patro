@@ -11,9 +11,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.bikram_sambat import gregorian_to_bs
-from engine.vedic.lunar_month import clear_lunar_year_cache
-from services.holiday_generator import (
+from engine.calendar.bikram_sambat import gregorian_to_bs
+from engine.panchanga.lunar_month import clear_lunar_year_cache
+from services.festivals.holiday_generator import (
     generate_bs_festivals,
     get_bs_festivals,
     load_rules,
@@ -66,7 +66,7 @@ def test_mata_tirtha_aunshi_bs_2084_civil_baishakh():
 
 
 def test_get_bs_festivals_computes_without_preexisting_cache(tmp_path, monkeypatch):
-    import services.holiday_generator as hg
+    import services.festivals.holiday_generator as hg
 
     monkeypatch.setattr(hg, "CACHE_DIR", tmp_path)
 

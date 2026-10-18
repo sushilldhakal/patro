@@ -51,7 +51,7 @@ else
   grep -v '^-e ./ephemeris_provision' requirements.txt | pip install -r /dev/stdin -q
 fi
 
-if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
+if [[ ! -f data/cities.db ]] || ! python -c "from services.geography.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
   echo "==> Building cities.db (GeoNames global + full Nepal coverage)"
   mkdir -p data
   python scripts/import_cities.py
@@ -115,7 +115,7 @@ if [[ "${health_ok}" -ne 1 ]]; then
 fi
 
 echo "==> Warming documents cache"
-# The service restart above resets services/documents_db.py's in-process
+# The service restart above resets services/scripture/documents_db.py's in-process
 # _seeded flag, so the next request to touch it pays a real reseed (parses
 # every data/documents_source/*.json manifest — ~1.5s with the Rigveda
 # corpus) plus, per document, a cache-miss build the first time its content

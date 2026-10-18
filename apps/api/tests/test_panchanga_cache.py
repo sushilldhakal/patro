@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.daily_panchanga import get_daily_panchanga
-from services import panchanga_cache
+from services.panchanga.daily_panchanga import get_daily_panchanga
+from services.panchanga import panchanga_cache
 
 
 @pytest.fixture()

@@ -18,10 +18,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.observer_location import resolve_location_from_query
-from engine.vedic.bikram_sambat import iter_bs_month_days
-from services.cities_db import POPULAR_CITY_IDS, get_city_by_id
-from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+from services.geography.observer_location import resolve_location_from_query
+from engine.calendar.bikram_sambat import iter_bs_month_days
+from services.geography.cities_db import POPULAR_CITY_IDS, get_city_by_id
+from services.panchanga.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
 
 
 def _dates_for_bs_year(bs_year: int) -> list[date]:

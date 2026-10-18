@@ -7,10 +7,10 @@ from typing import Any, Optional
 from zoneinfo import ZoneInfo
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.vedic.bikram_sambat import bs_to_gregorian
-from engine.vedic.bs_year import bs_solar_year_for_gregorian_year
-from engine.vedic.lunar_month import find_festival_in_lunar_month
-from engine.vedic.sankranti import find_sankranti
+from engine.calendar.bikram_sambat import bs_to_gregorian
+from engine.calendar.bs_year import bs_solar_year_for_gregorian_year
+from engine.panchanga.lunar_month import find_festival_in_lunar_month
+from engine.calendar.sankranti import find_sankranti
 
 
 def _resolve_adhik_policy(rule: dict[str, Any], gregorian_year: int) -> str:
@@ -41,7 +41,7 @@ def compute_adhik_arambha(
     gregorian_year: int,
 ) -> Optional[date]:
     """First day of Adhik Maas when the intercalary month matches ``lunar_month``."""
-    from engine.vedic.adhik_maas import find_adhik_maas_for_gregorian_year
+    from engine.panchanga.adhik_maas import find_adhik_maas_for_gregorian_year
 
     adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
     if not adhik or not adhik.get("has_adhik_maas"):
@@ -163,9 +163,9 @@ def get_special_months_for_gregorian_year(
     Kshaya Maas: extremely rare lost month with two Sankrantis — last in
     BS 2020 (1963 CE), next predicted ~BS 2198 (2141 CE).
     """
-    from engine.vedic.adhik_maas import find_adhik_maas_for_gregorian_year
-    from engine.vedic.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
-    from engine.vedic.lunar_month import get_lunar_year
+    from engine.panchanga.adhik_maas import find_adhik_maas_for_gregorian_year
+    from engine.panchanga.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
+    from engine.panchanga.lunar_month import get_lunar_year
 
     adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
 

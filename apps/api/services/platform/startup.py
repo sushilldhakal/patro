@@ -1,0 +1,314 @@
+"""Warm holiday caches on process startup (for ephemeral hosts like Render)."""
+
+from __future__ import annotations
+
+import logging
+import os
+from datetime import date
+
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.calendar.bikram_sambat import gregorian_to_bs
+from services.festivals.holiday_generator import precompute_bs_range
+
+logger = logging.getLogger(__name__)
+
+
+def ensure_swiss_ephemeris_files() -> bool:
+    """Download missing ``.se1`` files for the full browse window (idempotent).
+
+    Runs from app startup when the extended set is absent — covers live hosts
+    where ``pip install -r requirements.txt`` did not execute the local hook
+    (wheel-only install) or ``ephemeris_provision/`` was missing from the deploy.
+    Set ``SKIP_EPHEMERIS_PROVISION=1`` to disable.
+    """
+    if os.environ.get("SKIP_EPHEMERIS_PROVISION", "").lower() in {"1", "true", "yes"}:
+        return False
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    from engine.astronomy.paths import ephemeris_path
+
+    ephe = ephemeris_path()
+    extended_ok = (ephe / "sepl_168.se1").is_file() and (ephe / "seplm132.se1").is_file()
+    if extended_ok:
+        return True
+
+    api_root = Path(__file__).resolve().parents[2]
+    script = api_root / "scripts" / "install_ephemeris.py"
+    if not script.is_file():
+        logger.warning("install_ephemeris.py not found — cannot provision .se1 files")
+        return False
+
+    logger.info("Swiss Ephemeris extended files missing — running install_ephemeris.py --extended")
+    try:
+        subprocess.check_call(
+            [sys.executable, str(script), "--extended"],
+            cwd=str(api_root),
+        )
+    except subprocess.CalledProcessError:
+        logger.exception("Ephemeris download failed")
+        return False
+
+    import swisseph as swe
+
+    if ephe.is_dir() and any(ephe.glob("*.se1")):
+        swe.set_ephe_path(str(ephe))
+        return True
+    return False
+
+
+def _precompute_enabled() -> bool:
+    return os.environ.get("PRECOMPUTE_ON_STARTUP", "true").lower() not in {
+        "0",
+        "false",
+        "no",
+    }
+
+
+def resolve_precompute_years() -> tuple[int, int]:
+    """Return inclusive BS year range to warm on startup."""
+    explicit = os.environ.get("PRECOMPUTE_BS_YEARS", "").strip()
+    if explicit:
+        years = sorted(int(part.strip()) for part in explicit.split(",") if part.strip())
+        return years[0], years[-1]
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    # ±3 → 7 popular years (last few + next few): previous-year lookups, wedding
+    # planning, festival research, next-year calendar — without a heavy cold start.
+    span = max(int(os.environ.get("PRECOMPUTE_BS_SPAN", "3")), 0)
+    return current_bs_year - span, current_bs_year + span
+
+
+def warm_holiday_cache() -> list[int]:
+    """Generate missing BS-year caches for the configured range."""
+    if not _precompute_enabled():
+        logger.info("Startup precompute disabled (PRECOMPUTE_ON_STARTUP=false)")
+        return []
+
+    # With many workers each process boots and would run this same warm. One
+    # worker per window does it (the caches are shared); the rest skip. Without
+    # Redis every worker warms, as before.
+    from services.platform import redis_cache
+
+    if not redis_cache.claim_once("startup-warm", ttl=int(os.environ.get("WARM_CLAIM_TTL_S", "900"))):
+        logger.info("Startup warm already claimed by another worker — skipping")
+        return []
+
+    start_year, end_year = resolve_precompute_years()
+    generated = precompute_bs_range(start_year, end_year, DEFAULT_LOCATION)
+    if generated:
+        logger.info(
+            "Precomputed BS holiday cache for years %s @ %s",
+            generated,
+            DEFAULT_LOCATION.cache_key(),
+        )
+    else:
+        logger.info(
+            "BS holiday cache already present for %s–%s",
+            start_year,
+            end_year,
+        )
+    _report_provenance_drift()
+    _prune_stale_blob_cache()
+    _warm_year_response_cache()
+    _warm_popular_city_caches()
+    _warm_sait_cache()
+    return generated
+
+
+def _report_provenance_drift() -> None:
+    """Log whether cached rows came from a different astronomical environment.
+
+    Diagnostics only — no cache is purged. See
+    services.panchanga.panchanga_cache.report_provenance_drift for why detection and
+    invalidation are deliberately separate.
+    """
+    try:
+        from services.panchanga.panchanga_cache import report_provenance_drift
+
+        report_provenance_drift()
+    except Exception:  # noqa: BLE001 - never let a diagnostic break startup
+        logger.exception("Provenance drift check failed (continuing)")
+
+
+def _prune_stale_blob_cache() -> None:
+    """Drop DB blob rows left over from a previous payload version (once per
+    startup, before the warm re-populates the current version)."""
+    from services.platform.blob_db_cache import prune_stale_blobs
+
+    removed = prune_stale_blobs()
+    if removed:
+        logger.info("Pruned %d stale blob-cache rows (old payload version)", removed)
+
+
+def _warm_sait_enabled() -> bool:
+    return os.environ.get("WARM_SAIT", "true").lower() not in {"0", "false", "no"}
+
+
+def _sait_warm_locations() -> list:
+    """Locations to pre-warm sāit for: the default plus the top popular cities.
+
+    A sāit day-list is per-city (each city's own sunrise drives its tithi), so
+    the cache is keyed by location and a new city pays a cold build on first
+    view. After nearest-city snapping virtually all traffic lands on a small set
+    of cities, so warming those (SAIT_WARM_CITY_COUNT, default 8) makes the common
+    ones hot right after a deploy. 0 warms the default location only. The list is
+    de-duplicated by cache key (snapping canonicalises duplicate town rows)."""
+    locations = [DEFAULT_LOCATION]
+    count = max(int(os.environ.get("SAIT_WARM_CITY_COUNT", "8")), 0)
+    if count <= 0:
+        return locations
+    try:
+        from services.geography.observer_location import resolve_location_from_query
+        from services.geography.cities_db import get_city_by_id
+
+        seen = {DEFAULT_LOCATION.cache_key()}
+        for city_id in _popular_warm_city_ids()[:count]:
+            row = get_city_by_id(city_id)
+            if row is None:
+                continue
+            loc = resolve_location_from_query(lat=row["lat"], lon=row["lon"])
+            if loc.cache_key() in seen:
+                continue
+            seen.add(loc.cache_key())
+            locations.append(loc)
+    except Exception:  # noqa: BLE001 — resolving warm cities must not block startup
+        logger.exception("Resolving sāit warm cities failed")
+    return locations
+
+
+def _warm_sait_cache() -> None:
+    """Pre-build the current BS year's sāit listings for every ceremony, at the
+    default location and the top popular cities.
+
+    Sāit dates are ephemeris-computed per day and cached per (year, category,
+    location); without this warm the first visitor to a sāit page after a deploy
+    (or an engine-version bump) pays the ~3 s per-category cold build. We warm the
+    current year (± SAIT_WARM_SPAN, default 0) for the default + popular cities
+    (SAIT_WARM_CITY_COUNT, default 8); every other year/location is still computed
+    on-demand and cached on first request. Skip-existing (via the generator's own
+    cache check) keeps this a no-op once warmed — cheap on persistent hosts. Gate
+    off with WARM_SAIT=false, or SAIT_WARM_CITY_COUNT=0 for the default only, on
+    light / ephemeral hosts.
+    """
+    if not _precompute_enabled() or not _warm_sait_enabled():
+        return
+
+    from services.festivals.sait_api import list_sait_categories
+    from services.festivals.sait_generator import get_generated_sait
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    span = max(int(os.environ.get("SAIT_WARM_SPAN", "0")), 0)
+    category_ids = [c["id"] for c in list_sait_categories()]
+    for location in _sait_warm_locations():
+        for bs_year in range(current_bs_year - span, current_bs_year + span + 1):
+            for category in category_ids:
+                try:
+                    # use_cache=True: a hit returns instantly; a miss computes and
+                    # persists to the shared cache for every later request/instance.
+                    get_generated_sait(bs_year, category, location)
+                except Exception:  # noqa: BLE001 — a warm failure must not block startup
+                    logger.exception(
+                        "Sāit warm failed for BS %s / %s @ %s",
+                        bs_year, category, location.cache_key(),
+                    )
+        logger.info(
+            "Warmed sāit cache: %d categories × %d year(s) @ %s",
+            len(category_ids), span * 2 + 1, location.name,
+        )
+
+
+def _warm_popular_cities_enabled() -> bool:
+    return os.environ.get("WARM_POPULAR_CITIES", "true").lower() not in {"0", "false", "no"}
+
+
+def _popular_warm_city_ids() -> list[int]:
+    """City ids to pre-warm. Defaults to the most populous Nepali cities (the
+    towns snapping collapses traffic to); override with a comma-separated
+    WARM_CITY_IDS list. Empty WARM_CITY_IDS disables the city warm."""
+    if "WARM_CITY_IDS" in os.environ:
+        explicit = os.environ["WARM_CITY_IDS"].strip()
+        return [int(part) for part in explicit.split(",") if part.strip()]
+
+    from services.geography.cities_db import top_cities_by_population
+
+    limit = max(int(os.environ.get("WARM_CITY_COUNT", "20")), 0)
+    return [row["id"] for row in top_cities_by_population(limit, country="NP")]
+
+
+def _warm_popular_city_caches() -> None:
+    """Pre-build the current-year sun-times + lite calendar for popular cities.
+
+    After nearest-city snapping, virtually all real traffic lands on one of a
+    small set of city ids. Warming their location-varying year payloads (sun
+    rise/set + lite grid) for the current BS year means a visitor switching to
+    Pokhara or Biratnagar gets a millisecond cache hit instead of the ~30 s cold
+    build. Kept to the current year only to bound the startup cost; gate off with
+    WARM_POPULAR_CITIES=false on light/ephemeral hosts.
+    """
+    if not _warm_popular_cities_enabled():
+        return
+
+    from services.geography.observer_location import resolve_location_from_query
+    from services.geography.cities_db import get_city_by_id
+    from services.panchanga.panchanga_api import build_year_calendar, build_year_sun_times
+    from services.panchanga.year_cache import read_year_cache, write_year_cache
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    seen_keys: set[int | None] = set()
+    for seed_id in _popular_warm_city_ids():
+        row = get_city_by_id(seed_id)
+        if row is None:
+            continue
+        # Resolve the city's own centre through the same path real requests take,
+        # so the warmed key is exactly the city:<id> that snapped traffic hits
+        # (GeoNames has duplicate rows for some towns — snapping canonicalizes).
+        location = resolve_location_from_query(lat=row["lat"], lon=row["lon"])
+        if location.city_id in seen_keys:
+            continue
+        seen_keys.add(location.city_id)
+        builders = {
+            "sun": lambda loc=location: build_year_sun_times(current_bs_year, loc),
+            "lite": lambda loc=location: build_year_calendar(current_bs_year, loc, full=False),
+        }
+        for variant, build in builders.items():
+            if read_year_cache(current_bs_year, location, variant=variant) is not None:
+                continue
+            try:
+                write_year_cache(current_bs_year, location, build(), variant=variant)
+                logger.info("Warmed %s cache for %s (BS %s)", variant, location.name, current_bs_year)
+            except Exception:  # noqa: BLE001 — a warm failure must not block startup
+                logger.exception("City warm failed for %s (%s)", location.name, variant)
+
+
+def _warm_year_response_cache() -> None:
+    """Pre-build the year-page payloads for the popular BS years (Kathmandu).
+
+    /panchanga/year serves cached gzipped bytes in milliseconds once the file
+    exists; without this warm, the first visitor after a deploy (or an engine
+    version bump) would pay the ~30 s year build. We only pre-warm the popular
+    window (current year ± PRECOMPUTE_BS_SPAN) — every other year is computed
+    on-demand and cached on first request. Skip-existing keeps this cheap on
+    persistent hosts (warmed once) while ephemeral hosts should keep the span
+    small to avoid a heavy cold start.
+    """
+    from services.panchanga.panchanga_api import build_year_calendar, build_year_sun_times
+    from services.panchanga.year_cache import read_year_cache, write_year_cache
+
+    start_year, end_year = resolve_precompute_years()
+    for bs_year in range(start_year, end_year + 1):
+        builders = {
+            "full": lambda y=bs_year: build_year_calendar(y, DEFAULT_LOCATION, full=True),
+            "lite": lambda y=bs_year: build_year_calendar(y, DEFAULT_LOCATION, full=False),
+            "sun": lambda y=bs_year: build_year_sun_times(y, DEFAULT_LOCATION),
+        }
+        for variant, build in builders.items():
+            if read_year_cache(bs_year, DEFAULT_LOCATION, variant=variant) is not None:
+                continue
+            try:
+                payload = build()
+                write_year_cache(bs_year, DEFAULT_LOCATION, payload, variant=variant)
+                logger.info("Warmed year response cache for BS %s (%s)", bs_year, variant)
+            except Exception:  # noqa: BLE001 — warm failure must not block startup
+                logger.exception("Year response cache warm failed for BS %s", bs_year)

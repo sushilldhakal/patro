@@ -1,8 +1,8 @@
-"""Tests for the canonical Vastu spatial coordinate system (engine/vedic/vastu/spatial.py)."""
+"""Tests for the canonical Vastu spatial coordinate system (engine/vastu/spatial.py)."""
 
 from __future__ import annotations
 
-from engine.vedic.vastu import spatial
+from engine.vastu import spatial
 
 
 def test_counts():

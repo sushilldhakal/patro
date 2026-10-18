@@ -18,7 +18,7 @@ count of verses.
 
 No auth — same public/read-only shape as vastu, panchanga, kundali. Content
 lives in ``data/documents_source/*.json`` (see that folder's README) and is
-served from ``data/documents.db`` via ``services/documents_db.py``.
+served from ``data/documents.db`` via ``services/scripture/documents_db.py``.
 
 Every route is served through ``response_cache``'s gzip cache: the payload is
 a pure function of the manifests already seeded into SQLite, and the cache
@@ -35,7 +35,8 @@ from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Query, Request
 
 import config
-from services import documents_db, response_cache
+from services.scripture import documents_db
+from services.platform import response_cache
 
 router = APIRouter(tags=["documents"])
 

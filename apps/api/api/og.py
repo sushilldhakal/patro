@@ -21,10 +21,10 @@ from engine.astronomy.location import (
     ObserverLocation,
     resolve_location,
 )
-from services.observer_location import resolve_location_from_query
-from services.fb_post_content import periods_summary, planets_summary
-from services.og_image import og_fields, render_panchanga_og
-from services.panchanga_api import build_daily_state
+from services.geography.observer_location import resolve_location_from_query
+from services.sharing.fb_post_content import periods_summary, planets_summary
+from services.sharing.og_image import og_fields, render_panchanga_og
+from services.panchanga.panchanga_api import build_daily_state
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ def og_image(
     # Pillow card if the browser is unavailable or the render fails, so a crawler
     # always gets an image.
     png: bytes | None = None
-    from services.og_screenshot import render_timeline_png, screenshot_available
+    from services.sharing.og_screenshot import render_timeline_png, screenshot_available
 
     if screenshot_available():
         try:

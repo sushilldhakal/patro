@@ -49,15 +49,15 @@ def test_caption_and_urls():
     # in Kathmandu with no stored preference / URL params.
     assert caption.strip().endswith("https://vedicpatro.com/panchanga")
 
-    from services.fb_post_content import image_url
+    from services.sharing.fb_post_content import image_url
     assert image_url(day).endswith("date=2026-07-25&full=1")
 
 
 def test_anga_transition_lines_match_the_day():
     from datetime import date as _date
 
-    from services.fb_post_content import anga_transition_lines, kathmandu_location
-    from services.panchanga_api import build_daily_state
+    from services.sharing.fb_post_content import anga_transition_lines, kathmandu_location
+    from services.panchanga.panchanga_api import build_daily_state
 
     day = _date(2026, 7, 25)
     loc = kathmandu_location()
@@ -71,7 +71,7 @@ def test_anga_transition_lines_match_the_day():
 
 
 def test_post_photo_by_url_builds_request(monkeypatch):
-    from services import fb_page
+    from services.sharing import fb_page
 
     captured: dict = {}
 
@@ -102,7 +102,7 @@ def test_post_photo_by_url_builds_request(monkeypatch):
 
 
 def test_post_link_builds_request(monkeypatch):
-    from services import fb_page
+    from services.sharing import fb_page
 
     captured: dict = {}
 
@@ -133,7 +133,7 @@ def test_post_link_builds_request(monkeypatch):
 
 
 def test_post_photo_raises_on_bad_response(monkeypatch):
-    from services import fb_page
+    from services.sharing import fb_page
 
     class _FakeResp(io.BytesIO):
         def __enter__(self):

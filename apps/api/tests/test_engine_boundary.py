@@ -24,7 +24,7 @@ class TestNoCulturalRulesInAstronomy:
     def test_astronomy_layer_holds_no_cultural_logic(self):
         """Span constants and name tables are calendar *mathematics* — a tithi is
         12 degrees of elongation in every tradition. Which tithi a community
-        observes for a festival is cultural, and belongs in engine/vedic or
+        observes for a festival is cultural, and belongs in engine/festivals or
         rules/."""
         offenders: list[str] = []
         for path in (ROOT / "engine" / "astronomy").rglob("*.py"):
@@ -82,9 +82,9 @@ class TestDuplicateAstronomyIsContained:
         from datetime import datetime, timezone
 
         from engine.astronomy.engine import default_engine
-        from engine.vedic.tropical_seasons import solar_apparent_longitude
+        from engine.calendar.tropical_seasons import solar_apparent_longitude
 
-        from engine.vedic.tropical_seasons import _julian_day
+        from engine.calendar.tropical_seasons import _julian_day
 
         for year in (1950, 2000, 2026, 2050, 2100):
             when = datetime(year, 3, 20, 12, 0, tzinfo=timezone.utc)

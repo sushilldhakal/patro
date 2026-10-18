@@ -10,7 +10,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from app.main import app
-from services.payload_slim import (
+from services.panchanga.payload_slim import (
     MONTH_EMBED_SLIM_DROP_KEYS,
     slim_day_payload,
     slim_month_payload,

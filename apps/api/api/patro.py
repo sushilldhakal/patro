@@ -12,10 +12,10 @@ from api.deps import (
     stamp_year_era,
     validated_year_span_jd,
 )
-from services.holiday_generator import precompute_bs_year
+from services.festivals.holiday_generator import precompute_bs_year
 from app.day_resolver import greg_date_for_date_key
-from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
-from services.presentation import render_panchanga_month
+from services.panchanga.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
+from services.panchanga.presentation import render_panchanga_month
 
 router = APIRouter()
 
@@ -34,10 +34,10 @@ def _cache_year_hint(era: str, year: int) -> int:
 @router.get("/nepal/gochar/year/{bs_year}")
 def nepal_gochar_year(bs_year: int, location: LocationDep, request: Request):
     """Yearly Gochar summary — slow-graha transit timeline + monthly rashi snapshots."""
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
-    from engine.vedic.gochar import build_gochar_year_summary
+    from engine.jyotish.gochar import build_gochar_year_summary
 
     key = f"gocharyear_{bs_year}_{location_cache_key(location)}"
     return serve_cached_json(
@@ -57,7 +57,7 @@ def nepal_patro_grid(
     output: Literal["json", "text"] = Query("json"),
 ):
     """Printable Surya-style monthly Patro grid or linear dayblock stream."""
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
@@ -89,9 +89,9 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
     import calendar as _cal
-    from engine.vedic.bikram_sambat import gregorian_to_bs
-    from services.daily_panchanga import get_daily_panchanga
-    from services.patro_generator import collect_bs_year_festivals, festivals_for_day
+    from engine.calendar.bikram_sambat import gregorian_to_bs
+    from services.panchanga.daily_panchanga import get_daily_panchanga
+    from services.festivals.patro_generator import collect_bs_year_festivals, festivals_for_day
 
     last_day = _cal.monthrange(ad_year, ad_month)[1]
     month_start_ad = date(ad_year, ad_month, 1)
@@ -130,10 +130,10 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
 def generate_panchanga_popular_cities(bs_year: int, force: bool = Query(False)):
     """Precompute panchanga cache for all popular cities."""
     _validate_bs_year(bs_year)
-    from services.observer_location import resolve_location_from_query
-    from engine.vedic.bikram_sambat import iter_bs_month_days
-    from services.cities_db import POPULAR_CITY_IDS
-    from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+    from services.geography.observer_location import resolve_location_from_query
+    from engine.calendar.bikram_sambat import iter_bs_month_days
+    from services.geography.cities_db import POPULAR_CITY_IDS
+    from services.panchanga.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
 
     dates = [greg for month in range(1, 13) for _, greg in iter_bs_month_days(bs_year, month)]
     results = []
@@ -157,8 +157,8 @@ def generate_panchanga_popular_cities(bs_year: int, force: bool = Query(False)):
 def generate_panchanga_year(bs_year: int, location: LocationDep, force: bool = Query(False)):
     """Precompute panchanga SQLite cache for every day in a BS year at this location."""
     _validate_bs_year(bs_year)
-    from engine.vedic.bikram_sambat import iter_bs_month_days
-    from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+    from engine.calendar.bikram_sambat import iter_bs_month_days
+    from services.panchanga.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
 
     dates = [greg for month in range(1, 13) for _, greg in iter_bs_month_days(bs_year, month)]
     location_key, city_id = resolve_cache_keys(location)
@@ -203,8 +203,8 @@ def nepal_gochar_ingress(
         date_if_supported,
         format_civil_iso,
     )
-    from engine.vedic.gochar import GRAHA_ORDER, build_gochar_ingress
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.jyotish.gochar import GRAHA_ORDER, build_gochar_ingress
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     graha_list = None
     if grahas:
@@ -277,9 +277,9 @@ def nepal_gochar_jd(
     upcoming: bool = Query(False),
 ):
     """Gochar at local sunrise for a civil day keyed by Julian Day (0h UT)."""
-    from engine.vedic.gochar import build_gochar
-    from services.panchanga_api import resolve_panchanga_jd_ut
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.jyotish.gochar import build_gochar
+    from services.panchanga.panchanga_api import resolve_panchanga_jd_ut
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     # This used to fan out three ways; the first two branches were the same code
     # twice, and the third differed only in which twin it called. One builder,
@@ -307,9 +307,9 @@ def nepal_gochar(
     """Gochar (planetary transit) table for a date."""
     from app.day_resolver import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
-    from engine.vedic.bikram_sambat import format_bs_date
-    from engine.vedic.gochar import build_gochar
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.calendar.bikram_sambat import format_bs_date
+    from engine.jyotish.gochar import build_gochar
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     # One resolver for every era: engine.calendar.era.to_jd knows all four, so
     # the local ad-or-bs parser this used to carry (which silently returned None
@@ -361,9 +361,9 @@ def nepal_graha_sthiti(
     """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
     from app.day_resolver import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
-    from engine.vedic.bikram_sambat import format_bs_date
-    from engine.vedic.graha_detail import build_graha_sthiti
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.calendar.bikram_sambat import format_bs_date
+    from engine.jyotish.graha_detail import build_graha_sthiti
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     civil = civil_day_for_date_key(date_key, era)
     if civil is None:
@@ -401,8 +401,8 @@ def nepal_graha_asta_year(
     era: EraQuery = "bs",
 ):
     """Yearly heliacal udaya/asta (rising/setting) timeline for a BS or AD year."""
-    from engine.vedic.graha_detail import build_graha_asta_span
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from engine.jyotish.graha_detail import build_graha_asta_span
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"grahaasta_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
@@ -434,8 +434,8 @@ def nepal_graha_vakri_year(
     """
     from app.era_middleware import era_context
     from engine.calendar.era import year_span_jd
-    from engine.vedic.graha_detail import build_graha_vakri_span
-    from services.response_cache import location_cache_key, serve_cached_json
+    from engine.jyotish.graha_detail import build_graha_vakri_span
+    from services.platform.response_cache import location_cache_key, serve_cached_json
 
     ctx = era_context(request)
     try:
@@ -464,8 +464,8 @@ def nepal_eclipse_year(
     era: EraQuery = "bs",
 ):
     """Solar or lunar eclipses whose maximum falls within a BS or AD year."""
-    from engine.vedic.graha_detail import build_eclipse_span
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from engine.jyotish.graha_detail import build_eclipse_span
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"eclipse_{kind}_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
@@ -488,8 +488,8 @@ def nepal_panchak_year(
     era: EraQuery = "bs",
 ):
     """Annual Panchak windows — Moon in Dhanishta pada 3 through Revati."""
-    from engine.vedic.panchak_calendar import build_panchak_span
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    from engine.jyotish.panchak_calendar import build_panchak_span
+    from services.platform.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"panchak_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"

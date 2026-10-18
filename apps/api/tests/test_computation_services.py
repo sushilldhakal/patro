@@ -27,9 +27,9 @@ from pathlib import Path
 import pytest
 
 from engine.astronomy.engine import default_engine
-from engine.astronomy.lagna import lagna_service
+from engine.panchanga.lagna import lagna_service
 from engine.astronomy.moon import PHASE_NAMES, moon_service
-from engine.astronomy.panchanga import panchanga_service
+from engine.panchanga.angas import panchanga_service
 from engine.astronomy.planets import GRAHA_KEYS, planet_service, spashta_table
 from engine.astronomy.rashi import RASHI_NAMES, RITU_DATA, rashi_service
 from engine.astronomy.sun import sun_service
@@ -219,7 +219,7 @@ class TestSunService:
         assert min(values) > -17.0
 
     def test_sunrise_matches_the_day_typed_helper(self):
-        from services.observer_location import resolve_location_from_query
+        from services.geography.observer_location import resolve_location_from_query
         from engine.astronomy.sun import calculate_sunrise
 
         location = resolve_location_from_query(
@@ -346,7 +346,7 @@ class TestLagnaService:
     def test_next_boundary_lands_in_the_following_rashi(self):
         """The search converges from above: the answer is inside the next sign,
         by at most the 30-second bisection tolerance."""
-        from engine.astronomy.lagna import _TOLERANCE_DAYS
+        from engine.panchanga.lagna import _TOLERANCE_DAYS
 
         lat, lon = KATHMANDU
         for jd in SAMPLE_JDS:
@@ -401,7 +401,7 @@ class TestMoonPhaseReachesThePayload:
         from datetime import date
 
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import build_daily_panchanga
+        from engine.panchanga.daily import build_daily_panchanga
 
         phase = build_daily_panchanga(date(2026, 7, 31), DEFAULT_LOCATION)["moon_phase"]
         assert phase["name"] in PHASE_NAMES
@@ -413,7 +413,7 @@ class TestMoonPhaseReachesThePayload:
         from datetime import date
 
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.daily import build_daily_panchanga
+        from engine.panchanga.daily import build_daily_panchanga
 
         payload = build_daily_panchanga(date(2026, 7, 31), DEFAULT_LOCATION)
         phase = payload["moon_phase"]
@@ -425,7 +425,7 @@ class TestMoonPhaseReachesThePayload:
         from datetime import datetime, timezone
 
         from engine.astronomy.location import DEFAULT_LOCATION
-        from engine.vedic.at_time import build_planetary_snapshot
+        from engine.panchanga.at_time import build_planetary_snapshot
 
         snap = build_planetary_snapshot(
             datetime(2026, 7, 31, 9, 30, tzinfo=timezone.utc),

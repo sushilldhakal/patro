@@ -4,8 +4,8 @@ from __future__ import annotations
 
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.bikram_sambat import bs_to_gregorian
-from services.panchanga_api import build_month_calendar
+from engine.calendar.bikram_sambat import bs_to_gregorian
+from services.panchanga.panchanga_api import build_month_calendar
 
 
 def _day_row(bs_year: int, bs_month: int, bs_day: int) -> dict:

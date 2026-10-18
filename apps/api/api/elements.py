@@ -15,7 +15,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from api.deps import LocationDep
-from services.element_api import (
+from services.panchanga.element_api import (
     element_day,
     element_month,
     element_spans,

@@ -1,4 +1,4 @@
-"""Tests for POST /vastu/house-plan (api/vastu.py + services/vastu_house_plan.py)."""
+"""Tests for POST /vastu/house-plan (api/vastu.py + services/vastu/vastu_house_plan.py)."""
 
 from __future__ import annotations
 
@@ -96,7 +96,7 @@ def test_house_plan_feet_unit_converts_to_meters():
 
 
 def _shared_span(a: dict, b: dict) -> tuple[bool, float, float, float] | None:
-    """Port of engine.vedic.vastu.geometry.shared_seg for the API's plain-dict
+    """Port of engine.vastu.geometry.shared_seg for the API's plain-dict
     room shape: (is_horizontal, fixed_coordinate, lo, hi) of the segment
     where rects `a` and `b` touch flush, or None if they don't."""
     eps = 0.04
@@ -197,7 +197,7 @@ def test_window_rooms_sit_on_the_exterior_wall(plot_width, plot_depth, storeys):
     can never get one. Every kind outside EXTERIOR_EXEMPT_KINDS (storage,
     utility and the wet rooms, which are routinely interior in real plans)
     must therefore touch an outer wall."""
-    from engine.vedic.vastu.solver import EXTERIOR_EXEMPT_KINDS
+    from engine.vastu.solver import EXTERIOR_EXEMPT_KINDS
 
     body = {
         "site": {**_BODY["site"], "plot_width": plot_width, "plot_depth": plot_depth},

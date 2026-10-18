@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.astronomy.location import DEFAULT_LOCATION  # noqa: E402
-from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
-from services.sait_generator import precompute_sait_range  # noqa: E402
+from engine.calendar.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
+from services.festivals.sait_generator import precompute_sait_range  # noqa: E402
 
 
 def main() -> None:

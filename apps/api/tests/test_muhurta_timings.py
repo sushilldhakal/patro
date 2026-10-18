@@ -3,7 +3,7 @@
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.daily import build_daily_panchanga
+from engine.panchanga.daily import build_daily_panchanga
 
 
 def test_extended_muhurta_timings_present():

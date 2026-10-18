@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from services.presentation.canonical import to_canonical
-from services.presentation.panchanga_renderer import (
+from services.panchanga.presentation.canonical import to_canonical
+from services.panchanga.presentation.panchanga_renderer import (
     render_day_block,
     render_day_block_from_state,
     render_month_stream,

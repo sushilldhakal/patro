@@ -3,7 +3,7 @@
  * content. The static reference text itself (house themes, karakatva,
  * bhavesh-phala, Lal Kitab, and the fixed rashi-lord table) now lives
  * server-side — see `BhavaReferencePayload` in `@/lib/api`, sourced from
- * nepali-holiday-api's `engine/vedic/bhava_reference.py`. */
+ * `apps/api/engine/jyotish/bhava_reference.py`. */
 
 import type { BhavaHouse } from "../bhava";
 import { drishtiTargetHouses } from "../bhava";

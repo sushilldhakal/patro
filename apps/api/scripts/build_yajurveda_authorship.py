@@ -15,7 +15,7 @@ per-Adhyaya headers and is intentionally not parsed here.
 
 ingest_yajurveda.py merges this file into each shloka by (adhyaya, position),
 the same way ingest_rigveda.py merges rigveda_authorship.json by
-(mandala, sukta) — see services/documents_db.py's sukta_number column and
+(mandala, sukta) — see services/scripture/documents_db.py's sukta_number column and
 the frontend's DocumentChapterDetail page, which groups a chapter's shlokas
 back into these ranges and shows the Rishi/Devata/Chhanda header per group.
 

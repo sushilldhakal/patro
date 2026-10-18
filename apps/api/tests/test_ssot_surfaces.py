@@ -6,14 +6,14 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.gochar import get_gochar_table
-from engine.vedic.patro_year_axis import (
+from engine.jyotish.gochar import get_gochar_table
+from engine.calendar.patro_year_axis import (
     PATRO_EPHEMERIS_SIGNED_MAX,
     PATRO_EPHEMERIS_SIGNED_MIN,
     browse_limits,
 )
-from services.panchanga_api import build_month_calendar
-from services.panchanga_cache import CACHE_PAYLOAD_VERSION
+from services.panchanga.panchanga_api import build_month_calendar
+from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
 
 client = TestClient(app)
 

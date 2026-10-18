@@ -22,7 +22,7 @@ The distinction is genuinely Vedic, not an implementation artefact:
               sunrise
 ``madhyahna`` / ``aparahna`` / ``pradosh``
               the festival falls on the day the tithi PERVADES that part of the
-              day — see engine/vedic/kaal.py and tests/test_kaal_vyapini.py
+              day — see engine/panchanga/kaal.py and tests/test_kaal_vyapini.py
 
 See docs/phase-7-preparation.md section 1.3.
 """
@@ -35,7 +35,7 @@ from pathlib import Path
 import pytest
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.lunar_month import find_festival_in_lunar_month
+from engine.panchanga.lunar_month import find_festival_in_lunar_month
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -87,7 +87,7 @@ class TestTheKnobsStayCovered:
         return json.loads(path.read_text(encoding="utf-8"))["festivals"]
 
     def test_every_date_selection_value_is_known(self):
-        from engine.vedic.kaal import KAAL_NAMES
+        from engine.panchanga.kaal import KAAL_NAMES
 
         known = {"udaya", "boundary", *KAAL_NAMES}
         used = {

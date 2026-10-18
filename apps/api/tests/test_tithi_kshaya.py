@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from unittest.mock import patch
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.tithi import is_kshaya_paksha, is_kshaya_tithi_day
+from engine.panchanga.tithi import is_kshaya_paksha, is_kshaya_tithi_day
 
 
 def _fake_sunrise_tithi(sequence: dict[date, tuple[int, str]]):
@@ -25,7 +25,7 @@ def _run(first: date, tithis: list[tuple[int, str]]) -> dict[date, tuple[int, st
 def test_is_kshaya_tithi_day_detects_two_step():
     seq = {date(2026, 2, 1): (5, "shukla"), date(2026, 2, 2): (7, "shukla")}
     with patch(
-        "engine.vedic.tithi.calculate_tithi_at_sunrise",
+        "engine.panchanga.tithi.calculate_tithi_at_sunrise",
         side_effect=_fake_sunrise_tithi(seq),
     ):
         assert is_kshaya_tithi_day(date(2026, 2, 1))
@@ -34,7 +34,7 @@ def test_is_kshaya_tithi_day_detects_two_step():
 def test_is_kshaya_tithi_day_false_on_normal_advance():
     seq = {date(2026, 2, 1): (5, "shukla"), date(2026, 2, 2): (6, "shukla")}
     with patch(
-        "engine.vedic.tithi.calculate_tithi_at_sunrise",
+        "engine.panchanga.tithi.calculate_tithi_at_sunrise",
         side_effect=_fake_sunrise_tithi(seq),
     ):
         assert not is_kshaya_tithi_day(date(2026, 2, 1))
@@ -50,7 +50,7 @@ def test_kshaya_paksha_true_on_13_day_fortnight():
     )
     seq = _run(date(2026, 1, 31), tithis)
     with patch(
-        "engine.vedic.tithi.calculate_tithi_at_sunrise",
+        "engine.panchanga.tithi.calculate_tithi_at_sunrise",
         side_effect=_fake_sunrise_tithi(seq),
     ):
         # Any day inside the 13-day fortnight reports the whole pakṣa as kṣaya.
@@ -69,7 +69,7 @@ def test_kshaya_paksha_false_on_single_lost_tithi():
     )
     seq = _run(date(2026, 1, 31), tithis)
     with patch(
-        "engine.vedic.tithi.calculate_tithi_at_sunrise",
+        "engine.panchanga.tithi.calculate_tithi_at_sunrise",
         side_effect=_fake_sunrise_tithi(seq),
     ):
         assert not is_kshaya_paksha(date(2026, 2, 4))
@@ -83,7 +83,7 @@ def test_kshaya_paksha_false_on_full_fortnight():
     )
     seq = _run(date(2026, 1, 31), tithis)
     with patch(
-        "engine.vedic.tithi.calculate_tithi_at_sunrise",
+        "engine.panchanga.tithi.calculate_tithi_at_sunrise",
         side_effect=_fake_sunrise_tithi(seq),
     ):
         assert not is_kshaya_paksha(date(2026, 2, 5))

@@ -36,7 +36,7 @@ if [[ ! -f "${REPO_DIR}/.env" ]]; then
 fi
 ln -sfn ../../.env .env
 mkdir -p cache data
-if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
+if [[ ! -f data/cities.db ]] || ! python -c "from services.geography.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
   echo "==> Building cities.db (GeoNames global + full Nepal coverage)"
   python scripts/import_cities.py
 fi

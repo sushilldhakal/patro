@@ -7,7 +7,7 @@ router = APIRouter(tags=["meta"])
 def health():
     from engine.astronomy.engine import default_engine
     from engine.astronomy.paths import cities_db_path
-    from services.panchanga_cache import cache_stats
+    from services.panchanga.panchanga_cache import cache_stats
 
     return {
         "status": "ok",
@@ -33,7 +33,7 @@ def provenance():
     version bump).
     """
     from engine.astronomy.provenance import current_provenance
-    from services.panchanga_cache import report_provenance_drift
+    from services.panchanga.panchanga_cache import report_provenance_drift
 
     prov = current_provenance()
     payload = {"provenance": prov.as_dict()}
@@ -58,8 +58,8 @@ def capabilities():
     ``PATRO_EPHEMERIS_SIGNED_*`` (and friends) in their own source. Month
     calendar payloads also carry a ``limits`` block from the same function.
     """
-    from engine.vedic.patro_year_axis import browse_limits
-    from services.panchanga_cache import CACHE_PAYLOAD_VERSION
+    from engine.calendar.patro_year_axis import browse_limits
+    from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
 
     return {
         **browse_limits(),

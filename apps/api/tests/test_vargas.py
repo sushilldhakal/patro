@@ -1,6 +1,6 @@
 """Divisional (varga) rashi rules — regression tests for the BPHS method."""
 
-from engine.vedic.vargas import varga_rashi_from_longitude as v
+from engine.jyotish.vargas import varga_rashi_from_longitude as v
 
 
 def test_d4_quarters_are_kendras_from_sign():

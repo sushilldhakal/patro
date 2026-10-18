@@ -5,8 +5,8 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.vedic.daily import build_daily_panchanga
-from engine.vedic.solar_corrections import (
+from engine.panchanga.daily import build_daily_panchanga
+from engine.panchanga.solar_corrections import (
     build_solar_corrections,
     compute_belaantar,
     compute_deshaantar,

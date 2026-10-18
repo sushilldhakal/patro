@@ -87,7 +87,7 @@ class TestCallSitesAgree:
     def test_gochar_table_matches_planetary_positions(self):
         from engine.astronomy.planets import spashta_table
         from engine.astronomy.ut_instant import as_julian_day
-        from engine.vedic.gochar import get_gochar_table
+        from engine.jyotish.gochar import get_gochar_table
 
         positions = spashta_table(as_julian_day(DAY))
         table = get_gochar_table(DAY)
@@ -97,9 +97,9 @@ class TestCallSitesAgree:
             assert row["motion"] == ("Vakri" if row["is_retrograde"] else "Margi")
 
     def test_graha_sthiti_matches_gochar(self):
-        from services.observer_location import resolve_location_from_query
-        from engine.vedic.gochar import get_gochar_table
-        from engine.vedic.graha_detail import build_graha_sthiti
+        from services.geography.observer_location import resolve_location_from_query
+        from engine.jyotish.gochar import get_gochar_table
+        from engine.jyotish.graha_detail import build_graha_sthiti
 
         location = resolve_location_from_query(
             lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu"
