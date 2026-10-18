@@ -9,7 +9,7 @@ from fastapi import Depends, HTTPException, Query
 
 from engine.astronomy.location import ObserverLocation
 from services.geography.observer_location import resolve_location_from_query
-from engine.calendar.bikram_sambat import format_bs_date, gregorian_to_bs
+from engine.calendar.bs_date import BsDate
 
 
 def location_params(
@@ -169,8 +169,8 @@ def _enrich_holiday_bs_dates(holidays: list[dict[str, Any]]) -> list[dict[str, A
         end_ad = date.fromisoformat(h["end_date"])
         result.append({
             **h,
-            "bs_start_date": format_bs_date(*gregorian_to_bs(start_ad)),
-            "bs_end_date": format_bs_date(*gregorian_to_bs(end_ad)),
+            "bs_start_date": str(BsDate.from_gregorian(start_ad)),
+            "bs_end_date": str(BsDate.from_gregorian(end_ad)),
         })
     return result
 

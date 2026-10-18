@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
 
 from app.era_middleware import era_params
+from engine.calendar.bs_date import BsDate
 from api.deps import (
     EraQuery,
     LocationDep,
@@ -23,7 +24,6 @@ from engine.calendar.bikram_sambat import (
     bs_to_gregorian,
     format_bs_date,
     gregorian_to_bs,
-    parse_bs_date,
 )
 from services.festivals.holiday_generator import (
     FestivalCacheMissError,
@@ -792,15 +792,15 @@ def holidays(
 def convert_ad_to_bs(ad_date: date):
     """Convert an AD (Gregorian) date to Bikram Sambat with full metadata."""
     try:
-        bs_year, bs_month, bs_day = gregorian_to_bs(ad_date)
+        bs = BsDate.from_gregorian(ad_date)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {
         "ad_date": ad_date.isoformat(),
-        "bs_year": bs_year, "bs_month": bs_month, "bs_day": bs_day,
-        "bs_date": format_bs_date(bs_year, bs_month, bs_day),
-        "bs_month_name": bs_month_name(bs_month),
-        "bs_month_name_ne": bs_month_name(bs_month, nepali=True),
+        "bs_year": bs.year, "bs_month": bs.month, "bs_day": bs.day,
+        "bs_date": str(bs),
+        "bs_month_name": bs.month_name(),
+        "bs_month_name_ne": bs.month_name(nepali=True),
         "weekday": ad_date.strftime("%A"),
     }
 
@@ -809,15 +809,15 @@ def convert_ad_to_bs(ad_date: date):
 def convert_bs_to_ad(bs_date: str):
     """Convert a BS (Bikram Sambat) date to AD (Gregorian) with full metadata."""
     try:
-        bs_year, bs_month, bs_day = parse_bs_date(bs_date)
-        greg = bs_to_gregorian(bs_year, bs_month, bs_day)
+        bs = BsDate.parse(bs_date)
+        greg = bs.to_gregorian()
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {
-        "bs_date": format_bs_date(bs_year, bs_month, bs_day),
-        "bs_year": bs_year, "bs_month": bs_month, "bs_day": bs_day,
-        "bs_month_name": bs_month_name(bs_month),
-        "bs_month_name_ne": bs_month_name(bs_month, nepali=True),
+        "bs_date": str(bs),
+        "bs_year": bs.year, "bs_month": bs.month, "bs_day": bs.day,
+        "bs_month_name": bs.month_name(),
+        "bs_month_name_ne": bs.month_name(nepali=True),
         "ad_date": greg.isoformat(),
         "weekday": greg.strftime("%A"),
     }
@@ -1338,7 +1338,7 @@ def nepal_panchanga_year(bs_year: int, location: LocationDep):
         bs = p["bs_date"]
         m = p.get("muhurta", {})
         days.append({
-            "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
+            "date_bs": str(BsDate.of(bs)),
             "date_ad": greg.isoformat(),
             "weekday": p["vaara"]["name_ne"],
             "weekday_en": p["vaara"]["name_english"],

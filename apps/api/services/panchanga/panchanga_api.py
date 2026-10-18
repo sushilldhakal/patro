@@ -26,6 +26,8 @@ from engine.calendar.bikram_sambat import (
     iter_bs_month_civil_days,
     shaka_year,
 )
+from engine.calendar.bs_date import BsDate
+from engine.panchanga.anga_state import AngaState
 from engine.calendar.samvatsara import samvatsara_payload_for_bs_year
 from services.panchanga.daily_panchanga import get_daily_panchanga
 from services.panchanga.festival_port import festival_calendar
@@ -154,31 +156,8 @@ def _local_stamp(iso_dt: str | None, timezone_name: str) -> str | None:
 
 
 def element_state(block: dict, timezone_name: str) -> dict[str, Any]:
-    nxt = block.get("next") or {}
-    state = {
-        "name": block["name"],
-        "name_ne": block.get("name_ne"),
-        "start": _local_stamp(block.get("start_time"), timezone_name),
-        "end": _local_stamp(block.get("end_time"), timezone_name),
-        "next": nxt.get("name"),
-        "next_ne": nxt.get("name_ne"),
-        "end_ghati_clock": block.get("end_ghati_clock"),
-        "end_hours_clock": block.get("end_hours_clock"),
-        "progress": block.get("progress"),
-    }
-    # Carry the next anga's end + any third anga (kshaya days) so the client can
-    # render a skipped tithi's ending rather than dropping it.
-    if nxt.get("end_time"):
-        state["next_end"] = _local_stamp(nxt.get("end_time"), timezone_name)
-        state["next_end_ghati_clock"] = nxt.get("end_ghati_clock")
-        state["next_end_hours_clock"] = nxt.get("end_hours_clock")
-    third = nxt.get("next")
-    if third:
-        state["next_next"] = third.get("name")
-        state["next_next_ne"] = third.get("name_ne")
-        state["next_next_end_ghati_clock"] = third.get("end_ghati_clock")
-        state["next_next_end_hours_clock"] = third.get("end_hours_clock")
-    return state
+    """One anga's day-state row; see :class:`engine.panchanga.anga_state.AngaState`."""
+    return AngaState.from_block(block, lambda iso: _local_stamp(iso, timezone_name)).to_payload()
 
 
 def greg_date_for_date_key(date_key: str, era: str) -> date:
@@ -213,7 +192,7 @@ def build_daily_state(
     tz = location.timezone
 
     payload: dict[str, Any] = {
-        "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
+        "date_bs": str(BsDate.of(bs)),
         "date_ad": greg.isoformat(),
         "jd_ut": raw.get("jd_ut"),
         "weekday": raw["vaara"]["name_ne"],
@@ -313,7 +292,7 @@ def build_daily_state_civil(
     date_ad = raw["date_ad"]
 
     payload: dict[str, Any] = {
-        "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
+        "date_bs": str(BsDate.of(bs)),
         "date_ad": date_ad,
         "jd_ut": raw.get("jd_ut"),
         "weekday": raw["vaara"]["name_ne"],
@@ -1035,7 +1014,7 @@ def build_kundali(
         planets[name] = f"{pos['rashi_name']} {degree:.1f}°"
 
     return {
-        "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
+        "date_bs": str(BsDate.of(bs)),
         "date_ad": greg.isoformat(),
         "location": raw["location"],
         "planets": planets,
