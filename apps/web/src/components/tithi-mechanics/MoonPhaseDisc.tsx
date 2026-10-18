@@ -5,7 +5,7 @@ import {
   isNewMoonElongation,
   moonPhaseLitPath,
   normElongation,
-} from "@vedic-patro/domain/moon-phase-svg";
+} from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
 import { brand, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 interface MoonPhaseDiscProps {

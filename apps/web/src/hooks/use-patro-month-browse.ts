@@ -1,8 +1,8 @@
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { usePatroMonthBrowse as useSharedPatroMonthBrowse } from "@vedic-patro/features/patro-date";
 
-export { coerceMonthBrowseFromUrl } from "@vedic-patro/domain/patro-browse-params";
+export { coerceMonthBrowseFromUrl } from "@vedic-patro/domain/calendar/patro-browse-params";
 export type { PatroMonthBrowse } from "@vedic-patro/features/patro-date";
 
 function calendarEraAsEra(raw: ReturnType<typeof useCalendarEra>): Era {

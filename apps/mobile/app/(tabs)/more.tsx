@@ -1,4 +1,4 @@
-import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga/panchanga-i18n";
 import { translateKey } from "@vedic-patro/domain/locale";
 import { Linking, Platform, Pressable, Share, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -25,7 +25,7 @@ import {
   SITEMAP_SAIT_CATEGORIES,
   type SitemapRoute,
 } from "@/lib/sitemap-routes";
-import { CEREMONY_META, ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { elementHref } from "@/lib/element-routes";
 import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
 import {

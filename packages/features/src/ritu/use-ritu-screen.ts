@@ -4,7 +4,7 @@
  * Learn slugs under the seasons. The seasons themselves come from
  * `useRituPage`.
  */
-import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
+import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const RITU_LEARN_SLUGS = ["ritu-drift"];

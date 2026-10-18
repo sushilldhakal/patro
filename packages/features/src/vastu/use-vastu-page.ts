@@ -22,8 +22,8 @@ import {
   type VastuPadaId,
   type VastuPadaStatus,
   type VastuSelectionId,
-} from "@vedic-patro/domain/vastu";
-import { gunaTone } from "@vedic-patro/domain/vastu-guna";
+} from "@vedic-patro/domain/vastu/vastu";
+import { gunaTone } from "@vedic-patro/domain/vastu/vastu-guna";
 import { illustration } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
 

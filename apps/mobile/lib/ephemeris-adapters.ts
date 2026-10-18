@@ -4,7 +4,7 @@ import {
   type LocationParams,
   type PanchangaDay,
 } from "@/lib/api";
-import { mergeEphemerisAtTimeWithDaily } from "@vedic-patro/read-models/ephemeris-adapters";
+import { mergeEphemerisAtTimeWithDaily } from "@vedic-patro/read-models/astronomy/ephemeris-adapters";
 
 export function buildAtTimeDatetime(adDate: string, clock: string): string {
   const [hh, mm] = clock.split(":");

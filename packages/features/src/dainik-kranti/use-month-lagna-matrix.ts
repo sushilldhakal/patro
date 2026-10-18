@@ -4,7 +4,7 @@
  * row per day (today marked, starts past midnight flagged), the loading /
  * empty state, and copy.
  */
-import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import type { LagnaMatrixRow } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { isLateLagnaTime, patroWeekday, rashiColumns, usePatroTableStatus, type PatroTableState } from "./patro-cells";
 

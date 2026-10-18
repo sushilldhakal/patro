@@ -3,7 +3,7 @@ import Svg, { Path } from "react-native-svg";
 import { Box, Pressable, Text } from "@vedic-patro/ui";
 import { kitIcons } from "@vedic-patro/ui/classes";
 import { neutral } from "@vedic-patro/design-tokens";
-import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
+import { LEGAL_SITE } from "@vedic-patro/domain/identity/legal-copy";
 import { useChapterStill, useChapterTip } from "@vedic-patro/features/learn";
 import type { ChapterStillProps, ChapterTipProps } from "../contract";
 

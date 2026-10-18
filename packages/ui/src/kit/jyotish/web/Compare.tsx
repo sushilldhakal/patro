@@ -1,5 +1,5 @@
 import { useDivisionalChartCompare, useDivisionalTableToggle, type DivisionalChartSlot } from "@vedic-patro/features/kundali";
-import type { ChartAnchor } from "@vedic-patro/domain/varga-display";
+import type { ChartAnchor } from "@vedic-patro/domain/jyotish/varga-display";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Box, Pressable, Text } from "@vedic-patro/ui";

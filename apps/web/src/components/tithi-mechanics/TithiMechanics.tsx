@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { Pause, Play } from "lucide-react";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/tithi-wheel-data";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { ElongationDiagram, EARTH_ARC_SYNODIC, earthOrbitDegFromLunarDay } from "./ElongationDiagram";
 import { SYNODIC_MONTH } from "@/components/learn/sun-earth-moon-math";
 import { cn } from "@vedic-patro/design-tokens/cn";

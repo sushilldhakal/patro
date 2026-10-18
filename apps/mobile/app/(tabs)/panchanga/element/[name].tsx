@@ -21,12 +21,12 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { useThemeColors } from "@/lib/theme-context";
-import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
 /*
  * Column counts match the web grid at each breakpoint. `Grid` measures the

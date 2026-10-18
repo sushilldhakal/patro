@@ -17,7 +17,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { RASHIFAL_PERIOD_ICON } from "@/lib/rashifal-ui";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { searchToLocation } from "@/lib/url-state";
 import { panchangaKeys } from "@/lib/api";
 import { buildPatroDayApiQuery } from "@/lib/patro-day-url";

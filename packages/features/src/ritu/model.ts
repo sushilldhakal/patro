@@ -4,8 +4,8 @@
  * three slots; the dates do not. This turns the boundaries into card data.
  */
 import type { TropicalSeasonsResponse } from "@vedic-patro/api-client";
-import { adToBS } from "@vedic-patro/domain/bs-calendar";
-import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
 const DAY = 86_400_000;
 const midnightUtcMs = (adStr: string) => Date.parse(`${adStr}T00:00:00Z`);

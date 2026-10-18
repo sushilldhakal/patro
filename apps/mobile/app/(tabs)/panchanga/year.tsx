@@ -7,13 +7,13 @@ import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { Text } from "@/components/ui/Text";
 import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
-import { bsToAD, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
+import { bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 

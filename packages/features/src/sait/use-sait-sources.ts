@@ -3,7 +3,7 @@
  * website's and the app's `components/sait/SaitSources.tsx`: which texts
  * apply to the ceremony, numbered, with credit, edition and what was used.
  */
-import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
+import type { SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type SaitSourceId = "brihat_samhita" | "dharma_sindhu" | "muhurta_chintamani";

@@ -5,8 +5,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { dampHeading } from "@vedic-patro/domain/compass-heading";
-export { dampHeading } from "@vedic-patro/domain/compass-heading";
+import { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
+export { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
 
 export type CompassPermissionState = "unnecessary" | "prompt-required" | "granted" | "denied";
 

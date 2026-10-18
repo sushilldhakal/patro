@@ -27,12 +27,12 @@ import { ChevronDown, ChevronUp, Maximize2, Minimize2, Pause, Play, RotateCcw } 
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { TwoSystemsPanel } from "@vedic-patro/ui/kit/learn";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
-import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
+import { geocentricPointAt } from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import {
   TWO_SYSTEMS_SPEEDS,
   buildYearLadders,
@@ -45,7 +45,7 @@ import {
   SIDEREAL_MONTH,
   SIDEREAL_YEAR,
   TITHI_ARC,
-} from "@vedic-patro/domain/sky3d/two-systems";
+} from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import Scene, {
   type CameraState,
   type Focus,

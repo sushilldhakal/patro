@@ -6,7 +6,7 @@
  */
 import { get } from "./client";
 import { ApiError } from "./http";
-import type { DocumentCategoryId } from "@vedic-patro/domain/document-categories";
+import type { DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 
 /**
  * Scripture text and meanings don't change under a reader's feet — the backend

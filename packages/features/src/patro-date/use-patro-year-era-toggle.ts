@@ -3,8 +3,8 @@
  * `components/patro-date/PatroYearEraToggle.tsx`: which era it switches to,
  * its short label and its accessible label. Null when the era has no pair.
  */
-import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/era";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
+import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function usePatroYearEraToggle(era: Era): { targetEra: Era; label: string; ariaLabel: string } | null {

@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useRashifalPage } from "@vedic-patro/features/rashifal";
 import { RASHIFAL_PERIODS, type RashifalPeriod } from "@vedic-patro/api-client";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";

@@ -3,10 +3,10 @@
  * panel: the patro planet's label, a lagna start time that runs past the
  * night (the next day's ghadi 25–27), and the rashi columns.
  */
-import { PATRO_PLANET_NE, type PATRO_PLANET_KEYS } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { PATRO_PLANET_NE, type PATRO_PLANET_KEYS } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type PatroPlanetKey = (typeof PATRO_PLANET_KEYS)[number];

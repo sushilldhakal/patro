@@ -4,7 +4,7 @@
  */
 import { keepPreviousData, useQuery, type QueryKey, type UseQueryResult } from "@tanstack/react-query";
 import type { LocationParams } from "@vedic-patro/api-client";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 
 /** How long a year of patro data stays fresh — the same on every year page, in both apps. */
 export const YEAR_DATA_STALE_TIME = 1000 * 60 * 60;

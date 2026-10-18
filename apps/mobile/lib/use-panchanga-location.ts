@@ -7,8 +7,8 @@ import {
   hasCoords,
   healStoredLocation as healSharedLocation,
   type PanchangaLocation,
-} from "@vedic-patro/read-models/panchanga-location";
-import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
+} from "@vedic-patro/read-models/geography/panchanga-location";
+import { KATHMANDU } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 
 export {
   cityToLocation,
@@ -16,7 +16,7 @@ export {
   hasCoords,
   resolveLocationTimezone,
   type PanchangaLocation,
-} from "@vedic-patro/read-models/panchanga-location";
+} from "@vedic-patro/read-models/geography/panchanga-location";
 
 const STORAGE_KEY = "vedicPatroLocation";
 

@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { formatVedaCite } from "../src/veda-cite";
+import { formatVedaCite } from "../src/learn/veda-cite";
 import { DEFAULT_LANGUAGE, LANGUAGE_STORAGE_KEY, parseStoredLanguage } from "../src/locale";
-import { angaEndClock, angaEndWithDay, dayOffsetLabel } from "../src/panchanga-format";
-import { assignLanes } from "../src/day-timeline-layout";
-import { niceCeil } from "../src/kundali/shadbala-chart";
-import { clampPct, strengthBand } from "../src/kundali/bhava-bala-chart";
-import { embedRashi, dowOf } from "../src/dainikKranti/day-helpers";
-import { positiveInt, positiveMonth } from "../src/patro-browse-params";
+import { angaEndClock, angaEndWithDay, dayOffsetLabel } from "../src/panchanga/panchanga-format";
+import { assignLanes } from "../src/panchanga/day-timeline-layout";
+import { niceCeil } from "../src/jyotish/kundali/shadbala-chart";
+import { clampPct, strengthBand } from "../src/jyotish/kundali/bhava-bala-chart";
+import { embedRashi, dowOf } from "../src/jyotish/dainikKranti/day-helpers";
+import { positiveInt, positiveMonth } from "../src/calendar/patro-browse-params";
 
 test("Veda citations", () => {
   assert.equal(formatVedaCite("rigveda:1.1.3", "ne"), "ऋग्वेद १.१.३");

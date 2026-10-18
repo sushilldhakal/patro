@@ -8,7 +8,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { usePatroDayUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
 import { useRouteLoading } from "@/lib/route-loading";
-import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { searchToLocation } from "@/lib/url-state";
 import { fetchMonthCalendar } from "@/lib/api";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";

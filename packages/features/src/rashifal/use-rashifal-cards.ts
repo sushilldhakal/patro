@@ -12,11 +12,11 @@ import type {
   RashifalPersonal,
   RashifalSignBlock,
 } from "@vedic-patro/api-client";
-import { formatBsCivilIsoLong } from "@vedic-patro/domain/bs-calendar";
-import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
-import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { toNepaliDigits } from "@vedic-patro/domain/rashifal-ui";
+import { formatBsCivilIsoLong } from "@vedic-patro/domain/calendar/bs-calendar";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { toNepaliDigits } from "@vedic-patro/domain/jyotish/rashifal-ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type RashifalLuckyKey = "color" | "number" | "direction" | "time";

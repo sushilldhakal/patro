@@ -9,12 +9,12 @@
  * (URL on the website, screen state in the app) and comes in as `year` / `onChange`.
  */
 import { useState } from "react";
-import type { Era } from "@vedic-patro/domain/era";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
-import { stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
+import { stepPatroBrowseYear } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { gregorianSpanOfBsYear } from "./calendar-header-model";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { usePatroYearEraToggle } from "./use-patro-year-era-toggle";
 import { useSamvatsaraLabel } from "./use-samvatsara-label";
 import { useYearJump } from "./use-year-jump";

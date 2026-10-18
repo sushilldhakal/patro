@@ -4,10 +4,10 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { VargaChartEntry } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import {
   Table,
   TableBody,

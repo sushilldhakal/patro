@@ -1,6 +1,6 @@
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { DashaSystem, DashaTreeNode } from "@/lib/api";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { DashaTree as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function DashaTree(props: {

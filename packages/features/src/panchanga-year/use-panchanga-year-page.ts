@@ -21,13 +21,13 @@ import {
   BS_MONTHS_NE,
   BS_SUPPORTED_END_YEAR,
   BS_SUPPORTED_START_YEAR,
-} from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@vedic-patro/domain/era";
-import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
-import { formatTimeShort, getSunrise } from "@vedic-patro/read-models/panchanga-format";
-import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
-import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
-import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
+} from "@vedic-patro/domain/calendar/bs-calendar";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
+import { formatTimeShort, getSunrise } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
+import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga/panchanga-year-page";
 import {
   buildYearWheelDays,
   sliceWheelWindow,
@@ -35,9 +35,9 @@ import {
   wheelWindowBounds,
   yearWheelIndexOfAdDate,
   type YearWheelDay,
-} from "@vedic-patro/read-models/panchanga-year-wheel";
-import { formatWheelPlaybackRate, WHEEL_MAX_PLAY_SPEED, WHEEL_PLAY_BASE_MS } from "@vedic-patro/domain/wheel-year-playback";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+} from "@vedic-patro/read-models/panchanga/panchanga-year-wheel";
+import { formatWheelPlaybackRate, WHEEL_MAX_PLAY_SPEED, WHEEL_PLAY_BASE_MS } from "@vedic-patro/domain/panchanga/wheel-year-playback";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Days from an edge (at 1×) at which the window grows toward it. */

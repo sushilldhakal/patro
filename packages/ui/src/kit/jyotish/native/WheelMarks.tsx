@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { G, Line, Path, Text as SvgText } from "react-native-svg";
 import { fontFamily } from "@vedic-patro/design-tokens";
-import { vastuWheelPoint } from "@vedic-patro/domain/vastu";
+import { vastuWheelPoint } from "@vedic-patro/domain/vastu/vastu";
 import { PURUSHA_PATH } from "../purusha-path";
 import type { VastuCenter, VastuMarks } from "../contract";
 

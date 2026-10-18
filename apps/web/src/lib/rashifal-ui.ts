@@ -25,7 +25,7 @@ export {
   rashifalStepDate,
   toNepaliDigits,
   type RashifalWindowSource,
-} from "@vedic-patro/domain/rashifal-ui";
+} from "@vedic-patro/domain/jyotish/rashifal-ui";
 export { rashifalToneBar, rashifalToneText } from "@vedic-patro/design-tokens/classes/rashifal-tone-classes";
 
 /**

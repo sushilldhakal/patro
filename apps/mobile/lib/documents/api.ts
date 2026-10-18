@@ -25,4 +25,4 @@ export type {
   DocumentChapterDetail,
   VedaDaily,
 } from "@vedic-patro/api-client";
-export { formatVedaCite } from "@vedic-patro/domain/veda-cite";
+export { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";

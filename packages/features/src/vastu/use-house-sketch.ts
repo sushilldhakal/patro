@@ -4,10 +4,10 @@
  * the gallery and arrow anchors, room labels and sizes, the caption, the
  * legend and the rules. Each app draws the SVG and the caption.
  */
-import { VASTU_ELEMENT_ORDER, type CardinalWall, type VastuElementId } from "@vedic-patro/domain/vastu";
-import { RING_SIZE, houseBoxInRing } from "@vedic-patro/domain/vastu-ring";
-import { houseTemplate, type Rect } from "@vedic-patro/domain/vastu-house-template";
-import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import { VASTU_ELEMENT_ORDER, type CardinalWall, type VastuElementId } from "@vedic-patro/domain/vastu/vastu";
+import { RING_SIZE, houseBoxInRing } from "@vedic-patro/domain/vastu/vastu-ring";
+import { houseTemplate, type Rect } from "@vedic-patro/domain/vastu/vastu-house-template";
+import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu/vastu-plan";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Ring-units-per-metre this layout was tuned at — label sizes scale off it. */

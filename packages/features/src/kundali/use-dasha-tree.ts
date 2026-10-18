@@ -8,7 +8,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { dashaExpandKeys, fetchDashaChildren, type DashaSystem, type DashaTreeNode } from "@vedic-patro/api-client";
-import { formatZonedAdMoment, formatZonedBsMoment } from "@vedic-patro/domain/bs-calendar";
+import { formatZonedAdMoment, formatZonedBsMoment } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   DASHA_LORD_EN,
   DASHA_LORD_NE,
@@ -17,8 +17,8 @@ import {
   formatDashaDuration,
   formatDashaDurationParts,
   type DashaLord,
-} from "@vedic-patro/domain/dasha";
-import { toSpan, type SpanWithChildren } from "@vedic-patro/read-models/kundali/dasha-tree";
+} from "@vedic-patro/domain/jyotish/dasha";
+import { toSpan, type SpanWithChildren } from "@vedic-patro/read-models/jyotish/kundali/dasha-tree";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Catalogue keys, outermost dasha level first. */

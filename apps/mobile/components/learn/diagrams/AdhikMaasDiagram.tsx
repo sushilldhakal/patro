@@ -12,7 +12,7 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

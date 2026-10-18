@@ -6,10 +6,10 @@
  * the wheel, its dock and its gestures.
  */
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
-import { getWheelRashis } from "@vedic-patro/domain/wheel-data";
-import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { bsMonthEnOf } from "@vedic-patro/domain/panchanga/panchanga-wheel";
+import { getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
+import { NAK_LORD_EN } from "@vedic-patro/domain/panchanga/wheel-locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type PanchangaWheelTip = { kind: string; title: string; rows: { label: string; value: string }[]; sym?: string };

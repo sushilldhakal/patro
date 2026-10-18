@@ -6,9 +6,9 @@
  * is a mono run), the before-sunrise note, and copy.
  */
 import type { PanchangaDay } from "@vedic-patro/api-client";
-import { formatBsDateLong } from "@vedic-patro/domain/bs-calendar";
-import { windowLabel } from "@vedic-patro/read-models/muhurta-now";
-import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
+import { formatBsDateLong } from "@vedic-patro/domain/calendar/bs-calendar";
+import { windowLabel } from "@vedic-patro/read-models/panchanga/muhurta-now";
+import { parseAdStr } from "@vedic-patro/domain/panchanga/panchanga-year-page";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type MuhurtaNowKey = keyof NonNullable<PanchangaDay["muhurta_now"]>;

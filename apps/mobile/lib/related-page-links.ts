@@ -6,7 +6,7 @@
 import { elementHref } from "@/lib/element-routes";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 
-import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/related-page-links";
+import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
 
 /** This app's route for each static site link id. */
 export const SITE_LINK_PATH: Record<string, string> = {

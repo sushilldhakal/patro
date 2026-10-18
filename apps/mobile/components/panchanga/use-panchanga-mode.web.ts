@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser.web";
-import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
-export { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
+import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
+export { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
 
 export type PanchangaDataMode = "udaya" | "instant";
 

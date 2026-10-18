@@ -8,7 +8,7 @@
  * device: the saved values then replace the defaults a frame later).
  */
 import { useEffect, useMemo, useState } from "react";
-import { CARDINAL_WALLS, type CardinalWall } from "@vedic-patro/domain/vastu";
+import { CARDINAL_WALLS, type CardinalWall } from "@vedic-patro/domain/vastu/vastu";
 import {
   DEFAULT_HOUSE_PLAN,
   FLOOR_SPACES,
@@ -21,8 +21,8 @@ import {
   type HousePlan,
   type SpaceKind,
   type StoreyId,
-} from "@vedic-patro/domain/vastu-plan";
-import { parseDimension } from "@vedic-patro/domain/vastu-plot-input";
+} from "@vedic-patro/domain/vastu/vastu-plan";
+import { parseDimension } from "@vedic-patro/domain/vastu/vastu-plot-input";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useVastuSketch, type VastuSketchOffline } from "./use-vastu-sketch";
 

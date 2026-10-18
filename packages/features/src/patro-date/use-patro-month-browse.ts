@@ -8,16 +8,16 @@
  * app's onboarding choice) as `options.era`.
  */
 import { useState } from "react";
-import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
-import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/era";
+import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
+import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceMonthBrowseFromUrl,
   defaultMonthBrowseParts,
   positiveInt,
   positiveMonth,
-} from "@vedic-patro/domain/patro-browse-params";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
-import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";
+} from "@vedic-patro/domain/calendar/patro-browse-params";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
+import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 function resolveInitialMonthBrowse(

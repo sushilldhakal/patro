@@ -1,5 +1,5 @@
 import { useId } from "react";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
 

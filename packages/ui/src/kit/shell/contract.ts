@@ -4,8 +4,8 @@
  */
 import type { ComponentType, ReactNode } from "react";
 import type { CalendarDay, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
-import type { Era, Language } from "@vedic-patro/domain/era";
-import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
+import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
 import type { SunTimesPage } from "@vedic-patro/features/sun-times";
 import type { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";

@@ -1,13 +1,13 @@
 import type { CSSProperties } from "react";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import {
   tithiName,
   TWO_SYSTEMS_SPEEDS,
   type LunarReading,
   type SolarReading,
-} from "@vedic-patro/domain/sky3d/two-systems";
+} from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import { edPlayBtn, edRo, edRoK, edRoV, edScrubWrap } from "@vedic-patro/design-tokens/classes/learn-classes";
 import { edScrub } from "@vedic-patro/design-tokens/classes/diagram-classes";
 import type { TwoSystemsPanelProps } from "../contract";

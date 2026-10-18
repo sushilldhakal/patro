@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
-import type { LunarReading, SolarReading, buildYearLadders } from "@vedic-patro/domain/sky3d/two-systems";
+import type { LunarReading, SolarReading, buildYearLadders } from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import type { ChapterVolumeLevel, DayChapterPlayer } from "@vedic-patro/features/learn";
 import type { SkyTimeTransport } from "@vedic-patro/features/sky3d";
 

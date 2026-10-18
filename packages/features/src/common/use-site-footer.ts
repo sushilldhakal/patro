@@ -3,7 +3,7 @@
  * `components/SiteFooter.tsx` and the app's `components/branding/SiteFooter.tsx`:
  * Privacy, Terms, Support (mail) and the site, with labels and targets.
  */
-import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
+import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/identity/legal-copy";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type SiteFooterLink =

@@ -6,7 +6,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { documentsKeys, fetchDocuments, type DocumentSummary } from "@vedic-patro/api-client";
-import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryGroup, type DocumentCategoryId } from "@vedic-patro/domain/document-categories";
+import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryGroup, type DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 

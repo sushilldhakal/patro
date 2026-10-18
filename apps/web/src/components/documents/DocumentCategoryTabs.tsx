@@ -5,9 +5,9 @@ import {
   DOCUMENT_CATEGORY_GROUPS,
   type DocumentCategoryGroup,
   type DocumentCategoryId,
-} from "@vedic-patro/domain/document-categories";
+} from "@vedic-patro/domain/learn/document-categories";
 import { documentsListSearch, type DocumentCategoryTab, type DocumentSummary } from "@/lib/documents-api";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";

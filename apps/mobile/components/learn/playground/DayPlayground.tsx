@@ -56,10 +56,10 @@ import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
 import {
   clocks,
   dayCounts,
@@ -68,7 +68,7 @@ import {
   PERIHELION,
   PLANET_PRESETS,
   VERNAL,
-} from "@vedic-patro/domain/sky3d/day-mechanics";
+} from "@vedic-patro/domain/astronomy/sky3d/day-mechanics";
 import {
   resolvePlayground,
   SPEED_MULTIPLIERS,

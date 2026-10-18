@@ -16,7 +16,7 @@ import { SeasonsScene } from "@/components/learn/diagrams/SeasonsScene";
 import { SunEarthMoonScene } from "@/components/learn/diagrams/SunEarthMoonScene";
 import { TithiAngleScene } from "@/components/learn/diagrams/TithiAngleScene";
 import { Text } from "@/components/ui/Text";
-import { bsMonthLabel } from "@vedic-patro/domain/bs-calendar";
+import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { DIAGRAM_COLOR } from "@/lib/learn/diagram-theme";
 import {
@@ -34,7 +34,7 @@ import {
   yearAngleFromDay,
 } from "@/lib/learn/sun-earth-moon-math";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
 /* Framing offsets: the Sun sits off to one side in these two scenes, so the

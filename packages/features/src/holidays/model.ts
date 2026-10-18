@@ -4,7 +4,7 @@
  */
 import type { Festival, Holiday } from "@vedic-patro/api-client";
 import { bilingualText, formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
-import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
+import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga/panchanga-format";
 
 export type HolidaysTab = "holidays" | "festivals";
 

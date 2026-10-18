@@ -3,7 +3,7 @@
  * is stopped, back to stopped) over the year page's playback, which runs at
  * 1×, 2×, 4× … up to the page's top speed in either direction: rung −6…6, 0 paused.
  */
-import { WHEEL_MAX_PLAY_SPEED } from "@vedic-patro/domain/wheel-year-playback";
+import { WHEEL_MAX_PLAY_SPEED } from "@vedic-patro/domain/panchanga/wheel-year-playback";
 
 export const WHEEL_TRANSPORT_MAX = Math.round(Math.log2(WHEEL_MAX_PLAY_SPEED)) + 1;
 

@@ -7,7 +7,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { BsNativeSelect } from "@/components/ui/BsNativeSelect";
 import { PatroYearEraToggle } from "@/components/patro-date/PatroYearEraToggle";
-import { type Era } from "@vedic-patro/domain/era";
+import { type Era } from "@vedic-patro/domain/calendar/era";
 
 type Props = {
   year: number;

@@ -1,4 +1,4 @@
-import { type Era } from "@vedic-patro/domain/era";
+import { type Era } from "@vedic-patro/domain/calendar/era";
 
 /** The only three date chrome variants — used across phone and tablet. */
 export type PatroDateNavMode = "year" | "year-month" | "year-month-time";

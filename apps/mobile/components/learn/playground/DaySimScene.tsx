@@ -58,7 +58,7 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
+import { KATHMANDU } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import {
   atLonInto,
   BELT_MID,
@@ -75,7 +75,7 @@ import {
   type PlaygroundLabel,
 } from "@/components/learn/playground/playground-labels";
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
-import { makeEarthMaterial } from "@vedic-patro/domain/sky3d/earth-material";
+import { makeEarthMaterial } from "@vedic-patro/domain/astronomy/sky3d/earth-material";
 import {
   equationOfTime,
   euclideanModulo,
@@ -88,7 +88,7 @@ import {
   PERIHELION,
   VERNAL,
   VERNAL_FROM_PERIHELION,
-} from "@vedic-patro/domain/sky3d/day-mechanics";
+} from "@vedic-patro/domain/astronomy/sky3d/day-mechanics";
 
 import type {
   CameraTarget,

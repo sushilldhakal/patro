@@ -2,11 +2,11 @@ import { useCallback, useMemo } from "react";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderSwap, PatroHeaderTabs, type PatroHeaderTab } from "./PatroHeaderTabs";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { Era, Language } from "@vedic-patro/domain/era";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
-import { adToBS } from "@vedic-patro/domain/bs-calendar";
-import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
+import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { calendarPickerClasses as pickerClasses } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import {
@@ -18,9 +18,9 @@ import {
   pickBrowseVikramDate,
   stepBrowseVikramDay,
 } from "@/lib/patro-date-options";
-import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
-import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { signedPatroYearFromBrowse } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/calendar/patro-day";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { PatroDayTimeHeader } from "@vedic-patro/ui/kit/shell";
 
 export type PatroDayTimeNavProps = {

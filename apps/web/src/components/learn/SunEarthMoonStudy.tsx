@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";
 import { tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";
 import { Pause, Play } from "lucide-react";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import { SunEarthMoonOrbit } from "./SunEarthMoonOrbit";
 import {
   SYNODIC_MONTH,

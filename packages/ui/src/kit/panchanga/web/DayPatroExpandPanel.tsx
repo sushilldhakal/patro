@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useDayPatroExpand } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";

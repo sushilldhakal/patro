@@ -9,8 +9,8 @@
  */
 import { useState } from "react";
 import type { BhavaReferencePayload } from "@vedic-patro/api-client";
-import { drishtiTargetHouses, formatHouseBadge, houseBadge, type BhavaHouse } from "@vedic-patro/domain/bhava";
-import { GRAHA_ICON, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { drishtiTargetHouses, formatHouseBadge, houseBadge, type BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
+import { GRAHA_ICON, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   HOUSE_LORD_TITLE_NE,
   HOUSE_ORDINAL_EN,
@@ -18,9 +18,9 @@ import {
   computeAspectedBy,
   splitList,
   subsetsOf3,
-} from "@vedic-patro/domain/kundali/bhava-detail";
+} from "@vedic-patro/domain/jyotish/kundali/bhava-detail";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type BhavaTabId = "summary" | "lord" | "drishti" | "rules";

@@ -9,13 +9,13 @@ import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
-import { instantFromCivilIso } from "@vedic-patro/domain/instant-query";
+import { instantFromCivilIso } from "@vedic-patro/domain/calendar/instant-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { shantiClasses as sc } from "@vedic-patro/design-tokens/classes/shanti-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();

@@ -13,8 +13,8 @@ import {
   type ReportMeta,
   type ReportSection,
 } from "@vedic-patro/api-client";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
-import { localizeItemLabel } from "@vedic-patro/domain/kundali/report-labels";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
+import { localizeItemLabel } from "@vedic-patro/domain/jyotish/kundali/report-labels";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

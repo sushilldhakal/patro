@@ -1,7 +1,7 @@
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaShantiRecommendation } from "@/lib/api";
 import { scrollViewIntoView } from "@/lib/page-scroll";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { ShantiVidhiPanel as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function ShantiVidhiPanel({ grahaShanti, isError }: { grahaShanti?: GrahaShantiRecommendation; isError?: boolean }) {

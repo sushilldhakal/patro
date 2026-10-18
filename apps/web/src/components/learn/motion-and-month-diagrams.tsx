@@ -12,7 +12,7 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 /* PakshaStrip still calls bilingualText for its one caption built around a
    formatted number; everything else now comes from the catalogue. */
 import { useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 
 import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

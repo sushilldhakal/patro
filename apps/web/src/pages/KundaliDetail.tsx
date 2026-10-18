@@ -16,7 +16,7 @@ import {
 import { hasStoredSession } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
-import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { KundaliView } from "@/components/kundali/KundaliView";
 import {

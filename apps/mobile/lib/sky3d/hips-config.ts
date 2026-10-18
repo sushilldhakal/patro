@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
-import { configureHipsBaseUrl } from "@vedic-patro/domain/sky3d/hips";
+import { configureHipsBaseUrl } from "@vedic-patro/domain/astronomy/sky3d/hips";
 
 /**
  * The tiles are static files, not bundled (a bundler cannot build a path from a

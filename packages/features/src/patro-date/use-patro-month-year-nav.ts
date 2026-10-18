@@ -3,8 +3,8 @@
  * `components/patro-date/PatroMonthYearNav.tsx`: the cross-era subtitle under
  * the headline and the nav's button labels.
  */
-import type { Era, Language } from "@vedic-patro/domain/era";
-import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
+import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { usePatroMonthHeadlineSubtitle } from "./use-patro-month-headline-subtitle";
 

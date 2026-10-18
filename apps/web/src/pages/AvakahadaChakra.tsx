@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroStickyHeadCell, patroStickyHeadCorner, patroStickyHeadRow } from "@/lib/patro-classes";
-import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
+import { findNakshatraIcon } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 

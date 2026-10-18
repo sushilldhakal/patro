@@ -8,8 +8,8 @@ import {
 } from "@/lib/panchanga-route-preload";
 import { usePanchangaSidebarNav, type PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
 import { KundaliSidebarSubnav, parseKundaliSectionFromHash } from "@/components/panchanga/KundaliSidebarSubnav";
-import { parseKundaliProfileId } from "@vedic-patro/domain/kundali/kundali-routes";
-import { buildPageSearch, getLanguageForEra, parseEraFromUrl, type EraSelection } from "@vedic-patro/domain/era";
+import { parseKundaliProfileId } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
+import { buildPageSearch, getLanguageForEra, parseEraFromUrl, type EraSelection } from "@vedic-patro/domain/calendar/era";
 import { locationSearchFingerprint, locationToSearch, patroRouteLinkSearch, sameLocationParams, searchToLocation, validateLocationSearch } from "@/lib/url-state";
 import type { CalendarEra } from "@/lib/patro-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";

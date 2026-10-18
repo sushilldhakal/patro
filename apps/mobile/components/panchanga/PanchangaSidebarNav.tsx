@@ -1,7 +1,7 @@
 import { usePathname, useRouter } from "expo-router";
 import { KundaliSidebarSubnav } from "@/components/kundali/KundaliSidebarSubnav";
 import type { KundaliSectionId } from "@vedic-patro/features/kundali";
-import { parseKundaliProfileId } from "@vedic-patro/domain/kundali/kundali-routes";
+import { parseKundaliProfileId } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
 import { usePanchangaSidebarNav, type PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
 import { elementHref } from "@/lib/element-routes";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";

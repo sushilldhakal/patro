@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
-import { nebulaSources } from "@vedic-patro/domain/sky3d/nebulae";
+import { nebulaSources } from "@vedic-patro/domain/astronomy/sky3d/nebulae";
 
 /**
  * The nebula images are static assets rather than bundled — same reasoning, and

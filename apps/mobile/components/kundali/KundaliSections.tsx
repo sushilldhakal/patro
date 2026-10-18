@@ -17,7 +17,7 @@ import {
   formatHouseBadge,
   type BhavaTableRow,
   RASHI_QUALITIES,
-} from "@vedic-patro/domain/bhava";
+} from "@vedic-patro/domain/jyotish/bhava";
 import {
   GrahaInline,
   GrahaInlineChildren,
@@ -25,12 +25,12 @@ import {
   NakshatraInline,
   RashiInline,
 } from "@/components/kundali/KundaliGlyphLabels";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { kundaliLabel, type KundaliI18nKey } from "@/lib/kundali/kundali-i18n";
 import { useLocale } from "@/lib/i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import {

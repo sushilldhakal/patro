@@ -3,10 +3,10 @@ import {
   VASTU_ELEMENT_COLOR,
   vastuDirection,
   vastuElementTint,
-} from "@vedic-patro/domain/vastu";
-import { RING_SIZE } from "@vedic-patro/domain/vastu-ring";
+} from "@vedic-patro/domain/vastu/vastu";
+import { RING_SIZE } from "@vedic-patro/domain/vastu/vastu-ring";
 import { useHouseSketch } from "@vedic-patro/features/vastu";
-import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
+import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu/vastu-house-template";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import type { HouseSketchProps } from "../contract";
 import { VastuCompassRing } from "./VastuCompass";

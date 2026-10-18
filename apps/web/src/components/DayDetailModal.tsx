@@ -31,11 +31,11 @@ import {
   getSunsetDisplay,
   getVaaraNe,
   relativeDayLabel,
-} from "@vedic-patro/read-models/panchanga-format";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroAsideLink } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
+import { resolveRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
 interface Props {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { earthTop, retroBorder, wheelMoonShadow } from "../src/wheel-bodies.ts";
+import { earthTop, retroBorder, wheelMoonShadow } from "../src/panchanga/wheel-bodies.ts";
 
 test("longitude 0 is straight up from the north pole", () => {
   const top = earthTop(27.7, 0, new Date("2026-10-15T06:15:00Z"));

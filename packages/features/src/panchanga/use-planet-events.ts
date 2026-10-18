@@ -6,11 +6,11 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { fetchGocharJd, gocharKeys, type GocharNextEntry, type LocationParams } from "@vedic-patro/api-client";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatClockNepali } from "@vedic-patro/domain/panchanga-format";
-import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
+import { formatClockNepali } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
+import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const GRAHA_ORDER = [

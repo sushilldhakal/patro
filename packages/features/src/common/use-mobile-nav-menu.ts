@@ -5,7 +5,7 @@
  * sections (without what Main already promoted), each item with its label.
  * Each app turns an item into its own link, icon and search params.
  */
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
   getPanchangaSidebarSections,

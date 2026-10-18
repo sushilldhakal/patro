@@ -4,7 +4,7 @@
  * Sukta → rik) and verses. Both apps draw exactly these rows.
  */
 import type { DocumentChapter, Shloka } from "@vedic-patro/api-client";
-import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
+import { suktaAttribution } from "@vedic-patro/domain/learn/sukta-attribution";
 import type { TFunction } from "@vedic-patro/i18n/react";
 
 export type ReaderRow =

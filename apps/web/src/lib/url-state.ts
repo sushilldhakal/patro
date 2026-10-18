@@ -5,7 +5,7 @@ import {
   parseEraFromUrl,
   type Era,
   type EraSelection,
-} from "@vedic-patro/domain/era";
+} from "@vedic-patro/domain/calendar/era";
 import {
   readCalendarEra,
   validatePatroBrowseMonth,
@@ -16,17 +16,17 @@ import {
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import type { PatroYearBrowse } from "@/hooks/use-patro-year-browse";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
+import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import {
   buildPatroDayPageSearch,
   parsePatroDayUrl,
   type PatroDayFetchState,
 } from "@/lib/patro-day-url";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   normalizePatroBrowseRange,
   type PatroBrowseRange,
-} from "@vedic-patro/domain/patro-browse-range";
+} from "@vedic-patro/domain/calendar/patro-browse-range";
 
 /**
  * Shareable URL state.

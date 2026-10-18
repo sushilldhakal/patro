@@ -6,8 +6,8 @@
  * draws the panel.
  */
 import { useEffect, useState } from "react";
-import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
-import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
+import { parseTimeToMinutes } from "@vedic-patro/domain/panchanga/ghati-clock";
+import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 function pad2(n: number): string {

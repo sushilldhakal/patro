@@ -1,6 +1,6 @@
 import { ScrollView, View } from "react-native";
 import { Trans } from "@vedic-patro/i18n/react";
-import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import type { CalcNote } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
 import { useMonthCalcNotes } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";

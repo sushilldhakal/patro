@@ -25,8 +25,8 @@
  */
 
 import * as THREE from "three";
-import { smoothstep, skyLikeness } from "@vedic-patro/domain/sky3d/terrain";
-export { type HorizonTerrainOptions, type HorizonTerrain, buildHorizonTerrain, terrainSeed, buildHorizonLandscapeTexture, KATHMANDU_THETA_MAX, applyNadirStereographicUVs } from "@vedic-patro/domain/sky3d/terrain";
+import { smoothstep, skyLikeness } from "@vedic-patro/domain/astronomy/sky3d/terrain";
+export { type HorizonTerrainOptions, type HorizonTerrain, buildHorizonTerrain, terrainSeed, buildHorizonLandscapeTexture, KATHMANDU_THETA_MAX, applyNadirStereographicUVs } from "@vedic-patro/domain/astronomy/sky3d/terrain";
 
 /**
  * Copy the little-planet JPEG onto a canvas and punch out the sky / corners so

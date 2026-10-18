@@ -8,14 +8,14 @@ import { GocharIngressSection, GocharPlanetDeepDive, GocharSkySection } from "@v
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
-import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import { getAdMonthLength } from "@vedic-patro/domain/patro-day";
+import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getAdMonthLength } from "@vedic-patro/domain/calendar/patro-day";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { applyPatroApiLimits } from "@/lib/patro-browse-years";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";

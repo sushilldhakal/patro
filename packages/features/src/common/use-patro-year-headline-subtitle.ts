@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFestivals } from "@vedic-patro/api-client";
-import type { Era, Language } from "@vedic-patro/domain/era";
-import { formatPatroYearGregorianRange, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
+import { formatPatroYearGregorianRange, patroHeadlineDigits } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { useLanguage } from "@vedic-patro/i18n/react";
 
 /**

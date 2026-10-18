@@ -1,5 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { PatroYearNav } from "@vedic-patro/ui/kit/shell";

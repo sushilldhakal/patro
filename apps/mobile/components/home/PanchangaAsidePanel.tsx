@@ -11,7 +11,7 @@ import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
-import { type Era, isGregorianEra } from "@vedic-patro/domain/era";
+import { type Era, isGregorianEra } from "@vedic-patro/domain/calendar/era";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const TABS = ["panchanga", "sait", "muhurta"] as const;

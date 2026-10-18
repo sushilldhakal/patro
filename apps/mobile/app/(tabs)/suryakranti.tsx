@@ -7,7 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { Text } from "@/components/ui/Text";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { useTheme } from "@/lib/theme-context";

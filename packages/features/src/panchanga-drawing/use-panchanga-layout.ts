@@ -5,7 +5,7 @@
  * time and the not-available range. Each app draws the cards and rows.
  */
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
+import { rowLabel } from "@vedic-patro/domain/panchanga/panchanga-layout";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function usePanchangaLayoutCopy() {

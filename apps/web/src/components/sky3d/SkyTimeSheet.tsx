@@ -26,4 +26,4 @@ export function SkyTimeSheet(props: Omit<SkyTimeSheetProps, "icons">) {
   return <SkyTimeSheetView {...props} icons={icons} />;
 }
 
-export type { WallParts } from "@vedic-patro/domain/sky3d/sky-time";
+export type { WallParts } from "@vedic-patro/domain/astronomy/sky3d/sky-time";

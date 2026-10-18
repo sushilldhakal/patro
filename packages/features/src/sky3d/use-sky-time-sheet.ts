@@ -7,12 +7,12 @@
  * Each app draws the sheet, its sliders and its hold-to-repeat buttons.
  */
 import { useState } from "react";
-import { adToBS, bsToAdOrNull, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
+import { adToBS, bsToAdOrNull, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { civilGregorianToUtcMs } from "@vedic-patro/domain/patro-day";
-import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/patro-year-axis";
-import { DAY_PERIODS, periodIdAtHour, wallCivilUtc, wallPartsFromMs, type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
-import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
+import { civilGregorianToUtcMs } from "@vedic-patro/domain/calendar/patro-day";
+import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { DAY_PERIODS, periodIdAtHour, wallCivilUtc, wallPartsFromMs, type WallParts } from "@vedic-patro/domain/astronomy/sky3d/sky-time";
+import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/astronomy/sky3d/time-steps";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type SkyTimeField = keyof WallParts;

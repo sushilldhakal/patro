@@ -5,7 +5,7 @@
  * shared icon identity (`FEATURE_ICON` in @vedic-patro/icons) each app
  * draws; `search` says which URL state the website carries into the link.
  */
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type HomeQuickLinkFeature =

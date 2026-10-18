@@ -7,9 +7,9 @@ import { fetchPanchanga, panchangaKeys } from "@/lib/api";
 import { buildAtTimeDatetime, fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
 import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
-import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
-import { bsToAD } from "@vedic-patro/domain/bs-calendar";
+import { parseAdStr } from "@vedic-patro/domain/panchanga/panchanga-year-page";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
+import { bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 
 /**
  * The app's side of `usePanchangaPage` (@vedic-patro/features): the browsed

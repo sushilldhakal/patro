@@ -2,8 +2,8 @@
  * Bundled राशि / नक्षत्र SVG URLs (`src/assets/rashi`, `src/assets/nakshatras`).
  * Order matches {@link rashiNumberFromName} and {@link NAKSHATRA_ICONS}.
  */
-import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
+import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { rashiNumberFromName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 
 import rashiMesha from "@/assets/rashi/mesha.svg?url";
 import rashiVrishabha from "@/assets/rashi/vrishabha.svg?url";

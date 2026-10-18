@@ -13,7 +13,7 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 /* The figures that still call bilingualText are the ones whose text is built
    around a formatted number, so they are not single catalogue strings. */
 import { useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 
 import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

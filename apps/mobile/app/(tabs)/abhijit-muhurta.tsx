@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { useAbhijitPage, type AbhijitDayView } from "@vedic-patro/features/abhijit";
-import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { space } from "@vedic-patro/design-tokens";
 import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";

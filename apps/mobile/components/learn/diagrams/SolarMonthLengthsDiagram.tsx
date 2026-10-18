@@ -15,7 +15,7 @@ import {
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
   getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 import { BS_SUPPORTED_END_YEAR } from "@/lib/bs-range";
 
 const SAMPLE_YEARS = 10;

@@ -4,20 +4,20 @@ import { useNavigate } from "@tanstack/react-router";
 import { useHomeMonth, type CalendarMonthContext } from "@vedic-patro/features/home";
 import { fetchMonthCalendar, type CalendarDay } from "@/lib/api";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
-import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
+import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { PanchangaMonthGrid } from "@/components/panchanga/PanchangaMonthGrid";
 import { buildPatroDaySearch } from "@/lib/url-state";
-import { getLanguageForEra } from "@vedic-patro/domain/era";
+import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
 import {
   patroDayFetchFromApiBsParts,
   patroDayFetchFromApiDateAd,
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { PatroCalendarHeader } from "@/components/patro-date";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";

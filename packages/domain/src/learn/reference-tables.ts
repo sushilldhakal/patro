@@ -1,13 +1,13 @@
-import { NAKSHATRA_ICONS } from "../nakshatra-icons";
+import { NAKSHATRA_ICONS } from "../panchanga/nakshatra-icons";
 import {
   KAR_FIX_NAMES,
   KAR_MOV,
   KARANA_EN,
   WHEEL_TITHIS,
   WHEEL_YOGAS,
-} from "../tithi-wheel-data";
-import { NAK_LORD_EN, TATTVA_EN } from "../wheel-locale";
-import { PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "../wheel-data";
+} from "../panchanga/tithi-wheel-data";
+import { NAK_LORD_EN, TATTVA_EN } from "../panchanga/wheel-locale";
+import { PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "../panchanga/wheel-data";
 
 /** English yoga names, in the same order as {@link WHEEL_YOGAS}. */
 export const YOGA_EN = [

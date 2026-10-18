@@ -7,7 +7,7 @@ import { featureIcon, navEntryIcon } from "@/lib/nav-icons";
 import { resolveSidebarLinkPath } from "@/lib/panchanga-route-preload";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
-import { parseEraFromUrl } from "@vedic-patro/domain/era";
+import { parseEraFromUrl } from "@vedic-patro/domain/calendar/era";
 import type { FeatureId } from "@vedic-patro/icons";
 import { useMobileNavMenu } from "@vedic-patro/features/common";
 import type { PanchangaSidebarItem } from "@vedic-patro/features/panchanga";

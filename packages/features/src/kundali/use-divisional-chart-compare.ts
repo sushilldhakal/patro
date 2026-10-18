@@ -7,10 +7,10 @@
  */
 import { useMemo, useState } from "react";
 import type { VargaCharts } from "@vedic-patro/api-client";
-import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { CHART_ANCHOR_LABELS, GRAHA_ANCHOR_ORDER, VARGA_OPTIONS, vargaOption, type ChartAnchor } from "@vedic-patro/domain/varga-display";
+import { CHART_ANCHOR_LABELS, GRAHA_ANCHOR_ORDER, VARGA_OPTIONS, vargaOption, type ChartAnchor } from "@vedic-patro/domain/jyotish/varga-display";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type DivisionalPanelConfig = { anchor: ChartAnchor; division: number };

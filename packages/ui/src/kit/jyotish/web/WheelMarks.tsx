@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { vastuWheelPoint } from "@vedic-patro/domain/vastu";
+import { vastuWheelPoint } from "@vedic-patro/domain/vastu/vastu";
 import { PURUSHA_PATH } from "../purusha-path";
 import type { VastuCenter, VastuMarks } from "../contract";
 

@@ -1,5 +1,5 @@
 /** Avakahada chakra — the 27 nakshatra rows, their columns, search and sort. */
-import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
+import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import {
   formatRashiSwami,
   formatSanjnaMukha,
@@ -12,7 +12,7 @@ import {
   localizeNakshatra,
   localizeRashi,
   sanjnaTitle,
-} from "@vedic-patro/domain/avakahada-locale";
+} from "@vedic-patro/domain/jyotish/avakahada-locale";
 
 export interface AvakahadaRow {
   index: number;

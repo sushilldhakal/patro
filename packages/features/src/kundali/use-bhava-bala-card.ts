@@ -6,8 +6,8 @@
  */
 import { useState } from "react";
 import type { BhavaBalaData, BhavaBalaHouse } from "@vedic-patro/api-client";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import { fmtNum } from "@vedic-patro/domain/jyotish/kundali/bhava-bala-chart";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

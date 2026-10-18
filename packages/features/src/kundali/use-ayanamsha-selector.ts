@@ -4,7 +4,7 @@
  * mode starred), and the note under them naming the current mode and, when
  * it differs from the panchanga's, that grahas / lagna / nakshatra follow it.
  */
-import { AYANAMSHA_MODES, getAyanamshaModeInfo, matchesPanchangaAngas, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import { AYANAMSHA_MODES, getAyanamshaModeInfo, matchesPanchangaAngas, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

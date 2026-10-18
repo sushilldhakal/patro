@@ -8,8 +8,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchVastuSketch, type VastuSketchRequest, type VastuSketchResponse } from "@vedic-patro/api-client";
-import type { CardinalWall } from "@vedic-patro/domain/vastu";
-import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import type { CardinalWall } from "@vedic-patro/domain/vastu/vastu";
+import type { HousePlan } from "@vedic-patro/domain/vastu/vastu-plan";
 
 /** How long the plot/requirements must sit still before the sketch is re-asked for. */
 const SKETCH_DEBOUNCE_MS = 250;

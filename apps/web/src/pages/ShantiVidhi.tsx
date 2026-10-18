@@ -3,14 +3,14 @@ import { useShantiPage } from "@vedic-patro/features/shanti";
 import { Flame, UserSearch } from "lucide-react";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 import { KundaliControls } from "@/components/kundali/KundaliControls";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { shantiClasses as sc } from "@vedic-patro/design-tokens/classes/shanti-classes";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 
 function nowMoment(clock: string, pickerEra: "bs" | "ad"): InstantQuery {
   if (pickerEra === "bs") {

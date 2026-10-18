@@ -6,12 +6,12 @@ import {
   BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   getSupportedAdBounds,
-} from "@vedic-patro/domain/bs-calendar";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/domain/calendar/bs-calendar";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { PatroHeaderLocation } from "@/components/patro-date";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 
 const BS_YEARS = Array.from(
   { length: BS_SUPPORTED_END_YEAR - BS_SUPPORTED_START_YEAR + 1 },

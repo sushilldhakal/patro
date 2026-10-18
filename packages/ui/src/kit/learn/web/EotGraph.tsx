@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { eotEarly, eotLate } from "@vedic-patro/design-tokens/classes/learn/diagram-colors";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { EOT_H, EOT_W, formatDuration, layoutEotGraph } from "@vedic-patro/domain/learn/eot-graph";
 import type { EotGraphProps } from "../contract";
 

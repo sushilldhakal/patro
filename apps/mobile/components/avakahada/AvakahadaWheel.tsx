@@ -1,4 +1,4 @@
-import type { Gana } from "@vedic-patro/domain/avakahada-data";
+import type { Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { illustration, wheel } from "@vedic-patro/design-tokens";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
 import { AvakahadaWheel as KitWheel, type AvakahadaWheelAssets } from "@vedic-patro/ui/kit/panchanga";
@@ -23,5 +23,5 @@ export function AvakahadaWheel({ highlighted }: Props) {
 }
 
 export default AvakahadaWheel;
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 export { AVAKAHADA_WHEEL_ROWS } from "@vedic-patro/ui/kit/panchanga";

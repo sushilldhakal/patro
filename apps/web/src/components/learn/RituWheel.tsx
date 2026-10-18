@@ -21,7 +21,7 @@
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
 
 import { illustration } from "@vedic-patro/design-tokens";
 /* The viewBox is wider than the wheel on purpose: the four marker labels sit

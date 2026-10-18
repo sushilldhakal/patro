@@ -5,7 +5,7 @@
  * score per classification, and the grade legend.
  */
 import type { VimshopakaData, VimshopakaGrade } from "@vedic-patro/api-client";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

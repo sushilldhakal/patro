@@ -8,8 +8,8 @@
 import { useMemo } from "react";
 import type { Shloka } from "@vedic-patro/api-client";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatVedaCite } from "@vedic-patro/domain/veda-cite";
-import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
+import { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";
+import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/learn/word-tracking";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Closing lines ("iti ...", "dhyanam") are set apart from the verses. */

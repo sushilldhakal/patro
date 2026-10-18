@@ -5,7 +5,7 @@
  * the letters stay upright). Each app draws the dial and handles the drag.
  */
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { COMPASS_POINTS } from "@vedic-patro/domain/sky3d/sky-geometry";
+import { COMPASS_POINTS } from "@vedic-patro/domain/astronomy/sky3d/sky-geometry";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export const COMPASS_DIAL_SIZE = 64;

@@ -6,8 +6,8 @@
  * twelve-hour clock. Also the graha list the camera can follow.
  */
 import { useMemo } from "react";
-import { bsMonthLabel, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
-import { bikramFromSun } from "@vedic-patro/domain/sky3d/bikram-solar";
+import { bsMonthLabel, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { bikramFromSun } from "@vedic-patro/domain/astronomy/sky3d/bikram-solar";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /**

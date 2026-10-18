@@ -1,5 +1,5 @@
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { usePatroYearBrowse as useSharedPatroYearBrowse } from "@vedic-patro/features/patro-date";
 
 export type { PatroYearBrowse } from "@vedic-patro/features/patro-date";

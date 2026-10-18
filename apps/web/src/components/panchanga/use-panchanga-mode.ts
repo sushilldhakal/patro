@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
-import { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga-mode";
-export { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga-mode";
+import { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga/panchanga-mode";
+export { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga/panchanga-mode";
 
 const CLOCK_KEY = "dhakalPatroPanchClock";
 

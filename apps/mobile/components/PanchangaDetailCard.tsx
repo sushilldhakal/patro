@@ -11,7 +11,7 @@ import {
   getMoonset,
   getSunrise,
   getSunset,
-} from "@vedic-patro/read-models/panchanga-format";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (

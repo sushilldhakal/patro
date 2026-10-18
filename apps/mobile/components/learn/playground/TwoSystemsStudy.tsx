@@ -45,8 +45,8 @@ import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { geocentricPointAt } from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import { TwoSystemsPanel } from "@vedic-patro/ui/kit/learn";
 import {
   TWO_SYSTEMS_SPEEDS,
@@ -61,7 +61,7 @@ import {
   SIDEREAL_MONTH,
   SIDEREAL_YEAR,
   TITHI_ARC,
-} from "@vedic-patro/domain/sky3d/two-systems";
+} from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import type { PlaygroundLabel } from "@/components/learn/playground/playground-labels";
 import { PlaygroundLabelText } from "@/components/learn/playground/PlaygroundLabelText";
 import PerfMeter, { type PerfSample } from "@/components/learn/playground/PerfMeter";

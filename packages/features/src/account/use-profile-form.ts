@@ -6,7 +6,7 @@
  */
 import { useState } from "react";
 import { createProfile, updateProfile, type Profile, type ProfileInput } from "@vedic-patro/api-client";
-import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
+import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/identity/birth-date";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Blank profile, used when adding a new one. */

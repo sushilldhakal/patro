@@ -1,7 +1,7 @@
 import { useId } from "react";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from "react-native-svg";
 import { fontFamily } from "@vedic-patro/design-tokens";
-import { annularSectorPath } from "@vedic-patro/domain/vastu";
+import { annularSectorPath } from "@vedic-patro/domain/vastu/vastu";
 import { VASTU_COMPASS_RING as R, useVastuCompassRing } from "@vedic-patro/features/vastu";
 import type { VastuCompassRingProps } from "../contract";
 import { ArcLabel, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette } from "./WheelMarks";

@@ -6,8 +6,8 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { fetchKundaliDetail, kundaliDetailKeys, type LocationParams } from "@vedic-patro/api-client";
-import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 
 export const KUNDALI_CHART_STALE_TIME = 1000 * 60 * 5;
 

@@ -7,12 +7,12 @@
  */
 import { useState } from "react";
 import type { CalendarDay } from "@vedic-patro/api-client";
-import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
-import { getSecondaryCellDate } from "@vedic-patro/read-models/local-calendar";
+import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getSecondaryCellDate } from "@vedic-patro/read-models/calendar/local-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/read-models/month-grid-moon";
-import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { tithiIndexFromCalendarDay } from "@vedic-patro/read-models/tithi-wheel-data";
+import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/read-models/panchanga/month-grid-moon";
+import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type BsCalendarWeekday = {

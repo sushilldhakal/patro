@@ -7,7 +7,7 @@ import {
   civilIsoFromDate,
   formatCivilIsoParts,
   parseCivilIsoToDate,
-} from "@vedic-patro/domain/patro-day";
+} from "@vedic-patro/domain/calendar/patro-day";
 import {
   parsePatroDayUrl,
   patroDayFetchFromApiBsParts,
@@ -21,7 +21,7 @@ import {
   type PatroDayFetchState,
   type ResolvedPatroDayFields,
 } from "@/lib/patro-day-url";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import {
   locationSearchFingerprint,
   patroDayBrowseNavigateSearch,

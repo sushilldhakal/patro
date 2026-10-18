@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { useWheelTimeSheet, wheelTransport, type WheelPlayback } from "@vedic-patro/features/sky3d";
 
 export type WheelDateSheetSlot = {

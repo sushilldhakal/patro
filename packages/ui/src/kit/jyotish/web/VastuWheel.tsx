@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu/vastu";
 import {
   VASTU_DIR16,
   VASTU_ELEMENT_COLOR,
@@ -18,9 +18,9 @@ import {
   vastuPada,
   vastuWheelPoint,
   type VastuSelectionId,
-} from "@vedic-patro/domain/vastu";
+} from "@vedic-patro/domain/vastu/vastu";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { annulusPath } from "@vedic-patro/domain/vastu-purusha-wheel";
+import { annulusPath } from "@vedic-patro/domain/vastu/vastu-purusha-wheel";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import {
   VASTU_COMPASS_16,

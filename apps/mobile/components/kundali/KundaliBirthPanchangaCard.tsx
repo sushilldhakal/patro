@@ -4,17 +4,17 @@ import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
-import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatGhadiPalaVipala } from "@vedic-patro/read-models/birth-panchanga-meta";
-import { normalizeEphemerisDay } from "@vedic-patro/read-models/ephemeris-adapters";
+import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { formatGhadiPalaVipala } from "@vedic-patro/read-models/jyotish/birth-panchanga-meta";
+import { normalizeEphemerisDay } from "@vedic-patro/read-models/astronomy/ephemeris-adapters";
 import {
   formatChoghadiyaAtBirth,
   kundaliLabel,
   type KundaliI18nKey,
 } from "@/lib/kundali/kundali-i18n";
-import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
+import { generateAvakahadaShloka } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { useLocale } from "@/lib/i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {
   formatTithiWithPaksha,
@@ -27,9 +27,9 @@ import {
   getSuryaRashi,
   getVaaraEn,
   getVaaraNe,
-} from "@vedic-patro/read-models/panchanga-format";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { tFor } from "@vedic-patro/i18n/runtime";
 
 function TraitRow({ label, value }: { label: string; value: string }) {

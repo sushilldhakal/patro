@@ -1,8 +1,8 @@
 import { useMemo, useRef } from "react";
 import { eclAxis, eclBloodGlow, eclBloodTint, eclBodyLabel, eclEarthGlow, ecleclipticRing, eclMoonEclipsed, eclMoonOrbit, eclNodeArrow, eclNodeArrowHead, eclNodeCallout, eclNodeDot, eclNodeLine, eclNodeTitle, eclPanelBg, eclPenumbra, eclPlaneCaption, eclRay, eclStatusFor, eclStatusSub, eclSunDisc, eclTiltNote, eclUmbraShape } from "@/lib/diagram-classes";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { edSvg } from "@/lib/learn-classes";
-import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
+import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 import { MoonPhaseDisc } from "@/components/tithi-mechanics/MoonPhaseDisc";
 import {

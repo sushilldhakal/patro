@@ -5,7 +5,7 @@
  */
 import type { ReactNode } from "react";
 import type { LocationParams, PanchangaDay } from "@vedic-patro/api-client";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 
 export type PlanetEventsPanelProps = {
   /** Civil-day Julian identity from panchanga (`jd_ut`). */

@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { type Era } from "@vedic-patro/domain/era";
+import { type Era } from "@vedic-patro/domain/calendar/era";
 
 const ONBOARDING_DONE_KEY = "onboardingCompleted";
 const ONBOARDING_ERA_KEY = "onboardingCalendarEra";

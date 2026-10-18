@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useEclipsePage, type EclipseKind } from "@vedic-patro/features/graha";
-import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";

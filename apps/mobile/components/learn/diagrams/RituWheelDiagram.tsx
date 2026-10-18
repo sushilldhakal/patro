@@ -12,7 +12,7 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
-import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { tFor } from "@vedic-patro/i18n/runtime";
 const AYANAMSHA = 24;
 const R_OUT = 0.58;

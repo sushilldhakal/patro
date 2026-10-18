@@ -32,18 +32,18 @@ import type {
   SaitSuitability,
   Shloka,
 } from "@vedic-patro/api-client";
-import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import type { ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
+import type { ShadbalaScale } from "@vedic-patro/domain/jyotish/kundali/shadbala-chart";
 import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPanelConfig } from "@vedic-patro/features/kundali";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
-import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
-import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import type { CardinalWall, VastuSelectionId } from "@vedic-patro/domain/vastu";
-import type { HousePlan, PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
+import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
+import type { SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
+import type { CardinalWall, VastuSelectionId } from "@vedic-patro/domain/vastu/vastu";
+import type { HousePlan, PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu/vastu-plan";
 import type { FetchCivilDay, VastuPlannerStorage, VastuSketchOffline } from "@vedic-patro/features/vastu";
 import type { ProfilePlace } from "@vedic-patro/features/account";
-import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
+import type { SaitRuleEntry } from "@vedic-patro/domain/festivals/sait-rules-content";
 import type { useRashifalSignCard } from "@vedic-patro/features/rashifal";
 
 export type SaitSourcesProps = {

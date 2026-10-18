@@ -15,7 +15,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { deleteReminder, updateReminder } from "@/lib/notifications/api";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import {
   ensureNotificationPermission,
   getNotificationPermission,

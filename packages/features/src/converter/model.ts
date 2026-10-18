@@ -3,7 +3,7 @@
  * the result cards each direction shows.
  */
 import type { ConvertAdToBs, ConvertBsToAd } from "@vedic-patro/api-client";
-import { adToBS, todayAdString, WEEKDAYS_EN, WEEKDAYS_NE } from "@vedic-patro/domain/bs-calendar";
+import { adToBS, todayAdString, WEEKDAYS_EN, WEEKDAYS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText, formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
 
 export type ConvertMode = "ad-to-bs" | "bs-to-ad";

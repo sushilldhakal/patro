@@ -8,9 +8,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { LocationParams, MonthCalendar } from "@vedic-patro/api-client";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 import { abhijitDays, type AbhijitDayView } from "./model";

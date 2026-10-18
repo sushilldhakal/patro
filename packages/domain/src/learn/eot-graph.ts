@@ -6,7 +6,7 @@ import {
   solarMonthStarts,
   PERIHELION,
   VERNAL,
-} from "../sky3d/day-mechanics";
+} from "../astronomy/sky3d/day-mechanics";
 
 /** Shared by both drawings of the equation-of-time chart. */
 export type Pt = { t: number; minutes: number };

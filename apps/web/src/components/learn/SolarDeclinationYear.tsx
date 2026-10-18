@@ -33,9 +33,9 @@ import { useMemo } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { solarMonthStarts } from "@vedic-patro/domain/sky3d/day-mechanics";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+import { solarMonthStarts } from "@vedic-patro/domain/astronomy/sky3d/day-mechanics";
 
 import { illustration } from "@vedic-patro/design-tokens";
 const W = 560;

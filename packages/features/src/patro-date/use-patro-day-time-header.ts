@@ -10,12 +10,12 @@
  * (`onSelect` receives the new year, month and day in the browsing era).
  */
 import { useState } from "react";
-import type { Era } from "@vedic-patro/domain/era";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { monthLengthInBrowseEra } from "@vedic-patro/domain/patro-browse-range";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
-import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
+import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { dayCells, firstWeekdayOfMonth, formatClock, monthOptions, parseClock, stepClock } from "./calendar-header-model";
 import { usePatroYearEraToggle } from "./use-patro-year-era-toggle";

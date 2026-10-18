@@ -3,10 +3,10 @@
  * events by graha and turning each into display text.
  */
 import type { AstaStamp, GrahaAstaPeriod, GrahaVakriEvent } from "@vedic-patro/api-client";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
-import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
-import { parsePatroDayDateKey } from "@vedic-patro/domain/patro-day";
+import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { parsePatroDayDateKey } from "@vedic-patro/domain/calendar/patro-day";
 
 /** Column order on the asta page (the Moon's "tara asta" sits third). */
 export const ASTA_ORDER = ["mercury", "venus", "moon", "mars", "jupiter", "saturn"] as const;

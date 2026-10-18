@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { usePanchangaYearPage } from "@vedic-patro/features/panchanga-year";
-import { adToBS } from "@vedic-patro/domain/bs-calendar";
+import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PatroDayTimeNav } from "@/components/patro-date";
@@ -11,7 +11,7 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import { buildPatroBrowseYearOptions, pickBrowseVikramDate } from "@/lib/patro-date-options";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import {
   currentPatroDayLinkSearch,

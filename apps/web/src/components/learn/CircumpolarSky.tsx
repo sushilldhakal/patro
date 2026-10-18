@@ -26,7 +26,7 @@
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 
 import { illustration } from "@vedic-patro/design-tokens";
 const W = 520;

@@ -4,8 +4,8 @@
  * nakshatra with its name, time range, "tara/quality" subtitle, tone and
  * whether it holds the clock; each app draws the glyph and the card.
  */
-import { findCurrentBalamCard, type BalamCardItem } from "@vedic-patro/read-models/balam-cards";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
+import { findCurrentBalamCard, type BalamCardItem } from "@vedic-patro/read-models/panchanga/balam-cards";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
 
 export function useNavataraBalamCards({
   cards,

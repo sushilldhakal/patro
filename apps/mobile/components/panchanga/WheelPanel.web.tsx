@@ -1,9 +1,9 @@
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { bsMonthsForWheel, PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { bsMonthsForWheel, PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import type { WheelPick } from "./WheelChart";
 import { useLocale } from "@/lib/i18n";
-import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/panchanga/wheel-locale";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   wheelDl,
   wheelDlK,
@@ -21,7 +21,7 @@ import {
   wheelPanelSub,
   wheelPanelTitle,
 } from "@/lib/wheel-classes";
-import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
+import { bsMonthEnOf } from "@vedic-patro/domain/panchanga/panchanga-wheel";
 
 interface WheelPanelProps {
   sel: WheelPick | null;

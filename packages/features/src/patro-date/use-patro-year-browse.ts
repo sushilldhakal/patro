@@ -7,13 +7,13 @@
  * Each app passes its own starting era as `options.era`.
  */
 import { useState } from "react";
-import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/era";
+import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceYearBrowseFromUrl,
   defaultBrowseYear,
   patroBrowseTodayYear,
   positiveInt,
-} from "@vedic-patro/domain/patro-browse-params";
+} from "@vedic-patro/domain/calendar/patro-browse-params";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?: Era | null }) {

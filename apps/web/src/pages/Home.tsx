@@ -8,12 +8,12 @@ import { AakashGocharEntryCard } from "@/components/sky3d/AakashGocharEntryCard"
 import { useRouteLoading } from "@/lib/route-loading";
 import { setLocalStorageItem } from "@/lib/browser";
 import { resolveLocationTimezone, usePanchangaLocation, type PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
-import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
-import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { getLanguageForEra, type Era } from "@vedic-patro/domain/era";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
+import { getLanguageForEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroDayFetchFromApiDateAd, patroDayFetchFromBrowseGridParts, type PatroDayFetchState } from "@/lib/patro-day-url";
 import { PanchangaAsideTabPanel } from "@/components/home/PanchangaAsideTabs";
 import { prefetchAsidePanels } from "@/components/home/aside-prefetch";

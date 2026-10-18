@@ -1,4 +1,4 @@
-import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
+import { normalizeDeg } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
 
 /** A drag shorter than this, released quickly, reads as a tap rather than a spin. */
 export const COMPASS_TAP_SLOP_PX = 6;

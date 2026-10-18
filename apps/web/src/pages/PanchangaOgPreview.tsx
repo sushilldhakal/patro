@@ -4,16 +4,16 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { fetchPanchangaDay, panchangaKeys, type PanchangaDay } from "@/lib/api";
 import { parsePatroDayUrl } from "@/lib/patro-day-url";
-import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 import { searchToLocation } from "@/lib/url-state";
 import { DayTimeline } from "@vedic-patro/ui/kit/panchanga";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { D1Card, PeriodsCard } from "@/components/panchanga/OgShareCards";
 import { ogAppLinkFromUrl, ogCardFromUrl } from "@/lib/og-card";
-import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+import { resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   formatTimeShort,
   getPanchangaDetail,
@@ -22,7 +22,7 @@ import {
   getVaaraEn,
   getVaaraNe,
   toNepaliDigits,
-} from "@vedic-patro/read-models/panchanga-format";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
 
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
 import { tFor, lazyList } from "@vedic-patro/i18n/runtime";

@@ -1,8 +1,8 @@
 import { useWindowDimensions } from "react-native";
 import { Box, Input, Text } from "@vedic-patro/ui";
-import type { CardinalWall } from "@vedic-patro/domain/vastu";
-import { VASTU_INK } from "@vedic-patro/domain/vastu";
-import { CX, CY } from "@vedic-patro/domain/vastu-purusha-wheel";
+import type { CardinalWall } from "@vedic-patro/domain/vastu/vastu";
+import { VASTU_INK } from "@vedic-patro/domain/vastu/vastu";
+import { CX, CY } from "@vedic-patro/domain/vastu/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK, usePlotPlanner } from "@vedic-patro/features/vastu";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";

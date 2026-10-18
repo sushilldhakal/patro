@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { HeartHandshake } from "lucide-react";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { SaitRule } from "@vedic-patro/ui/kit/jyotish";
 import { SaitCeremonyLayout as Shared } from "@vedic-patro/ui/kit/jyotish";

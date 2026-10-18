@@ -7,9 +7,9 @@
  * blurbs, and copy. Each app turns an item into its own link.
  */
 import { useState } from "react";
-import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
-import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
+import { isKundaliRoute } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export interface PanchangaSidebarItem {

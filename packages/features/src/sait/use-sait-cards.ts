@@ -7,10 +7,10 @@
  */
 import { useMemo, useState } from "react";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitShuddhiPlanet, SaitShuddhiTone } from "@vedic-patro/api-client";
-import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
+import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import type { SaitRuleEntry } from "@vedic-patro/domain/festivals/sait-rules-content";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const SHUDDHI_PLANET_LABEL: Record<SaitShuddhiPlanet["planet"], string> = {

@@ -16,7 +16,7 @@ import {
   type LocationParams,
   type MonthCalendar,
 } from "@vedic-patro/api-client";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import {
   applyHolidaysToDays,
   buildAdCalendarGridDays,
@@ -25,11 +25,11 @@ import {
   mergeEnrichedDays,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@vedic-patro/read-models/local-calendar";
-import { parseCivilIso } from "@vedic-patro/domain/patro-day";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { BBS_URL_YEAR_MAX, BBS_URL_YEAR_MIN, BS_FESTIVAL_STACK_MIN_YEAR, getPatroLimits, maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
+} from "@vedic-patro/read-models/calendar/local-calendar";
+import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { BBS_URL_YEAR_MAX, BBS_URL_YEAR_MIN, BS_FESTIVAL_STACK_MIN_YEAR, getPatroLimits, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** What the day panel needs to know about the month on screen. */

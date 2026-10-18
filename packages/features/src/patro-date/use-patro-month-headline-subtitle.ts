@@ -6,16 +6,16 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { fetchFestivals, fetchMonthCalendarRaw, locationCacheKey } from "@vedic-patro/api-client";
-import type { Era, Language } from "@vedic-patro/domain/era";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import { formatLocaleDigits, normalizeLang } from "@vedic-patro/domain/locale";
-import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
-import { canonicalCivilIso } from "@vedic-patro/domain/patro-day";
+import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
+import { canonicalCivilIso } from "@vedic-patro/domain/calendar/patro-day";
 import {
   formatPatroAdRangeHeadlineSubtitle,
   formatPatroMonthCrossEraSubtitle,
   formatPatroYearGregorianRange,
-} from "@vedic-patro/domain/patro-headline-subtitle";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+} from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function usePatroMonthHeadlineSubtitle(

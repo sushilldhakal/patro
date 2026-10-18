@@ -10,7 +10,7 @@
  * the change here.
  */
 import type { VastuSketchRequest, VastuSketchResponse } from "@/lib/api";
-import type { CardinalWall, VastuDirectionId } from "@vedic-patro/domain/vastu";
+import type { CardinalWall, VastuDirectionId } from "@vedic-patro/domain/vastu/vastu";
 import {
   clampStoreys,
   type FloorPref,
@@ -20,7 +20,7 @@ import {
   type VastuMode,
   type SpaceKind,
   type StoreyId,
-} from "@vedic-patro/domain/vastu-plan";
+} from "@vedic-patro/domain/vastu/vastu-plan";
 
 type SpaceAssignment = PlannedSpace & {
   zone: VastuDirectionId;

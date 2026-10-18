@@ -1,6 +1,6 @@
 import { useId, type ComponentType, type ReactNode } from "react";
 import { Circle, ClipPath, Defs, Ellipse, G, Line, Path, RadialGradient, Rect, Stop, Svg } from "react-native-svg";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
 
 export type GrahaPlanetIconProps = {

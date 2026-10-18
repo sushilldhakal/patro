@@ -2,9 +2,9 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import type { UpagrahaDetailRow } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import {
   Table,
   TableBody,

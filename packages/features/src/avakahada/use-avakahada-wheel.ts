@@ -6,9 +6,9 @@
  * copy. Each app draws the SVG and handles its own gestures.
  */
 import { useState } from "react";
-import { AVAKAHADA } from "@vedic-patro/domain/avakahada-data";
-import { localizeGana, localizeRashi } from "@vedic-patro/domain/avakahada-locale";
-import { ATTR_RINGS, attrValue, toWheelRow, type AttrRingId, type AvakahadaWheelRow } from "@vedic-patro/domain/avakahada-wheel";
+import { AVAKAHADA } from "@vedic-patro/domain/jyotish/avakahada-data";
+import { localizeGana, localizeRashi } from "@vedic-patro/domain/jyotish/avakahada-locale";
+import { ATTR_RINGS, attrValue, toWheelRow, type AttrRingId, type AvakahadaWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type AvakahadaHubRing = AttrRingId | "nakshatra" | "pada";

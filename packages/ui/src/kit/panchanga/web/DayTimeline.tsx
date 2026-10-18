@@ -1,24 +1,24 @@
 import type { ReactNode } from "react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
 import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   formatDegreeInRashi,
   getPlanetsAnchorLabel,
-} from "@vedic-patro/read-models/panchanga-format";
-import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import {
   dualTimeAtGhati,
-} from "@vedic-patro/domain/day-timeline-data";
-import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
+} from "@vedic-patro/domain/panchanga/day-timeline-data";
+import { choghadiyaName } from "@vedic-patro/domain/panchanga/choghadiya-display";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { patroCard, patroMono, patroSecBand, patroSkel } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
-import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
-import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
+import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
+import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/astronomy/sunrise-icon-art";
 import {
   pgTlAxis,
   pgTlEventTimeMoon,
@@ -47,7 +47,7 @@ import {
   pgxSunline,
   pgxTimeLagna,
 } from "@vedic-patro/design-tokens/classes/timeline-classes";
-import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/domain/day-timeline-layout";
+import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/domain/panchanga/day-timeline-layout";
 
 import { useDayCycleToggle, useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
 const GRAHA_KEYS = new Set<string>([

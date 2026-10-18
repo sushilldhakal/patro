@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { annularSectorPath } from "@vedic-patro/domain/vastu";
+import { annularSectorPath } from "@vedic-patro/domain/vastu/vastu";
 import { VASTU_COMPASS_RING as R, useVastuCompassRing } from "@vedic-patro/features/vastu";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import type { VastuCompassRingProps } from "../contract";

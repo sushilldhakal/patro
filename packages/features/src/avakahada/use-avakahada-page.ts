@@ -4,8 +4,8 @@
  * (`apps/mobile/app/(tabs)/panchanga/avakahada-chakra.tsx`).
  */
 import { useMemo, useState } from "react";
-import { BHAUMA_DOSHA_SHLOKAS, MANGLI_VARGAS } from "@vedic-patro/domain/avakahada-data";
-import { localizeVarga } from "@vedic-patro/domain/avakahada-locale";
+import { BHAUMA_DOSHA_SHLOKAS, MANGLI_VARGAS } from "@vedic-patro/domain/jyotish/avakahada-data";
+import { localizeVarga } from "@vedic-patro/domain/jyotish/avakahada-locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
   AVAKAHADA_COLUMNS,

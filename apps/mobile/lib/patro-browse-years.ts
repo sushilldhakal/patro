@@ -1,6 +1,6 @@
-import { type Era } from "@vedic-patro/domain/era";
-import { clampBrowseYear, maxBrowseYearForEraOrDefault } from "@vedic-patro/domain/patro-browse-range";
-import { applyPatroApiLimits as applyDomainLimits } from "@vedic-patro/domain/patro-year-axis";
+import { type Era } from "@vedic-patro/domain/calendar/era";
+import { clampBrowseYear, maxBrowseYearForEraOrDefault } from "@vedic-patro/domain/calendar/patro-browse-range";
+import { applyPatroApiLimits as applyDomainLimits } from "@vedic-patro/domain/calendar/patro-year-axis";
 
 /** Bootstrap until `GET /meta/capabilities` brings `offline_max_span_years`. */
 export const OFFLINE_MAX_SPAN_BOOTSTRAP = 90;

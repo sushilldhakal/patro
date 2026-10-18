@@ -12,15 +12,15 @@ import Svg, {
 } from "react-native-svg";
 import { Icon } from "@vedic-patro/ui";
 import { zoomInIcon, zoomOutIcon } from "../icons";
-import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
+import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 
 /**
  * react-native-svg types `Defs` without `children` and `onPress` as an

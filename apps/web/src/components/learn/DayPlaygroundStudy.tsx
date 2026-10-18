@@ -41,15 +41,15 @@ import {
 import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
 import earthToonUrl from "@/assets/graha/earth-orig.png";
 import { bilingualText, useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { edRo, edRoK, edRoV } from "@/lib/learn-classes";
 import { edScrub } from "@/lib/diagram-classes";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
-import { NAKSHATRA_ASTERISMS, NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
+import { NAKSHATRA_ASTERISMS, NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
 import { NakshatraIcon } from "@/components/nakshatra/NakshatraIcon";
 import {
   clocks,
@@ -61,7 +61,7 @@ import {
   PERIHELION,
   PLANET_PRESETS,
   VERNAL,
-} from "@vedic-patro/domain/sky3d/day-mechanics";
+} from "@vedic-patro/domain/astronomy/sky3d/day-mechanics";
 import { mixMeddle, type Meddle } from "@vedic-patro/domain/learn/chapter-player";
 import { adjacentTopicMetas } from "@/lib/learn/learn-topics-meta";
 import {

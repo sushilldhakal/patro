@@ -12,8 +12,8 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 /* TwoZeroPoints still calls bilingualText for the one label built around a
    formatted number; everything else now comes from the catalogue. */
 import { useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

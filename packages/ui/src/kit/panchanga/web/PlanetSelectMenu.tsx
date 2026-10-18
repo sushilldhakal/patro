@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
+import type { WheelGraha } from "@vedic-patro/domain/panchanga/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
 import { panchangaPageClasses as pg } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";

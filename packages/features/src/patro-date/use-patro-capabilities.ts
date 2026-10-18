@@ -10,7 +10,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPatroCapabilities, patroCapabilitiesKey, type PatroApiLimits } from "@vedic-patro/api-client";
-import { applyPatroApiLimits } from "@vedic-patro/domain/patro-year-axis";
+import { applyPatroApiLimits } from "@vedic-patro/domain/calendar/patro-year-axis";
 
 export type ApplyPatroApiLimits = (limits: PatroApiLimits) => void;
 

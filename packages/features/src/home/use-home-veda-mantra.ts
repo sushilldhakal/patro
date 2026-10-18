@@ -8,7 +8,7 @@
 import { useEffect, useMemo } from "react";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DOCUMENTS_STALE_TIME, fetchVedaDaily, vedaDailyKeys, type VedaDaily } from "@vedic-patro/api-client";
-import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
+import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/learn/word-tracking";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 function addDays(dateAd: string, days: number): string {

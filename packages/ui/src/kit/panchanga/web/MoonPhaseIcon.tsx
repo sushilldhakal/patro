@@ -1,4 +1,4 @@
-import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@vedic-patro/domain/moon-phase-svg";
+import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
 
 export type MoonPhaseIconProps = {

@@ -1,5 +1,5 @@
-import { VASTU_INK } from "@vedic-patro/domain/vastu";
-import { CX, CY } from "@vedic-patro/domain/vastu-purusha-wheel";
+import { VASTU_INK } from "@vedic-patro/domain/vastu/vastu";
+import { CX, CY } from "@vedic-patro/domain/vastu/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK } from "@vedic-patro/features/vastu";
 import { VastuCompassRing as Shared } from "@vedic-patro/ui/kit/jyotish";
 

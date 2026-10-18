@@ -3,7 +3,7 @@ import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
-import { isGregorianEra } from "@vedic-patro/domain/era";
+import { isGregorianEra } from "@vedic-patro/domain/calendar/era";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import type { HomePatroView } from "./PatroViewToggle";
 

@@ -1,9 +1,9 @@
 /** Solar and lunar eclipse pages — one card per eclipse of the year. */
 import { useLocale } from "@vedic-patro/i18n/react";
 import { fetchEclipseYear, grahaDetailKeys, type EclipseEvent } from "@vedic-patro/api-client";
-import { renderedEclipseDate } from "@vedic-patro/read-models/eclipse-date";
+import { renderedEclipseDate } from "@vedic-patro/read-models/astronomy/eclipse-date";
 import { formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
-import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
+import { localTimeShortFromIso } from "@vedic-patro/domain/panchanga/time-format";
 import { statusOf, useYearData, type PageStatus, type YearScope } from "../_shared";
 
 export type EclipseKind = "solar" | "lunar";

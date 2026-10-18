@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import { useGocharKundaliChart, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Text } from "@vedic-patro/ui";

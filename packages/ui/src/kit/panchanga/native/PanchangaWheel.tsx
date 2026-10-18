@@ -4,11 +4,11 @@ import { Modal, Pressable, StatusBar, Text, View, useWindowDimensions } from "re
 import Svg, { Path, Polygon, Rect } from "react-native-svg";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { PanchangaDay } from "@vedic-patro/api-client";
-import { getPanchangaDetail } from "@vedic-patro/read-models/panchanga-format";
-import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
-import { buildWheelDetail, buildWheelMarkers, buildWheelMarkersAtTime, buildWheelMarkersFromDetail, DEFAULT_WHEEL_TWEAKS, gClock, type WheelGraha } from "@vedic-patro/read-models/wheel-data";
-import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
+import { getPanchangaDetail } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
+import { buildWheelDetail, buildWheelMarkers, buildWheelMarkersAtTime, buildWheelMarkersFromDetail, DEFAULT_WHEEL_TWEAKS, gClock, type WheelGraha } from "@vedic-patro/read-models/panchanga/wheel-data";
+import { wheelPlaceFromClock } from "@vedic-patro/domain/panchanga/wheel-bodies";
 import { WheelChart, type WheelChartAssets, type WheelHover, type WheelPick } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { WheelDateSheet, type WheelDateSheetSlot } from "./WheelDateSheet";

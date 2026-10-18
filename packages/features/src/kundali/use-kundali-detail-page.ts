@@ -9,8 +9,8 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import type { Profile } from "@vedic-patro/api-client";
-import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/read-models/kundali/profile-chart";
+import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useAuthDialog } from "./use-kundali-hub-page";
 

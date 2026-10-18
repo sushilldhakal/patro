@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useGocharDeepDive } from "@vedic-patro/features/gochar";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Pressable, Text } from "@vedic-patro/ui";

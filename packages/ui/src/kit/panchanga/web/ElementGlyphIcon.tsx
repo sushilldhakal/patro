@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { tithiIndexFromElementSpan } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromElementSpan } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import { grahaKeyFromLabel, nakshatraIconIndex, rashiIconIndex } from "../glyph-lookup";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";

@@ -17,7 +17,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { EclipticPlane, OrbitPath, RashiRing, ellipsePoints, orientRay } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { tFor } from "@vedic-patro/i18n/runtime";
 
 const D2R = Math.PI / 180;

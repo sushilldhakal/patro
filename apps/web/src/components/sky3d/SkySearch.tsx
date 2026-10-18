@@ -18,7 +18,7 @@ import {
   skyTargetsOfKind,
   type SkyTarget,
   type SkyTargetKind,
-} from "@vedic-patro/domain/sky3d/sky-catalogue";
+} from "@vedic-patro/domain/astronomy/sky3d/sky-catalogue";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
 import { tFor } from "@vedic-patro/i18n/runtime";

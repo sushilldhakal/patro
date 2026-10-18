@@ -13,8 +13,8 @@ import {
   type LocationParams,
   type RashifalSignBlock,
 } from "@/lib/api";
-import { instantCacheKey } from "@vedic-patro/domain/instant-query";
-import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
+import { instantCacheKey } from "@vedic-patro/domain/calendar/instant-query";
+import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useLocale } from "@/lib/i18n";
 import { rashifalMonthLabel } from "@/lib/rashifal-ui";

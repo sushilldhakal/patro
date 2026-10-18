@@ -8,7 +8,7 @@ export {
   displayRituSlot,
   rituSeasonKeyAtSlot,
   type RituSeasonKey,
-} from "@vedic-patro/domain/ritu-display";
+} from "@vedic-patro/domain/calendar/ritu-display";
 
 /** The season right now at a place — shared logic in @vedic-patro/features/ritu. */
 export function useCurrentRitu(location: PanchangaLocation) {

@@ -10,7 +10,7 @@
 import { useState } from "react";
 import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@vedic-patro/api-client";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/shanti/navagraha-shanti";
+import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/jyotish/shanti/navagraha-shanti";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type ShantiTier = "critical" | "core";

@@ -1,6 +1,6 @@
 import { Compass } from "lucide-react";
 import { useVastuPage, type VastuChip, type VastuDetailRow, type VastuDirChip, type VastuPage } from "@vedic-patro/features/vastu";
-import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu";
+import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu/vastu";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PlotPlanner } from "@/components/vastu/PlotPlanner";

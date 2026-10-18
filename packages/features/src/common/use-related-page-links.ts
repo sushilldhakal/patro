@@ -12,7 +12,7 @@ import {
   SITE_LINK_LABEL_KEY,
   getRelatedLearnSlugs,
   getRelatedSiteLinkIds,
-} from "@vedic-patro/domain/related-page-links";
+} from "@vedic-patro/domain/panchanga/related-page-links";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Articles and pages share one list, capped so the footer stays scannable. */

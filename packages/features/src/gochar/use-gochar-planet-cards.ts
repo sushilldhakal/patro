@@ -6,15 +6,15 @@
  * until its next sign / nakshatra / pada, and copy.
  */
 import type { GocharGraha } from "@vedic-patro/api-client";
-import { grahaRashiDisplay } from "@vedic-patro/read-models/dainikKranti/gochar-display";
+import { grahaRashiDisplay } from "@vedic-patro/read-models/jyotish/dainikKranti/gochar-display";
 import {
   formatGocharPatroDate,
   grahaExalted,
   grahaNakshatraLine,
   motionLabel,
   speedTone,
-} from "@vedic-patro/read-models/gochar-page-utils";
-import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+} from "@vedic-patro/read-models/jyotish/gochar-page-utils";
+import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

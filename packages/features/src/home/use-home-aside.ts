@@ -8,8 +8,8 @@
 import { useMemo, useState } from "react";
 import { keepPreviousData, useQuery, type QueryKey } from "@tanstack/react-query";
 import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
-import { adToBS, bsToAdOrNull } from "@vedic-patro/domain/bs-calendar";
-import { canonicalCivilIso, civilIsoFromDate } from "@vedic-patro/domain/patro-day";
+import { adToBS, bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
+import { canonicalCivilIso, civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { CalendarMonthContext } from "./use-home-month";
 

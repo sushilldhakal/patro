@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
+import { verticalEdgeLabel } from "@vedic-patro/domain/panchanga/vertical-edge-label";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { useBsCalendarGrid, type BsCalendarCell } from "@vedic-patro/features/home";
 import { useLocale } from "@vedic-patro/i18n/react";

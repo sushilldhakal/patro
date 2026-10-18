@@ -1,14 +1,14 @@
 import { useMemo, useRef } from "react";
 import { edArc, edArcCap, edArcVal, edAxis, edBodyLabel, edCurband, edDeglabel, edDegtick, edEarthOrbitArrow, edEarthOrbitLabel, edEarthSolarOrbit, edEndEn, edEndNe, edLens, edOrbit, edOrbitDir, edOrbitDirArrow, edOrbitDirLabel, edPakshaOn, edRay, edRing, edRmline, edTiltCap, edTiltEq, edTiltLabel, edTiltPole, edTiltRim, edTnumCur, hoEarthGroup } from "@/lib/diagram-classes";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { edSvg } from "@/lib/learn-classes";
-import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
+import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { EarthGlobeImage, EARTH_AXIAL_TILT } from "@/components/learn/EarthGlobeImage";
 import { SYNODIC_MONTH, TROPICAL_YEAR } from "@/components/learn/sun-earth-moon-math";
 import {
   tithiIndexFromElongation,
   tithiNum,
-} from "@vedic-patro/domain/tithi-wheel-data";
+} from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { MoonPhaseDisc } from "./MoonPhaseDisc";
 
 import { illustration } from "@vedic-patro/design-tokens";

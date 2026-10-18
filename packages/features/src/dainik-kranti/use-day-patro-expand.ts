@@ -10,7 +10,7 @@ import {
   type CalcNote,
   type GrahaSpashtaRow,
   type LagnaMatrixRow,
-} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { isLateLagnaTime, patroPlanetLabel, rashiColumns, type PatroPlanetKey } from "./patro-cells";

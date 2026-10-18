@@ -2,7 +2,7 @@ import { G, Path, Svg } from "react-native-svg";
 import { View } from "react-native";
 import { useColorScheme } from "nativewind";
 import { dark, light } from "@vedic-patro/design-tokens";
-import { tithiIndexFromElementSpan } from "@vedic-patro/domain/tithi-wheel-data";
+import { tithiIndexFromElementSpan } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import { grahaKeyFromLabel, nakshatraIconIndex, rashiIconIndex } from "../glyph-lookup";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";

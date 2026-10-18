@@ -3,9 +3,9 @@
  * no React, no copy. `use-patro-calendar-header.ts` wraps these; the tests in
  * `test/patro-calendar-header.test.ts` pin them down.
  */
-import type { Era } from "@vedic-patro/domain/era";
-import { isGregorianEraBrowse, adMonthLabel, bsMonthLabel } from "@vedic-patro/domain/patro-month-labels";
-import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { isGregorianEraBrowse, adMonthLabel, bsMonthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 
 const DEVANAGARI_ZERO = 0x0966;
 

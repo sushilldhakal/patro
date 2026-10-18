@@ -1,6 +1,6 @@
 /** Shared by apps/web/src/components/learn/DaySimScene.tsx and apps/mobile/components/learn/playground/DaySimScene.tsx (moved here from both, unchanged). */
 import * as THREE from "three";
-import { orbitDistance } from "../sky3d/day-mechanics";
+import { orbitDistance } from "../astronomy/sky3d/day-mechanics";
 
 export const PI2 = Math.PI * 2;
 

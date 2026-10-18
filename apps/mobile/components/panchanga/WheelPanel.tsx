@@ -1,12 +1,12 @@
 import { Pressable, ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal"
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { bsMonthsForWheel, PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { bsMonthsForWheel, PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import type { WheelPick } from "./WheelChart";
 import { useLocale } from "@/lib/i18n";
-import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
+import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/panchanga/wheel-locale";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
 
 import { midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
 function bsMonthEnOf(ne: string): string {

@@ -27,46 +27,46 @@ import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { Text } from "@/components/ui/Text";
 import type { GocharGraha, VedicStarPosition } from "@/lib/api";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   bsMonthLabel,
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
-import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
-import { formatRashiByNumber, getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber, getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { GRAHA_COLOR, normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
+import { GRAHA_COLOR, normalizeDeg } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { LIVE_GRAHA_KEYS, liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 /* The one zoom→field-of-view mapping, shared with the scene. This file used to
    keep a hand-copy of it, which is exactly the kind of thing that drifts: the
    degrees the HUD prints have to be the degrees the camera is actually at. */
-import { DEFAULT_STEP_INDEX, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
+import { DEFAULT_STEP_INDEX, TIME_STEPS } from "@vedic-patro/domain/astronomy/sky3d/time-steps";
 import {
   dragScaleForZoom,
   fovForZoom,
   HORIZON_ZOOM_HOME,
   HORIZON_ZOOM_MAX,
   HORIZON_ZOOM_MIN,
-} from "@vedic-patro/domain/sky3d/sky-zoom";
-import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
+} from "@vedic-patro/domain/astronomy/sky3d/sky-zoom";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import {
   ayanamsa,
   calibrate,
   daysSinceJ2000,
   type SkyCalibration,
-} from "@vedic-patro/domain/sky3d/orbital-model";
+} from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import { RASHI_ICONS } from "@/lib/sky3d/rashi-icons";
-import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
-import { SOLAR_STATIONS } from "@vedic-patro/domain/sky3d/sky-geometry";
-import { POLE_STARS } from "@vedic-patro/domain/sky3d/pole-stars";
+import { getZonedTimeParts } from "@vedic-patro/domain/calendar/zoned-time";
+import { SOLAR_STATIONS } from "@vedic-patro/domain/astronomy/sky3d/sky-geometry";
+import { POLE_STARS } from "@vedic-patro/domain/astronomy/sky3d/pole-stars";
 import {
   SKY_BY_ID,
   SKY_KINDS,
@@ -76,7 +76,7 @@ import {
   vedicStarTargets,
   type SkyTarget,
   type SkyTargetKind,
-} from "@vedic-patro/read-models/sky3d/sky-catalogue";
+} from "@vedic-patro/read-models/astronomy/sky3d/sky-catalogue";
 import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import {
   AakashGocharScene,
@@ -93,7 +93,7 @@ import { COMPASS_DIAL_SIZE } from "@vedic-patro/features/sky3d";
 import { CompassControl } from "@vedic-patro/ui/kit/learn";
 import { useDeviceOrientation } from "@/lib/sky3d/device-orientation";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
+import { formatPoleYear } from "@vedic-patro/domain/astronomy/sky3d/pole-year";
 
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

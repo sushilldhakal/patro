@@ -5,7 +5,7 @@ import {
   type PanchangaDay,
 } from "@/lib/api";
 import type { PatroDayFetchState } from "@/lib/patro-day-url";
-import { mergeEphemerisAtTimeWithDaily } from "@vedic-patro/read-models/ephemeris-adapters";
+import { mergeEphemerisAtTimeWithDaily } from "@vedic-patro/read-models/astronomy/ephemeris-adapters";
 
 /**
  * Ephemeris day from `/panchanga/at-time` — calendar parts + clock for BBS/BC

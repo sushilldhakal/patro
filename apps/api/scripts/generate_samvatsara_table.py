@@ -14,7 +14,7 @@ deep walk it replaces.
 Writes both consumers so they can never disagree:
 
   * ``engine/calendar/samvatsara_table.json``         (backend)
-  * ``../dhakal-patro/src/lib/samvatsara-table.json`` (frontend)
+  * ``packages/domain/src/calendar/samvatsara-table.json`` (frontend, repo root)
 
 Run from the repo root:
     python scripts/generate_samvatsara_table.py
@@ -31,7 +31,7 @@ API_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(API_ROOT))
 
 BACKEND_OUT = API_ROOT / "engine" / "calendar" / "samvatsara_table.json"
-FRONTEND_OUT = API_ROOT.parent / "dhakal-patro" / "src" / "lib" / "samvatsara-table.json"
+FRONTEND_OUT = API_ROOT.parent.parent / "packages" / "domain" / "src" / "calendar" / "samvatsara-table.json"
 
 from engine.calendar.patro_year_axis import (  # noqa: E402
     PATRO_EPHEMERIS_SIGNED_MAX,

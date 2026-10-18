@@ -9,9 +9,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchJanmaRashi, type LocationParams, type NavataraTone, type PanchangaDay, type Profile } from "@vedic-patro/api-client";
-import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { DEFAULT_PANCHANGA_LOCATION, resolveLocationTimezone, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
+import { DEFAULT_PANCHANGA_LOCATION, resolveLocationTimezone, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { useLocale, type Lang } from "@vedic-patro/i18n/react";
 import { lazyList } from "@vedic-patro/i18n/runtime";
 

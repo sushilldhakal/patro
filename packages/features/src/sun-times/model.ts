@@ -4,15 +4,15 @@
  * as per-month tables (narrow screens). Both apps draw exactly these.
  */
 import type { SunYearDay, SunYearMonth, SunYearResponse } from "@vedic-patro/api-client";
-import { AD_MONTHS_SHORT, AD_MONTHS_SHORT_NE, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { AD_MONTHS_SHORT, AD_MONTHS_SHORT_NE, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   formatAyanaMarkShort,
   formatClockNepali,
   formatTimeShort,
   isAyanaNorthMark,
-} from "@vedic-patro/domain/panchanga-format";
+} from "@vedic-patro/domain/panchanga/panchanga-format";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
-import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { tFor, type Lang } from "@vedic-patro/i18n/runtime";
 
 export type SunAyana = {

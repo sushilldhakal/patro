@@ -30,7 +30,7 @@ import {
   NAK_INNER,
   NAK_OUTER,
 } from "@/components/learn/EclipticWheel";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 import {
   DEG,
@@ -39,7 +39,7 @@ import {
   NAKSHATRA_ARC,
   normalizeDeg,
   RASHI_ARC,
-} from "@vedic-patro/domain/sky3d/geocentric-model";
+} from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
 import {
   altAzToVec3,
   eclipticToAltAz,
@@ -47,7 +47,7 @@ import {
   lstDeg,
   obliquity,
   type Observer,
-} from "@vedic-patro/domain/sky3d/horizon";
+} from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import {
   ayanamsa,
   bodyRadius,
@@ -62,7 +62,7 @@ import {
   type GeoBody,
   type SkyCalibration,
   type OuterPlanetKey,
-} from "@vedic-patro/domain/sky3d/orbital-model";
+} from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import {
   BAND_EDGES,
   COMPASS_POINTS,
@@ -90,19 +90,19 @@ import {
   RASHI_DIVIDERS,
   RASHI_LABEL_LAT,
   type eclipticPoint,
-} from "@vedic-patro/domain/sky3d/sky-geometry";
-import { flattenAsterisms, NAKSHATRA_ASTERISMS, precessionSinceJ2000, starOverlayNames } from "@vedic-patro/domain/sky3d/nakshatra-stars";
-import { VEDIC_CONSTELLATION_LINKS } from "@vedic-patro/domain/sky3d/vedic-constellations";
-import { cultureStarLabel, flattenSkyCulture } from "@vedic-patro/domain/sky3d/sky-culture";
-import { flattenNebulae } from "@vedic-patro/domain/sky3d/nebulae";
+} from "@vedic-patro/domain/astronomy/sky3d/sky-geometry";
+import { flattenAsterisms, NAKSHATRA_ASTERISMS, precessionSinceJ2000, starOverlayNames } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
+import { VEDIC_CONSTELLATION_LINKS } from "@vedic-patro/domain/astronomy/sky3d/vedic-constellations";
+import { cultureStarLabel, flattenSkyCulture } from "@vedic-patro/domain/astronomy/sky3d/sky-culture";
+import { flattenNebulae } from "@vedic-patro/domain/astronomy/sky3d/nebulae";
 import { NEBULA_SOURCES } from "@/lib/sky3d/nebula-sources";
-import { flattenBackgroundStars } from "@vedic-patro/domain/sky3d/background-stars";
+import { flattenBackgroundStars } from "@vedic-patro/domain/astronomy/sky3d/background-stars";
 import {
   placedPoleStars,
   poleStarEpoch,
   poleTrackPoints,
   reigningPoleStar,
-} from "@vedic-patro/domain/sky3d/pole-stars";
+} from "@vedic-patro/domain/astronomy/sky3d/pole-stars";
 import type { VedicStarPosition } from "@/lib/api";
 import {
   EARTH_TOON_SOURCE,
@@ -120,15 +120,15 @@ import {
   GLOBE_R,
   SPACE_FOV,
   type SkyMode,
-} from "@vedic-patro/domain/sky3d/sky-zoom";
+} from "@vedic-patro/domain/astronomy/sky3d/sky-zoom";
 import {
   createHorizonFisheyeUniforms,
   horizonViewWindow,
   projectHorizonRaw,
   injectHorizonFisheyeIn,
   projectHorizon,
-} from "@vedic-patro/domain/sky3d/horizon-projection";
-import { buildGridLabels } from "@vedic-patro/domain/sky3d/grid-labels";
+} from "@vedic-patro/domain/astronomy/sky3d/horizon-projection";
+import { buildGridLabels } from "@vedic-patro/domain/astronomy/sky3d/grid-labels";
 import {
   makeMoonMaterial,
   MOON_EARTHSHINE,
@@ -136,8 +136,8 @@ import {
   MOON_PHASE_FOV_WIDE,
   MOON_UNLIT_FAR,
   type MoonMaterial,
-} from "@vedic-patro/domain/sky3d/moon-material";
-import { makeEarthMaterial } from "@vedic-patro/domain/sky3d/earth-material";
+} from "@vedic-patro/domain/astronomy/sky3d/moon-material";
+import { makeEarthMaterial } from "@vedic-patro/domain/astronomy/sky3d/earth-material";
 import { applyNadirStereographicUVs, prepareKathmanduGround } from "@/lib/sky3d/terrain";
 import {
   buildHipsTileOutline,
@@ -158,20 +158,20 @@ import {
   writeHipsDebugSnapshot,
   type HipsDebugTile,
   type HipsTileEntry,
-} from "@vedic-patro/domain/sky3d/hips";
+} from "@vedic-patro/domain/astronomy/sky3d/hips";
 import {
   evaluateHipsTiles,
   getHipsTileScreenSizePx,
   HIPS_TILE_REFINE_PIXELS,
   type HipsLodFrame,
   type HipsLodLeaf,
-} from "@vedic-patro/domain/sky3d/hips-lod";
-import { eclipseNow, lunarShadowRadiiDeg } from "@vedic-patro/domain/sky3d/eclipse-geometry";
-import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeEclipseShadow, placeEclipseShadow, disposeEclipseShadow, faceOrigin, spinAngle, makeLunarShadowMaterial, setLunarShadow, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
-import { smoothstep } from "@vedic-patro/domain/sky3d/terrain";
+} from "@vedic-patro/domain/astronomy/sky3d/hips-lod";
+import { eclipseNow, lunarShadowRadiiDeg } from "@vedic-patro/domain/astronomy/sky3d/eclipse-geometry";
+import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeEclipseShadow, placeEclipseShadow, disposeEclipseShadow, faceOrigin, spinAngle, makeLunarShadowMaterial, setLunarShadow, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/astronomy/sky3d/scene-builders";
+import { smoothstep } from "@vedic-patro/domain/astronomy/sky3d/terrain";
 import { illustration, neutral, wheel } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
-export { type ScreenLabel } from "@vedic-patro/domain/sky3d/scene-builders";
+export { type ScreenLabel } from "@vedic-patro/domain/astronomy/sky3d/scene-builders";
 
 /** Same wheel as Learn — radii come from {@link EclipticWheel}. */
 export const RASHI_INNER = BELT_INNER;

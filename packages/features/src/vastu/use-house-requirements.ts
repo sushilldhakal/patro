@@ -14,7 +14,7 @@ import {
   type HousePlan,
   type SpaceKind,
   type VastuMode,
-} from "@vedic-patro/domain/vastu-plan";
+} from "@vedic-patro/domain/vastu/vastu-plan";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { normalizeExtras } from "./use-plot-planner";
 

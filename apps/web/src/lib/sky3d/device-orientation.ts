@@ -103,7 +103,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { dampHeading } from "@vedic-patro/domain/compass-heading";
+import { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
 
 export type OrientationPermissionState =
   | "unnecessary"

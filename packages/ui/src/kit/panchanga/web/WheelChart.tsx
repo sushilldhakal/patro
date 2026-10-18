@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   bsMonthsForWheel,
   GRAHA_META,
@@ -11,7 +11,7 @@ import {
   type WheelDetail,
   type WheelMarkers,
   type WheelTweaks,
-} from "@vedic-patro/domain/wheel-data";
+} from "@vedic-patro/domain/panchanga/wheel-data";
 import {
   WHEEL_CHART_INNER_R,
   WHEEL_CHART_R,
@@ -21,7 +21,7 @@ import {
   wheelLabelRows,
   type WheelHover,
 } from "@vedic-patro/features/panchanga-drawing";
-import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
+import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { wheelSvg, wheelSvgWrap } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
@@ -47,7 +47,7 @@ import {
   wTwName,
   wYogaLbl,
 } from "@vedic-patro/design-tokens/classes/wheel-svg-classes";
-import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -55,8 +55,8 @@ import {
   WHEEL_RETRO,
   wheelMoonShadow,
   type WheelPlace,
-} from "@vedic-patro/domain/wheel-bodies";
-import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
+} from "@vedic-patro/domain/panchanga/wheel-bodies";
+import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
 import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { wheelPalette } from "../wheel-palette";

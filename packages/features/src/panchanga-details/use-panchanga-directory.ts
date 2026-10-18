@@ -5,7 +5,7 @@
  * `components/panchanga/PanchangaDirectoryMobile.tsx`): which links, in which
  * sections, with which text. Each app turns a link into its own route.
  */
-import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Lucide icon name (kebab case); each app maps it to its icon component. */

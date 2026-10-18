@@ -47,49 +47,49 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { GocharGraha, VedicStarPosition } from "@/lib/api";
-import type { Era } from "@vedic-patro/domain/era";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   dragScaleForZoom,
   fovForZoom,
   HORIZON_ZOOM_MAX,
   HORIZON_ZOOM_MIN,
   SPACE_FOV,
-} from "@vedic-patro/domain/sky3d/sky-zoom";
+} from "@vedic-patro/domain/astronomy/sky3d/sky-zoom";
 import {
   DEFAULT_STEP_INDEX,
   nearestStepIndex,
   TIME_STEPS,
-} from "@vedic-patro/domain/sky3d/time-steps";
+} from "@vedic-patro/domain/astronomy/sky3d/time-steps";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { SkySearch } from "@/components/sky3d/SkySearch";
-import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/read-models/sky3d/sky-catalogue";
+import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/read-models/astronomy/sky3d/sky-catalogue";
 import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@vedic-patro/domain/sky3d/geocentric-model";
-import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
+import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import {
   ayanamsa,
   calibrate,
   daysSinceJ2000,
   GEO_BODY_ORDER,
   type SkyCalibration,
-} from "@vedic-patro/domain/sky3d/orbital-model";
+} from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
-import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
-import { SOLAR_STATIONS } from "@vedic-patro/domain/sky3d/sky-geometry";
-import { POLE_STARS } from "@vedic-patro/domain/sky3d/pole-stars";
+import { getZonedTimeParts } from "@vedic-patro/domain/calendar/zoned-time";
+import { SOLAR_STATIONS } from "@vedic-patro/domain/astronomy/sky3d/sky-geometry";
+import { POLE_STARS } from "@vedic-patro/domain/astronomy/sky3d/pole-stars";
 import {
   AakashGocharScene,
   type SceneToggles,
@@ -100,13 +100,13 @@ import {
   type SkySample,
   type ViewState,
 } from "@/components/sky3d/AakashGocharScene";
-import { HIPS_ATTRIBUTION, readHipsDebugSnapshot, type HipsDebugSnapshot } from "@vedic-patro/domain/sky3d/hips";
+import { HIPS_ATTRIBUTION, readHipsDebugSnapshot, type HipsDebugSnapshot } from "@vedic-patro/domain/astronomy/sky3d/hips";
 import { CompassControl } from "@vedic-patro/ui/kit/learn";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import compassNeedle from "@/assets/compass.svg?raw";
 import cameraGlyph from "@/assets/camera.svg?raw";
 import { useDeviceOrientation, type OrientationSample } from "@/lib/sky3d/device-orientation";
-import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
+import { formatPoleYear } from "@vedic-patro/domain/astronomy/sky3d/pole-year";
 
 import { effect, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

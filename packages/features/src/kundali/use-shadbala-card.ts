@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import type { BhavaBalaData, ShadbalaPlanet, ShadbalaResponse, ShadbalaStatus, YuddhaData } from "@vedic-patro/api-client";
-import { fmt, type ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
+import { fmt, type ShadbalaScale } from "@vedic-patro/domain/jyotish/kundali/shadbala-chart";
 import {
   GRAHA_NAME_I18N,
   KALA_SUBS,
@@ -15,7 +15,7 @@ import {
   grahaDisplayName,
   orderShadbalaPlanets,
   yuddhaVirupasForPlanet,
-} from "@vedic-patro/read-models/kundali/shadbala-display";
+} from "@vedic-patro/read-models/jyotish/kundali/shadbala-display";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

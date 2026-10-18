@@ -7,11 +7,11 @@
  */
 import { useMemo } from "react";
 import type { VargaCharts } from "@vedic-patro/api-client";
-import { rashiToHouse } from "@vedic-patro/domain/bhava";
-import { DIGNITY_LABELS, GRAHA_NAME, RELATION_LABELS, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { rashiToHouse } from "@vedic-patro/domain/jyotish/bhava";
+import { DIGNITY_LABELS, GRAHA_NAME, RELATION_LABELS, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const COLUMN_KEYS = [

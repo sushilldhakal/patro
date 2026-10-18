@@ -9,17 +9,17 @@ import {
 import {
   BBS_URL_YEAR_MAX,
   BBS_URL_YEAR_MIN,
-} from "@vedic-patro/domain/patro-year-axis";
-import type { Era } from "@vedic-patro/domain/era";
-import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, adToBS } from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/patro-year-axis";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   buildAdCalendarGridDays,
   buildCalendarGridDays,
   getBsMonthsOverlappingAdMonth,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@vedic-patro/read-models/local-calendar";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
+} from "@vedic-patro/read-models/calendar/local-calendar";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@/i18n/locale";
 import { usePanchangaMonthGrid, type PanchangaMonthCell } from "@vedic-patro/features/home";

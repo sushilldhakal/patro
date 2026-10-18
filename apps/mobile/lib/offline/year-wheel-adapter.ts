@@ -1,7 +1,7 @@
 import type { CalendarDay, MonthCalendar, YearWheelCalendar, YearWheelCalendarDay } from "@/lib/api";
-import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 
-import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
 const WEEKDAYS_EN = WEEKDAYS_SHORT;
 

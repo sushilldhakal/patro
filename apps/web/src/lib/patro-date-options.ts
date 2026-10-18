@@ -2,17 +2,17 @@ import {
   bsToAdOrNull,
   getBSMonthLength,
   getSupportedAdBounds,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 import { fetchPanchangaDay, type LocationParams } from "@/lib/api";
-import { getLanguageForEra } from "@vedic-patro/domain/era";
+import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import { DEFAULT_PANCHANGA_LOCATION } from "@/components/panchanga/use-panchanga-location";
 import {
   civilAnchorFromPanchangaDay,
   parseCivilIsoToDate,
-} from "@vedic-patro/domain/patro-day";
-import type { Era } from "@vedic-patro/domain/era";
-import { getAdMonthLength } from "@vedic-patro/domain/patro-day";
+} from "@vedic-patro/domain/calendar/patro-day";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { getAdMonthLength } from "@vedic-patro/domain/calendar/patro-day";
 
 export { getAdMonthLength };
 import {
@@ -21,7 +21,7 @@ import {
   isBbsSigned,
   signedPatroYearFromBrowse,
   stepPatroSignedYear,
-} from "@vedic-patro/domain/patro-year-axis";
+} from "@vedic-patro/domain/calendar/patro-year-axis";
 
 const AD_BOUNDS = getSupportedAdBounds();
 

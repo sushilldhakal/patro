@@ -1,8 +1,8 @@
 /**
  * Privacy policy and terms — the text both apps show, in the reader's
- * language. The copy itself lives in `@vedic-patro/domain/legal-copy`.
+ * language. The copy itself lives in `@vedic-patro/domain/identity/legal-copy`.
  */
-import { LEGAL_UPDATED, PRIVACY_INTRO, PRIVACY_SECTIONS, TERMS_INTRO, TERMS_SECTIONS } from "@vedic-patro/domain/legal-copy";
+import { LEGAL_UPDATED, PRIVACY_INTRO, PRIVACY_SECTIONS, TERMS_INTRO, TERMS_SECTIONS } from "@vedic-patro/domain/identity/legal-copy";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type LegalKind = "privacy" | "terms";

@@ -4,10 +4,10 @@
  */
 
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 
-import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/related-page-links";
+import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
 
 /** Static route for a site link id (dynamic ids use `element:` / `sait:` prefixes). */
 export const SITE_LINK_PATH: Record<string, string> = {

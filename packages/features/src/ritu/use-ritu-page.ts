@@ -5,10 +5,10 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTropicalSeasons, seasonsKeys, type LocationParams } from "@vedic-patro/api-client";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { RITU_MARKER_KEYS, RITU_SEASON_EMOJI, RITU_SEASON_KEYS, displayRituSlot, rituSeasonKeyAtSlot } from "@vedic-patro/domain/ritu-display";
-import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { RITU_MARKER_KEYS, RITU_SEASON_EMOJI, RITU_SEASON_KEYS, displayRituSlot, rituSeasonKeyAtSlot } from "@vedic-patro/domain/calendar/ritu-display";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 import { fmtAdDayMonth, seasonItems } from "./model";

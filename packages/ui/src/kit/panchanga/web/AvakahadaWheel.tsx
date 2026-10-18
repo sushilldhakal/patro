@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
-import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
-import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
+import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
+import { findNakshatraIcon } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { Icon } from "@vedic-patro/ui";
 import { zoomInIcon, zoomOutIcon } from "../icons";
 import { GANA_PILL_CLASS, GANA_SWATCH_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
@@ -23,11 +23,11 @@ import {
 import { wheelIconBtn } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
-import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 import { AVAKAHADA_ZOOM, sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { midnight, wheel } from "@vedic-patro/design-tokens";
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 const HUB_ICON_SVG = "inline-block h-full w-full [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current";
 const WHEEL_SVG = "block h-auto w-full max-w-[660px] select-none";
 const HUB_FRAME = "flex h-full w-full items-center justify-center overflow-hidden text-center";

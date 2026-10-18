@@ -1,7 +1,7 @@
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { AshtakavargaData } from "@/lib/api";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { AshtakavargaCard as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function AshtakavargaCard({ data }: { data: AshtakavargaData }) {

@@ -4,8 +4,8 @@
  */
 import { useMemo } from "react";
 import { fetchPanchakYear, panchakKeys } from "@vedic-patro/api-client";
-import { mapPanchakPeriod } from "@vedic-patro/read-models/panchak/panchak-patro-data";
-import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
+import { mapPanchakPeriod } from "@vedic-patro/read-models/panchanga/panchak/panchak-patro-data";
+import { formatBrowsePatroYear } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, useYearData, type PageStatus, type YearScope } from "../_shared";
 import { PANCHAK_PROHIBITED, panchakCardView, panchakVarieties, type PanchakCardView } from "./model";

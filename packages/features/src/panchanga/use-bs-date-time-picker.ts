@@ -21,17 +21,17 @@ import {
   bsMonthLabel,
   bsToAdOrNull,
   getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@vedic-patro/domain/era";
-import { formatClockParts } from "@vedic-patro/domain/panchanga-mode";
-import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/panchanga-location";
-import { civilIsoFromDate, civilIsoWeekday } from "@vedic-patro/domain/patro-day";
+} from "@vedic-patro/domain/calendar/bs-calendar";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { formatClockParts } from "@vedic-patro/domain/panchanga/panchanga-mode";
+import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/geography/panchanga-location";
+import { civilIsoFromDate, civilIsoWeekday } from "@vedic-patro/domain/calendar/patro-day";
 import {
   bbsFromSigned,
   isBbsSigned,
   signedPatroYearFromBrowse,
   stepPatroSignedYear,
-} from "@vedic-patro/domain/patro-year-axis";
+} from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type Meridiem = "AM" | "PM";

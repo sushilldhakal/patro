@@ -1,6 +1,6 @@
-import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
+import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import { rashiNumberFromName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 
 const HORA_TO_GRAHA: Record<string, GrahaKey> = {
   ravi: "sun",

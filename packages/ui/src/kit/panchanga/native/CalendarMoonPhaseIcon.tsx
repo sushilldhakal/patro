@@ -1,6 +1,6 @@
 import { Circle, G, Path, Svg } from "react-native-svg";
 import { useColorScheme } from "nativewind";
-import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/moon-phase-svg";
+import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { illustration, midnight } from "@vedic-patro/design-tokens";
 
 export type CalendarMoonPhaseIconProps = {

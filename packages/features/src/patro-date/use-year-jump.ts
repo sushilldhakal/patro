@@ -4,9 +4,9 @@
  * the era, and which page of twelve years is showing.
  */
 import { useState } from "react";
-import type { Era } from "@vedic-patro/domain/era";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { parseYearInput, shiftYearPage, yearPageStart, yearPageYears } from "./calendar-header-model";
 

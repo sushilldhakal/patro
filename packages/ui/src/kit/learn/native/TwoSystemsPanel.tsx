@@ -3,8 +3,8 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { tithiName, TWO_SYSTEMS_SPEEDS } from "@vedic-patro/domain/sky3d/two-systems";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { tithiName, TWO_SYSTEMS_SPEEDS } from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import { illustration, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import type { TwoSystemsPanelProps } from "../contract";
 

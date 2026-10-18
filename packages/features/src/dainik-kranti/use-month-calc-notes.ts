@@ -4,7 +4,7 @@
  * `components/dainikKranti/MonthCalcNotes.tsx`: notes grouped by day and
  * ordered by kind, kind labels, and copy.
  */
-import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import type { CalcNote } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

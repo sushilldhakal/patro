@@ -21,9 +21,9 @@ import {
   tmTravelHead,
   tmVline,
 } from "@/lib/diagram-classes";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
-import { WHEEL_TITHIS, tithiNum } from "@vedic-patro/domain/tithi-wheel-data";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { WHEEL_TITHIS, tithiNum } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { tmAmLegend, tmCal, tmCalCellDup, tmCalGap, tmCalGate, tmCalNo, tmCalTithi, tmDiagramSvg, tmLegAdhik } from "@/lib/learn-classes";
 import { TmLegendDot, TmNewMoon, TmSun } from "./diagram-glyphs";
 import { tFor } from "@vedic-patro/i18n/runtime";

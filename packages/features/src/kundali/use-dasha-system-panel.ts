@@ -6,7 +6,7 @@
  */
 import { useState } from "react";
 import type { DashaSystem, DashaTreeResponse } from "@vedic-patro/api-client";
-import { DASHA_LORD_EN, DASHA_LORD_NE, dashaMahadashaGrahaKey, type DashaLord } from "@vedic-patro/domain/dasha";
+import { DASHA_LORD_EN, DASHA_LORD_NE, dashaMahadashaGrahaKey, type DashaLord } from "@vedic-patro/domain/jyotish/dasha";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 

@@ -6,7 +6,7 @@
  */
 import { useCallback, useState } from "react";
 import type { RashifalSignBlock } from "@vedic-patro/api-client";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type HomeRashifalThumb = {

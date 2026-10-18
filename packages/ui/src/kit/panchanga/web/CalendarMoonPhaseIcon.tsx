@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/moon-phase-svg";
+import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
 export type CalendarMoonPhaseIconProps = {
   /** Wheel tithi index 0-29 (0 shukla pratipada, 14 purnima, 29 aaushi). */

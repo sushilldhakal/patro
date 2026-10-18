@@ -10,7 +10,7 @@ import {
   adToBS,
   bsToAD,
   getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import { OfflineMissError } from "@/lib/offline/offline-http";
 

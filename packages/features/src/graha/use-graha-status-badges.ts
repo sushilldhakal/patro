@@ -4,7 +4,7 @@
  * show (the shared rules in domain/graha-status) and their labels, for the
  * tooltip / accessibility label and the legend.
  */
-import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
+import { showAsta, showVakri } from "@vedic-patro/domain/jyotish/graha-status";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function useGrahaStatusLabels() {

@@ -18,9 +18,9 @@ import {
   type SaitPersonalizeDay,
   type SaitSuitability,
 } from "@vedic-patro/api-client";
-import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
-import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
+import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
+import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
+import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/festivals/sait-rules-content";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const HOUR = 1000 * 60 * 60;

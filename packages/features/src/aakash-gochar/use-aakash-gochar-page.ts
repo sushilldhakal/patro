@@ -12,16 +12,16 @@
 import { useCallback, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchGochar, gocharKeys } from "@vedic-patro/api-client";
-import { formatGocharPatroDate } from "@vedic-patro/domain/gochar-page-utils";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { formatGocharPatroDate } from "@vedic-patro/domain/jyotish/gochar-page-utils";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   displayLocationLabel,
   resolveLocationTimezone,
   type PanchangaLocation,
-} from "@vedic-patro/read-models/panchanga-location";
-import { toAdStr } from "@vedic-patro/domain/patro-day";
-import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
-import { clockStringInTimezone, todayAdStringInTimezone, zonedWallTimeToInstant } from "@vedic-patro/domain/zoned-time";
+} from "@vedic-patro/read-models/geography/panchanga-location";
+import { toAdStr } from "@vedic-patro/domain/calendar/patro-day";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/horizon";
+import { clockStringInTimezone, todayAdStringInTimezone, zonedWallTimeToInstant } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function useAakashGocharPage({ location, ready = true }: { location: PanchangaLocation; ready?: boolean }) {

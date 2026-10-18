@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import { PatroMonthYearNav } from "@/components/patro-date/PatroMonthYearNav";
-import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import type { SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
+import type { SamvatsaraPayload } from "@vedic-patro/domain/calendar/samvatsara";
 import { type PanchangaLocation } from "@/lib/use-panchanga-location";
 
 export type PakshaFilter = "all" | "krishna" | "shukla";

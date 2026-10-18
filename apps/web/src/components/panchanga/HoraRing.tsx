@@ -27,7 +27,7 @@ import {
   horaTextArc,
   type HoraPlanetKey,
 } from "@/lib/hora-data";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { patroWheelShell } from "@/lib/patro-classes";
 import {
@@ -56,7 +56,7 @@ import {
   horaVerticalScrub,
 } from "@/lib/hora-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { buildWheelDetail } from "@vedic-patro/read-models/wheel-data";
+import { buildWheelDetail } from "@vedic-patro/read-models/panchanga/wheel-data";
 import { PlanetIcon } from "./hora/PlanetIcon";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";

@@ -1,6 +1,6 @@
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { BhavaBalaData, ShadbalaResponse, YuddhaData } from "@/lib/api";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { ShadbalaCard as Shared, ShadbalaChart } from "@vedic-patro/ui/kit/jyotish";
 
 function graha({ graha, size }: { graha: string; size?: number }) {

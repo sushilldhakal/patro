@@ -1,5 +1,5 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
+import { verticalEdgeLabel } from "@vedic-patro/domain/panchanga/vertical-edge-label";
 import { Box } from "@vedic-patro/ui";
 import type { VerticalEdgeLabelProps } from "../contract";
 

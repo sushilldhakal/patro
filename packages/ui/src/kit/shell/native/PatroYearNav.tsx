@@ -1,5 +1,5 @@
-import { patroBrowseTodayEra } from "@vedic-patro/domain/era";
-import { patroBrowseTodayYear } from "@vedic-patro/domain/patro-browse-params";
+import { patroBrowseTodayEra } from "@vedic-patro/domain/calendar/era";
+import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { usePatroYearHeadlineSubtitle } from "@vedic-patro/features/common";

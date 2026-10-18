@@ -1,4 +1,4 @@
-import type { RashyadiSegment } from "@vedic-patro/domain/dainikKranti/rashyadi";
+import type { RashyadiSegment } from "@vedic-patro/domain/jyotish/dainikKranti/rashyadi";
 import { useGocharRashyadiTable, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";

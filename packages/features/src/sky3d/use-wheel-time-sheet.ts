@@ -6,12 +6,12 @@
  * the app both draw the sheet and call this.
  */
 import { useState } from "react";
-import { adToBS, bsToAdOrNull } from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@vedic-patro/domain/era";
-import { civilGregorianToUtcMs } from "@vedic-patro/domain/patro-day";
-import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
-import { wallCivilUtc, wallPartsFromMs } from "@vedic-patro/domain/sky3d/sky-time";
-import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
+import { adToBS, bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { civilGregorianToUtcMs } from "@vedic-patro/domain/calendar/patro-day";
+import { signedPatroYearFromBrowse } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { wallCivilUtc, wallPartsFromMs } from "@vedic-patro/domain/astronomy/sky3d/sky-time";
+import { getZonedTimeParts } from "@vedic-patro/domain/calendar/zoned-time";
 
 /** The place's offset from UT at the given instant (one offset, applied throughout the edit). */
 function zoneOffsetMsAt(date: Date, timeZone: string | undefined): number {

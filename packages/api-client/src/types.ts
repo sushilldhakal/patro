@@ -3,10 +3,10 @@
  * Each app's lib/api.ts re-exports them, so app code imports from "@/lib/api".
  */
 
-import type { Era } from "@vedic-patro/domain/era";
-import type { InstantQuery } from "@vedic-patro/domain/instant";
-import type { VastuDirectionId } from "@vedic-patro/domain/vastu";
-import type { PlannedSpace, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
+import type { VastuDirectionId } from "@vedic-patro/domain/vastu/vastu";
+import type { PlannedSpace, SpaceAssignment } from "@vedic-patro/domain/vastu/vastu-plan";
 import type {
   ElementKind,
   GrahaDignity,

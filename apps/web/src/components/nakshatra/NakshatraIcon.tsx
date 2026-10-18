@@ -1,4 +1,4 @@
-import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
+import { findNakshatraIcon } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { nakshatraIcon } from "@/lib/learn-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 

@@ -8,7 +8,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFestivals, fetchHolidays, holidayKeys } from "@vedic-patro/api-client";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
   filterHolidayRows,

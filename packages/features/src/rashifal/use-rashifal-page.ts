@@ -18,11 +18,11 @@ import {
   type RashifalPeriod,
   type RashifalSignBlock,
 } from "@vedic-patro/api-client";
-import { instantCacheKey } from "@vedic-patro/domain/instant-query";
-import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
-import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { rashifalRangeLabel, rashifalStepDate } from "@vedic-patro/domain/rashifal-ui";
+import { instantCacheKey } from "@vedic-patro/domain/calendar/instant-query";
+import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
+import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { rashifalRangeLabel, rashifalStepDate } from "@vedic-patro/domain/jyotish/rashifal-ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type RashifalDay = { key: readonly unknown[]; query: URLSearchParams };

@@ -1,4 +1,4 @@
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { grahaArt as c } from "@vedic-patro/design-tokens";
 
 export type GrahaStop = { offset: string; color: string };

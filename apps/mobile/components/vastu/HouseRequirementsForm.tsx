@@ -1,5 +1,5 @@
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
-import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
+import type { HousePlan } from "@vedic-patro/domain/vastu/vastu-plan";
 import { HouseRequirementsForm as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function HouseRequirementsForm({ plan, onChange }: { plan: HousePlan; onChange: (plan: HousePlan) => void }) {

@@ -14,9 +14,9 @@ import {
   type PanchangaDay,
   type PlanetInfo,
 } from "@/lib/api";
-import { normalizeEphemerisDay } from "@vedic-patro/read-models/ephemeris-adapters";
-import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/instant-query";
-import { formatMomentDateLabel } from "@vedic-patro/domain/kundali/profile-chart";
+import { normalizeEphemerisDay } from "@vedic-patro/read-models/astronomy/ephemeris-adapters";
+import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
+import { formatMomentDateLabel } from "@vedic-patro/domain/jyotish/kundali/profile-chart";
 import {
   getInstantLagna,
   getLagnaDisplay,
@@ -26,9 +26,9 @@ import {
   getSuryaRashi,
   getVaaraNe,
   formatTithiWithPaksha,
-} from "@vedic-patro/read-models/panchanga-format";
-import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 // DivisionalChartCompare stays a static import: it belongs to the default
 // landing tab (kundali-overview), so it should arrive with the route chunk
 // rather than costing that first view an extra chunk fetch. Every other
@@ -36,14 +36,14 @@ import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 // React.lazy chunk, fetched only when that section is actually shown.
 import { DivisionalChartCompare } from "@/components/kundali/DivisionalChartCompare";
 import type { GrahaAstroPoint } from "@/components/kundali/GrahaAstroTable";
-import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/bhava";
-import { buildPresentYogaRefIds } from "@vedic-patro/read-models/kundali/yoga-reference-map";
+import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/jyotish/bhava";
+import { buildPresentYogaRefIds } from "@vedic-patro/read-models/jyotish/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
-import { formatGhadiPalaVipala } from "@vedic-patro/read-models/birth-panchanga-meta";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
+import { formatGhadiPalaVipala } from "@vedic-patro/read-models/jyotish/birth-panchanga-meta";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { generateAvakahadaShloka } from "@vedic-patro/domain/jyotish/avakahada-data";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
+import { WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import {
   BALA_TAB_SECTIONS,
   contentSectionId,

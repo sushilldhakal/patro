@@ -11,9 +11,9 @@ import {
   choghadiyaLegendMarker,
   choghadiyaRowLabel,
   choghadiyaTone,
-} from "@vedic-patro/domain/choghadiya-display";
-import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga-format";
-import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/time-format";
+} from "@vedic-patro/domain/panchanga/choghadiya-display";
+import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import type { TFunction } from "@vedic-patro/i18n/react";
 
 type AnyRow = Record<string, unknown>;

@@ -8,10 +8,10 @@
 import { useMemo } from "react";
 import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { fetchSaitMonthAll, saitMonthAllKey, type LocationParams } from "@vedic-patro/api-client";
-import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE, bsToAD } from "@vedic-patro/domain/bs-calendar";
-import { getBsMonthsOverlappingAdMonth } from "@vedic-patro/domain/local-calendar";
+import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getBsMonthsOverlappingAdMonth } from "@vedic-patro/domain/calendar/local-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { SAIT_CATEGORIES } from "@vedic-patro/domain/sait-data";
+import { SAIT_CATEGORIES } from "@vedic-patro/domain/festivals/sait-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type SaitAsideDay = { day: number; label: string; highlighted: boolean };

@@ -43,8 +43,8 @@ import { memo, useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { DEG, beltDivisions, eclipticToVec3, normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
-import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
+import { DEG, beltDivisions, eclipticToVec3, normalizeDeg } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
+import { geocentricPointAt } from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import {
   longitudeTravelled,
   siderealLon,
@@ -52,7 +52,7 @@ import {
   SIDEREAL_MONTH,
   SYNODIC_MONTH,
   TITHI_ARC,
-} from "@vedic-patro/domain/sky3d/two-systems";
+} from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import {
   usePlaygroundLabels,
   type PlaygroundLabel,
@@ -60,7 +60,7 @@ import {
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
-import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
+import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { tFor } from "@vedic-patro/i18n/runtime";
 export type Focus = "solar" | "lunar" | "both";
 

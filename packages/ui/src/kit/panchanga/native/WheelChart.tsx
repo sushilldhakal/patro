@@ -14,7 +14,7 @@ import Svg, {
 
 /** Web typings of Defs omit children when moduleSuffixes resolves the .web types. */
 const SvgDefs = Defs as ComponentType<{ children?: ReactNode }>;
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import {
   WHEEL_CHART_INNER_R,
@@ -25,9 +25,9 @@ import {
   wheelLabelRows,
   type WheelHover,
 } from "@vedic-patro/features/panchanga-drawing";
-import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
-import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
+import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
+import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
+import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
 
 type NodeIcon = ComponentType<{ width?: number; height?: number }>;
@@ -70,7 +70,7 @@ function WheelGlyph({ art, size, cx, cy, color, opacity = 1 }: { art: GlyphArt |
 }
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { wheelPalette } from "../wheel-palette";
-import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -78,8 +78,8 @@ import {
   WHEEL_RETRO,
   wheelMoonShadow,
   type WheelPlace,
-} from "@vedic-patro/domain/wheel-bodies";
-import { moonSunFacingRotation } from "@vedic-patro/domain/moon-phase-svg";
+} from "@vedic-patro/domain/panchanga/wheel-bodies";
+import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
 const SKY_NAMES = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 

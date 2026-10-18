@@ -4,8 +4,8 @@
  * rows, one row per day (planet cells with their retro / combust flags and
  * the solar corrections), the loading / empty state, the footnote, and copy.
  */
-import { PATRO_PLANET_KEYS, type GrahaSpashtaRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
+import { PATRO_PLANET_KEYS, type GrahaSpashtaRow } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
+import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { patroPlanetLabel, patroWeekday, usePatroTableStatus, type PatroTableState } from "./patro-cells";
 

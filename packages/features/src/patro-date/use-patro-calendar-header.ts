@@ -10,15 +10,15 @@
  * opened with `panel === "location"`.
  */
 import { useState } from "react";
-import type { Era } from "@vedic-patro/domain/era";
-import { patroBrowseTodayEra } from "@vedic-patro/domain/era";
-import { defaultMonthBrowseParts } from "@vedic-patro/domain/patro-browse-params";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { bsMonthLabel, adMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { shiftPatroBrowseMonth, stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step";
-import { maxBrowseYearForEra } from "@vedic-patro/domain/patro-year-axis";
-import { monthLengthInBrowseEra } from "@vedic-patro/domain/patro-browse-range";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { patroBrowseTodayEra } from "@vedic-patro/domain/calendar/era";
+import { defaultMonthBrowseParts } from "@vedic-patro/domain/calendar/patro-browse-params";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { bsMonthLabel, adMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { shiftPatroBrowseMonth, stepPatroBrowseYear } from "@vedic-patro/domain/calendar/patro-year-browse-step";
+import { maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { monthOptions, parseYearInput } from "./calendar-header-model";
 import { useSamvatsaraLabel } from "./use-samvatsara-label";

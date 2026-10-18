@@ -6,11 +6,11 @@
  */
 import { useState } from "react";
 import type { NavataraRow, PanchangaDay } from "@vedic-patro/api-client";
-import { choghadiyaName, choghadiyaTone, choghadiyaToneLabel } from "@vedic-patro/domain/choghadiya-display";
-import { buildDayTimelineData, ghatiToCivilClockLabel } from "@vedic-patro/read-models/day-timeline-data";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { choghadiyaName, choghadiyaTone, choghadiyaToneLabel } from "@vedic-patro/domain/panchanga/choghadiya-display";
+import { buildDayTimelineData, ghatiToCivilClockLabel } from "@vedic-patro/read-models/panchanga/day-timeline-data";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
 import {
   formatClockNepali,
   formatTimeRangeShort,
@@ -19,7 +19,7 @@ import {
   getSunrise,
   getTarabalaTable,
   getUdayaLagna,
-} from "@vedic-patro/read-models/panchanga-format";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type MuhurtaSubTab = "tarabal" | "chandrabal" | "choghadiya" | "hora" | "pushkara";

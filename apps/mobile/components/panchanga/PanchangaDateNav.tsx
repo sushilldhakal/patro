@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
+import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import type { PanchangaDay } from "@/lib/api";
 import { PatroDateNav } from "@/components/patro-date/PatroDateNav";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -8,8 +8,8 @@ import {
   formatGregorianFromDateParts,
   formatPatroCivilDayLabel,
   patroHeadlineDigits,
-} from "@vedic-patro/domain/patro-headline-subtitle";
-import { type Era } from "@vedic-patro/domain/era";
+} from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { type Era } from "@vedic-patro/domain/calendar/era";
 import type { PatroHeaderTab } from "@/components/patro-date/PatroHeaderTabs";
 
 function toAdStr(d: Date): string {

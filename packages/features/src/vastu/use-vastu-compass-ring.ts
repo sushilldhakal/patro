@@ -11,8 +11,8 @@ import {
   evenBearings,
   vastuElementAtBearing,
   vastuWheelPoint,
-} from "@vedic-patro/domain/vastu";
-import { RING_SIZE, R_HOUSE } from "@vedic-patro/domain/vastu-ring";
+} from "@vedic-patro/domain/vastu/vastu";
+import { RING_SIZE, R_HOUSE } from "@vedic-patro/domain/vastu/vastu-ring";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const CX = RING_SIZE / 2;

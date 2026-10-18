@@ -6,7 +6,7 @@
  */
 import { useMemo } from "react";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { GREG_EN, GREG_NE } from "@vedic-patro/domain/wheel-data";
+import { GREG_EN, GREG_NE } from "@vedic-patro/domain/panchanga/wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Ring radii in the wheel's viewBox, outside to in. */

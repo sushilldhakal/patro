@@ -10,7 +10,7 @@
 
 import { AppState } from "react-native";
 import { createAudioPlayer, type AudioPlayer, type AudioStatus } from "expo-audio";
-import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
+import { LEGAL_SITE } from "@vedic-patro/domain/identity/legal-copy";
 import type { ChapterTrack } from "@vedic-patro/domain/learn/chapter-tracks";
 import {
   useChapterTrack as useSharedChapterTrack,

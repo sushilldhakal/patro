@@ -20,8 +20,8 @@ import { KundaliSources } from "@/components/kundali/KundaliSources";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { KundaliReport } from "@/components/kundali/KundaliReport";
 import type { KundaliDetailResponse, LocationParams } from "@/lib/api";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
-import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import {
   BALA_TAB_SECTIONS,
   contentSectionId,
@@ -32,7 +32,7 @@ import {
 } from "@vedic-patro/features/kundali";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { buildPresentYogaRefIds } from "@vedic-patro/read-models/kundali/yoga-reference-map";
+import { buildPresentYogaRefIds } from "@vedic-patro/read-models/jyotish/kundali/yoga-reference-map";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 

@@ -14,8 +14,8 @@ import {
   type MilanPersonQuery,
   type Profile,
 } from "@vedic-patro/api-client";
-import { getAyanamshaModeInfo } from "@vedic-patro/domain/ayanamsha";
-import { formatProfileBirthLabel, profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
+import { getAyanamshaModeInfo } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { formatProfileBirthLabel, profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useAuthDialog, type KundaliHubStatus } from "./use-kundali-hub-page";
 import { useAyanamshaMode, type AyanamshaStorage } from "./use-kundali-detail-page";

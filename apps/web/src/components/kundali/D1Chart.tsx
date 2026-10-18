@@ -1,5 +1,5 @@
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusBadges";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import { D1Chart as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 export function D1Chart({ houses, size }: { houses: BhavaHouse[]; size?: number }) {

@@ -21,7 +21,7 @@ import {
   getSunriseDisplay,
   getSunsetDisplay,
   isAyanaNorthMark,
-} from "@vedic-patro/read-models/panchanga-format";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type AngaBlock = {

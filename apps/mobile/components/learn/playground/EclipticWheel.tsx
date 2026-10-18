@@ -18,7 +18,7 @@
 import { useEffect, useLayoutEffect, useMemo, type Ref } from "react";
 import * as THREE from "three";
 import { makeLine, ellipseGeometry, disposeObject } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
-import { atLonInto, BELT_MID, ECLIPTIC_GRID_COLOR, NAK_MID } from "@vedic-patro/domain/sky3d/ecliptic-position";
+import { atLonInto, BELT_MID, ECLIPTIC_GRID_COLOR, NAK_MID } from "@vedic-patro/domain/astronomy/sky3d/ecliptic-position";
 
 export { atLonInto, BELT_MID, NAK_MID };
 

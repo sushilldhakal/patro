@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
-import type { WheelGraha } from "@vedic-patro/domain/wheel-data";
+import type { WheelGraha } from "@vedic-patro/domain/panchanga/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
 import { brand, nativeShadow, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { Text } from "@vedic-patro/ui";

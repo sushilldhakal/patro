@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useBhavaDetail, useBhavaDialogCopy, type BhavaShloka } from "@vedic-patro/features/kundali";

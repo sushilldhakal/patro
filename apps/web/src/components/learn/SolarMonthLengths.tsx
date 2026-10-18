@@ -23,13 +23,13 @@ import { useMemo } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import {
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
   BS_SUPPORTED_END_YEAR,
   getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/domain/calendar/bs-calendar";
 
 import { illustration } from "@vedic-patro/design-tokens";
 const W = 560;

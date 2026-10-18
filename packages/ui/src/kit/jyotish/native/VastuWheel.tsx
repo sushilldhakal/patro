@@ -3,13 +3,13 @@ import { View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
 import { Box, Text } from "@vedic-patro/ui";
 import { fontFamily } from "@vedic-patro/design-tokens";
-import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu/vastu";
 import {
   VASTU_DIR16, VASTU_ELEMENT_COLOR, VASTU_ELEMENT_ORDER, VASTU_GUNA_COLOR, VASTU_INNER4, VASTU_PADAS,
   VASTU_WHEEL_DIRECTIONS, annularSectorPath as annularSectorPathAt, isDir16, isInner4, isPada,
   vastuDir16, vastuDirection, vastuElementAtBearing, vastuPada, vastuWheelPoint, type VastuSelectionId,
-} from "@vedic-patro/domain/vastu";
-import { annulusPath } from "@vedic-patro/domain/vastu-purusha-wheel";
+} from "@vedic-patro/domain/vastu/vastu";
+import { annulusPath } from "@vedic-patro/domain/vastu/vastu-purusha-wheel";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import { VASTU_COMPASS_16, VASTU_GUNA_BANDS, VASTU_WHEEL_GEOMETRY, useVastuPurushaWheel } from "@vedic-patro/features/vastu";
 import type { VastuPurushaWheelProps } from "../contract";

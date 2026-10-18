@@ -6,9 +6,9 @@ import {
   type RashifalPersonal,
 } from "@/lib/api";
 import type { Profile } from "@/lib/auth/client";
-import { instantCacheKey } from "@vedic-patro/domain/instant-query";
-import { profileChartParams } from "@vedic-patro/read-models/kundali/profile-chart";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { instantCacheKey } from "@vedic-patro/domain/calendar/instant-query";
+import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
+import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { notifStore } from "./store";
 import type { RashifalCache, RashifalDayEntry, RashifalSettings } from "./types";
 

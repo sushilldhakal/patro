@@ -1,6 +1,6 @@
 import type { BsNativeSelectOption } from "@/components/BsNativeSelect";
-import type { Era } from "@vedic-patro/domain/era";
-import { formatBrowsePatroYearPicker } from "@vedic-patro/domain/patro-year-axis";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { formatBrowsePatroYearPicker } from "@vedic-patro/domain/calendar/patro-year-axis";
 import {
   parsePatroYearSearchQuery,
   signedTargetsForYearSearch,

@@ -5,9 +5,9 @@
  * Each app positions and draws the menu.
  */
 import { useState } from "react";
-import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@vedic-patro/domain/graha-details";
+import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
+import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/panchanga/wheel-data";
 import { midnight } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
 

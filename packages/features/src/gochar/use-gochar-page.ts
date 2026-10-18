@@ -18,7 +18,7 @@ import {
   type LocationParams,
   type MonthCalendar,
 } from "@vedic-patro/api-client";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 import {
   buildGocharIngressMonthList,
   countIngressByFilter,
@@ -30,13 +30,13 @@ import {
   ingressGrahaLabel,
   relativeDayLabel,
   type IngressFilter,
-} from "@vedic-patro/read-models/gochar-page-utils";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import type { PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
-import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
-import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
-import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
+} from "@vedic-patro/read-models/jyotish/gochar-page-utils";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
+import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type Parts = { year?: number; month?: number; day?: number };

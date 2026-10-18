@@ -2,7 +2,7 @@ import { useColorScheme } from "nativewind";
 import { G, Path } from "react-native-svg";
 import { View } from "react-native";
 import { useGrahaStatusBadges, useGrahaStatusLabels } from "@vedic-patro/features/graha";
-import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
+import { showAsta, showVakri } from "@vedic-patro/domain/jyotish/graha-status";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { mobileRoles } from "@vedic-patro/design-tokens";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";

@@ -3,9 +3,9 @@
  * browsed year, shown after the year in the picker titles. Empty for
  * Gregorian eras and years the cycle does not cover.
  */
-import type { Era } from "@vedic-patro/domain/era";
-import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/calendar/samvatsara";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export function useSamvatsaraLabel(era: Era, year: number): string {

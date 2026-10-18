@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Modal, Pressable, ScrollView, View } from "react-native";
-import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { space, spaceUnit } from "@vedic-patro/design-tokens";

@@ -12,8 +12,8 @@ import {
   getChandraBalamCards,
   getTaraBalamCards,
   type BalamCardItem,
-} from "@vedic-patro/read-models/balam-cards";
-import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";
+} from "@vedic-patro/read-models/panchanga/balam-cards";
+import { shortWeekdayNe } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import {
   angaEndOrigin,
@@ -55,10 +55,10 @@ import {
   getVaaraEn,
   getVaaraNe,
   toNepaliDigits,
-} from "@vedic-patro/read-models/panchanga-format";
-import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/samvatsara";
-import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/calendar/samvatsara";
+import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 type AngaEnd = { name_ne?: string; name?: string; end_local_time?: string; end_ghati_clock?: string; end_hours_clock?: string };

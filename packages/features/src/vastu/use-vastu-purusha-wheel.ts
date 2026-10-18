@@ -13,7 +13,7 @@ import {
   evenBearings,
   vastuElementAtBearing,
   type VastuGunaId,
-} from "@vedic-patro/domain/vastu";
+} from "@vedic-patro/domain/vastu/vastu";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /**

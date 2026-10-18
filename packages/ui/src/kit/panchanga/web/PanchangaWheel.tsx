@@ -14,8 +14,8 @@ import {
 } from "../icons";
 import type { WheelAtTimeClient, WheelAtTimeQuery } from "../wheel-clock";
 import type { WheelDateSheetSlot } from "./WheelDateSheet";
-import { getPanchangaDetail } from "@vedic-patro/read-models/panchanga-format";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
+import { getPanchangaDetail } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { parseClockParts } from "../wheel-clock";
 import {
   buildWheelDetail,
@@ -26,8 +26,8 @@ import {
   gClock,
   scrubGToAtTimeQuery,
   type WheelDetail,
-} from "@vedic-patro/read-models/wheel-data";
-import { wheelPlaceFromClock } from "@vedic-patro/domain/wheel-bodies";
+} from "@vedic-patro/read-models/panchanga/wheel-data";
+import { wheelPlaceFromClock } from "@vedic-patro/domain/panchanga/wheel-bodies";
 import { WheelChart, type WheelHover } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { WheelDateSheet } from "./WheelDateSheet";
@@ -64,7 +64,7 @@ import {
   wheelPlayRateBadge,
 } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";

@@ -1,9 +1,9 @@
 /** Panchak patro — turning the year's panchak windows into card text. */
 import type { Lang } from "@vedic-patro/domain/locale";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
-import { PANCHAK_VARIETIES, panchakVarietyFromStartAd } from "@vedic-patro/domain/panchak/panchak-types";
-import type { PanchakPeriod } from "@vedic-patro/domain/panchak/panchak-patro-data";
-import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
+import { PANCHAK_VARIETIES, panchakVarietyFromStartAd } from "@vedic-patro/domain/panchanga/panchak/panchak-types";
+import type { PanchakPeriod } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
+import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga/panchanga-format";
 
 /** `2026-10-20` → `Oct 20, 2026` / the Nepali locale's short date. */
 export function fmtAdShort(iso: string, lang: Lang): string {

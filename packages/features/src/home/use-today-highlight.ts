@@ -6,7 +6,7 @@
  */
 import { useMemo } from "react";
 import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
-import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@vedic-patro/domain/bs-calendar";
+import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import {
   daysDiffFromAd,
@@ -16,10 +16,10 @@ import {
   formatTimeShort,
   getSunrise,
   getSunset,
-} from "@vedic-patro/read-models/panchanga-format";
-import { civilIsoWeekday, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
-import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/read-models/tithi-wheel-data";
+} from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { civilIsoWeekday, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
+import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
+import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { lazyList } from "@vedic-patro/i18n/runtime";
 

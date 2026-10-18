@@ -9,13 +9,13 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { bhavaReferenceKeys, fetchBhavaReference, type BhavaBalaData, type VargaCharts } from "@vedic-patro/api-client";
-import { buildBhavaChart, houseClasses, type BhavaHouse, type HouseClass } from "@vedic-patro/domain/bhava";
-import { houseNumberPos, rashiFromMadhya, strengthBand, type StrengthBand } from "@vedic-patro/domain/kundali/bhava-bala-chart";
-import { splitList } from "@vedic-patro/domain/kundali/bhava-detail";
-import { NI_HOUSE_POLYGONS, pointsToSvg, polygonCentroid } from "@vedic-patro/domain/kundali/north-indian-layout";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { buildBhavaChart, houseClasses, type BhavaHouse, type HouseClass } from "@vedic-patro/domain/jyotish/bhava";
+import { houseNumberPos, rashiFromMadhya, strengthBand, type StrengthBand } from "@vedic-patro/domain/jyotish/kundali/bhava-bala-chart";
+import { splitList } from "@vedic-patro/domain/jyotish/kundali/bhava-detail";
+import { NI_HOUSE_POLYGONS, pointsToSvg, polygonCentroid } from "@vedic-patro/domain/jyotish/kundali/north-indian-layout";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const HOUSE_CLASS_LABEL: Record<HouseClass, string> = {

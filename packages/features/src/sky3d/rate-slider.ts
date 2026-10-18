@@ -1,4 +1,4 @@
-import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
+import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/astronomy/sky3d/time-steps";
 import type { SkyTimeTransport } from "./wheel-transport";
 
 /** One notch is one rung of {@link TIME_STEPS}. The sign is the direction. 0 is paused. */

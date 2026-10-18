@@ -1,12 +1,12 @@
-import { getCurrentBs } from "../bs-calendar";
+import { getCurrentBs } from "../calendar/bs-calendar";
 import { translateKey } from "../locale";
-import { toNepaliDigits } from "../panchanga-format";
-import { HISTORY_ERA_NOTE, formatBbse } from "../history/era-dates";
+import { toNepaliDigits } from "../panchanga/panchanga-format";
+import { HISTORY_ERA_NOTE, formatBbse } from "./history/era-dates";
 import {
   HISTORY_MILESTONES,
   HISTORY_SOURCE,
   SURYA_SIDDHANTA_HISTORY,
-} from "../history/surya-siddhanta-history";
+} from "./history/surya-siddhanta-history";
 import type { ArticleData, Bi } from "./article-schema";
 
 const both = (key: string, vars: Record<string, string> = {}): Bi => {

@@ -24,7 +24,7 @@ import {
   type DainikDayRow,
   type DainikPakshaFilter,
 } from "@vedic-patro/features/dainik-kranti";
-import { getCurrentBs, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
+import { getCurrentBs, shiftBsMonth } from "@vedic-patro/domain/calendar/bs-calendar";
 import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

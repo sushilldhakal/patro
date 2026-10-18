@@ -1,9 +1,9 @@
 // Same-origin by default: nginx proxies "/api" → the FastAPI backend, so the
 // browser never makes a cross-origin request (no CORS). Override with
 // VITE_API_BASE_URL for a split host (e.g. http://localhost:8080 in dev).
-import type { Era } from "@vedic-patro/domain/era";
-import type { InstantQuery } from "@vedic-patro/domain/instant";
-import { getLanguageForEra } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
+import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
 import {
   buildPatroDayApiQuery,
   patroDayFetchFromApiDateAd,

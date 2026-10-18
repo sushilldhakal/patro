@@ -1,5 +1,5 @@
-import { type Era } from "@vedic-patro/domain/era";
-import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
+import { type Era } from "@vedic-patro/domain/calendar/era";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { useLocale } from "@/lib/i18n";
 import { tFor } from "@vedic-patro/i18n/runtime";
 

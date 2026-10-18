@@ -5,9 +5,9 @@ import {
   appendBirthInstantParams,
   appendInstantParams,
   instantCacheKey,
-} from "@vedic-patro/domain/instant-query";
-import type { Era } from "@vedic-patro/domain/era";
-import type { InstantQuery } from "@vedic-patro/domain/instant";
+} from "@vedic-patro/domain/calendar/instant-query";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 
 import {
   appendLocation,

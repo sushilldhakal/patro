@@ -16,14 +16,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useQuery, type QueryKey } from "@tanstack/react-query";
 import { ApiError, fetchCivilTimeline, locationCacheKey, PANCHANGA_CACHE_VERSION, type PanchangaDay } from "@vedic-patro/api-client";
-import { adToBS, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@vedic-patro/domain/era";
-import { chartDateAd, isEphemerisPanchanga } from "@vedic-patro/read-models/ephemeris-adapters";
-import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/read-models/panchanga-format";
-import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/panchanga-location";
-import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
-import { civilAnchorFromPanchangaDay, parseCivilIso } from "@vedic-patro/domain/patro-day";
-import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { adToBS, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import { chartDateAd, isEphemerisPanchanga } from "@vedic-patro/read-models/astronomy/ephemeris-adapters";
+import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
+import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
+import { civilAnchorFromPanchangaDay, parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** दिन-चक्र day boundary: sunrise→sunrise (default) or midnight→midnight. */

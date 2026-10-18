@@ -1,4 +1,4 @@
-import type { JanmaPhalaHintPart } from "@vedic-patro/domain/janma-phala-tables";
+import type { JanmaPhalaHintPart } from "@vedic-patro/domain/jyotish/janma-phala-tables";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 

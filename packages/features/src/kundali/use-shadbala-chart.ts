@@ -15,8 +15,8 @@ import {
   segmentDisplay,
   yMaxFor,
   type ShadbalaScale,
-} from "@vedic-patro/read-models/kundali/shadbala-chart";
-import { BALA_STACK, GRAHA_NAME_I18N, KALA_SUBS, STHANA_SUBS, grahaDisplayName, yuddhaVirupasForPlanet } from "@vedic-patro/read-models/kundali/shadbala-display";
+} from "@vedic-patro/read-models/jyotish/kundali/shadbala-chart";
+import { BALA_STACK, GRAHA_NAME_I18N, KALA_SUBS, STHANA_SUBS, grahaDisplayName, yuddhaVirupasForPlanet } from "@vedic-patro/read-models/jyotish/kundali/shadbala-display";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const SCALES: { id: ShadbalaScale; label: string }[] = [

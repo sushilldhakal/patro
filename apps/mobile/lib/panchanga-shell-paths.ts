@@ -1,4 +1,4 @@
-import { PANCHANGA_SHELL_PATHS } from "@vedic-patro/domain/panchanga-shell-paths";
+import { PANCHANGA_SHELL_PATHS } from "@vedic-patro/domain/panchanga/panchanga-shell-paths";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 
 /**

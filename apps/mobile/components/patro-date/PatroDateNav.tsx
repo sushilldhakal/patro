@@ -1,6 +1,6 @@
-import { adToBS, bsToAD } from "@vedic-patro/domain/bs-calendar";
-import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
-import { patroBrowseTodayYear } from "@vedic-patro/domain/patro-browse-params";
+import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";

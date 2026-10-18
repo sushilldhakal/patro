@@ -1,5 +1,5 @@
 import { ScrollView, View } from "react-native";
-import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import type { LagnaMatrixRow } from "@vedic-patro/domain/jyotish/dainikKranti/month-patro-tables";
 import { useMonthLagnaMatrix } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Text } from "@vedic-patro/ui";

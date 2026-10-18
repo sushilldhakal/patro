@@ -6,7 +6,7 @@ import type { DocumentCategory } from "@vedic-patro/api-client";
 import {
   isDocumentCategoryId,
   isTopicOf,
-} from "@vedic-patro/domain/document-categories";
+} from "@vedic-patro/domain/learn/document-categories";
 
 export type DocumentCategoryTab = "all" | DocumentCategory;
 
@@ -86,4 +86,4 @@ export type {
   DocumentChapterDetail,
   VedaDaily,
 } from "@vedic-patro/api-client";
-export { formatVedaCite } from "@vedic-patro/domain/veda-cite";
+export { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";

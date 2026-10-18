@@ -72,9 +72,9 @@ import {
   appendBirthInstantParams,
   appendInstantParams,
   instantCacheKey,
-} from "@vedic-patro/domain/instant";
-import type { Era } from "@vedic-patro/domain/era";
-import type { InstantQuery } from "@vedic-patro/domain/instant";
+} from "@vedic-patro/domain/calendar/instant";
+import type { Era } from "@vedic-patro/domain/calendar/era";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────

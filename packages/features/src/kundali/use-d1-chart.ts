@@ -10,17 +10,17 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { bhavaReferenceKeys, fetchBhavaReference, type BhavaReferencePayload } from "@vedic-patro/api-client";
-import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import {
   NI_HOUSE_POLYGONS,
   planetGridLayout,
   pointsToSvg,
   polygonCentroid,
   type Point,
-} from "@vedic-patro/domain/kundali/north-indian-layout";
+} from "@vedic-patro/domain/jyotish/kundali/north-indian-layout";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Catalogue key for each planet's two-letter glyph label. */

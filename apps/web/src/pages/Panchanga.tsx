@@ -3,8 +3,8 @@ import { Link, getRouteApi } from "@tanstack/react-router";
 import { CalendarRange } from "lucide-react";
 import { usePanchangaPage } from "@vedic-patro/features/panchanga";
 import { fetchPanchangaCivilDay, fetchPanchangaDay, panchangaKeys } from "@/lib/api";
-import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate } from "@vedic-patro/domain/patro-day";
-import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate } from "@vedic-patro/domain/calendar/patro-day";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { useDayCycleToggle } from "@vedic-patro/features/panchanga-drawing";
@@ -35,7 +35,7 @@ import {
 } from "@vedic-patro/ui/kit/panchanga";
 import { useRouteLoading } from "@/lib/route-loading";
 import { buildPatroBrowseYearOptions, pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/calendar/era";
 
 /** Panchanga scrubs date/time in-place; never block the whole page with the route overlay. */
 const PANCHANGA_ROUTE_LOADING = false;

@@ -5,7 +5,7 @@
  * rashi merged in on its own day), and copy.
  */
 import type { GocharGraha } from "@vedic-patro/api-client";
-import { rowLabelFor } from "@vedic-patro/domain/dainikKranti/gochar-rows";
+import { rowLabelFor } from "@vedic-patro/domain/jyotish/dainikKranti/gochar-rows";
 import {
   mergeKundaliRashi,
   RASHYADI_PLANET_ABBREV,
@@ -13,7 +13,7 @@ import {
   RASHYADI_ROW_KEYS,
   rashyadiCellValue,
   type RashyadiSegment,
-} from "@vedic-patro/read-models/dainikKranti/rashyadi";
+} from "@vedic-patro/read-models/jyotish/dainikKranti/rashyadi";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type GocharGrahaRow = GocharGraha & { key: string };

@@ -3,7 +3,7 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { BhavaTable } from "@/components/kundali/BhavaTable";
 import type { VargaCharts } from "@/lib/api";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import type { DivisionalPanelConfig } from "@vedic-patro/features/kundali";
 import { DivisionalChartCompare as Shared } from "@vedic-patro/ui/kit/jyotish";
 

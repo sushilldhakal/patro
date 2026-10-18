@@ -6,7 +6,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { fetchKundaliDetail, kundaliDetailKeys, type LocationParams } from "@vedic-patro/api-client";
-import type { InstantQuery } from "@vedic-patro/domain/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 

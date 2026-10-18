@@ -4,9 +4,9 @@
  * (what it is, how it is calculated, what it means) for a graha page or a
  * panchanga element, and the app's link back to all elements.
  */
-import { GRAHA_PAGE_DESCRIPTIONS } from "@vedic-patro/domain/graha-detail-descriptions";
+import { GRAHA_PAGE_DESCRIPTIONS } from "@vedic-patro/domain/jyotish/graha-detail-descriptions";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
+import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga/panchanga-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 const SECTIONS = ["what", "how", "meaning"] as const;
