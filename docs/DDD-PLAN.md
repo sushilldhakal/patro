@@ -106,12 +106,11 @@ full API suite before merge.
 
 ### Phase 0 — Agree the model ✅
 This document, plus `tests/test_layer_dependencies.py`, which fails when the
-engine imports an outer layer. It carries an allow-list of the imports that were
-already there, so it passes today. Phase 1 empties the allow-list, and nothing
-new can join it.
+engine imports an outer layer.
 
-### Phase 1 — Dependency direction (engine → nothing outward) — in progress
-Move out of `engine/` whatever reaches upward:
+### Phase 1 — Dependency direction (engine → nothing outward) ✅
+Moved out of `engine/` whatever reached upward. Every payload stayed
+byte-identical (a 42-endpoint before/after snapshot, plus the full suite).
 
 | Was in the engine | Now |
 |---|---|
@@ -119,12 +118,14 @@ Move out of `engine/` whatever reaches upward:
 | `location.resolve_location_from_query` looked up cities in `services.cities_db` | moved to `services/observer_location.py` (Geography application); the engine keeps the pure `resolve_location` |
 | `daily.get_daily_panchanga` / `daily_civil.get_daily_panchanga_civil`: cache-aside plus festival attachment | moved to `services/daily_panchanga.py`; the engine keeps the pure `build_*` builders |
 | `at_time.build_panchanga_at_time` / `build_panchanga_civil_day` / `instant_row_from_date` called `services.panchanga_api` | moved to `services/panchanga_at_time.py` |
-| `kundali_detail.build_kundali_detail` assembled a panchanga block | moved to `services/kundali_detail_api.py`; chart maths stays in the engine |
+| `kundali_detail.build_kundali_detail` assembled a panchanga block | split: the engine keeps `assemble_kundali_detail(..., panchanga)`; `services/kundali_detail_api.build_kundali_detail` builds the panchanga block and calls it |
 | `vastu/architecture.py` imported `services.vastu_room_sizes_db` | the size tiers are reference data the domain owns: `engine/vedic/vastu/room_sizes.py` |
-| `vastu/zone_rules.py` imported `services.vastu_rules_db` (SQLite) | depends on a `ZoneRuleIndex` port; the SQLite store implements it and is wired by default from `services/` |
+| `vastu/zone_rules.py` imported `services.vastu_rules_db` (SQLite) | declares a `ZoneRuleIndex` port; the SQLite store implements it, and `services/wiring.configure()` (the composition root, called by `app/main.py` and `tests/conftest.py`) plugs it in |
 
-Private cross-module imports (`_collect_bs_year_festivals`, `_festivals_for_day`,
-`_scan_year`, `_element_state`, `_paksha_block`) became public names.
+Helpers imported across a layer boundary under a private name became public:
+`paksha_block`, `compute_navatara_number`, `navatara_meta`, `element_state`,
+`collect_bs_year_festivals`, `festivals_for_day`, `scan_year`. Private imports
+between modules inside one engine context are left alone.
 
 ### Phase 2 — Application layer for Identity & Profiles
 - `Profile` aggregate with its invariants in the domain: one default per user,
