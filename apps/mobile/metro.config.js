@@ -1,6 +1,8 @@
 const https = require("https");
 const path = require("path");
-const { getDefaultConfig } = require("expo/metro-config");
+/* Sentry's wrapper around Expo's default config: stamps each bundle with a debug ID so a crash
+   in a build or an EAS update maps back to the source line. */
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 const { withNativeWind } = require("nativewind/metro");
 
 /** One Three.js build for the whole bundle (avoids cjs + esm double-load warning). */
@@ -10,7 +12,7 @@ const THREE_ENTRY = [
   path.resolve(__dirname, "../../node_modules/three/build/three.module.js"),
 ].find((candidate) => require("fs").existsSync(candidate));
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 config.transformer = {
   ...config.transformer,

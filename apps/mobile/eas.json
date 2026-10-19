@@ -13,7 +13,8 @@
         "buildType": "apk"
       },
       "env": {
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "SENTRY_ALLOW_FAILURE": "true"
       }
     },
     "development-simulator": {
@@ -29,7 +30,8 @@
         "buildType": "apk"
       },
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "preview",
+        "SENTRY_ALLOW_FAILURE": "true"
       }
     },
     "production": {
@@ -39,7 +41,8 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "SENTRY_ALLOW_FAILURE": "true"
       }
     },
     "testflight": {

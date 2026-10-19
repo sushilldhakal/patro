@@ -5,11 +5,13 @@ import "./i18n/index";
 import i18n from "./i18n/index";
 import { syncDocumentLang } from "./lib/fonts";
 import { initAnalytics } from "./lib/analytics";
+import { initSentry, sentryRootErrorHandlers } from "./lib/sentry";
 import App from "./App";
 
 syncDocumentLang(i18n.language);
 
 initAnalytics();
+initSentry();
 
 const root = document.getElementById("root");
 if (!root) {
@@ -35,6 +37,7 @@ if (ssrPath && normalize(ssrPath) === normalize(window.location.pathname)) {
   // different day than the build. React 19 recovers automatically; we silence
   // the console noise from those expected mismatches.
   hydrateRoot(root, app, {
+    ...sentryRootErrorHandlers,
     onRecoverableError(error) {
       if (
         import.meta.env.DEV &&
@@ -47,5 +50,5 @@ if (ssrPath && normalize(ssrPath) === normalize(window.location.pathname)) {
   });
 } else {
   root.innerHTML = "";
-  createRoot(root).render(app);
+  createRoot(root, sentryRootErrorHandlers).render(app);
 }

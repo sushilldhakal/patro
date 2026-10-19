@@ -36,6 +36,14 @@ if [[ -z "${ga_id}" && -f "${WEB_ROOT}/index.html" ]]; then
 fi
 [[ -n "${ga_id}" ]] && BUILD_ENV+=(VITE_GA_MEASUREMENT_ID="${ga_id}")
 
+# Sentry: the DSN turns error reporting on in the bundle; the org, project and token let the
+# build upload source maps (and then delete them from the output). Each is optional.
+for key in VITE_SENTRY_DSN SENTRY_ORG SENTRY_PROJECT SENTRY_AUTH_TOKEN; do
+  value="${!key:-}"
+  [[ -n "${value}" ]] || value="$(env_value "${key}")"
+  if [[ -n "${value}" ]]; then BUILD_ENV+=("${key}=${value}"); fi
+done
+
 (cd "${WEB_DIR}" && env "${BUILD_ENV[@]}" npm run build)
 
 if grep -q 'googletagmanager.com/gtag/js' "${WEB_DIR}/dist/index.html" 2>/dev/null; then

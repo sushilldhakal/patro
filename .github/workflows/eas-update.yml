@@ -24,6 +24,10 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT_MOBILE }}
     steps:
       - uses: actions/checkout@v4
 
@@ -51,3 +55,10 @@ jobs:
           --message "$MESSAGE"
           --platform all
           --non-interactive
+
+      # Source maps for the update just published, so a crash in it reads as the original file
+      # and line in Sentry. Skipped until the SENTRY_AUTH_TOKEN secret exists.
+      - name: Upload update source maps to Sentry
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
+        working-directory: apps/mobile
+        run: npx sentry-expo-upload-sourcemaps dist
