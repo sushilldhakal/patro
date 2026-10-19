@@ -122,8 +122,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
   const gaId = env.VITE_GA_MEASUREMENT_ID
   /* Sentry source maps: uploaded when the deploy supplies a token, then deleted from the
      output so the site never serves them. Without a token the build is unchanged. */
-  const sentryUpload =
-    !isSsrBuild && Boolean(env.SENTRY_AUTH_TOKEN && env.SENTRY_ORG && env.SENTRY_PROJECT)
+  const sentryOrg = env.SENTRY_ORG || "nagosi"
+  const sentryProject = env.SENTRY_PROJECT || "patro-web"
+  const sentryUpload = !isSsrBuild && Boolean(env.SENTRY_AUTH_TOKEN)
 
   return {
     base: "/",
@@ -136,8 +137,8 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       ...(sentryUpload
         ? [
             sentryVitePlugin({
-              org: env.SENTRY_ORG,
-              project: env.SENTRY_PROJECT,
+              org: sentryOrg,
+              project: sentryProject,
               authToken: env.SENTRY_AUTH_TOKEN,
               sourcemaps: { filesToDeleteAfterUpload: ["./dist/**/*.map"] },
               telemetry: false,
