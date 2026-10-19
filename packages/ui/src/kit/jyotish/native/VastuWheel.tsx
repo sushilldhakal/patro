@@ -14,6 +14,7 @@ import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import { VASTU_COMPASS_16, VASTU_GUNA_BANDS, VASTU_WHEEL_GEOMETRY, useVastuPurushaWheel } from "@vedic-patro/features/vastu";
 import type { VastuPurushaWheelProps } from "../contract";
 import { ArcLabel, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette } from "./WheelMarks";
+import { ZoomStage } from "../../panchanga/native/ZoomStage";
 
 const fonts = fontFamily.native;
 const press = (fn: () => void): any => fn;
@@ -106,9 +107,11 @@ export function VastuPurushaWheel({
 
   return (
     <View>
+      <ZoomStage size={size ?? WHEEL_SIZE}>
+      {(px) => (
       <Svg
-        width={size ?? WHEEL_SIZE}
-        height={size ?? WHEEL_SIZE}
+        width={px}
+        height={px}
         viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
         accessibilityLabel={w.heading}
       >
@@ -467,6 +470,8 @@ export function VastuPurushaWheel({
           </G>
         ) : null}
       </Svg>
+      )}
+      </ZoomStage>
 
       <View className={vastuClasses.wheelLegend}>
         {VASTU_ELEMENT_ORDER.map((element) => (

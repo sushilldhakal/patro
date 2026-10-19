@@ -329,7 +329,10 @@ function RingLabel({
               <TSpan
                 key={`${row}-${i}`}
                 x={CX}
-                dy={i > 0 ? 15 * fontSize : -0.55 * (stack.length - 1) * fontSize}
+                /* 1.1em, as on web. `15 * fontSize` flung the second word
+                   (“फाल्गुनी”) ~165 units off the ring and left “उत्तर” /
+                   “पूर्व” stranded on their own. */
+                dy={i > 0 ? 1.1 * fontSize : -0.55 * (stack.length - 1) * fontSize}
               >
                 {row}
               </TSpan>
@@ -397,6 +400,19 @@ function WheelChartImpl({
   zoomRef.current = zoom;
   const pinchRef = useRef<PinchGesture | null>(null);
   const pinchingRef = useRef(false);
+  /* Live pinch / pan, applied straight to the transform. Committing every
+     finger-move to `zoom` / `pan` state re-rendered the whole SVG per event —
+     and in fullscreen there were two of them — so pinch stalled there. The
+     parent's state is set once, on release. */
+  const liveZoom = useRef(new Animated.Value(zoom)).current;
+  const liveX = useRef(new Animated.Value(pan.x)).current;
+  const liveY = useRef(new Animated.Value(pan.y)).current;
+  const pendingRef = useRef<{ zoom: number; x: number; y: number } | null>(null);
+  useLayoutEffect(() => {
+    liveZoom.setValue(zoom);
+    liveX.setValue(pan.x);
+    liveY.setValue(pan.y);
+  }, [zoom, pan.x, pan.y, liveZoom, liveX, liveY]);
   /* Live drag rotation, degrees, applied as a transform on the drawing — the
      wheel is ~900 SVG nodes, so re-rendering it per finger-move (what setting
      `spin` state did) starved the JS thread and made the wheel lag and drop
@@ -448,6 +464,14 @@ function WheelChartImpl({
     return (Math.atan2(locationY - cy, locationX - cx) * 180) / Math.PI;
   }, []);
 
+  const commitLive = useCallback(() => {
+    const done = pendingRef.current;
+    pendingRef.current = null;
+    if (!done) return;
+    if (done.zoom !== zoomRef.current) onZoom(done.zoom);
+    onPan(done.x, done.y);
+  }, [onPan, onZoom]);
+
   const wheelPan = useMemo(
     () =>
       PanResponder.create({
@@ -497,11 +521,12 @@ function WheelChartImpl({
             const centroid = touchCentroidInView(touches, layout.pageX, layout.pageY);
             if (dist <= 0 || !centroid) return;
             if (!pinchRef.current) {
+              const from = pendingRef.current ?? { zoom: zoomRef.current, ...panRef.current };
               pinchRef.current = {
                 dist0: dist,
-                zoom0: zoomRef.current,
-                pan0x: panRef.current.x,
-                pan0y: panRef.current.y,
+                zoom0: from.zoom,
+                pan0x: from.x,
+                pan0y: from.y,
                 focalX: centroid.x,
                 focalY: centroid.y,
                 centroid0x: centroid.x,
@@ -510,18 +535,32 @@ function WheelChartImpl({
               return;
             }
             const next = applyPinchTransform(pinchRef.current, dist, centroid, layout.w, layout.h);
-            onZoom(next.zoom);
-            onPan(next.pan.x, next.pan.y);
+            pendingRef.current = { zoom: next.zoom, x: next.pan.x, y: next.pan.y };
+            liveZoom.setValue(next.zoom);
+            liveX.setValue(next.pan.x);
+            liveY.setValue(next.pan.y);
             return;
           }
 
+          if (pinchRef.current) {
+            /* Lifted one finger of two: start from where the pinch left it. */
+            const done = pendingRef.current;
+            if (done) {
+              panRef.current = { x: done.x, y: done.y };
+              zoomRef.current = done.zoom;
+            }
+          }
           pinchRef.current = null;
           const drag = dragRef.current;
           if (!drag) return;
 
           if (drag.mode === "p") {
             if (Math.abs(gestureState.dx) > 3 || Math.abs(gestureState.dy) > 3) drag.moved = true;
-            onPan(drag.pan0x + gestureState.dx, drag.pan0y + gestureState.dy);
+            const x = drag.pan0x + gestureState.dx;
+            const y = drag.pan0y + gestureState.dy;
+            pendingRef.current = { zoom: zoomRef.current, x, y };
+            liveX.setValue(x);
+            liveY.setValue(y);
             return;
           }
 
@@ -542,6 +581,7 @@ function WheelChartImpl({
           const drag = dragRef.current;
           const wasPinching = pinchingRef.current;
           if (drag?.mode === "r" && drag.moved && !wasPinching) onSpin(drag.latest);
+          commitLive();
           dragRef.current = null;
           pinchRef.current = null;
           pinchingRef.current = false;
@@ -550,12 +590,13 @@ function WheelChartImpl({
           const drag = dragRef.current;
           if (drag?.mode === "r" && drag.moved) onSpin(drag.latest);
           else dragRot.setValue(0);
+          commitLive();
           dragRef.current = null;
           pinchRef.current = null;
           pinchingRef.current = false;
         },
       }),
-    [angleAt, dragRot, onPan, onSpin, onZoom, syncLayout, touchFromEvent],
+    [angleAt, commitLive, dragRot, liveX, liveY, liveZoom, onSpin, syncLayout, touchFromEvent],
   );
 
   const pol = useCallback(
@@ -1064,10 +1105,10 @@ function WheelChartImpl({
       }}
       {...wheelPan.panHandlers}
     >
-      <View
+      <Animated.View
         style={{
           flex: 1,
-          transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
+          transform: [{ translateX: liveX }, { translateY: liveY }, { scale: liveZoom }],
         }}
       >
         {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
@@ -1101,7 +1142,7 @@ function WheelChartImpl({
         {markerNodes}
       </Svg>
         </Animated.View>
-      </View>
+      </Animated.View>
     </View>
   );
 }

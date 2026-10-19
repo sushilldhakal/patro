@@ -1,7 +1,8 @@
 import type { Gana } from "@vedic-patro/domain/avakahada-data";
 import { illustration, wheel } from "@vedic-patro/design-tokens";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
-import { AvakahadaWheel as KitWheel, type AvakahadaWheelAssets } from "@vedic-patro/ui/kit/panchanga";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AvakahadaWheel as KitWheel, ZoomStageInsets, type AvakahadaWheelAssets } from "@vedic-patro/ui/kit/panchanga";
 
 const assets: AvakahadaWheelAssets = {
   chartFont: NOTO_DEVANAGARI_CHART,
@@ -19,7 +20,12 @@ type Props = {
 
 /** Fonts and gana fills stay in the app. The drawing lives in the kit. */
 export function AvakahadaWheel({ highlighted }: Props) {
-  return <KitWheel highlighted={highlighted} assets={assets} />;
+  const insets = useSafeAreaInsets();
+  return (
+    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom }}>
+      <KitWheel highlighted={highlighted} assets={assets} />
+    </ZoomStageInsets>
+  );
 }
 
 export default AvakahadaWheel;

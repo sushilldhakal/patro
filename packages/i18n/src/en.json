@@ -2703,7 +2703,7 @@
     "wheel_zoom_in": "Zoom in",
     "wheel_zoom_out": "Zoom out",
     "wheel_zoom_reset": "Reset zoom",
-    "wheel_pan_hint": "Drag to pan when zoomed",
+    "wheel_pan_hint": "Pinch or scroll to zoom; drag to pan when zoomed",
     "bhoomadosha_title": "Bhoomadosha (Mangal) considerations",
     "name_groups": "Name-syllable groups and enemy groups",
     "bhoomadosha_note": "Bhoomadosha (Mangal) is considered when bride and groom name-syllable groups are mutual enemies.",
@@ -5023,6 +5023,11 @@
       "x_be9a266a": "{{v0}} enters {{v1}}",
       "x_c068f043": "{{v0}}",
       "reload_reset_zoom": "Reload · reset zoom · {{mode}}"
+    },
+    "zoom": {
+      "fullscreen": "Full screen",
+      "exit_fullscreen": "Exit full screen",
+      "reset": "Reset zoom"
     },
     "patro_date": {
       "choose_year": "Choose year",

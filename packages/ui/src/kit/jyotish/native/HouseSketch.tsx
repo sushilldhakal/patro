@@ -13,6 +13,7 @@ import { useHouseSketch } from "@vedic-patro/features/vastu";
 import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
 import type { HouseSketchProps } from "../contract";
 import { VastuCompassRing } from "./VastuCompass";
+import { ZoomStage } from "../../panchanga/native/ZoomStage";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
@@ -136,15 +137,17 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
 
   return (
     <View>
-      <View style={{ width: edge, height: edge }} className="self-center">
+      <ZoomStage size={edge}>
+      {(dim) => (
+      <View style={{ width: dim, height: dim }} className="self-center">
         <View className="absolute inset-0">
-          <VastuCompassRing size={edge} center={center} ink={ink} marks={marks} />
+          <VastuCompassRing size={dim} center={center} ink={ink} marks={marks} />
         </View>
 
         <View className="absolute inset-0">
           <Svg
-            width={edge}
-            height={edge}
+            width={dim}
+            height={dim}
             viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
             accessibilityLabel={sketch.labels.aria}
             pointerEvents="none"
@@ -316,6 +319,8 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
           </Svg>
         </View>
       </View>
+      )}
+      </ZoomStage>
 
       <View className={vastuClasses.sketchCaption}>
         <Text

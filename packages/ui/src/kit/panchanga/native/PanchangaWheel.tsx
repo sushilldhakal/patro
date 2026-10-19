@@ -844,6 +844,9 @@ function WheelBody({
     >
       {renderHeader(fullscreen)}
       <View className="flex-1">
+        {/* The page's copy sits behind the fullscreen modal. Drawing it too
+            doubled every pinch frame — and the modal one never kept up. */}
+        {expanded && !fullscreen ? null : (
         <WheelChart
           det={det}
           markers={markers}
@@ -865,6 +868,7 @@ function WheelBody({
           place={place}
           assets={chartAssets}
         />
+        )}
       </View>
       <WheelChrome
         pick={pick}

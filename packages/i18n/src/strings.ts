@@ -4648,7 +4648,7 @@ export const strings = {
   "avakahada.wheel_zoom_in": { ne: "ठूलो पार्नुहोस्", en: "Zoom in" },
   "avakahada.wheel_zoom_out": { ne: "सानो पार्नुहोस्", en: "Zoom out" },
   "avakahada.wheel_zoom_reset": { ne: "जुम रिसेट", en: "Reset zoom" },
-  "avakahada.wheel_pan_hint": { ne: "जुम गरेपछि तानेर सार्न सकिन्छ", en: "Drag to pan when zoomed" },
+  "avakahada.wheel_pan_hint": { ne: "दुई औँलाले वा माउस ह्वीलले जुम गर्नुहोस्; जुम गरेपछि तानेर सार्न सकिन्छ", en: "Pinch or scroll to zoom; drag to pan when zoomed" },
   "avakahada.bhoomadosha_title": { ne: "भौमदोष (मङ्गली) विचार", en: "Bhoomadosha (Mangal) considerations" },
   "avakahada.name_groups": { ne: "नामाक्षर वर्ग र शत्रु वर्ग", en: "Name-syllable groups and enemy groups" },
   "avakahada.bhoomadosha_note": {
@@ -7621,6 +7621,9 @@ export const strings = {
   "ui.panchanga.panchanga_details": { ne: "पञ्चाङ्ग विवरण", en: "Panchanga details" },
   "ui.panchanga.rel_d": { ne: "{{rel}} दिन", en: "{{rel}}d" },
   "ui.panchanga.reload": { ne: "रिलोड", en: "Reload" },
+  "ui.zoom.fullscreen": { ne: "पूरा स्क्रिन", en: "Full screen" },
+  "ui.zoom.exit_fullscreen": { ne: "पूरा स्क्रिन बन्द", en: "Exit full screen" },
+  "ui.zoom.reset": { ne: "जुम रिसेट", en: "Reset zoom" },
   "ui.panchanga.reload_reset_zoom_sunrise": { ne: "रिलोड · जुम रिसेट · सूर्योदय", en: "Reload · reset zoom · sunrise" },
   "ui.panchanga.status_at_instanttime": { ne: "{{instantTime}} बजेको अवस्था", en: "Status at {{instantTime}}" },
   "ui.panchanga.value_padas": { ne: "{{value}} पद", en: "{{value}} padas" },
