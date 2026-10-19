@@ -73,37 +73,30 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
   const icon = findNakshatraIcon(row.en);
 
   if (ring === "nakshatra") {
+    /* Sized in wheel units (the hub is a 208-unit circle) so all seven rows
+       sit inside it with no scrollbar, whatever the wheel's on-screen size. */
     return (
-      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
-        <div className={cn(avakahadaClasses.hubIcon, `text-[var(--w-ink,${midnight.foam})]`)}>
+      <div className="flex w-[150px] flex-col items-center text-[var(--w-ink)]">
+        <div className="h-[18px] w-[18px] shrink-0">
           {icon?.svg ? (
-            <span
-              className={HUB_ICON_SVG}
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: icon.svg }}
-            />
-          ) : (
-            <span className={avakahadaClasses.hubIconFallback}>{row.index}</span>
-          )}
+            <span className={HUB_ICON_SVG} aria-hidden dangerouslySetInnerHTML={{ __html: icon.svg }} />
+          ) : null}
         </div>
-        <p className={cn(avakahadaClasses.hubNakTitle, `text-[var(--w-ink,${midnight.foam})]`)}>
+        <p className="m-0 max-w-full truncate text-[12px] font-bold leading-[14px]">
           {row.index}. {row.nakshatraLabel}
         </p>
-        <dl className={avakahadaClasses.hubAttrList}>
+        <dl className="m-0 mt-[3px] w-full text-left">
           {hub.attrs.map((attr) => (
             <div
               key={attr.id}
-              className={cn(
-                avakahadaClasses.hubAttrRow,
-                "grid grid-cols-[52px_1fr] border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] max-sm:grid-cols-[44px_1fr]",
-              )}
+              className="grid grid-cols-[46px_1fr] items-baseline gap-x-1 border-b border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] py-px last:border-b-0"
             >
-              <dt className={cn(avakahadaClasses.hubAttrName, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>{attr.label}</dt>
-              <dd className={cn(avakahadaClasses.hubAttrValue, `text-[var(--w-ink,${midnight.foam})]`)}>{attr.value}</dd>
+              <dt className="truncate text-[8.5px] leading-[11px] text-[var(--w-ink-faint)]">{attr.label}</dt>
+              <dd className="m-0 truncate text-[9.5px] font-semibold leading-[11px]">{attr.value}</dd>
             </div>
           ))}
         </dl>
-        <p className={avakahadaClasses.hubVairi}>
+        <p className="m-0 mt-[3px] max-w-[130px] truncate text-[8px] leading-[10px] text-[var(--w-ink-faint)]">
           {hub.vairi}
         </p>
       </div>
@@ -112,7 +105,7 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
 
   if (ring === "pada" && hub.charan) {
     return (
-      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
+      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-hidden")}>
         <p className={cn(avakahadaClasses.hubLabel, "text-[var(--w-accent,var(--color-danger))]")}>
           {label}
         </p>
@@ -128,7 +121,7 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
   }
 
   return (
-    <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
+    <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-hidden")}>
       <p className={cn(avakahadaClasses.hubLabel, "text-[var(--w-accent,var(--color-danger))]")}>
         {label}
       </p>

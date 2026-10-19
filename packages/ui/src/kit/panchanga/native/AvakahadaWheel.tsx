@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import Svg, {
   Circle,
   Defs as SvgDefsBase,
@@ -109,47 +109,67 @@ function RadialText({
   );
 }
 
-function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>; row: AvakahadaWheelRow }) {
+function HubContent({
+  hub,
+  row,
+  scale,
+}: {
+  hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>;
+  row: AvakahadaWheelRow;
+  /** On-screen points per wheel unit — the hub is a 208-unit circle. */
+  scale: number;
+}) {
   const { ring, label, value } = hub;
   const vairiLine = hub.vairi;
   const { chartFont } = useAvakahadaAssets();
 
   if (ring === "nakshatra") {
+    /* Sized in wheel units so all seven rows sit inside the hub with no
+       scrolling; pinch or fullscreen to read it larger. */
+    const u = (n: number) => n * scale;
     return (
-      <ScrollView
-        contentContainerClassName={avakahadaClasses.hubStack}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{ width: u(150), alignItems: "center" }}>
         <Text
-          style={{ color: W_INK, fontFamily: chartFont }}
-          className={cn(avakahadaClasses.hubNakTitle, "text-xs text-center")}
+          numberOfLines={1}
+          style={{ color: W_INK, fontFamily: chartFont, fontSize: u(12), lineHeight: u(15), fontWeight: "700" }}
         >
           {hub.nakTitle}
         </Text>
-        <View className={avakahadaClasses.hubAttrList}>
-          {hub.attrs.map((attr) => (
+        <View style={{ width: "100%", marginTop: u(3) }}>
+          {hub.attrs.map((attr, i) => (
             <View
               key={attr.id}
-              className={cn("flex-row justify-between", avakahadaClasses.hubAttrRow)}
-              style={{ borderBottomColor: W_SEP_SOFT }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: u(4),
+                paddingVertical: u(1),
+                borderBottomWidth: i < hub.attrs.length - 1 ? 0.5 : 0,
+                borderBottomColor: W_SEP_SOFT,
+              }}
             >
-              <Text style={{ color: W_INK_FAINT, fontFamily: chartFont }} className={cn(avakahadaClasses.hubAttrName, "text-xs")}>
+              <Text
+                numberOfLines={1}
+                style={{ width: u(46), color: W_INK_FAINT, fontFamily: chartFont, fontSize: u(8.5), lineHeight: u(12) }}
+              >
                 {attr.label}
               </Text>
               <Text
                 numberOfLines={1}
-                style={{ color: W_INK, fontFamily: chartFont }}
-                className={cn(avakahadaClasses.hubAttrValue, "text-xs shrink")}
+                style={{ flex: 1, color: W_INK, fontFamily: chartFont, fontSize: u(9.5), lineHeight: u(12), fontWeight: "600" }}
               >
                 {attr.value}
               </Text>
             </View>
           ))}
         </View>
-        <Text style={{ color: W_INK_FAINT, fontFamily: chartFont }} className={cn(avakahadaClasses.hubSub, "text-xs")}>
+        <Text
+          numberOfLines={1}
+          style={{ maxWidth: u(130), marginTop: u(3), color: W_INK_FAINT, fontFamily: chartFont, fontSize: u(8), lineHeight: u(11) }}
+        >
           {vairiLine}
         </Text>
-      </ScrollView>
+      </View>
     );
   }
 
@@ -435,7 +455,7 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
               }}
             >
               {activeRow && selected ? (
-                <HubContent hub={v.hub(selected, activeRow)} row={activeRow} />
+                <HubContent hub={v.hub(selected, activeRow)} row={activeRow} scale={scale} />
               ) : (
                 <View className="items-center px-1">
                   <Text
