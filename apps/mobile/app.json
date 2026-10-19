@@ -234,7 +234,14 @@
       "backgroundColor": "#073f43"
     },
     "plugins": [
-      "@sentry/react-native/expo",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "patro",
+          "organization": "nagosi"
+        }
+      ],
       "expo-router",
       "expo-dev-client",
       "./plugins/with-react-native-dir.js",
