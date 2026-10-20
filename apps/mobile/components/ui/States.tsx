@@ -1,4 +1,8 @@
+import { useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { useNetworkStatus } from "@/lib/offline/network-status";
+import { useThemeColors } from "@/lib/theme-context";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
@@ -20,6 +24,12 @@ export function LoadingState({ label }: { label?: string | null }) {
   );
 }
 
+/**
+ * The page-level error box. Offline, it says so plainly — "no internet connection", and how to
+ * get it back — instead of a bare "could not load", and it retries by itself the moment the
+ * connection returns. A screen's own message (e.g. "this year is not downloaded") still shows
+ * under the offline title.
+ */
 export function ErrorState({
   message,
   onRetry,
@@ -27,7 +37,40 @@ export function ErrorState({
   message?: string;
   onRetry?: () => void;
 }) {
-  const { t, pick } = useLocale();
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const { isOnline } = useNetworkStatus();
+
+  /* Back online after being offline here: try again without waiting for a tap. */
+  const wasOffline = useRef(false);
+  useEffect(() => {
+    if (!isOnline) {
+      wasOffline.current = true;
+      return;
+    }
+    if (wasOffline.current) {
+      wasOffline.current = false;
+      onRetry?.();
+    }
+  }, [isOnline, onRetry]);
+
+  if (!isOnline) {
+    return (
+      <View className="items-center gap-2 rounded-xl border border-border bg-card px-4 py-6">
+        <Ionicons name="cloud-offline-outline" size={32} color={colors.mutedForeground} />
+        <Text className="text-body text-center font-bold text-foreground">{t("ui.common.no_internet_title")}</Text>
+        <Text className="text-caption text-center text-muted-foreground">
+          {message ?? t("ui.common.no_internet_body")}
+        </Text>
+        {onRetry ? (
+          <Pressable onPress={onRetry} className="mt-2 rounded-lg bg-primary px-4 py-2">
+            <Text className="text-body font-semibold text-primary-foreground">{t("ui.common.retry")}</Text>
+          </Pressable>
+        ) : null}
+      </View>
+    );
+  }
+
   return (
     <View className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
       <Text className="text-body text-destructive">

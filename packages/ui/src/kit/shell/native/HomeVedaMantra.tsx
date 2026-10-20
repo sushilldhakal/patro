@@ -35,7 +35,9 @@ export function HomeVedaMantra({
         <Text as="p" className={home.vedaSanskrit}>
           {tokens.map((tok, i) =>
             i === activeToken ? (
-              <Text key={i} className={cn(home.vedaWord, "px-0.5")}>
+              /* Same size as the line around it: the kit's Text sizes itself (text-body) when
+                 no size is given, so the highlighted word shrank while it was being read. */
+              <Text key={i} className={cn(home.vedaSanskrit, home.vedaWord)}>
                 {tok}
               </Text>
             ) : (

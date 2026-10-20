@@ -4550,6 +4550,11 @@
       "x_be9a266a": "{{v0}} enters {{v1}}",
       "reload_reset_zoom": "Reload · reset zoom · {{mode}}"
     },
+    "zoom": {
+      "fullscreen": "Full screen",
+      "exit_fullscreen": "Exit full screen",
+      "reset": "Reset zoom"
+    },
     "reminders": {
       "reminders": "Reminders"
     },

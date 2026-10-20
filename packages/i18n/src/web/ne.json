@@ -4550,6 +4550,11 @@
       "x_be9a266a": "{{v0}} {{v1}}मा प्रवेश",
       "reload_reset_zoom": "रिलोड · जुम रिसेट · {{mode}}"
     },
+    "zoom": {
+      "fullscreen": "पूरा स्क्रिन",
+      "exit_fullscreen": "पूरा स्क्रिन बन्द",
+      "reset": "जुम रिसेट"
+    },
     "reminders": {
       "reminders": "रिमाइन्डर"
     },

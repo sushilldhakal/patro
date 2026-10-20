@@ -4320,6 +4320,8 @@
       "horizon": "Horizon",
       "notes": "Notes",
       "retry": "Retry",
+      "no_internet_title": "No internet connection",
+      "no_internet_body": "Turn on Wi-Fi or mobile data. This loads again by itself once you're back online.",
       "saving": "Saving…",
       "start": "Start",
       "theme": "Theme",

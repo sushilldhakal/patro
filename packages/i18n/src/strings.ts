@@ -6887,6 +6887,11 @@ export const strings = {
   "ui.common.horizon": { ne: "क्षितिज", en: "Horizon" },
   "ui.common.notes": { ne: "टिप्पणी", en: "Notes" },
   "ui.common.retry": { ne: "पुनः प्रयास", en: "Retry" },
+  "ui.common.no_internet_title": { ne: "इन्टरनेट जडान छैन", en: "No internet connection" },
+  "ui.common.no_internet_body": {
+    ne: "वाइफाइ वा मोबाइल डाटा खोल्नुहोस्। जडान फर्किएपछि यो आफैँ लोड हुन्छ।",
+    en: "Turn on Wi-Fi or mobile data. This loads again by itself once you're back online.",
+  },
   "ui.common.saving": { ne: "सेभ हुँदै…", en: "Saving…" },
   "ui.common.start": { ne: "सुरु", en: "Start" },
   "ui.common.theme": { ne: "थिम", en: "Theme" },
