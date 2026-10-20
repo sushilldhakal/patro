@@ -58,7 +58,7 @@ export const spec = {
 
   // ── Stat card (label + value + sub) ───────────────────────────────────────
   statCard: "flex flex-col gap-1 rounded-xl border border-border bg-card p-4",
-  statCardHighlight: "border-secondary/40 bg-secondary/5",
+  statCardHighlight: "border-secondary/60 bg-secondary/10",
 
   // ── Table ─────────────────────────────────────────────────────────────────
   tableHeaderCell: "px-3 py-2 text-xs font-semibold uppercase tracking-wide",

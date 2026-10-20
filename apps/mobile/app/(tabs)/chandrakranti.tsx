@@ -1,6 +1,6 @@
-import { Redirect } from "expo-router";
+import { RouteAlias } from "@/components/navigation/RouteAlias";
 
 /** Legacy path `/chandrakranti` → daily transit. */
 export default function ChandrakrantiAlias() {
-  return <Redirect href="/dainikkranti" />;
+  return <RouteAlias to="/dainikkranti" />;
 }

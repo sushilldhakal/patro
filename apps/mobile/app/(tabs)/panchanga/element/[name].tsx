@@ -168,9 +168,17 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
       <>
         <Grid cols={LEGEND_COLS} gapX={16} gapY={4} className="mb-3">
           {table.legend.map((item) => (
-            <Text key={item.key} style={nepaliTextStyle(14)} className="text-sm text-muted-foreground">
-              {item.text}
-            </Text>
+            <View key={item.key} className="flex-row items-center gap-2">
+              <View
+                className={cn(
+                  "h-2.5 w-2.5 rounded-full",
+                  item.tone === "good" ? "bg-success" : item.tone === "bad" ? "bg-destructive" : "bg-warning",
+                )}
+              />
+              <Text style={nepaliTextStyle(14)} className="flex-1 text-sm text-muted-foreground">
+                {item.label}
+              </Text>
+            </View>
           ))}
         </Grid>
         {rows(ROW_COLS)}

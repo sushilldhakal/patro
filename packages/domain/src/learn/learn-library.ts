@@ -160,7 +160,7 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "CalendarRange",
     title: { ne: "नेपाली पात्रो र विक्रम सम्वत्", en: "The Nepali Calendar and Bikram Sambat" },
     summary: {
-      ne: "बि.सं. के हो, वर्ष बैशाखमा किन सुरु हुन्छ, ई.सं.सँगको फरक किन स्थिर हुँदैन, र सौर–चान्द्र–चान्द्रसौर गणना कसरी छुट्टिन्छन्।",
+      ne: "वि.सं. के हो, वर्ष बैशाखमा किन सुरु हुन्छ, ई.सं.सँगको फरक किन स्थिर हुँदैन, र सौर–चान्द्र–चान्द्रसौर गणना कसरी छुट्टिन्छन्।",
       en: "What Bikram Sambat is, why the year opens in Baisakh, why its offset from AD is never fixed, and how the solar, lunar and lunisolar reckonings differ.",
     },
   },
@@ -224,9 +224,9 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     section: "start",
     status: "planned",
     icon: "CalendarRange",
-    title: { ne: "बि.सं. को वर्ष कसरी बन्छ", en: "How a Bikram Sambat Year Is Formed" },
+    title: { ne: "वि.सं. को वर्ष कसरी बन्छ", en: "How a Bikram Sambat Year Is Formed" },
     summary: {
-      ne: "बाह्र सौर महिना जोडिएर एक बि.सं. वर्ष बन्छ — र त्यो वर्ष सधैँ ३६५ दिनको हुँदैन।",
+      ne: "बाह्र सौर महिना जोडिएर एक वि.सं. वर्ष बन्छ — र त्यो वर्ष सधैँ ३६५ दिनको हुँदैन।",
       en: "Twelve solar months make one BS year — and that year is not always 365 days long.",
     },
   },
@@ -235,7 +235,7 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     section: "start",
     status: "planned",
     icon: "Locate",
-    title: { ne: "एक बि.सं. मिति कसरी निर्धारण हुन्छ", en: "How a Single BS Date Is Determined" },
+    title: { ne: "एक वि.सं. मिति कसरी निर्धारण हुन्छ", en: "How a Single BS Date Is Determined" },
     summary: {
       ne: "वर्ष, महिना र गते — तीनवटै छुट्टै नियमबाट आउँछन्, र सँगै एउटा मिति बनाउँछन्।",
       en: "Year, month and gate each come from a separate rule, and together they make one date.",
@@ -257,7 +257,7 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     section: "start",
     status: "planned",
     icon: "ArrowLeftRight",
-    title: { ne: "बि.सं. र ई.सं. मिति कसरी रूपान्तरण हुन्छ", en: "How BS and AD Dates Are Converted" },
+    title: { ne: "वि.सं. र ई.सं. मिति कसरी रूपान्तरण हुन्छ", en: "How BS and AD Dates Are Converted" },
     summary: {
       ne: "तालिका होइन, गणना — जुलियन दिनमार्फत दुई पात्रोबीच मिति कसरी सारिन्छ।",
       en: "Not a lookup table but a computation — how a date moves between the two calendars via the Julian Day.",

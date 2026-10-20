@@ -1,3 +1,4 @@
+import { createContext, isValidElement, useContext, type ReactNode } from "react";
 import { Platform, Text as RNText } from "react-native";
 import { cn } from "@vedic-patro/domain/utils";
 import { fontFamily } from "@vedic-patro/design-tokens";
@@ -41,6 +42,27 @@ function hasDevanagari(children: unknown): boolean {
    conjuncts and matras apart ("न क्ष त्र"). The browser keeps clusters whole. */
 const NO_TRACKING = { letterSpacing: 0 };
 
+/* Android measures a line-height-styled run that ends in a Devanagari
+   cluster short of what it draws, so a label sized to its text (a chip, a
+   table cell, "नयाँ वर्ष") wrapped its last word — or clipped it — with room
+   to spare. Ending the run on a no-break space keeps measure and draw in step.
+   (Same fix as the app's own Text.) */
+const ENDS_DEVANAGARI = /[\u0900-\u097F]$/;
+
+/** Set inside a Text: a nested span is part of its parent's run, not the end of one. */
+const InsideText = createContext(false);
+
+function padAndroidDevanagari(children: ReactNode): ReactNode {
+  if (Platform.OS !== "android") return children;
+  if (typeof children === "string") return ENDS_DEVANAGARI.test(children) ? `${children}\u00A0` : children;
+  if (Array.isArray(children) && children.length > 0) {
+    const last: unknown = children[children.length - 1];
+    /* A run that ends in a nested span ("श्रावण <Text>३१ दिन</Text>") ends on that span's text. */
+    if ((typeof last === "string" && ENDS_DEVANAGARI.test(last)) || isValidElement(last)) return [...children, "\u00A0"];
+  }
+  return children;
+}
+
 /* A line box of 1–1.25× the size crops the marks above and below a Devanagari
    line on iOS (असोज drew as "असाज", चैत as "चत"). The browser paints overflow. */
 const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
@@ -56,7 +78,9 @@ export function Text({ variant, numberOfLines, as, className, nativeClassName, c
   const tinted = /\btext-/.test(sized.replace(TEXT_NOT_COLOR, "")) ? sized : cn("text-foreground", sized);
   const devanagari = hasDevanagari(children);
   const colored = devanagari ? tinted.replace(TIGHT_LEADING, "leading-normal") : tinted;
+  const nested = useContext(InsideText);
   return (
+    <InsideText.Provider value>
     <RNText
       className={cn("font-sans", colored)}
       style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING, devanagari ? NO_TRACKING : undefined]}
@@ -64,7 +88,8 @@ export function Text({ variant, numberOfLines, as, className, nativeClassName, c
       accessibilityRole={as && /^h\d$/.test(as) ? "header" : undefined}
       testID={testID}
     >
-      {children}
+      {nested ? children : padAndroidDevanagari(children)}
     </RNText>
+    </InsideText.Provider>
   );
 }

@@ -43,11 +43,7 @@ import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
 import * as Updates from "expo-updates";
-import { Observe as ObserveExport, ObserveRoot, type ObserveModule } from "expo-observe";
-
-/* expo-observe's web typings declare the module as a class rather than its instance, and this
-   app's TypeScript reads `.web` typings first; the object itself is an `ObserveModule`. */
-const Observe = ObserveExport as unknown as ObserveModule;
+import { Observe, ObserveRoot } from "@/lib/observe";
 
 /*
  * EAS Observe: startup timing (TTR is measured by `ObserveRoot.wrap` below, TTI by the

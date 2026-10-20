@@ -1,4 +1,5 @@
-import { StyleSheet, Text as RNText, type TextProps as RNTextProps } from "react-native";
+import { createContext, isValidElement, useContext } from "react";
+import { Platform, StyleSheet, Text as RNText, type TextProps as RNTextProps } from "react-native";
 import {
   NOTO_DEVANAGARI_BOLD,
   NOTO_DEVANAGARI_MEDIUM,
@@ -94,6 +95,27 @@ function hasDevanagari(children: unknown): boolean {
   return false;
 }
 
+/* Android measures a line-height-styled run that ends in a Devanagari
+   cluster short of what it draws, so a label sized to its text ("राज
+   पञ्चक", "रूपान्तरण गर्नुहोस्", a chip, a button) wrapped its last word —
+   or clipped it — with room to spare. Ending the run on a no-break space
+   (which never wraps on its own) keeps measure and draw in step. */
+const ENDS_DEVANAGARI = /[\u0900-\u097F]$/;
+
+/** Set inside a Text: a nested span is part of its parent's run, not the end of one. */
+const InsideText = createContext(false);
+
+function padAndroidDevanagari(children: RNTextProps["children"]): RNTextProps["children"] {
+  if (Platform.OS !== "android") return children;
+  if (typeof children === "string") return ENDS_DEVANAGARI.test(children) ? `${children}\u00A0` : children;
+  if (Array.isArray(children) && children.length > 0) {
+    const last = children[children.length - 1];
+    /* A run that ends in a nested span ("श्रावण <Text>३१ दिन</Text>") ends on that span's text. */
+    if ((typeof last === "string" && ENDS_DEVANAGARI.test(last)) || isValidElement(last)) return [...children, "\u00A0"];
+  }
+  return children;
+}
+
 /* A line box of 1–1.25× the size crops the marks above and below a Devanagari
    line on iOS. The browser paints the overflow. */
 const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
@@ -111,16 +133,21 @@ export function Text({ className, style, variant, ...props }: Props) {
     ? weightFamily(flat?.fontWeight, colored)
     : undefined;
 
+  const nested = useContext(InsideText);
+
   return (
+    <InsideText.Provider value>
     <RNText
       {...props}
       className={cn("font-sans", colored)}
+      children={nested ? props.children : padAndroidDevanagari(props.children)}
       style={[
         typeStyle,
         family ? { fontFamily: family, fontWeight: "normal" } : undefined,
         devanagari ? { letterSpacing: 0 } : undefined,
       ]}
     />
+    </InsideText.Provider>
   );
 }
 

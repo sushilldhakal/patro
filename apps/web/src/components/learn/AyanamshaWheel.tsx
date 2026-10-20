@@ -29,7 +29,7 @@ const TAU = Math.PI * 2;
 const RATE = 50.2879 / 3600;
 
 /* CE → बिक्रम सम्वत् (Vikram Sambat runs ≈ 57 years ahead). Internal ayanāṁśa
- * math stays in CE; only the year readout is shown in बि.सं. */
+ * math stays in CE; only the year readout is shown in वि.सं. */
 const ceToBs = (ce: number) => Math.round(ce) + 57;
 
 /* each system's ayanāṁśa at year 2000 CE (degrees) */

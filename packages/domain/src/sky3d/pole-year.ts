@@ -16,5 +16,5 @@ export function formatPoleYear(
   }
   const bs = year + 57;
   const abs = digits(Math.abs(bs).toLocaleString("en-US"));
-  return bs < 0 ? `${abs} बि.सं. पूर्व` : `${abs} बि.सं.`;
+  return bs < 0 ? `${abs} वि.सं. पूर्व` : `${abs} वि.सं.`;
 }

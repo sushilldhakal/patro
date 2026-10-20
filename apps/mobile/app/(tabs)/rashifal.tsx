@@ -83,18 +83,21 @@ export default function RashifalScreen() {
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               accessibilityLabel={label}
+              /* Every tab names itself: three bare calendar icons could not be told apart. */
               className={cn(
-                "relative min-w-0 flex-row items-center justify-center",
+                "relative min-w-0 items-center justify-center gap-0.5",
                 rashifalClasses.tab,
-                active ? cn(rashifalClasses.tabGapActive, rashifalClasses.tabActiveSurface) : rashifalClasses.tabGapIdle,
+                active && rashifalClasses.tabActiveSurface,
               )}
             >
-              <Ionicons name={RASHIFAL_PERIOD_ICON[id]} size={20} color={active ? colors.foreground : colors.mutedForeground} />
-              {active ? (
-                <Text className={rashifalClasses.tabLabel} style={nepaliTextStyle()} numberOfLines={1}>
-                  {label}
-                </Text>
-              ) : null}
+              <Ionicons name={RASHIFAL_PERIOD_ICON[id]} size={18} color={active ? colors.foreground : colors.mutedForeground} />
+              <Text
+                className={cn(rashifalClasses.tabLabel, !active && "font-medium text-muted-foreground")}
+                style={nepaliTextStyle()}
+                numberOfLines={1}
+              >
+                {label}
+              </Text>
               {active ? <View className={rashifalClasses.tabIndicator} /> : null}
             </Pressable>
           ))}

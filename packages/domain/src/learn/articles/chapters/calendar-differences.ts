@@ -14,7 +14,7 @@ export const calendarDifferences: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "**ग्रेगोरियन (ई.सं.)** शुद्ध सौर पात्रो हो — महिनाको दिन निश्चित। **नेपाली (बि.सं.)** चान्द्र–सौर हो — महिना सूर्यको राशिले तय हुन्छ। **वैदिक** मा दुई धारा छन्: नागरिक शक सम्वत् (सौर) र पञ्चाङ्ग आधारित विक्रम/शालिवाहन (चान्द्र–सौर)।",
+            ne: "**ग्रेगोरियन (ई.सं.)** शुद्ध सौर पात्रो हो — महिनाको दिन निश्चित। **नेपाली (वि.सं.)** चान्द्र–सौर हो — महिना सूर्यको राशिले तय हुन्छ। **वैदिक** मा दुई धारा छन्: नागरिक शक सम्वत् (सौर) र पञ्चाङ्ग आधारित विक्रम/शालिवाहन (चान्द्र–सौर)।",
             en: "The **Gregorian (AD)** is a purely solar calendar — fixed days per month. The **Nepali (BS)** is luni-solar — the month is set by the Sun's sign. The **Vedic** tradition has two streams: the civil Shaka Samvat (solar) and the almanac-based Vikram/Shalivahana (luni-solar).",
           },
         },
@@ -36,7 +36,7 @@ export const calendarDifferences: ArticleData = {
                 en: "Year count",
               },
               p: {
-                ne: "बि.सं. ≈ ई.सं. + ५६/५७; शक सम्वत् ≈ ई.सं. − ७८।",
+                ne: "वि.सं. ≈ ई.सं. + ५६/५७; शक सम्वत् ≈ ई.सं. − ७८।",
                 en: "BS ≈ AD + 56/57; Shaka Samvat ≈ AD − 78.",
               },
             },
@@ -46,7 +46,7 @@ export const calendarDifferences: ArticleData = {
                 en: "Year start",
               },
               p: {
-                ne: "ग्रेगोरियन: जनवरी १; बि.सं.: बैशाख (मेष सङ्क्रान्ति); वैदिक चान्द्र: चैत्र शुक्ल प्रतिपदा।",
+                ne: "ग्रेगोरियन: जनवरी १; वि.सं.: बैशाख (मेष सङ्क्रान्ति); वैदिक चान्द्र: चैत्र शुक्ल प्रतिपदा।",
                 en: "Gregorian: Jan 1; BS: Baisakh (Mesha Sankranti); Vedic lunar: Chaitra Shukla Pratipada.",
               },
             },
@@ -56,7 +56,7 @@ export const calendarDifferences: ArticleData = {
                 en: "Days per month",
               },
               p: {
-                ne: "ग्रेगोरियन: २८–३१ निश्चित; बि.सं.: २९–३२ सूर्य–गति अनुसार।",
+                ne: "ग्रेगोरियन: २८–३१ निश्चित; वि.सं.: २९–३२ सूर्य–गति अनुसार।",
                 en: "Gregorian: fixed 28–31; BS: 29–32 by the Sun's motion.",
               },
             },
@@ -66,7 +66,7 @@ export const calendarDifferences: ArticleData = {
                 en: "Adhik Maas",
               },
               p: {
-                ne: "ग्रेगोरियनमा छैन; बि.सं./वैदिक चान्द्र–सौरमा ∼३ वर्षमा थपिन्छ।",
+                ne: "ग्रेगोरियनमा छैन; वि.सं./वैदिक चान्द्र–सौरमा ∼३ वर्षमा थपिन्छ।",
                 en: "None in the Gregorian; added ∼every 3 years in BS/Vedic luni-solar.",
               },
             },

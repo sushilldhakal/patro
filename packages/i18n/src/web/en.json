@@ -3104,11 +3104,11 @@
       },
       "shubha": {
         "name": "Shubha",
-        "quality": "Auspicious"
+        "quality": "Good for all auspicious work"
       },
       "labha": {
         "name": "Labha",
-        "quality": "Gain"
+        "quality": "Good for business and gain"
       },
       "chara": {
         "name": "Chara",
@@ -3116,15 +3116,15 @@
       },
       "roga": {
         "name": "Roga",
-        "quality": "Disease (Avoid Important Tasks)"
+        "quality": "Illness — avoid important tasks"
       },
       "kala": {
         "name": "Kala",
-        "quality": "Inauspicious"
+        "quality": "Inauspicious — start nothing new"
       },
       "udvega": {
         "name": "Udvega",
-        "quality": "Anxiety (Avoid Important Tasks)"
+        "quality": "Anxiety — avoid important tasks"
       }
     },
     "quality_good": "Good",

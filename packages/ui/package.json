@@ -30,7 +30,8 @@
     "nativewind": "*",
     "react": "*",
     "react-native": "*",
-    "react-native-svg": "*"
+    "react-native-svg": "*",
+    "react-native-gesture-handler": "*"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -40,6 +41,9 @@
       "optional": true
     },
     "nativewind": {
+      "optional": true
+    },
+    "react-native-gesture-handler": {
       "optional": true
     }
   },

@@ -1,6 +1,6 @@
-import { useId } from "react";
 import { View } from "react-native";
-import Svg, { G, Image, Marker, Path, Rect, Text as SvgText } from "react-native-svg";
+import Svg, { G, Image, Path, Polygon, Rect, Text as SvgText } from "react-native-svg";
+import { markerArrowhead, straightPathEnd } from "./arrowhead";
 import { useColorScheme } from "nativewind";
 import { Text } from "@vedic-patro/ui";
 import { mix, mobileRoles, withAlpha } from "@vedic-patro/design-tokens";
@@ -22,7 +22,6 @@ export function ServerPipelineDiagram({ earthSrc, grahaSrc }: ServerPipelineDiag
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const caption = t("learn.study.pipeline.caption");
-  const markerId = `pipe-arrow-${useId().replace(/:/g, "")}`;
   const teal = roles.success;
   const amber = roles.warning;
   const gold = roles.accent;
@@ -35,9 +34,6 @@ export function ServerPipelineDiagram({ earthSrc, grahaSrc }: ServerPipelineDiag
     <View className={tmCardPadLg}>
       <View style={{ width: "100%", aspectRatio: PIPELINE_W / PIPELINE_H }}>
         <Svg viewBox={`0 0 ${PIPELINE_W} ${PIPELINE_H}`} width="100%" height="100%" accessibilityRole="image" accessibilityLabel={caption}>
-          <Marker id={markerId} markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <Path d="M0,0 L8,4 L0,8 Z" fill={faint} />
-          </Marker>
           <Image href={earthSrc} x="24" y="36" width="48" height="48" opacity={0.92} />
           <SvgText x="80" y="58" fill={withAlpha(ink, 0.78)} fontSize={12}>
             {t("learn.study.pipeline.api_name")}
@@ -81,9 +77,15 @@ export function ServerPipelineDiagram({ earthSrc, grahaSrc }: ServerPipelineDiag
               {t("learn.study.pipeline.grahas_note")}
             </SvgText>
           </G>
-          {PIPELINE_ARROWS.map((d) => (
-            <Path key={d} d={d} fill="none" stroke={faint} strokeWidth={1.4} markerEnd={`url(#${markerId})`} opacity={0.85} />
-          ))}
+          {PIPELINE_ARROWS.map((d) => {
+            const end = straightPathEnd(d);
+            return (
+              <G key={d} opacity={0.85}>
+                <Path d={d} fill="none" stroke={faint} strokeWidth={1.4} />
+                {end ? <Polygon points={markerArrowhead(end.x, end.y, end.angle, 1.4, 8, 8, 2)} fill={faint} /> : null}
+              </G>
+            );
+          })}
         </Svg>
       </View>
       <Text className={tmCardCap}>{caption}</Text>

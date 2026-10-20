@@ -23,7 +23,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
-  const { pick, lang } = useLocale();
+  const { pick, lang, digits } = useLocale();
   const t = (ne?: string, en?: string) => (lang === "ne" ? ne || en : en || ne) || "—";
 
   return (
@@ -32,10 +32,10 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
         <Text className="text-title font-bold text-foreground">
           {data.display?.bs_ne && lang === "ne"
             ? data.display.bs_ne
-            : data.date_bs ?? data.date_ad ?? "—"}
+            : digits(data.date_bs ?? data.date_ad ?? "—")}
         </Text>
         <Text className="text-body text-muted-foreground">
-          {data.display?.gregorian_en ?? data.date_ad}
+          {digits(data.display?.gregorian_en ?? data.date_ad)}
           {data.weekday ? ` · ${data.weekday}` : ""}
         </Text>
         {data.samvatsara ? (
@@ -60,10 +60,10 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
             ) ?? "—"
           }
         />
-        <Row label={pick(tFor("ne", "kundali.sunrise"), tFor("en", "kundali.sunrise"))} value={timeShort(getSunrise(data))} />
-        <Row label={pick(tFor("ne", "kundali.sunset"), tFor("en", "kundali.sunset"))} value={timeShort(getSunset(data))} />
-        <Row label={pick(tFor("ne", "sections.moonrise"), tFor("en", "sections.moonrise"))} value={timeShort(getMoonrise(data))} />
-        <Row label={pick(tFor("ne", "sections.moonset"), tFor("en", "sections.moonset"))} value={timeShort(getMoonset(data))} />
+        <Row label={pick(tFor("ne", "kundali.sunrise"), tFor("en", "kundali.sunrise"))} value={digits(timeShort(getSunrise(data)))} />
+        <Row label={pick(tFor("ne", "kundali.sunset"), tFor("en", "kundali.sunset"))} value={digits(timeShort(getSunset(data)))} />
+        <Row label={pick(tFor("ne", "sections.moonrise"), tFor("en", "sections.moonrise"))} value={digits(timeShort(getMoonrise(data)))} />
+        <Row label={pick(tFor("ne", "sections.moonset"), tFor("en", "sections.moonset"))} value={digits(timeShort(getMoonset(data)))} />
       </View>
       {data.muhurta ? (
         <View className="border-t border-border/60 px-4 py-2">
@@ -73,13 +73,13 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
           {data.muhurta.rahu_kalam ? (
             <Row
               label={pick(tFor("ne", "ui.panchanga_detail_card.rahu_kaal"), tFor("en", "ui.panchanga_detail_card.rahu_kaal"))}
-              value={`${data.muhurta.rahu_kalam.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.rahu_kalam.end_time?.slice(0, 5) ?? "—"}`}
+              value={digits(`${data.muhurta.rahu_kalam.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.rahu_kalam.end_time?.slice(0, 5) ?? "—"}`)}
             />
           ) : null}
           {data.muhurta.abhijit ? (
             <Row
               label={pick(tFor("ne", "ui.panchanga.abhijit"), tFor("en", "ui.panchanga.abhijit"))}
-              value={`${data.muhurta.abhijit.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.abhijit.end_time?.slice(0, 5) ?? "—"}`}
+              value={digits(`${data.muhurta.abhijit.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.abhijit.end_time?.slice(0, 5) ?? "—"}`)}
             />
           ) : null}
         </View>

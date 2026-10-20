@@ -1,7 +1,7 @@
 /**
  * A बिक्रम सम्वत् reading for instants the offline table cannot reach.
  *
- * `lib/bs-calendar` carries a compiled table of month starts for बि.सं.
+ * `lib/bs-calendar` carries a compiled table of month starts for वि.सं.
  * 1700–2200 and is authoritative inside it. Past the end it has nothing to say,
  * and {@link adToBS} pins to the last month start — which is why the 3D sky's
  * clock froze at २२०० चैत the moment the simulation ran past AD 2144 while the

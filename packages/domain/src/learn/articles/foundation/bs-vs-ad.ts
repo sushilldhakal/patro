@@ -11,7 +11,7 @@ export const bsVsAd: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "बि.सं. र ई.सं. (ग्रेगोरियन) दुवैले दिन गन्छन्, तर तिनको **आधार फरक** छ। ग्रेगोरियन पात्रो *सायन* वर्षमा टेकेको छ — ऋतुचक्रसँग बाँधिएको। बि.सं. का महिना *निरयन* सौर गतिमा टेकेका छन् — ताराको सन्दर्भमा सूर्यको स्थिति।",
+            ne: "वि.सं. र ई.सं. (ग्रेगोरियन) दुवैले दिन गन्छन्, तर तिनको **आधार फरक** छ। ग्रेगोरियन पात्रो *सायन* वर्षमा टेकेको छ — ऋतुचक्रसँग बाँधिएको। वि.सं. का महिना *निरयन* सौर गतिमा टेकेका छन् — ताराको सन्दर्भमा सूर्यको स्थिति।",
             en: "BS and AD (Gregorian) both count days, but their **foundations differ**. The Gregorian calendar rests on the *tropical* year, tied to the seasonal cycle. The months of BS rest on *sidereal* solar motion — the Sun's position against the stars.",
           },
         },
@@ -31,12 +31,12 @@ export const bsVsAd: ArticleData = {
         {
           kind: "table",
           caption: {
-            ne: "बि.सं. र ग्रेगोरियन पात्रोको संरचनात्मक तुलना",
+            ne: "वि.सं. र ग्रेगोरियन पात्रोको संरचनात्मक तुलना",
             en: "A structural comparison of BS and the Gregorian calendar",
           },
           headers: [
             { ne: "पक्ष", en: "Aspect" },
-            { ne: "विक्रम सम्वत् (बि.सं.)", en: "Bikram Sambat (BS)" },
+            { ne: "विक्रम सम्वत् (वि.सं.)", en: "Bikram Sambat (BS)" },
             { ne: "ग्रेगोरियन (ई.सं.)", en: "Gregorian (AD)" },
           ],
           rows: [
@@ -80,13 +80,13 @@ export const bsVsAd: ArticleData = {
       ],
     },
     {
-      title: { ne: "किन बि.सं. पहिल्यै लेख्न सकिँदैन", en: "Why BS cannot be tabulated in advance" },
+      title: { ne: "किन वि.सं. पहिल्यै लेख्न सकिँदैन", en: "Why BS cannot be tabulated in advance" },
       eyebrow: "Computed, not counted",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "ग्रेगोरियन पात्रोमा *जुलाईमा ३१ दिन* भन्ने कुरा नियम हो — कुनै गणना चाहिँदैन। बि.सं.मा *जेठमा कति दिन* भन्ने प्रश्नको उत्तर सूर्य वृषभ राशिमा कति बेर बस्छ भन्नेमा निर्भर छ।",
+            ne: "ग्रेगोरियन पात्रोमा *जुलाईमा ३१ दिन* भन्ने कुरा नियम हो — कुनै गणना चाहिँदैन। वि.सं.मा *जेठमा कति दिन* भन्ने प्रश्नको उत्तर सूर्य वृषभ राशिमा कति बेर बस्छ भन्नेमा निर्भर छ।",
             en: "In the Gregorian calendar, *July has 31 days* is a rule — nothing to compute. In BS, *how many days Jestha has* depends on how long the Sun actually lingers in Vrishabha.",
           },
         },

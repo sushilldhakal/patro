@@ -85,7 +85,7 @@ export const calendarDrift: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "बि.सं.मा त्यस्तो नाटकीय सुधार भएको छैन — किनभने यसको संरचना नै फरक छ। महिनाको लम्बाइ हरेक वर्ष गणनाबाट आउने भएकाले **सुधार निरन्तर हुन्छ**, एकैचोटि होइन।",
+            ne: "वि.सं.मा त्यस्तो नाटकीय सुधार भएको छैन — किनभने यसको संरचना नै फरक छ। महिनाको लम्बाइ हरेक वर्ष गणनाबाट आउने भएकाले **सुधार निरन्तर हुन्छ**, एकैचोटि होइन।",
             en: "BS has seen no such dramatic reform, because its structure differs. Since month lengths are computed afresh each year, **correction is continuous** rather than sudden.",
           },
         },

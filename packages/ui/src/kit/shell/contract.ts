@@ -264,7 +264,7 @@ export type AuthDialogViewProps = {
   password: string;
   onPassword: (value: string) => void;
   passwordLabel: string;
-  passwordPlaceholder: string;
+  passwordPlaceholder?: string;
   showConfirm: boolean;
   confirm: string;
   onConfirm: (value: string) => void;

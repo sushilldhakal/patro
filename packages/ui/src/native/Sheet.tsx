@@ -1,9 +1,14 @@
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, View } from "react-native";
 import { cn } from "@vedic-patro/domain/utils";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
+
+/* A top sheet draws under the status bar (the modal is edge to edge), so its
+   title and close button sat on the clock and battery. The kit cannot read the
+   app's safe-area insets; this clears the bar on both platforms. */
+const TOP_SHEET_INSET = Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 12 : 56;
 
 /** A panel that rises from the bottom; the back button and a tap on the backdrop close it. */
 export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, placement, children, className, nativeClassName, testID }: SheetProps) {
@@ -17,7 +22,11 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
           accessibilityRole="button"
           accessibilityLabel={closeLabel}
         />
-        <View className={cn(top ? cn("pt-14", sheetClass.panelTop) : cn("pb-10", sheetClass.panel), className, nativeClassName)} accessibilityViewIsModal style={{ maxHeight: `${maxHeightPercent ?? 85}%` }}>
+        <View
+          className={cn(top ? sheetClass.panelTop : cn("pb-10", sheetClass.panel), className, nativeClassName)}
+          accessibilityViewIsModal
+          style={{ maxHeight: `${maxHeightPercent ?? 85}%`, ...(top ? { paddingTop: TOP_SHEET_INSET } : null) }}
+        >
           {top ? null : <View className={sheetClass.handle} />}
           {title || closeLabel ? (
             <View className={sheetClass.header}>

@@ -10,7 +10,8 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { brand, nativeShadow } from "@vedic-patro/design-tokens";
+import { LinearGradient } from "expo-linear-gradient";
+import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 export function FloatingNavBar() {
@@ -30,9 +31,17 @@ export function FloatingNavBar() {
       style={{ paddingBottom: Math.max(insets.bottom, isTablet ? 10 : 6) }}
       className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter)}
     >
+      {/* No blur on native: fade the page out under the bar instead, so text
+          never shows through the gap below it or around its corners. */}
+      <LinearGradient
+        pointerEvents="none"
+        colors={[withAlpha(colors.background, 0), colors.background]}
+        locations={[0, 0.45]}
+        style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
+      />
       <View
         style={nativeShadow("lg")}
-        className={cn("w-full flex-row self-center", shellClasses.navBar)}
+        className={cn("w-full flex-row self-center bg-background", shellClasses.navBar)}
       >
         {FLOATING_NAV.map((item) => {
           const active = isNavActive(pathname, item.href);

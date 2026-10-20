@@ -13,6 +13,10 @@ import { PatroHeaderLocation } from "./PatroHeaderLocation";
  * CSS grid or `order`, so the rows are written out: three on a phone, two on a tablet,
  * one on a wide screen. The month and location panels open as sheets.
  */
+/** Header control heights: the website's `h-9.5` / `size-9.5`, and `8.5` on narrow phones. */
+const CONTROL = 38;
+const CONTROL_DENSE = 34;
+
 export function PatroCalendarHeader({
   era,
   year,
@@ -65,24 +69,36 @@ export function PatroCalendarHeader({
     </View>
   );
 
+  /* The header's buttons get their size from a wrapping View with an explicit style, not from
+     their own height classes: on Android a Pressable sitting straight in a flex row lost
+     `h-*` / `size-*` and collapsed to its text (the arrows, month button and पञ्चाङ्ग swap
+     drew at half height). The location chip, already wrapped, was unaffected. */
+  const control = dense ? CONTROL_DENSE : CONTROL;
+
   const stepper = (
     <View className="flex-row items-center gap-2">
-      <Pressable label={labels.prevMonth} onPress={() => header.stepMonth(-1)} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
-        <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
-      </Pressable>
-      <Pressable
-        label={labels.picker}
-        onPress={() => header.togglePanel("month")}
-        className={cn(cls.selectButton, "min-w-32 shrink", monthOpen ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
-      >
-        <Text numberOfLines={1} className={cn(cls.selectLabel, dense && cls.nativeDenseText)}>
-          {header.title.month} {header.title.year}
-        </Text>
-        {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
-      </Pressable>
-      <Pressable label={labels.nextMonth} onPress={() => header.stepMonth(1)} disabled={nextDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
-        <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
-      </Pressable>
+      <View style={{ width: control, height: control }}>
+        <Pressable label={labels.prevMonth} onPress={() => header.stepMonth(-1)} disabled={prevDisabled} className={cn(cls.iconButton, "h-full w-full")}>
+          <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
+        </Pressable>
+      </View>
+      <View className="min-w-32 shrink" style={{ height: control }}>
+        <Pressable
+          label={labels.picker}
+          onPress={() => header.togglePanel("month")}
+          className={cn(cls.selectButton, "h-full", monthOpen ? cls.selectButtonOpen : cls.selectButtonIdle)}
+        >
+          <Text numberOfLines={1} className={cn(cls.selectLabel, dense && cls.nativeDenseText)}>
+            {header.title.month} {header.title.year}
+          </Text>
+          {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
+        </Pressable>
+      </View>
+      <View style={{ width: control, height: control }}>
+        <Pressable label={labels.nextMonth} onPress={() => header.stepMonth(1)} disabled={nextDisabled} className={cn(cls.iconButton, "h-full w-full")}>
+          <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
+        </Pressable>
+      </View>
     </View>
   );
 
@@ -103,10 +119,12 @@ export function PatroCalendarHeader({
       ? segments
           .filter((seg) => !seg.active)
           .map((seg) => (
-            <Pressable key={seg.key} label={seg.label} onPress={seg.onPress} className={cn(cls.swapButton, dense && cls.nativeDenseControl)}>
-              <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
-              <Text className={cls.swapLabel}>{seg.label}</Text>
-            </Pressable>
+            <View key={seg.key} className="shrink-0" style={{ height: control }}>
+              <Pressable label={seg.label} onPress={seg.onPress} className={cn(cls.swapButton, "h-full")}>
+                <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
+                <Text className={cls.swapLabel}>{seg.label}</Text>
+              </Pressable>
+            </View>
           ))
       : null;
 

@@ -11,7 +11,7 @@ export const bikramSambat: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "विक्रम सम्वत् (बि.सं.) नेपालको नागरिक पात्रोमा प्रयोग हुने *सम्वत्* हो। तर यसलाई बुझ्न दुई फरक प्रश्न छुट्याउनु आवश्यक छ।",
+            ne: "विक्रम सम्वत् (वि.सं.) नेपालको नागरिक पात्रोमा प्रयोग हुने *सम्वत्* हो। तर यसलाई बुझ्न दुई फरक प्रश्न छुट्याउनु आवश्यक छ।",
             en: "Bikram Sambat (BS) is the *era* used by Nepal for its civil calendar. To understand it, though, two different questions must be kept apart.",
           },
         },
@@ -44,7 +44,7 @@ export const bikramSambat: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "यही छुट्याइ नबुझ्दा “बि.सं. ग्रेगोरियनभन्दा ५७ वर्ष अगाडि छ” भन्ने वाक्यले पूरै पात्रो व्याख्या गरेको भ्रम पर्छ — वास्तवमा त्यसले वर्षको सङ्ख्या मात्र बताउँछ।",
+            ne: "यही छुट्याइ नबुझ्दा “वि.सं. ग्रेगोरियनभन्दा ५७ वर्ष अगाडि छ” भन्ने वाक्यले पूरै पात्रो व्याख्या गरेको भ्रम पर्छ — वास्तवमा त्यसले वर्षको सङ्ख्या मात्र बताउँछ।",
             en: "Miss this distinction and \"BS runs 57 years ahead of the Gregorian\" starts to sound like a full account of the calendar — when in fact it describes only the year number.",
           },
         },
@@ -65,7 +65,7 @@ export const bikramSambat: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "परम्परागत दक्षिण एसियाली पात्रो–खगोलशास्त्रमा समय नाप्ने कैयन् विधि छन्। बि.सं. का महिनाको आधार *सौरमान* हो — जसले राशिचक्रमा सूर्यको प्रगतिबाट सौर वर्ष नाप्छ।",
+            ne: "परम्परागत दक्षिण एसियाली पात्रो–खगोलशास्त्रमा समय नाप्ने कैयन् विधि छन्। वि.सं. का महिनाको आधार *सौरमान* हो — जसले राशिचक्रमा सूर्यको प्रगतिबाट सौर वर्ष नाप्छ।",
             en: "Traditional South Asian calendrical astronomy contains several methods of measuring time. The months of BS rest on *Sauramāna*, which measures the solar year by the Sun's progression through the zodiac.",
           },
         },
@@ -112,13 +112,13 @@ export const bikramSambat: ArticleData = {
       ],
     },
     {
-      title: { ne: "बि.सं.को महिना कसरी बन्छ", en: "How a BS month is formed" },
+      title: { ne: "वि.सं.को महिना कसरी बन्छ", en: "How a BS month is formed" },
       eyebrow: "Gate and month length",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "बि.सं.मा महिनाको नाम चान्द्र मासबाट आउँछ, तर महिनाको **लम्बाइ सूर्यको राशि–गतिले** तय गर्छ। सूर्य कुनै राशिमा जति दिन बस्छ, त्यही महिनाको दिन–सङ्ख्या हुन्छ।",
+            ne: "वि.सं.मा महिनाको नाम चान्द्र मासबाट आउँछ, तर महिनाको **लम्बाइ सूर्यको राशि–गतिले** तय गर्छ। सूर्य कुनै राशिमा जति दिन बस्छ, त्यही महिनाको दिन–सङ्ख्या हुन्छ।",
             en: "In BS the month *names* come from the lunar months, but a month's **length is set by the Sun's motion through a sign**. However many days the Sun spends in a rashi is how many days that month has.",
           },
         },

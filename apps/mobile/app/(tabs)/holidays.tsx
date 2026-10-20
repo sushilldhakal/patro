@@ -66,7 +66,7 @@ export default function HolidaysScreen() {
         ))}
       </Box>
 
-      <Box className={cn("mb-8 flex-row items-center gap-2 px-3", holidaysClasses.searchBox)}>
+      <Box className={cn("mb-8 flex-row items-center gap-2 px-3", holidaysClasses.searchBox, "max-w-full")}>
         <Icon node={searchIcon} size="md" />
         <TextInput
           className={cn("flex-1", holidaysClasses.searchInput)}

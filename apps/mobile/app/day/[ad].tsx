@@ -12,7 +12,7 @@ import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/sh
 
 export default function DayDetailScreen() {
   const { ad } = useLocalSearchParams<{ ad: string }>();
-  const { t } = useLocale();
+  const { t, digits } = useLocale();
 
   const query = useQuery({
     queryKey: apiKeys.panchanga(ad ?? "", "ad"),
@@ -25,7 +25,7 @@ export default function DayDetailScreen() {
     <View className={msc.dayScreen}>
       <View className={msc.dayHeader} style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
         <Text className={msc.dayTitle}>{t("ui.day.day_detail")}</Text>
-        <Text className={msc.daySubtitle}>{ad}</Text>
+        <Text className={msc.daySubtitle}>{digits(ad)}</Text>
       </View>
       <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING, paddingBottom: FLOATING_NAV_BOTTOM_PADDING_TABLET }}>
         {query.isLoading ? (

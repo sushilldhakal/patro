@@ -14,7 +14,8 @@ export const RITU_SEASON_EMOJI: Record<RituSeasonKey, string> = {
   summer: "☀️",
   monsoon: "🌧️",
   autumn: "🍂",
-  pre_winter: "🌫️",
+  /* Harvest: the fog emoji drew as a white blob on Android. Hemanta is the dhan-harvest season. */
+  pre_winter: "🌾",
   winter: "❄️",
 };
 

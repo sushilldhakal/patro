@@ -61,7 +61,12 @@ export type ToneRowView = {
 
 export type ElementTableView =
   | { kind: "strength"; anchor?: { label: string; value: string }; rows: ToneRowView[] }
-  | { kind: "choghadiya"; legend: { key: string; text: string }[]; rows: ToneRowView[] }
+  | {
+      kind: "choghadiya";
+      /** `text` leads with an emoji marker (web); `label` and `tone` let the app draw its own dot. */
+      legend: { key: string; text: string; label: string; tone: "good" | "bad" | "neutral" }[];
+      rows: ToneRowView[];
+    }
   | { kind: "segments"; rows: ToneRowView[] }
   | { kind: "message"; text: string };
 
@@ -106,7 +111,12 @@ export function elementTable(data: unknown, sunrise: string | undefined, element
     if (elementId === "choghadiya") {
       return {
         kind: "choghadiya",
-        legend: CHOGHADIYA_TYPE_KEYS.map((key) => ({ key, text: `${choghadiyaLegendMarker(TONE_BY_KEY[key])} ${choghadiyaLegendLabel(key, lang)}` })),
+        legend: CHOGHADIYA_TYPE_KEYS.map((key) => ({
+          key,
+          text: `${choghadiyaLegendMarker(TONE_BY_KEY[key])} ${choghadiyaLegendLabel(key, lang)}`,
+          label: choghadiyaLegendLabel(key, lang),
+          tone: TONE_BY_KEY[key],
+        })),
         rows: rows.map((it, i) => {
           const nameNe = String(it.name_ne ?? it.name ?? "—");
           const tone = choghadiyaTone(nameNe, it.bad as boolean | undefined);

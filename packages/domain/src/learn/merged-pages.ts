@@ -43,7 +43,7 @@ export const MERGED_PAGES: MergedPage[] = [
     parts: [
       P("bikram-sambat", "विक्रम सम्वत् के हो", "What Bikram Sambat is"),
       P("year-begins-baisakh", "वर्ष बैशाखमा किन सुरु हुन्छ", "Why the year begins in Baisakh"),
-      P("bs-vs-ad", "बि.सं. र ई.सं. कसरी फरक छन्", "How BS and AD differ"),
+      P("bs-vs-ad", "वि.सं. र ई.सं. कसरी फरक छन्", "How BS and AD differ"),
       P("bs-ad-offset", "स्थिर फरक किन हुँदैन", "Why there is no fixed offset"),
       P("bs-calendar", "सौर, चान्द्र र चान्द्र–सौर पात्रो", "Solar, lunar and lunisolar calendars"),
       P("sauramana", "सौरमान — सौर गणना", "Sauramāna — the solar reckoning"),

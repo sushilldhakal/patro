@@ -245,6 +245,7 @@
       "expo-router",
       "expo-dev-client",
       "./plugins/with-react-native-dir.js",
+      "./plugins/with-ios-scene-lifecycle.js",
       [
         "expo-build-properties",
         {

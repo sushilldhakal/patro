@@ -8,6 +8,7 @@
       "@/*": ["./*"],
       // Only the app installs these; the native half of @vedic-patro/ui imports them from packages/ui.
       "react-native-svg": ["./node_modules/react-native-svg"],
+      "react-native-gesture-handler": ["./node_modules/react-native-gesture-handler"],
       "nativewind": ["./node_modules/nativewind"]
     }
   },

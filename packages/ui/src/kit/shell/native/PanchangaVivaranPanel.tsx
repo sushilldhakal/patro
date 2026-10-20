@@ -32,8 +32,9 @@ function Cell({ label, value, hint, mono, ayana }: VivaranCell) {
       <Text className={cn(home.vivaranLabel, "tracking-normal")}>{label}</Text>
       <Text className={cn(home.vivaranValue, mono && home.vivaranValueMono)}>
         {value ?? "—"}
-        {ayana ? <Text className={cn(ayana.north ? patroAyanaNorth : patroAyanaSouth, "mb-0 ml-1.5")}>{ayana.mark}</Text> : null}
       </Text>
+      {/* The bare "उ"/"द" mark glued to the time read as a typo; name the ayana instead. */}
+      {ayana ? <Text className={cn(home.vivaranHint, ayana.north ? patroAyanaNorth : patroAyanaSouth)}>{ayana.label}</Text> : null}
       {hint ? <Text className={cn(home.vivaranHint, "break-words")}>{hint}</Text> : null}
     </Tile>
   );

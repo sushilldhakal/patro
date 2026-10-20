@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { convertorKeys, fetchAdToBs, fetchBsToAd, type ConvertAdToBs, type ConvertBsToAd } from "@vedic-patro/api-client";
+import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { resultCards, todayInputs, type ConvertCard, type ConvertMode } from "./model";
 
@@ -79,8 +80,8 @@ export function useConverterPage(options: {
     status: active.isError ? "error" : active.isLoading ? "loading" : data ? "ready" : "idle",
     result: data
       ? {
-          from: adToBsMode ? data.ad_date : data.bs_date,
-          to: adToBsMode ? data.bs_date : data.ad_date,
+          from: formatLocaleDigits(adToBsMode ? data.ad_date : data.bs_date, lang),
+          to: formatLocaleDigits(adToBsMode ? data.bs_date : data.ad_date, lang),
           cards: resultCards(mode, data, lang).map((c) => ({ ...c, label: t(c.labelKey) })),
         }
       : undefined,

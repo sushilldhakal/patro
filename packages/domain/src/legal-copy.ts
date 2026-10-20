@@ -2,6 +2,7 @@
  * Canonical URLs: https://www.vedicpatro.com/privacy and /terms
  */
 export const LEGAL_UPDATED = "27 August 2026";
+export const LEGAL_UPDATED_NE = "२७ अगस्ट २०२६";
 export const LEGAL_CONTACT_EMAIL = "vedicnepalpatro@gmail.com";
 export const LEGAL_SITE = "https://www.vedicpatro.com";
 
@@ -143,8 +144,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     heading: { ne: "सम्पर्क", en: "Contact" },
     body: [
       {
-        ne: "प्रश्न वा डेटा अनुरोध: vedicnepalpatro@gmail.com — Vedic Patro, https://www.vedicpatro.com",
-        en: "Questions or data requests: vedicnepalpatro@gmail.com — Vedic Patro, https://www.vedicpatro.com",
+        ne: "प्रश्न वा डेटा अनुरोध: vedicnepalpatro@gmail.com — Vedic Patro, vedicpatro.com",
+        en: "Questions or data requests: vedicnepalpatro@gmail.com — Vedic Patro, vedicpatro.com",
       },
     ],
   },
@@ -223,8 +224,8 @@ export const TERMS_SECTIONS: LegalSection[] = [
     heading: { ne: "सम्पर्क", en: "Contact" },
     body: [
       {
-        ne: "vedicnepalpatro@gmail.com — https://www.vedicpatro.com",
-        en: "vedicnepalpatro@gmail.com — https://www.vedicpatro.com",
+        ne: "vedicnepalpatro@gmail.com — vedicpatro.com",
+        en: "vedicnepalpatro@gmail.com — vedicpatro.com",
       },
     ],
   },

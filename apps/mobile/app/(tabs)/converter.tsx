@@ -74,7 +74,7 @@ export default function ConverterScreen() {
         <Button
           label={page.copy.convert}
           variant="secondary"
-          className={cn("h-auto", converterClasses.submit)}
+          className={cn("h-auto shrink-0", converterClasses.submit)}
           textClassName={converterClasses.submitLabel}
           onPress={page.submit}
         />

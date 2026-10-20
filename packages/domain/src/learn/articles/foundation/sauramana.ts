@@ -158,7 +158,7 @@ export const sauramana: ArticleData = {
           kind: "list",
           items: [
             {
-              ne: "**नागरिक मिति** — बि.सं.को गते, महिना र वर्ष; सरकारी कागजात र दैनिक प्रयोग।",
+              ne: "**नागरिक मिति** — वि.सं.को गते, महिना र वर्ष; सरकारी कागजात र दैनिक प्रयोग।",
               en: "**Civil dates** — the gate, month and year of BS; official documents and everyday use.",
             },
             {

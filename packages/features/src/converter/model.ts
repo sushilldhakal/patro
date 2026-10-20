@@ -33,16 +33,16 @@ export function resultCards(mode: ConvertMode, r: Result, lang: Lang): ConvertCa
   const weekday = { labelKey: "converter.weekday", value: weekdayLabel(r.weekday, lang) };
   return mode === "ad-to-bs"
     ? [
-        { labelKey: "converter.bs_date", value: r.bs_date, highlight: true },
+        { labelKey: "converter.bs_date", value: formatLocaleDigits(r.bs_date, lang), highlight: true },
         { labelKey: "converter.bs_year", value: year },
         { labelKey: "converter.bs_month", value: month },
         { labelKey: "converter.bs_day", value: day },
-        { labelKey: "converter.ad_date", value: r.ad_date },
+        { labelKey: "converter.ad_date", value: formatLocaleDigits(r.ad_date, lang) },
         weekday,
       ]
     : [
-        { labelKey: "converter.ad_date", value: r.ad_date, highlight: true },
-        { labelKey: "converter.bs_date", value: r.bs_date },
+        { labelKey: "converter.ad_date", value: formatLocaleDigits(r.ad_date, lang), highlight: true },
+        { labelKey: "converter.bs_date", value: formatLocaleDigits(r.bs_date, lang) },
         { labelKey: "converter.bs_month", value: month },
         { labelKey: "converter.bs_day", value: day },
         { labelKey: "converter.bs_year", value: year },

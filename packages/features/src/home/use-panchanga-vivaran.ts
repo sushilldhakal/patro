@@ -42,6 +42,12 @@ export type VivaranCell = {
   ayana?: { mark: string; label: string; north: boolean };
 };
 
+/** "शरद" and "शरद्" are one word: the trailing halant is spelling, not a second name. */
+function sameWord(a?: string, b?: string): boolean {
+  const bare = (w?: string) => w?.trim().replace(/\u094D$/, "");
+  return bare(a) === bare(b);
+}
+
 export function usePanchangaVivaran({ p, selectedDay }: { p?: PanchangaDay; selectedDay?: CalendarDay | null }) {
   const { t, lang } = useLocale();
   if (!p) return null;
@@ -69,7 +75,7 @@ export function usePanchangaVivaran({ p, selectedDay }: { p?: PanchangaDay; sele
     },
     { label: t("aside.moonrise"), value: moonrise ?? t("sections.dash"), mono: true },
     // Nepali names the season and the ritu with the same word — don't print it twice.
-    { label: t("aside.ritu"), value: ritu, hint: season === ritu ? undefined : season },
+    { label: t("aside.ritu"), value: ritu, hint: sameWord(season, ritu) ? undefined : season },
     { label: t("aside.nakshatra"), value: angaName(nakshatra), hint: formatAngaPatroTransitionHint(nakshatra, lang) },
     { label: t("aside.yoga"), value: angaName(yoga), hint: formatAngaPatroTransitionHint(yoga, lang) },
     { label: t("aside.karana"), value: angaName(karana), hint: formatAngaPatroTransitionHint(karana, lang) },
