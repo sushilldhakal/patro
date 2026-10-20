@@ -59,7 +59,7 @@ export function toHolidayRow(item: Holiday | Festival, lang: Lang, index: number
     key: `${item.id ?? name}-${start}-${index}`,
     name,
     /* The page is one year already: "वैशाख १, वि.सं. २०८३" on every row only repeated it. */
-    bsDate: bsDate.replace(/,\s*(?:वि\.सं\.|BS)\s*[०-९0-9]+$/, ""),
+    bsDate: bsDate.replace(/,\s*[^,\s]+\s*[\u0966-\u096F0-9]+$/, ""),
     adDate: start || "—",
     days: formatLocaleDigits(days, lang),
     type,

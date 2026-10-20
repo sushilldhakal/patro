@@ -82,21 +82,21 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
             <span className={HUB_ICON_SVG} aria-hidden dangerouslySetInnerHTML={{ __html: icon.svg }} />
           ) : null}
         </div>
-        <p className="m-0 max-w-full truncate text-[12px] font-bold leading-[14px]">
+        <p className="m-0 max-w-full truncate text-diagram-sm font-bold leading-tight">
           {row.index}. {row.nakshatraLabel}
         </p>
-        <dl className="m-0 mt-[3px] w-full text-left">
+        <dl className="m-0 mt-0.5 w-full text-left">
           {hub.attrs.map((attr) => (
             <div
               key={attr.id}
               className="grid grid-cols-[46px_1fr] items-baseline gap-x-1 border-b border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] py-px last:border-b-0"
             >
-              <dt className="truncate text-[8.5px] leading-[11px] text-[var(--w-ink-faint)]">{attr.label}</dt>
-              <dd className="m-0 truncate text-[9.5px] font-semibold leading-[11px]">{attr.value}</dd>
+              <dt className="truncate text-diagram-2xs leading-tight text-[var(--w-ink-faint)]">{attr.label}</dt>
+              <dd className="m-0 truncate text-diagram-xs font-semibold leading-tight">{attr.value}</dd>
             </div>
           ))}
         </dl>
-        <p className="m-0 mt-[3px] max-w-[130px] truncate text-[8px] leading-[10px] text-[var(--w-ink-faint)]">
+        <p className="m-0 mt-0.5 max-w-[130px] truncate text-diagram-2xs leading-none text-[var(--w-ink-faint)]">
           {hub.vairi}
         </p>
       </div>

@@ -15,7 +15,7 @@ import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { WheelDateSheet, type WheelDateSheetSlot } from "./WheelDateSheet";
 import { parseClockParts, scrubGToDatetime, type WheelAtTimeClient } from "../wheel-clock";
 import { wheelLegendDot, wheelLegendRow } from "@vedic-patro/design-tokens/classes/wheel-classes";
-import { brand, breakpoints, illustration, midnight, nativeShadow, neutral, radius, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { brand, breakpoints, illustration, midnight, nativeShadow, neutral, radius, space, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
 import type { IconNode } from "../../../contract";
@@ -846,7 +846,7 @@ function WheelBody({
       {renderHeader(fullscreen)}
       {/* Inline, the title block and the legend sat on top of the wheel: start the
           chart below the title and stop it above the dock. Fullscreen has room. */}
-      <View className="flex-1" style={fullscreen ? undefined : { marginTop: compactHead ? 64 : 96, marginBottom: 56 }}>
+      <View className="flex-1" style={fullscreen ? undefined : { marginTop: compactHead ? space["5xl"] + space.lg : space["5xl"] * 2, marginBottom: space["5xl"] + space.sm }}>
         {/* The page's copy sits behind the fullscreen modal. Drawing it too
             doubled every pinch frame — and the modal one never kept up. */}
         {expanded && !fullscreen ? null : (

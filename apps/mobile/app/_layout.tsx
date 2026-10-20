@@ -7,7 +7,7 @@ import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { tFor } from "@vedic-patro/i18n/runtime";
-import { light } from "@vedic-patro/design-tokens";
+import { light, mobileTypeScale, radius, space } from "@vedic-patro/design-tokens";
 import { QueryClient } from "@tanstack/react-query";
 import { ApiError, TimeoutError } from "@vedic-patro/api-client";
 import { OfflineMissError } from "@/lib/offline/offline-http";
@@ -356,8 +356,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  errorRoot: { flex: 1, alignItems: "center", justifyContent: "center", gap: 16, padding: 24, backgroundColor: light.background },
-  errorText: { fontSize: 16, lineHeight: 24, color: light.foreground, textAlign: "center" },
-  errorButton: { borderRadius: 12, backgroundColor: light.secondary, paddingHorizontal: 20, paddingVertical: 12 },
-  errorButtonText: { fontSize: 15, fontWeight: "700", color: light.secondaryForeground },
+  errorRoot: { flex: 1, alignItems: "center", justifyContent: "center", gap: space.lg, padding: space["2xl"], backgroundColor: light.background },
+  errorText: { fontSize: mobileTypeScale.base.size, lineHeight: mobileTypeScale.base.lineHeight, color: light.foreground, textAlign: "center" },
+  errorButton: { borderRadius: radius.xl, backgroundColor: light.secondary, paddingHorizontal: space.xl, paddingVertical: space.md },
+  errorButtonText: { fontSize: mobileTypeScale.base.size, fontWeight: "700", color: light.secondaryForeground },
 });
