@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useLocale } from "@/lib/i18n";
 /**
  * वास्तु — the app's drawing of `useVastuPage` (@vedic-patro/features): the
  * 16-direction / 81-pada wheel with a live compass, the detail card for the
@@ -186,6 +188,8 @@ export default function VastuScreen() {
   const { width, isTablet } = useBreakpoint();
   const page = useVastuPage({ useCompass: useCompassHeading });
   const { copy, compass, dialog } = page;
+  const { t, lang } = useLocale();
+  const [show16, setShow16] = useState(false);
   /* iPad: 10% under the full column width. */
   const wheelSize = Math.round(Math.max(280, width - WHEEL_CHROME) * (isTablet ? 0.9 : 1));
 
@@ -234,8 +238,21 @@ export default function VastuScreen() {
             <ZoneDetail page={page} />
           </View>
 
-          <DirChips chips={page.directions} onSelect={page.select} />
-          <DirChips chips={page.directions16} onSelect={page.select} />
+          {/* One picker: the eight directions, and the sixteen on request — two rows of
+              chips for the same choice (the second in English abbreviations) read as a mistake. */}
+          {show16 ? (
+            <DirChips
+              chips={page.directions16.map((dir) => (lang === "en" ? dir : { ...dir, label: dir.title ?? dir.label }))}
+              onSelect={page.select}
+            />
+          ) : (
+            <DirChips chips={page.directions} onSelect={page.select} />
+          )}
+          <Pressable onPress={() => setShow16((v) => !v)} className="self-start" accessibilityRole="button">
+            <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(13)}>
+              {show16 ? t("vastu.show_8_directions") : t("vastu.show_16_directions")}
+            </Text>
+          </Pressable>
         </View>
       </View>
 

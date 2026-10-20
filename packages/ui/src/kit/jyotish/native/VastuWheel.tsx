@@ -142,7 +142,7 @@ export function VastuPurushaWheel({
                 <ArcLabel center={center}
                   bearing={band.bearing}
                   radius={GUNA_LABEL_R}
-                  fontSize={10}
+                  fontSize={13}
                   fontFamily={fonts.bold}
                   fill={labelFill}
                 >
@@ -167,7 +167,7 @@ export function VastuPurushaWheel({
                 <ArcLabel center={center}
                   bearing={point.bearing}
                   radius={DIR16_LABEL_R + 11}
-                  fontSize={11}
+                  fontSize={14}
                   fontFamily={fonts.bold}
                  fill={VASTU_INK.text}>
                   {point.abbr}
@@ -175,7 +175,7 @@ export function VastuPurushaWheel({
                 <ArcLabel center={center}
                   bearing={point.bearing}
                   radius={DIR16_LABEL_R - 11}
-                  fontSize={9}
+                  fontSize={12}
                   fontFamily={fonts.semibold}
                  fill={VASTU_INK.text}>
                   {attr}
@@ -217,7 +217,7 @@ export function VastuPurushaWheel({
                 <ArcLabel center={center}
                   bearing={pada.bearing}
                   radius={DEITY_LABEL_R}
-                  fontSize={9}
+                  fontSize={12}
                   fontFamily={fonts.semibold}
                  fill={VASTU_INK.text}>
                   {w.padaName(pada.id)}
@@ -244,7 +244,7 @@ export function VastuPurushaWheel({
                   alignmentBaseline="central"
                   fill={VASTU_INK.text}
                   fillOpacity={0.88}
-                  fontSize={12}
+                  fontSize={15}
                   fontFamily={fonts.semibold}
                 >
                   {w.padaName(devata.id)}
@@ -314,7 +314,7 @@ export function VastuPurushaWheel({
                 pointerEvents="none"
                 fill={VASTU_INK.text}
                 fillOpacity={active ? 1 : 0.82}
-                fontSize={11}
+                fontSize={14}
                 fontFamily={active ? fonts.bold : fonts.semibold}
               >
                 {w.dirName(dir.id)}
@@ -436,7 +436,7 @@ export function VastuPurushaWheel({
                   <ArcLabel center={center}
                     bearing={bearing}
                     radius={DEG_LABEL_R}
-                    fontSize={7}
+                    fontSize={9}
                     fontFamily={fonts.semibold}
                     fillOpacity={0.8}
                    fill={VASTU_INK.text}>

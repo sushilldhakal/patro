@@ -172,7 +172,7 @@ export const panchangaPageClasses = {
     cardRow: "flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3",
     backLink: "text-sm",
     backLinkFooter: "mt-6",
-    backLinkText: "text-primary underline",
+    backLinkText: "font-semibold text-secondary",
     shellMain: "mx-auto max-w-page-wide px-4 py-8",
     shellRow: "items-start gap-6",
     shellContent: "min-w-0 flex-1 overflow-x-hidden",

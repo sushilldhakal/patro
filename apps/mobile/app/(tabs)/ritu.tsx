@@ -8,8 +8,6 @@ import { RituSeasons } from "@/components/RituSeasons";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useTheme } from "@/lib/theme-context";
 import { useRituScreen } from "@vedic-patro/features/ritu";
-import { cn } from "@vedic-patro/domain/utils";
-import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
 export default function RituScreen() {
   const { colors, isDark } = useTheme();
@@ -18,22 +16,16 @@ export default function RituScreen() {
 
   return (
     <AppShell title="" showHeader={false}>
-      {/* Web: header and the compact place picker share a wrapping row. */}
-      <View className={cn("mb-8 flex-row flex-wrap", rituClasses.headerRow)}>
-        <PatroPageHeader
-          className="mb-0"
-          icon={<AppNavIcon name="sprout" size={28} color={isDark ? colors.primary : colors.secondary} />}
-          title={ritu.title}
-          subtitle={ritu.subtitle}
-        />
-        {/* Right-hand side, also when the row wraps: the place picker is always on the right. */}
-        <View className="ml-auto">
-          <PatroHeaderLocation location={location} onLocationChange={setLocation} />
-        </View>
-      </View>
+      <PatroPageHeader
+        className="mb-4"
+        icon={<AppNavIcon name="sprout" size={28} color={isDark ? colors.primary : colors.secondary} />}
+        title={ritu.title}
+        subtitle={ritu.subtitle}
+      />
 
+      {/* The place picker shares the why-link's row: each on a row of its own left a tall gap above the cards. */}
       <View className="mb-8">
-        <RituSeasons location={location} />
+        <RituSeasons location={location} toolbarStart={<PatroHeaderLocation location={location} onLocationChange={setLocation} />} />
       </View>
 
       <LearnMoreCard slugs={ritu.learnSlugs} />

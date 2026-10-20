@@ -72,7 +72,9 @@ export function useDocumentsPage(active: DocumentsTab) {
       { id: "all" as DocumentsTab, label: t("documents.category.all"), active: active === "all" },
       ...nonEmpty.map((e) => ({
         id: e.group.id as DocumentsTab,
-        label: `${e.group.emoji} ${name(e.group)}`,
+        /* Words only on the chips: an emoji beside a short name ("📖 उपनिषद्") left
+           some chips showing just the emoji, and the rest of the app uses line icons. */
+        label: name(e.group),
         count: e.docs.length,
         countLabel: digits(e.docs.length),
         active: active === e.group.id,

@@ -14,6 +14,7 @@ import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { Staged } from "@/components/ui/Deferred";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { LoadingState } from "@/components/ui/States";
 
 /**
@@ -24,7 +25,8 @@ import { LoadingState } from "@/components/ui/States";
 export default function HolidaysScreen() {
   const colors = useThemeColors();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
-  const page = useHolidaysPage({ year, era });
+  const { location } = usePanchangaLocation();
+  const page = useHolidaysPage({ year, era, location: location.params });
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>

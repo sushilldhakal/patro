@@ -399,6 +399,8 @@ export type RituSeasonsProps = {
   placeLabel?: string;
   headerIcon?: ReactNode;
   onWhyPress?: () => void;
+  /** Toolbar only: drawn at the toolbar's start, so a place picker shares the why-link's row. */
+  toolbarStart?: ReactNode;
   className?: string;
 };
 

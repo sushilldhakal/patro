@@ -11,7 +11,8 @@ export function useDocumentCard(doc: DocumentSummary) {
   const { t, lang, digits } = useLocale();
   return {
     title: bilingualText(lang, doc.title_ne, doc.title_en),
-    subtitle: bilingualText(lang, doc.subtitle_ne, doc.subtitle_en, ""),
+    /* The API writes counts in the Nepali subtitle with Latin digits ("40 अध्याय"). */
+    subtitle: digits(bilingualText(lang, doc.subtitle_ne, doc.subtitle_en, "")),
     description: bilingualText(lang, doc.description_ne, doc.description_en, ""),
     /** "N chapters" (only for documents split into chapters), then "N verses". */
     meta: [

@@ -45,14 +45,10 @@ function SpanBoundary({ view, tone }: { view: SpanBoundaryView; tone: "begin" | 
   const accent = tone === "begin" ? colors.success : colors.danger;
   return (
     <View className={cn("gap-0.5 rounded-md px-2 py-1.5", tone === "begin" ? "bg-success/10" : "bg-danger/10")}>
-      <View className="flex-row items-center justify-between gap-2">
-        <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
-          {view.label}
-        </Text>
-        <Text className="font-num text-xs tabular-nums text-foreground" style={nepaliTextStyle(14)}>
-          {view.time}
-        </Text>
-      </View>
+      {/* The time is already in `when`; repeating it in the corner showed it twice. */}
+      <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
+        {view.label}
+      </Text>
       <Text className="m-0 font-num text-sm font-semibold leading-snug text-foreground md:text-base" style={nepaliTextStyle(14)}>
         {view.when}
       </Text>
@@ -98,7 +94,10 @@ function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
     ? { bg: undefined, cls: "bg-danger/10", fg: colors.danger }
     : row.good
       ? { bg: undefined, cls: "bg-success/12", fg: colors.success }
-      : { bg: colors.surfaceInset, cls: "", fg: colors.foreground };
+      : elementId === "choghadiya"
+        ? /* Chara is neutral, not missing: amber like its legend dot, not grey. */
+          { bg: undefined, cls: "bg-warning/12", fg: colors.foreground }
+        : { bg: colors.surfaceInset, cls: "", fg: colors.foreground };
   const leading: ReactNode = row.glyph ? (
     row.glyph.kind === "nakshatra" ? (
       <NakshatraGlyphIcon name={row.glyph.name} number={row.glyph.number} size={24} />
@@ -185,7 +184,36 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
       </>
     );
   }
+  if (elementId === "hora") {
+    return (
+      <>
+        <HoraLegend />
+        {rows(ROW_COLS)}
+      </>
+    );
+  }
   return rows(ROW_COLS);
+}
+
+/** Hora rows are tinted green / red; say what the colours mean. */
+function HoraLegend() {
+  const { t } = useLocale();
+  const items = [
+    { key: "good", dot: "bg-success", label: t("choghadiya.quality_good") },
+    { key: "bad", dot: "bg-destructive", label: t("choghadiya.quality_bad") },
+  ];
+  return (
+    <View className="mb-3 flex-row gap-4">
+      {items.map((item) => (
+        <View key={item.key} className="flex-row items-center gap-2">
+          <View className={cn("h-2.5 w-2.5 rounded-full", item.dot)} />
+          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            {item.label}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
 }
 
 function BalamView({ balam, clock }: { balam: NonNullable<ElementPage["balam"]>; clock?: string }) {

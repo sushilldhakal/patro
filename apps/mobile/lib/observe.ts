@@ -1,5 +1,6 @@
 import { requireOptionalNativeModule } from "expo";
-import { Platform, type ComponentType } from "react-native";
+import type { ComponentType } from "react";
+import { Platform } from "react-native";
 import type { ObserveModule } from "expo-observe";
 
 /*

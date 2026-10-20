@@ -19,7 +19,7 @@ export function LoadingState({ label }: { label?: string | null }) {
   const { t } = useLocale();
   return (
     <View className="flex-1 items-center justify-center py-10" style={{ minHeight: LOADING_MIN_HEIGHT }}>
-      <VedicPatroLoader label={label === undefined ? t("rashifal.profile.loading") : label} size={88} />
+      <VedicPatroLoader label={label === undefined ? t("rashifal.profile.loading") : label} size={56} />
     </View>
   );
 }

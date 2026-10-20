@@ -91,7 +91,8 @@ export function useShantiVidhiPanel({
       key: graha.key,
       colorHex: graha.colorHex,
       title: t("kundali.x.shanti_title", { name: pick(graha.nameNe, graha.nameEn) }),
-      subtitle: pick(graha.nameEn, graha.nameNe),
+      /* The other language's name: in Nepali that put "Saturn" under शनि शान्ति. English keeps the Nepali name. */
+      subtitle: lang === "en" ? graha.nameNe : "",
       vaara: pick(graha.vaaraNe, graha.vaaraEn),
       samaya: pick(graha.shubhSamayaNe, graha.shubhSamayaEn),
       color: pick(graha.colorNe, graha.colorEn),

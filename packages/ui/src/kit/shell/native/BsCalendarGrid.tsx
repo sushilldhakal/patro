@@ -98,7 +98,7 @@ export function BsCalendarGrid({
                   key={cell.day.date_ad}
                   onPress={() => onSelectDay?.(cell.day)}
                   style={colStyle(col, { minHeight: cellMinH })}
-                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, bgClass)}
+                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, bgClass, isToday && isCompact && "border-2 border-secondary")}
                 >
                   {isSelected ? (
                     <View pointerEvents="none" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderWidth: 2, borderColor: roles.primary }} />
@@ -126,8 +126,10 @@ export function BsCalendarGrid({
                   </View>
 
                   <View className="flex-1 items-start justify-center gap-0.5 py-0.5">
-                    {isToday ? (
-                      <View className={cn(cal.todayBadge, isCompact && cal.todayBadgePhone)}>
+                    {/* On a phone the cell is too short for the badge: it pushed the date down
+                        over the tithi. The today fill and ring already mark the cell. */}
+                    {isToday && !isCompact ? (
+                      <View className={cal.todayBadge}>
                         <Text className={cal.todayBadgeText}>{grid.todayBadge}</Text>
                       </View>
                     ) : null}

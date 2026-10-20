@@ -164,7 +164,7 @@ function useTimelineColors() {
     card: colors.card,
     axis: isDark ? withAlpha(neutral.white, 0.45) : withAlpha(brand.ink, 0.45),
     tick: isDark ? withAlpha(neutral.white, 0.4) : withAlpha(brand.ink, 0.35),
-    night: isDark ? withAlpha(neutral.white, 0.06) : withAlpha(brand.blue, 0.06),
+    night: isDark ? withAlpha(neutral.white, 0.08) : withAlpha(brand.blue, 0.1),
     sunLine: colors.border,
     moonLine: isDark ? withAlpha(neutral.white, 0.25) : withAlpha(brand.ink, 0.2),
     hair: withAlpha(illustration.orange53b, 0.55),
@@ -427,7 +427,9 @@ export function DayTimeline({
                   )
               : segmentsFromRow(row);
       return { key: row.label, ne: row.label, en: row.en, cls, segs };
-    });
+    })
+    /* A row with nothing in it (योग, when its spans are missing) drew as an unlabeled empty bar. */
+    .filter((tr) => tr.segs.length > 0);
 
   const H = T0 + tracks.length * TRACK + 6;
   /** Web: `w-full min-w-[768px]` — at least 767px, grow to fill the card column. */
@@ -698,7 +700,8 @@ export function DayTimeline({
         <View className={panchangaPageClasses.dayCycle.bandLegend}>
           <LegendDot color={withAlpha(illustration.green40, 0.55)} label={copy.good} />
           <LegendDot color={withAlpha(illustration.red57, 0.55)} label={copy.bad} />
-          <LegendDot color={withAlpha(neutral.white, 0.2)} label={copy.night} />
+          {/* The chart's own night fill, darker: white on a light card was invisible. */}
+          <LegendDot color={withAlpha(brand.blue, 0.35)} label={copy.night} />
         </View>
       </View>
 
@@ -706,8 +709,9 @@ export function DayTimeline({
         {scrollChart ? (
           <ScrollView
             horizontal
-            nestedScrollEnabled
             showsHorizontalScrollIndicator
+            /* Not nestedScrollEnabled: on Android that made this horizontal chart keep a
+               vertical drag that started on it, so the page would not scroll there. */
             style={{ width: "100%" }}
             contentContainerStyle={{ width: MIN_CHART_WIDTH, minWidth: MIN_CHART_WIDTH }}
             className="py-3 pl-1 pr-2"
@@ -721,6 +725,12 @@ export function DayTimeline({
               {chartContent}
             </Svg>
           </ScrollView>
+        ) : null}
+        {scrollChart ? (
+          /* The chart runs past the right edge: say it scrolls. */
+          <View pointerEvents="none" className="absolute bottom-1 right-2 rounded-full px-2 py-0.5" style={{ backgroundColor: withAlpha(C.card, 0.9) }}>
+            <Text className={cn(panchangaPageClasses.dayCycle.legendLabel, "text-muted-foreground")}>{copy.scrollHint} →</Text>
+          </View>
         ) : null}
         {scrollChart ? (
           <View

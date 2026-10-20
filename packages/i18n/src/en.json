@@ -349,6 +349,7 @@
       "title": "Day cycle",
       "good": "Good",
       "bad": "Bad",
+      "scroll_hint": "Scroll",
       "night": "Night",
       "now": "Now",
       "chosen_time": "Chosen time",
@@ -2142,6 +2143,8 @@
         "inner4": "Inner four"
       }
     },
+    "show_16_directions": "Show 16 directions",
+    "show_8_directions": "Only 8 directions",
     "element": {
       "earth": "Earth",
       "water": "Water",
@@ -2745,6 +2748,7 @@
     "support": "Support"
   },
   "ritu": {
+    "starts": "Starts (BS)",
     "title": "Season",
     "subtitle": "Tropical seasons · equinox–solstice",
     "southern": " · Southern hemisphere",

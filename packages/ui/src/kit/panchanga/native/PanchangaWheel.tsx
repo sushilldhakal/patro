@@ -844,7 +844,9 @@ function WheelBody({
       }}
     >
       {renderHeader(fullscreen)}
-      <View className="flex-1">
+      {/* Inline, the title block and the legend sat on top of the wheel: start the
+          chart below the title and stop it above the dock. Fullscreen has room. */}
+      <View className="flex-1" style={fullscreen ? undefined : { marginTop: compactHead ? 64 : 96, marginBottom: 56 }}>
         {/* The page's copy sits behind the fullscreen modal. Drawing it too
             doubled every pinch frame — and the modal one never kept up. */}
         {expanded && !fullscreen ? null : (

@@ -9,6 +9,9 @@ import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import type { PlotPlannerProps } from "../contract";
 import { HouseSketch } from "./HouseSketch";
 
+/* The kit Input carries no styling of its own: unstyled, the fields had no visible edge. */
+const PLOT_INPUT = "h-10 rounded-lg border bg-background px-3 text-base text-foreground";
+
 const center = { cx: CX, cy: CY };
 const marks = { good: VASTU_STATUS_MARK.good, bad: VASTU_STATUS_MARK.bad };
 
@@ -28,11 +31,11 @@ export function PlotPlanner({ storage, offline, renderSelect, renderOwner, rende
         <Box nativeClassName="flex-row" className="gap-3">
           <Box className="min-w-0 flex-1">
             <Text className={vastuClasses.fieldLabel}>{copy.lengthLabel}</Text>
-            <Input label={copy.lengthLabel} type="number" value={plot.length} onChange={(value) => v.update({ length: value })} className={errors.length ? "border-destructive" : undefined} />
+            <Input label={copy.lengthLabel} type="number" value={plot.length} onChange={(value) => v.update({ length: value })} className={cn(PLOT_INPUT, errors.length ? "border-destructive" : "border-border")} />
           </Box>
           <Box className="min-w-0 flex-1">
             <Text className={vastuClasses.fieldLabel}>{copy.breadthLabel}</Text>
-            <Input label={copy.breadthLabel} type="number" value={plot.breadth} onChange={(value) => v.update({ breadth: value })} className={errors.breadth ? "border-destructive" : undefined} />
+            <Input label={copy.breadthLabel} type="number" value={plot.breadth} onChange={(value) => v.update({ breadth: value })} className={cn(PLOT_INPUT, errors.breadth ? "border-destructive" : "border-border")} />
           </Box>
         </Box>
         <Box>

@@ -23,7 +23,7 @@ export function Holidays() {
   const search = routeApi.useSearch();
   const navigate = routeApi.useNavigate();
   const { location, setLocation, yearBrowse } = usePatroYearDataPage(search, navigate);
-  const page = useHolidaysPage({ year: yearBrowse.year, era: yearBrowse.era });
+  const page = useHolidaysPage({ year: yearBrowse.year, era: yearBrowse.era, location: location?.params });
 
   useRouteLoading(page.status === "loading");
 

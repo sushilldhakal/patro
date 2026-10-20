@@ -578,6 +578,7 @@ export const strings = {
   "panchanga.day_cycle.title": { ne: "दिन-चक्र", en: "Day cycle" },
   "panchanga.day_cycle.good": { ne: "शुभ", en: "Good" },
   "panchanga.day_cycle.bad": { ne: "अशुभ", en: "Bad" },
+  "panchanga.day_cycle.scroll_hint": { ne: "सार्नुहोस्", en: "Scroll" },
   "panchanga.day_cycle.night": { ne: "रात", en: "Night" },
   "panchanga.day_cycle.now": { ne: "अहिले", en: "Now" },
   "panchanga.day_cycle.chosen_time": { ne: "छानिएको समय", en: "Chosen time" },
@@ -3882,6 +3883,8 @@ export const strings = {
   "vastu.labels.best": { ne: "उपयुक्त", en: "Best for" },
   "vastu.labels.avoid": { ne: "जोगिने", en: "Avoid" },
   "vastu.labels.pada": { ne: "पद", en: "Pada" },
+  "vastu.show_16_directions": { ne: "१६ दिशा हेर्नुहोस्", en: "Show 16 directions" },
+  "vastu.show_8_directions": { ne: "८ दिशा मात्र", en: "Only 8 directions" },
   "vastu.labels.quality": { ne: "मूल गुण", en: "Quality" },
   "vastu.labels.kind.dir8": { ne: "८ दिशा", en: "8-direction" },
   "vastu.labels.kind.dir16": { ne: "१६ दिशा", en: "16-direction" },
@@ -4703,6 +4706,7 @@ export const strings = {
   "footer.support": { ne: "सहायता", en: "Support" },
 
   /* ── ritu ────────────────────────────────────────────────────────────── */
+  "ritu.starts": { ne: "सुरु (वि.सं.)", en: "Starts (BS)" },
   "ritu.title": { ne: "ऋतु", en: "Season" },
   "ritu.subtitle": { ne: "सायन ऋतु · विषुव–अयनान्त", en: "Tropical seasons · equinox–solstice" },
   "ritu.southern": { ne: " · दक्षिणी गोलार्ध", en: " · Southern hemisphere" },

@@ -1,3 +1,4 @@
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { useAbhijitPage, type AbhijitDayView } from "@vedic-patro/features/abhijit";
@@ -46,17 +47,12 @@ export default function AbhijitMuhurtaScreen() {
 
   return (
     <AppShell title={t("nav.abhijit_muhurta")} showHeader={false}>
-      <View className="mb-6">
-        <View className={ac.titleRow}>
-          <AppNavIcon name="sparkles" size={28} color={colors.secondary} />
-          <Text className={cn(ac.title, "flex-1 text-3xl")} style={nepaliTextStyle()}>
-            {page.copy.title}
-          </Text>
-        </View>
-        <Text className={ac.subtitle} style={nepaliTextStyle()}>
-          {page.copy.subtitle}
-        </Text>
-      </View>
+      <PatroPageHeader
+        className="mb-8"
+        icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
+        title={page.copy.title}
+        subtitle={page.copy.subtitle}
+      />
 
       <PatroMonthYearNavBlock
         era={era}

@@ -1,3 +1,4 @@
+import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Card } from "@/components/ui/Card";
@@ -54,7 +55,7 @@ export function StampLine({
   label: string;
   stamp: AstaStamp | null;
 }) {
-  const { digits } = useLocale();
+  const { digits, lang } = useLocale();
   if (!stamp) {
     return (
       <Text className="text-xs text-muted-foreground">
@@ -62,7 +63,8 @@ export function StampLine({
       </Text>
     );
   }
-  const date = stamp.date_bs ?? stamp.date_ad ?? stamp.date ?? "";
+  /* "साउन २९, २०८३" like the asta page, not a bare "२०८३-०३-१५". */
+  const date = formatBsIsoDateNepali(stamp.date_bs, { lang }) ?? stamp.date_ad ?? stamp.date ?? "";
   return (
     <Text className="text-sm text-foreground">
       <Text className="font-semibold">{label}: </Text>

@@ -5697,10 +5697,11 @@
       "name_ne": "भक्तपुर सिद्धपोखरी मेला",
       "type": "lunar",
       "lunar_month": "Ashwin",
-      "tithi": 10,
-      "paksha": "shukla",
+      "tithi": 2,
+      "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
+      "notes": "Ashwin Krishna Dwitiya (pūrṇimānta) — during Sohra Shraddha, about three weeks before Vijaya Dashami; not on Dashami.",
       "importance": "regional",
       "category": "cultural"
     },

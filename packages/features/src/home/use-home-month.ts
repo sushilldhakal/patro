@@ -122,7 +122,11 @@ export function useHomeMonth({
     [requiredMonths],
   );
   const festivalQueries = useQueries({
-    queries: festivalYears.map((y) => ({ queryKey: holidayKeys.festivals(y), queryFn: () => fetchFestivals(y), staleTime: HOUR })),
+    queries: festivalYears.map((y) => ({
+      queryKey: holidayKeys.festivals(y, "bs", undefined, location),
+      queryFn: () => fetchFestivals(y, { location }),
+      staleTime: HOUR,
+    })),
   });
   const festivalsTick = festivalQueries.map((q) => `${q.dataUpdatedAt ?? 0}:${q.status}`).join("|");
   const festivals = useMemo(() => {

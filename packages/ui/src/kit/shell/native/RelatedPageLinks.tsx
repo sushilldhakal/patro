@@ -20,7 +20,7 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
             key={item.key}
             label={item.label}
             onPress={item.onPress}
-            className="flex flex-row items-start gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
+            className="flex flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
             webClassName="transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]"
           >
             <Box className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10">{item.icon}</Box>

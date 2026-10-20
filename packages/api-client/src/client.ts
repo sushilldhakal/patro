@@ -82,7 +82,7 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // instead of serving stale ones. Bump here — one place for both apps.
 
 /** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga_cache.py. */
-export const PANCHANGA_CACHE_VERSION = "4703";
+export const PANCHANGA_CACHE_VERSION = "4903";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
 export const SAIT_CACHE_VERSION = "14";
 /** Graha sthiti / asta / vakri / eclipse (`gv=`). */
@@ -602,18 +602,26 @@ export const saitKeys = {
 // The server defaults `language` from `era` (bs → ne, ad → en), so it is only
 // sent when it differs — e.g. English festival names for a BS year.
 
-export const fetchHolidays = (year: number, era: Era = "bs") =>
-  get<HolidaysResponse>(withPanchangaCacheVersion(`/nepal/holidays?year=${year}&era=${era}`));
+// Lunar festival dates follow the observer outside Nepal (the tithi can reach
+// sunrise / madhyahna a civil day apart), so pass the location to get that
+// city's dates. Omitted, the URL is the national (Kathmandu) listing.
+const withFestivalLocation = (path: string, location?: LocationParams) =>
+  location ? appendLocation(path, location) : path;
+
+export const fetchHolidays = (year: number, era: Era = "bs", location?: LocationParams) =>
+  get<HolidaysResponse>(
+    withPanchangaCacheVersion(withFestivalLocation(`/nepal/holidays?year=${year}&era=${era}`, location)),
+  );
 
 export const fetchFestivals = (
   year: number,
-  options: { era?: Era; language?: "ne" | "en"; month?: number } = {},
+  options: { era?: Era; language?: "ne" | "en"; month?: number; location?: LocationParams } = {},
 ) => {
   const era = options.era ?? "bs";
   const language = options.language ?? (era === "ad" || era === "bc" ? "en" : "ne");
   let path = `/nepal/festivals?year=${year}&era=${era}&language=${language}`;
   if (options.month != null) path += `&month=${options.month}`;
-  return get<FestivalsResponse>(withPanchangaCacheVersion(path));
+  return get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location)));
 };
 
 // ─── Panchanga elements ───────────────────────────────────────────────────────
@@ -873,27 +881,29 @@ export const fetchPatroMonth = (year: number, month: number) =>
 // ─── Holidays & Festivals ─────────────────────────────────────────────────────
 
 export const holidayKeys = {
-  holidays: (year: number, era: Era = "bs") => ["holidays", era, year] as const,
-  festivals: (year: number, era: Era = "bs", month?: number) =>
+  holidays: (year: number, era: Era = "bs", location?: LocationParams) =>
+    ["holidays", era, year, locationCacheKey(location)] as const,
+  festivals: (year: number, era: Era = "bs", month?: number, location?: LocationParams) =>
     month != null
-      ? (["festivals", era, year, month] as const)
-      : (["festivals", era, year] as const),
-  upcoming: (days = 90, limit = 15, holidaysOnly = false) =>
-    ["festivals", "upcoming", days, limit, holidaysOnly] as const,
+      ? (["festivals", era, year, month, locationCacheKey(location)] as const)
+      : (["festivals", era, year, locationCacheKey(location)] as const),
+  upcoming: (days = 90, limit = 15, holidaysOnly = false, location?: LocationParams) =>
+    ["festivals", "upcoming", days, limit, holidaysOnly, locationCacheKey(location)] as const,
 };
 
 /** Next festivals from today (observer TZ), across the BS-year boundary. */
 export const fetchUpcomingFestivals = (
   days = 90,
   limit = 15,
-  holidaysOnly = false
+  holidaysOnly = false,
+  location?: LocationParams,
 ) => {
   const params = new URLSearchParams({
     days: String(days),
     limit: String(limit),
   });
   if (holidaysOnly) params.set("holidays_only", "true");
-  return get<UpcomingFestivalsResponse>(`/nepal/festivals/upcoming?${params}`);
+  return get<UpcomingFestivalsResponse>(withFestivalLocation(`/nepal/festivals/upcoming?${params}`, location));
 };
 
 export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");

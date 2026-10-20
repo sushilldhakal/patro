@@ -55,10 +55,13 @@ export default function RashifalScreen() {
   return (
     <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
       <View className="gap-8">
-        <PageHeader icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />} title={page.copy.title} subtitle={page.copy.subtitle} />
-        <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
-          {page.copy.eyebrow}
-        </Text>
+        {/* Breadcrumb above the title, as on the कुण्डली pages; under it, it read as part of the subtitle. */}
+        <View className="gap-1.5">
+          <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
+            {page.copy.eyebrow}
+          </Text>
+          <PageHeader icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />} title={page.copy.title} subtitle={page.copy.subtitle} />
+        </View>
 
         <View className={rashifalClasses.navWrap}>
           <PanchangaDateNav

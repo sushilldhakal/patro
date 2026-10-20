@@ -190,9 +190,9 @@ function wheelFor(year: number, location: LocationParams | undefined): Promise<Y
 function calendarTasks(year: number, location: LocationParams | undefined): Task[] {
   const tasks: Task[] = [
     () => wheelFor(year, location),
-    () => fetchHolidays(year),
-    () => fetchFestivals(year, { language: "ne" }),
-    () => fetchFestivals(year, { language: "en" }),
+    () => fetchHolidays(year, "bs", location),
+    () => fetchFestivals(year, { language: "ne", location }),
+    () => fetchFestivals(year, { language: "en", location }),
     () => fetchSpecialMonths(year),
   ];
   for (let month = 1; month <= 12; month += 1) {
