@@ -4,7 +4,7 @@
     "description": "Festival rules using LUNAR MONTH NAMES (correct Adhik Maas model)",
     "date_updated": "2026-07-29",
     "model": "lunar_month_based",
-    "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on. v3.3: `date_selection` accepts the kaal-vyapini modes madhyahna / aparahna / pradosh alongside udaya and boundary — the day a tithi pervades that part of the day, for observances whose date is not the udaya-tithi day (Vijaya Dashami, Laxmi Puja).",
+    "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on. v3.4: `end_at` closes a span on another festival's start day (Tihar holiday: Laxmi Puja → Bhai Tika). v3.3: `date_selection` accepts the kaal-vyapini modes madhyahna / aparahna / pradosh alongside udaya and boundary — the day a tithi pervades that part of the day, for observances whose date is not the udaya-tithi day (Vijaya Dashami, Laxmi Puja).",
     "tradition_field": "Optional. Present only on rules whose date depends on the observing tradition (Smarta vs Vaishnava Ekadashi). Absent means the rule is tradition-neutral and is emitted for every tradition. See docs/phase-7-preparation.md and engine/vedic/tradition.py."
   },
   "festivals": {
@@ -13,11 +13,13 @@
       "name_ne": "तिहार",
       "type": "lunar",
       "lunar_month": "Kartik",
-      "tithi": 14,
+      "tithi": 15,
       "paksha": "krishna",
       "adhik_policy": "skip",
-      "duration_days": 5,
-      "notes": "Kaag Tihar to Bhai Tika",
+      "date_selection": "pradosh",
+      "end_at": "bhai-tika",
+      "duration_days": 4,
+      "notes": "Tihar public holiday — Laxmi Puja to Bhai Tika. Starts on the Laxmi Puja day (pradosh-vyapini Amavasya) and ends on the Bhai Tika day (`end_at`), so the span is 3–5 days as the tithis fall.",
       "importance": "national",
       "category": "hindu"
     },
