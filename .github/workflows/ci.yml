@@ -63,4 +63,5 @@ jobs:
           tests/test_context_map.py
           tests/test_profile_rules.py
           tests/test_profiles_api.py
+          tests/test_auth_api.py
           tests/test_value_objects.py

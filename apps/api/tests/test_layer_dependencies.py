@@ -65,3 +65,58 @@ class TestEngineDependsOnNothingOutward:
             "implement it in services/. See docs/DDD-PLAN.md."
         )
 
+
+
+def _imports_under(folder: str) -> list[tuple[str, int, str]]:
+    found = []
+    for path in sorted((ROOT / folder).rglob("*.py")):
+        if "__pycache__" in path.parts:
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Import):
+                found += [(rel, node.lineno, alias.name) for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                found.append((rel, node.lineno, node.module))
+    return found
+
+
+class TestApplicationDependsOnlyInward:
+    """``services/`` (use cases and their stores) sits under the interface and the
+    composition root: it may not import ``app`` or ``api``. A request-reading
+    helper it needs belongs in the domain (as ``engine.calendar.date_keys`` did)."""
+
+    def test_services_import_no_interface(self):
+        offenders = [
+            f"{rel}:{line} -> {name}"
+            for rel, line, name in _imports_under("services")
+            if name.split(".")[0] in ("app", "api")
+        ]
+        assert not offenders, "services/ imports the interface layer: " + ", ".join(offenders)
+
+
+class TestRoutersDoNotQueryTheDatabase:
+    """A router translates HTTP; it does not query tables. Persistence goes through
+    a use case and its store (``services/identity/*_store.py``)."""
+
+    ROUTER_FOLDERS = ("api", "app/routers")
+
+    def test_no_router_imports_sqlalchemy(self):
+        offenders = [
+            f"{rel}:{line} -> {name}"
+            for folder in self.ROUTER_FOLDERS
+            for rel, line, name in _imports_under(folder)
+            if name.split(".")[0] == "sqlalchemy"
+        ]
+        assert not offenders, "a router queries the database itself: " + ", ".join(offenders)
+
+
+class TestRulesFolderIsData:
+    """``rules/`` holds the festival and sait rule data; the code that reads it is
+    domain code and lives in ``engine/festivals`` where these guards see it."""
+
+    def test_no_python_in_rules(self):
+        stray = sorted(
+            p.relative_to(ROOT).as_posix() for p in (ROOT / "rules").rglob("*.py") if "__pycache__" not in p.parts
+        )
+        assert not stray, f"code in rules/: {stray}"
