@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import date
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from fastapi import Depends, HTTPException, Query
 
 from engine.astronomy.location import ObserverLocation
 from services.geography.observer_location import resolve_location_from_query
-from engine.calendar.bs_date import BsDate
 
 
 def location_params(
@@ -160,37 +158,3 @@ def _validate_bs_year(year: int) -> None:
 def _validate_bs_month(month: int) -> None:
     if not 1 <= month <= 12:
         raise HTTPException(status_code=400, detail="month must be 1..12")
-
-
-def _enrich_holiday_bs_dates(holidays: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    result = []
-    for h in holidays:
-        start_ad = date.fromisoformat(h["start_date"])
-        end_ad = date.fromisoformat(h["end_date"])
-        result.append({
-            **h,
-            "bs_start_date": str(BsDate.from_gregorian(start_ad)),
-            "bs_end_date": str(BsDate.from_gregorian(end_ad)),
-        })
-    return result
-
-
-def _nepal_holidays_for_ad_year(
-    ad_year: int,
-    location: ObserverLocation,
-    *,
-    cache_only: bool = False,
-) -> list[dict[str, Any]]:
-    from services.festivals.holiday_generator import HolidayCacheMissError, get_bs_holidays
-    seen: dict[str, dict[str, Any]] = {}
-    for bs_year in (ad_year + 56, ad_year + 57):
-        try:
-            payload = get_bs_holidays(bs_year, location, cache_only=cache_only)
-            for h in payload["holidays"]:
-                start = date.fromisoformat(h["start_date"])
-                end = date.fromisoformat(h["end_date"])
-                if start.year <= ad_year <= end.year or start.year == ad_year or end.year == ad_year:
-                    seen[h["id"]] = h
-        except HolidayCacheMissError:
-            pass
-    return sorted(seen.values(), key=lambda h: h["start_date"])
