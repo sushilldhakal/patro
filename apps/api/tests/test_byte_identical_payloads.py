@@ -76,7 +76,7 @@ SCENARIOS: dict[str, Callable[[], dict[str, Any]]] = {
     #
     # The five scenarios above call the builder with its default
     # ``include_festivals=False``, so none of them carried a ``festivals`` key
-    # and the entire festival/rule surface — ~2,700 lines across rules/engine.py,
+    # and the entire festival/rule surface — ~2,700 lines across engine/festivals/festival_rules.py,
     # sait_rules, lunar_month, sankranti and holiday_generator — had no
     # regression cover at all.
     #

@@ -27,7 +27,7 @@ every step here:
 | **Astronomy** | generic | Where is each body, when does the Sun rise, what is ΔT | `engine/astronomy/` | `domain/astronomy/` (sky3d, ayanamsha) |
 | **Calendar** | core | Which BS / AD day is this, which era, which samvatsara | `engine/calendar/` | `domain/calendar/` |
 | **Panchanga** | core | The five angas, the udaya day, muhurta, hora, choghadiya; lunar month, adhik/kshaya maas, Nepal Sambat | `engine/panchanga/` · `services/panchanga/` | `domain/panchanga/` |
-| **Festivals & Sait** | core | Which festival, holiday or auspicious date falls on a day, by tradition | `engine/festivals/`, `rules/` · `services/festivals/` | `domain/festivals/` |
+| **Festivals & Sait** | core | Which festival, holiday or auspicious date falls on a day, by tradition | `engine/festivals/` (rule data in `rules/*.json`) · `services/festivals/` | `domain/festivals/` |
 | **Jyotish** | core | Birth chart, vargas, dashas, strengths, gochar, rashifal, milan, guidance | `engine/jyotish/` · `services/jyotish/` | `domain/jyotish/` |
 | **Vastu** | supporting | Zones, room placement, scoring | `engine/vastu/` · `services/vastu/` | `domain/vastu/` |
 | **Geography** | supporting | Which city, which coordinates, which timezone | `engine/astronomy/location.py` (`ObserverLocation`) · `services/geography/` | `domain/geography/` |
@@ -164,7 +164,7 @@ Use these words in code, docs and UI copy, and don't invent synonyms.
   Nepal Sambat months, small-plot vastu): new modules were placed by context
   — `engine/festivals/festival_sait.py`, `services/festivals/festival_details.py`
   (which also owns `attach_festival_saits`, called by the day router) — and
-  `rules/engine.py` reads its own rule file instead of importing a service.
+  the festival rule matcher reads its own rule file instead of importing a service.
 
 ## 6. Existing issues found while checking
 

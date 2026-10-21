@@ -27,6 +27,7 @@ from engine.calendar.bikram_sambat import (
     shaka_year,
 )
 from engine.calendar.bs_date import BsDate
+from engine.calendar.date_keys import greg_date_for_date_key
 from engine.panchanga.anga_state import AngaState
 from engine.calendar.samvatsara import samvatsara_payload_for_bs_year
 from services.panchanga.daily_panchanga import get_daily_panchanga
@@ -158,17 +159,6 @@ def _local_stamp(iso_dt: str | None, timezone_name: str) -> str | None:
 def element_state(block: dict, timezone_name: str) -> dict[str, Any]:
     """One anga's day-state row; see :class:`engine.panchanga.anga_state.AngaState`."""
     return AngaState.from_block(block, lambda iso: _local_stamp(iso, timezone_name)).to_payload()
-
-
-def greg_date_for_date_key(date_key: str, era: str) -> date:
-    """Thin re-export of the one resolver, imported late to avoid a cycle.
-
-    ``app`` imports ``app.main``, which imports the routers, which import this
-    module — so the resolver cannot be bound at module level here.
-    """
-    from app.day_resolver import greg_date_for_date_key as _resolve
-
-    return _resolve(date_key, era)
 
 
 def resolve_panchanga_jd_ut(jd_ut: float) -> tuple[float, CivilDay, date | None]:

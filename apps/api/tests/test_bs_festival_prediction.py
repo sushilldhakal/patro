@@ -18,7 +18,7 @@ from services.festivals.holiday_generator import (
     get_bs_festivals,
     load_rules,
 )
-from rules.engine import compute_festival_dates
+from engine.festivals.festival_rules import compute_festival_dates
 
 
 @pytest.fixture(autouse=True)

@@ -18,7 +18,7 @@ from engine.calendar.bikram_sambat import (
     get_bs_month_start,
 )
 from engine.panchanga.tithi import get_udaya_tithi
-from rules.engine import bs_year_for_gregorian, compute_festival_dates
+from engine.festivals.festival_rules import bs_year_for_gregorian, compute_festival_dates, load_festival_rules
 from services.platform.cache_meta import cache_is_valid, stamp_payload
 
 
@@ -86,17 +86,14 @@ class FestivalCacheMissError(LookupError):
     """Raised when a BS-year festival cache file has not been precomputed."""
 
 
-RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 PUBLIC_HOLIDAYS_PATH = Path(__file__).resolve().parents[2] / "rules" / "public_holidays_v1.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"
 CACHE_DIR = Path(__file__).resolve().parents[2] / "cache"
 
 
-@lru_cache(maxsize=8)
 def load_rules() -> dict[str, dict[str, Any]]:
-    with open(RULES_PATH, encoding="utf-8") as f:
-        data = json.load(f)
-    return data["festivals"]
+    """The festival rule book — the Festivals domain's own copy (one read, one cache)."""
+    return load_festival_rules()
 
 
 @lru_cache(maxsize=1)
@@ -888,7 +885,7 @@ def get_special_months_for_bs_year(
     to mid-2026). We scan both Gregorian years to find any special months
     whose dates fall within the BS year range.
     """
-    from rules.engine import get_special_months_for_gregorian_year
+    from engine.festivals.festival_rules import get_special_months_for_gregorian_year
     from engine.calendar.bikram_sambat import bs_year_date_range
 
     year_start, year_end = bs_year_date_range(bs_year)

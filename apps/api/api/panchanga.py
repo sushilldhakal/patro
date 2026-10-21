@@ -40,7 +40,7 @@ from services.panchanga.panchanga_api import (
     build_patro_month,
     build_year_calendar,
 )
-from app.day_resolver import greg_date_for_date_key
+from engine.calendar.date_keys import greg_date_for_date_key
 from services.panchanga.payload_slim import slim_day_payload, slim_month_payload
 from services.panchanga.presentation import render_panchanga, render_panchanga_month
 
@@ -236,7 +236,8 @@ def panchanga_rashifal_personal(
     was *born* (needed once, to cast the Lagna — the Moon is geocentric and
     would not need this, but the ascendant does).
     """
-    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from app.day_resolver import day_jd_for_request
+    from engine.calendar.date_keys import DayResolutionError
     from app.instant_resolver import birth_instant_from_query
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
     from engine.jyotish.rashifal_personal import build_natal_chart
@@ -549,7 +550,8 @@ def _panchanga_day_impl(
     slim: bool = False,
 ):
     """Shared handler for ``/panchanga/today``, ``/panchanga/{date_key}`` and ``?jd=``."""
-    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from app.day_resolver import day_jd_for_request
+    from engine.calendar.date_keys import DayResolutionError
 
     try:
         jd_ut = day_jd_for_request(request, date_key)
@@ -676,7 +678,8 @@ def panchanga_rashifal(
     observer's own sunrise — so the whole payload goes through the gzip response
     cache. That matters most for ``yearly``, which sweeps ~123 sunrises.
     """
-    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from app.day_resolver import day_jd_for_request
+    from engine.calendar.date_keys import DayResolutionError
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
     from app.response_cache import (
         DAILY_PANCHANGA_CACHE_CONTROL,
@@ -1226,7 +1229,7 @@ def nepal_panchanga_day(
     output: Literal["json", "text"] = Query("json"),
 ):
     """Combined daily panchanga + festivals + public holiday status."""
-    from app.day_resolver import civil_day_for_date_key
+    from engine.calendar.date_keys import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
     from engine.calendar.bikram_sambat import locate_patro_day_for_civil
 

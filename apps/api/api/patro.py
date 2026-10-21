@@ -13,7 +13,7 @@ from api.deps import (
     validated_year_span_jd,
 )
 from services.festivals.holiday_generator import precompute_bs_year
-from app.day_resolver import greg_date_for_date_key
+from engine.calendar.date_keys import greg_date_for_date_key
 from services.panchanga.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
 from services.panchanga.presentation import render_panchanga_month
 
@@ -164,7 +164,7 @@ def nepal_gochar_ingress(
     grahas: str | None = Query(None),
 ):
     """Planetary ingress timeline between two dates."""
-    from app.day_resolver import civil_day_for_date_key
+    from engine.calendar.date_keys import civil_day_for_date_key
     from engine.astronomy.jd_calendar import (
         civil_day_jd_from_date,
         date_if_supported,
@@ -272,7 +272,7 @@ def nepal_gochar(
     upcoming: bool = Query(False),
 ):
     """Gochar (planetary transit) table for a date."""
-    from app.day_resolver import civil_day_for_date_key
+    from engine.calendar.date_keys import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
     from engine.calendar.bikram_sambat import format_bs_date
     from engine.jyotish.gochar import build_gochar
@@ -326,7 +326,7 @@ def nepal_graha_sthiti(
     era: EraQuery = "ad",
 ):
     """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
-    from app.day_resolver import civil_day_for_date_key
+    from engine.calendar.date_keys import civil_day_for_date_key
     from engine.astronomy.jd_calendar import date_if_supported
     from engine.calendar.bikram_sambat import format_bs_date
     from engine.jyotish.graha_detail import build_graha_sthiti

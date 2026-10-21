@@ -71,7 +71,7 @@ class TestDateSelectionIsLive:
         every one of the 578 rules relies on the default."""
         import inspect
 
-        from rules.engine import compute_lunar_festival
+        from engine.festivals.festival_rules import compute_lunar_festival
 
         src = inspect.getsource(compute_lunar_festival)
         assert 'date_selection", "udaya"' in src or "date_selection\", \"udaya\"" in src
@@ -94,7 +94,7 @@ class TestTheKnobsStayCovered:
             v["date_selection"] for v in self._rules().values() if "date_selection" in v
         }
         assert used <= known, (
-            f"unknown date_selection value(s) {used - known} — rules/engine.py "
+            f"unknown date_selection value(s) {used - known} — engine/festivals/festival_rules.py "
             "passes the string straight through, so an unrecognised one silently "
             "falls back to udaya."
         )

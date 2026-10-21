@@ -1,4 +1,5 @@
-"""Simple festival rule matcher — no DSL, no v4 catalog."""
+"""Festival rule matcher — the day each rule in ``rules/festival_rules_v3.json``
+names in a year at an observer. No DSL, no v4 catalog."""
 
 from __future__ import annotations
 
@@ -16,10 +17,14 @@ from engine.panchanga.lunar_month import find_festival_in_lunar_month
 from engine.calendar.sankranti import find_sankranti
 
 
+# The rule book is the Festivals domain's own reference data, kept in rules/.
+FESTIVAL_RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
+
+
 @lru_cache(maxsize=1)
-def _rules_by_id() -> dict[str, dict[str, Any]]:
-    """The festival rules, for a rule that ends on another festival's day (``end_at``)."""
-    with open(Path(__file__).with_name("festival_rules_v3.json"), encoding="utf-8") as f:
+def load_festival_rules() -> dict[str, dict[str, Any]]:
+    """Every festival rule by id — read once, shared by the matcher and its callers."""
+    with open(FESTIVAL_RULES_PATH, encoding="utf-8") as f:
         return json.load(f)["festivals"]
 
 
@@ -157,7 +162,7 @@ def compute_festival_dates(
     # Tika) rather than after a fixed count — tithi kshaya/vriddhi make the
     # count 4, 5 or 6 days.
     if rule.get("end_at"):
-        end_rule = _rules_by_id().get(rule["end_at"])
+        end_rule = load_festival_rules().get(rule["end_at"])
         ends = compute_festival_dates(rule["end_at"], end_rule, gregorian_year, location) if end_rule else None
         if ends is not None and ends[0] >= start:
             return start, ends[0]

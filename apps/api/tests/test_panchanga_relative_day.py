@@ -49,7 +49,7 @@ def test_date_resolver_rejects_a_relative_day_string():
     """"today" names an instant; it must never reach a calendar date parser."""
     import pytest
 
-    from app.day_resolver import DayResolutionError, greg_date_for_date_key
+    from engine.calendar.date_keys import DayResolutionError, greg_date_for_date_key
 
     with pytest.raises(DayResolutionError, match="names an instant"):
         greg_date_for_date_key("today", "bs")

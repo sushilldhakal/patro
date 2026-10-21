@@ -25,7 +25,7 @@ from engine.panchanga.lunar_month import clear_lunar_year_cache, find_festival_i
 from engine.panchanga.tithi import get_udaya_tithi
 from engine.panchanga.tithi_boundaries import find_next_tithi, find_tithi_end
 from engine.astronomy.ut_instant import day_instant_utc
-from rules.engine import compute_festival_dates
+from engine.festivals.festival_rules import compute_festival_dates
 
 RULES = json.loads((ROOT / "rules" / "festival_rules_v3.json").read_text())["festivals"]
 

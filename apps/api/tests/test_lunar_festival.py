@@ -22,7 +22,7 @@ from engine.panchanga.lunar_month import (
     get_lunar_year,
 )
 from engine.panchanga.tithi import get_udaya_tithi
-from rules.engine import compute_festival_dates
+from engine.festivals.festival_rules import compute_festival_dates
 import json
 
 
