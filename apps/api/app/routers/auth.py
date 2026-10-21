@@ -17,10 +17,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 
-from app import emailer
-from app.apple_auth import AppleAuthError, verify_apple_identity_token
-from app.facebook_auth import FacebookAuthError, verify_facebook_access_token
-from app.google_auth import GoogleAuthError, verify_google_id_token
+from services.identity import emailer
+from services.identity.apple_auth import AppleAuthError, verify_apple_identity_token
+from services.identity.facebook_auth import FacebookAuthError, verify_facebook_access_token
+from services.identity.google_auth import GoogleAuthError, verify_google_id_token
 from app.security import CurrentUser, DbSession
 from database.models import User
 from database.schemas import (
