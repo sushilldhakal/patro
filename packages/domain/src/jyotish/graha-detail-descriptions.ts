@@ -52,7 +52,7 @@ export const GRAHA_PAGE_DESCRIPTIONS: Record<string, GrahaPageDescription> = {
       en: "Graha vakri (retrograde) is when a planet appears to move backward through the zodiac as seen from Earth. It is an apparent motion caused by the relative speeds of Earth and the planet. When the planet resumes forward motion it is margi (direct). This page lists the vakri/margi station moments through the year for Mercury, Venus, Mars, Jupiter and Saturn.",
     },
     how: {
-      ne: "प्रत्येक ग्रहको दैनिक गति (°/दिन) को चिन्ह अनुगमन गरिन्छ। गति धनात्मकबाट ऋणात्मक हुँदा वक्री आरम्भ (वक्री station) र ऋणात्मकबाट धनात्मक हुँदा मार्गी हुन्छ। चिन्ह परिवर्तन हुने ठ्याक्कै क्षण द्विखण्डन विधिबाट निकालिन्छ।",
+      ne: "प्रत्येक ग्रहको दैनिक गति (°/दिन) को चिन्ह अनुगमन गरिन्छ। गति धनात्मकबाट ऋणात्मक हुँदा वक्री आरम्भ (स्तम्भन बिन्दु) र ऋणात्मकबाट धनात्मक हुँदा मार्गी हुन्छ। चिन्ह परिवर्तन हुने ठ्याक्कै क्षण द्विखण्डन विधिबाट निकालिन्छ।",
       en: "The sign of each planet's daily speed (°/day) is tracked. When the speed turns from positive to negative the planet begins retrograde (vakri station); from negative to positive it turns direct (margi). The exact instant of the sign change is found by bisection.",
     },
     meaning: {

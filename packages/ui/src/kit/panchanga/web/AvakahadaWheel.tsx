@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { findNakshatraIcon } from "@vedic-patro/domain/panchanga/nakshatra-icons";
-import { Icon } from "@vedic-patro/ui";
-import { zoomInIcon, zoomOutIcon } from "../icons";
+import { ZoomStage } from "./ZoomStage";
 import { GANA_PILL_CLASS, GANA_SWATCH_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
 import {
   avWheelAttrVal,
@@ -20,18 +19,16 @@ import {
   avWheelSpoke,
   avWheelTheme,
 } from "@vedic-patro/design-tokens/classes/av-wheel-classes";
-import { wheelIconBtn } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/jyotish/avakahada-wheel";
-import { AVAKAHADA_ZOOM, sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
+import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { midnight, wheel } from "@vedic-patro/design-tokens";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
 const HUB_ICON_SVG = "inline-block h-full w-full [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current";
-const WHEEL_SVG = "block h-auto w-full max-w-[660px] select-none";
+const WHEEL_SVG = "mx-auto block h-auto w-full select-none";
 const HUB_FRAME = "flex h-full w-full items-center justify-center overflow-hidden text-center";
-const WHEEL_PAN_AREA = "flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden";
 const RIM = 302;
 
 const NAK_STEP = 360 / 27;
@@ -76,37 +73,30 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
   const icon = findNakshatraIcon(row.en);
 
   if (ring === "nakshatra") {
+    /* Sized in wheel units (the hub is a 208-unit circle) so all seven rows
+       sit inside it with no scrollbar, whatever the wheel's on-screen size. */
     return (
-      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
-        <div className={cn(avakahadaClasses.hubIcon, `text-[var(--w-ink,${midnight.foam})]`)}>
+      <div className="flex w-[150px] flex-col items-center text-[var(--w-ink)]">
+        <div className="h-[18px] w-[18px] shrink-0">
           {icon?.svg ? (
-            <span
-              className={HUB_ICON_SVG}
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: icon.svg }}
-            />
-          ) : (
-            <span className={avakahadaClasses.hubIconFallback}>{row.index}</span>
-          )}
+            <span className={HUB_ICON_SVG} aria-hidden dangerouslySetInnerHTML={{ __html: icon.svg }} />
+          ) : null}
         </div>
-        <p className={cn(avakahadaClasses.hubNakTitle, `text-[var(--w-ink,${midnight.foam})]`)}>
+        <p className="m-0 max-w-full truncate text-diagram-sm font-bold leading-tight">
           {row.index}. {row.nakshatraLabel}
         </p>
-        <dl className={avakahadaClasses.hubAttrList}>
+        <dl className="m-0 mt-0.5 w-full text-left">
           {hub.attrs.map((attr) => (
             <div
               key={attr.id}
-              className={cn(
-                avakahadaClasses.hubAttrRow,
-                "grid grid-cols-[52px_1fr] border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] max-sm:grid-cols-[44px_1fr]",
-              )}
+              className="grid grid-cols-[46px_1fr] items-baseline gap-x-1 border-b border-[color-mix(in_srgb,var(--w-sep-soft)_80%,transparent)] py-px last:border-b-0"
             >
-              <dt className={cn(avakahadaClasses.hubAttrName, `text-[var(--w-ink-faint,${wheel.inkFaint})]`)}>{attr.label}</dt>
-              <dd className={cn(avakahadaClasses.hubAttrValue, `text-[var(--w-ink,${midnight.foam})]`)}>{attr.value}</dd>
+              <dt className="truncate text-diagram-2xs leading-tight text-[var(--w-ink-faint)]">{attr.label}</dt>
+              <dd className="m-0 truncate text-diagram-xs font-semibold leading-tight">{attr.value}</dd>
             </div>
           ))}
         </dl>
-        <p className={avakahadaClasses.hubVairi}>
+        <p className="m-0 mt-0.5 max-w-[130px] truncate text-diagram-2xs leading-none text-[var(--w-ink-faint)]">
           {hub.vairi}
         </p>
       </div>
@@ -115,7 +105,7 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
 
   if (ring === "pada" && hub.charan) {
     return (
-      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
+      <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-hidden")}>
         <p className={cn(avakahadaClasses.hubLabel, "text-[var(--w-accent,var(--color-danger))]")}>
           {label}
         </p>
@@ -131,7 +121,7 @@ function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakaha
   }
 
   return (
-    <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-y-auto")}>
+    <div className={cn(avakahadaClasses.hubStack, "flex max-h-full flex-col overflow-hidden")}>
       <p className={cn(avakahadaClasses.hubLabel, "text-[var(--w-accent,var(--color-danger))]")}>
         {label}
       </p>
@@ -160,43 +150,11 @@ type Props = {
   ganaFill: Record<Gana, string>;
 };
 
-const ZOOM_MIN = AVAKAHADA_ZOOM.min;
-
 export function AvakahadaWheel({ highlighted, ganaFill }: Props) {
   const v = useAvakahadaWheel({ highlighted });
   const { lang } = useLocale();
-  const { zoom, pan, setPan, allRows, highlightSet, hasFilter, activeFocus, activeRow, selectFocus, attrRings, copy } = v;
+  const { allRows, highlightSet, hasFilter, activeFocus, activeRow, selectFocus, attrRings, copy } = v;
   const setHover = v.setHovered;
-  const resetView = v.resetView;
-  const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
-
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (zoom <= 1) return;
-    dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
-    setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
-
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const d = dragRef.current;
-    if (!d) return;
-    setPan({ x: d.px + (e.clientX - d.x), y: d.py + (e.clientY - d.y) });
-  };
-
-  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
-    dragRef.current = null;
-    setIsDragging(false);
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-  };
-
-  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.deltaY < 0) v.zoomIn();
-    else v.zoomOut();
-  };
 
   const nakLayers = useMemo(() => {
     const segs: React.ReactNode[] = [];
@@ -356,66 +314,9 @@ export function AvakahadaWheel({ highlighted, ganaFill }: Props) {
         <p className={avakahadaClasses.wheelSubtitle}>{copy.subtitle}</p>
       </div>
 
-      <div className={cn(
-          avakahadaClasses.wheelStage,
-          `relative flex min-h-[min(92vw,680px)] flex-col border border-[var(--w-surface-border)] bg-[radial-gradient(ellipse_at_50%_42%,var(--w-sky-0,${wheel.sky0})_0%,var(--w-sky-2,${wheel.sky2})_72%)] max-sm:min-h-[min(95vw,420px)]`,
-        )}>
-        <div className={cn(avakahadaClasses.wheelToolbar, "flex")}>
-          <button
-            type="button"
-            className={wheelIconBtn}
-            title={copy.zoomIn}
-            aria-label={copy.zoomIn}
-            onClick={v.zoomIn}
-          >
-            <Icon node={zoomInIcon} size={16} tone="muted" />
-          </button>
-          <button
-            type="button"
-            className={wheelIconBtn}
-            title={copy.zoomOut}
-            aria-label={copy.zoomOut}
-            onClick={v.zoomOut}
-            disabled={zoom <= ZOOM_MIN}
-          >
-            <Icon node={zoomOutIcon} size={16} tone="muted" />
-          </button>
-          {zoom !== 1 && (
-            <button
-              type="button"
-              className={cn(wheelIconBtn, "px-1.5 text-sm")}
-              title={copy.zoomReset}
-              onClick={resetView}
-            >
-              1:1
-            </button>
-          )}
-          <span className={cn(avakahadaClasses.zoomPercent, `min-w-[42px] text-[var(--w-ink-dim,${wheel.inkDim})]`)}>
-            {Math.round(zoom * 100)}%
-          </span>
-        </div>
-
-        <div
-          className={cn(
-            WHEEL_PAN_AREA,
-            zoom > 1 && "cursor-grab",
-            isDragging && "cursor-grabbing",
-          )}
-          onWheel={onWheel}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-        >
-          <div
-            className="flex w-full justify-center will-change-transform"
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "center center",
-              transition: isDragging ? "none" : "transform 0.12s ease-out",
-            }}
-          >
-        <svg viewBox="0 0 620 620" className={WHEEL_SVG} role="img" aria-label={copy.svgAria}>
+      <ZoomStage className="mx-2 sm:mx-3">
+        {(fullscreen) => (
+        <svg viewBox="0 0 620 620" className={cn(WHEEL_SVG, !fullscreen && "max-w-[660px]")} role="img" aria-label={copy.svgAria}>
           <defs>
             <radialGradient id="av-hub-glow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="var(--av-hub-center)" />
@@ -459,9 +360,8 @@ export function AvakahadaWheel({ highlighted, ganaFill }: Props) {
             </div>
           </foreignObject>
         </svg>
-          </div>
-        </div>
-      </div>
+        )}
+      </ZoomStage>
 
       <div className={cn(avakahadaClasses.legend, "flex")}>
         <span className={avakahadaClasses.legendLabel}>{copy.legendGana}</span>

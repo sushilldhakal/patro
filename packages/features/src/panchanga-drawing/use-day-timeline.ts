@@ -109,6 +109,7 @@ export function useDayTimeline({
       good: t("panchanga.day_cycle.good"),
       bad: t("panchanga.day_cycle.bad"),
       night: t("panchanga.day_cycle.night"),
+      scrollHint: t("panchanga.day_cycle.scroll_hint"),
       chartAria: t("ui.panchanga.full_panchanga_day_chart"),
       hour: t("panchanga.hour_aria"),
       ghati: t("panchanga.day_cycle.ghati"),

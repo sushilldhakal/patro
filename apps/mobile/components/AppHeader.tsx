@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Easing, Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { Animated, Easing, Modal, Platform, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -24,10 +24,18 @@ function BrandMark({ onPress, centered }: { onPress: () => void; centered?: bool
       className={cn(shellClasses.brand, "flex-row active:opacity-80", centered && "justify-center")}
     >
       <VedicPatroMark size={42} />
-      <Text className={cn("py-0.5", shellClasses.brandName)} numberOfLines={1} style={nepaliTextStyle()}>
-        <Text className={cn(shellClasses.brandName, shellClasses.brandVedic)}>{t("brand_vedic")}</Text>
-        <Text className={cn(shellClasses.brandName, shellClasses.brandPatro)}> {t("brand_patro")}</Text>
-      </Text>
+      {/* Two texts side by side, not spans inside one line: Android measured the nested line in
+          the outer font, so the bold words overflowed it and "वैदिक पात्रो" was cut to "वैदिक पा…". */}
+      <View className="flex-row items-baseline">
+        <Text className={cn("py-0.5", shellClasses.brandName, shellClasses.brandVedic)} style={nepaliTextStyle()}>
+          {t("brand_vedic")}
+        </Text>
+        <Text className={cn("py-0.5", shellClasses.brandName, shellClasses.brandPatro)} style={nepaliTextStyle()}>
+          {/* On Android the first word already ends on a no-break space (components/ui/Text). */}
+          {Platform.OS === "android" ? "" : " "}
+          {t("brand_patro")}
+        </Text>
+      </View>
     </Pressable>
   );
 }

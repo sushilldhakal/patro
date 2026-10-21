@@ -5,7 +5,7 @@ import { Box, Icon, Text } from "@vedic-patro/ui";
 import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
-/** Selected day's date, festival, moon and sun times. Side by side once the card is 32rem wide. */
+/** Selected day's date, festival (and its sait), moon and sun times. Side by side once the card is 32rem wide. */
 export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   return (
@@ -14,19 +14,20 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
         <Box className={cn(cls.highlightTop, "@[32rem]:shrink-0")}>
           <Text className={cls.highlightDay}>{h.day}</Text>
           <Box className={cls.highlightDate}>
-            {/* Month and weekday on one line, the other era (and Nepal Sambat) under it. */}
-            <Text className={cls.highlightMonth}>
+            {/* Month and weekday on one line, the other era (and Nepal Sambat) under it.
+                Web Text is an inline <span>, so each line is a <p> to break. */}
+            <Text as="p" className={cls.highlightMonth}>
               {h.month}
               <Text className={cls.highlightWeekday}> · {h.weekday}</Text>
             </Text>
-            <Text className={cls.highlightCrossEra}>{h.crossEra}</Text>
-            {h.nepalSambat ? <Text className={cls.highlightNs}>{h.nepalSambat}</Text> : null}
+            <Text as="p" className={cls.highlightCrossEra}>{h.crossEra}</Text>
+            {h.nepalSambat ? <Text as="p" className={cls.highlightNs}>{h.nepalSambat}</Text> : null}
           </Box>
         </Box>
         <Box className={cn(cls.highlightSpecial, "@[32rem]:mt-0 @[32rem]:min-w-0 @[32rem]:flex-1 @[32rem]:border-l @[32rem]:border-t-0 @[32rem]:pl-4 @[32rem]:pt-0")}>
-          <Text className={cls.highlightTitle}>{h.title}</Text>
+          <Text as="p" className={cls.highlightTitle}>{h.title}</Text>
           {/* The "N days ago" kicker rides on the subtitle line instead of a line of its own. */}
-          <Text className={cls.highlightSubtitle}>
+          <Text as="p" className={cls.highlightSubtitle}>
             {[h.subtitle, h.kicker].filter(Boolean).join(" · ")}
           </Text>
           {(h.phase && h.tithiIndex != null) || h.sunrise || h.sunset ? (
@@ -50,6 +51,24 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
                   <Text className={cls.highlightSunText}>{h.sunset}</Text>
                 </Box>
               ) : null}
+            </Box>
+          ) : null}
+          {h.saits.length ? (
+            <Box className={cls.highlightSait}>
+              <Text as="p" className={cls.highlightSaitHeading}>{h.saitHeading}</Text>
+              {h.saits.map((sait) => (
+                <Box key={sait.key} className={cls.highlightSaitItem}>
+                  <Text as="p" className={cls.highlightSaitLabel}>{sait.label}</Text>
+                  {sait.times.map((slot) => (
+                    <Box key={slot.key} className={cls.highlightSaitRow}>
+                      <Text className={cls.highlightSaitTime}>{slot.time}</Text>
+                      {slot.detail ? <Text className={cls.highlightSaitDetail}>{slot.detail}</Text> : null}
+                    </Box>
+                  ))}
+                  {sait.facing ? <Text as="p" className={cls.highlightSaitFacing}>{sait.facing}</Text> : null}
+                </Box>
+              ))}
+              <Text as="p" className={cls.highlightSaitNote}>{h.saitNote}</Text>
             </Box>
           ) : null}
         </Box>

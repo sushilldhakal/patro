@@ -1,6 +1,7 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
 import { Modal, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Svg, { Path, Polygon, Rect } from "react-native-svg";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { PanchangaDay } from "@vedic-patro/api-client";
@@ -14,7 +15,7 @@ import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { WheelDateSheet, type WheelDateSheetSlot } from "./WheelDateSheet";
 import { parseClockParts, scrubGToDatetime, type WheelAtTimeClient } from "../wheel-clock";
 import { wheelLegendDot, wheelLegendRow } from "@vedic-patro/design-tokens/classes/wheel-classes";
-import { brand, breakpoints, illustration, midnight, nativeShadow, neutral, radius, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { brand, breakpoints, illustration, midnight, nativeShadow, neutral, radius, space, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
 import type { IconNode } from "../../../contract";
@@ -843,7 +844,12 @@ function WheelBody({
       }}
     >
       {renderHeader(fullscreen)}
-      <View className="flex-1">
+      {/* Inline, the title block and the legend sat on top of the wheel: start the
+          chart below the title and stop it above the dock. Fullscreen has room. */}
+      <View className="flex-1" style={fullscreen ? undefined : { marginTop: compactHead ? space["5xl"] + space.lg : space["5xl"] * 2, marginBottom: space["5xl"] + space.sm }}>
+        {/* The page's copy sits behind the fullscreen modal. Drawing it too
+            doubled every pinch frame — and the modal one never kept up. */}
+        {expanded && !fullscreen ? null : (
         <WheelChart
           det={det}
           markers={markers}
@@ -865,6 +871,7 @@ function WheelBody({
           place={place}
           assets={chartAssets}
         />
+        )}
       </View>
       <WheelChrome
         pick={pick}
@@ -971,7 +978,9 @@ function WheelBody({
         onRequestClose={toggleExpanded}
       >
         <StatusBar barStyle="light-content" backgroundColor={W_BG} translucent />
-        <View style={{ flex: 1, backgroundColor: W_BG }}>
+        {/* A Modal is its own native root: on Android the wheel's pinch / spin
+            gestures only reach it through a root of their own. */}
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor: W_BG }}>
           {renderStage("fill", true)}
           {/* Inside the fullscreen modal on purpose: a sheet mounted by the page
               would open behind it, and closing fullscreen to pick a date is
@@ -979,7 +988,7 @@ function WheelBody({
           {fullscreenOverlay}
           {/* The date sheet too: a modal opened from the page would sit behind this one. */}
           {expanded ? calendarModal : null}
-        </View>
+        </GestureHandlerRootView>
       </Modal>
 
       {expanded ? null : calendarModal}

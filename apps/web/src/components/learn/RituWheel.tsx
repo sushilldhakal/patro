@@ -1,5 +1,5 @@
 /**
- * The six ऋतु as a ring, against the twelve बि.सं. months and the four
+ * The six ऋतु as a ring, against the twelve वि.सं. months and the four
  * सायन markers.
  *
  * The छ ऋतु section had a table and nothing else, and a table cannot show the

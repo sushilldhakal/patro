@@ -1,9 +1,9 @@
-import { Link } from "expo-router";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { useSunTimesPage } from "@vedic-patro/features/sun-times";
 import { Trans } from "@vedic-patro/i18n/react";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { Text } from "@/components/ui/Text";
@@ -28,22 +28,13 @@ export default function SuryakrantiScreen() {
 
   return (
     <AppShell title={copy.title} showHeader={false}>
-      <View className="mb-4">
-        <Link href="/" asChild>
-          <Pressable accessibilityRole="link" className={cn("flex-row self-start", sunTimesClasses.backLink)}>
-            <Ionicons name="arrow-back" size={14} color={colors.foreground} />
-            <Text className={sunTimesClasses.backLinkText} style={nepaliTextStyle()}>
-              {copy.backHome}
-            </Text>
-          </Pressable>
-        </Link>
-        <Text className={sunTimesClasses.title} style={nepaliTextStyle()}>
-          {copy.title}
-        </Text>
-        <Text className={sunTimesClasses.subtitle} style={nepaliTextStyle()}>
-          {copy.subtitle}
-        </Text>
-      </View>
+      {/* The standard page header: no other page carried a "back to home" link. */}
+      <PatroPageHeader
+        className="mb-8"
+        icon={<Ionicons name="sunny-outline" size={28} color={isDark ? colors.primary : colors.secondary} />}
+        title={copy.title}
+        subtitle={copy.subtitle}
+      />
 
       <PatroYearNavBlock
         className="mb-0"

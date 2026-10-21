@@ -47,7 +47,6 @@ export {
 export {
   BalamSection,
   DinVisheshSection,
-  FestivalsSection,
   MuhurtaTimingsSection,
   NivasShoolSection,
   PanchakaLagnaSection,
@@ -65,3 +64,4 @@ export type { YearWheelCalendarPick, YearWheelScrub } from "./PanchangaWheel";
 export type { WheelAtTimeClient } from "../wheel-clock";
 export type { WheelHover } from "@vedic-patro/features/panchanga-drawing";
 export type { PanchangaSidebarItemView, PanchangaSidebarLinkArgs, PanchangaSidebarSectionView } from "../sidebar-types";
+export { ZoomStage, ZoomStageInsets } from "./ZoomStage";

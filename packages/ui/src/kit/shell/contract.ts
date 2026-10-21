@@ -264,7 +264,7 @@ export type AuthDialogViewProps = {
   password: string;
   onPassword: (value: string) => void;
   passwordLabel: string;
-  passwordPlaceholder: string;
+  passwordPlaceholder?: string;
   showConfirm: boolean;
   confirm: string;
   onConfirm: (value: string) => void;
@@ -399,6 +399,8 @@ export type RituSeasonsProps = {
   placeLabel?: string;
   headerIcon?: ReactNode;
   onWhyPress?: () => void;
+  /** Toolbar only: drawn at the toolbar's start, so a place picker shares the why-link's row. */
+  toolbarStart?: ReactNode;
   className?: string;
 };
 

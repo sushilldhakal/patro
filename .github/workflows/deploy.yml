@@ -28,4 +28,5 @@ jobs:
           command_timeout: 25m
           script: |
             export VITE_GA_MEASUREMENT_ID="${{ secrets.VITE_GA_MEASUREMENT_ID }}"
+            export SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
             bash /home/ubuntu/patro/scripts/deploy.sh

@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type Plugin } from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
+import { sentryVitePlugin } from "@sentry/vite-plugin"
 import path from "path"
 import { spawnSync } from "node:child_process"
 
@@ -119,6 +120,11 @@ function injectGaSnippet(measurementId: string | undefined): Plugin {
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd(), "")
   const gaId = env.VITE_GA_MEASUREMENT_ID
+  /* Sentry source maps: uploaded when the deploy supplies a token, then deleted from the
+     output so the site never serves them. Without a token the build is unchanged. */
+  const sentryOrg = env.SENTRY_ORG || "nagosi"
+  const sentryProject = env.SENTRY_PROJECT || "patro-web"
+  const sentryUpload = !isSsrBuild && Boolean(env.SENTRY_AUTH_TOKEN)
 
   return {
     base: "/",
@@ -128,6 +134,17 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       i18nBundles(),
       r3fTimerClock(),
       ...(isSsrBuild ? [] : [injectGaSnippet(gaId)]),
+      ...(sentryUpload
+        ? [
+            sentryVitePlugin({
+              org: sentryOrg,
+              project: sentryProject,
+              authToken: env.SENTRY_AUTH_TOKEN,
+              sourcemaps: { filesToDeleteAfterUpload: ["./dist/**/*.map"] },
+              telemetry: false,
+            }),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
@@ -171,6 +188,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       },
     },
     build: {
+      sourcemap: sentryUpload ? "hidden" : false,
       rollupOptions: {
         output: {
           manualChunks: manualChunkId,

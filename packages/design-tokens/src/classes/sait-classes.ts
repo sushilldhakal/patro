@@ -1,4 +1,3 @@
-import { spec } from "../specs";
 
 /**
  * Sait (muhurta) pages: ceremony layout, day card, rules section, profile
@@ -163,8 +162,9 @@ export const saitClasses = {
   pickerRow: "flex flex-row flex-wrap items-center gap-2",
   pickerLabel: "flex-row items-center gap-1.5",
   pickerLabelText: "text-sm font-medium text-foreground",
-  pickerSignIn: spec.chip,
-  pickerSignInText: "text-xs font-semibold text-primary",
+  /* A filled button: outlined, it read as an empty text field. */
+  pickerSignIn: "rounded-full bg-primary px-3.5 py-1.5",
+  pickerSignInText: "text-sm font-semibold text-primary-foreground",
   pickerHint: "text-xs text-muted-foreground",
   pickerSelect: "h-9 min-w-[10rem] max-w-[16rem] rounded-lg border border-border bg-card px-2.5",
   pickerSelectText: "text-sm text-foreground",

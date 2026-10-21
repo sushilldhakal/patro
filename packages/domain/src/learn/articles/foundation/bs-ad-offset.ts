@@ -11,7 +11,7 @@ export const bsAdOffset: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "प्रायः भनिन्छ — “बि.सं. ई.सं.भन्दा ५६ वा ५७ वर्ष अगाडि छ।” यो **उपयोगी अनुमान** हो, तर पूर्ण पात्रो नियम होइन।",
+            ne: "प्रायः भनिन्छ — “वि.सं. ई.सं.भन्दा ५६ वा ५७ वर्ष अगाडि छ।” यो **उपयोगी अनुमान** हो, तर पूर्ण पात्रो नियम होइन।",
             en: "People often say: \"BS is 56 or 57 years ahead of AD.\" That is a **useful approximation**, but it is not a complete calendrical rule.",
           },
         },
@@ -37,7 +37,7 @@ export const bsAdOffset: ArticleData = {
               big: { ne: "महिना", en: "Month" },
               label: { ne: "महिनाको सीमा", en: "The month boundary" },
               desc: {
-                ne: "बि.सं.को महिना सङ्क्रान्तिले सुरु हुन्छ, ग्रेगोरियनको नियमले।",
+                ne: "वि.सं.को महिना सङ्क्रान्तिले सुरु हुन्छ, ग्रेगोरियनको नियमले।",
                 en: "A BS month starts at a sankranti; a Gregorian month starts by rule.",
               },
             },

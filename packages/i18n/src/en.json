@@ -349,6 +349,7 @@
       "title": "Day cycle",
       "good": "Good",
       "bad": "Bad",
+      "scroll_hint": "Scroll",
       "night": "Night",
       "now": "Now",
       "chosen_time": "Chosen time",
@@ -1295,7 +1296,9 @@
     "nivas_from": "from",
     "nivas_to_full_night": "to Full Night",
     "special_observances": "Special observances",
-    "festivals": "Festivals",
+    "public_holiday": "Public holiday",
+    "festival_vidhi": "How it is observed",
+    "ceremony_saits": "Ceremony saits",
     "planet_positions": "Planet positions",
     "lagna": "Lagna",
     "not_available": "Not available",
@@ -2142,6 +2145,8 @@
         "inner4": "Inner four"
       }
     },
+    "show_16_directions": "Show 16 directions",
+    "show_8_directions": "Only 8 directions",
     "element": {
       "earth": "Earth",
       "water": "Water",
@@ -2703,7 +2708,7 @@
     "wheel_zoom_in": "Zoom in",
     "wheel_zoom_out": "Zoom out",
     "wheel_zoom_reset": "Reset zoom",
-    "wheel_pan_hint": "Drag to pan when zoomed",
+    "wheel_pan_hint": "Pinch or scroll to zoom; drag to pan when zoomed",
     "bhoomadosha_title": "Bhoomadosha (Mangal) considerations",
     "name_groups": "Name-syllable groups and enemy groups",
     "bhoomadosha_note": "Bhoomadosha (Mangal) is considered when bride and groom name-syllable groups are mutual enemies.",
@@ -2745,6 +2750,7 @@
     "support": "Support"
   },
   "ritu": {
+    "starts": "Starts (BS)",
     "title": "Season",
     "subtitle": "Tropical seasons · equinox–solstice",
     "southern": " · Southern hemisphere",
@@ -3104,11 +3110,11 @@
       },
       "shubha": {
         "name": "Shubha",
-        "quality": "Auspicious"
+        "quality": "Good for all auspicious work"
       },
       "labha": {
         "name": "Labha",
-        "quality": "Gain"
+        "quality": "Good for business and gain"
       },
       "chara": {
         "name": "Chara",
@@ -3116,15 +3122,15 @@
       },
       "roga": {
         "name": "Roga",
-        "quality": "Disease (Avoid Important Tasks)"
+        "quality": "Illness — avoid important tasks"
       },
       "kala": {
         "name": "Kala",
-        "quality": "Inauspicious"
+        "quality": "Inauspicious — start nothing new"
       },
       "udvega": {
         "name": "Udvega",
-        "quality": "Anxiety (Avoid Important Tasks)"
+        "quality": "Anxiety — avoid important tasks"
       }
     },
     "quality_good": "Good",
@@ -4320,6 +4326,8 @@
       "horizon": "Horizon",
       "notes": "Notes",
       "retry": "Retry",
+      "no_internet_title": "No internet connection",
+      "no_internet_body": "Turn on Wi-Fi or mobile data. This loads again by itself once you're back online.",
       "saving": "Saving…",
       "start": "Start",
       "theme": "Theme",
@@ -4382,6 +4390,23 @@
       "reminder_card_body": "Get notified for today's shubh and ashubh times",
       "reminder_sheet_title": "Today's shubh / ashubh times",
       "reminder_sheet_hint": "Tap the alarm on a time to set a reminder for it",
+      "sait_abhijit_note": "If the time suits you, it can also be done in Abhijit muhurta.",
+      "sait_dir_east": "East",
+      "sait_dir_north": "North",
+      "sait_dir_south": "South",
+      "sait_dir_west": "West",
+      "sait_facing": "Face {{v0}} to receive Tika · Moon in {{v1}}",
+      "sait_heading": "Sait",
+      "sait_lagna": "{{v0}} lagna",
+      "sait_local_note": "From your location's sunrise, sunset and rising lagna.",
+      "sait_ritual_bhai_tika": "Bhai Tika",
+      "sait_ritual_bratabandha": "Bratabandha",
+      "sait_ritual_dashain_tika": "Dashain Tika",
+      "sait_ritual_fulpati": "Phulpati",
+      "sait_ritual_ghatasthapana": "Ghatasthapana",
+      "sait_ritual_griha_pravesh": "Griha Pravesh",
+      "sait_ritual_laxmi_puja": "Laxmi Puja",
+      "sait_ritual_vivah": "Marriage",
       "shubh_times": "Shubh times",
       "special_today": "Special today",
       "this_day_s_panchanga": "This day's panchanga",
@@ -5023,6 +5048,11 @@
       "x_be9a266a": "{{v0}} enters {{v1}}",
       "x_c068f043": "{{v0}}",
       "reload_reset_zoom": "Reload · reset zoom · {{mode}}"
+    },
+    "zoom": {
+      "fullscreen": "Full screen",
+      "exit_fullscreen": "Exit full screen",
+      "reset": "Reset zoom"
     },
     "patro_date": {
       "choose_year": "Choose year",

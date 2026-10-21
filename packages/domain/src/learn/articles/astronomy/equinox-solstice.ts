@@ -112,8 +112,8 @@ export const equinoxSolstice: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "ऋतुको कुरा गर्दा यही सायन वक्र नै सन्दर्भ हो — बि.सं. महिना होइन। महिना निरयन छन्, वक्र सायन; त्यसैले दुई बिस्तारै छुट्टिन्छन्।",
-            en: "When the subject is the ṛtus, this tropical curve is the reference — not the बि.सं. months. The months are sidereal and the curve is tropical, so the two slowly part company.",
+            ne: "ऋतुको कुरा गर्दा यही सायन वक्र नै सन्दर्भ हो — वि.सं. महिना होइन। महिना निरयन छन्, वक्र सायन; त्यसैले दुई बिस्तारै छुट्टिन्छन्।",
+            en: "When the subject is the ṛtus, this tropical curve is the reference — not the वि.सं. months. The months are sidereal and the curve is tropical, so the two slowly part company.",
           },
         },
       ],

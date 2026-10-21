@@ -6,40 +6,40 @@
   "https://www.vedicpatro.com/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchMonthCalendar#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=5103&city_id=1283240"
  ],
  "fetchMonthCalendar-ad#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=5103&city_id=1283240"
  ],
  "fetchYearWheelCalendar#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=5103&city_id=1283240"
  ],
  "fetchPanchanga#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=5103&city_id=1283240"
  ],
  "fetchPanchangaAtTime#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=5103&city_id=1283240"
  ],
  "fetchCivilTimeline#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=5103&city_id=1283240"
  ],
  "fetchHolidays#0": [
-  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=5103"
  ],
  "fetchFestivals-ne#0": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=5103"
  ],
  "fetchFestivals-en#0": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=5103"
  ],
  "fetchRashifal-daily#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=5103&city_id=1283240"
  ],
  "fetchRashifal-monthly#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=5103&city_id=1283240"
  ],
  "fetchPersonalRashifal#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=5103&city_id=1283240"
  ],
  "fetchGochar#0": [
   "https://www.vedicpatro.com/api/v1/nepal/gochar/2026-10-10?era=ad&city_id=1283240"
@@ -90,13 +90,13 @@
   "https://www.vedicpatro.com/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchElementDay#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=5103&city_id=1283240"
  ],
  "fetchYearSunTimes#0": [
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchElementSpans#0": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=5103&city_id=1283240"
  ],
  "fetchTropicalSeasons#0": [
   "https://www.vedicpatro.com/api/v1/seasons/tropical?city_id=1283240"
@@ -120,40 +120,40 @@
   "https://www.vedicpatro.com/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchMonthCalendar#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=5103&city_id=1283240"
  ],
  "fetchMonthCalendar-ad#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=5103&city_id=1283240"
  ],
  "fetchYearWheelCalendar#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=5103&city_id=1283240"
  ],
  "fetchPanchanga#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=5103&city_id=1283240"
  ],
  "fetchPanchangaAtTime#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=5103&city_id=1283240"
  ],
  "fetchCivilTimeline#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=5103&city_id=1283240"
  ],
  "fetchHolidays#1": [
-  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=5103"
  ],
  "fetchFestivals-ne#1": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=5103"
  ],
  "fetchFestivals-en#1": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=5103"
  ],
  "fetchRashifal-daily#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=5103&city_id=1283240"
  ],
  "fetchRashifal-monthly#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=5103&city_id=1283240"
  ],
  "fetchPersonalRashifal#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=5103&city_id=1283240"
  ],
  "fetchGochar#1": [
   "https://www.vedicpatro.com/api/v1/nepal/gochar/2026-10-10?era=ad&city_id=1283240"
@@ -204,13 +204,13 @@
   "https://www.vedicpatro.com/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchElementDay#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=5103&city_id=1283240"
  ],
  "fetchYearSunTimes#1": [
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchElementSpans#1": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&city_id=1283240"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=5103&city_id=1283240"
  ],
  "fetchTropicalSeasons#1": [
   "https://www.vedicpatro.com/api/v1/seasons/tropical?city_id=1283240"
@@ -234,40 +234,40 @@
   "https://www.vedicpatro.com/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchMonthCalendar#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchMonthCalendar-ad#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchYearWheelCalendar#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchanga#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaAtTime#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchCivilTimeline#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchHolidays#2": [
-  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=5103"
  ],
  "fetchFestivals-ne#2": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=5103"
  ],
  "fetchFestivals-en#2": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=5103"
  ],
  "fetchRashifal-daily#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchRashifal-monthly#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPersonalRashifal#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchGochar#2": [
   "https://www.vedicpatro.com/api/v1/nepal/gochar/2026-10-10?era=ad&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -318,13 +318,13 @@
   "https://www.vedicpatro.com/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchElementDay#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchYearSunTimes#2": [
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchElementSpans#2": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=5103&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchTropicalSeasons#2": [
   "https://www.vedicpatro.com/api/v1/seasons/tropical?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -348,40 +348,40 @@
   "https://www.vedicpatro.com/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
  ],
  "fetchMonthCalendar#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchMonthCalendar-ad#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/ad/2026/10?full=true&era=ad&language=en&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchYearWheelCalendar#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchPanchanga#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&festivals=true&detail=true&slim=true&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaAtTime#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchCivilTimeline#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchHolidays#3": [
-  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/holidays?year=2083&era=bs&cv=5103"
  ],
  "fetchFestivals-ne#3": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=5103"
  ],
  "fetchFestivals-en#3": [
-  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=4703"
+  "https://www.vedicpatro.com/api/v1/nepal/festivals?year=2083&era=bs&language=en&cv=5103"
  ],
  "fetchRashifal-daily#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=daily&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchRashifal-monthly#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal?date=2026-10-10&era=ad&period=monthly&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchPersonalRashifal#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/rashifal/personal?date=2026-10-10&era=ad&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchGochar#3": [
   "https://www.vedicpatro.com/api/v1/nepal/gochar/2026-10-10?era=ad&lat=28.2&lon=83.98"
@@ -432,13 +432,13 @@
   "https://www.vedicpatro.com/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"
  ],
  "fetchElementDay#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchYearSunTimes#3": [
   "https://www.vedicpatro.com/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"
  ],
  "fetchElementSpans#3": [
-  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&lat=28.2&lon=83.98"
+  "https://www.vedicpatro.com/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=5103&lat=28.2&lon=83.98"
  ],
  "fetchTropicalSeasons#3": [
   "https://www.vedicpatro.com/api/v1/seasons/tropical?lat=28.2&lon=83.98"

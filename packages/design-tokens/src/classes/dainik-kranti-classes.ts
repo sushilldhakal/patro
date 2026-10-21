@@ -28,7 +28,9 @@ export const dainikKrantiClasses = {
   // ── Day card (mobile) ─────────────────────────────────────────────────────
   dayCard: "overflow-hidden rounded-2xl border bg-card p-3.5 shadow-xs",
   dayCardToday: "border-secondary/60 bg-secondary/10",
-  dayCardFestival: "border-rose-500/30 bg-rose-500/5",
+  /* A rose rim only: nearly every day has a festival, so a tinted fill turned
+     the whole list pink and dimmed the figures. */
+  dayCardFestival: "border-rose-500/30",
   dayCardPlain: "border-border",
   cardHead: "flex flex-row items-start justify-between gap-3",
   cardDateCol: "flex flex-col leading-tight",
@@ -47,7 +49,7 @@ export const dainikKrantiClasses = {
   /** Transits as one wrapped line of entries. */
   transitsInline: "mt-2.5 flex-row flex-wrap items-baseline gap-x-3 gap-y-0.5",
   field: "min-w-0",
-  fieldLabel: "text-[11px] font-medium uppercase tracking-wide",
+  fieldLabel: "text-xs font-medium uppercase tracking-wide",
   fieldValue: "text-[15px] font-semibold leading-snug text-foreground",
   fieldSub: "text-xs leading-tight",
   transitsBlock: "mt-3",

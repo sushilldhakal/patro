@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo, useRef, type ReactNode } from "react";
-import { PanResponder, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { Text, View, useWindowDimensions } from "react-native";
 import Svg, {
   Circle,
   Defs as SvgDefsBase,
@@ -10,8 +10,7 @@ import Svg, {
   Stop,
   Text as SvgText,
 } from "react-native-svg";
-import { Icon } from "@vedic-patro/ui";
-import { zoomInIcon, zoomOutIcon } from "../icons";
+import { ZoomStage } from "./ZoomStage";
 import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
@@ -110,47 +109,67 @@ function RadialText({
   );
 }
 
-function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>; row: AvakahadaWheelRow }) {
+function HubContent({
+  hub,
+  row,
+  scale,
+}: {
+  hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>;
+  row: AvakahadaWheelRow;
+  /** On-screen points per wheel unit — the hub is a 208-unit circle. */
+  scale: number;
+}) {
   const { ring, label, value } = hub;
   const vairiLine = hub.vairi;
   const { chartFont } = useAvakahadaAssets();
 
   if (ring === "nakshatra") {
+    /* Sized in wheel units so all seven rows sit inside the hub with no
+       scrolling; pinch or fullscreen to read it larger. */
+    const u = (n: number) => n * scale;
     return (
-      <ScrollView
-        contentContainerClassName={avakahadaClasses.hubStack}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{ width: u(150), alignItems: "center" }}>
         <Text
-          style={{ color: W_INK, fontFamily: chartFont }}
-          className={cn(avakahadaClasses.hubNakTitle, "text-xs text-center")}
+          numberOfLines={1}
+          style={{ color: W_INK, fontFamily: chartFont, fontSize: u(12), lineHeight: u(15), fontWeight: "700" }}
         >
           {hub.nakTitle}
         </Text>
-        <View className={avakahadaClasses.hubAttrList}>
-          {hub.attrs.map((attr) => (
+        <View style={{ width: "100%", marginTop: u(3) }}>
+          {hub.attrs.map((attr, i) => (
             <View
               key={attr.id}
-              className={cn("flex-row justify-between", avakahadaClasses.hubAttrRow)}
-              style={{ borderBottomColor: W_SEP_SOFT }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: u(4),
+                paddingVertical: u(1),
+                borderBottomWidth: i < hub.attrs.length - 1 ? 0.5 : 0,
+                borderBottomColor: W_SEP_SOFT,
+              }}
             >
-              <Text style={{ color: W_INK_FAINT, fontFamily: chartFont }} className={cn(avakahadaClasses.hubAttrName, "text-xs")}>
+              <Text
+                numberOfLines={1}
+                style={{ width: u(46), color: W_INK_FAINT, fontFamily: chartFont, fontSize: u(8.5), lineHeight: u(12) }}
+              >
                 {attr.label}
               </Text>
               <Text
                 numberOfLines={1}
-                style={{ color: W_INK, fontFamily: chartFont }}
-                className={cn(avakahadaClasses.hubAttrValue, "text-xs shrink")}
+                style={{ flex: 1, color: W_INK, fontFamily: chartFont, fontSize: u(9.5), lineHeight: u(12), fontWeight: "600" }}
               >
                 {attr.value}
               </Text>
             </View>
           ))}
         </View>
-        <Text style={{ color: W_INK_FAINT, fontFamily: chartFont }} className={cn(avakahadaClasses.hubSub, "text-xs")}>
+        <Text
+          numberOfLines={1}
+          style={{ maxWidth: u(130), marginTop: u(3), color: W_INK_FAINT, fontFamily: chartFont, fontSize: u(8), lineHeight: u(11) }}
+        >
           {vairiLine}
         </Text>
-      </ScrollView>
+      </View>
     );
   }
 
@@ -212,30 +231,11 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
   const { lang } = useLocale();
   const { width } = useWindowDimensions();
   const { ganaFill: GANA_FILL, regularFont, chartFont } = useAvakahadaAssets();
-  const { zoom, pan, setPan, allRows, highlightSet, hasFilter, selected, activeRow, selectFocus, resetView, copy } = v;
+  const { allRows, highlightSet, hasFilter, selected, activeRow, selectFocus, copy } = v;
   const isSameFocus = sameAvakahadaFocus;
-  const panStart = useRef({ x: 0, y: 0 });
-  const zoomRef = useRef(1);
-  zoomRef.current = zoom;
 
-  const size = Math.min(width - 32, 660);
-  const scale = size / 620;
-
-  const responder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_e, g) =>
-          zoomRef.current > 1 && (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4),
-        onPanResponderGrant: () => {
-          panStart.current = pan;
-        },
-        onPanResponderMove: (_e, g) => {
-          setPan({ x: panStart.current.x + g.dx, y: panStart.current.y + g.dy });
-        },
-      }),
-    [pan, setPan],
-  );
+  /* The stage's card has a 12 px margin and its own padding. */
+  const size = Math.min(width - 32 - 24, 660);
 
   const layers = useMemo(() => {
     const segs: ReactNode[] = [];
@@ -362,54 +362,14 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
 
   const hubBox = R.hub * 2 - 20;
 
-  return (
-    <View className={avakahadaClasses.wheelSection}>
-      <View className={avakahadaClasses.wheelHead}>
-        <Text className={avakahadaClasses.wheelTitle} style={{ fontFamily: chartFont }}>
-          {copy.title}
-        </Text>
-        <Text className={avakahadaClasses.wheelSubtitle} style={{ fontFamily: chartFont }}>
-          {copy.subtitle}
-        </Text>
-      </View>
-
-      <View
-        className={cn("m-3 overflow-hidden", avakahadaClasses.wheelStage)}
-        style={{ backgroundColor: midnight.background, borderWidth: 1, borderColor: W_SURFACE_BORDER }}
-      >
-        <View className={cn("flex-row", avakahadaClasses.wheelToolbar)}>
-          <ZoomBtn icon="add" onPress={v.zoomIn} />
-          <ZoomBtn
-            icon="remove"
-            disabled={!v.canZoomOut}
-            onPress={v.zoomOut}
-          />
-          {zoom !== 1 ? (
-            <Pressable
-              onPress={resetView}
-              style={{ borderColor: W_SURFACE_BORDER }}
-              className={cn(avakahadaClasses.zoomReset, "active:opacity-70")}
-            >
-              <Text style={{ color: W_INK_DIM }} className="text-xs font-semibold">
-                1:1
-              </Text>
-            </Pressable>
-          ) : null}
-          <Text
-            style={{ color: W_INK_DIM, fontFamily: regularFont }}
-            className={avakahadaClasses.zoomPercent}
-          >
-            {v.zoomLabel}
-          </Text>
-        </View>
-
-        <View className="overflow-hidden" style={{ height: size }} {...responder.panHandlers}>
+  const drawWheel = (size: number) => {
+    const scale = size / 620;
+    return (
           <View
             style={{
               width: size,
               height: size,
               alignSelf: "center",
-              transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
             }}
           >
             <Svg width={size} height={size} viewBox="0 0 620 620">
@@ -495,7 +455,7 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
               }}
             >
               {activeRow && selected ? (
-                <HubContent hub={v.hub(selected, activeRow)} row={activeRow} />
+                <HubContent hub={v.hub(selected, activeRow)} row={activeRow} scale={scale} />
               ) : (
                 <View className="items-center px-1">
                   <Text
@@ -514,7 +474,22 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
               )}
             </View>
           </View>
-        </View>
+    );
+  };
+
+  return (
+    <View className={avakahadaClasses.wheelSection}>
+      <View className={avakahadaClasses.wheelHead}>
+        <Text className={avakahadaClasses.wheelTitle} style={{ fontFamily: chartFont }}>
+          {copy.title}
+        </Text>
+        <Text className={avakahadaClasses.wheelSubtitle} style={{ fontFamily: chartFont }}>
+          {copy.subtitle}
+        </Text>
+      </View>
+
+      <View className="m-3">
+        <ZoomStage size={size}>{(px) => drawWheel(px)}</ZoomStage>
       </View>
 
       <View className={cn("flex-row", avakahadaClasses.legend)}>
@@ -545,27 +520,6 @@ function AvakahadaWheelView({ highlighted }: { highlighted?: Props["highlighted"
         ) : null}
       </View>
     </View>
-  );
-}
-
-function ZoomBtn({
-  icon,
-  onPress,
-  disabled,
-}: {
-  icon: "add" | "remove";
-  onPress: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={{ borderColor: W_SURFACE_BORDER, opacity: disabled ? 0.4 : 1 }}
-      className={cn(avakahadaClasses.zoomButton, "active:opacity-70")}
-    >
-      <Icon node={icon === "add" ? zoomInIcon : zoomOutIcon} size={15} tone="muted" />
-    </Pressable>
   );
 }
 

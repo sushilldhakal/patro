@@ -12,6 +12,7 @@ import type { HouseSketchProps } from "../contract";
 import { VastuCompassRing } from "./VastuCompass";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { ZoomStage } from "../../panchanga/web/ZoomStage";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 /**
  * A rough Vāstu house sketch: the classical courtyard plan, drawn inside the
@@ -138,7 +139,9 @@ export function HouseSketch({ plot, facing, assignments, ink, center, marks, siz
 
   return (
     <figure className="m-0">
-      <div className="relative mx-auto aspect-square w-full max-w-[900px]">
+      <ZoomStage className="mx-auto max-w-[900px]">
+      {() => (
+      <div className="relative mx-auto aspect-square w-full">
         <VastuCompassRing className="absolute inset-0 h-full w-full" center={center} ink={ink} marks={marks} />
 
         <svg
@@ -312,6 +315,8 @@ export function HouseSketch({ plot, facing, assignments, ink, center, marks, siz
           </g>
         </svg>
       </div>
+      )}
+      </ZoomStage>
 
       <figcaption className={cn(vastuClasses.sketchCaption, "mx-auto max-w-[900px]")}>
         <p className={vastuClasses.sketchSummary}>

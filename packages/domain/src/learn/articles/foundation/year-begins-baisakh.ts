@@ -69,7 +69,7 @@ export const yearBeginsBaisakh: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "मेषलाई शून्य मान्नु परम्परा मात्र होइन। जुन बेला यो राशिचक्र निश्चित गरियो — करिब `२८५` ई.सं., अर्थात् `३४२` बि.सं. तिर — मेषको ० अंश ठ्याक्कै **वसन्त विषुव** मा थियो।",
+            ne: "मेषलाई शून्य मान्नु परम्परा मात्र होइन। जुन बेला यो राशिचक्र निश्चित गरियो — करिब `२८५` ई.सं., अर्थात् `३४२` वि.सं. तिर — मेषको ० अंश ठ्याक्कै **वसन्त विषुव** मा थियो।",
             en: "Taking Mesha as zero was not merely a convention. When this zodiac was fixed — around `285` CE, roughly `342` BS — the 0° point of Mesha sat exactly on the **vernal equinox**.",
           },
         },

@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import { View } from "react-native";
+
 import type { BalamCardItem } from "@vedic-patro/read-models/panchanga/balam-cards";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useNavataraBalamCards } from "@vedic-patro/features/panchanga";
-import { Box, Text } from "@vedic-patro/ui";
+import { Box, Grid, Text } from "@vedic-patro/ui";
 import {
   panchangaCardBase,
-  panchangaCardGrid,
   panchangaCardSubtitle,
   panchangaCardTitle,
 } from "@vedic-patro/design-tokens";
@@ -40,13 +39,14 @@ function BalamCard({
       className={cn(
         panchangaCardBase,
         panchangaPageClasses.layout.balamCard,
+        "w-full min-w-0",
         patroNavataraToneBg(tone),
         isCurrent && "shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_65%,transparent)] ring-2 ring-accent/80",
       )}
     >
       <Box className={cn("flex-row items-start gap-2", panchangaCardTitle)}>
         {icon ? <Box className="mt-0.5 shrink-0">{icon}</Box> : null}
-        <Box className="min-w-0">{titleLine}</Box>
+        <Box className="min-w-0 flex-1">{titleLine}</Box>
       </Box>
       {subtitleLine ? <Text className={panchangaCardSubtitle}>{subtitleLine}</Text> : null}
     </Box>
@@ -57,7 +57,10 @@ export function NavataraBalamCardGrid({ cards, clock, formatName, lang, variant 
   const items = useNavataraBalamCards({ cards, clock, formatName, lang });
   if (!items.length) return null;
   return (
-    <View className={panchangaCardGrid}>
+    /* Measured columns: the web's `basis-[calc(50%-…)]` has no native meaning, so the
+       cards came out ragged — one full width, the next cropped. */
+    <Box className="w-full p-4">
+    <Grid cols={{ base: 2, sm: 3, lg: 4 }} gap={8}>
       {items.map((card) => (
         <BalamCard
           key={card.key}
@@ -79,6 +82,7 @@ export function NavataraBalamCardGrid({ cards, clock, formatName, lang, variant 
           }
         />
       ))}
-    </View>
+    </Grid>
+    </Box>
   );
 }

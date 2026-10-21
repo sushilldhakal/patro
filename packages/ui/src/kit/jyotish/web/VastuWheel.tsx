@@ -29,6 +29,7 @@ import {
   useVastuPurushaWheel,
 } from "@vedic-patro/features/vastu";
 import type { VastuPurushaWheelProps } from "../contract";
+import { ZoomStage } from "../../panchanga/web/ZoomStage";
 import { ArcLabel, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette } from "./WheelMarks";
 
 const {
@@ -130,6 +131,8 @@ export function VastuPurushaWheel({
 
   return (
     <div>
+    <ZoomStage>
+    {() => (
     <svg
       viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
       className={cn("mx-auto block h-auto w-full", className)}
@@ -481,6 +484,8 @@ export function VastuPurushaWheel({
         </g>
       ) : null}
     </svg>
+    )}
+    </ZoomStage>
     <ul className={cn(vastuClasses.wheelLegend, vastuClasses.wheelLegendText)}>
       {VASTU_ELEMENT_ORDER.map((element) => (
         <li key={element} className={cn(vastuClasses.wheelLegendItem, "inline-flex")}>

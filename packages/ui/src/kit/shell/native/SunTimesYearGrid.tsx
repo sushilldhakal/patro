@@ -22,7 +22,10 @@ function Legend({ page, hideHeader }: { page: SunTimesPage; hideHeader?: boolean
   return (
     <Box className={cn("flex-row flex-wrap", sun.legend)}>
       {hideHeader ? null : (
-        <Box className="min-w-0 flex-1">
+        /* A floor on the title's width: beside the four-item legend on a phone
+           it was squeezed to a column ("वार्षिक सूर्योद / य-सूर्यास्त"); now the
+           legend wraps under it instead. */
+        <Box className="min-w-[220px] flex-1">
           <Text className={sun.legendTitle}>{copy.gridTitle}</Text>
           <Text className={sun.legendSub}>{copy.subtitle}</Text>
         </Box>

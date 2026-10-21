@@ -152,26 +152,31 @@ def test_kanchanpur_search_prefers_bhimdatta_sudurpashchim():
 
 
 def test_kanyam_to_kanchanpur_deshaantar_is_about_31_minutes():
-    """Classical 4 min/° from Kanyam Jhapa (~88.09°) to Bhimdatta (~80.18°) ≈ 31.5 min."""
-    from zoneinfo import ZoneInfo
+    """Classical 4 min/° from Kanyam Jhapa (~88.09°) to Bhimdatta (~80.18°) ≈ 31.6 min.
 
-    from engine.astronomy.sun import calculate_sunrise
+    Deshantara is a longitude correction, so it is exact for local noon (the
+    middle of the day), not for sunrise: in Asar, Bhimdatta's 2° more northern
+    latitude brings its sunrise ~5 min earlier, and the sunrise gap is ~27 min.
+    """
+    from engine.astronomy.sun import calculate_sunrise, calculate_sunset
     from engine.calendar.bikram_sambat import iter_bs_month_days
 
-    ktm = ZoneInfo("Asia/Kathmandu")
     greg = next(g for d, g in iter_bs_month_days(2083, 3) if d == 24)
     kanyam = resolve_city("Kanyam", country="NP")
     kanchanpur = resolve_city("Kanchanpur", country="NP")
     assert kanyam is not None and kanchanpur is not None
     assert kanchanpur["id"] == 1283095
 
-    east = calculate_sunrise(
-        greg, kanyam["lat"], kanyam["lon"], timezone_name="Asia/Kathmandu",
-    ).astimezone(ktm)
-    west = calculate_sunrise(
-        greg, kanchanpur["lat"], kanchanpur["lon"], timezone_name="Asia/Kathmandu",
-    ).astimezone(ktm)
-    delta_min = (west - east).total_seconds() / 60.0
+    def midday(city):
+        rise = calculate_sunrise(greg, city["lat"], city["lon"], timezone_name="Asia/Kathmandu")
+        set_ = calculate_sunset(greg, city["lat"], city["lon"], timezone_name="Asia/Kathmandu")
+        return rise + (set_ - rise) / 2
+
+    delta_min = (midday(kanchanpur) - midday(kanyam)).total_seconds() / 60.0
     expected = (kanyam["lon"] - kanchanpur["lon"]) * 4.0
-    assert abs(delta_min - expected) < 0.05
+    assert abs(delta_min - expected) < 0.1
     assert 31.0 <= delta_min <= 32.5
+    # Sunrise also shifts with latitude, so it is later in the west but by less.
+    east = calculate_sunrise(greg, kanyam["lat"], kanyam["lon"], timezone_name="Asia/Kathmandu")
+    west = calculate_sunrise(greg, kanchanpur["lat"], kanchanpur["lon"], timezone_name="Asia/Kathmandu")
+    assert 20.0 <= (west - east).total_seconds() / 60.0 < delta_min

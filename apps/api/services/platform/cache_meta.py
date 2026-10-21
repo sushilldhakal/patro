@@ -21,7 +21,9 @@ RULE_VERSION = "v3"
 # 1.0.6: kaal-vyapini date_selection (madhyahna / pradosh) — the rules file hash
 # covers the JSON side of this change, but the selection logic itself lives in
 # the engine and needs its own bump.
-ENGINE_VERSION = stamp("1.0.6")
+# 1.0.7: `end_at` spans — the Tihar holiday runs Laxmi Puja → Bhai Tika instead
+# of five days from Kaag Tihar.
+ENGINE_VERSION = stamp("1.0.7")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"

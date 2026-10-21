@@ -419,7 +419,19 @@ def ring_layout(
     buckets: dict[str, list[PlannedSpace]] = {z: [] for z in RING_ZONES}
     spans: dict[str, Placement] = {}
     dropped: list[PlannedSpace] = []
-    for space in sorted(spaces, key=lambda s: _priority(s.kind)):
+    ordered = sorted(spaces, key=lambda s: _priority(s.kind))
+
+    # Rooms too big for any single cell need a side band of two; on a small
+    # plot there are few, so they are chosen first and together, before the
+    # small rooms scatter across the cells a band is made of.
+    for space_id, (zone, rect, used_zones) in _assign_bands(ordered, plan, usable, free, taken, mode, keep_clear).items():
+        spans[space_id] = Placement(rect, zone)
+        for z in used_zones:
+            free[z] = 0.0
+
+    for space in ordered:
+        if space.id in spans:
+            continue
         need = IDEAL_SIZE[space.kind].min_area
         best: str | None = None
         best_key: tuple[float, float] | None = None
@@ -469,6 +481,47 @@ def ring_layout(
     return SolveResult(placed, dropped), plan
 
 
+def _span_options(
+    space: PlannedSpace,
+    plan: RingPlan,
+    free: dict[str, float],
+    taken: dict[str, list[Rect]],
+    mode: str,
+    keep_clear: Rect | None = None,
+) -> list[tuple[str, Rect, tuple[str, str]]]:
+    """Every side band `space` could take, best first: plain bands before deep
+    ones, then the cheapest Vastu zone. Only bands whose cells are untouched
+    and that are genuinely big enough are offered.
+
+    A plain band is only as deep as its cells. On a small plot that is under
+    any big room's minimum side — 8 m deep leaves 1.8 m cells, short of a
+    kitchen's 2.4 m — so a band may also take the corridor run along its
+    inner side, out to the Brahmasthāna's edge (never into it). The room then
+    opens straight onto the Brahmasthāna, and the rest of each run it cut
+    still reaches the ring.
+    """
+    options: list[tuple[int, float, str, Rect, tuple[str, str]]] = []
+    for deep in (False, True):
+        for zone, zones in _SPANS:
+            if any(z in taken for z in zones):
+                continue
+            # Only claim cells nothing has been booked into yet.
+            if any(free[z] + EPS < plan.cells[z].w * plan.cells[z].h for z in zones):
+                continue
+            rect = _union(plan.cells, zones)
+            if deep:
+                rect = _deepened(rect, zone, plan.brahmasthana)
+            # A band spans the corridor run between its two cells, so it can
+            # cover the entrance hall even though neither cell was reserved.
+            if keep_clear is not None and overlap_area(rect, keep_clear) > EPS:
+                continue
+            if not _fits(rect, space.kind):
+                continue
+            options.append((int(deep), _zone_rank(space.kind, zone, mode), zone, rect, zones))
+    options.sort(key=lambda o: (o[0], o[1]))
+    return [(zone, rect, zones) for _, _, zone, rect, zones in options]
+
+
 def _claim_span(
     space: PlannedSpace,
     plan: RingPlan,
@@ -477,27 +530,90 @@ def _claim_span(
     mode: str,
     keep_clear: Rect | None = None,
 ) -> tuple[str, Rect, tuple[str, str]] | None:
-    """Give `space` a whole side band, if both its cells are still untouched
-    and the band is genuinely big enough. Cheapest Vastu zone wins."""
-    best: tuple[str, Rect, tuple[str, str]] | None = None
-    best_rank = float("inf")
-    for zone, zones in _SPANS:
-        if any(z in taken for z in zones):
+    """The best side band `space` could take now (see `_span_options`)."""
+    options = _span_options(space, plan, free, taken, mode, keep_clear)
+    return options[0] if options else None
+
+
+def _assign_bands(
+    ordered: list[PlannedSpace],
+    plan: RingPlan,
+    usable: dict[str, Rect | None],
+    free: dict[str, float],
+    taken: dict[str, list[Rect]],
+    mode: str,
+    keep_clear: Rect | None,
+) -> dict[str, tuple[str, Rect, tuple[str, str]]]:
+    """Side bands for the rooms too big for any single cell, chosen together.
+
+    On a small plot bands are few and overlap (each is two of the eight
+    cells), so taking them one room at a time lets the first room grab the
+    only band a later, larger room could use — a kitchen that fits the
+    north band taking the west one, the only band deep enough for the master
+    bedroom. This searches the assignments instead and keeps the one that
+    seats rooms best in PLACE_ORDER: the first room if at all possible, then
+    the second, and so on. A band is only taken while enough untouched cells
+    remain for the higher-priority rooms that do fit a cell, so a bedroom's
+    band never costs the puja its seat.
+    """
+    def fits_a_cell(kind: str) -> bool:
+        ideal = IDEAL_SIZE[kind]
+        return any(
+            cell is not None and min(cell.w, cell.h) + EPS >= ideal.min_side and free[z] + EPS >= ideal.min_area
+            for z, cell in usable.items()
+        )
+
+    big: list[tuple[PlannedSpace, int, list[tuple[str, Rect, tuple[str, str]]]]] = []
+    small_ahead = 0
+    for space in ordered:
+        if fits_a_cell(space.kind):
+            small_ahead += 1
             continue
-        # Only claim cells nothing has been booked into yet.
-        if any(free[z] + EPS < plan.cells[z].w * plan.cells[z].h for z in zones):
-            continue
-        rect = _union(plan.cells, zones)
-        # A band spans the corridor run between its two cells, so it can
-        # cover the entrance hall even though neither cell was reserved.
-        if keep_clear is not None and overlap_area(rect, keep_clear) > EPS:
-            continue
-        if not _fits(rect, space.kind):
-            continue
-        rank = _zone_rank(space.kind, zone, mode)
-        if rank < best_rank:
-            best, best_rank = (zone, rect, zones), rank
-    return best
+        options = _span_options(space, plan, free, taken, mode, keep_clear)
+        if options:
+            big.append((space, small_ahead, options))
+    if not big:
+        return {}
+
+    untouched = sum(1 for z, cell in usable.items() if cell is not None and free[z] + EPS >= cell.w * cell.h)
+    best_flags: list[int] | None = None
+    best_choice: dict[str, tuple[str, Rect, tuple[str, str]]] = {}
+
+    def search(i: int, used: frozenset[str], flags: list[int], choice: dict[str, tuple[str, Rect, tuple[str, str]]]) -> None:
+        nonlocal best_flags, best_choice
+        if best_flags is not None and flags < best_flags[: len(flags)]:
+            return
+        if i == len(big):
+            if best_flags is None or flags > best_flags:
+                best_flags, best_choice = list(flags), dict(choice)
+            return
+        space, ahead, options = big[i]
+        for option in options:
+            zones = option[2]
+            if used & set(zones):
+                continue
+            if untouched - len(used) - len(zones) < ahead:
+                continue
+            choice[space.id] = option
+            search(i + 1, used | set(zones), [*flags, 1], choice)
+            del choice[space.id]
+        search(i + 1, used, [*flags, 0], choice)
+
+    search(0, frozenset(), [], {})
+    return best_choice
+
+
+def _deepened(band: Rect, side: str, centre: Rect) -> Rect:
+    """``band`` grown across the corridor run on its inner side, up to the centre's edge."""
+    if side == "north":
+        return Rect(band.x, band.y, band.w, centre.y - band.y)
+    if side == "south":
+        bottom = centre.y + centre.h
+        return Rect(band.x, bottom, band.w, band.y + band.h - bottom)
+    if side == "west":
+        return Rect(band.x, band.y, centre.x - band.x, band.h)
+    right = centre.x + centre.w
+    return Rect(right, band.y, band.x + band.w - right, band.h)
 
 
 def _remainder(cell: Rect, cut: Rect) -> Rect | None:

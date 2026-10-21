@@ -1,5 +1,5 @@
 /**
- * The Sun's north–south travel across one बि.सं. year, drawn as a curve.
+ * The Sun's north–south travel across one वि.सं. year, drawn as a curve.
  *
  * This diagram exists to settle one confusion by making it visible rather than
  * by asserting it in prose: **विषुव and अयनान्त are different points on the same
@@ -18,7 +18,7 @@
  * an अयनान्त event and not a सङ्क्रान्ति one — मकर सङ्क्रान्ति sits about २४ days
  * to the right of the शीत अयनान्त, and the gap widens with अयन चलन.
  *
- * The x-axis is deliberately the बि.सं. year rather than a Gregorian one, which
+ * The x-axis is deliberately the वि.सं. year rather than a Gregorian one, which
  * shows the other half of the story: the four markers do **not** sit on month
  * boundaries, and they drift against them over centuries. Months are निरयन;
  * this curve is सायन.
@@ -55,16 +55,16 @@ const EPS = 23.44;
  */
 const AYANAMSHA = 24;
 const DAYS = 365;
-/** Earth's orbital eccentricity — what makes the बि.सं. months unequal. */
+/** Earth's orbital eccentricity — what makes the वि.सं. months unequal. */
 const ECCENTRICITY = 0.0167;
 
 const D2R = Math.PI / 180;
-/** Tropical longitude of the Sun, degrees, at a given day of the बि.सं. year. */
+/** Tropical longitude of the Sun, degrees, at a given day of the वि.सं. year. */
 const lambdaAt = (day: number) => AYANAMSHA + (day / DAYS) * 360;
 /** δ = asin(sin ε · sin λ). */
 const declAt = (day: number) =>
   Math.asin(Math.sin(EPS * D2R) * Math.sin(lambdaAt(day) * D2R)) / D2R;
-/** Day of the बि.सं. year at which the Sun reaches tropical longitude λ. */
+/** Day of the वि.सं. year at which the Sun reaches tropical longitude λ. */
 const dayOfLambda = (lambda: number) => (((lambda - AYANAMSHA + 360) % 360) / 360) * DAYS;
 
 interface Marker {
@@ -76,7 +76,7 @@ interface Marker {
   whenKey: string;
 }
 
-/** The four turning points, in the order the बि.सं. year meets them. */
+/** The four turning points, in the order the वि.सं. year meets them. */
 const MARKERS: Marker[] = [
   { lambda: 90, kind: "solstice", key: "learn.study.summer_solstice", whenKey: "learn.study.declination.when_summer_solstice" },
   { lambda: 180, kind: "equinox", key: "learn.study.autumn_equinox", whenKey: "learn.study.declination.when_autumn_equinox" },
@@ -105,7 +105,7 @@ export function SolarDeclinationYear() {
     return pts.join(" ");
   }, []);
 
-  /* Real बि.सं. month boundaries, not twelve equal slices. A month is 30° of the
+  /* Real वि.सं. month boundaries, not twelve equal slices. A month is 30° of the
      Sun's travel, and the Sun runs faster near उपसौर — so the months are 30–32
      days long and the ruler underneath is genuinely uneven. Drawing it evenly
      would hide the same eccentricity the curve is riding on. */
@@ -140,7 +140,7 @@ export function SolarDeclinationYear() {
         >
           {t("learn.study.declination.dakshinayana")}
         </text>
-        {/* उत्तरायण is the rising half, and a बि.सं. year opens partway through
+        {/* उत्तरायण is the rising half, and a वि.सं. year opens partway through
             it — so it shows as two flanks either side of दक्षिणायन, not one
             block. Labelling only the right one would read as though बैशाख–असार
             belonged to neither ayana. */}
@@ -183,7 +183,7 @@ export function SolarDeclinationYear() {
           </g>
         ))}
 
-        {/* बि.सं. months — the निरयन ruler the सायन curve drifts against */}
+        {/* वि.सं. months — the निरयन ruler the सायन curve drifts against */}
         {monthStarts.map((d, i) => (
           <g key={i}>
             <line

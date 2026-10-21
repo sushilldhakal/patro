@@ -22,17 +22,56 @@ from rules.engine import bs_year_for_gregorian, compute_festival_dates
 from services.platform.cache_meta import cache_is_valid, stamp_payload
 
 
-# Festival/holiday dates are national: they follow the udaya tithi at the
-# Kathmandu reference, not the observer's city. Per-city sunrise inside Nepal
-# shifts by minutes and never moves a festival's civil date, while regenerating
-# a whole year of festival rules per city costs ~4 s of JPL sunrise
-# searches. `get_festivals`/`get_holidays`/`get_bs_festivals` therefore pin the
-# location to DEFAULT_LOCATION so every city shares one cached calendar.
+# Festival/holiday dates follow the udaya / kaal-vyapini tithi where the
+# observer is. Inside Nepal that is the national calendar: per-city sunrise
+# shifts by minutes and never moves a festival's civil date, so every Nepal
+# observer shares the one Kathmandu-reference calendar (and the MoHA overrides).
+# Abroad the tithi can reach sunrise/madhyahna a civil day earlier or later —
+# Vijaya Dashami 2083 is Oct 20 in Houston but Oct 21 in Kathmandu — so lunar
+# festivals are recomputed for the observer, on a ~11 km grid so nearby cities
+# share one cached calendar. See `festival_location`.
 #
 # In-process memo of parsed year payloads — one disk JSON read per year per
-# process instead of one per request/day-row. Safe because the payloads are
-# location-independent after the pin above; callers must treat them read-only.
-_year_payload_memo: dict[tuple[str, int], dict[str, Any]] = {}
+# location per process instead of one per request/day-row. Callers must treat
+# the payloads read-only.
+_year_payload_memo: dict[tuple[str, int, str], dict[str, Any]] = {}
+_YEAR_PAYLOAD_MEMO_MAX = 512
+
+
+def festival_location(location: ObserverLocation) -> ObserverLocation:
+    """The location a festival calendar is computed for.
+
+    Nepal observers get the national (Kathmandu) calendar; anyone else gets
+    their own, snapped to 0.1° so a metro area shares one cache bucket.
+    """
+    if location.timezone == DEFAULT_LOCATION.timezone:
+        return DEFAULT_LOCATION
+    return ObserverLocation(
+        lat=round(location.lat, 1),
+        lon=round(location.lon, 1),
+        timezone=location.timezone,
+        name="observer",
+    )
+
+
+def is_national_location(location: ObserverLocation) -> bool:
+    return location.cache_key() == DEFAULT_LOCATION.cache_key()
+
+
+def _memo_get(kind: str, year: int, location: ObserverLocation) -> dict[str, Any] | None:
+    return _year_payload_memo.get((kind, year, location.cache_key()))
+
+
+def _memo_put(kind: str, year: int, location: ObserverLocation, payload: dict[str, Any]) -> None:
+    if len(_year_payload_memo) >= _YEAR_PAYLOAD_MEMO_MAX:
+        _year_payload_memo.clear()
+    _year_payload_memo[(kind, year, location.cache_key())] = payload
+
+
+def _override_applies(override: dict[str, Any], location: ObserverLocation) -> bool:
+    """MoHA overrides pin Nepal's announced dates; abroad, a lunar festival
+    follows the observer's own tithi instead."""
+    return is_national_location(location) or override.get("type") != "lunar"
 
 
 def clear_year_payload_memo() -> None:
@@ -212,6 +251,7 @@ def filter_redundant_year_festivals(festivals: list[dict[str, Any]]) -> list[dic
 def _apply_gregorian_year_overrides(
     gregorian_year: int,
     festivals: list[dict[str, Any]],
+    location: ObserverLocation = DEFAULT_LOCATION,
 ) -> list[dict[str, Any]]:
     """Apply BS-year authority overrides to a Gregorian-year festival list."""
     overrides_data = load_holiday_overrides()
@@ -220,6 +260,8 @@ def _apply_gregorian_year_overrides(
 
     for bs_year_key in (str(gregorian_year + 56), str(gregorian_year + 57)):
         for festival_id, override in overrides_data.get(bs_year_key, {}).items():
+            if not _override_applies(override, location):
+                continue
             start = date.fromisoformat(override["start_date"])
             end = date.fromisoformat(override["end_date"])
             if start.year == gregorian_year or end.year == gregorian_year:
@@ -260,7 +302,7 @@ def generate_festivals(
         festivals.append(_build_festival_entry(festival_id, rule, start_date, end_date))
 
     festivals = filter_redundant_year_festivals(
-        _apply_gregorian_year_overrides(gregorian_year, festivals)
+        _apply_gregorian_year_overrides(gregorian_year, festivals, location)
     )
     festivals.sort(key=lambda item: item["start_date"])
 
@@ -410,6 +452,7 @@ def _apply_bs_year_overrides(
     festivals: list[dict[str, Any]],
     *,
     public_only: bool = False,
+    location: ObserverLocation = DEFAULT_LOCATION,
 ) -> list[dict[str, Any]]:
     overrides = load_holiday_overrides().get(str(bs_year), {})
     merged = {festival["id"]: festival for festival in festivals}
@@ -418,6 +461,8 @@ def _apply_bs_year_overrides(
         rules = load_rules()
         for festival_id, override in overrides.items():
             if public_only and not is_public_holiday(festival_id):
+                continue
+            if not _override_applies(override, location):
                 continue
             start_date = date.fromisoformat(override["start_date"])
             end_date = date.fromisoformat(override["end_date"])
@@ -452,6 +497,7 @@ def generate_bs_festivals(
             bs_year,
             _merge_bs_year_festivals(bs_year, gregorian_payloads),
             public_only=False,
+            location=location,
         )
     )
     payload = {
@@ -482,6 +528,7 @@ def generate_bs_holidays(
         bs_year,
         _filter_public_holidays(festival_payload["festivals"]),
         public_only=True,
+        location=location,
     )
 
     payload = {
@@ -499,8 +546,10 @@ def precompute_bs_year(
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, Any]:
     """Generate and persist BS-year festival + holiday caches."""
-    location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
-    clear_year_payload_memo()  # regeneration invalidates memoized payloads
+    location = festival_location(location)
+    # Regeneration invalidates memoized payloads for this location.
+    for key in [k for k in _year_payload_memo if k[2] == location.cache_key()]:
+        del _year_payload_memo[key]
     festival_payload = generate_bs_festivals(bs_year, location)
     save_bs_festivals_cache(festival_payload, location)
 
@@ -538,7 +587,7 @@ def get_bs_festivals(
     cache_only: bool = False,
     bs_month: int | None = None,
 ) -> dict[str, Any]:
-    location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
+    location = festival_location(location)
 
     # The festival stack is a modern (MoHA / lunar-rule) construct built on
     # Gregorian `date`, so it stops where that does — the same BS 60 floor the
@@ -555,12 +604,11 @@ def get_bs_festivals(
             **({"bs_month": bs_month} if bs_month is not None else {}),
         }
 
-    memo_key = ("festivals_bs", bs_year)
-    payload = _year_payload_memo.get(memo_key)
+    payload = _memo_get("festivals_bs", bs_year, location)
     if payload is None:
         payload = load_bs_festivals_cached(bs_year, location)
         if payload is not None:
-            _year_payload_memo[memo_key] = payload
+            _memo_put("festivals_bs", bs_year, location, payload)
 
     if payload is None:
         if cache_only:
@@ -570,7 +618,7 @@ def get_bs_festivals(
             )
         payload = generate_bs_festivals(bs_year, location)
         save_bs_festivals_cache(payload, location)
-        _year_payload_memo[memo_key] = payload
+        _memo_put("festivals_bs", bs_year, location, payload)
 
     if bs_month is not None:
         filtered = filter_festivals_by_bs_month(payload["festivals"], bs_year, bs_month)
@@ -591,13 +639,12 @@ def get_bs_holidays(
     cache_only: bool = False,
     bs_month: int | None = None,
 ) -> dict[str, Any]:
-    location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
-    memo_key = ("holidays_bs", bs_year)
-    payload = _year_payload_memo.get(memo_key)
+    location = festival_location(location)
+    payload = _memo_get("holidays_bs", bs_year, location)
     if payload is None:
         payload = load_bs_cached(bs_year, location)
         if payload is not None:
-            _year_payload_memo[memo_key] = payload
+            _memo_put("holidays_bs", bs_year, location, payload)
 
     if payload is None:
         if cache_only:
@@ -606,7 +653,7 @@ def get_bs_holidays(
                 f"POST /generate/{bs_year} first."
             )
         payload = precompute_bs_year(bs_year, location)
-        _year_payload_memo[memo_key] = payload
+        _memo_put("holidays_bs", bs_year, location, payload)
 
     if bs_month is not None:
         filtered = filter_holidays_by_bs_month(payload["holidays"], bs_year, bs_month)
@@ -652,21 +699,20 @@ def get_festivals(
     use_cache: bool = True,
     month: int | None = None,
 ) -> dict[str, Any]:
-    location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
-    memo_key = ("festivals_ad", gregorian_year)
+    location = festival_location(location)
     payload: dict[str, Any] | None = None
 
     if use_cache:
-        payload = _year_payload_memo.get(memo_key)
+        payload = _memo_get("festivals_ad", gregorian_year, location)
         if payload is None:
             payload = load_festivals_cached(gregorian_year, location)
             if payload is not None:
-                _year_payload_memo[memo_key] = payload
+                _memo_put("festivals_ad", gregorian_year, location, payload)
 
     if payload is None:
         payload = generate_festivals(gregorian_year, location)
         save_festivals_cache(payload, location)
-        _year_payload_memo[memo_key] = payload
+        _memo_put("festivals_ad", gregorian_year, location, payload)
 
     if month is not None:
         filtered = filter_festivals_by_month(payload["festivals"], gregorian_year, month)
@@ -687,21 +733,20 @@ def get_holidays(
     use_cache: bool = True,
     month: int | None = None,
 ) -> dict[str, Any]:
-    location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
-    memo_key = ("holidays_ad", gregorian_year)
+    location = festival_location(location)
     payload: dict[str, Any] | None = None
 
     if use_cache:
-        payload = _year_payload_memo.get(memo_key)
+        payload = _memo_get("holidays_ad", gregorian_year, location)
         if payload is None:
             payload = load_cached(gregorian_year, location)
             if payload is not None:
-                _year_payload_memo[memo_key] = payload
+                _memo_put("holidays_ad", gregorian_year, location, payload)
 
     if payload is None:
         payload = generate_holidays(gregorian_year, location)
         save_cache(payload, location)
-        _year_payload_memo[memo_key] = payload
+        _memo_put("holidays_ad", gregorian_year, location, payload)
 
     if month is not None:
         filtered = filter_holidays_by_month(payload["holidays"], gregorian_year, month)

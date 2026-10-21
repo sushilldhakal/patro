@@ -204,7 +204,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
               setBusy(null);
             });
           }}
-          className={cn(accountClasses.socialButton, "w-full max-w-xs flex-row items-center justify-center self-center active:bg-muted")}
+          className={cn(accountClasses.socialButton, "w-full flex-row items-center justify-center active:bg-muted")}
           style={disabled || !googleReady ? { opacity: 0.5 } : undefined}
         >
           {busy === "google" ? (
@@ -228,7 +228,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
               setBusy(null);
             });
           }}
-          className={cn(accountClasses.socialButton, "w-full max-w-xs flex-row items-center justify-center self-center active:bg-muted")}
+          className={cn(accountClasses.socialButton, "w-full flex-row items-center justify-center active:bg-muted")}
           style={disabled || !fbRequest ? { opacity: 0.5 } : undefined}
         >
           {busy === "facebook" ? (

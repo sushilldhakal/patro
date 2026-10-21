@@ -3,6 +3,7 @@ import { Pressable, View } from "react-native";
 import { useAllElementsLink, useElementDescription, useGrahaDescription, type AboutCard } from "@vedic-patro/features/graha";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { spec } from "@vedic-patro/design-tokens";
 import { Card, Icon, Text } from "@vedic-patro/ui";
 import { moonIcon, rotateCcwIcon, sparklesIcon, sunriseIcon } from "../icons";
 import type { IconNode } from "../../../contract";
@@ -22,18 +23,16 @@ export type GrahaBannerProps = {
   blurbKey?: string;
 };
 
+/** Drawn as the app's standard page header (icon, title, subtitle), so these pages
+    open like every other one instead of in a boxed banner. */
 export function GrahaBanner({ icon, title = "", blurb = "" }: GrahaBannerProps) {
   const named = typeof icon === "string" ? NAMED_ICONS[icon] : undefined;
   return (
-    <View className={cn("mb-4", grahaClasses.banner)}>
-      <View className={cn("flex-row", grahaClasses.bannerRow)}>
-        <View className={grahaClasses.bannerIcon}>
-          {named ? <Icon node={named} size={24} tone="secondary" /> : icon}
-        </View>
-        <View className={cn("flex-1", grahaClasses.bannerText)}>
-          <Text className={grahaClasses.bannerTitle}>{title}</Text>
-          <Text className={grahaClasses.bannerBlurb}>{blurb}</Text>
-        </View>
+    <View className={cn("mb-8 flex-row", spec.pageHeaderRow)}>
+      <View className="mt-0.5 shrink-0">{named ? <Icon node={named} size={28} tone="secondary" /> : icon}</View>
+      <View className="min-w-0 flex-1">
+        <Text className={spec.pageTitle}>{title}</Text>
+        {blurb ? <Text className={spec.pageSubtitle}>{blurb}</Text> : null}
       </View>
     </View>
   );
@@ -68,7 +67,7 @@ export function AllElementsLink({ onPress }: { onPress?: () => void }) {
   const { label } = useAllElementsLink();
   return (
     <Pressable onPress={onPress} className={cn(grahaClasses.detailsLink, "flex-row items-center")}>
-      <Text className="text-sm text-primary underline">{label}</Text>
+      <Text className="text-sm font-semibold text-secondary">{label} →</Text>
     </Pressable>
   );
 }

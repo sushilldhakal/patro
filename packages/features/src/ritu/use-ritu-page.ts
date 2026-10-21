@@ -43,7 +43,7 @@ export type RituCard = {
 };
 
 export type RituPage = {
-  copy: { title: string; subtitle: string; whyLink: string; southern: string; southNote: string };
+  copy: { title: string; subtitle: string; whyLink: string; southern: string; southNote: string; startsLabel: string };
   south: boolean;
   status: PageStatus;
   cards: RituCard[];
@@ -68,6 +68,7 @@ export function useRituPage(location?: LocationParams): RituPage {
       whyLink: t("ritu.why_link"),
       southern: t("ritu.southern"),
       southNote: t("ritu.southern_hemisphere_note"),
+      startsLabel: t("ritu.starts"),
     },
     south,
     status: statusOf(query),

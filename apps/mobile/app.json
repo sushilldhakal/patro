@@ -2,7 +2,7 @@
   "expo": {
     "name": "Vedic Patro",
     "slug": "vedic-patro-mobile",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": [
@@ -234,9 +234,18 @@
       "backgroundColor": "#073f43"
     },
     "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "patro",
+          "organization": "nagosi"
+        }
+      ],
       "expo-router",
       "expo-dev-client",
       "./plugins/with-react-native-dir.js",
+      "./plugins/with-ios-scene-lifecycle.js",
       [
         "expo-build-properties",
         {

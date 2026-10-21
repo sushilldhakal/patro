@@ -618,6 +618,21 @@ def test_ring_grid_tiles_the_plot_with_no_dead_slivers(size):
     assert abs(plan.brahmasthana.h - height / 3) <= 0.1
 
 
+def _long_side(strip, rect, eps: float = 0.04) -> str | None:
+    """Which long side of ``strip`` the neighbour ``rect`` lies along, if either."""
+    if strip.w >= strip.h:
+        if abs(rect.y + rect.h - strip.y) < eps:
+            return "before"
+        if abs(strip.y + strip.h - rect.y) < eps:
+            return "after"
+    else:
+        if abs(rect.x + rect.w - strip.x) < eps:
+            return "before"
+        if abs(strip.x + strip.w - rect.x) < eps:
+            return "after"
+    return None
+
+
 @pytest.mark.parametrize("facing", FACINGS)
 @pytest.mark.parametrize("size", [(13.8, 15), (15, 10), (12, 12), (18, 15)])
 def test_no_corridor_strip_is_walled_off_between_two_rooms(facing, size):
@@ -631,7 +646,7 @@ def test_no_corridor_strip_is_walled_off_between_two_rooms(facing, size):
     `absorb_dead_corridors` hands each of those back to a neighbour. What
     may still survive is a strip a *wet* room or the stair depends on for
     its own door (neither can be grown into), so the check is that no
-    surviving strip has a merge-eligible room on both sides of it.
+    surviving strip has a merge-eligible room along both of its long sides.
     """
     from engine.vastu.geometry import shared_seg
     from engine.vastu.layout import is_merge_target
@@ -651,13 +666,18 @@ def test_no_corridor_strip_is_walled_off_between_two_rooms(facing, size):
                 continue
             if min(strip.rect.w, strip.rect.h) < 0.3:
                 continue
-            growable = [
-                r for r in rooms
+            # Walled in means a growable room along *each* long side. Two rooms
+            # side by side along one long side, with the Brahmasthāna's open
+            # floor along the other, are just rooms fronting open floor.
+            sides = {
+                side
+                for r in rooms
                 if is_merge_target(r) and shared_seg(strip.rect, r.rect)
-            ]
-            assert len(growable) < 2, (
+                and (side := _long_side(strip.rect, r.rect))
+            }
+            assert sides != {"before", "after"}, (
                 f"{strip.id} {strip.rect} is a passage with no door, walled in by "
-                f"{[r.kind for r in growable]} — one of them should have absorbed it"
+                f"rooms on both sides — one of them should have absorbed it"
             )
 
 

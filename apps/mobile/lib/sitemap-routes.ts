@@ -29,7 +29,6 @@ export const SITEMAP_ROUTES: SitemapRoute[] = [
   { path: "/ritu", get ne() { return tFor("ne", "sidebar_nav.items.ritu.label"); }, get en() { return tFor("en", "sidebar_nav.items.ritu.label"); }, icon: "sprout", group: "tools" },
   { path: "/kundali", get ne() { return tFor("ne", "nav.jyotish_kundali"); }, get en() { return tFor("en", "nav.jyotish_kundali"); }, icon: "sparkles", group: "jyotish" },
   { path: "/rashifal", get ne() { return tFor("ne", "nav.jyotish_rashifal"); }, get en() { return tFor("en", "nav.jyotish_rashifal"); }, icon: "sun", group: "jyotish" },
-  { path: "/jyotish/rashifal", get ne() { return tFor("ne", "ui.sitemap_routes.rashifal_jyotish"); }, get en() { return tFor("en", "ui.sitemap_routes.rashifal_jyotish"); }, icon: "sun", group: "jyotish" },
   { path: "/jyotish/kundali-milan", get ne() { return tFor("ne", "home_quick.kundali_milan_title"); }, get en() { return tFor("en", "home_quick.kundali_milan_title"); }, icon: "heart", group: "jyotish" },
   { path: "/vastu", get ne() { return tFor("ne", "nav.vastu"); }, get en() { return tFor("en", "nav.vastu"); }, icon: "compass", group: "tools" },
   { path: "/learn", get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); }, icon: "book-open", group: "learn" },

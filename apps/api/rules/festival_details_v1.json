@@ -1,0 +1,1092 @@
+{
+  "_meta": {
+    "description": "What each festival is and how it is observed, shown with the festival on the day panchanga. Keys are festival ids from festival_rules_v3.json. `families` give a short general text to the festivals without their own entry, matched by id (first match wins). Timings are not written here: a rite with a sait (festival_sait.py) is timed for the observer's own location.",
+    "fields": "about_ne / about_en: one or two sentences. vidhi_ne / vidhi_en: the observance in steps, in order."
+  },
+  "festivals": {
+    "ghatasthapana": {
+      "about_ne": "बडा दशैंको पहिलो दिन। आश्विन शुक्ल प्रतिपदामा कलश स्थापना गरी नवदुर्गाको आराधना सुरु गरिन्छ।",
+      "about_en": "The first day of Bada Dashain. On Ashwin Shukla Pratipada a kalash is installed and the nine-day worship of Navadurga begins.",
+      "vidhi_ne": [
+        "दशैंघर वा पूजाकोठा सफा गरी शुद्ध माटो र बालुवा राखिन्छ।",
+        "पानी भरेको कलशमा देवीको आवाहन गरी साइतमा स्थापना गरिन्छ।",
+        "कलश वरिपरि जौ (र मकै) छरेर जमरा राखिन्छ; जमरा घाम नपर्ने ठाउँमा हुर्काइन्छ।",
+        "नौ दिनसम्म बिहान–बेलुका कलश र जमराको पूजा, दुर्गा सप्तशती (चण्डी) पाठ गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "The Dashain room or puja room is cleaned and pure soil and sand are laid.",
+        "A kalash filled with water is installed at the sait, invoking the Goddess into it.",
+        "Barley (and maize) seeds are sown around the kalash for jamara, grown away from sunlight.",
+        "For nine days the kalash and jamara are worshipped morning and evening, with readings of the Durga Saptashati (Chandi)."
+      ]
+    },
+    "fulpati": {
+      "about_ne": "दशैंको सातौं दिन। गोरखाबाट ल्याइएको फूलपाती (केरा, बेल, धान, अनार, हलेदो, कच्चु, अशोक, जयन्ती, मानकचु—नवपत्रिका) काठमाडौं हनुमानढोकामा भित्र्याइन्छ।",
+      "about_en": "The seventh day of Dashain. The phulpati — the nine sacred plants (navapatrika) — brought from Gorkha is carried into Hanuman Dhoka in Kathmandu.",
+      "vidhi_ne": [
+        "घरमा पनि नवपत्रिका (नौ प्रकारका पात–फूल) बाँधेर दशैंघरमा भित्र्याइन्छ।",
+        "फूलपाती भित्र्याएपछि कलशसँगै देवीको रूपमा पूजा गरिन्छ।",
+        "हनुमानढोकामा फूलपाती भित्र्याउँदा सलामी र बडाहाकिमको स्वागत गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "At home too, the nine plants are bound together and brought into the Dashain room.",
+        "Once inside, the phulpati is worshipped as the Goddess alongside the kalash.",
+        "At Hanuman Dhoka its arrival is marked with a gun salute and a formal welcome."
+      ]
+    },
+    "maha-ashtami": {
+      "about_ne": "दशैंको आठौं दिन। देवीको उग्र रूप महाकाली र भद्रकालीको विशेष पूजा गरिन्छ; मध्यरातमा कालरात्रिको पूजा हुन्छ।",
+      "about_en": "The eighth day of Dashain, given to the fierce forms of the Goddess, Mahakali and Bhadrakali; Kalaratri is worshipped at midnight.",
+      "vidhi_ne": [
+        "शक्तिपीठहरू र दशैंघरमा देवीको विशेष पूजा, बलि वा कुभिण्डो–नरिवलको अर्पण गरिन्छ।",
+        "राति कालरात्रि पूजा र जाग्राम बसिन्छ।",
+        "धेरै परिवारले यस दिन व्रत बस्छन्।"
+      ],
+      "vidhi_en": [
+        "Special worship of the Goddess at the shakti peethas and in the Dashain room, with animal sacrifice or offerings of ash gourd and coconut.",
+        "Kalaratri puja is held at night with a vigil.",
+        "Many families keep a fast on this day."
+      ]
+    },
+    "maha-navami": {
+      "about_ne": "दशैंको नवौं दिन। सिद्धिदात्री देवी र विश्वकर्माको पूजा गरिन्छ; हतियार, औजार र सवारीसाधनको पूजा हुन्छ।",
+      "about_en": "The ninth day of Dashain, for Siddhidatri and Vishwakarma: weapons, tools and vehicles are worshipped.",
+      "vidhi_ne": [
+        "घर, कार्यालय र कारखानामा औजार, हतियार र सवारीसाधनको पूजा गरिन्छ।",
+        "तलेजु भवानीको मन्दिर वर्षमा यही दिन मात्र आम भक्तजनका लागि खुल्छ।",
+        "नवदुर्गा पूजाको अन्तिम दिन भएकाले कन्या पूजा पनि गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Tools, weapons and vehicles are worshipped at home, offices and workshops.",
+        "The Taleju Bhawani temple opens to the public on this one day of the year.",
+        "As the last day of Navadurga worship, young girls are worshipped as the Goddess (kanya puja)."
+      ]
+    },
+    "vijaya-dashami": {
+      "about_ne": "बडा दशैंको मुख्य दिन। असुरमाथि देवीको विजयको सम्झनामा ठूलाबडाबाट टीका, जमरा र आशीर्वाद ग्रहण गरिन्छ।",
+      "about_en": "The main day of Bada Dashain, celebrating the Goddess's victory over evil: tika, jamara and blessings are received from elders.",
+      "vidhi_ne": [
+        "बिहान कलश र जमराको पूजा गरी देवी विसर्जन गरिन्छ।",
+        "अक्षता (चामल, दही, अबिर) तयार पारी पहिला देवीलाई चढाइन्छ।",
+        "साइतमा परिवारका ठूलाले सानालाई टीका लगाइदिन्छन्, जमरा शिरमा राखी आशीर्वाद दिन्छन्।",
+        "टीका थाप्दा साइतसँग देखाइएको दिशातर्फ फर्केर बसिन्छ।",
+        "पूर्णिमा (कोजाग्रत) सम्म आफन्तकहाँ गएर टीका थापिन्छ।"
+      ],
+      "vidhi_en": [
+        "In the morning the kalash and jamara are worshipped and the Goddess is bid farewell (visarjan).",
+        "Akshata — rice mixed with curd and red vermilion — is prepared and first offered to the Goddess.",
+        "At the sait, elders put tika on the younger ones' foreheads, place jamara on their heads and give blessings.",
+        "Those receiving tika sit facing the direction shown with the sait.",
+        "Tika is received from relatives until Purnima (Kojagrat)."
+      ]
+    },
+    "devi-visarjan": {
+      "about_ne": "विजया दशमीकै दिन नवरात्रभर पूजिएकी देवीलाई विदाइ गरिन्छ।",
+      "about_en": "On Vijaya Dashami itself the Goddess worshipped through Navaratri is bid farewell.",
+      "vidhi_ne": [
+        "कलश र जमराको अन्तिम पूजा गरी देवीलाई विसर्जन गरिन्छ।",
+        "विसर्जनपछि जमरा प्रसादका रूपमा टीकामा प्रयोग गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After a final puja of the kalash and jamara, the Goddess is ritually released.",
+        "The jamara is then used as prasad with the tika."
+      ]
+    },
+    "manvadi": {
+      "about_ne": "मन्वन्तरहरू सुरु भएका तिथिहरूमध्ये एक (मन्वादि तिथि)। यस दिन स्नान, दान र पितृ तर्पण पुण्यदायी मानिन्छ।",
+      "about_en": "One of the Manvadi tithis, on which a Manvantara (age of a Manu) began. Bathing, charity and offerings to ancestors are held meritorious.",
+      "vidhi_ne": [
+        "स्नान गरी पितृलाई तर्पण र यथाशक्ति दान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, water offerings (tarpan) are made to the ancestors and alms are given."
+      ]
+    },
+    "kalratri": {
+      "about_ne": "दशैंको महाअष्टमीको राति देवीको कालरात्रि रूपको पूजा गरिन्छ।",
+      "about_en": "On the night of Maha Ashtami the Goddess is worshipped as Kalaratri.",
+      "vidhi_ne": [
+        "मध्यरातमा शक्तिपीठ र दशैंघरमा विशेष पूजा र बलि दिइन्छ।"
+      ],
+      "vidhi_en": [
+        "Special worship and sacrifice are offered at midnight at shakti peethas and in the Dashain room."
+      ]
+    },
+    "kojagrat-purnima": {
+      "about_ne": "दशैंको अन्तिम दिन, आश्विन पूर्णिमा। लक्ष्मीले 'को जाग्रत?' (को जागा छ?) भनी सोध्दै घुम्छिन् भन्ने विश्वासमा रातभर जाग्राम बसिन्छ।",
+      "about_en": "Ashwin Purnima, the last day of Dashain. Laxmi is believed to roam asking 'Who is awake?' (ko jagrat), so the night is spent awake.",
+      "vidhi_ne": [
+        "लक्ष्मीको पूजा गरी रातभर जाग्राम बसिन्छ।",
+        "दशैंको टीका थाप्ने अन्तिम दिन यही हो।"
+      ],
+      "vidhi_en": [
+        "Laxmi is worshipped and the night is kept awake.",
+        "It is the last day for receiving Dashain tika."
+      ]
+    },
+    "dhanteras": {
+      "about_ne": "तिहार सुरु हुने दिन। धनवन्तरी जयन्ती पनि हो; नयाँ भाँडाकुँडा र धातु किन्नु शुभ मानिन्छ।",
+      "about_en": "The start of Tihar and Dhanvantari's birth day; buying new utensils and metal is held auspicious.",
+      "vidhi_ne": [
+        "घर सफा गरी साँझ यमदीप (दक्षिणतर्फ बत्ती) बालिन्छ।",
+        "धनवन्तरी र लक्ष्मी–कुबेरको पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "The house is cleaned and in the evening a lamp for Yama (yamadeep) is lit facing south.",
+        "Dhanvantari and Laxmi–Kubera are worshipped."
+      ]
+    },
+    "kaag-tihar": {
+      "about_ne": "तिहारको पहिलो दिन। यमराजका दूत मानिने कागलाई पूजा गरी खाना खुवाइन्छ।",
+      "about_en": "The first day of Tihar: crows, held to be Yama's messengers, are worshipped and fed.",
+      "vidhi_ne": [
+        "बिहानै छानामा वा आँगनमा कागलाई भात, मिठाई राखी पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Early in the morning rice and sweets are set out for crows on the roof or in the courtyard."
+      ]
+    },
+    "kukur-tihar": {
+      "about_ne": "तिहारको दोस्रो दिन। यमराजको द्वारपाल मानिने कुकुरलाई टीका, माला लगाई मीठो खाना खुवाइन्छ।",
+      "about_en": "The second day of Tihar: dogs, Yama's gatekeepers, are honoured with tika, garlands and good food.",
+      "vidhi_ne": [
+        "कुकुरलाई टीका, सयपत्रीको माला लगाई पूजा गरी खाना दिइन्छ।"
+      ],
+      "vidhi_en": [
+        "Dogs are given tika and a marigold garland, worshipped and fed."
+      ]
+    },
+    "naraka-chaturdashi": {
+      "about_ne": "कृष्णले नरकासुर मारेको दिन। यम–चतुर्दशी पनि भनिन्छ।",
+      "about_en": "The day Krishna slew Narakasura, also kept as Yama Chaturdashi.",
+      "vidhi_ne": [
+        "बिहानै तेल लगाई स्नान गरिन्छ र साँझ यमका लागि दियो बालिन्छ।"
+      ],
+      "vidhi_en": [
+        "An oil bath is taken before dawn and lamps are lit for Yama in the evening."
+      ]
+    },
+    "laxmi-puja": {
+      "about_ne": "तिहारको मुख्य दिन, कार्तिक औंसी। बिहान गाई पूजा र साँझ धन–सम्पत्तिकी देवी लक्ष्मीको पूजा गरिन्छ।",
+      "about_en": "The main day of Tihar, Kartik Amavasya: cows are worshipped in the morning and Laxmi, goddess of wealth, in the evening.",
+      "vidhi_ne": [
+        "बिहान गाईलाई टीका, माला लगाई पूजा गरिन्छ।",
+        "घर सफा गरी ढोकादेखि पूजाकोठासम्म रातो माटो र कमेरोले लक्ष्मीको पाइला बनाइन्छ, रङ्गोली कोरिन्छ।",
+        "साइतमा लक्ष्मीको पूजा गरी घरभरि दियो, मैनबत्ती बालिन्छ।",
+        "राति भैलो खेलिन्छ।"
+      ],
+      "vidhi_en": [
+        "In the morning cows are given tika and garlands and worshipped.",
+        "The house is cleaned, Laxmi's footprints are drawn from the door to the puja room, and rangoli is made.",
+        "At the sait Laxmi is worshipped and lamps and candles are lit throughout the house.",
+        "Bhailo is sung at night."
+      ]
+    },
+    "gai-puja": {
+      "about_ne": "लक्ष्मी पूजाको बिहान लक्ष्मीको रूप मानिने गाईको पूजा गरिन्छ।",
+      "about_en": "On the morning of Laxmi Puja the cow, held to be a form of Laxmi, is worshipped.",
+      "vidhi_ne": [
+        "गाईलाई टीका, माला लगाई घाँस र अन्न खुवाइन्छ।"
+      ],
+      "vidhi_en": [
+        "The cow is given tika and a garland and fed grass and grain."
+      ]
+    },
+    "mha-puja": {
+      "about_ne": "नेवार समुदायको आत्म (शरीर) पूजा। यही साँझदेखि नेपाल सम्वत्को नयाँ वर्ष सुरु हुन्छ।",
+      "about_en": "The Newar worship of one's own body and self; the Nepal Sambat new year begins that evening.",
+      "vidhi_ne": [
+        "परिवारका प्रत्येक सदस्यका लागि मण्डल कोरी त्यसमा बसाएर पूजा गरिन्छ।",
+        "सगुन (अण्डा, माछा, मासु, बारा र रक्सी) दिई सुख–स्वास्थ्यको कामना गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A mandala is drawn for each family member, who sits before it to be worshipped.",
+        "Sagun — egg, fish, meat, bara and wine — is given with wishes for health and long life."
+      ]
+    },
+    "govardhan-puja": {
+      "about_ne": "कृष्णले गोवर्धन पर्वत उचालेर गोकुल बचाएको सम्झनामा गोवर्धन पूजा गरिन्छ।",
+      "about_en": "Kept in memory of Krishna lifting Mount Govardhan to shelter Gokul.",
+      "vidhi_ne": [
+        "गोबरको गोवर्धन पर्वत बनाई पूजा गरिन्छ; गोरु पूजा पनि यसै दिन हुन्छ।"
+      ],
+      "vidhi_en": [
+        "A Govardhan hill is made of cow dung and worshipped; oxen are worshipped the same day."
+      ]
+    },
+    "goru-puja": {
+      "about_ne": "खेतीमा सघाउने गोरुको सम्मान गर्ने दिन।",
+      "about_en": "A day of honour for the oxen that work the fields.",
+      "vidhi_ne": [
+        "गोरुलाई टीका, माला लगाई मीठो खुवाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Oxen are given tika and garlands and fed well."
+      ]
+    },
+    "bhai-tika": {
+      "about_ne": "तिहारको अन्तिम दिन, कार्तिक शुक्ल द्वितीया। दिदीबहिनीले दाजुभाइको दीर्घायुको कामना गर्दै टीका लगाइदिन्छन्।",
+      "about_en": "The last day of Tihar, Kartik Shukla Dwitiya: sisters put tika on their brothers and pray for their long life.",
+      "vidhi_ne": [
+        "दिदीबहिनीले दाजुभाइको शिरमा तेल लगाई ढोकादेखि तेल र पानीको धारो (रेखा) बनाउँछन्।",
+        "ओखर फुटाई यमराजलाई प्रतिकात्मक रूपमा रोकिन्छ।",
+        "साइतमा सप्तरङ्गी टीका लगाई मखमली फूलको माला लगाइदिन्छन्।",
+        "टीका थाप्दा साइतसँग देखाइएको दिशातर्फ फर्केर बसिन्छ।",
+        "दाजुभाइले दक्षिणा र उपहार दिन्छन्; दिदीबहिनीले पनि दाजुभाइबाट टीका पाउँछन्।"
+      ],
+      "vidhi_en": [
+        "Sisters anoint their brothers' heads with oil and draw a line of oil and water from the door.",
+        "A walnut is cracked to symbolically ward off Yama.",
+        "At the sait a seven-coloured tika is applied and a makhamali (globe amaranth) garland is placed.",
+        "Brothers sit facing the direction shown with the sait while receiving tika.",
+        "Brothers give dakshina and gifts; sisters receive tika from their brothers too."
+      ]
+    },
+    "kija-puja": {
+      "about_ne": "नेवार समुदायको भाइटीका (किजा पूजा)।",
+      "about_en": "The Newar Bhai Tika (Kija Puja).",
+      "vidhi_ne": [
+        "दिदीबहिनीले दाजुभाइको मण्डल पूजा गरी सगुन दिन्छन्।"
+      ],
+      "vidhi_en": [
+        "Sisters worship their brothers before a mandala and give sagun."
+      ]
+    },
+    "tihar": {
+      "about_ne": "दीपावली। काग, कुकुर, गाई, गोरु र दाजुभाइ पूजा गरिने पाँच दिने बत्तीको चाड।",
+      "about_en": "Deepawali: the five-day festival of lights honouring crows, dogs, cows, oxen and brothers.",
+      "vidhi_ne": [
+        "पाँच दिनसम्म घर सफा गरी दियो बालिन्छ, भैलो–देउसी खेलिन्छ।"
+      ],
+      "vidhi_en": [
+        "For five days houses are cleaned and lit with lamps, and bhailo and deusi are sung."
+      ]
+    },
+    "chhath": {
+      "about_ne": "सूर्य र छठी मैयाको उपासना गरिने पर्व, मुख्यतः मधेशमा। अस्ताउँदो र उदाउँदो सूर्यलाई अर्घ्य दिइन्छ।",
+      "about_en": "The worship of the Sun and Chhathi Maiya, mainly in Madhesh: offerings are made to the setting and the rising sun.",
+      "vidhi_ne": [
+        "चतुर्थीमा नहाय–खाय, पञ्चमीमा खरना गरी व्रत सुरु गरिन्छ।",
+        "षष्ठीको साँझ नदी वा पोखरीमा उभिएर अस्ताउँदो सूर्यलाई अर्घ्य दिइन्छ।",
+        "सप्तमीको बिहान उदाउँदो सूर्यलाई अर्घ्य दिएर व्रत खोलिन्छ।"
+      ],
+      "vidhi_en": [
+        "The vrata opens with nahay-khay on Chaturthi and kharna on Panchami.",
+        "On Shashthi evening devotees stand in a river or pond and offer arghya to the setting sun.",
+        "On Saptami morning arghya is offered to the rising sun and the fast is broken."
+      ]
+    },
+    "teej": {
+      "about_ne": "भाद्र शुक्ल तृतीया। महिलाहरूले पार्वतीले शिवलाई पति पाउन गरेको तपस्याको सम्झनामा निराहार व्रत बस्छन्।",
+      "about_en": "Bhadra Shukla Tritiya: women keep a strict fast in memory of Parvati's penance to win Shiva.",
+      "vidhi_ne": [
+        "अघिल्लो दिन दर खाइन्छ।",
+        "तीजको दिन निराहार व्रत बसी शिव–पार्वतीको पूजा, नाचगान गरिन्छ।",
+        "भोलिपल्ट पूजा गरी व्रत खोलिन्छ; त्यसको भोलिपल्ट ऋषि पञ्चमी हुन्छ।"
+      ],
+      "vidhi_en": [
+        "Dar, a feast, is eaten the day before.",
+        "On Teej women fast without food or water, worship Shiva and Parvati, and sing and dance.",
+        "The fast is broken after worship the next day; Rishi Panchami follows."
+      ]
+    },
+    "rishi-panchami": {
+      "about_ne": "सप्तऋषिको पूजा गरिने दिन। महिलाहरूले रजस्वलाकालमा भएका दोषको प्रायश्चित्तका रूपमा स्नान र व्रत गर्छन्।",
+      "about_en": "The day of the seven sages (Saptarishi); women bathe and fast in atonement for the year's ritual impurity.",
+      "vidhi_ne": [
+        "दतिवनले दाँत माझी ३६५ पटक नदीमा स्नान गर्ने चलन छ; सप्तऋषिको पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Women clean their teeth with datiwan twigs, bathe (traditionally 365 dips) and worship the seven sages."
+      ]
+    },
+    "janai-purnima": {
+      "about_ne": "श्रावण पूर्णिमा। तागाधारीले नयाँ जनै फेर्छन् र सबैले रक्षाबन्धन (डोरो) बाँध्छन्।",
+      "about_en": "Shrawan Purnima: those who wear the sacred thread renew their janai, and everyone ties a protective rakshya bandhan.",
+      "vidhi_ne": [
+        "स्नान गरी पुरोहितबाट मन्त्रिएको नयाँ जनै धारण गरिन्छ।",
+        "हातमा रक्षाबन्धन बाँधिन्छ; क्वाँटी खाइन्छ।",
+        "गोसाइँकुण्ड लगायतका तीर्थमा स्नान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, a new janai consecrated by a priest is put on.",
+        "A protective thread is tied on the wrist and kwati (nine-bean soup) is eaten.",
+        "Pilgrims bathe at Gosaikunda and other sacred lakes."
+      ]
+    },
+    "raksha-bandhan": {
+      "about_ne": "दिदीबहिनीले दाजुभाइको हातमा राखी बाँधी सुरक्षाको कामना गर्ने दिन।",
+      "about_en": "Sisters tie a rakhi on their brothers' wrists for their protection.",
+      "vidhi_ne": [
+        "राखी बाँधी मिठाई खुवाइन्छ; दाजुभाइले उपहार दिन्छन्।"
+      ],
+      "vidhi_en": [
+        "A rakhi is tied and sweets are shared; brothers give gifts."
+      ]
+    },
+    "kwati-khane-din": {
+      "about_ne": "जनै पूर्णिमामा नौ प्रकारका गेडागुडीको क्वाँटी खाइन्छ।",
+      "about_en": "On Janai Purnima kwati, a soup of nine sprouted beans, is eaten.",
+      "vidhi_ne": [
+        "केही दिनअघि भिजाई टुसा उमारेका गेडागुडीको झोल पकाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Beans soaked and sprouted over the preceding days are cooked into soup."
+      ]
+    },
+    "gai-jatra": {
+      "about_ne": "वर्षभरिमा दिवंगत भएकाहरूको सम्झनामा गाई वा गाईको भेषमा बालबालिका सहर परिक्रमा गराइन्छ।",
+      "about_en": "Families who lost someone that year send a cow, or a child dressed as one, around the town in their memory.",
+      "vidhi_ne": [
+        "गाई वा गाईको भेष लगाएका बालबालिका परम्परागत मार्ग परिक्रमा गर्छन्; व्यङ्ग्य र हास्य प्रस्तुति गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Cows or costumed children walk the traditional route; satire and humour are performed."
+      ]
+    },
+    "krishna-janmashtami": {
+      "about_ne": "भगवान श्रीकृष्णको जन्मोत्सव, भाद्र कृष्ण अष्टमी।",
+      "about_en": "The birth of Lord Krishna, Bhadra Krishna Ashtami.",
+      "vidhi_ne": [
+        "दिनभर व्रत बसी मध्यरात (कृष्ण जन्म भएको समय) मा पूजा गरिन्छ।",
+        "कृष्ण मन्दिरहरूमा भजन–कीर्तन र जाग्राम हुन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast is kept through the day and worship is done at midnight, the hour of Krishna's birth.",
+        "Krishna temples hold bhajans and an all-night vigil."
+      ]
+    },
+    "nag-panchami": {
+      "about_ne": "श्रावण शुक्ल पञ्चमीमा नागदेवताको पूजा गरिन्छ।",
+      "about_en": "Shrawan Shukla Panchami: the serpent deities (Nagas) are worshipped.",
+      "vidhi_ne": [
+        "ढोकामाथि नागको चित्र टाँसी दूध, लावा र दुबोले पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A picture of the Nagas is pasted above the door and worshipped with milk, puffed rice and durva grass."
+      ]
+    },
+    "kushe-aunshi": {
+      "about_ne": "बुबाको मुख हेर्ने दिन। बुबालाई मिठाई र उपहार दिई सम्मान गरिन्छ; दिवंगत बुबाको श्राद्ध–तर्पण गरिन्छ।",
+      "about_en": "Father's Day: fathers are honoured with sweets and gifts, and departed fathers with shraddha and tarpan.",
+      "vidhi_ne": [
+        "बुबाको मुख हेरी आशीर्वाद लिइन्छ; गोकर्णेश्वरमा दिवंगत बुबाको तर्पण गरिन्छ। पूजाका लागि कुश ल्याइन्छ।"
+      ],
+      "vidhi_en": [
+        "Children look upon their father's face and take his blessing; tarpan for departed fathers is offered at Gokarneshwar. Kusha grass is gathered for the year's rites."
+      ]
+    },
+    "mata-tirtha-aunshi": {
+      "about_ne": "आमाको मुख हेर्ने दिन। आमालाई मिठाई र उपहार दिई सम्मान गरिन्छ; दिवंगत आमाको मातातीर्थमा श्राद्ध गरिन्छ।",
+      "about_en": "Mother's Day: mothers are honoured with sweets and gifts, and departed mothers with shraddha at Matatirtha.",
+      "vidhi_ne": [
+        "आमाको मुख हेरी आशीर्वाद लिइन्छ; दिवंगत आमाका लागि मातातीर्थमा स्नान र तर्पण गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Children look upon their mother's face and take her blessing; for departed mothers, a bath and tarpan at Matatirtha."
+      ]
+    },
+    "shivaratri": {
+      "about_ne": "फाल्गुन कृष्ण चतुर्दशीमा भगवान शिवको महान रात्रि। पशुपतिनाथमा लाखौं भक्तजन दर्शन गर्छन्।",
+      "about_en": "Falgun Krishna Chaturdashi, Shiva's great night; hundreds of thousands visit Pashupatinath.",
+      "vidhi_ne": [
+        "व्रत बसी शिवलिङ्गमा जल, दूध, बेलपत्र र धतुरो चढाइन्छ।",
+        "रातभर चार प्रहरको पूजा गरी जाग्राम बसिन्छ; धुनी बालिन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast is kept; water, milk, bel leaves and datura are offered on the Shiva linga.",
+        "Worship is done in each of the night's four watches, with a vigil and sacred fire (dhuni)."
+      ]
+    },
+    "holi": {
+      "about_ne": "फागु पूर्णिमा, रङको चाड। होलिकादहन गरी भोलिपल्ट रङ र अबिर खेलिन्छ।",
+      "about_en": "Fagu Purnima, the festival of colours: Holika is burned and colours are played.",
+      "vidhi_ne": [
+        "बसन्तपुरमा चीर ठड्याइन्छ र होलिकादहन गरिन्छ; रङ, अबिर र पानी खेलिन्छ।"
+      ],
+      "vidhi_en": [
+        "The chir pole is raised at Basantapur and Holika is burned; colours, powder and water are played."
+      ]
+    },
+    "pahadma-holi": {
+      "about_ne": "पहाडमा फागु पूर्णिमाकै दिन होली खेलिन्छ।",
+      "about_en": "In the hills, Holi is played on Fagu Purnima itself.",
+      "vidhi_ne": [
+        "रङ, अबिर खेली चीरदहन गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Colours are played and the chir is burned."
+      ]
+    },
+    "terai-holi": {
+      "about_ne": "तराईमा फागु पूर्णिमाको भोलिपल्ट होली खेलिन्छ।",
+      "about_en": "In the Terai, Holi is played the day after Fagu Purnima.",
+      "vidhi_ne": [
+        "अघिल्लो राति होलिकादहन गरी भोलिपल्ट रङ खेलिन्छ।"
+      ],
+      "vidhi_en": [
+        "Holika is burned the night before and colours are played the next day."
+      ]
+    },
+    "buddha-jayanti": {
+      "about_ne": "वैशाख पूर्णिमा। भगवान गौतम बुद्धको जन्म, बुद्धत्व प्राप्ति र महापरिनिर्वाण तीनै यसै दिन भएको मानिन्छ।",
+      "about_en": "Baishakh Purnima: the birth, enlightenment and passing of the Buddha are all remembered on this day.",
+      "vidhi_ne": [
+        "लुम्बिनी, स्वयम्भू र बौद्धमा पूजा, दीप प्रज्वलन र धर्मदेशना गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Worship, lamp lighting and teachings are held at Lumbini, Swayambhu and Boudha."
+      ]
+    },
+    "maghe-sankranti": {
+      "about_ne": "सूर्य मकर राशिमा प्रवेश गर्ने दिन, उत्तरायण सुरु। तिल, घिउ, चाकु, तरुल खाने र तीर्थस्नान गर्ने पर्व।",
+      "about_en": "The Sun enters Makara and its northward course begins: a day of holy bathing and of sesame, ghee, chaku and yam.",
+      "vidhi_ne": [
+        "देवघाट, त्रिवेणी लगायतका तीर्थमा स्नान गरी तिल र घिउ दान गरिन्छ; ठूलाबाट टीका थापिन्छ।"
+      ],
+      "vidhi_en": [
+        "A holy bath at Devghat, Triveni and other confluences, gifts of sesame and ghee, and tika from elders."
+      ]
+    },
+    "maghi-parwa": {
+      "about_ne": "थारू समुदायको नयाँ वर्ष (माघी)।",
+      "about_en": "Maghi, the Tharu new year.",
+      "vidhi_ne": [
+        "नाचगान, भोज र नयाँ वर्षका लागि घरमुली (अगुवा) छनोट गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Dancing, feasts, and the choosing of community leaders for the new year."
+      ]
+    },
+    "saraswati-puja": {
+      "about_ne": "श्रीपञ्चमी (वसन्त पञ्चमी)। विद्याकी देवी सरस्वतीको पूजा गरिन्छ।",
+      "about_en": "Shree Panchami (Vasant Panchami): Saraswati, goddess of learning, is worshipped.",
+      "vidhi_ne": [
+        "विद्यार्थीले कलम, किताब र वाद्यवादनको पूजा गर्छन्; बालबालिकालाई अक्षरारम्भ गराइन्छ।"
+      ],
+      "vidhi_en": [
+        "Students worship pens, books and instruments; small children are introduced to writing (aksharambha)."
+      ]
+    },
+    "ram-navami": {
+      "about_ne": "चैत्र शुक्ल नवमीमा भगवान श्रीरामको जन्मोत्सव।",
+      "about_en": "Chaitra Shukla Navami: the birth of Lord Rama.",
+      "vidhi_ne": [
+        "व्रत बसी राम मन्दिरमा पूजा र रामायण पाठ गरिन्छ; जनकपुरमा विशेष मेला लाग्छ।"
+      ],
+      "vidhi_en": [
+        "A fast, worship at Rama temples and Ramayana readings; a large fair is held in Janakpur."
+      ]
+    },
+    "navaratri-chaitra": {
+      "about_ne": "चैते दशैं, वसन्त नवरात्र। चैत्र शुक्ल पक्षमा नवदुर्गाको आराधना गरिन्छ।",
+      "about_en": "Chaite Dashain, the spring Navaratri: Navadurga is worshipped through Chaitra's bright fortnight.",
+      "vidhi_ne": [
+        "नौ दिनसम्म देवीको पूजा र चण्डी पाठ गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "The Goddess is worshipped for nine days with readings of the Chandi."
+      ]
+    },
+    "haribodhi-ekadashi": {
+      "about_ne": "चार महिनाको शयनपछि भगवान विष्णु जाग्ने दिन; चतुर्मास व्रत सकिन्छ।",
+      "about_en": "Vishnu wakes from his four-month sleep and Chaturmas ends.",
+      "vidhi_ne": [
+        "व्रत बसी विष्णुको पूजा गरिन्छ; बूढानीलकण्ठ र विष्णु मन्दिरमा मेला लाग्छ। भोलिपल्ट तुलसी विवाह गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast and worship of Vishnu, with fairs at Budhanilkantha and Vishnu temples; Tulsi Vivah follows."
+      ]
+    },
+    "harishayani-ekadashi": {
+      "about_ne": "भगवान विष्णु चार महिनाका लागि शयन गर्ने दिन; चतुर्मास सुरु हुन्छ र तुलसी रोपिन्छ।",
+      "about_en": "Vishnu lies down for his four-month sleep; Chaturmas begins and tulsi is planted.",
+      "vidhi_ne": [
+        "व्रत बसी विष्णुको पूजा गरिन्छ; आँगनको मठमा तुलसीको बिरुवा रोपिन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast and worship of Vishnu; a tulsi sapling is planted in the courtyard shrine."
+      ]
+    },
+    "tulsi-vivah": {
+      "about_ne": "तुलसी र भगवान विष्णु (शालिग्राम) को विवाह गराइन्छ।",
+      "about_en": "Tulsi is ceremonially married to Vishnu as the shaligram.",
+      "vidhi_ne": [
+        "तुलसीको मठमा विवाहको सबै विधि गरी शालिग्रामसँग विवाह गराइन्छ।"
+      ],
+      "vidhi_en": [
+        "The full marriage rite is performed at the tulsi shrine with the shaligram."
+      ]
+    },
+    "bala-chaturdashi": {
+      "about_ne": "पितृको सद्गतिका लागि पशुपति क्षेत्रमा सतबीज छर्ने र रातभर बत्ती बाली जाग्राम बस्ने दिन।",
+      "about_en": "For the departed: seven grains (satbij) are scattered around Pashupati and lamps are kept burning through the night.",
+      "vidhi_ne": [
+        "राति मृगस्थलीमा बत्ती बालेर जाग्राम बसिन्छ; बिहान स्नान गरी सतबीज छरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Lamps are lit at Mrigasthali through the night; at dawn, after bathing, satbij is scattered."
+      ]
+    },
+    "swasthani-brata-arambha": {
+      "about_ne": "पौष पूर्णिमादेखि माघ पूर्णिमासम्म एक महिना श्री स्वस्थानी व्रत कथा वाचन गरिन्छ।",
+      "about_en": "From Poush Purnima to Magh Purnima the Shree Swasthani Vrata Katha is read for a month.",
+      "vidhi_ne": [
+        "हरेक साँझ स्वस्थानी देवीको पूजा गरी कथाको एक अध्याय वाचन गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Each evening the goddess Swasthani is worshipped and a chapter of the story is read."
+      ]
+    },
+    "swasthani-brata-samapti": {
+      "about_ne": "माघ पूर्णिमामा एक महिने स्वस्थानी व्रत कथा समापन हुन्छ।",
+      "about_en": "Magh Purnima closes the month-long Swasthani reading.",
+      "vidhi_ne": [
+        "स्वस्थानीको विशेष पूजा गरी १०८ वटा फलफूल र रोटी चढाइन्छ।"
+      ],
+      "vidhi_en": [
+        "A closing puja with 108 offerings of fruits and breads."
+      ]
+    },
+    "ganesh-chaturthi": {
+      "about_ne": "भगवान गणेशको जन्मोत्सव; नेवार समुदायमा चथा भनिन्छ। यस राति चन्द्रमा हेर्नु हुँदैन भनिन्छ।",
+      "about_en": "Ganesha's birthday, Chatha among the Newars; one should not look at the Moon this night.",
+      "vidhi_ne": [
+        "गणेशको पूजा गरी मोदक र लड्डु चढाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Ganesha is worshipped with modak and laddu."
+      ]
+    },
+    "guru-purnima": {
+      "about_ne": "आषाढ पूर्णिमा, व्यास जयन्ती। गुरुप्रति सम्मान व्यक्त गरिन्छ।",
+      "about_en": "Ashadh Purnima, Vyasa's birthday: a day to honour one's teachers.",
+      "vidhi_ne": [
+        "विद्यार्थीले गुरुलाई माला, टीका र दक्षिणा दिई आशीर्वाद लिन्छन्।"
+      ],
+      "vidhi_en": [
+        "Students offer their teachers garlands, tika and dakshina and receive their blessing."
+      ]
+    },
+    "indra-jatra": {
+      "about_ne": "काठमाडौंको येँया पुन्ही। इन्द्र र भैरवको पूजा, कुमारीको रथयात्रा र लाखे नाच हुन्छ।",
+      "about_en": "Yenya Punhi in Kathmandu: Indra and Bhairava are worshipped, the Kumari's chariot is pulled and Lakhe dances.",
+      "vidhi_ne": [
+        "हनुमानढोकामा इन्द्रध्वज (लिङ्गो) ठड्याइन्छ, कुमारी, गणेश र भैरवको रथ तानिन्छ।"
+      ],
+      "vidhi_en": [
+        "The Indra pole is raised at Hanuman Dhoka and the chariots of Kumari, Ganesh and Bhairav are pulled."
+      ]
+    },
+    "udhauli-parwa": {
+      "about_ne": "किराँत समुदायको उधौली पर्व; जाडो सुरु हुँदा बसाइँ तल (उँधो) झर्ने सम्झनामा।",
+      "about_en": "The Kirat Udhauli festival, marking the descent (udho) to lower lands as winter comes.",
+      "vidhi_ne": [
+        "प्रकृति र पितृको पूजा गरी साकेला (सिली) नाच नाचिन्छ।"
+      ],
+      "vidhi_en": [
+        "Nature and ancestors are worshipped and the Sakela (sili) dance is performed."
+      ]
+    },
+    "ubhauli-parwa": {
+      "about_ne": "किराँत समुदायको उभौली पर्व; गर्मी सुरु हुँदा बसाइँ माथि (उँभो) सर्ने सम्झनामा।",
+      "about_en": "The Kirat Ubhauli festival, marking the move up (ubho) to the hills as summer comes.",
+      "vidhi_ne": [
+        "भूमि पूजा गरी साकेला नाच नाचिन्छ।"
+      ],
+      "vidhi_en": [
+        "The land is worshipped and the Sakela dance is performed."
+      ]
+    },
+    "bs-new-year": {
+      "about_ne": "विक्रम सम्वत्को नयाँ वर्ष, वैशाख १ गते।",
+      "about_en": "The Bikram Sambat new year, Baishakh 1.",
+      "vidhi_ne": [
+        "भक्तपुरमा बिस्केट जात्रा, शुभकामना आदानप्रदान र मन्दिर दर्शन गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Bisket Jatra in Bhaktapur, greetings and temple visits."
+      ]
+    },
+    "dahi-chiura-khane-din": {
+      "about_ne": "असार १५, रोपाइँको दिन। खेतमा धान रोप्दै दही–चिउरा खाइन्छ।",
+      "about_en": "Asar 15, the paddy-planting day: curd and beaten rice are eaten in the fields.",
+      "vidhi_ne": [
+        "हिलो खेल्दै धान रोपिन्छ र असारे गीत गाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Rice is planted amid mud play and asare songs."
+      ]
+    },
+    "vivah-panchami": {
+      "about_ne": "मार्गशीर्ष शुक्ल पञ्चमीमा राम–सीताको विवाहको सम्झना; जनकपुरमा भव्य उत्सव हुन्छ।",
+      "about_en": "Mangsir Shukla Panchami, the wedding of Rama and Sita, celebrated grandly in Janakpur.",
+      "vidhi_ne": [
+        "जानकी मन्दिरमा राम–सीताको विवाहको झाँकी र विधि गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "The wedding of Rama and Sita is re-enacted at the Janaki temple."
+      ]
+    },
+    "sohrashraddha-arambha": {
+      "about_ne": "पितृपक्ष (सोह्र श्राद्ध) सुरु। आश्विन कृष्ण पक्षभर पितृको तिथिमा श्राद्ध गरिन्छ।",
+      "about_en": "Pitri Paksha (the sixteen shraddhas) begins: through Ashwin's dark fortnight each ancestor's shraddha falls on their tithi.",
+      "vidhi_ne": [
+        "दिवंगत पितृको तिथिमा पिण्ड, तर्पण र ब्राह्मण भोजन गराइन्छ।"
+      ],
+      "vidhi_en": [
+        "On each ancestor's tithi, pinda and tarpan are offered and Brahmins are fed."
+      ]
+    },
+    "pitri-visarjan": {
+      "about_ne": "पितृपक्षको अन्तिम दिन, औंसी श्राद्ध। तिथि थाहा नभएका सबै पितृको श्राद्ध गरिन्छ।",
+      "about_en": "The last day of Pitri Paksha: shraddha for all ancestors whose tithi is unknown.",
+      "vidhi_ne": [
+        "सबै पितृको नाममा श्राद्ध र तर्पण गरी पितृ विसर्जन गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Shraddha and tarpan are offered for all ancestors, who are then bid farewell."
+      ]
+    },
+    "nirjala-ekadashi": {
+      "about_ne": "ज्येष्ठ शुक्ल एकादशी। पानी पनि नपिई गरिने कठोर एकादशी व्रत।",
+      "about_en": "Jestha Shukla Ekadashi, the strictest Ekadashi, kept without even water.",
+      "vidhi_ne": [
+        "निर्जल व्रत बसी विष्णुको पूजा गरिन्छ; द्वादशीमा पारण गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast without water and worship of Vishnu; it is broken on Dwadashi."
+      ]
+    },
+    "christmas": {
+      "about_ne": "येशु ख्रीष्टको जन्मोत्सव।",
+      "about_en": "The birth of Jesus Christ.",
+      "vidhi_ne": [
+        "चर्चमा प्रार्थना, क्यारोल गायन र उपहार आदानप्रदान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Church services, carols and the exchange of gifts."
+      ]
+    },
+    "sonam-lhosar": {
+      "about_ne": "तामाङ र हायोल्मो समुदायको नयाँ वर्ष।",
+      "about_en": "The new year of the Tamang and Hyolmo communities.",
+      "vidhi_ne": [
+        "गुम्बामा पूजा, परम्परागत पोशाकमा नाचगान र भोज गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Prayers at the gompa, dances in traditional dress, and feasts."
+      ]
+    },
+    "gyalpo-lhosar": {
+      "about_ne": "शेर्पा र तिब्बती मूलका समुदायको नयाँ वर्ष।",
+      "about_en": "The new year of the Sherpa and Tibetan-origin communities.",
+      "vidhi_ne": [
+        "गुम्बामा पूजा, लुङ्दार (ध्वजा) फेर्ने र परिवारसँग भोज गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Prayers at the gompa, new prayer flags, and family feasts."
+      ]
+    },
+    "tamu-lhosar": {
+      "about_ne": "गुरुङ समुदायको नयाँ वर्ष।",
+      "about_en": "The Gurung new year.",
+      "vidhi_ne": [
+        "परम्परागत पोशाकमा र्‍याली, नाचगान र भोज गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Processions in traditional dress, dancing and feasts."
+      ]
+    },
+    "nepal-sambat-arambha": {
+      "about_ne": "नेपाल सम्वत्को नयाँ वर्ष, शङ्खधर साख्वाले जनताको ऋण मिनाहा गरी चलाएको सम्वत्।",
+      "about_en": "The Nepal Sambat new year — the era begun by Sankhadhar Sakhwa, who paid off the people's debts.",
+      "vidhi_ne": [
+        "म्ह पूजा गरी शुभकामना आदानप्रदान र र्‍याली गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Mha Puja, greetings and processions."
+      ]
+    },
+    "yomari-punhi": {
+      "about_ne": "धान भित्र्याएपछि नेवार समुदायले योमरी बनाई अन्नपूर्णा र कुबेरको पूजा गर्छन्।",
+      "about_en": "After the rice harvest the Newars make yomari and worship Annapurna and Kubera.",
+      "vidhi_ne": [
+        "चामलको पीठोभित्र चाकु र तिल भरेर योमरी बनाई पूजा गरी खाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Rice-flour dumplings filled with chaku and sesame are offered and eaten."
+      ]
+    },
+    "ghode-jatra": {
+      "about_ne": "चैत्र कृष्ण चतुर्दशीमा टुँडिखेलमा घोडा दौड गराइन्छ।",
+      "about_en": "On Chaitra Krishna Chaturdashi horses are raced at Tundikhel.",
+      "vidhi_ne": [
+        "नेपाली सेनाको घोडा प्रदर्शन हुन्छ; पासाचह्रे पनि मनाइन्छ।"
+      ],
+      "vidhi_en": [
+        "The Nepal Army stages a horse show; Pasa Chahre is kept the same day."
+      ]
+    },
+    "kartik-purnima": {
+      "about_ne": "कार्तिक महिनाभरको व्रत–स्नान समापन हुने दिन।",
+      "about_en": "Closes the month of Kartik's bathing and vows.",
+      "vidhi_ne": [
+        "तीर्थस्नान, दीपदान र विष्णुको पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Holy bathing, lamp offerings and worship of Vishnu."
+      ]
+    },
+    "jitiya-parwa": {
+      "about_ne": "मधेशमा आमाहरूले सन्तानको दीर्घायुका लागि बस्ने निर्जल व्रत।",
+      "about_en": "In Madhesh, mothers keep a waterless fast for their children's long life.",
+      "vidhi_ne": [
+        "जीमूतवाहनको पूजा गरी निर्जल व्रत बसिन्छ; भोलिपल्ट पारण गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Jimutavahana is worshipped and a waterless fast kept, broken the next day."
+      ]
+    },
+    "rato-machhindranath-ratharohan": {
+      "about_ne": "ललितपुरमा रातो मच्छिन्द्रनाथ (बुङ्गद्यः) को रथ यात्रा सुरु।",
+      "about_en": "Rato Machhindranath (Bunga Dyah) is placed in his chariot in Lalitpur and the long chariot festival begins.",
+      "vidhi_ne": [
+        "रथ बनाई देवतालाई रथारोहण गराइन्छ र पाटनका परम्परागत मार्गमा तानिन्छ।"
+      ],
+      "vidhi_en": [
+        "The god is installed in the chariot, which is pulled along Patan's traditional route."
+      ]
+    },
+    "ganatantra-diwas": {
+      "about_ne": "२०६५ जेठ १५ मा नेपाल सङ्घीय लोकतान्त्रिक गणतन्त्र घोषणा भएको सम्झनामा।",
+      "about_en": "Marks Nepal's declaration as a federal democratic republic on Jestha 15, 2065 BS.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "sambidhan-diwas": {
+      "about_ne": "२०७२ असोज ३ मा नेपालको संविधान जारी भएको दिन।",
+      "about_en": "The promulgation of Nepal's constitution on Asoj 3, 2072 BS.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "prajatantra-diwas": {
+      "about_ne": "२००७ फागुन ७ मा राणा शासन अन्त्य भई प्रजातन्त्र स्थापना भएको सम्झनामा।",
+      "about_en": "Marks the end of Rana rule and the coming of democracy on Falgun 7, 2007 BS.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "shahid-diwas": {
+      "about_ne": "प्रजातन्त्रका लागि बलिदान दिने शुक्रराज, धर्मभक्त, दशरथ चन्द र गङ्गालाल लगायत शहीदहरूको सम्झनामा।",
+      "about_en": "Honours the martyrs of the struggle for democracy — Shukraraj, Dharmabhakta, Dasharath Chand and Gangalal among them.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "loktantra-diwas": {
+      "about_ne": "२०६३ को जनआन्दोलनपछि लोकतन्त्र पुनर्स्थापना भएको सम्झनामा।",
+      "about_en": "Marks the restoration of democracy after the 2063 BS people's movement.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "prithvi-jayanti": {
+      "about_ne": "आधुनिक नेपालका एकीकरणकर्ता पृथ्वीनारायण शाहको जन्म जयन्ती, राष्ट्रिय एकता दिवस।",
+      "about_en": "The birth anniversary of Prithvi Narayan Shah, unifier of modern Nepal, kept as National Unity Day.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "akshaya-tritiya": {
+      "about_ne": "वैशाख शुक्ल तृतीया। यस दिन गरिएको दान, जप र पुण्यको फल अक्षय (कहिल्यै नघट्ने) हुन्छ भन्ने विश्वास।",
+      "about_en": "Baishakh Shukla Tritiya: what is given, chanted or done today is believed to bear undiminishing (akshaya) fruit.",
+      "vidhi_ne": [
+        "स्नान गरी जल भरिएको घ्याम्पो, सातु र अन्न दान गरिन्छ; नयाँ काम थाल्न शुभ मानिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, pots of water, sattu and grain are given; it is held a good day to begin new work."
+      ]
+    },
+    "anant-chaturdashi": {
+      "about_ne": "भाद्र शुक्ल चतुर्दशीमा अनन्त (विष्णु) को पूजा गरिन्छ।",
+      "about_en": "Bhadra Shukla Chaturdashi: Ananta, the endless form of Vishnu, is worshipped.",
+      "vidhi_ne": [
+        "चौध गाँठो पारेको अनन्त डोरो पूजा गरी पुरुषले दाहिने र महिलाले देब्रे हातमा बाँध्छन्।"
+      ],
+      "vidhi_en": [
+        "A cord with fourteen knots is worshipped and tied on the right arm by men and the left by women."
+      ]
+    },
+    "ganga-dashahara": {
+      "about_ne": "ज्येष्ठ शुक्ल दशमी, गङ्गा पृथ्वीमा अवतरण भएको दिन।",
+      "about_en": "Jestha Shukla Dashami, the day the Ganga descended to earth.",
+      "vidhi_ne": [
+        "नदीमा स्नान गरी गङ्गाको पूजा र दस प्रकारका वस्तु दान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A river bath, worship of the Ganga, and gifts of ten kinds."
+      ]
+    },
+    "ghantakarna-chaturdashi": {
+      "about_ne": "गठेमङ्गल। खेतीपातीमा दुःख दिने राक्षस घण्टाकर्णलाई गाउँबाहिर लगेर जलाइन्छ।",
+      "about_en": "Gathemangal: the demon Ghantakarna, who troubles the crops, is carried out of the settlement and burned.",
+      "vidhi_ne": [
+        "चोकचोकमा निगालो र परालको घण्टाकर्ण बनाई साँझ घिसार्दै लगेर जलाइन्छ; हातमा फलामको औंठी लगाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Effigies of reed and straw are built at crossroads, dragged out at dusk and burned; iron rings are worn for protection."
+      ]
+    },
+    "gaura-parwa": {
+      "about_ne": "सुदूरपश्चिमको गौरा पर्व। गौरा (पार्वती) र महेश्वरको पूजा गरिन्छ।",
+      "about_en": "Gaura Parva of the Far West, the worship of Gaura (Parvati) and Maheshwar.",
+      "vidhi_ne": [
+        "बिरुडा (पाँच प्रकारका भिजाएका गेडागुडी) चढाई गौराको मूर्ति बनाई पूजा गरिन्छ; देउडा नाचिन्छ।",
+        "महिलाहरूले दुबो धागो बाँध्छन्।"
+      ],
+      "vidhi_en": [
+        "Biruda — five soaked grains — is offered to a figure of Gaura and worshipped; deuda is danced.",
+        "Women tie a durva thread."
+      ]
+    },
+    "sithi-nakha": {
+      "about_ne": "नेवार समुदायको सिथि नखः; कुमार (कार्तिकेय) को जन्म दिन र इनार–पोखरी सफा गर्ने दिन।",
+      "about_en": "Sithi Nakha of the Newars: the birth of Kumar (Kartikeya), and the day wells and ponds are cleaned.",
+      "vidhi_ne": [
+        "इनार, पोखरी र ढुङ्गेधारा सफा गरिन्छ; वः (बारा) लगायत परिकार बनाई भोज गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Wells, ponds and stone spouts are cleaned, and feasts with wo (bara) are held."
+      ]
+    },
+    "english-new-year": {
+      "about_ne": "ग्रेगोरियन क्यालेन्डरको नयाँ वर्ष, जनवरी १।",
+      "about_en": "The Gregorian new year, January 1.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    "kheer-khane-din": {
+      "about_ne": "साउन १५, खीर खाने दिन।",
+      "about_en": "Shrawan 15, the day for eating kheer (rice pudding).",
+      "vidhi_ne": [
+        "घरमा खीर पकाई खाइन्छ।"
+      ],
+      "vidhi_en": [
+        "Kheer is cooked and eaten at home."
+      ]
+    },
+    "gunla-parva-arambha": {
+      "about_ne": "नेवार बौद्ध समुदायको पवित्र गुँला महिना सुरु; स्वयम्भू दर्शन र बाजा बजाइन्छ।",
+      "about_en": "The holy Newar Buddhist month of Gunla begins, with daily visits to Swayambhu and music.",
+      "vidhi_ne": [
+        "महिनाभर बिहान गुँला बाजा बजाउँदै स्वयम्भू परिक्रमा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Each morning of the month, processions with Gunla music circle Swayambhu."
+      ]
+    },
+    "baikuntha-chaturdashi": {
+      "about_ne": "कार्तिक शुक्ल चतुर्दशी, विष्णु र शिव दुवैको पूजा गरिने दिन।",
+      "about_en": "Kartik Shukla Chaturdashi, when both Vishnu and Shiva are worshipped.",
+      "vidhi_ne": [
+        "विष्णुलाई बेलपत्र र शिवलाई तुलसी चढाइने यो विशेष दिन हो; दीपदान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "On this one day bel leaves go to Vishnu and tulsi to Shiva; lamps are offered."
+      ]
+    },
+    "rishitarpani": {
+      "about_ne": "जनै पूर्णिमामा ऋषिहरूलाई तर्पण गरिन्छ।",
+      "about_en": "On Janai Purnima, water offerings are made to the sages.",
+      "vidhi_ne": [
+        "स्नान गरी सप्तऋषिलाई तर्पण गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, tarpan is offered to the seven sages."
+      ]
+    },
+    "dar-khane-din": {
+      "about_ne": "तीजको अघिल्लो दिन, महिलाहरू भेला भई दर खाने दिन।",
+      "about_en": "The eve of Teej, when women gather for the dar feast.",
+      "vidhi_ne": [
+        "माइती वा आफन्तकहाँ भेला भई मीठो भोजन र नाचगान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Women gather at their maternal homes or with relatives for a feast and dancing."
+      ]
+    },
+    "ghyu-chaku-khane-din": {
+      "about_ne": "माघे संक्रान्तिमा घिउ, चाकु, तिलको लड्डु र तरुल खाइन्छ।",
+      "about_en": "On Maghe Sankranti ghee, chaku, sesame laddu and yam are eaten.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    }
+  },
+  "families": [
+    {
+      "match": "snan",
+      "about_ne": "तीर्थस्नान गर्ने दिन वा अवधि।",
+      "about_en": "A day or season of holy bathing.",
+      "vidhi_ne": [
+        "तीर्थ वा नदीमा स्नान गरी पूजा र दान गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Bathing at a sacred river or pool, with worship and charity."
+      ]
+    },
+    {
+      "match": "khane-din",
+      "about_ne": "परम्परागत परिकार खाने दिन।",
+      "about_en": "A day for a traditional dish.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "mela",
+      "about_ne": "धार्मिक मेला।",
+      "about_en": "A religious fair.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "yatra",
+      "about_ne": "स्थानीय देवी–देवताको यात्रा। देवताको खट वा रथ परम्परागत मार्गमा घुमाइन्छ।",
+      "about_en": "A local yatra: the deity's palanquin or chariot is carried along its traditional route.",
+      "vidhi_ne": [
+        "स्थानीय गुठी र परम्परा अनुसार पूजा, बाजा र खट–रथ परिक्रमा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Worship, music and the procession follow the local guthi's tradition."
+      ]
+    },
+    {
+      "match": "punhi",
+      "about_ne": "नेवार समुदायको पूर्णिमा पर्व (पुन्ही)।",
+      "about_en": "A Newar full-moon festival (punhi).",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "ekadashi",
+      "about_ne": "एकादशी व्रत। भगवान विष्णुको आराधना गरिने हरेक पक्षको एघारौं तिथि।",
+      "about_en": "An Ekadashi vrata: the eleventh tithi of each fortnight, given to the worship of Vishnu.",
+      "vidhi_ne": [
+        "दशमीको साँझदेखि अन्न त्यागी एकादशीमा व्रत बसिन्छ र विष्णुको पूजा गरिन्छ।",
+        "द्वादशीमा सूर्योदयपछि पारण (व्रत खोल्ने) गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Grain is given up from Dashami evening; the Ekadashi fast is kept with worship of Vishnu.",
+        "The fast is broken (parana) on Dwadashi after sunrise."
+      ]
+    },
+    {
+      "match": "shraddha",
+      "about_ne": "पितृपक्षमा यही तिथिमा दिवंगत भएका पितृको श्राद्ध गरिने दिन।",
+      "about_en": "In Pitri Paksha, the shraddha for ancestors who died on this tithi.",
+      "vidhi_ne": [
+        "मध्याह्न (कुतप) कालमा पिण्ड, तिलोदक र तर्पण गरी ब्राह्मण भोजन गराइन्छ।"
+      ],
+      "vidhi_en": [
+        "Pinda, sesame water and tarpan are offered around midday (kutapa) and Brahmins are fed."
+      ]
+    },
+    {
+      "match": "sankranti",
+      "about_ne": "सूर्य नयाँ राशिमा प्रवेश गर्ने दिन (संक्रान्ति); महिनाको पहिलो दिन।",
+      "about_en": "The Sun enters a new sign (sankranti), opening the solar month.",
+      "vidhi_ne": [
+        "तीर्थस्नान, सूर्यलाई अर्घ्य र दान गर्नु पुण्यदायी मानिन्छ।"
+      ],
+      "vidhi_en": [
+        "A holy bath, water offered to the Sun, and charity are held meritorious."
+      ]
+    },
+    {
+      "match": "purnima",
+      "about_ne": "पूर्णिमा, शुक्ल पक्षको अन्तिम तिथि।",
+      "about_en": "Purnima, the full-moon tithi that ends the bright fortnight.",
+      "vidhi_ne": [
+        "व्रत बसी सत्यनारायणको पूजा र कथा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "A fast is kept with the Satyanarayan puja and story."
+      ]
+    },
+    {
+      "match": "aunshi",
+      "about_ne": "औंसी, कृष्ण पक्षको अन्तिम तिथि; पितृका लागि तर्पण गरिन्छ।",
+      "about_en": "Amavasya, the new-moon tithi that ends the dark fortnight; offerings are made to the ancestors.",
+      "vidhi_ne": [
+        "स्नान गरी पितृलाई तर्पण गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, tarpan is offered to the ancestors."
+      ]
+    },
+    {
+      "match": "lhosar",
+      "about_ne": "समुदायको नयाँ वर्ष (ल्होसार)।",
+      "about_en": "A community's new year (Lhosar).",
+      "vidhi_ne": [
+        "गुम्बामा पूजा, परम्परागत पोशाकमा नाचगान र भोज गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Prayers, dances in traditional dress, and feasts."
+      ]
+    },
+    {
+      "match": "jatra",
+      "about_ne": "स्थानीय देवी–देवताको जात्रा। देवताको खट वा रथ परम्परागत मार्गमा घुमाइन्छ।",
+      "about_en": "A local jatra: the deity's palanquin or chariot is carried along its traditional route.",
+      "vidhi_ne": [
+        "स्थानीय गुठी र परम्परा अनुसार पूजा, बाजा र खट–रथ परिक्रमा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "Worship, music and the procession follow the local guthi's tradition."
+      ]
+    },
+    {
+      "match": "jayanti",
+      "about_ne": "जन्म जयन्ती — यस दिन जन्मनुभएको व्यक्ति वा देवताको सम्झनामा।",
+      "about_en": "A jayanti: the birth anniversary of the person or deity it is named for.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "smriti",
+      "about_ne": "स्मृति दिवस — योगदान दिनुभएकाको सम्झनामा मनाइने दिन।",
+      "about_en": "A remembrance day for the person it is named for.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "vrat",
+      "about_ne": "व्रत। सम्बन्धित देवताको आराधना गर्दै उपवास बसिने दिन।",
+      "about_en": "A vrata: a day of fasting in worship of its deity.",
+      "vidhi_ne": [
+        "स्नान गरी व्रत बसी सम्बन्धित देवताको पूजा गरिन्छ।"
+      ],
+      "vidhi_en": [
+        "After bathing, a fast is kept with worship of the deity."
+      ]
+    },
+    {
+      "match": "puja",
+      "about_ne": "सम्बन्धित देवताको विशेष पूजा गरिने दिन।",
+      "about_en": "A day of special worship of its deity.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "diwas",
+      "about_ne": "राष्ट्रिय दिवस।",
+      "about_en": "A national observance day.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    },
+    {
+      "match": "-day",
+      "about_ne": "अन्तर्राष्ट्रिय वा राष्ट्रिय दिवस।",
+      "about_en": "An international or national observance day.",
+      "vidhi_ne": [],
+      "vidhi_en": []
+    }
+  ]
+}

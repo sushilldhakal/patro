@@ -29,7 +29,7 @@ export const calendarsAlignedWithNature: ArticleData = {
               { ne: "~४ वर्षमा", en: "~every 4 years" },
             ],
             [
-              { ne: "बि.सं. / हिन्दू", en: "BS / Hindu" },
+              { ne: "वि.सं. / हिन्दू", en: "BS / Hindu" },
               { ne: "अधिक मास", en: "An extra month" },
               { ne: "~३२.५ महिनामा", en: "~every 32.5 months" },
             ],

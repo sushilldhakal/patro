@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu/vastu";
 import { CX, CY } from "@vedic-patro/domain/vastu/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK } from "@vedic-patro/features/vastu";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VastuPurushaWheel as Shared } from "@vedic-patro/ui/kit/jyotish";
+import { ZoomStageInsets } from "@vedic-patro/ui/kit/panchanga";
 
 const center = { cx: CX, cy: CY };
 const marks = { good: VASTU_STATUS_MARK.good, bad: VASTU_STATUS_MARK.bad };
@@ -20,7 +22,9 @@ export function VastuPurushaWheel({
   centerContent?: ReactNode;
   headingDeg?: number | null;
 }) {
+  const insets = useSafeAreaInsets();
   return (
+    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom }}>
     <Shared
       size={size}
       selected={selected}
@@ -31,6 +35,7 @@ export function VastuPurushaWheel({
       ink={VASTU_INK}
       marks={marks}
     />
+    </ZoomStageInsets>
   );
 }
 

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Optional
 from zoneinfo import ZoneInfo
 
@@ -11,6 +14,13 @@ from engine.calendar.bikram_sambat import bs_to_gregorian
 from engine.calendar.bs_year import bs_solar_year_for_gregorian_year
 from engine.panchanga.lunar_month import find_festival_in_lunar_month
 from engine.calendar.sankranti import find_sankranti
+
+
+@lru_cache(maxsize=1)
+def _rules_by_id() -> dict[str, dict[str, Any]]:
+    """The festival rules, for a rule that ends on another festival's day (``end_at``)."""
+    with open(Path(__file__).with_name("festival_rules_v3.json"), encoding="utf-8") as f:
+        return json.load(f)["festivals"]
 
 
 def _resolve_adhik_policy(rule: dict[str, Any], gregorian_year: int) -> str:
@@ -142,6 +152,15 @@ def compute_festival_dates(
 
     if start is None:
         return None
+
+    # A span that closes on another festival's day (Tihar: Laxmi Puja → Bhai
+    # Tika) rather than after a fixed count — tithi kshaya/vriddhi make the
+    # count 4, 5 or 6 days.
+    if rule.get("end_at"):
+        end_rule = _rules_by_id().get(rule["end_at"])
+        ends = compute_festival_dates(rule["end_at"], end_rule, gregorian_year, location) if end_rule else None
+        if ends is not None and ends[0] >= start:
+            return start, ends[0]
 
     end = start + timedelta(days=duration - 1)
     return start, end

@@ -166,7 +166,8 @@ export function useAuthDialog({
       email: t("auth.email"),
       emailPlaceholder: t("auth.email_placeholder"),
       password: t("auth.password"),
-      passwordPlaceholder: mode === "signup" ? t("auth.password_hint") : "••••••••",
+      /* Dots in an empty field read as a password already filled in. */
+      passwordPlaceholder: mode === "signup" ? t("auth.password_hint") : undefined,
       confirmPassword: t("auth.confirm_password"),
       forgotPassword: t("auth.forgot_password"),
       newHere: t("auth.new_here"),

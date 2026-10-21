@@ -13,7 +13,7 @@ import { illustration } from "@vedic-patro/design-tokens";
 /**
  * अयन चलन — how the *tropical* spring-equinox point (सायन ०°, "Point 0") slowly
  * regresses through the FIXED *sidereal* zodiac (निरयन राशि), and why that is the
- * real reason the ऋतु drift against the बि.सं. months.
+ * real reason the ऋतु drift against the वि.सं. months.
  *
  * The scene is a pseudo-3D view of the ecliptic plane seen from slightly above:
  *   • a tilted ring of the 12 sidereal राशि (FIXED — anchored to the stars)
@@ -23,7 +23,7 @@ import { illustration } from "@vedic-patro/design-tokens";
  *   • Earth at the centre with its tilted N–S axis
  *   • the red विषुव/अयनान्त cross (Spring/Fall equinox + Summer/Winter solstice)
  *
- * The cross + equator rotate with the year slider (बि.सं. ० → +26,000) at the
+ * The cross + equator rotate with the year slider (वि.सं. ० → +26,000) at the
  * precession rate (≈ 50.29″/yr ≈ 1° / 72 yr); the राशि ring stays put. Watch the
  * spring equinox slide from राशि to राशि — one full lap ≈ 25,772 years.
  */
@@ -37,9 +37,9 @@ const RATE = 50.2879 / 3600;
 const EPS = 23.4367;
 /* one full precession lap (years) */
 const CYCLE = Math.round(360 / RATE); // ≈ 25,772
-/* बि.सं. year where Lahiri ayanāṁśa = 0 (≈ 285 CE) → equinox at मेष ०° */
+/* वि.सं. year where Lahiri ayanāṁśa = 0 (≈ 285 CE) → equinox at मेष ०° */
 const BS_AYAN_ZERO = 342;
-/* slider runs from the very start of बि.सं. to one full lap later */
+/* slider runs from the very start of वि.सं. to one full lap later */
 const Y_MIN = 0;
 const Y_MAX = CYCLE;
 
@@ -90,7 +90,7 @@ export function EquinoxPrecession() {
   const fmtDeg = (a: number) =>
     `${N(Math.floor(a))}°${N(String(Math.round((a - Math.floor(a)) * 60)).padStart(2, "0"))}′`;
 
-  const nowBs = new Date().getFullYear() + 57; // ≈ current बि.सं.
+  const nowBs = new Date().getFullYear() + 57; // ≈ current वि.सं.
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
@@ -102,7 +102,7 @@ export function EquinoxPrecession() {
       const dt = (now - last) / 1000;
       last = now;
       setYear((y) => {
-        const next = y + dt * 320; // ~320 बि.सं. years / second
+        const next = y + dt * 320; // ~320 वि.सं. years / second
         return next > Y_MAX ? Y_MIN : next;
       });
       raf.current = requestAnimationFrame(tick);
@@ -112,10 +112,10 @@ export function EquinoxPrecession() {
   }, [playing]);
 
   const model = useMemo(() => {
-    // sidereal longitude of the spring equinox at this बि.सं. year
+    // sidereal longitude of the spring equinox at this वि.सं. year
     const eqSid = norm360((BS_AYAN_ZERO - year) * RATE);
     const ayanamsha = (year - BS_AYAN_ZERO) * RATE; // shift from मेष ०°
-    const sinceBs0 = year * RATE; // shift since बि.सं. ०
+    const sinceBs0 = year * RATE; // shift since वि.सं. ०
     const alphaEq = alphaOf(eqSid);
 
     // celestial equator polyline: ecliptic circle tilted by ε about the equinox axis

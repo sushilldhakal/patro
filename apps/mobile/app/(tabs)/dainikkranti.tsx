@@ -129,26 +129,16 @@ export default function DainikKrantiScreen() {
       />
 
       <View className={cn(dainikKrantiClasses.monthHead, "gap-1")}>
-        <View className={dainikKrantiClasses.monthTitleRow}>
-          <Text className={dainikKrantiClasses.monthTitle} style={nepaliTextStyle()}>
-            {header.title}
+        <Text className={dainikKrantiClasses.monthTitle} style={nepaliTextStyle()}>
+          {header.title}
+        </Text>
+        {/* One meta line under the title: as separate texts beside it they wrapped
+            one by one and the "·" separators landed at the starts of lines. */}
+        {header.yearBs || header.ritu || header.dayCount ? (
+          <Text className={dainikKrantiClasses.metaText} style={nepaliTextStyle()}>
+            {[header.yearBs, header.ritu, header.dayCount].filter(Boolean).join(" · ")}
           </Text>
-          {header.yearBs ? (
-            <Text className={dainikKrantiClasses.metaText} style={nepaliTextStyle()}>
-              {header.yearBs}
-            </Text>
-          ) : null}
-          {header.ritu ? (
-            <Text className={dainikKrantiClasses.metaText} style={nepaliTextStyle()}>
-              · {header.ritu}
-            </Text>
-          ) : null}
-          {header.dayCount ? (
-            <Text className={dainikKrantiClasses.metaSmall} style={nepaliTextStyle()}>
-              · {header.dayCount}
-            </Text>
-          ) : null}
-        </View>
+        ) : null}
         <Text className={dainikKrantiClasses.metaText} style={nepaliTextStyle()}>
           {header.intro}
         </Text>

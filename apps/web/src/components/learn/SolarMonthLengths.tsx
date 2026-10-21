@@ -1,5 +1,5 @@
 /**
- * Why a बि.सं. month is 29–32 days long, drawn from the real calendar.
+ * Why a वि.सं. month is 29–32 days long, drawn from the real calendar.
  *
  * A सौर मास is not a count of days — it is `३०°` of the Sun's travel along the
  * राशि belt, from one सङ्क्रान्ति to the next. The Sun does not travel at a

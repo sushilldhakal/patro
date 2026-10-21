@@ -1,5 +1,6 @@
 import { createContext, memo, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { Animated, PanResponder, View, type ImageSourcePropType } from "react-native";
+import { Animated, View, type ImageSourcePropType } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Svg, {
   Circle,
   ClipPath,
@@ -172,15 +173,7 @@ function clampZoom(z: number): number {
   return Math.max(0.55, Math.min(14, z));
 }
 
-type LayoutMetrics = { w: number; h: number; pageX: number; pageY: number };
-
-function touchInView(
-  pageX: number,
-  pageY: number,
-  layout: LayoutMetrics,
-): { x: number; y: number } {
-  return { x: pageX - layout.pageX, y: pageY - layout.pageY };
-}
+type LayoutMetrics = { w: number; h: number };
 
 type PinchGesture = {
   dist0: number;
@@ -192,20 +185,6 @@ type PinchGesture = {
   centroid0x: number;
   centroid0y: number;
 };
-
-function touchCentroidInView(
-  touches: readonly { pageX: number; pageY: number }[],
-  pageX: number,
-  pageY: number,
-): { x: number; y: number } | null {
-  if (touches.length < 2) return null;
-  const t0 = touches[0]!;
-  const t1 = touches[1]!;
-  return {
-    x: (t0.pageX + t1.pageX) / 2 - pageX,
-    y: (t0.pageY + t1.pageY) / 2 - pageY,
-  };
-}
 
 /** Keep the point under `focal` fixed while zoom changes (scale is around view center). */
 function panForFocalZoom(
@@ -252,13 +231,6 @@ function applyPinchTransform(
       y: p.y + (centroid.y - pinch.centroid0y),
     },
   };
-}
-
-function touchPageDistance(touches: readonly { pageX: number; pageY: number }[]): number {
-  if (touches.length < 2) return 0;
-  const t0 = touches[0]!;
-  const t1 = touches[1]!;
-  return Math.hypot(t1.pageX - t0.pageX, t1.pageY - t0.pageY);
 }
 
 function segNakFill(opts: { alt?: boolean; hot?: boolean; sel?: boolean }): string {
@@ -329,7 +301,10 @@ function RingLabel({
               <TSpan
                 key={`${row}-${i}`}
                 x={CX}
-                dy={i > 0 ? 15 * fontSize : -0.55 * (stack.length - 1) * fontSize}
+                /* 1.1em, as on web. `15 * fontSize` flung the second word
+                   (“फाल्गुनी”) ~165 units off the ring and left “उत्तर” /
+                   “पूर्व” stranded on their own. */
+                dy={i > 0 ? 1.1 * fontSize : -0.55 * (stack.length - 1) * fontSize}
               >
                 {row}
               </TSpan>
@@ -385,8 +360,7 @@ function WheelChartImpl({
 
   const { pick, gregMonths } = useWheelChartLabels();
   const lineTarget = lineTargetProp ?? 1;
-  const viewRef = useRef<View>(null);
-  const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0, pageX: 0, pageY: 0 });
+  const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0 });
   const [layoutBox, setLayoutBox] = useState({ w: 0, h: 0 });
   const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
   const spinRef = useRef(spin);
@@ -397,6 +371,19 @@ function WheelChartImpl({
   zoomRef.current = zoom;
   const pinchRef = useRef<PinchGesture | null>(null);
   const pinchingRef = useRef(false);
+  /* Live pinch / pan, applied straight to the transform. Committing every
+     finger-move to `zoom` / `pan` state re-rendered the whole SVG per event —
+     and in fullscreen there were two of them — so pinch stalled there. The
+     parent's state is set once, on release. */
+  const liveZoom = useRef(new Animated.Value(zoom)).current;
+  const liveX = useRef(new Animated.Value(pan.x)).current;
+  const liveY = useRef(new Animated.Value(pan.y)).current;
+  const pendingRef = useRef<{ zoom: number; x: number; y: number } | null>(null);
+  useLayoutEffect(() => {
+    liveZoom.setValue(zoom);
+    liveX.setValue(pan.x);
+    liveY.setValue(pan.y);
+  }, [zoom, pan.x, pan.y, liveZoom, liveX, liveY]);
   /* Live drag rotation, degrees, applied as a transform on the drawing — the
      wheel is ~900 SVG nodes, so re-rendering it per finger-move (what setting
      `spin` state did) starved the JS thread and made the wheel lag and drop
@@ -417,29 +404,6 @@ function WheelChartImpl({
     | null
   >(null);
 
-  const syncLayout = useCallback(() => {
-    viewRef.current?.measureInWindow((x, y, mw, mh) => {
-      const cur = layoutRef.current;
-      layoutRef.current = {
-        w: cur.w > 0 ? cur.w : mw,
-        h: cur.h > 0 ? cur.h : mh,
-        pageX: x,
-        pageY: y,
-      };
-    });
-  }, []);
-
-  const touchFromEvent = useCallback(
-    (evt: { nativeEvent: { locationX: number; locationY: number; pageX: number; pageY: number } }) => {
-      const layout = layoutRef.current;
-      if (layout.w > 0 && layout.h > 0 && (layout.pageX !== 0 || layout.pageY !== 0)) {
-        return touchInView(evt.nativeEvent.pageX, evt.nativeEvent.pageY, layout);
-      }
-      return { x: evt.nativeEvent.locationX, y: evt.nativeEvent.locationY };
-    },
-    [],
-  );
-
   const angleAt = useCallback((locationX: number, locationY: number) => {
     const { w, h } = layoutRef.current;
     if (w <= 0 || h <= 0) return 0;
@@ -448,115 +412,115 @@ function WheelChartImpl({
     return (Math.atan2(locationY - cy, locationX - cx) * 180) / Math.PI;
   }, []);
 
-  const wheelPan = useMemo(
-    () =>
-      PanResponder.create({
-        /* Spin and pinch start after the finger has actually moved. A tap on a
-           graha, rashi, or nakshatra does not select anything — that lives in
-           the planet toolbar. */
-        onStartShouldSetPanResponder: () => false,
-        onStartShouldSetPanResponderCapture: () => false,
-        onMoveShouldSetPanResponder: (evt, gs) =>
-          (evt.nativeEvent.touches?.length ?? 0) >= 2 || Math.hypot(gs.dx, gs.dy) > 10,
-        onMoveShouldSetPanResponderCapture: (evt, gs) =>
-          (evt.nativeEvent.touches?.length ?? 0) >= 2 || Math.hypot(gs.dx, gs.dy) > 10,
-        onPanResponderTerminationRequest: () => false,
-        onPanResponderGrant: (evt) => {
-          syncLayout();
-          pinchingRef.current = false;
-          pinchRef.current = null;
-          const { w, h } = layoutRef.current;
-          const touch = touchFromEvent(evt);
-          const { x, y } = untransformTouch(touch.x, touch.y, w, h, panRef.current, zoomRef.current);
-          if (zoomRef.current > 1) {
-            dragRef.current = {
-              mode: "p",
-              pan0x: panRef.current.x,
-              pan0y: panRef.current.y,
-              moved: false,
-            };
-          } else {
-            dragRef.current = {
-              mode: "r",
-              spin0: spinRef.current,
-              angle0: angleAt(x, y),
-              moved: false,
-              latest: spinRef.current,
-            };
-          }
-        },
-        onPanResponderMove: (evt, gestureState) => {
-          const touches = evt.nativeEvent.touches;
-          const layout = layoutRef.current;
-          if (touches.length >= 2 && layout.w > 0) {
-            pinchingRef.current = true;
-            const rotating = dragRef.current;
-            if (rotating?.mode === "r" && rotating.moved) onSpin(rotating.latest);
-            dragRef.current = null;
-            const dist = touchPageDistance(touches);
-            const centroid = touchCentroidInView(touches, layout.pageX, layout.pageY);
-            if (dist <= 0 || !centroid) return;
-            if (!pinchRef.current) {
-              pinchRef.current = {
-                dist0: dist,
-                zoom0: zoomRef.current,
-                pan0x: panRef.current.x,
-                pan0y: panRef.current.y,
-                focalX: centroid.x,
-                focalY: centroid.y,
-                centroid0x: centroid.x,
-                centroid0y: centroid.y,
-              };
-              return;
-            }
-            const next = applyPinchTransform(pinchRef.current, dist, centroid, layout.w, layout.h);
-            onZoom(next.zoom);
-            onPan(next.pan.x, next.pan.y);
-            return;
-          }
+  const commitLive = useCallback(() => {
+    const done = pendingRef.current;
+    pendingRef.current = null;
+    if (!done) return;
+    if (done.zoom !== zoomRef.current) onZoom(done.zoom);
+    onPan(done.x, done.y);
+  }, [onPan, onZoom]);
 
-          pinchRef.current = null;
-          const drag = dragRef.current;
-          if (!drag) return;
-
-          if (drag.mode === "p") {
-            if (Math.abs(gestureState.dx) > 3 || Math.abs(gestureState.dy) > 3) drag.moved = true;
-            onPan(drag.pan0x + gestureState.dx, drag.pan0y + gestureState.dy);
-            return;
-          }
-
-          const { w, h } = layoutRef.current;
-          const touch = touchFromEvent(evt);
-          const { x, y } = untransformTouch(touch.x, touch.y, w, h, panRef.current, zoomRef.current);
-          const angle = angleAt(x, y);
-          let delta = angle - drag.angle0;
-          if (delta > 180) delta -= 360;
-          if (delta < -180) delta += 360;
-          if (Math.abs(delta) > 1.2) drag.moved = true;
-          drag.latest = drag.spin0 + delta;
-          /* Spin increases counter-clockwise on screen (see `pol`), CSS rotate
-             is clockwise — hence the sign. */
-          dragRot.setValue(-delta);
-        },
-        onPanResponderRelease: () => {
-          const drag = dragRef.current;
-          const wasPinching = pinchingRef.current;
-          if (drag?.mode === "r" && drag.moved && !wasPinching) onSpin(drag.latest);
-          dragRef.current = null;
-          pinchRef.current = null;
-          pinchingRef.current = false;
-        },
-        onPanResponderTerminate: () => {
-          const drag = dragRef.current;
-          if (drag?.mode === "r" && drag.moved) onSpin(drag.latest);
+  /* Gesture-handler gestures, not the JS responder: the responder never saw a
+     touch inside the fullscreen Modal, and on the panchanga page the scroll view
+     took a two-finger drag before the wheel could claim it, so pinch did nothing
+     on phones and tablets alike. Pinch zooms about the fingers; one finger spins
+     the wheel at 1x and pans it once zoomed in. Both drive Animated values — the
+     real `zoom` / `pan` / `spin` are committed once, on release. */
+  const wheelGesture = useMemo(() => {
+    const pinch = Gesture.Pinch()
+      .runOnJS(true)
+      .onStart((e) => {
+        pinchingRef.current = true;
+        const rotating = dragRef.current;
+        if (rotating?.mode === "r") {
+          if (rotating.moved) onSpin(rotating.latest);
           else dragRot.setValue(0);
-          dragRef.current = null;
-          pinchRef.current = null;
-          pinchingRef.current = false;
-        },
-      }),
-    [angleAt, dragRot, onPan, onSpin, onZoom, syncLayout, touchFromEvent],
-  );
+        }
+        dragRef.current = null;
+        const from = pendingRef.current ?? { zoom: zoomRef.current, ...panRef.current };
+        pinchRef.current = {
+          dist0: 1,
+          zoom0: from.zoom,
+          pan0x: from.x,
+          pan0y: from.y,
+          focalX: e.focalX,
+          focalY: e.focalY,
+          centroid0x: e.focalX,
+          centroid0y: e.focalY,
+        };
+      })
+      .onUpdate((e) => {
+        const p = pinchRef.current;
+        const { w, h } = layoutRef.current;
+        /* As a finger lifts, Android sends one more update whose focal point is
+           the finger left behind — following it threw the wheel sideways. */
+        if (!p || w <= 0 || h <= 0 || e.numberOfPointers < 2) return;
+        /* `scale` is the finger spread relative to where the pinch began. */
+        const next = applyPinchTransform(p, e.scale, { x: e.focalX, y: e.focalY }, w, h);
+        pendingRef.current = { zoom: next.zoom, x: next.pan.x, y: next.pan.y };
+        liveZoom.setValue(next.zoom);
+        liveX.setValue(next.pan.x);
+        liveY.setValue(next.pan.y);
+      })
+      .onFinalize(() => {
+        if (!pinchingRef.current) return;
+        commitLive();
+        pinchRef.current = null;
+        pinchingRef.current = false;
+      });
+
+    const drag = Gesture.Pan()
+      .runOnJS(true)
+      .minDistance(10)
+      .onStart((e) => {
+        if (pinchingRef.current || e.numberOfPointers > 1) return;
+        if (zoomRef.current > 1) {
+          dragRef.current = { mode: "p", pan0x: panRef.current.x, pan0y: panRef.current.y, moved: false };
+          return;
+        }
+        const { w, h } = layoutRef.current;
+        /* Angle from where the finger went down, not where the drag was recognised. */
+        const { x, y } = untransformTouch(e.x - e.translationX, e.y - e.translationY, w, h, panRef.current, zoomRef.current);
+        dragRef.current = { mode: "r", spin0: spinRef.current, angle0: angleAt(x, y), moved: false, latest: spinRef.current };
+      })
+      .onUpdate((e) => {
+        const d = dragRef.current;
+        if (!d || pinchingRef.current || e.numberOfPointers > 1) return;
+        if (d.mode === "p") {
+          if (Math.abs(e.translationX) > 3 || Math.abs(e.translationY) > 3) d.moved = true;
+          const x = d.pan0x + e.translationX;
+          const y = d.pan0y + e.translationY;
+          pendingRef.current = { zoom: zoomRef.current, x, y };
+          liveX.setValue(x);
+          liveY.setValue(y);
+          return;
+        }
+        const { w, h } = layoutRef.current;
+        const { x, y } = untransformTouch(e.x, e.y, w, h, panRef.current, zoomRef.current);
+        let delta = angleAt(x, y) - d.angle0;
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+        if (Math.abs(delta) > 1.2) d.moved = true;
+        d.latest = d.spin0 + delta;
+        /* Spin increases counter-clockwise on screen (see `pol`), CSS rotate
+           is clockwise — hence the sign. */
+        dragRot.setValue(-delta);
+      })
+      .onFinalize(() => {
+        const d = dragRef.current;
+        dragRef.current = null;
+        if (!d) return;
+        if (d.mode === "r") {
+          if (d.moved) onSpin(d.latest);
+          else dragRot.setValue(0);
+          return;
+        }
+        commitLive();
+      });
+
+    return Gesture.Simultaneous(pinch, drag);
+  }, [angleAt, commitLive, dragRot, liveX, liveY, liveZoom, onSpin]);
+
 
   const pol = useCallback(
     (L: number, rad: number): [number, number] => {
@@ -1053,21 +1017,20 @@ function WheelChartImpl({
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
   return (
+    <GestureDetector gesture={wheelGesture}>
     <View
-      ref={viewRef}
+      collapsable={false}
       style={{ flex: 1 }}
       onLayout={(e) => {
         const { width: w, height: h } = e.nativeEvent.layout;
-        layoutRef.current = { ...layoutRef.current, w, h };
+        layoutRef.current = { w, h };
         setLayoutBox({ w, h });
-        syncLayout();
       }}
-      {...wheelPan.panHandlers}
     >
-      <View
+      <Animated.View
         style={{
           flex: 1,
-          transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
+          transform: [{ translateX: liveX }, { translateY: liveY }, { scale: liveZoom }],
         }}
       >
         {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
@@ -1101,8 +1064,9 @@ function WheelChartImpl({
         {markerNodes}
       </Svg>
         </Animated.View>
-      </View>
+      </Animated.View>
     </View>
+    </GestureDetector>
   );
 }
 

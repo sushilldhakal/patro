@@ -3,7 +3,6 @@ import { GrahaStatusBadges } from "./GrahaStatusBadges";
 import {
   useBalamSection,
   useDinVisheshSection,
-  useFestivalsSection,
   useMuhurtaTimingsSection,
   useNivasShoolSection,
   usePadaSection,
@@ -368,18 +367,73 @@ export function NivasShoolSection({
   );
 }
 
+type DinVishesh = ReturnType<typeof useDinVisheshSection>;
+
+function SaitBlock({ row }: { row: NonNullable<DinVishesh["festivals"][number]["sait"]> }) {
+  return (
+    <div className={sc.festivalSait}>
+      <p className={sc.festivalSaitLabel}>{row.label}</p>
+      {row.times.map((slot) => (
+        <div key={slot.key} className={sc.festivalSaitRow}>
+          <span className={sc.festivalSaitTime}>{slot.time}</span>
+          {slot.detail ? <span className={sc.festivalSaitDetail}>{slot.detail}</span> : null}
+        </div>
+      ))}
+      {row.facing ? <p className={sc.festivalSaitFacing}>{row.facing}</p> : null}
+    </div>
+  );
+}
+
+/** दिन विशेष: one card per festival (what, when, how, sait), then the day's other markers. */
 export function DinVisheshSection({ p }: { p: PanchangaDay }) {
-  const labels = useDinVisheshSection(p);
-  if (!labels.length) return null;
+  const day = useDinVisheshSection(p);
+  if (day.empty) return null;
 
   return (
     <PanchangaSection titleKey="sections.special_observances">
-      <div className={panchangaCardGrid}>
-        {labels.map((label) => (
-          <span key={label} className={sc.chipFestival}>
-            {label}
-          </span>
+      <div className={sc.festivalList}>
+        {day.festivals.map((f) => (
+          <article key={f.id} className={sc.festivalCard}>
+            <div className={sc.festivalHead}>
+              <h3 className={sc.festivalName}>{f.name}</h3>
+              {f.holiday ? <span className={sc.festivalBadge}>{day.copy.holiday}</span> : null}
+            </div>
+            {f.when ? <p className={sc.festivalWhen}>{f.when}</p> : null}
+            {f.about ? <p className={sc.festivalAbout}>{f.about}</p> : null}
+            {f.sait ? <SaitBlock row={f.sait} /> : null}
+            {f.steps.length ? (
+              <div className={sc.festivalSteps}>
+                <p className={sc.festivalSubheading}>{day.copy.vidhi}</p>
+                <ol className={sc.festivalSteps}>
+                  {f.steps.map((step) => (
+                    <li key={step.key} className={sc.festivalStep}>
+                      <span className={sc.festivalStepNumber}>{step.number}</span>
+                      <span className={sc.festivalStepText}>{step.text}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+          </article>
         ))}
+        {day.ceremonies.length ? (
+          <article className={sc.festivalCard}>
+            <h3 className={sc.festivalName}>{day.copy.ceremonies}</h3>
+            {day.ceremonies.map((row) => (
+              <SaitBlock key={row.key} row={row} />
+            ))}
+          </article>
+        ) : null}
+        {day.copy.note ? <p className={sc.festivalNote}>{day.copy.note}</p> : null}
+        {day.markers.length ? (
+          <div className={sc.festivalMarkers}>
+            {day.markers.map((label) => (
+              <span key={label} className={sc.chipFestival}>
+                {label}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </PanchangaSection>
   );
@@ -435,22 +489,5 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
         ))}
       </div>
     </div>
-  );
-}
-
-export function FestivalsSection({ p }: { p: PanchangaDay }) {
-  const festivals = useFestivalsSection(p);
-  if (!festivals.length) return null;
-
-  return (
-    <PanchangaSection titleKey="sections.festivals">
-      <div className={panchangaCardGrid}>
-        {festivals.map((f) => (
-          <span key={f.id} className={f.holiday ? sc.chipHoliday : sc.chipFestival}>
-            {f.name}
-          </span>
-        ))}
-      </div>
-    </PanchangaSection>
   );
 }

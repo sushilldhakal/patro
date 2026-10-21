@@ -7,7 +7,7 @@
  */
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchFestivals, fetchHolidays, holidayKeys } from "@vedic-patro/api-client";
+import { fetchFestivals, fetchHolidays, holidayKeys, type LocationParams } from "@vedic-patro/api-client";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
@@ -50,20 +50,29 @@ export type HolidaysPage = {
   gregorianRange?: { start: string; end: string };
 };
 
-export function useHolidaysPage({ year, era }: { year: number; era: Era }): HolidaysPage {
+export function useHolidaysPage({
+  year,
+  era,
+  location,
+}: {
+  year: number;
+  era: Era;
+  /** Observer location: lunar festival dates follow it outside Nepal. */
+  location?: LocationParams;
+}): HolidaysPage {
   const { t, lang, digits } = useLocale();
   const [tab, setTab] = useState<HolidaysTab>("holidays");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<HolidaySort>(null);
 
   const holidaysQ = useQuery({
-    queryKey: holidayKeys.holidays(year, era),
-    queryFn: () => fetchHolidays(year, era),
+    queryKey: holidayKeys.holidays(year, era, location),
+    queryFn: () => fetchHolidays(year, era, location),
     staleTime: HOUR,
   });
   const festivalsQ = useQuery({
-    queryKey: holidayKeys.festivals(year, era),
-    queryFn: () => fetchFestivals(year, { era }),
+    queryKey: holidayKeys.festivals(year, era, undefined, location),
+    queryFn: () => fetchFestivals(year, { era, location }),
     staleTime: HOUR,
   });
 

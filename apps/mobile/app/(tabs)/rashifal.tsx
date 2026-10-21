@@ -55,10 +55,13 @@ export default function RashifalScreen() {
   return (
     <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
       <View className="gap-8">
-        <PageHeader icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />} title={page.copy.title} subtitle={page.copy.subtitle} />
-        <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
-          {page.copy.eyebrow}
-        </Text>
+        {/* Breadcrumb above the title, as on the कुण्डली pages; under it, it read as part of the subtitle. */}
+        <View className="gap-1.5">
+          <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
+            {page.copy.eyebrow}
+          </Text>
+          <PageHeader icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />} title={page.copy.title} subtitle={page.copy.subtitle} />
+        </View>
 
         <View className={rashifalClasses.navWrap}>
           <PanchangaDateNav
@@ -83,18 +86,21 @@ export default function RashifalScreen() {
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               accessibilityLabel={label}
+              /* Every tab names itself: three bare calendar icons could not be told apart. */
               className={cn(
-                "relative min-w-0 flex-row items-center justify-center",
+                "relative min-w-0 items-center justify-center gap-0.5",
                 rashifalClasses.tab,
-                active ? cn(rashifalClasses.tabGapActive, rashifalClasses.tabActiveSurface) : rashifalClasses.tabGapIdle,
+                active && rashifalClasses.tabActiveSurface,
               )}
             >
-              <Ionicons name={RASHIFAL_PERIOD_ICON[id]} size={20} color={active ? colors.foreground : colors.mutedForeground} />
-              {active ? (
-                <Text className={rashifalClasses.tabLabel} style={nepaliTextStyle()} numberOfLines={1}>
-                  {label}
-                </Text>
-              ) : null}
+              <Ionicons name={RASHIFAL_PERIOD_ICON[id]} size={18} color={active ? colors.foreground : colors.mutedForeground} />
+              <Text
+                className={cn(rashifalClasses.tabLabel, !active && "font-medium text-muted-foreground")}
+                style={nepaliTextStyle()}
+                numberOfLines={1}
+              >
+                {label}
+              </Text>
               {active ? <View className={rashifalClasses.tabIndicator} /> : null}
             </Pressable>
           ))}

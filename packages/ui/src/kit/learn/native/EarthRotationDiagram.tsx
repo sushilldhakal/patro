@@ -1,5 +1,6 @@
 import { useId } from "react";
-import Svg, { Circle, ClipPath, G, Image, Line, Marker, Path, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, ClipPath, G, Image, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
+import { markerArrowhead } from "./arrowhead";
 import { useColorScheme } from "nativewind";
 import { mobileRoles, withAlpha } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
@@ -21,15 +22,17 @@ export function EarthRotationDiagram({ globeSrc }: EarthRotationDiagramProps) {
   const amber = roles.warning;
   const teal = roles.success;
   const clipId = `earth-clip-${useId().replace(/:/g, "")}`;
-  const markerId = `ss-rot-arrow-${useId().replace(/:/g, "")}`;
   const { cx, cy } = earthRotation;
   const d = EARTH_ROT_R * 2;
+  /* The curve is `M cx-38,cy+44 A 46 46 0 1 1 cx+38,cy+44`: an arc over the top whose centre sits
+     sqrt(46² - 38²) above the chord. Its head points along the clockwise tangent at the end. */
+  const arcCy = cy + 44 - Math.sqrt(46 * 46 - 38 * 38);
+  const endX = cx + 38;
+  const endY = cy + 44;
+  const rotationHead = markerArrowhead(endX, endY, Math.atan2(endX - cx, -(endY - arcCy)), 2.4, 7, 7, 1);
 
   return (
     <Svg viewBox={`0 0 ${EARTH_ROT_W} ${EARTH_ROT_H}`} width="100%" height={220} accessibilityElementsHidden>
-      <Marker id={markerId} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-        <Path d="M0,0 L7,3.5 L0,7 Z" fill={amber} />
-      </Marker>
       <ClipPath id={clipId}>
         <Circle cx={cx} cy={cy} r={EARTH_ROT_R} />
       </ClipPath>
@@ -70,7 +73,8 @@ export function EarthRotationDiagram({ globeSrc }: EarthRotationDiagramProps) {
         strokeWidth={2}
         strokeLinecap="round"
       />
-      <Path d={earthRotation.curve} fill="none" stroke={amber} strokeWidth={2.4} strokeLinecap="round" markerEnd={`url(#${markerId})`} />
+      <Path d={earthRotation.curve} fill="none" stroke={amber} strokeWidth={2.4} strokeLinecap="round" />
+      <Polygon points={rotationHead} fill={amber} />
       <SvgText x={earthRotation.label.x} y={earthRotation.label.y} fill={teal} fontSize={14} fontWeight="600" textAnchor="middle">
         {t("learn.west_east")} · ~{digits(24)} {t("learn.hours")}
       </SvgText>

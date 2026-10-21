@@ -1,10 +1,13 @@
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
-import { Stack, useRootNavigationState, useRouter } from "expo-router";
+import { Stack, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
+import * as Sentry from "@sentry/react-native";
 import { deviceStore } from "@/lib/device-store";
 import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { tFor } from "@vedic-patro/i18n/runtime";
+import { light, mobileTypeScale, radius, space } from "@vedic-patro/design-tokens";
 import { QueryClient } from "@tanstack/react-query";
 import { ApiError, TimeoutError } from "@vedic-patro/api-client";
 import { OfflineMissError } from "@/lib/offline/offline-http";
@@ -39,6 +42,43 @@ import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
+import * as Updates from "expo-updates";
+import { Observe, ObserveRoot } from "@/lib/observe";
+
+/*
+ * EAS Observe: startup timing (TTR is measured by `ObserveRoot.wrap` below, TTI by the
+ * `markInteractive` call once the first screen is up), per-route timing through the Expo Router
+ * integration, and unhandled JS errors as `exception` events — the closest thing to a crash
+ * reason we get from TestFlight testers. Configured at module scope: the integration cannot be
+ * switched on after a screen has mounted. Events are tagged with the update channel, so preview
+ * (TestFlight) and production (store) read apart in the dashboard. Debug builds do not dispatch.
+ */
+/*
+ * Sentry: crashes and JS errors with the file and line (source maps are uploaded by the EAS build
+ * and update steps), the screen the user was on and their last taps. The DSN comes from the EAS
+ * environment (`EXPO_PUBLIC_SENTRY_DSN`); with none set — or in development, or on the web — it
+ * stays off. No personal data is attached.
+ */
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+const sentryNavigation = Sentry.reactNavigationIntegration({ enableTimeToInitialDisplay: true });
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enabled: Boolean(SENTRY_DSN) && !__DEV__ && Platform.OS !== "web",
+  environment: Updates.channel || (__DEV__ ? "development" : "production"),
+  sendDefaultPii: false,
+  tracesSampleRate: 0.2,
+  integrations: [sentryNavigation],
+});
+
+Observe.configure({
+  environment: Updates.channel || (__DEV__ ? "development" : "production"),
+  integrations: {
+    "expo-router": {
+      // Route params that can carry personal data stay on the device.
+      filteredParams: ["token", "profileId", "email", "name", "dob", "birthDate", "birthTime", "lat", "lon"],
+    },
+  },
+});
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* Expo Go / hot reload may not register a native splash view controller. */
@@ -127,8 +167,12 @@ const WEB_NOTO_FONTS = {
   [NOTO_DEVANAGARI_BOLD]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
 };
 
-export default function RootLayout() {
+function RootLayout() {
   usePreviewAutoUpdate();
+  const navigationRef = useNavigationContainerRef();
+  useEffect(() => {
+    if (navigationRef) sentryNavigation.registerNavigationContainer(navigationRef);
+  }, [navigationRef]);
   const [loaded] = useFonts({
     /* Noto (semi-condensed, see assets/fonts/README.md) is built into the iOS and Android apps by the
        expo-font plugin and registered by the OS at launch. Registered here at runtime instead, the
@@ -189,7 +233,10 @@ export default function RootLayout() {
     void SplashScreen.hideAsync().catch(() => {
       /* Already hidden or unavailable (common in Expo Go). */
     });
-  }, [ready]);
+    /* App-level TTI: fonts, the onboarding check and the saved place are in, and the
+       splash is going — the first screen (home or onboarding) is usable from here. */
+    Observe.markInteractive({ params: { onboarded: onboarded === true } });
+  }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }} className="flex-1 bg-background">
@@ -280,9 +327,37 @@ function RootShell({
   );
 }
 
+export default Sentry.wrap(ObserveRoot.wrap(RootLayout));
+
+/**
+ * A screen that throws while rendering lands here instead of closing the app (what a release
+ * build does with an uncaught render error). Render errors never reach Observe's global
+ * handler, so this reports them itself — with the message and stack, which is what tells us
+ * why a page "crashed" for a TestFlight tester. Drawn outside the providers, so it uses plain
+ * colours and the runtime translator.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => {
+    Observe.reportError(error);
+    Sentry.captureException(error);
+  }, [error]);
+  return (
+    <View style={styles.errorRoot}>
+      <Text style={styles.errorText}>{tFor(undefined, "common.route_error_body")}</Text>
+      <Pressable accessibilityRole="button" onPress={() => void retry()} style={styles.errorButton}>
+        <Text style={styles.errorButtonText}>{tFor(undefined, "common.reload")}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   fontGate: {
     alignItems: "center",
     justifyContent: "center",
   },
+  errorRoot: { flex: 1, alignItems: "center", justifyContent: "center", gap: space.lg, padding: space["2xl"], backgroundColor: light.background },
+  errorText: { fontSize: mobileTypeScale.base.size, lineHeight: mobileTypeScale.base.lineHeight, color: light.foreground, textAlign: "center" },
+  errorButton: { borderRadius: radius.xl, backgroundColor: light.secondary, paddingHorizontal: space.xl, paddingVertical: space.md },
+  errorButtonText: { fontSize: mobileTypeScale.base.size, fontWeight: "700", color: light.secondaryForeground },
 });

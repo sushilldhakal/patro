@@ -1,6 +1,6 @@
-import { Redirect } from "expo-router";
+import { RouteAlias } from "@/components/navigation/RouteAlias";
 
 /** Legacy web path `/sun-times` → `/suryakranti`. */
 export default function SunTimesAlias() {
-  return <Redirect href="/suryakranti" />;
+  return <RouteAlias to="/suryakranti" />;
 }

@@ -103,18 +103,6 @@
         "importance": "regional",
         "notes": "MoHA BS 2081-06-01 (असोज १) इन्द्रजात्रा"
       },
-      "tihar": {
-        "id": "tihar",
-        "name_en": "Tihar",
-        "name_ne": "तिहार",
-        "start_date": "2024-10-31",
-        "end_date": "2024-11-04",
-        "duration_days": 5,
-        "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "BS 2081 Kartik Krishna 14 — Kaag Tihar to Bhai Tika"
-      },
       "chhath": {
         "id": "chhath",
         "name_en": "Chhath Puja",
@@ -694,18 +682,6 @@
         "category": "hindu",
         "importance": "regional",
         "notes": "MoHA BS 2083-07-29 (कात्तिक २९) — 1 day public holiday"
-      },
-      "tihar": {
-        "id": "tihar",
-        "name_en": "Tihar",
-        "name_ne": "तिहार",
-        "start_date": "2026-11-08",
-        "end_date": "2026-11-12",
-        "duration_days": 5,
-        "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "Kaag Tihar to Bhai Tika"
       },
       "saraswati-puja": {
         "id": "saraswati-puja",

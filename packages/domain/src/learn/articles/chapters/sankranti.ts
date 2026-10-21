@@ -14,7 +14,7 @@ export const sankranti: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "सूर्य एक राशिबाट अर्को राशिमा प्रवेश गर्ने ठ्याक्क क्षणलाई ~सङ्क्रान्ति~ भनिन्छ। वर्षमा **१२ सङ्क्रान्ति** हुन्छन्, र प्रत्येकले बि.सं. को नयाँ *महिनाको पहिलो गते* चिन्ह लगाउँछ।",
+            ne: "सूर्य एक राशिबाट अर्को राशिमा प्रवेश गर्ने ठ्याक्क क्षणलाई ~सङ्क्रान्ति~ भनिन्छ। वर्षमा **१२ सङ्क्रान्ति** हुन्छन्, र प्रत्येकले वि.सं. को नयाँ *महिनाको पहिलो गते* चिन्ह लगाउँछ।",
             en: "The exact moment the Sun enters a new sign from the previous one is called ~Sankranti~. There are **12 sankrantis** a year, and each marks the *first day of a new BS month*.",
           },
         },

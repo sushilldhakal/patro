@@ -42,7 +42,7 @@ export const bsCalendar: ArticleData = {
             {
               h: { ne: "चान्द्र–सौर", en: "Lunisolar" },
               p: {
-                ne: "दुवैको मेल — बि.सं. र हिन्दू पात्रो। ~अधिक मास~ले सन्तुलन राख्छ।",
+                ne: "दुवैको मेल — वि.सं. र हिन्दू पात्रो। ~अधिक मास~ले सन्तुलन राख्छ।",
                 en: "A blend of both — BS and the Hindu calendar. An ~adhik maas~ keeps the balance.",
               },
             },
@@ -137,7 +137,7 @@ export const bsCalendar: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "विक्रम सम्वत् (बि.सं.) नेपालको आधिकारिक पात्रो हो, जुन ग्रेगोरियनभन्दा झन्डै `५६`–`५७` वर्ष अगाडि चल्छ।",
+            ne: "विक्रम सम्वत् (वि.सं.) नेपालको आधिकारिक पात्रो हो, जुन ग्रेगोरियनभन्दा झन्डै `५६`–`५७` वर्ष अगाडि चल्छ।",
             en: "Bikram Sambat (BS) is Nepal's official calendar, running about `56`–`57` years ahead of the Gregorian.",
           },
         },
@@ -164,7 +164,7 @@ export const bsCalendar: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "सूर्य कुनै राशिमा `२९` देखि `३२` दिनसम्म बस्ने हुनाले बि.सं. का महिना **२९–३२ दिनका** हुन्छन् — र हरेक वर्ष फरक पर्न सक्छन्।",
+            ne: "सूर्य कुनै राशिमा `२९` देखि `३२` दिनसम्म बस्ने हुनाले वि.सं. का महिना **२९–३२ दिनका** हुन्छन् — र हरेक वर्ष फरक पर्न सक्छन्।",
             en: "Since the Sun stays in a sign anywhere from `29` to `32` days, BS months run **29–32 days** long — and can differ from one year to the next.",
           },
         },
@@ -240,7 +240,7 @@ export const bsCalendar: ArticleData = {
               { ne: "चान्द्र–सौर", en: "Lunisolar" },
               { ne: "दुवै — सुधारसहित", en: "Both — with a correction" },
               { ne: "महिनाको स्थिर लम्बाइ", en: "A fixed number of months" },
-              { ne: "बि.सं., हिब्रू, चिनियाँ", en: "BS, Hebrew, Chinese" },
+              { ne: "वि.सं., हिब्रू, चिनियाँ", en: "BS, Hebrew, Chinese" },
             ],
           ],
         },
@@ -279,7 +279,7 @@ export const bsCalendar: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "नेपाली पात्रोले तेस्रो बाटो रोज्छ, तर एउटा थप मोडसहित — **महिनाको नाम चान्द्र, तर गतेको लम्बाइ सौर**। यसैले बि.सं. सामान्य चान्द्र–सौर पात्रोभन्दा पनि एक तह बढी संयुक्त छ।",
+            ne: "नेपाली पात्रोले तेस्रो बाटो रोज्छ, तर एउटा थप मोडसहित — **महिनाको नाम चान्द्र, तर गतेको लम्बाइ सौर**। यसैले वि.सं. सामान्य चान्द्र–सौर पात्रोभन्दा पनि एक तह बढी संयुक्त छ।",
             en: "The Nepali calendar takes the third road with an extra twist — **lunar month names, but solar month lengths**. That makes BS one layer more hybrid than a standard lunisolar calendar.",
           },
         },

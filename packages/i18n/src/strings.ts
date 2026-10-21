@@ -74,7 +74,7 @@ export const strings = {
 
   /* ── seo ─────────────────────────────────────────────────────────────── */
   "seo.site_keywords": {
-    ne: "नेपाली पात्रो, पञ्चाङ्ग, कुण्डली, तिथि, नक्षत्र, वैदिक ज्योतिष, बि.सं. मिति",
+    ne: "नेपाली पात्रो, पञ्चाङ्ग, कुण्डली, तिथि, नक्षत्र, वैदिक ज्योतिष, वि.सं. मिति",
     en: "Nepali calendar, Panchanga, Kundali, Tithi, Nakshatra, Vedic astrology, BS AD converter",
   },
   "seo.default_description": {
@@ -86,7 +86,7 @@ export const strings = {
     en: "Nepali Calendar {{adYear}} — Nepali Patro {{bsYear}}, Tithi & Holidays | Vedic Patro",
   },
   "seo.routes.home.description": {
-    ne: "नेपाली पात्रो {{bsYearNe}} (Nepali Calendar {{adYear}}) — आजको मिति र तिथि, दैनिक पञ्चाङ्ग, नेपालका सार्वजनिक बिदा र चाडपर्व, बि.सं.–ई.सं. मिति रूपान्तरण र नि:शुल्क जन्म कुण्डली।",
+    ne: "नेपाली पात्रो {{bsYearNe}} (Nepali Calendar {{adYear}}) — आजको मिति र तिथि, दैनिक पञ्चाङ्ग, नेपालका सार्वजनिक बिदा र चाडपर्व, वि.सं.–ई.सं. मिति रूपान्तरण र नि:शुल्क जन्म कुण्डली।",
     en: "Nepali calendar {{adYear}} (Bikram Sambat {{bsYear}}) with today's date and tithi, daily almanac, Nepal public holidays and festivals, BS–AD date converter and free janma kundali.",
   },
   "seo.routes.home.keywords": {
@@ -166,7 +166,7 @@ export const strings = {
     en: "stotram, shloka, sanskrit scripture, bhagavad gita, gayatri mantra, mantra meaning",
   },
   "seo.routes.converter.title": {
-    ne: "नेपाली मिति रूपान्तरण — बि.सं. ⇄ ई.सं. Date Converter | वैदिक पात्रो",
+    ne: "नेपाली मिति रूपान्तरण — वि.सं. ⇄ ई.सं. Date Converter | वैदिक पात्रो",
     en: "Nepali Date Converter — BS to AD, AD to BS | Vedic Patro",
   },
   "seo.routes.converter.description": {
@@ -322,7 +322,7 @@ export const strings = {
     en: "gochar, planetary transit, graha gochar, rashi change, retrograde",
   },
   "seo.routes.aakash_gochar.title": {
-    ne: "३D आकाश गोचर — प्रत्यक्ष ग्रह आकाश | वैदिक पात्रो",
+    ne: "3D आकाश गोचर — प्रत्यक्ष ग्रह आकाश | वैदिक पात्रो",
     en: "3D Aakash Gochar — Live Planetary Sky | Vedic Patro",
   },
   "seo.routes.aakash_gochar.description": {
@@ -578,6 +578,7 @@ export const strings = {
   "panchanga.day_cycle.title": { ne: "दिन-चक्र", en: "Day cycle" },
   "panchanga.day_cycle.good": { ne: "शुभ", en: "Good" },
   "panchanga.day_cycle.bad": { ne: "अशुभ", en: "Bad" },
+  "panchanga.day_cycle.scroll_hint": { ne: "सार्नुहोस्", en: "Scroll" },
   "panchanga.day_cycle.night": { ne: "रात", en: "Night" },
   "panchanga.day_cycle.now": { ne: "अहिले", en: "Now" },
   "panchanga.day_cycle.chosen_time": { ne: "छानिएको समय", en: "Chosen time" },
@@ -1828,12 +1829,12 @@ export const strings = {
     en: "Select two saved profiles — Vara (boy) and Kanya (girl) — for Ashtakuta guna milan.",
   },
   "milan.login_required": {
-    ne: "सुरक्षित प्रोफाइलबाट कुण्डली मिलन गर्न साइन इन गर्नुहोस्।",
+    ne: "सुरक्षित प्रोफाइलबाट कुण्डली मिलन गर्न लग-इन गर्नुहोस्।",
     en: "Sign in to match kundali from your saved profiles.",
   },
-  "milan.login_prompt_title": { ne: "कुण्डली मिलनका लागि साइन इन", en: "Sign in to match kundali" },
+  "milan.login_prompt_title": { ne: "कुण्डली मिलनका लागि लग-इन", en: "Sign in to match kundali" },
   "milan.login_prompt_body": {
-    ne: "साइन इन गरी दुवै पक्षको जन्म प्रोफाइल सुरक्षित गर्नुहोस्, त्यसपछि अष्टकूट कुण्डली मिलन चलाउनुहोस्।",
+    ne: "लग-इन गरी दुवै पक्षको जन्म प्रोफाइल सुरक्षित गर्नुहोस्, त्यसपछि अष्टकूट कुण्डली मिलन चलाउनुहोस्।",
     en: "Sign in and save birth profiles for both partners, then run Ashtakuta kundali milan with dasha-ready chart data.",
   },
   "milan.profile_hint": {
@@ -1937,7 +1938,7 @@ export const strings = {
     en: "Convert between Bikram Sambat (BS) and Gregorian (AD) calendars",
   },
   "converter.ad_date": { ne: "ई.सं. मिति", en: "AD Date" },
-  "converter.bs_date": { ne: "वि.सं. मिति (YYYY-MM-DD)", en: "BS Date (YYYY-MM-DD)" },
+  "converter.bs_date": { ne: "वि.सं. मिति (वर्ष-महिना-गते)", en: "BS Date (YYYY-MM-DD)" },
   "converter.convert": { ne: "रूपान्तरण गर्नुहोस्", en: "Convert" },
   "converter.error": {
     ne: "रूपान्तरण असफल भयो। मिति ढाँचा जाँच गर्नुहोस्।",
@@ -2032,7 +2033,7 @@ export const strings = {
   "auth.facebook_load_error": { ne: "फेसबुक लग-इन लोड हुन सकेन", en: "Could not load Facebook sign-in" },
   "auth.facebook_cancelled": { ne: "फेसबुक लग-इन रद्द भयो", en: "Facebook sign-in was cancelled" },
   "auth.facebook_not_authorized": {
-    ne: "साइन इन गर्न फेसबुकमा इमेल अनुमति दिनुहोस्",
+    ne: "लग-इन गर्न फेसबुकमा इमेल अनुमति दिनुहोस्",
     en: "Allow email access in Facebook to sign in",
   },
   "auth.facebook_checking": { ne: "फेसबुक जाँच गर्दै…", en: "Checking Facebook…" },
@@ -2138,7 +2139,9 @@ export const strings = {
   "sections.nivas_from": { ne: "देखि", en: "from" },
   "sections.nivas_to_full_night": { ne: "सम्पूर्ण रातसम्म", en: "to Full Night" },
   "sections.special_observances": { ne: "दिन विशेष", en: "Special observances" },
-  "sections.festivals": { ne: "कार्यक्रमहरू", en: "Festivals" },
+  "sections.public_holiday": { ne: "सार्वजनिक बिदा", en: "Public holiday" },
+  "sections.festival_vidhi": { ne: "कसरी मनाइन्छ", en: "How it is observed" },
+  "sections.ceremony_saits": { ne: "संस्कारका साइत", en: "Ceremony saits" },
   "sections.planet_positions": { ne: "ग्रह स्थिति", en: "Planet positions" },
   "sections.lagna": { ne: "लग्न", en: "Lagna" },
   "sections.not_available": { ne: "उपलब्ध छैन", en: "Not available" },
@@ -2207,7 +2210,7 @@ export const strings = {
   "panchak.prohibited_title": { ne: "पञ्चकमा वर्जित गरिएका कार्यहरू", en: "Acts discouraged during Panchak" },
   "panchak.prohibited.south_travel": { ne: "दक्षिण यात्रा", en: "Travel south" },
   "panchak.prohibited.south_travel_desc": {
-    ne: "यमराजको दिशाबाट बच्न (Avoiding the direction of Yamaraj)",
+    ne: "यमराजको दिशा (दक्षिण) बाट बच्न",
     en: "Avoiding the direction of Yama (south)",
   },
   "panchak.prohibited.roof": { ne: "घर छाउनु", en: "Roofing a house" },
@@ -2537,7 +2540,7 @@ export const strings = {
   "sait.not_this_child_s_age_month": { ne: "यो बालकको उपयुक्त उमेर-मास होइन", en: "not this child's age-month" },
   "sait.personalise": { ne: "व्यक्तिगत मिति", en: "Personalise" },
   "sait.sign_in_to_pick_your_profile": {
-    ne: "साइन इन गरी आफ्नो प्रोफाइल छान्नुहोस्",
+    ne: "लग-इन गरी आफ्नो प्रोफाइल छान्नुहोस्",
     en: "Sign in to pick your profile",
   },
   "sait.no_saved_profiles_add_one_in_your_account": {
@@ -3882,6 +3885,8 @@ export const strings = {
   "vastu.labels.best": { ne: "उपयुक्त", en: "Best for" },
   "vastu.labels.avoid": { ne: "जोगिने", en: "Avoid" },
   "vastu.labels.pada": { ne: "पद", en: "Pada" },
+  "vastu.show_16_directions": { ne: "१६ दिशा हेर्नुहोस्", en: "Show 16 directions" },
+  "vastu.show_8_directions": { ne: "८ दिशा मात्र", en: "Only 8 directions" },
   "vastu.labels.quality": { ne: "मूल गुण", en: "Quality" },
   "vastu.labels.kind.dir8": { ne: "८ दिशा", en: "8-direction" },
   "vastu.labels.kind.dir16": { ne: "१६ दिशा", en: "16-direction" },
@@ -4648,7 +4653,7 @@ export const strings = {
   "avakahada.wheel_zoom_in": { ne: "ठूलो पार्नुहोस्", en: "Zoom in" },
   "avakahada.wheel_zoom_out": { ne: "सानो पार्नुहोस्", en: "Zoom out" },
   "avakahada.wheel_zoom_reset": { ne: "जुम रिसेट", en: "Reset zoom" },
-  "avakahada.wheel_pan_hint": { ne: "जुम गरेपछि तानेर सार्न सकिन्छ", en: "Drag to pan when zoomed" },
+  "avakahada.wheel_pan_hint": { ne: "दुई औँलाले वा माउस ह्वीलले जुम गर्नुहोस्; जुम गरेपछि तानेर सार्न सकिन्छ", en: "Pinch or scroll to zoom; drag to pan when zoomed" },
   "avakahada.bhoomadosha_title": { ne: "भौमदोष (मङ्गली) विचार", en: "Bhoomadosha (Mangal) considerations" },
   "avakahada.name_groups": { ne: "नामाक्षर वर्ग र शत्रु वर्ग", en: "Name-syllable groups and enemy groups" },
   "avakahada.bhoomadosha_note": {
@@ -4703,6 +4708,7 @@ export const strings = {
   "footer.support": { ne: "सहायता", en: "Support" },
 
   /* ── ritu ────────────────────────────────────────────────────────────── */
+  "ritu.starts": { ne: "सुरु (वि.सं.)", en: "Starts (BS)" },
   "ritu.title": { ne: "ऋतु", en: "Season" },
   "ritu.subtitle": { ne: "सायन ऋतु · विषुव–अयनान्त", en: "Tropical seasons · equinox–solstice" },
   "ritu.southern": { ne: " · दक्षिणी गोलार्ध", en: " · Southern hemisphere" },
@@ -4856,7 +4862,7 @@ export const strings = {
   "seo_faq.section_title": { ne: "बारम्बार सोधिने प्रश्नहरू", en: "Frequently Asked Questions" },
   "seo_faq.converter.intro": {
     ne: [
-      "यो नेपाली मिति रूपान्तरण उपकरणले विक्रम सम्वत् (बि.सं.) र ईश्वीय सम्वत् (ई.सं./AD) मिति एकअर्कामा तुरुन्त परिवर्तन गर्छ। जन्ममिति यकिन गर्न, नागरिकता, पासपोर्ट वा शैक्षिक कागजात भर्न र नेपाली–अङ्ग्रेजी क्यालेन्डर मिलाउन यो सबैभन्दा छिटो तरिका हो।",
+      "यो नेपाली मिति रूपान्तरण उपकरणले विक्रम सम्वत् (वि.सं.) र ईश्वीय सम्वत् (ई.सं./AD) मिति एकअर्कामा तुरुन्त परिवर्तन गर्छ। जन्ममिति यकिन गर्न, नागरिकता, पासपोर्ट वा शैक्षिक कागजात भर्न र नेपाली–अङ्ग्रेजी क्यालेन्डर मिलाउन यो सबैभन्दा छिटो तरिका हो।",
       "विक्रम सम्वत् नेपालको आधिकारिक पात्रो हो, जुन ग्रेगोरियन (अङ्ग्रेजी) क्यालेन्डरभन्दा करिब ५६ वर्ष ८ महिना अगाडि छ। नेपाली महिनाहरूको दिन सङ्ख्या हरेक वर्ष फरक पर्ने भएकाले शुद्ध रूपान्तरणका लागि आधिकारिक पात्रो तालिका चाहिन्छ — यहाँ त्यही प्रयोग गरिएको छ।",
     ],
     en: [
@@ -4866,11 +4872,11 @@ export const strings = {
   },
   "seo_faq.converter.items": {
     ne: [
-      { q: "बि.सं. र ई.सं. मितिबीच कति वर्षको फरक छ?", a: "विक्रम सम्वत् ग्रेगोरियन क्यालेन्डरभन्दा लगभग ५६ वर्ष ८ महिना अगाडि छ। जस्तै ई.सं. {{adYear}} मा बि.सं. {{bsYearNe}} चलिरहेको छ। नेपाली नयाँ वर्ष वैशाख १ गते (अप्रिल मध्यतिर) सुरु हुन्छ।" },
-      { q: "नेपाली मितिलाई अङ्ग्रेजीमा कसरी बदल्ने?", a: "माथिको उपकरणमा बि.सं. → ई.सं. मोड रोजेर वर्ष, महिना र गते चयन गर्नुहोस् — अङ्ग्रेजी मिति, वार र पूरा विवरण तुरुन्तै देखिन्छ। उल्टो दिशामा ई.सं. → बि.सं. पनि उस्तै सजिलो छ।" },
+      { q: "वि.सं. र ई.सं. मितिबीच कति वर्षको फरक छ?", a: "विक्रम सम्वत् ग्रेगोरियन क्यालेन्डरभन्दा लगभग ५६ वर्ष ८ महिना अगाडि छ। जस्तै ई.सं. {{adYear}} मा वि.सं. {{bsYearNe}} चलिरहेको छ। नेपाली नयाँ वर्ष वैशाख १ गते (अप्रिल मध्यतिर) सुरु हुन्छ।" },
+      { q: "नेपाली मितिलाई अङ्ग्रेजीमा कसरी बदल्ने?", a: "माथिको उपकरणमा वि.सं. → ई.सं. मोड रोजेर वर्ष, महिना र गते चयन गर्नुहोस् — अङ्ग्रेजी मिति, वार र पूरा विवरण तुरुन्तै देखिन्छ। उल्टो दिशामा ई.सं. → वि.सं. पनि उस्तै सजिलो छ।" },
       { q: "यो मिति रूपान्तरण कति शुद्ध छ?", a: "रूपान्तरण आधिकारिक नेपाली पात्रोको महिना–तालिकामा आधारित छ, त्यसैले जन्ममिति, कागजात र सरकारी प्रयोजनका लागि भरपर्दो छ।" },
       { q: "नेपाली महिनामा कति दिन हुन्छन्?", a: "नेपाली महिनामा २९ देखि ३२ दिनसम्म हुन्छन् र यो सङ्ख्या हरेक वर्ष फरक पर्न सक्छ, किनभने महिना सूर्यको राशि प्रवेश (सङ्क्रान्ति) अनुसार निर्धारण हुन्छ।" },
-      { q: "कुन-कुन वर्षका मिति रूपान्तरण गर्न सकिन्छ?", a: "पुराना ऐतिहासिक मितिदेखि आगामी वर्षहरूसम्म — सामान्य प्रयोगमा आउने सबै बि.सं./ई.सं. वर्ष समर्थित छन्।" },
+      { q: "कुन-कुन वर्षका मिति रूपान्तरण गर्न सकिन्छ?", a: "पुराना ऐतिहासिक मितिदेखि आगामी वर्षहरूसम्म — सामान्य प्रयोगमा आउने सबै वि.सं./ई.सं. वर्ष समर्थित छन्।" },
     ],
     en: [
       { q: "How many years apart are BS and AD dates?", a: "Bikram Sambat runs about 56 years 8 months ahead of the Gregorian calendar. For example, AD {{adYear}} corresponds to BS {{bsYear}}. The Nepali new year starts on Baisakh 1 (mid-April)." },
@@ -5080,22 +5086,22 @@ export const strings = {
   "choghadiya.types.amrita.name": { ne: "अमृत", en: "Amrita" },
   "choghadiya.types.amrita.quality": { ne: "उत्तम (अत्यन्त शुभ)", en: "Excellent (Highly Auspicious)" },
   "choghadiya.types.shubha.name": { ne: "शुभ", en: "Shubha" },
-  "choghadiya.types.shubha.quality": { ne: "शुभ", en: "Auspicious" },
+  "choghadiya.types.shubha.quality": { ne: "सबै शुभ कार्यका लागि राम्रो", en: "Good for all auspicious work" },
   "choghadiya.types.labha.name": { ne: "लाभ", en: "Labha" },
-  "choghadiya.types.labha.quality": { ne: "लाभ", en: "Gain" },
+  "choghadiya.types.labha.quality": { ne: "व्यापार र आम्दानीका लागि राम्रो", en: "Good for business and gain" },
   "choghadiya.types.chara.name": { ne: "चर", en: "Chara" },
   "choghadiya.types.chara.quality": { ne: "यात्रा र चलचलका लागि राम्रो", en: "Good for Movement & Travel" },
   "choghadiya.types.roga.name": { ne: "रोग", en: "Roga" },
   "choghadiya.types.roga.quality": {
-    ne: "रोग (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-    en: "Disease (Avoid Important Tasks)",
+    ne: "रोगकारक — महत्त्वपूर्ण काम टाढा राख्नुहोस्",
+    en: "Illness — avoid important tasks",
   },
   "choghadiya.types.kala.name": { ne: "काल", en: "Kala" },
-  "choghadiya.types.kala.quality": { ne: "अशुभ", en: "Inauspicious" },
+  "choghadiya.types.kala.quality": { ne: "अशुभ — नयाँ काम नथाल्नुहोस्", en: "Inauspicious — start nothing new" },
   "choghadiya.types.udvega.name": { ne: "उद्वेग", en: "Udvega" },
   "choghadiya.types.udvega.quality": {
-    ne: "चिन्ता (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-    en: "Anxiety (Avoid Important Tasks)",
+    ne: "चिन्ता — महत्त्वपूर्ण काम टाढा राख्नुहोस्",
+    en: "Anxiety — avoid important tasks",
   },
   "choghadiya.quality_good": { ne: "शुभ", en: "Good" },
   "choghadiya.quality_bad": { ne: "अशुभ", en: "Inauspicious" },
@@ -5191,7 +5197,7 @@ export const strings = {
     en: "Lagna (the ascendant) is the zodiac sign rising on the eastern horizon at a given moment. Over a day all 12 signs rise in turn.",
   },
   "element_descriptions.lagna.how": {
-    ne: "स्थानीय नक्षत्र समय (sidereal time) र observer को अक्षांशबाट गणना गरिन्छ — पूर्वी क्षितिज काट्ने क्रान्तिवृत्त बिन्दु। प्रत्येक राशिको उदय अवधि अक्षांश र राशिअनुसार फरक हुन्छ।",
+    ne: "स्थानीय नाक्षत्र समय र अवलोककको अक्षांशबाट गणना गरिन्छ — पूर्वी क्षितिज काट्ने क्रान्तिवृत्त बिन्दु। प्रत्येक राशिको उदय अवधि अक्षांश र राशिअनुसार फरक हुन्छ।",
     en: "Computed from the local sidereal time and the observer's latitude — the point of the ecliptic crossing the eastern horizon. Each sign's rising duration differs by latitude and by sign (short and long ascension).",
   },
   "element_descriptions.lagna.meaning": {
@@ -5227,7 +5233,7 @@ export const strings = {
     en: "Tarabala (\"star strength\") rates the day's nakshatra against a person's birth nakshatra through the nine-tara cycle.",
   },
   "element_descriptions.tarabala.how": {
-    ne: "जन्म ताराबाट दिनको तारासम्म गनेर ९ ले भाग (modulo) गर्दा नौ तारामध्ये एक (जन्म, सम्पत्, विपत्, क्षेम, प्रत्यरि, साधक, वध, मित्र, अतिमित्र) आउँछ। केही शुभ, केही त्याज्य।",
+    ne: "जन्म ताराबाट दिनको तारासम्म गनेर ९ ले भाग गर्दा बाँकी नौ तारामध्ये एक (जन्म, सम्पत्, विपत्, क्षेम, प्रत्यरि, साधक, वध, मित्र, अतिमित्र) आउँछ। केही शुभ, केही त्याज्य।",
     en: "Count from the birth star to the day's star and take it modulo 9 → one of nine taras (Janma, Sampat, Vipat, Kshema, Pratyari, Sadhaka, Vadha, Mitra, Ati-mitra). Some are auspicious, some to be avoided.",
   },
   "element_descriptions.tarabala.meaning": {
@@ -5289,7 +5295,7 @@ export const strings = {
     ne: "आकाश एक नजरमा, आगामी परिवर्तन र विस्तृत विवरण",
     en: "Sky at a glance, upcoming changes & deep dive",
   },
-  "sidebar_nav.items.aakash-gochar.label": { ne: "३D आकाश गोचर", en: "3D Aakash Gochar" },
+  "sidebar_nav.items.aakash-gochar.label": { ne: "3D आकाश गोचर", en: "3D Aakash Gochar" },
   "sidebar_nav.items.aakash-gochar.blurb": {
     ne: "भूकेन्द्रित त्रिआयामिक प्रत्यक्ष आकाश",
     en: "The live sky in three dimensions, geocentric",
@@ -5428,7 +5434,7 @@ export const strings = {
     en: "Graha vakri (retrograde) is when a planet appears to move backward through the zodiac as seen from Earth. It is an apparent motion caused by the relative speeds of Earth and the planet. When the planet resumes forward motion it is margi (direct). This page lists the vakri/margi station moments through the year for Mercury, Venus, Mars, Jupiter and Saturn.",
   },
   "graha_descriptions.graha-vakri.how": {
-    ne: "प्रत्येक ग्रहको दैनिक गति (°/दिन) को चिन्ह अनुगमन गरिन्छ। गति धनात्मकबाट ऋणात्मक हुँदा वक्री आरम्भ (वक्री station) र ऋणात्मकबाट धनात्मक हुँदा मार्गी हुन्छ। चिन्ह परिवर्तन हुने ठ्याक्कै क्षण द्विखण्डन विधिबाट निकालिन्छ।",
+    ne: "प्रत्येक ग्रहको दैनिक गति (°/दिन) को चिन्ह अनुगमन गरिन्छ। गति धनात्मकबाट ऋणात्मक हुँदा वक्री आरम्भ (स्तम्भन बिन्दु) र ऋणात्मकबाट धनात्मक हुँदा मार्गी हुन्छ। चिन्ह परिवर्तन हुने ठ्याक्कै क्षण द्विखण्डन विधिबाट निकालिन्छ।",
     en: "The sign of each planet's daily speed (°/day) is tracked. When the speed turns from positive to negative the planet begins retrograde (vakri station); from negative to positive it turns direct (margi). The exact instant of the sign change is found by bisection.",
   },
   "graha_descriptions.graha-vakri.meaning": {
@@ -5501,7 +5507,7 @@ export const strings = {
   "dainik.festival": { ne: "पर्व", en: "Festival" },
   "dainik.hide_details": { ne: "विवरण लुकाउनुहोस्", en: "Hide details" },
   "dainik.lagna_planets_more": { ne: "लग्न · ग्रहस्पष्ट · थप विवरण", en: "Lagna · planets & more" },
-  "dainik.bs": { ne: "बि.सं.", en: "BS" },
+  "dainik.bs": { ne: "वि.सं.", en: "BS" },
   "dainik.season": { ne: "ऋतु", en: "Season" },
   "dainik.days": { ne: "दिन", en: "days" },
   "dainik.could_not_load_details_please_try_again": {
@@ -5973,7 +5979,7 @@ export const strings = {
   "learn.diagrams.hierarchy_driver_sun": { ne: "राशिचक्रमा वार्षिक गति", en: "annual path through the zodiac" },
   "learn.diagrams.hierarchy_mana_lunar": { ne: "चान्द्रमान", en: "Chāndramāna" },
   "learn.diagrams.hierarchy_mana_solar": { ne: "सौरमान", en: "Sauramāna" },
-  "learn.diagrams.hierarchy_result": { ne: "एउटा बि.सं. मिति", en: "One Bikram Sambat date" },
+  "learn.diagrams.hierarchy_result": { ne: "एउटा वि.सं. मिति", en: "One Bikram Sambat date" },
   "learn.diagrams.hierarchy_result_fields": {
     ne: "वर्ष · महिना · गते · तिथि · वार",
     en: "year · month · gate · tithi · vaara",
@@ -5985,7 +5991,7 @@ export const strings = {
   "learn.diagrams.hierarchy_rule_rashi_span": { ne: "३०° को भाग", en: "30° segment" },
   "learn.diagrams.hierarchy_rule_tithi_span": { ne: "हरेक १२°", en: "every 12°" },
   "learn.diagrams.hierarchy_stacked_aria": {
-    ne: "आकाशीय गतिबाट पञ्चाङ्ग र बि.सं. मितिसम्मको क्रम।",
+    ne: "आकाशीय गतिबाट पञ्चाङ्ग र वि.सं. मितिसम्मको क्रम।",
     en: "The chain from celestial motion to the panchanga and a Bikram Sambat date.",
   },
   "learn.diagrams.hierarchy_step_lunar_month": { ne: "चान्द्र मास", en: "Lunar month" },
@@ -5996,7 +6002,7 @@ export const strings = {
   "learn.diagrams.hierarchy_step_vaara": { ne: "वार", en: "Vāra" },
   "learn.diagrams.hierarchy_top": { ne: "आकाशीय गति", en: "Celestial motion" },
   "learn.diagrams.hierarchy_wide_aria": {
-    ne: "पृथ्वी, सूर्य र चन्द्रको गतिबाट दिन, सौर महिना र चान्द्र मास बन्छन्, र तीनै मिलेर पञ्चाङ्ग र बि.सं. मिति बनाउँछन्।",
+    ne: "पृथ्वी, सूर्य र चन्द्रको गतिबाट दिन, सौर महिना र चान्द्र मास बन्छन्, र तीनै मिलेर पञ्चाङ्ग र वि.सं. मिति बनाउँछन्।",
     en: "Earth's, the Sun's and the Moon's motions produce the day, the solar month and the lunar month; together they make the panchanga and a Bikram Sambat date.",
   },
   "learn.diagrams.hora_cycle_caption": {
@@ -6234,7 +6240,7 @@ export const strings = {
     en: "● Graha — sidereal longitude (one place in the sky, two readings)",
   },
   "learn.study.ayanamsha.slider_year": {
-    ne: "वर्ष — अक्ष-चलनले विषुव बिन्दु सर्छ ({{from}} → {{to}} बि.सं.)",
+    ne: "वर्ष — अक्ष-चलनले विषुव बिन्दु सर्छ ({{from}} → {{to}} वि.सं.)",
     en: "Year — precession moves the equinox point ({{from}} → {{to}} BS)",
   },
   "learn.study.ayanamsha.spring_equinox_point": { ne: "वसन्त-विषुव", en: "spring equinox" },
@@ -6273,7 +6279,7 @@ export const strings = {
     en: "The Sun's declination through the year — zero at the equinoxes, extreme at the solstices",
   },
   "learn.study.declination.caption": {
-    ne: "एउटै वक्र, दुई फरक बिन्दु — विषुव त्यहाँ जहाँ वक्रले शून्य काट्छ (सूर्य विषुवत् रेखामा, दिन–रात बराबर, उत्तर–दक्षिण गति सबैभन्दा छिटो), अयनान्त त्यहाँ जहाँ वक्र फर्किन्छ (क्रान्ति ±२३.४४°, सबैभन्दा लामो र छोटो दिन)। तल बि.सं. महिना — चारै बिन्दु महिनाको सीमामा पर्दैनन्, र शताब्दीयौँमा सर्दै जान्छन्।",
+    ne: "एउटै वक्र, दुई फरक बिन्दु — विषुव त्यहाँ जहाँ वक्रले शून्य काट्छ (सूर्य विषुवत् रेखामा, दिन–रात बराबर, उत्तर–दक्षिण गति सबैभन्दा छिटो), अयनान्त त्यहाँ जहाँ वक्र फर्किन्छ (क्रान्ति ±२३.४४°, सबैभन्दा लामो र छोटो दिन)। तल वि.सं. महिना — चारै बिन्दु महिनाको सीमामा पर्दैनन्, र शताब्दीयौँमा सर्दै जान्छन्।",
     en: "One curve, two different points — an equinox is where it crosses zero (the Sun on the celestial equator, day equal to night, north–south motion at its fastest); a solstice is where it turns (declination ±23.44°, the longest and shortest day). The B.S. months run underneath: none of the four lands on a month boundary, and over centuries they drift against them.",
   },
   "learn.study.declination.dakshinayana": { ne: "दक्षिणायन", en: "Dakshinayana" },
@@ -6356,11 +6362,11 @@ export const strings = {
   "learn.study.equinox.legend_ecliptic": { ne: "क्रान्तिवृत्त (ecliptic)", en: "Ecliptic" },
   "learn.study.equinox.legend_equator": { ne: "खगोलीय विषुवत् (Celestial Equator)", en: "Celestial equator" },
   "learn.study.equinox.point_zero": { ne: "Point 0", en: "Point 0" },
-  "learn.study.equinox.preset_bs_start": { ne: "बि.सं. आरम्भ", en: "Start of BS" },
+  "learn.study.equinox.preset_bs_start": { ne: "वि.सं. आरम्भ", en: "Start of BS" },
   "learn.study.equinox.preset_now": { ne: "↺ अहिले", en: "↺ Now" },
-  "learn.study.equinox.shift_since_bs0": { ne: "विषुव सरेको (बि.सं. ० देखि)", en: "Equinox shift (since BS 0)" },
+  "learn.study.equinox.shift_since_bs0": { ne: "विषुव सरेको (वि.सं. ० देखि)", en: "Equinox shift (since BS 0)" },
   "learn.study.equinox.slider": {
-    ne: "वर्ष — अक्ष-चलनले विषुव सर्छ (बि.सं. {{from}} → {{to}}; एक पूरा फेरो ~{{cycle}} वर्ष)",
+    ne: "वर्ष — अक्ष-चलनले विषुव सर्छ (वि.सं. {{from}} → {{to}}; एक पूरा फेरो ~{{cycle}} वर्ष)",
     en: "Year — precession shifts the equinox (BS {{from}} → {{to}}; one full turn ≈ {{cycle}} years)",
   },
   "learn.study.history.era_bbse": { ne: "पू.वि.सं.", en: "BBSE" },
@@ -6468,7 +6474,7 @@ export const strings = {
   },
   "learn.study.pipeline.node_gochar": { ne: "गोचर · वक्री", en: "Gochar · retrograde" },
   "learn.study.pipeline.node_julian_day": {
-    ne: "जुलियन दिन\nई.सं. / बि.सं. / ई.पू.",
+    ne: "जुलियन दिन\nई.सं. / वि.सं. / ई.पू.",
     en: "Julian day\nAD / BS / BCE",
   },
   "learn.study.pipeline.node_kundali": { ne: "कुण्डली · दशा", en: "Kundali · dasha" },
@@ -6493,7 +6499,7 @@ export const strings = {
     en: "Earth’s axis stays tilted at {{tilt}}° but, like a spinning top, slowly circles the",
   },
   "learn.study.precession.caption_stars": {
-    ne: "देखाउँछ — कुनै बेला थुबन, अहिले ध्रुव, र ~{{year}} बि.सं. मा अभिजित। ऋतु-आधारित",
+    ne: "देखाउँछ — कुनै बेला थुबन, अहिले ध्रुव, र ~{{year}} वि.सं. मा अभिजित। ऋतु-आधारित",
     en: "over time — Thuban once, Polaris today, and Vega around {{year}} BS. The season-based",
   },
   "learn.study.precession.caption_tail": {
@@ -6608,7 +6614,7 @@ export const strings = {
   "learn.study.two_systems.adhik_maas_gap": { ne: "अधिक मासले पुर्ने खाडल", en: "the gap an adhik maas fills" },
   "learn.study.two_systems.back_to_year_start": { ne: "वर्षारम्भमा फर्कनुहोस्", en: "Back to year start" },
   "learn.study.two_systems.belt_pinned_to_stars": {
-    ne: "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले बि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
+    ne: "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले वि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
     en: "The rashi belt is pinned to the stars, so a BS year is exactly 360° — the 365.26-day sidereal year. The orbit is an ellipse, not a circle: 0.983–1.017 AU (3.4%), and the Sun moves fastest when nearest — which is why a solar month runs 29 to 32 days. The scene exaggerates that gap 6× so the eye can see it.",
   },
   "learn.study.two_systems.chain_angular_gap": { ne: "☀️🌙 कोणीय दूरी", en: "☀️🌙 angular gap" },
@@ -6670,8 +6676,8 @@ export const strings = {
   },
   "learn.study.winter_solstice": { ne: "शीत अयनान्त", en: "Winter solstice" },
   "learn.study.year": { ne: "वर्ष", en: "Year" },
-  "learn.study.year_before_bs": { ne: "{{year}} बि.सं. पूर्व", en: "{{year}} before BS" },
-  "learn.study.year_bs": { ne: "{{year}} बि.सं.", en: "{{year}} BS" },
+  "learn.study.year_before_bs": { ne: "{{year}} वि.सं. पूर्व", en: "{{year}} before BS" },
+  "learn.study.year_bs": { ne: "{{year}} वि.सं.", en: "{{year}} BS" },
 
   /* ── home_rashifal ───────────────────────────────────────────────────── */
   "home_rashifal.section_title": { ne: "मासिक राशिफल", en: "Monthly Rashifal" },
@@ -6785,7 +6791,7 @@ export const strings = {
     ne: "{{length}} वर्ष · {{bytes}} भण्डारण",
     en: "{{length}} years · {{bytes}} stored",
   },
-  "ui.account.log_in_to_view_your_account": { ne: "खाता हेर्न लगइन गर्नुहोस्।", en: "Log in to view your account." },
+  "ui.account.log_in_to_view_your_account": { ne: "खाता हेर्न लग-इन गर्नुहोस्।", en: "Log in to view your account." },
   "ui.account.manage_the_calendar_years_downloaded_for": {
     ne: "इन्टरनेट बिना पात्रो हेर्न वर्षहरू व्यवस्थापन गर्नुहोस्।",
     en: "Manage the calendar years downloaded for offline use.",
@@ -6793,7 +6799,7 @@ export const strings = {
   "ui.account.measuring_size": { ne: "आकार नापिँदैछ…", en: "Measuring size…" },
   "ui.account.nothing_downloaded_yet": { ne: "अझै केही डाउनलोड गरिएको छैन।", en: "Nothing downloaded yet." },
   "ui.account.offline_calendar_data_can_be_managed": {
-    ne: "लगइन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
+    ne: "लग-इन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
     en: "Offline calendar data can be managed without logging in.",
   },
   "ui.account.offline_data": { ne: "अफलाइन डाटा", en: "Offline Data" },
@@ -6833,7 +6839,7 @@ export const strings = {
     en: "You're offline. Downloading needs an internet connection.",
   },
   "ui.account.you_stay_signed_in_the_app": {
-    ne: "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
+    ne: "तपाईं लग-इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
     en: "You stay signed in; the app asks for biometrics when opened.",
   },
 
@@ -6862,7 +6868,7 @@ export const strings = {
   },
   "ui.auth.vedic_patro_is_locked": { ne: "वैदिक पात्रो लक गरिएको छ", en: "Vedic Patro is locked" },
   "ui.auth.you_ll_stay_signed_in_next": {
-    ne: "तपाईं साइन इन नै रहनुहुनेछ। अर्को पटकदेखि {{label}} ले एप खोल्नुहोस्।",
+    ne: "तपाईं लग-इन नै रहनुहुनेछ। अर्को पटकदेखि {{label}} ले एप खोल्नुहोस्।",
     en: "You'll stay signed in. Next time, open the app with {{label}}.",
   },
   "ui.auth.yyyy_mm_dd": { ne: "वर्ष-महिना-दिन", en: "YYYY-MM-DD" },
@@ -6887,6 +6893,11 @@ export const strings = {
   "ui.common.horizon": { ne: "क्षितिज", en: "Horizon" },
   "ui.common.notes": { ne: "टिप्पणी", en: "Notes" },
   "ui.common.retry": { ne: "पुनः प्रयास", en: "Retry" },
+  "ui.common.no_internet_title": { ne: "इन्टरनेट जडान छैन", en: "No internet connection" },
+  "ui.common.no_internet_body": {
+    ne: "वाइफाइ वा मोबाइल डाटा खोल्नुहोस्। जडान फर्किएपछि यो आफैँ लोड हुन्छ।",
+    en: "Turn on Wi-Fi or mobile data. This loads again by itself once you're back online.",
+  },
   "ui.common.saving": { ne: "सेभ हुँदै…", en: "Saving…" },
   "ui.common.start": { ne: "सुरु", en: "Start" },
   "ui.common.theme": { ne: "थिम", en: "Theme" },
@@ -6961,6 +6972,32 @@ export const strings = {
   "ui.home.reminder_card_body": { ne: "आजको शुभ र अशुभ समयमा सूचना पाउनुहोस्", en: "Get notified for today's shubh and ashubh times" },
   "ui.home.reminder_sheet_title": { ne: "आजको शुभ / अशुभ समय", en: "Today's shubh / ashubh times" },
   "ui.home.reminder_sheet_hint": { ne: "अलार्म चिन्हमा थिचेर त्यस समयको रिमाइन्डर राख्नुहोस्", en: "Tap the alarm on a time to set a reminder for it" },
+  "ui.home.sait_abhijit_note": {
+    ne: "समय अनुकूल भए अभिजित् मुहूर्तमा लगाउनु।",
+    en: "If the time suits you, it can also be done in Abhijit muhurta.",
+  },
+  "ui.home.sait_dir_east": { ne: "पूर्व", en: "East" },
+  "ui.home.sait_dir_north": { ne: "उत्तर", en: "North" },
+  "ui.home.sait_dir_south": { ne: "दक्षिण", en: "South" },
+  "ui.home.sait_dir_west": { ne: "पश्चिम", en: "West" },
+  "ui.home.sait_facing": {
+    ne: "टीका थाप्दा {{v0}} तर्फ फर्कने · चन्द्र {{v1}} राशिमा",
+    en: "Face {{v0}} to receive Tika · Moon in {{v1}}",
+  },
+  "ui.home.sait_heading": { ne: "शुभ साइत", en: "Sait" },
+  "ui.home.sait_lagna": { ne: "{{v0}} लग्न", en: "{{v0}} lagna" },
+  "ui.home.sait_local_note": {
+    ne: "तपाईंको स्थानको सूर्योदय, सूर्यास्त र उदाउँदो लग्नअनुसार।",
+    en: "From your location's sunrise, sunset and rising lagna.",
+  },
+  "ui.home.sait_ritual_bhai_tika": { ne: "भाइटीका", en: "Bhai Tika" },
+  "ui.home.sait_ritual_bratabandha": { ne: "ब्रतबन्ध", en: "Bratabandha" },
+  "ui.home.sait_ritual_dashain_tika": { ne: "दशैं टीका", en: "Dashain Tika" },
+  "ui.home.sait_ritual_fulpati": { ne: "फूलपाती", en: "Phulpati" },
+  "ui.home.sait_ritual_ghatasthapana": { ne: "घटस्थापना", en: "Ghatasthapana" },
+  "ui.home.sait_ritual_griha_pravesh": { ne: "गृह प्रवेश", en: "Griha Pravesh" },
+  "ui.home.sait_ritual_laxmi_puja": { ne: "लक्ष्मी पूजा", en: "Laxmi Puja" },
+  "ui.home.sait_ritual_vivah": { ne: "विवाह", en: "Marriage" },
   "ui.home.shubh_times": { ne: "शुभ समय", en: "Shubh times" },
   "ui.home.special_today": { ne: "आज विशेष", en: "Special today" },
   "ui.home.this_day_s_panchanga": { ne: "यस दिनको पञ्चाङ्ग", en: "This day's panchanga" },
@@ -7113,7 +7150,7 @@ export const strings = {
   "ui.learn.ayanamsha_gap": { ne: "अयनांश खाडल", en: "Ayanamsha gap" },
   "ui.learn.belt_width_needed": { ne: "राशि पट्टीको चौडाइ", en: "Belt width needed" },
   "ui.learn.bs_0": { ne: "वि.सं. ०", en: "BS 0" },
-  "ui.learn.bs_date": { ne: "बि.सं. मिति", en: "BS date" },
+  "ui.learn.bs_date": { ne: "वि.सं. मिति", en: "BS date" },
   "ui.learn.bs_year_2": { ne: "वि.सं. {{year}}", en: "BS {{year}}" },
   "ui.learn.ce": { ne: "ई.सं.", en: "CE" },
   "ui.learn.ce_year_ayanamsha_value": {
@@ -7156,7 +7193,7 @@ export const strings = {
     en: "Earth's orbit is not a perfect circle but a gentle ellipse (exaggerated here to be visible). Earth is closest to the Sun (perihelion) around January and farthest (aphelion) around July — that is, closest during the northern hemisphere's winter. So distance does not make the seasons — if it did, they'd run backwards; the real cause is the axial tilt.",
   },
   "ui.learn.earth_s_rotation_gives_the_day": {
-    ne: "पृथ्वीको घूर्णनले दिन र वार दिन्छ; सूर्यको राशि-गतिले राशि, सङ्क्रान्ति र सौर महिना दिन्छ; चन्द्र र सूर्यबीचको कोणले तिथि, पक्ष र चान्द्र महिना दिन्छ। तीनै धारा पञ्चाङ्गमा मिसिन्छन्, र त्यहाँबाट एउटै बि.सं. मिति बन्छ।",
+    ne: "पृथ्वीको घूर्णनले दिन र वार दिन्छ; सूर्यको राशि-गतिले राशि, सङ्क्रान्ति र सौर महिना दिन्छ; चन्द्र र सूर्यबीचको कोणले तिथि, पक्ष र चान्द्र महिना दिन्छ। तीनै धारा पञ्चाङ्गमा मिसिन्छन्, र त्यहाँबाट एउटै वि.सं. मिति बन्छ।",
     en: "Earth's rotation gives the day and the vaara; the Sun's motion through the rashis gives rashi, sankranti and the solar month; the angle between Moon and Sun gives tithi, paksha and the lunar month. All three streams converge on the panchanga, and from there, a single BS date.",
   },
   "ui.learn.earth_s_spin_axis_stays_tilted": {
@@ -7269,82 +7306,82 @@ export const strings = {
   "ui.learn.n2_months_each": { ne: "२ महिना हरेक", en: "2 months each" },
   "ui.learn.n3_months": { ne: "३ महिना", en: "+3 months" },
   "ui.learn.n3_step_jump_chord": { ne: "३ पाइला जम्प (चरण)", en: "3-step jump (chord)" },
-  "ui.learn.n3d_angle_of_sunlight": { ne: "३D — सूर्यको किरण कोण", en: "3D — angle of sunlight" },
-  "ui.learn.n3d_axial_tilt_and_the_seasons": { ne: "३D — अक्षीय झुकाव र ऋतु", en: "3D — axial tilt and the seasons" },
-  "ui.learn.n3d_ayanamsha_lahiri": { ne: "३D — अयनांश (लाहिरी)", en: "3D — ayanamsha (Lahiri)" },
-  "ui.learn.n3d_circumpolar_stars": { ne: "३D — परिध्रुवीय तारा", en: "3D — circumpolar stars" },
-  "ui.learn.n3d_day_length_2h": { ne: "३D — दिनमान = 2H", en: "3D — day length = 2H" },
-  "ui.learn.n3d_earth_s_elliptical_orbit": { ne: "३D — पृथ्वीको अण्डाकार कक्ष", en: "3D — Earth's elliptical orbit" },
-  "ui.learn.n3d_earth_s_rotation": { ne: "३D — पृथ्वीको घूर्णन", en: "3D — Earth's rotation" },
-  "ui.learn.n3d_how_a_lunar_eclipse_happens": { ne: "३D — चन्द्र ग्रहण कसरी", en: "3D — how a lunar eclipse happens" },
-  "ui.learn.n3d_how_a_solar_eclipse_happens": { ne: "३D — सूर्य ग्रहण कसरी", en: "3D — how a solar eclipse happens" },
-  "ui.learn.n3d_how_an_adhik_maas_forms": { ne: "३D — अधिक मास कसरी बन्छ", en: "3D — how an adhik maas forms" },
+  "ui.learn.n3d_angle_of_sunlight": { ne: "3D — सूर्यको किरण कोण", en: "3D — angle of sunlight" },
+  "ui.learn.n3d_axial_tilt_and_the_seasons": { ne: "3D — अक्षीय झुकाव र ऋतु", en: "3D — axial tilt and the seasons" },
+  "ui.learn.n3d_ayanamsha_lahiri": { ne: "3D — अयनांश (लाहिरी)", en: "3D — ayanamsha (Lahiri)" },
+  "ui.learn.n3d_circumpolar_stars": { ne: "3D — परिध्रुवीय तारा", en: "3D — circumpolar stars" },
+  "ui.learn.n3d_day_length_2h": { ne: "3D — दिनमान = 2H", en: "3D — day length = 2H" },
+  "ui.learn.n3d_earth_s_elliptical_orbit": { ne: "3D — पृथ्वीको अण्डाकार कक्ष", en: "3D — Earth's elliptical orbit" },
+  "ui.learn.n3d_earth_s_rotation": { ne: "3D — पृथ्वीको घूर्णन", en: "3D — Earth's rotation" },
+  "ui.learn.n3d_how_a_lunar_eclipse_happens": { ne: "3D — चन्द्र ग्रहण कसरी", en: "3D — how a lunar eclipse happens" },
+  "ui.learn.n3d_how_a_solar_eclipse_happens": { ne: "3D — सूर्य ग्रहण कसरी", en: "3D — how a solar eclipse happens" },
+  "ui.learn.n3d_how_an_adhik_maas_forms": { ne: "3D — अधिक मास कसरी बन्छ", en: "3D — how an adhik maas forms" },
   "ui.learn.n3d_manda_and_shighra_corrections": {
-    ne: "३D — मन्द र शीघ्र सुधार",
+    ne: "3D — मन्द र शीघ्र सुधार",
     en: "3D — manda and shighra corrections",
   },
   "ui.learn.n3d_moonrise_slipping_later": {
-    ne: "३D — चन्द्रोदय ढिलो हुँदै जाने क्रम",
+    ne: "3D — चन्द्रोदय ढिलो हुँदै जाने क्रम",
     en: "3D — moonrise slipping later",
   },
-  "ui.learn.n3d_precession_of_the_equinox": { ne: "३D — विषुव बिन्दुको अयन चलन", en: "3D — precession of the equinox" },
+  "ui.learn.n3d_precession_of_the_equinox": { ne: "3D — विषुव बिन्दुको अयन चलन", en: "3D — precession of the equinox" },
   "ui.learn.n3d_same_instant_two_places_two": {
-    ne: "३D — एउटै क्षण, दुई ठाउँ, दुई तिथि",
+    ne: "3D — एउटै क्षण, दुई ठाउँ, दुई तिथि",
     en: "3D — same instant, two places, two tithis",
   },
   "ui.learn.n3d_sidereal_day_vs_solar_day": {
-    ne: "३D — नाक्षत्र दिन बनाम सौर दिन",
+    ne: "3D — नाक्षत्र दिन बनाम सौर दिन",
     en: "3D — sidereal day vs solar day",
   },
-  "ui.learn.n3d_solar_month_lengths": { ne: "३D — सौर महिनाको लम्बाइ", en: "3D — solar month lengths" },
-  "ui.learn.n3d_sun_earth_moon": { ne: "३D — सूर्य, पृथ्वी, चन्द्र", en: "3D — Sun, Earth, Moon" },
+  "ui.learn.n3d_solar_month_lengths": { ne: "3D — सौर महिनाको लम्बाइ", en: "3D — solar month lengths" },
+  "ui.learn.n3d_sun_earth_moon": { ne: "3D — सूर्य, पृथ्वी, चन्द्र", en: "3D — Sun, Earth, Moon" },
   "ui.learn.n3d_the_10_lost_days_of": {
-    ne: "३D — अक्टोबर १५८२ को १० दिन हराए",
+    ne: "3D — अक्टोबर १५८२ को १० दिन हराए",
     en: "3D — the 10 lost days of October 1582",
   },
-  "ui.learn.n3d_the_computation_pipeline": { ne: "३D — गणना पाइपलाइन", en: "3D — the computation pipeline" },
-  "ui.learn.n3d_the_eclipse_season_window": { ne: "३D — ग्रहण ऋतुको झ्याल", en: "3D — the eclipse-season window" },
+  "ui.learn.n3d_the_computation_pipeline": { ne: "3D — गणना पाइपलाइन", en: "3D — the computation pipeline" },
+  "ui.learn.n3d_the_eclipse_season_window": { ne: "3D — ग्रहण ऋतुको झ्याल", en: "3D — the eclipse-season window" },
   "ui.learn.n3d_the_lunar_solar_year_gap": {
-    ne: "३D — चान्द्र र सौर वर्षको खाडल",
+    ne: "3D — चान्द्र र सौर वर्षको खाडल",
     en: "3D — the lunar–solar year gap",
   },
   "ui.learn.n3d_the_moon_s_tilted_orbit": {
-    ne: "३D — चन्द्र-कक्षको झुकाव र ग्रहण",
+    ne: "3D — चन्द्र-कक्षको झुकाव र ग्रहण",
     en: "3D — the Moon's tilted orbit and eclipses",
   },
   "ui.learn.n3d_the_pakshas_and_the_moon": {
-    ne: "३D — पक्ष र चन्द्र कला",
+    ne: "3D — पक्ष र चन्द्र कला",
     en: "3D — the pakshas and the Moon's phases",
   },
   "ui.learn.n3d_the_panchanga_samples_tithi_at": {
-    ne: "३D — सूर्योदयमै तिथि नमुना",
+    ne: "3D — सूर्योदयमै तिथि नमुना",
     en: "3D — the panchanga samples tithi at sunrise",
   },
-  "ui.learn.n3d_the_precession_cone": { ne: "३D — विषुवको अयन-शङ्कु", en: "3D — the precession cone" },
+  "ui.learn.n3d_the_precession_cone": { ne: "3D — विषुवको अयन-शङ्कु", en: "3D — the precession cone" },
   "ui.learn.n3d_the_seven_named_moon_phases": {
-    ne: "३D — चन्द्र कलाका सात चरण",
+    ne: "3D — चन्द्र कलाका सात चरण",
     en: "3D — the seven named Moon phases",
   },
-  "ui.learn.n3d_the_six_tu_wheel": { ne: "३D — छ ऋतु चक्र", en: "3D — the six-ṛtu wheel" },
+  "ui.learn.n3d_the_six_tu_wheel": { ne: "3D — छ ऋतु चक्र", en: "3D — the six-ṛtu wheel" },
   "ui.learn.n3d_the_sun_s_declination_across": {
-    ne: "३D — वर्षभरि सूर्यको क्रान्ति",
+    ne: "3D — वर्षभरि सूर्यको क्रान्ति",
     en: "3D — the Sun's declination across the year",
   },
   "ui.learn.n3d_the_weekday_order_from_the": {
-    ne: "३D — होरा चक्रबाट वारको क्रम",
+    ne: "3D — होरा चक्रबाट वारको क्रम",
     en: "3D — the weekday order from the hora cycle",
   },
-  "ui.learn.n3d_three_motions_one_date": { ne: "३D — तीन गति, एउटा मिति", en: "3D — three motions, one date" },
-  "ui.learn.n3d_tithi_angle_12": { ne: "३D — तिथि कोण (१२°)", en: "3D — tithi angle (12°)" },
-  "ui.learn.n3d_tithi_kshaya_skipped": { ne: "३D — तिथि क्षय (हराउने)", en: "3D — tithi kshaya (skipped)" },
-  "ui.learn.n3d_tithi_vriddhi_repeated": { ne: "३D — तिथि वृद्धि (दोहोरिने)", en: "3D — tithi vriddhi (repeated)" },
-  "ui.learn.n3d_two_zero_points": { ne: "३D — दुई शून्य बिन्दु", en: "3D — two zero points" },
+  "ui.learn.n3d_three_motions_one_date": { ne: "3D — तीन गति, एउटा मिति", en: "3D — three motions, one date" },
+  "ui.learn.n3d_tithi_angle_12": { ne: "3D — तिथि कोण (१२°)", en: "3D — tithi angle (12°)" },
+  "ui.learn.n3d_tithi_kshaya_skipped": { ne: "3D — तिथि क्षय (हराउने)", en: "3D — tithi kshaya (skipped)" },
+  "ui.learn.n3d_tithi_vriddhi_repeated": { ne: "3D — तिथि वृद्धि (दोहोरिने)", en: "3D — tithi vriddhi (repeated)" },
+  "ui.learn.n3d_two_zero_points": { ne: "3D — दुई शून्य बिन्दु", en: "3D — two zero points" },
   "ui.learn.n3d_where_the_ecliptic_crosses_the": {
-    ne: "३D — क्रान्तिवृत्त र विषुवत् रेखाको काट",
+    ne: "3D — क्रान्तिवृत्त र विषुवत् रेखाको काट",
     en: "3D — where the ecliptic crosses the equator",
   },
-  "ui.learn.n3d_why_the_zodiac_has_width": { ne: "३D — राशि पट्टीको चौडाइ", en: "3D — why the zodiac has width" },
-  "ui.learn.n3d_year_length_comparison": { ne: "३D — वर्षको लम्बाइ तुलना", en: "3D — year-length comparison" },
+  "ui.learn.n3d_why_the_zodiac_has_width": { ne: "3D — राशि पट्टीको चौडाइ", en: "3D — why the zodiac has width" },
+  "ui.learn.n3d_year_length_comparison": { ne: "3D — वर्षको लम्बाइ तुलना", en: "3D — year-length comparison" },
   "ui.learn.n6_am": { ne: "बिहान ६", en: "6 AM" },
   "ui.learn.n6_months": { ne: "६ महिना", en: "+6 months" },
   "ui.learn.n6_pm": { ne: "साँझ ६", en: "6 PM" },
@@ -7480,7 +7517,7 @@ export const strings = {
     en: "The outer green line is the tropical (season-based) scale, whose zero is pinned to the vernal equinox. The inner zodiac ring is sidereal (star-based), whose zero is pinned to the true Mesha star-cluster. The angular gap between the two zeros is the ayanamsha — today about 24°.",
   },
   "ui.learn.the_outer_ring_is_the_12": {
-    ne: "बाहिरी घेरामा १२ निरयन बि.सं. महिना, भित्री घेरामा ६ ऋतु (दुई–दुई महिना)। चार सायन बिन्दु (विषुव/अयनान्त) जानाजान महिनाको सीमामा पर्दैनन् — ग्रीष्म अयनान्त असारभित्रै पर्छ, जेठ–असारको जोर्नीमा होइन — किनकि एउटा नाप ताराको सापेक्ष हो, अर्को विषुवको। अयन चलनका कारण यी बिन्दु हरेक ७२ वर्षमा ~१° अनुसार घेराभित्र सर्दै जान्छन्, जुन नै \"ऋतु सर्नु\" हो।",
+    ne: "बाहिरी घेरामा १२ निरयन वि.सं. महिना, भित्री घेरामा ६ ऋतु (दुई–दुई महिना)। चार सायन बिन्दु (विषुव/अयनान्त) जानाजान महिनाको सीमामा पर्दैनन् — ग्रीष्म अयनान्त असारभित्रै पर्छ, जेठ–असारको जोर्नीमा होइन — किनकि एउटा नाप ताराको सापेक्ष हो, अर्को विषुवको। अयन चलनका कारण यी बिन्दु हरेक ७२ वर्षमा ~१° अनुसार घेराभित्र सर्दै जान्छन्, जुन नै \"ऋतु सर्नु\" हो।",
     en: "The outer ring is the 12 sidereal BS months, the inner ring the 6 ṛtus (two months each). The four tropical markers (equinox/solstice) deliberately don't land on month boundaries — the summer solstice falls inside Asar, not at the Jestha–Asar seam — because one ruler is tied to the stars and the other to the equinox. Precession creeps these markers around the ring by ~1° every 72 years, which is what \"ṛtu drift\" means.",
   },
   "ui.learn.the_outer_ring_orders_the_seven": {
@@ -7621,6 +7658,9 @@ export const strings = {
   "ui.panchanga.panchanga_details": { ne: "पञ्चाङ्ग विवरण", en: "Panchanga details" },
   "ui.panchanga.rel_d": { ne: "{{rel}} दिन", en: "{{rel}}d" },
   "ui.panchanga.reload": { ne: "रिलोड", en: "Reload" },
+  "ui.zoom.fullscreen": { ne: "पूरा स्क्रिन", en: "Full screen" },
+  "ui.zoom.exit_fullscreen": { ne: "पूरा स्क्रिन बन्द", en: "Exit full screen" },
+  "ui.zoom.reset": { ne: "जुम रिसेट", en: "Reset zoom" },
   "ui.panchanga.reload_reset_zoom_sunrise": { ne: "रिलोड · जुम रिसेट · सूर्योदय", en: "Reload · reset zoom · sunrise" },
   "ui.panchanga.status_at_instanttime": { ne: "{{instantTime}} बजेको अवस्था", en: "Status at {{instantTime}}" },
   "ui.panchanga.value_padas": { ne: "{{value}} पद", en: "{{value}} padas" },
@@ -7836,7 +7876,7 @@ export const strings = {
 
   /* ── ui.gochar ──────────────────────────────────────────────────────────── */
   "ui.gochar.in_rashiuntil_until_lang": {
-    ne: "{{rashiUntil}} मा {{lang}} सम्म",
+    ne: "{{rashiUntil}}मा {{lang}}सम्म",
     en: "In {{rashiUntil}} until {{lang}}",
   },
 
@@ -8220,7 +8260,7 @@ export const strings = {
   "ui.learn.earth_faster": { ne: "पृथ्वी (छिटो)", en: "Earth (faster)" },
   "ui.learn.mars_slower": { ne: "मंगल (सुस्त)", en: "Mars (slower)" },
   "ui.learn.path_seen_against_the_sky": { ne: "आकाशमा देखिने बाटो", en: "Path seen against the sky" },
-  "ui.learn.n_3_d_mars_s_retrograde_loop": { ne: "३D — मंगलको वक्री गति", en: "3D — Mars's retrograde loop" },
+  "ui.learn.n_3_d_mars_s_retrograde_loop": { ne: "3D — मंगलको वक्री गति", en: "3D — Mars's retrograde loop" },
   "ui.learn.point_seen_against_the_stars_trail": { ne: "तारा-पृष्ठभूमिमा देखिने बिन्दु (लिक)", en: "Point seen against the stars (trail)" },
   "ui.learn.synodic_period": { ne: "सिनोडिक अवधि", en: "Synodic period" },
   "ui.learn.on_the_inner_orbit_earth_moves": { ne: "भित्री कक्षमा पृथ्वी बाहिरी कक्षको मंगलभन्दा छिटो घुम्छ। पृथ्वीबाट मंगलतर्फको दृष्टिरेखा तारा-पृष्ठभूमिमा कहाँ पर्छ भनेर हेर्दा — प्रायः यो अगाडि सर्छ, तर पृथ्वीले मंगललाई उछिन्ने बेला केही समयका लागि यो पछाडि सर्छ (वक्री), अनि फेरि अगाडि। यो लूप कतै मंगल वा पृथ्वी गएको ठाउँ होइन — यो दृष्टिरेखाको दिशा मात्र हो।", en: "On the inner orbit, Earth moves faster than Mars on the outer one. Watching where the sightline from Earth to Mars points against the star backdrop, it usually drifts forward — but while Earth overtakes Mars, it drifts backward for a while (retrograde), then resumes forward. This loop is not anywhere either planet actually went — it's only the direction of the sightline." },
@@ -8251,9 +8291,9 @@ export const strings = {
   "ui.learn.x_e83f4e4a": { ne: "सौर वर्ष {{v0}} दिन · १२ चान्द्र मास {{v1}} दिन → ~{{v2}} दिनको खाडल", en: "Solar year {{v0}} days · 12 lunar months {{v1}} days → ~{{v2}}-day gap" },
   "ui.learn.x_efb4e824": { ne: "१२ चान्द्र मास = {{v0}} दिन", en: "12 lunar months = {{v0}} days" },
   "ui.learn.x_d723f1f1": { ne: "चान्द्र मास — औंसीबाट औंसी · वर्षभित्र अहिलेसम्म {{v0}}", en: "Lunar month — new moon to new moon · {{v0}} so far this year" },
-  "ui.onboarding.daily_panchanga_bs_and_ad_dates": { ne: ["आजको पञ्चाङ्ग","बि.सं. र ई.सं. मिति, तिथि, नक्षत्र, योग, करण र सूर्योदय–सूर्यास्त एकै ठाउँमा।"], en: ["Daily panchanga","BS and AD dates, tithi, nakshatra, yoga, karana and sunrise–sunset in one place."] },
+  "ui.onboarding.daily_panchanga_bs_and_ad_dates": { ne: ["आजको पञ्चाङ्ग","वि.सं. र ई.सं. मिति, तिथि, नक्षत्र, योग, करण र सूर्योदय–सूर्यास्त एकै ठाउँमा।"], en: ["Daily panchanga","BS and AD dates, tithi, nakshatra, yoga, karana and sunrise–sunset in one place."] },
   "ui.onboarding.festivals_holidays_browse_festivals_and_public": { ne: ["चाडपर्व र बिदा","महिना ग्रिडमा चाडपर्व र सार्वजनिक बिदा हेर्नुहोस्।"], en: ["Festivals & holidays","Browse festivals and public holidays on the month grid."] },
-  "ui.onboarding.planets_sky_view_see_planetary_positions": { ne: ["ग्रह स्थिति र आकाश","ग्रहहरूको स्थिति र ३D आकाश दृश्य हेर्नुहोस्।"], en: ["Planets & sky view","See planetary positions and explore the 3D sky."] },
+  "ui.onboarding.planets_sky_view_see_planetary_positions": { ne: ["ग्रह स्थिति र आकाश","ग्रहहरूको स्थिति र 3D आकाश दृश्य हेर्नुहोस्।"], en: ["Planets & sky view","See planetary positions and explore the 3D sky."] },
   "ui.onboarding.the_more_tab_kundali_sait_rashifal": { ne: ["थप मेनु","कुण्डली, साइत, राशिफल, रूपान्तरण र सेटिङ तलको 'थप' बाट पुग्न सकिन्छ।"], en: ["The More tab","Kundali, sait, rashifal, converter and settings live under 'More' at the bottom."] },
   "ui.onboarding.x_0822b526": { ne: "वैदिक पात्रोमा स्वागत छ", en: "Welcome to Vedic Patro" },
   "ui.onboarding.x_f8221375": { ne: "सुरु गर्नु अघि केही रोजाइहरू मिलाऔं। पछि सेटिङबाट यी सबै परिवर्तन गर्न सकिन्छ।", en: "Let's set a few preferences before you start. You can change all of these later in settings." },
@@ -8290,7 +8330,7 @@ export const strings = {
   "ui.ui.x_5abec41f": { ne: "पासवर्ड देखाउनुहोस्", en: "Show password" },
   "ui.mobile_drawer_nav.sun_times": { ne: "सूर्यक्रान्ति", en: "Sun times" },
   "ui.mobile_drawer_nav.avakahada": { ne: "अवकहडा चक्र", en: "Avakahada" },
-  "ui.mobile_drawer_nav.n_3_d_sky_gochar": { ne: "३D आकाश गोचर", en: "3D sky gochar" },
+  "ui.mobile_drawer_nav.n_3_d_sky_gochar": { ne: "3D आकाश गोचर", en: "3D sky gochar" },
   "ui.mobile_nav.transit": { ne: "दैनिक", en: "Transit" },
   "ui.notifications.varjyam": { ne: "वर्ज्यम्", en: "Varjyam" },
   "ui.notifications.bhadra": { ne: "भद्रा", en: "Bhadra" },

@@ -2,7 +2,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import type { CalendarDay, Festival, Holiday } from "@vedic-patro/api-client";
 import { AD_MONTHS_SHORT, AD_MONTHS_SHORT_NE, BS_MONTH_NAMES, BS_MONTHS_NE, BS_MONTHS_SHORT, adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
-import { canonicalCivilIso, civilIsoDayOfMonth, civilIsoWeekday, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
+import { addDaysCivilIso, canonicalCivilIso, civilIsoDayOfMonth, civilIsoWeekday, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 import { type SecondaryCellDate, WEEKDAYS_EN, WEEKDAYS_NE, bsMonthHasOfflineData, filterRedundantDayFestivals, formatAdIso, shiftAdMonth } from "@vedic-patro/domain/calendar/local-calendar";
 
 export * from "@vedic-patro/domain/calendar/local-calendar";
@@ -251,6 +251,28 @@ export function mergeEnrichedDays(
       outsideMonth: local.outsideMonth,
     };
   });
+}
+
+/** Longest span one holiday may paint; guards against a malformed end date. */
+const MAX_HOLIDAY_SPAN_DAYS = 31;
+
+/**
+ * Every civil date a public holiday covers — each day from `start_date` through
+ * `end_date`, not just the first: Tihar is one entry running Laxmi Puja → Bhai
+ * Tika, and all of those days are off.
+ */
+export function publicHolidayDateSet(festivals: Array<Holiday | Festival>): Set<string> {
+  const dates = new Set<string>();
+  for (const f of festivals) {
+    if (!f.is_public_holiday || !f.start_date) continue;
+    const end = f.end_date && f.end_date > f.start_date ? f.end_date : f.start_date;
+    let day = f.start_date;
+    for (let i = 0; i < MAX_HOLIDAY_SPAN_DAYS && day <= end; i += 1) {
+      dates.add(day);
+      day = addDaysCivilIso(day, 1);
+    }
+  }
+  return dates;
 }
 
 /** Attach festival/holiday names from a yearly list (lighter than full month API). */

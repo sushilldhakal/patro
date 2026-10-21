@@ -54,7 +54,7 @@ function axisDir(phi: number): V3 {
 
 /* ---- pole stars the north pole sweeps past, by बिक्रम सम्वत् year -------
  * ध्रुव (Polaris) and अभिजित (Vega) keep their Nepali names in the catalogue;
- * the rest carry their standard names (year = closest approach, बि.सं.).     */
+ * the rest carry their standard names (year = closest approach, वि.सं.).     */
 const POLE_STARS = [
   { key: "learn.study.precession.star_thuban", bs: -2730 }, // α Dra
   { key: "learn.study.precession.star_kochab", bs: -943 }, // β UMi
@@ -97,7 +97,7 @@ export function PrecessionCone() {
     return () => cancelAnimationFrame(raf.current);
   }, [playing]);
 
-  const year = (phi / TAU) * CYCLE; // बिक्रम सम्वत् — starts at ०००० बि.सं.
+  const year = (phi / TAU) * CYCLE; // बिक्रम सम्वत् — starts at ०००० वि.सं.
 
   /* axis endpoints */
   const a = axisDir(phi);

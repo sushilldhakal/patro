@@ -23,7 +23,7 @@ export const rashifalClasses = {
   panel: "mt-6 flex flex-col gap-4",
   selectedBar: "flex items-center justify-center gap-1.5 text-sm text-secondary",
   selectedLink: "font-semibold underline underline-offset-2",
-  methodNote: "m-0 text-center text-xs text-muted-foreground",
+  methodNote: "m-0 text-center text-sm text-muted-foreground",
   intro: "m-0 text-center text-sm text-muted-foreground",
   statusBox:
     "rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm",
@@ -38,7 +38,7 @@ export const rashifalClasses = {
     "flex items-start gap-3 border-b border-border bg-secondary/8 px-4 py-3 dark:bg-secondary/15",
   headerBody: "min-w-0 flex-1",
   name: "m-0 text-base font-bold leading-snug text-foreground",
-  nameSub: "m-0 mt-1 text-xs leading-relaxed text-muted-foreground",
+  nameSub: "m-0 mt-1 text-sm leading-relaxed text-muted-foreground",
   taraBadge: "shrink-0 rounded-md px-2 py-0.5 text-diagram-xs font-bold uppercase tracking-wide",
   /** The badge's text in the app (React Native text does not inherit from the View). */
   taraBadgeText: "text-diagram-xs font-bold uppercase tracking-wide text-foreground",
@@ -111,8 +111,9 @@ export const rashifalClasses = {
     row: "flex-wrap items-center gap-2",
     label: "items-center gap-1.5",
     labelText: "text-sm font-medium text-foreground",
-    signInButton: "rounded-lg border border-border bg-card px-2.5 py-1.5",
-    signInText: "text-xs font-semibold text-primary",
+    /* A filled button: outlined, it read as an empty text field. */
+    signInButton: "rounded-full bg-primary px-3.5 py-1.5",
+    signInText: "text-sm font-semibold text-primary-foreground",
     empty: "text-xs text-muted-foreground",
     select:
       "h-9 min-w-[10rem] max-w-[16rem] rounded-lg border border-border bg-card px-2.5 text-sm text-foreground",

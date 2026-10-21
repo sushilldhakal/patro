@@ -2,7 +2,8 @@
  * The selected day's highlight on the home page, shared by the website's and
  * the app's `components/home/TodayHighlightCard.tsx`: the big date, month and
  * weekday, the cross-era and Nepal Sambat lines, the festival or tithi title,
- * the moon phase and the sunrise/sunset.
+ * the moon phase, the sunrise/sunset, and — on Dashain, Tihar and the other
+ * ritual festivals — each rite's sait at the selected location.
  */
 import { useMemo } from "react";
 import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
@@ -22,6 +23,7 @@ import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patr
 import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { lazyList } from "@vedic-patro/i18n/runtime";
+import { buildSaitRows, saitNote } from "../_shared/sait-rows";
 
 const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
@@ -35,6 +37,8 @@ function moonPhaseKey(index: number): string {
   if (index >= 21 && index <= 23) return "ui.home.waning_half_moon";
   return index < 14 ? "ui.home.waxing_moon" : "ui.home.waning_moon";
 }
+
+export type { SaitRow } from "../_shared/sait-rows";
 
 export function useTodayHighlight({
   selectedDay,
@@ -113,6 +117,10 @@ export function useTodayHighlight({
     return english ? short : (formatClockNepali(short) ?? digits(short));
   };
 
+  // Saits come from the day payload, which is fetched per location: a new
+  // location brings its own local kaal, lagna and clock times.
+  const saits = buildSaitRows(p?.festival_saits, { t, lang, digits, selectedAdDate });
+
   const count = digits(Math.abs(daysAway));
   const kicker = isToday
     ? t("ui.home.special_today")
@@ -144,5 +152,8 @@ export function useTodayHighlight({
     phase: tithiIndex != null ? t(moonPhaseKey(tithiIndex)) : undefined,
     sunrise: clock((p ? getSunrise(p) : undefined) ?? selectedDay?.sunrise),
     sunset: clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset),
+    saits,
+    saitHeading: t("ui.home.sait_heading"),
+    saitNote: saitNote(p?.festival_saits, t),
   };
 }

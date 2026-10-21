@@ -515,9 +515,14 @@ def _purnimant_month_to_lunar_month(window: PurnimantMonth) -> LunarMonth:
     to the *beginning* of the purnimant window so that Krishna-paksha tithis
     (which precede the Purnima) are found within the correct 35-day scan.
     """
+    # The window opens a day after the previous Purnima *instant*, but that
+    # instant is where Krishna Pratipada begins — searching from the window
+    # open skipped Pratipada/Dwitiya and matched the next month's instead
+    # (Ashwin Krishna 2 of 2083 resolved to nothing, Krishna 1 to Kartik's).
+    krishna_start = window.start_dt - timedelta(days=1)
     return LunarMonth(
         start_Aausi=window.start_dt,
-        end_purnima=window.start_dt,           # krishna search starts at window open
+        end_purnima=krishna_start,             # krishna search starts at the previous Purnima
         end_Aausi=window.end_dt + timedelta(days=1),
         month_name=window.festival_masa,
         month_index=1,

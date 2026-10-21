@@ -73,7 +73,7 @@ export const leapYears: ArticleData = {
       ],
     },
     {
-      title: { ne: "बि.सं.मा लीप दिन किन छैन", en: "Why BS has no leap day" },
+      title: { ne: "वि.सं.मा लीप दिन किन छैन", en: "Why BS has no leap day" },
       eyebrow: "A different mechanism",
       blocks: [
         {
@@ -86,7 +86,7 @@ export const leapYears: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "ग्रेगोरियन पात्रोले महिनाको लम्बाइ **पहिल्यै तय** गर्छ, त्यसैले अंश मिलाउन थप दिन चाहिन्छ। बि.सं.ले भने महिनाको लम्बाइ **हरेक वर्ष सूर्यको वास्तविक स्थितिबाट** निकाल्छ — अंश आफैँ भित्रै समायोजित हुन्छ।",
+            ne: "ग्रेगोरियन पात्रोले महिनाको लम्बाइ **पहिल्यै तय** गर्छ, त्यसैले अंश मिलाउन थप दिन चाहिन्छ। वि.सं.ले भने महिनाको लम्बाइ **हरेक वर्ष सूर्यको वास्तविक स्थितिबाट** निकाल्छ — अंश आफैँ भित्रै समायोजित हुन्छ।",
             en: "The Gregorian calendar **fixes month lengths in advance**, so it needs an extra day to absorb the remainder. BS instead derives month lengths **each year from the Sun's actual position** — the remainder is absorbed automatically.",
           },
         },
@@ -104,12 +104,12 @@ export const leapYears: ArticleData = {
               { ne: "लीप दिन (फेब्रुअरी २९)", en: "A leap day (29 February)" },
             ],
             [
-              { ne: "बि.सं. — सौर पक्ष", en: "BS — solar side" },
+              { ne: "वि.सं. — सौर पक्ष", en: "BS — solar side" },
               { ne: "उही अंश", en: "The same remainder" },
               { ne: "महिनाको लम्बाइ आफैँ बदलिन्छ (२९–३२ दिन)", en: "Month lengths simply vary (29–32 days)" },
             ],
             [
-              { ne: "बि.सं. — चान्द्र पक्ष", en: "BS — lunar side" },
+              { ne: "वि.सं. — चान्द्र पक्ष", en: "BS — lunar side" },
               { ne: "वर्षमा ११ दिनको फरक", en: "An 11-day gap each year" },
               { ne: "अधिक मास — थप महिना", en: "Adhika masa — an extra month" },
             ],
@@ -118,7 +118,7 @@ export const leapYears: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "अर्थात् बि.सं.मा “लीप” को समकक्ष **अधिक मास** हो — तर यो सौर अंश मिलाउन होइन, **चान्द्र–सौर फरक** मिलाउन प्रयोग हुन्छ। दुई फरक समस्याका दुई फरक समाधान।",
+            ne: "अर्थात् वि.सं.मा “लीप” को समकक्ष **अधिक मास** हो — तर यो सौर अंश मिलाउन होइन, **चान्द्र–सौर फरक** मिलाउन प्रयोग हुन्छ। दुई फरक समस्याका दुई फरक समाधान।",
             en: "So the BS counterpart of a leap day is **adhika masa** — but it corrects the **lunar–solar gap**, not the solar remainder. Two different problems, two different fixes.",
           },
         },

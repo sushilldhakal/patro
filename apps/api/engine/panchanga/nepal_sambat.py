@@ -21,20 +21,19 @@ NS_ADHIK_PAKSHA_NE = {
     "krishna": "अनालागा",
 }
 
-# Regular-month Newari krishna-paksha suffix (…लागा) by lunar month index 1–12
+# Nepal Sambat months are amānta and begin with Kachhalā, the amānta Kartik
+# (its new year is Kartik Shukla Pratipada): amānta month name → its index in
+# NS_MONTH_NAMES_NE. Laxmi Puja, the amānta Ashwin Amavasya, is Kaulā Āmāi.
+NS_MONTH_OF_AMANTA = {
+    "Kartik": 0, "Mangsir": 1, "Poush": 2, "Magh": 3, "Falgun": 4, "Chaitra": 5,
+    "Baishakh": 6, "Jestha": 7, "Ashadh": 8, "Shrawan": 9, "Bhadra": 10, "Ashwin": 11,
+}
+
+# Regular-month Newari krishna-paksha name (…लागा), keyed by the *amānta*
+# month — the one ``merge_lunar_month_for_day`` names. Amānta Ashwin's dark
+# half (Tihar) is कौलागा; pūrṇimānta reckoning would call it Kartik's.
 NS_KRISHNA_PAKSHA_NE = {
-    "Kartik": "कौलागा",
-    "Mangsir": "कछलागा",
-    "Poush": "थिन्लागा",
-    "Magh": "पोहेलागा",
-    "Falgun": "सिल्लागा",
-    "Chaitra": "चिल्लागा",
-    "Baishakh": "चौलागा",
-    "Jestha": "बछलागा",
-    "Ashadh": "तछलागा",
-    "Shrawan": "दिल्लागा",
-    "Bhadra": "गुँलागा",
-    "Ashwin": "ञलागा",
+    month: f"{NS_MONTH_NAMES_NE[index]}गा" for month, index in NS_MONTH_OF_AMANTA.items()
 }
 
 
@@ -112,7 +111,11 @@ def gregorian_to_ns(
         "year": ns_year,
         "month": month_name,
         "month_index": month_index,
-        "month_name_ne": NS_MONTH_NAMES_NE[month_index - 1] if month_index else None,
+        "month_name_ne": (
+            NS_MONTH_NAMES_NE[NS_MONTH_OF_AMANTA[lunar_month_name]]
+            if lunar_month_name in NS_MONTH_OF_AMANTA
+            else None
+        ),
         "day": tithi_display,
         "tithi_absolute": tithi_absolute,
         "paksha": paksha,

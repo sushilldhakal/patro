@@ -39,13 +39,24 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha, sc
           {group.open ? (
             <Grid cols={{ base: 1, sm: 2 }} gap={12}>
               {group.cards.map((card) => (
+                /* Step and badge share a row, the graha sits beside its name, and the button
+                   is sized to its label: stacked loose, the badge stretched full width, the
+                   graha dot floated on a line of its own and the button text wrapped. */
                 <Box key={card.key} className={sh.finding}>
-                  <Text className={sh.findingStep}>{card.step}</Text>
-                  <Text className={cn(sh.remedyBadge, sh.remedyBadgeText, REMEDY[card.remedy])}>{card.remedyLabel}</Text>
-                  {renderGraha({ graha: card.graha, size: 28 })}
-                  <Text className={sh.findingName}>{card.name}</Text>
+                  <Box className={sh.findingHead}>
+                    <Text className={sh.findingStep}>{card.step}</Text>
+                    <Box className={cn("self-start", sh.remedyBadge, REMEDY[card.remedy])}>
+                      <Text className={cn(sh.remedyBadgeText, REMEDY[card.remedy], "bg-transparent")}>{card.remedyLabel}</Text>
+                    </Box>
+                  </Box>
+                  <Box className={sh.findingGraha}>
+                    {renderGraha({ graha: card.graha, size: 28 })}
+                    <Text className={sh.findingName}>{card.name}</Text>
+                  </Box>
                   <Text className={sh.findingReason}>{card.reason}</Text>
-                  <Pressable onPress={() => panel.selectFinding(card.graha)} className={sh.findingButton}><Text>{card.viewLabel}</Text></Pressable>
+                  <Pressable onPress={() => panel.selectFinding(card.graha)} className={cn("self-start", sh.findingButton)}>
+                    <Text className={sh.findingButtonText}>{card.viewLabel}</Text>
+                  </Pressable>
                 </Box>
               ))}
             </Grid>
@@ -69,9 +80,20 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha, sc
             <Text as="h2" className={sh.detailTitle}>{detail.title}</Text>
             <Text className={sh.detailSubtitle}>{detail.subtitle}</Text>
           </Box>
-          <Text className={sh.pill}><Icon node={iconCalendarClock} size={14} tone="secondary" /> {detail.vaara}</Text>
-          <Text className={sh.pill}><Icon node={iconClock} size={14} tone="secondary" /> {detail.samaya}</Text>
-          <Text className={sh.pill}>{detail.color}</Text>
+          {/* Icon and label in a row: an icon nested inside a Text does not lay out on native. */}
+          <Box className={sh.pills}>
+            <Box className={sh.pill}>
+              <Icon node={iconCalendarClock} size={14} tone="secondary" />
+              <Text className={sh.pillText}>{detail.vaara}</Text>
+            </Box>
+            <Box className={sh.pill}>
+              <Icon node={iconClock} size={14} tone="secondary" />
+              <Text className={sh.pillText}>{detail.samaya}</Text>
+            </Box>
+            <Box className={sh.pill}>
+              <Text className={sh.pillText}>{detail.color}</Text>
+            </Box>
+          </Box>
         </Box>
         <Box className={sh.mantraBox}>
           <Text className={sh.mantraLabel}>{copy.beejaHeading}</Text>
@@ -83,7 +105,10 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha, sc
           <Text className={sh.mantraBig}>{detail.tantrikMantra}</Text>
         </Box>
         <Box className={sh.stotramBox}>
-          <Text className={sh.tileLabel}><Icon node={iconBookOpen} size={16} tone="secondary" /> {copy.stotramHeading}</Text>
+          <Box className={sh.stotramHead}>
+            <Icon node={iconBookOpen} size={16} tone="secondary" />
+            <Text className={sh.tileLabel}>{copy.stotramHeading}</Text>
+          </Box>
           <Text className={sh.stotram}>{detail.stotram}</Text>
         </Box>
         <Text className={sh.yantraLabel}>{copy.yantraHeading}</Text>
@@ -100,7 +125,10 @@ export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha, sc
           ))}
         </Grid>
         <Text className={cn(sh.noteBox, sh.noteText)}><Text className={sh.noteLabel}>{copy.gemDetailLabel}</Text> {detail.gemDetail}</Text>
-        <Text className={sh.donationTitle}><Icon node={iconCoins} size={16} tone="secondary" /> {copy.donationItems}</Text>
+        <Box className="flex-row items-center gap-1.5">
+          <Icon node={iconCoins} size={16} tone="secondary" />
+          <Text className={sh.donationTitle}>{copy.donationItems}</Text>
+        </Box>
         <Box className={sh.donationList}>
           {detail.daan.map((item, idx) => <Text key={`${item}-${idx}`} className={cn(sh.donationChip, sh.donationChipText)}>{item}</Text>)}
         </Box>

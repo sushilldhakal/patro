@@ -11,6 +11,7 @@ import {
   type KundaliProfilePickerHandle,
 } from "@/components/kundali/KundaliProfilePicker";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
+import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -56,12 +57,17 @@ export default function KundaliScreen() {
             </Text>
           </View>
         ) : status === "login" ? (
-          <KundaliLoginPrompt
-            title={copy.loginTitle}
-            body={copy.loginBody}
-            onLogin={authDialog.openLogin}
-            onSignup={authDialog.openSignup}
-          />
+          <View className="gap-6">
+            <KundaliLoginPrompt
+              title={copy.loginTitle}
+              body={copy.loginBody}
+              onLogin={authDialog.openLogin}
+              onSignup={authDialog.openSignup}
+            />
+            {/* Logged out, the card alone left half the screen empty: offer the reading
+                that explains a kundali's parts, which needs no account. */}
+            <LearnMoreCard slugs={["rashi", "sidereal-vs-tropical", "five-limbs-together"]} />
+          </View>
         ) : (
           <View className="gap-4">
             <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>

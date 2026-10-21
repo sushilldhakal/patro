@@ -21,7 +21,7 @@ import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 /** A sait ceremony — the app's drawing of `useSaitPage` (@vedic-patro/features). */
 export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
-  const { t } = useLocale();
+  const { t, digits } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -95,7 +95,7 @@ export default function SaitCategoryScreen() {
             {page.months.map((m) => (
               <View key={m.key} className={saitClasses.dateRow}>
                 <Text className={saitClasses.dateRowMonth} style={nepaliTextStyle()}>
-                  {m.label}
+                  {digits(m.label)}
                 </Text>
                 <View className={saitClasses.dateRowDays}>
                   {m.days.map((d) => {
@@ -107,7 +107,7 @@ export default function SaitCategoryScreen() {
                         className={saitClasses.dateChip}
                       >
                         <Text className={saitClasses.dateChipText} style={{ color: style ? style.fg : brand.green, ...nepaliTextStyle() }}>
-                          {d.label}
+                          {digits(d.label)}
                         </Text>
                       </View>
                     );

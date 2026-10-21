@@ -249,7 +249,7 @@ export const astronomyBasics: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "सूर्यको मार्ग (क्रान्तिवृत्त) लाई **१२ बराबर भाग** मा बाँडिएको छ — प्रत्येक ~३०°~ को एक राशि। सङ्क्रान्ति = सूर्य अर्को राशिमा प्रवेश; बि.सं. को महिना पनि यही सूर्य–राशिमा आधारित।",
+            ne: "सूर्यको मार्ग (क्रान्तिवृत्त) लाई **१२ बराबर भाग** मा बाँडिएको छ — प्रत्येक ~३०°~ को एक राशि। सङ्क्रान्ति = सूर्य अर्को राशिमा प्रवेश; वि.सं. को महिना पनि यही सूर्य–राशिमा आधारित।",
             en: "The Sun's path (ecliptic) is divided into **12 equal parts** — each a ~30°~ rashi. A sankranti = the Sun entering the next sign; the BS months are also based on this solar sign.",
           },
         },

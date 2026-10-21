@@ -5,7 +5,7 @@ import { Grid, Box, Pressable, Text } from "@vedic-patro/ui";
 import type { RituSeasonsProps } from "../contract";
 
 /** Six seasons. The why-link route and the header icon come from the app. */
-export function RituSeasons({ location, showHeader = true, placeLabel, headerIcon, onWhyPress, className }: RituSeasonsProps) {
+export function RituSeasons({ location, showHeader = true, placeLabel, headerIcon, onWhyPress, toolbarStart, className }: RituSeasonsProps) {
   const page = useRituPage(location);
   const why = onWhyPress ? (
     <Pressable label={page.copy.whyLink} onPress={onWhyPress} className={cn("flex-row", ritu.whyLink)} webClassName="hover:border-secondary/55 hover:bg-secondary/12">
@@ -27,7 +27,8 @@ export function RituSeasons({ location, showHeader = true, placeLabel, headerIco
           {why}
         </Box>
       ) : (
-        <Box className={cn("flex-row flex-wrap", ritu.toolbar)}>
+        <Box className={cn("flex-row flex-wrap", ritu.toolbar, toolbarStart ? "justify-between" : undefined)}>
+          {toolbarStart}
           {page.south ? <Text className={ritu.southTag}>{page.copy.southern}</Text> : null}
           {why}
         </Box>
@@ -41,9 +42,12 @@ export function RituSeasons({ location, showHeader = true, placeLabel, headerIco
               <Box className={ritu.nameWrap}>
                 <Text className={ritu.name}>{card.name}</Text>
               </Box>
-              <Box className={cn(ritu.dateChip, ritu.dateChipBox)}>
-                <Text className={ritu.dateDay}>{card.day}</Text>
-                <Text className={ritu.dateMonth}>{card.month}</Text>
+              {/* The season's first day in BS — labelled, since a bare "७ / असोज" read as a mystery number. */}
+              <Box className="items-end">
+                <Text className="text-xs text-muted-foreground">{page.copy.startsLabel}</Text>
+                <Text className="text-sm font-semibold text-accent">
+                  {card.month} {card.day}
+                </Text>
               </Box>
             </Box>
             <Box className={cn("flex-row", ritu.metaRow)}>

@@ -35,7 +35,7 @@ export function AuthDialog(props: AuthDialogViewProps) {
         {props.mode === "login" ? (
           <>
             <Pressable label={sw.forgot} onPress={() => props.onSwitch("forgot")}>
-              <Text className={account.switchText}>{sw.forgot}</Text>
+              <Text className={account.switchLink}>{sw.forgot}</Text>
             </Pressable>
             <Pressable label={sw.create} onPress={() => props.onSwitch("signup")}>
               <Text className={account.switchText}>

@@ -169,7 +169,7 @@ export const howWeCalculate: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "हरेक गणना एउटै सूत्रबाट सुरु हुन्छ: *अवलोककको स्थान* (अक्षांश, देशान्तर, समय क्षेत्र, उचाइ), *नागरिक दिन* (ग्रेगोरियन, ई.पू., वा बि.सं. ठेगाना), र त्यो दिनको ~जुलियन दिन~। स्थानीय घडी आईएएनए समय क्षेत्रबाट; उदय/अस्तका लागि साँचो क्षितिज, अपवर्तन र क्षितिज झुकाव समावेश।",
+            ne: "हरेक गणना एउटै सूत्रबाट सुरु हुन्छ: *अवलोककको स्थान* (अक्षांश, देशान्तर, समय क्षेत्र, उचाइ), *नागरिक दिन* (ग्रेगोरियन, ई.पू., वा वि.सं. ठेगाना), र त्यो दिनको ~जुलियन दिन~। स्थानीय घडी आईएएनए समय क्षेत्रबाट; उदय/अस्तका लागि साँचो क्षितिज, अपवर्तन र क्षितिज झुकाव समावेश।",
             en: "Every run starts the same way: the *observer’s place* (latitude, longitude, timezone, elevation), the chosen *civil day* (Gregorian, BCE, or BS from the URL), and its ~Julian Day~. The local clock comes from the IANA timezone; rise and set include the true horizon, refraction, and horizon dip.",
           },
         },
@@ -478,7 +478,7 @@ export const howWeCalculate: ArticleData = {
                 en: "11",
               },
               {
-                ne: "सम्वत्सर, बि.सं./ने.सं.",
+                ne: "सम्वत्सर, वि.सं./ने.सं.",
                 en: "Samvatsara, BS/NS labels",
               },
               {
@@ -594,7 +594,7 @@ export const howWeCalculate: ArticleData = {
                 en: "Upcoming event list",
               },
               {
-                ne: "चयनित महिनाका ई.सं. सीमाभित्र सबै प्रवेश/स्थान घटना → स्थानीय समय + बि.सं. दिन",
+                ne: "चयनित महिनाका ई.सं. सीमाभित्र सबै प्रवेश/स्थान घटना → स्थानीय समय + वि.सं. दिन",
                 en: "Every ingress/station event inside the browsed month’s AD bounds → local time + BS day",
               },
             ],
@@ -713,7 +713,7 @@ export const howWeCalculate: ArticleData = {
                 en: "Patro display",
               },
               {
-                ne: "नेपाली लेबल, बि.सं./ई.सं. मिति, त्यो नागरिक दिनको दैनिक पञ्चाङ्ग लिङ्क",
+                ne: "नेपाली लेबल, वि.सं./ई.सं. मिति, त्यो नागरिक दिनको दैनिक पञ्चाङ्ग लिङ्क",
                 en: "Nepali labels, BS/AD dates, and a link to that civil day’s panchanga",
               },
             ],
