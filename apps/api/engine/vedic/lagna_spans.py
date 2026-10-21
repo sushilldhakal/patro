@@ -18,8 +18,15 @@ def build_lagna_spans(
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
     ayanamsa: int | None = None,
+    complete: bool = False,
 ) -> list[dict[str, Any]]:
-    """Twelve lagna periods across one vedic day (sunrise → sunrise)."""
+    """Twelve lagna periods across one vedic day (sunrise → sunrise).
+
+    The patro table lists twelve signs and stretches the twelfth to the next
+    sunrise, although the Sun's own sign rises again shortly before it.
+    ``complete`` walks every real boundary instead, so the closing stretch
+    carries the sign actually rising — for timing a rite, not for the table.
+    """
     from engine.astronomy.engine import SIDM_LAHIRI
     from engine.astronomy.timescale import resolve_observer_timezone
 
@@ -28,10 +35,13 @@ def build_lagna_spans(
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt
 
-    for index in range(12):
+    # Twelve signs, plus the Sun's own sign again when walking to the end.
+    for index in range(14 if complete else 12):
+        if complete and cursor >= next_sunrise_dt:
+            break
         cursor_jd = as_julian_day(cursor)
         lagna = lagna_service.lagna(cursor_jd, lat=lat, lon=lon, ayanamsa=mode)
-        if index == 11:
+        if index == 11 and not complete:
             end_dt = next_sunrise_dt
         else:
             end_jd = lagna_service.next_boundary(
@@ -41,6 +51,8 @@ def build_lagna_spans(
             # JD: datetime_from_jd truncates to whole seconds, which would
             # coarsen every span boundary this payload prints.
             end_dt = cursor + timedelta(days=end_jd - cursor_jd)
+            if complete:
+                end_dt = min(end_dt, next_sunrise_dt)
         if end_dt <= cursor:
             end_dt = cursor + timedelta(seconds=60)
 

@@ -56,9 +56,6 @@ const SAIT_DIRECTION_KEYS: Record<string, string> = {
   north: "ui.home.sait_dir_north",
 };
 
-/** Night kaals — a rite timed in them (Laxmi Puja) has no Abhijit to fall back on. */
-const NIGHT_KAALS = new Set(["pradosh", "purva_ratri"]);
-
 /** One rite on the card: its clock times, one per lagna stretch. */
 export type SaitRow = {
   key: string;
@@ -148,7 +145,15 @@ export function useTodayHighlight({
   // Saits come from the day payload, which is fetched per location: a new
   // location brings its own local kaal, lagna and clock times. One row per
   // rite; a ceremony split across several lagnas lists each stretch.
-  const span = (w: { start_local: string; end_local: string }) => `${clock(w.start_local)} – ${clock(w.end_local)}`;
+  // Far from Nepal the tithi can hold on the local day before or after the
+  // patro's; such a sait carries its own date.
+  const span = (w: { date_local?: string; start_local: string; end_local: string }) => {
+    const times = `${clock(w.start_local)} – ${clock(w.end_local)}`;
+    if (!w.date_local || w.date_local === selectedAdDate) return times;
+    const [, m, d] = w.date_local.split("-").map(Number);
+    const monthLabel = bilingualText(lang, AD_MONTH_NAMES_NE[m - 1], AD_MONTH_NAMES[m - 1]);
+    return `${monthLabel} ${digits(d)}, ${times}`;
+  };
   const saits: SaitRow[] = [];
   const label = (keys: Record<string, string>, id: string | null | undefined) => {
     const key = id ? keys[id] : undefined;
@@ -180,7 +185,8 @@ export function useTodayHighlight({
     });
   }
 
-  const daytimeRite = (p?.festival_saits ?? []).some((sait) => sait.kind === "festival" && !NIGHT_KAALS.has(sait.kaal ?? ""));
+  // Set by the API when a daytime sait lies outside the local Abhijit muhurta.
+  const abhijitAlternate = (p?.festival_saits ?? []).some((sait) => sait.alternate);
 
   const count = digits(Math.abs(daysAway));
   const kicker = isToday
@@ -216,6 +222,6 @@ export function useTodayHighlight({
     saits,
     saitHeading: t("ui.home.sait_heading"),
     // A daytime festival rite may be done in Abhijit when its sait does not suit.
-    saitNote: [t("ui.home.sait_local_note"), daytimeRite ? t("ui.home.sait_abhijit_note") : ""].filter(Boolean).join(" "),
+    saitNote: [t("ui.home.sait_local_note"), abhijitAlternate ? t("ui.home.sait_abhijit_note") : ""].filter(Boolean).join(" "),
   };
 }

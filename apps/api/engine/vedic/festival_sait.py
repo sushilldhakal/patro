@@ -22,9 +22,10 @@ for each place, not converted from Kathmandu.
 Each rule names the windows to search in order of preference and the lagna
 groups to prefer inside them. The sait is the first stretch of a window in
 which the tithi prevails *and* a preferred lagna is rising; failing a lagna,
-the stretch of the window the tithi covers. A daytime sait that lands in the
-early morning also carries the local Abhijit muhurta as an alternative, since
-the rite may equally be done then.
+the stretch of the window the tithi covers. A rule's widest window is still
+part of the day (forenoon, or up to Aparahna), never the evening. A daytime
+sait outside Abhijit also carries the local Abhijit muhurta as an alternative,
+since the rite may equally be done then.
 
 A Tika rite (Dashain, Bhai Tika) also names the direction to face while
 receiving it — Chandra Vāsa: towards the Moon, whose direction follows its
@@ -41,12 +42,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.panchanga import panchanga_service
 from engine.astronomy.rashi import rashi_service
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.vedic.element_boundaries import find_nakshatra_end, find_yoga_end
 from engine.vedic.lagna_spans import build_lagna_spans
 from engine.vedic.tithi import calculate_tithi
 from engine.vedic.tithi_boundaries import find_tithi_end
@@ -58,10 +61,16 @@ DWISWABHAVA_LAGNAS = frozenset({3, 6, 9, 12})  # dual: Mithuna, Kanya, Dhanu, Me
 SHUBHA_LAGNAS = STHIRA_LAGNAS | DWISWABHAVA_LAGNAS
 VRISHABHA = frozenset({2})
 
+CHITRA = 14  # nakshatra number
+VAIDHRITI = 27  # yoga number
+
 Window = tuple[datetime, datetime]
 
 # A lagna that only grazes the window is no sait: half a ghati at least.
 MIN_SAIT = timedelta(minutes=12)
+
+# Night kālas: a rite timed in them has no Abhijit to fall back on.
+NIGHT_KAALS = frozenset({"pradosh", "purva_ratri"})
 
 
 @dataclass(frozen=True)
@@ -71,12 +80,17 @@ class SaitRule:
     ritual: str
     tithi: int
     paksha: str
-    # Kāla names searched in order; see ``_kaal_windows``.
+    # Kāla names searched in order; see ``_kaal_windows``. The last is the
+    # widest stretch of the day the rite may still be done in — never the whole
+    # day, so a forenoon rite cannot fall back to the evening.
     windows: tuple[str, ...]
     # Lagna groups preferred in order; the first group with a rising sign wins.
     lagnas: tuple[frozenset[int], ...]
     # Tika is received facing the Moon's direction (Chandra Vāsa).
     tika: bool = False
+    # Stretches to avoid where the tithi leaves room elsewhere (avoided, not forbidden).
+    avoid_nakshatras: frozenset[int] = frozenset()
+    avoid_yogas: frozenset[int] = frozenset()
 
     @property
     def absolute_tithi(self) -> int:
@@ -87,20 +101,22 @@ class SaitRule:
 # at a chosen moment carry a sait; the rest of the patro has none to show.
 SAIT_RULES: dict[str, SaitRule] = {
     # Kalash and jamara at a dual lagna in the forenoon of Pratipada; the Kanya
-    # lagna is rising at sunrise in Ashwin.
+    # lagna is rising at sunrise in Ashwin. Chitra and Vaidhriti are avoided.
     "ghatasthapana": SaitRule(
         ritual="ghatasthapana",
         tithi=1,
         paksha="shukla",
-        windows=("pratah", "abhijit", "dinamaan"),
+        windows=("pratah", "abhijit", "until_madhyahna"),
         lagnas=(DWISWABHAVA_LAGNAS, STHIRA_LAGNAS),
+        avoid_nakshatras=frozenset({CHITRA}),
+        avoid_yogas=frozenset({VAIDHRITI}),
     ),
     # Phulpati is brought in at midday on Saptami under a benefic lagna.
     "fulpati": SaitRule(
         ritual="fulpati",
         tithi=7,
         paksha="shukla",
-        windows=("abhijit", "madhyahna", "dinamaan"),
+        windows=("abhijit", "madhyahna", "until_madhyahna"),
         lagnas=(SHUBHA_LAGNAS,),
     ),
     # Tika in Abhijit under a benefic (fixed or dual) lagna while Dashami holds.
@@ -108,7 +124,7 @@ SAIT_RULES: dict[str, SaitRule] = {
         ritual="dashain-tika",
         tithi=10,
         paksha="shukla",
-        windows=("abhijit", "madhyahna", "dinamaan"),
+        windows=("abhijit", "madhyahna", "until_madhyahna"),
         lagnas=(SHUBHA_LAGNAS,),
         tika=True,
     ),
@@ -126,7 +142,7 @@ SAIT_RULES: dict[str, SaitRule] = {
         ritual="bhai-tika",
         tithi=2,
         paksha="shukla",
-        windows=("abhijit_aparahna", "dinamaan"),
+        windows=("abhijit_aparahna", "until_aparahna"),
         lagnas=(SHUBHA_LAGNAS,),
         tika=True,
     ),
@@ -151,6 +167,27 @@ def has_sait(festival_id: str) -> bool:
     return festival_id in SAIT_RULES
 
 
+@dataclass(frozen=True)
+class _Sky:
+    """One local day (sunrise → next sunrise) at the observer."""
+
+    day: date
+    sunrise: datetime
+    sunset: datetime
+    next_sunrise: datetime
+    lagna_spans: list[dict[str, Any]]
+
+
+def _local_sky(day: date, location: ObserverLocation) -> _Sky:
+    sun = {"latitude": location.lat, "longitude": location.lon, "timezone_name": location.timezone}
+    sunrise = calculate_sunrise(day, **sun)
+    next_sunrise = calculate_sunrise(day + timedelta(days=1), **sun)
+    spans = build_lagna_spans(
+        sunrise, next_sunrise, lat=location.lat, lon=location.lon, timezone_name=location.timezone, complete=True
+    )
+    return _Sky(day, sunrise, calculate_sunset(day, **sun), next_sunrise, spans)
+
+
 def _kaal_windows(sunrise: datetime, sunset: datetime, next_sunrise: datetime) -> dict[str, Window]:
     """Every kāla a rule can name, as instants for this day at this place.
 
@@ -167,24 +204,51 @@ def _kaal_windows(sunrise: datetime, sunset: datetime, next_sunrise: datetime) -
         "madhyahna": (sunrise + 2 * fifth, sunrise + 3 * fifth),
         "aparahna": (sunrise + 3 * fifth, sunrise + 4 * fifth),
         "abhijit_aparahna": (sunrise + 7 * muhurta, sunrise + 4 * fifth),
-        "dinamaan": (sunrise, sunset),
+        "until_madhyahna": (sunrise, sunrise + 3 * fifth),
+        "until_aparahna": (sunrise, sunrise + 4 * fifth),
         "pradosh": (sunset, sunset + night / 5),
         "purva_ratri": (sunset, sunset + night / 2),
     }
 
 
-def _tithi_spans(start: datetime, end: datetime, target: int) -> list[Window]:
-    """Stretches of ``[start, end)`` in which absolute tithi ``target`` prevails."""
+def _spans_where(
+    start: datetime,
+    end: datetime,
+    number_at: Callable[[datetime], int],
+    end_of: Callable[[datetime], datetime],
+    wanted: frozenset[int],
+) -> list[Window]:
+    """Stretches of ``[start, end)`` in which an anga numbered in ``wanted`` prevails."""
     spans: list[Window] = []
     cursor = start
-    # A day holds at most three tithis; the guard only stops a runaway loop.
+    # A day holds at most three of any anga; the guard only stops a runaway loop.
     for _ in range(6):
         if cursor >= end:
             break
-        boundary = find_tithi_end(cursor)
-        if calculate_tithi(cursor)["number"] == target:
+        boundary = end_of(cursor)
+        if number_at(cursor) in wanted:
             spans.append((cursor, min(boundary, end)))
         cursor = boundary + timedelta(seconds=1)
+    return spans
+
+
+def _tithi_spans(start: datetime, end: datetime, target: int) -> list[Window]:
+    """Stretches of ``[start, end)`` in which absolute tithi ``target`` prevails."""
+    return _spans_where(start, end, lambda at: calculate_tithi(at)["number"], find_tithi_end, frozenset({target}))
+
+
+def _avoided_spans(rule: SaitRule, start: datetime, end: datetime) -> list[Window]:
+    spans: list[Window] = []
+    if rule.avoid_nakshatras:
+        spans += _spans_where(
+            start, end, lambda at: panchanga_service.nakshatra(as_julian_day(at))["number"],
+            find_nakshatra_end, rule.avoid_nakshatras,
+        )
+    if rule.avoid_yogas:
+        spans += _spans_where(
+            start, end, lambda at: panchanga_service.yoga(as_julian_day(at))["number"],
+            find_yoga_end, rule.avoid_yogas,
+        )
     return spans
 
 
@@ -197,6 +261,23 @@ def _clip_all(window: Window, spans: Iterable[Window]) -> list[Window]:
     return [part for span in spans if (part := _intersect(window, span))]
 
 
+def _subtract(spans: Iterable[Window], holes: Iterable[Window]) -> list[Window]:
+    """``spans`` with every stretch of ``holes`` cut out."""
+    out = list(spans)
+    for hole in holes:
+        cut: list[Window] = []
+        for start, end in out:
+            if hole[1] <= start or hole[0] >= end:
+                cut.append((start, end))
+                continue
+            if start < hole[0]:
+                cut.append((start, hole[0]))
+            if hole[1] < end:
+                cut.append((hole[1], end))
+        out = cut
+    return out
+
+
 def _lagna_span_windows(spans: list[dict[str, Any]]) -> list[tuple[int, dict[str, Any], Window]]:
     return [
         (span["number"], span, (datetime.fromisoformat(span["start_time"]), datetime.fromisoformat(span["end_time"])))
@@ -206,43 +287,54 @@ def _lagna_span_windows(spans: list[dict[str, Any]]) -> list[tuple[int, dict[str
 
 def _time_block(start: datetime, end: datetime, tz_name: str) -> dict[str, str]:
     tz = resolve_observer_timezone(tz_name)
+    local_start = start.astimezone(tz)
     return {
         "start": start.isoformat(),
         "end": end.isoformat(),
-        "start_local": start.astimezone(tz).strftime("%H:%M"),
+        "date_local": local_start.date().isoformat(),
+        "start_local": local_start.strftime("%H:%M"),
         "end_local": end.astimezone(tz).strftime("%H:%M"),
     }
 
 
-def compute_sait(
-    rule: SaitRule,
-    sunrise: datetime,
-    sunset: datetime,
-    next_sunrise: datetime,
-    lagna_spans: list[dict[str, Any]],
-    tz_name: str,
-) -> dict[str, Any] | None:
-    """The sait for one rule on one day, or ``None`` if its tithi never prevails."""
-    kaals = _kaal_windows(sunrise, sunset, next_sunrise)
-    tithi = _tithi_spans(sunrise, next_sunrise, rule.absolute_tithi)
+@dataclass(frozen=True)
+class _Found:
+    sait: dict[str, Any]
+    # Whether the tithi reaches the rite's own kāla, and whether a preferred
+    # lagna was found: how well this day suits the rite.
+    in_primary: bool
+    has_lagna: bool
+
+
+def _sait_on(rule: SaitRule, sky: _Sky, tz_name: str) -> _Found | None:
+    """The sait for one rule on one local day, or ``None`` if its tithi never reaches its kālas."""
+    kaals = _kaal_windows(sky.sunrise, sky.sunset, sky.next_sunrise)
+    tithi = _tithi_spans(sky.sunrise, sky.next_sunrise, rule.absolute_tithi)
     if not tithi:
         return None
-    lagnas = _lagna_span_windows(lagna_spans)
+    lagnas = _lagna_span_windows(sky.lagna_spans)
+    # Avoided stretches give way only where the tithi leaves no other room.
+    clean = _subtract(tithi, _avoided_spans(rule, sky.sunrise, sky.next_sunrise))
+    passes = [clean, tithi] if clean != tithi else [tithi]
 
-    def entry(kaal: str, sait: Window, lagna: dict[str, Any] | None) -> dict[str, Any]:
-        return {
-            "ritual": rule.ritual,
-            "kaal": kaal,
-            "window": _time_block(*kaals[kaal], tz_name),
-            "sait": _time_block(*sait, tz_name),
-            "lagna": lagna,
-            "alternate": _abhijit_alternate(kaal, sait),
-            "facing": chandra_vasa(sait[0]) if rule.tika else None,
-        }
+    def entry(kaal: str, sait: Window, lagna: dict[str, Any] | None) -> _Found:
+        return _Found(
+            sait={
+                "ritual": rule.ritual,
+                "kaal": kaal,
+                "window": _time_block(*kaals[kaal], tz_name),
+                "sait": _time_block(*sait, tz_name),
+                "lagna": lagna,
+                "alternate": _abhijit_alternate(kaal, sait),
+                "facing": chandra_vasa(sait[0]) if rule.tika else None,
+            },
+            in_primary=bool(_clip_all(kaals[rule.windows[0]], tithi)),
+            has_lagna=lagna is not None,
+        )
 
     def _abhijit_alternate(kaal: str, sait: Window) -> dict[str, Any] | None:
-        """Abhijit, when the sait falls in the early morning — the rite may be done then too."""
-        if kaal == "abhijit" or not (kaals["pratah"][0] <= sait[0] < kaals["pratah"][1]):
+        """Abhijit, when a daytime sait lies outside it — the rite may be done then too."""
+        if kaal in NIGHT_KAALS or _intersect(kaals["abhijit"], sait):
             return None
         parts = _clip_all(kaals["abhijit"], tithi)
         if not parts:
@@ -262,24 +354,26 @@ def compute_sait(
             return timedelta(0)
         return min(abs(hit[0] - anchor), abs(hit[1] - anchor))
 
-    for kaal in rule.windows:
-        open_parts = _clip_all(kaals[kaal], tithi)
-        for group in rule.lagnas:
-            hits = [
-                (hit, number, span)
-                for number, span, lagna_window in lagnas
-                if number in group
-                for hit in _clip_all(lagna_window, open_parts)
-                if hit[1] - hit[0] >= MIN_SAIT
-            ]
-            if hits:
-                hit, number, span = min(hits, key=lambda h: (distance(h[0]), h[0][0]))
-                return entry(kaal, hit, {"number": number, "name": span["name"], "name_ne": span["name_ne"]})
+    for spans in passes:
+        for kaal in rule.windows:
+            open_parts = _clip_all(kaals[kaal], spans)
+            for group in rule.lagnas:
+                hits = [
+                    (hit, number, span)
+                    for number, span, lagna_window in lagnas
+                    if number in group
+                    for hit in _clip_all(lagna_window, open_parts)
+                    if hit[1] - hit[0] >= MIN_SAIT
+                ]
+                if hits:
+                    hit, number, span = min(hits, key=lambda h: (distance(h[0]), h[0][0]))
+                    return entry(kaal, hit, {"number": number, "name": span["name"], "name_ne": span["name_ne"]})
 
-    for kaal in rule.windows:
-        open_parts = _clip_all(kaals[kaal], tithi)
-        if open_parts:
-            return entry(kaal, open_parts[0], None)
+    for spans in passes:
+        for kaal in rule.windows:
+            open_parts = _clip_all(kaals[kaal], spans)
+            if open_parts:
+                return entry(kaal, open_parts[0], None)
     return None
 
 
@@ -290,6 +384,12 @@ def festival_saits(
 ) -> list[dict[str, Any]]:
     """Saits for the ritual festivals among ``festival_ids`` on ``day`` at ``location``.
 
+    ``day`` is the festival's date in the patro, fixed at Kathmandu. Far from
+    Nepal its tithi may hold through the rite's kāla on the local day before
+    (west) or after (east) instead — Dashami can end before New York's sunrise
+    on Dashain itself. The neighbouring local day is then taken, and the sait's
+    ``date_local`` says which day it is.
+
     Cheap to call for a day with none: the sky is only read once a festival with
     a rule is present.
     """
@@ -297,19 +397,27 @@ def festival_saits(
     if not wanted:
         return []
 
-    sun = {"latitude": location.lat, "longitude": location.lon, "timezone_name": location.timezone}
-    sunrise = calculate_sunrise(day, **sun)
-    sunset = calculate_sunset(day, **sun)
-    next_sunrise = calculate_sunrise(day + timedelta(days=1), **sun)
-    spans = build_lagna_spans(
-        sunrise, next_sunrise, lat=location.lat, lon=location.lon, timezone_name=location.timezone
-    )
+    skies: dict[date, _Sky] = {}
+
+    def sky(offset: int) -> _Sky:
+        when = day + timedelta(days=offset)
+        if when not in skies:
+            skies[when] = _local_sky(when, location)
+        return skies[when]
 
     out: list[dict[str, Any]] = []
     for fid in wanted:
-        sait = compute_sait(SAIT_RULES[fid], sunrise, sunset, next_sunrise, spans, location.timezone)
-        if sait is not None:
-            out.append({"kind": "festival", "festival_id": fid, "timezone": location.timezone, **sait})
+        rule = SAIT_RULES[fid]
+        best: _Found | None = None
+        # The patro's own day first; a neighbour only if it suits the rite better.
+        for offset in (0, -1, 1):
+            found = _sait_on(rule, sky(offset), location.timezone)
+            if found and (best is None or (found.in_primary, found.has_lagna) > (best.in_primary, best.has_lagna)):
+                best = found
+            if best and best.in_primary and best.has_lagna:
+                break
+        if best is not None:
+            out.append({"kind": "festival", "festival_id": fid, "timezone": location.timezone, **best.sait})
     return out
 
 
@@ -337,12 +445,7 @@ def ceremony_saits(day: date, location: ObserverLocation = DEFAULT_LOCATION) -> 
     if not any(found.values()):
         return []
 
-    sun = {"latitude": location.lat, "longitude": location.lon, "timezone_name": location.timezone}
-    sunrise = calculate_sunrise(day, **sun)
-    next_sunrise = calculate_sunrise(day + timedelta(days=1), **sun)
-    lagnas = _lagna_span_windows(
-        build_lagna_spans(sunrise, next_sunrise, lat=location.lat, lon=location.lon, timezone_name=location.timezone)
-    )
+    lagnas = _lagna_span_windows(_local_sky(day, location).lagna_spans)
 
     out: list[dict[str, Any]] = []
     for cat, windows in found.items():
@@ -353,9 +456,10 @@ def ceremony_saits(day: date, location: ObserverLocation = DEFAULT_LOCATION) -> 
                 for number, span, lagna_window in lagnas
                 if number in CEREMONY_SAITS[cat] and (part := _intersect(whole, lagna_window))
             ]
-            # Slivers at a lagna change are dropped unless the window is nothing but.
-            kept = [piece for piece in pieces if piece[0][1] - piece[0][0] >= MIN_SAIT] or pieces
-            for part, number, span in kept:
+            # Slivers at a lagna change are no sait, as for the festivals.
+            for part, number, span in pieces:
+                if part[1] - part[0] < MIN_SAIT:
+                    continue
                 out.append(
                     {
                         "kind": "ceremony",

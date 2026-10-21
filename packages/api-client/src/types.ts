@@ -1368,6 +1368,8 @@ export interface PlanetInfo {
 export interface SaitTimeWindow {
   start: string;
   end: string;
+  /** Local date of `start` — far from Nepal it can be the day before or after the patro's. */
+  date_local?: string;
   start_local: string;
   end_local: string;
 }
@@ -1391,12 +1393,12 @@ export interface FestivalSait {
     | "bratabandha"
     | "griha-pravesh"
     | (string & {});
-  kaal: "pratah" | "abhijit" | "madhyahna" | "aparahna" | "abhijit_aparahna" | "dinamaan" | "pradosh" | "purva_ratri" | (string & {}) | null;
+  kaal: "pratah" | "abhijit" | "madhyahna" | "aparahna" | "abhijit_aparahna" | "until_madhyahna" | "until_aparahna" | "pradosh" | "purva_ratri" | (string & {}) | null;
   timezone: string;
   window: SaitTimeWindow;
   sait: SaitTimeWindow;
   lagna: { number: number; name: string; name_ne: string } | null;
-  /** Set when the sait falls in the early morning: the rite may also be done in this (Abhijit) window. */
+  /** Set when a daytime sait lies outside Abhijit: the rite may also be done in this (Abhijit) window. */
   alternate: (SaitTimeWindow & { kaal: string }) | null;
   /** Tika rites only: face the Moon's direction (Chandra Vasa), from its sign at the sait. */
   facing: { direction: "east" | "south" | "west" | "north"; moon_rashi: { number: number; name: string; name_ne: string } } | null;
