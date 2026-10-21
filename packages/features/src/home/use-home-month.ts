@@ -23,6 +23,7 @@ import {
   buildCalendarGridDays,
   buildLocalAdMonthDays,
   mergeEnrichedDays,
+  publicHolidayDateSet,
   shiftAdMonth,
   uniqueBsMonths,
 } from "@vedic-patro/domain/local-calendar";
@@ -157,7 +158,7 @@ export function useHomeMonth({
   }, [panchangaView, isGregorian, year, month, monthDays, enriched, prevQ?.data?.calendar, nextQ?.data?.calendar, festivals, lang, era]);
 
   const publicHolidayDates = useMemo(
-    () => new Set(festivals.filter((f) => f.is_public_holiday && f.start_date).map((f) => f.start_date as string)),
+    () => publicHolidayDateSet(festivals),
     [festivals],
   );
 

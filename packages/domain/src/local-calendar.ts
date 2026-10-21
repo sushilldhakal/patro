@@ -16,6 +16,7 @@ import {
 import { patroBrowseYearWithinEphemeris } from "./patro-year-axis";
 import { shiftPatroBrowseMonth } from "./patro-year-browse-step";
 import {
+  addDaysCivilIso,
   canonicalCivilIso,
   civilIsoDayOfMonth,
   civilIsoWeekday,
@@ -558,6 +559,28 @@ export function filterRedundantDayFestivals<T extends { id: string; name_en?: st
 }
 
 /** Attach festival/holiday names from a yearly list (lighter than full month API). */
+/** Longest span one holiday may paint; guards against a malformed end date. */
+const MAX_HOLIDAY_SPAN_DAYS = 31;
+
+/**
+ * Every civil date a public holiday covers — each day from `start_date` through
+ * `end_date`, not just the first: Tihar is one entry running Laxmi Puja → Bhai
+ * Tika, and all of those days are off.
+ */
+export function publicHolidayDateSet(festivals: Array<Holiday | Festival>): Set<string> {
+  const dates = new Set<string>();
+  for (const f of festivals) {
+    if (!f.is_public_holiday || !f.start_date) continue;
+    const end = f.end_date && f.end_date > f.start_date ? f.end_date : f.start_date;
+    let day = f.start_date;
+    for (let i = 0; i < MAX_HOLIDAY_SPAN_DAYS && day <= end; i += 1) {
+      dates.add(day);
+      day = addDaysCivilIso(day, 1);
+    }
+  }
+  return dates;
+}
+
 export function applyHolidaysToDays(
   days: CalendarDay[],
   holidays: Array<Holiday | Festival>,
