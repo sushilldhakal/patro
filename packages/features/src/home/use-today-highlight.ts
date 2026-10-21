@@ -43,6 +43,8 @@ export type SaitRow = {
   label: string;
   times: Array<{ key: string; time: string; detail: string }>;
   alternate?: string;
+  /** Tika rites: the direction to face (Chandra Vasa). */
+  facing?: string;
 };
 
 export function useTodayHighlight({
@@ -146,6 +148,12 @@ export function useTodayHighlight({
       times: [time],
       alternate: sait.alternate
         ? t("ui.home.sait_or_kaal", { v0: t(`ui.home.sait_kaal_${sait.alternate.kaal}`), v1: span(sait.alternate) })
+        : undefined,
+      facing: sait.facing
+        ? t("ui.home.sait_facing", {
+            v0: t(`ui.home.sait_dir_${sait.facing.direction}`),
+            v1: bilingualText(lang, sait.facing.moon_rashi.name_ne, sait.facing.moon_rashi.name),
+          })
         : undefined,
     });
   }

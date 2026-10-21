@@ -78,6 +78,7 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
                   </Box>
                 ))}
                 {sait.alternate ? <Text className={cls.highlightSaitDetail}>{sait.alternate}</Text> : null}
+                {sait.facing ? <Text className={cls.highlightSaitFacing}>{sait.facing}</Text> : null}
               </Box>
             ))}
             <Text className={cls.highlightSaitNote}>{h.saitNote}</Text>

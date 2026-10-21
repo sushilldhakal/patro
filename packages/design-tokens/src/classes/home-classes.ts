@@ -56,6 +56,7 @@ export const homeClasses = {
   highlightSaitLabel: "text-sm font-semibold text-foreground",
   highlightSaitTime: "font-num text-sm font-bold text-danger",
   highlightSaitDetail: "text-xs text-muted-foreground",
+  highlightSaitFacing: "text-xs font-semibold text-foreground",
   highlightSaitNote: "text-xs text-muted-foreground",
 
   // ── Panchanga (vivaran) tab ───────────────────────────────────────────────

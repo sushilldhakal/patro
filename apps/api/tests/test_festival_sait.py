@@ -115,3 +115,20 @@ def test_refined_muhurta_windows_sit_within_one_scan_step():
     for c, f in zip(coarse, fine):
         assert c.start - _STEP < f.start <= c.start
         assert c.end - _STEP <= f.end <= c.end
+
+
+@pytest.mark.parametrize("number,direction", [(1, "east"), (5, "east"), (9, "east"), (2, "south"), (6, "south"),
+                                              (10, "south"), (3, "west"), (7, "west"), (11, "west"),
+                                              (4, "north"), (8, "north"), (12, "north")])
+def test_chandra_vasa_directions(number, direction):
+    from engine.vedic.festival_sait import CHANDRA_VASA_DIRECTIONS
+
+    assert CHANDRA_VASA_DIRECTIONS[(number - 1) % 4] == direction
+
+
+def test_tika_rites_name_the_facing_direction():
+    tika = _one(DASHAIN_TIKA_2026, "vijaya-dashami", DEFAULT_LOCATION)
+    # Moon in Kumbha at the 2026 Dashain Tika sait → face west.
+    assert tika["facing"]["moon_rashi"]["name"] == "Kumbha"
+    assert tika["facing"]["direction"] == "west"
+    assert _one(LAXMI_PUJA_2026, "laxmi-puja", DEFAULT_LOCATION)["facing"] is None

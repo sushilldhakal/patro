@@ -4315,6 +4315,7 @@
     "home": {
       "geocentric": "Geocentric",
       "read_more": "Read more →",
+      "sait_facing": "Face {{v0}} to receive Tika · Moon in {{v1}}",
       "sait_heading": "Sait",
       "sait_lagna": "{{v0}} lagna",
       "sait_local_note": "From your location's sunrise, sunset and rising lagna",

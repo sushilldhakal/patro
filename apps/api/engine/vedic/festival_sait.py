@@ -26,6 +26,11 @@ the stretch of the window the tithi covers. A daytime sait that lands in the
 early morning also carries the local Abhijit muhurta as an alternative, since
 the rite may equally be done then.
 
+A Tika rite (Dashain, Bhai Tika) also names the direction to face while
+receiving it — Chandra Vāsa: towards the Moon, whose direction follows its
+sign (Mesha/Simha/Dhanu east, Vrishabha/Kanya/Makara south,
+Mithuna/Tula/Kumbha west, Karka/Vrishchika/Meena north), read at the sait.
+
 Saṃskāra — marriage, Bratabandha, Griha Pravesh — have no fixed day; their
 days and windows come from the muhūrta engine (:mod:`engine.vedic.muhurta_engine`,
 also observer-local), and :func:`ceremony_saits` splits each window at the
@@ -39,11 +44,13 @@ from datetime import date, datetime, timedelta
 from typing import Any, Iterable
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.rashi import rashi_service
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.lagna_spans import build_lagna_spans
 from engine.vedic.tithi import calculate_tithi
 from engine.vedic.tithi_boundaries import find_tithi_end
+from engine.astronomy.ut_instant import as_julian_day
 
 # Rashi numbers (1 = Mesha … 12 = Meena).
 STHIRA_LAGNAS = frozenset({2, 5, 8, 11})  # fixed: Vrishabha, Simha, Vrishchika, Kumbha
@@ -68,6 +75,8 @@ class SaitRule:
     windows: tuple[str, ...]
     # Lagna groups preferred in order; the first group with a rising sign wins.
     lagnas: tuple[frozenset[int], ...]
+    # Tika is received facing the Moon's direction (Chandra Vāsa).
+    tika: bool = False
 
     @property
     def absolute_tithi(self) -> int:
@@ -101,6 +110,7 @@ SAIT_RULES: dict[str, SaitRule] = {
         paksha="shukla",
         windows=("abhijit", "madhyahna", "dinamaan"),
         lagnas=(SHUBHA_LAGNAS,),
+        tika=True,
     ),
     # Lamps in Pradosh while Amavasya holds, under a fixed lagna — Vrishabha
     # first, which rises in the Kartik evening shortly after sunset.
@@ -118,8 +128,23 @@ SAIT_RULES: dict[str, SaitRule] = {
         paksha="shukla",
         windows=("abhijit_aparahna", "dinamaan"),
         lagnas=(SHUBHA_LAGNAS,),
+        tika=True,
     ),
 }
+
+
+# Chandra Vāsa: the Moon's sign → its direction, cycling east, south, west, north
+# from Mesha.
+CHANDRA_VASA_DIRECTIONS: tuple[str, ...] = ("east", "south", "west", "north")
+
+
+def chandra_vasa(at: datetime) -> dict[str, Any]:
+    """Direction to face for Tika at ``at``: the Moon's, from its sidereal sign."""
+    moon = rashi_service.chandra(as_julian_day(at))
+    return {
+        "direction": CHANDRA_VASA_DIRECTIONS[(moon["number"] - 1) % 4],
+        "moon_rashi": {"number": moon["number"], "name": moon["name"], "name_ne": moon["name_ne"]},
+    }
 
 
 def has_sait(festival_id: str) -> bool:
@@ -212,6 +237,7 @@ def compute_sait(
             "sait": _time_block(*sait, tz_name),
             "lagna": lagna,
             "alternate": _abhijit_alternate(kaal, sait),
+            "facing": chandra_vasa(sait[0]) if rule.tika else None,
         }
 
     def _abhijit_alternate(kaal: str, sait: Window) -> dict[str, Any] | None:
@@ -341,6 +367,7 @@ def ceremony_saits(day: date, location: ObserverLocation = DEFAULT_LOCATION) -> 
                         "sait": _time_block(*part, location.timezone),
                         "lagna": {"number": number, "name": span["name"], "name_ne": span["name_ne"]},
                         "alternate": None,
+                        "facing": None,
                     }
                 )
     return out

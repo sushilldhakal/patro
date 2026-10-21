@@ -1398,6 +1398,8 @@ export interface FestivalSait {
   lagna: { number: number; name: string; name_ne: string } | null;
   /** Set when the sait falls in the early morning: the rite may also be done in this (Abhijit) window. */
   alternate: (SaitTimeWindow & { kaal: string }) | null;
+  /** Tika rites only: face the Moon's direction (Chandra Vasa), from its sign at the sait. */
+  facing: { direction: "east" | "south" | "west" | "north"; moon_rashi: { number: number; name: string; name_ne: string } } | null;
 }
 
 export interface Festival {
