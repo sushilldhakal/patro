@@ -3,7 +3,7 @@
  * app's `components/panchanga/PanchangaSections.tsx`: one hook per section
  * builds its rows (sun/moon/samvat, the five angas, nakshatra padas, balam,
  * panchaka and udaya lagna, ritu/ayana, muhurta timings, nivas/shool, special
- * observances, planets, festivals). Each app keeps its own section layout
+ * observances with the day's festivals, planets). Each app keeps its own section layout
  * and only draws these values.
  */
 import type { NivasShoolSegment, PanchangaDay } from "@vedic-patro/api-client";
@@ -14,6 +14,7 @@ import {
   type BalamCardItem,
 } from "@vedic-patro/domain/balam-cards";
 import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";
+import { buildSaitRows, saitNote } from "../_shared/sait-rows";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import {
   angaEndOrigin,
@@ -345,18 +346,46 @@ export function useNivasShoolSection(p: PanchangaDay, fallback?: PanchangaDay | 
 }
 
 /* ── special observances and festivals ── */
+/**
+ * दिन विशेष: the day's festivals, one card each — what it is, when it falls,
+ * how it is observed and, for a timed rite, its sait and the direction to face
+ * — then the day's other markers (Purnima, Ekadashi, shraddha) not already
+ * named by a festival, and the day's ceremony saits.
+ */
 export function useDinVisheshSection(p: PanchangaDay) {
-  const { lang } = useLocale();
-  return getDinVisheshLabels(p, [], lang);
-}
+  const { t, lang, digits } = useLocale();
+  const english = lang === "en";
+  const saits = buildSaitRows(p.festival_saits, { t, lang, digits, selectedAdDate: p.date_ad ?? "" });
+  const pick = (text: { ne: string; en: string } | null | undefined) => (text ? (english ? text.en : text.ne) : null);
 
-export function useFestivalsSection(p: PanchangaDay) {
-  const { lang } = useLocale();
-  return (p.festivals ?? []).map((f) => ({
+  const festivals = (p.festivals ?? []).map((f) => ({
     id: f.id,
     name: bilingualText(lang, f.name_ne ?? f.name ?? "", f.name_en ?? f.name ?? f.name_ne ?? "", ""),
     holiday: Boolean(f.is_public_holiday),
+    when: pick(f.when),
+    about: pick(f.about),
+    steps: (f.vidhi ? (english ? f.vidhi.en : f.vidhi.ne) : [])
+      .filter(Boolean)
+      .map((text, i) => ({ key: `${i}`, number: `${digits(i + 1)}.`, text })),
+    sait: saits.find((row) => row.kind === "festival" && row.festivalId === f.id) ?? null,
   }));
+  const named = new Set(festivals.map((f) => f.name));
+  const markers = getDinVisheshLabels(p, [], lang).filter((label) => !named.has(label));
+  const ceremonies = saits.filter((row) => row.kind === "ceremony");
+
+  return {
+    festivals,
+    markers,
+    ceremonies,
+    empty: !festivals.length && !markers.length && !ceremonies.length,
+    copy: {
+      holiday: t("sections.public_holiday"),
+      vidhi: t("sections.festival_vidhi"),
+      sait: t("ui.home.sait_heading"),
+      ceremonies: t("sections.ceremony_saits"),
+      note: saits.length ? saitNote(p.festival_saits, t) : null,
+    },
+  };
 }
 
 /* ── planets at the anchor moment ── */

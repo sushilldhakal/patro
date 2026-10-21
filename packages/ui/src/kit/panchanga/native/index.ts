@@ -50,7 +50,6 @@ export {
 export {
   BalamSection,
   DinVisheshSection,
-  FestivalsSection,
   MuhurtaTimingsSection,
   NivasShoolSection,
   PanchakaLagnaSection,

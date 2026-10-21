@@ -24,7 +24,6 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { currentPatroYearRangeLinkSearch, patroRouteLinkSearch, searchToLocation } from "@/lib/url-state";
 import {
   DinVisheshSection,
-  FestivalsSection,
   NivasShoolSection,
   PanchangCoreSection,
   BalamSection,
@@ -280,7 +279,6 @@ export function Panchanga() {
             <PanchakaLagnaSection p={angaData ?? data} clock={clock} />
             <NivasShoolSection p={data} fallback={wheelData} />
             <DinVisheshSection p={data} />
-            <FestivalsSection p={data} />
           </div>
         )}
       </div>

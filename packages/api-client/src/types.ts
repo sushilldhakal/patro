@@ -1419,6 +1419,12 @@ export interface Festival {
   duration_days?: number;
   importance?: string;
   notes?: string;
+  /** Day routes: where the festival falls in the calendar ("Ashwin Shukla Dashami"). */
+  when?: { ne: string; en: string } | null;
+  /** Day routes: what the festival is. */
+  about?: { ne: string; en: string } | null;
+  /** Day routes: how it is observed, in steps. */
+  vidhi?: { ne: string[]; en: string[] } | null;
 }
 
 export interface LunarLayer {

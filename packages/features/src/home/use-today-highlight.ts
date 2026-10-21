@@ -23,6 +23,7 @@ import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patr
 import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { lazyList } from "@vedic-patro/i18n/runtime";
+import { buildSaitRows, saitNote } from "../_shared/sait-rows";
 
 const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
@@ -37,33 +38,7 @@ function moonPhaseKey(index: number): string {
   return index < 14 ? "ui.home.waxing_moon" : "ui.home.waning_moon";
 }
 
-// Literal keys, not `ui.home.sait_ritual_${ritual}`: the website's i18n bundle keeps
-// only the `ui.*` keys that appear as literals in its source.
-const SAIT_RITUAL_KEYS: Record<string, string> = {
-  ghatasthapana: "ui.home.sait_ritual_ghatasthapana",
-  fulpati: "ui.home.sait_ritual_fulpati",
-  "dashain-tika": "ui.home.sait_ritual_dashain_tika",
-  "laxmi-puja": "ui.home.sait_ritual_laxmi_puja",
-  "bhai-tika": "ui.home.sait_ritual_bhai_tika",
-  vivah: "ui.home.sait_ritual_vivah",
-  bratabandha: "ui.home.sait_ritual_bratabandha",
-  "griha-pravesh": "ui.home.sait_ritual_griha_pravesh",
-};
-const SAIT_DIRECTION_KEYS: Record<string, string> = {
-  east: "ui.home.sait_dir_east",
-  south: "ui.home.sait_dir_south",
-  west: "ui.home.sait_dir_west",
-  north: "ui.home.sait_dir_north",
-};
-
-/** One rite on the card: its clock times, one per lagna stretch. */
-export type SaitRow = {
-  key: string;
-  label: string;
-  times: Array<{ key: string; time: string; detail: string }>;
-  /** Tika rites: the direction to face (Chandra Vasa). */
-  facing?: string;
-};
+export type { SaitRow } from "../_shared/sait-rows";
 
 export function useTodayHighlight({
   selectedDay,
@@ -143,50 +118,8 @@ export function useTodayHighlight({
   };
 
   // Saits come from the day payload, which is fetched per location: a new
-  // location brings its own local kaal, lagna and clock times. One row per
-  // rite; a ceremony split across several lagnas lists each stretch.
-  // Far from Nepal the tithi can hold on the local day before or after the
-  // patro's; such a sait carries its own date.
-  const span = (w: { date_local?: string; start_local: string; end_local: string }) => {
-    const times = `${clock(w.start_local)} – ${clock(w.end_local)}`;
-    if (!w.date_local || w.date_local === selectedAdDate) return times;
-    const [, m, d] = w.date_local.split("-").map(Number);
-    const monthLabel = bilingualText(lang, AD_MONTH_NAMES_NE[m - 1], AD_MONTH_NAMES[m - 1]);
-    return `${monthLabel} ${digits(d)}, ${times}`;
-  };
-  const saits: SaitRow[] = [];
-  const label = (keys: Record<string, string>, id: string | null | undefined) => {
-    const key = id ? keys[id] : undefined;
-    return key ? t(key) : "";
-  };
-  for (const sait of p?.festival_saits ?? []) {
-    const lagna = sait.lagna ? t("ui.home.sait_lagna", { v0: bilingualText(lang, sait.lagna.name_ne, sait.lagna.name) }) : "";
-    const time = {
-      key: sait.sait.start,
-      time: span(sait.sait),
-      detail: lagna,
-    };
-    const key = `${sait.festival_id}:${sait.ritual}`;
-    const row = saits.find((r) => r.key === key);
-    if (row) {
-      row.times.push(time);
-      continue;
-    }
-    saits.push({
-      key,
-      label: label(SAIT_RITUAL_KEYS, sait.ritual),
-      times: [time],
-      facing: sait.facing
-        ? t("ui.home.sait_facing", {
-            v0: label(SAIT_DIRECTION_KEYS, sait.facing.direction),
-            v1: bilingualText(lang, sait.facing.moon_rashi.name_ne, sait.facing.moon_rashi.name),
-          })
-        : undefined,
-    });
-  }
-
-  // Set by the API when a daytime sait lies outside the local Abhijit muhurta.
-  const abhijitAlternate = (p?.festival_saits ?? []).some((sait) => sait.alternate);
+  // location brings its own local kaal, lagna and clock times.
+  const saits = buildSaitRows(p?.festival_saits, { t, lang, digits, selectedAdDate });
 
   const count = digits(Math.abs(daysAway));
   const kicker = isToday
@@ -221,7 +154,6 @@ export function useTodayHighlight({
     sunset: clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset),
     saits,
     saitHeading: t("ui.home.sait_heading"),
-    // A daytime festival rite may be done in Abhijit when its sait does not suit.
-    saitNote: [t("ui.home.sait_local_note"), abhijitAlternate ? t("ui.home.sait_abhijit_note") : ""].filter(Boolean).join(" "),
+    saitNote: saitNote(p?.festival_saits, t),
   };
 }

@@ -157,7 +157,7 @@ logger = logging.getLogger(__name__)
 # 50: the Tihar public holiday runs Laxmi Puja → Bhai Tika (`end_at`), not five
 #     days from Kaag Tihar; 2026 had it through Nov 12, a day after Bhai Tika.
 #     Day, month and year payloads carry the holiday flag per day.
-PANCHANGA_PAYLOAD_VERSION = 50
+PANCHANGA_PAYLOAD_VERSION = 51
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

@@ -12,7 +12,6 @@ import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { useAppPanchangaPage } from "@/components/panchanga/use-app-panchanga-page";
 import {
   DinVisheshSection,
-  FestivalsSection,
   NivasShoolSection,
   PanchangCoreSection,
   BalamSection,
@@ -218,7 +217,6 @@ export default function PanchangaScreen() {
             <PanchakaLagnaSection p={angaData ?? data} clock={clock} />
             <NivasShoolSection p={data} fallback={wheelData} />
             <DinVisheshSection p={data} />
-            <FestivalsSection p={data} />
           </View>
         ) : null}
 
