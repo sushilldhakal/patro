@@ -216,7 +216,9 @@ export default function PanchangaScreen() {
             <BalamSection p={angaData ?? data} clock={clock} />
             <PanchakaLagnaSection p={angaData ?? data} clock={clock} />
             <NivasShoolSection p={data} fallback={wheelData} />
-            <DinVisheshSection p={data} />
+            {/* Festivals, their details and saits are the day's own: the udaya
+                payload carries them, the at-time one only names the festivals. */}
+            <DinVisheshSection p={wheelData ?? data} />
           </View>
         ) : null}
 
