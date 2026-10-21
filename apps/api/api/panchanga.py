@@ -972,17 +972,15 @@ def nepal_sait_personalize(
     ``gender`` (with a birth date) enables the annaprāśana age-month rule.
     """
     from app.instant_resolver import birth_instant_from_query
-    from engine.astronomy.timescale import resolve_observer_timezone
 
     _validate_bs_year(bs_year)
     from app.response_cache import SAIT_CUSTOM_CACHE_CONTROL
-    from services.festivals.sait_personalize import compute_janma_from_instant, personalize_sait
+    from services.festivals.sait_personalize import personalize_for_birth
 
-    birth_date = None
     has_birth_parts = None not in (birth_year, birth_month, birth_day)
     try:
-        if birth or has_birth_parts:
-            instant = birth_instant_from_query(
+        instant = (
+            birth_instant_from_query(
                 birth=birth,
                 birth_tz=birth_tz,
                 birth_era=birth_era,
@@ -991,23 +989,17 @@ def nepal_sait_personalize(
                 birth_day=birth_day,
                 birth_clock=birth_clock,
             )
-            tz = resolve_observer_timezone(birth_tz)
-            birth_date = instant.astimezone(tz).date()
-            if janma_nakshatra is None or janma_rashi is None:
-                janma = compute_janma_from_instant(instant)
-                janma_nakshatra = janma["nakshatra"]
-                janma_rashi = janma["rashi"]
-        if janma_nakshatra is None or janma_rashi is None:
-            raise ValueError(
-                "Provide either janma_nakshatra + janma_rashi, or a birth moment."
-            )
-        payload = personalize_sait(
+            if birth or has_birth_parts
+            else None
+        )
+        payload = personalize_for_birth(
             bs_year,
             category,
-            janma_nakshatra,
-            janma_rashi,
             location,
-            birth_date=birth_date,
+            janma_nakshatra=janma_nakshatra,
+            janma_rashi=janma_rashi,
+            birth_instant=instant,
+            birth_tz=birth_tz,
             gender=gender,
         )
     except ValueError as exc:

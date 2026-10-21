@@ -83,6 +83,10 @@ ROUTES: tuple[str, ...] = (
     f"/v1/nepal/sait/2083/month/7?{KTM}",
     f"/v1/nepal/sait/2083/vivah?{KTM}",
     f"/v1/nepal/sait/2083/vivah/detail?{KTM}",
+    f"/v1/nepal/sait/2083/vivah/personalize?janma_nakshatra=4&janma_rashi=2&{KTM}",
+    f"/v1/nepal/sait/2083/annaprasan/personalize?birth_era=bs&birth_year=2082&birth_month=10&birth_day=5"
+    f"&birth_clock=06:30&gender=male&{KTM}",
+    f"/v1/nepal/sait/2083/vivah/personalize?{KTM}",
     # Jyotish
     f"/v1/kundali/detail?{BIRTH}&{KTM}",
     f"/v1/kundali/vimshottari?{BIRTH}&{KTM}",

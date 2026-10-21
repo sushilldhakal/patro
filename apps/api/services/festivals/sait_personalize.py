@@ -444,3 +444,33 @@ def personalize_sait(
         "counts": counts,
         "days": days_out,
     }
+
+
+def personalize_for_birth(
+    bs_year: int,
+    category: str,
+    location: ObserverLocation,
+    *,
+    janma_nakshatra: int | None = None,
+    janma_rashi: int | None = None,
+    birth_instant: datetime | None = None,
+    birth_tz: str = "Asia/Kathmandu",
+    gender: str | None = None,
+) -> dict[str, Any]:
+    """:func:`personalize_sait` from whatever the person gave.
+
+    A janma Moon given directly wins; otherwise it is computed from the birth
+    moment. The birth date (for the annaprāśana age rule) is read in the birth
+    timezone. Raises :class:`ValueError` when neither was given.
+    """
+    birth_date = None
+    if birth_instant is not None:
+        birth_date = birth_instant.astimezone(resolve_observer_timezone(birth_tz)).date()
+        if janma_nakshatra is None or janma_rashi is None:
+            janma = compute_janma_from_instant(birth_instant)
+            janma_nakshatra, janma_rashi = janma["nakshatra"], janma["rashi"]
+    if janma_nakshatra is None or janma_rashi is None:
+        raise ValueError("Provide either janma_nakshatra + janma_rashi, or a birth moment.")
+    return personalize_sait(
+        bs_year, category, janma_nakshatra, janma_rashi, location, birth_date=birth_date, gender=gender,
+    )
