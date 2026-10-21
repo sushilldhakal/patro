@@ -90,6 +90,9 @@ ROUTES: tuple[str, ...] = (
     f"/v1/planetary/positions?{BIRTH}&{KTM}",
     "/v1/kundali/milan?boy_datetime=1990-05-12T06:30:00%2B05:45&girl_datetime=1992-08-20T14:10:00%2B05:45",
     "/v1/kundali/reference/bhava",
+    f"/v1/nepal/panchanga/year/2083?{KTM}",
+    f"/v1/nepal/panchanga/2026-10-21?format=raw&{KTM}",
+    f"/v1/nepal/panchanga/2026-10-21?format=dayblock&locale=ne&{KTM}",
     "/v1/kundali/yogas/reference",
     f"/v1/nepal/gochar/2026-10-21?{KTM}",
     f"/v1/nepal/gochar/year/2083?{KTM}",
@@ -108,6 +111,12 @@ ROUTES: tuple[str, ...] = (
     "/v1/cities/nearest?lat=27.7&lon=85.3",
     "/v1/cities/popular",
     "/v1/documents",
+    "/v1/documents/gayatri-mantra",
+    "/v1/documents/bhagavad-gita",
+    "/v1/documents/sri-rudram",
+    "/v1/documents/bhagavad-gita/chapters/2",
+    "/v1/documents/bhagavad-gita/chapters/99",
+    "/v1/documents/no-such-document",
     "/v1/veda/daily?date=2026-10-21",
 )
 

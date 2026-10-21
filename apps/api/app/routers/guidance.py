@@ -7,16 +7,17 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlalchemy import select
 
 from api.deps import LocationDep
 from app.security import CurrentUser, DbSession
 from database.models import Device, Profile, Reminder
 from engine.identity.profiles import ProfileNotFound
+from engine.identity.reminders import BadWeekdays, DeviceNotFound, ReminderNotFound, decode_weekdays
+from services.identity import reminders
 from app.routers.profiles import profile_not_found
 from services.identity.profile_store import SqlProfileRepository
 from services.identity.profiles import get_profile
-from services.jyotish.daily_guidance import MAX_DAYS, build_guidance_range
+from services.jyotish.daily_guidance import MAX_DAYS, build_guidance_range, natal_chart_for_profile
 
 router = APIRouter(tags=["guidance"])
 
@@ -26,30 +27,6 @@ def _owned_profile(db, user, profile_id: str) -> Profile:
         return get_profile(SqlProfileRepository(db), user.id, profile_id)
     except ProfileNotFound:
         raise profile_not_found() from None
-
-
-def _natal_for(profile: Profile):
-    """The profile's natal chart, or None when it has no usable birth moment."""
-    from app.instant_resolver import birth_instant_from_query
-    from engine.jyotish.rashifal_personal import build_natal_chart
-
-    if not (profile.birth_date and profile.latitude is not None and profile.longitude is not None):
-        return None
-    try:
-        year, month, day = (int(part) for part in profile.birth_date.split("-")[:3])
-        instant = birth_instant_from_query(
-            birth_tz=profile.timezone or "Asia/Kathmandu",
-            birth_era=profile.birth_era or "bs",
-            birth_year=year,
-            birth_month=month,
-            birth_day=day,
-            birth_clock=profile.birth_time or "12:00",
-            lat=profile.latitude,
-            lon=profile.longitude,
-        )
-        return build_natal_chart(instant, lat=profile.latitude, lon=profile.longitude)
-    except (ValueError, TypeError):
-        return None
 
 
 @router.get("/profiles/{profile_id}/daily-guidance")
@@ -68,7 +45,7 @@ def daily_guidance(
     """
     profile = _owned_profile(db, user, profile_id)
     first = start or datetime.now(timezone.utc).date()
-    payload = build_guidance_range(first, days, location, _natal_for(profile))
+    payload = build_guidance_range(first, days, location, natal_chart_for_profile(profile))
     payload["profile_id"] = profile.id
     return payload
 
@@ -92,27 +69,15 @@ class DeviceOut(DeviceIn):
 @router.post("/devices", response_model=DeviceOut)
 def register_device(body: DeviceIn, user: CurrentUser, db: DbSession) -> Device:
     """Idempotent on the push token: re-registering moves it to the current user."""
-    device = db.scalar(select(Device).where(Device.push_token == body.push_token))
-    if device is None:
-        device = Device(user_id=user.id, **body.model_dump())
-        db.add(device)
-    else:
-        device.user_id = user.id
-        device.platform = body.platform
-        device.timezone = body.timezone
-        device.locale = body.locale
-    db.commit()
-    db.refresh(device)
-    return device
+    return reminders.register_device(db, user.id, body.model_dump())
 
 
 @router.delete("/devices/{device_id}", status_code=status.HTTP_204_NO_CONTENT)
 def unregister_device(device_id: str, user: CurrentUser, db: DbSession) -> None:
-    device = db.get(Device, device_id)
-    if device is None or device.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
-    db.delete(device)
-    db.commit()
+    try:
+        reminders.unregister_device(db, user.id, device_id)
+    except DeviceNotFound as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
 
 
 # ─── Reminder rules ────────────────────────────────────────────────────────────
@@ -146,77 +111,41 @@ def _to_out(row: Reminder) -> ReminderOut:
         window_kind=row.window_kind,  # type: ignore[arg-type]
         window_key=row.window_key,
         lead_minutes=row.lead_minutes,
-        weekdays=[int(d) for d in row.weekdays.split(",") if d != ""],
+        weekdays=decode_weekdays(row.weekdays),
         label=row.label,
         enabled=row.enabled,
     )
 
 
-def _clean_weekdays(days: list[int]) -> str:
-    if any(d < 0 or d > 6 for d in days):
-        raise HTTPException(status_code=422, detail="weekdays must be 0 (Sunday) to 6")
-    return ",".join(str(d) for d in sorted(set(days)))
-
-
-def _check_profile(db, user, profile_id: str | None) -> None:
-    if profile_id is not None:
-        _owned_profile(db, user, profile_id)
-
-
-def _owned_reminder(db, user, reminder_id: str) -> Reminder:
-    row = db.get(Reminder, reminder_id)
-    if row is None or row.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reminder not found")
-    return row
+def _rules_to_http(call, *args):
+    """Run a reminder use case, mapping its rule errors to status codes."""
+    try:
+        return call(*args)
+    except ProfileNotFound:
+        raise profile_not_found() from None
+    except ReminderNotFound as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
+    except BadWeekdays as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
 
 
 @router.get("/reminders", response_model=list[ReminderOut])
 def list_reminders(user: CurrentUser, db: DbSession) -> list[ReminderOut]:
-    rows = db.scalars(
-        select(Reminder).where(Reminder.user_id == user.id).order_by(Reminder.created_at)
-    )
-    return [_to_out(r) for r in rows]
+    return [_to_out(r) for r in reminders.list_reminders(db, user.id)]
 
 
 @router.post("/reminders", response_model=ReminderOut, status_code=status.HTTP_201_CREATED)
 def create_reminder(body: ReminderIn, user: CurrentUser, db: DbSession) -> ReminderOut:
-    _check_profile(db, user, body.profile_id)
-    row = Reminder(
-        user_id=user.id,
-        profile_id=body.profile_id,
-        window_kind=body.window_kind,
-        window_key=body.window_key,
-        lead_minutes=body.lead_minutes,
-        weekdays=_clean_weekdays(body.weekdays),
-        label=body.label,
-        enabled=body.enabled,
-    )
-    db.add(row)
-    db.commit()
-    db.refresh(row)
-    return _to_out(row)
+    return _to_out(_rules_to_http(reminders.create_reminder, db, user.id, body.model_dump()))
 
 
 @router.put("/reminders/{reminder_id}", response_model=ReminderOut)
 def update_reminder(
     reminder_id: str, body: ReminderIn, user: CurrentUser, db: DbSession
 ) -> ReminderOut:
-    row = _owned_reminder(db, user, reminder_id)
-    _check_profile(db, user, body.profile_id)
-    row.profile_id = body.profile_id
-    row.window_kind = body.window_kind
-    row.window_key = body.window_key
-    row.lead_minutes = body.lead_minutes
-    row.weekdays = _clean_weekdays(body.weekdays)
-    row.label = body.label
-    row.enabled = body.enabled
-    db.commit()
-    db.refresh(row)
-    return _to_out(row)
+    return _to_out(_rules_to_http(reminders.update_reminder, db, user.id, reminder_id, body.model_dump()))
 
 
 @router.delete("/reminders/{reminder_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_reminder(reminder_id: str, user: CurrentUser, db: DbSession) -> None:
-    row = _owned_reminder(db, user, reminder_id)
-    db.delete(row)
-    db.commit()
+    _rules_to_http(reminders.delete_reminder, db, user.id, reminder_id)

@@ -185,18 +185,10 @@ def build_natal_chart(birth_instant_utc: datetime, *, lat: float, lon: float) ->
 
 
 def birth_instant_from_local(birth: str, birth_tz: str) -> datetime:
-    """Naive local birth datetime (``YYYY-MM-DDTHH:MM``) → a UTC instant.
+    """Naive local birth datetime (``YYYY-MM-DDTHH:MM``) → a UTC instant."""
+    from engine.panchanga.instants import local_birth_instant
 
-    Same convention as :func:`services.festivals.sait_personalize.compute_janma_points`
-    — kept as a separate one-liner here rather than imported, since that
-    function only ever needed the Moon's geocentric position and this one
-    also needs the birth place for the Lagna.
-    """
-    tz = resolve_observer_timezone(birth_tz)
-    local = datetime.fromisoformat(birth)
-    if local.tzinfo is None:
-        local = local.replace(tzinfo=tz)
-    return local.astimezone(timezone.utc)
+    return local_birth_instant(birth, birth_tz)
 
 
 # ── Vimshottari dasha, running at a given instant ───────────────────────────

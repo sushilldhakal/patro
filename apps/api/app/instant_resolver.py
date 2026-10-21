@@ -21,12 +21,20 @@ Three encodings, one resolution — in precedence order:
     the only form that cannot address a pre-1 CE birth moment.
 
 All three land on the same aware ``datetime``. Handlers should call
-:func:`instant_for_request` and never parse any of them themselves.
+:func:`instant_for_request` and never parse any of them themselves. The
+resolution itself is :mod:`engine.panchanga.instants`; this module only reads
+the request.
 """
 
 from __future__ import annotations
 
 from datetime import datetime as _datetime
+
+from engine.panchanga.instants import (  # noqa: F401 - re-exported for the routers
+    birth_instant_from_query,
+    instant_at,
+    instant_for_parts,
+)
 
 
 def _era_jd(request) -> float | None:
@@ -45,45 +53,6 @@ def _era_jd(request) -> float | None:
     return ctx.julian
 
 
-def instant_for_parts(
-    *,
-    era: str | None,
-    year: int | None,
-    month: int | None,
-    day: int | None,
-    clock: str | None,
-    datetime_raw: str | None,
-    jd: float | None,
-    timezone_name: str,
-    lat: float | None = None,
-    lon: float | None = None,
-) -> _datetime:
-    """One moment, addressed independently of the request-wide era context.
-
-    Milan names *two* birth moments in a single request, so neither can come from
-    :class:`~app.era_middleware.EraMiddleware` — that resolves one date per
-    request. Each person therefore carries their own era + parts (or their own
-    Julian Day), converted here through the same codec as everything else.
-    """
-    from engine.calendar.era import to_jd
-
-    day_jd = jd
-    if day_jd is None and None not in (year, month, day):
-        try:
-            day_jd = to_jd(era or "ad", int(year), int(month), int(day))
-        except ValueError as exc:
-            raise ValueError(str(exc)) from exc
-
-    return instant_for_request(
-        datetime_raw=datetime_raw,
-        jd=day_jd,
-        clock=clock,
-        timezone_name=timezone_name,
-        lat=lat,
-        lon=lon,
-    )
-
-
 def instant_for_request(
     *,
     datetime_raw: str | None,
@@ -96,82 +65,11 @@ def instant_for_request(
 ) -> _datetime:
     """Resolve ``jd``+``clock``, era parts + ``clock``, or ``datetime`` to a moment.
 
-    A Julian Day is an identity and an ISO string is a spelling, so the JD forms
-    win when more than one is supplied. Raises ``ValueError`` for anything
-    unusable, so callers surface a 400 the same way they already do.
+    The request contributes only the day the era middleware resolved from its
+    ``inputEra`` + parts; :func:`engine.panchanga.instants.instant_at` does the
+    rest. Raises ``ValueError`` for anything unusable, so callers surface a 400.
     """
-    from engine.panchanga.at_time import parse_clock_on_date, parse_query_datetime
-    from services.panchanga.panchanga_api import resolve_panchanga_jd_ut
-
     day_jd = jd if jd is not None else (_era_jd(request) if request is not None else None)
-
-    if day_jd is not None:
-        if not clock:
-            raise ValueError(
-                "a Julian Day or calendar date needs a clock (observer-local HH:MM) "
-                "to name a moment"
-            )
-        _, civil, greg = resolve_panchanga_jd_ut(day_jd)
-        # Pre-1 CE days have no ``datetime.date``; the CivilDay carries them.
-        anchor = greg if greg is not None else civil
-        return parse_clock_on_date(
-            clock,
-            anchor,
-            timezone_name=timezone_name,
-            lat=lat,
-            lon=lon,
-        )
-
-    return parse_query_datetime(
-        datetime_raw,
-        timezone_name=timezone_name,
-        lat=lat,
-        lon=lon,
-    )
-
-
-def birth_instant_from_query(
-    *,
-    birth: str | None = None,
-    birth_tz: str = "Asia/Kathmandu",
-    birth_era: str | None = None,
-    birth_year: int | None = None,
-    birth_month: int | None = None,
-    birth_day: int | None = None,
-    birth_clock: str | None = None,
-    lat: float | None = None,
-    lon: float | None = None,
-) -> _datetime:
-    """Resolve a saved profile's birth moment. Era parts win over a Gregorian ISO.
-
-    Clients send the profile's stored ``birth_date`` / ``birth_era`` / clock
-    (and timezone) and this is the only place those become an instant. The
-    older ``birth=YYYY-MM-DDTHH:MM`` form stays for callers that already hold
-    a Gregorian civil datetime.
-    """
-    clock = birth_clock
-    if not clock and birth and "T" in birth:
-        clock = birth.split("T", 1)[1]
-
-    if None not in (birth_year, birth_month, birth_day):
-        return instant_for_parts(
-            era=birth_era or "ad",
-            year=int(birth_year),
-            month=int(birth_month),
-            day=int(birth_day),
-            clock=clock or "12:00",
-            datetime_raw=None,
-            jd=None,
-            timezone_name=birth_tz,
-            lat=lat,
-            lon=lon,
-        )
-
-    if birth:
-        from engine.jyotish.rashifal_personal import birth_instant_from_local
-
-        return birth_instant_from_local(birth, birth_tz)
-
-    raise ValueError(
-        "Provide birth_era + birth_year/month/day + birth_clock, or a birth datetime."
+    return instant_at(
+        datetime_raw=datetime_raw, jd=day_jd, clock=clock, timezone_name=timezone_name, lat=lat, lon=lon,
     )

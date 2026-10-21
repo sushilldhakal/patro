@@ -185,20 +185,7 @@ def kundali_report(
     force: bool = Query(False, description="Bypass cache and regenerate the report"),
 ):
     """Deterministic Vedic interpretation of the birth chart, streamed as NDJSON."""
-    from datetime import datetime as _dt
-    from datetime import timezone as _tz
-
-    from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.panchanga.at_time import build_planetary_snapshot, resolve_vedic_day_anchor
-    from services.panchanga.panchanga_at_time import build_panchanga_at_time
-    from engine.jyotish.interpretation import iter_report
-    from engine.jyotish.shadbala import compute_shadbala
-    from engine.jyotish.vimshottari import vimshottari_dasha
-    from services.jyotish.kundali_report_cache import (
-        get_cached_report,
-        make_cache_key,
-        store_report_cache,
-    )
+    from services.jyotish.kundali_report import kundali_report as build_report
 
     try:
         instant = instant_for_request(
@@ -210,64 +197,11 @@ def kundali_report(
             lon=location.lon,
             request=request,
         )
-        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
-        instant_utc = instant.astimezone(_tz.utc)
-        snapshot = build_planetary_snapshot(instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode_id)
-        planets = snapshot["planets"]
-        lagna = snapshot["lagna"]
-        moon_lon = planets["moon"]["longitude"]
-        dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
-        shadbala = compute_shadbala(instant_utc, lat=location.lat, lon=location.lon,
-                                    timezone_name=location.timezone, ayanamsa=mode_id)
-
-        # Gulika/Mandi and day/night birth feed several classical yoga rules
-        # in the report's yoga list — same data the /kundali/detail endpoint
-        # already computes, sourced here the same way.
-        is_day: bool | None = None
-        gulika_lon: float | None = None
-        mandi_lon: float | None = None
-        try:
-            panchanga = build_panchanga_at_time(instant, location, ayanamsa=mode_id)
-            upagraha_raw = {
-                row["key"]: row for row in (panchanga.get("detail") or {}).get("upagrahas") or []
-            }
-            gulika_lon = upagraha_raw.get("gulika", {}).get("longitude")
-            mandi_lon = upagraha_raw.get("mandi", {}).get("longitude")
-            _, sunrise_utc, sunset_utc, _ = resolve_vedic_day_anchor(instant, location)
-            is_day = sunrise_utc <= instant_utc < sunset_utc
-        except Exception:
-            pass
+        header, cached_records, cache_status = build_report(
+            instant, location, ayanamsha=ayanamsha, lang=lang, force=force,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-    report_lang = "en" if str(lang or "ne").startswith("en") else "ne"
-    ayanamsha_id = ayanamsha or "lahiri"
-    birth_instant = instant.isoformat()
-    header = {"ayanamsha": ayanamsha_id, "location": location.as_dict(), "birth_instant": birth_instant}
-    cache_key = make_cache_key(birth_instant, location, ayanamsha_id, report_lang)
-    cache_status = "miss"
-
-    cached_records: list[dict] | None = None
-    if not force:
-        cached_records = get_cached_report(cache_key)
-        if cached_records is not None:
-            cache_status = "hit"
-
-    if cached_records is None:
-        cached_records = list(
-            iter_report(
-                planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc), lang=report_lang,
-                is_day=is_day, gulika_lon=gulika_lon, mandi_lon=mandi_lon,
-            )
-        )
-        store_report_cache(
-            cache_key,
-            birth_instant=birth_instant,
-            location=location,
-            ayanamsha=ayanamsha_id,
-            lang=report_lang,
-            records=cached_records,
-        )
 
     def _stream():
         yield json.dumps({"kind": "header", **header}, ensure_ascii=False) + "\n"

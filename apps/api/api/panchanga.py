@@ -1097,8 +1097,6 @@ def nepal_panchanga_day(
 ):
     """Combined daily panchanga + festivals + public holiday status."""
     from engine.calendar.date_keys import civil_day_for_date_key
-    from engine.astronomy.jd_calendar import date_if_supported
-    from engine.calendar.bikram_sambat import locate_patro_day_for_civil
 
     civil = civil_day_for_date_key(date_key, era)
     if civil is None:
@@ -1107,32 +1105,9 @@ def nepal_panchanga_day(
             detail=f"{date_key!r} is not a date this era can read",
         )
 
-    greg = date_if_supported(civil.year, civil.month, civil.day)
-    if greg is None:
-        # Pre-1 CE: the signed patro axis carries the day, and the CE-only
-        # lunar/festival engines stub out — same split build_daily_panchanga_at_jd
-        # makes one layer down.
-        py, pm, pd = locate_patro_day_for_civil(civil)
-        state = build_daily_state_civil(
-            civil,
-            location,
-            patro_bs_year=py,
-            patro_bs_month=pm,
-            patro_bs_day=pd,
-            include_festivals=True,
-            include_detail=False,
-        )
-    else:
-        state = build_daily_state(
-            greg, location, include_festivals=True, include_detail=False
-        )
-    from services.festivals.holiday_generator import is_public_holiday
-    festivals = state.get("festivals", [])
-    for f in festivals:
-        f["is_public_holiday"] = is_public_holiday(f["id"])
-    state["is_public_holiday"] = any(f.get("is_public_holiday") for f in festivals)
-    state.pop("detail", None)
+    from services.festivals.festival_day import day_state_with_holidays
 
+    state = day_state_with_holidays(civil, location)
     if format == "raw":
         return state
     payload = render_panchanga(state, style=format, variant=variant, locale=locale)
@@ -1201,48 +1176,9 @@ def nepal_sankranti_day(
 def nepal_panchanga_year(bs_year: int, location: LocationDep):
     """Full-year Panchanga summary for a BS year."""
     _validate_bs_year(bs_year)
-    from engine.calendar.bikram_sambat import (
-        format_bs_date, get_bs_month_length, get_bs_month_start,
-        iter_bs_month_days, bs_to_gregorian,
-    )
-    from services.panchanga.daily_panchanga import get_daily_panchanga
+    from services.panchanga.panchanga_api import build_bs_year_summary
 
-    all_greg_days: list[date] = []
-    for month in range(1, 13):
-        all_greg_days.extend(greg for _, greg in iter_bs_month_days(bs_year, month))
-
-    days = []
-    for greg in all_greg_days:
-        p = get_daily_panchanga(greg, location)
-        bs = p["bs_date"]
-        m = p.get("muhurta", {})
-        days.append({
-            "date_bs": str(BsDate.of(bs)),
-            "date_ad": greg.isoformat(),
-            "weekday": p["vaara"]["name_ne"],
-            "weekday_en": p["vaara"]["name_english"],
-            "tithi": p["tithi"]["name"],
-            "tithi_ne": p["tithi"]["name_ne"],
-            "nakshatra": p["nakshatra"]["name"],
-            "paksha": p["paksha"]["label_en"],
-            "sunrise": p["sunrise"]["local_time_short"],
-            "sunset": p["sunset"]["local_time_short"],
-            "rahu_kalam": {"start": (m.get("rahu_kalam") or {}).get("start_time"),
-                           "end": (m.get("rahu_kalam") or {}).get("end_time")},
-            "abhijit": {"start": (m.get("abhijit") or {}).get("start_time"),
-                        "end": (m.get("abhijit") or {}).get("end_time")},
-            "is_public_holiday": False,
-        })
-
-    yr_start = get_bs_month_start(bs_year, 1)
-    yr_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
-    return {
-        "bs_year": bs_year,
-        "gregorian_range": {"start": yr_start.isoformat(), "end": yr_end.isoformat()},
-        "location": location.as_dict(),
-        "count": len(days),
-        "days": days,
-    }
+    return build_bs_year_summary(bs_year, location)
 
 
 @router.get("/nepal/special-months/{bs_year}")

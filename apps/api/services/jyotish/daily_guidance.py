@@ -168,3 +168,27 @@ def build_guidance_range(
         "location": {"lat": location.lat, "lon": location.lon, "timezone": location.timezone},
         "days": [build_day_guidance(start + timedelta(days=i), location, natal) for i in range(days)],
     }
+
+
+def natal_chart_for_profile(profile: Any):
+    """A saved profile's natal chart, or ``None`` when it has no usable birth moment."""
+    from engine.jyotish.rashifal_personal import build_natal_chart
+    from engine.panchanga.instants import birth_instant_from_query
+
+    if not (profile.birth_date and profile.latitude is not None and profile.longitude is not None):
+        return None
+    try:
+        year, month, day = (int(part) for part in profile.birth_date.split("-")[:3])
+        instant = birth_instant_from_query(
+            birth_tz=profile.timezone or "Asia/Kathmandu",
+            birth_era=profile.birth_era or "bs",
+            birth_year=year,
+            birth_month=month,
+            birth_day=day,
+            birth_clock=profile.birth_time or "12:00",
+            lat=profile.latitude,
+            lon=profile.longitude,
+        )
+        return build_natal_chart(instant, lat=profile.latitude, lon=profile.longitude)
+    except (ValueError, TypeError):
+        return None

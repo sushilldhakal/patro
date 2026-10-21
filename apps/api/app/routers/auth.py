@@ -7,26 +7,27 @@ Tokens
 * refresh — opaque, high-entropy, stored hashed in `refresh_tokens`. Rotated on
             every refresh and revoked on logout. Works identically for web and
             future mobile clients.
+
+The rules are ``engine.identity.accounts`` and the use cases
+``services.identity.accounts``; this router verifies provider tokens, maps
+account errors to status codes, and queues the emails a use case asks for.
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
-from sqlalchemy import select
 
-import config
 from app import emailer
 from app.apple_auth import AppleAuthError, verify_apple_identity_token
 from app.facebook_auth import FacebookAuthError, verify_facebook_access_token
 from app.google_auth import GoogleAuthError, verify_google_id_token
-from database.models import EmailToken, RefreshToken, User
+from app.security import CurrentUser, DbSession
+from database.models import User
 from database.schemas import (
     AppleAuthRequest,
+    FacebookAuthRequest,
     ForgotPasswordRequest,
     GoogleAuthRequest,
-    FacebookAuthRequest,
     LoginRequest,
     MessageResponse,
     RefreshRequest,
@@ -36,78 +37,46 @@ from database.schemas import (
     UserOut,
     VerifyEmailRequest,
 )
-from app.security import (
-    CurrentUser,
-    DbSession,
-    create_access_token,
-    generate_opaque_token,
-    hash_password,
-    hash_token,
-    verify_password,
+from engine.identity.accounts import (
+    AccountDisabled,
+    AccountError,
+    EmailAlreadyRegistered,
+    InvalidCredentials,
+    InvalidLink,
+    InvalidSession,
+    apple_account_email,
 )
+from services.identity import accounts
+from services.identity.account_store import SqlAccountStore
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-VERIFY_TTL = timedelta(hours=24)
-RESET_TTL = timedelta(hours=1)
+_STATUS: dict[type[AccountError], int] = {
+    EmailAlreadyRegistered: status.HTTP_409_CONFLICT,
+    InvalidCredentials: status.HTTP_401_UNAUTHORIZED,
+    AccountDisabled: status.HTTP_403_FORBIDDEN,
+    InvalidLink: status.HTTP_400_BAD_REQUEST,
+    InvalidSession: status.HTTP_401_UNAUTHORIZED,
+}
 
 
-def _now() -> datetime:
-    return datetime.now(timezone.utc)
+def _http(exc: AccountError) -> HTTPException:
+    return HTTPException(status_code=_STATUS[type(exc)], detail=str(exc))
 
 
-def _issue_tokens(db, user: User) -> TokenPair:
-    """Create an access JWT and a fresh persisted refresh token."""
-    raw_refresh = generate_opaque_token()
-    db.add(
-        RefreshToken(
-            user_id=user.id,
-            token_hash=hash_token(raw_refresh),
-            expires_at=_now() + timedelta(days=config.refresh_token_ttl_days()),
-        )
-    )
-    db.commit()
+def _pair(tokens: accounts.IssuedTokens) -> TokenPair:
     return TokenPair(
-        access_token=create_access_token(user),
-        refresh_token=raw_refresh,
-        expires_in=config.access_token_ttl_minutes() * 60,
+        access_token=tokens.access_token, refresh_token=tokens.refresh_token, expires_in=tokens.expires_in,
     )
 
 
-def _oauth_user(db: DbSession, email: str) -> User:
-    """Find or create a user after an OAuth provider has verified their email."""
-    normalized = email.lower()
-    user = db.scalar(select(User).where(User.email == normalized))
-    if user is None:
-        user = User(
-            email=normalized,
-            password_hash=hash_password(generate_opaque_token()),
-            is_verified=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    elif not user.is_verified:
-        user.is_verified = True
-        db.commit()
-
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
-    return user
-
-
-def _create_email_token(db, user: User, kind: str, ttl: timedelta) -> str:
-    raw = generate_opaque_token()
-    db.add(
-        EmailToken(
-            user_id=user.id,
-            kind=kind,
-            token_hash=hash_token(raw),
-            expires_at=_now() + ttl,
-        )
+def _provider_error(exc: Exception) -> HTTPException:
+    """503 when the provider simply isn't configured, 401 for a bad token."""
+    not_configured = "not configured" in str(exc)
+    return HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE if not_configured else status.HTTP_401_UNAUTHORIZED,
+        detail=str(exc),
     )
-    db.commit()
-    return raw
 
 
 # ─── Signup / login ────────────────────────────────────────────────────────────
@@ -115,32 +84,20 @@ def _create_email_token(db, user: User, kind: str, ttl: timedelta) -> str:
 
 @router.post("/signup", response_model=TokenPair, status_code=status.HTTP_201_CREATED)
 def signup(body: SignupRequest, db: DbSession, background: BackgroundTasks) -> TokenPair:
-    email = body.email.lower()
-    existing = db.scalar(select(User).where(User.email == email))
-    if existing is not None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
-
-    user = User(email=email, password_hash=hash_password(body.password))
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    token = _create_email_token(db, user, "verify", VERIFY_TTL)
-    background.add_task(emailer.send_verification_email, user.email, token)
-
-    return _issue_tokens(db, user)
+    try:
+        tokens, link = accounts.sign_up(SqlAccountStore(db), body.email, body.password)
+    except AccountError as exc:
+        raise _http(exc) from None
+    background.add_task(emailer.send_verification_email, link.to, link.token)
+    return _pair(tokens)
 
 
 @router.post("/login", response_model=TokenPair)
 def login(body: LoginRequest, db: DbSession) -> TokenPair:
-    user = db.scalar(select(User).where(User.email == body.email.lower()))
-    if user is None or not verify_password(body.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
-        )
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
-    return _issue_tokens(db, user)
+    try:
+        return _pair(accounts.sign_in(SqlAccountStore(db), body.email, body.password))
+    except AccountError as exc:
+        raise _http(exc) from None
 
 
 @router.post("/google", response_model=TokenPair)
@@ -149,17 +106,11 @@ def google_auth(body: GoogleAuthRequest, db: DbSession) -> TokenPair:
     try:
         claims = verify_google_id_token(body.id_token)
     except GoogleAuthError as exc:
-        # 503 when the feature simply isn't configured, 401 for bad tokens.
-        not_configured = "not configured" in str(exc)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
-            if not_configured
-            else status.HTTP_401_UNAUTHORIZED,
-            detail=str(exc),
-        ) from exc
-
-    user = _oauth_user(db, claims["email"])
-    return _issue_tokens(db, user)
+        raise _provider_error(exc) from exc
+    try:
+        return _pair(accounts.sign_in_verified_email(SqlAccountStore(db), claims["email"]))
+    except AccountError as exc:
+        raise _http(exc) from None
 
 
 @router.post("/facebook", response_model=TokenPair)
@@ -168,52 +119,11 @@ def facebook_auth(body: FacebookAuthRequest, db: DbSession) -> TokenPair:
     try:
         profile = verify_facebook_access_token(body.access_token)
     except FacebookAuthError as exc:
-        not_configured = "not configured" in str(exc)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
-            if not_configured
-            else status.HTTP_401_UNAUTHORIZED,
-            detail=str(exc),
-        ) from exc
-
-    user = _oauth_user(db, profile["email"])
-    return _issue_tokens(db, user)
-
-
-def _apple_email(claims: dict, fallback: str | None) -> str:
-    email = claims.get("email") or fallback
-    if isinstance(email, str) and email.strip():
-        return email.strip().lower()
-    sub = str(claims["sub"])
-    return f"apple.{sub}@users.vedicpatro.com"
-
-
-def _oauth_apple_user(db: DbSession, sub: str, email: str) -> User:
-    """Find or create a user after Apple has verified their identity token."""
-    user = db.scalar(select(User).where(User.apple_user_id == sub))
-    if user is None:
-        user = db.scalar(select(User).where(User.email == email))
-        if user is None:
-            user = User(
-                email=email,
-                password_hash=hash_password(generate_opaque_token()),
-                is_verified=True,
-                apple_user_id=sub,
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-        else:
-            user.apple_user_id = sub
-            user.is_verified = True
-            db.commit()
-    elif not user.is_verified:
-        user.is_verified = True
-        db.commit()
-
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
-    return user
+        raise _provider_error(exc) from exc
+    try:
+        return _pair(accounts.sign_in_verified_email(SqlAccountStore(db), profile["email"]))
+    except AccountError as exc:
+        raise _http(exc) from None
 
 
 @router.post("/apple", response_model=TokenPair)
@@ -222,45 +132,26 @@ def apple_auth(body: AppleAuthRequest, db: DbSession) -> TokenPair:
     try:
         claims = verify_apple_identity_token(body.identity_token)
     except AppleAuthError as exc:
-        not_configured = "not configured" in str(exc)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
-            if not_configured
-            else status.HTTP_401_UNAUTHORIZED,
-            detail=str(exc),
-        ) from exc
-
-    email = _apple_email(claims, body.email)
-    user = _oauth_apple_user(db, str(claims["sub"]), email)
-    return _issue_tokens(db, user)
+        raise _provider_error(exc) from exc
+    email = apple_account_email(claims, body.email)
+    try:
+        return _pair(accounts.sign_in_with_apple(SqlAccountStore(db), str(claims["sub"]), email))
+    except AccountError as exc:
+        raise _http(exc) from None
 
 
 @router.post("/refresh", response_model=TokenPair)
 def refresh(body: RefreshRequest, db: DbSession) -> TokenPair:
-    token_hash = hash_token(body.refresh_token)
-    stored = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
-    if stored is None or not stored.is_valid:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired refresh token"
-        )
-    # Rotate: revoke the used token, issue a new pair.
-    stored.revoked_at = _now()
-    db.commit()
-    user = db.get(User, stored.user_id)
-    if user is None or not user.is_active:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    return _issue_tokens(db, user)
+    try:
+        return _pair(accounts.refresh_session(SqlAccountStore(db), body.refresh_token))
+    except AccountError as exc:
+        raise _http(exc) from None
 
 
 @router.post("/logout", response_model=MessageResponse)
 def logout(body: RefreshRequest, db: DbSession) -> MessageResponse:
     """Revoke the supplied refresh token. Access tokens expire on their own."""
-    stored = db.scalar(
-        select(RefreshToken).where(RefreshToken.token_hash == hash_token(body.refresh_token))
-    )
-    if stored is not None and stored.revoked_at is None:
-        stored.revoked_at = _now()
-        db.commit()
+    accounts.sign_out(SqlAccountStore(db), body.refresh_token)
     return MessageResponse(message="Logged out")
 
 
@@ -275,8 +166,7 @@ def delete_me(user: CurrentUser, db: DbSession) -> MessageResponse:
 
     Required by Apple App Store and Google Play for apps that create accounts.
     """
-    db.delete(user)
-    db.commit()
+    accounts.delete_account(SqlAccountStore(db), user)
     return MessageResponse(message="Account deleted")
 
 
@@ -285,28 +175,19 @@ def delete_me(user: CurrentUser, db: DbSession) -> MessageResponse:
 
 @router.post("/verify-email", response_model=MessageResponse)
 def verify_email(body: VerifyEmailRequest, db: DbSession) -> MessageResponse:
-    stored = db.scalar(
-        select(EmailToken).where(
-            EmailToken.token_hash == hash_token(body.token), EmailToken.kind == "verify"
-        )
-    )
-    if stored is None or not stored.is_valid:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired link")
-    user = db.get(User, stored.user_id)
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
-    user.is_verified = True
-    stored.used_at = _now()
-    db.commit()
+    try:
+        accounts.verify_email(SqlAccountStore(db), body.token)
+    except AccountError as exc:
+        raise _http(exc) from None
     return MessageResponse(message="Email verified")
 
 
 @router.post("/resend-verification", response_model=MessageResponse)
 def resend_verification(user: CurrentUser, db: DbSession, background: BackgroundTasks) -> MessageResponse:
-    if user.is_verified:
+    link = accounts.resend_verification(SqlAccountStore(db), user)
+    if link is None:
         return MessageResponse(message="Already verified")
-    token = _create_email_token(db, user, "verify", VERIFY_TTL)
-    background.add_task(emailer.send_verification_email, user.email, token)
+    background.add_task(emailer.send_verification_email, link.to, link.token)
     return MessageResponse(message="Verification email sent")
 
 
@@ -317,35 +198,17 @@ def resend_verification(user: CurrentUser, db: DbSession, background: Background
 def forgot_password(
     body: ForgotPasswordRequest, db: DbSession, background: BackgroundTasks
 ) -> MessageResponse:
-    user = db.scalar(select(User).where(User.email == body.email.lower()))
-    # Always return the same response to avoid leaking which emails exist.
-    if user is not None and user.is_active:
-        token = _create_email_token(db, user, "reset", RESET_TTL)
-        background.add_task(emailer.send_password_reset_email, user.email, token)
+    link = accounts.request_password_reset(SqlAccountStore(db), body.email)
+    # Always the same response, so which emails exist does not leak.
+    if link is not None:
+        background.add_task(emailer.send_password_reset_email, link.to, link.token)
     return MessageResponse(message="If that email exists, a reset link has been sent")
 
 
 @router.post("/reset-password", response_model=MessageResponse)
 def reset_password(body: ResetPasswordRequest, db: DbSession) -> MessageResponse:
-    stored = db.scalar(
-        select(EmailToken).where(
-            EmailToken.token_hash == hash_token(body.token), EmailToken.kind == "reset"
-        )
-    )
-    if stored is None or not stored.is_valid:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired link")
-    user = db.get(User, stored.user_id)
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
-
-    user.password_hash = hash_password(body.password)
-    stored.used_at = _now()
-    # Revoke all refresh tokens so existing sessions can't continue after a reset.
-    for rt in db.scalars(
-        select(RefreshToken).where(
-            RefreshToken.user_id == user.id, RefreshToken.revoked_at.is_(None)
-        )
-    ):
-        rt.revoked_at = _now()
-    db.commit()
+    try:
+        accounts.reset_password(SqlAccountStore(db), body.token, body.password)
+    except AccountError as exc:
+        raise _http(exc) from None
     return MessageResponse(message="Password updated")

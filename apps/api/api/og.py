@@ -22,8 +22,8 @@ from engine.astronomy.location import (
     resolve_location,
 )
 from services.geography.observer_location import resolve_location_from_query
-from services.sharing.fb_post_content import periods_summary, planets_summary
-from services.sharing.og_image import og_fields, render_panchanga_og
+from services.sharing.og_image import render_panchanga_og
+from services.sharing.share_copy import share_copy
 from services.panchanga.panchanga_api import build_daily_state
 
 logger = logging.getLogger(__name__)
@@ -152,7 +152,9 @@ def share_panchanga(
     location = _resolve_location(city=city, lat=lat, lon=lon, tz=tz)
     payload = build_daily_state(greg, location, include_festivals=False, include_detail=True)
     label = place or location.name
-    f = og_fields(payload, date_ad=greg.isoformat(), location_name=label)
+    title, description = share_copy(
+        payload, date_ad=greg.isoformat(), label=label, card=request.query_params.get("card"),
+    )
 
     base = config.frontend_url() or "https://vedicpatro.com"
     qs = request.url.query
@@ -163,25 +165,6 @@ def share_panchanga(
     # scraper caches when the card layout changes — keep it in step with
     # CHART_OG_IMAGE_URL on the front-end.
     image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=4"
-
-    # Nepali (Bikram Sambat) date everywhere a human reads it — the Gregorian
-    # date belongs in the URL, not in the share title.
-    date_ne = f["bs_line"] or f["ad_line"]
-    date_line = " · ".join(x for x in (f["weekday"], date_ne) if x)
-    card = request.query_params.get("card")
-    if card == "periods":
-        # The daily शुभ / अशुभ समय post — same URL contract, different image + copy.
-        title = f"आजका शुभ र अशुभ समय · {label} · {date_ne} | Vedic Patro"
-        description = f"{label}, {date_line}। {periods_summary(payload)}।"
-    elif card == "d1":
-        title = f"आजको ग्रहस्थिति · D1 चक्र · {label} · {date_ne} | Vedic Patro"
-        description = f"{label}, {date_line}। उदयकालिक स्पष्टग्रह: {planets_summary(payload)}।"
-    else:
-        title = f"{f['paksha']} {f['tithi']} · {label} · {date_ne} — पञ्चाङ्ग | Vedic Patro"
-        description = (
-            f"{label}, {date_line}। तिथि {f['tithi']}, नक्षत्र {f['nakshatra']}, "
-            f"योग {f['yoga']}, करण {f['karana']}। सूर्योदय {f['sunrise']}, सूर्यास्त {f['sunset']}।"
-        )
 
     return HTMLResponse(
         content=_share_html(title=title, description=description, page_url=page_url, image_url=image_url),
