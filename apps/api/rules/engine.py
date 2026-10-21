@@ -143,6 +143,17 @@ def compute_festival_dates(
     if start is None:
         return None
 
+    # A span that closes on another festival's day (Tihar: Laxmi Puja → Bhai
+    # Tika) rather than after a fixed count — tithi kshaya/vriddhi make the
+    # count 4, 5 or 6 days.
+    if rule.get("end_at"):
+        from services.holiday_generator import load_rules
+
+        end_rule = load_rules().get(rule["end_at"])
+        ends = compute_festival_dates(rule["end_at"], end_rule, gregorian_year, location) if end_rule else None
+        if ends is not None and ends[0] >= start:
+            return start, ends[0]
+
     end = start + timedelta(days=duration - 1)
     return start, end
 

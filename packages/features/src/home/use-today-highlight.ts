@@ -37,6 +37,35 @@ function moonPhaseKey(index: number): string {
   return index < 14 ? "ui.home.waxing_moon" : "ui.home.waning_moon";
 }
 
+// Literal keys, not `ui.home.sait_kaal_${kaal}`: the website's i18n bundle keeps
+// only the `ui.*` keys that appear as literals in its source.
+const SAIT_RITUAL_KEYS: Record<string, string> = {
+  ghatasthapana: "ui.home.sait_ritual_ghatasthapana",
+  fulpati: "ui.home.sait_ritual_fulpati",
+  "dashain-tika": "ui.home.sait_ritual_dashain_tika",
+  "laxmi-puja": "ui.home.sait_ritual_laxmi_puja",
+  "bhai-tika": "ui.home.sait_ritual_bhai_tika",
+  vivah: "ui.home.sait_ritual_vivah",
+  bratabandha: "ui.home.sait_ritual_bratabandha",
+  "griha-pravesh": "ui.home.sait_ritual_griha_pravesh",
+};
+const SAIT_KAAL_KEYS: Record<string, string> = {
+  pratah: "ui.home.sait_kaal_pratah",
+  abhijit: "ui.home.sait_kaal_abhijit",
+  madhyahna: "ui.home.sait_kaal_madhyahna",
+  aparahna: "ui.home.sait_kaal_aparahna",
+  abhijit_aparahna: "ui.home.sait_kaal_abhijit_aparahna",
+  dinamaan: "ui.home.sait_kaal_dinamaan",
+  pradosh: "ui.home.sait_kaal_pradosh",
+  purva_ratri: "ui.home.sait_kaal_purva_ratri",
+};
+const SAIT_DIRECTION_KEYS: Record<string, string> = {
+  east: "ui.home.sait_dir_east",
+  south: "ui.home.sait_dir_south",
+  west: "ui.home.sait_dir_west",
+  north: "ui.home.sait_dir_north",
+};
+
 /** One rite on the card: its clock times (one per lagna stretch) and, for an early-morning sait, the Abhijit alternative. */
 export type SaitRow = {
   key: string;
@@ -129,12 +158,16 @@ export function useTodayHighlight({
   // rite; a ceremony split across several lagnas lists each stretch.
   const span = (w: { start_local: string; end_local: string }) => `${clock(w.start_local)} – ${clock(w.end_local)}`;
   const saits: SaitRow[] = [];
+  const label = (keys: Record<string, string>, id: string | null | undefined) => {
+    const key = id ? keys[id] : undefined;
+    return key ? t(key) : "";
+  };
   for (const sait of p?.festival_saits ?? []) {
     const lagna = sait.lagna ? t("ui.home.sait_lagna", { v0: bilingualText(lang, sait.lagna.name_ne, sait.lagna.name) }) : "";
     const time = {
       key: sait.sait.start,
       time: span(sait.sait),
-      detail: [sait.kaal ? t(`ui.home.sait_kaal_${sait.kaal}`) : "", lagna].filter(Boolean).join(" · "),
+      detail: [label(SAIT_KAAL_KEYS, sait.kaal), lagna].filter(Boolean).join(" · "),
     };
     const key = `${sait.festival_id}:${sait.ritual}`;
     const row = saits.find((r) => r.key === key);
@@ -144,14 +177,14 @@ export function useTodayHighlight({
     }
     saits.push({
       key,
-      label: t(`ui.home.sait_ritual_${sait.ritual.replace(/-/g, "_")}`),
+      label: label(SAIT_RITUAL_KEYS, sait.ritual),
       times: [time],
       alternate: sait.alternate
-        ? t("ui.home.sait_or_kaal", { v0: t(`ui.home.sait_kaal_${sait.alternate.kaal}`), v1: span(sait.alternate) })
+        ? t("ui.home.sait_or_kaal", { v0: label(SAIT_KAAL_KEYS, sait.alternate.kaal), v1: span(sait.alternate) })
         : undefined,
       facing: sait.facing
         ? t("ui.home.sait_facing", {
-            v0: t(`ui.home.sait_dir_${sait.facing.direction}`),
+            v0: label(SAIT_DIRECTION_KEYS, sait.facing.direction),
             v1: bilingualText(lang, sait.facing.moon_rashi.name_ne, sait.facing.moon_rashi.name),
           })
         : undefined,

@@ -138,6 +138,9 @@ TIHAR = [
     ("laxmi-puja", 2025, date(2025, 10, 20)),
     ("gai-puja", 2024, date(2024, 10, 31)),
     ("gai-puja", 2025, date(2025, 10, 20)),
+    # The Tihar public holiday opens on the Laxmi Puja day (and closes on Bhai Tika).
+    ("tihar", 2024, date(2024, 10, 31)),
+    ("tihar", 2025, date(2025, 10, 20)),
 ]
 
 

@@ -82,7 +82,7 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // instead of serving stale ones. Bump here — one place for both apps.
 
 /** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga_cache.py. */
-export const PANCHANGA_CACHE_VERSION = "4903";
+export const PANCHANGA_CACHE_VERSION = "5003";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
 export const SAIT_CACHE_VERSION = "14";
 /** Graha sthiti / asta / vakri / eclipse (`gv=`). */

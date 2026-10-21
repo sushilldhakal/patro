@@ -132,3 +132,19 @@ def test_tika_rites_name_the_facing_direction():
     assert tika["facing"]["moon_rashi"]["name"] == "Kumbha"
     assert tika["facing"]["direction"] == "west"
     assert _one(LAXMI_PUJA_2026, "laxmi-puja", DEFAULT_LOCATION)["facing"] is None
+
+
+@pytest.mark.parametrize(
+    "year,laxmi_puja,bhai_tika",
+    [(2026, date(2026, 11, 8), date(2026, 11, 11)), (2027, date(2027, 10, 29), date(2027, 10, 31))],
+)
+def test_tihar_holiday_runs_laxmi_puja_to_bhai_tika(year, laxmi_puja, bhai_tika):
+    """The Tihar public holiday closes on Bhai Tika, however many days the tithis give it."""
+    from services.holiday_generator import generate_festivals, is_public_holiday
+
+    by_id = {f["id"]: f for f in generate_festivals(year)["festivals"]}
+    assert by_id["laxmi-puja"]["start_date"] == laxmi_puja.isoformat()
+    assert by_id["bhai-tika"]["start_date"] == bhai_tika.isoformat()
+    tihar = by_id["tihar"]
+    assert (tihar["start_date"], tihar["end_date"]) == (laxmi_puja.isoformat(), bhai_tika.isoformat())
+    assert tihar["is_public_holiday"] and is_public_holiday("tihar")
