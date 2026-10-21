@@ -73,3 +73,45 @@ def test_every_rule_names_known_kaals():
     known = _kaal_windows(now, now.replace(hour=12), now.replace(day=2))
     for rule in SAIT_RULES.values():
         assert set(rule.windows) <= set(known)
+
+
+def test_phulpati_is_a_midday_sait():
+    sait = _one(date(2026, 10, 17), "fulpati", DEFAULT_LOCATION)
+    assert sait["ritual"] == "fulpati"
+    assert sait["kaal"] == "abhijit"
+    assert sait["lagna"] is not None
+
+
+def test_early_morning_sait_also_offers_abhijit():
+    """Ghatasthapana at the sunrise Kanya lagna may equally be done in Abhijit."""
+    sait = _one(date(2026, 10, 11), "ghatasthapana", DEFAULT_LOCATION)
+    assert sait["kaal"] == "pratah"
+    assert sait["alternate"]["kaal"] == "abhijit"
+    assert "11:00" <= sait["alternate"]["start_local"] <= "12:30"
+    # A sait already in Abhijit needs no alternative.
+    assert _one(DASHAIN_TIKA_2026, "vijaya-dashami", DEFAULT_LOCATION)["alternate"] is None
+
+
+def test_ceremony_saits_name_a_permitted_local_lagna():
+    from engine.vedic.festival_sait import CEREMONY_SAITS, ceremony_saits
+
+    rows = ceremony_saits(date(2027, 2, 11), DEFAULT_LOCATION)
+    assert {row["ritual"] for row in rows} == {"vivah", "bratabandha", "griha-pravesh"}
+    for row in rows:
+        assert row["kind"] == "ceremony"
+        assert row["lagna"]["number"] in CEREMONY_SAITS[row["ritual"]]
+        start = datetime.fromisoformat(row["sait"]["start"])
+        end = datetime.fromisoformat(row["sait"]["end"])
+        assert datetime.fromisoformat(row["window"]["start"]) <= start < end <= datetime.fromisoformat(row["window"]["end"])
+
+
+def test_refined_muhurta_windows_sit_within_one_scan_step():
+    from engine.vedic.muhurta_engine import _STEP, muhurta_windows
+
+    day = date(2027, 2, 11)
+    coarse = muhurta_windows("griha-pravesh", day, DEFAULT_LOCATION)
+    fine = muhurta_windows("griha-pravesh", day, DEFAULT_LOCATION, refine=True)
+    assert len(coarse) == len(fine) > 0
+    for c, f in zip(coarse, fine):
+        assert c.start - _STEP < f.start <= c.start
+        assert c.end - _STEP <= f.end <= c.end

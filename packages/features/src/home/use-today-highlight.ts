@@ -37,6 +37,14 @@ function moonPhaseKey(index: number): string {
   return index < 14 ? "ui.home.waxing_moon" : "ui.home.waning_moon";
 }
 
+/** One rite on the card: its clock times (one per lagna stretch) and, for an early-morning sait, the Abhijit alternative. */
+export type SaitRow = {
+  key: string;
+  label: string;
+  times: Array<{ key: string; time: string; detail: string }>;
+  alternate?: string;
+};
+
 export function useTodayHighlight({
   selectedDay,
   selectedAdDate,
@@ -115,16 +123,32 @@ export function useTodayHighlight({
   };
 
   // Saits come from the day payload, which is fetched per location: a new
-  // location brings its own local kaal, lagna and clock times.
-  const saits = (p?.festival_saits ?? []).map((sait) => {
+  // location brings its own local kaal, lagna and clock times. One row per
+  // rite; a ceremony split across several lagnas lists each stretch.
+  const span = (w: { start_local: string; end_local: string }) => `${clock(w.start_local)} – ${clock(w.end_local)}`;
+  const saits: SaitRow[] = [];
+  for (const sait of p?.festival_saits ?? []) {
     const lagna = sait.lagna ? t("ui.home.sait_lagna", { v0: bilingualText(lang, sait.lagna.name_ne, sait.lagna.name) }) : "";
-    return {
-      key: `${sait.festival_id}:${sait.ritual}`,
-      label: t(`ui.home.sait_ritual_${sait.ritual.replace(/-/g, "_")}`),
-      time: `${clock(sait.sait.start_local)} – ${clock(sait.sait.end_local)}`,
-      detail: [t(`ui.home.sait_kaal_${sait.kaal}`), lagna].filter(Boolean).join(" · "),
+    const time = {
+      key: sait.sait.start,
+      time: span(sait.sait),
+      detail: [sait.kaal ? t(`ui.home.sait_kaal_${sait.kaal}`) : "", lagna].filter(Boolean).join(" · "),
     };
-  });
+    const key = `${sait.festival_id}:${sait.ritual}`;
+    const row = saits.find((r) => r.key === key);
+    if (row) {
+      row.times.push(time);
+      continue;
+    }
+    saits.push({
+      key,
+      label: t(`ui.home.sait_ritual_${sait.ritual.replace(/-/g, "_")}`),
+      times: [time],
+      alternate: sait.alternate
+        ? t("ui.home.sait_or_kaal", { v0: t(`ui.home.sait_kaal_${sait.alternate.kaal}`), v1: span(sait.alternate) })
+        : undefined,
+    });
+  }
 
   const count = digits(Math.abs(daysAway));
   const kicker = isToday

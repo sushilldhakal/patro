@@ -69,10 +69,15 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
           <Box className={cls.highlightSait}>
             <Text className={cls.highlightSaitHeading}>{h.saitHeading}</Text>
             {h.saits.map((sait) => (
-              <Box key={sait.key} className={cls.highlightSaitRow}>
+              <Box key={sait.key} className={cls.highlightSaitItem}>
                 <Text className={cls.highlightSaitLabel}>{sait.label}</Text>
-                <Text className={cls.highlightSaitTime}>{sait.time}</Text>
-                {sait.detail ? <Text className={cls.highlightSaitDetail}>{sait.detail}</Text> : null}
+                {sait.times.map((slot) => (
+                  <Box key={slot.key} className={cls.highlightSaitRow}>
+                    <Text className={cls.highlightSaitTime}>{slot.time}</Text>
+                    {slot.detail ? <Text className={cls.highlightSaitDetail}>{slot.detail}</Text> : null}
+                  </Box>
+                ))}
+                {sait.alternate ? <Text className={cls.highlightSaitDetail}>{sait.alternate}</Text> : null}
               </Box>
             ))}
             <Text className={cls.highlightSaitNote}>{h.saitNote}</Text>

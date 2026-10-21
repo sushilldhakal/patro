@@ -1373,17 +1373,31 @@ export interface SaitTimeWindow {
 }
 
 /**
- * One festival's sait at the observer (`festival_saits` on the day payload):
- * local sunrise/sunset kaal, local rising lagna, and the tithi still prevailing.
+ * One rite's sait at the observer (`festival_saits` on the day payload): local
+ * sunrise/sunset kaal, local rising lagna, and the tithi still prevailing.
+ * `kind: "ceremony"` rows are marriage / Bratabandha / Griha Pravesh muhurtas —
+ * one row per stretch under a single lagna, with no kaal.
  */
 export interface FestivalSait {
+  kind: "festival" | "ceremony";
   festival_id: string;
-  ritual: "ghatasthapana" | "dashain-tika" | "laxmi-puja" | "bhai-tika" | (string & {});
-  kaal: "pratah" | "abhijit" | "madhyahna" | "aparahna" | "abhijit_aparahna" | "dinamaan" | "pradosh" | "purva_ratri" | (string & {});
+  ritual:
+    | "ghatasthapana"
+    | "fulpati"
+    | "dashain-tika"
+    | "laxmi-puja"
+    | "bhai-tika"
+    | "vivah"
+    | "bratabandha"
+    | "griha-pravesh"
+    | (string & {});
+  kaal: "pratah" | "abhijit" | "madhyahna" | "aparahna" | "abhijit_aparahna" | "dinamaan" | "pradosh" | "purva_ratri" | (string & {}) | null;
   timezone: string;
   window: SaitTimeWindow;
   sait: SaitTimeWindow;
   lagna: { number: number; name: string; name_ne: string } | null;
+  /** Set when the sait falls in the early morning: the rite may also be done in this (Abhijit) window. */
+  alternate: (SaitTimeWindow & { kaal: string }) | null;
 }
 
 export interface Festival {

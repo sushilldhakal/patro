@@ -575,6 +575,7 @@ def relax_rule(category: str, rule: CeremonyRule, disabled_ids) -> CeremonyRule:
 _SCAN_HOURS = 24.0
 _STEP = timedelta(minutes=30)
 MIN_WINDOW = timedelta(minutes=5)
+_REFINE_TOLERANCE = timedelta(seconds=30)
 
 
 @dataclass(frozen=True)
@@ -975,12 +976,17 @@ def muhurta_windows(
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
     rule: CeremonyRule | None = None,
+    refine: bool = False,
 ) -> list[MuhurtaWindow]:
     """Auspicious muhūrta windows for ``category`` on the civil day ``greg``.
 
     ``rule`` overrides the default ``CEREMONY_RULES[category]`` — used by the
     year-listing layer to apply an adaptive variant (e.g. the widened gṛha-
     praveśa nakṣatra set) while keeping ``category`` for messages/caching.
+
+    The scan steps every 30 minutes, so window edges are only good to that step.
+    ``refine`` bisects each edge to the minute — for showing a sait's clock
+    times; year listings only need to know a window exists and leave it off.
     """
     if rule is None:
         rule = CEREMONY_RULES.get(category)
@@ -1050,27 +1056,44 @@ def muhurta_windows(
     last = None
     dt = sunrise
 
-    def _close(run, last_dt):
-        if run is None or last_dt is None:
-            return
-        stop = min(last_dt + _STEP, end)
-        if stop - run[0] >= MIN_WINDOW:
-            s, ti, nk, lg = run
-            windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
-
-    while dt <= end:
-        in_godhuli = bool(godhuli and godhuli[0] <= dt < godhuli[1])
-        ok, tithi, nak, lagna = _window_ok(
+    def _ok_at(at: datetime) -> tuple[bool, int, int, int]:
+        return _window_ok(
             rule,
-            dt,
+            at,
             planet_rashis,
             pierced_naks,
             gate.vaara,
             location,
-            in_godhuli=in_godhuli,
-            in_dur_muhurta=_in_any_interval(dt, dur_intervals),
-            in_sankranti=_in_any_interval(dt, sankranti_intervals),
+            in_godhuli=bool(godhuli and godhuli[0] <= at < godhuli[1]),
+            in_dur_muhurta=_in_any_interval(at, dur_intervals),
+            in_sankranti=_in_any_interval(at, sankranti_intervals),
         )
+
+    def _edge(good: datetime, bad: datetime) -> tuple[datetime, datetime]:
+        """Narrow a passing/failing pair of instants to within ``_REFINE_TOLERANCE``."""
+        while abs(bad - good) > _REFINE_TOLERANCE:
+            mid = good + (bad - good) / 2
+            if _ok_at(mid)[0]:
+                good = mid
+            else:
+                bad = mid
+        return good, bad
+
+    def _close(run, last_dt):
+        if run is None or last_dt is None:
+            return
+        s, ti, nk, lg = run
+        stop = min(last_dt + _STEP, end)
+        if refine:
+            if s > sunrise:
+                s = _edge(s, s - _STEP)[0]
+            if stop < end:
+                stop = _edge(last_dt, stop)[1]
+        if stop - s >= MIN_WINDOW:
+            windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
+
+    while dt <= end:
+        ok, tithi, nak, lagna = _ok_at(dt)
         if ok:
             if run_start is None:
                 run_start = (dt, tithi, nak, lagna)

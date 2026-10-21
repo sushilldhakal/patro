@@ -22,7 +22,14 @@ for each place, not converted from Kathmandu.
 Each rule names the windows to search in order of preference and the lagna
 groups to prefer inside them. The sait is the first stretch of a window in
 which the tithi prevails *and* a preferred lagna is rising; failing a lagna,
-the stretch of the window the tithi covers.
+the stretch of the window the tithi covers. A daytime sait that lands in the
+early morning also carries the local Abhijit muhurta as an alternative, since
+the rite may equally be done then.
+
+Saṃskāra — marriage, Bratabandha, Griha Pravesh — have no fixed day; their
+days and windows come from the muhūrta engine (:mod:`engine.vedic.muhurta_engine`,
+also observer-local), and :func:`ceremony_saits` splits each window at the
+local lagna changes so every row names the sign rising through it.
 """
 
 from __future__ import annotations
@@ -78,6 +85,14 @@ SAIT_RULES: dict[str, SaitRule] = {
         paksha="shukla",
         windows=("pratah", "abhijit", "dinamaan"),
         lagnas=(DWISWABHAVA_LAGNAS, STHIRA_LAGNAS),
+    ),
+    # Phulpati is brought in at midday on Saptami under a benefic lagna.
+    "fulpati": SaitRule(
+        ritual="fulpati",
+        tithi=7,
+        paksha="shukla",
+        windows=("abhijit", "madhyahna", "dinamaan"),
+        lagnas=(SHUBHA_LAGNAS,),
     ),
     # Tika in Abhijit under a benefic (fixed or dual) lagna while Dashami holds.
     "vijaya-dashami": SaitRule(
@@ -196,7 +211,17 @@ def compute_sait(
             "window": _time_block(*kaals[kaal], tz_name),
             "sait": _time_block(*sait, tz_name),
             "lagna": lagna,
+            "alternate": _abhijit_alternate(kaal, sait),
         }
+
+    def _abhijit_alternate(kaal: str, sait: Window) -> dict[str, Any] | None:
+        """Abhijit, when the sait falls in the early morning — the rite may be done then too."""
+        if kaal == "abhijit" or not (kaals["pratah"][0] <= sait[0] < kaals["pratah"][1]):
+            return None
+        parts = _clip_all(kaals["abhijit"], tithi)
+        if not parts:
+            return None
+        return {"kaal": "abhijit", **_time_block(*parts[0], tz_name)}
 
     # A preferred lagna in any window beats the first window without one: south
     # of the equator, say, no benefic sign may rise inside Abhijit at all. In a
@@ -258,5 +283,64 @@ def festival_saits(
     for fid in wanted:
         sait = compute_sait(SAIT_RULES[fid], sunrise, sunset, next_sunrise, spans, location.timezone)
         if sait is not None:
-            out.append({"festival_id": fid, "timezone": location.timezone, **sait})
+            out.append({"kind": "festival", "festival_id": fid, "timezone": location.timezone, **sait})
+    return out
+
+
+# Saṃskāra shown with their clock times on the day they fall (muhūrta engine id →
+# the lagnas a sait may be fixed in). The engine's own vivāha rule stops at the
+# angas, so the lagna-śuddhi is applied here: Mithuna, Kanya, Tula best, then
+# Vrishabha, Dhanu, Meena. Bratabandha and Griha Pravesh take a fixed or dual
+# lagna, as the engine already requires for Griha Pravesh.
+CEREMONY_SAITS: dict[str, frozenset[int]] = {
+    "vivah": frozenset({2, 3, 6, 7, 9, 12}),
+    "bratabandha": SHUBHA_LAGNAS,
+    "griha-pravesh": SHUBHA_LAGNAS,
+}
+
+
+def ceremony_saits(day: date, location: ObserverLocation = DEFAULT_LOCATION) -> list[dict[str, Any]]:
+    """Marriage, Bratabandha and Griha Pravesh windows on ``day`` at ``location``.
+
+    One row per stretch of a muhūrta window under a single permitted local
+    lagna, so the times are the minutes that lagna holds the horizon here.
+    """
+    from engine.vedic.muhurta_engine import muhurta_windows
+
+    found = {cat: muhurta_windows(cat, day, location, refine=True) for cat in CEREMONY_SAITS}
+    if not any(found.values()):
+        return []
+
+    sun = {"latitude": location.lat, "longitude": location.lon, "timezone_name": location.timezone}
+    sunrise = calculate_sunrise(day, **sun)
+    next_sunrise = calculate_sunrise(day + timedelta(days=1), **sun)
+    lagnas = _lagna_span_windows(
+        build_lagna_spans(sunrise, next_sunrise, lat=location.lat, lon=location.lon, timezone_name=location.timezone)
+    )
+
+    out: list[dict[str, Any]] = []
+    for cat, windows in found.items():
+        for win in windows:
+            whole: Window = (win.start, win.end)
+            pieces = [
+                (part, number, span)
+                for number, span, lagna_window in lagnas
+                if number in CEREMONY_SAITS[cat] and (part := _intersect(whole, lagna_window))
+            ]
+            # Slivers at a lagna change are dropped unless the window is nothing but.
+            kept = [piece for piece in pieces if piece[0][1] - piece[0][0] >= MIN_SAIT] or pieces
+            for part, number, span in kept:
+                out.append(
+                    {
+                        "kind": "ceremony",
+                        "festival_id": cat,
+                        "timezone": location.timezone,
+                        "ritual": cat,
+                        "kaal": None,
+                        "window": _time_block(*whole, location.timezone),
+                        "sait": _time_block(*part, location.timezone),
+                        "lagna": {"number": number, "name": span["name"], "name_ne": span["name_ne"]},
+                        "alternate": None,
+                    }
+                )
     return out
