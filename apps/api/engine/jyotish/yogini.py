@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
-from engine.jyotish.vimshottari import NAKSHATRA_SPAN_DEG, _add_years, _format_years_label
+from engine.jyotish.dasha import DashaSystem, DashaTimeline, mahadashas_from_birth
+from engine.jyotish.vimshottari import NAKSHATRA_SPAN_DEG, _format_years_label
 
 YOGINI_SEQUENCE = [
     "mangala",
@@ -53,6 +54,14 @@ YOGINI_LORD_EN = {
 
 YOGINI_CYCLE_YEARS = sum(YOGINI_YEARS.values())
 
+YOGINI = DashaSystem(
+    name="yogini",
+    sequence=tuple(YOGINI_SEQUENCE),
+    years=YOGINI_YEARS,
+    cycle_years=float(YOGINI_CYCLE_YEARS),
+    lord_ne=YOGINI_LORD_NE,
+)
+
 
 def _yogini_index_for_nakshatra(nakshatra_index: int) -> int:
     """Map nakshatra (0-based, 0-26) to the starting Yogini.
@@ -71,62 +80,45 @@ def _yogini_index_for_nakshatra(nakshatra_index: int) -> int:
     return (nakshatra_index + 3) % len(YOGINI_SEQUENCE)
 
 
+def yogini_timeline(
+    moon_sidereal_lon_deg: float,
+    birth_instant: datetime,
+    *,
+    cycles: int = 1,
+) -> DashaTimeline:
+    lon = moon_sidereal_lon_deg % 360
+    nakshatra_index = int(lon // NAKSHATRA_SPAN_DEG)
+    start_idx = _yogini_index_for_nakshatra(nakshatra_index)
+    mahadasha_lord = YOGINI_SEQUENCE[start_idx]
+    fraction_elapsed = (lon % NAKSHATRA_SPAN_DEG) / NAKSHATRA_SPAN_DEG
+    balance_years = (1 - fraction_elapsed) * YOGINI_YEARS[mahadasha_lord]
+    periods = mahadashas_from_birth(
+        sequence=YOGINI_SEQUENCE,
+        start_index=start_idx,
+        balance_years=balance_years,
+        full_years=lambda lord: YOGINI_YEARS[lord],
+        lord_ne=YOGINI_LORD_NE,
+        birth=birth_instant,
+        cycles=cycles,
+    )
+    return DashaTimeline(
+        header=(
+            ("system", "yogini"),
+            ("nakshatra_index", nakshatra_index),
+            ("mahadasha_lord", mahadasha_lord),
+            ("mahadasha_lord_ne", YOGINI_LORD_NE[mahadasha_lord]),
+            ("balance_years", balance_years),
+            ("balance_label", _format_years_label(balance_years)),
+            ("cycle_years", YOGINI_CYCLE_YEARS),
+        ),
+        periods=periods,
+    )
+
+
 def yogini_dasha(
     moon_sidereal_lon_deg: float,
     birth_instant: datetime,
     *,
     cycles: int = 1,
 ) -> dict[str, Any]:
-    lon = moon_sidereal_lon_deg % 360
-    nakshatra_index = int(lon // NAKSHATRA_SPAN_DEG)
-    start_idx = _yogini_index_for_nakshatra(nakshatra_index)
-    mahadasha_lord = YOGINI_SEQUENCE[start_idx]
-
-    fraction_elapsed = (lon % NAKSHATRA_SPAN_DEG) / NAKSHATRA_SPAN_DEG
-    full_years = YOGINI_YEARS[mahadasha_lord]
-    balance_years = (1 - fraction_elapsed) * full_years
-
-    if birth_instant.tzinfo is None:
-        birth_instant = birth_instant.replace(tzinfo=timezone.utc)
-
-    sequence: list[dict[str, Any]] = []
-    cursor = birth_instant
-    total_steps = len(YOGINI_SEQUENCE) * cycles
-
-    first_end = _add_years(cursor, balance_years)
-    sequence.append(
-        {
-            "lord": mahadasha_lord,
-            "lord_ne": YOGINI_LORD_NE[mahadasha_lord],
-            "start": cursor.isoformat(),
-            "end": first_end.isoformat(),
-            "years": balance_years,
-        }
-    )
-    cursor = first_end
-
-    for step in range(1, total_steps):
-        lord = YOGINI_SEQUENCE[(start_idx + step) % len(YOGINI_SEQUENCE)]
-        years = YOGINI_YEARS[lord]
-        end = _add_years(cursor, years)
-        sequence.append(
-            {
-                "lord": lord,
-                "lord_ne": YOGINI_LORD_NE[lord],
-                "start": cursor.isoformat(),
-                "end": end.isoformat(),
-                "years": years,
-            }
-        )
-        cursor = end
-
-    return {
-        "system": "yogini",
-        "nakshatra_index": nakshatra_index,
-        "mahadasha_lord": mahadasha_lord,
-        "mahadasha_lord_ne": YOGINI_LORD_NE[mahadasha_lord],
-        "balance_years": balance_years,
-        "balance_label": _format_years_label(balance_years),
-        "cycle_years": YOGINI_CYCLE_YEARS,
-        "sequence": sequence,
-    }
+    return yogini_timeline(moon_sidereal_lon_deg, birth_instant, cycles=cycles).to_payload()

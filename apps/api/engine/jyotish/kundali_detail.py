@@ -35,8 +35,10 @@ from engine.jyotish.shadbala import compute_shadbala
 from engine.jyotish.shanti_recommendation import compute_shanti_recommendation
 from engine.jyotish.vargas import VARGA_DIVISIONS, varga_rashi_from_longitude
 from engine.jyotish.tribhagi import tribhagi_dasha
-from engine.jyotish.vimshottari import DASHA_LORD_NE, YEAR_DAYS, vimshottari_dasha
+from engine.jyotish.dasha import parse_instant, sub_periods
+from engine.jyotish.vimshottari import DASHA_LORD_NE, VIMSHOTTARI, YEAR_DAYS, vimshottari_dasha
 from engine.jyotish.yogini import (
+    YOGINI,
     YOGINI_CYCLE_YEARS,
     YOGINI_LORD_NE,
     YOGINI_SEQUENCE,
@@ -1998,64 +2000,7 @@ def _yogas_to_api(chart_yogas: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
-def _parse_iso(value: str) -> datetime:
-    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt
-
-
-def _subdivide_cycle(
-    lord: str,
-    start: datetime,
-    end: datetime,
-    *,
-    sequence: list[str],
-    years_map: dict[str, float],
-    cycle_years: float,
-    lord_ne_map: dict[str, str],
-    parent_full_years: float | None = None,
-) -> list[dict[str, Any]]:
-    """Split [start, end) into child periods using classical year proportions.
-
-    ``parent_full_years`` is the theoretical full length of this parent (e.g. 20
-    for a Venus mahadasha). When the visible span is only the birth balance,
-    children are laid out on that full span and any period that ended before
-    ``start`` is dropped — the first remaining child is clipped to birth.
-    Omitting it keeps the older "compress all children into the visible span"
-    behaviour, which is correct for a full parent at any depth.
-    """
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
-    if end.tzinfo is None:
-        end = end.replace(tzinfo=timezone.utc)
-    visible_years = (end - start).total_seconds() / (YEAR_DAYS * 86400.0)
-    full_years = float(parent_full_years) if parent_full_years is not None else visible_years
-    if full_years <= 0:
-        full_years = visible_years
-    theo_start = end - timedelta(days=full_years * YEAR_DAYS)
-    start_idx = sequence.index(lord)
-    cursor = theo_start
-    children: list[dict[str, Any]] = []
-    n = len(sequence)
-    for step in range(n):
-        sub_lord = sequence[(start_idx + step) % n]
-        dur_days = years_map[sub_lord] * full_years / cycle_years * YEAR_DAYS
-        child_end = end if step == n - 1 else cursor + timedelta(days=dur_days)
-        if child_end <= start:
-            cursor = child_end
-            continue
-        child_start = start if cursor < start else cursor
-        children.append({
-            "lord": sub_lord,
-            "lord_ne": lord_ne_map[sub_lord],
-            "start": child_start.isoformat(),
-            "end": child_end.isoformat(),
-        })
-        cursor = child_end
-    if children:
-        children[-1]["end"] = end.isoformat()
-    return children
+_parse_iso = parse_instant
 
 
 def subdivide_yogini_period(
@@ -2065,16 +2010,7 @@ def subdivide_yogini_period(
     parent_full_years: float | None = None,
 ) -> list[dict[str, Any]]:
     """Yogini antardasha children proportional to the 36-year yogini cycle."""
-    return _subdivide_cycle(
-        lord,
-        start,
-        end,
-        sequence=list(YOGINI_SEQUENCE),
-        years_map=YOGINI_YEARS,
-        cycle_years=float(sum(YOGINI_YEARS.values())),
-        lord_ne_map=YOGINI_LORD_NE,
-        parent_full_years=parent_full_years,
-    )
+    return [p.to_payload() for p in sub_periods(YOGINI, lord, start, end, parent_full_years=parent_full_years)]
 
 
 def subdivide_dasha_period(
@@ -2084,16 +2020,7 @@ def subdivide_dasha_period(
     parent_full_years: float | None = None,
 ) -> list[dict[str, Any]]:
     """Antardasha / pratyantar children: MD_years × AD_years / 120."""
-    return _subdivide_cycle(
-        lord,
-        start,
-        end,
-        sequence=list(DASHA_ORDER),
-        years_map=DASHA_YEARS,
-        cycle_years=120.0,
-        lord_ne_map=DASHA_LORD_NE,
-        parent_full_years=parent_full_years,
-    )
+    return [p.to_payload() for p in sub_periods(VIMSHOTTARI, lord, start, end, parent_full_years=parent_full_years)]
 
 
 def _tree_node(

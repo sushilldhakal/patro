@@ -37,7 +37,7 @@ from engine.astronomy.ut_instant import as_julian_day
 from engine.jyotish.ashtakavarga import GRAHAS as AV_GRAHAS
 from engine.jyotish.ashtakavarga import compute_ashtakavarga
 from engine.jyotish.interpretation import PLANET_EN, PLANET_NE, SIGN_LORD
-from engine.jyotish.kundali_detail import subdivide_dasha_period
+from engine.jyotish.dasha import DashaPeriod, running, sub_periods
 from engine.panchanga.names_ne import to_nepali_digits
 from engine.jyotish.rashifal_engine import (
     DOMAIN_KEYS,
@@ -68,7 +68,7 @@ from engine.jyotish.rashifal_engine import (
     tone_for_score,
     vaara_hora_block,
 )
-from engine.jyotish.vimshottari import DASHA_LORD_NE, DASHA_YEARS, vimshottari_dasha
+from engine.jyotish.vimshottari import DASHA_LORD_NE, DASHA_YEARS, VIMSHOTTARI, vimshottari_timeline
 
 #: The general engine's LAYER_LABEL tables have no "dasha" entry — it is a
 #: layer only the personal engine has. Extend rather than mutate the shared
@@ -194,18 +194,6 @@ def birth_instant_from_local(birth: str, birth_tz: str) -> datetime:
 # ── Vimshottari dasha, running at a given instant ───────────────────────────
 
 
-def _parse_iso(value: str) -> datetime:
-    dt = datetime.fromisoformat(value)
-    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
-
-
-def _find_running(periods: list[dict[str, Any]], as_of: datetime) -> dict[str, Any]:
-    for period in periods:
-        if _parse_iso(period["start"]) <= as_of < _parse_iso(period["end"]):
-            return period
-    return periods[-1]
-
-
 def _dasha_score_for_lord(natal: NatalChart, lord: str) -> float:
     """How favourably a dasha lord sits in the birth chart: dignity + house
     from Lagna. The nodes have no classical dignity table, so their score
@@ -220,14 +208,13 @@ def _dasha_score_for_lord(natal: NatalChart, lord: str) -> float:
     return clamp(0.6 * dignity_score + 0.4 * placement)
 
 
-def _period_label(lang: str, period: dict[str, Any]) -> dict[str, Any]:
-    lord = period["lord"]
+def _period_label(lang: str, period: DashaPeriod) -> dict[str, Any]:
     return {
-        "lord": lord,
-        "lord_ne": DASHA_LORD_NE[lord],
-        "lord_en": DASHA_LORD_EN[lord],
-        "start": period["start"],
-        "end": period["end"],
+        "lord": period.lord,
+        "lord_ne": DASHA_LORD_NE[period.lord],
+        "lord_en": DASHA_LORD_EN[period.lord],
+        "start": period.start.isoformat(),
+        "end": period.end.isoformat(),
     }
 
 
@@ -238,20 +225,15 @@ def dasha_block(natal: NatalChart, as_of: datetime) -> dict[str, Any]:
         0.0, (as_of - natal.birth_instant_utc).total_seconds() / (365.2425 * 86400)
     )
     cycles = max(1, math.ceil((elapsed_years + 5.0) / cycle_years))
-    dasha = vimshottari_dasha(
-        _sign_lon(natal, "moon"), natal.birth_instant_utc, cycles=cycles
+    timeline = vimshottari_timeline(_sign_lon(natal, "moon"), natal.birth_instant_utc, cycles=cycles)
+    maha = timeline.running(as_of) or timeline.periods[-1]
+    antardashas = sub_periods(
+        VIMSHOTTARI, maha.lord, maha.start, maha.end, parent_full_years=float(DASHA_YEARS[maha.lord]),
     )
-    maha = _find_running(dasha["sequence"], as_of)
-    antardashas = subdivide_dasha_period(
-        maha["lord"],
-        _parse_iso(maha["start"]),
-        _parse_iso(maha["end"]),
-        parent_full_years=float(DASHA_YEARS[maha["lord"]]),
-    )
-    antar = _find_running(antardashas, as_of)
+    antar = running(antardashas, as_of) or antardashas[-1]
 
-    maha_score = _dasha_score_for_lord(natal, maha["lord"])
-    antar_score = _dasha_score_for_lord(natal, antar["lord"])
+    maha_score = _dasha_score_for_lord(natal, maha.lord)
+    antar_score = _dasha_score_for_lord(natal, antar.lord)
     score = clamp(DASHA_BLEND["mahadasha"] * maha_score + DASHA_BLEND["antardasha"] * antar_score)
 
     return {

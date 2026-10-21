@@ -74,7 +74,7 @@ def test_dasha_block_names_a_running_mahadasha_and_antardasha(natal):
     )
     assert -1.0 <= block["score"] <= 1.0
     # The running mahadasha must actually contain `as_of`.
-    from engine.jyotish.rashifal_personal import _parse_iso
+    from engine.jyotish.dasha import parse_instant as _parse_iso
 
     assert _parse_iso(block["mahadasha"]["start"]) <= as_of < _parse_iso(block["mahadasha"]["end"])
 
@@ -86,7 +86,7 @@ def test_dasha_is_consistent_for_someone_much_older_than_one_cycle(natal):
 
     far_future = dt.datetime(2200, 1, 1, tzinfo=dt.timezone.utc)
     block = dasha_block(natal, far_future)
-    from engine.jyotish.rashifal_personal import _parse_iso
+    from engine.jyotish.dasha import parse_instant as _parse_iso
 
     assert _parse_iso(block["mahadasha"]["start"]) <= far_future < _parse_iso(
         block["mahadasha"]["end"]

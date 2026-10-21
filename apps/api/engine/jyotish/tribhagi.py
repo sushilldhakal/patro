@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
+from engine.jyotish.dasha import DashaTimeline, mahadashas_from_birth
 from engine.jyotish.vimshottari import (
     DASHA_LORD_NE,
     DASHA_SEQUENCE,
@@ -12,7 +13,6 @@ from engine.jyotish.vimshottari import (
     NAKSHATRA_LORDS_NE,
     NAKSHATRA_SPAN_DEG,
     NE_TO_LORD,
-    _add_years,
     _format_years_label,
 )
 
@@ -26,13 +26,13 @@ def _nakshatra_lord_index(lon: float) -> tuple[int, str]:
     return DASHA_SEQUENCE.index(mahadasha_lord), mahadasha_lord
 
 
-def tribhagi_dasha(
+def tribhagi_timeline(
     moon_sidereal_lon_deg: float,
     birth_instant: datetime,
     *,
     cycles: int = 1,
-) -> dict[str, Any]:
-    """Tribhagi dasha from Moon longitude at birth.
+) -> DashaTimeline:
+    """Tribhagi mahadashas from birth.
 
     Classical Tribhagi (त्रिभागी = divided by three) is Vimshottari with every
     mahadasha compressed to 1/3, so the 120-year cycle becomes three 40-year
@@ -47,50 +47,35 @@ def tribhagi_dasha(
     tribhaga_size = NAKSHATRA_SPAN_DEG / TRIBHAGA_PARTS
     tribhaga = min(TRIBHAGA_PARTS - 1, int(pos_in_nak / tribhaga_size))
     fraction_elapsed = pos_in_nak / NAKSHATRA_SPAN_DEG
-    full_years = DASHA_YEARS[mahadasha_lord] / TRIBHAGA_PARTS
-    balance_years = (1 - fraction_elapsed) * full_years
-
-    if birth_instant.tzinfo is None:
-        birth_instant = birth_instant.replace(tzinfo=timezone.utc)
-
-    sequence: list[dict[str, Any]] = []
-    cursor = birth_instant
-    total_steps = len(DASHA_SEQUENCE) * cycles
-
-    first_end = _add_years(cursor, balance_years)
-    sequence.append(
-        {
-            "lord": mahadasha_lord,
-            "lord_ne": DASHA_LORD_NE[mahadasha_lord],
-            "start": cursor.isoformat(),
-            "end": first_end.isoformat(),
-            "years": balance_years,
-        }
+    balance_years = (1 - fraction_elapsed) * (DASHA_YEARS[mahadasha_lord] / TRIBHAGA_PARTS)
+    periods = mahadashas_from_birth(
+        sequence=DASHA_SEQUENCE,
+        start_index=start_idx,
+        balance_years=balance_years,
+        full_years=lambda lord: DASHA_YEARS[lord] / TRIBHAGA_PARTS,
+        lord_ne=DASHA_LORD_NE,
+        birth=birth_instant,
+        cycles=cycles,
     )
-    cursor = first_end
+    return DashaTimeline(
+        header=(
+            ("system", "tribhagi"),
+            ("nakshatra_index", nakshatra_index),
+            ("tribhaga", tribhaga + 1),
+            ("mahadasha_lord", mahadasha_lord),
+            ("mahadasha_lord_ne", DASHA_LORD_NE[mahadasha_lord]),
+            ("balance_years", balance_years),
+            ("balance_label", _format_years_label(balance_years)),
+        ),
+        periods=periods,
+    )
 
-    for step in range(1, total_steps):
-        lord = DASHA_SEQUENCE[(start_idx + step) % len(DASHA_SEQUENCE)]
-        years = DASHA_YEARS[lord] / TRIBHAGA_PARTS
-        end = _add_years(cursor, years)
-        sequence.append(
-            {
-                "lord": lord,
-                "lord_ne": DASHA_LORD_NE[lord],
-                "start": cursor.isoformat(),
-                "end": end.isoformat(),
-                "years": years,
-            }
-        )
-        cursor = end
 
-    return {
-        "system": "tribhagi",
-        "nakshatra_index": nakshatra_index,
-        "tribhaga": tribhaga + 1,
-        "mahadasha_lord": mahadasha_lord,
-        "mahadasha_lord_ne": DASHA_LORD_NE[mahadasha_lord],
-        "balance_years": balance_years,
-        "balance_label": _format_years_label(balance_years),
-        "sequence": sequence,
-    }
+def tribhagi_dasha(
+    moon_sidereal_lon_deg: float,
+    birth_instant: datetime,
+    *,
+    cycles: int = 1,
+) -> dict[str, Any]:
+    """Tribhagi dasha payload from Moon longitude at birth (see :func:`tribhagi_timeline`)."""
+    return tribhagi_timeline(moon_sidereal_lon_deg, birth_instant, cycles=cycles).to_payload()

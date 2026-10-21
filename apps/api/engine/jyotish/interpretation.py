@@ -33,7 +33,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Iterator, Optional
 
+from engine.jyotish.dasha import YEAR_DAYS, DashaPeriod, sub_periods
 from engine.jyotish.vargas import varga_rashi_from_longitude
+from engine.jyotish.vimshottari import DASHA_SEQUENCE, DASHA_YEARS, VIMSHOTTARI
 
 # ── Classical reference tables ────────────────────────────────────────────────
 
@@ -292,13 +294,8 @@ def _amsa_grade(key: str, longitude: float) -> Optional[str]:
         return "vaiseshikamsa"
     return AMSA_NAME_BY_COUNT.get(count)
 
-DASHA_ORDER = [
-    "ketu", "venus", "sun", "moon", "mars", "rahu", "jupiter", "saturn", "mercury",
-]
-DASHA_YEARS = {
-    "ketu": 7, "venus": 20, "sun": 6, "moon": 10, "mars": 7,
-    "rahu": 18, "jupiter": 16, "saturn": 19, "mercury": 17,
-}
+# The canonical Vimshottari order and years (engine.jyotish.vimshottari).
+DASHA_ORDER = list(DASHA_SEQUENCE)
 DASHA_THEME = {
     "sun": "leadership, recognition, dealings with authority and matters of the father",
     "moon": "emotional life, home, public contact and care-giving",
@@ -367,9 +364,10 @@ def _plain_theme(key: str, ne: bool) -> str:
     return PLAIN_THEME_NE.get(key, key) if ne else PLAIN_THEME_EN.get(key, key)
 
 
-# Dasha year length — 360-day savana year, matching the Vimshottari engine so
-# the report's reconstructed bhukti dates and chapter durations stay aligned.
-DAYS_PER_YEAR = 360.0
+# Dasha year length — the dasha model's (365.2425 days), so the report's bhukti
+# dates and chapter durations agree with the dasha tree. This was a 360-day
+# savana year, left behind when the Vimshottari engine moved off it.
+DAYS_PER_YEAR = YEAR_DAYS
 
 
 # ── Small helpers ─────────────────────────────────────────────────────────────
@@ -712,61 +710,33 @@ def _dasha_detail(sequence: list[dict[str, Any]], now: datetime) -> Optional[dic
     """Precise running dasha: mahadasha window, the antardasha (bhukti) schedule
     with real dates, the current bhukti, and the next mahadasha transitions.
 
-    Bhukti dates are reconstructed from the mahadasha's theoretical full span
-    (``maha_end − full_length``), so they stay exact for full periods and for the
-    shorter birth-balance period alike.
+    Bhuktis come from the shared dasha model (``engine.jyotish.dasha``), laid out
+    over the mahadasha's full span and cut at birth — the same dates the
+    kundali detail's dasha tree shows.
     """
-    current = None
-    index = -1
-    for i, period in enumerate(sequence):
-        if _parse_iso(period["start"]) <= now < _parse_iso(period["end"]):
-            current, index = period, i
-            break
+    periods = [DashaPeriod.from_payload(row) for row in sequence]
+    index, current = next(((i, p) for i, p in enumerate(periods) if p.contains(now)), (-1, None))
     if current is None:
         return None
 
-    maha_lord = current["lord"]
-    maha_start = _parse_iso(current["start"])
-    maha_end = _parse_iso(current["end"])
-    full = timedelta(days=DASHA_YEARS[maha_lord] * DAYS_PER_YEAR)
-    theo_start = maha_end - full
-
-    bhuktis: list[dict[str, Any]] = []
-    cursor = theo_start
-    start_idx = DASHA_ORDER.index(maha_lord)
-    for step in range(len(DASHA_ORDER)):
-        lord = DASHA_ORDER[(start_idx + step) % len(DASHA_ORDER)]
-        dur = timedelta(
-            days=DASHA_YEARS[lord] * DASHA_YEARS[maha_lord] / 120.0 * DAYS_PER_YEAR
+    maha_lord = current.lord
+    maha_start = current.start
+    maha_end = current.end
+    bhuktis = [
+        {"lord": b.lord, "start": b.start, "end": b.end}
+        for b in sub_periods(
+            VIMSHOTTARI, maha_lord, maha_start, maha_end, parent_full_years=float(DASHA_YEARS[maha_lord]),
         )
-        b_start, b_end = cursor, cursor + dur
-        cursor = b_end
-        if b_end <= maha_start:
-            continue  # consumed before birth (balance period)
-        bhuktis.append({"lord": lord, "start": b_start, "end": b_end})
+    ]
 
     cur_bhukti = next(
         (b for b in bhuktis if b["start"] <= now < b["end"]),
         bhuktis[0] if bhuktis else None,
     )
-    upcoming_maha = [
-        {
-            "lord": q["lord"],
-            "start": _parse_iso(q["start"]),
-            "end": _parse_iso(q["end"]),
-        }
-        for q in sequence[index + 1: index + 4]
-    ]
+    upcoming_maha = [{"lord": q.lord, "start": q.start, "end": q.end} for q in periods[index + 1: index + 4]]
     # Full mahadasha chapters from birth onward — powers the life-journey
     # timeline (past → present → future). The first entry's start ≈ birth.
-    full_sequence = [
-        {
-            "lord": q["lord"],
-            "start": _parse_iso(q["start"]),
-            "end": _parse_iso(q["end"]),
-        }
-        for q in sequence
-    ]
+    full_sequence = [{"lord": q.lord, "start": q.start, "end": q.end} for q in periods]
     birth = full_sequence[0]["start"] if full_sequence else maha_start
     return {
         "maha_lord": maha_lord,
