@@ -65,3 +65,35 @@ jobs:
           tests/test_profiles_api.py
           tests/test_auth_api.py
           tests/test_value_objects.py
+
+  api-tests:
+    # The whole API suite. It needs the Swiss ephemeris (.se1, ~95 MB) and the
+    # city database (~25 MB), which are downloads rather than repository files;
+    # both are fetched the way scripts/deploy.sh fetches them and cached on the
+    # scripts that produce them.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      OG_SCREENSHOT: "false"
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.txt
+      - run: grep -v '^-e ' requirements.txt > /tmp/requirements-ci.txt && pip install -r /tmp/requirements-ci.txt pytest httpx
+      - uses: actions/cache@v4
+        with:
+          path: apps/api/data/ephemeris
+          key: ephemeris-${{ hashFiles('apps/api/scripts/install_ephemeris.py') }}
+      - run: python scripts/install_ephemeris.py --extended
+      - uses: actions/cache@v4
+        with:
+          path: apps/api/data/cities.db
+          key: cities-${{ hashFiles('apps/api/scripts/import_cities.py', 'apps/api/services/geography/cities_db.py', 'apps/api/data/cities_db_version') }}
+      - run: test -f data/cities.db || python scripts/import_cities.py
+      - run: python -m pytest -q

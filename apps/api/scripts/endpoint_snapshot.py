@@ -86,6 +86,15 @@ ROUTES: tuple[str, ...] = (
     # Jyotish
     f"/v1/kundali/detail?{BIRTH}&{KTM}",
     f"/v1/kundali/vimshottari?{BIRTH}&{KTM}",
+    f"/v1/kundali/vimshottari?{BIRTH}&cycles=2&{KTM}",
+    f"/v1/kundali/report?{BIRTH}&lang=en&force=true&{KTM}",
+    f"/v1/kundali/report?datetime=1955-02-03T22:10:00%2B05:30&lang=ne&force=true&{KTM}",
+    f"/v1/kundali/detail?datetime=1955-02-03T22:10:00%2B05:30&{KTM}",
+    "/v1/panchanga/rashifal/personal?birth_lat=27.7&birth_lon=85.3&birth_era=bs&birth_year=2050&birth_month=5"
+    "&birth_day=12&birth_clock=06:30&period=daily&date=2026-10-21",
+    "/v1/panchanga/rashifal/personal?birth_lat=27.7&birth_lon=85.3&birth=1960-07-01T03:00&period=monthly&date=2026-10-21",
+    "/v1/kundali/dasha/expand?lord=venus&start=2010-01-01T00:00:00%2B00:00&end=2030-01-01T00:00:00%2B00:00",
+    "/v1/kundali/dasha/expand?lord=sankata&start=2010-01-01T00:00:00%2B00:00&end=2018-01-01T00:00:00%2B00:00&system=yogini",
     f"/v1/shadbala?{BIRTH}&{KTM}",
     f"/v1/planetary/positions?{BIRTH}&{KTM}",
     "/v1/kundali/milan?boy_datetime=1990-05-12T06:30:00%2B05:45&girl_datetime=1992-08-20T14:10:00%2B05:45",
@@ -140,12 +149,23 @@ def _without_volatile(value):
     return value
 
 
-def _digest(body: bytes) -> str:
+def _canonical(body: bytes) -> bytes:
+    """JSON (or NDJSON, one object per line) with sorted keys and no timestamps."""
+    def dump(value) -> str:
+        return json.dumps(_without_volatile(value), sort_keys=True, ensure_ascii=False)
+
     try:
-        canon = json.dumps(_without_volatile(json.loads(body)), sort_keys=True, ensure_ascii=False).encode()
+        return dump(json.loads(body)).encode()
     except ValueError:
-        canon = body
-    return hashlib.sha256(canon).hexdigest()
+        pass
+    try:
+        return "\n".join(dump(json.loads(line)) for line in body.splitlines() if line.strip()).encode()
+    except ValueError:
+        return body
+
+
+def _digest(body: bytes) -> str:
+    return hashlib.sha256(_canonical(body)).hexdigest()
 
 
 def take() -> dict[str, dict]:
