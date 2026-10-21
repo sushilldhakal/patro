@@ -83,3 +83,27 @@ def test_bs_date_unpacks_formats_and_converts():
 def test_bs_date_parse_rejects_what_parse_bs_date_rejects(text):
     with pytest.raises(ValueError):
         BsDate.parse(text)
+
+
+def test_festival_occurrence_is_the_old_entry():
+    from datetime import date
+
+    from engine.festivals.occurrence import FestivalOccurrence, occurrence_key, row_covers
+
+    rule = {"name_en": "Tihar", "name_ne": "तिहार", "type": "lunar", "category": "hindu",
+            "importance": "national", "notes": "Laxmi Puja to Bhai Tika"}
+    occ = FestivalOccurrence.from_rule("tihar", rule, date(2026, 11, 8), date(2026, 11, 11), is_public_holiday=True)
+    assert occ.to_payload() == {
+        "id": "tihar", "name_en": "Tihar", "name_ne": "तिहार",
+        "start_date": "2026-11-08", "end_date": "2026-11-11", "duration_days": 4,
+        "type": "lunar", "category": "hindu", "importance": "national",
+        "is_public_holiday": True, "notes": "Laxmi Puja to Bhai Tika",
+    }
+    assert occ.covers(date(2026, 11, 11)) and not occ.covers(date(2026, 11, 12))
+    # One festival, two years: two occurrences.
+    row = occ.to_payload()
+    assert occ.key == occurrence_key(row) == ("tihar", "2026-11-08")
+    assert occurrence_key({**row, "start_date": "2027-10-29"}) != occ.key
+    assert row_covers(row, date(2026, 11, 9))
+    # The rule's own name stands in when it has no English one.
+    assert FestivalOccurrence.from_rule("x", {}, date(2026, 1, 1), date(2026, 1, 1), is_public_holiday=False).name_en == "x"

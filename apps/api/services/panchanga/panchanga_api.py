@@ -637,7 +637,7 @@ def build_gregorian_browse_month_calendar(
         if not patro_year_supports_gregorian_festival_rules(bs_year):
             continue
         for f in festival_calendar().collect_bs_year_festivals(bs_year, location):
-            occurrence = (f["id"], f.get("start_date", ""))
+            occurrence = (f["id"], f.get("start_date", ""))  # one festival, one year's instance
             if occurrence not in seen:
                 seen.add(occurrence)
                 festivals.append(f)

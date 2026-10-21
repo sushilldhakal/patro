@@ -21,6 +21,7 @@ from typing import Any, Iterable
 from engine.astronomy.location import ObserverLocation
 from engine.calendar.bs_date import BsDate
 from engine.festivals import tradition as tradition_module
+from engine.festivals.occurrence import occurrence_key
 from services.festivals.holiday_generator import (
     FestivalCacheMissError,
     HolidayCacheMissError,
@@ -84,7 +85,7 @@ def _merge_bs_years(load, bs_years: Iterable[int], keep, miss: type[Exception]) 
             continue
         for row in rows:
             if keep(row):
-                seen[(row["id"], row["start_date"])] = row
+                seen[occurrence_key(row)] = row
     return sorted(seen.values(), key=lambda row: row["start_date"])
 
 

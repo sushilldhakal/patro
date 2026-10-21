@@ -15,18 +15,13 @@ from engine.calendar.bikram_sambat import (
     iter_bs_month_days,
 )
 from services.panchanga.daily_panchanga import get_daily_panchanga
+from engine.festivals.occurrence import occurrence_key, row_covers
 from services.platform.cache_meta import stamp_payload
 from services.festivals.holiday_generator import filter_redundant_day_festivals, get_bs_festivals
 
 
 def festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
-    active = []
-    for holiday in all_holidays:
-        start = date.fromisoformat(holiday["start_date"])
-        end = date.fromisoformat(holiday["end_date"])
-        if start <= target <= end:
-            active.append(holiday)
-    return filter_redundant_day_festivals(active)
+    return filter_redundant_day_festivals([row for row in all_holidays if row_covers(row, target)])
 
 
 def collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
@@ -57,7 +52,7 @@ def generate_ad_month_patro(
     seen: set[tuple[str, str]] = set()
     for bs_year in bs_years:
         for festival in collect_bs_year_festivals(bs_year, location):
-            occurrence = (festival["id"], festival["start_date"])
+            occurrence = occurrence_key(festival)
             if occurrence not in seen:
                 seen.add(occurrence)
                 festivals.append(festival)

@@ -19,6 +19,7 @@ from engine.calendar.bikram_sambat import (
 )
 from engine.panchanga.tithi import get_udaya_tithi
 from engine.festivals.festival_rules import bs_year_for_gregorian, compute_festival_dates, load_festival_rules
+from engine.festivals.occurrence import FestivalOccurrence
 from services.platform.cache_meta import cache_is_valid, stamp_payload
 
 
@@ -124,20 +125,9 @@ def _build_festival_entry(
     start_date: date,
     end_date: date,
 ) -> dict[str, Any]:
-    duration = (end_date - start_date).days + 1
-    return {
-        "id": festival_id,
-        "name_en": rule.get("name_en", festival_id),
-        "name_ne": rule.get("name_ne"),
-        "start_date": start_date.isoformat(),
-        "end_date": end_date.isoformat(),
-        "duration_days": duration,
-        "type": rule.get("type", "lunar"),
-        "category": rule.get("category"),
-        "importance": rule.get("importance"),
-        "is_public_holiday": is_public_holiday(festival_id),
-        "notes": rule.get("notes"),
-    }
+    return FestivalOccurrence.from_rule(
+        festival_id, rule, start_date, end_date, is_public_holiday=is_public_holiday(festival_id),
+    ).to_payload()
 
 
 def _filter_public_holidays(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
