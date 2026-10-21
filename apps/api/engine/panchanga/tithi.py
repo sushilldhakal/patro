@@ -1,5 +1,6 @@
 """Tithi calculation and udaya (sunrise) tithi."""
 
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
@@ -28,32 +29,67 @@ TITHI_NAMES = [
 ]
 
 
-def calculate_tithi(dt: date | datetime) -> dict[str, Any]:
+@dataclass(frozen=True)
+class Tithi:
+    """The lunar day in force at an instant.
+
+    ``number`` is absolute, 1–30 (Shukla Pratipada … Purnima is 1–15, Krishna
+    Pratipada … Amavasya 16–30); ``display_number`` is the 1–15 count within
+    the paksha. ``progress`` is how far through the tithi the instant is (0–1)
+    and ``elongation`` the Moon–Sun angle that defines it.
+    """
+
+    number: int
+    display_number: int
+    paksha: str
+    progress: float
+    elongation: float
+
+    @property
+    def is_purnima(self) -> bool:
+        return self.display_number == 15 and self.paksha == "shukla"
+
+    @property
+    def is_amavasya(self) -> bool:
+        return self.display_number == 15 and self.paksha != "shukla"
+
+    @property
+    def name(self) -> str:
+        if self.display_number == 15:
+            return "Purnima" if self.paksha == "shukla" else "Aausi"
+        return TITHI_NAMES[self.display_number - 1]
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "number": self.number,
+            "display_number": self.display_number,
+            "paksha": self.paksha,
+            "name": self.name,
+            "progress": round(self.progress, 4),
+            "elongation": round(self.elongation, 4),
+        }
+
+
+def tithi_at(dt: date | datetime) -> Tithi:
+    """The tithi at ``dt`` (a ``date`` is read at its civil-day instant; naive = UTC)."""
     if isinstance(dt, date) and not isinstance(dt, datetime):
         dt = day_instant_utc(dt)
     elif isinstance(dt, datetime) and dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
 
     tithi = panchanga_service.tithi(as_julian_day(dt))
-    elongation = tithi["elongation"]
-    tithi_num = tithi["number"]
-    paksha = tithi["paksha"]
-    display_num = tithi["display_number"]
-    progress = tithi["progress"]
+    return Tithi(
+        number=tithi["number"],
+        display_number=tithi["display_number"],
+        paksha=tithi["paksha"],
+        progress=tithi["progress"],
+        elongation=tithi["elongation"],
+    )
 
-    if display_num == 15:
-        name = "Purnima" if paksha == "shukla" else "Aausi"
-    else:
-        name = TITHI_NAMES[display_num - 1]
 
-    return {
-        "number": tithi_num,
-        "display_number": display_num,
-        "paksha": paksha,
-        "name": name,
-        "progress": round(progress, 4),
-        "elongation": round(elongation, 4),
-    }
+def calculate_tithi(dt: date | datetime) -> dict[str, Any]:
+    """The tithi at ``dt`` as its payload (see :class:`Tithi`)."""
+    return tithi_at(dt).to_payload()
 
 
 def calculate_tithi_at_sunrise(

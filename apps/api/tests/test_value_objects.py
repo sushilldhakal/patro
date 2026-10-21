@@ -107,3 +107,22 @@ def test_festival_occurrence_is_the_old_entry():
     assert row_covers(row, date(2026, 11, 9))
     # The rule's own name stands in when it has no English one.
     assert FestivalOccurrence.from_rule("x", {}, date(2026, 1, 1), date(2026, 1, 1), is_public_holiday=False).name_en == "x"
+
+
+def test_tithi_payload_is_the_old_dict():
+    from datetime import datetime, timezone
+
+    from engine.panchanga.tithi import calculate_tithi, tithi_at
+
+    for instant in (
+        datetime(2026, 10, 21, 0, 30, tzinfo=timezone.utc),  # Dashami
+        datetime(2026, 11, 8, 12, 0, tzinfo=timezone.utc),   # Amavasya (Laxmi Puja)
+        datetime(2026, 10, 25, 18, 0, tzinfo=timezone.utc),  # Kojagrat Purnima
+    ):
+        tithi = tithi_at(instant)
+        payload = calculate_tithi(instant)
+        assert payload == tithi.to_payload()
+        assert set(payload) == {"number", "display_number", "paksha", "name", "progress", "elongation"}
+        assert 1 <= tithi.number <= 30 and 1 <= tithi.display_number <= 15
+        assert tithi.is_amavasya == (tithi.number == 30) and tithi.is_purnima == (tithi.number == 15)
+    assert tithi_at(datetime(2026, 11, 8, 12, 0, tzinfo=timezone.utc)).name == "Aausi"

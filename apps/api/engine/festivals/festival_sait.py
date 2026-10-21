@@ -51,7 +51,7 @@ from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.panchanga.element_boundaries import find_nakshatra_end, find_yoga_end
 from engine.panchanga.lagna_spans import build_lagna_spans
-from engine.panchanga.tithi import calculate_tithi
+from engine.panchanga.tithi import tithi_at
 from engine.panchanga.tithi_boundaries import find_tithi_end
 from engine.astronomy.ut_instant import as_julian_day
 
@@ -234,7 +234,7 @@ def _spans_where(
 
 def _tithi_spans(start: datetime, end: datetime, target: int) -> list[Window]:
     """Stretches of ``[start, end)`` in which absolute tithi ``target`` prevails."""
-    return _spans_where(start, end, lambda at: calculate_tithi(at)["number"], find_tithi_end, frozenset({target}))
+    return _spans_where(start, end, lambda at: tithi_at(at).number, find_tithi_end, frozenset({target}))
 
 
 def _avoided_spans(rule: SaitRule, start: datetime, end: datetime) -> list[Window]:

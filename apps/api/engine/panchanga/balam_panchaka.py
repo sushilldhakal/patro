@@ -10,7 +10,7 @@ from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
 from engine.astronomy.ut_instant import as_julian_day
 from engine.panchanga.ghati_time import time_from_sunrise
 from engine.panchanga.names_ne import NAKSHATRA_NAMES_NE
-from engine.panchanga.tithi import calculate_tithi
+from engine.panchanga.tithi import tithi_at
 
 # Favorable janma-rashi offsets from moon rashi (Patro convention).
 _CHANDRA_OFFSETS_CURRENT = (1, 2, 5, 6, 9, 11)
@@ -121,7 +121,7 @@ def build_tarabalam(
 
 
 def _panchaka_remainder(dt: datetime, lagna_num: int, vaara_num: int) -> int:
-    tithi_num = int(calculate_tithi(dt)["number"])
+    tithi_num = tithi_at(dt).number
     nak_num = panchanga_service.nakshatra(as_julian_day(dt))["number"]
     vaara_panchaka = vaara_num + 1  # Sunday=1 … Saturday=7
     total = tithi_num + vaara_panchaka + nak_num + lagna_num
