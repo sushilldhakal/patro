@@ -97,45 +97,18 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
 def generate_panchanga_popular_cities(bs_year: int, force: bool = Query(False)):
     """Precompute panchanga cache for all popular cities."""
     _validate_bs_year(bs_year)
-    from services.geography.observer_location import resolve_location_from_query
-    from engine.calendar.bikram_sambat import iter_bs_month_days
-    from services.geography.cities_db import POPULAR_CITY_IDS
-    from services.panchanga.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+    from app.precompute_jobs import precompute_year_for_popular_cities
 
-    dates = [greg for month in range(1, 13) for _, greg in iter_bs_month_days(bs_year, month)]
-    results = []
-    total_written = 0
-    for city_id in POPULAR_CITY_IDS:
-        loc = resolve_location_from_query(city_id=city_id)
-        key, _ = resolve_cache_keys(loc)
-        written = precompute_range(loc, dates, skip_existing=not force)
-        total_written += written
-        results.append({"city_id": city_id, "location_key": key, "days_written": written})
-
-    return {
-        "status": "generated", "bs_year": bs_year,
-        "cities": len(POPULAR_CITY_IDS), "days_total_per_city": len(dates),
-        "total_rows_written": total_written, "results": results,
-        "cache": cache_stats(),
-    }
+    return precompute_year_for_popular_cities(bs_year, force=force)
 
 
 @router.post("/generate/panchanga/{bs_year}")
 def generate_panchanga_year(bs_year: int, location: LocationDep, force: bool = Query(False)):
     """Precompute panchanga SQLite cache for every day in a BS year at this location."""
     _validate_bs_year(bs_year)
-    from engine.calendar.bikram_sambat import iter_bs_month_days
-    from services.panchanga.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+    from services.panchanga.precompute import precompute_year
 
-    dates = [greg for month in range(1, 13) for _, greg in iter_bs_month_days(bs_year, month)]
-    location_key, city_id = resolve_cache_keys(location)
-    written = precompute_range(location, dates, skip_existing=not force)
-    return {
-        "status": "generated", "bs_year": bs_year,
-        "location_key": location_key, "city_id": city_id,
-        "days_written": written, "days_total": len(dates),
-        "cache": cache_stats(),
-    }
+    return precompute_year(bs_year, location, force=force)
 
 
 @router.post("/generate/{year}")

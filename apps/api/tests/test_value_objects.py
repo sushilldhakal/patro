@@ -126,3 +126,23 @@ def test_tithi_payload_is_the_old_dict():
         assert 1 <= tithi.number <= 30 and 1 <= tithi.display_number <= 15
         assert tithi.is_amavasya == (tithi.number == 30) and tithi.is_purnima == (tithi.number == 15)
     assert tithi_at(datetime(2026, 11, 8, 12, 0, tzinfo=timezone.utc)).name == "Aausi"
+
+
+def test_patro_day_unpacks_like_the_old_pair():
+    from datetime import date
+
+    from engine.calendar.bikram_sambat import iter_bs_month_days, iter_bs_year_days
+    from engine.calendar.bs_date import BsDate
+
+    days = list(iter_bs_month_days(2083, 7))
+    first = days[0]
+    bs_day, civil = first
+    assert (bs_day, civil) == (1, date(2026, 10, 18)) == (first[0], first[1])
+    assert first.bs == BsDate(2083, 7, 1) and first.gregorian == date(2026, 10, 18)
+    assert [d.day for d in days] == list(range(1, len(days) + 1))
+    year = list(iter_bs_year_days(2083))
+    assert year[0].bs == BsDate(2083, 1, 1) and year[-1].bs.month == 12
+    assert len({d.civil for d in year}) == len(year)
+    # Before 1 CE the civil day is a CivilDay and there is no Gregorian date.
+    early = next(iter(iter_bs_month_days(-57, 1)))
+    assert early.gregorian is None

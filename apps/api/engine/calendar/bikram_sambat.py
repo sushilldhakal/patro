@@ -276,12 +276,15 @@ def get_bs_month_start(bs_year: int, bs_month: int):
 
 
 def iter_bs_month_days(bs_year: int, bs_month: int):
-    """Yield ``(bs_day, civil_day)`` for each day in a BS month.
+    """Yield a :class:`~engine.calendar.patro_day.PatroDay` for each day in a BS month.
 
-    ``civil_day`` is a ``date`` for CE days and a ``CivilDay`` for pre-1 CE ones,
-    rather than raising as it used to — see :func:`get_bs_month_start`.
+    It unpacks as ``(bs_day, civil_day)``; ``civil_day`` is a ``date`` for CE
+    days and a ``CivilDay`` for pre-1 CE ones, rather than raising as it used
+    to — see :func:`get_bs_month_start`.
     """
     from engine.astronomy.jd_calendar import CivilDay, civil_day_add, date_if_supported
+    from engine.calendar.bs_date import BsDate
+    from engine.calendar.patro_day import PatroDay
 
     start_c = get_bs_month_start_civil(bs_year, bs_month)
     length = get_bs_month_length(bs_year, bs_month)
@@ -289,7 +292,13 @@ def iter_bs_month_days(bs_year: int, bs_month: int):
     for offset in range(length):
         civil = CivilDay.from_jd_ut(civil_day_add(jd, offset))
         greg = date_if_supported(civil.year, civil.month, civil.day)
-        yield offset + 1, (greg if greg is not None else civil)
+        yield PatroDay(BsDate(bs_year, bs_month, offset + 1), greg if greg is not None else civil)
+
+
+def iter_bs_year_days(bs_year: int):
+    """Every :class:`~engine.calendar.patro_day.PatroDay` of a BS year, Baishakh 1 first."""
+    for bs_month in range(1, 13):
+        yield from iter_bs_month_days(bs_year, bs_month)
 
 
 def iter_bs_month_civil_days(bs_year: int, bs_month: int):

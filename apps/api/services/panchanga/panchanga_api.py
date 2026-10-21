@@ -24,6 +24,7 @@ from engine.calendar.bikram_sambat import (
     gregorian_to_bs,
     iter_bs_month_days,
     iter_bs_month_civil_days,
+    iter_bs_year_days,
     shaka_year,
 )
 from engine.calendar.bs_date import BsDate
@@ -1021,27 +1022,27 @@ def build_bs_year_summary(bs_year: int, location: ObserverLocation) -> dict[str,
     from services.panchanga.daily_panchanga import get_daily_panchanga
 
     days = []
-    for month in range(1, 13):
-        for _, greg in iter_bs_month_days(bs_year, month):
-            p = get_daily_panchanga(greg, location)
-            m = p.get("muhurta", {})
-            days.append({
-                "date_bs": str(BsDate.of(p["bs_date"])),
-                "date_ad": greg.isoformat(),
-                "weekday": p["vaara"]["name_ne"],
-                "weekday_en": p["vaara"]["name_english"],
-                "tithi": p["tithi"]["name"],
-                "tithi_ne": p["tithi"]["name_ne"],
-                "nakshatra": p["nakshatra"]["name"],
-                "paksha": p["paksha"]["label_en"],
-                "sunrise": p["sunrise"]["local_time_short"],
-                "sunset": p["sunset"]["local_time_short"],
-                "rahu_kalam": {"start": (m.get("rahu_kalam") or {}).get("start_time"),
-                               "end": (m.get("rahu_kalam") or {}).get("end_time")},
-                "abhijit": {"start": (m.get("abhijit") or {}).get("start_time"),
-                            "end": (m.get("abhijit") or {}).get("end_time")},
-                "is_public_holiday": False,
-            })
+    for patro_day in iter_bs_year_days(bs_year):
+        greg = patro_day.civil
+        p = get_daily_panchanga(greg, location)
+        m = p.get("muhurta", {})
+        days.append({
+            "date_bs": str(BsDate.of(p["bs_date"])),
+            "date_ad": greg.isoformat(),
+            "weekday": p["vaara"]["name_ne"],
+            "weekday_en": p["vaara"]["name_english"],
+            "tithi": p["tithi"]["name"],
+            "tithi_ne": p["tithi"]["name_ne"],
+            "nakshatra": p["nakshatra"]["name"],
+            "paksha": p["paksha"]["label_en"],
+            "sunrise": p["sunrise"]["local_time_short"],
+            "sunset": p["sunset"]["local_time_short"],
+            "rahu_kalam": {"start": (m.get("rahu_kalam") or {}).get("start_time"),
+                           "end": (m.get("rahu_kalam") or {}).get("end_time")},
+            "abhijit": {"start": (m.get("abhijit") or {}).get("start_time"),
+                        "end": (m.get("abhijit") or {}).get("end_time")},
+            "is_public_holiday": False,
+        })
 
     yr_start = get_bs_month_start(bs_year, 1)
     yr_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
