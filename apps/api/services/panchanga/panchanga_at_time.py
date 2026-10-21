@@ -335,12 +335,16 @@ def instant_row_from_date(
     )
     snap = build_panchanga_at_time(instant, location)
     bs_day = gregorian_to_bs(greg)[2]
+    # The at-time payload is the day-state shape: the weekday is ``weekday`` /
+    # ``weekday_en`` and the sun times sit under ``sun``, not ``vaara`` /
+    # ``sunrise`` / ``sunset`` as in the raw daily panchanga.
+    sun = snap.get("sun") or {}
     row: dict[str, Any] = {
         "day": bs_day,
         "date_ad": greg.isoformat(),
-        "weekday": snap["vaara"]["name_ne"],
-        "weekday_ne": snap["vaara"]["name_ne"],
-        "weekday_en": snap["vaara"]["name_english"],
+        "weekday": snap["weekday"],
+        "weekday_ne": snap["weekday"],
+        "weekday_en": snap["weekday_en"],
         "tithi": snap["tithi"]["name"],
         "tithi_ne": snap["tithi"].get("name_ne"),
         "nakshatra": snap["nakshatra"]["name"],
@@ -349,8 +353,8 @@ def instant_row_from_date(
         "yoga_ne": snap["yoga"].get("name_ne"),
         "karana": snap["karana"]["name"],
         "karana_ne": snap["karana"].get("name_ne"),
-        "sunrise": snap["sunrise"]["local_time_short"],
-        "sunset": snap["sunset"]["local_time_short"],
+        "sunrise": sun.get("sunrise"),
+        "sunset": sun.get("sunset"),
         "mode": "ephemeris",
         "query_instant": snap["query_instant"],
         "panchanga": snap,
