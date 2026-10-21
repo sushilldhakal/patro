@@ -100,7 +100,7 @@ def test_row_from_a_prior_cache_version_is_treated_as_stale(temp_panchanga_db):
             "SELECT payload_json FROM panchanga_cache WHERE location_key = ? AND date = ?",
             (location_key, target.isoformat()),
         ).fetchone()
-        payload = json.loads(row["payload_json"])
+        payload = panchanga_cache._decode_payload(row["payload_json"])
         payload["_cache_version"] = panchanga_cache.CACHE_PAYLOAD_VERSION - 1
         conn.execute(
             """
@@ -108,7 +108,7 @@ def test_row_from_a_prior_cache_version_is_treated_as_stale(temp_panchanga_db):
             WHERE location_key = ? AND date = ?
             """,
             (
-                json.dumps(payload),
+                panchanga_cache._encode_payload(payload),
                 datetime.now(timezone.utc).isoformat(),
                 location_key,
                 target.isoformat(),

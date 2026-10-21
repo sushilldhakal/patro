@@ -56,3 +56,15 @@ def test_day_payload_festivals_carry_details_and_sait():
     assert by_id["vijaya-dashami"]["vidhi"]["en"]
     assert by_id["manvadi"]["about"]["en"]
     assert {s["festival_id"] for s in payload["festival_saits"]} >= {"vijaya-dashami"}
+
+
+def test_nepal_sambat_months_follow_the_amanta_month():
+    """Laxmi Puja is Kaulā Āmāi: amānta Ashwin's dark half is कौलागा, not ञलागा."""
+    from engine.vedic.daily import build_daily_panchanga
+    from engine.vedic.nepal_sambat import NS_KRISHNA_PAKSHA_NE
+
+    assert NS_KRISHNA_PAKSHA_NE["Ashwin"] == "कौलागा"
+    assert NS_KRISHNA_PAKSHA_NE["Falgun"] == "चिल्लागा"
+    eve = build_daily_panchanga(date(2026, 11, 8), DEFAULT_LOCATION)
+    assert "कौलागा" in eve["display"]["ns_ne"]
+    assert eve["ns_date"]["month_name_ne"] == "कौला"

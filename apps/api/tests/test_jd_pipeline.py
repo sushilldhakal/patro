@@ -187,7 +187,7 @@ class TestUncomputableDatesAreBadRequests:
     """
 
     @pytest.mark.parametrize(
-        "era,year", [("bbs", 12942), ("bs", 17055), ("bbs", 99999), ("bs", 99999)]
+        "era,year", [("bbs", 13201), ("bs", 17055), ("bbs", 99999), ("bs", 99999)]
     )
     def test_out_of_range_years_are_rejected_cleanly(self, era, year):
         resp = client.get(f"/v1/panchanga?era={era}&year={year}&month=1&day=1&{LOCATION}&{LEAN}")
