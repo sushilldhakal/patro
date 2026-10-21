@@ -4315,6 +4315,11 @@
     "home": {
       "geocentric": "Geocentric",
       "read_more": "Read more →",
+      "sait_facing": "Face {{v0}} to receive Tika · Moon in {{v1}}",
+      "sait_heading": "Sait",
+      "sait_lagna": "{{v0}} lagna",
+      "sait_local_note": "From your location's sunrise, sunset and rising lagna",
+      "sait_or_kaal": "or {{v0}}: {{v1}}",
       "special_today": "Special today",
       "this_day_s_panchanga": "This day's panchanga",
       "view_full_table": "View full table →",

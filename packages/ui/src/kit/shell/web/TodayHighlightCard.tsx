@@ -5,7 +5,7 @@ import { Box, Icon, Text } from "@vedic-patro/ui";
 import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
-/** Selected day's date, festival, moon and sun times. Side by side once the card is 32rem wide. */
+/** Selected day's date, festival (and its sait), moon and sun times. Side by side once the card is 32rem wide. */
 export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   return (
@@ -51,6 +51,25 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
                   <Text className={cls.highlightSunText}>{h.sunset}</Text>
                 </Box>
               ) : null}
+            </Box>
+          ) : null}
+          {h.saits.length ? (
+            <Box className={cls.highlightSait}>
+              <Text as="p" className={cls.highlightSaitHeading}>{h.saitHeading}</Text>
+              {h.saits.map((sait) => (
+                <Box key={sait.key} className={cls.highlightSaitItem}>
+                  <Text as="p" className={cls.highlightSaitLabel}>{sait.label}</Text>
+                  {sait.times.map((slot) => (
+                    <Box key={slot.key} className={cls.highlightSaitRow}>
+                      <Text className={cls.highlightSaitTime}>{slot.time}</Text>
+                      {slot.detail ? <Text className={cls.highlightSaitDetail}>{slot.detail}</Text> : null}
+                    </Box>
+                  ))}
+                  {sait.alternate ? <Text as="p" className={cls.highlightSaitDetail}>{sait.alternate}</Text> : null}
+                  {sait.facing ? <Text as="p" className={cls.highlightSaitFacing}>{sait.facing}</Text> : null}
+                </Box>
+              ))}
+              <Text as="p" className={cls.highlightSaitNote}>{h.saitNote}</Text>
             </Box>
           ) : null}
         </Box>

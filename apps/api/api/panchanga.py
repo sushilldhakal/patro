@@ -520,6 +520,11 @@ def _day_payload_for_jd(
             greg, location, include_festivals=festivals, include_detail=detail
         )
 
+    if festivals:
+        from services.panchanga_api import attach_festival_saits
+
+        attach_festival_saits(payload, greg, location)
+
     if civil:
         from services.civil_timeline import build_civil_timeline
 

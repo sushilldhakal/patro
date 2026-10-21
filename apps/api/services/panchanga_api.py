@@ -286,6 +286,18 @@ def build_daily_state(
     return payload
 
 
+def attach_festival_saits(payload: dict[str, Any], greg: date, location: ObserverLocation) -> None:
+    """Add ``festival_saits`` — rite timings at this observer: the day's ritual
+    festivals, then any marriage / Bratabandha / Griha Pravesh muhūrtas.
+
+    Day routes only: the ceremony scan is too heavy to run for every row of a month.
+    """
+    from engine.vedic.festival_sait import ceremony_saits, festival_saits
+
+    ids = [f.get("id") for f in payload.get("festivals") or [] if f.get("id")]
+    payload["festival_saits"] = festival_saits(greg, ids, location) + ceremony_saits(greg, location)
+
+
 def build_daily_state_civil(
     civil: CivilDay,
     location: ObserverLocation = DEFAULT_LOCATION,

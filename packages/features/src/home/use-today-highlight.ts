@@ -2,7 +2,8 @@
  * The selected day's highlight on the home page, shared by the website's and
  * the app's `components/home/TodayHighlightCard.tsx`: the big date, month and
  * weekday, the cross-era and Nepal Sambat lines, the festival or tithi title,
- * the moon phase and the sunrise/sunset.
+ * the moon phase, the sunrise/sunset, and — on Dashain, Tihar and the other
+ * ritual festivals — each rite's sait at the selected location.
  */
 import { useMemo } from "react";
 import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
@@ -35,6 +36,16 @@ function moonPhaseKey(index: number): string {
   if (index >= 21 && index <= 23) return "ui.home.waning_half_moon";
   return index < 14 ? "ui.home.waxing_moon" : "ui.home.waning_moon";
 }
+
+/** One rite on the card: its clock times (one per lagna stretch) and, for an early-morning sait, the Abhijit alternative. */
+export type SaitRow = {
+  key: string;
+  label: string;
+  times: Array<{ key: string; time: string; detail: string }>;
+  alternate?: string;
+  /** Tika rites: the direction to face (Chandra Vasa). */
+  facing?: string;
+};
 
 export function useTodayHighlight({
   selectedDay,
@@ -113,6 +124,40 @@ export function useTodayHighlight({
     return english ? short : (formatClockNepali(short) ?? digits(short));
   };
 
+  // Saits come from the day payload, which is fetched per location: a new
+  // location brings its own local kaal, lagna and clock times. One row per
+  // rite; a ceremony split across several lagnas lists each stretch.
+  const span = (w: { start_local: string; end_local: string }) => `${clock(w.start_local)} – ${clock(w.end_local)}`;
+  const saits: SaitRow[] = [];
+  for (const sait of p?.festival_saits ?? []) {
+    const lagna = sait.lagna ? t("ui.home.sait_lagna", { v0: bilingualText(lang, sait.lagna.name_ne, sait.lagna.name) }) : "";
+    const time = {
+      key: sait.sait.start,
+      time: span(sait.sait),
+      detail: [sait.kaal ? t(`ui.home.sait_kaal_${sait.kaal}`) : "", lagna].filter(Boolean).join(" · "),
+    };
+    const key = `${sait.festival_id}:${sait.ritual}`;
+    const row = saits.find((r) => r.key === key);
+    if (row) {
+      row.times.push(time);
+      continue;
+    }
+    saits.push({
+      key,
+      label: t(`ui.home.sait_ritual_${sait.ritual.replace(/-/g, "_")}`),
+      times: [time],
+      alternate: sait.alternate
+        ? t("ui.home.sait_or_kaal", { v0: t(`ui.home.sait_kaal_${sait.alternate.kaal}`), v1: span(sait.alternate) })
+        : undefined,
+      facing: sait.facing
+        ? t("ui.home.sait_facing", {
+            v0: t(`ui.home.sait_dir_${sait.facing.direction}`),
+            v1: bilingualText(lang, sait.facing.moon_rashi.name_ne, sait.facing.moon_rashi.name),
+          })
+        : undefined,
+    });
+  }
+
   const count = digits(Math.abs(daysAway));
   const kicker = isToday
     ? t("ui.home.special_today")
@@ -144,5 +189,8 @@ export function useTodayHighlight({
     phase: tithiIndex != null ? t(moonPhaseKey(tithiIndex)) : undefined,
     sunrise: clock((p ? getSunrise(p) : undefined) ?? selectedDay?.sunrise),
     sunset: clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset),
+    saits,
+    saitHeading: t("ui.home.sait_heading"),
+    saitNote: t("ui.home.sait_local_note"),
   };
 }
