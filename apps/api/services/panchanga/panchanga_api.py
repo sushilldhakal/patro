@@ -637,16 +637,19 @@ def build_gregorian_browse_month_calendar(
     end_civil = CivilDay.from_jd_ut(end_jd)
     bs_years = sorted({gregorian_to_bs(start_civil)[0], gregorian_to_bs(end_civil)[0]})
 
+    # A festival recurs in each BS year, so an occurrence is its id and its
+    # date: by id alone, April kept the old year's Baishakh 1 and lost this one.
     festivals: list[dict[str, Any]] = []
-    seen_ids: set[str] = set()
+    seen: set[tuple[str, str]] = set()
     from engine.calendar.patro_year_axis import patro_year_supports_gregorian_festival_rules
 
     for bs_year in bs_years:
         if not patro_year_supports_gregorian_festival_rules(bs_year):
             continue
         for f in festival_calendar().collect_bs_year_festivals(bs_year, location):
-            if f["id"] not in seen_ids:
-                seen_ids.add(f["id"])
+            occurrence = (f["id"], f.get("start_date", ""))
+            if occurrence not in seen:
+                seen.add(occurrence)
                 festivals.append(f)
 
     calendar: list[dict[str, Any]] = []

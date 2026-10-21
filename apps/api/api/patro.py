@@ -88,42 +88,9 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
     """Festival panchanga (patro) for an AD (Gregorian) month."""
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
-    import calendar as _cal
-    from engine.calendar.bikram_sambat import gregorian_to_bs
-    from services.panchanga.daily_panchanga import get_daily_panchanga
-    from services.festivals.patro_generator import collect_bs_year_festivals, festivals_for_day
+    from services.festivals.patro_generator import generate_ad_month_patro
 
-    last_day = _cal.monthrange(ad_year, ad_month)[1]
-    month_start_ad = date(ad_year, ad_month, 1)
-    month_end_ad = date(ad_year, ad_month, last_day)
-    bs_years = sorted({gregorian_to_bs(month_start_ad)[0], gregorian_to_bs(month_end_ad)[0]})
-
-    all_festivals: list[dict] = []
-    seen_ids: set[str] = set()
-    for bs_year in bs_years:
-        for f in collect_bs_year_festivals(bs_year, location):
-            if f["id"] not in seen_ids:
-                seen_ids.add(f["id"])
-                all_festivals.append(f)
-
-    days = []
-    current = month_start_ad
-    from datetime import timedelta
-    while current <= month_end_ad:
-        p = get_daily_panchanga(current, location)
-        days.append({
-            "date_ad": current.isoformat(),
-            **p,
-            "festivals": festivals_for_day(current, all_festivals),
-        })
-        current += timedelta(days=1)
-
-    return {
-        "ad_year": ad_year,
-        "ad_month": ad_month,
-        "count": len(days),
-        "days": days,
-    }
+    return generate_ad_month_patro(ad_year, ad_month, location)
 
 
 @router.post("/generate/panchanga/popular/{bs_year}")
@@ -432,16 +399,18 @@ def nepal_graha_vakri_year(
     requested era on the way out. Adding an era here is a codec change, not a
     handler change.
     """
-    from app.era_middleware import era_context
+    from app.era_middleware import optional_era_context
     from engine.calendar.era import year_span_jd
     from engine.jyotish.graha_detail import build_graha_vakri_span
     from app.response_cache import location_cache_key, serve_cached_json
 
-    ctx = era_context(request)
+    # A request without ``?era=`` carries no era context: the year is then
+    # named in ``era`` (BS by default) and spanned here.
+    ctx = optional_era_context(request)
     try:
         jd_start, jd_end = (
             (ctx.julian, ctx.julian_end)
-            if ctx.julian is not None and ctx.julian_end is not None
+            if ctx is not None and ctx.julian is not None and ctx.julian_end is not None
             else year_span_jd(era, year)
         )
     except ValueError as exc:

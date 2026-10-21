@@ -478,6 +478,11 @@ def era_params(
     return None
 
 
+def optional_era_context(request: Request) -> EraContext | None:
+    """The requested date's era context, or ``None`` when the request named no era."""
+    return getattr(request.state, "era_ctx", None)
+
+
 def era_context(request: Request) -> EraContext:
     """FastAPI dependency — the handler's only view of the requested date."""
     ctx = getattr(request.state, "era_ctx", None)

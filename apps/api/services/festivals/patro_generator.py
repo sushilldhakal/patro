@@ -8,6 +8,7 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.calendar.bikram_sambat import (
     bs_month_name,
+    gregorian_to_bs,
     bs_year_date_range,
     get_bs_month_length,
     get_bs_month_start,
@@ -31,6 +32,47 @@ def festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
 def collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
     payload = get_bs_festivals(bs_year, location)
     return payload["festivals"]
+
+
+def generate_ad_month_patro(
+    ad_year: int,
+    ad_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Festival patro for one AD (Gregorian) month: every day's panchanga and
+    the festivals active on it. A month can straddle two BS years (Baishakh 1
+    falls in April), so both years' festivals are read and each occurrence kept once."""
+    import calendar as _calendar
+
+    if not 1 <= ad_month <= 12:
+        raise ValueError("ad_month must be 1..12")
+    month_start = date(ad_year, ad_month, 1)
+    month_end = date(ad_year, ad_month, _calendar.monthrange(ad_year, ad_month)[1])
+    bs_years = sorted({gregorian_to_bs(month_start)[0], gregorian_to_bs(month_end)[0]})
+
+    # The same festival recurs in each BS year (its new year, its Dashain), so
+    # an occurrence is its id *and* its date — by id alone, April kept BS
+    # 2082's entries and lost 2083's Baishakh 1.
+    festivals: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+    for bs_year in bs_years:
+        for festival in collect_bs_year_festivals(bs_year, location):
+            occurrence = (festival["id"], festival["start_date"])
+            if occurrence not in seen:
+                seen.add(occurrence)
+                festivals.append(festival)
+
+    days = []
+    current = month_start
+    while current <= month_end:
+        days.append({
+            "date_ad": current.isoformat(),
+            **get_daily_panchanga(current, location),
+            "festivals": festivals_for_day(festivals, current),
+        })
+        current += timedelta(days=1)
+
+    return {"ad_year": ad_year, "ad_month": ad_month, "count": len(days), "days": days}
 
 
 def generate_bs_month_patro(
