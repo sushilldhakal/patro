@@ -8,6 +8,7 @@ import { niceCeil } from "../src/kundali/shadbala-chart";
 import { clampPct, strengthBand } from "../src/kundali/bhava-bala-chart";
 import { embedRashi, dowOf } from "../src/dainikKranti/day-helpers";
 import { positiveInt, positiveMonth } from "../src/patro-browse-params";
+import { publicHolidayDateSet } from "../src/local-calendar";
 
 test("Veda citations", () => {
   assert.equal(formatVedaCite("rigveda:1.1.3", "ne"), "ऋग्वेद १.१.३");
@@ -65,4 +66,14 @@ test("browse parameters stay in range", () => {
   assert.equal(positiveInt(2083.7), 2083);
   assert.equal(positiveMonth(13), 12);
   assert.equal(positiveMonth(0), 1);
+});
+
+test("a multi-day public holiday marks every day of its span", () => {
+  const dates = publicHolidayDateSet([
+    { id: "tihar", start_date: "2026-11-08", end_date: "2026-11-11", is_public_holiday: true },
+    { id: "laxmi-puja", start_date: "2026-11-08", end_date: "2026-11-08", is_public_holiday: false },
+    { id: "chhath", start_date: "2026-11-15", end_date: "2026-11-15", is_public_holiday: true },
+    { id: "month-end", start_date: "2026-10-31", end_date: "2026-11-01", is_public_holiday: true },
+  ]);
+  assert.deepEqual([...dates].sort(), ["2026-10-31", "2026-11-01", "2026-11-08", "2026-11-09", "2026-11-10", "2026-11-11", "2026-11-15"]);
 });
