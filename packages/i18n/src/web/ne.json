@@ -4315,6 +4315,9 @@
     "home": {
       "geocentric": "भूकेन्द्रित",
       "read_more": "थप पढ्नुहोस् →",
+      "sait_heading": "शुभ साइत",
+      "sait_lagna": "{{v0}} लग्न",
+      "sait_local_note": "तपाईंको स्थानको सूर्योदय, सूर्यास्त र उदाउँदो लग्नअनुसार",
       "special_today": "आज विशेष",
       "this_day_s_panchanga": "यस दिनको पञ्चाङ्ग",
       "view_full_table": "पूरा तालिका हेर्नुहोस् →",

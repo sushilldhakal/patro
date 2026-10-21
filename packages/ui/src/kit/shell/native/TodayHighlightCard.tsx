@@ -10,7 +10,7 @@ import { shellIcons } from "../icon-nodes";
 /** Card width from which the date block and the festival block sit side by side (web `@[32rem]`). */
 const SIDE_BY_SIDE = 512;
 
-/** Selected day's date, festival, moon and sun times. */
+/** Selected day's date, festival (and its sait), moon and sun times. */
 export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   const [wide, setWide] = useState(false);
@@ -63,6 +63,19 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
                 <Text className={cls.highlightSunText}>{h.sunset}</Text>
               </Box>
             ) : null}
+          </Box>
+        ) : null}
+        {h.saits.length ? (
+          <Box className={cls.highlightSait}>
+            <Text className={cls.highlightSaitHeading}>{h.saitHeading}</Text>
+            {h.saits.map((sait) => (
+              <Box key={sait.key} className={cls.highlightSaitRow}>
+                <Text className={cls.highlightSaitLabel}>{sait.label}</Text>
+                <Text className={cls.highlightSaitTime}>{sait.time}</Text>
+                {sait.detail ? <Text className={cls.highlightSaitDetail}>{sait.detail}</Text> : null}
+              </Box>
+            ))}
+            <Text className={cls.highlightSaitNote}>{h.saitNote}</Text>
           </Box>
         ) : null}
       </Box>

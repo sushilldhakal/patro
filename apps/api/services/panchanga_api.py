@@ -271,6 +271,7 @@ def build_daily_state(
             }
             for f in raw["festivals"]
         ]
+        attach_festival_saits(payload, greg, location)
 
     if include_detail:
         payload["detail"] = raw
@@ -284,6 +285,14 @@ def build_daily_state(
     payload["rashifal"] = raw.get("rashifal")
 
     return payload
+
+
+def attach_festival_saits(payload: dict[str, Any], greg: date, location: ObserverLocation) -> None:
+    """Add ``festival_saits`` — the rite timings, at this observer — for the day's ritual festivals."""
+    from engine.vedic.festival_sait import festival_saits
+
+    ids = [f.get("id") for f in payload.get("festivals") or [] if f.get("id")]
+    payload["festival_saits"] = festival_saits(greg, ids, location)
 
 
 def build_daily_state_civil(

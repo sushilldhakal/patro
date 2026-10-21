@@ -48,6 +48,14 @@ export const homeClasses = {
   highlightMeta: "mt-2 flex flex-row flex-wrap items-center gap-x-4 gap-y-1.5",
   highlightSunItem: "flex flex-row items-center gap-1.5",
   highlightSunText: "font-num text-sm text-foreground",
+  // Festival saits under the sun times — Dashain Tika, Laxmi Puja, Bhai Tika…
+  highlightSait: "mt-2.5 flex flex-col gap-1.5 rounded-lg border border-border bg-muted/40 px-3 py-2",
+  highlightSaitHeading: "text-xs font-semibold uppercase tracking-wide text-muted-foreground",
+  highlightSaitRow: "flex flex-row flex-wrap items-baseline gap-x-2 gap-y-0.5",
+  highlightSaitLabel: "text-sm font-semibold text-foreground",
+  highlightSaitTime: "font-num text-sm font-bold text-danger",
+  highlightSaitDetail: "text-xs text-muted-foreground",
+  highlightSaitNote: "text-xs text-muted-foreground",
 
   // ── Panchanga (vivaran) tab ───────────────────────────────────────────────
   vivaranCells: "mb-2.5",

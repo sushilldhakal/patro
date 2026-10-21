@@ -2,7 +2,8 @@
  * The selected day's highlight on the home page, shared by the website's and
  * the app's `components/home/TodayHighlightCard.tsx`: the big date, month and
  * weekday, the cross-era and Nepal Sambat lines, the festival or tithi title,
- * the moon phase and the sunrise/sunset.
+ * the moon phase, the sunrise/sunset, and — on Dashain, Tihar and the other
+ * ritual festivals — each rite's sait at the selected location.
  */
 import { useMemo } from "react";
 import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
@@ -113,6 +114,18 @@ export function useTodayHighlight({
     return english ? short : (formatClockNepali(short) ?? digits(short));
   };
 
+  // Saits come from the day payload, which is fetched per location: a new
+  // location brings its own local kaal, lagna and clock times.
+  const saits = (p?.festival_saits ?? []).map((sait) => {
+    const lagna = sait.lagna ? t("ui.home.sait_lagna", { v0: bilingualText(lang, sait.lagna.name_ne, sait.lagna.name) }) : "";
+    return {
+      key: `${sait.festival_id}:${sait.ritual}`,
+      label: t(`ui.home.sait_ritual_${sait.ritual.replace(/-/g, "_")}`),
+      time: `${clock(sait.sait.start_local)} – ${clock(sait.sait.end_local)}`,
+      detail: [t(`ui.home.sait_kaal_${sait.kaal}`), lagna].filter(Boolean).join(" · "),
+    };
+  });
+
   const count = digits(Math.abs(daysAway));
   const kicker = isToday
     ? t("ui.home.special_today")
@@ -144,5 +157,8 @@ export function useTodayHighlight({
     phase: tithiIndex != null ? t(moonPhaseKey(tithiIndex)) : undefined,
     sunrise: clock((p ? getSunrise(p) : undefined) ?? selectedDay?.sunrise),
     sunset: clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset),
+    saits,
+    saitHeading: t("ui.home.sait_heading"),
+    saitNote: t("ui.home.sait_local_note"),
   };
 }
