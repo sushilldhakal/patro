@@ -640,6 +640,20 @@ def get_bs_holidays(
     bs_month: int | None = None,
 ) -> dict[str, Any]:
     location = festival_location(location)
+
+    # The same floor as get_bs_festivals: holidays are built from the festival
+    # rules, which stop at BS 60.
+    from engine.calendar.patro_year_axis import BS_PANCHANGA_SIGNED_MIN
+
+    if bs_year < BS_PANCHANGA_SIGNED_MIN:
+        return {
+            "bs_year": bs_year,
+            "count": 0,
+            "holidays": [],
+            "unavailable_reason": "pre_festival_era",
+            **({"bs_month": bs_month} if bs_month is not None else {}),
+        }
+
     payload = _memo_get("holidays_bs", bs_year, location)
     if payload is None:
         payload = load_bs_cached(bs_year, location)

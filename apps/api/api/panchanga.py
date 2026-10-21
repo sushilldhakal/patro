@@ -870,10 +870,12 @@ def nepal_holidays(
     result: dict[str, Any] = {
         "bs_year": signed,
         "era": era,
-        "gregorian_range": payload["gregorian_range"],
+        "gregorian_range": payload.get("gregorian_range"),
         "count": len(holidays_list),
         "holidays": _enrich_holiday_bs_dates(holidays_list),
     }
+    if payload.get("unavailable_reason"):
+        result["unavailable_reason"] = payload["unavailable_reason"]
     if era == "bbs":
         result["bbs"] = year
     return result
@@ -1111,7 +1113,7 @@ def nepal_festivals(
 
     if era == "ad":
         from services.festivals.holiday_generator import get_bs_festivals
-        seen: dict[str, Any] = {}
+        seen: dict[tuple[str, str], Any] = {}
         for bs_year in (year + 56, year + 57):
             try:
                 payload = get_bs_festivals(bs_year, location)
@@ -1119,7 +1121,9 @@ def nepal_festivals(
                     start = date.fromisoformat(f["start_date"])
                     end = date.fromisoformat(f["end_date"])
                     if start.year <= year <= end.year or start.year == year or end.year == year:
-                        seen[f["id"]] = f
+                        # One entry per occurrence: a span crossing New Year
+                        # and the next BS year's instance share an id.
+                        seen[(f["id"], f["start_date"])] = f
             except FestivalCacheMissError:
                 pass
         festivals = sorted(seen.values(), key=lambda f: f["start_date"])

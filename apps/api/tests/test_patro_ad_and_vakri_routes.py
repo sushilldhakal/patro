@@ -56,3 +56,15 @@ def test_ad_month_grid_shows_the_nepali_new_year():
         grid = client.get(f"/v1/panchanga/ad/{year}/4?{LOCATION}").json()["calendar"]
         new_year = next(d for d in grid if d["date_ad"] == f"{year}-04-14")
         assert new_year["festivals"], year
+
+
+def test_holidays_before_the_festival_era_are_empty_not_500():
+    """Like /nepal/festivals, the holiday list stops at the BS 60 floor."""
+    for query in ("year=57&era=bbs", "year=40&era=bs"):
+        resp = client.get(f"/v1/nepal/holidays?{query}&{LOCATION}")
+        assert resp.status_code == 200, (query, resp.text[:200])
+        body = resp.json()
+        assert body["count"] == 0 and body["holidays"] == []
+        assert body["unavailable_reason"] == "pre_festival_era"
+        festivals = client.get(f"/v1/nepal/festivals?{query}&{LOCATION}").json()
+        assert festivals["unavailable_reason"] == "pre_festival_era"
