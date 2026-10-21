@@ -160,12 +160,26 @@ Use these words in code, docs and UI copy, and don't invent synonyms.
   moved. After a merge, run `node scripts/monorepo-tools/domain-contexts.mjs` to
   rewrite any old flat import paths that came in (it is idempotent).
 
-## 6. Existing issues found while checking (not changed here)
+  `main` was merged into `dev` this way once (festival saits and details,
+  Nepal Sambat months, small-plot vastu): new modules were placed by context
+  — `engine/festivals/festival_sait.py`, `services/festivals/festival_details.py`
+  (which also owns `attach_festival_saits`, called by the day router) — and
+  `rules/engine.py` reads its own rule file instead of importing a service.
 
-- `GET /v1/panchanga/{bs_year}/{bs_month}?clock=HH:MM` returns 500:
-  `services/panchanga/panchanga_at_time.instant_row_from_date` reads
-  `snap["vaara"]`, which the at-time payload does not have.
-- `engine/jyotish/shanti_recommendation.py` iterates a `set` of graha names, so
-  the order of shanti findings varies between processes (`PYTHONHASHSEED`).
+## 6. Existing issues found while checking
+
+Fixed on `dev`:
+
+- `GET /v1/panchanga/{bs_year}/{bs_month}?clock=HH:MM` returned 500:
+  `instant_row_from_date` read `snap["vaara"]` and `snap["sunrise"]`, but the
+  at-time payload has `weekday` / `weekday_en` and `sun.sunrise` / `sun.sunset`
+  (`tests/test_month_at_clock.py`).
+- `engine/jyotish/shanti_recommendation.py` iterated `set`s of graha names, so
+  the order of shanti findings — and, for Step 3(a), which trikona lord was
+  named — varied with `PYTHONHASHSEED`. Now the Mahadasha lord precedes the
+  Antardasha lord and the trikona lords run by house (`tests/test_shanti_order.py`).
+
+Still open:
+
 - The web's `/reset-password` and `/verify-email` read `window` while server
   rendering, so they always fall back to client rendering.

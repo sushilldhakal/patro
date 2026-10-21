@@ -77,6 +77,18 @@ def _lord_set(chart: Chart, houses: set[int]) -> set[str]:
     return {chart.house_lord.get(h) for h in houses} - {None}
 
 
+def _lords_in_order(chart: Chart, houses) -> list[str]:
+    """The lords of *houses* by house number, each graha once — the order the
+    findings are reported in. A set of graha names would follow the string
+    hash, which changes between processes (``PYTHONHASHSEED``)."""
+    lords: list[str] = []
+    for house in sorted(houses):
+        lord = chart.house_lord.get(house)
+        if lord is not None and lord not in lords:
+            lords.append(lord)
+    return lords
+
+
 def _affliction_reasons(chart: Chart, graha: str, dusthana_lords: set[str], maraka_lords: set[str]) -> list[str]:
     pf = chart.planets.get(graha)
     reasons: list[str] = []
@@ -134,11 +146,13 @@ def compute_shanti_recommendation(
     findings: list[dict[str, Any]] = []
     dusthana_lords = _lord_set(chart, DUSTHANA)
     maraka_lords = _lord_set(chart, MARAKA_HOUSES)
-    benefic_lords = _lord_set(chart, BENEFIC_HOUSES)
+    # Lagnesha, then the 5th and 9th lords: iterated, so kept in that order.
+    benefic_lords = _lords_in_order(chart, BENEFIC_HOUSES)
 
     # ── Step 1 — current dasha/antardasha lord ────────────────────────────
     step1_ne, step1_en = "महादशा/अन्तर्दशा स्वामी परीक्षण", "Dasha / Antardasha Lord Assessment"
-    for lord in {chart.maha_lord, chart.antar_lord} - {None}:
+    # Mahadasha lord first, then the Antardasha lord when it is another graha.
+    for lord in dict.fromkeys(l for l in (chart.maha_lord, chart.antar_lord) if l is not None):
         reasons = _affliction_reasons(chart, lord, dusthana_lords, maraka_lords)
         if not reasons:
             continue
