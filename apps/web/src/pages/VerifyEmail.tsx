@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useVerifyEmailPage } from "@vedic-patro/features/account";
@@ -6,12 +5,13 @@ import { accountClasses } from "@vedic-patro/design-tokens/classes/account-class
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
+import { useSearchToken } from "@/lib/use-search-token";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 /** Confirm an email address — the website's drawing of `useVerifyEmailPage` (@vedic-patro/features). */
 export function VerifyEmail() {
   const { refreshUser } = useAuth();
-  const token = useMemo(() => new URLSearchParams(window.location.search).get("token"), []);
+  const token = useSearchToken();
   const page = useVerifyEmailPage(token, refreshUser);
   useRouteLoading(page.status === "loading");
 

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useResetPasswordPage } from "@vedic-patro/features/account";
@@ -7,12 +6,13 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouteLoading } from "@/lib/route-loading";
+import { useSearchToken } from "@/lib/use-search-token";
 
 /** Set a new password — the website's drawing of `useResetPasswordPage` (@vedic-patro/features). */
 export function ResetPassword() {
   useRouteLoading(false);
   const navigate = useNavigate();
-  const token = useMemo(() => new URLSearchParams(window.location.search).get("token"), []);
+  const token = useSearchToken();
   const page = useResetPasswordPage(token, () => void navigate({ to: "/" }));
 
   if (page.done) {
