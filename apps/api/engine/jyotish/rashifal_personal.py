@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, replace
+from functools import cached_property
 from datetime import datetime, timezone
 from typing import Any
 
@@ -36,7 +37,7 @@ from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.jyotish.ashtakavarga import GRAHAS as AV_GRAHAS
 from engine.jyotish.ashtakavarga import compute_ashtakavarga
-from engine.jyotish.interpretation import PLANET_EN, PLANET_NE, SIGN_LORD
+from engine.jyotish.interpretation import PLANET_EN, PLANET_NE, SIGN_LORD, Chart, build_chart
 from engine.jyotish.dasha import DashaPeriod, running, sub_periods
 from engine.panchanga.names_ne import to_nepali_digits
 from engine.jyotish.rashifal_engine import (
@@ -128,18 +129,45 @@ AGGREGATE_PEAK_WEIGHT = 0.35
 
 @dataclass(frozen=True)
 class NatalChart:
-    """Everything a personal reading needs from one birth — cast once, reused
-    for every day/period query against it (a birth instant never changes)."""
+    """The personal reading's view of one birth: the Jyotish context's
+    :class:`~engine.jyotish.interpretation.Chart` plus the natal Ashtakavarga.
+
+    Cast once and reused for every day/period query against it (a birth
+    instant never changes). Lagna, Sun and Moon signs, and each graha's sign
+    and degree, are read from the chart, so the personal rashifal and the
+    kundali report describe one birth with one model.
+    """
 
     birth_instant_utc: datetime
-    lagna_sign: int
-    lagna_longitude: float
-    moon_sign: int
-    sun_sign: int
-    graha_sign: dict[str, int]
-    graha_degree: dict[str, float]
+    chart: Chart
     sav: list[int]
     bav: dict[str, list[int]]
+
+    @property
+    def lagna_sign(self) -> int:
+        return self.chart.lagna_sign
+
+    @property
+    def lagna_longitude(self) -> float:
+        return self.chart.lagna_lon
+
+    @property
+    def moon_sign(self) -> int:
+        return self.chart.moon_sign
+
+    @property
+    def sun_sign(self) -> int:
+        return self.chart.sun_sign
+
+    @cached_property
+    def graha_sign(self) -> dict[str, int]:
+        """0-based sign of each gochar graha."""
+        return {g: self.chart.planets[g].sign for g in GOCHAR_GRAHAS}
+
+    @cached_property
+    def graha_degree(self) -> dict[str, float]:
+        """Degrees within its sign of each gochar graha."""
+        return {g: round(self.chart.planets[g].deg_in_sign, 6) for g in GOCHAR_GRAHAS}
 
 
 def build_natal_chart(birth_instant_utc: datetime, *, lat: float, lon: float) -> NatalChart:
@@ -150,37 +178,23 @@ def build_natal_chart(birth_instant_utc: datetime, *, lat: float, lon: float) ->
     the general engine's Ashtakavarga (cast on the day's own transit chart,
     for lack of any birth chart to use) is a different, honestly-labelled
     approximation.
+
+    The reading uses no Shadbala or dasha from the chart (it runs its own
+    dasha at the queried instant), so the chart is cast without them.
     """
     jd = as_julian_day(birth_instant_utc)
     positions = spashta_table(jd)
     lagna = lagna_service.lagna(jd, lat=lat, lon=lon)
-    lagna_longitude = float(lagna["longitude"])
-    lagna_sign = int(lagna_longitude % 360.0 // 30.0) % 12
-
-    graha_sign = {
-        g: int(positions[g]["longitude"] % 360.0 // 30.0) % 12 for g in GOCHAR_GRAHAS
-    }
-    graha_degree = {
-        g: float(positions[g].get("deg_in_rashi", positions[g]["longitude"] % 30.0))
-        for g in GOCHAR_GRAHAS
-    }
+    chart = build_chart(positions, lagna, {}, {}, birth_instant_utc)
 
     av = compute_ashtakavarga(
-        {g: float(positions[g]["longitude"]) for g in AV_GRAHAS}, lagna_longitude
+        {g: chart.planets[g].longitude for g in AV_GRAHAS}, chart.lagna_lon
     )
     sav = [int(row["sarvashtaka"]) for row in av["raw"]]
     bav = {g: [int(row["bindus"][g]) for row in av["raw"]] for g in AV_GRAHAS}
 
     return NatalChart(
-        birth_instant_utc=birth_instant_utc,
-        lagna_sign=lagna_sign,
-        lagna_longitude=lagna_longitude,
-        moon_sign=graha_sign["moon"],
-        sun_sign=graha_sign["sun"],
-        graha_sign=graha_sign,
-        graha_degree=graha_degree,
-        sav=sav,
-        bav=bav,
+        birth_instant_utc=birth_instant_utc, chart=chart, sav=sav, bav=bav
     )
 
 

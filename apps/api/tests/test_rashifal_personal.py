@@ -38,6 +38,20 @@ def test_natal_chart_casts_lagna_moon_sun(natal):
     assert natal.sun_sign == natal.graha_sign["sun"]
 
 
+def test_natal_chart_is_read_from_the_one_jyotish_chart(natal):
+    """The personal reading and the kundali report share one chart model."""
+    from engine.astronomy.ut_instant import as_julian_day
+    from engine.jyotish.interpretation import Chart
+    from engine.panchanga.spashta import spashta_table
+
+    assert isinstance(natal.chart, Chart)
+    assert natal.lagna_longitude == natal.chart.lagna_lon
+    table = spashta_table(as_julian_day(BIRTH))
+    for graha, sign in natal.graha_sign.items():
+        assert sign == table[graha]["rashi"] - 1, graha
+        assert natal.graha_degree[graha] == table[graha]["deg_in_rashi"], graha
+
+
 def test_natal_ashtakavarga_totals_337_bindus(natal):
     assert sum(natal.sav) == 337
 
