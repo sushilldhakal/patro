@@ -1,5 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Pressable as RNPressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
+import { DURATION, EASE_OUT, ENTER_SCALE, SHIFT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { useColorScheme } from "nativewind";
 import { mobileRoles } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -13,6 +15,186 @@ import { VerticalEdgeLabel } from "./VerticalEdgeLabel";
 const TODAY_AD = new Date().toISOString().split("T")[0];
 const COLS = 7;
 const GAP = 1;
+const TODAY_PULSE_MS = 600;
+
+type PulseApi = {
+  seen: (todayAd: string) => boolean;
+  mark: (todayAd: string) => void;
+  subscribe: (listener: () => void) => () => void;
+};
+
+function readTodayPulse(): PulseApi | null {
+  try {
+    return (globalThis as { __vpTodayPulseApi?: PulseApi }).__vpTodayPulseApi ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function TodayCellPulse({ todayAd }: { todayAd: string }) {
+  const reduced = Boolean(useReducedMotionPref());
+  const [on, setOn] = useState(false);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const style = useAnimatedStyle(() => {
+    const shown = scale.get();
+    return {
+      opacity: opacity.get(),
+      transform: shown === 1 ? undefined : [{ scale: shown }],
+    };
+  });
+
+  useEffect(() => {
+    const api = readTodayPulse();
+    if (!api) return;
+    let cancel = false;
+    return api.subscribe(() => {
+      if (cancel || api.seen(todayAd)) return;
+      api.mark(todayAd);
+      if (!cancel) setOn(true);
+    });
+  }, [todayAd]);
+
+  useLayoutEffect(() => {
+    if (!on) return;
+    opacity.set(0);
+    scale.set(reduced ? 1 : ENTER_SCALE);
+    opacity.set(
+      withSequence(
+        withTiming(1, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
+        withTiming(0, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
+      ),
+    );
+    if (!reduced) scale.set(withTiming(1, { duration: TODAY_PULSE_MS, easing: EASE_OUT }));
+    const timer = setTimeout(() => setOn(false), TODAY_PULSE_MS + 40);
+    return () => clearTimeout(timer);
+  }, [on, opacity, reduced, scale]);
+
+  if (!on) return null;
+  return (
+    <Animated.View pointerEvents="none" style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, style]}>
+      <View pointerEvents="none" className="absolute inset-0 border-2 border-secondary" />
+    </Animated.View>
+  );
+}
+
+type DatedDay = { date_ad: string; outsideMonth?: boolean };
+
+function monthSignature(days: DatedDay[]): string {
+  const inside = days.filter((day) => !day.outsideMonth);
+  const span = inside.length ? inside : days;
+  if (!span.length) return "";
+  return `${span[0].date_ad}:${span[span.length - 1].date_ad}:${span.length}`;
+}
+
+type Travel<T> = {
+  sig: string;
+  from: T[] | null;
+  /** Month the fade was heading toward, frozen while that fade reverses. */
+  to: T[] | null;
+  dir: number;
+  fresh: boolean;
+  reverse: boolean;
+  token: number;
+};
+
+function useMonthTravel<T extends DatedDay>(days: T[]) {
+  const reduced = useReducedMotionPref();
+  const signature = monthSignature(days);
+  const daysRef = useRef(days);
+  const [travel, setTravel] = useState<Travel<T>>({
+    sig: signature,
+    from: null,
+    to: null,
+    dir: 1,
+    fresh: false,
+    reverse: false,
+    token: 0,
+  });
+
+  if (signature !== travel.sig && signature !== "" && travel.sig !== "") {
+    const nextDir = signature > travel.sig ? 1 : -1;
+    const inFlight = travel.from !== null;
+    const fromSig = travel.from ? monthSignature(travel.from) : "";
+    if (!inFlight) {
+      setTravel({
+        sig: signature,
+        from: daysRef.current,
+        to: null,
+        dir: nextDir,
+        fresh: true,
+        reverse: false,
+        token: travel.token + 1,
+      });
+    } else if (fromSig === signature) {
+      setTravel({
+        sig: signature,
+        from: travel.from,
+        to: travel.to ?? daysRef.current,
+        dir: travel.dir,
+        fresh: false,
+        reverse: true,
+        token: travel.token + 1,
+      });
+    } else {
+      setTravel({
+        sig: signature,
+        from: travel.from,
+        to: null,
+        dir: travel.dir,
+        fresh: false,
+        reverse: false,
+        token: travel.token + 1,
+      });
+    }
+  } else {
+    daysRef.current = days;
+  }
+
+  const progress = useSharedValue(1);
+  const dirSv = useSharedValue(1);
+  const reducedSv = useSharedValue(Boolean(reduced));
+  const tokenRef = useRef(travel.token);
+  const travelRef = useRef(travel);
+  tokenRef.current = travel.token;
+  travelRef.current = travel;
+
+  useLayoutEffect(() => {
+    reducedSv.set(Boolean(reduced));
+  }, [reduced, reducedSv]);
+
+  useLayoutEffect(() => {
+    const current = travelRef.current;
+    if (!current.from) return;
+    if (current.fresh) {
+      progress.set(0);
+      dirSv.set(current.dir);
+    }
+    const token = current.token;
+    const reverse = current.reverse;
+    progress.set(withTiming(reverse ? 0 : 1, { duration: DURATION.standard, easing: EASE_OUT }));
+    const timer = setTimeout(() => {
+      if (tokenRef.current !== token) return;
+      setTravel((latest) =>
+        latest.token === token ? { ...latest, from: null, to: null, fresh: false, reverse: false } : latest,
+      );
+    }, DURATION.standard + 40);
+    return () => clearTimeout(timer);
+  }, [travel.token, progress, dirSv]);
+
+  const incomingStyle = useAnimatedStyle(() => {
+    const p = progress.get();
+    const shift = reducedSv.get() ? 0 : dirSv.get() * SHIFT;
+    return { opacity: p, transform: [{ translateX: (1 - p) * shift }] };
+  });
+  const outgoingStyle = useAnimatedStyle(() => {
+    const p = progress.get();
+    const shift = reducedSv.get() ? 0 : dirSv.get() * SHIFT;
+    return { opacity: 1 - p, transform: [{ translateX: -p * shift }] };
+  });
+
+  return { from: travel.from, to: travel.to, incomingStyle, outgoingStyle };
+}
 
 /** The grid is measured once so the header and every row share one exact column width (percent widths wrap a column on some phones). */
 function useGridWidth() {
@@ -55,6 +237,21 @@ export function BsCalendarGrid({
   const moonSize = width >= 640 ? 16 : 14;
   const moonInset = isCompact ? 0 : 4;
   const cellMinH = isCompact ? 80 : 104;
+  const travel = useMonthTravel(days);
+  const incoming = useBsCalendarGrid({
+    days: travel.to ?? days,
+    publicHolidayDates,
+    selectedAdDate,
+    todayAd,
+    primaryDate: primaryDateProp,
+  });
+  const ghost = useBsCalendarGrid({
+    days: travel.from ?? days,
+    publicHolidayDates,
+    selectedAdDate,
+    todayAd,
+    primaryDate: primaryDateProp,
+  });
 
   return (
     <>
@@ -81,7 +278,8 @@ export function BsCalendarGrid({
           })}
         </View>
 
-        {grid.rows.map((row, rowIndex) => (
+        {(() => {
+          const renderRows = (source: typeof grid, pulse: boolean) => source.rows.map((row, rowIndex) => (
           <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: GAP }}>
             {row.map((cell, colIndex) => {
               const cellIndex = rowIndex * 7 + colIndex;
@@ -94,7 +292,7 @@ export function BsCalendarGrid({
                  otherwise the grid lines' colour shows through. Holiday wins, as on the web. */
               const tintClass = isOutside ? undefined : isPublicHoliday ? cal.cellHoliday : isToday ? cal.cellToday : undefined;
               const dayColorClass = !isOutside && (isWeekend || isPublicHoliday) ? cal.dayNumberDanger : isOutside ? cal.cellTextOutside : cal.cellText;
-              const openFestivals = () => grid.openFestivals(cell);
+              const openFestivals = () => source.openFestivals(cell);
 
               return (
                 <RNPressable
@@ -108,6 +306,7 @@ export function BsCalendarGrid({
                   {isSelected ? (
                     <View pointerEvents="none" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderWidth: 2, borderColor: roles.primary }} />
                   ) : null}
+                  {pulse && isToday && !isOutside ? <TodayCellPulse todayAd={todayAd} /> : null}
 
                   {cell.tithiIndex != null && moon ? (
                     <View pointerEvents="none" style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2, width: moonSize, height: moonSize }}>
@@ -135,7 +334,7 @@ export function BsCalendarGrid({
                         over the tithi. The today fill and ring already mark the cell. */}
                     {isToday && !isCompact ? (
                       <View className={cal.todayBadge}>
-                        <Text className={cal.todayBadgeText}>{grid.todayBadge}</Text>
+                        <Text className={cal.todayBadgeText}>{source.todayBadge}</Text>
                       </View>
                     ) : null}
                     <View className="flex-row flex-wrap items-baseline justify-center gap-x-1">
@@ -176,7 +375,25 @@ export function BsCalendarGrid({
               );
             })}
           </View>
-        ))}
+          ));
+          const rowGap = { gap: GAP };
+          if (!travel.from) return <View style={rowGap}>{renderRows(grid, true)}</View>;
+          return (
+            <View style={{ position: "relative" }}>
+              <Animated.View
+                pointerEvents="none"
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                style={[travel.outgoingStyle, { position: "absolute", left: 0, right: 0, top: 0 }]}
+              >
+                <View style={rowGap}>{renderRows(ghost, false)}</View>
+              </Animated.View>
+              <Animated.View pointerEvents={travel.to ? "none" : "auto"} style={travel.incomingStyle}>
+                <View style={rowGap}>{renderRows(travel.to ? incoming : grid, true)}</View>
+              </Animated.View>
+            </View>
+          );
+        })()}
       </View>
 
       <Sheet open={grid.festivalDialog != null} onClose={grid.closeFestivals} title={grid.festivalDialog?.title} closeLabel={t("common.close")}>

@@ -1,5 +1,7 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Platform, ScrollView, Text, View, useWindowDimensions, type LayoutChangeEvent, type TextStyle, type ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { DURATION, EASE_OUT, SPRING_SETTLE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { choghadiyaName } from "@vedic-patro/domain/panchanga/choghadiya-display";
@@ -282,10 +284,85 @@ type Props = {
   /** Adds an alarm button to each शुभ / अशुभ period card; the app opens its reminder sheet. */
   onRemind?: (period: TimelinePeriod) => void;
   remindLabel?: string;
+  /** Called in the same turn the reminder save succeeds, with that card's id. */
+  savedPulseRef?: { current: (id: string) => void };
 };
 
 /** A शुभ / अशुभ window as the period cards list it. */
-export type TimelinePeriod = { kind: "shubh" | "ashubh"; key?: string; ne: string; en: string; time: string };
+export type TimelinePeriod = { kind: "shubh" | "ashubh"; key?: string; ne: string; en: string; time: string; remindId?: string };
+
+function Crossfade({ token, children }: { token: string; children: ReactNode }) {
+  const opacity = useSharedValue(1);
+  const latest = useRef(children);
+  const [fade, setFade] = useState<{ token: string; prev: ReactNode | null; gen: number; reset: boolean }>({
+    token,
+    prev: null,
+    gen: 0,
+    reset: false,
+  });
+  if (token !== fade.token) {
+    setFade({
+      token,
+      prev: fade.prev ?? latest.current,
+      gen: fade.gen + 1,
+      reset: fade.prev == null,
+    });
+  }
+  latest.current = children;
+
+  useLayoutEffect(() => {
+    if (!fade.prev) return;
+    if (fade.reset) opacity.set(0);
+    opacity.set(withTiming(1, { duration: DURATION.fast, easing: EASE_OUT }));
+    const gen = fade.gen;
+    const timer = setTimeout(() => {
+      setFade((current) => (current.gen === gen ? { ...current, prev: null, reset: false } : current));
+    }, DURATION.fast + 20);
+    return () => clearTimeout(timer);
+  }, [fade.gen, fade.prev, fade.reset, opacity]);
+
+  const incoming = useAnimatedStyle(() => ({ opacity: opacity.get() }));
+  const outgoing = useAnimatedStyle(() => ({ opacity: 1 - opacity.get() }));
+  if (!fade.prev) return children;
+  return (
+    <View style={{ position: "relative" }}>
+      <Animated.View pointerEvents="none" style={[outgoing, { position: "absolute", left: 0, right: 0, top: 0 }]}>
+        {fade.prev}
+      </Animated.View>
+      <Animated.View style={incoming}>{children}</Animated.View>
+    </View>
+  );
+}
+
+function AlarmIcon({
+  tone,
+  remindId,
+  bindBell,
+}: {
+  tone: "danger" | "success";
+  remindId: string;
+  bindBell: (id: string, play: () => void) => () => void;
+}) {
+  const reduced = Boolean(useReducedMotionPref());
+  const reducedRef = useRef(reduced);
+  reducedRef.current = reduced;
+  const scale = useSharedValue(1);
+  const play = useCallback(() => {
+    if (reducedRef.current) return;
+    scale.set(0.9);
+    scale.set(withSpring(1, SPRING_SETTLE));
+  }, [scale]);
+  useEffect(() => bindBell(remindId, play), [bindBell, play, remindId]);
+  const style = useAnimatedStyle(() => {
+    const shown = scale.get();
+    return shown === 1 ? {} : { transform: [{ scale: shown }] };
+  });
+  return (
+    <Animated.View style={style}>
+      <Icon node={alarmClockIcon} size="sm" tone={tone === "danger" ? "destructive" : "success"} />
+    </Animated.View>
+  );
+}
 
 function SunHalfIcon({
   x,
@@ -371,11 +448,28 @@ export function DayTimeline({
   renderStatus,
   onRemind,
   remindLabel,
+  savedPulseRef,
 }: Props) {
   const { pick, digits, lang } = useLocale();
   const { width: windowWidth } = useWindowDimensions();
   const [containerWidth, setContainerWidth] = useState(0);
   const C = useTimelineColors();
+  const bells = useRef(new Map<string, () => void>());
+  const bindBell = useCallback((id: string, play: () => void) => {
+    bells.current.set(id, play);
+    return () => {
+      if (bells.current.get(id) === play) bells.current.delete(id);
+    };
+  }, []);
+  useEffect(() => {
+    if (!savedPulseRef) return;
+    savedPulseRef.current = (id: string) => {
+      bells.current.get(id)?.();
+    };
+    return () => {
+      savedPulseRef.current = () => {};
+    };
+  }, [savedPulseRef]);
   const tl = useDayTimeline({ p, dateAd, isToday, timezone, needleClock, showNeedle, loading, mode, civil, civilLoading });
   const { isCivil, data, planets, busy, nowG, nowLabel, copy } = tl;
 
@@ -776,19 +870,24 @@ export function DayTimeline({
         )}
       </View>
 
+      <Crossfade token={dateAd}>
+      <>
       {data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
           title={copy.inauspicious}
           cellStyle={periodCell}
           remindLabel={remindLabel}
+          bindBell={bindBell}
           items={data.ashubhaAll.map((a, i) => {
             const time = `${tLabel(a.startG)} – ${tLabel(a.endG)}`;
+            const remindId = `ashubh:${i}:${a.key ?? ""}`;
             return {
               n: digits(i + 1),
               label: pick(a.detailNe, a.detailEn),
               time,
-              onRemind: onRemind ? () => onRemind({ kind: "ashubh", key: a.key, ne: a.detailNe, en: a.detailEn, time }) : undefined,
+              remindId,
+              onRemind: onRemind ? () => onRemind({ kind: "ashubh", key: a.key, ne: a.detailNe, en: a.detailEn, time, remindId }) : undefined,
             };
           })}
         />
@@ -800,13 +899,16 @@ export function DayTimeline({
           title={copy.auspicious}
           cellStyle={periodCell}
           remindLabel={remindLabel}
+          bindBell={bindBell}
           items={data.shubha.map((s, i) => {
             const time = `${tLabel(s.startG)} – ${tLabel(s.endG)}`;
+            const remindId = `shubh:${i}:${s.key ?? ""}`;
             return {
               n: digits(i + 1),
               label: pick(s.name, s.nameEn),
               time,
-              onRemind: onRemind ? () => onRemind({ kind: "shubh", key: s.key, ne: s.name, en: s.nameEn, time }) : undefined,
+              remindId,
+              onRemind: onRemind ? () => onRemind({ kind: "shubh", key: s.key, ne: s.name, en: s.nameEn, time, remindId }) : undefined,
             };
           })}
         />
@@ -916,6 +1018,8 @@ export function DayTimeline({
           </View>
         </View>
       ) : null}
+      </>
+      </Crossfade>
     </Card>
     </View>
   );
@@ -927,12 +1031,14 @@ function PeriodCards({
   items,
   cellStyle,
   remindLabel,
+  bindBell,
 }: {
   tone: "danger" | "success";
   title: string;
-  items: { n: string; label: string; time: string; onRemind?: () => void }[];
+  items: { n: string; label: string; time: string; onRemind?: () => void; remindId?: string }[];
   cellStyle: ViewStyle;
   remindLabel?: string;
+  bindBell: (id: string, play: () => void) => () => void;
 }) {
   const accent = tone === "danger" ? illustration.red60 : illustration.green40;
   const borderColor = tone === "danger" ? withAlpha(illustration.red57, 0.28) : withAlpha(illustration.green40, 0.28);
@@ -960,13 +1066,13 @@ function PeriodCards({
               <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle()}>
                 {it.label}
               </Text>
-              {it.onRemind ? (
+              {it.onRemind && it.remindId ? (
                 <Pressable
                   label={remindLabel ?? it.label}
                   onPress={it.onRemind}
                   className="-my-1 -mr-1 size-8 shrink-0 items-center justify-center rounded-full"
                 >
-                  <Icon node={alarmClockIcon} size="sm" tone={tone === "danger" ? "destructive" : "success"} />
+                  <AlarmIcon tone={tone} remindId={it.remindId} bindBell={bindBell} />
                 </Pressable>
               ) : null}
             </View>

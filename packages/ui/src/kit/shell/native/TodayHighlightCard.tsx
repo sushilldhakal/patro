@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { homeClasses as cls } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useTodayHighlight } from "@vedic-patro/features/home";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Box, Icon, Text } from "@vedic-patro/ui";
+import { EASE_OUT, SHIFT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
+
+const FESTIVAL_ENTER_MS = 240;
+
+function isHighlightFestive(day: TodayHighlightCardProps["selectedDay"], p: TodayHighlightCardProps["p"]): boolean {
+  if (day?.is_public_holiday) return true;
+  if (day?.festivals?.some((name) => name.trim().length > 0)) return true;
+  return Boolean(
+    p?.festivals?.some(
+      (fest) => fest.is_public_holiday || Boolean(fest.name?.trim() || fest.name_ne?.trim() || fest.name_en?.trim()),
+    ),
+  );
+}
 
 /** Card width from which the date block and the festival block sit side by side (web `@[32rem]`). */
 const SIDE_BY_SIDE = 512;
@@ -14,7 +28,44 @@ const SIDE_BY_SIDE = 512;
 export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   const [wide, setWide] = useState(false);
+  const reduced = Boolean(useReducedMotionPref());
+  const festive = isHighlightFestive(props.selectedDay, props.p);
+  const date = props.selectedAdDate;
+  const opacity = useSharedValue(1);
+  const ty = useSharedValue(0);
+  const seen = useRef<string | null>(null);
+  const fadeStyle = useAnimatedStyle(() => {
+    const y = ty.get();
+    const shown = opacity.get();
+    return {
+      ...(shown === 1 ? null : { opacity: shown }),
+      ...(y === 0 ? null : { transform: [{ translateY: y }] }),
+    };
+  });
+
+  useLayoutEffect(() => {
+    if (!festive) {
+      seen.current = null;
+      opacity.set(1);
+      ty.set(0);
+      return;
+    }
+    if (seen.current === date) return;
+    const current = opacity.get();
+    const mid = current > 0.02 && current < 0.999;
+    seen.current = date;
+    if (!mid) {
+      opacity.set(0);
+      ty.set(reduced ? 0 : SHIFT);
+    } else if (reduced) {
+      ty.set(0);
+    }
+    opacity.set(withTiming(1, { duration: FESTIVAL_ENTER_MS, easing: EASE_OUT }));
+    if (!reduced) ty.set(withTiming(0, { duration: FESTIVAL_ENTER_MS, easing: EASE_OUT }));
+  }, [date, festive, opacity, reduced, ty]);
+
   return (
+    <Animated.View style={fadeStyle}>
     <View
       className={cn(cls.highlight, wide ? "flex-row items-start gap-4" : null, className)}
       onLayout={(e) => {
@@ -85,5 +136,6 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
         ) : null}
       </Box>
     </View>
+    </Animated.View>
   );
 }

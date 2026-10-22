@@ -1,5 +1,8 @@
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Pressable, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { Text } from "@/components/ui/Text";
+import { EASE_OUT, ENTER_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import type { CalendarDay } from "@/lib/api";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { useLocale } from "@/lib/i18n";
@@ -15,8 +18,58 @@ import {
   CALENDAR_GRID_GAP,
   calendarColStyle,
   selectionRingStyle,
+  todayPulse,
   useCalendarGridWidth,
+  useMonthTravel,
 } from "./calendar-grid-layout";
+
+const TODAY_PULSE_MS = 600;
+
+/** One soft ring on today's cell, the first time that civil date is opened. */
+function TodayCellPulse({ todayAd }: { todayAd: string }) {
+  const reduced = Boolean(useReducedMotionPref());
+  const [on, setOn] = useState(false);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const style = useAnimatedStyle(() => {
+    const shown = scale.get();
+    return {
+      opacity: opacity.get(),
+      transform: shown === 1 ? undefined : [{ scale: shown }],
+    };
+  });
+
+  useEffect(() => {
+    let cancel = false;
+    return todayPulse.subscribe(() => {
+      if (cancel || todayPulse.seen(todayAd)) return;
+      todayPulse.mark(todayAd);
+      if (!cancel) setOn(true);
+    });
+  }, [todayAd]);
+
+  useLayoutEffect(() => {
+    if (!on) return;
+    opacity.set(0);
+    scale.set(reduced ? 1 : ENTER_SCALE);
+    opacity.set(
+      withSequence(
+        withTiming(1, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
+        withTiming(0, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
+      ),
+    );
+    if (!reduced) scale.set(withTiming(1, { duration: TODAY_PULSE_MS, easing: EASE_OUT }));
+    const timer = setTimeout(() => setOn(false), TODAY_PULSE_MS + 40);
+    return () => clearTimeout(timer);
+  }, [on, opacity, reduced, scale]);
+
+  if (!on) return null;
+  return (
+    <Animated.View pointerEvents="none" style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, style]}>
+      <View pointerEvents="none" className="absolute inset-0 border-2 border-danger/30" />
+    </Animated.View>
+  );
+}
 
 type Props = {
   days: CalendarDay[];
@@ -52,42 +105,17 @@ export function PanchangaMonthGrid({
   const numFont = (bold: boolean) =>
     isEn ? (bold ? "font-num-bold" : "font-num") : undefined;
 
+  const travel = useMonthTravel(days);
   const grid = usePanchangaMonthGrid({ days, todayAd, selectedAd });
+  const incomingGrid = usePanchangaMonthGrid({ days: travel.to ?? days, todayAd, selectedAd });
+  const outgoingGrid = usePanchangaMonthGrid({
+    days: travel.from ?? days,
+    todayAd,
+    selectedAd,
+  });
 
-  return (
-    <View
-      onLayout={onLayout}
-      className="relative overflow-hidden rounded-xl border border-border shadow-sm"
-      style={{ backgroundColor: theme.border, gap: CALENDAR_GRID_GAP }}
-    >
-      {loading ? (
-        <View className="absolute inset-0 z-10 items-center justify-center bg-background/70">
-          <VedicPatroLoader size={88} />
-        </View>
-      ) : null}
-
-      <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }} className="border-b border-border">
-        {grid.weekdays.map((w) => {
-          const weekend = w.weekend;
-          return (
-            <View
-              key={w.key}
-              style={col()}
-              className="min-h-10 items-center justify-center bg-background px-1 py-1.5"
-            >
-              <Text
-                numberOfLines={1}
-                className={cn("text-center text-sm font-semibold leading-tight", weekend && "text-danger")}
-                style={nepaliTextStyle()}
-              >
-                {isCompact ? w.short : w.label}
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-
-      {grid.rows.map((row, rowIndex) => (
+  const renderRows = (source: typeof grid, pulse: boolean) =>
+    source.rows.map((row, rowIndex) => (
         <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
           {row.map((cell) => {
             const { day, isOutside, isToday, isSelected: isSel, isKrishna, hasSunTimes } = cell;
@@ -123,6 +151,7 @@ export function PanchangaMonthGrid({
                     className="absolute inset-0 border-2 border-danger/30"
                   />
                 ) : null}
+                {pulse && isToday && !isOutside ? <TodayCellPulse todayAd={todayAd} /> : null}
 
                 {cell.tithiIndex != null ? (
                   <View
@@ -243,7 +272,60 @@ export function PanchangaMonthGrid({
             );
           })}
         </View>
-      ))}
+    ));
+
+  const rowGap = { gap: CALENDAR_GRID_GAP };
+
+  return (
+    <View
+      onLayout={onLayout}
+      className="relative overflow-hidden rounded-xl border border-border shadow-sm"
+      style={{ backgroundColor: theme.border, gap: CALENDAR_GRID_GAP }}
+    >
+      {loading ? (
+        <View className="absolute inset-0 z-10 items-center justify-center bg-background/70">
+          <VedicPatroLoader size={88} />
+        </View>
+      ) : null}
+
+      <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }} className="border-b border-border">
+        {grid.weekdays.map((w) => {
+          const weekend = w.weekend;
+          return (
+            <View
+              key={w.key}
+              style={col()}
+              className="min-h-10 items-center justify-center bg-background px-1 py-1.5"
+            >
+              <Text
+                numberOfLines={1}
+                className={cn("text-center text-sm font-semibold leading-tight", weekend && "text-danger")}
+                style={nepaliTextStyle()}
+              >
+                {isCompact ? w.short : w.label}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      {travel.from ? (
+        <View style={{ position: "relative" }}>
+          <Animated.View
+            pointerEvents="none"
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+            style={[travel.outgoingStyle, { position: "absolute", left: 0, right: 0, top: 0 }]}
+          >
+            <View style={rowGap}>{renderRows(outgoingGrid, false)}</View>
+          </Animated.View>
+          <Animated.View pointerEvents={travel.to ? "none" : "auto"} style={travel.incomingStyle}>
+            <View style={rowGap}>{renderRows(incomingGrid, true)}</View>
+          </Animated.View>
+        </View>
+      ) : (
+        <View style={rowGap}>{renderRows(grid, true)}</View>
+      )}
     </View>
   );
 }

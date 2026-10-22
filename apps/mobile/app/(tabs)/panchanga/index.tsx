@@ -129,12 +129,14 @@ export default function PanchangaScreen() {
               civil={page.civilTimeline}
               civilLoading={page.civilLoading}
               remindLabel={t("ui.home.set_a_reminder")}
-              onRemind={(period) =>
+              savedPulseRef={reminder.savedPulseRef}
+              onRemind={(period) => {
+                reminder.arm(period.remindId);
                 void reminder.open({
                   windowKey: resolveWindowKey(period),
                   subtitle: `${pick(period.ne, period.en)} · ${period.time}`,
-                })
-              }
+                });
+              }}
               renderStatus={(mark) => (
                 <GrahaStatusBadges planetKey={mark.planetKey} isRetrograde={mark.isRetrograde} isCombust={mark.isCombust} size={mark.size} />
               )}

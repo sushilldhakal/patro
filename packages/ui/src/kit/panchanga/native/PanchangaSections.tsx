@@ -1,6 +1,9 @@
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Text } from "@vedic-patro/ui";
+import { DURATION, EASE_OUT } from "@vedic-patro/ui/motion";
 import type { PanchangaDay } from "@vedic-patro/api-client";
 import {
   useBalamSection,
@@ -38,6 +41,54 @@ import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 const sc = panchangaPageClasses.sections;
+
+function Crossfade({ token, children }: { token: string; children: ReactNode }) {
+  const opacity = useSharedValue(1);
+  const latest = useRef(children);
+  const [fade, setFade] = useState<{ token: string; prev: ReactNode | null; gen: number; reset: boolean }>({
+    token,
+    prev: null,
+    gen: 0,
+    reset: false,
+  });
+  if (token !== fade.token) {
+    setFade({
+      token,
+      prev: fade.prev ?? latest.current,
+      gen: fade.gen + 1,
+      reset: fade.prev == null,
+    });
+  }
+  latest.current = children;
+
+  useLayoutEffect(() => {
+    if (!fade.prev) return;
+    if (fade.reset) opacity.set(0);
+    opacity.set(withTiming(1, { duration: DURATION.fast, easing: EASE_OUT }));
+    const gen = fade.gen;
+    const timer = setTimeout(() => {
+      setFade((current) => (current.gen === gen ? { ...current, prev: null, reset: false } : current));
+    }, DURATION.fast + 20);
+    return () => clearTimeout(timer);
+  }, [fade.gen, fade.prev, fade.reset, opacity]);
+
+  const incoming = useAnimatedStyle(() => ({ opacity: opacity.get() }));
+  const outgoing = useAnimatedStyle(() => ({ opacity: 1 - opacity.get() }));
+  if (!fade.prev) return children;
+  return (
+    <View style={{ position: "relative" }}>
+      <Animated.View pointerEvents="none" style={[outgoing, { position: "absolute", left: 0, right: 0, top: 0 }]}>
+        {fade.prev}
+      </Animated.View>
+      <Animated.View style={incoming}>{children}</Animated.View>
+    </View>
+  );
+}
+
+function angaToken(anga: AngaValue | null): string {
+  if (!anga) return "";
+  return `${anga.name}|${anga.endTime ?? ""}|${anga.next?.name ?? ""}|${anga.next?.endTime ?? ""}`;
+}
 
 function AngaCell({ anga }: { anga: AngaValue | null }) {
   if (!anga) return <Text>—</Text>;
@@ -113,13 +164,19 @@ export function PanchangCoreSection({ p }: { p: PanchangaDay }) {
     <PanchangaSection titleKey="sections.panchang_core">
       <PanchangaTableBody>
         <PanchangaFieldCell labelKey="tithi">
-          <AngaCell anga={s.tithi} />
+          <Crossfade token={angaToken(s.tithi)}>
+            <AngaCell anga={s.tithi} />
+          </Crossfade>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="nakshatra">
-          <AngaCell anga={s.nakshatra} />
+          <Crossfade token={angaToken(s.nakshatra)}>
+            <AngaCell anga={s.nakshatra} />
+          </Crossfade>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.yoga">
-          <AngaCell anga={s.yoga} />
+          <Crossfade token={angaToken(s.yoga)}>
+            <AngaCell anga={s.yoga} />
+          </Crossfade>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.karana">
           <AngaCell anga={s.karana} />

@@ -13,6 +13,10 @@
     "./native": "./src/native/index.ts",
     "./contract": "./src/contract.ts",
     "./classes": "./src/classes.ts",
+    "./motion": {
+      "react-native": "./src/native/motion.ts",
+      "default": "./src/web/motion.ts"
+    },
     "./kit/*": {
       "react-native": "./src/kit/*/native/index.ts",
       "default": "./src/kit/*/web/index.ts"

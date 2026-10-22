@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { haptics } from "@vedic-patro/ui/motion";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -50,6 +51,11 @@ export function useReminderPrep() {
 export function useWindowReminder() {
   const prep = useReminderPrep();
   const [target, setTarget] = useState<ReminderTarget | null>(null);
+  const armed = useRef<string | undefined>(undefined);
+  const savedPulseRef = useRef<(id: string) => void>(() => {});
+  const arm = useCallback((id?: string) => {
+    armed.current = id;
+  }, []);
 
   const open = useCallback(
     async (next: ReminderTarget) => {
@@ -68,6 +74,10 @@ export function useWindowReminder() {
           initialKey={target?.windowKey}
           subtitle={target?.subtitle}
           onCreated={async () => {
+            const id = armed.current;
+            armed.current = undefined;
+            haptics.success();
+            if (id) savedPulseRef.current(id);
             setTarget(null);
             await prep.created();
           }}
@@ -77,5 +87,5 @@ export function useWindowReminder() {
     </>
   );
 
-  return { open, element };
+  return { open, element, arm, savedPulseRef };
 }

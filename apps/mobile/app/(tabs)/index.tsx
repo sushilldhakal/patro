@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+import { SPRING_SNAP, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
@@ -33,6 +37,7 @@ import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZ
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
+import { MONTH_SWIPE_ENABLED } from "@/components/home/calendar-grid-layout";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
@@ -42,6 +47,107 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 const ASIDE_SIDEBAR_SPLIT = 1280;
 const ASIDE_WIDTH = 360;
 const ASIDE_MAX_WIDTH = 400;
+const MONTH_FLICK_VELOCITY = 800;
+
+function project(velocity: number) {
+  "worklet";
+  const decelerationRate = 0.998;
+  return ((velocity / 1000) * decelerationRate) / (1 - decelerationRate);
+}
+
+function rubberband(overshoot: number, dimension: number) {
+  "worklet";
+  const constant = 0.55;
+  const span = dimension > 0 ? dimension : 1;
+  return (overshoot * span * constant) / (span + constant * Math.abs(overshoot));
+}
+
+function MonthGridSwipe({
+  enabled,
+  atStart,
+  atEnd,
+  onCommit,
+  children,
+}: {
+  enabled: boolean;
+  atStart: boolean;
+  atEnd: boolean;
+  onCommit: (delta: number) => void;
+  children: ReactNode;
+}) {
+  const reduced = Boolean(useReducedMotionPref());
+  const tx = useSharedValue(0);
+  const widthSv = useSharedValue(0);
+  const atStartSv = useSharedValue(atStart);
+  const atEndSv = useSharedValue(atEnd);
+  const reducedSv = useSharedValue(reduced);
+  const drag = useSharedValue(0);
+  const commitRef = useRef(onCommit);
+  commitRef.current = onCommit;
+  const commit = useCallback((delta: number) => {
+    commitRef.current(delta);
+  }, []);
+  const snap = useCallback(() => {
+    haptics.snap();
+  }, []);
+
+  useLayoutEffect(() => {
+    atStartSv.set(atStart);
+    atEndSv.set(atEnd);
+    reducedSv.set(reduced);
+  }, [atStart, atEnd, reduced, atStartSv, atEndSv, reducedSv]);
+
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(enabled)
+        .activeOffsetX([-16, 16])
+        .failOffsetY([-12, 12])
+        .onBegin(() => {
+          drag.set(tx.get());
+          tx.set(tx.get());
+        })
+        .onUpdate((e) => {
+          if (reducedSv.get()) return;
+          const width = widthSv.get();
+          let next = drag.get() + e.translationX;
+          if (next > 0 && atStartSv.get()) next = rubberband(next, width);
+          else if (next < 0 && atEndSv.get()) next = -rubberband(-next, width);
+          tx.set(next);
+        })
+        .onEnd((e) => {
+          const width = widthSv.get();
+          const traveled = e.translationX;
+          const projected = traveled + project(e.velocityX);
+          const flick = Math.abs(e.velocityX) > MONTH_FLICK_VELOCITY;
+          const far = width > 0 && (Math.abs(traveled) > width * 0.3 || Math.abs(projected) > width * 0.3);
+          const signed = Math.abs(e.velocityX) > 20 ? e.velocityX : traveled;
+          const dir = signed > 0 ? -1 : 1;
+          const blocked = (dir > 0 && atEndSv.get()) || (dir < 0 && atStartSv.get());
+          if ((flick || far) && !blocked && width > 0) {
+            scheduleOnRN(snap);
+            scheduleOnRN(commit, dir);
+          }
+          const velocity = reducedSv.get() ? 0 : e.velocityX;
+          tx.set(withSpring(0, { ...SPRING_SNAP, velocity }));
+        }),
+    [atEndSv, atStartSv, commit, drag, enabled, reducedSv, snap, tx, widthSv],
+  );
+
+  const style = useAnimatedStyle(() => {
+    const x = tx.get();
+    return x === 0 ? {} : { transform: [{ translateX: x }] };
+  });
+
+  if (!enabled) return children;
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View style={style} onLayout={(event) => widthSv.set(event.nativeEvent.layout.width)}>
+        {children}
+      </Animated.View>
+    </GestureDetector>
+  );
+}
 
 export default function HomeScreen() {
   const belowFoldReady = useDeferredMount();
@@ -236,28 +342,37 @@ export default function HomeScreen() {
             onRetry={homeMonth.retry}
           />
         </View>
-      ) : patroView === "panchanga" ? (
-        <PanchangaMonthGrid
-          days={gridDays}
-          year={year}
-          month={month}
-          todayAd={todayAd}
-          selectedAd={aside.highlightAd}
-          loading={monthFetching}
-          onPickDay={handleSelectDay}
-          edgeToEdge={isPhone}
-        />
       ) : (
-        <BsCalendarGrid
-          days={gridDays}
-          selectedAdDate={aside.highlightAd}
-          todayAd={todayAd}
-          publicHolidayDates={publicHolidayDates}
-          onSelectDay={handleSelectDay}
-          isEnriching={monthFetching}
-          primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
-          moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
-        />
+        <MonthGridSwipe
+          enabled={MONTH_SWIPE_ENABLED}
+          atStart={homeMonth.prevDisabled}
+          atEnd={homeMonth.nextDisabled}
+          onCommit={goMonth}
+        >
+          {patroView === "panchanga" ? (
+            <PanchangaMonthGrid
+              days={gridDays}
+              year={year}
+              month={month}
+              todayAd={todayAd}
+              selectedAd={aside.highlightAd}
+              loading={monthFetching}
+              onPickDay={handleSelectDay}
+              edgeToEdge={isPhone}
+            />
+          ) : (
+            <BsCalendarGrid
+              days={gridDays}
+              selectedAdDate={aside.highlightAd}
+              todayAd={todayAd}
+              publicHolidayDates={publicHolidayDates}
+              onSelectDay={handleSelectDay}
+              isEnriching={monthFetching}
+              primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
+              moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
+            />
+          )}
+        </MonthGridSwipe>
       )}
     </View>
   );
