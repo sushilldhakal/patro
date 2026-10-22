@@ -22,7 +22,7 @@ const TOP_SHEET_INSET = Platform.OS === "android" ? (StatusBar.currentHeight ?? 
 
 /** Let go past this fraction of the panel's height, or flick faster than this (px/s), and it dismisses. */
 const DISMISS_FRACTION = 0.35;
-const FLICK_VELOCITY = 600;
+const FLICK_VELOCITY = 800;
 /** The bottom edge is a hard edge: a bounce past it would lift the panel off the screen's bottom. */
 const PANEL_SPRING = { ...SPRING_SHEET, overshootClamping: true };
 
