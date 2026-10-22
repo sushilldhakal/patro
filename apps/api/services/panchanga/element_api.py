@@ -89,7 +89,7 @@ def _tithi_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
 
 def _chandra_rashi_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
     d = rashi_service.chandra(as_julian_day(dt))
-    return int(d["number"]), d["name"], d.get("name_ne", d["name"]), {}
+    return d.number, d.name, d.name_ne, {}
 
 
 # ── table extractors (raw daily payload → element data) ──────────────────────

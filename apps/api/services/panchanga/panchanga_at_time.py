@@ -232,8 +232,8 @@ def build_panchanga_civil_day(
     tithi_info = calculate_tithi(midnight_utc)
     paksha = paksha_block(lunar, tithi_info["paksha"])
     midnight_jd = as_julian_day(midnight_utc)
-    chandra_rashi = rashi_service.chandra(midnight_jd)
-    surya_rashi = rashi_service.surya(midnight_jd)
+    chandra_rashi = rashi_service.chandra(midnight_jd).to_payload()
+    surya_rashi = rashi_service.surya(midnight_jd).to_payload()
     lagna = lagna_service.lagna(
         midnight_jd, lat=location.lat, lon=location.lon, ayanamsa=mode
     )

@@ -108,8 +108,8 @@ class TestServicesMatchTheFunctionsTheyReplace:
     @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
     def test_rashi_ritu_and_ayana(self, row: dict):
         jd = row["jd"]
-        assert rashi_service.surya(jd) == row["surya_rashi"]
-        assert rashi_service.chandra(jd) == row["chandra_rashi"]
+        assert rashi_service.surya(jd).to_payload() == row["surya_rashi"]
+        assert rashi_service.chandra(jd).to_payload() == row["chandra_rashi"]
         assert rashi_service.aayan(jd) == row["aayan"]
         assert rashi_service.ritu(jd, sidereal=True) == row["ritu"]
 
@@ -313,13 +313,13 @@ class TestRashiService:
     def test_surya_and_chandra_read_their_own_longitudes(self):
         for jd in SAMPLE_JDS:
             surya = rashi_service.surya(jd)
-            assert surya["longitude"] == pytest.approx(
+            assert surya.longitude == pytest.approx(
                 round(sun_service.longitude(jd), 6), abs=1e-6
             )
-            assert surya["name"] == RASHI_NAMES[int(surya["longitude"] / 30) % 12]
+            assert surya.name == RASHI_NAMES[int(surya.longitude / 30) % 12]
 
             chandra = rashi_service.chandra(jd)
-            assert chandra["longitude"] == pytest.approx(
+            assert chandra.longitude == pytest.approx(
                 round(moon_service.longitude(jd), 6), abs=1e-6
             )
 

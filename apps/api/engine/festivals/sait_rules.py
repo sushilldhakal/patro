@@ -322,10 +322,10 @@ def build_day_panchanga(
     yoga_num = panchanga_service.yoga(sunrise_jd)["number"]
     karana_name = panchanga_service.karana(sunrise_jd)["name"]
 
-    sun_lon = surya["longitude"]
     # position().longitude rather than longitude(): the former rounds to 6
     # decimals exactly as the old get_planet_position did, and these values are
     # compared against combustion orbs.
+    sun_lon = planet_service.position(sunrise_jd, "sun").longitude
     jupiter = planet_service.position(sunrise_jd, "jupiter").longitude
     venus = planet_service.position(sunrise_jd, "venus").longitude
     mercury = planet_service.position(sunrise_jd, "mercury").longitude
@@ -354,7 +354,7 @@ def build_day_panchanga(
         paksha=tithi_info["paksha"],
         nakshatra=nak_num,
         vaara=vaara_num + 1,  # Sunday = 1 … Saturday = 7
-        sun_rashi=surya["number"],
+        sun_rashi=surya.number,
         sun_longitude=sun_lon,
         jupiter_combust=_is_combust(jupiter, sun_lon, JUPITER_COMBUST_ORB),
         venus_combust=_is_combust(venus, sun_lon, VENUS_COMBUST_ORB),

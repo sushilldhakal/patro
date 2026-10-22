@@ -48,3 +48,24 @@ def test_engine_service_and_table_agree():
     assert graha_positions(JD)["jupiter"] == engine_pos
     row = spashta_table(JD)["jupiter"]
     assert row == {**engine_pos.to_payload(), "is_combust": row["is_combust"]}
+
+
+def test_rashi_placement_is_cut_from_the_unrounded_longitude():
+    from engine.astronomy.rashi import RashiPlacement
+
+    edge = RashiPlacement(59.99999999)
+    assert edge.number == 2
+    assert edge.to_payload()["longitude"] == 60.0
+    assert RashiPlacement(75.0).to_payload() == {
+        "number": 3, "name": "Mithuna", "name_ne": "मिथुन",
+        "longitude": 75.0, "progress": 0.5,
+    }
+
+
+def test_lagna_block_is_built_from_the_rising_placement():
+    from engine.panchanga.lagna import lagna_service
+
+    block = lagna_service.lagna(JD, lat=27.7, lon=85.3)
+    rising = lagna_service.placement(JD, lat=27.7, lon=85.3)
+    assert block["number"] == rising.number
+    assert block["longitude"] == round(rising.longitude, 6)

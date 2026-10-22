@@ -249,7 +249,7 @@ def compute_janma_from_instant(instant: datetime) -> dict[str, int]:
         instant = instant.astimezone(timezone.utc)
     instant_jd = as_julian_day(instant)
     nak_num = panchanga_service.nakshatra(instant_jd)["number"]
-    rashi_num = rashi_service.chandra(instant_jd)["number"]
+    rashi_num = rashi_service.chandra(instant_jd).number
     return {"nakshatra": nak_num, "rashi": rashi_num}
 
 
@@ -292,7 +292,7 @@ def _annotate_one(
     )
     sunrise_jd = as_julian_day(sunrise_utc)
     t_nak = panchanga_service.nakshatra(sunrise_jd)["number"]
-    t_rashi = rashi_service.chandra(sunrise_jd)["number"]
+    t_rashi = rashi_service.chandra(sunrise_jd).number
 
     tara_num = compute_navatara_number(janma_nak - 1, t_nak - 1, 27)
     chandra_num = compute_navatara_number(janma_rashi - 1, t_rashi - 1, 12)

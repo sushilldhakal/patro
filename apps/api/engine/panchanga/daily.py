@@ -253,7 +253,7 @@ def _assemble_udaya_panchanga(
     nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
     chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans, tz_name)
     tarabalam = build_tarabalam(sunrise_utc, nakshatra_block, tz_name)
-    chandra_rashi = rashi_service.chandra(sunrise_jd)
+    chandra_rashi = rashi_service.chandra(sunrise_jd).to_payload()
     tarabala_table = build_tarabala_table(nakshatra_block)
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
     rashifal = build_daily_rashifal(chandrabala_table, vaara_num=vaara_num)
@@ -351,7 +351,7 @@ def _assemble_udaya_panchanga(
         "moon_phase": moon_service.phase(sunrise_jd),
         "chandra_rashi_spans": chandra_rashi_spans,
         "nakshatra_pada_spans": nakshatra_pada_spans,
-        "surya_rashi": rashi_service.surya(sunrise_jd),
+        "surya_rashi": rashi_service.surya(sunrise_jd).to_payload(),
         "surya_nakshatra": surya_nakshatra,
         "ritu": ritu_pauranik,
         "ritu_pauranik": ritu_pauranik,

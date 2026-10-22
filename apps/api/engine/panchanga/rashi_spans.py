@@ -76,9 +76,9 @@ def build_chandra_rashi_spans(
         rashi = rashi_service.chandra(as_julian_day(cursor))
         end_dt = min(find_moon_rashi_end(cursor), next_sunrise_dt)
         span: dict[str, Any] = {
-            "number": rashi["number"],
-            "name": rashi["name"],
-            "name_ne": rashi["name_ne"],
+            "number": rashi.number,
+            "name": rashi.name,
+            "name_ne": rashi.name_ne,
         }
         _attach_end(span, end_dt, sunrise_dt, next_sunrise_dt, timezone_name)
         spans.append(span)

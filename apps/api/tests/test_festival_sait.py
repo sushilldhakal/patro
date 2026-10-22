@@ -177,10 +177,11 @@ def test_refined_muhurta_windows_sit_within_one_scan_step():
                                               (10, "south"), (3, "west"), (7, "west"), (11, "west"),
                                               (4, "north"), (8, "north"), (12, "north")])
 def test_chandra_vasa_directions(monkeypatch, number, direction):
+    from engine.astronomy.rashi import RashiPlacement
     from engine.festivals import festival_sait
 
     monkeypatch.setattr(
-        festival_sait.rashi_service, "chandra", lambda jd: {"number": number, "name": "x", "name_ne": "x"}
+        festival_sait.rashi_service, "chandra", lambda jd: RashiPlacement((number - 1) * 30 + 15)
     )
     facing = festival_sait.chandra_vasa(datetime(2026, 10, 21, 6, tzinfo=timezone.utc))
     assert facing["direction"] == direction

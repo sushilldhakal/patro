@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from engine.astronomy.engine import SIDM_LAHIRI, default_engine
-from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE, rashi_index
+from engine.astronomy.rashi import RashiPlacement, rashi_index
 
 # Bisection window for the next rashi boundary. The ascendant crosses a sign in
 # roughly two hours at Kathmandu's latitude; four hours brackets even the slowest
@@ -49,17 +49,26 @@ class LagnaService:
     def lagna(
         self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
     ) -> dict[str, Any]:
-        """The lagna block — number, names, longitude and degree within the sign."""
-        asc = self.longitude(jd, lat=lat, lon=lon, ayanamsa=ayanamsa)
-        index = rashi_index(asc)
+        """The lagna block — number, names, longitude and degree within the sign.
+
+        A payload: callers re-anchor it and attach coordinates. The rising sign
+        itself is :meth:`placement`.
+        """
+        rising = self.placement(jd, lat=lat, lon=lon, ayanamsa=ayanamsa)
         return {
-            "number": index + 1,
-            "name": RASHI_NAMES[index],
-            "name_ne": RASHI_NAMES_NE[index],
-            "longitude": round(asc, 6),
-            "degree_in_rashi": round(asc % 30, 4),
+            "number": rising.number,
+            "name": rising.name,
+            "name_ne": rising.name_ne,
+            "longitude": round(rising.longitude, 6),
+            "degree_in_rashi": round(rising.degree_in_rashi, 4),
             "anchor": "sunrise",
         }
+
+    def placement(
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+    ) -> RashiPlacement:
+        """The rising sign at *jd* for the observer."""
+        return RashiPlacement(self.longitude(jd, lat=lat, lon=lon, ayanamsa=ayanamsa))
 
     def next_boundary(
         self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI

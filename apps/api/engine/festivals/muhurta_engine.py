@@ -621,8 +621,8 @@ def _sankranti_moment_between(start_iso: str, end_iso: str) -> str | None:
     """Cached exact solar-ingress ISO between two UTC timestamps, or None."""
     start = datetime.fromisoformat(start_iso)
     end = datetime.fromisoformat(end_iso)
-    r0 = rashi_service.surya(as_julian_day(start))["number"]
-    r1 = rashi_service.surya(as_julian_day(end))["number"]
+    r0 = rashi_service.surya(as_julian_day(start)).number
+    r1 = rashi_service.surya(as_julian_day(end)).number
     if r0 == r1:
         return None
     target_degree = (r1 - 1) * 30
@@ -645,7 +645,7 @@ def _sankranti_vetoes(
     if moment_iso is None:
         return []
     moment = datetime.fromisoformat(moment_iso)
-    incoming = rashi_service.surya(as_julian_day(moment + timedelta(minutes=1)))["number"]
+    incoming = rashi_service.surya(as_julian_day(moment + timedelta(minutes=1))).number
     hours = (
         rule.major_sankranti_buffer_hours
         if incoming in rule.major_sankranti_rashis
@@ -799,8 +799,8 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         tz = resolve_observer_timezone(location.timezone)
         noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
         if (
-            rashi_service.surya(as_julian_day(noon))["number"]
-            != rashi_service.surya(as_julian_day(noon + timedelta(days=1)))["number"]
+            rashi_service.surya(as_julian_day(noon)).number
+            != rashi_service.surya(as_julian_day(noon + timedelta(days=1))).number
         ):
             return _DayGate(False)
     if rule.lunar_months and dp.lunar_month not in rule.lunar_months:

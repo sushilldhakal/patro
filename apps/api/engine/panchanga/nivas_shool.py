@@ -236,7 +236,7 @@ _CHANDRA_VASA_DIR_IDX = {1: 0, 2: 3, 3: 1, 0: 2}
 
 
 def _chandra_vasa_at(instant: datetime) -> dict[str, Any]:
-    rashi = rashi_service.chandra(as_julian_day(instant))["number"]
+    rashi = rashi_service.chandra(as_julian_day(instant)).number
     return _direction(_CHANDRA_VASA_DIR_IDX[rashi % 4])
 
 
@@ -341,7 +341,7 @@ def _collect_vishti_spans(
             cursor = find_karana_end(cursor) + timedelta(seconds=90)
             continue
         end_dt = min(find_karana_end(cursor), next_sunrise_dt)
-        rashi = rashi_service.chandra(as_julian_day(cursor))["number"]
+        rashi = rashi_service.chandra(as_julian_day(cursor)).number
         loka_key = _BHADRA_LOKA_BY_RASHI.get(rashi, "prithvi")
         loka = _BHADRA_LOKA[loka_key]
         span: dict[str, Any] = {

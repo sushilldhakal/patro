@@ -158,8 +158,8 @@ def chandra_vasa(at: datetime) -> dict[str, Any]:
     """Direction to face for Tika at ``at``: the Moon's, from its sidereal sign."""
     moon = rashi_service.chandra(as_julian_day(at))
     return {
-        "direction": CHANDRA_VASA_DIRECTIONS[(moon["number"] - 1) % 4],
-        "moon_rashi": {"number": moon["number"], "name": moon["name"], "name_ne": moon["name_ne"]},
+        "direction": CHANDRA_VASA_DIRECTIONS[(moon.number - 1) % 4],
+        "moon_rashi": {"number": moon.number, "name": moon.name, "name_ne": moon.name_ne},
     }
 
 

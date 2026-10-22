@@ -530,9 +530,9 @@ def build_day_frame(
         g: int(positions[g]["longitude"] % 360.0 // 30.0) % 12 for g in GOCHAR_GRAHAS
     }
 
-    lagna = lagna_service.lagna(jd_sunrise, lat=location.lat, lon=location.lon)
-    lagna_longitude = float(lagna["longitude"])
-    lagna_sign = int(lagna_longitude % 360.0 // 30.0) % 12
+    lagna = lagna_service.placement(jd_sunrise, lat=location.lat, lon=location.lon)
+    lagna_longitude = round(lagna.longitude, 6)
+    lagna_sign = lagna.index
 
     # Tithi straight off the Sun→Moon elongation — the same angle the panchanga
     # tithi comes from, so paksha here can never disagree with the day page.

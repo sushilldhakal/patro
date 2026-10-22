@@ -14,6 +14,7 @@ See docs/computation-architecture-audit.md (section A2, phase 2).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from engine.astronomy.engine import default_engine
@@ -54,6 +55,54 @@ def rashi_index(longitude: float) -> int:
     return int(longitude / 30) % 12
 
 
+@dataclass(frozen=True, slots=True)
+class RashiPlacement:
+    """Which rashi an ecliptic longitude falls in, and how far through it.
+
+    ``longitude`` is kept unrounded, so the rashi is cut from the exact value;
+    :meth:`to_payload` rounds it for the rashi block a route returns.
+    """
+
+    longitude: float
+
+    @property
+    def index(self) -> int:
+        """0–11 index into :data:`RASHI_NAMES`."""
+        return rashi_index(self.longitude)
+
+    @property
+    def number(self) -> int:
+        """1–12."""
+        return self.index + 1
+
+    @property
+    def name(self) -> str:
+        return RASHI_NAMES[self.index]
+
+    @property
+    def name_ne(self) -> str:
+        return RASHI_NAMES_NE[self.index]
+
+    @property
+    def degree_in_rashi(self) -> float:
+        return self.longitude % 30
+
+    @property
+    def progress(self) -> float:
+        """0–1 through the rashi."""
+        return self.degree_in_rashi / 30
+
+    def to_payload(self) -> dict[str, Any]:
+        """The rashi block — number, names, longitude and progress."""
+        return {
+            "number": self.number,
+            "name": self.name,
+            "name_ne": self.name_ne,
+            "longitude": round(self.longitude, 6),
+            "progress": round(self.progress, 4),
+        }
+
+
 class RashiService:
     """Rashi, ritu and ayana at a Julian Day. Stateless — see ``rashi_service``."""
 
@@ -62,24 +111,17 @@ class RashiService:
 
     # ── rashi ───────────────────────────────────────────────────────────────
 
-    def of_longitude(self, longitude: float) -> dict[str, Any]:
-        """The rashi block for a bare longitude — number, names, progress."""
-        index = rashi_index(longitude)
-        return {
-            "number": index + 1,
-            "name": RASHI_NAMES[index],
-            "name_ne": RASHI_NAMES_NE[index],
-            "longitude": round(longitude, 6),
-            "progress": round((longitude % 30) / 30, 4),
-        }
+    def of_longitude(self, longitude: float) -> RashiPlacement:
+        """The rashi of a bare longitude."""
+        return RashiPlacement(longitude)
 
-    def surya(self, jd: float, *, ayanamsa: int | None = None) -> dict[str, Any]:
+    def surya(self, jd: float, *, ayanamsa: int | None = None) -> RashiPlacement:
         """Sun's rashi (सूर्य राशि)."""
         return self.of_longitude(
             self._engine.sun_longitude(jd, sidereal=True, ayanamsa=ayanamsa)
         )
 
-    def chandra(self, jd: float, *, ayanamsa: int | None = None) -> dict[str, Any]:
+    def chandra(self, jd: float, *, ayanamsa: int | None = None) -> RashiPlacement:
         """Moon's rashi (चन्द्र राशि)."""
         return self.of_longitude(
             self._engine.moon_longitude(jd, sidereal=True, ayanamsa=ayanamsa)
