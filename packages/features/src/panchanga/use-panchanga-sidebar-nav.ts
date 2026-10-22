@@ -68,6 +68,7 @@ export function getPanchangaSidebarSections(): PanchangaSidebarSection[] {
         { id: "panchanga-year", to: "/panchanga/year", labelKey: "sidebar_nav.items.panchanga-year.label" },
         { id: "dainikkranti", to: "/dainikkranti", labelKey: "sidebar_nav.items.dainikkranti.label" },
         { id: "panchak-patro", to: "/panchak-patro", labelKey: "sidebar_nav.items.panchak-patro.label" },
+        { id: "adhik-maas", to: "/adhik-maas", labelKey: "sidebar_nav.items.adhik-maas.label" },
         { id: "ritu", to: "/ritu", labelKey: "sidebar_nav.items.ritu.label" },
       ],
     },

@@ -18,7 +18,7 @@ export default function RituScreen() {
     <AppShell title="" showHeader={false}>
       <PatroPageHeader
         className="mb-4"
-        icon={<AppNavIcon name="sprout" size={28} color={isDark ? colors.primary : colors.secondary} />}
+        icon={<AppNavIcon name="leaf" size={28} color={isDark ? colors.primary : colors.secondary} />}
         title={ritu.title}
         subtitle={ritu.subtitle}
       />

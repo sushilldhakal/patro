@@ -16,6 +16,7 @@ export const PANCHANGA_SHELL_PATHS: readonly string[] = [
   "/suryakranti",
   "/abhijit-muhurta",
   "/panchak-patro",
+  "/adhik-maas",
   "/panchanga/details",
   "/panchanga/element/$name",
   "/gochar",

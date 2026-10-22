@@ -1,20 +1,15 @@
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { useAdhikMaasNotice } from "@vedic-patro/features/home";
 
-/** "This year's adhik maas" — one quiet row under the calendar; a tap opens the month, its span and a jump to it. */
-export function AdhikMaasNotice({
-  bsYear,
-  onJump,
-}: {
-  bsYear: number;
-  /** Shows the adhik month's BS month in the calendar; omitted when the calendar can't jump there. */
-  onJump?: (year: number, month: number) => void;
-}) {
+/** "This year's adhik maas" — one quiet row under the calendar; a tap opens the month, its span and a link to the adhik maas page. */
+export function AdhikMaasNotice({ bsYear }: { bsYear: number }) {
   const colors = useThemeColors();
+  const router = useRouter();
   const notice = useAdhikMaasNotice(bsYear);
   if (!notice) return null;
 
@@ -41,17 +36,15 @@ export function AdhikMaasNotice({
           <Text className="mt-1 text-xs leading-5 text-muted-foreground" style={nepaliTextStyle()}>
             {notice.why}
           </Text>
-          {onJump ? (
-            <Pressable
-              onPress={() => onJump(notice.target.year, notice.target.month)}
-              className="mt-2 self-start active:opacity-70"
-              accessibilityRole="button"
-            >
-              <Text className="text-xs font-medium text-secondary" style={nepaliTextStyle()}>
-                {notice.jumpLabel} →
-              </Text>
-            </Pressable>
-          ) : null}
+          <Pressable
+            onPress={() => router.push(`/adhik-maas?year=${notice.year}` as never)}
+            className="mt-2 self-start active:opacity-70"
+            accessibilityRole="link"
+          >
+            <Text className="text-xs font-medium text-secondary" style={nepaliTextStyle()}>
+              {notice.moreLabel} →
+            </Text>
+          </Pressable>
         </View>
       ) : null}
     </View>

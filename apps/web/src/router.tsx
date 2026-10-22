@@ -58,6 +58,7 @@ const LearnArticle = lazyRoute(() => import("./pages/LearnArticle"), "LearnArtic
 const SunTimesYear = lazyRoute(() => import("./pages/SunTimesYear"), "SunTimesYear");
 const AbhijitMuhurta = lazyRoute(() => import("./pages/AbhijitMuhurta"), "AbhijitMuhurta");
 const PanchakPatro = lazyRoute(() => import("./pages/PanchakPatro"), "PanchakPatro");
+const AdhikMaas = lazyRoute(() => import("./pages/AdhikMaas"), "AdhikMaas");
 const PanchangaDetailsHub = lazyRoute(() => import("./pages/PanchangaDetailsHub"), "PanchangaDetailsHub");
 const ElementPage = lazyRoute(() => import("./pages/ElementPage"), "ElementPage");
 const Gochar = lazyRoute(() => import("./pages/Gochar"), "Gochar");
@@ -230,6 +231,12 @@ const panchakPatroRoute = createRoute({
   validateSearch: validatePanchangaYearSearch,
   component: PanchakPatro,
 });
+const adhikMaasRoute = createRoute({
+  getParentRoute: () => panchangaShellRoute,
+  path: "/adhik-maas",
+  validateSearch: validatePanchangaYearSearch,
+  component: AdhikMaas,
+});
 const sunTimesLegacyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sun-times",
@@ -336,6 +343,7 @@ const panchangaShellChildRoutes = [
   suryakrantiRoute,
   abhijitMuhurtaRoute,
   panchakPatroRoute,
+  adhikMaasRoute,
   panchangaDetailsRoute,
   elementRoute,
   gocharRoute,

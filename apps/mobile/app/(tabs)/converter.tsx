@@ -33,7 +33,7 @@ export default function ConverterScreen() {
     <AppShell title={page.copy.title} showHeader={false}>
       <PatroPageHeader
         className="mb-8"
-        icon={<AppNavIcon name="arrow-left-right" size={24} color={colors.secondary} />}
+        icon={<AppNavIcon name="calendar-sync" size={24} color={colors.secondary} />}
         title={page.copy.title}
         subtitle={page.copy.subtitle}
       />

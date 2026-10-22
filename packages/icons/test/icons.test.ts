@@ -9,7 +9,8 @@ import {
 } from "../src/index";
 
 test("nav entries resolve the same in every section", () => {
-  assert.equal(resolveNavIcon("patro", "holidays"), "party-popper");
+  assert.equal(resolveNavIcon("patro", "holidays"), "calendar-heart");
+  assert.equal(resolveNavIcon("patro", "adhik-maas"), "calendar-plus");
   assert.equal(resolveNavIcon("jyotish", "kundali"), "sparkles");
   assert.equal(resolveNavIcon("spans", "chandra-rashi"), "moon-star");
   assert.equal(resolveNavIcon("tables", "hora"), "clock-3");

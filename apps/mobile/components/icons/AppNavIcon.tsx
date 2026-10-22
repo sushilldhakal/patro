@@ -1,10 +1,15 @@
 import type { NavIconName } from "@vedic-patro/icons";
 import { LucideNative, type LucideIconNode } from "./LucideNative";
-import { __iconNode as ArrowLeftRightNode } from "lucide-react/dist/esm/icons/arrow-left-right";
+import { __iconNode as CalendarHeartNode } from "lucide-react/dist/esm/icons/calendar-heart";
+import { __iconNode as CalendarSyncNode } from "lucide-react/dist/esm/icons/calendar-sync";
+import { __iconNode as ChartPieNode } from "lucide-react/dist/esm/icons/chart-pie";
+import { __iconNode as CalendarXNode } from "lucide-react/dist/esm/icons/calendar-x";
+import { __iconNode as CalendarPlusNode } from "lucide-react/dist/esm/icons/calendar-plus";
+import { __iconNode as LeafNode } from "lucide-react/dist/esm/icons/leaf";
+import { __iconNode as TimerNode } from "lucide-react/dist/esm/icons/timer";
 import { __iconNode as BookOpenNode } from "lucide-react/dist/esm/icons/book-open";
 import { __iconNode as CalendarClockNode } from "lucide-react/dist/esm/icons/calendar-clock";
 import { __iconNode as CalendarDaysNode } from "lucide-react/dist/esm/icons/calendar-days";
-import { __iconNode as CalendarRangeNode } from "lucide-react/dist/esm/icons/calendar-range";
 import { __iconNode as ChevronRightNode } from "lucide-react/dist/esm/icons/chevron-right";
 import { __iconNode as Clock3Node } from "lucide-react/dist/esm/icons/clock-3";
 import { __iconNode as CompassNode } from "lucide-react/dist/esm/icons/compass";
@@ -21,12 +26,10 @@ import { __iconNode as LayersNode } from "lucide-react/dist/esm/icons/layers";
 import { __iconNode as MoonNode } from "lucide-react/dist/esm/icons/moon";
 import { __iconNode as MoonStarNode } from "lucide-react/dist/esm/icons/moon-star";
 import { __iconNode as OrbitNode } from "lucide-react/dist/esm/icons/orbit";
-import { __iconNode as PartyPopperNode } from "lucide-react/dist/esm/icons/party-popper";
 import { __iconNode as RotateCcwNode } from "lucide-react/dist/esm/icons/rotate-ccw";
 import { __iconNode as RouteNode } from "lucide-react/dist/esm/icons/route";
 import { __iconNode as ShieldNode } from "lucide-react/dist/esm/icons/shield";
 import { __iconNode as SparklesNode } from "lucide-react/dist/esm/icons/sparkles";
-import { __iconNode as SproutNode } from "lucide-react/dist/esm/icons/sprout";
 import { __iconNode as StarNode } from "lucide-react/dist/esm/icons/star";
 import { __iconNode as SunNode } from "lucide-react/dist/esm/icons/sun";
 import { __iconNode as SunriseNode } from "lucide-react/dist/esm/icons/sunrise";
@@ -36,17 +39,20 @@ import { __iconNode as UserNode } from "lucide-react/dist/esm/icons/user";
 
 const LUCIDE: Record<NavIconName, LucideIconNode> = {
   house: HouseNode,
+  "calendar-heart": CalendarHeartNode,
+  "calendar-sync": CalendarSyncNode,
+  "chart-pie": ChartPieNode,
+  "calendar-x": CalendarXNode,
+  "calendar-plus": CalendarPlusNode,
+  "leaf": LeafNode,
+  "timer": TimerNode,
   "book-marked": BookMarkedNode,
   star: StarNode,
   "book-open": BookOpenNode,
   compass: CompassNode,
-  "party-popper": PartyPopperNode,
-  "arrow-left-right": ArrowLeftRightNode,
   sunrise: SunriseNode,
-  "calendar-range": CalendarRangeNode,
   moon: MoonNode,
   "calendar-clock": CalendarClockNode,
-  sprout: SproutNode,
   "grid-3x3": Grid3x3Node,
   sparkles: SparklesNode,
   heart: HeartNode,

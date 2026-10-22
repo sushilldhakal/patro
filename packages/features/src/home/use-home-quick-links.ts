@@ -15,6 +15,7 @@ export type HomeQuickLinkFeature =
   | "panchanga-year"
   | "dainikkranti"
   | "panchak-patro"
+  | "adhik-maas"
   | "ritu"
   | "avakahada"
   | "abhijit"
@@ -41,6 +42,7 @@ const PATRO: LinkDef[] = [
   { to: "/panchanga/year", feature: "panchanga-year", label: "panchanga_year.title", search: "route" },
   { to: "/dainikkranti", feature: "dainikkranti", label: "nav.dainikkranti", search: "month" },
   { to: "/panchak-patro", feature: "panchak-patro", label: "panchak.title", search: "year" },
+  { to: "/adhik-maas", feature: "adhik-maas", label: "sidebar_nav.items.adhik-maas.label", search: "year" },
   { to: "/ritu", feature: "ritu", label: "ritu.title", search: "route" },
 ];
 

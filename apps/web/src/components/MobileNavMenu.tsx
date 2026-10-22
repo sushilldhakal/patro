@@ -1,5 +1,5 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Sprout, type LucideIcon } from "lucide-react";
+import { Leaf, type LucideIcon } from "lucide-react";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale } from "@/i18n/locale";
@@ -41,7 +41,7 @@ function itemSearch(
   if (item.id === "kundali" || item.id === "kundali-milan" || item.id === "rashifal" || item.id === "avakahada" || item.id === "converter") {
     return undefined;
   }
-  if (item.id === "panchak-patro") {
+  if (item.id === "panchak-patro" || item.id === "adhik-maas") {
     return currentPatroYearLinkSearch(location, era) as Record<string, unknown>;
   }
   const path = item.params ? resolveSidebarLinkPath(item.to, item.params) : item.to;
@@ -92,7 +92,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
         const to = item.params ? resolveSidebarLinkPath(item.to, item.params) : item.to;
         const icon = item.id === "ritu"
           ? rituLoading || !ritu?.emoji
-            ? <Sprout size={28} strokeWidth={1.75} className={TILE_ICON} aria-hidden />
+            ? <Leaf size={28} strokeWidth={1.75} className={TILE_ICON} aria-hidden />
             : <span className="text-sm leading-none" aria-hidden>{ritu.emoji}</span>
           : <TileIcon icon={navEntryIcon(section.id, item.id)} />;
         return {

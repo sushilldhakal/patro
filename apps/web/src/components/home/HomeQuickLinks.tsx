@@ -1,5 +1,5 @@
 import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
-import { Sprout, type LucideIcon } from "lucide-react";
+import { Leaf, type LucideIcon } from "lucide-react";
 import { useHomeQuickLinks, type HomeQuickLink } from "@vedic-patro/features/home";
 import { HomeQuickLinks as HomeQuickLinksView, type HomeQuickLinkGroup } from "@vedic-patro/ui/kit/shell";
 import { createElement, type ReactNode } from "react";
@@ -68,7 +68,7 @@ function RituIcon({ location }: { location: PanchangaLocation }) {
       </span>
     );
   }
-  return <Sprout size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
+  return <Leaf size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
 }
 
 function FeatureIcon({ feature }: { feature: HomeQuickLink["feature"] }) {

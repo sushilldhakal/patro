@@ -1,24 +1,23 @@
 /**
  * "This year's adhik maas" — one quiet row under the calendar. Clicking it
- * opens which month is adhik, its span, and a jump to that month.
+ * opens which month is adhik and its span, with a link to the adhik maas page.
  */
 
+import { Link } from "@tanstack/react-router";
 import { ChevronDown, Moon } from "lucide-react";
 import { useAdhikMaasNotice } from "@vedic-patro/features/home";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { buildPageSearch, getLanguageForEra } from "@vedic-patro/domain/calendar/era";
+import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
+import { locationToSearch } from "@/lib/url-state";
 
-export function AdhikMaasNotice({
-  bsYear,
-  onJump,
-  className,
-}: {
-  bsYear: number;
-  /** Shows the adhik month's BS month in the calendar; omitted when the calendar can't jump there. */
-  onJump?: (year: number, month: number) => void;
-  className?: string;
-}) {
+export function AdhikMaasNotice({ bsYear, location, className }: { bsYear: number; location: PanchangaLocation; className?: string }) {
   const notice = useAdhikMaasNotice(bsYear);
   if (!notice) return null;
+  const search = {
+    ...locationToSearch(location),
+    ...buildPageSearch({ era: "bs", language: getLanguageForEra("bs"), year: notice.year }),
+  };
 
   return (
     <div className={cn("rounded-xl border border-border bg-card", className)}>
@@ -39,15 +38,13 @@ export function AdhikMaasNotice({
         <div className="border-t border-border px-3 pb-3 pt-2 text-sm">
           <p className="m-0 font-medium text-foreground">{notice.detail}</p>
           <p className="m-0 mt-1 text-xs leading-relaxed text-muted-foreground">{notice.why}</p>
-          {onJump ? (
-            <button
-              type="button"
-              onClick={() => onJump(notice.target.year, notice.target.month)}
-              className="mt-2 text-xs font-medium text-secondary hover:underline"
-            >
-              {notice.jumpLabel} →
-            </button>
-          ) : null}
+          <Link
+            to="/adhik-maas"
+            search={search as never}
+            className="mt-2 inline-block text-xs font-medium text-secondary no-underline hover:underline"
+          >
+            {notice.moreLabel} →
+          </Link>
         </div>
       ) : null}
     </div>

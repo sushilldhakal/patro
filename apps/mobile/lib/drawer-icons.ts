@@ -29,7 +29,7 @@ const LEARN_ION_TO_DRAWER: Record<string, DrawerIconName> = {
   "calendar-outline": "calendar-days",
   "globe-outline": "orbit",
   "layers-outline": "layers",
-  "leaf-outline": "sprout",
+  "leaf-outline": "leaf",
   "book-outline": "book-open",
   "moon-outline": "moon",
   "add-circle-outline": "sparkles",

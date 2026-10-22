@@ -1,9 +1,14 @@
 import type { LucideIcon } from "lucide-react";
-import ArrowLeftRight from "lucide-react/dist/esm/icons/arrow-left-right";
+import CalendarHeart from "lucide-react/dist/esm/icons/calendar-heart";
+import CalendarSync from "lucide-react/dist/esm/icons/calendar-sync";
+import ChartPie from "lucide-react/dist/esm/icons/chart-pie";
+import CalendarX from "lucide-react/dist/esm/icons/calendar-x";
+import CalendarPlus from "lucide-react/dist/esm/icons/calendar-plus";
+import Leaf from "lucide-react/dist/esm/icons/leaf";
+import Timer from "lucide-react/dist/esm/icons/timer";
 import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
-import CalendarRange from "lucide-react/dist/esm/icons/calendar-range";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right";
 import Clock3 from "lucide-react/dist/esm/icons/clock-3";
 import Compass from "lucide-react/dist/esm/icons/compass";
@@ -20,12 +25,10 @@ import Layers from "lucide-react/dist/esm/icons/layers";
 import Moon from "lucide-react/dist/esm/icons/moon";
 import MoonStar from "lucide-react/dist/esm/icons/moon-star";
 import Orbit from "lucide-react/dist/esm/icons/orbit";
-import PartyPopper from "lucide-react/dist/esm/icons/party-popper";
 import RotateCcw from "lucide-react/dist/esm/icons/rotate-ccw";
 import Route from "lucide-react/dist/esm/icons/route";
 import Shield from "lucide-react/dist/esm/icons/shield";
 import Sparkles from "lucide-react/dist/esm/icons/sparkles";
-import Sprout from "lucide-react/dist/esm/icons/sprout";
 import Star from "lucide-react/dist/esm/icons/star";
 import Sun from "lucide-react/dist/esm/icons/sun";
 import Sunrise from "lucide-react/dist/esm/icons/sunrise";
@@ -36,17 +39,20 @@ import type { NavIconName } from "@vedic-patro/icons";
 
 const LUCIDE: Record<NavIconName, LucideIcon> = {
   house: House,
+  "calendar-heart": CalendarHeart,
+  "calendar-sync": CalendarSync,
+  "chart-pie": ChartPie,
+  "calendar-x": CalendarX,
+  "calendar-plus": CalendarPlus,
+  "leaf": Leaf,
+  "timer": Timer,
   "book-marked": BookMarked,
   star: Star,
   "book-open": BookOpen,
   compass: Compass,
-  "party-popper": PartyPopper,
-  "arrow-left-right": ArrowLeftRight,
   sunrise: Sunrise,
-  "calendar-range": CalendarRange,
   moon: Moon,
   "calendar-clock": CalendarClock,
-  sprout: Sprout,
   "grid-3x3": Grid3x3,
   sparkles: Sparkles,
   heart: Heart,

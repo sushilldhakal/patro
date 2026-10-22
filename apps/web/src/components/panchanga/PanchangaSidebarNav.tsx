@@ -19,6 +19,7 @@ const YEAR_SCOPED_PATHS = new Set([
   "/holidays",
   "/suryakranti",
   "/panchak-patro",
+  "/adhik-maas",
   "/panchanga/graha-asta",
   "/panchanga/graha-vakri",
   "/panchanga/chandra-grahan",

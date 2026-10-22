@@ -129,6 +129,11 @@
         "description": "Annual Panchak windows, prohibited acts, and Panchak types per Vedic jyotish.",
         "keywords": "Panchak, Panchak patro, Panchaka rahita, moment"
       },
+      "adhik_maas": {
+        "title": "Adhik Maas (Mala Maas) | Vedic Patro",
+        "description": "Which month is adhik (mala / purushottam) maas in each year, its dates, and how and why it happens.",
+        "keywords": "Adhik maas, mala maas, purushottam maas, kshaya maas, extra month"
+      },
       "account": {
         "title": "Account | Vedic Patro",
         "description": "User account settings.",
@@ -1362,6 +1367,42 @@
     "rahita_title": "Why Panchaka-rahita moment matters",
     "rahita_body": "Scheduling auspicious rites (vivaha, mundana, etc.) in Panchaka-rahita windows keeps them outside these inauspicious spans so the work may proceed smoothly.",
     "types_title": "Types of Panchak by start weekday"
+  },
+  "adhik_page": {
+    "title": "Adhik (Mala) Maas",
+    "subtitle": "Which month is adhik in a year, from when to when, and why",
+    "intro": "Adhik maas (mala maas or purushottam maas) is a lunar month in which the Sun makes no sankranti. This extra month comes about every 32–33 months to keep the lunar and solar years together.",
+    "result_title": "Adhik maas in {{year}}",
+    "adhik_name": "Adhik {{month}}",
+    "none": "There is no adhik maas in {{year}}.",
+    "unsupported": "Adhik maas can be looked up for BS or AD years only.",
+    "bs_label": "Bikram Sambat",
+    "ad_label": "Gregorian",
+    "length_label": "Length",
+    "days": "{{count}} days",
+    "nij_note": "The lunar month after it is nij (shuddha) {{month}}.",
+    "kshaya_found": "This year also has a kshaya (lost) month: {{month}}.",
+    "nearby_title": "Nearby years",
+    "nearby_none": "None",
+    "learn_title": "How and why adhik maas happens",
+    "learn": {
+      "what_title": "What is adhik maas?",
+      "what_body": "Within each lunar month (new moon to new moon) the Sun normally moves from one rashi into the next — a sankranti. A lunar month with no sankranti inside it is adhik, an extra month.",
+      "why_title": "Why does it happen?",
+      "why_body": "Twelve lunar months last about 354 days, but a solar year about 365. Some 11 days of difference build up every year. After about 32–33 months it reaches a whole month, and one lunar month then fits entirely between two sankrantis — that month is adhik.",
+      "how_title": "How is it worked out?",
+      "how_body": "For each lunar month, the Sun's rashi is checked at the new moon that opens it and the one that closes it. If the Sun is in the same rashi at both, no sankranti fell in between, so the month is adhik. When a new moon and a sankranti fall very close together, the answer can differ between reckonings (Surya Siddhanta or drik).",
+      "name_title": "How is it named?",
+      "name_body": "An adhik month takes the name of the month that follows it. Adhik Jestha, for example, is followed by nij (shuddha) Jestha, so that year has two lunar months of the same name."
+    },
+    "observe_title": "What to do and avoid in adhik maas",
+    "observe": {
+      "do_title": "Observed",
+      "do_body": "The month is held sacred to Vishnu (Purushottama). Worship, japa, fasting, charity, pilgrimage, the Purushottam Maas katha and hearing the Bhagavata are considered auspicious.",
+      "avoid_title": "Avoided",
+      "avoid_body": "Weddings, bratabandha, griha pravesh, starting a new house or business and other auspicious rites are usually not held this month. Regular festivals are kept in the nij month."
+    },
+    "read_more": "Read more about adhik and kshaya maas →"
   },
   "calendar": {
     "eyebrow": "Nepali Patro · B.S.",
@@ -3246,6 +3287,9 @@
       "panchak-patro": {
         "label": "Panchak calendar"
       },
+      "adhik-maas": {
+        "label": "Adhik Maas"
+      },
       "ritu": {
         "label": "Seasons"
       },
@@ -4386,7 +4430,7 @@
       "adhik_maas_label": "Adhik (Mala) Maas in {{year}}: {{month}}",
       "adhik_maas_detail": "This year's adhik maas is in {{month}} — {{range}}.",
       "adhik_maas_why": "No sankranti falls in this lunar month, so it is an extra (adhik) month.",
-      "adhik_maas_jump": "Show in calendar",
+      "adhik_maas_more": "More about adhik maas",
       "muhurta_details_unavailable": "Muhurta details unavailable.",
       "read_more": "Read more →",
       "set_a_reminder": "Set a reminder",

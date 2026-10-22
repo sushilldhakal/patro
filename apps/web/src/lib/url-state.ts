@@ -511,6 +511,7 @@ export function patroRouteLinkSearch(
     normalized === "/holidays" ||
     normalized === "/suryakranti" ||
     normalized === "/panchak-patro" ||
+    normalized === "/adhik-maas" ||
     normalized === "/panchanga/graha-asta" ||
     normalized === "/panchanga/graha-vakri" ||
     normalized === "/panchanga/chandra-grahan" ||

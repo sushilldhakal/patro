@@ -163,15 +163,6 @@ export default function HomeScreen() {
     [stepMonth],
   );
 
-  const jumpToAdhik = useCallback(
-    (y: number, m: number) => {
-      setYear(y);
-      setMonth(m);
-      selectDay(null);
-    },
-    [setYear, setMonth, selectDay],
-  );
-
   const goToday = () => {
     goTodayBrowse(todayAd);
     selectDay(null);
@@ -312,10 +303,7 @@ export default function HomeScreen() {
       {calendarBlock}
 
       <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
-        <AdhikMaasNotice
-          bsYear={browseEra === "bs" ? year : getCurrentBs().year}
-          onJump={browseEra === "bs" ? jumpToAdhik : undefined}
-        />
+        <AdhikMaasNotice bsYear={browseEra === "bs" ? year : getCurrentBs().year} />
         <AakashGocharEntryCard />
         <HomeVedaMantra dateAd={todayAd} />
         <HomeReminderCard p={aside.p} />

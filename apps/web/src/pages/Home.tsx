@@ -206,15 +206,6 @@ export function Home() {
     setLocalStorageItem(HOME_PATRO_VIEW_KEY, view);
   }, []);
 
-  const { setYearMonth } = monthBrowse;
-  const handleAdhikJump = useCallback(
-    (year: number, month: number) => {
-      setYearMonth(year, month);
-      selectDay(null);
-    },
-    [setYearMonth, selectDay],
-  );
-
   useRouteLoading(aside.initialLoading);
 
   return (
@@ -233,7 +224,7 @@ export function Home() {
           <>
             <AdhikMaasNotice
               bsYear={browseEra === "bs" ? browseYear : bsYear}
-              onJump={browseEra === "bs" ? handleAdhikJump : undefined}
+              location={location}
               className="mt-3 max-sm:mx-2.5"
             />
             <AakashGocharEntryCard className={cn("mt-3 max-sm:mx-2.5", homeClasses.aakashCardTone)} />
