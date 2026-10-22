@@ -27,6 +27,7 @@ import { DIAGRAM_CANVAS_BG, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-them
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme } from "@/lib/theme-context";
+import { useOnScreen } from "@/lib/use-on-screen";
 import { useStaggeredMount } from "@/lib/use-staggered-mount";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
@@ -109,6 +110,8 @@ export function LearnDiagram3D({
   const { height: windowHeight } = useWindowDimensions();
 
   const [fullscreen, setFullscreen] = useState(false);
+  /* A learn article can hold a dozen of these; only the ones near the screen need to draw. */
+  const view = useOnScreen();
   const [labels, setLabels] = useState<DiagramLabel[]>([]);
   const [ready, setReady] = useState(false);
   const [hinted, setHinted] = useState(false);
@@ -163,12 +166,15 @@ export function LearnDiagram3D({
       ) : null}
 
       <View
+        ref={view.ref}
+        onLayout={view.onLayout}
         style={{ height: canvasHeight, backgroundColor: DIAGRAM_CANVAS_BG }}
         onTouchStart={() => setHinted(true)}
         {...gesture.panHandlers}
       >
         {showCanvas ? (
         <Canvas
+          paused={!view.onScreen && !fullscreen}
           camera={{ position: [0, 2.2, 4], fov: camera?.fov ?? 46, near: 0.05, far: 200 }}
           gl={{ antialias: true }}
           /* Capped: a 3x phone screen does not need a 3x framebuffer for a few
