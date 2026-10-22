@@ -1,10 +1,12 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal, Pressable as RNPressable, View, useWindowDimensions } from "react-native";
+import Animated from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { brand, neutral } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { accountClasses as account } from "@vedic-patro/design-tokens/classes/account-classes";
 import { Box, Button, Pressable, Text } from "@vedic-patro/ui";
+import { CSS_EASE_OUT, DURATION, ENTER_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import type { AccountMenuProps } from "../contract";
 
 /** Lucide `badge-check`, filled: the verified tick beside the email. */
@@ -24,6 +26,38 @@ function VerifiedBadge({ label }: { label: string }) {
 /** Gap between the avatar and the top of the menu, and the menu's distance from the screen edge. */
 const MENU_GAP = 8;
 const SCREEN_EDGE = 12;
+/** The menu opens out of the avatar's corner over this long; it closes over `DURATION.fast`. */
+const OPEN_MS = 180;
+
+/**
+ * Keeps the menu mounted while it plays its exit. `shown` flips a frame after the modal mounts (so the
+ * enter has something to move from) and straight away on close; `mounted` follows once the exit is done.
+ */
+function usePresence(open: boolean, exitMs: number) {
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(open);
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      return;
+    }
+    setShown(false);
+    const timer = setTimeout(() => setMounted(false), exitMs);
+    return () => clearTimeout(timer);
+  }, [open, exitMs]);
+  useEffect(() => {
+    if (!open || !mounted) return;
+    let inner: number | undefined;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => setShown(true));
+    });
+    return () => {
+      cancelAnimationFrame(outer);
+      if (inner !== undefined) cancelAnimationFrame(inner);
+    };
+  }, [open, mounted]);
+  return { mounted, shown };
+}
 
 /**
  * Header account control. Signed out it opens sign-in; signed in it drops a menu under the avatar.
@@ -52,6 +86,8 @@ export function AccountMenu({
   const anchorRef = useRef<View>(null);
   const { width } = useWindowDimensions();
   const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
+  const reduced = useReducedMotionPref();
+  const { mounted, shown } = usePresence(menuOpen, DURATION.fast);
 
   if (status === "loading") return <Box className={cn("animate-pulse", account.avatarSkeleton)} />;
   if (status === "signed-out") {
@@ -80,11 +116,24 @@ export function AccountMenu({
       <Pressable label={copy.menuAria} onPress={open} className={cn(account.avatar, "flex")}>
         <Text className={account.avatarText}>{initial}</Text>
       </Pressable>
-      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={onCloseMenu} statusBarTranslucent>
+      <Modal visible={mounted} transparent animationType="none" onRequestClose={onCloseMenu} statusBarTranslucent>
         <RNPressable accessibilityLabel={copy.menuAria} onPress={onCloseMenu} style={{ flex: 1 }}>
+          {/* Reanimated draws the motion: from the avatar's top-right corner, scale + fade (fade only under Reduce Motion). */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: anchor?.top ?? 64,
+              right: anchor?.right ?? SCREEN_EDGE,
+              transformOrigin: "top right",
+              opacity: shown ? 1 : 0,
+              transform: [{ scale: shown || reduced ? 1 : ENTER_SCALE }],
+              transitionProperty: ["opacity", "transform"],
+              transitionDuration: shown ? OPEN_MS : DURATION.fast,
+              transitionTimingFunction: CSS_EASE_OUT,
+            }}
+          >
           <View
             className="w-60 rounded-xl border border-border bg-card p-1.5 shadow-lg"
-            style={{ position: "absolute", top: anchor?.top ?? 64, right: anchor?.right ?? SCREEN_EDGE }}
             /* Taps inside the card stay with its items rather than closing it. */
             onStartShouldSetResponder={() => true}
           >
@@ -112,6 +161,7 @@ export function AccountMenu({
               <Text className={account.menuItemText}>{copy.signOut}</Text>
             </Pressable>
           </View>
+          </Animated.View>
         </RNPressable>
       </Modal>
     </View>

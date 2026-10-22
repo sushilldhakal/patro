@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Easing, Modal, Platform, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Modal, Platform, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { cssInterop } from "nativewind";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { Text } from "@/components/ui/Text";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -16,6 +20,26 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 
 import { neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { EASE_OUT, SPRING_SHEET, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const MotionView = cssInterop(Animated.View, { className: "style" });
+
+/** The drawer's own slide, as it has always been: 220 ms in, 180 ms out. */
+const OPEN_MS = 220;
+const CLOSE_MS = 180;
+/** Let go past this fraction of the drawer's width, or flick faster than this (px/s), and it closes. */
+const DISMISS_FRACTION = 0.35;
+const FLICK_VELOCITY = 600;
+/** The screen's left edge is a hard edge: a bounce past it would open a gap beside the drawer. */
+const DRAWER_SPRING = { ...SPRING_SHEET, overshootClamping: true };
+
+/** The further past the edge, the less the drawer follows the finger. */
+function rubberband(overshoot: number, dimension: number) {
+  "worklet";
+  if (dimension <= 0) return 0;
+  const constant = 0.55;
+  return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
+}
 function BrandMark({ onPress, centered }: { onPress: () => void; centered?: boolean }) {
   const { t, pick } = useLocale();
   return (
@@ -100,53 +124,147 @@ function NavDrawer({
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
+  const reduced = useReducedMotionPref();
   const [mounted, setMounted] = useState(open);
-  const slide = useRef(new Animated.Value(0)).current;
   /* Match web drawer: `w-[min(85vw,400px)]`. */
   const drawerWidth = Math.min(windowWidth * 0.85, 400);
+  /** Drawer offset: 0 open, -width closed. Under Reduce Motion it stays 0 and `fade` does the work. */
+  const x = useSharedValue(-drawerWidth);
+  const widthSv = useSharedValue(drawerWidth);
+  const fade = useSharedValue(0);
+  const dragFrom = useSharedValue(0);
+  const dismissing = useSharedValue(false);
+  const committed = useRef(false);
+  const openRef = useRef(open);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+  useEffect(() => {
+    widthSv.set(drawerWidth);
+  }, [widthSv, drawerWidth]);
+
+  const finishClose = useCallback(() => {
+    if (openRef.current) return;
+    committed.current = false;
+    setMounted(false);
+  }, []);
+
+  /** A drag let go past the threshold: tell the parent now, the spring carries on off screen. */
+  const commitDismiss = useCallback(() => {
+    haptics.snap();
+    committed.current = true;
+    onCloseRef.current();
+  }, []);
+
+  const animateOpen = useCallback(() => {
+    dismissing.set(false);
+    committed.current = false;
+    if (reduced) fade.set(withTiming(1, { duration: OPEN_MS, easing: EASE_OUT }));
+    else x.set(withTiming(0, { duration: OPEN_MS, easing: EASE_OUT }));
+  }, [dismissing, fade, reduced, x]);
+
+  const animateClose = useCallback(() => {
+    if (reduced) {
+      fade.set(
+        withTiming(0, { duration: CLOSE_MS, easing: EASE_OUT }, (finished) => {
+          if (finished) scheduleOnRN(finishClose);
+        }),
+      );
+    } else {
+      x.set(
+        withTiming(-widthSv.get(), { duration: CLOSE_MS, easing: EASE_OUT }, (finished) => {
+          if (finished) scheduleOnRN(finishClose);
+        }),
+      );
+    }
+  }, [fade, finishClose, reduced, widthSv, x]);
 
   useEffect(() => {
+    openRef.current = open;
     if (open) {
-      setMounted(true);
-      Animated.timing(slide, {
-        toValue: 1,
-        duration: 220,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }).start();
-    } else if (mounted) {
-      Animated.timing(slide, {
-        toValue: 0,
-        duration: 180,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished) setMounted(false);
-      });
+      if (!mounted) {
+        // Opening from closed: start off screen, then slide in once mounted.
+        x.set(-widthSv.get());
+        fade.set(0);
+        dismissing.set(false);
+        committed.current = false;
+        setMounted(true);
+        return;
+      }
+      animateOpen();
+      return;
     }
-  }, [open, mounted, slide]);
+    if (!mounted || committed.current) return;
+    animateClose();
+  }, [open, mounted, animateOpen, animateClose, dismissing, fade, widthSv, x]);
+
+  /* A drag on the drawer closes it. Only a leftward drag claims the touch, so the menu still scrolls. */
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(!reduced)
+        .activeOffsetX(-10)
+        .failOffsetY([-12, 12])
+        .onStart(() => {
+          // From where the eye last saw it, so grabbing mid-slide doesn't teleport the drawer.
+          dragFrom.set(x.get());
+        })
+        .onUpdate((e) => {
+          if (dismissing.get()) return;
+          const next = dragFrom.get() + e.translationX;
+          x.set(next <= 0 ? next : rubberband(next, widthSv.get()));
+        })
+        .onEnd((e) => {
+          if (dismissing.get()) return;
+          const w = widthSv.get();
+          const far = x.get() < -w * DISMISS_FRACTION;
+          const flick = e.velocityX < -FLICK_VELOCITY;
+          if (far || flick) {
+            dismissing.set(true);
+            x.set(
+              withSpring(-w, { ...DRAWER_SPRING, velocity: e.velocityX }, (finished) => {
+                if (finished) scheduleOnRN(finishClose);
+              }),
+            );
+            scheduleOnRN(commitDismiss);
+          } else {
+            x.set(withSpring(0, { ...DRAWER_SPRING, velocity: e.velocityX }));
+          }
+        }),
+    [commitDismiss, dismissing, dragFrom, finishClose, reduced, widthSv, x],
+  );
+
+  /* The scrim follows the drawer, so a drag dims and undims it in step. */
+  const scrimMotion = useAnimatedStyle(() => ({
+    opacity: reduced ? fade.get() : interpolate(x.get(), [-widthSv.get(), 0], [0, 1], Extrapolation.CLAMP),
+  }));
+  const drawerMotion = useAnimatedStyle(() => (reduced ? { opacity: fade.get() } : { transform: [{ translateX: x.get() }] }));
 
   if (!mounted) return null;
 
-  const translateX = slide.interpolate({ inputRange: [0, 1], outputRange: [-drawerWidth, 0] });
-
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose}>
-      <Animated.View style={{ flex: 1, opacity: slide, backgroundColor: withAlpha(neutral.black, 0.4) }}>
+      {/* A Modal is its own window on Android: gestures need their own root inside it. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+      <Animated.View style={[{ flex: 1, backgroundColor: withAlpha(neutral.black, 0.4) }, scrimMotion]}>
         <Pressable className="flex-1" onPress={onClose} />
       </Animated.View>
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: drawerWidth,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          transform: [{ translateX }],
-          backgroundColor: colors.card,
-        }}
+      <GestureDetector gesture={pan}>
+      <MotionView
+        style={[
+          {
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            width: drawerWidth,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            backgroundColor: colors.card,
+          },
+          drawerMotion,
+        ]}
         className="border-r border-border"
       >
         <View className={cn("flex-row p-4", shellClasses.drawerBrandRow, shellClasses.drawerHeader)}>
@@ -168,7 +286,9 @@ function NavDrawer({
             <MenuPreferences onNavigate={onNavigate} />
           </View>
         </ScrollView>
-      </Animated.View>
+      </MotionView>
+      </GestureDetector>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

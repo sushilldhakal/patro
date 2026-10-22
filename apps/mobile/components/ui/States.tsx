@@ -1,5 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
+import { cssInterop } from "nativewind";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { DURATION, EASE_OUT } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useNetworkStatus } from "@/lib/offline/network-status";
 import { useThemeColors } from "@/lib/theme-context";
@@ -7,6 +10,10 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
+
+const MotionView = cssInterop(Animated.View, { className: "style" });
+/** An error that replaces the loader fades in over a standard step; it does not move. */
+const FADE_IN = FadeIn.duration(DURATION.standard).easing(EASE_OUT);
 
 /** Smallest height a loading block keeps, so it never collapses to nothing in a scroll view. */
 const LOADING_MIN_HEIGHT = 200;
@@ -61,7 +68,7 @@ export function ErrorState({
 
   if (!isOnline) {
     return (
-      <View className="items-center gap-2 rounded-xl border border-border bg-card px-4 py-6">
+      <MotionView entering={FADE_IN} className="items-center gap-2 rounded-xl border border-border bg-card px-4 py-6">
         <Ionicons name="cloud-offline-outline" size={32} color={colors.mutedForeground} />
         <Text className="text-body text-center font-bold text-foreground">{t("ui.common.no_internet_title")}</Text>
         <Text className="text-caption text-center text-muted-foreground">
@@ -72,12 +79,12 @@ export function ErrorState({
             <Text className="text-body font-semibold text-primary-foreground">{t("ui.common.retry")}</Text>
           </Pressable>
         ) : null}
-      </View>
+      </MotionView>
     );
   }
 
   return (
-    <View className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+    <MotionView entering={FADE_IN} className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
       <Text className="text-body text-destructive">
         {message ?? t("ui.ui.could_not_load_data")}
       </Text>
@@ -88,6 +95,6 @@ export function ErrorState({
           </Text>
         </Pressable>
       ) : null}
-    </View>
+    </MotionView>
   );
 }

@@ -15,12 +15,48 @@
  */
 
 import { Pressable, ScrollView, View } from "react-native";
+import { cssInterop } from "nativewind";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  withSpring,
+  withTiming,
+  type EntryAnimationsValues,
+  type ExitAnimationsValues,
+} from "react-native-reanimated";
 import { Ionicons } from "@/components/icons/Ionicons";
 
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 import { neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { DURATION, EASE_OUT, SPRING_SHEET, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const MotionView = cssInterop(Animated.View, { className: "style" });
+
+/* The panel is mounted and unmounted by its parent, so the motion is a layout animation: it rises by
+   its own height with the sheet spring, and leaves the way it came. The canvas clips what is below it. */
+const SHEET_SPRING = { ...SPRING_SHEET, overshootClamping: true };
+const sheetIn = (values: EntryAnimationsValues) => {
+  "worklet";
+  return {
+    initialValues: { transform: [{ translateY: values.targetHeight }] },
+    animations: { transform: [{ translateY: withSpring(0, SHEET_SPRING) }] },
+  };
+};
+const sheetOut = (values: ExitAnimationsValues) => {
+  "worklet";
+  return {
+    initialValues: { transform: [{ translateY: 0 }] },
+    animations: {
+      transform: [{ translateY: withTiming(values.currentHeight, { duration: DURATION.standard, easing: EASE_OUT }) }],
+    },
+  };
+};
+/** Reduce Motion: no travel, just a fade. */
+const FADE_IN = FadeIn.duration(DURATION.standard).easing(EASE_OUT);
+const FADE_OUT = FadeOut.duration(DURATION.standard).easing(EASE_OUT);
+
 export function OverlaySheet({
   title,
   onClose,
@@ -33,8 +69,11 @@ export function OverlaySheet({
   maxHeight: number;
   children: React.ReactNode;
 }) {
+  const reduced = useReducedMotionPref();
   return (
-    <View
+    <MotionView
+      entering={reduced ? FADE_IN : sheetIn}
+      exiting={reduced ? FADE_OUT : sheetOut}
       className="absolute inset-x-0 bottom-0 border-t border-white/15"
       style={{ backgroundColor: withAlpha(wheel.sky2, 0.95), maxHeight }}
     >
@@ -56,7 +95,7 @@ export function OverlaySheet({
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3 px-3 pb-3.5">
         {children}
       </ScrollView>
-    </View>
+    </MotionView>
   );
 }
 
