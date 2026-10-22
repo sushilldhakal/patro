@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import { cssInterop } from "nativewind";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { DURATION, EASE_OUT, SPRING_SHEET, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { kitIcons, sheetClass } from "../classes";
@@ -10,9 +11,6 @@ import type { SheetProps } from "../contract";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 
-/* UI thread → React. `runOnJS` is Reanimated's alias for worklets' `scheduleOnRN`: the kit cannot import
-   `react-native-worklets` itself (apps/mobile/tsconfig.json has no path for it from packages/ui), and the alias
-   does the same call. Switch to `scheduleOnRN` once that path exists. */
 const MotionView = cssInterop(Animated.View, { className: "style" });
 
 const FILL = { flex: 1 } as const;
@@ -90,13 +88,13 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
     if (fadeOnly) {
       fade.set(
         withTiming(0, { duration: fadeMs, easing: EASE_OUT }, (finished) => {
-          if (finished) runOnJS(finishClose)();
+          if (finished) scheduleOnRN(finishClose);
         }),
       );
     } else {
       y.set(
         withTiming(panelHeight.get(), { duration: DURATION.standard, easing: EASE_OUT }, (finished) => {
-          if (finished) runOnJS(finishClose)();
+          if (finished) scheduleOnRN(finishClose);
         }),
       );
     }
@@ -168,10 +166,10 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
             scrim.set(withTiming(0, { duration: fadeMs, easing: EASE_OUT }));
             y.set(
               withSpring(h, { ...PANEL_SPRING, velocity: e.velocityY }, (finished) => {
-                if (finished) runOnJS(finishClose)();
+                if (finished) scheduleOnRN(finishClose);
               }),
             );
-            runOnJS(commitDismiss)();
+            scheduleOnRN(commitDismiss);
           } else {
             scrim.set(withTiming(1, { duration: fadeMs, easing: EASE_OUT }));
             y.set(withSpring(0, { ...PANEL_SPRING, velocity: e.velocityY }));
