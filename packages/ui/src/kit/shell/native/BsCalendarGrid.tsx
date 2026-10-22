@@ -89,7 +89,10 @@ export function BsCalendarGrid({
 
               const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, extraFestCount, tithi } = cell;
               const compactBsFest = cell.bsFestCompact && isCompact;
-              const bgClass = isOutside ? cal.cellOutside : isToday ? cal.cellToday : isPublicHoliday ? cal.cellHoliday : undefined;
+              /* The web mixes these tints into the card (`color-mix`); native has only the
+                 translucent tint, so it is laid over the card instead of replacing it —
+                 otherwise the grid lines' colour shows through. Holiday wins, as on the web. */
+              const tintClass = isOutside ? undefined : isPublicHoliday ? cal.cellHoliday : isToday ? cal.cellToday : undefined;
               const dayColorClass = !isOutside && (isWeekend || isPublicHoliday) ? cal.dayNumberDanger : isOutside ? cal.cellTextOutside : cal.cellText;
               const openFestivals = () => grid.openFestivals(cell);
 
@@ -98,8 +101,10 @@ export function BsCalendarGrid({
                   key={cell.day.date_ad}
                   onPress={() => onSelectDay?.(cell.day)}
                   style={colStyle(col, { minHeight: cellMinH })}
-                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, bgClass, isToday && isCompact && "border-2 border-secondary")}
+                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, isOutside && cal.cellOutside, isToday && isCompact && "border-2 border-secondary")}
                 >
+                  {tintClass ? <View pointerEvents="none" className={cn("absolute inset-0", tintClass)} /> : null}
+
                   {isSelected ? (
                     <View pointerEvents="none" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderWidth: 2, borderColor: roles.primary }} />
                   ) : null}
