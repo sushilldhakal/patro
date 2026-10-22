@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Keeps packages/features shared between the website and the mobile app:
 // React hooks and plain TypeScript, no React Native, no DOM, no router.
-// Drawing belongs in each app (or in @vedic-patro/ui); this package decides
+// Drawing belongs in each app (or in @vedic-patro/ui; its geometry in
+// @vedic-patro/drawing); this package decides
 // what a page shows and how it behaves.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -15,6 +16,7 @@ const ALLOWED = [
   "@tanstack/react-query",
   "@vedic-patro/api-client",
   "@vedic-patro/domain/",
+  "@vedic-patro/drawing/",
   "@vedic-patro/read-models/",
   "@vedic-patro/i18n/runtime",
   "@vedic-patro/i18n/react",

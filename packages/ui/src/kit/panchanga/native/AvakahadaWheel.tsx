@@ -17,9 +17,9 @@ import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-c
 import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/jyotish/avakahada-wheel";
+import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 
 /**
  * react-native-svg types `Defs` without `children` and `onPress` as an

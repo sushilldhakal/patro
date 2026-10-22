@@ -29,5 +29,5 @@ export function AvakahadaWheel({ highlighted }: Props) {
 }
 
 export default AvakahadaWheel;
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 export { AVAKAHADA_WHEEL_ROWS } from "@vedic-patro/ui/kit/panchanga";

@@ -1,5 +1,5 @@
 /** Shared by apps/web/src/components/kundali/BhavaBalaChart.tsx and apps/mobile/components/kundali/BhavaBalaChart.tsx (moved here from both, unchanged). */
-import { type Point, polygonCentroid } from "./north-indian-layout";
+import { type Point, polygonCentroid } from "@vedic-patro/domain/jyotish/kundali/north-indian-layout";
 
 export const CHART_CENTER: Point = [150, 150];
 

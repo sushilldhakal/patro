@@ -13,7 +13,6 @@
     "./native": "./src/native/index.ts",
     "./contract": "./src/contract.ts",
     "./classes": "./src/classes.ts",
-    "./geometry/*": "./src/geometry/*.ts",
     "./kit/*": {
       "react-native": "./src/kit/*/native/index.ts",
       "default": "./src/kit/*/web/index.ts"
@@ -25,6 +24,7 @@
   "dependencies": {
     "@vedic-patro/design-tokens": "*",
     "@vedic-patro/domain": "*",
+    "@vedic-patro/drawing": "*",
     "@vedic-patro/icons": "*",
     "@vedic-patro/read-models": "*"
   },

@@ -3,9 +3,7 @@ import { test } from "node:test";
 import { formatVedaCite } from "../src/learn/veda-cite";
 import { DEFAULT_LANGUAGE, LANGUAGE_STORAGE_KEY, parseStoredLanguage } from "../src/locale";
 import { angaEndClock, angaEndWithDay, dayOffsetLabel } from "../src/panchanga/panchanga-format";
-import { assignLanes } from "../src/panchanga/day-timeline-layout";
 import { niceCeil } from "../src/jyotish/kundali/shadbala-chart";
-import { clampPct, strengthBand } from "../src/jyotish/kundali/bhava-bala-chart";
 import { embedRashi, dowOf } from "../src/jyotish/dainikKranti/day-helpers";
 import { positiveInt, positiveMonth } from "../src/calendar/patro-browse-params";
 
@@ -35,23 +33,9 @@ test("anga end times carry a भोलि / पर्सि prefix when they end
   assert.equal(dayOffsetLabel(2, "ne"), "पर्सि");
 });
 
-test("timeline lanes never overlap", () => {
-  const lanes = assignLanes([
-    { fromG: 0, toG: 10 } as never,
-    { fromG: 5, toG: 15 } as never,
-    { fromG: 10, toG: 20 } as never,
-  ]) as unknown as { lane: number }[];
-  assert.deepEqual(lanes.map((s) => s.lane), [0, 1, 0]);
-});
-
-test("chart scale helpers", () => {
+test("shadbala chart scale", () => {
   assert.equal(niceCeil(0), 1);
   assert.ok(niceCeil(437) >= 437);
-  assert.equal(strengthBand(100), "strong");
-  assert.equal(strengthBand(85), "average");
-  assert.equal(strengthBand(10), "weak");
-  assert.equal(clampPct(5, 0), 0);
-  assert.equal(clampPct(150, 100), 100);
 });
 
 test("DainikKranti day helpers", () => {

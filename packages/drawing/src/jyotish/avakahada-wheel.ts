@@ -1,6 +1,6 @@
 /** Shared by apps/web/src/components/avakahada/AvakahadaWheel.tsx and apps/mobile/components/avakahada/AvakahadaWheel.tsx (moved here from both, unchanged). */
-import type { NakshatraRow, Gana } from "./avakahada-data";
-import { rowMetaFromCharans, localizeNakshatra, localizeLord, localizeVarna, localizeVashya, localizeYoni, localizeNadi, localizeGana, localizeRashi } from "./avakahada-locale";
+import type { NakshatraRow, Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
+import { rowMetaFromCharans, localizeNakshatra, localizeLord, localizeVarna, localizeVashya, localizeYoni, localizeNadi, localizeGana, localizeRashi } from "@vedic-patro/domain/jyotish/avakahada-locale";
 
 export const CX = 310;
 

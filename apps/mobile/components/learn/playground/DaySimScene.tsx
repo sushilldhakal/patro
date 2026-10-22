@@ -98,7 +98,7 @@ import type {
   CameraState,
   PlaygroundGlobe,
 } from "@vedic-patro/domain/learn/sim-types";
-import { PI2, AXIS_Y, ellipseGeometry, focalEllipseGeometry, makeLine, composeMoonPlane } from "@vedic-patro/domain/learn/day-sim-geometry";
+import { PI2, AXIS_Y, ellipseGeometry, focalEllipseGeometry, makeLine, composeMoonPlane } from "@vedic-patro/drawing/learn/day-sim-geometry";
 
 export type {
   CameraTarget,

@@ -20,7 +20,7 @@ import {
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu/vastu";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { annulusPath } from "@vedic-patro/ui/geometry/vastu-purusha-wheel";
+import { annulusPath } from "@vedic-patro/drawing/vastu/vastu-purusha-wheel";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import {
   VASTU_COMPASS_16,

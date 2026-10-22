@@ -21,11 +21,11 @@ import {
 } from "@vedic-patro/design-tokens/classes/av-wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
-import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/jyotish/avakahada-wheel";
+import { CX, CY, R, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { midnight, wheel } from "@vedic-patro/design-tokens";
-export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/jyotish/avakahada-wheel";
+export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 const HUB_ICON_SVG = "inline-block h-full w-full [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current";
 const WHEEL_SVG = "mx-auto block h-auto w-full select-none";
 const HUB_FRAME = "flex h-full w-full items-center justify-center overflow-hidden text-center";

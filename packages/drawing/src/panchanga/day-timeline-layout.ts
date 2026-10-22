@@ -1,5 +1,5 @@
 /** Shared by apps/web/src/components/panchanga/DayTimeline.tsx and apps/mobile/components/panchanga/DayTimeline.web.tsx (moved here from both, unchanged). */
-import type { TimelineRowData } from "./day-timeline-data";
+import type { TimelineRowData } from "@vedic-patro/domain/panchanga/day-timeline-data";
 
 export interface ChartSegment {
   ne: string;

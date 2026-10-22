@@ -1,4 +1,4 @@
-/** Drawing geometry for the Vastu Purusha wheel, shared by the kit's VastuWheel / Plot and both apps' VastuPurushaWheel / VastuCompassRing. */
+/** Shared by packages/ui (VastuWheel, Plot), apps/web and apps/mobile (VastuPurushaWheel, VastuCompassRing). */
 import { WHEEL_SIZE } from "@vedic-patro/domain/vastu/vastu";
 
 export const CX = WHEEL_SIZE / 2;

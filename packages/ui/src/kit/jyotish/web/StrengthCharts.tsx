@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses as k } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { clampPct, type StrengthBand } from "@vedic-patro/domain/jyotish/kundali/bhava-bala-chart";
+import { clampPct, type StrengthBand } from "@vedic-patro/drawing/jyotish/kundali/bhava-bala-chart";
 import { useBhavaBalaChart, useShadbalaChart, type BhavaBalaTone, type ShadbalaMeterRow } from "@vedic-patro/features/kundali";
 import { columnStack } from "../column-stack";
 import type { BhavaBalaChartProps, ShadbalaChartProps } from "../contract";

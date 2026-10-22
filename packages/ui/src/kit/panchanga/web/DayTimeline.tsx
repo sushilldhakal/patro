@@ -47,7 +47,7 @@ import {
   pgxSunline,
   pgxTimeLagna,
 } from "@vedic-patro/design-tokens/classes/timeline-classes";
-import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/domain/panchanga/day-timeline-layout";
+import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/drawing/panchanga/day-timeline-layout";
 
 import { useDayCycleToggle, useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
 const GRAHA_KEYS = new Set<string>([

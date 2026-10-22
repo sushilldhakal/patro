@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu/vastu";
-import { CX, CY } from "@vedic-patro/ui/geometry/vastu-purusha-wheel";
+import { CX, CY } from "@vedic-patro/drawing/vastu/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK } from "@vedic-patro/features/vastu";
 import { VastuPurushaWheel as Shared } from "@vedic-patro/ui/kit/jyotish";
 

@@ -10,6 +10,8 @@
  * (`@vedic-patro/domain/panchanga/panchanga-format`), run it without flags: every
  * `@vedic-patro/{domain,read-models}/<old>` specifier in apps/ and packages/
  * becomes `<context>/<old>`. Paths already in a context folder are left alone.
+ * Drawing geometry that has since moved to packages/drawing (`DRAWING`) is
+ * pointed at `@vedic-patro/drawing/<context>/<module>` instead.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -48,6 +50,16 @@ const CONTEXTS = {
 };
 // learn/ already is the Learn context's folder; locale and vocabulary stay at the root (shared kernel).
 
+/** Drawing geometry that later left the domain for packages/drawing (Phase 11): domain path -> drawing path. */
+const DRAWING = new Map([
+  ["jyotish/avakahada-wheel", "jyotish/avakahada-wheel"],
+  ["jyotish/kundali/bhava-bala-chart", "jyotish/kundali/bhava-bala-chart"],
+  ["panchanga/day-timeline-layout", "panchanga/day-timeline-layout"],
+  ["vastu/vastu-purusha-wheel", "vastu/vastu-purusha-wheel"],
+  ["learn/ecliptic-wheel-geometry", "learn/ecliptic-wheel-geometry"],
+  ["learn/day-sim-geometry", "learn/day-sim-geometry"],
+]);
+
 const PKGS = ["domain", "read-models"];
 const MAP = new Map(); // old path (no ext, or folder/) -> new
 for (const [ctx, mods] of Object.entries(CONTEXTS)) for (const m of mods) MAP.set(m.replace(/\.json$/, ".json"), `${ctx}/${m}`);
@@ -59,7 +71,7 @@ const oldToNew = (p) => {
 
 const listFiles = (dir, pred, out = []) => {
   for (const n of readdirSync(dir)) {
-    if (["node_modules", "dist", "dist-web", ".expo", ".turbo"].includes(n)) continue;
+    if (["node_modules", "dist", "dist-web", ".expo", ".turbo", "Pods", "build"].includes(n)) continue;
     const p = join(dir, n);
     statSync(p).isDirectory() ? listFiles(p, pred, out) : pred(p) && out.push(p);
   }
@@ -123,6 +135,8 @@ function rewriteSpecifiers() {
       let n = 0;
       const out = text.replace(re, (all, q, pkg, p) => {
         const mapped = oldToNew(p);
+        const drawing = pkg === "domain" ? DRAWING.get(mapped ?? p) : undefined;
+        if (drawing) { n++; return `${q}@vedic-patro/drawing/${drawing}${q}`; }
         if (!mapped || mapped === p) return all;
         n++; return `${q}@vedic-patro/${pkg}/${mapped}${q}`;
       });

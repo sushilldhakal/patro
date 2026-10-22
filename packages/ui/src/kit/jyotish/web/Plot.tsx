@@ -1,6 +1,6 @@
 import type { CardinalWall } from "@vedic-patro/domain/vastu/vastu";
 import { VASTU_INK } from "@vedic-patro/domain/vastu/vastu";
-import { CX, CY } from "@vedic-patro/ui/geometry/vastu-purusha-wheel";
+import { CX, CY } from "@vedic-patro/drawing/vastu/vastu-purusha-wheel";
 import { VASTU_STATUS_MARK, usePlotPlanner } from "@vedic-patro/features/vastu";
 import { Input } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";

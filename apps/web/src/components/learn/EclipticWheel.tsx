@@ -11,8 +11,8 @@
 
 import { useEffect, useLayoutEffect, useMemo, type Ref } from "react";
 import * as THREE from "three";
-import { MONTH_R, NAK_OUTER, COLOR, ellipseGeometry, makeLine, diagramLine, buildRashiBelt, buildGuideGrid, buildRashiHighlight, buildNakBelt, buildNakHighlight, disposeObject } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
-export { MONTH_R, BELT_INNER, BELT_OUTER, NAK_INNER, NAK_OUTER } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
+import { MONTH_R, NAK_OUTER, COLOR, ellipseGeometry, makeLine, diagramLine, buildRashiBelt, buildGuideGrid, buildRashiHighlight, buildNakBelt, buildNakHighlight, disposeObject } from "@vedic-patro/drawing/learn/ecliptic-wheel-geometry";
+export { MONTH_R, BELT_INNER, BELT_OUTER, NAK_INNER, NAK_OUTER } from "@vedic-patro/drawing/learn/ecliptic-wheel-geometry";
 export { BELT_MID, NAK_MID, ECLIPTIC_GRID_COLOR } from "@vedic-patro/domain/astronomy/sky3d/ecliptic-position";
 
 function buildMonthRing() {

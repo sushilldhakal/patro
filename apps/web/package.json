@@ -33,6 +33,7 @@
     "@vedic-patro/api-client": "*",
     "@vedic-patro/design-tokens": "*",
     "@vedic-patro/domain": "*",
+    "@vedic-patro/drawing": "*",
     "@vedic-patro/features": "*",
     "@vedic-patro/i18n": "*",
     "@vedic-patro/icons": "*",

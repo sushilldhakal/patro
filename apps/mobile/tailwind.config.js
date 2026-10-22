@@ -48,6 +48,7 @@ module.exports = {
     "./lib/**/*.{js,jsx,ts,tsx}",
     "../../packages/design-tokens/src/**/*.{js,ts,tsx}",
     "../../packages/domain/src/**/*.{js,ts,tsx}",
+    "../../packages/drawing/src/**/*.{js,ts,tsx}",
     "../../packages/ui/src/**/*.{js,ts,tsx}",
     "../../packages/features/src/**/*.{js,ts,tsx}",
   ],
