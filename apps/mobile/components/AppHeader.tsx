@@ -29,7 +29,7 @@ const OPEN_MS = 220;
 const CLOSE_MS = 180;
 /** Let go past this fraction of the drawer's width, or flick faster than this (px/s), and it closes. */
 const DISMISS_FRACTION = 0.35;
-const FLICK_VELOCITY = 600;
+const FLICK_VELOCITY = 800;
 /** The screen's left edge is a hard edge: a bounce past it would open a gap beside the drawer. */
 const DRAWER_SPRING = { ...SPRING_SHEET, overshootClamping: true };
 
