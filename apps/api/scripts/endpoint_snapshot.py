@@ -3,11 +3,16 @@
 docs/DDD-PLAN.md's binding rule: no computed value changes as a side effect of
 restructuring. This calls a fixed set of GET routes in-process, with the
 panchanga SQLite and blob caches off and a fixed hash seed, and records each
-response's status and a SHA-256 of its body (JSON re-serialised with sorted
-keys, so dict order alone is not a change).
+response's status and a SHA-256 of its body. JSON is re-serialised with sorted
+keys, so dict order alone is not a change.
 
     python scripts/endpoint_snapshot.py --write  snapshot.json   # before
     python scripts/endpoint_snapshot.py --check  snapshot.json   # after
+
+``--ordered`` hashes the JSON as served: keys stay in the order the response
+used, and volatile keys are still removed. Pass it to both ``--write`` and
+``--check``. An ordered snapshot records that, and ``--check`` refuses a
+snapshot written the other way.
 
 ``--check`` lists every route whose status or body moved and exits non-zero.
 A route that answers differently on two calls in one run (it reads the clock)
@@ -153,10 +158,13 @@ def _without_volatile(value):
     return value
 
 
-def _canonical(body: bytes) -> bytes:
-    """JSON (or NDJSON, one object per line) with sorted keys and no timestamps."""
+def _canonical(body: bytes, *, ordered: bool = False) -> bytes:
+    """JSON (or NDJSON, one object per line) with no timestamps.
+
+    Keys are sorted unless ``ordered``, which keeps the order they were served in.
+    """
     def dump(value) -> str:
-        return json.dumps(_without_volatile(value), sort_keys=True, ensure_ascii=False)
+        return json.dumps(_without_volatile(value), sort_keys=not ordered, ensure_ascii=False)
 
     try:
         return dump(json.loads(body)).encode()
@@ -168,11 +176,11 @@ def _canonical(body: bytes) -> bytes:
         return body
 
 
-def _digest(body: bytes) -> str:
-    return hashlib.sha256(_canonical(body)).hexdigest()
+def _digest(body: bytes, *, ordered: bool = False) -> str:
+    return hashlib.sha256(_canonical(body, ordered=ordered)).hexdigest()
 
 
-def take() -> dict[str, dict]:
+def take(*, ordered: bool = False) -> dict[str, dict]:
     os.environ.setdefault("PANCHANGA_CACHE", "0")
     os.environ.setdefault("BLOB_CACHE_USE_DB", "0")
     os.environ.pop("REDIS_URL", None)
@@ -202,8 +210,8 @@ def take() -> dict[str, dict]:
     for route in ROUTES:
         first = client.get(route)
         second = client.get(route)
-        entry = {"status": first.status_code, "sha256": _digest(first.content)}
-        if second.status_code != first.status_code or _digest(second.content) != entry["sha256"]:
+        entry = {"status": first.status_code, "sha256": _digest(first.content, ordered=ordered)}
+        if second.status_code != first.status_code or _digest(second.content, ordered=ordered) != entry["sha256"]:
             entry["unstable"] = True
         snap[route] = entry
     return snap
@@ -214,12 +222,29 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--write", metavar="FILE")
     mode.add_argument("--check", metavar="FILE")
+    parser.add_argument(
+        "--ordered",
+        action="store_true",
+        help="Hash JSON with keys in the order served, instead of sorting them. "
+        "Pass it to both --write and --check.",
+    )
     args = parser.parse_args()
     _ensure_seed()
 
-    snap = take()
+    before = None
+    if args.check:
+        before = json.loads(Path(args.check).read_text())
+        meta = before.pop("__meta__", {})
+        if bool(meta.get("ordered")) != bool(args.ordered):
+            print("snapshot key order does not match this command (pass --ordered for both --write and --check)")
+            return 1
+
+    snap = take(ordered=args.ordered)
     if args.write:
-        Path(args.write).write_text(json.dumps(snap, indent=1, sort_keys=True) + "\n")
+        # __meta__ is only on an ordered snapshot, so --check can refuse a file
+        # written with the other key order. The default file stays routes only.
+        written = {**snap, "__meta__": {"ordered": True}} if args.ordered else snap
+        Path(args.write).write_text(json.dumps(written, indent=1, sort_keys=True) + "\n")
         unstable = [r for r, e in snap.items() if e.get("unstable")]
         errors = [f"{r} -> {e['status']}" for r, e in snap.items() if e["status"] >= 500]
         print(f"{len(snap)} routes written; {len(unstable)} unstable; {len(errors)} 5xx")
@@ -229,7 +254,6 @@ def main() -> int:
             print("  5xx:", line)
         return 0
 
-    before = json.loads(Path(args.check).read_text())
     moved = []
     for route, entry in snap.items():
         was = before.get(route)

@@ -97,7 +97,7 @@ What each rule is and what enforces it:
 | `rules/` holds data only — the code that reads it is `engine/festivals/` | same file |
 | No context imports a downstream one (engine and services alike) | `apps/api/tests/test_context_map.py` |
 | The Astronomy layer holds no cultural (festival / tradition) logic | `apps/api/tests/test_engine_boundary.py` |
-| No computed value moves as a side effect of a refactor | `apps/api/scripts/endpoint_snapshot.py --write / --check` (94 routes, caches off, fixed hash seed) |
+| No computed value moves as a side effect of a refactor | `apps/api/scripts/endpoint_snapshot.py --write` / `--check` (94 routes, caches off, fixed hash seed; keys sorted, so order alone is not a move). `--ordered` hashes the JSON as served — keys in their original order, volatile keys still removed — for both `--write` and `--check`. The default still sorts keys. |
 | `packages/domain`: plain TS, no React/platform APIs, **no API types**, no class-name helpers | `npm run lint -w @vedic-patro/domain` |
 | `packages/read-models`: plain TS over domain + API types only | `npm run lint -w @vedic-patro/read-models` |
 | `packages/drawing`: plain TS over domain and `three` only | `npm run lint -w @vedic-patro/drawing` |
