@@ -78,6 +78,8 @@ module.exports = {
         accent: "rgb(var(--tw-accent) / <alpha-value>)",
         ring: "rgb(var(--tw-primary) / <alpha-value>)",
         saffron: "rgb(var(--tw-primary) / <alpha-value>)",
+        /* Web --color-panchang is --brand-green; without it the app drew the ghati label invisible. */
+        panchang: "rgb(var(--tw-success) / <alpha-value>)",
         vermilion: "rgb(var(--tw-destructive) / <alpha-value>)",
         ...nativeTokenColors,
         /* After the spread: the status colours take an alpha (`bg-success/12`),

@@ -1,3 +1,4 @@
+import { ActivityIndicator } from "react-native";
 import { useState } from "react";
 import type { ReportConfidence, ReportItem, ReportSection } from "@vedic-patro/api-client";
 import { Trans } from "@vedic-patro/i18n/react";
@@ -6,7 +7,7 @@ import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali
 import { REPORT_CONFIDENCE_LEVELS, useKundaliReport, useReportLabels, type ReportMetaCell } from "@vedic-patro/features/kundali";
 import { Grid, Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { KundaliReportProps } from "../contract";
-import { iconBookOpen, iconChevronDown, iconChevronUp, iconLoader, iconRotateCcw } from "../icons";
+import { iconBookOpen, iconChevronDown, iconChevronUp, iconRotateCcw } from "../icons";
 
 const r = kundaliDetailClasses.report;
 const CONFIDENCE: Record<ReportConfidence, string> = {
@@ -96,7 +97,12 @@ export function KundaliReport({ moment, location, ayanamsha, disabled, renderShe
             <Text>{report.copy.regenerate}</Text>
           </Pressable>
         ) : null}
-        {report.busyLabel ? <Text className={cn(r.statusPill, r.statusText)}><Icon node={iconLoader} size={16} tone="muted" webClassName="animate-spin" /> {report.busyLabel}</Text> : null}
+        {report.busyLabel ? (
+          <Box className={cn(r.statusPill, "flex-row items-center gap-2")}>
+            <ActivityIndicator size="small" />
+            <Text className={r.statusText}>{report.busyLabel}</Text>
+          </Box>
+        ) : null}
         {report.showConfidenceLegend ? (
           <Box className={r.confidenceRow}>
             <Text className={r.confidenceLabel}>{report.copy.confidenceLabel}</Text>

@@ -1,10 +1,11 @@
+import { ActivityIndicator } from "react-native";
 import type { ShadbalaStatus, VimshopakaGrade } from "@vedic-patro/api-client";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useAshtakavargaCard, useBhavaBalaSelection, useBhavaBalaTable, useGrahaDetailsList, useShadbalaCard, useVimshopakaCard, useYogaReferenceCatalog } from "@vedic-patro/features/kundali";
 import { Grid, Box, Icon, Input, Pressable, Table, Text } from "@vedic-patro/ui";
 import type { AshtakavargaCardProps, BhavaBalaCardProps, GrahaDetailsListProps, ShadbalaCardProps, VimshopakaCardProps, YogaReferenceCatalogProps } from "../contract";
-import { iconChevronDown, iconChevronRight, iconLoader, iconRotateCcw } from "../icons";
+import { iconChevronDown, iconChevronRight, iconRotateCcw } from "../icons";
 import { DashaSystemPanel } from "./DashaSystem";
 
 export { DashaSystemPanel };
@@ -86,9 +87,10 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps) 
         <Box className={y.body}>
           {cat.status === "error" ? <Text as="p" className={y.message}>{cat.errorText}</Text> : null}
           {cat.status === "loading" ? (
-            <Text as="p" className={cn(y.loadingRow, y.loadingText, "flex")}>
-              <Icon node={iconLoader} size={16} tone="muted" webClassName="animate-spin" /> {cat.loadingText}
-            </Text>
+            <Box className={cn(y.loadingRow, "flex-row items-center gap-2")}>
+              <ActivityIndicator size="small" />
+              <Text className={y.loadingText}>{cat.loadingText}</Text>
+            </Box>
           ) : null}
           {cat.status === "ready" ? (
             <>

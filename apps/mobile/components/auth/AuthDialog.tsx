@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -16,11 +17,32 @@ export function AuthDialog({
   initialMode?: AuthDialogMode;
 }) {
   const router = useRouter();
+  const auth = useAuth();
+  // Signed out with Face ID on: tapping sign in asks for Face ID first, and the
+  // password form only shows if the reader cancels it.
+  const [tryingBiometric, setTryingBiometric] = useState(false);
+  const triedThisOpen = useRef(false);
+  useEffect(() => {
+    if (!open) {
+      triedThisOpen.current = false;
+      return;
+    }
+    if (triedThisOpen.current || initialMode !== "login") return;
+    triedThisOpen.current = true;
+    setTryingBiometric(true);
+    void auth
+      .resumeWithBiometrics()
+      .then((ok) => {
+        if (ok) onOpenChange(false);
+      })
+      .finally(() => setTryingBiometric(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
   const d = useAuthDialog({
     open,
     onOpenChange,
     initialMode,
-    auth: useAuth(),
+    auth,
     onClose: Keyboard.dismiss,
     resetBetweenOpens: true,
   });
@@ -30,7 +52,7 @@ export function AuthDialog({
   };
   return (
     <AuthDialogView
-      open={open}
+      open={open && !tryingBiometric}
       onClose={d.close}
       title={d.copy.title}
       description={d.copy.description}

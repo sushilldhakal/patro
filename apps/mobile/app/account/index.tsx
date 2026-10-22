@@ -1,3 +1,4 @@
+import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
@@ -145,7 +146,7 @@ export default function AccountScreen() {
         />
       ) : page.listStatus === "loading" ? (
         <View className={cn("items-center", accountClasses.loadingBox)}>
-          <VedicPatroLoader label={null} size={72} />
+          <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
         </View>
       ) : page.listStatus === "empty" ? (
         <View className={accountClasses.emptyBox}>

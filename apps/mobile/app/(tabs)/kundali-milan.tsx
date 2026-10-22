@@ -1,3 +1,4 @@
+import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Modal, Pressable, ScrollView, View } from "react-native";
@@ -57,7 +58,7 @@ export default function KundaliMilanScreen() {
       >
         {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-            <VedicPatroLoader size={72} />
+            <VedicPatroLoader size={INLINE_LOADER_SIZE} />
           </View>
         ) : status === "login" ? (
           <KundaliLoginPrompt
@@ -103,7 +104,7 @@ export default function KundaliMilanScreen() {
                   </View>
                 ) : matchStatus === "loading" ? (
                   <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-                    <VedicPatroLoader label={null} size={72} />
+                    <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
                     <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
                       {copy.loading}
                     </Text>
@@ -281,7 +282,7 @@ function ProfilePickModal({
         </View>
         <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: Math.max(insets.bottom, space.lg) }}>
           {isLoading ? (
-            <VedicPatroLoader label={null} size={56} className="py-6" />
+            <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} className="py-6" />
           ) : (profiles ?? []).length === 0 ? (
             <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
               {emptyLabel}

@@ -51,10 +51,12 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _start_session(store: AccountStore, account: Account) -> IssuedTokens:
-    """An access JWT and a fresh persisted refresh token."""
+def _start_session(store: AccountStore, account: Account, rotated_from=None) -> IssuedTokens:
+    """An access JWT and a fresh persisted refresh token (linked from the one it replaces)."""
     raw_refresh = generate_opaque_token()
-    store.add_session(account.id, hash_token(raw_refresh), _now() + timedelta(days=config.refresh_token_ttl_days()))
+    created = store.add_session(account.id, hash_token(raw_refresh), _now() + timedelta(days=config.refresh_token_ttl_days()))
+    if rotated_from is not None:
+        rotated_from.replaced_by_id = created.id
     store.commit()
     return IssuedTokens(
         access_token=create_access_token(account),
@@ -131,17 +133,47 @@ def sign_in_with_apple(store: AccountStore, subject: str, email: str) -> IssuedT
 # ─── Sessions ──────────────────────────────────────────────────────────────────
 
 
+def _as_aware(value: datetime) -> datetime:
+    """SQLite hands back naive datetimes; they were stored as UTC."""
+    return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+
+
+def _lost_rotation_successor(store: AccountStore, stored):
+    """The token ``stored`` was rotated into, when the client never received it.
+
+    A phone can lose the /auth/refresh response (suspended, offline) after the
+    server rotated: it still holds the old token, and rejecting it would sign the
+    reader out for nothing. The old token is accepted again only while its
+    successor has never been used — once the client refreshes with the new
+    token, or signs out, the old one is dead for good.
+    """
+    if stored.replaced_by_id is None or _as_aware(stored.expires_at) <= _now():
+        return None
+    successor = store.session_by_id(stored.replaced_by_id)
+    if successor is None or not successor.is_valid or successor.replaced_by_id is not None:
+        return None
+    return successor
+
+
 def refresh_session(store: AccountStore, raw_refresh: str) -> IssuedTokens:
     """Rotate: the used refresh token is revoked and a new pair issued."""
     stored = store.session(hash_token(raw_refresh))
-    if stored is None or not stored.is_valid:
+    if stored is None:
         raise InvalidSession
-    stored.revoked_at = _now()
+    if stored.is_valid:
+        stored.revoked_at = _now()
+    else:
+        successor = _lost_rotation_successor(store, stored)
+        if successor is None:
+            raise InvalidSession
+        # The reply the client never got is retired for good (no link onward);
+        # the old token now points at the fresh pair instead.
+        successor.revoked_at = _now()
     store.commit()
     account = store.get(stored.user_id)
     if account is None or not account.is_active:
         raise InvalidSession("User not found")
-    return _start_session(store, account)
+    return _start_session(store, account, stored)
 
 
 def sign_out(store: AccountStore, raw_refresh: str) -> None:

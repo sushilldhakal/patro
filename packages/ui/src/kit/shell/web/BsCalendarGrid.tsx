@@ -168,9 +168,9 @@ function DayCell({
           ) : null}
         </Text>
 
-        <Box className="flex-1 flex-col items-center justify-center gap-0.5">
+        <Box className="flex flex-1 flex-col items-center justify-center gap-0.5">
           {isToday ? <Text className={cn(cal.todayBadge, cal.todayBadgeText, "max-md:px-1")}>{todayBadge}</Text> : null}
-          <Text className="flex-row flex-wrap items-baseline justify-center gap-x-1 leading-none">
+          <Text className="inline-flex flex-row flex-wrap items-baseline justify-center gap-x-1 leading-none">
             <Text
               className={cn(
                 "font-num",

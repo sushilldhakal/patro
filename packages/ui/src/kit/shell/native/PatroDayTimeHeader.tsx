@@ -33,7 +33,10 @@ export function PatroDayTimeHeader({
 }: PatroDayTimeHeaderProps) {
   const h = usePatroDayTimeHeader({ era, year, month, day, weekday, today, clock, nowClock, onSelect, onStepDay, onToday, onClockChange, subtitleOverride: subtitle, crossEraText });
   const { labels, time } = h;
-  const dense = useWindowDimensions().width < 420;
+  const width = useWindowDimensions().width;
+  const dense = width < 420;
+  /** Phones: month + day (the title shows the year), and always the time. */
+  const shortDate = width < 640;
 
   return (
     <View className={cn("w-full gap-3", className)}>
@@ -65,9 +68,9 @@ export function PatroDayTimeHeader({
           <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, "min-w-28 flex-none shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}>
             {dense ? null : <Icon node={shellIcons.calendar} size="sm" tone="secondary" />}
             <Text numberOfLines={1} className={pick.dateButtonText}>
-              {dense ? h.buttonTextShort : h.buttonText}
+              {shortDate ? h.buttonTextShort : h.buttonText}
             </Text>
-            {h.timeText && !dense ? <Text className={pick.dateButtonTime}>{h.timeText}</Text> : null}
+            {h.timeText ? <Text className={pick.dateButtonTime}>{h.timeText}</Text> : null}
           </Pressable>
           <Pressable label={labels.nextDay} onPress={() => h.stepDay(1)} disabled={nextDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />

@@ -83,14 +83,33 @@ def test_login_checks_the_password_and_the_account(env):
     assert disabled.status_code == 403 and disabled.json()["detail"] == "Account disabled"
 
 
+def _refresh(env, token):
+    return env.post("/auth/refresh", json={"refresh_token": token})
+
+
 def test_refresh_rotates_and_the_old_token_stops_working(env):
     pair = _signup(env).json()
-    rotated = env.post("/auth/refresh", json={"refresh_token": pair["refresh_token"]})
+    rotated = _refresh(env, pair["refresh_token"])
     assert rotated.status_code == 200
     assert rotated.json()["refresh_token"] != pair["refresh_token"]
-    reused = env.post("/auth/refresh", json={"refresh_token": pair["refresh_token"]})
+    # Once the new token has been used, the old one is dead.
+    assert _refresh(env, rotated.json()["refresh_token"]).status_code == 200
+    reused = _refresh(env, pair["refresh_token"])
     assert reused.status_code == 401 and reused.json()["detail"] == "Invalid or expired refresh token"
-    assert env.post("/auth/refresh", json={"refresh_token": "made-up"}).status_code == 401
+    assert _refresh(env, "made-up").status_code == 401
+
+
+def test_a_lost_refresh_response_does_not_sign_the_reader_out(env):
+    """The phone sent its token, the server rotated, the reply never arrived."""
+    pair = _signup(env).json()
+    lost = _refresh(env, pair["refresh_token"]).json()["refresh_token"]
+    retried = _refresh(env, pair["refresh_token"])
+    assert retried.status_code == 200
+    # The reply the phone never saw is retired; the retried one carries on.
+    assert _refresh(env, lost).status_code == 401
+    assert _refresh(env, retried.json()["refresh_token"]).status_code == 200
+    # And the original token cannot be replayed a second time.
+    assert _refresh(env, pair["refresh_token"]).status_code == 401
 
 
 def test_logout_revokes_the_refresh_token(env):
@@ -99,6 +118,14 @@ def test_logout_revokes_the_refresh_token(env):
     assert env.post("/auth/refresh", json={"refresh_token": pair["refresh_token"]}).status_code == 401
     # Logging out an unknown token is still a polite success.
     assert env.post("/auth/logout", json={"refresh_token": "made-up"}).status_code == 200
+
+
+def test_signing_out_after_a_rotation_leaves_no_way_back_in(env):
+    pair = _signup(env).json()
+    current = _refresh(env, pair["refresh_token"]).json()["refresh_token"]
+    env.post("/auth/logout", json={"refresh_token": current})
+    assert _refresh(env, pair["refresh_token"]).status_code == 401
+    assert _refresh(env, current).status_code == 401
 
 
 def test_verify_email_once(env):

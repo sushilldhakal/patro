@@ -5,10 +5,14 @@ import { useNetworkStatus } from "@/lib/offline/network-status";
 import { useThemeColors } from "@/lib/theme-context";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
+import { useBreakpoint } from "@/lib/responsive";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 
 /** Smallest height a loading block keeps, so it never collapses to nothing in a scroll view. */
 const LOADING_MIN_HEIGHT = 200;
+/** A section's loader: big enough to read as "loading" at a glance, larger again on a tablet. */
+export const INLINE_LOADER_SIZE = 88;
+export const INLINE_LOADER_SIZE_TABLET = 112;
 
 /**
  * The page-level "loading" block: the animated Vedic Patro mark, centred. It
@@ -17,9 +21,10 @@ const LOADING_MIN_HEIGHT = 200;
  */
 export function LoadingState({ label }: { label?: string | null }) {
   const { t } = useLocale();
+  const { isTablet } = useBreakpoint();
   return (
     <View className="flex-1 items-center justify-center py-10" style={{ minHeight: LOADING_MIN_HEIGHT }}>
-      <VedicPatroLoader label={label === undefined ? t("rashifal.profile.loading") : label} size={56} />
+      <VedicPatroLoader label={label === undefined ? t("rashifal.profile.loading") : label} size={isTablet ? INLINE_LOADER_SIZE_TABLET : INLINE_LOADER_SIZE} />
     </View>
   );
 }

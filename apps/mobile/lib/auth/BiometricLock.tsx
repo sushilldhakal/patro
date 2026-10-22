@@ -16,8 +16,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Alert, AppState, Pressable, StyleSheet, View } from "react-native";
-import { Ionicons } from "@/components/icons/Ionicons";
+import { AppState, Pressable, StyleSheet, View } from "react-native";
+import { BiometricOfferSheet } from "@/components/auth/BiometricOfferSheet";
+import { BIOMETRIC_ENABLED_KEY, revokeParkedSession } from "@/lib/auth/parked-session";
+import { LucideNative } from "@/components/icons/LucideNative";
+import { __iconNode as ScanFaceNode } from "lucide-react/dist/esm/icons/scan-face";
+import { __iconNode as FingerprintNode } from "lucide-react/dist/esm/icons/fingerprint";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authenticateBiometric, biometricLabel, getBiometricInfo, type BiometricInfo } from "@/lib/auth/biometrics";
@@ -27,7 +31,7 @@ import { space } from "@vedic-patro/design-tokens";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
-const ENABLED_KEY = "device:biometric_lock";
+const ENABLED_KEY = BIOMETRIC_ENABLED_KEY;
 const PROMPTED_KEY = "device:biometric_prompted";
 /** Re-lock only after the app has been away this long, so quick app-switches don't nag. */
 const RELOCK_AFTER_MS = 30_000;
@@ -56,6 +60,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
   const [enabled, setEnabledState] = useState(false);
   const [ready, setReady] = useState(false);
   const [locked, setLocked] = useState(false);
+  const [offerOpen, setOfferOpen] = useState(false);
 
   const prompting = useRef(false);
   const backgroundedAt = useRef<number | null>(null);
@@ -136,6 +141,8 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
       }
       setEnabledState(on);
       await deviceStore.set(ENABLED_KEY, on);
+      // Off: a session parked behind Face ID at sign-out ends too.
+      if (!on) void revokeParkedSession(t("ui.auth.face_id_prompt"));
       return true;
     },
     [info.available, label, pick],
@@ -150,14 +157,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
     void (async () => {
       if (await deviceStore.get<boolean>(PROMPTED_KEY)) return;
       await deviceStore.set(PROMPTED_KEY, true);
-      Alert.alert(
-        t("ui.auth.use_label", { label }),
-        t("ui.auth.you_ll_stay_signed_in_next", { label }),
-        [
-          { text: t("ui.auth.not_now"), style: "cancel" },
-          { text: t("ui.auth.turn_on"), onPress: () => void setEnabled(true) },
-        ],
-      );
+      setOfferOpen(true);
     })();
   }, [ready, authLoading, isAuthenticated, enabled, info.available, label, pick, setEnabled]);
 
@@ -173,6 +173,16 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
   return (
     <BiometricLockContext.Provider value={value}>
       {children}
+      <BiometricOfferSheet
+        open={offerOpen}
+        kind={info.kind}
+        label={label}
+        onDecline={() => setOfferOpen(false)}
+        onAccept={() => {
+          setOfferOpen(false);
+          void setEnabled(true);
+        }}
+      />
       {cover || showLock ? (
         <View
           style={[StyleSheet.absoluteFill, styles.lock, { backgroundColor: colors.background }]}
@@ -180,16 +190,18 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
         >
           {showLock ? (
             <>
-              <Ionicons name="lock-closed-outline" size={44} color={colors.secondary} />
-              <Text className="text-title mt-4 font-bold text-foreground">
+              <View className="size-20 items-center justify-center rounded-3xl bg-secondary/10">
+                <LucideNative node={info.kind === "fingerprint" ? FingerprintNode : ScanFaceNode} size={44} color={colors.secondary} strokeWidth={1.5} />
+              </View>
+              <Text className="text-title mt-6 font-bold text-foreground">
                 {t("ui.auth.vedic_patro_is_locked")}
               </Text>
               <Pressable
                 onPress={() => void unlock()}
                 accessibilityRole="button"
-                className="mt-6 flex-row items-center gap-2 rounded-xl bg-secondary px-6 py-3 active:opacity-80"
+                className="mt-8 h-14 w-full max-w-sm flex-row items-center justify-center gap-2 rounded-2xl bg-secondary px-6 active:opacity-85"
               >
-                <Ionicons name={info.kind === "fingerprint" ? "finger-print" : "scan-outline"} size={18} color={inkOn(colors.secondary)} />
+                <LucideNative node={info.kind === "fingerprint" ? FingerprintNode : ScanFaceNode} size={20} color={inkOn(colors.secondary)} />
                 <Text className="text-body font-semibold text-secondary-foreground">
                   {t("ui.auth.unlock_with_label", { label })}
                 </Text>

@@ -186,10 +186,10 @@ export function PanchangaMonthGrid({
                 ) : (
                   <View className="w-full gap-0.5">
                     {cell.sunrise ? (
-                      <VerticalEdgeLabel text={cell.sunrise ?? ""} side="left" color={theme.textMuted} className="font-normal" />
+                      <VerticalEdgeLabel text={cell.sunrise ?? ""} side="left" align="end" color={theme.textMuted} className="font-normal" />
                     ) : null}
                     {cell.sunset ? (
-                      <VerticalEdgeLabel text={cell.sunset ?? ""} side="right" color={theme.textMuted} className="font-normal" />
+                      <VerticalEdgeLabel text={cell.sunset ?? ""} side="right" align="end" color={theme.textMuted} className="font-normal" />
                     ) : null}
 
                     <Text className="w-full text-center text-xs font-semibold leading-snug" style={nepaliTextStyle()}>

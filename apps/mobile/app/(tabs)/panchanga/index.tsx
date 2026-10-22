@@ -36,6 +36,9 @@ import { resolveWindowKey } from "@/lib/notifications/window-key";
 import { useLocale } from "@/lib/i18n";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
+/** Under the page (no sidebar), this much width fits the chart and the planet events side by side. */
+const TWO_COLUMN_MIN_WIDTH = 700;
+
 export default function PanchangaScreen() {
   const colors = useThemeColors();
   const router = useRouter();
@@ -157,6 +160,7 @@ export default function PanchangaScreen() {
             refDateAd={page.civilAnchor}
             location={location.params}
             planetEventsHref="/gochar"
+            twoColumn={!splitSidebar && width >= TWO_COLUMN_MIN_WIDTH}
           />
         </View>
         ) : null}

@@ -51,6 +51,7 @@ def init_db() -> None:
 
     Base.metadata.create_all(bind=get_engine())
     _ensure_apple_user_id_column()
+    _ensure_refresh_replaced_by_column()
 
 
 def _ensure_apple_user_id_column() -> None:
@@ -69,6 +70,20 @@ def _ensure_apple_user_id_column() -> None:
         conn.execute(
             text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_apple_user_id ON users (apple_user_id)")
         )
+
+
+def _ensure_refresh_replaced_by_column() -> None:
+    """create_all will not ALTER existing tables — add the rotation link if missing."""
+    from sqlalchemy import inspect, text
+
+    engine = get_engine()
+    inspector = inspect(engine)
+    if "refresh_tokens" not in inspector.get_table_names():
+        return
+    if "replaced_by_id" in {col["name"] for col in inspector.get_columns("refresh_tokens")}:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE refresh_tokens ADD COLUMN replaced_by_id VARCHAR(36)"))
 
 
 def get_db() -> Iterator[Session]:

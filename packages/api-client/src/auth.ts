@@ -194,6 +194,11 @@ export async function apiLogout(): Promise<void> {
   }
 }
 
+/** End a session by its refresh token, leaving the current one alone (a parked Face ID session). */
+export async function apiRevokeRefreshToken(refresh_token: string): Promise<void> {
+  await raw("/auth/logout", { method: "POST", body: JSON.stringify({ refresh_token }) }).catch(() => undefined);
+}
+
 export const apiMe = () => authFetch<AuthUser>("/auth/me");
 
 export async function apiDeleteAccount(): Promise<void> {

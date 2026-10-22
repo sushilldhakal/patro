@@ -130,7 +130,7 @@ export function BsCalendarGrid({
                     )}
                   </View>
 
-                  <View className="flex-1 items-start justify-center gap-0.5 py-0.5">
+                  <View className="flex-1 items-center justify-center gap-0.5 py-0.5">
                     {/* On a phone the cell is too short for the badge: it pushed the date down
                         over the tithi. The today fill and ring already mark the cell. */}
                     {isToday && !isCompact ? (
@@ -138,7 +138,7 @@ export function BsCalendarGrid({
                         <Text className={cal.todayBadgeText}>{grid.todayBadge}</Text>
                       </View>
                     ) : null}
-                    <View className="flex-row flex-wrap items-baseline justify-start gap-x-1">
+                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1">
                       <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
                       <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
                         {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}

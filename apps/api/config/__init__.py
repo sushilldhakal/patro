@@ -245,7 +245,9 @@ def access_token_ttl_minutes() -> int:
 
 
 def refresh_token_ttl_days() -> int:
-    return int(os.getenv("REFRESH_TOKEN_TTL_DAYS", "30"))
+    # A year, sliding: each refresh starts a new one, so only a reader away for a
+    # whole year (or signing out) has to sign in again.
+    return int(os.getenv("REFRESH_TOKEN_TTL_DAYS", "365"))
 
 
 def frontend_url() -> str:

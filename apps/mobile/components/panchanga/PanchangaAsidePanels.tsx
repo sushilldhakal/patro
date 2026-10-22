@@ -18,6 +18,8 @@ type Props = {
   location: LocationParams;
   /** Route for the planet events' "view more" link; no link without it. */
   planetEventsHref?: string;
+  /** Room for two columns (a tablet in portrait, under the page): the chart and the events side by side. */
+  twoColumn?: boolean;
 };
 
 export function PanchangaAsidePanels({
@@ -29,26 +31,34 @@ export function PanchangaAsidePanels({
   refDateAd,
   location,
   planetEventsHref,
+  twoColumn = false,
 }: Props) {
   const router = useRouter();
+  const columnStyle = twoColumn ? { flex: 1, minWidth: 0 } : undefined;
   return (
     <View className="gap-4">
       <GhatiClock sunrise={sunrise} sunset={sunset} timezone={timezone} />
-      {chartData ? (
-        <SunriseD1ChartPanel
-          p={chartData}
-          renderChart={(houses) => <D1Chart houses={houses} />}
-          renderLegend={() => <GrahaStatusLegend className="mt-1" />}
-        />
-      ) : null}
-      {jdUt != null && refDateAd ? (
-        <PlanetEventsPanel
-          jdUt={jdUt}
-          refDateAd={refDateAd}
-          location={location}
-          onViewMore={planetEventsHref ? () => router.push(planetEventsHref as never) : undefined}
-        />
-      ) : null}
+      <View className={twoColumn ? "flex-row items-start gap-4" : "gap-4"}>
+        {chartData ? (
+          <View style={columnStyle}>
+            <SunriseD1ChartPanel
+              p={chartData}
+              renderChart={(houses) => <D1Chart houses={houses} />}
+              renderLegend={() => <GrahaStatusLegend className="mt-1" />}
+            />
+          </View>
+        ) : null}
+        {jdUt != null && refDateAd ? (
+          <View style={columnStyle}>
+            <PlanetEventsPanel
+              jdUt={jdUt}
+              refDateAd={refDateAd}
+              location={location}
+              onViewMore={planetEventsHref ? () => router.push(planetEventsHref as never) : undefined}
+            />
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }

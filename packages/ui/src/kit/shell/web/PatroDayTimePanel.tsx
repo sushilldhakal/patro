@@ -54,7 +54,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
           <Box className={pick.dayGrid}>
             {h.cells.map((c) =>
               c.day === null ? (
-                <Box key={c.key} className={pick.dayCell} />
+                <Box key={c.key} className={cn(pick.dayCell, pick.dayCellEmpty)} />
               ) : (
                 <Box key={c.key} className={pick.dayCell}>
                   <Pressable
@@ -71,6 +71,10 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
                 </Box>
               ),
             )}
+            {/* Close the last week so its lines run to the edge. */}
+            {Array.from({ length: (7 - (h.cells.length % 7)) % 7 }, (_, i) => (
+              <Box key={`pad-${i}`} className={cn(pick.dayCell, pick.dayCellEmpty)} />
+            ))}
           </Box>
           {time ? (
             <Box className={pick.timeRow}>

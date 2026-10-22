@@ -412,6 +412,8 @@ export type VerticalEdgeLabelProps = {
   insetClass?: string;
   /** App callers pass a theme colour. The website uses `className`. */
   color?: string;
+  /** Where along the edge the text sits: the middle (default) or the bottom. */
+  align?: "center" | "end";
 };
 
 export type MatrixCell = {

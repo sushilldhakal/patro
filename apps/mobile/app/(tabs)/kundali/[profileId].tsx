@@ -1,3 +1,4 @@
+import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -82,7 +83,7 @@ export default function KundaliDetailScreen() {
     if (status === "loading") {
       return (
         <View className={cn(kundaliClasses.emptyBoxTall, "items-center")}>
-          <VedicPatroLoader label={null} size={72} />
+          <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {copy.loading}
           </Text>
@@ -134,7 +135,7 @@ export default function KundaliDetailScreen() {
     if (chartStatus === "loading") {
       return (
         <View className={cn(kundaliClasses.computingBox, "items-center")}>
-          <VedicPatroLoader label={null} size={72} />
+          <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {copy.computing}
           </Text>

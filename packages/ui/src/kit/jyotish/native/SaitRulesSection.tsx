@@ -1,10 +1,10 @@
-import { Pressable, useWindowDimensions, View } from "react-native";
+import { Pressable, useWindowDimensions, View, ActivityIndicator } from "react-native";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useSaitRules } from "@vedic-patro/features/sait";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SaitRulesSectionProps } from "../contract";
-import { iconChevronDown, iconInfo, iconLoader, iconScrollText } from "../icons";
+import { iconChevronDown, iconInfo, iconScrollText } from "../icons";
 
 function RuleSwitch({ checked, onChange, label }: { checked: boolean; onChange: (next: boolean) => void; label: string }) {
   return (
@@ -44,7 +44,7 @@ export function SaitRulesSection({ busy = false, ...props }: SaitRulesSectionPro
           <Text className={saitClasses.rulesTitle}>{view.title}</Text>
           <Text className={saitClasses.rulesSubtitle}>{view.subtitle}</Text>
         </Box>
-        {busy ? <Icon node={iconLoader} size="md" tone="secondary" /> : null}
+        {busy ? <ActivityIndicator size="small" /> : null}
         <Box nativeClassName={view.open ? "rotate-180" : undefined}>
           <Icon node={iconChevronDown} size="xl" tone="muted" />
         </Box>

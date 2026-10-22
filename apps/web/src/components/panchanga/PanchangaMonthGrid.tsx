@@ -329,6 +329,7 @@ export function PanchangaMonthGrid({
                     <VerticalEdgeLabel
                       text={cell.sunrise}
                       side="left"
+                      align="end"
                       className="font-normal tabular-nums text-muted-foreground"
                     />
                   ) : null}
@@ -336,6 +337,7 @@ export function PanchangaMonthGrid({
                     <VerticalEdgeLabel
                       text={cell.sunset}
                       side="right"
+                      align="end"
                       className="font-normal tabular-nums text-muted-foreground"
                     />
                   ) : null}

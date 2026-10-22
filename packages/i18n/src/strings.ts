@@ -6936,6 +6936,26 @@ export const strings = {
   },
   "ui.auth.hh_mm": { ne: "घण्टा:मिनेट", en: "HH:MM" },
   "ui.auth.not_now": { ne: "अहिले होइन", en: "Not now" },
+  "ui.auth.biometric_title": { ne: "{{label}} ले लग-इन गर्नुहोस्", en: "Sign in with {{label}}" },
+  "ui.auth.biometric_body": {
+    ne: "पासवर्ड बिना, एकै पटक हेरेर आफ्नो खाता खोल्नुहोस्।",
+    en: "Open your account with a glance — no password to type.",
+  },
+  "ui.auth.biometric_point_open": {
+    ne: "एप खोल्दा {{label}} ले मात्र खुल्छ",
+    en: "The app opens with {{label}}",
+  },
+  "ui.auth.biometric_point_signin": {
+    ne: "साइन आउट गरेपछि पनि लग-इन थिच्दा {{label}} ले नै फेरि खुल्छ",
+    en: "After signing out, tapping sign in uses {{label}} again",
+  },
+  "ui.auth.biometric_point_private": {
+    ne: "तपाईंको अनुहार वा औँठाछापको जानकारी फोनमै रहन्छ — हामीसम्म आउँदैन",
+    en: "Your face or fingerprint data stays on this device — we never see it",
+  },
+  "ui.auth.biometric_turn_on": { ne: "{{label}} चालु गर्नुहोस्", en: "Turn on {{label}}" },
+  "ui.auth.face_id_prompt": { ne: "वैदिक पात्रोमा लग-इन गर्न पुष्टि गर्नुहोस्", en: "Confirm to sign in to Vedic Patro" },
+  "ui.auth.use_password_instead": { ne: "पासवर्डले लग-इन गर्नुहोस्", en: "Use password instead" },
   "ui.auth.sign_out": { ne: "साइन आउट", en: "Sign out" },
   "ui.auth.turn_on": { ne: "चालु गर्नुहोस्", en: "Turn on" },
   "ui.auth.unlock_with_label": { ne: "{{label}} प्रयोग गर्नुहोस्", en: "Unlock with {{label}}" },

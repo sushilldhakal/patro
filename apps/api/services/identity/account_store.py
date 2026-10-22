@@ -34,8 +34,14 @@ class SqlAccountStore:
     def remove_account(self, account: User) -> None:
         self.db.delete(account)
 
-    def add_session(self, account_id: str, token_hash: str, expires_at: datetime) -> None:
-        self.db.add(RefreshToken(user_id=account_id, token_hash=token_hash, expires_at=expires_at))
+    def add_session(self, account_id: str, token_hash: str, expires_at: datetime) -> RefreshToken:
+        token = RefreshToken(user_id=account_id, token_hash=token_hash, expires_at=expires_at)
+        self.db.add(token)
+        self.db.flush()
+        return token
+
+    def session_by_id(self, session_id: str) -> RefreshToken | None:
+        return self.db.get(RefreshToken, session_id)
 
     def session(self, token_hash: str) -> RefreshToken | None:
         return self.db.scalar(select(RefreshToken).where(RefreshToken.token_hash == token_hash))

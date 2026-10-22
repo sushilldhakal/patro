@@ -1,3 +1,4 @@
+import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { useRef } from "react";
 import { useKundaliHubPage } from "@vedic-patro/features/kundali";
 import { useThemeColors } from "@/lib/theme-context";
@@ -51,7 +52,7 @@ export default function KundaliScreen() {
       >
         {status === "loading" ? (
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
-            <VedicPatroLoader label={null} size={72} />
+            <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
             <Text className={cn("mt-2", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
               {copy.loading}
             </Text>

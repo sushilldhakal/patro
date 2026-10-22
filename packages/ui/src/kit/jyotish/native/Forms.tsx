@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch } from "react-native";
+import { Switch, ActivityIndicator } from "react-native";
 import type { AshtakutaResult } from "@vedic-patro/api-client";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
@@ -19,7 +19,7 @@ import type {
   OwnerCompatibilityProps,
   ProfileFormProps,
 } from "../contract";
-import { iconCalendarClock, iconChevronDown, iconChevronRight, iconClock, iconGlobe, iconLoader, iconMapPin, iconNavigation, iconPencil, iconSparkles, iconStar } from "../icons";
+import { iconCalendarClock, iconChevronDown, iconChevronRight, iconClock, iconGlobe, iconMapPin, iconNavigation, iconPencil, iconSparkles, iconStar } from "../icons";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -274,7 +274,7 @@ export function KundaliProfilePicker({ selectedId, onSelect, bindOpen, onPrefetc
   if (picker.status === "loading") {
     return (
       <Box className={kundaliDetailClasses.milanPicker.loadingBox} nativeClassName="flex-row">
-        <Icon node={iconLoader} size={16} tone="muted" />
+        <ActivityIndicator size="small" />
         <Text>{picker.loadingText}</Text>
       </Box>
     );

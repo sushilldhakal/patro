@@ -63,9 +63,11 @@ class Account(Protocol):
 
 
 class OneTimeToken(Protocol):
+    id: str
     user_id: str
     revoked_at: Any
     used_at: Any
+    replaced_by_id: str | None
 
     @property
     def is_valid(self) -> bool: ...
@@ -85,7 +87,9 @@ class AccountStore(Protocol):
 
     def remove_account(self, account: Account) -> None: ...
 
-    def add_session(self, account_id: str, token_hash: str, expires_at: datetime) -> None: ...
+    def add_session(self, account_id: str, token_hash: str, expires_at: datetime) -> OneTimeToken: ...
+
+    def session_by_id(self, session_id: str) -> OneTimeToken | None: ...
 
     def session(self, token_hash: str) -> OneTimeToken | None: ...
 
