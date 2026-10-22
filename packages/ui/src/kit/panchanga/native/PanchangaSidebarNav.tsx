@@ -70,11 +70,21 @@ export function PanchangaSidebarNav({
   const bodyRef = useRef<View>(null);
   const itemRefs = useRef<Record<string, View | null>>({});
   const [frames, setFrames] = useState<Record<string, Frame>>({});
-  const [pillOn, setPillOn] = useState(false);
+  const [placed, setPlaced] = useState(false);
   const y = useSharedValue(0);
   const h = useSharedValue(0);
   const activeId = sections.flatMap((section) => section.items).find((item) => item.active)?.id ?? null;
   const frame = activeId ? frames[activeId] : undefined;
+  // At rest the row owns the highlight, so a press scale takes it along. The
+  // pill is only on screen while it is travelling between rows.
+  const [settledId, setSettledId] = useState(activeId);
+  const trackedActive = useRef(activeId);
+  if (trackedActive.current !== activeId) {
+    const previous = trackedActive.current;
+    trackedActive.current = activeId;
+    if (!reduced && previous != null && settledId != null) setSettledId(null);
+  }
+  const travelling = placed && !reduced && activeId != null && settledId !== activeId;
 
   const remember = useCallback((id: string, next: Frame) => {
     setFrames((prev) => {
@@ -102,22 +112,40 @@ export function PanchangaSidebarNav({
 
   useEffect(() => {
     if (!activeId || !frame) return;
-    if (reduced || !pillOn) {
+    const park = () => {
       y.set(frame.y);
       h.set(frame.height);
-      if (!reduced && !pillOn) setPillOn(true);
+      setPlaced(true);
+      setSettledId(activeId);
+    };
+    if (reduced || !placed) {
+      park();
       return;
     }
-    if (!near(y.get(), frame.y)) y.set(withTiming(frame.y, PILL_TIMING));
+    if (settledId === activeId) {
+      if (!near(y.get(), frame.y)) y.set(frame.y);
+      if (!near(h.get(), frame.height)) h.set(frame.height);
+      return;
+    }
+    if (near(y.get(), frame.y) && near(h.get(), frame.height)) {
+      setSettledId(activeId);
+      return;
+    }
+    const id = activeId;
+    y.set(withTiming(frame.y, PILL_TIMING));
     if (!near(h.get(), frame.height)) h.set(withTiming(frame.height, PILL_TIMING));
-  }, [activeId, frame, h, pillOn, reduced, y]);
+    // The highlight returns to the row when the move ends, so the press scale
+    // owns it at rest. A new tap clears this before it can settle the old row.
+    const timer = setTimeout(() => setSettledId(id), DURATION.standard);
+    return () => clearTimeout(timer);
+  }, [activeId, frame, h, placed, reduced, settledId, y]);
 
   const pillStyle = useAnimatedStyle(() => ({
     height: h.get(),
     transform: [{ translateY: y.get() }],
   }));
 
-  const showPill = pillOn && !reduced && frame != null;
+  const showPill = travelling && frame != null;
 
   const body = (
     <>
@@ -157,7 +185,7 @@ export function PanchangaSidebarNav({
                           className={cn(s.link, !item.active && "active:bg-muted")}
                           nativeClassName={
                             item.active
-                              ? showPill
+                              ? travelling
                                 ? "border border-transparent"
                                 : "border border-secondary/30 bg-secondary/15"
                               : undefined
