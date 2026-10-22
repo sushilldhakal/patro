@@ -238,6 +238,25 @@ export const motion = {
     standard: "cubic-bezier(0.4, 0, 0.2, 1)",
     springInteractive: "cubic-bezier(0.34, 1.3, 0.64, 1)",
   },
+  /**
+   * Native motion. Plain numbers only — Reanimated builds its easings and
+   * springs from these in `@vedic-patro/ui/motion`, so no screen hand-types a curve.
+   * `easeOut` enters and exits, `easeInOut` moves something already on screen,
+   * `easeSheet` is the iOS sheet curve.
+   */
+  native: {
+    easeOut: [0.23, 1, 0.32, 1],
+    easeInOut: [0.77, 0, 0.175, 1],
+    easeSheet: [0.32, 0.72, 0, 1],
+    spring: {
+      settle: { duration: 400, dampingRatio: 1 },
+      snap: { duration: 400, dampingRatio: 0.8 },
+      sheet: { duration: 300, dampingRatio: 0.8 },
+    },
+    pressScale: 0.97,
+    enterScale: 0.95,
+    shift: 8,
+  },
 } as const;
 
 // ─── Breakpoints ──────────────────────────────────────────────────────────────

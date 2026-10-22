@@ -33,6 +33,7 @@
         "applinks:vedicpatro.com"
       ],
       "infoPlist": {
+        "CADisableMinimumFrameDurationOnPhone": true,
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleAllowMixedLocalizations": true,
         "NSCameraUsageDescription": "Vedic Patro uses the camera only in Aakash Gochar to show the live sky behind the sky map. We do not take photos, record video, or upload camera data. You can use the sky map without the camera.",

@@ -37,7 +37,10 @@
     "react": "*",
     "react-native": "*",
     "react-native-svg": "*",
-    "react-native-gesture-handler": "*"
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*",
+    "react-native-worklets": "*",
+    "expo-haptics": "*"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -50,6 +53,15 @@
       "optional": true
     },
     "react-native-gesture-handler": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    },
+    "expo-haptics": {
       "optional": true
     }
   },

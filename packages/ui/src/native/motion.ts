@@ -1,8 +1,10 @@
+import { motion } from "@vedic-patro/design-tokens";
+import * as Haptics from "expo-haptics";
 import { Easing, ReduceMotion, cubicBezier, useReducedMotion } from "react-native-reanimated";
 
-const easeOut = [0.23, 1, 0.32, 1] as const;
-const easeInOut = [0.77, 0, 0.175, 1] as const;
-const easeSheet = [0.32, 0.72, 0, 1] as const;
+const easeOut = motion.native.easeOut;
+const easeInOut = motion.native.easeInOut;
+const easeSheet = motion.native.easeSheet;
 
 /** `withTiming` / `.easing(...)`. Strong ease-out for entering and exiting. */
 export const EASE_OUT = Easing.bezier(easeOut[0], easeOut[1], easeOut[2], easeOut[3]);
@@ -25,47 +27,25 @@ function spring(config: { readonly duration: number; readonly dampingRatio: numb
 }
 
 /** Default settle, no overshoot. */
-export const SPRING_SETTLE = spring({ duration: 400, dampingRatio: 1 });
+export const SPRING_SETTLE = spring(motion.native.spring.settle);
 /** Reposition / snap back after a drag. */
-export const SPRING_SNAP = spring({ duration: 400, dampingRatio: 0.8 });
+export const SPRING_SNAP = spring(motion.native.spring.snap);
 /** Sheet and drawer. */
-export const SPRING_SHEET = spring({ duration: 300, dampingRatio: 0.8 });
+export const SPRING_SHEET = spring(motion.native.spring.sheet);
 
-export const DURATION = { fast: 120, standard: 200, slow: 320 } as const;
-export const PRESS_SCALE = 0.97;
-export const ENTER_SCALE = 0.95;
-export const SHIFT = 8;
+export const DURATION = motion.duration;
+export const PRESS_SCALE = motion.native.pressScale;
+export const ENTER_SCALE = motion.native.enterScale;
+export const SHIFT = motion.native.shift;
 
 /** True when the OS asks for reduced motion. Scale and translation should drop; fades stay. */
 export function useReducedMotionPref(): boolean {
-  return useReducedMotion() === true;
+  return useReducedMotion();
 }
 
-type HapticApi = {
-  selectionAsync(): Promise<void>;
-  impactAsync(style: number): Promise<void>;
-  notificationAsync(type: number): Promise<void>;
-  ImpactFeedbackStyle: { readonly Light: number };
-  NotificationFeedbackType: { readonly Success: number; readonly Error: number };
-};
-
-function loadHaptics(): HapticApi | null {
+function fire(run: () => Promise<void>): void {
   try {
-    const req = new Function("return typeof require === 'function' ? require : null")() as
-      | ((id: string) => HapticApi)
-      | null;
-    if (!req) return null;
-    return req("expo-haptics");
-  } catch {
-    return null;
-  }
-}
-
-function fire(run: (api: HapticApi) => Promise<void>): void {
-  try {
-    const api = loadHaptics();
-    if (!api) return;
-    void Promise.resolve(run(api)).catch(() => {});
+    void Promise.resolve(run()).catch(() => {});
   } catch {
     // Missing on web, simulators, and devices without a vibrator.
   }
@@ -73,16 +53,18 @@ function fire(run: (api: HapticApi) => Promise<void>): void {
 
 /** One haptic per user action. Never the only feedback — the visual has to stand alone. */
 export const haptics = {
+  /** A value ticks past a step: picker, stepper, segmented control. */
   tick(): void {
-    fire((api) => api.selectionAsync());
+    fire(() => Haptics.selectionAsync());
   },
+  /** Something snaps home: a sheet detent, a drag commit. */
   snap(): void {
-    fire((api) => api.impactAsync(api.ImpactFeedbackStyle.Light));
+    fire(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light));
   },
   success(): void {
-    fire((api) => api.notificationAsync(api.NotificationFeedbackType.Success));
+    fire(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
   },
   error(): void {
-    fire((api) => api.notificationAsync(api.NotificationFeedbackType.Error));
+    fire(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error));
   },
 };
