@@ -29,8 +29,8 @@ export default function KundaliScreen() {
   const { status, authDialog, canAddProfile, copy } = useKundaliHubPage({ isAuthenticated, authLoading });
   const pickerRef = useRef<KundaliProfilePickerHandle>(null);
 
-  const onSelectProfile = (profile: Profile) => {
-    router.push(`/kundali/${profile.id}` as never);
+  const onSelectProfile = (profile: Profile, opts?: { created: boolean }) => {
+    router.push(`/kundali/${profile.id}${opts?.created ? "?created=1" : ""}` as never);
   };
 
   return (

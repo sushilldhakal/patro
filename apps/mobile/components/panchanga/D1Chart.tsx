@@ -3,11 +3,12 @@ import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import { D1Chart as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 /** The drawing and the house-detail sheet are `@vedic-patro/ui/kit/jyotish`, the same chart the website draws; this file supplies the vakri / asta glyphs. */
-export function D1Chart({ houses, size }: { houses: BhavaHouse[]; size?: number }) {
+export function D1Chart({ houses, size, entrance }: { houses: BhavaHouse[]; size?: number; entrance?: boolean }) {
   return (
     <Shared
       houses={houses}
       size={size}
+      entrance={entrance}
       renderMarks={(mark) => (
         <GrahaStatusMarksSvg
           planetKey={mark.planetKey}

@@ -1,9 +1,10 @@
 import { INLINE_LOADER_SIZE } from "@/components/ui/States";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useKundaliChart, useKundaliDetailPage } from "@vedic-patro/features/kundali";
+import { contentSectionId, useKundaliChart, useKundaliDetailPage } from "@vedic-patro/features/kundali";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { ProfileForm, profileToInput } from "@/components/auth/ProfileForm";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
@@ -29,11 +30,12 @@ import { space } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
+import { haptics } from "@vedic-patro/ui/motion";
 
 const ayanamshaStorage = { load: getStoredAyanamshaMode, save: setStoredAyanamshaMode };
 
 export default function KundaliDetailScreen() {
-  const { profileId } = useLocalSearchParams<{ profileId: string }>();
+  const { profileId, created } = useLocalSearchParams<{ profileId: string; created?: string }>();
   const router = useRouter();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -49,6 +51,22 @@ export default function KundaliDetailScreen() {
     page.ayanamshaMode,
   );
   const showSidebar = useShowPanchangaSidebar();
+
+  /* A profile just added from the hub opens with `?created=1`: its kundali is being
+     drawn for the first time, which is the one moment the charts fade in and the
+     phone answers with a success tick. Opening a saved kundali does neither. The
+     flag is spent on that first paint so a section switch, a division change or a
+     later visit to this screen never replays it. */
+  const [chartEntrance, setChartEntrance] = useState(created === "1");
+  const chartReady = Boolean(detail) && status === "ready";
+  const chartShown = contentSectionId(section) === "kundali-overview" && Boolean(detail?.vargaCharts.entries["1"]?.length);
+  useEffect(() => {
+    if (!chartEntrance || !chartReady) return;
+    // Never the only feedback: no chart on screen, no tick.
+    if (chartShown) haptics.success();
+    setChartEntrance(false);
+    router.setParams({ created: undefined } as never);
+  }, [chartEntrance, chartReady, chartShown, router]);
 
   const topBar = (
     <View className={cn(kundaliClasses.topBar, "mb-4")}>
@@ -170,6 +188,7 @@ export default function KundaliDetailScreen() {
           birthLocation={location?.params}
           reportDisabled={false}
           onNavigate={setSection}
+          chartEntrance={chartEntrance}
         />
       </View>
     );

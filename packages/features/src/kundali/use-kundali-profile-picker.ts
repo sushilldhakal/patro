@@ -19,7 +19,14 @@ const GENDER_LABEL: Record<string, string> = {
   other: "profile.other",
 };
 
-export function useKundaliProfilePicker({ selectedId, onSelect }: { selectedId?: string | null; onSelect: (profile: Profile) => void }) {
+export function useKundaliProfilePicker({
+  selectedId,
+  onSelect,
+}: {
+  selectedId?: string | null;
+  /** `created` is true when the profile was just added — its kundali has never been drawn. */
+  onSelect: (profile: Profile, opts?: { created: boolean }) => void;
+}) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const { data: profiles, isLoading, isError } = useProfilesQuery();
@@ -73,7 +80,8 @@ export function useKundaliProfilePicker({ selectedId, onSelect }: { selectedId?:
             const wasEditingSelected = dialog.mode === "edit" && dialog.profile.id === selectedId;
             setDialog(null);
             await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
-            if (dialog.mode === "add" || wasEditingSelected) onSelect(saved);
+            if (dialog.mode === "add") onSelect(saved, { created: true });
+            else if (wasEditingSelected) onSelect(saved);
           },
         }
       : null,

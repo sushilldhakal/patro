@@ -9,7 +9,7 @@ export interface KundaliProfilePickerHandle {
 
 export const KundaliProfilePicker = forwardRef<
   KundaliProfilePickerHandle,
-  { selectedId?: string | null; onSelect: (profile: Profile) => void }
+  { selectedId?: string | null; onSelect: (profile: Profile, opts?: { created: boolean }) => void }
 >(function KundaliProfilePicker(props, ref) {
   const openAdd = useRef<() => void>(() => {});
   useImperativeHandle(ref, () => ({ openAdd: () => openAdd.current() }), []);

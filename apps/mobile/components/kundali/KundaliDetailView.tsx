@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -20,7 +20,7 @@ import { KundaliSources } from "@/components/kundali/KundaliSources";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { KundaliReport } from "@/components/kundali/KundaliReport";
 import type { KundaliDetailResponse, LocationParams } from "@/lib/api";
-import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import {
   BALA_TAB_SECTIONS,
@@ -36,24 +36,6 @@ import { buildPresentYogaRefIds } from "@vedic-patro/read-models/jyotish/kundali
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
-/**
- * Read by the kit chart on its first paint. Same key as
- * `packages/ui/src/kit/jyotish/native/D1Chart.tsx` — the chart is drawn
- * inside a component this change cannot edit, so the two files share a slot.
- */
-const CHART_ENTRANCE = "__vedicPatroKundaliChartEntrance";
-
-type ChartEntrance = { armed: boolean; haptic: boolean };
-
-function chartEntrance(): ChartEntrance {
-  const host = globalThis as typeof globalThis & { [CHART_ENTRANCE]?: ChartEntrance };
-  host[CHART_ENTRANCE] ??= { armed: false, haptic: false };
-  return host[CHART_ENTRANCE];
-}
-
-/** Charts that have already played their entrance this session. */
-const shownKundaliCharts = new Set<string>();
-
 type Props = {
   detail: KundaliDetailResponse;
   section: KundaliSectionId;
@@ -65,6 +47,8 @@ type Props = {
   reportDisabled?: boolean;
   /** Jump to another section — wires DashaSystemPanel's own tabs into the nav. */
   onNavigate?: (id: KundaliSectionId) => void;
+  /** The kundali was just generated: its charts fade in as they first appear. */
+  chartEntrance?: boolean;
 };
 
 export function KundaliDetailView({
@@ -77,6 +61,7 @@ export function KundaliDetailView({
   birthLocation,
   reportDisabled,
   onNavigate,
+  chartEntrance,
 }: Props) {
   const { t, lang } = useLocale();
   const d1Rows = detail.vargaCharts.entries["1"] ?? [];
@@ -106,21 +91,6 @@ export function KundaliDetailView({
   );
   const presentRefIds = useMemo(() => buildPresentYogaRefIds(detail.yogas), [detail.yogas]);
   const hasPresentYogas = detail.yogas.some((y) => y.present);
-  const chartKey = birthMoment
-    ? `${instantCacheKey(birthMoment)}@${birthLocation?.lat ?? ""},${birthLocation?.lon ?? ""}`
-    : "";
-  const showChart = show("kundali-overview") && d1Rows.length > 0;
-  if (showChart && chartKey && !shownKundaliCharts.has(chartKey)) {
-    const slot = chartEntrance();
-    slot.armed = true;
-    slot.haptic = true;
-  }
-  useLayoutEffect(() => {
-    if (showChart && chartKey) shownKundaliCharts.add(chartKey);
-    const slot = chartEntrance();
-    slot.armed = false;
-    slot.haptic = false;
-  });
 
   return (
     <View>
@@ -128,7 +98,7 @@ export function KundaliDetailView({
         <>
           <KundaliBirthPanchangaCard detail={detail} ayanamshaMode={ayanamshaMode} />
           {d1Rows.length > 0 ? (
-            <DivisionalChartCompare vargaCharts={detail.vargaCharts} combustion={detail.combustion} />
+            <DivisionalChartCompare vargaCharts={detail.vargaCharts} combustion={detail.combustion} entrance={chartEntrance} />
           ) : null}
         </>
       ) : null}

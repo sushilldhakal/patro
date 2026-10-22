@@ -1,8 +1,8 @@
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Pressable as RNPressable, type GestureResponderEvent } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { cssInterop, useColorScheme } from "nativewind";
-import { EASE_OUT, haptics } from "@vedic-patro/ui/motion";
+import { EASE_OUT } from "@vedic-patro/ui/motion";
 import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from "react-native-svg";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { mobileRoles } from "@vedic-patro/design-tokens";
@@ -18,21 +18,6 @@ const MotionView = cssInterop(Animated.View, { className: "style" });
 /** The chart appearing after a kundali is generated. Not a duration token. */
 const KUNDALI_CHART_FADE_MS = 240;
 const CHART_FADE = FadeIn.duration(KUNDALI_CHART_FADE_MS).easing(EASE_OUT);
-
-/**
- * Set by the kundali detail screen before this chart paints, once per chart
- * per session. A module both files can see: the kit index is not part of this
- * change, and the chart is rendered by a component this change cannot edit.
- */
-const CHART_ENTRANCE = "__vedicPatroKundaliChartEntrance";
-
-type ChartEntrance = { armed: boolean; haptic: boolean };
-
-function chartEntrance(): ChartEntrance {
-  const host = globalThis as typeof globalThis & { [CHART_ENTRANCE]?: ChartEntrance };
-  host[CHART_ENTRANCE] ??= { armed: false, haptic: false };
-  return host[CHART_ENTRANCE];
-}
 
 /** react-native-svg's web types (picked up through `moduleSuffixes`) describe `onPress` with an unsatisfiable type; the cast is the narrow workaround. */
 function svgPress(handler: (() => void) | undefined): any {
@@ -82,21 +67,10 @@ function DrishtiPanel({ panel, onClose }: { panel: D1DrishtiPanel; onClose: () =
   );
 }
 
-export function D1Chart({ houses, size, renderMarks }: D1ChartProps) {
-  const fade = useRef<boolean | null>(null);
-  const haptic = useRef(false);
-  if (fade.current === null) {
-    const slot = chartEntrance();
-    fade.current = slot.armed;
-    haptic.current = slot.armed && slot.haptic;
-    if (haptic.current) slot.haptic = false;
-  }
-  useLayoutEffect(() => {
-    chartEntrance().armed = false;
-    if (!haptic.current) return;
-    haptic.current = false;
-    haptics.success();
-  }, []);
+export function D1Chart({ houses, size, renderMarks, entrance = false }: D1ChartProps) {
+  /* Only the value at mount counts: the screen clears `entrance` right after this
+     first paint, and that must not cut the fade short or play it again later. */
+  const fade = useRef(entrance).current;
   const chart = useD1Chart(houses);
   const { cells, togglePlanet, setOpenHouse } = chart;
   const { colorScheme } = useColorScheme();
@@ -147,7 +121,7 @@ export function D1Chart({ houses, size, renderMarks }: D1ChartProps) {
   /* Square, and the full width of the column (or `size` when given): an
      aspectRatio box uses the width it has instead of letterboxing. */
   return (
-    <MotionView className="w-full items-center" {...(fade.current ? { entering: CHART_FADE } : {})}>
+    <MotionView className="w-full items-center" {...(fade ? { entering: CHART_FADE } : {})}>
       <RNPressable
         onPress={onChartPress}
         onLayout={(e) => setChartSize(e.nativeEvent.layout.width)}

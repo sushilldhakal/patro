@@ -294,7 +294,8 @@ export type KundaliProfileFormArgs = {
 
 export type KundaliProfilePickerProps = {
   selectedId?: string | null;
-  onSelect: (profile: Profile) => void;
+  /** `created` is true when the profile was just added. */
+  onSelect: (profile: Profile, opts?: { created: boolean }) => void;
   bindOpen?: (openAdd: () => void) => void;
   onPrefetch?: (id: string) => void;
   renderForm: (args: KundaliProfileFormArgs) => ReactNode;
@@ -345,6 +346,8 @@ export type D1MarkArgs = {
 export type D1ChartProps = {
   houses: BhavaHouse[];
   size?: number;
+  /** Fade in on mount — only for a kundali that was just generated. Read once; the app ignores later changes. */
+  entrance?: boolean;
   renderMarks: (args: D1MarkArgs) => ReactNode;
 };
 

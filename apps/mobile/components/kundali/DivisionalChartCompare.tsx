@@ -8,14 +8,24 @@ import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import type { DivisionalPanelConfig } from "@vedic-patro/features/kundali";
 import { DivisionalChartCompare as Shared } from "@vedic-patro/ui/kit/jyotish";
 
-export function DivisionalChartCompare(props: { vargaCharts: VargaCharts; combustion?: Record<string, boolean | null>; defaultLeft?: DivisionalPanelConfig; defaultRight?: DivisionalPanelConfig }) {
+export function DivisionalChartCompare({
+  entrance,
+  ...props
+}: {
+  vargaCharts: VargaCharts;
+  combustion?: Record<string, boolean | null>;
+  defaultLeft?: DivisionalPanelConfig;
+  defaultRight?: DivisionalPanelConfig;
+  /** The charts fade in on first mount: a kundali that was just generated. */
+  entrance?: boolean;
+}) {
   return (
     <Shared
       {...props}
       renderSelect={({ label, value, onChange, options }) => (
         <NativeStringSelect value={value} ariaLabel={label} options={options.map((option) => ({ value: option.id, label: option.label }))} onChange={onChange} />
       )}
-      renderChart={(houses) => <D1Chart houses={houses} />}
+      renderChart={(houses) => <D1Chart houses={houses} entrance={entrance} />}
       renderLegend={() => <GrahaStatusLegend />}
       renderBhava={(args) => <BhavaTable {...args} />}
       renderGraha={({ graha, size }) => <GrahaPlanetIcon graha={graha as GrahaKey} size={size} />}
