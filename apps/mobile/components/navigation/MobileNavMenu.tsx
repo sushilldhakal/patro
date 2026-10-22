@@ -83,7 +83,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
         tile(item.id, label, itemHref(item), resolveDrawerIcon(section.id, item.id)),
       );
       if (section.id === "patro") {
-        items.push(tile("reminders", menu.appOnly.reminders, "/reminders", "calendar-clock"));
+        items.push(tile("reminders", menu.appOnly.reminders, "/reminders", resolveDrawerIcon("patro", "reminders")));
       }
       if (section.id === "graha") {
         items.unshift(tile("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar")));

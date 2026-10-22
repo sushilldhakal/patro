@@ -1,59 +1,42 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { RelatedPageLinks as RelatedPageLinksView, type RelatedLinkItem } from "@vedic-patro/ui/kit/shell";
 import { useRelatedPageLinks } from "@vedic-patro/features/common";
-import {
-  CalendarHeart,
-  CalendarSync,
-  ChartPie,
-  CalendarX,
-  Leaf,
-  Timer,
-  CalendarClock,
-  Compass,
-  Eclipse,
-  Grid3x3,
-  Heart,
-  HeartHandshake,
-  Moon,
-  MoonStar,
-  Orbit,
-  Route,
-  RotateCcw,
-  Sparkles,
-  Sunrise,
-  Sun,
-  type LucideIcon,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { resolveNavIcon, type NavIconName } from "@vedic-patro/icons";
+import { NAV_ICONS } from "@/lib/nav-icons";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { resolveSitePageId, shouldShowRelatedLinks, siteLinkRouteProps } from "@/lib/related-page-links";
 
-const SITE_LINK_ICONS: Record<string, LucideIcon> = {
-  panchanga: CalendarClock,
-  "aakash-gochar": Orbit,
-  holidays: CalendarHeart,
-  converter: CalendarSync,
-  suryakranti: Sunrise,
-  "panchanga-year": ChartPie,
-  dainikkranti: Moon,
-  "panchak-patro": CalendarX,
-  ritu: Leaf,
-  "avakahada-chakra": Grid3x3,
-  "abhijit-muhurta": Timer,
-  kundali: Sparkles,
-  "kundali-milan": Heart,
-  gochar: Route,
-  "graha-asta": Sunrise,
-  "graha-vakri": RotateCcw,
-  "chandra-grahan": MoonStar,
-  "surya-grahan": Eclipse,
-  rashifal: Sun,
+/** Same icons the navigation draws (@vedic-patro/icons), keyed by related-link id. */
+const SITE_LINK_ICONS: Record<string, NavIconName> = {
+  panchanga: "scroll-text",
+  "aakash-gochar": "orbit",
+  holidays: "calendar-heart",
+  converter: "calendar-sync",
+  suryakranti: "sunrise",
+  "panchanga-year": "chart-pie",
+  dainikkranti: "moon",
+  "panchak-patro": "calendar-x",
+  "adhik-maas": "calendar-plus",
+  ritu: "leaf",
+  "avakahada-chakra": "grid-3x3",
+  "abhijit-muhurta": "timer",
+  kundali: "sparkles",
+  "kundali-milan": "heart",
+  gochar: "route",
+  "graha-asta": "eye-off",
+  "graha-vakri": "rotate-ccw",
+  "chandra-grahan": "sun-moon",
+  "surya-grahan": "eclipse",
+  rashifal: "sun",
 };
 
 function iconForLinkId(id: string): LucideIcon {
-  if (id.startsWith("element:") || id.startsWith("sait:")) return HeartHandshake;
-  return SITE_LINK_ICONS[id] ?? Compass;
+  if (id.startsWith("element:")) return NAV_ICONS[resolveNavIcon("tables", id.slice("element:".length))];
+  if (id.startsWith("sait:")) return NAV_ICONS[resolveNavIcon("sait", id.slice("sait:".length))];
+  return NAV_ICONS[SITE_LINK_ICONS[id] ?? "compass"];
 }
 
 export function RelatedPageLinks({ className }: { className?: string }) {

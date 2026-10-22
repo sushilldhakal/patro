@@ -13,9 +13,10 @@ test("nav entries resolve the same in every section", () => {
   assert.equal(resolveNavIcon("patro", "adhik-maas"), "calendar-plus");
   assert.equal(resolveNavIcon("jyotish", "kundali"), "sparkles");
   assert.equal(resolveNavIcon("spans", "chandra-rashi"), "moon-star");
-  assert.equal(resolveNavIcon("tables", "hora"), "clock-3");
+  assert.equal(resolveNavIcon("tables", "hora"), "hourglass");
   assert.equal(resolveNavIcon("graha", "graha-vakri"), "rotate-ccw");
-  assert.equal(resolveNavIcon("sait", "vivah"), "heart-handshake");
+  assert.equal(resolveNavIcon("sait", "vivah"), "gem");
+  assert.equal(resolveNavIcon("sait", "unknown-ceremony"), "heart-handshake");
 });
 
 test("unknown entries fall back per section", () => {

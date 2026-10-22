@@ -19,7 +19,7 @@ export { iconSize, type IconSize };
 export const FEATURE_ICON = {
   // Main
   home: "house",
-  panchanga: "star",
+  panchanga: "scroll-text",
   kundali: "sparkles",
   dainikkranti: "moon",
   "kundali-milan": "heart",
@@ -37,33 +37,41 @@ export const FEATURE_ICON = {
   "panchak-patro": "calendar-x",
   "adhik-maas": "calendar-plus",
   ritu: "leaf",
-  reminders: "calendar-clock",
+  reminders: "bell",
   // Jyotish
   avakahada: "grid-3x3",
   abhijit: "timer",
   // Panchanga spans (the five limbs)
-  tithi: "moon",
+  tithi: "contrast",
   nakshatra: "star",
-  yoga: "sparkles",
+  yoga: "infinity",
   karana: "layers",
   "chandra-rashi": "moon-star",
   // Day tables
   choghadiya: "clock-3",
-  hora: "clock-3",
-  lagna: "sunrise",
-  chandrabala: "moon-star",
-  tarabala: "star",
-  "panchaka-rahita": "calendar-clock",
-  pushkara: "sparkles",
+  hora: "hourglass",
+  lagna: "arrow-up-from-line",
+  chandrabala: "gauge",
+  tarabala: "sparkle",
+  "panchaka-rahita": "calendar-check",
+  pushkara: "droplets",
   // Graha
   gochar: "route",
   "aakash-gochar": "orbit",
-  "graha-asta": "sunrise",
+  "graha-asta": "eye-off",
   "graha-vakri": "rotate-ccw",
-  "chandra-grahan": "moon-star",
+  "chandra-grahan": "sun-moon",
   "surya-grahan": "eclipse",
-  // Sait (every muhurta category)
+  // Sait: the category fallback, then one per ceremony
   sait: "heart-handshake",
+  vivah: "gem",
+  bratabandha: "graduation-cap",
+  "griha-aarambha": "hammer",
+  "griha-pravesh": "door-open",
+  "byaparik-pratisthan": "store",
+  "rudri-jurne": "shell",
+  "agni-jurne": "flame",
+  annaprasan: "baby",
   // Account
   account: "user",
   "sign-in": "log-in",
@@ -90,7 +98,6 @@ const SECTION_FALLBACK: Record<NavSectionId, NavIconName> = {
 
 /** The icon a navigation entry is drawn with. Same answer in both apps. */
 export function resolveNavIcon(sectionId: string, itemId: string): NavIconName {
-  if (sectionId === "sait") return FEATURE_ICON.sait;
   const own = (FEATURE_ICON as Record<string, NavIconName>)[itemId];
   if (own) return own;
   return SECTION_FALLBACK[sectionId as NavSectionId] ?? "calendar-days";
@@ -100,6 +107,7 @@ export function resolveNavIcon(sectionId: string, itemId: string): NavIconName {
 export type NavIconName =
   | (typeof FEATURE_ICON)[FeatureId]
   | "calendar-days"
+  | "calendar-clock"
   | "chevron-right";
 
 export const NAV_ICON_NAMES: readonly NavIconName[] = [

@@ -1,18 +1,15 @@
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { CalendarClock, HeartHandshake, MoonStar, type LucideIcon } from "lucide-react";
+import { resolveNavIcon } from "@vedic-patro/icons";
 import { usePanchangaDirectory, type DirectoryLink } from "@vedic-patro/features/panchanga-details";
 import { QuickLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { featureIcon } from "@/lib/nav-icons";
+import { NAV_ICONS, featureIcon } from "@/lib/nav-icons";
 
-const ICONS: Partial<Record<DirectoryLink["icon"], LucideIcon>> = {
-  "moon-star": MoonStar,
-  "calendar-clock": CalendarClock,
-  "heart-handshake": HeartHandshake,
-};
+/** Each element and ceremony has its own icon (the one the navigation draws). */
+const linkIcon = (link: DirectoryLink) => NAV_ICONS[resolveNavIcon(link.kind === "sait" ? "sait" : "tables", link.id)];
 
 /**
  * Categorized link grid (transition elements → graha detail → daily tables →
@@ -32,7 +29,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
             to="/panchanga/element/$name"
             params={{ name: link.id }}
             search={patroElementLinkSearch(link.id, location, era) as Record<string, unknown>}
-            icon={ICONS[link.icon] ?? MoonStar}
+            icon={linkIcon(link)}
             label={link.label}
             description={link.description}
           />
@@ -55,7 +52,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
             to="/sait/$category"
             params={{ category: link.id }}
             search={patroRouteLinkSearch(`/sait/${link.id}`, location, era)}
-            icon={HeartHandshake}
+            icon={linkIcon(link)}
             label={link.label}
             description={link.description}
           />

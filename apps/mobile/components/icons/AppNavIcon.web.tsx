@@ -6,6 +6,26 @@ import CalendarX from "lucide-react/dist/esm/icons/calendar-x";
 import CalendarPlus from "lucide-react/dist/esm/icons/calendar-plus";
 import Leaf from "lucide-react/dist/esm/icons/leaf";
 import Timer from "lucide-react/dist/esm/icons/timer";
+import ScrollText from "lucide-react/dist/esm/icons/scroll-text";
+import Bell from "lucide-react/dist/esm/icons/bell";
+import Contrast from "lucide-react/dist/esm/icons/contrast";
+import InfinityIcon from "lucide-react/dist/esm/icons/infinity";
+import Hourglass from "lucide-react/dist/esm/icons/hourglass";
+import ArrowUpFromLine from "lucide-react/dist/esm/icons/arrow-up-from-line";
+import Gauge from "lucide-react/dist/esm/icons/gauge";
+import Sparkle from "lucide-react/dist/esm/icons/sparkle";
+import CalendarCheck from "lucide-react/dist/esm/icons/calendar-check";
+import Droplets from "lucide-react/dist/esm/icons/droplets";
+import EyeOff from "lucide-react/dist/esm/icons/eye-off";
+import SunMoon from "lucide-react/dist/esm/icons/sun-moon";
+import Gem from "lucide-react/dist/esm/icons/gem";
+import GraduationCap from "lucide-react/dist/esm/icons/graduation-cap";
+import Hammer from "lucide-react/dist/esm/icons/hammer";
+import DoorOpen from "lucide-react/dist/esm/icons/door-open";
+import Store from "lucide-react/dist/esm/icons/store";
+import Shell from "lucide-react/dist/esm/icons/shell";
+import Flame from "lucide-react/dist/esm/icons/flame";
+import Baby from "lucide-react/dist/esm/icons/baby";
 import BookOpen from "lucide-react/dist/esm/icons/book-open";
 import CalendarClock from "lucide-react/dist/esm/icons/calendar-clock";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days";
@@ -39,6 +59,26 @@ import type { NavIconName } from "@vedic-patro/icons";
 
 const LUCIDE: Record<NavIconName, LucideIcon> = {
   house: House,
+  "scroll-text": ScrollText,
+  bell: Bell,
+  contrast: Contrast,
+  infinity: InfinityIcon,
+  hourglass: Hourglass,
+  "arrow-up-from-line": ArrowUpFromLine,
+  gauge: Gauge,
+  sparkle: Sparkle,
+  "calendar-check": CalendarCheck,
+  droplets: Droplets,
+  "eye-off": EyeOff,
+  "sun-moon": SunMoon,
+  gem: Gem,
+  "graduation-cap": GraduationCap,
+  hammer: Hammer,
+  "door-open": DoorOpen,
+  store: Store,
+  shell: Shell,
+  flame: Flame,
+  baby: Baby,
   "calendar-heart": CalendarHeart,
   "calendar-sync": CalendarSync,
   "chart-pie": ChartPie,

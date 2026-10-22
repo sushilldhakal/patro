@@ -7,6 +7,26 @@ import { __iconNode as CalendarXNode } from "lucide-react/dist/esm/icons/calenda
 import { __iconNode as CalendarPlusNode } from "lucide-react/dist/esm/icons/calendar-plus";
 import { __iconNode as LeafNode } from "lucide-react/dist/esm/icons/leaf";
 import { __iconNode as TimerNode } from "lucide-react/dist/esm/icons/timer";
+import { __iconNode as ScrollTextNode } from "lucide-react/dist/esm/icons/scroll-text";
+import { __iconNode as BellNode } from "lucide-react/dist/esm/icons/bell";
+import { __iconNode as ContrastNode } from "lucide-react/dist/esm/icons/contrast";
+import { __iconNode as InfinityNode } from "lucide-react/dist/esm/icons/infinity";
+import { __iconNode as HourglassNode } from "lucide-react/dist/esm/icons/hourglass";
+import { __iconNode as ArrowUpFromLineNode } from "lucide-react/dist/esm/icons/arrow-up-from-line";
+import { __iconNode as GaugeNode } from "lucide-react/dist/esm/icons/gauge";
+import { __iconNode as SparkleNode } from "lucide-react/dist/esm/icons/sparkle";
+import { __iconNode as CalendarCheckNode } from "lucide-react/dist/esm/icons/calendar-check";
+import { __iconNode as DropletsNode } from "lucide-react/dist/esm/icons/droplets";
+import { __iconNode as EyeOffNode } from "lucide-react/dist/esm/icons/eye-off";
+import { __iconNode as SunMoonNode } from "lucide-react/dist/esm/icons/sun-moon";
+import { __iconNode as GemNode } from "lucide-react/dist/esm/icons/gem";
+import { __iconNode as GraduationCapNode } from "lucide-react/dist/esm/icons/graduation-cap";
+import { __iconNode as HammerNode } from "lucide-react/dist/esm/icons/hammer";
+import { __iconNode as DoorOpenNode } from "lucide-react/dist/esm/icons/door-open";
+import { __iconNode as StoreNode } from "lucide-react/dist/esm/icons/store";
+import { __iconNode as ShellNode } from "lucide-react/dist/esm/icons/shell";
+import { __iconNode as FlameNode } from "lucide-react/dist/esm/icons/flame";
+import { __iconNode as BabyNode } from "lucide-react/dist/esm/icons/baby";
 import { __iconNode as BookOpenNode } from "lucide-react/dist/esm/icons/book-open";
 import { __iconNode as CalendarClockNode } from "lucide-react/dist/esm/icons/calendar-clock";
 import { __iconNode as CalendarDaysNode } from "lucide-react/dist/esm/icons/calendar-days";
@@ -39,6 +59,26 @@ import { __iconNode as UserNode } from "lucide-react/dist/esm/icons/user";
 
 const LUCIDE: Record<NavIconName, LucideIconNode> = {
   house: HouseNode,
+  "scroll-text": ScrollTextNode,
+  bell: BellNode,
+  contrast: ContrastNode,
+  infinity: InfinityNode,
+  hourglass: HourglassNode,
+  "arrow-up-from-line": ArrowUpFromLineNode,
+  gauge: GaugeNode,
+  sparkle: SparkleNode,
+  "calendar-check": CalendarCheckNode,
+  droplets: DropletsNode,
+  "eye-off": EyeOffNode,
+  "sun-moon": SunMoonNode,
+  gem: GemNode,
+  "graduation-cap": GraduationCapNode,
+  hammer: HammerNode,
+  "door-open": DoorOpenNode,
+  store: StoreNode,
+  shell: ShellNode,
+  flame: FlameNode,
+  baby: BabyNode,
   "calendar-heart": CalendarHeartNode,
   "calendar-sync": CalendarSyncNode,
   "chart-pie": ChartPieNode,

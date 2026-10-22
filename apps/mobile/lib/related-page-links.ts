@@ -5,6 +5,7 @@
 
 import { elementHref } from "@/lib/element-routes";
 import type { DrawerIconName } from "@/lib/drawer-icons";
+import { resolveNavIcon } from "@vedic-patro/icons";
 
 import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
 
@@ -35,7 +36,7 @@ export const SITE_LINK_PATH: Record<string, string> = {
 
 /** Same Lucide icons web's `SITE_LINK_ICONS` picks, as drawer icon names. */
 export const SITE_LINK_ICON: Record<string, DrawerIconName> = {
-  panchanga: "calendar-clock",
+  panchanga: "scroll-text",
   "aakash-gochar": "orbit",
   holidays: "calendar-heart",
   converter: "calendar-sync",
@@ -43,21 +44,23 @@ export const SITE_LINK_ICON: Record<string, DrawerIconName> = {
   "panchanga-year": "chart-pie",
   dainikkranti: "moon",
   "panchak-patro": "calendar-x",
+  "adhik-maas": "calendar-plus",
   ritu: "leaf",
   "avakahada-chakra": "grid-3x3",
   "abhijit-muhurta": "timer",
   kundali: "sparkles",
   "kundali-milan": "heart",
   gochar: "route",
-  "graha-asta": "sunrise",
+  "graha-asta": "eye-off",
   "graha-vakri": "rotate-ccw",
-  "chandra-grahan": "moon-star",
+  "chandra-grahan": "sun-moon",
   "surya-grahan": "eclipse",
   rashifal: "sun",
 };
 
 export function iconForLinkId(id: string): DrawerIconName {
-  if (id.startsWith("element:") || id.startsWith("sait:")) return "heart-handshake";
+  if (id.startsWith("element:")) return resolveNavIcon("tables", id.slice("element:".length));
+  if (id.startsWith("sait:")) return resolveNavIcon("sait", id.slice("sait:".length));
   return SITE_LINK_ICON[id] ?? "compass";
 }
 

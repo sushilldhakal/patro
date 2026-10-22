@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { resolveNavIcon } from "@vedic-patro/icons";
 import { usePanchangaDirectory, type DirectoryLink } from "@vedic-patro/features/panchanga-details";
 import { QuickLinkSection, type QuickLink } from "@/components/home/QuickLinkTile";
 import { elementHref } from "@/lib/element-routes";
@@ -18,7 +19,7 @@ export function PanchangaDirectoryMobile() {
         <QuickLinkSection
           key={section.id}
           title={section.title}
-          links={section.links.map((link): QuickLink => ({ href: href(link), label: link.label, description: link.description, icon: link.icon }))}
+          links={section.links.map((link): QuickLink => ({ href: href(link), label: link.label, description: link.description, icon: resolveNavIcon(link.kind === "sait" ? "sait" : "graha", link.id) }))}
         />
       ))}
     </View>

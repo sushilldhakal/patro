@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS documents_meta (
 
 _seed_lock = threading.Lock()
 _seeded = False
+_seeded_stamp = 0.0
 _current_version: str | None = None
 
 
@@ -387,14 +388,28 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     )
 
 
+def _manifest_stamp(paths: list[Path] | None = None) -> float:
+    """Newest manifest mtime. A running server uses this to notice a new or edited JSON file."""
+    latest = 0.0
+    for path in paths if paths is not None else _manifest_paths():
+        try:
+            latest = max(latest, path.stat().st_mtime)
+        except OSError:
+            continue
+    return latest
+
+
 def ensure_seeded() -> None:
-    global _seeded, _current_version
-    if _seeded:
+    global _seeded, _seeded_stamp, _current_version
+    # Uvicorn --reload watches Python, not these JSON files. Recheck the
+    # folder mtime so adding a document shows up on the next request.
+    if _seeded and _manifest_stamp() <= _seeded_stamp:
         return
     with _seed_lock:
-        if _seeded:
-            return
         paths = _manifest_paths()
+        stamp = _manifest_stamp(paths)
+        if _seeded and stamp <= _seeded_stamp:
+            return
         version = _content_version(paths)
         with _connect() as conn:
             conn.executescript(_SCHEMA)
@@ -405,6 +420,7 @@ def ensure_seeded() -> None:
             if current is not None and current["value"] == version:
                 _current_version = version
                 _seeded = True
+                _seeded_stamp = stamp
                 return
 
             for path in paths:
@@ -426,6 +442,7 @@ def ensure_seeded() -> None:
             )
         _current_version = version
         _seeded = True
+        _seeded_stamp = stamp
 
 
 def content_version() -> str:
