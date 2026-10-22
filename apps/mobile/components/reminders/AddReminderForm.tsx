@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 import { Button } from "@/components/ui/Button";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
@@ -11,25 +13,44 @@ import { LEAD_MINUTE_OPTIONS, WINDOW_OPTIONS, type WindowKind } from "@/lib/noti
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
+import { SelectionFill } from "@vedic-patro/ui";
+import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 export const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
 export const WEEKDAYS_EN = WEEKDAYS_SHORT;
 
 export function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  const reduced = useReducedMotionPref();
+  const [pressed, setPressed] = useState(false);
   return (
-    <Pressable
-      onPress={onPress}
+    <ScalePressable
+      onPress={() => {
+        haptics.tick();
+        onPress();
+      }}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
-      className={cn(msc.reminderChip, active ? "border-secondary bg-secondary" : "border-border bg-card")}
+      pressRetentionOffset={16}
+      className={cn(msc.reminderChip, active ? "border-secondary bg-card" : "border-border bg-card")}
+      style={{
+        transform: [{ scale: !reduced && pressed ? PRESS_SCALE : 1 }],
+        transitionProperty: "transform",
+        transitionDuration: reduced ? 0 : DURATION.fast,
+        transitionTimingFunction: CSS_EASE_OUT,
+      }}
     >
+      <SelectionFill active={active} className="rounded-full bg-secondary" />
       <Text
         className={cn(msc.reminderChipLabel, active ? "text-secondary-foreground" : "text-foreground")}
         style={nepaliTextStyle(13)}
       >
         {label}
       </Text>
-    </Pressable>
+    </ScalePressable>
   );
 }
 

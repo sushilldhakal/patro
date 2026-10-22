@@ -4,6 +4,7 @@ import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";
 import { Box, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroDayTimeHeaderProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 import { PatroDayTimePanel } from "./PatroDayTimePanel";
@@ -62,7 +63,7 @@ export function PatroDayTimeHeader({
 
       <View className="flex-row items-center justify-between gap-2">
         <View className="min-w-0 shrink flex-row items-center gap-2">
-          <Pressable label={labels.prevDay} onPress={() => h.stepDay(-1)} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+          <Pressable label={labels.prevDay} onPress={() => { haptics.tick(); h.stepDay(-1); }} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
           </Pressable>
           <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, "min-w-28 flex-none shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}>
@@ -72,7 +73,7 @@ export function PatroDayTimeHeader({
             </Text>
             {h.timeText ? <Text className={pick.dateButtonTime}>{h.timeText}</Text> : null}
           </Pressable>
-          <Pressable label={labels.nextDay} onPress={() => h.stepDay(1)} disabled={nextDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+          <Pressable label={labels.nextDay} onPress={() => { haptics.tick(); h.stepDay(1); }} disabled={nextDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
           </Pressable>
         </View>

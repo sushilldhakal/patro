@@ -3,7 +3,8 @@ import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "re
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
-import { Box, Grid, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { Box, Grid, Icon, Pressable, SelectionFill, Sheet, Text } from "@vedic-patro/ui";
+import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroCalendarHeaderProps, PatroMonthYearNavProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
@@ -78,7 +79,7 @@ export function PatroCalendarHeader({
   const stepper = (
     <View className="flex-row items-center gap-2">
       <View style={{ width: control, height: control }}>
-        <Pressable label={labels.prevMonth} onPress={() => header.stepMonth(-1)} disabled={prevDisabled} className={cn(cls.iconButton, "h-full w-full")}>
+        <Pressable label={labels.prevMonth} onPress={() => { haptics.tick(); header.stepMonth(-1); }} disabled={prevDisabled} className={cn(cls.iconButton, "h-full w-full")}>
           <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
         </Pressable>
       </View>
@@ -95,7 +96,7 @@ export function PatroCalendarHeader({
         </Pressable>
       </View>
       <View style={{ width: control, height: control }}>
-        <Pressable label={labels.nextMonth} onPress={() => header.stepMonth(1)} disabled={nextDisabled} className={cn(cls.iconButton, "h-full w-full")}>
+        <Pressable label={labels.nextMonth} onPress={() => { haptics.tick(); header.stepMonth(1); }} disabled={nextDisabled} className={cn(cls.iconButton, "h-full w-full")}>
           <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
         </Pressable>
       </View>
@@ -106,7 +107,18 @@ export function PatroCalendarHeader({
     segments && segments.length > 0 ? (
       <Box className={cn(cls.segment, cls.nativeSegmentRow)} label={segmentsLabel}>
         {segments.map((seg) => (
-          <Pressable key={seg.key} label={seg.label} role="tab" selected={seg.active} onPress={seg.onPress} className={cn(cls.nativeSegmentRowItem, seg.active && cls.segmentItemActive)}>
+          <Pressable
+            key={seg.key}
+            label={seg.label}
+            role="tab"
+            selected={seg.active}
+            onPress={() => {
+              if (!seg.active) haptics.tick();
+              seg.onPress();
+            }}
+            className={cls.nativeSegmentRowItem}
+          >
+            <SelectionFill active={seg.active} className={cn("rounded-xl", cls.segmentItemActive)} />
             <Text className={cn(cls.segmentLabel, seg.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{seg.label}</Text>
           </Pressable>
         ))}
@@ -120,7 +132,14 @@ export function PatroCalendarHeader({
           .filter((seg) => !seg.active)
           .map((seg) => (
             <View key={seg.key} className="shrink-0" style={{ height: control }}>
-              <Pressable label={seg.label} onPress={seg.onPress} className={cn(cls.swapButton, "h-full")}>
+              <Pressable
+                label={seg.label}
+                onPress={() => {
+                  haptics.tick();
+                  seg.onPress();
+                }}
+                className={cn(cls.swapButton, "h-full")}
+              >
                 <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
                 <Text className={cls.swapLabel}>{seg.label}</Text>
               </Pressable>
@@ -200,9 +219,14 @@ export function PatroCalendarHeader({
                 label={e.label}
                 role="tab"
                 selected={e.active}
-                onPress={() => (e.active ? undefined : onEraChange(e.era))}
-                className={cn(cls.segmentItem, e.active && cls.segmentItemActive)}
+                onPress={() => {
+                  if (e.active) return;
+                  haptics.tick();
+                  onEraChange(e.era);
+                }}
+                className={cls.segmentItem}
               >
+                <SelectionFill active={e.active} className={cn("rounded-xl", cls.segmentItemActive)} />
                 <Text className={cn(cls.segmentLabel, e.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{e.label}</Text>
               </Pressable>
             ))}
@@ -210,7 +234,7 @@ export function PatroCalendarHeader({
         ) : null}
         <Text className={cls.panelLabel}>{labels.yearSection}</Text>
         <Box className={cls.yearRow}>
-          <Pressable label={labels.prevYear} onPress={() => header.stepYear("prev")} className={cls.iconButtonSmall}>
+          <Pressable label={labels.prevYear} onPress={() => { haptics.tick(); header.stepYear("prev"); }} className={cls.iconButtonSmall}>
             <Icon node={shellIcons.chevronLeft} size="sm" tone="secondary" />
           </Pressable>
           <TextInput
@@ -222,10 +246,10 @@ export function PatroCalendarHeader({
             accessibilityLabel={labels.yearInput}
             className={cn(cls.yearInput, yearInput.invalid ? cls.yearInputBad : cls.yearInputOk)}
           />
-          <Pressable label={labels.yearGo} onPress={yearInput.commit} className={cls.yearGo}>
+          <Pressable label={labels.yearGo} onPress={() => { haptics.tick(); yearInput.commit(); }} className={cls.yearGo}>
             <Text className={cls.yearGoLabel}>{labels.yearGo}</Text>
           </Pressable>
-          <Pressable label={labels.nextYear} onPress={() => header.stepYear("next")} className={cls.iconButtonSmall}>
+          <Pressable label={labels.nextYear} onPress={() => { haptics.tick(); header.stepYear("next"); }} className={cls.iconButtonSmall}>
             <Icon node={shellIcons.chevronRight} size="sm" tone="secondary" />
           </Pressable>
         </Box>
@@ -233,7 +257,15 @@ export function PatroCalendarHeader({
         <Text className={cls.panelLabel}>{labels.monthSection}</Text>
         <Grid cols={3} gap={8}>
           {header.months.map((m) => (
-            <Pressable key={m.month} label={m.label} onPress={m.pick} className={cn(cls.monthChip, m.selected ? cls.monthChipActive : cls.monthChipIdle)}>
+            <Pressable
+              key={m.month}
+              label={m.label}
+              onPress={() => {
+                if (!m.selected) haptics.tick();
+                m.pick();
+              }}
+              className={cn(cls.monthChip, m.selected ? cls.monthChipActive : cls.monthChipIdle)}
+            >
               <Text className={cn(cls.monthChipLabel, m.selected ? cls.monthChipLabelActive : cls.monthChipLabelIdle)}>{m.label}</Text>
             </Pressable>
           ))}

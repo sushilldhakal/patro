@@ -1,4 +1,7 @@
+import { useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { usePathname } from "expo-router";
 import { useNavPress } from "@/lib/use-nav-press";
@@ -13,6 +16,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { LinearGradient } from "expo-linear-gradient";
 import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 export function FloatingNavBar() {
   const navPress = useNavPress();
@@ -46,16 +52,10 @@ export function FloatingNavBar() {
         {FLOATING_NAV.map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
-            <Pressable
+            <NavItem
               key={item.href}
+              active={active}
               onPress={() => navPress(item.href)}
-              className={cn(
-                "min-w-0 justify-center",
-                shellClasses.navItem,
-                active && shellClasses.navItemActive,
-              )}
-              accessibilityRole="button"
-              accessibilityState={{ selected: active }}
             >
               <AppNavIcon
                 name={item.icon}
@@ -73,10 +73,39 @@ export function FloatingNavBar() {
               >
                 {pick(item.ne, item.en)}
               </Text>
-            </Pressable>
+            </NavItem>
           );
         })}
       </View>
     </View>
+  );
+}
+
+/** Press scale only. Tabs are peers, so the active item never slides. */
+function NavItem({ active, onPress, children }: { active: boolean; onPress: () => void; children: ReactNode }) {
+  const reduced = useReducedMotionPref();
+  const [pressed, setPressed] = useState(false);
+  return (
+    <ScalePressable
+      onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      className={cn(
+        "min-w-0 justify-center",
+        shellClasses.navItem,
+        active && shellClasses.navItemActive,
+      )}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      pressRetentionOffset={16}
+      style={{
+        transform: [{ scale: !reduced && pressed ? PRESS_SCALE : 1 }],
+        transitionProperty: "transform",
+        transitionDuration: reduced ? 0 : DURATION.fast,
+        transitionTimingFunction: CSS_EASE_OUT,
+      }}
+    >
+      {children}
+    </ScalePressable>
   );
 }

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 import { useRouter } from "expo-router";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Text } from "@/components/ui/Text";
@@ -9,6 +11,9 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
+import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 export type QuickLink = {
   href: string;
@@ -29,17 +34,30 @@ const TILE_MAX_AT_MD = 128;
 export function QuickLinkTile({ link, tileSize }: { link: QuickLink; tileSize?: number }) {
   const router = useRouter();
   const colors = useThemeColors();
+  const reduced = useReducedMotionPref();
+  const [pressed, setPressed] = useState(false);
   const square = tileSize != null;
   return (
-    <Pressable
+    <ScalePressable
       onPress={() => router.push(link.href as never)}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       accessibilityRole="button"
+      pressRetentionOffset={16}
       className={cn(
         "border border-border bg-card active:opacity-80",
         square ? homeClasses.quickTile : cn(homeClasses.quickChip, "self-start"),
         square && "max-w-full items-center",
       )}
-      style={square ? { width: tileSize, height: tileSize } : undefined}
+      style={[
+        square ? { width: tileSize, height: tileSize } : undefined,
+        {
+          transform: [{ scale: !reduced && pressed ? PRESS_SCALE : 1 }],
+          transitionProperty: "transform" as const,
+          transitionDuration: reduced ? 0 : DURATION.fast,
+          transitionTimingFunction: CSS_EASE_OUT,
+        },
+      ]}
     >
       <AppNavIcon name={link.icon} size={square ? 28 : 20} color={colors.danger} />
       {/* No numberOfLines / shrink on the chip: it is content-sized, and a single-line,
@@ -53,7 +71,7 @@ export function QuickLinkTile({ link, tileSize }: { link: QuickLink; tileSize?: 
       >
         {link.label}
       </Text>
-    </Pressable>
+    </ScalePressable>
   );
 }
 

@@ -1,7 +1,8 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { buttonClass } from "../classes";
 import type { ButtonProps } from "../contract";
+import { Pressable } from "./Pressable";
 import { Text } from "./Text";
 
 export function Button({
@@ -20,9 +21,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label ? undefined : ariaLabel}
-      accessibilityState={{ disabled }}
+      label={label ? undefined : ariaLabel}
       disabled={disabled}
       onPress={onPress}
       testID={testID}

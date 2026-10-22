@@ -6,12 +6,12 @@ import { Card } from "./Card";
 import { Grid } from "./Grid";
 import { Icon } from "./Icon";
 import { Input } from "./Input";
-import { Pressable } from "./Pressable";
+import { Pressable, SelectionFill } from "./Pressable";
 import { Sheet } from "./Sheet";
 import { Table } from "./Table";
 import { Text } from "./Text";
 
-export { Box, Grid, Button, Card, Icon, Input, Pressable, Sheet, Table, Text };
+export { Box, Grid, Button, Card, Icon, Input, Pressable, SelectionFill, Sheet, Table, Text };
 export * from "../contract";
 export { buttonClass, cardClass, iconToneClass, tableClass, textVariantClass } from "../classes";
 

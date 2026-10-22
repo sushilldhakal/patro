@@ -2,7 +2,8 @@ import { useWindowDimensions } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { breakpoints } from "@vedic-patro/design-tokens";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
-import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
+import { Box, Icon, Pressable, SelectionFill, Text } from "@vedic-patro/ui";
+import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroHeaderSwapProps, PatroHeaderTabsProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -20,9 +21,13 @@ export function PatroHeaderTabs({ tabs, label, className }: PatroHeaderTabsProps
           label={tab.label}
           role="tab"
           selected={tab.active}
-          onPress={tab.onPress}
-          className={cn(cls.nativeSegmentRowItem, tab.active && cls.segmentItemActive)}
+          onPress={() => {
+            if (!tab.active) haptics.tick();
+            tab.onPress();
+          }}
+          className={cls.nativeSegmentRowItem}
         >
+          <SelectionFill active={tab.active} className={cn("rounded-xl", cls.segmentItemActive)} />
           <Text className={cn(cls.segmentLabel, tab.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{tab.label}</Text>
         </Pressable>
       ))}
@@ -34,7 +39,14 @@ export function PatroHeaderSwap({ tabs, className }: PatroHeaderSwapProps) {
   const other = tabs.find((tab) => !tab.active);
   if (!other || tabs.length !== 2) return null;
   return (
-    <Pressable label={other.label} onPress={other.onPress} className={cn(cls.swapButton, cls.nativeDenseControl, className)}>
+    <Pressable
+      label={other.label}
+      onPress={() => {
+        haptics.tick();
+        other.onPress();
+      }}
+      className={cn(cls.swapButton, cls.nativeDenseControl, className)}
+    >
       <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
       <Text className={cls.swapLabel}>{other.label}</Text>
     </Pressable>

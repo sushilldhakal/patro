@@ -1,8 +1,13 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
+import Animated from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { spec } from "@vedic-patro/design-tokens";
+import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
+
+const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 type Props = PressableProps & {
   label: string;
@@ -26,8 +31,14 @@ export function Button({
   textClassName,
   disabled,
   icon,
+  style,
+  onPressIn,
+  onPressOut,
   ...props
 }: Props) {
+  const reduced = useReducedMotionPref();
+  const [pressed, setPressed] = useState(false);
+  const scale = !reduced && pressed && !disabled;
   const base = cn(spec.button, "active:opacity-80");
   const sizes = {
     sm: spec.buttonSm,
@@ -48,14 +59,32 @@ export function Button({
   };
 
   return (
-    <Pressable
+    <ScalePressable
       accessibilityRole="button"
       disabled={disabled}
       className={cn(base, sizes[size], variants[variant], disabled && "opacity-50", className)}
       {...props}
+      pressRetentionOffset={16}
+      onPressIn={(event) => {
+        setPressed(true);
+        onPressIn?.(event);
+      }}
+      onPressOut={(event) => {
+        setPressed(false);
+        onPressOut?.(event);
+      }}
+      style={[
+        style,
+        {
+          transform: [{ scale: scale ? PRESS_SCALE : 1 }],
+          transitionProperty: "transform",
+          transitionDuration: reduced ? 0 : DURATION.fast,
+          transitionTimingFunction: CSS_EASE_OUT,
+        },
+      ]}
     >
       {icon ? <View>{icon}</View> : null}
       <Text className={cn("text-sm", textVariants[variant], textClassName)}>{label}</Text>
-    </Pressable>
+    </ScalePressable>
   );
 }

@@ -3,7 +3,8 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
 import { usePatroYearHeader } from "@vedic-patro/features/patro-date";
-import { Box, Icon, Pressable, Sheet, Text } from "@vedic-patro/ui";
+import { Box, Icon, Pressable, SelectionFill, Sheet, Text } from "@vedic-patro/ui";
+import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroYearHeaderProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -39,7 +40,7 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
 
       <View className="flex-row items-center justify-between gap-2">
         <View className="min-w-0 shrink flex-row items-center gap-2">
-          <Pressable label={labels.prev} onPress={h.prev} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+          <Pressable label={labels.prev} onPress={() => { haptics.tick(); h.prev(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
           </Pressable>
           <Pressable
@@ -50,7 +51,7 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
             <Text className={pick.yearButtonText}>{h.yearLabel}</Text>
             <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />
           </Pressable>
-          <Pressable label={labels.next} onPress={h.next} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+          <Pressable label={labels.next} onPress={() => { haptics.tick(); h.next(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
           </Pressable>
         </View>
@@ -66,9 +67,14 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
                 label={e.label}
                 role="tab"
                 selected={e.active}
-                onPress={() => (e.active ? undefined : onEraChange(e.era))}
-                className={cn(cls.segmentItem, e.active && cls.segmentItemActive)}
+                onPress={() => {
+                  if (e.active) return;
+                  haptics.tick();
+                  onEraChange(e.era);
+                }}
+                className={cls.segmentItem}
               >
+                <SelectionFill active={e.active} className={cn("rounded-xl", cls.segmentItemActive)} />
                 <Text className={cn(cls.segmentLabel, e.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{e.label}</Text>
               </Pressable>
             ))}
@@ -86,17 +92,17 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
             accessibilityLabel={labels.input}
             className={cn(cls.yearInput, input.invalid ? cls.yearInputBad : cls.yearInputOk)}
           />
-          <Pressable label={labels.go} onPress={input.commit} className={cls.yearGo}>
+          <Pressable label={labels.go} onPress={() => { haptics.tick(); input.commit(); }} className={cls.yearGo}>
             <Text className={cls.yearGoLabel}>{labels.go}</Text>
           </Pressable>
         </Box>
         {input.invalid ? <Text className={cls.yearError}>{input.errorText}</Text> : null}
         <Box className={pick.yearPageRow}>
-          <Pressable label={labels.prevPage} onPress={page.prev} disabled={page.prevDisabled} className={cls.iconButtonSmall}>
+          <Pressable label={labels.prevPage} onPress={() => { haptics.tick(); page.prev(); }} disabled={page.prevDisabled} className={cls.iconButtonSmall}>
             <Icon node={shellIcons.chevronLeft} size="sm" tone="secondary" />
           </Pressable>
           <Text className={pick.yearPageText}>{page.rangeText}</Text>
-          <Pressable label={labels.nextPage} onPress={page.next} disabled={page.nextDisabled} className={cls.iconButtonSmall}>
+          <Pressable label={labels.nextPage} onPress={() => { haptics.tick(); page.next(); }} disabled={page.nextDisabled} className={cls.iconButtonSmall}>
             <Icon node={shellIcons.chevronRight} size="sm" tone="secondary" />
           </Pressable>
         </Box>
@@ -106,7 +112,10 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
               key={chip.year}
               label={chip.label}
               selected={chip.selected}
-              onPress={chip.pick}
+              onPress={() => {
+                if (!chip.selected) haptics.tick();
+                chip.pick();
+              }}
               className={cn(pick.yearChip, chip.selected ? cls.monthChipActive : cls.monthChipIdle, chip.current && !chip.selected && pick.monthChipCurrent)}
             >
               <Text className={cn(pick.yearChipLabel, chip.selected ? cls.monthChipLabelActive : cls.monthChipLabelIdle)}>{chip.label}</Text>

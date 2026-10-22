@@ -1,7 +1,8 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { calendarPickerClasses as pick } from "@vedic-patro/design-tokens/classes/calendar-picker-classes";
-import { Grid, Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
+import { Grid, Box, Icon, Input, Pressable, SelectionFill, Text } from "@vedic-patro/ui";
+import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroDayTimePanelProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
@@ -17,16 +18,21 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               key={e.era}
               label={e.label}
               selected={e.active}
-              onPress={() => (e.active ? undefined : onEraChange(e.era))}
-              className={cn(cls.segmentItem, e.active && cls.segmentItemActive)}
+              onPress={() => {
+                if (e.active) return;
+                haptics.tick();
+                onEraChange(e.era);
+              }}
+              className={cls.segmentItem}
             >
+              <SelectionFill active={e.active} className={cn("rounded-xl", cls.segmentItemActive)} />
               <Text className={cn(cls.segmentLabel, e.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{e.label}</Text>
             </Pressable>
           ))}
         </Box>
       ) : null}
       <Box className={pick.crumbRow}>
-        <Pressable label={labels.prevMonth} onPress={crumbs.prevMonth} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
+        <Pressable label={labels.prevMonth} onPress={() => { haptics.tick(); crumbs.prevMonth(); }} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
           <Icon node={shellIcons.chevronLeft} size="sm" tone="secondary" />
         </Pressable>
         <Box className={pick.crumbs}>
@@ -37,7 +43,7 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
             <Text className={pick.crumbLabel}>{crumbs.year.label}</Text>
           </Pressable>
         </Box>
-        <Pressable label={labels.nextMonth} onPress={crumbs.nextMonth} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
+        <Pressable label={labels.nextMonth} onPress={() => { haptics.tick(); crumbs.nextMonth(); }} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
           <Icon node={shellIcons.chevronRight} size="sm" tone="secondary" />
         </Pressable>
       </Box>
@@ -60,7 +66,10 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
                   <Pressable
                     label={c.label}
                     selected={c.selected}
-                    onPress={c.pick}
+                    onPress={() => {
+                      if (!c.selected) haptics.tick();
+                      c.pick();
+                    }}
                     className={cn(pick.dayButton, c.selected ? pick.dayButtonSelected : c.today && pick.dayButtonToday)}
                     webClassName={c.selected ? undefined : "hover:bg-muted"}
                   >
@@ -79,11 +88,11 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
           {time ? (
             <Box className={pick.timeRow}>
               <Text className={pick.timeLabel}>{labels.time}</Text>
-              <Stepper value={time.hour} up={labels.hourUp} down={labels.hourDown} onStep={(d) => time.step("hour", d)} />
+              <Stepper value={time.hour} up={labels.hourUp} down={labels.hourDown} onStep={(d) => { haptics.tick(); time.step("hour", d); }} />
               <Text className={pick.timeColon}>:</Text>
-              <Stepper value={time.minute} up={labels.minuteUp} down={labels.minuteDown} onStep={(d) => time.step("minute", d)} />
+              <Stepper value={time.minute} up={labels.minuteUp} down={labels.minuteDown} onStep={(d) => { haptics.tick(); time.step("minute", d); }} />
               <Box className={pick.timeSpacer} />
-              <Pressable label={labels.now} onPress={time.setNow} className={pick.ghostButton} webClassName="hover:bg-muted max-w-24">
+              <Pressable label={labels.now} onPress={() => { haptics.tick(); time.setNow(); }} className={pick.ghostButton} webClassName="hover:bg-muted max-w-24">
                 <Text className={pick.ghostLabel}>{labels.now}</Text>
               </Pressable>
             </Box>
@@ -110,7 +119,10 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               key={m.month}
               label={m.label}
               selected={m.selected}
-              onPress={m.pick}
+              onPress={() => {
+                if (!m.selected) haptics.tick();
+                m.pick();
+              }}
               className={cn(cls.monthChip, m.selected ? cls.monthChipActive : cls.monthChipIdle, m.current && !m.selected && pick.monthChipCurrent)}
               webClassName={m.selected ? undefined : "hover:bg-muted"}
             >
@@ -133,17 +145,17 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               className={cn(cls.yearInput, yearInput.invalid ? cls.yearInputBad : cls.yearInputOk)}
               webClassName="outline-none focus:border-secondary"
             />
-            <Pressable label={labels.go} onPress={yearInput.commit} className={cls.yearGo} webClassName="hover:opacity-90">
+            <Pressable label={labels.go} onPress={() => { haptics.tick(); yearInput.commit(); }} className={cls.yearGo} webClassName="hover:opacity-90">
               <Text className={cls.yearGoLabel}>{labels.go}</Text>
             </Pressable>
           </Box>
           {yearInput.invalid ? <Text className={cls.yearError}>{yearInput.errorText}</Text> : null}
           <Box className={pick.yearPageRow}>
-            <Pressable label={labels.prevPage} onPress={yearPage.prev} disabled={yearPage.prevDisabled} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
+            <Pressable label={labels.prevPage} onPress={() => { haptics.tick(); yearPage.prev(); }} disabled={yearPage.prevDisabled} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
               <Icon node={shellIcons.chevronLeft} size="sm" tone="secondary" />
             </Pressable>
             <Text className={pick.yearPageText}>{yearPage.rangeText}</Text>
-            <Pressable label={labels.nextPage} onPress={yearPage.next} disabled={yearPage.nextDisabled} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
+            <Pressable label={labels.nextPage} onPress={() => { haptics.tick(); yearPage.next(); }} disabled={yearPage.nextDisabled} className={cls.iconButtonSmall} webClassName="hover:bg-muted">
               <Icon node={shellIcons.chevronRight} size="sm" tone="secondary" />
             </Pressable>
           </Box>
@@ -153,7 +165,10 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
                 key={y.year}
                 label={y.label}
                 selected={y.selected}
-                onPress={y.pick}
+                onPress={() => {
+                  if (!y.selected) haptics.tick();
+                  y.pick();
+                }}
                 className={cn(cls.monthChip, y.selected ? cls.monthChipActive : cls.monthChipIdle, y.current && !y.selected && pick.monthChipCurrent)}
                 webClassName={y.selected ? undefined : "hover:bg-muted"}
               >
