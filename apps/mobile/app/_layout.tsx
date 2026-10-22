@@ -44,6 +44,7 @@ import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
 import * as Updates from "expo-updates";
 import { Observe, ObserveRoot } from "@/lib/observe";
+import { useReducedMotionPref } from "@vedic-patro/ui/motion";
 
 /*
  * EAS Observe: startup timing (TTR is measured by `ObserveRoot.wrap` below, TTI by the
@@ -277,6 +278,7 @@ function RootShell({
   onOnboarded: () => void;
 }) {
   const { colors } = useTheme();
+  const reducedMotion = useReducedMotionPref();
   usePatroCapabilities();
   const router = useRouter();
   const navState = useRootNavigationState();
@@ -304,8 +306,10 @@ function RootShell({
         <Stack
           screenOptions={{
             headerShown: false,
-            animation: "fade_from_bottom",
+            // Phone keeps the root rise. Reduce Motion drops the travel and fades.
+            animation: reducedMotion ? "fade" : "fade_from_bottom",
             animationDuration: 220,
+            ...(reducedMotion ? { animationMatchesGesture: true } : {}),
             contentStyle: { backgroundColor: colors.background },
           }}
         />

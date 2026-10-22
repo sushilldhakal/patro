@@ -1,5 +1,7 @@
-import { createContext, memo, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Animated, View, type ImageSourcePropType } from "react-native";
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Svg, {
   Circle,
@@ -30,6 +32,31 @@ import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
+
+/** First draw of a session only. The plan's settle, not a duration token. */
+const WHEEL_SETTLE_MS = 600;
+let wheelSettleClaimed = false;
+
+function useWheelSettle(layoutWidth: number) {
+  const reduced = useReducedMotionPref();
+  const play = useRef<boolean | null>(null);
+  if (play.current === null) {
+    play.current = !wheelSettleClaimed && !reduced;
+    wheelSettleClaimed = true;
+  }
+  const started = useRef(false);
+  const rotation = useSharedValue(play.current ? -10 : 0);
+  useEffect(() => {
+    if (!play.current || started.current || layoutWidth <= 0) return;
+    started.current = true;
+    rotation.set(withTiming(0, { duration: WHEEL_SETTLE_MS, easing: EASE_OUT }));
+  }, [layoutWidth, rotation]);
+  return useAnimatedStyle(() => {
+    const deg = rotation.get();
+    if (deg === 0) return {};
+    return { transform: [{ rotate: `${deg}deg` }] };
+  });
+}
 
 type NodeIcon = ComponentType<{ width?: number; height?: number }>;
 type WheelChartAssets = {
@@ -362,6 +389,7 @@ function WheelChartImpl({
   const lineTarget = lineTargetProp ?? 1;
   const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0 });
   const [layoutBox, setLayoutBox] = useState({ w: 0, h: 0 });
+  const settleStyle = useWheelSettle(layoutBox.w);
   const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
   const spinRef = useRef(spin);
   spinRef.current = spin;
@@ -1033,6 +1061,7 @@ function WheelChartImpl({
           transform: [{ translateX: liveX }, { translateY: liveY }, { scale: liveZoom }],
         }}
       >
+        <Reanimated.View style={[{ flex: 1 }, settleStyle]} pointerEvents="none">
         {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
             rotates that texture. Without it every frame re-draws the whole wheel
             (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}
@@ -1064,6 +1093,7 @@ function WheelChartImpl({
         {markerNodes}
       </Svg>
         </Animated.View>
+        </Reanimated.View>
       </Animated.View>
     </View>
     </GestureDetector>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
+import { DURATION, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { floatingNavBottomPadding, PANCHANGA_SIDEBAR_MIN_WIDTH, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
@@ -14,6 +15,26 @@ export const PANCHANGA_SIDEBAR_RAIL_WIDTH = 224;
 export function useShowPanchangaSidebar(): boolean {
   const { width } = useWindowDimensions();
   return width >= PANCHANGA_SIDEBAR_MIN_WIDTH;
+}
+
+/**
+ * Pages opened from the iPad rail are siblings, so a push slide would imply
+ * depth that is not there. Phones keep the stack's own animation. Reduce
+ * Motion fades every one of these stacks.
+ */
+export function useRailPageAnimation(): {
+  animation: "fade";
+  animationDuration: number;
+  animationMatchesGesture: true;
+} | null {
+  const reduced = useReducedMotionPref();
+  const rail = useShowPanchangaSidebar();
+  if (!reduced && !rail) return null;
+  return {
+    animation: "fade",
+    animationDuration: DURATION.standard,
+    animationMatchesGesture: true,
+  };
 }
 
 type KundaliSectionNavProps = {
