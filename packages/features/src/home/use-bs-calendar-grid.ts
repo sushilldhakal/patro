@@ -105,12 +105,11 @@ export function useBsCalendarGrid({
     const extraFestCount = festCount > 2 ? festCount - 2 : 0;
     const primaryDayNum = primaryDate === "ad" ? civilIsoDayOfMonth(day.date_ad) : day.day;
     const secondary = getSecondaryCellDate(day, primaryDate, lang, i === 0);
-    const secondaryLabel = secondary.monthLabel
-      ? `${secondary.monthLabel} ${monoDigits(secondary.day)}`
-      : monoDigits(secondary.day);
-    const secondaryLabelShort = secondary.monthLabelShort
-      ? `${secondary.monthLabelShort} ${monoDigits(secondary.day)}`
-      : monoDigits(secondary.day);
+    // The cell shows only the other calendar's day number; the month names are in
+    // the page header. The spoken label keeps the month.
+    const secondaryLabel = monoDigits(secondary.day);
+    const secondaryLabelShort = secondaryLabel;
+    const secondarySpoken = secondary.monthLabel ? `${secondary.monthLabel} ${secondaryLabel}` : secondaryLabel;
     return {
       key: day.date_ad,
       day,
@@ -138,8 +137,8 @@ export function useBsCalendarGrid({
       primaryDay: monoDigits(primaryDayNum),
       secondaryLabel,
       secondaryLabelShort,
-      secondaryNamed: Boolean(secondary.monthLabel),
-      ariaLabel: `${monoDigits(primaryDayNum)} (${secondaryLabel}), ${day.date_ad}`,
+      secondaryNamed: false,
+      ariaLabel: `${monoDigits(primaryDayNum)} (${secondarySpoken}), ${day.date_ad}`,
     };
   });
 

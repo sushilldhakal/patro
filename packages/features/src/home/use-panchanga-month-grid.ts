@@ -97,13 +97,10 @@ export function usePanchangaMonthGrid({
       yoga: bilingualText(lang, day.yoga_ne ?? day.yoga, day.yoga ?? day.yoga_ne),
       karana: bilingualText(lang, day.karana_ne ?? day.karana, day.karana ?? day.karana_ne),
       primaryDay: monoDigits(primaryDay),
-      secondaryLabel: secondary.monthLabel
-        ? `${secondary.monthLabel} ${monoDigits(secondary.day)}`
-        : monoDigits(secondary.day),
-      secondaryLabelShort: secondary.monthLabelShort
-        ? `${secondary.monthLabelShort} ${monoDigits(secondary.day)}`
-        : monoDigits(secondary.day),
-      secondaryNamed: Boolean(secondary.monthLabel),
+      // Only the other calendar's day number; the month names are in the page header.
+      secondaryLabel: monoDigits(secondary.day),
+      secondaryLabelShort: monoDigits(secondary.day),
+      secondaryNamed: false,
     };
   });
 
