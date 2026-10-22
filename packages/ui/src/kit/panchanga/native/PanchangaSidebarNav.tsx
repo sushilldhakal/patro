@@ -153,12 +153,13 @@ export function PanchangaSidebarNav({
       <Box className={compact ? s.navBody : cn("max-h-[70vh]", s.navBody)}>
         <View ref={bodyRef} collapsable={false}>
           {showPill && frame ? (
-            <MotionView
-              pointerEvents="none"
-              accessible={false}
-              className="rounded-xl border border-secondary/30 bg-secondary/15"
-              style={[{ position: "absolute", left: frame.x, width: frame.width }, pillStyle]}
-            />
+            /* Position on a plain wrapper, the animation (height + travel) on the one view inside it and the
+               look on the child: a style array that mixes a plain style with an animated one drops the plain part. */
+            <View pointerEvents="none" accessible={false} style={{ position: "absolute", left: frame.x, top: 0, width: frame.width }}>
+              <Animated.View style={pillStyle}>
+                <View className="flex-1 rounded-xl border border-secondary/30 bg-secondary/15" />
+              </Animated.View>
+            </View>
           ) : null}
           {sections.map((section) => (
             <MotionView key={section.id} layout={RAIL_MOVE} className={cn("pb-1", s.section)}>

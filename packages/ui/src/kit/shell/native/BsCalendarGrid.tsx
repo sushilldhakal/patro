@@ -199,14 +199,16 @@ export function BsCalendarGrid({
           if (!travel.from) return <View style={rowGap}>{renderRows(grid, true)}</View>;
           return (
             <View style={{ position: "relative" }}>
-              <Animated.View
+              <View
                 pointerEvents="none"
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                style={[travel.outgoingStyle, { position: "absolute", left: 0, right: 0, top: 0 }]}
+                style={{ position: "absolute", left: 0, right: 0, top: 0 }}
               >
-                <View style={rowGap}>{renderRows(ghost, false)}</View>
-              </Animated.View>
+                <Animated.View style={travel.outgoingStyle}>
+                  <View style={rowGap}>{renderRows(ghost, false)}</View>
+                </Animated.View>
+              </View>
               <Animated.View pointerEvents={travel.to ? "none" : "auto"} style={travel.incomingStyle}>
                 <View style={rowGap}>{renderRows(travel.to ? incoming : grid, true)}</View>
               </Animated.View>

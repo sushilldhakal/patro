@@ -260,14 +260,18 @@ export function PanchangaMonthGrid({
 
       {travel.from ? (
         <View style={{ position: "relative" }}>
-          <Animated.View
+          {/* The fading month sits out of flow on a plain wrapper; the animated view inside carries only
+              the animation (a style array mixing the two drops the position). */}
+          <View
             pointerEvents="none"
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
-            style={[travel.outgoingStyle, { position: "absolute", left: 0, right: 0, top: 0 }]}
+            style={{ position: "absolute", left: 0, right: 0, top: 0 }}
           >
-            <View style={rowGap}>{renderRows(outgoingGrid, false)}</View>
-          </Animated.View>
+            <Animated.View style={travel.outgoingStyle}>
+              <View style={rowGap}>{renderRows(outgoingGrid, false)}</View>
+            </Animated.View>
+          </View>
           <Animated.View pointerEvents={travel.to ? "none" : "auto"} style={travel.incomingStyle}>
             <View style={rowGap}>{renderRows(incomingGrid, true)}</View>
           </Animated.View>
