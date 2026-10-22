@@ -150,49 +150,54 @@ export function BsDateTimePicker({
           ))}
         </View>
 
-        <View className="flex-row flex-wrap">
-          {picker.cells.map((c) =>
-            c.day == null ? (
-              <View
-                key={c.key}
-                className="w-[14.28%] border-b border-r border-border bg-muted/10"
-                style={{ height: dayRowHeight }}
-              />
-            ) : (
-              <Pressable
-                key={c.key}
-                onPress={c.pick}
-                accessibilityLabel={c.label}
-                accessibilityState={{ selected: c.selected }}
-                className="w-[14.28%] items-center justify-center border-b border-r border-border p-0.5"
-                style={{ height: dayRowHeight }}
-              >
-                <View
-                  className={cn(
-                    "w-full items-center justify-center rounded-md",
-                    isTablet ? "h-7" : "h-8",
-                    c.selected && "bg-secondary",
-                    c.today && !c.selected && "border border-secondary",
-                  )}
-                >
-                  <Text
-                    className={cn(
-                      "font-num font-semibold",
-                      isTablet ? "text-xs" : "text-sm",
-                      c.selected
-                        ? "text-secondary-foreground"
-                        : c.weekend
-                          ? "text-destructive"
-                          : "text-foreground",
-                    )}
+        {Array.from({ length: Math.ceil(picker.cells.length / 7) }, (_, r) => {
+          const row = picker.cells.slice(r * 7, r * 7 + 7);
+          return (
+            <View key={`row-${r}`} className="flex-row">
+              {Array.from({ length: 7 }, (_, i) => row[i]).map((c, i) =>
+                !c || c.day == null ? (
+                  <View
+                    key={c?.key ?? `pad-${r}-${i}`}
+                    className={cn("min-w-0 flex-1 border-b border-border bg-muted/10", i < 6 && "border-r")}
+                    style={{ height: dayRowHeight }}
+                  />
+                ) : (
+                  <Pressable
+                    key={c.key}
+                    onPress={c.pick}
+                    accessibilityLabel={c.label}
+                    accessibilityState={{ selected: c.selected }}
+                    className={cn("min-w-0 flex-1 items-center justify-center border-b border-border p-0.5", i < 6 && "border-r")}
+                    style={{ height: dayRowHeight }}
                   >
-                    {c.label}
-                  </Text>
-                </View>
-              </Pressable>
-            ),
-          )}
-        </View>
+                    <View
+                      className={cn(
+                        "w-full items-center justify-center rounded-md",
+                        isTablet ? "h-7" : "h-8",
+                        c.selected && "bg-secondary",
+                        c.today && !c.selected && "border border-secondary",
+                      )}
+                    >
+                      <Text
+                        className={cn(
+                          "font-num font-semibold",
+                          isTablet ? "text-xs" : "text-sm",
+                          c.selected
+                            ? "text-secondary-foreground"
+                            : c.weekend
+                              ? "text-destructive"
+                              : "text-foreground",
+                        )}
+                      >
+                        {c.label}
+                      </Text>
+                    </View>
+                  </Pressable>
+                ),
+              )}
+            </View>
+          );
+        })}
           </>
         )}
       </View>
