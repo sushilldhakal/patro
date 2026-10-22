@@ -1,7 +1,7 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { RelatedPageLinks as RelatedPageLinksView, type RelatedLinkItem } from "@vedic-patro/ui/kit/shell";
 import { useRelatedPageLinks } from "@vedic-patro/features/common";
-import type { LucideIcon } from "lucide-react";
+import { Compass, type LucideIcon } from "lucide-react";
 import { resolveNavIcon, type NavIconName } from "@vedic-patro/icons";
 import { NAV_ICONS } from "@/lib/nav-icons";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

@@ -13,7 +13,6 @@ import {
   AD_MONTH_NAMES_NE,
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
-  bsFromCivilIso,
   formatBsCivilIsoRange,
 } from "@vedic-patro/domain/calendar/bs-calendar";
 import type { Era } from "@vedic-patro/domain/calendar/era";
