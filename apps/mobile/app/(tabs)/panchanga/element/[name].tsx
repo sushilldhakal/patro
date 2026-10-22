@@ -27,6 +27,7 @@ import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/p
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 
 /*
  * Column counts match the web grid at each breakpoint. `Grid` measures the
@@ -255,7 +256,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear, month, setMonth, stepMonth, goToday } = usePatroMonthBrowse();
   const todayAd = todayAdStringInTimezone(new Date(), resolveTimeZone(undefined, location.params.timezone));
-  const [date, setDate] = useState(() => new Date(`${todayAd}T12:00:00`));
+  const [date, setDate] = useBrowsedDay(() => new Date(`${todayAd}T12:00:00`));
   const dateAd = civilIsoFromDate(date);
 
   const page = useElementPage({ name, location, month: { era, year, month }, day: { dateAd } });

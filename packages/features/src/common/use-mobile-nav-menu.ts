@@ -5,7 +5,6 @@
  * sections (without what Main already promoted), each item with its label.
  * Each app turns an item into its own link, icon and search params.
  */
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
   getPanchangaSidebarSections,
@@ -40,8 +39,7 @@ export type NavMenuItem = { item: PanchangaSidebarItem; label: string };
 export type NavMenuSection = { id: string; title: string; items: NavMenuItem[] };
 
 export function useMobileNavMenu() {
-  const { t, digits } = useLocale();
-  const panchakYear = defaultPanchakPatroYear();
+  const { t } = useLocale();
 
   const main: NavMenuMainLink[] = [
     { id: "home", label: t("home") },
@@ -57,7 +55,7 @@ export function useMobileNavMenu() {
   ];
 
   const labelForItem = (item: PanchangaSidebarItem) =>
-    item.id === "panchak-patro" ? t("panchak.title", { year: digits(panchakYear) }) : t(item.labelKey);
+    t(item.labelKey);
 
   const sections: NavMenuSection[] = getPanchangaSidebarSections()
     .map((section) => ({

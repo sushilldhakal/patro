@@ -8,7 +8,6 @@
  */
 import { useState } from "react";
 import { isKundaliRoute } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
 import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { useLocale } from "@vedic-patro/i18n/react";
 
@@ -135,16 +134,14 @@ export function usePanchangaSidebarNav({
   /** The app also lists its reminders screen under the patro section. */
   withReminders?: boolean;
 }) {
-  const { t, digits } = useLocale();
+  const { t } = useLocale();
   const sections = getPanchangaSidebarSections().map((section) =>
     withReminders && section.id === "patro"
       ? { ...section, items: [...section.items, { id: "reminders", to: "/reminders", labelKey: "" }] }
       : section,
   );
   const labelFor = (item: PanchangaSidebarItem) =>
-    item.id === "panchak-patro"
-      ? t("panchak.title", { year: digits(defaultPanchakPatroYear()) })
-      : item.id === "reminders"
+    item.id === "reminders"
         ? t("ui.reminders.reminders")
         : t(item.labelKey);
 

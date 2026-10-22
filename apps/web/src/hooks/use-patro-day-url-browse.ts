@@ -22,6 +22,7 @@ import {
   type ResolvedPatroDayFields,
 } from "@/lib/patro-day-url";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
 import { rememberBrowse } from "@vedic-patro/features/patro-date";
 import {
   locationSearchFingerprint,
@@ -62,6 +63,25 @@ function fallbackLanguage(lang: string): "en" | "ne" {
 function placeholderDate(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+}
+
+/**
+ * The day the URL names, as a Date — so a page that never fetches a single day
+ * (the year wheel) still draws the URL's day instead of today. A picked date for
+ * that same day keeps its object (callers' effects compare by identity).
+ */
+function dateFromDayState(dayState: PatroDayFetchState, picked: Date | null): Date | null {
+  if (dayState.kind !== "input") return null;
+  let d: Date | null = null;
+  if (dayState.inputEra === "bs") {
+    const ad = bsToAdOrNull(dayState.year, dayState.month, dayState.day);
+    d = ad ? new Date(ad.getFullYear(), ad.getMonth(), ad.getDate(), 12) : null;
+  } else if (dayState.inputEra === "ad") {
+    d = new Date(dayState.year, dayState.month - 1, dayState.day, 12);
+  }
+  if (!d) return null;
+  if (picked && civilIsoFromDate(picked) === civilIsoFromDate(d)) return picked;
+  return d;
 }
 
 function dateAdFromPicker(
@@ -197,7 +217,8 @@ export function usePatroDayUrlBrowse(
     [dayState, setDayState],
   );
 
-  const date = pickerDate ?? placeholderDate();
+  const urlDate = useMemo(() => dateFromDayState(dayState, pickerDate), [dayState, pickerDate]);
+  const date = urlDate ?? pickerDate ?? placeholderDate();
   const dateAd =
     dayState.kind === "input" && dayState.inputEra === "ad"
       ? formatCivilIsoParts(dayState.year, dayState.month, dayState.day)
@@ -374,11 +395,13 @@ export function usePatroPanchangaUrlBrowse(
     [dayState, replaceDayState],
   );
 
+  const urlDate = useMemo(() => dateFromDayState(dayState, pickerDate), [dayState, pickerDate]);
+
   return {
     dayState,
     replaceDayState,
     syncResolvedPatroDay,
-    date: pickerDate ?? placeholderDate(),
+    date: urlDate ?? pickerDate ?? placeholderDate(),
     setDate: setDateWithParts,
     syncPickerFromDateAd,
     dateAd: dateAdFromPicker(pickerDate, dayState),

@@ -23,6 +23,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -42,7 +43,7 @@ export default function RashifalScreen() {
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
-  const [date, setDate] = useState(() => new Date(`${todayAd}T12:00:00`));
+  const [date, setDate] = useBrowsedDay(() => new Date(`${todayAd}T12:00:00`));
   const [clock, setClock] = useState(() => defaultClockForTimezone(tz));
   const dateAd = toAdStr(date);
   // The app addresses a day by its AD date.

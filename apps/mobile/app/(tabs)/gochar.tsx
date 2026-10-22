@@ -20,6 +20,7 @@ import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { LoadingState } from "@/components/ui/States";
+import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 
 function toAdStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -35,7 +36,7 @@ export default function GocharScreen() {
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
-  const [date, setDate] = useState(() => new Date(`${todayAd}T12:00:00`));
+  const [date, setDate] = useBrowsedDay(() => new Date(`${todayAd}T12:00:00`));
   const [clock, setClock] = useState(() => defaultClockForTimezone(tz));
 
   const dateAd = useMemo(() => toAdStr(date), [date]);

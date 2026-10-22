@@ -5,7 +5,6 @@
  * shared icon identity (`FEATURE_ICON` in @vedic-patro/icons) each app
  * draws; `search` says which URL state the website carries into the link.
  */
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchanga/panchak/panchak-patro-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type HomeQuickLinkFeature =
@@ -41,7 +40,8 @@ const PATRO: LinkDef[] = [
   { to: "/suryakranti", feature: "suryakranti", label: "nav.suryakranti", search: "route" },
   { to: "/panchanga/year", feature: "panchanga-year", label: "panchanga_year.title", search: "route" },
   { to: "/dainikkranti", feature: "dainikkranti", label: "nav.dainikkranti", search: "month" },
-  { to: "/panchak-patro", feature: "panchak-patro", label: "panchak.title", search: "year" },
+  // No year in the label: the page opens on the year being browsed, which the label could not know.
+  { to: "/panchak-patro", feature: "panchak-patro", label: "sidebar_nav.items.panchak-patro.label", search: "year" },
   { to: "/adhik-maas", feature: "adhik-maas", label: "sidebar_nav.items.adhik-maas.label", search: "year" },
   { to: "/ritu", feature: "ritu", label: "ritu.title", search: "route" },
 ];
@@ -56,10 +56,8 @@ const JYOTISH: LinkDef[] = [
 ];
 
 export function useHomeQuickLinks() {
-  const { t, digits } = useLocale();
-  const panchakYear = digits(defaultPanchakPatroYear());
-  const links = (defs: LinkDef[]): HomeQuickLink[] =>
-    defs.map((d) => ({ ...d, label: d.feature === "panchak-patro" ? t(d.label, { year: panchakYear }) : t(d.label) }));
+  const { t } = useLocale();
+  const links = (defs: LinkDef[]): HomeQuickLink[] => defs.map((d) => ({ ...d, label: t(d.label) }));
 
   return {
     groups: [

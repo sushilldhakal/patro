@@ -9,7 +9,7 @@
  * selection and the copy. The calendar the date nav browses in stays with each
  * app's nav.
  */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchGochar, gocharKeys } from "@vedic-patro/api-client";
 import { formatGocharPatroDate } from "@vedic-patro/domain/jyotish/gochar-page-utils";
@@ -23,6 +23,8 @@ import { toAdStr } from "@vedic-patro/domain/calendar/patro-day";
 import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import { clockStringInTimezone, todayAdStringInTimezone, zonedWallTimeToInstant } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
+import { rememberBrowse, rememberedDayDate } from "../patro-date/remembered-browse";
 
 export function useAakashGocharPage({ location, ready = true }: { location: PanchangaLocation; ready?: boolean }) {
   const { t, lang } = useLocale();
@@ -32,7 +34,16 @@ export function useAakashGocharPage({ location, ready = true }: { location: Panc
   const todayAd = todayAdStringInTimezone(new Date(), tz);
   /* Noon, and only read for its year/month/day: midday cannot be tipped onto
      the next or previous day by the device's own offset. */
-  const [date, setDate] = useState(() => new Date(`${todayAd}T12:00:00`));
+  // Opens in the month the reader is browsing elsewhere (home on BS 2085 → 2085),
+  // and a day picked here becomes that month for the other pages.
+  const [date, setDate] = useState(() => {
+    const last = rememberedDayDate();
+    return last ? new Date(last.getFullYear(), last.getMonth(), last.getDate(), 12) : new Date(`${todayAd}T12:00:00`);
+  });
+  useEffect(() => {
+    const bs = adToBS(date);
+    rememberBrowse("bs", bs.year, bs.month);
+  }, [date]);
 
   /* The place's wall clock now. Until the reader picks an hour it follows the
      place (picking Tokyo opens on Tokyo's sky now); once chosen it is theirs. */

@@ -16,6 +16,7 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
+import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 
 /**
  * Panchanga wheel over a moving window — the app's drawing of
@@ -28,7 +29,7 @@ export default function PanchangaYearScreen() {
   const [dateNavHeight, setDateNavHeight] = useState(88);
   const [bodyHeight, setBodyHeight] = useState(0);
   const { location, setLocation, ready } = usePanchangaLocation();
-  const [date, setDate] = useState(() => new Date());
+  const [date, setDate] = useBrowsedDay(() => new Date());
   const { clock, setClock } = usePanchangaClock(resolveTimeZone(undefined, location.params.timezone));
 
   const page = usePanchangaYearPage({ era: "bs", location, date, setDate, setClock, enabled: ready });

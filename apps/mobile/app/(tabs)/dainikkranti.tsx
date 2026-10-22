@@ -37,6 +37,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { illustration } from "@vedic-patro/design-tokens";
+import { useBrowsedBsMonth } from "@vedic-patro/features/patro-date";
 
 type PageCopy = ReturnType<typeof useDainikKrantiPage>["copy"];
 
@@ -74,8 +75,7 @@ export default function DainikKrantiScreen() {
   const grahaCols = screenWidth >= 1024 ? 4 : screenWidth >= 640 ? 3 : 2;
   const { location, setLocation } = usePanchangaLocation();
   const today = useMemo(() => getCurrentBs(), []);
-  const [year, setYear] = useState(today.year);
-  const [month, setMonth] = useState(today.month);
+  const { year, setYear, month, setMonth } = useBrowsedBsMonth(today);
   const [paksha, setPaksha] = useState<DainikPakshaFilter>("all");
 
   const page = useDainikKrantiPage({
