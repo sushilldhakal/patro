@@ -6965,6 +6965,19 @@ export const strings = {
   "ui.home.could_not_load_calendar": { ne: "पात्रो लोड गर्न सकिएन।", en: "Could not load calendar." },
   "ui.home.full_detail": { ne: "पूरा विवरण →", en: "Full detail →" },
   "ui.home.geocentric": { ne: "भूकेन्द्रित", en: "Geocentric" },
+  "ui.home.adhik_maas_label": {
+    ne: "{{year}} सालको अधिक (मल) मास: {{month}}",
+    en: "Adhik (Mala) Maas in {{year}}: {{month}}",
+  },
+  "ui.home.adhik_maas_detail": {
+    ne: "यस वर्ष अधिक मास {{month}} महिनामा पर्छ — {{range}}।",
+    en: "This year's adhik maas is in {{month}} — {{range}}.",
+  },
+  "ui.home.adhik_maas_why": {
+    ne: "यो चान्द्र महिनामा कुनै संक्रान्ति नपर्ने भएकाले यो थप (अधिक) महिना हो।",
+    en: "No sankranti falls in this lunar month, so it is an extra (adhik) month.",
+  },
+  "ui.home.adhik_maas_jump": { ne: "पात्रोमा हेर्नुहोस्", en: "Show in calendar" },
   "ui.home.muhurta_details_unavailable": { ne: "मुहूर्त विवरण उपलब्ध छैन।", en: "Muhurta details unavailable." },
   "ui.home.read_more": { ne: "थप पढ्नुहोस् →", en: "Read more →" },
   "ui.home.set_a_reminder": { ne: "रिमाइन्डर राख्नुहोस्", en: "Set a reminder" },

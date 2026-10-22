@@ -11,3 +11,4 @@ export * from "./use-bs-calendar-grid";
 export * from "./use-panchanga-month-grid";
 export * from "./use-aakash-gochar-entry-card";
 export * from "./use-audio-available";
+export * from "./use-adhik-maas-notice";

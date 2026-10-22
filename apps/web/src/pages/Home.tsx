@@ -18,6 +18,7 @@ import { patroDayFetchFromApiDateAd, patroDayFetchFromBrowseGridParts, type Patr
 import { PanchangaAsideTabPanel } from "@/components/home/PanchangaAsideTabs";
 import { prefetchAsidePanels } from "@/components/home/aside-prefetch";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
+import { AdhikMaasNotice } from "@/components/home/AdhikMaasNotice";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
 import { HomeRashifalTeaser } from "@/components/home/HomeRashifalTeaser";
@@ -205,6 +206,15 @@ export function Home() {
     setLocalStorageItem(HOME_PATRO_VIEW_KEY, view);
   }, []);
 
+  const { setYearMonth } = monthBrowse;
+  const handleAdhikJump = useCallback(
+    (year: number, month: number) => {
+      setYearMonth(year, month);
+      selectDay(null);
+    },
+    [setYearMonth, selectDay],
+  );
+
   useRouteLoading(aside.initialLoading);
 
   return (
@@ -221,6 +231,11 @@ export function Home() {
         onMonthContextChange={handleMonthContextChange}
         belowPatro={
           <>
+            <AdhikMaasNotice
+              bsYear={browseEra === "bs" ? browseYear : bsYear}
+              onJump={browseEra === "bs" ? handleAdhikJump : undefined}
+              className="mt-3 max-sm:mx-2.5"
+            />
             <AakashGocharEntryCard className={cn("mt-3 max-sm:mx-2.5", homeClasses.aakashCardTone)} />
             <HomeVedaMantra dateAd={todayAd} className="mt-3 max-sm:mx-2.5" />
           </>

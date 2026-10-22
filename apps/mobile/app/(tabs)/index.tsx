@@ -13,6 +13,8 @@ import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
 import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
+import { AdhikMaasNotice } from "@/components/home/AdhikMaasNotice";
+import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
@@ -161,6 +163,15 @@ export default function HomeScreen() {
     [stepMonth],
   );
 
+  const jumpToAdhik = useCallback(
+    (y: number, m: number) => {
+      setYear(y);
+      setMonth(m);
+      selectDay(null);
+    },
+    [setYear, setMonth, selectDay],
+  );
+
   const goToday = () => {
     goTodayBrowse(todayAd);
     selectDay(null);
@@ -301,6 +312,10 @@ export default function HomeScreen() {
       {calendarBlock}
 
       <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
+        <AdhikMaasNotice
+          bsYear={browseEra === "bs" ? year : getCurrentBs().year}
+          onJump={browseEra === "bs" ? jumpToAdhik : undefined}
+        />
         <AakashGocharEntryCard />
         <HomeVedaMantra dateAd={todayAd} />
         <HomeReminderCard p={aside.p} />
