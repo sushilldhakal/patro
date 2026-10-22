@@ -1,5 +1,5 @@
-/** Shared by apps/web/src/components/vastu/VastuPurushaWheel.tsx and apps/mobile/components/vastu/VastuPurushaWheel.tsx (moved here from both, unchanged). */
-import { WHEEL_SIZE } from "./vastu";
+/** Drawing geometry for the Vastu Purusha wheel, shared by the kit's VastuWheel / Plot and both apps' VastuPurushaWheel / VastuCompassRing. */
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu/vastu";
 
 export const CX = WHEEL_SIZE / 2;
 
