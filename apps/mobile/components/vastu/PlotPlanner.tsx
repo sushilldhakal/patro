@@ -16,7 +16,7 @@ export function PlotPlanner() {
   const sketchSize = Math.round(Math.min(MAX_SKETCH, Math.max(240, width - SKETCH_CHROME)) * (isTablet ? 0.9 : 1));
   const insets = useSafeAreaInsets();
   return (
-    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom }}>
+    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom, left: insets.left, right: insets.right }}>
     <Shared
       storage={vastuStorage}
       offline={localVastuSketch}

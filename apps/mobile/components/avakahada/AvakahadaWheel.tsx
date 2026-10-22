@@ -22,7 +22,7 @@ type Props = {
 export function AvakahadaWheel({ highlighted }: Props) {
   const insets = useSafeAreaInsets();
   return (
-    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom }}>
+    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom, left: insets.left, right: insets.right }}>
       <KitWheel highlighted={highlighted} assets={assets} />
     </ZoomStageInsets>
   );

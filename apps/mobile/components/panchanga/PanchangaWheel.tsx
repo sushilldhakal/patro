@@ -47,6 +47,7 @@ function PanchangaWheelImpl(props: Props) {
       loadingMark={<VedicPatroLoader label={null} size={88} />}
       safeTop={insets.top}
       safeBottom={insets.bottom}
+      safeRight={insets.right}
       renderScrubber={({ value, onChange, trackWidth }) => (
         <Slider
           style={{ width: trackWidth, height: 32 }}

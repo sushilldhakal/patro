@@ -1,3 +1,4 @@
+import { isLandscape, landscapeWheelCap } from "./wheel-fit";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
 import { Modal, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
@@ -49,6 +50,8 @@ export type YearWheelScrub = {
   playbackRateLabel?: string;
 };
 
+const ALL_ORIENTATIONS: ("portrait" | "portrait-upside-down" | "landscape" | "landscape-left" | "landscape-right")[] = ["portrait", "portrait-upside-down", "landscape", "landscape-left", "landscape-right"];
+
 function DockIcon({ node, size = 16 }: { node: IconNode; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -83,6 +86,8 @@ function computeInlineWheelStageSize({
   screenH: number;
   safeAreaTop: number;
 }): number {
+  // Landscape: the whole stage fits between the header and the tab bar — no scrolling to see the wheel.
+  if (isLandscape(screenW, screenH)) return landscapeWheelCap(screenW, screenH, safeAreaTop);
   const fallbackWidth = Math.max(screenW - PAGE_HORIZONTAL_PADDING * 2, 280);
   const widthCap = Math.max(containerWidth || fallbackWidth, 280);
   const maxCardH = Math.max(280, screenH - (safeAreaTop + APP_HEADER_BAR_HEIGHT) - WHEEL_VIEWPORT_GAP);
@@ -183,6 +188,8 @@ type PanchangaWheelProps = {
   renderScrubber: (scrub: { value: number; onChange: (g: number) => void; trackWidth: number }) => ReactNode;
   safeTop: number;
   safeBottom: number;
+  /** Right inset (the notch in landscape); full-screen controls stay clear of it. */
+  safeRight?: number;
 };
 
 
@@ -234,6 +241,7 @@ function WheelCalendarModal({
 function WheelChrome({
   pick,
   top,
+  right = 12,
   expanded,
   onReset,
   onToggleFullscreen,
@@ -241,6 +249,7 @@ function WheelChrome({
 }: {
   pick: (ne: string, en: string) => string;
   top: number;
+  right?: number;
   expanded: boolean;
   onReset: () => void;
   onToggleFullscreen: () => void;
@@ -253,7 +262,7 @@ function WheelChrome({
       style={{
         position: "absolute",
         top,
-        right: 12,
+        right,
         zIndex: 40,
         flexDirection: "row",
         alignItems: "center",
@@ -501,6 +510,7 @@ function WheelBody({
   renderScrubber,
   safeTop,
   safeBottom,
+  safeRight = 0,
 }: Omit<PanchangaWheelProps, "loading" | "loadingMark" | "p"> & { p: PanchangaDay }) {
   const copy = usePanchangaWheelCopy();
   const { pick, digits } = useLocale();
@@ -876,6 +886,7 @@ function WheelBody({
       <WheelChrome
         pick={pick}
         top={fullscreen ? safeTop + 6 : compactHead ? 8 : 10}
+        right={fullscreen ? safeRight + 12 : 12}
         expanded={fullscreen}
         onReset={resetToSunrise}
         onToggleFullscreen={toggleExpanded}
@@ -975,6 +986,10 @@ function WheelBody({
         animationType="fade"
         presentationStyle="fullScreen"
         statusBarTranslucent
+        // iOS presents a Modal in portrait only unless told otherwise: in landscape
+        // it spun the wheel to portrait under the status bar, out of reach of the
+        // exit button. It now keeps the device's orientation.
+        supportedOrientations={ALL_ORIENTATIONS}
         onRequestClose={toggleExpanded}
       >
         <StatusBar barStyle="light-content" backgroundColor={W_BG} translucent />
@@ -1031,6 +1046,7 @@ function PanchangaWheelImpl({
   renderScrubber,
   safeTop,
   safeBottom,
+  safeRight = 0,
 }: PanchangaWheelProps) {
   if (loading || !p) {
     return <WheelSkeleton loadingMark={loadingMark} />;
@@ -1058,6 +1074,7 @@ function PanchangaWheelImpl({
       renderScrubber={renderScrubber}
       safeTop={safeTop}
       safeBottom={safeBottom}
+      safeRight={safeRight}
     />
   );
 }

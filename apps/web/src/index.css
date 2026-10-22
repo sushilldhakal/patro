@@ -928,3 +928,17 @@
 
 
 
+
+/* The height the site chrome takes around a wheel: the 64px header plus, below
+   lg, the floating bottom nav. Wheels cap their width at the viewport height
+   minus this (wheelFitScreen), so in landscape the whole wheel fits on screen. */
+:root {
+  --wheel-chrome: 10rem;
+  --bottom-nav-h: 5.5rem;
+}
+@media (min-width: 1024px) {
+  :root {
+    --wheel-chrome: 6rem;
+    --bottom-nav-h: 0px;
+  }
+}

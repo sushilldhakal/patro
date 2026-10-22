@@ -1,3 +1,4 @@
+import { wheelFitScreen } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { useMemo } from "react";
 import { AVAKAHADA, type Gana } from "@vedic-patro/domain/jyotish/avakahada-data";
 import { findNakshatraIcon } from "@vedic-patro/domain/panchanga/nakshatra-icons";
@@ -316,7 +317,7 @@ export function AvakahadaWheel({ highlighted, ganaFill }: Props) {
 
       <ZoomStage className="mx-2 sm:mx-3">
         {(fullscreen) => (
-        <svg viewBox="0 0 620 620" className={cn(WHEEL_SVG, !fullscreen && "max-w-[660px]")} role="img" aria-label={copy.svgAria}>
+        <svg viewBox="0 0 620 620" className={cn(WHEEL_SVG, !fullscreen && cn("max-w-[660px]", wheelFitScreen))} role="img" aria-label={copy.svgAria}>
           <defs>
             <radialGradient id="av-hub-glow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="var(--av-hub-center)" />

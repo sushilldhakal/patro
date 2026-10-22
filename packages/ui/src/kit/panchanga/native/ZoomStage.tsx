@@ -1,3 +1,4 @@
+import { fitWheelSize, isLandscape } from "./wheel-fit";
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { Animated, Modal, PanResponder, Pressable, StatusBar, View, useWindowDimensions, type GestureResponderEvent } from "react-native";
 import Svg, { Path } from "react-native-svg";
@@ -16,7 +17,7 @@ const MAX_ZOOM = 6;
 const FULLSCREEN_CHROME = 56;
 
 /** Safe-area insets for the fullscreen modal. The app provides them; the kit cannot read them. */
-const ZoomInsetsContext = createContext({ top: 0, bottom: 0 });
+const ZoomInsetsContext = createContext({ top: 0, bottom: 0, left: 0, right: 0 });
 export const ZoomStageInsets = ZoomInsetsContext.Provider;
 
 function StageIcon({ node }: { node: IconNode }) {
@@ -218,7 +219,9 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
   const [fsZoomed, setFsZoomed] = useState(false);
   const resetInline = useRef<(() => void) | null>(null);
   const resetFs = useRef<(() => void) | null>(null);
-  const stageH = Math.max(height ?? size, size);
+  // In landscape the inline chart shrinks to the screen height, so it never needs scrolling.
+  const inlineSize = fitWheelSize(size, screenW, screenH, insets.top);
+  const stageH = isLandscape(screenW, screenH) ? inlineSize : Math.max(height ?? size, size);
   const fsH = Math.max(240, screenH - insets.top - insets.bottom - FULLSCREEN_CHROME);
   const fsSize = Math.min(screenW, fsH);
 
@@ -251,8 +254,8 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
       >
         {/* The page's copy stays mounted but empty while fullscreen is up:
             one chart drawing at a time. */}
-        <ZoomSurface width={size} height={stageH} onZoomed={setZoomed} resetRef={resetInline}>
-          {fullscreen ? null : children(size, false)}
+        <ZoomSurface width={inlineSize} height={stageH} onZoomed={setZoomed} resetRef={resetInline}>
+          {fullscreen ? null : children(inlineSize, false)}
         </ZoomSurface>
         <View pointerEvents="box-none" style={{ position: "absolute", top: 8, right: 8, flexDirection: "row", gap: 8 }}>
           {zoomed ? <StageButton node={rotateCcwIcon} label={labels.reset} onPress={() => resetInline.current?.()} /> : null}
@@ -260,7 +263,14 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
         </View>
       </View>
 
-      <Modal visible={fullscreen} animationType="fade" presentationStyle="fullScreen" statusBarTranslucent onRequestClose={close}>
+      <Modal
+        visible={fullscreen}
+        animationType="fade"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+        supportedOrientations={["portrait", "portrait-upside-down", "landscape", "landscape-left", "landscape-right"]}
+        onRequestClose={close}
+      >
         <StatusBar barStyle="light-content" backgroundColor={ZOOM_STAGE_BG} translucent />
         <View style={{ flex: 1, backgroundColor: ZOOM_STAGE_BG, paddingTop: insets.top + FULLSCREEN_CHROME, paddingBottom: insets.bottom }}>
           {fullscreen ? (
@@ -270,7 +280,7 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
           ) : null}
           <View
             pointerEvents="box-none"
-            style={{ position: "absolute", top: insets.top + 10, right: 12, flexDirection: "row", gap: 8 }}
+            style={{ position: "absolute", top: insets.top + 10, right: insets.right + 12, flexDirection: "row", gap: 8 }}
           >
             {fsZoomed ? <StageButton node={rotateCcwIcon} label={labels.reset} onPress={() => resetFs.current?.()} /> : null}
             <StageButton node={minimizeIcon} label={labels.close} onPress={close} />

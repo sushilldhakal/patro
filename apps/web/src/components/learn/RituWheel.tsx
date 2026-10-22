@@ -18,6 +18,8 @@
  * a ऋतु argument has to be made in उत्तरायण/दक्षिणायन rather than in महिना.
  */
 
+import { wheelFigure, wheelFitScreen } from "@vedic-patro/design-tokens/classes/wheel-classes";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { useLocale } from "@/i18n/locale";
@@ -88,10 +90,10 @@ export function RituWheel() {
   const monthNames = ne ? BS_MONTHS_NE : ([...BS_MONTH_NAMES] as string[]);
 
   return (
-    <figure className="m-0 flex w-full flex-col items-center">
+    <figure className={wheelFigure}>
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className="block w-full max-w-[500px]"
+        className={cn("block w-full max-w-[500px]", wheelFitScreen)}
         role="img"
         aria-label={t("learn.study.ritu.aria")}
       >

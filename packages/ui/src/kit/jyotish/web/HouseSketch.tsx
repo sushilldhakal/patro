@@ -8,6 +8,7 @@ import { RING_SIZE } from "@vedic-patro/domain/vastu/vastu-ring";
 import { useHouseSketch } from "@vedic-patro/features/vastu";
 import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu/vastu-house-template";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { wheelFitScreen } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import type { HouseSketchProps } from "../contract";
 import { VastuCompassRing } from "./VastuCompass";
 
@@ -141,7 +142,7 @@ export function HouseSketch({ plot, facing, assignments, ink, center, marks, siz
     <figure className="m-0">
       <ZoomStage className="mx-auto max-w-[900px]">
       {() => (
-      <div className="relative mx-auto aspect-square w-full">
+      <div className={cn("relative aspect-square w-full", wheelFitScreen)}>
         <VastuCompassRing className="absolute inset-0 h-full w-full" center={center} ink={ink} marks={marks} />
 
         <svg

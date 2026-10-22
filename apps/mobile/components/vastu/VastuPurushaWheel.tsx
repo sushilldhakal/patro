@@ -24,7 +24,7 @@ export function VastuPurushaWheel({
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom }}>
+    <ZoomStageInsets value={{ top: insets.top, bottom: insets.bottom, left: insets.left, right: insets.right }}>
     <Shared
       size={size}
       selected={selected}

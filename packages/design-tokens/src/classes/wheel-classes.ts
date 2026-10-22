@@ -131,10 +131,21 @@ export const wheelSkyBackdrop = cn(
   wheelStageStars,
 );
 
+/**
+ * Every wheel (vastu, house plan, avakahada, ritu, ayanamsha): never wider than
+ * the screen is tall, minus the header and bottom nav (`--wheel-chrome`, web
+ * index.css) — in landscape the whole wheel fits without scrolling. Portrait is
+ * unchanged: the width is the smaller side there.
+ */
+export const wheelFitScreen = "mx-auto max-w-[calc(100dvh-var(--wheel-chrome,10rem))]";
+
+/** A wheel and its caption, centred in a column (learn diagrams). */
+export const wheelFigure = "m-0 flex w-full flex-col items-center";
+
 export const wheelStage = cn(
   "relative mx-auto min-h-0 w-full max-w-[1400px] overflow-hidden",
-  "h-[min(calc(100dvh-env(safe-area-inset-top,0px)-64px-20px),960px)]",
-  "max-[720px]:h-[min(calc(100dvh-env(safe-area-inset-top,0px)-64px-20px),640px)]",
+  "h-[min(calc(100dvh-env(safe-area-inset-top,0px)-64px-20px-var(--bottom-nav-h,0px)),960px)]",
+  "max-[720px]:h-[min(calc(100dvh-env(safe-area-inset-top,0px)-64px-20px-var(--bottom-nav-h,0px)),640px)]",
   "bg-[radial-gradient(circle_at_50%_47%,var(--w-sky-0)_0%,var(--w-sky-1)_42%,var(--w-sky-2)_78%)]",
   "before:pointer-events-none before:absolute before:inset-0 before:opacity-70 before:content-['']",
   wheelStageStars,

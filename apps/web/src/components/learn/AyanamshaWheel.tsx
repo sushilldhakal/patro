@@ -1,3 +1,4 @@
+import { wheelFitScreen } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";
@@ -154,7 +155,7 @@ export function AyanamshaWheel() {
     <div className={tmCardPadLg}>
       <svg
         viewBox={`0 0 ${VB.W} ${VB.H}`}
-        className={edSvg()}
+        className={cn(edSvg(), wheelFitScreen)}
         role="img"
         aria-label={t("learn.study.ayanamsha.aria")}
       >

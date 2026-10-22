@@ -20,6 +20,7 @@ import {
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu/vastu";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { wheelFitScreen } from "@vedic-patro/design-tokens/classes/wheel-classes";
 import { annulusPath } from "@vedic-patro/drawing/vastu/vastu-purusha-wheel";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import {
@@ -135,7 +136,7 @@ export function VastuPurushaWheel({
     {() => (
     <svg
       viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
-      className={cn("mx-auto block h-auto w-full", className)}
+      className={cn("block h-auto w-full", wheelFitScreen, className)}
       overflow="visible"
       role="group"
       aria-label={w.heading}
