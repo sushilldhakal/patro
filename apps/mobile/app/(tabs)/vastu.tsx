@@ -338,7 +338,7 @@ export default function VastuScreen() {
         ))}
       </SectionCard>
 
-      <BottomSheetModal visible={dialog.open} onClose={() => dialog.setOpen(false)}>
+      <BottomSheetModal variant="center" visible={dialog.open} onClose={() => dialog.setOpen(false)}>
         <View className="gap-3 p-4">
           <Text className="text-lg font-semibold tracking-tight text-foreground" style={nepaliTextStyle(18)}>
             {copy.dialogTitle}
