@@ -38,6 +38,8 @@ import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/p
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { MONTH_SWIPE_ENABLED, todayPulse } from "@/components/home/calendar-grid-layout";
+import { Reveal } from "@/components/ui/Reveal";
+import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
@@ -326,7 +328,7 @@ export default function HomeScreen() {
 
   const calendarBlock = (
     <View className={columnClass}>
-      {monthHeaderBlock}
+      <Reveal index={0}>{monthHeaderBlock}</Reveal>
 
       {monthLoading ? (
         <View className="py-16" style={{ paddingHorizontal: contentInset }}>
@@ -344,6 +346,7 @@ export default function HomeScreen() {
           />
         </View>
       ) : (
+        <Reveal index={1}>
         <MonthGridSwipe
           enabled={MONTH_SWIPE_ENABLED}
           atStart={homeMonth.prevDisabled}
@@ -375,6 +378,7 @@ export default function HomeScreen() {
             />
           )}
         </MonthGridSwipe>
+        </Reveal>
       )}
     </View>
   );
@@ -419,16 +423,18 @@ export default function HomeScreen() {
     <View className={columnClass}>
       {calendarBlock}
 
-      <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
-        <AdhikMaasNotice
-          bsYear={browseEra === "bs" ? year : getCurrentBs().year}
-          onMore={(y) => router.push(`/adhik-maas?year=${y}` as never)}
-        />
-        <AakashGocharEntryCard />
-        <HomeVedaMantra dateAd={todayAd} />
-        <HomeReminderCard p={aside.p} />
-        <OfflineDownloadPrompt year={year} era={browseEra} />
-      </View>
+      <Reveal index={2}>
+        <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
+          <AdhikMaasNotice
+            bsYear={browseEra === "bs" ? year : getCurrentBs().year}
+            onMore={(y) => router.push(`/adhik-maas?year=${y}` as never)}
+          />
+          <AakashGocharEntryCard />
+          <HomeVedaMantra dateAd={todayAd} />
+          <HomeReminderCard p={aside.p} />
+          <OfflineDownloadPrompt year={year} era={browseEra} />
+        </View>
+      </Reveal>
     </View>
   );
 
@@ -444,7 +450,10 @@ export default function HomeScreen() {
           paddingHorizontal: pageInset,
           paddingTop: pageTopPadding(isCompact),
         }}
+        onScroll={onPageScroll}
+        scrollEventThrottle={SCROLL_EVENT_THROTTLE}
       >
+        <ScrollRevealScope.Provider value>
         <View className={splitAside ? "flex-row items-start gap-4" : "gap-4"}>
           {leftColumn}
           {splitAside ? asideBlock : null}
@@ -452,7 +461,7 @@ export default function HomeScreen() {
 
         {splitAside ? null : (
           <View ref={asideRef} collapsable={false} className="mt-4">
-            {asideBlock}
+            <Reveal index={3}>{asideBlock}</Reveal>
           </View>
         )}
 
@@ -460,26 +469,35 @@ export default function HomeScreen() {
             today's panchanga appear first and their requests go out first. */}
         {belowFoldReady ? (
           <>
-            <View className="mt-6">
-              <HomeRashifalSection
-                dateAd={aside.dayAd}
-                location={location.params}
-                contentInset={cardInset}
-              />
-            </View>
+            <Reveal>
+              <View className="mt-6">
+                <HomeRashifalSection
+                  dateAd={aside.dayAd}
+                  location={location.params}
+                  contentInset={cardInset}
+                />
+              </View>
+            </Reveal>
 
-            <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
-              <HomeQuickLinks location={location} />
-            </View>
+            <Reveal>
+              <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
+                <HomeQuickLinks location={location} />
+              </View>
+            </Reveal>
 
-            <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
-              <PanchangaDirectoryMobile />
-            </View>
+            <Reveal>
+              <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
+                <PanchangaDirectoryMobile />
+              </View>
+            </Reveal>
 
-            <PatroFooterNote className={homeClasses.footerNote} paddingHorizontal={cardInset} />
-            <SiteFooter />
+            <Reveal>
+              <PatroFooterNote className={homeClasses.footerNote} paddingHorizontal={cardInset} />
+              <SiteFooter />
+            </Reveal>
             </>
           ) : null}
+        </ScrollRevealScope.Provider>
         </ScrollView>
 
     </>

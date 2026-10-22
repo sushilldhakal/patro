@@ -2,6 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { usePathname } from "expo-router";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
+import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
 import {
   floatingNavBottomPadding,
   pageTopPadding,
@@ -51,8 +52,10 @@ function ShellMainScroll({
       contentContainerStyle={contentContainerStyle}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      onScroll={onPageScroll}
+      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
     >
-      {children}
+      <ScrollRevealScope.Provider value>{children}</ScrollRevealScope.Provider>
     </ScrollView>
   );
 }

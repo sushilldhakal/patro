@@ -2,6 +2,8 @@ import type { RefObject } from "react";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
+import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
@@ -71,8 +73,8 @@ export function AppShell({
   if (shellScrollHost) {
     return (
       <View className="min-h-0 w-full">
-        {header}
-        {body}
+        {header ? <Reveal index={0}>{header}</Reveal> : null}
+        {body ? <Reveal index={1}>{body}</Reveal> : null}
       </View>
     );
   }
@@ -114,15 +116,19 @@ export function AppShell({
       automaticallyAdjustKeyboardInsets
       keyboardDismissMode="interactive"
       showsVerticalScrollIndicator={false}
+      onScroll={onPageScroll}
+      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
     >
-      {header}
-      {body}
-      {bodyReady ? (
-        <>
-          <RelatedPageLinks />
-          <SiteFooter />
-        </>
-      ) : null}
+      <ScrollRevealScope.Provider value>
+        {header ? <Reveal index={0}>{header}</Reveal> : null}
+        {body ? <Reveal index={1}>{body}</Reveal> : null}
+        {bodyReady ? (
+          <Reveal index={2}>
+            <RelatedPageLinks />
+            <SiteFooter />
+          </Reveal>
+        ) : null}
+      </ScrollRevealScope.Provider>
     </ScrollView>
   );
 }

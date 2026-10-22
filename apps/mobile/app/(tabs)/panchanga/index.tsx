@@ -34,6 +34,8 @@ import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 import { useWindowReminder } from "@/components/reminders/use-window-reminder";
 import { resolveWindowKey } from "@/lib/notifications/window-key";
 import { useLocale } from "@/lib/i18n";
+import { Reveal } from "@/components/ui/Reveal";
+import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 /** Under the page (no sidebar), this much width fits the chart and the planet events side by side. */
@@ -94,7 +96,10 @@ export default function PanchangaScreen() {
         paddingHorizontal: pagePadH,
       }}
       showsVerticalScrollIndicator={false}
+      onScroll={onPageScroll}
+      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
     >
+      <ScrollRevealScope.Provider value>
       <View
         className="gap-4"
         style={splitSidebar ? { flexDirection: "row", alignItems: "flex-start", gap: 20 } : undefined}
@@ -102,6 +107,7 @@ export default function PanchangaScreen() {
         {/* flex-1 only beside the sidebar: stacked in the scroll column it has a zero
             basis and was squeezed under the aside when that mounted. */}
         <View className={cn(splitSidebar && "flex-1", panchangaPageClasses.page.mainColumn)}>
+          <Reveal index={0}>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}
@@ -115,8 +121,10 @@ export default function PanchangaScreen() {
             location={location}
             onLocationChange={setLocation}
           />
+          </Reveal>
           {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
+            <Reveal index={1}>
             <DayTimeline
               p={wheelData}
               loading={showWheelSkeleton}
@@ -141,6 +149,7 @@ export default function PanchangaScreen() {
                 <GrahaStatusBadges planetKey={mark.planetKey} isRetrograde={mark.isRetrograde} isCombust={mark.isCombust} size={mark.size} />
               )}
             />
+            </Reveal>
           ) : null}
         </View>
 
@@ -153,6 +162,7 @@ export default function PanchangaScreen() {
               : { width: "100%" }
           }
         >
+          <Reveal index={2}>
           <PanchangaAsidePanels
             sunrise={page.sunrise}
             sunset={page.sunset}
@@ -164,6 +174,7 @@ export default function PanchangaScreen() {
             planetEventsHref="/gochar"
             twoColumn={!splitSidebar && width >= TWO_COLUMN_MIN_WIDTH}
           />
+          </Reveal>
         </View>
         ) : null}
       </View>
@@ -172,6 +183,7 @@ export default function PanchangaScreen() {
       <View className={panchangaPageClasses.page.sections}>
         {wheelData || showWheelSkeleton ? (
           <>
+            <Reveal>
             <PanchangaWheel
               p={wheelData}
               loading={showWheelSkeleton}
@@ -191,6 +203,7 @@ export default function PanchangaScreen() {
                 onCommit: commitCalendar,
               }}
             />
+            </Reveal>
             {wheelData ? (
               <Pressable
                 onPress={() => router.push("/panchanga/year")}
@@ -215,27 +228,32 @@ export default function PanchangaScreen() {
 
         {data ? (
           <View className={panchangaPageClasses.page.sectionStack}>
-            <SunMoonSamvatSection p={data} />
-            <PanchangCoreSection p={angaData ?? data} />
-            <RashiSection p={angaData ?? data} />
-            <RituSection p={data} />
-            <BalamSection p={angaData ?? data} clock={clock} />
-            <PanchakaLagnaSection p={angaData ?? data} clock={clock} />
-            <NivasShoolSection p={data} fallback={wheelData} />
+            <Reveal><SunMoonSamvatSection p={data} /></Reveal>
+            <Reveal><PanchangCoreSection p={angaData ?? data} /></Reveal>
+            <Reveal><RashiSection p={angaData ?? data} /></Reveal>
+            <Reveal><RituSection p={data} /></Reveal>
+            <Reveal><BalamSection p={angaData ?? data} clock={clock} /></Reveal>
+            <Reveal><PanchakaLagnaSection p={angaData ?? data} clock={clock} /></Reveal>
+            <Reveal><NivasShoolSection p={data} fallback={wheelData} /></Reveal>
             {/* Festivals, their details and saits are the day's own: the udaya
                 payload carries them, the at-time one only names the festivals. */}
-            <DinVisheshSection p={wheelData ?? data} />
+            <Reveal><DinVisheshSection p={wheelData ?? data} /></Reveal>
           </View>
         ) : null}
 
-        <GocharPromoCard onPress={() => router.push("/gochar" as never)} />
-        <LearnMoreCard
-          heading={page.copy.learnHeading}
-          slugs={page.learnSlugs}
-        />
+        <Reveal>
+          <GocharPromoCard onPress={() => router.push("/gochar" as never)} />
+        </Reveal>
+        <Reveal>
+          <LearnMoreCard
+            heading={page.copy.learnHeading}
+            slugs={page.learnSlugs}
+          />
+        </Reveal>
       </View>
       ) : null}
       {reminder.element}
+      </ScrollRevealScope.Provider>
     </ScrollView>
   );
 }
