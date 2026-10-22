@@ -1,4 +1,8 @@
 import { motion } from "@vedic-patro/design-tokens";
+/* Safe on binaries built before expo-haptics was added: it loads its native module with
+   `requireOptionalNativeModule`, so a missing one is null rather than a throw at import,
+   and each call rejects instead — which `fire` swallows. An over-the-air update to such a
+   build just doesn't vibrate. */
 import * as Haptics from "expo-haptics";
 import { Easing, ReduceMotion, cubicBezier, useReducedMotion } from "react-native-reanimated";
 
