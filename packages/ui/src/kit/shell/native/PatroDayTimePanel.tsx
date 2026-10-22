@@ -57,32 +57,32 @@ export function PatroDayTimePanel({ h, onEraChange, onOk, onToday }: PatroDayTim
               </Box>
             ))}
           </Box>
-          <Box className={pick.dayGrid}>
-            {h.cells.map((c) =>
-              c.day === null ? (
-                <Box key={c.key} className={cn(pick.dayCell, pick.dayCellEmpty)} />
-              ) : (
-                <Box key={c.key} className={pick.dayCell}>
-                  <Pressable
-                    label={c.label}
-                    selected={c.selected}
-                    onPress={() => {
-                      if (!c.selected) haptics.tick();
-                      c.pick();
-                    }}
-                    className={cn(pick.dayButton, c.selected ? pick.dayButtonSelected : c.today && pick.dayButtonToday)}
-                    webClassName={c.selected ? undefined : "hover:bg-muted"}
-                  >
-                    <Text className={cn(pick.dayLabel, c.saturday && pick.dayLabelSaturday, c.today && pick.dayLabelToday, c.selected && pick.dayLabelSelected)}>
-                      {c.label}
-                    </Text>
-                  </Pressable>
-                </Box>
-              ),
-            )}
-            {/* Close the last week so its lines run to the edge. */}
-            {Array.from({ length: (7 - (h.cells.length % 7)) % 7 }, (_, i) => (
-              <Box key={`pad-${i}`} className={cn(pick.dayCell, pick.dayCellEmpty)} />
+          <Box className={pick.dayRows}>
+            {Array.from({ length: Math.ceil(h.cells.length / 7) }, (_, r) => (
+              <Box key={`week-${r}`} className={pick.dayRow}>
+                {Array.from({ length: 7 }, (_, i) => h.cells[r * 7 + i]).map((c, i) =>
+                  !c || c.day === null ? (
+                    <Box key={c?.key ?? `pad-${r}-${i}`} className={cn(pick.dayCellFill, pick.dayCellEmpty)} />
+                  ) : (
+                    <Box key={c.key} className={pick.dayCellFill}>
+                      <Pressable
+                        label={c.label}
+                        selected={c.selected}
+                        onPress={() => {
+                          if (!c.selected) haptics.tick();
+                          c.pick();
+                        }}
+                        className={cn(pick.dayButton, c.selected ? pick.dayButtonSelected : c.today && pick.dayButtonToday)}
+                        webClassName={c.selected ? undefined : "hover:bg-muted"}
+                      >
+                        <Text className={cn(pick.dayLabel, c.saturday && pick.dayLabelSaturday, c.today && pick.dayLabelToday, c.selected && pick.dayLabelSelected)}>
+                          {c.label}
+                        </Text>
+                      </Pressable>
+                    </Box>
+                  ),
+                )}
+              </Box>
             ))}
           </Box>
           {time ? (

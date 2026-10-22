@@ -14,8 +14,8 @@ export const calendarPickerClasses = {
 
   crumbRow: "mb-2.5 flex flex-row items-center gap-2",
   crumbs: "flex min-w-0 flex-1 flex-row justify-center gap-1.5",
-  crumb: "flex h-10 flex-row items-center rounded-lg px-3",
-  crumbActive: "bg-muted",
+  crumb: "flex h-10 flex-row items-center rounded-lg border border-border bg-card px-3",
+  crumbActive: "border-secondary bg-muted",
   crumbLabel: "text-lg font-bold text-secondary",
 
   weekRow: "mb-1 flex flex-row",
@@ -26,6 +26,10 @@ export const calendarPickerClasses = {
   dayGrid: "flex flex-row flex-wrap overflow-hidden rounded-xl border-l border-t border-border",
   dayCell: "flex w-1/7 border-b border-r border-border p-0.5",
   dayCellEmpty: "bg-muted/40",
+  // The app lays the weeks out as rows of seven, so a wrapped sixth/seventh cell can never drop to the next line.
+  dayRows: "flex flex-col overflow-hidden rounded-xl border-l border-t border-border",
+  dayRow: "flex flex-row",
+  dayCellFill: "flex min-w-0 flex-1 border-b border-r border-border p-0.5",
   dayButton: "flex h-11 flex-1 items-center justify-center rounded-lg border border-transparent",
   dayButtonToday: "border-secondary",
   dayButtonSelected: "border-secondary bg-secondary",

@@ -211,7 +211,7 @@ function ZoomSurface({
 
 type ZoomStageProps = {
   /** The chart; `fullscreen` lets it drop width caps meant for the page. */
-  children: (fullscreen: boolean) => ReactNode;
+  children: (fullscreen: boolean, exitFullscreen: () => void) => ReactNode;
   className?: string;
 };
 
@@ -258,7 +258,7 @@ export function ZoomStage({ children, className }: ZoomStageProps) {
       <div className="relative z-[1] flex h-full w-full flex-col pt-14 pb-2">
         <ZoomSurface fill onZoomed={setFsZoomed} resetRef={resetFs}>
           <div className="aspect-square" style={{ width: "min(calc(100vw - 16px), calc(100dvh - 72px))" }}>
-            {children(true)}
+            {children(true, close)}
           </div>
         </ZoomSurface>
       </div>
@@ -279,7 +279,7 @@ export function ZoomStage({ children, className }: ZoomStageProps) {
     <div className={cn("pn-wheel relative overflow-hidden rounded-2xl border border-[var(--w-surface-border)]", wheelSkyBackdrop, className)}>
       <div className="relative z-[1]">
         <ZoomSurface fill={false} onZoomed={setZoomed} resetRef={resetInline}>
-          {children(false)}
+          {children(false, close)}
         </ZoomSurface>
       </div>
       <div className="absolute top-2 right-2 z-[2] flex items-center gap-1.5">

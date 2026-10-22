@@ -197,7 +197,7 @@ function ZoomSurface({
 
 type ZoomStageProps = {
   /** Draws the chart for a square of `size` points; called again, larger, in fullscreen. */
-  children: (size: number, fullscreen: boolean) => ReactNode;
+  children: (size: number, fullscreen: boolean, exitFullscreen: () => void) => ReactNode;
   /** Inline chart size. */
   size: number;
   /** Inline stage height, when it is taller than the chart. */
@@ -255,7 +255,7 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
         {/* The page's copy stays mounted but empty while fullscreen is up:
             one chart drawing at a time. */}
         <ZoomSurface width={inlineSize} height={stageH} onZoomed={setZoomed} resetRef={resetInline}>
-          {fullscreen ? null : children(inlineSize, false)}
+          {fullscreen ? null : children(inlineSize, false, close)}
         </ZoomSurface>
         <View pointerEvents="box-none" style={{ position: "absolute", top: 8, right: 8, flexDirection: "row", gap: 8 }}>
           {zoomed ? <StageButton node={rotateCcwIcon} label={labels.reset} onPress={() => resetInline.current?.()} /> : null}
@@ -275,7 +275,7 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
         <View style={{ flex: 1, backgroundColor: ZOOM_STAGE_BG, paddingTop: insets.top + FULLSCREEN_CHROME, paddingBottom: insets.bottom }}>
           {fullscreen ? (
             <ZoomSurface width={fsSize} height={fsH} onZoomed={setFsZoomed} resetRef={resetFs}>
-              {children(fsSize, true)}
+              {children(fsSize, true, close)}
             </ZoomSurface>
           ) : null}
           <View

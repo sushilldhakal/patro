@@ -31,6 +31,7 @@ import {
   CaseSensitive,
   ChevronDown,
   ChevronUp,
+  Clock,
   FastForward,
   Focus,
   Grid3x3,
@@ -2200,11 +2201,18 @@ export function AakashGocharSky({
           type="button"
           data-sky-controls
           onClick={() => setDatePickerOpen(true)}
-          className="absolute right-3 z-10 flex flex-col items-end rounded-xl border border-white/15 bg-black/60 px-2.5 py-1.5 text-right leading-tight backdrop-blur transition-colors hover:border-white/40"
+          aria-label={pick(tFor(undefined, "ui.sky3d.time_controls"), tFor("en", "ui.sky3d.time_controls"))}
+          className="absolute right-3 z-10 flex items-center gap-2 rounded-full border border-amber-300/60 bg-black/75 py-1.5 pl-1.5 pr-2.5 text-left leading-tight shadow-lg backdrop-blur transition hover:border-amber-200 hover:bg-black/85 active:scale-95"
           style={{ bottom: overlayBottom }}
         >
-          <span className="text-sm font-bold text-white">{simStamp.short.day}</span>
-          <span className="text-xs font-semibold text-white/70">{simStamp.short.clock}</span>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-300/20 text-amber-200">
+            <Clock size={16} />
+          </span>
+          <span className="flex flex-col">
+            <span className="text-sm font-bold text-white">{simStamp.short.day}</span>
+            <span className="text-xs font-semibold text-white/70">{simStamp.short.clock}</span>
+          </span>
+          <ChevronUp size={16} className="text-amber-200" />
         </button>
 
         {searchOpen ? (

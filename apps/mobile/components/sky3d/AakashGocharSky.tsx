@@ -2199,20 +2199,30 @@ export function AakashGocharSky({
         {sheet === "time" ? null : (
           <Pressable
             onPress={() => setSheet("time")}
-            className="absolute right-3 items-end rounded-xl border border-white/15 px-2.5 py-1.5 active:opacity-70"
+            className="absolute right-3 flex-row items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-2.5 active:opacity-70"
             style={{
               bottom: fullscreen ? fullscreenStripClearance : overlayBottom,
-              backgroundColor: withAlpha(neutral.black, 0.6),
+              backgroundColor: withAlpha(neutral.black, 0.75),
+              borderColor: withAlpha(illustration.amber61, 0.7),
             }}
             accessibilityRole="button"
             accessibilityLabel={t("ui.sky3d.time_controls")}
           >
-            <Text className="text-caption font-bold" style={[nepaliTextStyle(13, { dense: true }), { color: neutral.white }]}>
-              {simStamp.short.day}
-            </Text>
-            <Text className="text-caption font-semibold" style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.7) }]}>
-              {simStamp.short.clock}
-            </Text>
+            <View
+              className="size-8 items-center justify-center rounded-full"
+              style={{ backgroundColor: withAlpha(illustration.amber61, 0.22) }}
+            >
+              <Ionicons name="time-outline" size={16} color={illustration.amber61} />
+            </View>
+            <View>
+              <Text className="text-caption font-bold" style={[nepaliTextStyle(13, { dense: true }), { color: neutral.white }]}>
+                {simStamp.short.day}
+              </Text>
+              <Text className="text-caption font-semibold" style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.7) }]}>
+                {simStamp.short.clock}
+              </Text>
+            </View>
+            <Ionicons name="chevron-up" size={16} color={illustration.amber61} />
           </Pressable>
         )}
 

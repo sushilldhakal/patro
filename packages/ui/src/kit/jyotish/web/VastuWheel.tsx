@@ -133,7 +133,7 @@ export function VastuPurushaWheel({
   return (
     <div>
     <ZoomStage>
-    {() => (
+    {(_fullscreen, exitFullscreen) => (
     <svg
       viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
       className={cn("block h-auto w-full", wheelFitScreen, className)}
@@ -331,6 +331,16 @@ export function VastuPurushaWheel({
 
       <line x1={CX - 5} y1={CY} x2={CX + 5} y2={CY} stroke={VASTU_INK.text} strokeOpacity={0.45} strokeWidth={1} />
       <line x1={CX} y1={CY - 5} x2={CX} y2={CY + 5} stroke={VASTU_INK.text} strokeOpacity={0.45} strokeWidth={1} />
+      {/* A hand over the centre: the Brahmasthan is a button, and this says so. */}
+          {centerContent ? null : (
+            <g pointerEvents="none" transform={`translate(${CX - 15} ${CY - 34}) scale(1.25)`}>
+              <path d="M22 14a8 8 0 0 1-8 8" fill="none" stroke={VASTU_INK.text} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2" fill="none" stroke={VASTU_INK.text} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1" fill="none" stroke={VASTU_INK.text} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10" fill="none" stroke={VASTU_INK.text} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" fill="none" stroke={VASTU_INK.text} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+            </g>
+          )}
       {centerContent ?? (
         <text
           x={CX}
@@ -423,11 +433,13 @@ export function VastuPurushaWheel({
         fill="transparent"
         className="cursor-pointer outline-none focus-visible:stroke-[3]"
         stroke={VASTU_ELEMENT_COLOR.space}
-        strokeOpacity={0}
-        onClick={() => onSelect("center")}
+        strokeOpacity={0.55}
+        strokeDasharray="5 4"
+        onClick={() => { exitFullscreen(); onSelect("center"); }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            exitFullscreen();
             onSelect("center");
           }
         }}
