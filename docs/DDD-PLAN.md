@@ -79,6 +79,7 @@ the solar BS calendar, eras and samvatsara.
 | **application** | `services/<context>/` (use cases) | `packages/features` (one hook per page) | domain, ports |
 | **infrastructure** | `services/<context>/*_db.py`, `*_cache.py`, `*_store.py`, `services/platform/`, `services/identity/{credentials,google_auth,apple_auth,facebook_auth,emailer}.py` | `packages/api-client` | domain (to implement its ports) |
 | **read models** | — | `packages/read-models` | domain, `import type` from api-client |
+| **drawing geometry** | — | `packages/drawing` | domain, `three` |
 | **interface** | `api/`, `app/routers/`, `app/day_resolver.py`, `app/instant_resolver.py`, `app/era_middleware.py`, `services/panchanga/presentation/` | `packages/ui`, `packages/design-tokens`, `apps/*` | everything below |
 | **composition root** | `app/main.py`, `app/wiring.py`, `app/startup.py`, `app/precompute_jobs.py`, `app/response_cache.py` | — | everything |
 
@@ -99,6 +100,7 @@ What each rule is and what enforces it:
 | No computed value moves as a side effect of a refactor | `apps/api/scripts/endpoint_snapshot.py --write / --check` (94 routes, caches off, fixed hash seed) |
 | `packages/domain`: plain TS, no React/platform APIs, **no API types**, no class-name helpers | `npm run lint -w @vedic-patro/domain` |
 | `packages/read-models`: plain TS over domain + API types only | `npm run lint -w @vedic-patro/read-models` |
+| `packages/drawing`: plain TS over domain and `three` only | `npm run lint -w @vedic-patro/drawing` |
 | `packages/features`: only React, React Query and the shared packages | `npm run lint -w @vedic-patro/features` |
 
 CI runs all of them (`.github/workflows/ci.yml`: the `check` job's lint, the
@@ -111,6 +113,9 @@ ephemeris and city database fetched the way `scripts/deploy.sh` fetches them).
   `Protocol` there and plug the store in from `app/wiring.py`.
 - A use case: load, cache, combine contexts → `services/<context>/`.
 - Frontend logic over domain values → `packages/domain/src/<context>/`.
+- Drawing geometry (radii, sector paths, chart positions, timeline lanes,
+  three.js scene objects) → `packages/drawing/src/<context>/`. Both the kit and
+  the page hooks may read it.
 - Frontend logic that reads an API response (`PanchangaDay`, `CalendarDay`, …)
   → `packages/read-models/src/<context>/`.
 - A Tailwind class map → `packages/design-tokens/src/classes/`; `cn` is
@@ -157,7 +162,8 @@ Use these words in code, docs and UI copy, and don't invent synonyms.
 | **8 — Thin routers** | Every use case left the routers: festival / holiday listings (`services/festivals/festival_listings.py`), the AD month patro (`patro_generator.generate_ad_month_patro`), the Nepal day with holiday flags (`services/festivals/festival_day.py`), sait personalisation (`sait_personalize.personalize_for_birth`), the kundali report (`services/jyotish/kundali_report.py`), daily guidance's natal chart, the BS year summary, precompute (`services/panchanga/precompute.py`, `app/precompute_jobs.py`), scripture views (`services/scripture/document_views.py`), share copy (`services/sharing/share_copy.py`). Identity's account lifecycle (`engine/identity/accounts.py` rules + `AccountStore` port, `services/identity/accounts.py` use cases, `account_store.py`), devices and reminders (`engine/identity/reminders.py`, `services/identity/reminders.py`), with characterisation tests (`tests/test_auth_api.py`) written against the old router first. Pure request-free code left `app/`: date keys (`engine/calendar/date_keys.py`), instants (`engine/panchanga/instants.py`), the festival matcher (`rules/engine.py` → `engine/festivals/festival_rules.py`), provider adapters and the emailer (`services/identity/`). |
 | **9 — Value objects** | `DashaSystem` / `DashaPeriod` / `DashaTimeline` / `sub_periods` (`engine/jyotish/dasha.py`, one model for Vimshottari, Tribhagi, Yogini and every view of them), `FestivalOccurrence` (`engine/festivals/occurrence.py`), `Tithi` (`engine/panchanga/tithi.py`, `tithi_at`), `PatroDay` (`engine/calendar/patro_day.py`, yielded by `iter_bs_month_days` / `iter_bs_year_days`). Each `*_dasha` / `calculate_tithi` / entry builder is the object's `to_payload()`, byte-identical. |
 | **10 — CI** | The whole API suite runs in CI (`api-tests`). |
-| **11 — Positions and one chart** | `BodyPosition` and `CelestialCoordinates` (`engine/astronomy/position.py`): the engine's `planet_position` / `all_planet_positions`, `PlanetService.position` / `position_with_extras` / `all_positions`, `MoonService.position` and `graha_positions` return a position; `planet_astro_extras` returns coordinates, `ascendant_astro_extras` coordinates and speed. Rashi, DMS, वक्री and the motion label are derived from the stored longitude and speed; Ketu is Rahu's `opposite()`. Callers that reason with a position (gochar, graha detail, muhurta, sait, samvatsara) read attributes; `spashta_table` stays the payload builder, each row `BodyPosition.to_payload()` plus `is_combust` (`spashta.is_combust`). The personal rashifal's `NatalChart` now holds the Jyotish `interpretation.Chart` plus the natal Ashtakavarga and reads its signs and degrees from it, so the report, shanti and the personal reading share one chart model. Both checked against the snapshot, and again with key order kept (the snapshot sorts keys): the served JSON is byte-identical. `vastu-purusha-wheel` (drawing geometry no feature hook reads) moved to `@vedic-patro/ui/geometry/`. |
+| **11 — Positions and one chart** | `BodyPosition` and `CelestialCoordinates` (`engine/astronomy/position.py`): the engine's `planet_position` / `all_planet_positions`, `PlanetService.position` / `position_with_extras` / `all_positions`, `MoonService.position` and `graha_positions` return a position; `planet_astro_extras` returns coordinates, `ascendant_astro_extras` coordinates and speed. Rashi, DMS, वक्री and the motion label are derived from the stored longitude and speed; Ketu is Rahu's `opposite()`. Callers that reason with a position (gochar, graha detail, muhurta, sait, samvatsara) read attributes; `spashta_table` stays the payload builder, each row `BodyPosition.to_payload()` plus `is_combust` (`spashta.is_combust`). The personal rashifal's `NatalChart` now holds the Jyotish `interpretation.Chart` plus the natal Ashtakavarga and reads its signs and degrees from it, so the report, shanti and the personal reading share one chart model. Both checked against the snapshot, and again with key order kept (the snapshot sorts keys): the served JSON is byte-identical. |
+| **12 — Rashi placement and drawing geometry** | `RashiPlacement` (`engine/astronomy/rashi.py`): `rashi_service.surya` / `chandra` / `of_longitude` return it and `lagna_service.placement` gives the rising sign; callers that reason with the sign (Sankranti crossings in muhurta, nivas/shool and bhadra loka, Moon rashi spans, chandra vasa, sait rules and personalisation, the element API, the rashifal's lagna sign) read attributes, and the day pages put `to_payload()` in the response. `lagna_service.lagna` stays the lagna payload (callers re-anchor it and attach coordinates), built from the placement. Checked like phase 11. On the frontend, `packages/drawing` (`@vedic-patro/drawing`) is the one home for drawing geometry: `avakahada-wheel`, `kundali/bhava-bala-chart`, `day-timeline-layout`, `learn/ecliptic-wheel-geometry`, `learn/day-sim-geometry` (from the domain) and `vastu-purusha-wheel` (briefly in `packages/ui/src/geometry/`). It sits below the kit and the hooks because the hooks read it and may not import the kit. Web CSS byte-identical. |
 
 ## 5. What is left
 
@@ -168,24 +174,20 @@ Use these words in code, docs and UI copy, and don't invent synonyms.
   rule is about domain concepts: a concept other code reasons with (a date, a
   tithi, a dasha period, a festival occurrence) is a value object with
   `to_payload()`; a response shape is not.
-- **Other position-shaped dicts.** `lagna_service.lagna` (`engine/panchanga/lagna.py`)
-  and `rashi_service.surya` (`engine/astronomy/rashi.py`) still return dicts with
-  a `longitude`; they mix position with payload fields (anchor, names) and are
-  the next candidates for `BodyPosition`.
-- **Drawing geometry in `packages/domain`.** Geometry that only drawing code
-  reads belongs in the kit: `vastu-purusha-wheel` moved to
-  `packages/ui/src/geometry/` (`@vedic-patro/ui/geometry/*`, plain TS, checked
-  as a shared kit file). The rest stay in the domain on purpose for now:
-  `panchanga-wheel`, `panchanga-layout`, `day-timeline-layout`, `ghati-clock`,
-  `avakahada-wheel` and `kundali/bhava-bala-chart` are read by
-  `packages/features` hooks, and features — the application layer — may not
-  import `@vedic-patro/ui`; moving them needs the hooks that read them to move
-  too (or a geometry package below both). `learn/ecliptic-wheel-geometry` and
-  `learn/day-sim-geometry` are only drawn, but would bring `three` into the kit.
+- **Small shared helpers in `packages/domain`** marked "Shared by apps/web/… and
+  apps/mobile/…" that are not geometry stay there: `panchanga-wheel`
+  (`bsMonthEnOf`), `panchanga-layout` (`rowLabel`), `ghati-clock`
+  (`parseTimeToMinutes`), and the label, row and scene-data modules
+  (`report-labels`, `gochar-rows`, `vastu-guna`, `panchanga-mode`, `sky3d/*`,
+  `learn/kepler`, …). `kundali/north-indian-layout` (house polygons beside the
+  rashi→house map) and `kundali/shadbala-chart` (scale and number formatting)
+  also stay: domain modules (`dainikKranti/gapansha`, `gochar-display`) and
+  `packages/read-models` read them, and neither may import `packages/drawing`.
 - **Merging `main` into `dev`**: files under `packages/domain` and `read-models`
-  moved. After a merge, run `node scripts/monorepo-tools/domain-contexts.mjs` to
-  rewrite any old flat import paths that came in (it is idempotent; move an
-  untracked `apps/mobile/ios` / `android` aside first, the walk trips on Pods).
+  moved, and the drawing geometry left the domain for `packages/drawing`. After
+  a merge, run `node scripts/monorepo-tools/domain-contexts.mjs` to rewrite any
+  old flat or domain import paths that came in, including those six modules
+  (it is idempotent and skips `Pods/`, so an untracked `apps/mobile/ios` can stay).
   Then place new modules by context, not where rename detection put them.
 
 ## 6. Existing issues found while checking
