@@ -39,7 +39,7 @@ const CLOSE_MS = 220;
 const GRAB_ZONE = 64;
 /** Let go past this fraction of the sheet's height, or flick faster than this (px/s), and it dismisses. */
 const DISMISS_FRACTION = 0.35;
-const FLICK_VELOCITY = 600;
+const FLICK_VELOCITY = 800;
 /** The bottom edge is a hard edge: a bounce past it would lift the sheet off the screen's bottom. */
 const SHEET_SPRING = { ...SPRING_SHEET, overshootClamping: true };
 
