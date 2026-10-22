@@ -3,8 +3,8 @@ import type { LayoutChangeEvent, ViewStyle } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { TodayPulseStore } from "@vedic-patro/ui/kit/shell";
 
-/** Horizontal swipe to change month. Off until it has been feel-checked on device. */
-export const MONTH_SWIPE_ENABLED = false;
+/** Horizontal swipe on the home grid to change month. Set false to fall back to the ‹ › buttons only. */
+export const MONTH_SWIPE_ENABLED = true;
 
 const TODAY_PULSE_KEY = "vedic-patro.today-cell-pulse";
 

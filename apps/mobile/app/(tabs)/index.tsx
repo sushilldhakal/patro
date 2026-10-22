@@ -136,10 +136,9 @@ function MonthGridSwipe({
     [atEndSv, atStartSv, commit, drag, enabled, originX, reducedSv, snap, tx, widthSv],
   );
 
-  const style = useAnimatedStyle(() => {
-    const x = tx.get();
-    return x === 0 ? {} : { transform: [{ translateX: x }] };
-  });
+  /* Always written: Reanimated leaves a key it stops returning at its last value,
+     so `{}` at rest could strand the grid a fraction of a pixel off after a spring. */
+  const style = useAnimatedStyle(() => ({ transform: [{ translateX: tx.get() }] }));
 
   if (!enabled) return children;
   return (
