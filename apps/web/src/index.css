@@ -286,6 +286,7 @@
   --color-ill-brand-green-pressed: #1b5e20;
   --color-ill-brand-blue: #0b565a;
   --color-ill-brand-blue-pressed: #084548;
+  --color-ill-brand-verified: #1d9bf0;
   --color-ill-brand-off-white: #f8f6f2;
   --color-ill-brand-ink: #1a1410;
   --color-ill-brand-ink-muted: #5c4a3a;
@@ -367,6 +368,7 @@
   --brand-green-pressed: #1b5e20;
   --brand-blue: #0b565a;
   --brand-blue-pressed: #084548;
+  --brand-verified: #1d9bf0;
   --off-white: #f8f6f2;
   --ink: #1a1410;
   --ink-muted: #5c4a3a;

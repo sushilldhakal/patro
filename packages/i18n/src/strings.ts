@@ -4768,6 +4768,7 @@ export const strings = {
   "account_page.verified": { ne: "प्रमाणित", en: "Verified" },
   "account_page.email_unverified": { ne: "इमेल प्रमाणित भएको छैन", en: "Email not verified" },
   "account_page.my_profiles": { ne: "मेरा प्रोफाइलहरू", en: "My profiles" },
+  "account_page.settings": { ne: "सेटिङ", en: "Settings" },
   "account_page.sign_out": { ne: "लग-आउट", en: "Sign out" },
   "account_page.delete_account": { ne: "खाता मेटाउनुहोस्", en: "Delete account" },
   "account_page.delete_account_confirm": {
@@ -6881,6 +6882,19 @@ export const strings = {
     en: "Offline calendar data can be managed without logging in.",
   },
   "ui.account.offline_data": { ne: "अफलाइन डाटा", en: "Offline Data" },
+  "ui.settings.title": { ne: "सेटिङ", en: "Settings" },
+  "ui.settings.notifications": { ne: "दैनिक सूचना", en: "Daily notifications" },
+  "ui.settings.daily_briefing_sign_in": {
+    ne: "प्रोफाइल अनुसार दैनिक गर्ने/नगर्ने सूचना पाउन लग-इन गर्नुहोस्।",
+    en: "Sign in to get each profile's daily do's and don'ts.",
+  },
+  "ui.settings.reminders": { ne: "शुभ / अशुभ समयको सम्झना", en: "Shubh / ashubh reminders" },
+  "ui.settings.reminders_body": { ne: "कुन समयमा सूचना चाहिन्छ, त्यहाँ मिलाउनुहोस्", en: "Choose which windows remind you, and when" },
+  "ui.settings.language": { ne: "पूर्वनिर्धारित भाषा", en: "Default language" },
+  "ui.settings.theme": { ne: "थिम", en: "Theme" },
+  "ui.settings.theme_system": { ne: "सिस्टम", en: "System" },
+  "ui.settings.offline": { ne: "अफलाइन प्रयोग", en: "Offline use" },
+  "ui.settings.offline_years": { ne: "{{count}} वर्षको पात्रो यो उपकरणमा छ", en: "{{count}} calendar years saved on this device" },
   "ui.account.offline_downloads_aren_t_available_on": {
     ne: "अफलाइन डाउनलोड यो प्लेटफर्ममा उपलब्ध छैन। एन्ड्रोइड वा आईओएस एपमा प्रयोग गर्नुहोस्।",
     en: "Offline downloads aren't available on this platform. Use the Android or iOS app.",

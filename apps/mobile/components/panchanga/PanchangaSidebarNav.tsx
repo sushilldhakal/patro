@@ -5,6 +5,7 @@ import { parseKundaliProfileId } from "@vedic-patro/domain/jyotish/kundali/kunda
 import { usePanchangaSidebarNav, type PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
 import { elementHref } from "@/lib/element-routes";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
+import { scrollPageToTop } from "@/lib/page-scroll";
 import { PanchangaSidebarNav as SidebarNav } from "@vedic-patro/ui/kit/panchanga";
 
 export type KundaliSectionNavProps = {
@@ -63,7 +64,16 @@ export function PanchangaSidebarNav({
           label,
           blurb,
           active,
-          onPress: () => router.push(sidebarHref(item) as never),
+          onPress: () => {
+            const href = sidebarHref(item);
+            /* On iPad the rail stays up beside the page it opened: pushing that
+               page again stacked a second copy, which drew in as a fresh load. */
+            if (pathname === href) {
+              scrollPageToTop(true);
+              return;
+            }
+            router.push(href as never);
+          },
           trailing:
             item.id === "kundali" && kundaliProfileId != null && kundaliSectionNav != null ? (
               <KundaliSidebarSubnav activeSectionId={kundaliSectionNav.activeId} onNavigate={kundaliSectionNav.onNavigate} />

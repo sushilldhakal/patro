@@ -19,6 +19,8 @@ export const brand = {
   greenPressed: "#1b5e20",
   blue: "#0b565a",
   bluePressed: "#084548",
+  /** The verified-account tick — the blue people know that badge by, not the theme's teal. */
+  verified: "#1d9bf0",
   offWhite: "#f8f6f2",
   ink: "#1a1410",
   inkMuted: "#5c4a3a",

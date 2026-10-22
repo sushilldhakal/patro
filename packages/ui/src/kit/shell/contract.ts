@@ -244,8 +244,10 @@ export type AccountMenuProps = {
   onCloseMenu: () => void;
   onSignIn: () => void;
   onProfiles: () => void;
+  /** Opens the settings page; the item is left out where there is none. */
+  onSettings?: () => void;
   onSignOut: () => void;
-  copy: { signIn: string; menuAria: string; myProfiles: string; signOut: string };
+  copy: { signIn: string; menuAria: string; myProfiles: string; settings: string; signOut: string };
   /** The sign-in dialog, rendered by the app while it is open. */
   auth?: ReactNode;
 };

@@ -143,6 +143,8 @@ export const panchangaPageClasses = {
   dayCycle: {
     bandTitle: "m-0 text-sm font-bold",
     bandSubtitle: "text-sm uppercase tracking-wider",
+    /** App: no letter-spacing — on iOS it breaks the Devanagari conjuncts and matras apart. */
+    bandSubtitleNative: "min-w-0 shrink text-sm",
     bandLegend: "ml-auto flex-row flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm",
     legendItem: "items-center gap-1.5",
     legendSwatch: "h-2.5 w-2.5 rounded-md",

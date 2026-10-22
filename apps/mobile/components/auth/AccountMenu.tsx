@@ -23,6 +23,10 @@ export function AccountMenu() {
         menu.closeMenu();
         router.push("/account" as never);
       }}
+      onSettings={() => {
+        menu.closeMenu();
+        router.push("/account/settings" as never);
+      }}
       onSignOut={menu.signOut}
       copy={menu.copy}
       auth={<AuthDialog open={menu.authOpen} onOpenChange={menu.setAuthOpen} initialMode="login" />}

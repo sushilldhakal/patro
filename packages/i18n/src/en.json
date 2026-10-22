@@ -2775,6 +2775,7 @@
     "verified": "Verified",
     "email_unverified": "Email not verified",
     "my_profiles": "My profiles",
+    "settings": "Settings",
     "sign_out": "Sign out",
     "delete_account": "Delete account",
     "delete_account_confirm": "Your account and all kundali profiles will be permanently deleted. This cannot be undone.",
@@ -4338,6 +4339,18 @@
       "which_years_do_you_need": "Which years do you need?",
       "you_re_offline_downloading_needs_an": "You're offline. Downloading needs an internet connection.",
       "you_stay_signed_in_the_app": "You stay signed in; the app asks for biometrics when opened."
+    },
+    "settings": {
+      "title": "Settings",
+      "notifications": "Daily notifications",
+      "daily_briefing_sign_in": "Sign in to get each profile's daily do's and don'ts.",
+      "reminders": "Shubh / ashubh reminders",
+      "reminders_body": "Choose which windows remind you, and when",
+      "language": "Default language",
+      "theme": "Theme",
+      "theme_system": "System",
+      "offline": "Offline use",
+      "offline_years": "{{count}} calendar years saved on this device"
     },
     "app_header": {
       "nepali_calendar_and_panchanga": "Nepali calendar and Panchanga"

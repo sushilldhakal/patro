@@ -40,6 +40,7 @@ export function useAccountMenu(auth: {
       signIn: t("auth.sign_in"),
       menuAria: t("account_page.menu_aria"),
       myProfiles: t("account_page.my_profiles"),
+      settings: t("account_page.settings"),
       signOut: t("account_page.sign_out"),
     },
   };

@@ -50,24 +50,16 @@ function SunTimelineMarker({ x, y, variant, fill, width = 22 }: { x: number; y: 
 const W = 1000;
 /**
  * The width the scrolling chart is drawn at — its own coordinate width, so
- * the SVG renders 1:1.
+ * the SVG renders 1:1 and every `fontSize` in here is screen pixels.
  *
- * This used to be 767, borrowed from the web's `min-w-[768px]`. But the
- * viewBox is {@link W} = 1000 units wide, so drawing it into 767 px scaled
- * everything by 0.767 — and every `fontSize` in here is in *viewBox* units.
- * A band label asking for 10 landed on screen at 7.7 px, and the 9s at 6.9,
- * which is below anything a person can read Devanagari at. Web gets away
- * with it because 768 px there is a desktop column; on a phone the chart is
- * a horizontal scroll either way.
- *
- * Drawing at 1:1 made every number in here mean screen pixels; the 1.25
- * beyond that is a straight enlargement on top, because 1:1 still left the
- * band labels at 9-10 px. Scaling the whole viewBox rather than reaching in
- * and raising each `fontSize` is what keeps it safe: the cells grow with the
- * text, so a wider word cannot overflow a band it used to fit. It costs
- * horizontal scrolling, which this chart has either way.
+ * This was `W * 1.25` once, meant as an enlargement. It never was one: the
+ * Svg kept the viewBox's own height, and `meet` takes the smaller of the two
+ * scales, so the drawing stayed 1000 px wide inside a 1250 px box and the
+ * scroll ran on into 250 px of empty card.
  */
-const MIN_CHART_WIDTH = Math.round(W * 1.25);
+const MIN_CHART_WIDTH = W;
+/** `py-3 pl-1 pr-2` around the chart. */
+const CHART_H_INSET = 12;
 const X0 = 70;
 const X1 = 994;
 const RULER_H = 58;
@@ -103,17 +95,24 @@ const SECTION_H_PAD = 16;
 const PERIOD_CARD_GAP = 8;
 const PLANET_CARD_GAP = 6;
 
-function periodGridCols(width: number): number {
-  if (width >= breakpoints.lg) return 5;
-  if (width >= breakpoints.md) return 4;
-  if (width >= 420) return 3;
-  return 2;
+/** Narrowest a card still reads at: label + "05:12 – 06:48" / name + position + नक्षत्र. */
+const PERIOD_CARD_MIN = 132;
+const PLANET_CARD_MIN = 128;
+const MAX_GRID_COLS = 8;
+
+/** As many cards as fit the row — iPad portrait and landscape both take more than a fixed tier. */
+function gridColsThatFit(inner: number, minCell: number, gap: number): number {
+  return Math.min(MAX_GRID_COLS, Math.floor((inner + gap) / (minCell + gap)));
 }
 
-function planetGridCols(width: number): number {
-  if (width >= breakpoints.md) return 4;
-  if (width >= 380) return 3;
-  return 2;
+function periodGridCols(width: number, inner: number): number {
+  const tier = width >= breakpoints.lg ? 5 : width >= breakpoints.md ? 4 : width >= 420 ? 3 : 2;
+  return Math.max(tier, gridColsThatFit(inner, PERIOD_CARD_MIN, PERIOD_CARD_GAP));
+}
+
+function planetGridCols(width: number, inner: number): number {
+  const tier = width >= breakpoints.md ? 4 : width >= 380 ? 3 : 2;
+  return Math.max(tier, gridColsThatFit(inner, PLANET_CARD_MIN, PLANET_CARD_GAP));
 }
 
 const TRACK_CLS: Record<string, string> = {
@@ -131,6 +130,19 @@ const TRACK_CLS: Record<string, string> = {
 /** Rough width of a band label at fontSize 15, in viewBox units (Devanagari runs ~7.5 per code unit). */
 function labelWidth(text: string): number {
   return text.length * 7.5;
+}
+
+/**
+ * A band's label at `fontSize`, or null when even the bare name would spill
+ * past its band. An unfitted name ran over its neighbour's, and two Devanagari
+ * runs drawn through each other read as gibberish.
+ */
+function fitBandLabel(mainName: string, paksha: string, bandWidth: number, fontSize: number): string | null {
+  const fits = (text: string) => (labelWidth(text) * fontSize) / 15 <= bandWidth - 4;
+  const full = paksha ? `${mainName} · ${paksha}` : mainName;
+  if (fits(full)) return full;
+  if (fits(mainName)) return mainName;
+  return null;
 }
 
 /** The full name when it fits the band, else its short form. */
@@ -371,8 +383,8 @@ export function DayTimeline({
     return (
       <Card className="w-full overflow-hidden p-0">
         <View className={cn("flex-row", patroSecBand)}>
-          <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{copy.title}</Text>
-          <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
+          <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")} style={nepaliTextStyle()}>{copy.title}</Text>
+          <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitleNative, "text-muted-foreground")} style={nepaliTextStyle()}>
             {copy.subtitle}
           </Text>
         </View>
@@ -434,12 +446,13 @@ export function DayTimeline({
   const H = T0 + tracks.length * TRACK + 6;
   /** Web: `w-full min-w-[768px]` — at least 767px, grow to fill the card column. */
   const measuredWidth = containerWidth || windowWidth - PAGE_HORIZONTAL_PADDING * 2;
-  const chartWidth = Math.max(MIN_CHART_WIDTH, measuredWidth);
-  const scrollChart = measuredWidth < MIN_CHART_WIDTH;
-  const periodCols = periodGridCols(measuredWidth);
+  const chartWidth = Math.max(MIN_CHART_WIDTH, measuredWidth - CHART_H_INSET);
+  /* Scroll only when the drawing is wider than the card: wide enough, it stretches to fit. */
+  const scrollChart = measuredWidth - CHART_H_INSET < MIN_CHART_WIDTH;
   const sectionInner = Math.max(0, measuredWidth - SECTION_H_PAD * 2);
+  const periodCols = periodGridCols(measuredWidth, sectionInner);
   const periodCell = fillGridCell(sectionInner, periodCols, PERIOD_CARD_GAP);
-  const planetCols = planetGridCols(measuredWidth);
+  const planetCols = planetGridCols(measuredWidth, sectionInner);
   const planetCell = fillGridCell(sectionInner, planetCols, PLANET_CARD_GAP);
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
@@ -536,6 +549,7 @@ export function DayTimeline({
               const [mainName, paksha] = segText.includes(", ")
                 ? [segText.split(", ")[0]!, segText.split(", ").slice(1).join(", ")]
                 : [segText, ""];
+              const bandLabel = fitBandLabel(mainName, narrow ? "" : paksha, w, narrow ? 9 : 10);
               const laneCount = tr.cls === "ashubha" || tr.cls === "shubha" ? Math.max(1, s.laneCount ?? 1) : 1;
               const laneGap = laneCount > 1 ? 1.5 : 0;
               const laneH = BAND / laneCount;
@@ -583,7 +597,7 @@ export function DayTimeline({
                         {digits(si + 1)}
                       </SvgText>
                     ) : null
-                  ) : w >= 20 ? (
+                  ) : bandLabel ? (
                     <SvgText
                       x={midX}
                       y={labelY}
@@ -599,7 +613,7 @@ export function DayTimeline({
                           and drawn on top of each other — "पूर्णिमा" and
                           "· शुक्ल पक्ष" overlapping into an unreadable
                           smear. Joining them first makes it one run. */}
-                      {`${mainName}${!narrow && paksha ? ` · ${paksha}` : ""}`}
+                      {bandLabel}
                     </SvgText>
                   ) : null}
                 </G>
@@ -681,7 +695,7 @@ export function DayTimeline({
     </>
   );
   /* Same transform as the chart's Svg (uniform `meet` scale), so the column lines up. */
-  const labelScale = Math.min(MIN_CHART_WIDTH / W, 1);
+  const labelScale = MIN_CHART_WIDTH / W;
 
   return (
     <View
@@ -693,8 +707,8 @@ export function DayTimeline({
     >
     <Card className="w-full overflow-hidden p-0">
       <View className={cn("flex-row", patroSecBand)}>
-        <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{copy.title}</Text>
-        <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
+        <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")} style={nepaliTextStyle()}>{copy.title}</Text>
+        <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitleNative, "text-muted-foreground")} style={nepaliTextStyle()}>
           {copy.subtitle}
         </Text>
         <View className={panchangaPageClasses.dayCycle.bandLegend}>
@@ -749,11 +763,12 @@ export function DayTimeline({
           </View>
         ) : (
           <View className="w-full py-3 pl-1 pr-2">
+            {/* Grown uniformly, not stretched: `none` widened every glyph with the card. */}
             <Svg
               width={chartWidth}
-              height={H}
+              height={(H * chartWidth) / W}
               viewBox={`0 0 ${W} ${H}`}
-              preserveAspectRatio="none"
+              preserveAspectRatio="xMinYMid meet"
             >
               {chartContent}
             </Svg>

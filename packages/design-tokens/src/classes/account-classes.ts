@@ -89,6 +89,14 @@ export const accountClasses = {
   menuItem: "items-center gap-2 rounded-md px-2.5 py-2 text-sm",
   menuItemText: "text-sm text-foreground",
 
+  // ── Settings page (app) ───────────────────────────────────────────────────
+  settingsLink: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80",
+  settingsLinkBody: "flex-1 flex-row items-center gap-3 pr-3",
+  settingsLinkTitle: "text-sm font-medium text-foreground",
+  settingsLinkText: "mt-0.5 text-xs text-muted-foreground",
+  settingsRowTitle: "text-body font-semibold text-foreground",
+  settingsRowText: "text-caption text-muted-foreground",
+
   // ── Profile form native selects ───────────────────────────────────────────
   select: "h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm dark:bg-input/30",
 } as const;

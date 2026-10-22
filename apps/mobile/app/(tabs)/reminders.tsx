@@ -7,7 +7,8 @@ import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
-import { AddReminderForm, Chip, WEEKDAYS_EN, WEEKDAYS_NE } from "@/components/reminders/AddReminderForm";
+import { AddReminderForm, WEEKDAYS_EN, WEEKDAYS_NE } from "@/components/reminders/AddReminderForm";
+import { DailyBriefingCard, RashifalNotificationCard, SectionTitle } from "@/components/reminders/NotificationCards";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
@@ -15,20 +16,13 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { deleteReminder, updateReminder } from "@/lib/notifications/api";
-import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
-import {
-  ensureNotificationPermission,
-  getNotificationPermission,
-  type NotifPermission,
-} from "@/lib/notifications/permissions";
+import { getNotificationPermission, type NotifPermission } from "@/lib/notifications/permissions";
 import { pendingNotificationCount } from "@/lib/notifications/scheduler";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { syncNotifications } from "@/lib/notifications/sync";
 import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import {
   DEFAULT_BRIEFING,
-  DEFAULT_RASHIFAL_SETTINGS,
-  type RashifalSettings,
   WINDOW_OPTIONS,
   type BriefingSettings,
   type GuidanceDay,
@@ -42,16 +36,6 @@ import { useThemeColors } from "@/lib/theme-context";
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
-
-const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
-
-function SectionTitle({ children }: { children: string }) {
-  return (
-    <Text className={msc.reminderSection} style={nepaliTextStyle(16)}>
-      {children}
-    </Text>
-  );
-}
 
 function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
   const rows: { label: string; lines: string[]; tone: string }[] = [
@@ -75,90 +59,6 @@ function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
             ))}
           </View>
         ))}
-    </View>
-  );
-}
-
-/** Daily rashifal notification: personal when signed in, the chosen rashi's general rashifal for guests. */
-function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; onChanged: () => void }) {
-  const { t, pick, lang } = useLocale();
-  const l = lang === "en" ? "en" : "ne";
-  const [settings, setSettings] = useState<RashifalSettings>(DEFAULT_RASHIFAL_SETTINGS);
-  const [permission, setPermission] = useState<NotifPermission>("undetermined");
-  const [busy, setBusy] = useState(false);
-  const rashis = useMemo(() => getRashiList(l), [l]);
-
-  useEffect(() => {
-    void Promise.all([notifStore.getRashifalSettings(), getNotificationPermission()]).then(([s, perm]) => {
-      setSettings(s);
-      setPermission(perm);
-    });
-  }, []);
-
-  const save = async (next: RashifalSettings) => {
-    setSettings(next);
-    setBusy(true);
-    try {
-      await notifStore.setRashifalSettings(next);
-      if (next.enabled) {
-        const granted = await ensureNotificationPermission();
-        setPermission(granted ? "granted" : await getNotificationPermission());
-      }
-      await syncNotifications({ lang: l, force: true });
-    } catch {
-      /* the schedule is rebuilt on the next foreground sync */
-    } finally {
-      setBusy(false);
-      onChanged();
-    }
-  };
-
-  const showOff = permission === "denied" && settings.enabled;
-
-  return (
-    <View>
-      <SectionTitle>{t("ui.reminders.daily_rashifal_notification")}</SectionTitle>
-      <Card className="gap-4">
-        <View className="flex-row items-center justify-between gap-3">
-          <View className="min-w-0 flex-1">
-            <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
-              {t("ui.reminders.today_s_rashifal_every_day_at")}
-            </Text>
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
-              {signedIn
-                ? t("ui.reminders.personal_rashifal_from_your_default_profile")
-                : t("ui.reminders.pick_your_rashi_below")}
-            </Text>
-          </View>
-          <Switch value={settings.enabled} disabled={busy} onValueChange={(on) => save({ ...settings, enabled: on })} />
-        </View>
-
-        {settings.enabled ? (
-          <>
-            {!signedIn ? (
-              <View className="flex-row flex-wrap gap-2">
-                <Chip
-                  label={t("muhurta_aside.moon_ref_chandrabal")}
-                  active={settings.guestSignId == null}
-                  onPress={() => save({ ...settings, guestSignId: null })}
-                />
-                {rashis.map((name, i) => (
-                  <Chip
-                    key={name}
-                    label={name}
-                    active={settings.guestSignId === i + 1}
-                    onPress={() => save({ ...settings, guestSignId: i + 1 })}
-                  />
-                ))}
-              </View>
-            ) : null}
-          </>
-        ) : null}
-
-        {showOff ? (
-          <Button label={t("ui.reminders.open_settings")} onPress={() => void Linking.openSettings()} />
-        ) : null}
-      </Card>
     </View>
   );
 }
@@ -338,33 +238,7 @@ export default function RemindersScreen() {
 
           <RashifalNotificationCard signedIn onChanged={() => void reload()} />
 
-          <View>
-            <SectionTitle>{t("ui.reminders.daily_briefing")}</SectionTitle>
-            <Card className="gap-4">
-              <View className="flex-row flex-wrap gap-2">
-                {BRIEFING_TIMES.map((time) => (
-                  <Chip key={time} label={time} active={briefing.time === time} onPress={() => saveBriefing({ ...briefing, time })} />
-                ))}
-              </View>
-              {profiles.length === 0 ? (
-                <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-                  {t("ui.reminders.profiles_appear_here_once_you_add")}
-                </Text>
-              ) : (
-                profiles.map((p) => (
-                  <View key={p.id} className="flex-row items-center justify-between gap-3">
-                    <Text className="text-body min-w-0 flex-1 text-foreground" style={nepaliTextStyle(15)}>
-                      {p.full_name}
-                    </Text>
-                    <Switch
-                      value={briefing.enabled[p.id] !== false}
-                      onValueChange={(on) => saveBriefing({ ...briefing, enabled: { ...briefing.enabled, [p.id]: on } })}
-                    />
-                  </View>
-                ))
-              )}
-            </Card>
-          </View>
+          <DailyBriefingCard briefing={briefing} profiles={profiles} onChange={(next) => void saveBriefing(next)} />
 
           <View>
             <View className="mb-2 flex-row items-center justify-between">

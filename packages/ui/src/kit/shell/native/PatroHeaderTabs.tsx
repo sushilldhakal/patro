@@ -13,7 +13,7 @@ export function PatroHeaderTabs({ tabs, label, className }: PatroHeaderTabsProps
     return <PatroHeaderSwap tabs={tabs} className={className} />;
   }
   return (
-    <Box className={cn(cls.segment, className)} label={label}>
+    <Box className={cn(cls.segment, cls.nativeSegmentRow, className)} label={label}>
       {tabs.map((tab) => (
         <Pressable
           key={tab.key}
@@ -21,7 +21,7 @@ export function PatroHeaderTabs({ tabs, label, className }: PatroHeaderTabsProps
           role="tab"
           selected={tab.active}
           onPress={tab.onPress}
-          className={cn(cls.segmentItem, tab.active && cls.segmentItemActive)}
+          className={cn(cls.nativeSegmentRowItem, tab.active && cls.segmentItemActive)}
         >
           <Text className={cn(cls.segmentLabel, tab.active ? cls.segmentLabelActive : cls.segmentLabelIdle)}>{tab.label}</Text>
         </Pressable>
