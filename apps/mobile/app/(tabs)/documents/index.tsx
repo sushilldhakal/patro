@@ -47,7 +47,7 @@ export default function DocumentsScreen() {
                   className={cn(
                     documentsClasses.tab,
                     "flex-row items-center border",
-                    tab.active ? cn(documentsClasses.tabSelected, "border-border/60") : "border-transparent",
+                    tab.active ? cn(documentsClasses.tabSelected, "border-border/60") : "border-transparent shadow-none",
                   )}
                 >
                   <Text className={cn(documentsClasses.tabLabel, tab.active ? documentsClasses.tabLabelSelected : documentsClasses.tabLabelIdle)}>

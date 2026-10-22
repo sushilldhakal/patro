@@ -68,7 +68,8 @@ export const dainikKrantiClasses = {
   expandTabs: "mb-3 flex flex-row gap-1 rounded-lg bg-muted/60 p-1",
   expandTab: "flex-1 rounded-md px-2 py-1.5 text-center text-sm font-semibold",
   expandTabOn: "bg-card text-secondary shadow-xs",
-  expandTabOff: "text-muted-foreground",
+  /* shadow-none, not nothing: the app's NativeWind crashes in dev when a mounted tab gains the shadow's CSS variables (shadow-xs) only once it turns active. */
+  expandTabOff: "text-muted-foreground shadow-none",
 
   // ── Day number ────────────────────────────────────────────────────────────
   dayNum: "font-num text-base font-bold tabular-nums",
