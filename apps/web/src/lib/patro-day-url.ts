@@ -13,7 +13,8 @@ import {
   type Era,
   type Language,
 } from "@vedic-patro/domain/calendar/era";
-import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
+import { adToBS, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
+import { rememberedMonth } from "@vedic-patro/features/patro-date";
 import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
 
 export type PatroDisplayContext = {
@@ -102,7 +103,24 @@ export function parsePatroDayUrl(
     return { kind: "input", inputEra, year, month, day: defaultDay, display };
   }
 
-  return { kind: "today", display };
+  return rememberedDayState(display) ?? { kind: "today", display };
+}
+
+/**
+ * A day page opened with no date (a nav link) follows the month the reader last
+ * browsed to elsewhere — home on BS 2085 Kartik opens panchanga on 2085 Kartik,
+ * on today's day number. Null when nothing was browsed or it is this month.
+ */
+function rememberedDayState(display: PatroDisplayContext): PatroDayFetchState | null {
+  const era = display.era === "ad" ? "ad" : display.era === "bs" ? "bs" : null;
+  if (!era) return null;
+  const last = rememberedMonth(era);
+  if (!last) return null;
+  const now = new Date();
+  const today = era === "bs" ? adToBS(now) : { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+  if (today.year === last.year && today.month === last.month) return null;
+  const length = era === "bs" ? getBSMonthLength(last.year, last.month) : new Date(Date.UTC(last.year, last.month, 0)).getUTCDate();
+  return { kind: "input", inputEra: era, year: last.year, month: last.month, day: Math.min(today.day, length), display };
 }
 
 export function patroDayFetchFromApiJd(

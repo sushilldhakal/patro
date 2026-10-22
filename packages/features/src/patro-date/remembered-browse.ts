@@ -7,6 +7,7 @@
  * process, so a fresh visit starts on today again. A link or URL that names its
  * own year still wins; this only fills in a page opened without one.
  */
+import { adToBS, bsToAdOrNull, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 
 /** BS runs 56–57 years ahead of AD; the larger gap holds for most of the BS year. */
@@ -32,4 +33,24 @@ export function rememberedYear(era: Era): number | null {
 export function rememberedMonth(era: Era): { year: number; month: number } | null {
   if (!remembered || remembered.era !== era || remembered.month == null) return null;
   return { year: remembered.year, month: remembered.month };
+}
+
+/**
+ * The date a day page (panchanga) opens on when no date was asked for: today's
+ * day number in the remembered month, or null when that is this month already.
+ */
+export function rememberedDayDate(now: Date = new Date()): Date | null {
+  const bs = rememberedMonth("bs");
+  if (bs) {
+    const today = adToBS(now);
+    if (today.year === bs.year && today.month === bs.month) return null;
+    return bsToAdOrNull(bs.year, bs.month, Math.min(today.day, getBSMonthLength(bs.year, bs.month)));
+  }
+  const ad = rememberedMonth("ad");
+  if (ad) {
+    if (now.getFullYear() === ad.year && now.getMonth() + 1 === ad.month) return null;
+    const length = new Date(ad.year, ad.month, 0).getDate();
+    return new Date(ad.year, ad.month - 1, Math.min(now.getDate(), length));
+  }
+  return null;
 }

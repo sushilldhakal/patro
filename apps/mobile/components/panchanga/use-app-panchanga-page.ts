@@ -9,7 +9,8 @@ import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { parseAdStr } from "@vedic-patro/domain/panchanga/panchanga-year-page";
 import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
-import { bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { rememberBrowse, rememberedDayDate } from "@vedic-patro/features/patro-date";
 
 /**
  * The app's side of `usePanchangaPage` (@vedic-patro/features): the browsed
@@ -20,7 +21,14 @@ export function useAppPanchangaPage() {
   const params = useLocalSearchParams<{ date?: string }>();
   const queryClient = useQueryClient();
   const { location, setLocation, ready } = usePanchangaLocation();
-  const [date, setDate] = useState(() => (typeof params.date === "string" && params.date ? parseAdStr(params.date) : new Date()));
+  // No ?date=: open in the month the reader last browsed to (home on BS 2085 → 2085).
+  const [date, setDate] = useState(() =>
+    typeof params.date === "string" && params.date ? parseAdStr(params.date) : (rememberedDayDate() ?? new Date()),
+  );
+  useEffect(() => {
+    const bs = adToBS(date);
+    rememberBrowse("bs", bs.year, bs.month);
+  }, [date]);
   const { clock, setClock } = usePanchangaClock(location.params.timezone ?? "Asia/Kathmandu");
 
   useEffect(() => {

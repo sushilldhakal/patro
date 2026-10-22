@@ -22,6 +22,7 @@ import {
   type ResolvedPatroDayFields,
 } from "@/lib/patro-day-url";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { rememberBrowse } from "@vedic-patro/features/patro-date";
 import {
   locationSearchFingerprint,
   patroDayBrowseNavigateSearch,
@@ -33,6 +34,16 @@ import {
 } from "@/lib/url-state";
 
 type NavigateFn = (opts: NavigateOptions) => void;
+
+/** A BS / AD day shown here becomes the year the other patro pages open on. */
+function useRememberDay(dayState: PatroDayFetchState) {
+  const key = dayState.kind === "input" ? `${dayState.inputEra}:${dayState.year}:${dayState.month}` : "";
+  useEffect(() => {
+    if (dayState.kind !== "input" || (dayState.inputEra !== "bs" && dayState.inputEra !== "ad")) return;
+    rememberBrowse(dayState.inputEra, dayState.year, dayState.month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+}
 
 function fallbackLanguage(lang: string): "en" | "ne" {
   return lang === "en" ? "en" : "ne";
@@ -81,6 +92,7 @@ export function usePatroDayUrlBrowse(
     () => parsePatroDayUrl(search as Record<string, unknown>, language),
     [search, language],
   );
+  useRememberDay(dayState);
   const [pickerDate, setPickerDate] = useState<Date | null>(null);
   const seenUrlLocationRef = useRef<string | null>(null);
 
@@ -217,6 +229,7 @@ export function usePatroPanchangaUrlBrowse(
     () => parsePatroDayUrl(search as Record<string, unknown>, language),
     [search, language],
   );
+  useRememberDay(dayState);
   const timezone = location.params.timezone ?? "Asia/Kathmandu";
   const { clock, setClock: setClockState } = usePanchangaClock(timezone, { clock: search.time });
   /** Latest clock, including a setClock that has not re-rendered yet — date
