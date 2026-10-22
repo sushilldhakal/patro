@@ -32,7 +32,13 @@ export function TodayCellPulse({
   const [on, setOn] = useState(false);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(1);
+  /* One animated style, nothing plain beside it: a `style={[plain, animated]}` array drops the plain part. */
   const style = useAnimatedStyle(() => ({
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     opacity: opacity.get(),
     transform: [{ scale: scale.get() }],
   }));
@@ -68,7 +74,7 @@ export function TodayCellPulse({
 
   if (!on) return null;
   return (
-    <Animated.View pointerEvents="none" style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, style]}>
+    <Animated.View pointerEvents="none" style={style}>
       <View pointerEvents="none" className={cn("absolute inset-0", ringClassName)} />
     </Animated.View>
   );

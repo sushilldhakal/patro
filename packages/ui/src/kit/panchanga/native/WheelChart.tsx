@@ -51,11 +51,7 @@ function useWheelSettle(layoutWidth: number) {
     started.current = true;
     rotation.set(withTiming(0, { duration: WHEEL_SETTLE_MS, easing: EASE_OUT }));
   }, [layoutWidth, rotation]);
-  return useAnimatedStyle(() => {
-    const deg = rotation.get();
-    if (deg === 0) return {};
-    return { transform: [{ rotate: `${deg}deg` }] };
-  });
+  return useAnimatedStyle(() => ({ flex: 1, transform: [{ rotate: `${rotation.get()}deg` }] }));
 }
 
 type NodeIcon = ComponentType<{ width?: number; height?: number }>;
@@ -1061,7 +1057,7 @@ function WheelChartImpl({
           transform: [{ translateX: liveX }, { translateY: liveY }, { scale: liveZoom }],
         }}
       >
-        <Reanimated.View style={[{ flex: 1 }, settleStyle]} pointerEvents="none">
+        <Reanimated.View style={settleStyle} pointerEvents="none">
         {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
             rotates that texture. Without it every frame re-draws the whole wheel
             (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}

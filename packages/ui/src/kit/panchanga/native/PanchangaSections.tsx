@@ -82,11 +82,12 @@ function Crossfade({ token, children }: { token: string; children: ReactNode }) 
   }, [fade.gen, fade.invert, fade.prev, fade.reset, opacity]);
 
   const incoming = useAnimatedStyle(() => ({ opacity: opacity.get() }));
-  const outgoing = useAnimatedStyle(() => ({ opacity: 1 - opacity.get() }));
+  /* One animated style, nothing plain beside it: a `style={[plain, animated]}` array drops the plain part. */
+  const outgoing = useAnimatedStyle(() => ({ position: "absolute", left: 0, right: 0, top: 0, opacity: 1 - opacity.get() }));
   if (!fade.prev) return children;
   return (
     <View style={{ position: "relative" }}>
-      <Animated.View pointerEvents="none" style={[outgoing, { position: "absolute", left: 0, right: 0, top: 0 }]}>
+      <Animated.View pointerEvents="none" style={outgoing}>
         {fade.prev}
       </Animated.View>
       <Animated.View style={incoming}>{children}</Animated.View>

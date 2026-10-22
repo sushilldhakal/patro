@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Modal, Platform, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
-import { cssInterop } from "nativewind";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
@@ -22,7 +21,8 @@ import { neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { EASE_OUT, SPRING_SHEET, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 
-const MotionView = cssInterop(Animated.View, { className: "style" });
+/** The dim behind the drawer. */
+const SCRIM_COLOR = withAlpha(neutral.black, 0.4);
 
 /** The drawer's own slide, as it has always been: 220 ms in, 180 ms out. */
 const OPEN_MS = 220;
@@ -236,10 +236,31 @@ function NavDrawer({
   );
 
   /* The scrim follows the drawer, so a drag dims and undims it in step. */
+  /* Everything the two views need is in their one animated style, with no plain style beside it:
+     a `style={[plain, animated]}` array loses the plain part here, which left the drawer as a bare
+     header in the corner and the scrim unpainted. */
   const scrimMotion = useAnimatedStyle(() => ({
+    flex: 1,
+    backgroundColor: SCRIM_COLOR,
     opacity: reduced ? fade.get() : interpolate(x.get(), [-widthSv.get(), 0], [0, 1], Extrapolation.CLAMP),
   }));
-  const drawerMotion = useAnimatedStyle(() => (reduced ? { opacity: fade.get() } : { transform: [{ translateX: x.get() }] }));
+  const drawerPaddingTop = insets.top;
+  const drawerPaddingBottom = insets.bottom;
+  const drawerBackground = colors.card;
+  const drawerBorder = colors.border;
+  const drawerMotion = useAnimatedStyle(() => ({
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: drawerWidth,
+    paddingTop: drawerPaddingTop,
+    paddingBottom: drawerPaddingBottom,
+    backgroundColor: drawerBackground,
+    borderRightWidth: 1,
+    borderRightColor: drawerBorder,
+    ...(reduced ? { opacity: fade.get() } : { transform: [{ translateX: x.get() }] }),
+  }));
 
   if (!mounted) return null;
 
@@ -247,26 +268,11 @@ function NavDrawer({
     <Modal visible transparent animationType="none" onRequestClose={onClose}>
       {/* A Modal is its own window on Android: gestures need their own root inside it. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
-      <Animated.View style={[{ flex: 1, backgroundColor: withAlpha(neutral.black, 0.4) }, scrimMotion]}>
+      <Animated.View style={scrimMotion}>
         <Pressable className="flex-1" onPress={onClose} />
       </Animated.View>
       <GestureDetector gesture={pan}>
-      <MotionView
-        style={[
-          {
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            width: drawerWidth,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-            backgroundColor: colors.card,
-          },
-          drawerMotion,
-        ]}
-        className="border-r border-border"
-      >
+      <Animated.View style={drawerMotion}>
         <View className={cn("flex-row p-4", shellClasses.drawerBrandRow, shellClasses.drawerHeader)}>
           <VedicPatroMark size={36} />
           <View className="min-w-0 flex-1 gap-1.5">
@@ -286,7 +292,7 @@ function NavDrawer({
             <MenuPreferences onNavigate={onNavigate} />
           </View>
         </ScrollView>
-      </MotionView>
+      </Animated.View>
       </GestureDetector>
       </GestureHandlerRootView>
     </Modal>
