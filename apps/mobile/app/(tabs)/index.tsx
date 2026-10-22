@@ -82,6 +82,7 @@ function MonthGridSwipe({
   const atEndSv = useSharedValue(atEnd);
   const reducedSv = useSharedValue(reduced);
   const drag = useSharedValue(0);
+  const originX = useSharedValue(0);
   const commitRef = useRef(onCommit);
   commitRef.current = onCommit;
   const commit = useCallback((delta: number) => {
@@ -103,14 +104,15 @@ function MonthGridSwipe({
         .enabled(enabled)
         .activeOffsetX([-16, 16])
         .failOffsetY([-12, 12])
-        .onBegin(() => {
+        .onStart((e) => {
+          // Activate only — a vertical scroll must not cancel a spring already running.
           drag.set(tx.get());
-          tx.set(tx.get());
+          originX.set(e.translationX);
         })
         .onUpdate((e) => {
           if (reducedSv.get()) return;
           const width = widthSv.get();
-          let next = drag.get() + e.translationX;
+          let next = drag.get() + (e.translationX - originX.get());
           if (next > 0 && atStartSv.get()) next = rubberband(next, width);
           else if (next < 0 && atEndSv.get()) next = -rubberband(-next, width);
           tx.set(next);
@@ -131,7 +133,7 @@ function MonthGridSwipe({
           const velocity = reducedSv.get() ? 0 : e.velocityX;
           tx.set(withSpring(0, { ...SPRING_SNAP, velocity }));
         }),
-    [atEndSv, atStartSv, commit, drag, enabled, reducedSv, snap, tx, widthSv],
+    [atEndSv, atStartSv, commit, drag, enabled, originX, reducedSv, snap, tx, widthSv],
   );
 
   const style = useAnimatedStyle(() => {

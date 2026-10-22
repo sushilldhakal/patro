@@ -294,32 +294,41 @@ export type TimelinePeriod = { kind: "shubh" | "ashubh"; key?: string; ne: strin
 function Crossfade({ token, children }: { token: string; children: ReactNode }) {
   const opacity = useSharedValue(1);
   const latest = useRef(children);
-  const [fade, setFade] = useState<{ token: string; prev: ReactNode | null; gen: number; reset: boolean }>({
+  const [fade, setFade] = useState<{ token: string; prev: ReactNode | null; gen: number; reset: boolean; invert: boolean }>({
     token,
     prev: null,
     gen: 0,
     reset: false,
+    invert: false,
   });
   if (token !== fade.token) {
-    setFade({
-      token,
-      prev: fade.prev ?? latest.current,
-      gen: fade.gen + 1,
-      reset: fade.prev == null,
-    });
+    if (fade.token === "") {
+      setFade({ token, prev: null, gen: fade.gen, reset: false, invert: false });
+    } else {
+      const interrupting = fade.prev != null;
+      setFade({
+        token,
+        prev: latest.current,
+        gen: fade.gen + 1,
+        reset: !interrupting,
+        invert: interrupting,
+      });
+    }
   }
   latest.current = children;
 
   useLayoutEffect(() => {
     if (!fade.prev) return;
-    if (fade.reset) opacity.set(0);
+    // A second step mid-fade keeps the cards already on screen at their current opacity.
+    if (fade.invert) opacity.set(1 - opacity.get());
+    else if (fade.reset) opacity.set(0);
     opacity.set(withTiming(1, { duration: DURATION.fast, easing: EASE_OUT }));
     const gen = fade.gen;
     const timer = setTimeout(() => {
-      setFade((current) => (current.gen === gen ? { ...current, prev: null, reset: false } : current));
+      setFade((current) => (current.gen === gen ? { ...current, prev: null, reset: false, invert: false } : current));
     }, DURATION.fast + 20);
     return () => clearTimeout(timer);
-  }, [fade.gen, fade.prev, fade.reset, opacity]);
+  }, [fade.gen, fade.invert, fade.prev, fade.reset, opacity]);
 
   const incoming = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   const outgoing = useAnimatedStyle(() => ({ opacity: 1 - opacity.get() }));
@@ -355,7 +364,7 @@ function AlarmIcon({
   useEffect(() => bindBell(remindId, play), [bindBell, play, remindId]);
   const style = useAnimatedStyle(() => {
     const shown = scale.get();
-    return shown === 1 ? {} : { transform: [{ scale: shown }] };
+    return Math.abs(shown - 1) < 0.001 ? {} : { transform: [{ scale: shown }] };
   });
   return (
     <Animated.View style={style}>

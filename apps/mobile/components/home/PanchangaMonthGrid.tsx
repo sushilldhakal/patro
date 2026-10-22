@@ -31,13 +31,10 @@ function TodayCellPulse({ todayAd }: { todayAd: string }) {
   const [on, setOn] = useState(false);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(1);
-  const style = useAnimatedStyle(() => {
-    const shown = scale.get();
-    return {
-      opacity: opacity.get(),
-      transform: shown === 1 ? undefined : [{ scale: shown }],
-    };
-  });
+  const style = useAnimatedStyle(() => ({
+    opacity: opacity.get(),
+    transform: [{ scale: scale.get() }],
+  }));
 
   useEffect(() => {
     let cancel = false;

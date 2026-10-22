@@ -37,9 +37,11 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
   const fadeStyle = useAnimatedStyle(() => {
     const y = ty.get();
     const shown = opacity.get();
+    const fade = shown < 0.999;
+    const shift = Math.abs(y) > 0.05;
     return {
-      ...(shown === 1 ? null : { opacity: shown }),
-      ...(y === 0 ? null : { transform: [{ translateY: y }] }),
+      ...(fade ? { opacity: shown } : null),
+      ...(shift ? { transform: [{ translateY: y }] } : null),
     };
   });
 

@@ -36,13 +36,10 @@ function TodayCellPulse({ todayAd }: { todayAd: string }) {
   const [on, setOn] = useState(false);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(1);
-  const style = useAnimatedStyle(() => {
-    const shown = scale.get();
-    return {
-      opacity: opacity.get(),
-      transform: shown === 1 ? undefined : [{ scale: shown }],
-    };
-  });
+  const style = useAnimatedStyle(() => ({
+    opacity: opacity.get(),
+    transform: [{ scale: scale.get() }],
+  }));
 
   useEffect(() => {
     const api = readTodayPulse();
@@ -87,113 +84,197 @@ function monthSignature(days: DatedDay[]): string {
   return `${span[0].date_ad}:${span[span.length - 1].date_ad}:${span.length}`;
 }
 
+type Slot = "a" | "b";
+
 type Travel<T> = {
   sig: string;
-  from: T[] | null;
-  /** Month the fade was heading toward, frozen while that fade reverses. */
-  to: T[] | null;
+  a: T[];
+  b: T[] | null;
+  /** Slot that should finish visible. */
+  top: Slot;
+  /** Slot fading away, or null once the month has settled. */
+  ghost: Slot | null;
+  /** +1 next month, −1 previous. Kept on a reversal so the shift returns along the same path. */
   dir: number;
-  fresh: boolean;
-  reverse: boolean;
+  kind: "idle" | "enter" | "reverse" | "retarget" | "run";
   token: number;
+  /** Month asked for while a fade was already running. */
+  pending: T[] | null;
 };
 
+/** Same travel as the panchanga grid: crossfade, SHIFT px, interruptible. */
 function useMonthTravel<T extends DatedDay>(days: T[]) {
-  const reduced = useReducedMotionPref();
+  const reduced = Boolean(useReducedMotionPref());
   const signature = monthSignature(days);
-  const daysRef = useRef(days);
+  const snapshotRef = useRef(days);
   const [travel, setTravel] = useState<Travel<T>>({
     sig: signature,
-    from: null,
-    to: null,
+    a: days,
+    b: null,
+    top: "a",
+    ghost: null,
     dir: 1,
-    fresh: false,
-    reverse: false,
+    kind: "idle",
     token: 0,
+    pending: null,
   });
 
-  if (signature !== travel.sig && signature !== "" && travel.sig !== "") {
-    const nextDir = signature > travel.sig ? 1 : -1;
-    const inFlight = travel.from !== null;
-    const fromSig = travel.from ? monthSignature(travel.from) : "";
-    if (!inFlight) {
+  if (signature !== travel.sig) {
+    if (signature === "" || travel.sig === "") {
+      snapshotRef.current = days;
       setTravel({
+        ...travel,
         sig: signature,
-        from: daysRef.current,
-        to: null,
-        dir: nextDir,
-        fresh: true,
-        reverse: false,
-        token: travel.token + 1,
+        a: days,
+        top: "a",
+        ghost: null,
+        kind: "idle",
+        pending: null,
       });
-    } else if (fromSig === signature) {
-      setTravel({
-        sig: signature,
-        from: travel.from,
-        to: travel.to ?? daysRef.current,
-        dir: travel.dir,
-        fresh: false,
-        reverse: true,
-        token: travel.token + 1,
-      });
+    } else if (travel.ghost) {
+      const ghostDays = travel.ghost === "a" ? travel.a : travel.b;
+      const ghostSig = ghostDays ? monthSignature(ghostDays) : "";
+      if (ghostSig === signature && ghostDays) {
+        const top: Slot = travel.ghost;
+        setTravel({
+          ...travel,
+          sig: signature,
+          top,
+          ghost: travel.top,
+          kind: "reverse",
+          token: travel.token + 1,
+          pending: null,
+        });
+      } else {
+        setTravel({
+          ...travel,
+          sig: signature,
+          dir: signature > travel.sig ? 1 : -1,
+          kind: "retarget",
+          token: travel.token + 1,
+          pending: days,
+        });
+      }
     } else {
+      const previous = snapshotRef.current.slice();
+      const incoming: Slot = travel.top === "a" ? "b" : "a";
       setTravel({
+        ...travel,
         sig: signature,
-        from: travel.from,
-        to: null,
-        dir: travel.dir,
-        fresh: false,
-        reverse: false,
+        a: incoming === "a" ? days : previous,
+        b: incoming === "b" ? days : previous,
+        top: incoming,
+        ghost: travel.top,
+        dir: signature > travel.sig ? 1 : -1,
+        kind: "enter",
         token: travel.token + 1,
+        pending: null,
       });
     }
   } else {
-    daysRef.current = days;
+    snapshotRef.current = days;
   }
 
-  const progress = useSharedValue(1);
-  const dirSv = useSharedValue(1);
-  const reducedSv = useSharedValue(Boolean(reduced));
-  const tokenRef = useRef(travel.token);
+  const opA = useSharedValue(1);
+  const opB = useSharedValue(0);
+  const xA = useSharedValue(0);
+  const xB = useSharedValue(0);
+  const reducedSv = useSharedValue(reduced);
   const travelRef = useRef(travel);
-  tokenRef.current = travel.token;
+  const tokenRef = useRef(travel.token);
+  const settledToken = useRef(0);
   travelRef.current = travel;
+  tokenRef.current = travel.token;
+
+  const settle = useCallback((token: number) => {
+    if (tokenRef.current !== token || settledToken.current === token) return;
+    const current = travelRef.current;
+    if (current.token !== token || current.ghost == null) return;
+    settledToken.current = token;
+    if (current.ghost === "a") {
+      opA.set(0);
+      xA.set(0);
+    } else {
+      opB.set(0);
+      xB.set(0);
+    }
+    const next: Travel<T> = { ...current, ghost: null, kind: "idle", pending: null };
+    travelRef.current = next;
+    setTravel(next);
+  }, [opA, opB, xA, xB]);
 
   useLayoutEffect(() => {
-    reducedSv.set(Boolean(reduced));
+    reducedSv.set(reduced);
   }, [reduced, reducedSv]);
 
   useLayoutEffect(() => {
     const current = travelRef.current;
-    if (!current.from) return;
-    if (current.fresh) {
-      progress.set(0);
-      dirSv.set(current.dir);
-    }
+    if (current.kind === "idle" || current.kind === "run") return;
     const token = current.token;
-    const reverse = current.reverse;
-    progress.set(withTiming(reverse ? 0 : 1, { duration: DURATION.standard, easing: EASE_OUT }));
-    const timer = setTimeout(() => {
-      if (tokenRef.current !== token) return;
-      setTravel((latest) =>
-        latest.token === token ? { ...latest, from: null, to: null, fresh: false, reverse: false } : latest,
-      );
-    }, DURATION.standard + 40);
+    const shift = reducedSv.get() ? 0 : current.dir * SHIFT;
+    const timing = { duration: DURATION.standard, easing: EASE_OUT };
+    const op = { a: opA, b: opB };
+    const x = { a: xA, b: xB };
+    const playIn = (slot: Slot) => {
+      op[slot].set(0);
+      x[slot].set(shift);
+      op[slot].set(withTiming(1, timing));
+      x[slot].set(withTiming(0, timing));
+    };
+    const playOut = (slot: Slot, toX: number) => {
+      op[slot].set(withTiming(0, timing));
+      x[slot].set(withTiming(toX, timing));
+    };
+
+    if (current.kind === "reverse" && current.ghost) {
+      playOut(current.ghost, shift === 0 ? 0 : current.dir * SHIFT);
+      op[current.top].set(withTiming(1, timing));
+      x[current.top].set(withTiming(0, timing));
+    } else if (current.kind === "enter" && current.ghost) {
+      playIn(current.top);
+      playOut(current.ghost, shift === 0 ? 0 : -shift);
+    } else if (current.kind === "retarget" && current.ghost && current.pending) {
+      const destOp = op[current.top].get();
+      const srcOp = op[current.ghost].get();
+      const incoming: Slot = destOp >= srcOp ? current.ghost : current.top;
+      const outgoing: Slot = incoming === "a" ? "b" : "a";
+      const next: Travel<T> = {
+        ...current,
+        a: incoming === "a" ? current.pending : current.a,
+        b: incoming === "b" ? current.pending : current.b,
+        top: incoming,
+        ghost: outgoing,
+        kind: "run",
+        pending: null,
+      };
+      playIn(incoming);
+      playOut(outgoing, shift === 0 ? 0 : -shift);
+      travelRef.current = next;
+      setTravel(next);
+    }
+
+    const timer = setTimeout(() => settle(token), DURATION.standard + 80);
     return () => clearTimeout(timer);
-  }, [travel.token, progress, dirSv]);
+  }, [travel.token, opA, opB, xA, xB, reducedSv, settle]);
 
-  const incomingStyle = useAnimatedStyle(() => {
-    const p = progress.get();
-    const shift = reducedSv.get() ? 0 : dirSv.get() * SHIFT;
-    return { opacity: p, transform: [{ translateX: (1 - p) * shift }] };
-  });
-  const outgoingStyle = useAnimatedStyle(() => {
-    const p = progress.get();
-    const shift = reducedSv.get() ? 0 : dirSv.get() * SHIFT;
-    return { opacity: 1 - p, transform: [{ translateX: -p * shift }] };
-  });
+  const styleA = useAnimatedStyle(() => ({
+    opacity: opA.get(),
+    transform: [{ translateX: xA.get() }],
+  }));
+  const styleB = useAnimatedStyle(() => ({
+    opacity: opB.get(),
+    transform: [{ translateX: xB.get() }],
+  }));
 
-  return { from: travel.from, to: travel.to, incomingStyle, outgoingStyle };
+  const incomingDays = travel.top === "a" ? travel.a : travel.b;
+  const outgoingDays = travel.ghost === "a" ? travel.a : travel.ghost === "b" ? travel.b : null;
+  const incomingLive = incomingDays && monthSignature(incomingDays) === signature ? days : incomingDays;
+  return {
+    from: outgoingDays,
+    to: travel.ghost ? incomingLive : null,
+    incomingStyle: travel.top === "a" ? styleA : styleB,
+    outgoingStyle: travel.ghost === "b" ? styleB : styleA,
+  };
 }
 
 /** The grid is measured once so the header and every row share one exact column width (percent widths wrap a column on some phones). */
