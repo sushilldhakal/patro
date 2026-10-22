@@ -15,7 +15,7 @@ import {
   positiveInt,
 } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { rememberBrowse, rememberedYear } from "./remembered-browse";
+import { rememberBrowse, rememberedYear } from "@vedic-patro/domain/calendar/remembered-browse";
 
 export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?: Era | null }) {
   const { lang } = useLocale();

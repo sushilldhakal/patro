@@ -10,7 +10,7 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { parseAdStr } from "@vedic-patro/domain/panchanga/panchanga-year-page";
 import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberBrowse, rememberedDayDate } from "@vedic-patro/features/patro-date";
+import { rememberBrowse, rememberedDayDate } from "@vedic-patro/domain/calendar/remembered-browse";
 
 /**
  * The app's side of `usePanchangaPage` (@vedic-patro/features): the browsed

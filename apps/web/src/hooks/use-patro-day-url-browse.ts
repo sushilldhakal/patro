@@ -23,7 +23,7 @@ import {
 } from "@/lib/patro-day-url";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberBrowse } from "@vedic-patro/features/patro-date";
+import { rememberBrowse } from "@vedic-patro/domain/calendar/remembered-browse";
 import {
   locationSearchFingerprint,
   patroDayBrowseNavigateSearch,

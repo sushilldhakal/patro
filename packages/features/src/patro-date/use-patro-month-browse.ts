@@ -19,7 +19,7 @@ import {
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { rememberBrowse, rememberedMonth, rememberedYear } from "./remembered-browse";
+import { rememberBrowse, rememberedMonth, rememberedYear } from "@vedic-patro/domain/calendar/remembered-browse";
 
 function resolveInitialMonthBrowse(
   era: Era,

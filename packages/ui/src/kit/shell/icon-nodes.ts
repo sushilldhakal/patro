@@ -30,6 +30,7 @@ export const shellIcons = {
   ],
   chevronLeft: [["path", { d: "m15 18-6-6 6-6" }]],
   chevronRight: [["path", { d: "m9 18 6-6-6-6" }]],
+  moon: [["path", { d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" }]],
   chevronDown: [["path", { d: "m6 9 6 6 6-6" }]],
   chevronUp: [["path", { d: "m18 15-6-6-6 6" }]],
   calendar: [

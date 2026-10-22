@@ -4,6 +4,7 @@ import { useAdhikMaasPage, type AdhikMaasView } from "@vedic-patro/features/adhi
 import { usePatroYearBrowse } from "@vedic-patro/features/patro-date";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { adhikMaasClasses as a } from "@vedic-patro/design-tokens/classes/adhik-maas-classes";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -96,7 +97,7 @@ export default function AdhikMaasScreen() {
           <Text className={pc.panelTitleSpaced} style={nepaliTextStyle()}>
             {page.copy.nearbyTitle}
           </Text>
-          <View className="flex-row flex-wrap gap-2">
+          <View className={a.nearbyGrid}>
             {page.nearby.map((y) => (
               <Pressable
                 key={y.year}
@@ -104,18 +105,12 @@ export default function AdhikMaasScreen() {
                 accessibilityRole="button"
                 accessibilityState={{ selected: y.active }}
                 style={{ width: nearbyWidth as never }}
-                className={cn(
-                  "rounded-xl border px-3 py-2.5 active:opacity-80",
-                  y.active ? "border-secondary bg-secondary/10" : "border-border bg-card",
-                )}
+                className={cn(a.nearbyChip, "active:opacity-80", y.active ? a.nearbyChipActive : a.nearbyChipIdle)}
               >
-                <Text className="text-xs text-muted-foreground" style={nepaliTextStyle()}>
+                <Text className={a.nearbyYear} style={nepaliTextStyle()}>
                   {y.label}
                 </Text>
-                <Text
-                  className={cn("text-sm font-semibold", y.month ? "text-foreground" : "text-muted-foreground")}
-                  style={nepaliTextStyle()}
-                >
+                <Text className={y.month ? a.nearbyMonth : a.nearbyNone} style={nepaliTextStyle()}>
                   {y.month === undefined ? "…" : (y.month ?? page.copy.nearbyNone)}
                 </Text>
               </Pressable>
@@ -139,7 +134,7 @@ export default function AdhikMaasScreen() {
           </View>
         ))}
         <Pressable onPress={() => router.push(`/learn/${page.learnSlug}` as never)} accessibilityRole="link" className="self-start active:opacity-70">
-          <Text className="text-sm font-medium text-secondary" style={nepaliTextStyle()}>
+          <Text className={a.readMore} style={nepaliTextStyle()}>
             {page.copy.readMore}
           </Text>
         </Pressable>
@@ -171,7 +166,7 @@ function AdhikCard({ month, bsLabel, adLabel }: { month: AdhikMaasView; bsLabel:
   return (
     <View className={pc.periodCard}>
       <View className={pc.periodHead}>
-        <Text className="text-lg font-bold text-secondary" style={nepaliTextStyle()}>
+        <Text className={a.cardName} style={nepaliTextStyle()}>
           {month.name}
         </Text>
         <View className={pc.varietyBadge}>

@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from "react";
 import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberBrowse, rememberedDayDate } from "./remembered-browse";
+import { rememberBrowse, rememberedDayDate } from "@vedic-patro/domain/calendar/remembered-browse";
 
 export function useBrowsedDay(fallback: () => Date) {
   const [date, setDate] = useState<Date>(() => {

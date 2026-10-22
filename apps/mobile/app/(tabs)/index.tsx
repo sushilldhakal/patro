@@ -13,7 +13,7 @@ import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
 import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
-import { AdhikMaasNotice } from "@/components/home/AdhikMaasNotice";
+import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
@@ -303,7 +303,10 @@ export default function HomeScreen() {
       {calendarBlock}
 
       <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
-        <AdhikMaasNotice bsYear={browseEra === "bs" ? year : getCurrentBs().year} />
+        <AdhikMaasNotice
+          bsYear={browseEra === "bs" ? year : getCurrentBs().year}
+          onMore={(y) => router.push(`/adhik-maas?year=${y}` as never)}
+        />
         <AakashGocharEntryCard />
         <HomeVedaMantra dateAd={todayAd} />
         <HomeReminderCard p={aside.p} />

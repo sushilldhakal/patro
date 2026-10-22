@@ -11,7 +11,7 @@
  *   npm test -w @vedic-patro/api-client -- --update     accept the current URLs
  */
 import { build } from "esbuild";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -30,7 +30,8 @@ const stubs = {
 };
 
 const tryFile = (p) =>
-  [p, `${p}.ts`, `${p}.tsx`, `${p}/index.ts`, `${p}/index.tsx`, `${p}.json`].find((f) => existsSync(f) && !f.endsWith("/"));
+  // A folder (`@vedic-patro/features/patro-date`) must fall through to its index.ts.
+  [p, `${p}.ts`, `${p}.tsx`, `${p}/index.ts`, `${p}/index.tsx`, `${p}.json`].find((f) => existsSync(f) && statSync(f).isFile());
 
 async function urlsFor(app) {
   const appRoot = app === "web" ? `${root}/apps/web/src` : `${root}/apps/mobile`;

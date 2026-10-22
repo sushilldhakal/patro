@@ -3,6 +3,7 @@ import { ArrowLeft, CalendarPlus } from "lucide-react";
 import { useAdhikMaasPage, type AdhikMaasView } from "@vedic-patro/features/adhik-maas";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { adhikMaasClasses as a } from "@vedic-patro/design-tokens/classes/adhik-maas-classes";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
@@ -22,7 +23,7 @@ export function AdhikMaas() {
   return (
     <PageShell className={cn(pc.pageStack, "space-y-4")}>
       <div>
-        <Link to="/" className="mb-2 inline-flex items-center gap-1 text-xs hover:text-foreground">
+        <Link to="/" className={a.backLink}>
           <ArrowLeft className="h-3.5 w-3.5" />
           {page.copy.backHome}
         </Link>
@@ -71,13 +72,10 @@ export function AdhikMaas() {
                 type="button"
                 onClick={() => yearBrowse.setYear(y.year)}
                 aria-pressed={y.active}
-                className={cn(
-                  "rounded-xl border px-3 py-2.5 text-left transition-colors",
-                  y.active ? "border-secondary bg-secondary/10" : "border-border bg-card hover:border-secondary/40",
-                )}
+                className={cn(a.nearbyChip, "text-left transition-colors", y.active ? a.nearbyChipActive : cn(a.nearbyChipIdle, "hover:border-secondary/40"))}
               >
-                <span className="block text-xs text-muted-foreground">{y.label}</span>
-                <span className={cn("block text-sm font-semibold", y.month ? "text-foreground" : "text-muted-foreground")}>
+                <span className={cn("block", a.nearbyYear)}>{y.label}</span>
+                <span className={cn("block", y.month ? a.nearbyMonth : a.nearbyNone)}>
                   {y.month === undefined ? "…" : (y.month ?? page.copy.nearbyNone)}
                 </span>
               </button>
@@ -97,7 +95,7 @@ export function AdhikMaas() {
         <Link
           to="/learn/$slug"
           params={{ slug: page.learnSlug }}
-          className="text-sm font-medium text-secondary no-underline hover:underline"
+          className={cn(a.readMore, "no-underline hover:underline")}
         >
           {page.copy.readMore}
         </Link>
@@ -122,7 +120,7 @@ function AdhikCard({ month, page }: { month: AdhikMaasView; page: ReturnType<typ
   return (
     <article className={cn(pc.periodCard, "shadow-ring-soft")}>
       <div className={pc.periodHead}>
-        <h3 className="m-0 text-lg font-bold text-secondary">{month.name}</h3>
+        <h3 className={cn("m-0", a.cardName)}>{month.name}</h3>
         <span className={cn(pc.varietyBadge, pc.varietyText)}>{month.days}</span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

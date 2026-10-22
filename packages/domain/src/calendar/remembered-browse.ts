@@ -7,8 +7,8 @@
  * process, so a fresh visit starts on today again. A link or URL that names its
  * own year still wins; this only fills in a page opened without one.
  */
-import { adToBS, bsToAdOrNull, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
-import type { Era } from "@vedic-patro/domain/calendar/era";
+import { adToBS, bsToAdOrNull, getBSMonthLength } from "./bs-calendar";
+import type { Era } from "./era";
 
 /** BS runs 56–57 years ahead of AD; the larger gap holds for most of the BS year. */
 const BS_AD_OFFSET = 57;

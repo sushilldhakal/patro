@@ -440,8 +440,17 @@ export type SunTimesYearGridProps = {
   className?: string;
 };
 
+export type AdhikMaasNoticeProps = {
+  /** The BS year whose adhik maas the row names (nothing is drawn when it has none). */
+  bsYear: number;
+  /** Opens the adhik maas page on that year. */
+  onMore: (bsYear: number) => void;
+  className?: string;
+};
+
 export type ShellKit = {
   StatCard: ComponentType<StatCardProps>;
+  AdhikMaasNotice: ComponentType<AdhikMaasNoticeProps>;
   SeoContentSection: ComponentType<SeoContentSectionProps>;
   PatroHeaderTabs: ComponentType<PatroHeaderTabsProps>;
   PatroHeaderSwap: ComponentType<PatroHeaderSwapProps>;

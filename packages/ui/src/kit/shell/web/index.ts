@@ -1,5 +1,6 @@
 import type { ShellKit } from "../contract";
 import { AccountMenu } from "./AccountMenu";
+import { AdhikMaasNotice } from "./AdhikMaasNotice";
 import { BsCalendarGrid } from "./BsCalendarGrid";
 import { BsNativeSelect } from "./BsNativeSelect";
 import { AuthDialog } from "./AuthDialog";
@@ -31,6 +32,7 @@ import { VerticalEdgeLabel } from "./VerticalEdgeLabel";
 
 export {
   AccountMenu,
+  AdhikMaasNotice,
   BsCalendarGrid,
   BsNativeSelect,
   AuthDialog,
@@ -65,6 +67,7 @@ export {
 };
 export type {
   AccountMenuProps,
+  AdhikMaasNoticeProps,
   BsCalendarGridProps,
   BsCalendarMoon,
   BsNativeSelectOption,
@@ -146,4 +149,5 @@ export const shellKit = {
   VerticalEdgeLabel,
   MatrixTable,
   SunTimesYearGrid,
+  AdhikMaasNotice,
 } satisfies ShellKit;

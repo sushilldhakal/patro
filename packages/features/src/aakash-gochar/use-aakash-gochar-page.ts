@@ -24,7 +24,7 @@ import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/ho
 import { clockStringInTimezone, todayAdStringInTimezone, zonedWallTimeToInstant } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberBrowse, rememberedDayDate } from "../patro-date/remembered-browse";
+import { rememberBrowse, rememberedDayDate } from "@vedic-patro/domain/calendar/remembered-browse";
 
 export function useAakashGocharPage({ location, ready = true }: { location: PanchangaLocation; ready?: boolean }) {
   const { t, lang } = useLocale();

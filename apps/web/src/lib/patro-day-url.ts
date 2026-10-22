@@ -14,7 +14,7 @@ import {
   type Language,
 } from "@vedic-patro/domain/calendar/era";
 import { adToBS, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberedMonth } from "@vedic-patro/features/patro-date";
+import { rememberedMonth } from "@vedic-patro/domain/calendar/remembered-browse";
 import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
 
 export type PatroDisplayContext = {

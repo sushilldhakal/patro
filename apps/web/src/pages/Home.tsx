@@ -13,19 +13,19 @@ import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
-import { getLanguageForEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { buildPageSearch, getLanguageForEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroDayFetchFromApiDateAd, patroDayFetchFromBrowseGridParts, type PatroDayFetchState } from "@/lib/patro-day-url";
 import { PanchangaAsideTabPanel } from "@/components/home/PanchangaAsideTabs";
 import { prefetchAsidePanels } from "@/components/home/aside-prefetch";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
-import { AdhikMaasNotice } from "@/components/home/AdhikMaasNotice";
+import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
 import { HomeRashifalTeaser } from "@/components/home/HomeRashifalTeaser";
 import { PanchangaDirectory } from "@/components/panchanga/PanchangaDirectory";
 import { Button } from "@/components/ui/button";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
-import { currentPatroDayLinkSearch } from "@/lib/url-state";
+import { currentPatroDayLinkSearch, locationToSearch } from "@/lib/url-state";
 import { smoothScrollToElement } from "@/lib/scroll";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
@@ -224,7 +224,12 @@ export function Home() {
           <>
             <AdhikMaasNotice
               bsYear={browseEra === "bs" ? browseYear : bsYear}
-              location={location}
+              onMore={(year) =>
+                navigate({
+                  to: "/adhik-maas",
+                  search: { ...locationToSearch(location), ...buildPageSearch({ era: "bs", language: getLanguageForEra("bs"), year }) } as never,
+                })
+              }
               className="mt-3 max-sm:mx-2.5"
             />
             <AakashGocharEntryCard className={cn("mt-3 max-sm:mx-2.5", homeClasses.aakashCardTone)} />
