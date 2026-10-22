@@ -7,7 +7,7 @@
  * Each app passes its own starting era (the website's calendar-era store, the
  * app's onboarding choice) as `options.era`.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
@@ -19,6 +19,7 @@ import {
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { rememberBrowse, rememberedMonth, rememberedYear } from "./remembered-browse";
 
 function resolveInitialMonthBrowse(
   era: Era,
@@ -26,7 +27,11 @@ function resolveInitialMonthBrowse(
 ): { era: Era; year: number; month: number } {
   const defaults = defaultMonthBrowseParts(era);
   if (!initial) {
-    return { era, year: defaults.year, month: defaults.month };
+    // No year in the link: open on the month the reader last browsed to.
+    const last = rememberedMonth(era);
+    if (last) return { era, ...last };
+    const lastYear = rememberedYear(era);
+    return { era, year: lastYear ?? defaults.year, month: defaults.month };
   }
   const coerced = coerceMonthBrowseFromUrl(era, initial.year, initial.month);
   const year = positiveInt(coerced.year ?? initial.year ?? defaults.year);
@@ -55,6 +60,10 @@ export function usePatroMonthBrowse(
     setYearState(next.year);
     setMonthState(next.month);
   }
+
+  useEffect(() => {
+    rememberBrowse(era, year, month);
+  }, [era, year, month]);
 
   const setYear = (y: number) => {
     const n = positiveInt(y);

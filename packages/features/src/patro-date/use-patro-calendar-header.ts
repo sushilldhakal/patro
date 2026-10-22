@@ -54,6 +54,9 @@ export function usePatroCalendarHeader({
     setPanel(next);
   };
 
+  /** The year in the box when it parses (stepped or typed, not yet loaded), else the browsed one. */
+  const pendingYear = () => parseYearInput(draft, era) ?? year;
+
   const setYear = (next: number) => {
     setDraft(yearLabel(next));
     setInvalid(false);
@@ -99,13 +102,17 @@ export function usePatroCalendarHeader({
     },
 
     stepMonth: (delta: 1 | -1) => onChange(shiftPatroBrowseMonth(era, year, month, delta)),
-    stepYear: (direction: "prev" | "next") => setYear(stepPatroBrowseYear(era, year, direction)),
+    /** The arrows beside the year box only change the box; "Go" (or a month) loads that year. */
+    stepYear: (direction: "prev" | "next") => {
+      setDraft(yearLabel(stepPatroBrowseYear(era, pendingYear(), direction)));
+      setInvalid(false);
+    },
 
     months: monthOptions(era, month, lang).map((m) => ({
       ...m,
       pick: () => {
         setPanel(null);
-        onChange({ year, month: m.month });
+        onChange({ year: pendingYear(), month: m.month });
       },
     })),
 

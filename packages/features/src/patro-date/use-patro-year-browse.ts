@@ -6,7 +6,7 @@
  *
  * Each app passes its own starting era as `options.era`.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceYearBrowseFromUrl,
@@ -15,6 +15,7 @@ import {
   positiveInt,
 } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { rememberBrowse, rememberedYear } from "./remembered-browse";
 
 export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?: Era | null }) {
   const { lang } = useLocale();
@@ -24,7 +25,8 @@ export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?
     if (initial?.year != null) {
       return positiveInt(coerceYearBrowseFromUrl(initialEra, initial.year) ?? initial.year);
     }
-    return defaultBrowseYear(initialEra);
+    // No year in the link: open on the year the reader last browsed to.
+    return rememberedYear(initialEra) ?? defaultBrowseYear(initialEra);
   });
   const [syncedLang, setSyncedLang] = useState(lang);
 
@@ -34,6 +36,10 @@ export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?
     setEraState(nextEra);
     setYearState(defaultBrowseYear(nextEra));
   }
+
+  useEffect(() => {
+    rememberBrowse(era, year);
+  }, [era, year]);
 
   const setYear = (y: number) => setYearState(positiveInt(y));
   const setEra = (next: Era) => setEraState(next);

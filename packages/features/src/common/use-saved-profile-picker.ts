@@ -4,7 +4,7 @@
  * "none" option first. Each page passes its own copy; each app draws it (a
  * website select, an app dropdown or sheet).
  */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Profile } from "@vedic-patro/api-client";
 import { useProfilesQuery } from "../kundali/use-profiles-query";
 
@@ -42,6 +42,16 @@ export function useSavedProfilePicker({
       : profiles.length === 0
         ? "empty"
         : "ready";
+
+  // Open on the reader's primary (default) profile, once: choosing another, or
+  // "none", afterwards sticks.
+  const primaryApplied = useRef(false);
+  useEffect(() => {
+    if (primaryApplied.current || selectedId || !profiles?.length) return;
+    primaryApplied.current = true;
+    const primary = profiles.find((p) => p.is_default);
+    if (primary) onSelect(primary);
+  }, [profiles, selectedId, onSelect]);
 
   const select = (id: string | null) => {
     onSelect(id ? (profiles?.find((p) => p.id === id) ?? null) : null);
