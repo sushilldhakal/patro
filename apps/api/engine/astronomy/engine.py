@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 from collections import OrderedDict
 from datetime import date, datetime, time, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import threading
 
@@ -18,6 +18,17 @@ import swisseph as swe
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported
 from engine.astronomy.paths import ephemeris_path
 from engine.astronomy.timescale import resolve_observer_timezone
+
+if TYPE_CHECKING:
+    from engine.astronomy.position import BodyPosition, CelestialCoordinates
+
+
+def _position():
+    """``engine.astronomy.position``, imported on first use: it reads the rashi
+    names from ``engine.astronomy.rashi``, which imports this module."""
+    from engine.astronomy import position
+
+    return position
 
 
 def _configure_ephemeris() -> bool:
@@ -401,22 +412,20 @@ class AstronomyEngine:
 
     def planet_position(
         self, jd: float, planet: str, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> dict[str, Any]:
-        """longitude, speed (°/day), rashi (1-12) for one named planet."""
+    ) -> BodyPosition:
+        """Longitude and speed (°/day) for one named planet, rounded to 6 places."""
         body = _BODY_MAP.get(planet)
         if body is None:
             raise EphemerisError(f"Unknown planet: {planet!r}")
         lon, speed = self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-        return {
-            "longitude": round(lon, 6),
-            "speed": round(speed, 6),
-            "rashi": int(lon / 30) % 12 + 1,
-        }
+        return _position().BodyPosition(
+            body=planet, longitude=round(lon, 6), speed=round(speed, 6)
+        )
 
     def all_planet_positions(
         self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> dict[str, dict[str, Any]]:
-        """Sun through Rahu + derived Ketu."""
+    ) -> dict[str, BodyPosition]:
+        """Sun through Rahu. Ketu is Rahu's :meth:`~BodyPosition.opposite`."""
         return {
             name: self.planet_position(jd, name, sidereal=sidereal, ayanamsa=ayanamsa)
             for name in PLANET_KEYS
@@ -443,7 +452,7 @@ class AstronomyEngine:
             raise EphemerisError(f"cotrans failed: {exc}") from exc
         return ra % 360, dec
 
-    def planet_astro_extras(self, jd: float, planet: str) -> dict[str, Any]:
+    def planet_astro_extras(self, jd: float, planet: str) -> CelestialCoordinates:
         """Ecliptic latitude (shara), right ascension and declination (kranti).
 
         Equatorial values are ayanamsha-independent. 'ketu' is derived from the
@@ -454,21 +463,21 @@ class AstronomyEngine:
             lon = (ecl[0] + 180.0) % 360
             lat = -ecl[1]
             ra, dec = self.equatorial_from_ecliptic(jd, lon, lat)
-            return {
-                "latitude": round(lat, 4),
-                "right_ascension": round(ra, 4),
-                "declination": round(dec, 4),
-            }
+            return _position().CelestialCoordinates(
+                latitude=round(lat, 4),
+                right_ascension=round(ra, 4),
+                declination=round(dec, 4),
+            )
         body = _BODY_MAP.get(planet)
         if body is None:
             raise EphemerisError(f"Unknown planet: {planet!r}")
         ecl = self._calc_raw(body, jd)
         equ = self._calc_raw(body, jd, equatorial=True)
-        return {
-            "latitude": round(ecl[1], 4),
-            "right_ascension": round(equ[0] % 360, 4),
-            "declination": round(equ[1], 4),
-        }
+        return _position().CelestialCoordinates(
+            latitude=round(ecl[1], 4),
+            right_ascension=round(equ[0] % 360, 4),
+            declination=round(equ[1], 4),
+        )
 
     def phenomena(self, jd: float, planet: str) -> dict[str, float]:
         """Phase angle, illuminated fraction, elongation, diameter, magnitude.
@@ -517,8 +526,8 @@ class AstronomyEngine:
 
     def ascendant_astro_extras(
         self, jd: float, lat: float, lon: float
-    ) -> dict[str, Any]:
-        """Lagna shara (0 by definition), RA, kranti and speed in °/day."""
+    ) -> tuple[CelestialCoordinates, float]:
+        """Lagna coordinates (shara 0 by definition, RA, kranti) and speed in °/day."""
         _ensure_ephemeris_for_thread()
         try:
             # b"P" (Placidus) is the house *division* system. Only ascmc[0] —
@@ -535,12 +544,12 @@ class AstronomyEngine:
             raise EphemerisError(f"houses failed: {exc}") from exc
         speed = (((ascmc_next[0] - tropical_asc + 540.0) % 360.0) - 180.0) / step_days
         ra, dec = self.equatorial_from_ecliptic(jd, tropical_asc, 0.0)
-        return {
-            "latitude": 0.0,
-            "right_ascension": round(ra, 4),
-            "declination": round(dec, 4),
-            "speed": round(speed, 4),
-        }
+        coordinates = _position().CelestialCoordinates(
+            latitude=0.0,
+            right_ascension=round(ra, 4),
+            declination=round(dec, 4),
+        )
+        return coordinates, round(speed, 4)
 
     # ── ascendant ────────────────────────────────────────────────────────────
 

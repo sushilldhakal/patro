@@ -25,6 +25,7 @@ from typing import Any
 
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.motion import is_retrograde
+from engine.astronomy.position import CelestialCoordinates
 from engine.astronomy.engine import default_engine
 from engine.panchanga.angas import NAKSHATRA_NAMES
 from engine.panchanga.spashta import spashta_table
@@ -124,8 +125,8 @@ def _iso(jd: float) -> str:
 
 # ─── ग्रह स्थिति — daily sphuta table ──────────────────────────────────────────
 
-def _graha_row(graha: str, sid_lon: float, speed: float, extras: dict[str, Any], *,
-               is_retro: bool, is_combust: bool) -> dict[str, Any]:
+def _graha_row(graha: str, sid_lon: float, speed: float,
+               coords: CelestialCoordinates, *, is_retro: bool, is_combust: bool) -> dict[str, Any]:
     meta = GRAHA_META[graha]
     nak_idx, pada = _pada_for(sid_lon)
     star_lord_ne, sub_lord_ne = _nakshatra_lords(sid_lon)
@@ -143,13 +144,13 @@ def _graha_row(graha: str, sid_lon: float, speed: float, extras: dict[str, Any],
         "nakshatra_lord_ne": star_lord_ne,
         "sub_lord_ne": sub_lord_ne,
         "full_degree": round(sid_lon % 360.0, 2),
-        "shara": _dms_latitude(extras.get("latitude", 0.0)),
-        "shara_deg": round(extras.get("latitude", 0.0), 4),
+        "shara": _dms_latitude(coords.latitude),
+        "shara_deg": round(coords.latitude, 4),
         "speed_deg_day": round(speed, 2),
         "is_retrograde": is_retro,
         "is_combust": is_combust,
-        "right_ascension": round(extras.get("right_ascension", 0.0), 2),
-        "declination": round(extras.get("declination", 0.0), 2),
+        "right_ascension": round(coords.right_ascension, 2),
+        "declination": round(coords.declination, 2),
     }
 
 
@@ -170,7 +171,9 @@ def _build_graha_sthiti_at_sunrise(
     rows: list[dict[str, Any]] = []
 
     asc_lon = default_engine.ascendant(jd, location.lat, location.lon)
-    asc_extras = default_engine.ascendant_astro_extras(jd, location.lat, location.lon)
+    asc_coords, asc_speed = default_engine.ascendant_astro_extras(
+        jd, location.lat, location.lon
+    )
     asc_nak_idx, asc_pada = _pada_for(asc_lon)
     asc_star_lord, asc_sub_lord = _nakshatra_lords(asc_lon)
     rows.append({
@@ -189,11 +192,11 @@ def _build_graha_sthiti_at_sunrise(
         "full_degree": round(asc_lon % 360.0, 2),
         "shara": _dms_latitude(0.0),
         "shara_deg": 0.0,
-        "speed_deg_day": round(asc_extras.get("speed", 0.0), 2),
+        "speed_deg_day": round(asc_speed, 2),
         "is_retrograde": False,
         "is_combust": False,
-        "right_ascension": round(asc_extras.get("right_ascension", 0.0), 2),
-        "declination": round(asc_extras.get("declination", 0.0), 2),
+        "right_ascension": round(asc_coords.right_ascension, 2),
+        "declination": round(asc_coords.declination, 2),
     })
 
     for graha in GRAHA_ORDER:
@@ -201,7 +204,7 @@ def _build_graha_sthiti_at_sunrise(
         sid_lon = float(pos.get("longitude", 0.0))
         speed = float(pos.get("speed", 0.0))
         is_retro = is_retrograde(graha, speed)
-        extras = default_engine.planet_astro_extras(jd, graha)
+        coords = default_engine.planet_astro_extras(jd, graha)
         combust = False
         if graha not in ("sun", "moon", "rahu", "ketu"):
             try:
@@ -209,7 +212,7 @@ def _build_graha_sthiti_at_sunrise(
             except Exception:
                 combust = False
         rows.append(_graha_row(
-            graha, sid_lon, speed, extras,
+            graha, sid_lon, speed, coords,
             is_retro=is_retro, is_combust=combust,
         ))
 
@@ -369,8 +372,8 @@ def _elongation_at(instant) -> float:
         jd = default_engine.julian_day(instant.astimezone(timezone.utc))
     else:
         jd = as_julian_day(instant)
-    moon = float(default_engine.planet_position(jd, "moon")["longitude"])
-    sun = float(default_engine.planet_position(jd, "sun")["longitude"])
+    moon = float(default_engine.planet_position(jd, "moon").longitude)
+    sun = float(default_engine.planet_position(jd, "sun").longitude)
     diff = (moon - sun) % 360.0
     return min(diff, 360.0 - diff)
 

@@ -323,12 +323,12 @@ def build_day_panchanga(
     karana_name = panchanga_service.karana(sunrise_jd)["name"]
 
     sun_lon = surya["longitude"]
-    # position()["longitude"] rather than longitude(): the former rounds to 6
+    # position().longitude rather than longitude(): the former rounds to 6
     # decimals exactly as the old get_planet_position did, and these values are
     # compared against combustion orbs.
-    jupiter = planet_service.position(sunrise_jd, "jupiter")["longitude"]
-    venus = planet_service.position(sunrise_jd, "venus")["longitude"]
-    mercury = planet_service.position(sunrise_jd, "mercury")["longitude"]
+    jupiter = planet_service.position(sunrise_jd, "jupiter").longitude
+    venus = planet_service.position(sunrise_jd, "venus").longitude
+    mercury = planet_service.position(sunrise_jd, "mercury").longitude
 
     asc_lon = lagna_service.longitude(
         sunrise_jd, lat=location.lat, lon=location.lon,

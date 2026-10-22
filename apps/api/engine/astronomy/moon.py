@@ -18,6 +18,7 @@ from datetime import date, datetime
 from typing import Any
 
 from engine.astronomy.engine import default_engine
+from engine.astronomy.position import BodyPosition
 from engine.astronomy.sun import (
     LAT_KATHMANDU,
     LON_KATHMANDU,
@@ -133,7 +134,7 @@ class MoonService:
         Ayanamsha-independent. Previously computed but discarded — ``_calc``
         keeps only longitude and speed.
         """
-        return float(self._engine.planet_astro_extras(jd, "moon")["latitude"])
+        return float(self._engine.planet_astro_extras(jd, "moon").latitude)
 
     def speed(
         self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
@@ -142,29 +143,21 @@ class MoonService:
         return float(
             self._engine.planet_position(
                 jd, "moon", sidereal=sidereal, ayanamsa=ayanamsa
-            )["speed"]
+            ).speed
         )
 
     def declination(self, jd: float) -> float:
         """Declination (क्रान्ति) in degrees."""
-        return float(self._engine.planet_astro_extras(jd, "moon")["declination"])
+        return float(self._engine.planet_astro_extras(jd, "moon").declination)
 
     def position(
         self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> dict[str, Any]:
-        """longitude, latitude, speed, declination and rashi in one call."""
+    ) -> BodyPosition:
+        """Longitude and speed, with latitude, RA and declination, in one call."""
         pos = self._engine.planet_position(
             jd, "moon", sidereal=sidereal, ayanamsa=ayanamsa
         )
-        extras = self._engine.planet_astro_extras(jd, "moon")
-        return {
-            "longitude": pos["longitude"],
-            "speed": pos["speed"],
-            "rashi": pos["rashi"],
-            "latitude": extras["latitude"],
-            "right_ascension": extras["right_ascension"],
-            "declination": extras["declination"],
-        }
+        return pos.with_coordinates(self._engine.planet_astro_extras(jd, "moon"))
 
     # ── rise / set ──────────────────────────────────────────────────────────
 

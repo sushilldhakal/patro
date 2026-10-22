@@ -235,9 +235,10 @@ def enrich_snapshot_astro(
         jd = default_engine.julian_day(instant_utc)
         for name, pos in planets.items():
             if isinstance(pos, dict):
-                pos.update(default_engine.planet_astro_extras(jd, name))
+                pos.update(default_engine.planet_astro_extras(jd, name).to_payload())
         if lagna is not None:
-            lagna.update(default_engine.ascendant_astro_extras(jd, lat, lon))
+            coords, speed = default_engine.ascendant_astro_extras(jd, lat, lon)
+            lagna.update({**coords.to_payload(), "speed": speed})
     except EphemerisError:
         pass
 

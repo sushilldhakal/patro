@@ -158,16 +158,16 @@ class SunService:
         return float(
             self._engine.planet_position(
                 jd, "sun", sidereal=sidereal, ayanamsa=ayanamsa
-            )["speed"]
+            ).speed
         )
 
     def declination(self, jd: float) -> float:
         """Declination (क्रान्ति) in degrees — drives the seasons and day length."""
-        return float(self._engine.planet_astro_extras(jd, "sun")["declination"])
+        return float(self._engine.planet_astro_extras(jd, "sun").declination)
 
     def right_ascension(self, jd: float) -> float:
         """Right ascension (विषुवांश) in degrees."""
-        return float(self._engine.planet_astro_extras(jd, "sun")["right_ascension"])
+        return float(self._engine.planet_astro_extras(jd, "sun").right_ascension)
 
     def ayanamsa(self, jd: float, *, mode: int = SIDM_LAHIRI) -> float:
         """Ayanamsha — the tropical↔sidereal offset in degrees at *jd*."""

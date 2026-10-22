@@ -260,8 +260,11 @@ class TestPlanetService:
         """``position`` stays cheap; the uncached extras are opt-in."""
         lean = planet_service.position(JD, "mars")
         full = planet_service.position_with_extras(JD, "mars")
-        assert lean.items() <= full.items()
-        assert {"latitude", "right_ascension", "declination"} <= full.keys()
+        assert lean.coordinates is None
+        assert full.coordinates is not None
+        assert full.with_coordinates(None) == lean
+        assert lean.to_payload().items() <= full.to_payload().items()
+        assert {"latitude", "right_ascension", "declination"} <= full.to_payload().keys()
 
 
 class TestSpashtaTable:

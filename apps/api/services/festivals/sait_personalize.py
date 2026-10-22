@@ -154,7 +154,7 @@ def _kumbha_zone(count: int) -> dict[str, str]:
 
 
 def _kumbha_chakra(sunrise_utc, moon_nak: int) -> dict[str, Any]:
-    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun")["longitude"]
+    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun").longitude
     sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
     count = ((moon_nak - sun_nak) % 27) + 1
     return {"count": count, "sun_nakshatra": sun_nak, **_kumbha_zone(count)}
@@ -178,7 +178,7 @@ _AGNI_MUKHA_PLANETS: tuple[tuple[str, str, str, bool], ...] = (
 
 
 def _agni_mukha(sunrise_utc, moon_nak: int) -> dict[str, Any]:
-    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun")["longitude"]
+    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun").longitude
     sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
     count = ((moon_nak - sun_nak) % 27) + 1
     key, ne, en, benefic = _AGNI_MUKHA_PLANETS[(count - 1) // 3]
@@ -375,7 +375,7 @@ def _graha_shuddhi(
         else:
             lon = planet_service.position(
                 as_julian_day(sunrise_utc), meta["swe"]
-            )["longitude"]
+            ).longitude
             p_rashi = int(lon / 30) % 12 + 1
         house = ((p_rashi - janma_rashi) % 12) + 1
         factors.append(

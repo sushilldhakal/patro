@@ -837,7 +837,7 @@ def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
     noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
     noon_jd = as_julian_day(noon)
     return {
-        p: _rashi(planet_service.position(noon_jd, p)["longitude"]) for p in _MALEFICS
+        p: _rashi(planet_service.position(noon_jd, p).longitude) for p in _MALEFICS
     }
 
 
@@ -883,10 +883,10 @@ def latta_pierced_nakshatras(
             continue
         if planet in ("rahu", "ketu"):
             if rahu_lon is None:
-                rahu_lon = planet_service.position(as_julian_day(noon), "rahu")["longitude"]
+                rahu_lon = planet_service.position(as_julian_day(noon), "rahu").longitude
             lon = rahu_lon if planet == "rahu" else (rahu_lon + 180.0) % 360.0
         else:
-            lon = planet_service.position(as_julian_day(noon), planet)["longitude"]
+            lon = planet_service.position(as_julian_day(noon), planet).longitude
         pierced.add(_latta_target(_nakshatra_of(lon), offset))
     return frozenset(pierced)
 

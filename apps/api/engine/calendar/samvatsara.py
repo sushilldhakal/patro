@@ -100,7 +100,7 @@ def _jupiter_longitude_at_bs_new_year(bs_year: int) -> float:
     if mesh_jd is None:
         raise ValueError(f"Mesh sankranti not found for patro year {bs_year}")
     return float(
-        default_engine.planet_position(mesh_jd, "jupiter", sidereal=True)["longitude"]
+        default_engine.planet_position(mesh_jd, "jupiter", sidereal=True).longitude
     )
 
 

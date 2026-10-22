@@ -118,9 +118,9 @@ SLOW_GRAHAS: list[str] = ["jupiter", "saturn", "rahu", "ketu"]
 def _longitude_for(graha: str, dt: datetime) -> float:
     jd = as_julian_day(dt)
     if graha == "ketu":
-        rahu_lon = planet_service.position(jd, "rahu")["longitude"]
+        rahu_lon = planet_service.position(jd, "rahu").longitude
         return (rahu_lon + 180.0) % 360.0
-    return float(planet_service.position(jd, graha)["longitude"])
+    return float(planet_service.position(jd, graha).longitude)
 
 
 def _rashi_index_for(graha: str, dt: datetime) -> int:
