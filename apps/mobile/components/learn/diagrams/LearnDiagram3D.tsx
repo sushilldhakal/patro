@@ -111,12 +111,12 @@ export function LearnDiagram3D({
 
   const [fullscreen, setFullscreen] = useState(false);
   /* A learn article can hold a dozen of these; only the ones near the screen need to draw. */
-  const view = useOnScreen();
+  const view = useOnScreen(200, false);
   const [labels, setLabels] = useState<DiagramLabel[]>([]);
   const [ready, setReady] = useState(false);
   const [hinted, setHinted] = useState(false);
   const canvasTurn = useStaggeredMount();
-  const showCanvas = canvasTurn || fullscreen;
+  const showCanvas = (canvasTurn && view.onScreen) || fullscreen;
 
   const gesture = useDiagramGesture({
     yaw: camera?.yaw,

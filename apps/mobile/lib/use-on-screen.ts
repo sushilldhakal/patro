@@ -9,10 +9,10 @@ import { pageScrollY, pageViewportH } from "@/lib/scroll-motion";
  * Attach `ref` and `onLayout` to the block. It starts true, and stays true on a page that does not
  * report its scroll, so the worst case is a block that is never paused, not one that never draws.
  */
-export function useOnScreen(margin = 200) {
+export function useOnScreen(margin = 200, initial = true) {
   const ref = useAnimatedRef<View>();
-  const [onScreen, setOnScreen] = useState(true);
-  const last = useSharedValue(true);
+  const [onScreen, setOnScreen] = useState(initial);
+  const last = useSharedValue(initial);
   const laidOut = useSharedValue(false);
 
   useAnimatedReaction(
