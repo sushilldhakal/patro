@@ -334,6 +334,14 @@ export type MobileNavMenuProps = {
 
 export type BsCalendarMoon = { tithiIndex: number; title?: string };
 
+/** Remembers which civil date already played today's one-time ring (the app backs it with storage). */
+export type TodayPulseStore = {
+  seen: (todayAd: string) => boolean;
+  mark: (todayAd: string) => void;
+  /** Calls back once the remembered date has loaded (at once if it already has). */
+  subscribe: (listener: () => void) => () => void;
+};
+
 export type BsCalendarGridProps = {
   days: CalendarDay[];
   publicHolidayDates?: Set<string>;
@@ -341,6 +349,8 @@ export type BsCalendarGridProps = {
   onSelectDay?: (day: CalendarDay) => void;
   isEnriching?: boolean;
   todayAd?: string;
+  /** App only: today's cell rings once a day when given. The website ignores it. */
+  todayPulse?: TodayPulseStore;
   primaryDate?: "bs" | "ad";
   /** Moon artwork stays in each app (it is a panchanga drawing). */
   moon?: (info: BsCalendarMoon) => ReactNode;

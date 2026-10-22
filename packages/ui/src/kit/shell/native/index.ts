@@ -29,6 +29,7 @@ import { SunTimesYearGrid } from "./SunTimesYearGrid";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { VedicPatroLoader } from "./VedicPatroLoader";
 import { VerticalEdgeLabel } from "./VerticalEdgeLabel";
+export { TodayCellPulse, monthSignature, useMonthTravel, type TodayPulseStore } from "./month-motion";
 
 export {
   AccountMenu,

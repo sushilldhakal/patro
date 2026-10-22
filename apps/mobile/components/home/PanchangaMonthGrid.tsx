@@ -1,8 +1,6 @@
-import { useEffect, useLayoutEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { Text } from "@/components/ui/Text";
-import { EASE_OUT, ENTER_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import type { CalendarDay } from "@/lib/api";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { useLocale } from "@/lib/i18n";
@@ -12,7 +10,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand } from "@vedic-patro/design-tokens";
 import { usePanchangaMonthGrid } from "@vedic-patro/features/home";
-import { VerticalEdgeLabel } from "@vedic-patro/ui/kit/shell";
+import { TodayCellPulse, useMonthTravel, VerticalEdgeLabel } from "@vedic-patro/ui/kit/shell";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import {
   CALENDAR_GRID_GAP,
@@ -20,53 +18,7 @@ import {
   selectionRingStyle,
   todayPulse,
   useCalendarGridWidth,
-  useMonthTravel,
 } from "./calendar-grid-layout";
-
-const TODAY_PULSE_MS = 600;
-
-/** One soft ring on today's cell, the first time that civil date is opened. */
-function TodayCellPulse({ todayAd }: { todayAd: string }) {
-  const reduced = Boolean(useReducedMotionPref());
-  const [on, setOn] = useState(false);
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(1);
-  const style = useAnimatedStyle(() => ({
-    opacity: opacity.get(),
-    transform: [{ scale: scale.get() }],
-  }));
-
-  useEffect(() => {
-    let cancel = false;
-    return todayPulse.subscribe(() => {
-      if (cancel || todayPulse.seen(todayAd)) return;
-      todayPulse.mark(todayAd);
-      if (!cancel) setOn(true);
-    });
-  }, [todayAd]);
-
-  useLayoutEffect(() => {
-    if (!on) return;
-    opacity.set(0);
-    scale.set(reduced ? 1 : ENTER_SCALE);
-    opacity.set(
-      withSequence(
-        withTiming(1, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
-        withTiming(0, { duration: TODAY_PULSE_MS / 2, easing: EASE_OUT }),
-      ),
-    );
-    if (!reduced) scale.set(withTiming(1, { duration: TODAY_PULSE_MS, easing: EASE_OUT }));
-    const timer = setTimeout(() => setOn(false), TODAY_PULSE_MS + 40);
-    return () => clearTimeout(timer);
-  }, [on, opacity, reduced, scale]);
-
-  if (!on) return null;
-  return (
-    <Animated.View pointerEvents="none" style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, style]}>
-      <View pointerEvents="none" className="absolute inset-0 border-2 border-danger/30" />
-    </Animated.View>
-  );
-}
 
 type Props = {
   days: CalendarDay[];
@@ -148,7 +100,7 @@ export function PanchangaMonthGrid({
                     className="absolute inset-0 border-2 border-danger/30"
                   />
                 ) : null}
-                {pulse && isToday && !isOutside ? <TodayCellPulse todayAd={todayAd} /> : null}
+                {pulse && isToday && !isOutside ? <TodayCellPulse todayAd={todayAd} store={todayPulse} ringClassName="border-2 border-danger/30" /> : null}
 
                 {cell.tithiIndex != null ? (
                   <View

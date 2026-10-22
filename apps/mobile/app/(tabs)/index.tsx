@@ -37,7 +37,7 @@ import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZ
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
-import { MONTH_SWIPE_ENABLED } from "@/components/home/calendar-grid-layout";
+import { MONTH_SWIPE_ENABLED, todayPulse } from "@/components/home/calendar-grid-layout";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
@@ -367,6 +367,7 @@ export default function HomeScreen() {
               days={gridDays}
               selectedAdDate={aside.highlightAd}
               todayAd={todayAd}
+              todayPulse={todayPulse}
               publicHolidayDates={publicHolidayDates}
               onSelectDay={handleSelectDay}
               isEnriching={monthFetching}
