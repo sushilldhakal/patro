@@ -68,6 +68,14 @@ const defaultResolveRequest = finalConfig.resolver.resolveRequest;
 const UI_NATIVE_ENTRY = path.resolve(__dirname, "../../packages/ui/src/native/index.ts");
 
 finalConfig.resolver.resolveRequest = (context, moduleName, platform) => {
+  /* css-interop's "upgrade" warning stringifies React elements and crashes on expo-router's navigation
+     context; our copy of that one file prints the component's classes instead. */
+  if (
+    moduleName === "./render-component" &&
+    context.originModulePath.includes(`react-native-css-interop${path.sep}dist${path.sep}runtime${path.sep}native${path.sep}`)
+  ) {
+    return { type: "sourceFile", filePath: path.resolve(__dirname, "lib/css-interop/render-component.js") };
+  }
   if (moduleName === "three") {
     return { type: "sourceFile", filePath: THREE_ENTRY };
   }
