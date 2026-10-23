@@ -83,7 +83,7 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // instead of serving stale ones. Bump here — one place for both apps.
 
 /** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga/panchanga_cache.py. */
-export const PANCHANGA_CACHE_VERSION = "5203";
+export const PANCHANGA_CACHE_VERSION = "5303";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
 export const SAIT_CACHE_VERSION = "14";
 /** Graha sthiti / asta / vakri / eclipse (`gv=`). */
@@ -313,8 +313,10 @@ export const fetchAdToBs = (date: string) =>
 export const fetchBsToAd = (date: string) =>
   get<ConvertBsToAd>(`/convert/bs-to-ad/${date}`);
 
+// Versioned like the other cacheable data: past BS years are served `immutable` by the
+// CDN, so without `cv` a corrected adhik/kshaya answer would never replace the old one.
 export const fetchSpecialMonths = (year: number) =>
-  get<SpecialMonthsResponse>(`/nepal/special-months/${year}`);
+  get<SpecialMonthsResponse>(withPanchangaCacheVersion(`/nepal/special-months/${year}`));
 
 export const shadbalaKeys = {
   atTime: (moment: InstantQuery, location?: LocationParams) =>
