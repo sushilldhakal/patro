@@ -208,8 +208,24 @@ function WheelHead({
   planetInfo?: SkyPlanetInfo | null;
   className?: string;
 }) {
+  const headRef = useRef<HTMLDivElement>(null);
+  /* The wheel starts below the header, not under it: publish the header's height
+     on the stage, where the chart's wrapper reads it as top padding. */
+  useEffect(() => {
+    const el = headRef.current;
+    const stage = el?.parentElement;
+    if (!el || !stage) return;
+    const publish = () => stage.style.setProperty("--wheel-head-h", `${el.offsetHeight + 24}px`);
+    publish();
+    const ro = new ResizeObserver(publish);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      stage.style.removeProperty("--wheel-head-h");
+    };
+  }, []);
   return (
-    <div className={cn(wheelHead, "top-4", className)}>
+    <div ref={headRef} className={cn(wheelHead, "top-4", className)}>
       <div className={wheelHeadEyebrow}>{eyebrow}</div>
       <div className={wheelHeadTitle}>{title}</div>
       <div className={wheelHeadSub}>{sub}</div>

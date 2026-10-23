@@ -28,7 +28,7 @@ export const panchangaPageClasses = {
   planetMenu: {
     trigger:
       "flex h-9 w-9 items-center justify-center rounded-full border border-wheel-control-border bg-wheel-control shadow-[0_8px_20px_rgba(0,0,0,0.4)]",
-    list: "fixed z-[81] w-[228px] overflow-hidden rounded-2xl border border-wheel-control-border bg-wheel-control py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]",
+    list: "fixed z-[131] w-[228px] overflow-hidden rounded-2xl border border-wheel-control-border bg-wheel-control py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]",
     option: "flex w-full items-center gap-2.5 px-3 py-2 text-left text-base text-ill-midnight-foam",
     swatch: "inline-block h-1.5 w-1.5 shrink-0 rounded-full",
   },

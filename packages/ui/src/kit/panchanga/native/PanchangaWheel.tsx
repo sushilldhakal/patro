@@ -785,6 +785,9 @@ function WheelBody({
     />
   );
 
+  /* The chart starts below the header (title + planet card), whatever its height. */
+  const [headerH, setHeaderH] = useState(0);
+
   const renderHeader = (fullscreen?: boolean) => {
     const eyebrow = compactHead
       ? { ...headEyebrowStyle, letterSpacing: 1.2 }
@@ -803,6 +806,7 @@ function WheelBody({
     return (
       <View
         pointerEvents="none"
+        onLayout={(e) => setHeaderH(Math.ceil(e.nativeEvent.layout.height))}
         style={{
           position: "absolute",
           top,
@@ -887,7 +891,10 @@ function WheelBody({
       {renderHeader(fullscreen)}
       {/* Inline, the title block and the legend sat on top of the wheel: start the
           chart below the title and stop it above the dock. Fullscreen has room. */}
-      <View className="flex-1" style={fullscreen ? undefined : { marginTop: compactHead ? space["5xl"] + space.lg : space["5xl"] * 2, marginBottom: space["5xl"] + space.sm }}>
+      <View className="flex-1" style={{
+          marginTop: headerH + (fullscreen ? safeTop + 6 : compactHead ? 8 : 10) + 8,
+          ...(fullscreen ? null : { marginBottom: space["5xl"] + space.sm }),
+        }}>
         {/* The page's copy sits behind the fullscreen modal. Drawing it too
             doubled every pinch frame — and the modal one never kept up. */}
         {expanded && !fullscreen ? null : (

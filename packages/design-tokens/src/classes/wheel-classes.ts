@@ -171,7 +171,7 @@ export const wheelExpandedShell =
  * keeps the whole ring reachable, at the cost of a slightly smaller wheel.
  */
 export const wheelSvgWrap =
-  "absolute inset-0 z-[1] grid touch-none place-items-center pb-[76px] max-[720px]:pb-[56px]";
+  "absolute inset-0 z-[1] grid touch-none place-items-center pt-[var(--wheel-head-h,0px)] pb-[76px] max-[720px]:pb-[56px]";
 
 /**
  * Extra right padding while the detail sheet is open, so the wheel slides out

@@ -58,7 +58,7 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
       {open
         ? createPortal(
             <>
-              <button type="button" aria-label={menu.closeLabel} className="fixed inset-0 z-[80] cursor-default bg-transparent" onClick={menu.close} />
+              <button type="button" aria-label={menu.closeLabel} className="fixed inset-0 z-[130] cursor-default bg-transparent" onClick={menu.close} />
               <ul role="listbox" className={pg.planetMenu.list} style={{ top: anchor.top, bottom: anchor.bottom, right: anchor.right }}>
                 {menu.options.map((o) => (
                   <li key={o.key}>
