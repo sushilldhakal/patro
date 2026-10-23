@@ -385,7 +385,25 @@ export interface SpecialMonthsResponse {
   };
   kshaya_maas?: {
     is_kshaya?: boolean;
+    /** The month that survives, e.g. "Poush" in the Poush–Magha kshaya of 1983. */
     month_name?: string;
+    /** The month name that is dropped from the sequence, e.g. "Magha". */
+    dropped_month_name?: string;
+    full_name_en?: string;
+    full_name_ne?: string;
+    start_date?: string;
+    end_date?: string;
+    first_rashi_name?: string;
+    second_rashi_name?: string;
+    description?: string;
+    /** The Adhik months that flank a kshaya year (one before, one after). */
+    adhik_months?: Array<{
+      month_name: string;
+      full_name_en?: string;
+      full_name_ne?: string;
+      start_date: string;
+      end_date: string;
+    }>;
   };
 }
 

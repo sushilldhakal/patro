@@ -342,6 +342,16 @@ export function DainikKranti() {
         </div>
       ) : null}
 
+      {page.kshayaNotice ? (
+        <div className={cn(dainikKrantiClasses.adhikBox, dainikKrantiClasses.adhikText)}>
+          <Trans
+            i18nKey={page.kshayaNotice.i18nKey}
+            values={page.kshayaNotice.values}
+            components={{ b: <span className={dainikKrantiClasses.adhikStrong} /> }}
+          />
+        </div>
+      ) : null}
+
       <div className={cn(dainikKrantiClasses.pageBody, "w-full")}>
         <div className="w-full min-w-0 space-y-4">
         {/* mobile (<md): one card per day, wide table replaced to avoid horizontal scroll */}

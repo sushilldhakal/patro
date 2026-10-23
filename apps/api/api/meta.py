@@ -101,8 +101,8 @@ def about():
             "kshaya_maas": {
                 "description": "Extremely rare 'lost' lunar month when TWO Sankrantis fall within a single lunar month.",
                 "frequency": "Approximately once every 141 years",
-                "last_occurrence": "BS 2020 (1963 CE)",
-                "next_predicted": "BS 2198 (2141 CE)",
+                "last_occurrence": "BS 2039 (1983 CE) — Poush–Magha",
+                "next_predicted": "2124 CE — Poush",
             },
         },
     }

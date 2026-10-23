@@ -56,6 +56,7 @@ import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@vedic-pa
 import { formatBsDateKey } from "@vedic-patro/domain/calendar/patro-day";
 import { getRashiName, resolveRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { kshayaViewOf } from "../adhik-maas/kshaya-view";
 
 export type DainikPakshaFilter = Phase | "all";
 
@@ -222,6 +223,11 @@ export function useDainikKrantiPage({
     const lc = d.panchanga?.lunar_calendar;
     return lc?.purnimant?.is_adhik === true || lc?.amanta?.is_adhik === true || d.panchanga?.lunar_month?.is_adhik === true;
   });
+
+  // A kshaya (dropped) month is announced while the browsed month overlaps it.
+  const kshaya = kshayaViewOf(specialQ.data?.kshaya_maas, { lang, digits: dg, t });
+  const monthHasKshaya =
+    kshaya !== null && allDays.some((d) => d.date_ad >= kshaya.startDate && d.date_ad <= kshaya.endDate);
 
   const headerByDate = useMemo(() => {
     const out: Record<string, string> = {};
@@ -466,6 +472,18 @@ export function useDainikKrantiPage({
     adhikNotice:
       monthHasAdhik && adhik?.month_name
         ? { i18nKey: "dainik.adhik_notice", values: { month: lunarMonthNe(adhik.month_name, isEn) ?? adhik.month_name } }
+        : null,
+    /** The kshaya-maas notice (`Trans` key with <b> tags), when this month falls in one. */
+    kshayaNotice:
+      monthHasKshaya && kshaya
+        ? {
+            i18nKey: "dainik.kshaya_notice",
+            values: {
+              month: kshaya.months,
+              range: kshaya.range,
+              adhikLine: kshaya.adhik ? t("dainik.kshaya_notice_adhik", { adhik: kshaya.adhik }) : "",
+            },
+          }
         : null,
     rows,
     tables: { lagnaMatrix, grahaMatrix, calcNotes, rashyadiRange, papanshaLine, gapanshaLine },

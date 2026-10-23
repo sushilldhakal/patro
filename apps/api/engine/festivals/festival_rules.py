@@ -185,11 +185,13 @@ def get_special_months_for_gregorian_year(
     with no Sankranti — occurs roughly every 32–33 months.
 
     Kshaya Maas: extremely rare lost month with two Sankrantis — last in
-    BS 2020 (1963 CE), next predicted ~BS 2198 (2141 CE).
+    BS 2039 (1983 CE), next in 2124 CE.  The Kshaya year also carries two
+    Adhik months, one before and one after the lost month.
     """
     from engine.panchanga.adhik_maas import find_adhik_maas_for_gregorian_year
     from engine.panchanga.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
     from engine.panchanga.lunar_month import get_lunar_year
+    from engine.panchanga.names_ne import lunar_masa_name_ne
 
     adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
 
@@ -202,6 +204,17 @@ def get_special_months_for_gregorian_year(
             if info:
                 info["start_date"] = month.start_Aausi.date().isoformat()
                 info["end_date"] = (month.end_Aausi - timedelta(days=1)).date().isoformat()
+                info["adhik_months"] = [
+                    {
+                        "month_name": m.month_name,
+                        "full_name_en": m.full_name,
+                        "full_name_ne": f"अधिक {lunar_masa_name_ne(m.month_name)}",
+                        "start_date": m.start_Aausi.date().isoformat(),
+                        "end_date": (m.end_Aausi - timedelta(days=1)).date().isoformat(),
+                    }
+                    for m in lunar_year.months
+                    if m.is_adhik
+                ]
                 kshaya = info
                 break
 
