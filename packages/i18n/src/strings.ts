@@ -7112,6 +7112,10 @@ export const strings = {
     ne: "यो चान्द्र महिनामा कुनै संक्रान्ति नपर्ने भएकाले यो थप (अधिक) महिना हो।",
     en: "No sankranti falls in this lunar month, so it is an extra (adhik) month.",
   },
+  "ui.home.special_months_label": {
+    ne: "{{year}} सालका अधिक र क्षय मास: {{list}}",
+    en: "Adhik & Kshaya Maas in {{year}}: {{list}}",
+  },
   "ui.home.kshaya_maas_label": {
     ne: "{{year}} सालको क्षय मास: {{month}}",
     en: "Kshaya Maas in {{year}}: {{month}}",

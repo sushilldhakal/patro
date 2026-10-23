@@ -139,6 +139,10 @@ export type DainikGocharRow = {
 
 export type DainikMonthSource = { queryKey: QueryKey; queryFn: () => Promise<MonthCalendar> };
 
+function addDaysIso(iso: string, days: number): string {
+  return new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+}
+
 export function useDainikKrantiPage({
   browse,
   location,
@@ -217,7 +221,22 @@ export function useDainikKrantiPage({
     enabled: era === "bs",
     staleTime: 1000 * 60 * 60,
   });
-  const adhik = specialQ.data?.adhik_maas;
+  // A BS year can hold two adhik months (BS 2039); use the one the browsed month sits in or just after.
+  const firstDay = allDays[0]?.date_ad;
+  const lastDay = allDays[allDays.length - 1]?.date_ad;
+  const adhikMonths = specialQ.data?.adhik_months ?? (specialQ.data?.adhik_maas ? [specialQ.data.adhik_maas] : []);
+  const adhik =
+    (firstDay && lastDay
+      ? adhikMonths.find(
+          (a) =>
+            a.has_adhik_maas &&
+            a.start_date &&
+            a.end_date &&
+            a.start_date <= lastDay &&
+            // the shuddha month that follows runs ~a lunar month past the adhik
+            addDaysIso(a.end_date, 32) >= firstDay,
+        )
+      : undefined) ?? adhikMonths[0];
   const adhikMonthEn = adhik?.has_adhik_maas ? adhik.month_name : undefined;
   const monthHasAdhik = allDays.some((d) => {
     const lc = d.panchanga?.lunar_calendar;

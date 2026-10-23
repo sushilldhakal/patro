@@ -1,5 +1,6 @@
 import { useId } from "react";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import { grahaArt } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { isFullMoonElongation, isNewMoonElongation, moonPhaseLitPath } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
@@ -15,9 +16,6 @@ export type GrahaPlanetIconProps = {
   elongation?: number;
 };
 
-/** The Moon's unlit face and its rim — dark, but never lost against a dark card. */
-const MOON_UNLIT_FILL = "#1d2433";
-const MOON_RIM = "rgba(160,170,190,0.45)";
 
 /** Spherical graha artwork. Colours come from `grahaArt`. */
 export function GrahaPlanetIcon({ graha, size = 32, className, elongation }: GrahaPlanetIconProps) {
@@ -81,10 +79,10 @@ export function GrahaPlanetIcon({ graha, size = 32, className, elongation }: Gra
       ) : null}
       {phased && !phaseFull ? (
         <>
-          <circle cx="24" cy="24" r={spec.r} fill={MOON_UNLIT_FILL} />
+          <circle cx="24" cy="24" r={spec.r} fill={grahaArt.moonUnlit} />
           <circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} opacity={0.12} />
           {litPath ? <circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} clipPath={`url(#${phaseClip})`} /> : null}
-          <circle cx="24" cy="24" r={spec.r} fill="none" stroke={MOON_RIM} strokeWidth={0.8} />
+          <circle cx="24" cy="24" r={spec.r} fill="none" stroke={grahaArt.moonRim} strokeWidth={0.8} />
         </>
       ) : (
         <circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} />

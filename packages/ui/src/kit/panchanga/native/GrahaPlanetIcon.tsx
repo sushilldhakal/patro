@@ -1,3 +1,4 @@
+import { grahaArt } from "@vedic-patro/design-tokens";
 import { useId, type ComponentType, type ReactNode } from "react";
 import { Circle, ClipPath, Defs, Ellipse, G, Line, Path, RadialGradient, Rect, Stop, Svg } from "react-native-svg";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
@@ -18,9 +19,6 @@ export type GrahaPlanetIconProps = {
 /** Web typings of `Defs` omit `children` when the app resolves `.web` first. */
 const SvgDefs = Defs as ComponentType<{ children?: ReactNode }>;
 
-/** The Moon's unlit face and its rim — dark, but never lost against a dark card. */
-const MOON_UNLIT_FILL = "#1d2433";
-const MOON_RIM = "rgba(160,170,190,0.45)";
 
 /** Spherical graha artwork. Colours come from `grahaArt`. */
 export function GrahaPlanetIcon({ graha, size = 32, elongation }: GrahaPlanetIconProps) {
@@ -68,10 +66,10 @@ export function GrahaPlanetIcon({ graha, size = 32, elongation }: GrahaPlanetIco
       ) : null}
       {phased && !phaseFull ? (
         <>
-          <Circle cx="24" cy="24" r={spec.r} fill={MOON_UNLIT_FILL} />
+          <Circle cx="24" cy="24" r={spec.r} fill={grahaArt.moonUnlit} />
           <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} opacity={0.12} />
           {litPath ? <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} clipPath={`url(#${phaseClip})`} /> : null}
-          <Circle cx="24" cy="24" r={spec.r} fill="none" stroke={MOON_RIM} strokeWidth={0.8} />
+          <Circle cx="24" cy="24" r={spec.r} fill="none" stroke={grahaArt.moonRim} strokeWidth={0.8} />
         </>
       ) : (
         <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} />

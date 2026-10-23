@@ -4468,6 +4468,7 @@
       "adhik_maas_label": "Adhik (Mala) Maas in {{year}}: {{month}}",
       "adhik_maas_detail": "This year's adhik maas is in {{month}} — {{range}}.",
       "adhik_maas_why": "No sankranti falls in this lunar month, so it is an extra (adhik) month.",
+      "special_months_label": "Adhik & Kshaya Maas in {{year}}: {{list}}",
       "kshaya_maas_label": "Kshaya Maas in {{year}}: {{month}}",
       "kshaya_maas_detail": "This year {{month}} is a kshaya (dropped) month — {{range}}.",
       "kshaya_maas_adhik": "It is flanked by two adhik months, one before and one after: {{adhik}}.",

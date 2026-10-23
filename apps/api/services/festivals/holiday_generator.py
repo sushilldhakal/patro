@@ -878,28 +878,34 @@ def get_special_months_for_bs_year(
     from engine.festivals.festival_rules import get_special_months_for_gregorian_year
     from engine.calendar.bikram_sambat import bs_year_date_range
 
-    year_start, year_end = bs_year_date_range(bs_year)
-    gregorian_years = sorted({year_start.year, year_end.year})
+    from datetime import date as _date
 
-    adhik_result: dict[str, Any] = {"has_adhik_maas": False}
+    year_start, year_end = bs_year_date_range(bs_year)
+    # A lunar year built from 15 Feb can miss the Adhik/Kshaya months of the
+    # BS year's first weeks, so start one Gregorian year earlier.
+    gregorian_years = range(year_start.year - 1, year_end.year + 1)
+
+    def _in_year(iso: str) -> bool:
+        return year_start <= _date.fromisoformat(iso) <= year_end
+
+    adhik_by_start: dict[str, dict[str, Any]] = {}
     kshaya_result: dict[str, Any] = {"is_kshaya": False}
 
     for g_year in gregorian_years:
         special = get_special_months_for_gregorian_year(g_year)
 
-        adhik = special.get("adhik_maas", {})
-        if adhik.get("has_adhik_maas"):
-            from datetime import date as _date
-            start = _date.fromisoformat(adhik["start_date"])
-            if year_start <= start <= year_end:
-                adhik_result = adhik
+        for adhik in special.get("adhik_months", []):
+            if _in_year(adhik["start_date"]):
+                adhik_by_start.setdefault(adhik["start_date"], adhik)
 
         kshaya = special.get("kshaya_maas", {})
-        if kshaya.get("is_kshaya"):
-            from datetime import date as _date
-            start = _date.fromisoformat(kshaya["start_date"])
-            if year_start <= start <= year_end:
-                kshaya_result = kshaya
+        if kshaya.get("is_kshaya") and _in_year(kshaya["start_date"]):
+            kshaya_result = kshaya
+
+    # Chronological. ``adhik_maas`` stays the first one for older clients; a
+    # Kshaya year (BS 2039) has two, so ``adhik_months`` lists them all.
+    adhik_months = [adhik_by_start[k] for k in sorted(adhik_by_start)]
+    adhik_result: dict[str, Any] = adhik_months[0] if adhik_months else {"has_adhik_maas": False}
 
     return {
         "bs_year": bs_year,
@@ -909,5 +915,6 @@ def get_special_months_for_bs_year(
         },
         "location": location.as_dict(),
         "adhik_maas": adhik_result,
+        "adhik_months": adhik_months,
         "kshaya_maas": kshaya_result,
     }

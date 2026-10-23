@@ -44,6 +44,9 @@ export const panchangaCardSubtitle =
  * types the colour again. Names are the planet and the role of the paint.
  */
 export const grahaArt = {
+  /** The Moon's unlit face and rim — dark, but never lost against a dark card. */
+  moonUnlit: "#1d2433",
+  moonRim: "rgba(160,170,190,0.45)",
   jupiterLight: "#c98a4e",
   jupiterDark: "#7c441c",
   jupiterBand: "#8a5226",

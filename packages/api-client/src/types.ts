@@ -371,18 +371,23 @@ export interface ElementSpansResponse {
 
 // ─── Special months (adhik / kshaya maas) ─────────────────────────────────────
 
+export interface AdhikMonth {
+  has_adhik_maas?: boolean;
+  month_name?: string;
+  full_name_en?: string;
+  full_name_ne?: string;
+  start_date?: string;
+  end_date?: string;
+  purnima_date?: string;
+  note?: string;
+}
+
 export interface SpecialMonthsResponse {
   bs_year: number;
-  adhik_maas?: {
-    has_adhik_maas?: boolean;
-    month_name?: string;
-    full_name_en?: string;
-    full_name_ne?: string;
-    start_date?: string;
-    end_date?: string;
-    purnima_date?: string;
-    note?: string;
-  };
+  /** The year's first adhik month (kept for older clients — prefer `adhik_months`). */
+  adhik_maas?: AdhikMonth;
+  /** Every adhik month in the BS year, in order. A kshaya year (BS 2039) has two. */
+  adhik_months?: AdhikMonth[];
   kshaya_maas?: {
     is_kshaya?: boolean;
     /** The month that survives, e.g. "Poush" in the Poush–Magha kshaya of 1983. */
