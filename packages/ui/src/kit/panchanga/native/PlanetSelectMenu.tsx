@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 import type { WheelGraha } from "@vedic-patro/domain/panchanga/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
@@ -16,6 +16,13 @@ export type PlanetSelectMenuProps = {
 };
 
 const MENU_W = 228;
+
+/**
+ * The wheel's fullscreen view is a Modal, and a second Modal opened from inside it
+ * never presents. Under this host the menu is handed up to be drawn inside the
+ * fullscreen view instead (window coordinates equal stage coordinates there).
+ */
+export const PlanetMenuHostContext = createContext<((node: ReactNode) => void) | null>(null);
 
 export function PlanetSelectMenu({ grahas, selected, onSelect, compact = false, iconSize }: PlanetSelectMenuProps) {
   const menu = usePlanetSelectMenu({ grahas, selected, onSelect });
@@ -37,6 +44,53 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, compact = false, 
   const below = anchor.y + anchor.h + 8;
   const top = below + menuH > sh - 8 ? Math.max(8, anchor.y - menuH - 8) : below;
 
+  const host = useContext(PlanetMenuHostContext);
+  const menuNode = (
+    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      <Pressable style={StyleSheet.absoluteFill} onPress={menu.close} accessibilityLabel={menu.closeLabel} />
+      <View
+        className="rounded-2xl py-1.5"
+        style={{
+          position: "absolute",
+          left,
+          top,
+          width: MENU_W,
+          maxHeight: menuH,
+          borderWidth: 1,
+          borderColor: withAlpha(wheel.line, 0.32),
+          backgroundColor: withAlpha(wheel.surface, 0.96),
+          ...nativeShadow("lg"),
+        }}
+      >
+        {menu.options.map((o) => (
+          <Pressable
+            key={o.key}
+            onPress={o.choose}
+            accessibilityRole="button"
+            accessibilityState={{ selected: o.active }}
+            className="flex-row items-center gap-2.5 px-3 py-2"
+            style={{ backgroundColor: o.active ? withAlpha(brand.vermilion, 0.28) : "transparent" }}
+          >
+            <GrahaPlanetIcon graha={o.key} size={22} />
+            <View className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: o.color }} />
+            <Text className="flex-1 text-base text-ill-midnight-foam" nativeClassName={o.active ? "font-bold" : "font-medium"}>
+              {o.name}
+            </Text>
+            {o.active ? <Text className="text-base text-ill-midnight-foam">{String.fromCharCode(0x2713)}</Text> : null}
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+
+  useEffect(() => {
+    if (!host) return;
+    host(open ? menuNode : null);
+    // menuNode is rebuilt every render; these are what change what it shows.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [host, open, anchor, selected, sw, sh]);
+  useEffect(() => () => host?.(null), [host]);
+
   return (
     <>
       <Pressable
@@ -56,43 +110,11 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, compact = false, 
       >
         <GrahaPlanetIcon graha={menu.selectedKey} size={iconSize ?? (compact ? 18 : 22)} />
       </Pressable>
-      <Modal visible={open} transparent animationType="fade" statusBarTranslucent onRequestClose={menu.close}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-          <Pressable style={StyleSheet.absoluteFill} onPress={menu.close} accessibilityLabel={menu.closeLabel} />
-          <View
-            className="rounded-2xl py-1.5"
-            style={{
-              position: "absolute",
-              left,
-              top,
-              width: MENU_W,
-              maxHeight: menuH,
-              borderWidth: 1,
-              borderColor: withAlpha(wheel.line, 0.32),
-              backgroundColor: withAlpha(wheel.surface, 0.96),
-              ...nativeShadow("lg"),
-            }}
-          >
-            {menu.options.map((o) => (
-              <Pressable
-                key={o.key}
-                onPress={o.choose}
-                accessibilityRole="button"
-                accessibilityState={{ selected: o.active }}
-                className="flex-row items-center gap-2.5 px-3 py-2"
-                style={{ backgroundColor: o.active ? withAlpha(brand.vermilion, 0.28) : "transparent" }}
-              >
-                <GrahaPlanetIcon graha={o.key} size={22} />
-                <View className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: o.color }} />
-                <Text className="flex-1 text-base text-ill-midnight-foam" nativeClassName={o.active ? "font-bold" : "font-medium"}>
-                  {o.name}
-                </Text>
-                {o.active ? <Text className="text-base text-ill-midnight-foam">{String.fromCharCode(0x2713)}</Text> : null}
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      </Modal>
+      {host ? null : (
+        <Modal visible={open} transparent animationType="fade" statusBarTranslucent onRequestClose={menu.close}>
+          {menuNode}
+        </Modal>
+      )}
     </>
   );
 }

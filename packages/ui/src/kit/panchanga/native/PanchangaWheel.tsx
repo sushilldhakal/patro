@@ -12,7 +12,7 @@ import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/do
 import { buildWheelDetail, buildWheelMarkers, buildWheelMarkersAtTime, buildWheelMarkersFromDetail, DEFAULT_WHEEL_TWEAKS, gClock, type WheelGraha } from "@vedic-patro/read-models/panchanga/wheel-data";
 import { wheelPlaceFromClock } from "@vedic-patro/domain/panchanga/wheel-bodies";
 import { WheelChart, type WheelChartAssets, type WheelHover, type WheelPick } from "./WheelChart";
-import { PlanetSelectMenu } from "./PlanetSelectMenu";
+import { PlanetMenuHostContext, PlanetSelectMenu } from "./PlanetSelectMenu";
 import { WheelDateSheet, type WheelDateSheetSlot } from "./WheelDateSheet";
 import { parseClockParts, scrubGToDatetime, type WheelAtTimeClient } from "../wheel-clock";
 import { wheelLegendDot, wheelLegendRow } from "@vedic-patro/design-tokens/classes/wheel-classes";
@@ -787,6 +787,7 @@ function WheelBody({
 
   /* The chart starts below the header (title + planet card), whatever its height. */
   const [headerH, setHeaderH] = useState(0);
+  const [menuOverlay, setMenuOverlay] = useState<ReactNode>(null);
 
   const renderHeader = (fullscreen?: boolean) => {
     const eyebrow = compactHead
@@ -1034,7 +1035,10 @@ function WheelBody({
         {/* A Modal is its own native root: on Android the wheel's pinch / spin
             gestures only reach it through a root of their own. */}
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: W_BG }}>
-          {renderStage("fill", true)}
+          <PlanetMenuHostContext.Provider value={setMenuOverlay}>
+            {renderStage("fill", true)}
+          </PlanetMenuHostContext.Provider>
+          {menuOverlay}
           {/* Inside the fullscreen modal on purpose: a sheet mounted by the page
               would open behind it, and closing fullscreen to pick a date is
               exactly what the calendar button exists to avoid. */}
