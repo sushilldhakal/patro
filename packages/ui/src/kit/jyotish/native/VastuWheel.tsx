@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
 import { Box, Text } from "@vedic-patro/ui";
 import { fontFamily } from "@vedic-patro/design-tokens";
@@ -109,6 +109,7 @@ export function VastuPurushaWheel({
     <View>
       <ZoomStage size={size ?? WHEEL_SIZE} fullscreenOverlay={fullscreenOverlay} onFullscreenChange={onFullscreenChange}>
       {(px) => (
+      <View style={{ width: px, height: px }}>
       <Svg
         width={px}
         height={px}
@@ -420,7 +421,6 @@ export function VastuPurushaWheel({
             stroke={VASTU_ELEMENT_COLOR.space}
             strokeOpacity={0.55}
             strokeDasharray="5 4"
-            onPress={press(() => onSelect("center"))}
           />
 
           {/* Degree rim on top — parchment, so triguna colour cannot leak into 0°–360° */}
@@ -462,14 +462,14 @@ export function VastuPurushaWheel({
           <G pointerEvents="none" fill="none">
             {selected === "center" ? (
               <>
-                <Circle cx={CX} cy={CY} r={CENTER_R} fill="none" stroke={VASTU_INK.text} strokeWidth={4.2} />
-                <Circle cx={CX} cy={CY} r={CENTER_R} fill="none" stroke={VASTU_ELEMENT_COLOR.space} strokeWidth={2.2} />
+                <Circle cx={CX} cy={CY} r={CENTER_R} fill="none" stroke={VASTU_INK.text} strokeWidth={4.2} pointerEvents="none" />
+                <Circle cx={CX} cy={CY} r={CENTER_R} fill="none" stroke={VASTU_ELEMENT_COLOR.space} strokeWidth={2.2} pointerEvents="none" />
               </>
             ) : (
               selectionSlices(selected).map((slice, i) => (
                 <G key={`sel-${selected}-${i}`}>
-                  <Path d={slice.d} fill="none" stroke={VASTU_INK.text} strokeWidth={4.2} strokeLinejoin="round" />
-                  <Path d={slice.d} fill="none" stroke={slice.color} strokeWidth={2.2} strokeLinejoin="round" />
+                  <Path d={slice.d} fill="none" stroke={VASTU_INK.text} strokeWidth={4.2} strokeLinejoin="round" pointerEvents="none" />
+                  <Path d={slice.d} fill="none" stroke={slice.color} strokeWidth={2.2} strokeLinejoin="round" pointerEvents="none" />
                 </G>
               ))
             )}
@@ -481,6 +481,23 @@ export function VastuPurushaWheel({
           </G>
         ) : null}
       </Svg>
+      {/* The centre is a real touch target on top of the drawing: a tap on an SVG shape was dropped once
+          that shape was the selection (the outline drawn over it), so the Brahmasthan could not be
+          opened a second time. */}
+      <Pressable
+        onPress={() => onSelect("center")}
+        accessibilityRole="button"
+        accessibilityLabel={w.centerName}
+        style={{
+          position: "absolute",
+          left: (CX / WHEEL_SIZE) * px - (CENTER_R / WHEEL_SIZE) * px,
+          top: (CY / WHEEL_SIZE) * px - (CENTER_R / WHEEL_SIZE) * px,
+          width: (2 * CENTER_R / WHEEL_SIZE) * px,
+          height: (2 * CENTER_R / WHEEL_SIZE) * px,
+          borderRadius: (CENTER_R / WHEEL_SIZE) * px,
+        }}
+      />
+      </View>
       )}
       </ZoomStage>
 
