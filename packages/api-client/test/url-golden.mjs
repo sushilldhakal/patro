@@ -11,8 +11,7 @@
  *   npm test -w @vedic-patro/api-client -- --update     accept the current URLs
  */
 import { build } from "esbuild";
-import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -20,7 +19,12 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../../..");
 const update = process.argv.includes("--update");
-const work = mkdtempSync(join(tmpdir(), "url-golden-"));
+// The bundle keeps `react` as a bare import, so it has to live where Node can walk up to
+// node_modules — the OS temp dir cannot, and the run died with ERR_MODULE_NOT_FOUND.
+const scratch = join(here, "../node_modules/.cache");
+mkdirSync(scratch, { recursive: true });
+const work = mkdtempSync(join(scratch, "url-golden-"));
+process.on("exit", () => rmSync(work, { recursive: true, force: true }));
 
 const stubs = {
   "react-native": `export const Platform = { OS: "ios", select: (o) => o.ios ?? o.default }; export default {};`,
