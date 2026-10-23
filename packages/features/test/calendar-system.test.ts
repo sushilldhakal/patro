@@ -27,6 +27,9 @@ const adOfBsFirst = (year: number, month: number) => civilIsoFromDate(bsToAD(yea
 
 // ─── convertBrowseMonth ──────────────────────────────────────────────────────
 
+/** A "now" far from every month the first-day tests browse, so they never hit the current-month rule. */
+const LONG_AGO = new Date(Date.UTC(2000, 0, 15));
+
 test("a BS month converts to the AD month holding its first day", () => {
   // Shrawan 1, 2083 is mid-July 2026.
   const iso = adOfBsFirst(2083, 4);
@@ -62,12 +65,26 @@ test("the BS month an AD month converts to is the one holding the AD month's fir
   for (let year = 2024; year <= 2028; year += 1) {
     for (let month = 1; month <= 12; month += 1) {
       const firstAd = civilIsoFromDate(new Date(Date.UTC(year, month - 1, 1)));
-      const bs = convertBrowseMonth("ad", year, month, "bs");
+      const bs = convertBrowseMonth("ad", year, month, "bs", LONG_AGO);
       const start = civilIsoFromDate(bsToAD(bs.year, bs.month, 1));
       const next = bs.month === 12 ? { year: bs.year + 1, month: 1 } : { year: bs.year, month: bs.month + 1 };
       const end = civilIsoFromDate(bsToAD(next.year, next.month, 1));
       assert.ok(start <= firstAd && firstAd < end, `${firstAd} should sit in BS ${bs.year}/${bs.month} (${start}..${end})`);
     }
+  }
+});
+
+test("the current month converts to the current month, and back, without drifting", () => {
+  // Fri 23 Oct 2026 = Kartik 6, 2083: BS Kartik holds the 23rd, AD October holds it too.
+  const now = new Date(2026, 9, 23, 12);
+  const bs = adToBS(now);
+  const ad = convertBrowseMonth("bs", bs.year, bs.month, "ad", now);
+  assert.deepEqual(ad, { era: "ad", year: 2026, month: 10 });
+  assert.deepEqual(convertBrowseMonth("ad", 2026, 10, "bs", now), { era: "bs", year: bs.year, month: bs.month });
+  for (let i = 0, cur = ad; i < 4; i += 1) {
+    const toBs = convertBrowseMonth(cur.era, cur.year, cur.month, "bs", now);
+    cur = convertBrowseMonth(toBs.era, toBs.year, toBs.month, "ad", now);
+    assert.deepEqual(cur, { era: "ad", year: 2026, month: 10 });
   }
 });
 

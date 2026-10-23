@@ -76,7 +76,7 @@ export function GocharSkySection({ gochar, dateLabel, onSelectPlanet, selectedPl
             >
               <Text as="span" className={cn(gocharClasses.planetStripe, PLANET_STRIPE[key])} />
               <Box className={cn("flex", gocharClasses.planetHead)}>
-                <GrahaPlanetIcon graha={key} size={32} className="shrink-0" />
+                <GrahaPlanetIcon graha={key} size={32} className="shrink-0" elongation={card.elongation} />
                 <Box className="min-w-0 flex-1">
                   <Text as="p" className={cn("m-0 flex", gocharClasses.planetTitleWrap, gocharClasses.planetTitle, patroMono, "tabular-nums")}>
                     <Text as="span">{card.name}</Text>

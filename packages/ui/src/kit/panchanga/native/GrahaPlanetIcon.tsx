@@ -1,23 +1,40 @@
 import { useId, type ComponentType, type ReactNode } from "react";
 import { Circle, ClipPath, Defs, Ellipse, G, Line, Path, RadialGradient, Rect, Stop, Svg } from "react-native-svg";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
+import { isFullMoonElongation, isNewMoonElongation, moonPhaseLitPath } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { grahaPlanetArt, jupiterBands, jupiterSpot } from "../graha-planet-art";
 
 export type GrahaPlanetIconProps = {
   graha: GrahaKey;
   size?: number;
   className?: string;
+  /**
+   * Moon only: Moon-minus-Sun longitude in degrees (0 औंसी, 180 पूर्णिमा). Given, the
+   * disc shows the real phase — waxing lit on the right, waning on the left.
+   */
+  elongation?: number;
 };
 
 /** Web typings of `Defs` omit `children` when the app resolves `.web` first. */
 const SvgDefs = Defs as ComponentType<{ children?: ReactNode }>;
 
+/** The Moon's unlit face and its rim — dark, but never lost against a dark card. */
+const MOON_UNLIT_FILL = "#1d2433";
+const MOON_RIM = "rgba(160,170,190,0.45)";
+
 /** Spherical graha artwork. Colours come from `grahaArt`. */
-export function GrahaPlanetIcon({ graha, size = 32 }: GrahaPlanetIconProps) {
+export function GrahaPlanetIcon({ graha, size = 32, elongation }: GrahaPlanetIconProps) {
   const id = useId().replace(/:/g, "");
   const spec = grahaPlanetArt[graha];
   const grad = `${id}-g`;
   const clip = `${id}-c`;
+  const phaseClip = `${id}-p`;
+  const phaseE = graha === "moon" && elongation != null && Number.isFinite(elongation) ? elongation : null;
+  const phased = phaseE != null;
+  const phaseNew = phaseE != null && isNewMoonElongation(phaseE);
+  const phaseFull = phaseE != null && isFullMoonElongation(phaseE);
+  /* A partial phase: a dark disc with the lit shape cut out of the moon art. */
+  const litPath = phaseE != null && !phaseNew && !phaseFull ? moonPhaseLitPath(phaseE, spec.r) : null;
   return (
     <Svg width={size} height={size} viewBox="0 0 48 48">
       <SvgDefs>
@@ -29,6 +46,11 @@ export function GrahaPlanetIcon({ graha, size = 32 }: GrahaPlanetIconProps) {
         {spec.spots || graha === "jupiter" ? (
           <ClipPath id={clip}>
             <Circle cx="24" cy="24" r={spec.r} />
+          </ClipPath>
+        ) : null}
+        {litPath ? (
+          <ClipPath id={phaseClip}>
+            <Path d={litPath} transform="translate(24 24)" />
           </ClipPath>
         ) : null}
       </SvgDefs>
@@ -44,7 +66,16 @@ export function GrahaPlanetIcon({ graha, size = 32 }: GrahaPlanetIconProps) {
           <Ellipse cx="24" cy="24" rx="24" ry="7.2" fill="none" stroke={spec.ring.stroke} strokeWidth={2.4} opacity={0.9} />
         </G>
       ) : null}
-      <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} />
+      {phased && !phaseFull ? (
+        <>
+          <Circle cx="24" cy="24" r={spec.r} fill={MOON_UNLIT_FILL} />
+          <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} opacity={0.12} />
+          {litPath ? <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} clipPath={`url(#${phaseClip})`} /> : null}
+          <Circle cx="24" cy="24" r={spec.r} fill="none" stroke={MOON_RIM} strokeWidth={0.8} />
+        </>
+      ) : (
+        <Circle cx="24" cy="24" r={spec.r} fill={`url(#${grad})`} />
+      )}
       {spec.ring ? (
         <G transform="rotate(-20 24 24)">
           <Path d="M0 24a 24 7.2 0 0 0 48 0" fill="none" stroke={spec.ring.bright} strokeWidth={2.4} />
@@ -58,8 +89,8 @@ export function GrahaPlanetIcon({ graha, size = 32 }: GrahaPlanetIconProps) {
           <Ellipse cx={jupiterSpot.cx} cy={jupiterSpot.cy} rx={jupiterSpot.rx} ry={jupiterSpot.ry} fill={jupiterSpot.fill} />
         </G>
       ) : null}
-      {spec.spots && spec.spots.items.length > 0 ? (
-        <G clipPath={`url(#${clip})`} opacity={spec.spots.opacity} fill={spec.spots.fill}>
+      {spec.spots && spec.spots.items.length > 0 && !phaseNew && (!phased || phaseFull || litPath) ? (
+        <G clipPath={`url(#${litPath ? phaseClip : clip})`} opacity={spec.spots.opacity} fill={spec.spots.fill}>
           {spec.spots.items.map((spot) =>
             spot.rx != null ? (
               <Ellipse

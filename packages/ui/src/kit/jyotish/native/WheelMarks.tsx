@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { G, Line, Path, Text as SvgText } from "react-native-svg";
+import { memo, type ReactNode } from "react";
+import { G, Path, Text as SvgText } from "react-native-svg";
 import { fontFamily } from "@vedic-patro/design-tokens";
 import { vastuWheelPoint } from "@vedic-patro/domain/vastu/vastu";
 import { PURUSHA_PATH } from "../purusha-path";
@@ -11,7 +11,8 @@ function normBearing(bearing: number): number {
   return ((bearing % 360) + 360) % 360;
 }
 
-export function RingSeparators({
+/** Spokes between the cells of a ring — one Path for all of them, not a Line per spoke. */
+export const RingSeparators = memo(function RingSeparators({
   bearings,
   innerR,
   outerR,
@@ -24,23 +25,14 @@ export function RingSeparators({
   center: VastuCenter;
   ink: string;
 }) {
-  return bearings.map((bearing) => {
+  let d = "";
+  for (const bearing of bearings) {
     const a = vastuWheelPoint(bearing, innerR, center.cx, center.cy);
     const b = vastuWheelPoint(bearing, outerR, center.cx, center.cy);
-    return (
-      <Line
-        key={`sep-${innerR}-${outerR}-${bearing}`}
-        x1={a.x}
-        y1={a.y}
-        x2={b.x}
-        y2={b.y}
-        stroke={ink}
-        strokeOpacity={0.4}
-        strokeWidth={0.75}
-      />
-    );
-  });
-}
+    d += `M${a.x.toFixed(2)} ${a.y.toFixed(2)}L${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
+  }
+  return <Path d={d} fill="none" stroke={ink} strokeOpacity={0.4} strokeWidth={0.75} pointerEvents="none" />;
+});
 
 export function PadaCodeLabel({
   bearing,
@@ -133,3 +125,27 @@ export function VastuPurushaSilhouette({ size = 100, color }: { size?: number; c
     </G>
   );
 }
+
+type TickPoint = { x: number; y: number };
+export type TickSegment = { inner: TickPoint; outer: TickPoint; opacity: number; width: number };
+
+/**
+ * The 360 degree ticks as one Path per stroke style (four, not 360 groups of a line): each
+ * react-native-svg element is a native view, so the wheel's rim alone used to cost ~720 of them.
+ */
+export const DegreeTicks = memo(function DegreeTicks({ ticks, ink }: { ticks: readonly TickSegment[]; ink: string }) {
+  const groups = new Map<string, { opacity: number; width: number; d: string }>();
+  for (const tick of ticks) {
+    const key = `${tick.opacity}|${tick.width}`;
+    const group = groups.get(key) ?? { opacity: tick.opacity, width: tick.width, d: "" };
+    group.d += `M${tick.inner.x.toFixed(2)} ${tick.inner.y.toFixed(2)}L${tick.outer.x.toFixed(2)} ${tick.outer.y.toFixed(2)}`;
+    groups.set(key, group);
+  }
+  return (
+    <>
+      {[...groups.entries()].map(([key, group]) => (
+        <Path key={key} d={group.d} fill="none" stroke={ink} strokeOpacity={group.opacity} strokeWidth={group.width} pointerEvents="none" />
+      ))}
+    </>
+  );
+});

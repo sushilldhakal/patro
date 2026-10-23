@@ -18,6 +18,11 @@ import { PatroHeaderLocation } from "./PatroHeaderLocation";
 const CONTROL = 38;
 const CONTROL_DENSE = 34;
 
+/** The badge is one small box: Gregorian months in English letters show as Jan, Feb, Mar… */
+function badgeMonthName(era: string, name: string): string {
+  return (era === "ad" || era === "bc") && /^[A-Za-z]{4,}$/.test(name) ? name.slice(0, 3) : name;
+}
+
 export function PatroCalendarHeader({
   era,
   year,
@@ -46,13 +51,16 @@ export function PatroCalendarHeader({
   const header = usePatroCalendarHeader({ era, year, month, onChange });
   const nav = usePatroMonthYearNav({ era, year, month, location, crossEraSubtitle, displayLanguage });
   const { panel, labels, yearInput } = header;
+  const badgeMonth = badgeMonthName(era, header.title.month);
   const monthOpen = panel === "month";
   const locationOpen = panel === "location";
 
   const title = (
     <View className={cls.nativeTitle}>
       <Pressable label={labels.today} onPress={header.goToday} className={cls.badge}>
-        <Text className={cls.badgeMonth}>{header.title.month}</Text>
+        <Text numberOfLines={1} className={cn(cls.badgeMonth, [...badgeMonth].length > 6 && "text-xs")}>
+          {badgeMonth}
+        </Text>
         <Box className={cls.badgeDays}>
           <Text className={cls.badgeDaysText}>{header.dayRange}</Text>
         </Box>

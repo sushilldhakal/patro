@@ -10,7 +10,7 @@
  */
 import { useEffect, useState } from "react";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
-import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
+import { eraForCalendar } from "@vedic-patro/domain/calendar/calendar-system";
 import { patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceMonthBrowseFromUrl,
@@ -20,7 +20,7 @@ import {
 } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
-import { useCalendarSystem } from "@vedic-patro/i18n/react";
+import { useLiveCalendarSystem } from "@vedic-patro/i18n/react";
 import { rememberBrowse, rememberedMonth, rememberedYear } from "@vedic-patro/domain/calendar/remembered-browse";
 import { convertBrowseMonth } from "./convert-browse-month";
 
@@ -46,11 +46,10 @@ export function usePatroMonthBrowse(
   initial?: { year?: number; month?: number },
   options?: { era?: Era | null },
 ) {
-  // Subscribe so the hook re-renders on a change, but read the live value: while a
-  // prerendered page hydrates, the hook still returns the server's default (BS), and
-  // seeding from that would convert a stored-AD reader's explicit ?era=bs link.
-  useCalendarSystem();
-  const calendar = getCalendarSystem();
+  // Live read (not the server default while a prerendered page hydrates, which would convert a
+  // stored-AD reader's explicit ?era=bs link). A hook, never a bare getCalendarSystem() in render:
+  // React Compiler would cache that call and the browse would stop following the preference.
+  const calendar = useLiveCalendarSystem();
   const baseEra = options?.era ?? eraForCalendar(calendar);
   const initialParts = resolveInitialMonthBrowse(baseEra, initial);
 
@@ -58,7 +57,6 @@ export function usePatroMonthBrowse(
   const [year, setYearState] = useState(() => initialParts.year);
   const [month, setMonthState] = useState(() => initialParts.month);
   const [syncedCalendar, setSyncedCalendar] = useState(calendar);
-
   // The calendar preference changed: show the same month in the new system.
   if (calendar !== syncedCalendar) {
     setSyncedCalendar(calendar);

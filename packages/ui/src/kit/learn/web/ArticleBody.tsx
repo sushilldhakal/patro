@@ -1,7 +1,12 @@
 import { Fragment, type ReactNode } from "react";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { resolveArticle, resolveSeeAlso, type ResolvedInline } from "@vedic-patro/domain/learn/article-model";
+import {
+  resolveArticle,
+  resolveSeeAlso,
+  type ResolvedCalc,
+  type ResolvedInline,
+} from "@vedic-patro/domain/learn/article-model";
 import {
   learnRefCaption,
   learnRefHighlightRow,
@@ -9,6 +14,9 @@ import {
   learnRefWrap,
   ssPhasesHeading,
   tmCalc,
+  tmCalcCase,
+  tmCalcCaseTitle,
+  tmCases,
   tmCalcEg,
   tmCalcResult,
   tmCalcRule,
@@ -206,51 +214,12 @@ export function ArticleBody({
                   ) : null}
                 </Box>
               ) : null}
-              {block.kind === "calc" ? (
-                <Box>
-                  <Box className={tmCalc}>
-                    <Box className={tmCalcRule}>
-                      {block.rule.map((line, lineIndex) => (
-                        <Box key={lineIndex}>
-                          <Inline parts={line} openArticle={openArticle} />
-                        </Box>
-                      ))}
-                    </Box>
-                    {block.where ? (
-                      <dl className={tmCalcWhere}>
-                        {block.where.map((row) => (
-                          <Box key={row.sym}>
-                            <dt>{row.sym}</dt>
-                            <dd>
-                              <Inline parts={row.text} openArticle={openArticle} />
-                            </dd>
-                          </Box>
-                        ))}
-                      </dl>
-                    ) : null}
-                    {block.example ? (
-                      <Box className={tmCalcEg}>
-                        {block.example.map((row) => (
-                          <Box key={row.key}>
-                            <Text as="span">
-                              <Inline parts={row.label} openArticle={openArticle} />
-                            </Text>
-                            <Text as="span">{row.value}</Text>
-                          </Box>
-                        ))}
-                      </Box>
-                    ) : null}
-                    {block.result ? (
-                      <Box className={tmCalcResult}>
-                        <Inline parts={block.result} openArticle={openArticle} />
-                      </Box>
-                    ) : null}
-                  </Box>
-                  {block.caption ? (
-                    <Text as="p" className={tmCardCap}>
-                      {block.caption}
-                    </Text>
-                  ) : null}
+              {block.kind === "calc" ? <CalcCard calc={block} openArticle={openArticle} /> : null}
+              {block.kind === "cases" ? (
+                <Box className={tmCases}>
+                  {block.items.map((item, itemIndex) => (
+                    <CalcCard key={itemIndex} calc={item} inCases openArticle={openArticle} />
+                  ))}
                 </Box>
               ) : null}
               {block.kind === "diagram" ? <DiagramBlock block={block} renderDiagram={renderDiagram} /> : null}
@@ -277,6 +246,70 @@ export function ArticleBody({
         </Box>
       ) : null}
     </>
+  );
+}
+
+/** One worked calculation. Inside a `cases` group its caption is the heading; on its own it sits underneath. */
+function CalcCard({
+  calc,
+  inCases = false,
+  openArticle,
+}: {
+  calc: ResolvedCalc;
+  inCases?: boolean;
+  openArticle: (slug: string) => void;
+}) {
+  return (
+    <Box>
+      <Box className={inCases ? tmCalcCase : tmCalc}>
+        {inCases && calc.caption ? (
+          <Text as="h4" className={tmCalcCaseTitle}>
+            {calc.caption}
+          </Text>
+        ) : null}
+        <Box className={tmCalcRule}>
+          {calc.rule.map((line, lineIndex) => (
+            <Box key={lineIndex}>
+              <Inline parts={line} openArticle={openArticle} />
+            </Box>
+          ))}
+        </Box>
+        {calc.where ? (
+          <dl className={tmCalcWhere}>
+            {calc.where.map((row) => (
+              <Box key={row.sym}>
+                <dt>{row.sym}</dt>
+                <dd>
+                  <Inline parts={row.text} openArticle={openArticle} />
+                </dd>
+              </Box>
+            ))}
+          </dl>
+        ) : null}
+        {calc.example ? (
+          <Box className={tmCalcEg}>
+            {calc.example.map((row) => (
+              <Box key={row.key}>
+                <Text as="span">
+                  <Inline parts={row.label} openArticle={openArticle} />
+                </Text>
+                <Text as="span">{row.value}</Text>
+              </Box>
+            ))}
+          </Box>
+        ) : null}
+        {calc.result ? (
+          <Box className={tmCalcResult}>
+            <Inline parts={calc.result} openArticle={openArticle} />
+          </Box>
+        ) : null}
+      </Box>
+      {!inCases && calc.caption ? (
+        <Text as="p" className={tmCardCap}>
+          {calc.caption}
+        </Text>
+      ) : null}
+    </Box>
   );
 }
 

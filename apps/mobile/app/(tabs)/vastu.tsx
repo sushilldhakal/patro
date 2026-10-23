@@ -14,6 +14,7 @@ import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { Button } from "@/components/ui/Button";
+import { Deferred } from "@/components/ui/Deferred";
 import { Text } from "@/components/ui/Text";
 import { PlotPlanner } from "@/components/vastu/PlotPlanner";
 import { VastuPurushaWheel } from "@/components/vastu/VastuPurushaWheel";
@@ -293,87 +294,92 @@ export default function VastuScreen() {
         </View>
       </View>
 
-      <View className="mb-4">
-        <PlotPlanner />
-      </View>
+      {/* Everything below the wheel draws a frame after it: the plot planner holds another full
+          compass ring and the rest is long, and mounting all of it at once left the page blank. */}
+      <Deferred>
+        <View className="mb-4">
+          <PlotPlanner />
+        </View>
 
-      <View className={cn(vastuClasses.note, "mb-4")}>
-        <Text className={vastuClasses.noteText} style={nepaliTextStyle(13)}>
-          {copy.note}
-        </Text>
-      </View>
+        <View className={cn(vastuClasses.note, "mb-4")}>
+          <Text className={vastuClasses.noteText} style={nepaliTextStyle(13)}>
+            {copy.note}
+          </Text>
+        </View>
 
-      <View className={cn(vastuClasses.sourcesCard, "mb-4")}>
-        <Text className={vastuClasses.sourcesHeading} style={nepaliTextStyle(14)}>
-          {copy.sourcesHeading}
-        </Text>
-        <Text className={vastuClasses.sourcesBlurb} style={nepaliTextStyle(13)}>
-          {copy.sourcesBlurb}
-        </Text>
-        <View className={vastuClasses.sourcesList}>
-          {page.sources.map((source) => (
-            <View key={source.id} className={vastuClasses.sourceRow}>
-              <Text className={vastuClasses.sourceIndex} style={nepaliTextStyle(13)}>
-                {source.index}
+        <View className={cn(vastuClasses.sourcesCard, "mb-4")}>
+          <Text className={vastuClasses.sourcesHeading} style={nepaliTextStyle(14)}>
+            {copy.sourcesHeading}
+          </Text>
+          <Text className={vastuClasses.sourcesBlurb} style={nepaliTextStyle(13)}>
+            {copy.sourcesBlurb}
+          </Text>
+          <View className={vastuClasses.sourcesList}>
+            {page.sources.map((source) => (
+              <View key={source.id} className={vastuClasses.sourceRow}>
+                <Text className={vastuClasses.sourceIndex} style={nepaliTextStyle(13)}>
+                  {source.index}
+                </Text>
+                <View className={cn(vastuClasses.sourceBody, "flex-1")}>
+                  <Text className={vastuClasses.sourceCredit} style={nepaliTextStyle(13)}>
+                    {source.credit}
+                  </Text>
+                  <Text className={vastuClasses.sourceLine} style={nepaliTextStyle(13)}>
+                    {source.edition}
+                  </Text>
+                  <Text className={vastuClasses.sourceLine} style={nepaliTextStyle(13)}>
+                    {source.used}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <SectionCard icon="home-outline" title={page.rooms.heading} meta={page.rooms.ideal}>
+          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+            {page.rooms.blurb}
+          </Text>
+          {page.rooms.items.map((room) => (
+            <View key={room.id} className={vastuClasses.roomCard} style={{ borderLeftWidth: 4, borderLeftColor: room.color }}>
+              <View className="flex-row flex-wrap items-baseline gap-x-2">
+                <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+                  {room.name}
+                </Text>
+                <Text className="text-sm font-semibold" style={[nepaliTextStyle(13), { color: room.color }]}>
+                  {room.direction}
+                </Text>
+              </View>
+              <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+                {room.note}
               </Text>
-              <View className={cn(vastuClasses.sourceBody, "flex-1")}>
-                <Text className={vastuClasses.sourceCredit} style={nepaliTextStyle(13)}>
-                  {source.credit}
+            </View>
+          ))}
+        </SectionCard>
+
+        <SectionCard icon="warning-outline" title={page.doshas.heading}>
+          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+            {page.doshas.blurb}
+          </Text>
+          {page.doshas.items.map((dosha) => (
+            <View key={dosha.id} className={vastuClasses.infoCard}>
+              <View className="flex-row items-start gap-2">
+                <Ionicons name="warning-outline" size={16} color={colors.danger} style={{ marginTop: spaceUnit * 0.75 }} />
+                <Text className={cn(vastuClasses.sectionHeading, "min-w-0 flex-1")} style={nepaliTextStyle(14)}>
+                  {dosha.problem}
                 </Text>
-                <Text className={vastuClasses.sourceLine} style={nepaliTextStyle(13)}>
-                  {source.edition}
-                </Text>
-                <Text className={vastuClasses.sourceLine} style={nepaliTextStyle(13)}>
-                  {source.used}
+              </View>
+              <View className="mt-2 flex-row items-start gap-2">
+                <Ionicons name="build-outline" size={16} color={colors.secondary} style={{ marginTop: spaceUnit * 0.75 }} />
+                <Text className="min-w-0 flex-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+                  {dosha.remedy}
                 </Text>
               </View>
             </View>
           ))}
-        </View>
-      </View>
+        </SectionCard>
 
-      <SectionCard icon="home-outline" title={page.rooms.heading} meta={page.rooms.ideal}>
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
-          {page.rooms.blurb}
-        </Text>
-        {page.rooms.items.map((room) => (
-          <View key={room.id} className={vastuClasses.roomCard} style={{ borderLeftWidth: 4, borderLeftColor: room.color }}>
-            <View className="flex-row flex-wrap items-baseline gap-x-2">
-              <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
-                {room.name}
-              </Text>
-              <Text className="text-sm font-semibold" style={[nepaliTextStyle(13), { color: room.color }]}>
-                {room.direction}
-              </Text>
-            </View>
-            <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
-              {room.note}
-            </Text>
-          </View>
-        ))}
-      </SectionCard>
-
-      <SectionCard icon="warning-outline" title={page.doshas.heading}>
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
-          {page.doshas.blurb}
-        </Text>
-        {page.doshas.items.map((dosha) => (
-          <View key={dosha.id} className={vastuClasses.infoCard}>
-            <View className="flex-row items-start gap-2">
-              <Ionicons name="warning-outline" size={16} color={colors.danger} style={{ marginTop: spaceUnit * 0.75 }} />
-              <Text className={cn(vastuClasses.sectionHeading, "min-w-0 flex-1")} style={nepaliTextStyle(14)}>
-                {dosha.problem}
-              </Text>
-            </View>
-            <View className="mt-2 flex-row items-start gap-2">
-              <Ionicons name="build-outline" size={16} color={colors.secondary} style={{ marginTop: spaceUnit * 0.75 }} />
-              <Text className="min-w-0 flex-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
-                {dosha.remedy}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </SectionCard>
+      </Deferred>
 
       <BottomSheetModal variant="center" visible={dialog.open && !wheelFullscreen} onClose={() => dialog.setOpen(false)}>
         {dialogBody}

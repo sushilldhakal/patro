@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import type { MonthBrowseEra } from "@/lib/api";
-import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
@@ -49,10 +48,7 @@ export function BsMonthHeaderTitle({
 
   return (
     <View className="mb-3">
-      {/* BS | AD preference — apart from the BBS/BC pair toggle inside the month picker, and from the language. */}
-      <View className="mb-2 flex-row items-center justify-end">
-        <CalendarSystemToggle />
-      </View>
+      {/* The BS | AD preference lives in the sidebar menu and in Settings, not in the page header. */}
       <PatroCalendarHeader
         era={browseEra}
         onEraChange={(e) => onBrowseEraChange?.(e as MonthBrowseEra)}

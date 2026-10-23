@@ -70,7 +70,7 @@ export function GocharSkySection({
               >
                 <View style={{ backgroundColor: PLANET_STRIPE[key] }} className={gocharClasses.planetStripe} />
                 <Box className={cn("flex-row", gocharClasses.planetHead)}>
-                  <GrahaPlanetIcon graha={key} size={32} />
+                  <GrahaPlanetIcon graha={key} size={32} elongation={card.elongation} />
                   <Box className={cn("min-w-0 flex-1 flex-row", gocharClasses.planetTitleWrap)}>
                     <Text className={cn("font-num", gocharClasses.planetTitle)}>{card.name}</Text>
                     <Text className={cn("font-num", gocharClasses.planetTitle)}>{card.rashi}</Text>

@@ -35,6 +35,19 @@ export type Cell = string | Bi;
  *
  * The parser is `parseInlineMarkup` in `article-model.ts`.
  */
+export interface CalcBlock {
+  kind: "calc";
+  /** The rule itself, one entry per line. */
+  rule: Bi[];
+  /** Glossary for the symbols used above. */
+  where?: { sym: string; is: Bi }[];
+  /** Worked example, rendered as aligned label → value rows. */
+  example?: { k: Bi; v: string }[];
+  /** The line the example arrives at. */
+  result?: Bi;
+  caption?: Bi;
+}
+
 export type Block =
   /** Opening paragraph of a section — slightly larger than `para`. */
   | { kind: "lede"; text: Bi }
@@ -67,18 +80,14 @@ export type Block =
    * monospace ASCII, which could not set an equation, could not align a
    * worked example, and forced both languages onto one line.
    */
-  | {
-      kind: "calc";
-      /** The rule itself, one entry per line. */
-      rule: Bi[];
-      /** Glossary for the symbols used above. */
-      where?: { sym: string; is: Bi }[];
-      /** Worked example, rendered as aligned label → value rows. */
-      example?: { k: Bi; v: string }[];
-      /** The line the example arrives at. */
-      result?: Bi;
-      caption?: Bi;
-    }
+  | CalcBlock
+  /**
+   * Several worked calculations shown together. They sit side by side when the
+   * screen is wide enough for them and stack one under another when it is not,
+   * so a set of cases never leaves a wide page mostly empty. Each item's
+   * `caption` becomes its heading.
+   */
+  | { kind: "cases"; items: CalcBlock[] }
   /** An interactive/SVG diagram from the diagram registry. */
   | { kind: "diagram"; id: DiagramId; caption?: Bi; heading?: Bi }
   /** Centred closing aside. */

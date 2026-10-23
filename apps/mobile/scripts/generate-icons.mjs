@@ -57,14 +57,18 @@ await sharp({
   .png()
   .toFile(join(root, "assets/adaptive-icon.png"));
 
-/** Splash: same mark, smaller, on brand background. */
-const splashMark = await sharp(Buffer.from(squareSvg))
-  .resize(512, 512)
+/**
+ * Splash: the bare mark (assets/splash-mark.svg — the icon without its rounded-square
+ * background) on a transparent canvas. The splash screen supplies the brand colour
+ * itself, so baking a background in showed up as a visible box around the logo.
+ */
+const splashMark = await sharp(await readFile(join(root, "assets/splash-mark.svg")), { density: 384 })
+  .resize(676, 676, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
   .png()
-  .flatten({ background: BRAND })
   .toBuffer();
+/* Mark in the centre 66% — Android 12 crops the splash icon to a circle of that size. */
 await sharp({
-  create: { width: 1024, height: 1024, channels: 3, background: BRAND },
+  create: { width: 1024, height: 1024, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
 })
   .composite([{ input: splashMark, gravity: "center" }])
   .png()

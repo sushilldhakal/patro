@@ -60,6 +60,16 @@ export function useCalendarSystem(): { calendar: CalendarSystem; setCalendar: (c
   return useMemo(() => ({ calendar, setCalendar: setCalendarSystem }), [calendar]);
 }
 
+/**
+ * The calendar system, read live even while a prerendered page hydrates (server
+ * rendering would otherwise report the default). Use it where the first value seeds
+ * state (browse hooks). It must be a hook, not a bare `getCalendarSystem()` in render:
+ * the app builds with React Compiler, which caches an argument-less call forever.
+ */
+export function useLiveCalendarSystem(): CalendarSystem {
+  return useSyncExternalStore(subscribeCalendarSystem, getCalendarSystem, getCalendarSystem);
+}
+
 // ─── i18next-shaped handle ──────────────────────────────────────────────────
 
 type LanguageEvent = "languageChanged" | "loaded";

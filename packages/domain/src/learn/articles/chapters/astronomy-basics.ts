@@ -317,6 +317,136 @@ export const astronomyBasics: ArticleData = {
           kind: "diagram",
           id: "table-tithi",
         },
+        {
+          kind: "para",
+          text: {
+            ne: "३६०° को चक्रमा **३० तिथि** अटाउँछन्: कोण `०°`–`१८०°` सम्म **शुक्ल पक्ष** (तिथि १–१५, पूर्णिमासम्म), `१८०°`–`३६०°` सम्म **कृष्ण पक्ष** (तिथि १६–३०, औंसीसम्म)। अब यो तिथि संख्या कसरी निस्कन्छ, चरणबद्ध हेरौं।",
+            en: "**30 tithis** fit in the 360° circle: from `0°` to `180°` is **Shukla Paksha** (tithis 1–15, up to the full moon), from `180°` to `360°` is **Krishna Paksha** (tithis 16–30, up to the new moon). Now let us see step by step how the tithi number is produced.",
+          },
+        },
+        {
+          kind: "calc",
+          caption: { ne: "तिथि निकाल्ने सूत्र", en: "How a tithi is generated" },
+          rule: [
+            {
+              ne: "**चरण १ — कोण:** कोण = चन्द्रको देशान्तर − सूर्यको देशान्तर",
+              en: "**Step 1 — angle:** angle = Moon's longitude − Sun's longitude",
+            },
+            {
+              ne: "उत्तर ऋणात्मक आए `३६०°` जोड्ने; धनात्मक आए केही नगर्ने।",
+              en: "If the answer is negative, add `360°`; if positive, leave it as is.",
+            },
+            {
+              ne: "**चरण २ — भाग:** तिथि मान = कोण ÷ `१२`",
+              en: "**Step 2 — divide:** tithi value = angle ÷ `12`",
+            },
+            {
+              ne: "**चरण ३ — पूर्णाङ्क:** तिथि नम्बर = ⌊तिथि मान⌋ + `१`",
+              en: "**Step 3 — whole number:** tithi number = ⌊tithi value⌋ + `1`",
+            },
+            {
+              ne: "**चरण ४ — पक्ष:** नम्बर `१`–`१५` भए शुक्ल पक्ष; `१६`–`३०` भए कृष्ण पक्ष — `१५` घटाउने।",
+              en: "**Step 4 — paksha:** number `1`–`15` is Shukla Paksha; `16`–`30` is Krishna Paksha — subtract `15`.",
+            },
+          ],
+          where: [
+            {
+              sym: "⌊ ⌋",
+              is: {
+                ne: "दशमलवपछिको अंश छोडेर पूरा सङ्ख्या मात्र लिने (५.८३ → ५)।",
+                en: "Drop everything after the decimal point and keep the whole number (5.83 → 5).",
+              },
+            },
+            {
+              sym: "mod ३६०°",
+              is: {
+                ne: "कोण सधैं `०°`–`३६०°` भित्र राख्ने — त्यसैले ऋणात्मक आए `३६०°` थपिन्छ।",
+                en: "Keep the angle always within `0°`–`360°` — hence `360°` is added when it is negative.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "cases",
+          items: [
+            {
+              kind: "calc",
+              caption: {
+                ne: "केस १ — ३६०° नजोड्ने (चन्द्रमा > सूर्य)",
+                en: "Case 1 — no 360° needed (Moon > Sun)",
+              },
+              rule: [
+                {
+                  ne: "चन्द्र `११०°`, सूर्य `४०°` — चन्द्रमा सूर्यभन्दा अगाडि छ।",
+                  en: "Moon `110°`, Sun `40°` — the Moon is ahead of the Sun.",
+                },
+              ],
+              example: [
+                { k: { ne: "कोण = ११० − ४०", en: "angle = 110 − 40" }, v: "70°" },
+                { k: { ne: "धनात्मक — ३६०° नजोड्ने", en: "positive — no 360° added" }, v: "70°" },
+                { k: { ne: "७० ÷ १२", en: "70 ÷ 12" }, v: "5.83" },
+                { k: { ne: "⌊५.८३⌋ + १", en: "⌊5.83⌋ + 1" }, v: "6" },
+              ],
+              result: {
+                ne: "**शुक्ल पक्षको ६ औं तिथि — षष्ठी।**",
+                en: "**The 6th tithi of Shukla Paksha — Shashthi.**",
+              },
+            },
+            {
+              kind: "calc",
+              caption: {
+                ne: "केस २ — ३६०° जोड्नै पर्ने (चन्द्रमा < सूर्य)",
+                en: "Case 2 — 360° must be added (Moon < Sun)",
+              },
+              rule: [
+                {
+                  ne: "चन्द्र `१५°`, सूर्य `३३०°` — चन्द्रमाले ३६०° को सीमा पार गरिसक्यो, सूर्य अझै पछाडि।",
+                  en: "Moon `15°`, Sun `330°` — the Moon has already crossed the 360° mark while the Sun has not.",
+                },
+              ],
+              example: [
+                { k: { ne: "कोण = १५ − ३३०", en: "angle = 15 − 330" }, v: "−315°" },
+                { k: { ne: "ऋणात्मक — ३६० जोड्ने", en: "negative — add 360" }, v: "45°" },
+                { k: { ne: "४५ ÷ १२", en: "45 ÷ 12" }, v: "3.75" },
+                { k: { ne: "⌊३.७५⌋ + १", en: "⌊3.75⌋ + 1" }, v: "4" },
+              ],
+              result: {
+                ne: "**शुक्ल पक्षको ४ औं तिथि — चतुर्थी।**",
+                en: "**The 4th tithi of Shukla Paksha — Chaturthi.**",
+              },
+            },
+            {
+              kind: "calc",
+              caption: {
+                ne: "केस ३ — कृष्ण पक्ष (कोण १८०° भन्दा बढी)",
+                en: "Case 3 — Krishna Paksha (angle above 180°)",
+              },
+              rule: [
+                {
+                  ne: "चन्द्र `२५०°`, सूर्य `२०°`।",
+                  en: "Moon `250°`, Sun `20°`.",
+                },
+              ],
+              example: [
+                { k: { ne: "कोण = २५० − २०", en: "angle = 250 − 20" }, v: "230°" },
+                { k: { ne: "२३० ÷ १२", en: "230 ÷ 12" }, v: "19.16" },
+                { k: { ne: "⌊१९.१६⌋ + १", en: "⌊19.16⌋ + 1" }, v: "20" },
+                { k: { ne: "२० > १५ → कृष्ण पक्ष, २० − १५", en: "20 > 15 → Krishna Paksha, 20 − 15" }, v: "5" },
+              ],
+              result: {
+                ne: "**कृष्ण पक्षको ५ औं तिथि — पञ्चमी।**",
+                en: "**The 5th tithi of Krishna Paksha — Panchami.**",
+              },
+            },
+          ],
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "तिथि सधैं २४ घण्टाको हुँदैन — चन्द्रको गति फरक पर्दा कुनै तिथि छिट्टै सकिन्छ (क्षय), कुनै दुई सूर्योदय छोप्छ (वृद्धि)। त्यो [[calc-tithi|तिथि गणना]] मा हेर्न सकिन्छ।",
+            en: "A tithi is not always 24 hours — as the Moon's speed varies, one may end early (kshaya) and another may span two sunrises (vriddhi). See that in [[calc-tithi|the tithi calculation]].",
+          },
+        },
       ],
     },
     {
@@ -336,6 +466,102 @@ export const astronomyBasics: ArticleData = {
         {
           kind: "diagram",
           id: "table-yoga",
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "३६०° को चक्रमा **२७ योग** अटाउँछन् — पहिलो **विष्कम्भ** बाट सुरु भई २७ औं **वैधृति** मा चक्र पूरा हुन्छ। शुभ–अशुभ मुहूर्त छान्न यिनको प्रयोग हुन्छ। तिथिमा चन्द्र र सूर्यको *फरक* हेरिन्छ; योगमा दुवैको *जोड* हेरिन्छ।",
+            en: "**27 yogas** fit in the 360° circle — the first is **Vishkambha** and the 27th, **Vaidhriti**, completes the cycle. They are used to pick auspicious and inauspicious muhurtas. A tithi uses the *difference* of Moon and Sun; a yoga uses their *sum*.",
+          },
+        },
+        {
+          kind: "calc",
+          caption: { ne: "योग निकाल्ने सूत्र", en: "How a yoga is generated" },
+          rule: [
+            {
+              ne: "**चरण १ — जोड:** जम्मा डिग्री = चन्द्रको देशान्तर + सूर्यको देशान्तर",
+              en: "**Step 1 — sum:** total degrees = Moon's longitude + Sun's longitude",
+            },
+            {
+              ne: "जोडफल `३६०°` भन्दा बढी आए `३६०°` घटाउने; कम आए केही नगर्ने।",
+              en: "If the sum is above `360°`, subtract `360°`; if below, leave it as is.",
+            },
+            {
+              ne: "**चरण २ — भाग:** योग मान = जम्मा डिग्री ÷ `१३.३३३`",
+              en: "**Step 2 — divide:** yoga value = total degrees ÷ `13.333`",
+            },
+            {
+              ne: "**चरण ३ — पूर्णाङ्क:** योग नम्बर = ⌊योग मान⌋ + `१`",
+              en: "**Step 3 — whole number:** yoga number = ⌊yoga value⌋ + `1`",
+            },
+          ],
+          where: [
+            {
+              sym: "१३.३३३°",
+              is: {
+                ne: "`१३°२०′` लाई दशमलवमा लेखिएको — `३६०° ÷ २७`, एक योगको फैलावट।",
+                en: "`13°20′` written as a decimal — `360° ÷ 27`, the span of one yoga.",
+              },
+            },
+            {
+              sym: "⌊ ⌋",
+              is: {
+                ne: "दशमलवपछिको अंश छोडेर पूरा सङ्ख्या मात्र लिने (११.२५ → ११)।",
+                en: "Drop everything after the decimal point and keep the whole number (11.25 → 11).",
+              },
+            },
+          ],
+        },
+        {
+          kind: "cases",
+          items: [
+            {
+              kind: "calc",
+              caption: {
+                ne: "केस १ — ३६०° नघटाउने (जोडफल < ३६०°)",
+                en: "Case 1 — no 360° to subtract (sum < 360°)",
+              },
+              rule: [
+                {
+                  ne: "चन्द्र `११०°`, सूर्य `४०°`।",
+                  en: "Moon `110°`, Sun `40°`.",
+                },
+              ],
+              example: [
+                { k: { ne: "जोडफल = ११० + ४०", en: "sum = 110 + 40" }, v: "150°" },
+                { k: { ne: "३६० भन्दा कम — नघटाउने", en: "below 360 — nothing subtracted" }, v: "150°" },
+                { k: { ne: "१५० ÷ १३.३३३", en: "150 ÷ 13.333" }, v: "11.25" },
+                { k: { ne: "⌊११.२५⌋ + १", en: "⌊11.25⌋ + 1" }, v: "12" },
+              ],
+              result: {
+                ne: "**२७ योगमध्ये १२ औं — ध्रुव।**",
+                en: "**The 12th of the 27 yogas — Dhruva.**",
+              },
+            },
+            {
+              kind: "calc",
+              caption: {
+                ne: "केस २ — ३६०° घटाउनै पर्ने (जोडफल > ३६०°)",
+                en: "Case 2 — 360° must be subtracted (sum > 360°)",
+              },
+              rule: [
+                {
+                  ne: "चन्द्र `२५०°`, सूर्य `१८०°`।",
+                  en: "Moon `250°`, Sun `180°`.",
+                },
+              ],
+              example: [
+                { k: { ne: "जोडफल = २५० + १८०", en: "sum = 250 + 180" }, v: "430°" },
+                { k: { ne: "३६० भन्दा बढी — ३६० घटाउने", en: "above 360 — subtract 360" }, v: "70°" },
+                { k: { ne: "७० ÷ १३.३३३", en: "70 ÷ 13.333" }, v: "5.25" },
+                { k: { ne: "⌊५.२५⌋ + १", en: "⌊5.25⌋ + 1" }, v: "6" },
+              ],
+              result: {
+                ne: "**२७ योगमध्ये ६ औं — अतिगण्ड।**",
+                en: "**The 6th of the 27 yogas — Atiganda.**",
+              },
+            },
+          ],
         },
       ],
     },

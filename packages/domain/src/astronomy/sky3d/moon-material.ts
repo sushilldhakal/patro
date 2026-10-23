@@ -55,12 +55,13 @@ export const MOON_EARTHSHINE = 0.1;
  * nothing at all, and around औंसी the Moon simply disappeared from the sky it
  * is supposed to be gochar-ing across.
  *
- * At this floor the lit and unlit faces still differ plainly (0.55 against a
- * clamped 1.0), so the phase is not thrown away — the whole disc is just
- * always *there*. `earthshine` is a uniform, so the scene ramps between the
+ * At this floor the lit and unlit faces still differ plainly (0.3 against a
+ * clamped 1.0 — it was 0.55, and a crescent was barely distinguishable from a
+ * gibbous Moon at that), so the phase is not thrown away — the whole disc is
+ * just always *there*. `earthshine` is a uniform, so the scene ramps between the
  * two per frame off the field of view; nothing in the shader changes.
  */
-export const MOON_UNLIT_FAR = 0.55;
+export const MOON_UNLIT_FAR = 0.3;
 
 /** क्षितिज fields between these ramp the floor: true phase tight, visible disc wide. */
 export const MOON_PHASE_FOV_TIGHT = 15;

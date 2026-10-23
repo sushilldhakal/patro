@@ -30,7 +30,25 @@ export type GocharSkyCard = {
   motion: string;
   /** "In <rashi> until <date>", when the next sign entry is known. */
   footer: string | null;
+  /** The Moon's card only: Moon-minus-Sun longitude in degrees (0 औंसी, 180 पूर्णिमा), so its icon can show the phase. */
+  elongation?: number;
 };
+
+/** A graha's sidereal longitude, from the field or — failing that — its sign and degree. */
+function grahaLongitude(g: GocharGraha | undefined): number | undefined {
+  if (!g) return undefined;
+  if (g.longitude != null && Number.isFinite(g.longitude)) return g.longitude;
+  if (g.rashi_no != null && g.deg_in_rashi != null) return (g.rashi_no - 1) * 30 + g.deg_in_rashi;
+  return undefined;
+}
+
+/** Moon − Sun, wrapped to 0–360; `undefined` when either longitude is missing. */
+function moonElongation(gochar: Record<string, GocharGraha>): number | undefined {
+  const moon = grahaLongitude(gochar.moon);
+  const sun = grahaLongitude(gochar.sun);
+  if (moon == null || sun == null) return undefined;
+  return (((moon - sun) % 360) + 360) % 360;
+}
 
 function useGocharLabels() {
   const { t, lang, digits } = useLocale();
@@ -62,6 +80,7 @@ export function useGocharSkyCards(gochar: Record<string, GocharGraha>) {
       footer: untilAd
         ? t("ui.gochar.in_rashiuntil_until_lang", { rashiUntil, lang: formatGocharPatroDate(untilAd, lang) })
         : null,
+      ...(key === "moon" ? { elongation: moonElongation(gochar) } : {}),
     });
   }
   return {

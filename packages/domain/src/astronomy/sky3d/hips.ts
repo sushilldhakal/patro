@@ -726,6 +726,15 @@ export function loadHipsTileTexture(entry: HipsTileEntry): void {
   new THREE.TextureLoader(hipsLoadingManager).load(
     hipsTilePath(entry.order, entry.pix),
     (tex) => {
+      hipsLoadsInFlight = Math.max(0, hipsLoadsInFlight - 1);
+      /* The entry was disposed while this fetch was in flight (scene
+         unmounted, or a full teardown). Its material is gone, so attaching
+         the texture would leave a decoded image referenced by nothing that
+         will ever free it. */
+      if (entry.state === "evicted") {
+        tex.dispose();
+        return;
+      }
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.needsUpdate = true;
       entry.material.map = tex;
@@ -733,13 +742,13 @@ export function loadHipsTileTexture(entry: HipsTileEntry): void {
       entry.state = "ready";
       entry.readyAt = performance.now();
       clearHipsFallbackTexture(entry);
-      hipsLoadsInFlight = Math.max(0, hipsLoadsInFlight - 1);
     },
     undefined,
     () => {
+      hipsLoadsInFlight = Math.max(0, hipsLoadsInFlight - 1);
+      if (entry.state === "evicted") return;
       entry.state = "failed";
       entry.failedAt = performance.now();
-      hipsLoadsInFlight = Math.max(0, hipsLoadsInFlight - 1);
     },
   );
 }
@@ -754,15 +763,17 @@ export function loadHipsTileTexture(entry: HipsTileEntry): void {
  * a full teardown (unmount) wants without necessarily going through
  * eviction's "is it still needed" logic.
  *
- * The one thing this must *not* do is dispose a texture some other entry
- * currently has cloned out for its own Phase 1 fallback: `fallbackTexture`
- * clones share their ancestor's `.source` (see {@link
- * ensureHipsFallbackTexture}), but disposing the *ancestor's own* `THREE.
- * Texture` object still frees that shared source's GPU upload out from
- * under every clone still pointing at it. Evicting a tile currently serving
- * as someone else's fallback ancestor is exactly what {@link
- * evictHipsTiles}'s own protection set exists to prevent — this function
- * trusts that guarantee rather than re-deriving it.
+ * About shared sources: `fallbackTexture` clones share their ancestor's
+ * `.source`. three's `WebGLTextures` reference-counts the GPU upload per
+ * (source, sampler-state) pair — `usedTimes` goes up once per `Texture`
+ * object that has been rendered and down once when *that* object is
+ * disposed (three@0.185 `deallocateTexture`) — so disposing an ancestor's
+ * `Texture` while a child's clone is still being drawn does not free the
+ * upload; it is freed when the last of them is disposed. Disposing the same
+ * `Texture` twice is also a no-op (the renderer's listener removes itself on
+ * the first). {@link evictHipsTiles}'s protection set still keeps ancestors
+ * of visible tiles resident, but that is now a quality guarantee (no
+ * re-download, no flash of the coarser fallback), not a correctness one.
  */
 export function disposeHipsTile(entry: HipsTileEntry): void {
   entry.mesh.removeFromParent();
@@ -811,6 +822,70 @@ export function evictHipsTiles(
     cache.delete(hipsTileKey(entry.order, entry.pix));
   }
   return toEvict.length;
+}
+
+/**
+ * Disposes every entry in `cache` and empties it — the unmount path, so a
+ * scene that goes away does not leave tile textures to whenever the GL
+ * context happens to be reclaimed. Safe to call twice and safe to keep using
+ * `cache` afterwards (a React Strict Mode remount re-creates tiles lazily).
+ * In-flight loads notice the `evicted` state when they land and free their
+ * own texture (see {@link loadHipsTileTexture}).
+ */
+export function disposeAllHipsTiles(cache: Map<string, HipsTileEntry>): number {
+  let n = 0;
+  for (const entry of cache.values()) {
+    disposeHipsTile(entry);
+    n += 1;
+  }
+  cache.clear();
+  return n;
+}
+
+/** Bookkeeping for {@link stepHipsIdleRelease}; one per scene, lives in a ref. */
+export type HipsIdleState = { offSince: number | null };
+
+/**
+ * Called once per frame, whether or not the HiPS layer is on. While it is on
+ * this only resets the clock. Once it has been off for `releaseMs` the cache
+ * is trimmed to its order-0 floor (the 12 tiles that anchor every fallback),
+ * which is what lets zooming back in recover without a blank sky.
+ *
+ * No timer is involved on purpose: the check rides the render loop, so it
+ * cannot outlive the scene, cannot fire after unmount, and simply does not
+ * run while the loop is paused (blurred screen / backgrounded app). If the
+ * loop resumes after a long pause with the layer still off, the next frame
+ * releases — correct, since the layer really has been off that long. If it
+ * resumes with the layer on, the clock resets and nothing is released.
+ *
+ * Tiles mid-load are never evicted (see {@link evictHipsTiles}); they land
+ * on a later pass.
+ */
+export function stepHipsIdleRelease(
+  cache: Map<string, HipsTileEntry>,
+  idle: HipsIdleState,
+  layerOn: boolean,
+  now: number,
+  releaseMs: number,
+): number {
+  if (layerOn) {
+    idle.offSince = null;
+    return 0;
+  }
+  const floor = hipsTileCount(0);
+  if (cache.size <= floor) {
+    idle.offSince = null;
+    return 0;
+  }
+  if (idle.offSince === null) {
+    idle.offSince = now;
+    return 0;
+  }
+  if (now - idle.offSince <= releaseMs) return 0;
+  const keep = new Set<string>();
+  for (let pix = 0; pix < floor; pix += 1) keep.add(hipsTileKey(0, pix));
+  idle.offSince = now;
+  return evictHipsTiles(cache, keep, floor);
 }
 
 /**

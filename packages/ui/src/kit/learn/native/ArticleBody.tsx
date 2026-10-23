@@ -3,7 +3,12 @@ import { ScrollView } from "react-native";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { resolveArticle, resolveSeeAlso, type ResolvedInline } from "@vedic-patro/domain/learn/article-model";
+import {
+  resolveArticle,
+  resolveSeeAlso,
+  type ResolvedCalc,
+  type ResolvedInline,
+} from "@vedic-patro/domain/learn/article-model";
 import { articleClasses as cls } from "@vedic-patro/design-tokens/classes/learn/article-classes";
 import type { ArticleBodyProps } from "../contract";
 import { learnIcons } from "../icons";
@@ -137,47 +142,12 @@ export function ArticleBody({
                   {block.caption ? <Text className={cls.caption}>{block.caption}</Text> : null}
                 </Box>
               ) : null}
-              {block.kind === "calc" ? (
-                <Box>
-                  <Box className={cls.calc} nativeClassName="border-l-4 border-l-[var(--brand-saffron-bright)]">
-                    <Box>
-                      {block.rule.map((line, lineIndex) => (
-                        <Text key={lineIndex} className={cn(cls.calcRule, lineIndex > 0 && cls.calcRuleLine)}>
-                          <Inline parts={line} openArticle={openArticle} />
-                        </Text>
-                      ))}
-                    </Box>
-                    {block.where ? (
-                      <Box className={cls.calcWhere}>
-                        {block.where.map((row) => (
-                          <Box className={cls.calcWhereRow} key={row.sym}>
-                            <Text className={cls.calcSym}>{row.sym}</Text>
-                            <Text className={cls.calcIs}>
-                              <Inline parts={row.text} openArticle={openArticle} />
-                            </Text>
-                          </Box>
-                        ))}
-                      </Box>
-                    ) : null}
-                    {block.example ? (
-                      <Box className={cls.calcEg}>
-                        {block.example.map((row) => (
-                          <Box className={cls.calcEgRow} key={row.key}>
-                            <Text className={cls.calcEgLabel}>
-                              <Inline parts={row.label} openArticle={openArticle} />
-                            </Text>
-                            <Text className={cls.calcEgValue}>{row.value}</Text>
-                          </Box>
-                        ))}
-                      </Box>
-                    ) : null}
-                    {block.result ? (
-                      <Text className={cls.calcResult}>
-                        <Inline parts={block.result} openArticle={openArticle} />
-                      </Text>
-                    ) : null}
-                  </Box>
-                  {block.caption ? <Text className={cls.caption}>{block.caption}</Text> : null}
+              {block.kind === "calc" ? <CalcCard calc={block} openArticle={openArticle} /> : null}
+              {block.kind === "cases" ? (
+                <Box className={cls.cases}>
+                  {block.items.map((item, itemIndex) => (
+                    <CalcCard key={itemIndex} calc={item} inCases openArticle={openArticle} />
+                  ))}
                 </Box>
               ) : null}
               {block.kind === "diagram" ? <DiagramBlock block={block} renderDiagram={renderDiagram} /> : null}
@@ -198,6 +168,65 @@ export function ArticleBody({
         </Box>
       ) : null}
     </>
+  );
+}
+
+/** One worked calculation. Inside a `cases` group its caption is the heading; on its own it sits underneath. */
+function CalcCard({
+  calc,
+  inCases = false,
+  openArticle,
+}: {
+  calc: ResolvedCalc;
+  inCases?: boolean;
+  openArticle: (slug: string) => void;
+}) {
+  return (
+    <Box className={inCases ? cls.calcCase : undefined}>
+      <Box
+        className={inCases ? undefined : cls.calc}
+        nativeClassName={inCases ? undefined : "border-l-4 border-l-[var(--brand-saffron-bright)]"}
+      >
+        {inCases && calc.caption ? <Text className={cls.calcCaseTitle}>{calc.caption}</Text> : null}
+        <Box>
+          {calc.rule.map((line, lineIndex) => (
+            <Text key={lineIndex} className={cn(cls.calcRule, lineIndex > 0 && cls.calcRuleLine)}>
+              <Inline parts={line} openArticle={openArticle} />
+            </Text>
+          ))}
+        </Box>
+        {calc.where ? (
+          <Box className={cls.calcWhere}>
+            {calc.where.map((row) => (
+              <Box className={cls.calcWhereRow} key={row.sym}>
+                <Text className={cls.calcSym}>{row.sym}</Text>
+                <Text className={cls.calcIs}>
+                  <Inline parts={row.text} openArticle={openArticle} />
+                </Text>
+              </Box>
+            ))}
+          </Box>
+        ) : null}
+        {calc.example ? (
+          <Box className={cls.calcEg}>
+            {calc.example.map((row) => (
+              <Box className={cls.calcEgRow} key={row.key}>
+                <Text className={cls.calcEgLabel}>
+                  <Inline parts={row.label} openArticle={openArticle} />
+                </Text>
+                <Text className={cls.calcEgValue}>{row.value}</Text>
+              </Box>
+            ))}
+          </Box>
+        ) : null}
+        {calc.result ? (
+          <Text className={cls.calcResult}>
+            <Inline parts={calc.result} openArticle={openArticle} />
+          </Text>
+        ) : null}
+      </Box>
+      {!inCases && calc.caption ? <Text className={cls.caption}>{calc.caption}</Text> : null}
+    </Box>
   );
 }
 

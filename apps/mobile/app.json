@@ -245,8 +245,10 @@
       ],
       "expo-router",
       "expo-dev-client",
+      "expo-sqlite",
       "./plugins/with-react-native-dir.js",
       "./plugins/with-ios-scene-lifecycle.js",
+      "./plugins/with-ios-local-build.js",
       [
         "expo-build-properties",
         {
@@ -299,7 +301,7 @@
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "imageWidth": 180,
+          "imageWidth": 270,
           "resizeMode": "contain",
           "backgroundColor": "#073f43"
         }

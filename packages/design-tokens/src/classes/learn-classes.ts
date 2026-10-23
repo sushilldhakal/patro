@@ -112,6 +112,21 @@ export const tmCalc = cn(
   "dark:shadow-[0_18px_50px_rgba(0,0,0,0.4)]",
 );
 
+/**
+ * A set of worked calculations. `auto-fit` puts as many side by side as fit
+ * (each at least 280px wide) and drops the rest onto the next row, so a wide
+ * page is filled and a narrow one simply stacks them.
+ */
+export const tmCases =
+  "mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] items-stretch gap-3.5";
+
+/** One calculation inside `tmCases` — the grid owns the spacing, so no top margin. */
+export const tmCalcCase = cn(tmCalc, "mt-0 h-full");
+
+/** Heading of a calculation inside `tmCases`. */
+export const tmCalcCaseTitle =
+  "mb-3 border-b border-[var(--tm-border)] pb-2 text-sm font-bold text-[var(--tm-ink)]";
+
 export const tmCalcRule =
   "space-y-1.5 font-num text-sm leading-relaxed text-[var(--tm-ink)]";
 

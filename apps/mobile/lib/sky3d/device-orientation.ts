@@ -39,6 +39,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import { Accelerometer } from "expo-sensors";
+import { createSubscriptionScope } from "@vedic-patro/domain/subscription-scope";
 
 export type DeviceOrientation = {
   /** Compass heading, degrees, 0 = true north, clockwise. Null until the first reading arrives. */
@@ -67,34 +68,37 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
       setAvailable(false);
       return;
     }
-    let cancelled = false;
-    let headingSub: Location.LocationSubscription | null = null;
-    let accelSub: { remove: () => void } | null = null;
+    const scope = createSubscriptionScope();
 
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (cancelled || status !== "granted") return;
+      if (scope.closed || status !== "granted") return;
 
-      headingSub = await Location.watchHeadingAsync((h) => {
-        if (cancelled) return;
-        const heading = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
-        if (heading >= 0) setHeadingDeg(heading);
+      /* Subscriptions go through the scope so one that finishes starting after
+         the effect was torn down removes itself — the cleanup below has already
+         run by then and could not have. */
+      const heading = await Location.watchHeadingAsync((h) => {
+        if (scope.closed) return;
+        const deg = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
+        if (deg >= 0) setHeadingDeg(deg);
       });
+      if (!scope.add(heading)) return;
 
       Accelerometer.setUpdateInterval(ACCEL_UPDATE_MS);
-      accelSub = Accelerometer.addListener(({ x, y, z }) => {
-        if (cancelled) return;
+      const accel = Accelerometer.addListener(({ x, y, z }) => {
+        if (scope.closed) return;
         const pitch = Math.atan2(-z, -y) * (180 / Math.PI);
         setPitchDeg(pitch);
       });
+      if (!scope.add(accel)) return;
 
-      if (!cancelled) setAvailable(true);
-    })();
+      setAvailable(true);
+    })().catch(() => {
+      /* Permission/sensor failure: leave `available` false rather than leaving an unhandled rejection. */
+    });
 
     return () => {
-      cancelled = true;
-      headingSub?.remove();
-      accelSub?.remove();
+      scope.close();
       setAvailable(false);
     };
   }, [active]);

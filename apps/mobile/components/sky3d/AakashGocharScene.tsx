@@ -144,6 +144,7 @@ import {
   clearHipsDebugSnapshot,
   ensureHipsFallbackTexture,
   ensureHipsTile,
+  disposeAllHipsTiles,
   evictHipsTiles,
   findReadyHipsAncestor,
   getHipsSiblings,
@@ -156,9 +157,12 @@ import {
   loadHipsTileTexture,
   nextHipsFrame,
   writeHipsDebugSnapshot,
+  stepHipsIdleRelease,
   type HipsDebugTile,
+  type HipsIdleState,
   type HipsTileEntry,
 } from "@vedic-patro/domain/astronomy/sky3d/hips";
+import { disposeOwnedMaps, disposeSceneGraph } from "@vedic-patro/domain/astronomy/sky3d/scene-dispose";
 import {
   evaluateHipsTiles,
   getHipsTileScreenSizePx,
@@ -653,7 +657,20 @@ const HIPS_RENDER_ORDER = -0.55;
  * far (452 leaves at 100°, see that module's own doc comment) plus a
  * working margin for tiles just panned away from.
  */
-const HIPS_CACHE_MAX_RESIDENT = 400;
+const HIPS_CACHE_MAX_RESIDENT = 160;
+/**
+ * Not a "45MB" budget: that figure is the JPEG size on disk. expo-gl decodes
+ * each tile to RGBA8 (stb_image) — 512×512×4 = 1 MiB, ~1.33 MiB with mipmaps —
+ * so the budget is ~1.33 MiB per tile: 400 tiles ≈ 530 MiB, 160 ≈ 213 MiB, and
+ * the full order 0–3 set (1020 tiles) ≈ 1.3 GiB. That is texture memory only.
+ *
+ * This is a ceiling on *idle* tiles, not on the working set: tiles the current
+ * view needs (leaves, their ancestors, prefetched siblings) are protected from
+ * eviction and can exceed it — a tablet-sized viewport at a wide field of view
+ * can legitimately need more. UNVERIFIED on a device; see the memory test plan.
+ */
+/** Once the HiPS layer has been off (zoomed out past {@link HIPS_BLEND_START_FOV}) this long, trim it to the 12 order-0 fallback tiles. See `stepHipsIdleRelease`. */
+const HIPS_IDLE_RELEASE_MS = 8000;
 /**
  * Phase 8's fade-in window, milliseconds — how long a tile's opacity takes
  * to reach full strength after its own real texture (not a Phase 1
@@ -1392,16 +1409,46 @@ export function AakashGocharScene({
    * frame {@link makeMilkyWayGeometry} already uses, so the two share one
    * rotation with nothing extra to keep in sync.
    *
-   * `hipsCache` holds every tile mesh ever created for the life of the
-   * component — never disposed, never removed from the group, only shown
-   * or hidden — because the whole local order 0–3 set is ~45MB, well
-   * inside what is safe to keep once fetched (Step 10: "do not build a
-   * complicated cache system initially"). What actually varies frame to
-   * frame is `.visible` and, on first need, `.state` going from `idle` to
-   * `loading` to `ready`.
+   * `hipsCache` holds the tile meshes, bounded by {@link
+   * HIPS_CACHE_MAX_RESIDENT} (LRU eviction in the per-frame block), released
+   * down to the order-0 floor once the layer has been off for {@link
+   * HIPS_IDLE_RELEASE_MS}, and fully disposed when this scene unmounts.
+   * (The order 0–3 set is ~45MB as JPEGs but ~1.3 GiB decoded on the GPU,
+   * so it cannot be "kept once fetched".) What varies frame to frame is `.visible` and,
+   * on first need, `.state` going from `idle` to `loading` to `ready`.
    */
   const hipsGroupRef = useRef<THREE.Group | null>(null);
   const hipsCache = useRef(new Map<string, HipsTileEntry>());
+  /** Idle clock for `stepHipsIdleRelease` — frame-driven, no timer to cancel. */
+  const hipsIdle = useRef<HipsIdleState>({ offSince: null });
+  useEffect(() => {
+    const cache = hipsCache.current;
+    const idle = hipsIdle.current;
+    return () => {
+      disposeAllHipsTiles(cache);
+      idle.offSince = null;
+    };
+  }, []);
+
+  /* Everything else this scene allocated on the GPU, freed when it unmounts
+     rather than left to the GL context being reclaimed. Order matters little
+     but scope does:
+       - nebula photographs: textures loaded by `loadNebulaTexture` and owned by
+         nobody else (the marker ring's texture is a module-level cache shared
+         across mounts, and is left alone);
+       - every geometry/material still in the scene graph — but never textures
+         from `useLoader`'s shared cache, nor three's shared Sprite quad (see
+         `disposeSceneGraph`).
+     `map` is kept assigned on purpose: a sprite with no map draws as a solid
+     white quad, and a Strict Mode remount re-uses these same objects. */
+  const threeScene = useThree((s) => s.scene);
+  useEffect(
+    () => () => {
+      disposeOwnedMaps(nebulaField.map((n) => n.material));
+      disposeSceneGraph(threeScene);
+    },
+    [nebulaField, threeScene],
+  );
   /** Step 12's optional tile-boundary visualization — one `THREE.Line` per current leaf tile, rebuilt only while `hipsDebugControls.current.showBoundaries` is on (see the per-frame block). Lives in `hipsGroupRef` so it inherits the same rotation as the tiles it outlines. */
   const hipsDebugOutlines = useRef<THREE.Group | null>(null);
   /* The web app opens this from `?hipsdebug` in the URL. Native has no URL to
@@ -2836,6 +2883,7 @@ export function AakashGocharScene({
         });
       }
     }
+    stepHipsIdleRelease(hipsCache.current, hipsIdle.current, hipsOn, performance.now(), HIPS_IDLE_RELEASE_MS);
 
     /**
      * How far the Earth has turned, as an angle — Greenwich's hour angle from

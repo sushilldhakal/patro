@@ -9,7 +9,7 @@
  * renderer draws. It does not draw anything.
  */
 
-import type { ArticleData, Bi, Block, Cell } from "./article-schema";
+import type { ArticleData, Bi, Block, CalcBlock, Cell } from "./article-schema";
 import { sectionKicker } from "./article-schema";
 import { buildLearnViews, LEARN_LIBRARY, LEARN_SECTIONS, type LibraryTopic } from "./learn-library";
 
@@ -96,15 +96,18 @@ export type ResolvedBlock =
       rows: { key: string; highlight: boolean; cells: ResolvedInline[] }[];
     }
   | { kind: "figure"; art: string; caption?: string }
-  | {
-      kind: "calc";
-      rule: ResolvedInline[];
-      where?: { sym: string; text: ResolvedInline }[];
-      example?: { key: string; label: ResolvedInline; value: string }[];
-      result?: ResolvedInline;
-      caption?: string;
-    }
+  | ResolvedCalc
+  | { kind: "cases"; items: ResolvedCalc[] }
   | { kind: "diagram"; id: string; heading?: string; caption?: string };
+
+export type ResolvedCalc = {
+  kind: "calc";
+  rule: ResolvedInline[];
+  where?: { sym: string; text: ResolvedInline }[];
+  example?: { key: string; label: ResolvedInline; value: string }[];
+  result?: ResolvedInline;
+  caption?: string;
+};
 
 export type ResolvedSection = {
   key: string;
@@ -122,6 +125,21 @@ function inline(lang: LearnLang, value: Bi): ResolvedInline {
 
 function biKey(value: Bi, index: number): string {
   return value.en || value.ne || String(index);
+}
+
+function resolveCalc(block: CalcBlock, lang: LearnLang): ResolvedCalc {
+  return {
+    kind: "calc",
+    rule: block.rule.map((line) => inline(lang, line)),
+    where: block.where?.map((row) => ({ sym: row.sym, text: inline(lang, row.is) })),
+    example: block.example?.map((row, index) => ({
+      key: biKey(row.k, index),
+      label: inline(lang, row.k),
+      value: row.v,
+    })),
+    result: block.result ? inline(lang, block.result) : undefined,
+    caption: block.caption ? pickBi(lang, block.caption) : undefined,
+  };
 }
 
 function resolveBlock(block: Block, lang: LearnLang): ResolvedBlock {
@@ -174,18 +192,9 @@ function resolveBlock(block: Block, lang: LearnLang): ResolvedBlock {
     case "figure":
       return { kind: "figure", art: block.art, caption: block.caption ? pickBi(lang, block.caption) : undefined };
     case "calc":
-      return {
-        kind: "calc",
-        rule: block.rule.map((line) => inline(lang, line)),
-        where: block.where?.map((row) => ({ sym: row.sym, text: inline(lang, row.is) })),
-        example: block.example?.map((row, index) => ({
-          key: biKey(row.k, index),
-          label: inline(lang, row.k),
-          value: row.v,
-        })),
-        result: block.result ? inline(lang, block.result) : undefined,
-        caption: block.caption ? pickBi(lang, block.caption) : undefined,
-      };
+      return resolveCalc(block, lang);
+    case "cases":
+      return { kind: "cases", items: block.items.map((item) => resolveCalc(item, lang)) };
     case "diagram":
       return {
         kind: "diagram",

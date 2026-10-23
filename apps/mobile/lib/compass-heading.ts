@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
+import { createSubscriptionScope } from "@vedic-patro/domain/subscription-scope";
 export { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
 
 export type CompassPermissionState = "unnecessary" | "prompt-required" | "granted" | "denied";
@@ -66,14 +67,13 @@ export function useCompassHeading(active: boolean): {
       setDrifting(false);
       return;
     }
-    let cancelled = false;
-    let sub: Location.LocationSubscription | null = null;
+    const scope = createSubscriptionScope();
 
     (async () => {
       const { status } = await Location.getForegroundPermissionsAsync();
-      if (cancelled || status !== "granted") return;
-      sub = await Location.watchHeadingAsync((h) => {
-        if (cancelled) return;
+      if (scope.closed || status !== "granted") return;
+      const started = await Location.watchHeadingAsync((h) => {
+        if (scope.closed) return;
         const trueNorth = h.trueHeading >= 0;
         const raw = trueNorth ? h.trueHeading : h.magHeading;
         if (!(raw >= 0)) return;
@@ -83,11 +83,13 @@ export function useCompassHeading(active: boolean): {
         setAvailable(true);
         setDrifting(!trueNorth || h.accuracy <= DRIFT_ACCURACY);
       });
-    })();
+      // Cleanup may have run while the watch was starting; the scope then
+      // removes this subscription itself.
+      scope.add(started);
+    })().catch(() => {});
 
     return () => {
-      cancelled = true;
-      sub?.remove();
+      scope.close();
       prevHeading.current = null;
       setAvailable(false);
     };

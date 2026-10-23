@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, useMemo, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
 import { Box, Text } from "@vedic-patro/ui";
@@ -13,7 +13,7 @@ import { annulusPath } from "@vedic-patro/drawing/vastu/vastu-purusha-wheel";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 import { VASTU_COMPASS_16, VASTU_GUNA_BANDS, VASTU_WHEEL_GEOMETRY, useVastuPurushaWheel } from "@vedic-patro/features/vastu";
 import type { VastuPurushaWheelProps } from "../contract";
-import { ArcLabel, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette } from "./WheelMarks";
+import { ArcLabel, DegreeTicks, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette, type TickSegment } from "./WheelMarks";
 import { ZoomStage } from "../../panchanga/native/ZoomStage";
 
 const fonts = fontFamily.native;
@@ -26,6 +26,24 @@ const {
   DEITY_LABEL_R, WEDGE_LABEL_R, INNER4_LABEL_R, PADA_HALF, RING_DIVIDERS, GUNA_BOUNDARIES,
   DIR16_BOUNDARIES, PADA_BOUNDARIES, DIR8_BOUNDARIES, INNER4_BOUNDARIES,
 } = VASTU_WHEEL_GEOMETRY;
+/** Labelled every 10°. */
+const DEGREE_LABELS = Array.from({ length: 36 }, (_, i) => i * 10);
+
+/** The 360 ticks of the degree rim: longer and darker every 10° and 5°, heaviest at the cardinals. */
+function buildDegreeTicks(cx: number, cy: number): TickSegment[] {
+  return Array.from({ length: 360 }, (_, bearing) => {
+    const every10 = bearing % 10 === 0;
+    const every5 = bearing % 5 === 0;
+    const cardinal = bearing % 90 === 0;
+    const tickInner = every10 ? DEG_INNER : every5 ? DEG_INNER + 4 : DEG_OUTER - 6;
+    return {
+      inner: vastuWheelPoint(bearing, tickInner, cx, cy),
+      outer: vastuWheelPoint(bearing, DEG_OUTER, cx, cy),
+      opacity: cardinal ? 0.9 : every10 ? 0.75 : every5 ? 0.55 : 0.32,
+      width: cardinal ? 1.35 : every10 ? 0.85 : every5 ? 0.45 : 0.28,
+    };
+  });
+}
 const GUNA_BANDS = VASTU_GUNA_BANDS;
 const COMPASS_16 = VASTU_COMPASS_16;
 
@@ -61,6 +79,7 @@ export function VastuPurushaWheel({
   const digits = w.digits;
   const CX = center.cx;
   const CY = center.cy;
+  const degreeTicks = useMemo(() => buildDegreeTicks(CX, CY), [CX, CY]);
   const VASTU_INK = ink;
   const annularSectorPath = (bearing: number, halfAngle: number, outerR: number, innerR: number) =>
     annularSectorPathAt(bearing, halfAngle, outerR, innerR, CX, CY);
@@ -425,38 +444,18 @@ export function VastuPurushaWheel({
 
           {/* Degree rim on top — parchment, so triguna colour cannot leak into 0°–360° */}
           <Path d={annulusPath(DEG_OUTER, DEG_INNER)} fill={VASTU_INK.background} fillRule="evenodd" />
-          {Array.from({ length: 360 }, (_, bearing) => {
-            const every10 = bearing % 10 === 0;
-            const every5 = bearing % 5 === 0;
-            const cardinal = bearing % 90 === 0;
-            const tickInner = every10 ? DEG_INNER : every5 ? DEG_INNER + 4 : DEG_OUTER - 6;
-            const inner = vastuWheelPoint(bearing, tickInner, CX, CY);
-            const outer = vastuWheelPoint(bearing, DEG_OUTER, CX, CY);
-            return (
-              <G key={`deg-${bearing}`}>
-                <Line
-                  x1={inner.x}
-                  y1={inner.y}
-                  x2={outer.x}
-                  y2={outer.y}
-                  stroke={VASTU_INK.text}
-                  strokeOpacity={cardinal ? 0.9 : every10 ? 0.75 : every5 ? 0.55 : 0.32}
-                  strokeWidth={cardinal ? 1.35 : every10 ? 0.85 : every5 ? 0.45 : 0.28}
-                />
-                {every10 ? (
-                  <ArcLabel center={center}
-                    bearing={bearing}
-                    radius={DEG_LABEL_R}
-                    fontSize={9}
-                    fontFamily={fonts.semibold}
-                    fillOpacity={0.8}
-                   fill={VASTU_INK.text}>
-                    {digits(bearing)}
-                  </ArcLabel>
-                ) : null}
-              </G>
-            );
-          })}
+          <DegreeTicks ticks={degreeTicks} ink={VASTU_INK.text} />
+          {DEGREE_LABELS.map((bearing) => (
+            <ArcLabel key={`deg-${bearing}`} center={center}
+              bearing={bearing}
+              radius={DEG_LABEL_R}
+              fontSize={9}
+              fontFamily={fonts.semibold}
+              fillOpacity={0.8}
+             fill={VASTU_INK.text}>
+              {digits(bearing)}
+            </ArcLabel>
+          ))}
 
           {/* Selection outline last so rings, spokes, and the degree rim cannot cover it. */}
           <G pointerEvents="none" fill="none">
