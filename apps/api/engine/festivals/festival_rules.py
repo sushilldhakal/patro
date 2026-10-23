@@ -192,12 +192,27 @@ def get_special_months_for_gregorian_year(
     from engine.panchanga.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
     from engine.panchanga.lunar_month import get_lunar_year
     from engine.panchanga.names_ne import lunar_masa_name_ne
+    from engine.panchanga.names_ne import lunar_masa_name_ne
 
     adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
 
     # Scan lunar months for Kshaya
     kshaya: Optional[dict[str, Any]] = None
     lunar_year = get_lunar_year(gregorian_year)
+    # Every Adhik month the lunar year holds — a Kshaya year has two.
+    adhik_months = [
+        {
+            "has_adhik_maas": True,
+            "month_name": m.month_name,
+            "full_name_en": m.full_name,
+            "full_name_ne": f"अधिक {lunar_masa_name_ne(m.month_name)}",
+            "start_date": m.start_Aausi.date().isoformat(),
+            "end_date": (m.end_Aausi - timedelta(days=1)).date().isoformat(),
+            "purnima_date": m.end_purnima.date().isoformat(),
+        }
+        for m in lunar_year.months
+        if m.is_adhik
+    ]
     for month in lunar_year.months:
         if is_kshaya_maas(month.start_Aausi, month.end_Aausi):
             info = get_kshaya_maas_info(month.start_Aausi, month.end_Aausi)
@@ -205,15 +220,8 @@ def get_special_months_for_gregorian_year(
                 info["start_date"] = month.start_Aausi.date().isoformat()
                 info["end_date"] = (month.end_Aausi - timedelta(days=1)).date().isoformat()
                 info["adhik_months"] = [
-                    {
-                        "month_name": m.month_name,
-                        "full_name_en": m.full_name,
-                        "full_name_ne": f"अधिक {lunar_masa_name_ne(m.month_name)}",
-                        "start_date": m.start_Aausi.date().isoformat(),
-                        "end_date": (m.end_Aausi - timedelta(days=1)).date().isoformat(),
-                    }
-                    for m in lunar_year.months
-                    if m.is_adhik
+                    {k: a[k] for k in ("month_name", "full_name_en", "full_name_ne", "start_date", "end_date")}
+                    for a in adhik_months
                 ]
                 kshaya = info
                 break
@@ -222,5 +230,6 @@ def get_special_months_for_gregorian_year(
         "gregorian_year": gregorian_year,
         "bs_year": bs_year_for_gregorian(gregorian_year),
         "adhik_maas": adhik or {"has_adhik_maas": False},
+        "adhik_months": adhik_months,
         "kshaya_maas": kshaya or {"is_kshaya": False},
     }

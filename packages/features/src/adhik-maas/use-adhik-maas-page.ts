@@ -109,8 +109,8 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
   let kshaya: string | null = null;
   for (const y of bsYears) {
     const data = answer(y);
-    const adhik = data?.adhik_maas;
-    if (adhik?.has_adhik_maas && adhik.month_name && adhik.start_date && adhik.end_date) {
+    for (const adhik of data?.adhik_months ?? (data?.adhik_maas ? [data.adhik_maas] : [])) {
+      if (!adhik.has_adhik_maas || !adhik.month_name || !adhik.start_date || !adhik.end_date) continue;
       if (era === "ad" && Number(adhik.start_date.slice(0, 4)) !== year) continue;
       const month = monthLabel(adhik.month_name, isEn);
       months.push({
@@ -129,11 +129,14 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
   }
 
   const nearby: AdhikNearbyYear[] = nearbyYears.map((y) => {
-    const adhik = answer(y)?.adhik_maas;
+    const data = answer(y);
+    const names = (data?.adhik_months ?? (data?.adhik_maas ? [data.adhik_maas] : []))
+      .filter((a) => a.has_adhik_maas && a.month_name)
+      .map((a) => monthLabel(a.month_name!, isEn));
     return {
       year: y,
       label: digits(y),
-      month: answer(y) === undefined ? undefined : adhik?.has_adhik_maas && adhik.month_name ? monthLabel(adhik.month_name, isEn) : null,
+      month: data === undefined ? undefined : names.length ? names.join(", ") : null,
       active: y === year,
     };
   });

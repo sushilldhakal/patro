@@ -4468,6 +4468,7 @@
       "adhik_maas_label": "{{year}} सालको अधिक (मल) मास: {{month}}",
       "adhik_maas_detail": "यस वर्ष अधिक मास {{month}} महिनामा पर्छ — {{range}}।",
       "adhik_maas_why": "यो चान्द्र महिनामा कुनै संक्रान्ति नपर्ने भएकाले यो थप (अधिक) महिना हो।",
+      "special_months_label": "{{year}} सालका अधिक र क्षय मास: {{list}}",
       "kshaya_maas_label": "{{year}} सालको क्षय मास: {{month}}",
       "kshaya_maas_detail": "यस वर्ष {{month}} महिना क्षय (लोप) हुन्छ — {{range}}।",
       "kshaya_maas_adhik": "यसअघि र पछि एक-एक अधिक मास पर्छ: {{adhik}}।",
