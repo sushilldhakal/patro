@@ -204,3 +204,13 @@ export const wheelYearScrubBtnActive =
 /** Current playback-speed badge (e.g. 8×) shown while autoplaying. */
 export const wheelYearScrubSpeed =
   "shrink-0 font-num text-sm font-bold leading-none tabular-nums text-[var(--w-accent)] tracking-tight max-[480px]:text-sm";
+
+/** The selected graha's card under the wheel header: name, then label / value rows. */
+export const wheelInfo = "mt-3 border-t border-[var(--w-surface-border)] pt-2";
+export const wheelInfoName = "flex items-baseline gap-2 text-base font-bold text-[#f9c800]";
+export function wheelInfoMotion(retrograde?: boolean) {
+  return cn("text-xs font-semibold", retrograde ? "text-rose-300" : "text-[var(--w-ink-faint)]");
+}
+export const wheelInfoGrid = "m-0 mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5";
+export const wheelInfoLabel = "text-xs text-[var(--w-ink-faint)]";
+export const wheelInfoValue = "m-0 font-num text-xs font-semibold tabular-nums text-[var(--w-ink)]";

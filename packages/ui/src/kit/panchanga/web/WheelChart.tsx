@@ -1,6 +1,5 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
-import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   bsMonthsForWheel,
   GRAHA_META,
@@ -26,7 +25,6 @@ import { wheelSvg, wheelSvgWrap } from "@vedic-patro/design-tokens/classes/wheel
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import {
-  wDaytick,
   wDegNum,
   wDegTick,
   wKarLbl,
@@ -188,7 +186,6 @@ function WheelChartImpl({
   markers,
   spin,
   tw,
-  bsYear,
   hover,
   onSpin,
   zoom,
@@ -215,7 +212,7 @@ function WheelChartImpl({
     if (!el) return;
     const measure = () => {
       const side = Math.min(el.clientWidth, el.clientHeight);
-      if (side > 0) setUnitPx((side / 1000) * zoom);
+      if (side > 0) setUnitPx((side / 916) * zoom);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -363,29 +360,6 @@ function WheelChartImpl({
       }
     }
 
-    const dayTicks: React.ReactNode[] = [];
-    if (tw.show_lunar) {
-      for (let i = 0; i < 12; i++) {
-        const days = getBSMonthLength(bsYear, i + 1);
-        for (let d = 1; d < days; d++) {
-          const L = i * 30 + (d / days) * 30;
-          const major = d % 5 === 0;
-          const [x1, y1] = pol(L, R.bsOut - 1);
-          const [x2, y2] = pol(L, R.bsOut - (major ? 11 : 6));
-          dayTicks.push(
-            <line
-              key={`dt${i}_${d}`}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              className={wDaytick(major)}
-            />
-          );
-        }
-      }
-    }
-
     const rashiRays: React.ReactNode[] = [];
     for (let i = 0; i < 12; i++) {
       const [x1, y1] = pol(i * 30, 12);
@@ -403,8 +377,8 @@ function WheelChartImpl({
         ))
       : [];
 
-    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels };
-  }, [spin, hover, bsYear, tw, pol, arcSeg, pick, gregMonths]);
+    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels };
+  }, [spin, hover, tw, pol, arcSeg, pick, gregMonths]);
 
   // The data layers — current-time markers, the inner tithi/karana/yoga rings
   // and the planet core — are the only parts that depend on the panchanga data
@@ -705,6 +679,7 @@ function WheelChartImpl({
             r={R.bsMid}
             cls={wMonthNe(tw.show_today && i === sunRashiIdx)}
             spin={spin}
+            size={tw.show_today && i === sunRashiIdx ? 13 : 12}
           >
             {pick(m.ne, m.en)}
           </RingLabel>
@@ -724,26 +699,26 @@ function WheelChartImpl({
   const degreeRing = useMemo(() => {
     const nodes: React.ReactNode[] = [];
     for (const { deg, major, labelled } of wheelDegreeMarks(degreeStep, numberEvery1)) {
-      const [x1, y1] = pol(deg, R.rimOuter);
-      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : labelled ? 5 : 3.5));
+      const [x1, y1] = pol(deg, R.bsOut - 1);
+      const [x2, y2] = pol(deg, R.bsOut - (major ? 8 : labelled ? 6 : 4.5));
       nodes.push(<line key={`dgt${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} className={wDegTick(major)} />);
       if (!labelled || !wheelDegreeClearsReadout(deg, selectedDeg)) continue;
       nodes.push(
-        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} cls={wDegNum} spin={spin} size={wheelDegreeNumberSize(degreeStep)}>
+        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum - 1.5} cls={wDegNum} spin={spin} size={wheelDegreeNumberSize(degreeStep)}>
           {deg}
         </RingLabel>,
       );
     }
     if (selectedDeg != null) {
-      const [x1, y1] = pol(selectedDeg, R.tickIn);
-      const [x2, y2] = pol(selectedDeg, R.rimOuter);
+      const [x1, y1] = pol(selectedDeg, R.bsIn);
+      const [x2, y2] = pol(selectedDeg, R.bsOut);
       const a = normDeg(selectedDeg + spin);
       const flip = a > 90 && a < 270;
       const cy = CY - R.degNum;
       nodes.push(<line key="dgsel-line" x1={x1} y1={y1} x2={x2} y2={y2} className={wLagnaLine} style={{ strokeDasharray: "none" }} />);
       nodes.push(
         <g key="dgsel" transform={`rotate(${-a} ${CX} ${CY})`} style={{ pointerEvents: "none" }}>
-          <rect x={CX - 25} y={cy - 6.5} width={50} height={13} rx={4} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
+          <rect x={CX - 25} y={cy - 5.5} width={50} height={11} rx={3.5} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
           <text
             x={CX}
             y={cy}
@@ -857,7 +832,7 @@ function WheelChartImpl({
     if (ptrRef.current.size < 2) pinchRef.current = null;
   };
 
-  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } =
+  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels } =
     staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
@@ -869,7 +844,7 @@ function WheelChartImpl({
     >
       <svg
         ref={svgRef}
-        viewBox="0 0 1000 1000"
+        viewBox="42 42 916 916"
         className={wheelSvg(dragMoved)}
         onPointerDown={onDown}
         onPointerMove={onMove}
@@ -877,7 +852,6 @@ function WheelChartImpl({
         onPointerCancel={onUp}
       >
         <circle cx={CX} cy={CY} r={R.bsOut} className={wRimCircle} strokeWidth="1.4" />
-        <circle cx={CX} cy={CY} r={R.rimOuter} className={wRimCircle} strokeWidth="0.8" opacity="0.55" />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((r, k) => (
           <circle key={`rc${k}`} cx={CX} cy={CY} r={r} className={wRimCircle} strokeWidth="0.8" opacity="0.55" />
         ))}
@@ -892,7 +866,6 @@ function WheelChartImpl({
 
         {gregLabels}
         {bsLabels}
-        {dayTicks}
 
         {innerRings}
         {core}

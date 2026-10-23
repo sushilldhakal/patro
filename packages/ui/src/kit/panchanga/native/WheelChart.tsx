@@ -29,7 +29,6 @@ import {
   wheelLabelRows,
   type WheelHover,
 } from "@vedic-patro/features/panchanga-drawing";
-import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import {
   formatWheelDegree,
@@ -375,7 +374,6 @@ function WheelChartImpl({
   markers,
   spin,
   tw,
-  bsYear,
   sel,
   hover,
   onHover: _onHover,
@@ -396,7 +394,7 @@ function WheelChartImpl({
   const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0 });
   const [layoutBox, setLayoutBox] = useState({ w: 0, h: 0 });
   const settleStyle = useWheelSettle(layoutBox.w);
-  const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 1000) * zoom : 0;
+  const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
   const spinRef = useRef(spin);
   spinRef.current = spin;
   const panRef = useRef(pan);
@@ -684,31 +682,6 @@ function WheelChartImpl({
       }
     }
 
-    const dayTicks: ReactNode[] = [];
-    if (tw.show_lunar) {
-      for (let i = 0; i < 12; i++) {
-        const days = getBSMonthLength(bsYear, i + 1);
-        for (let d = 1; d < days; d++) {
-          const L = i * 30 + (d / days) * 30;
-          const major = d % 5 === 0;
-          const [x1, y1] = pol(L, R.bsOut - 1);
-          const [x2, y2] = pol(L, R.bsOut - (major ? 11 : 6));
-          dayTicks.push(
-            <Line
-              key={`dt${i}_${d}`}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke={major ? W_INK_DIM : W_INK_FAINT}
-              strokeWidth={major ? 0.9 : 0.55}
-              opacity={major ? 0.85 : 0.6}
-            />,
-          );
-        }
-      }
-    }
-
     const rashiRays: ReactNode[] = [];
     for (let i = 0; i < 12; i++) {
       const [x1, y1] = pol(i * 30, 12);
@@ -726,8 +699,8 @@ function WheelChartImpl({
         ))
       : [];
 
-    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels };
-  }, [spin, hover, sel, bsYear, tw, pol, arcSeg, pick, gregMonths]);
+    return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels };
+  }, [spin, hover, sel, tw, pol, arcSeg, pick, gregMonths]);
 
   const dataLayers = useMemo(() => {
     const sunRashiIdx = Math.floor(normDeg(sunLon) / 30);
@@ -1057,8 +1030,8 @@ function WheelChartImpl({
   const degreeRing = useMemo(() => {
     const nodes: ReactNode[] = [];
     for (const { deg, major, labelled } of wheelDegreeMarks(degreeStep, numberEvery1)) {
-      const [x1, y1] = pol(deg, R.rimOuter);
-      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : labelled ? 5 : 3.5));
+      const [x1, y1] = pol(deg, R.bsOut - 1);
+      const [x2, y2] = pol(deg, R.bsOut - (major ? 8 : labelled ? 6 : 4.5));
       nodes.push(
         <Line
           key={`dgt${deg}`}
@@ -1072,21 +1045,21 @@ function WheelChartImpl({
       );
       if (!labelled || !wheelDegreeClearsReadout(deg, selectedDeg)) continue;
       nodes.push(
-        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} spin={spin} fill={W_INK_DIM} size={wheelDegreeNumberSize(degreeStep)}>
+        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum - 1.5} spin={spin} fill={W_INK_DIM} size={wheelDegreeNumberSize(degreeStep)}>
           {String(deg)}
         </RingLabel>,
       );
     }
     if (selectedDeg != null) {
-      const [x1, y1] = pol(selectedDeg, R.tickIn);
-      const [x2, y2] = pol(selectedDeg, R.rimOuter);
+      const [x1, y1] = pol(selectedDeg, R.bsIn);
+      const [x2, y2] = pol(selectedDeg, R.bsOut);
       const a = normDeg(selectedDeg + spin);
       const flip = a > 90 && a < 270;
       const cy = CY - R.degNum;
       nodes.push(<Line key="dgsel-line" x1={x1} y1={y1} x2={x2} y2={y2} stroke={illustration.amber49} strokeWidth={1.4} />);
       nodes.push(
         <G key="dgsel" transform={`rotate(${-a} ${CX} ${CY})`} pointerEvents="none">
-          <Rect x={CX - 25} y={cy - 6.5} width={50} height={13} rx={4} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
+          <Rect x={CX - 25} y={cy - 5.5} width={50} height={11} rx={3.5} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
           <SvgText
             x={CX}
             y={cy}
@@ -1106,7 +1079,7 @@ function WheelChartImpl({
     return nodes;
   }, [degreeStep, numberEvery1, selectedDeg, spin, pol, FONT]);
 
-  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } = staticLayers;
+  const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
   return (
@@ -1137,9 +1110,8 @@ function WheelChartImpl({
           pointerEvents="none"
           renderToHardwareTextureAndroid={zoom <= 1.5}
         >
-        <Svg viewBox="0 0 1000 1000" width="100%" height="100%" pointerEvents="none">
+        <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
-        <Circle cx={CX} cy={CY} r={R.rimOuter} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
           <Circle key={`rc${k}`} cx={CX} cy={CY} r={rad} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
         ))}
@@ -1154,7 +1126,6 @@ function WheelChartImpl({
 
         {gregLabels}
         {bsLabels}
-        {dayTicks}
 
         {innerRings}
         {core}

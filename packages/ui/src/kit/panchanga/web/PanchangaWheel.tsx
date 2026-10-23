@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { PanchangaDay, LocationParams } from "@vedic-patro/api-client";
 import { Icon } from "@vedic-patro/ui";
@@ -46,6 +46,12 @@ import {
   wheelHeadEyebrow,
   wheelHeadSub,
   wheelHeadTitle,
+  wheelInfo,
+  wheelInfoGrid,
+  wheelInfoLabel,
+  wheelInfoMotion,
+  wheelInfoName,
+  wheelInfoValue,
   wheelIconBtn,
   wheelLegend,
   wheelLegendDot,
@@ -68,6 +74,8 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
+import { useSkyPlanetInfo, type SkyPlanetInfo } from "@vedic-patro/features/sky3d";
+import { GRAHA_KEYS } from "@vedic-patro/domain/panchanga/wheel-data";
 /* The wheel is always night-dark, so its icons take a light ink: the theme's
    `foreground` is near-black in light mode and left them invisible. Important,
    so the ink wins over the tone class whatever order the stylesheet lands in. */
@@ -189,12 +197,15 @@ function WheelHead({
   title,
   sub,
   playRate,
+  planetInfo,
   className,
 }: {
   eyebrow: React.ReactNode;
   title: React.ReactNode;
   sub: React.ReactNode;
   playRate?: React.ReactNode;
+  /** The selected graha's card — longitude, rashi, nakshatra. */
+  planetInfo?: SkyPlanetInfo | null;
   className?: string;
 }) {
   return (
@@ -203,6 +214,22 @@ function WheelHead({
       <div className={wheelHeadTitle}>{title}</div>
       <div className={wheelHeadSub}>{sub}</div>
       {playRate ? <div className={wheelPlayRateBadge}>{playRate}</div> : null}
+      {planetInfo ? (
+        <div className={wheelInfo}>
+          <div className={wheelInfoName}>
+            {planetInfo.name}
+            {planetInfo.motion ? <span className={wheelInfoMotion(planetInfo.motion.retrograde)}>{planetInfo.motion.label}</span> : null}
+          </div>
+          <dl className={wheelInfoGrid}>
+            {planetInfo.rows.map((row) => (
+              <Fragment key={row.label}>
+                <dt className={wheelInfoLabel}>{row.label}</dt>
+                <dd className={wheelInfoValue}>{row.value}</dd>
+              </Fragment>
+            ))}
+          </dl>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -450,6 +477,16 @@ function PanchangaWheelBody({
     return buildWheelMarkers(p, det, markerG);
   }, [atTimeData, p, det, markerG, rangeMode]);
 
+  /* The selected graha's card in the header; the wheel's needle points at the same one. */
+  const lineBody = useMemo(
+    () => ({
+      longitude: markers.planetLons[lineTarget] ?? markers.moonLon,
+      retrograde: det.grahas[lineTarget]?.retrograde,
+    }),
+    [markers, det, lineTarget],
+  );
+  const planetInfo = useSkyPlanetInfo(GRAHA_KEYS[lineTarget], lineBody);
+
   const handleScrubChange = useCallback((g: number) => {
     setScrubG(g);
     setScrubPinned(true);
@@ -601,6 +638,7 @@ function PanchangaWheelBody({
               {pick(tithiNe, tithiEn)} · {locLabel ?? copy.defaultLocation}
             </>
           }
+          planetInfo={planetInfo}
           playRate={
             yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
               <span aria-live="polite">

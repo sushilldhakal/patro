@@ -19,6 +19,8 @@ import { wheelLegendDot, wheelLegendRow } from "@vedic-patro/design-tokens/class
 import { brand, breakpoints, illustration, midnight, nativeShadow, neutral, radius, space, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { usePanchangaWheelCopy } from "@vedic-patro/features/panchanga-drawing";
+import { useSkyPlanetInfo } from "@vedic-patro/features/sky3d";
+import { GRAHA_KEYS } from "@vedic-patro/domain/panchanga/wheel-data";
 import type { IconNode } from "../../../contract";
 import {
   calendarIcon,
@@ -616,6 +618,16 @@ function WheelBody({
     return buildWheelMarkers(p, det, effectiveG);
   }, [atTimeData, p, det, effectiveG, rangeMode]);
 
+  /* The selected graha's card in the header; the wheel's needle points at the same one. */
+  const lineBody = useMemo(
+    () => ({
+      longitude: markers.planetLons[lineTarget] ?? markers.moonLon,
+      retrograde: det.grahas[lineTarget]?.retrograde,
+    }),
+    [markers, det, lineTarget],
+  );
+  const planetInfo = useSkyPlanetInfo(GRAHA_KEYS[lineTarget], lineBody);
+
   const handleScrubChange = useCallback((g: number) => {
     setScrubG(g);
     setScrubPinned(true);
@@ -827,6 +839,25 @@ function WheelBody({
             {yearScrub.playbackRateLabel}
             <Text style={{ color: W_INK }}> · {digits(yearScrub.speed)}×</Text>
           </Text>
+        ) : null}
+        {planetInfo ? (
+          <View className="mt-3 pt-2" style={{ borderTopWidth: 1, borderTopColor: withAlpha(W_INK, 0.18) }}>
+            <Text className="text-base font-bold" style={{ color: illustration.amber49 }}>
+              {planetInfo.name}
+              {planetInfo.motion ? (
+                <Text className="text-xs font-semibold" style={{ color: planetInfo.motion.retrograde ? brand.vermilion : W_INK_DIM }}>
+                  {"  "}
+                  {planetInfo.motion.label}
+                </Text>
+              ) : null}
+            </Text>
+            {planetInfo.rows.map((row) => (
+              <View key={row.label} className="mt-0.5 flex-row gap-x-3">
+                <Text className="text-xs" style={{ color: W_INK_DIM }}>{row.label}</Text>
+                <Text className="text-xs font-semibold tabular-nums" style={{ color: W_INK }}>{row.value}</Text>
+              </View>
+            ))}
+          </View>
         ) : null}
       </View>
     );

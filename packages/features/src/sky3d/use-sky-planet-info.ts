@@ -1,9 +1,9 @@
 /**
- * The 3D sky's planet info card, shared by both apps'
- * `components/sky3d/AakashGocharSky.tsx`: the rows the top-left HUD shows for
- * whichever graha is selected — exact sidereal longitude, where it sits in its
- * rashi and nakshatra, and how it is moving. The same card in the space,
- * horizon and globe views, since it reads the scene's sample, not the view.
+ * The selected graha's info card, shared by both apps' Aakash Gochar HUD
+ * (`components/sky3d/AakashGocharSky.tsx`) and the panchanga wheel's header:
+ * exact sidereal longitude, where it sits in its rashi and nakshatra, and how
+ * it is moving. In the sky it reads the scene's sample, not the view, so the
+ * space, horizon and globe tabs show the same card.
  */
 import { useMemo } from "react";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
@@ -14,11 +14,23 @@ import {
   padaOfLongitude,
   rashiOfLongitude,
 } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
-import type { GeoBody } from "@vedic-patro/domain/astronomy/sky3d/orbital-model";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { formatWheelDegree } from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { useLocale } from "@vedic-patro/i18n/react";
+
+/**
+ * What the card reads. The 3D sky's `GeoBody` fits as is; the panchanga wheel
+ * has only a longitude and the retrograde flag, and the card drops the rows it
+ * has no figure for.
+ */
+export type SkyPlanetBody = {
+  longitude: number;
+  latitude?: number;
+  speedDegPerDay?: number;
+  distanceAu?: number;
+  retrograde?: boolean;
+};
 
 export type SkyPlanetInfoRow = { label: string; value: string };
 
@@ -37,7 +49,7 @@ function degMin(deg: number): { d: number; m: number } {
 
 export function useSkyPlanetInfo(
   selectedKey: GrahaKey | null | undefined,
-  body: GeoBody | undefined,
+  body: SkyPlanetBody | undefined,
 ): SkyPlanetInfo | null {
   const { t, lang, digits } = useLocale();
   const longitude = body?.longitude;

@@ -13,13 +13,14 @@ import { useLocale } from "@vedic-patro/i18n/react";
 export const WHEEL_CHART_R = {
   rimOuter: 497,
   tickIn: 481,
-  /** Centre line of the degree numbers, in the band between `tickIn` and `rimOuter`. */
-  degNum: 489,
   gregOut: 481,
   gregMid: 467,
   gregIn: 453,
   bsOut: 453,
-  bsMid: 438,
+  /** Month names sit below the degree numbers, on the ring's inner half. */
+  bsMid: 429,
+  /** Centre line of the degree numbers, on the month ring's outer half. */
+  degNum: 441,
   bsIn: 424,
   nakOut: 423,
   nakIcon: 403,
