@@ -29,7 +29,9 @@ def count_sankrantis_in_period(start: datetime, end: datetime) -> list[int]:
     """Return rashi indices for each Sankranti that occurs in the half-open [start, end) window."""
     sankrantis: list[int] = []
     seen_rashis: set[int] = set()
-    check = start + timedelta(hours=6)
+    # Scan from the opening instant itself: a Sankranti can land within hours
+    # of the Aausi (Makar Sankranti did in 1983) and must still be counted.
+    check = start
 
     while check < end:
         rashi = get_sun_rashi_at_time(check)
