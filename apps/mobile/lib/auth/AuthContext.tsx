@@ -20,7 +20,6 @@ import {
   forgetParkedSession,
   hasParkedSession,
   parkSession,
-  revokeParkedSession,
   takeParkedSession,
 } from "./parked-session";
 
@@ -29,6 +28,7 @@ async function signOutOrPark(): Promise<void> {
   const refresh = tokenStore.refresh;
   if (refresh && (await deviceStore.get<boolean>(BIOMETRIC_ENABLED_KEY))) {
     if (await parkSession(refresh, tFor(undefined, "ui.auth.face_id_prompt"))) {
+      resumeDeclined = false;
       tokenStore.clear();
       return;
     }
@@ -36,11 +36,19 @@ async function signOutOrPark(): Promise<void> {
   await apiLogout();
 }
 
-/** A fresh sign-in replaces any session parked behind Face ID. */
+/**
+ * A fresh sign-in replaces any session parked behind Face ID. The parked token is dropped from the
+ * device without reading it: reading it would show Face ID to someone who has just signed in, which
+ * is exactly when it must not appear.
+ */
 async function startSession(issue: () => Promise<void>): Promise<void> {
   await issue();
-  if (await hasParkedSession()) void revokeParkedSession(tFor(undefined, "ui.auth.face_id_prompt"));
+  if (await hasParkedSession()) await forgetParkedSession();
 }
+
+/** One Face ID prompt at a time, and none again after the reader cancels it, until the app restarts. */
+let resumeInFlight: Promise<boolean> | null = null;
+let resumeDeclined = false;
 
 const USER_CACHE_KEY = "device:auth_user";
 
@@ -114,18 +122,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [refreshUser, applyUser, setLoading]);
 
-  const resumeWithBiometrics = useCallback(async () => {
-    if (!(await hasParkedSession())) return false;
-    if (!(await deviceStore.get<boolean>(BIOMETRIC_ENABLED_KEY))) {
-      await forgetParkedSession();
-      return false;
-    }
-    const refresh = await takeParkedSession(tFor(undefined, "ui.auth.face_id_prompt"));
-    if (!refresh) return false;
-    // No access token yet: the first request refreshes with the parked token.
-    await tokenStore.set({ access_token: "", refresh_token: refresh } as Parameters<typeof tokenStore.set>[0]);
-    await refreshUser();
-    return Boolean(tokenStore.access || tokenStore.refresh);
+  const resumeWithBiometrics = useCallback(() => {
+    // Already signed in (or already asking): never show Face ID.
+    if (tokenStore.access || tokenStore.refresh) return Promise.resolve(true);
+    if (resumeDeclined) return Promise.resolve(false);
+    if (resumeInFlight) return resumeInFlight;
+    resumeInFlight = (async () => {
+      if (!(await hasParkedSession())) return false;
+      if (!(await deviceStore.get<boolean>(BIOMETRIC_ENABLED_KEY))) {
+        await forgetParkedSession();
+        return false;
+      }
+      const refresh = await takeParkedSession(tFor(undefined, "ui.auth.face_id_prompt"));
+      if (!refresh) {
+        resumeDeclined = true;
+        return false;
+      }
+      // No access token yet: the first request refreshes with the parked token.
+      await tokenStore.set({ access_token: "", refresh_token: refresh } as Parameters<typeof tokenStore.set>[0]);
+      await refreshUser();
+      return Boolean(tokenStore.access || tokenStore.refresh);
+    })().finally(() => {
+      resumeInFlight = null;
+    });
+    return resumeInFlight;
   }, [refreshUser]);
 
   const value: AuthContextValue = {
