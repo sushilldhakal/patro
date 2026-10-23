@@ -241,7 +241,7 @@ export function PatroDayTimeNav({
   );
 
   return (
-      <div className={cn(pickerClasses.webDtGrid, className)}>
+      <div className={cn(pickerClasses.webDtGrid, !tabs && pickerClasses.webDtSolo, className)}>
         {header}
         {tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} className={pickerClasses.webDtTabs} /> : null}
         {tabs ? <PatroHeaderSwap tabs={tabs} className={pickerClasses.webDtSwap} /> : null}

@@ -74,6 +74,7 @@ import {
   instantCacheKey,
 } from "@vedic-patro/domain/calendar/instant";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 
@@ -424,25 +425,26 @@ export const fetchKundaliMilan = (
  * `era`, `language` and the optional `year`, in that order — the order the
  * mobile app's offline downloads were saved under.
  */
-export function eraQuery(era: Era = "bs", year?: number): string {
-  const language = era === "ad" || era === "bc" ? "en" : "ne";
+export function eraQuery(era: Era = "bs", year?: number, language: Lang = normalizeLang()): string {
+  // The language is the reader's UI language, never derived from the era: BS can be
+  // read in English and AD in Nepali.
   const params = new URLSearchParams({ era, language });
   if (year != null) params.set("year", String(year));
   return params.toString();
 }
 
-export const fetchGrahaAstaYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+export const fetchGrahaAstaYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
   get<GrahaAstaResponse>(
     appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${eraQuery(era, year)}`),
+      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${eraQuery(era, year, language)}`),
       location,
     ),
   );
 
-export const fetchGrahaVakriYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+export const fetchGrahaVakriYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
   get<GrahaVakriResponse>(
     appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${eraQuery(era, year)}`),
+      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${eraQuery(era, year, language)}`),
       location,
     ),
   );
@@ -452,22 +454,23 @@ export const fetchEclipseYear = (
   year: number,
   location?: LocationParams,
   era: Era = "bs",
+  language?: Lang,
 ) =>
   get<EclipseYearResponse>(
     appendLocation(
-      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${eraQuery(era, year)}`),
+      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${eraQuery(era, year, language)}`),
       location,
     ),
   );
 
-export const fetchPanchakYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+export const fetchPanchakYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
   get<PanchakYearResponse>(
-    appendLocation(`/nepal/panchak/year/${year}?${eraQuery(era, year)}`, location),
+    appendLocation(`/nepal/panchak/year/${year}?${eraQuery(era, year, language)}`, location),
   );
 
-export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: LocationParams) =>
+export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: LocationParams, language?: Lang) =>
   get<SunYearResponse>(
-    appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year)}`, location),
+    appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year, language)}`, location),
   );
 
 // ─── Cities ───────────────────────────────────────────────────────────────────
@@ -572,12 +575,17 @@ export const fetchGochar = (date: string, era: Era = "ad", location?: LocationPa
 export const grahaDetailKeys = {
   sthiti: (dateKey: string, apiEra: string, location?: LocationParams) =>
     ["graha", "sthiti", GRAHA_CACHE_VERSION, apiEra, dateKey, locationCacheKey(location)] as const,
-  asta: (year: number, location?: LocationParams, era: string = "bs") =>
-    ["graha", "asta", GRAHA_CACHE_VERSION, era, year, locationCacheKey(location)] as const,
-  vakri: (year: number, location?: LocationParams, era: string = "bs") =>
-    ["graha", "vakri", GRAHA_CACHE_VERSION, era, year, locationCacheKey(location)] as const,
-  eclipse: (kind: "solar" | "lunar", year: number, location?: LocationParams, era: string = "bs") =>
-    ["graha", "eclipse", GRAHA_CACHE_VERSION, kind, era, year, locationCacheKey(location)] as const,
+  asta: (year: number, location?: LocationParams, era: string = "bs", language: Lang = normalizeLang()) =>
+    ["graha", "asta", GRAHA_CACHE_VERSION, era, language, year, locationCacheKey(location)] as const,
+  vakri: (year: number, location?: LocationParams, era: string = "bs", language: Lang = normalizeLang()) =>
+    ["graha", "vakri", GRAHA_CACHE_VERSION, era, language, year, locationCacheKey(location)] as const,
+  eclipse: (
+    kind: "solar" | "lunar",
+    year: number,
+    location?: LocationParams,
+    era: string = "bs",
+    language: Lang = normalizeLang(),
+  ) => ["graha", "eclipse", GRAHA_CACHE_VERSION, kind, era, language, year, locationCacheKey(location)] as const,
 };
 
 export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, apiEra: Era = "ad") =>
@@ -586,8 +594,8 @@ export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, api
   );
 
 export const panchakKeys = {
-  year: (year: number, location?: LocationParams, era: string = "bs") =>
-    ["panchak", era, year, locationCacheKey(location)] as const,
+  year: (year: number, location?: LocationParams, era: string = "bs", language: Lang = normalizeLang()) =>
+    ["panchak", era, language, year, locationCacheKey(location)] as const,
 };
 
 export const saitKeys = {
@@ -599,8 +607,8 @@ export const saitKeys = {
 
 
 // ─── Holidays and festivals ───────────────────────────────────────────────────
-// The server defaults `language` from `era` (bs → ne, ad → en), so it is only
-// sent when it differs — e.g. English festival names for a BS year.
+// `language` is always sent: it is the UI language (default: the live one), never
+// the era's — English festival names for a BS year, Nepali ones for AD.
 
 // Lunar festival dates follow the observer outside Nepal (the tithi can reach
 // sunrise / madhyahna a civil day apart), so pass the location to get that
@@ -608,17 +616,19 @@ export const saitKeys = {
 const withFestivalLocation = (path: string, location?: LocationParams) =>
   location ? appendLocation(path, location) : path;
 
-export const fetchHolidays = (year: number, era: Era = "bs", location?: LocationParams) =>
+export const fetchHolidays = (year: number, era: Era = "bs", location?: LocationParams, language: Lang = normalizeLang()) =>
   get<HolidaysResponse>(
-    withPanchangaCacheVersion(withFestivalLocation(`/nepal/holidays?year=${year}&era=${era}`, location)),
+    withPanchangaCacheVersion(
+      withFestivalLocation(`/nepal/holidays?year=${year}&era=${era}&language=${language}`, location),
+    ),
   );
 
 export const fetchFestivals = (
   year: number,
-  options: { era?: Era; language?: "ne" | "en"; month?: number; location?: LocationParams } = {},
+  options: { era?: Era; language?: Lang; month?: number; location?: LocationParams } = {},
 ) => {
   const era = options.era ?? "bs";
-  const language = options.language ?? (era === "ad" || era === "bc" ? "en" : "ne");
+  const language = options.language ?? normalizeLang();
   let path = `/nepal/festivals?year=${year}&era=${era}&language=${language}`;
   if (options.month != null) path += `&month=${options.month}`;
   return get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location)));
@@ -628,8 +638,8 @@ export const fetchFestivals = (
 
 export const elementKeys = {
   list: () => ["element", "list"] as const,
-  spans: (name: string, range: ElementSpanRange, location?: LocationParams) =>
-    ["element", "spans", name, range.era, range.year, range.month, locationCacheKey(location)] as const,
+  spans: (name: string, range: ElementSpanRange, location?: LocationParams, language: Lang = normalizeLang()) =>
+    ["element", "spans", name, range.era, language, range.year, range.month, locationCacheKey(location)] as const,
   month: (name: string, bsYear: number, bsMonth: number, location?: LocationParams) =>
     ["element", "month", name, bsYear, bsMonth, locationCacheKey(location)] as const,
   day: (name: string, date: string, location?: LocationParams) =>
@@ -640,10 +650,12 @@ export const fetchElementSpans = (
   name: string,
   range: ElementSpanRange,
   location?: LocationParams,
+  language: Lang = normalizeLang(),
 ): Promise<ElementSpansResponse> => {
   // The era middleware turns era + year + month into the JD span server-side.
   const query = new URLSearchParams({
     era: range.era,
+    language,
     year: String(range.year),
     month: String(range.month),
   });
@@ -785,10 +797,18 @@ export const fetchMonthCalendarRaw = (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { era?: Era; full?: boolean; clock?: string; excludeInternational?: boolean; slim?: boolean },
+  options?: {
+    era?: Era;
+    /** UI language for the response labels; defaults to the live one (never the era's). */
+    language?: Lang;
+    full?: boolean;
+    clock?: string;
+    excludeInternational?: boolean;
+    slim?: boolean;
+  },
 ) => {
   const era = options?.era ?? "bs";
-  const language = era === "ad" || era === "bc" ? "en" : "ne";
+  const language = options?.language ?? normalizeLang();
   // Year/month live in the path — not in the query, so the era middleware does
   // not run to_jd() on mirrored params (that returned 400 for some BBS months).
   const params = new URLSearchParams();
@@ -881,12 +901,18 @@ export const fetchPatroMonth = (year: number, month: number) =>
 // ─── Holidays & Festivals ─────────────────────────────────────────────────────
 
 export const holidayKeys = {
-  holidays: (year: number, era: Era = "bs", location?: LocationParams) =>
-    ["holidays", era, year, locationCacheKey(location)] as const,
-  festivals: (year: number, era: Era = "bs", month?: number, location?: LocationParams) =>
+  holidays: (year: number, era: Era = "bs", location?: LocationParams, language: Lang = normalizeLang()) =>
+    ["holidays", era, language, year, locationCacheKey(location)] as const,
+  festivals: (
+    year: number,
+    era: Era = "bs",
+    month?: number,
+    location?: LocationParams,
+    language: Lang = normalizeLang(),
+  ) =>
     month != null
-      ? (["festivals", era, year, month, locationCacheKey(location)] as const)
-      : (["festivals", era, year, locationCacheKey(location)] as const),
+      ? (["festivals", era, language, year, month, locationCacheKey(location)] as const)
+      : (["festivals", era, language, year, locationCacheKey(location)] as const),
   upcoming: (days = 90, limit = 15, holidaysOnly = false, location?: LocationParams) =>
     ["festivals", "upcoming", days, limit, holidaysOnly, locationCacheKey(location)] as const,
 };

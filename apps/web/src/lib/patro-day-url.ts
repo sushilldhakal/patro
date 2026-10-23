@@ -2,20 +2,26 @@
  * Day-browse URL + API identity — Julian Day is the neutral key.
  *
  * - `inputEra` + year/month/day — shareable page URL identity (JD stays on the server)
- * - `era` — display calendar + language default only (does NOT parse path/date keys)
+ * - `era` — display calendar only (does NOT parse path/date keys); `language` is the UI language,
+ *   never derived from the era
  *
  * Month/year browse (`EraSelection` in era.ts) still uses era + y/m as grid coordinates.
  */
 
 import {
-  getLanguageForEra,
+  calendarForEra,
+  eraForCalendar,
+  getCalendarSystem,
+  type CalendarSystem,
+} from "@vedic-patro/domain/calendar/calendar-system";
+import {
   isEra,
   type Era,
   type Language,
 } from "@vedic-patro/domain/calendar/era";
-import { adToBS, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
+import { adToBS, bsToAdOrNull, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { rememberedMonth } from "@vedic-patro/domain/calendar/remembered-browse";
-import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
+import { civilIsoFromDate, parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
 
 export type PatroDisplayContext = {
   era: Era;
@@ -23,13 +29,15 @@ export type PatroDisplayContext = {
 };
 
 /**
- * Display context for a day that is presented as a Gregorian date in English.
+ * Display context for a day that is presented as a Gregorian date, in the given UI language.
  *
  * For callers that already hold a civil `date_ad` from the backend and want it
  * rendered the same way. It says nothing about how the day was addressed —
  * that is `inputEra`'s job.
  */
-export const AD_DISPLAY: PatroDisplayContext = { era: "ad", language: "en" };
+export function adDisplayContext(language: Language): PatroDisplayContext {
+  return { era: "ad", language };
+}
 
 export type PatroDayFetchState =
   | { kind: "jd"; jd: number; display: PatroDisplayContext }
@@ -51,16 +59,17 @@ function toPositiveInt(raw: unknown): number | undefined {
   return t >= 1 ? t : undefined;
 }
 
-function parseLanguage(raw: unknown, displayEra: Era): Language {
+/** URL `language` if valid, otherwise the UI language — never derived from the era. */
+function parseLanguage(raw: unknown, fallbackLanguage: Language): Language {
   if (raw === "en" || raw === "ne") return raw;
-  return getLanguageForEra(displayEra);
+  return fallbackLanguage;
 }
 
 function parseDisplay(search: Record<string, unknown>, fallbackLanguage: Language): PatroDisplayContext {
-  const era = isEra(search.era) ? search.era : fallbackLanguage === "en" ? "ad" : "bs";
+  const era = isEra(search.era) ? search.era : eraForCalendar(getCalendarSystem());
   return {
     era,
-    language: parseLanguage(search.language, era),
+    language: parseLanguage(search.language, fallbackLanguage),
   };
 }
 
@@ -204,9 +213,7 @@ export function patroDayFetchFromResolvedPanchanga(
         v.era === "bbs" || v.era === "bs" ? v.era : display.era === "bbs" ? "bbs" : "bs";
       const resolvedDisplay: PatroDisplayContext = {
         era: inputEra,
-        // Keep the UI language the user chose (e.g. en on a BS day). Forcing
-        // getLanguageForEra(inputEra) made syncResolvedPatroDay fight the URL
-        // mirror effect and throttle navigation forever.
+        // Keep the UI language the user chose (e.g. en on a BS day).
         language: display.language,
       };
       return {
@@ -261,7 +268,7 @@ export function patroDayFetchWithBrowseEraToggle(
     if (nextEra === "bs" || nextEra === "bbs" || nextEra === "ad" || nextEra === "bc") {
       const display: PatroDisplayContext = {
         era: nextEra,
-        language: getLanguageForEra(nextEra),
+        language: state.display.language,
       };
       return {
         kind: "input",
@@ -283,7 +290,7 @@ export function patroDayFetchWithDisplayEra(
 ): PatroDayFetchState {
   const display: PatroDisplayContext = {
     era: nextEra,
-    language: getLanguageForEra(nextEra),
+    language: state.display.language,
   };
   if (state.kind === "jd" || state.kind === "today") {
     return { ...state, display };
@@ -297,6 +304,50 @@ export function patroDayFetchWithDisplayEra(
     return { ...state, inputEra, display };
   }
   return state;
+}
+
+/**
+ * The same civil day, named in the other calendar's parts (offline tables).
+ * Null for BBS/BC days and dates outside the table — there is no local answer.
+ */
+export function convertCivilParts(
+  fromEra: Era,
+  parts: PatroBrowseCalendarParts,
+  target: "bs" | "ad",
+): PatroBrowseCalendarParts | null {
+  if (fromEra === target) return { year: parts.year, month: parts.month, day: parts.day };
+  if (fromEra === "bs" && target === "ad") {
+    const ad = bsToAdOrNull(parts.year, parts.month, parts.day);
+    return ad ? parseCivilIso(civilIsoFromDate(ad)) : null;
+  }
+  if (fromEra === "ad" && target === "bs") {
+    const date = new Date(parts.year, parts.month - 1, parts.day, 12);
+    if (date.getFullYear() !== parts.year) return null;
+    const bs = adToBS(date);
+    // `adToBS` clamps dates before the table; make sure it round-trips.
+    const back = bsToAdOrNull(bs.year, bs.month, bs.day);
+    if (!back || civilIsoFromDate(back) !== civilIsoFromDate(date)) return null;
+    return { year: bs.year, month: bs.month, day: bs.day };
+  }
+  return null;
+}
+
+/**
+ * Calendar-system switch on a day page: keep the same civil date, re-addressed in
+ * the new calendar's era. The language is untouched. BBS/BC days (no local answer)
+ * fall back to today, like the month browse does.
+ */
+export function patroDayFetchForCalendar(
+  state: PatroDayFetchState,
+  calendar: CalendarSystem,
+): PatroDayFetchState {
+  if (calendarForEra(state.display.era) === calendar) return state;
+  const era = eraForCalendar(calendar);
+  const display: PatroDisplayContext = { era, language: state.display.language };
+  if (state.kind !== "input") return { ...state, display };
+  const parts = convertCivilParts(state.inputEra, state, era);
+  if (!parts) return { kind: "today", display };
+  return { kind: "input", inputEra: era, ...parts, display };
 }
 
 /** Mirror active UI language into day-browse URL (language toggle). */

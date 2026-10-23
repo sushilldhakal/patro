@@ -9,7 +9,7 @@ import {
 import { usePanchangaSidebarNav, type PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
 import { KundaliSidebarSubnav, parseKundaliSectionFromHash } from "@/components/panchanga/KundaliSidebarSubnav";
 import { parseKundaliProfileId } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
-import { buildPageSearch, getLanguageForEra, parseEraFromUrl, type EraSelection } from "@vedic-patro/domain/calendar/era";
+import { buildPageSearch, parseEraFromUrl, type EraSelection } from "@vedic-patro/domain/calendar/era";
 import { locationSearchFingerprint, locationToSearch, patroRouteLinkSearch, sameLocationParams, searchToLocation, validateLocationSearch } from "@/lib/url-state";
 import type { CalendarEra } from "@/lib/patro-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
@@ -46,7 +46,7 @@ function itemSearch(
   const path = item.params ? resolveSidebarLinkPath(item.to, item.params) : item.to;
   if (item.id === "panchak-patro" || isYearScopedPath(path)) {
     return buildPageSearch(
-      { era: active.era, language: getLanguageForEra(active.era), year: active.year },
+      { era: active.era, language: active.language, year: active.year },
       locationToSearch(location) as Record<string, unknown>,
     ) as Record<string, unknown>;
   }
@@ -86,7 +86,8 @@ export function PanchangaSidebarNav({ className }: { className?: string }) {
 
   const hash = useRouterState({ select: (s) => s.location.hash });
   const fallbackLang = lang === "en" ? "en" : "ne";
-  const activeEraSelection = parseEraFromUrl(rawSearch, fallbackLang);
+  // Sidebar links carry the UI language (never one derived from the era).
+  const activeEraSelection: EraSelection = { ...parseEraFromUrl(rawSearch, fallbackLang), language: fallbackLang };
   const nav = usePanchangaSidebarNav({ pathname });
   const kundaliProfileId = parseKundaliProfileId(pathname);
   const kundaliSectionId = parseKundaliSectionFromHash(hash);

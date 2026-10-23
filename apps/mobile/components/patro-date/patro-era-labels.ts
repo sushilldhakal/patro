@@ -5,19 +5,19 @@ import { tFor } from "@vedic-patro/i18n/runtime";
 
 export { patroEraShortLabel };
 
+/**
+ * The pair toggle (BS↔BBS, AD↔BC) follows the era, never the language: English can
+ * browse BS and Nepali can browse AD.
+ */
 export function patroEraToggleLabel(
   era: Era,
   pick: (ne: string, en: string) => string,
   lang: "ne" | "en",
 ): string {
-  if (lang === "en") {
-    return era === "ad"
-      ? pick("Switch to B.C.", "Switch to B.C.")
-      : pick("Switch to A.D.", "Switch to A.D.");
-  }
-  return era === "bs"
-    ? pick(tFor("ne", "ui.patro_date.switch_to_b_b_s"), tFor("en", "ui.patro_date.switch_to_b_b_s"))
-    : pick(tFor("ne", "ui.patro_date.switch_to_b_s"), tFor("en", "ui.patro_date.switch_to_b_s"));
+  if (era === "bs") return pick(tFor("ne", "ui.patro_date.switch_to_b_b_s"), tFor("en", "ui.patro_date.switch_to_b_b_s"));
+  if (era === "bbs") return pick(tFor("ne", "ui.patro_date.switch_to_b_s"), tFor("en", "ui.patro_date.switch_to_b_s"));
+  const target: Era = era === "ad" ? "bc" : "ad";
+  return tFor(lang, "patro_date.switch_to_era", { era: patroEraShortLabel(target, lang) });
 }
 
 export function patroEraYearSectionTitle(

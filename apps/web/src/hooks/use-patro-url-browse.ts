@@ -3,7 +3,6 @@ import type { NavigateOptions } from "@tanstack/react-router";
 import type { PatroMonthBrowseSearch, PatroYearBrowseSearch } from "@/lib/patro-era";
 import {
   buildPageSearch,
-  getLanguageForEra,
   parseEraFromUrl,
   type EraSelection,
   type Language,
@@ -44,11 +43,11 @@ function urlMonthUnparseable(search: object, language: Language): boolean {
 
 function eraBrowseSelection(
   browse: { era: EraSelection["era"]; year: number; month?: number },
-  urlLanguage?: Language,
+  language: Language,
 ): EraSelection {
   return {
     era: browse.era,
-    language: urlLanguage ?? getLanguageForEra(browse.era),
+    language,
     year: browse.year,
     month: browse.month,
   };
@@ -57,12 +56,12 @@ function eraBrowseSelection(
 function buildEraBrowseSearch(
   loc: PanchangaLocation | undefined,
   browse: { era: EraSelection["era"]; year: number; month?: number },
-  extra?: Record<string, unknown>,
-  urlLanguage?: Language,
+  extra: Record<string, unknown> | undefined,
+  language: Language,
 ): Record<string, unknown> {
   return {
     ...(loc ? locationToSearch(loc) : {}),
-    ...buildPageSearch(eraBrowseSelection(browse, urlLanguage), extra),
+    ...buildPageSearch(eraBrowseSelection(browse, language), extra),
   };
 }
 
@@ -84,9 +83,9 @@ function applyEraBrowseFromSearch(
   if (urlMonthUnparseable(search, language)) return;
 
   const parsed = parseEraFromUrl(raw, language);
-  // Share URL still reflects the old UI language (e.g. ne+bs) while i18n just
-  // flipped — applying it would fight usePatro*Browse's language→era sync and
-  // loop navigate/replace forever.
+  // The URL still carries the previous UI language while i18n just flipped; the
+  // mirror effect rewrites it next. Applying a stale URL now would fight that
+  // rewrite, so wait for the URL to catch up with the UI language.
   if (parsed.language !== language) return;
 
   const coerced = coerceMonthBrowseFromUrl(parsed.era, parsed.year, parsed.month);

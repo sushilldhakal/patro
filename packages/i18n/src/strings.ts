@@ -25,6 +25,15 @@ export const strings = {
   /* ── app_name ────────────────────────────────────────────────────────── */
   "app_name": { ne: "वैदिक पात्रो", en: "Dhakal Patro" },
 
+  /* ── calendar_system (BS / AD preference, independent of language) ────── */
+  "calendar_system.label": { ne: "पात्रो", en: "Calendar" },
+  "calendar_system.bs": { ne: "वि.सं.", en: "BS" },
+  "calendar_system.ad": { ne: "ई.सं.", en: "AD" },
+  "calendar_system.bs_hint": { ne: "विक्रम संवत् मितिहरू", en: "Bikram Sambat dates (Baisakh, Jestha...)" },
+  "calendar_system.ad_hint": { ne: "ग्रेगोरियन मितिहरू", en: "Gregorian dates (January, February...)" },
+  "calendar_system.switch_aria": { ne: "पात्रो प्रणाली छान्नुहोस्", en: "Choose calendar system" },
+  "calendar_system.onboarding_title": { ne: "तपाईंले कुन मिति प्रयोग गर्नुहुन्छ?", en: "Which dates do you use?" },
+
   /* ── offline (the app's offline data page) ──────────────────────────────── */
   "offline.group.calendar.name": { ne: "पात्रो, चाडपर्व र साइत", en: "Calendar, festivals & sait" },
   "offline.group.calendar.hint": {
@@ -1986,6 +1995,11 @@ export const strings = {
   "holidays.col_days": { ne: "दिन", en: "Days" },
   "holidays.col_type": { ne: "प्रकार", en: "Type" },
   "holidays.col_govt": { ne: "सरकारी बिदा", en: "Gov't Holiday" },
+  "holidays.type_lunar": { ne: "चान्द्र", en: "Lunar" },
+  "holidays.type_solar": { ne: "सौर", en: "Solar" },
+  "holidays.type_bs_fixed": { ne: "वि.सं. तोकिएको", en: "Fixed BS date" },
+  "holidays.type_ad_fixed": { ne: "ई.सं. तोकिएको", en: "Fixed AD date" },
+  "holidays.type_adhik_arambha": { ne: "अधिक मास आरम्भ", en: "Adhik Maas start" },
 
   /* ── rel ─────────────────────────────────────────────────────────────── */
   "rel.today": { ne: "आज", en: "Today" },

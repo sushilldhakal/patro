@@ -4,7 +4,7 @@
  * `test/patro-calendar-header.test.ts` pin them down.
  */
 import type { Era } from "@vedic-patro/domain/calendar/era";
-import { isGregorianEraBrowse, adMonthLabel, bsMonthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { monthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 
 const DEVANAGARI_ZERO = 0x0966;
@@ -30,12 +30,11 @@ export function parseYearInput(text: string, era: Era): number | null {
 
 export type MonthOption = { month: number; label: string; selected: boolean };
 
-/** The twelve month buttons of the picker, named for the era being browsed. */
+/** The twelve month buttons of the picker, named for the era being browsed in the UI language (English BS → Baisakh…). */
 export function monthOptions(era: Era, selectedMonth: number, lang: string): MonthOption[] {
-  const label = isGregorianEraBrowse(era) ? adMonthLabel : bsMonthLabel;
   return Array.from({ length: 12 }, (_, i) => ({
     month: i + 1,
-    label: label(i + 1, lang),
+    label: monthLabel(era, i + 1, lang),
     selected: i + 1 === selectedMonth,
   }));
 }

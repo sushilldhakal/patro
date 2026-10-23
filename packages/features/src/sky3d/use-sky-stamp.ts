@@ -1,14 +1,15 @@
 /**
  * The 3D sky's time stamp, shared by both apps'
  * `components/sky3d/AakashGocharSky.tsx`: the HUD's date and time · place
- * line (Bikram Samvat in Nepali, marked approximate past the compiled table;
- * proleptic Gregorian in English) and the corner pill's short day and
+ * line (Bikram Samvat by default, marked approximate past the compiled table;
+ * proleptic Gregorian when the AD calendar is on — the language only names the
+ * parts) and the corner pill's short day and
  * twelve-hour clock. Also the graha list the camera can follow.
  */
 import { useMemo } from "react";
-import { bsMonthLabel, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { bsMonthLabel, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bikramFromSun } from "@vedic-patro/domain/astronomy/sky3d/bikram-solar";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 /**
  * The place's civil midnight, from an instant already shifted to the place's
@@ -36,6 +37,7 @@ export function useSkyStamp({
   sunSpeed?: number;
 }) {
   const { t, lang, digits } = useLocale();
+  const { calendar } = useCalendarSystem();
   return useMemo(() => {
     const local = new Date(simDate.getTime() + zoneOffsetMs);
     const y = local.getUTCFullYear();
@@ -62,23 +64,29 @@ export function useSkyStamp({
       clock: `${digits(h12)}:${digits(minute)} ${half}`,
     };
 
-    if (lang === "en") return { date: `${adYear}-${mo}-${d}`, time: `${wall} · ${place}`, short };
+    if (calendar === "ad") {
+      const adDate =
+        lang === "en"
+          ? `${adYear}-${mo}-${d}`
+          : `${y > 0 ? digits(y) : t("ui.sky3d.x_775bec8c", { v0: digits(1 - y) })}-${digits(mo)}-${digits(d)}`;
+      return { date: adDate, time: `${digits(wall)} · ${place}`, short };
+    }
 
-    const adYearNe = y > 0 ? t("ui.sky3d.x_87454780", { v0: digits(y) }) : t("ui.sky3d.x_775bec8c", { v0: digits(1 - y) });
+    const adYearLabel = y > 0 ? t("ui.sky3d.x_87454780", { v0: digits(y) }) : t("ui.sky3d.x_775bec8c", { v0: digits(1 - y) });
     const mark = bs.approximate ? "≈" : "";
     return {
       short,
       date: t("ui.sky3d.x_5616de2b", {
         v0: mark,
         v1: digits(bs.year),
-        v2: bsMonthLabel(bs.month, "ne"),
+        v2: bsMonthLabel(bs.month, lang),
         v3: digits(bs.day),
-        v4: WEEKDAYS_SHORT_NE[weekday],
+        v4: lang === "en" ? WEEKDAYS_SHORT[weekday] : WEEKDAYS_SHORT_NE[weekday],
       }),
       // Out past the table the AD year rides along, to check against a known calendar.
-      time: `${digits(wall)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
+      time: `${digits(wall)} · ${place}${bs.approximate ? ` · ${adYearLabel}` : ""}`,
     };
-  }, [simDate, zoneOffsetMs, timeZone, lang, digits, sunLongitude, sunSpeed, t]);
+  }, [simDate, zoneOffsetMs, timeZone, lang, calendar, digits, sunLongitude, sunSpeed, t]);
 }
 
 /** Bodies the camera can focus on / follow, with their catalogue keys. */

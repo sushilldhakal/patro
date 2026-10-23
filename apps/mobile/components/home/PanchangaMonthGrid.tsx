@@ -28,6 +28,8 @@ type Props = {
   selectedAd?: string;
   loading?: boolean;
   onPickDay: (day: CalendarDay) => void;
+  /** Which calendar's day is the big number: follows the browsed era, never the UI language. */
+  primaryDate?: "bs" | "ad";
   /** Phone home: calendar spans full width like vedicpatro.com max-md. */
   edgeToEdge?: boolean;
 };
@@ -38,6 +40,7 @@ export function PanchangaMonthGrid({
   selectedAd,
   loading,
   onPickDay,
+  primaryDate = "bs",
 }: Props) {
   const theme = useThemeColors();
   const { isDark } = useTheme();
@@ -55,12 +58,13 @@ export function PanchangaMonthGrid({
     isEn ? (bold ? "font-num-bold" : "font-num") : undefined;
 
   const travel = useMonthTravel(days);
-  const grid = usePanchangaMonthGrid({ days, todayAd, selectedAd });
-  const incomingGrid = usePanchangaMonthGrid({ days: travel.to ?? days, todayAd, selectedAd });
+  const grid = usePanchangaMonthGrid({ days, todayAd, selectedAd, primaryDate });
+  const incomingGrid = usePanchangaMonthGrid({ days: travel.to ?? days, todayAd, selectedAd, primaryDate });
   const outgoingGrid = usePanchangaMonthGrid({
     days: travel.from ?? days,
     todayAd,
     selectedAd,
+    primaryDate,
   });
 
   const renderRows = (source: typeof grid, pulse: boolean) =>

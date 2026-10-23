@@ -23,7 +23,6 @@ import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-b
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@/i18n/locale";
 import { usePanchangaMonthGrid, type PanchangaMonthCell } from "@vedic-patro/features/home";
-import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
@@ -54,9 +53,9 @@ export function PanchangaMonthGrid({
   onPickDay,
   gridEra = "bs",
 }: Props) {
-  const { isEnglish } = useLocale();
-  const calendarEra = useCalendarEra();
-  const isAdCalendar = gridEra === "ad" || calendarEra === "ad" || isEnglish;
+  const { lang } = useLocale();
+  // Which calendar the grid shows comes from the era, never from the UI language.
+  const isAdCalendar = gridEra === "ad";
   const monthFetchEra: Era = isAdCalendar ? "ad" : gridEra === "bbs" ? "bbs" : "bs";
   const bsFromDate = adToBS(date);
   const bs = useMemo(
@@ -136,12 +135,14 @@ export function PanchangaMonthGrid({
         false,
         true,
         monthFetchEra,
+        lang,
       ),
       queryFn: () =>
         fetchMonthCalendar(year, month, locationParams, {
           full: false,
           excludeInternational: true,
           era: monthFetchEra,
+          language: lang,
         }),
       staleTime: 1000 * 60 * 60,
       placeholderData: keepPreviousData,

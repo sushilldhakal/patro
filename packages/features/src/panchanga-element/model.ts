@@ -15,9 +15,10 @@ import {
 import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import type { TFunction } from "@vedic-patro/i18n/react";
+import type { CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 
 type AnyRow = Record<string, unknown>;
-type Text = { t: TFunction; lang: string; digits: (v: string | number) => string };
+type Text = { t: TFunction; lang: string; digits: (v: string | number) => string; calendar?: CalendarSystem };
 
 /** Auspicious / inauspicious, as the API writes a row's quality (Nepali). */
 const SHUBHA = "\u0936\u0941\u092d"; // copy-ok: API value
@@ -29,11 +30,11 @@ export type SpanBoundaryView = { label: string; time: string; when: string };
 export type SpanCard = { key: string; span: ElementSpan; name: string; paksha?: string; begins: SpanBoundaryView; ends: SpanBoundaryView };
 
 export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[] {
-  const { t, lang, digits } = text;
+  const { t, lang, digits, calendar } = text;
   const boundary = (label: string, stamp: ElementSpan["begins"]): SpanBoundaryView => ({
     label,
     time: digits(stamp.time_label),
-    when: formatElementStampDisplay(stamp, lang),
+    when: formatElementStampDisplay(stamp, lang, calendar),
   });
   return spans.map((s, i) => ({
     key: `${s.name}-${i}`,

@@ -1,19 +1,18 @@
 import { useSyncExternalStore } from "react";
-import i18n from "@/i18n";
+import { subscribeCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 import { type CalendarEra, readCalendarEra } from "@/lib/patro-era";
+import { CALENDAR_PREF_EVENT } from "@/lib/user-preferences";
 
 function subscribe(onStoreChange: () => void): () => void {
   const handler = () => onStoreChange();
-  i18n.on("languageChanged", handler);
-  i18n.on("loaded", handler);
+  const unsubscribe = subscribeCalendarSystem(handler);
   if (typeof window !== "undefined") {
-    window.addEventListener("patro-lang-pref", handler);
+    window.addEventListener(CALENDAR_PREF_EVENT, handler);
   }
   return () => {
-    i18n.off("languageChanged", handler);
-    i18n.off("loaded", handler);
+    unsubscribe();
     if (typeof window !== "undefined") {
-      window.removeEventListener("patro-lang-pref", handler);
+      window.removeEventListener(CALENDAR_PREF_EVENT, handler);
     }
   };
 }

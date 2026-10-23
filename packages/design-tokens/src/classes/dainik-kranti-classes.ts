@@ -122,7 +122,7 @@ export const dainikKrantiClasses = {
   legendDate: "ml-auto text-sm",
   legendBody: "gap-x-8 gap-y-6 p-4",
   legendHeading: "mb-2 text-sm font-semibold uppercase tracking-wide",
-  legendPlanetRow: "flex flex-row items-baseline gap-1.5 text-sm",
+  legendPlanetRow: "flex min-w-0 flex-row flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm",
   legendPlanetText: "text-sm",
   motionPill: "ml-auto shrink-0 rounded px-1.5 text-xs",
   motionVakri: "bg-rose-500/15 text-rose-600 dark:text-rose-300",

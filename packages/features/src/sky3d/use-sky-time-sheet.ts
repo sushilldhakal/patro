@@ -1,7 +1,7 @@
 /**
  * The time sheet over the 3D sky, shared by the website's and the app's
  * `components/sky3d/SkyTimeSheet.tsx`: the six wall-clock fields (Bikram
- * Samvat year / month / day in Nepali, Gregorian in English) with their
+ * Samvat year / month / day by default, Gregorian when AD is on) with their
  * values, step and typed-entry handling, the speed line, previous / next
  * night and now, the daylight scrub and its day-part labels, and copy.
  * Each app draws the sheet, its sliders and its hold-to-repeat buttons.
@@ -13,7 +13,7 @@ import { civilGregorianToUtcMs } from "@vedic-patro/domain/calendar/patro-day";
 import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { DAY_PERIODS, periodIdAtHour, wallCivilUtc, wallPartsFromMs, type WallParts } from "@vedic-patro/domain/astronomy/sky3d/sky-time";
 import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/astronomy/sky3d/time-steps";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 export type SkyTimeField = keyof WallParts;
 
@@ -171,7 +171,9 @@ export function useSkyTimeSheet({
   onApplyMs: (ms: number) => void;
 }) {
   const { t, lang, digits } = useLocale();
-  const nepaliCal = lang !== "en";
+  const { calendar } = useCalendarSystem();
+  /** The calendar preference (not the language) decides BS vs Gregorian fields. */
+  const nepaliCal = calendar === "bs";
   const parts = wallPartsFromMs(timeMs, zoneOffsetMs);
   const ne = nepaliCal ? nepaliYmd(parts) : null;
   const paused = timeRate === 0;

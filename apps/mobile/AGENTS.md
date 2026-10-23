@@ -43,7 +43,7 @@ Single source: `components/patro-date/`.
 | `year-month` | Home calendar month browse | `PatroDateNav mode="year-month"` |
 | `year-month-time` | Panchanga day + clock | `PatroDateNav mode="year-month-time"` or `PanchangaDateNav` |
 
-Phone: date/location chips + bottom sheet with **Date | Location** tabs. Tablet: inline pickers (web md+ parity). Era toggle in sheet: **BS↔BBS** (Nepali) or **AD↔BC** (English).
+Phone: date/location chips + bottom sheet with **Date | Location** tabs. Tablet: inline pickers (web md+ parity). Era toggle in sheet: **BS↔BBS** or **AD↔BC** (follows the browsed era, never the language). Language and calendar system (BS | AD, `CalendarSystemToggle`) are independent preferences.
 
 Do not add new date picker UIs outside this folder.
 

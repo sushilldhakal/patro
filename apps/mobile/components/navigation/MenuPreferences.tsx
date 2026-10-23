@@ -4,6 +4,7 @@ import * as Updates from "expo-updates";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
@@ -24,7 +25,7 @@ function runningBuildLine(): string {
   return `${build} · ${channel} · ${update}`;
 }
 
-/** Offline download, language, and theme — last block of the sidebar scroll. */
+/** Offline download, language, calendar system, and theme — last block of the sidebar scroll. */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
   const { t } = useLocale();
   const colors = useThemeColors();
@@ -44,6 +45,10 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
       <View className="flex-row items-center justify-between gap-3">
         <Text className="text-sm text-foreground">{t("language")}</Text>
         <LanguageSwitcher />
+      </View>
+      <View className="flex-row items-center justify-between gap-3">
+        <Text className="text-sm text-foreground">{t("calendar_system.label")}</Text>
+        <CalendarSystemToggle />
       </View>
       <View className="flex-row items-center justify-between gap-3">
         <Text className="text-sm text-foreground">{t("ui.common.theme")}</Text>

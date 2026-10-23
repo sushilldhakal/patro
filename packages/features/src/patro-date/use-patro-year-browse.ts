@@ -1,25 +1,32 @@
 /**
  * Year browse state, shared by the website's `hooks/use-patro-year-browse.ts`
  * and the app's `lib/use-patro-year-browse.ts`: a positive year in the active
- * era (no BS<->AD conversion), reset to the language's default era and that
- * era's "today" when the UI language changes.
+ * era. The UI language never touches it; when the calendar preference (BS / AD)
+ * changes the browsed year is converted to the new system.
  *
- * Each app passes its own starting era as `options.era`.
+ * Each app may pass its own starting era as `options.era`; without one the era
+ * follows the calendar preference.
  */
 import { useEffect, useState } from "react";
-import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
+import { patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceYearBrowseFromUrl,
   defaultBrowseYear,
   patroBrowseTodayYear,
   positiveInt,
 } from "@vedic-patro/domain/calendar/patro-browse-params";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem } from "@vedic-patro/i18n/react";
 import { rememberBrowse, rememberedYear } from "@vedic-patro/domain/calendar/remembered-browse";
+import { convertBrowseMonth } from "./convert-browse-month";
 
 export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?: Era | null }) {
-  const { lang } = useLocale();
-  const initialEra = options?.era ?? defaultEraForLanguage(lang === "en" ? "en" : "ne");
+  // Subscribe so the hook re-renders on a change, but read the live value: while a
+  // prerendered page hydrates, the hook still returns the server's default (BS), and
+  // seeding from that would convert a stored-AD reader's explicit ?era=bs link.
+  useCalendarSystem();
+  const calendar = getCalendarSystem();
+  const initialEra = options?.era ?? eraForCalendar(calendar);
   const [era, setEraState] = useState<Era>(() => initialEra);
   const [year, setYearState] = useState(() => {
     if (initial?.year != null) {
@@ -28,13 +35,15 @@ export function usePatroYearBrowse(initial?: { year?: number }, options?: { era?
     // No year in the link: open on the year the reader last browsed to.
     return rememberedYear(initialEra) ?? defaultBrowseYear(initialEra);
   });
-  const [syncedLang, setSyncedLang] = useState(lang);
+  const [syncedCalendar, setSyncedCalendar] = useState(calendar);
 
-  if (lang !== syncedLang) {
-    setSyncedLang(lang);
-    const nextEra = defaultEraForLanguage(lang === "en" ? "en" : "ne");
-    setEraState(nextEra);
-    setYearState(defaultBrowseYear(nextEra));
+  // The calendar preference changed: show the year that holds the same time in the new system.
+  // A BS year starts in April, so BS 2083 ↔ AD 2026 converts through Baisakh (BS→AD) and July (AD→BS).
+  if (calendar !== syncedCalendar) {
+    setSyncedCalendar(calendar);
+    const next = convertBrowseMonth(era, year, era === "ad" ? 7 : 1, calendar);
+    setEraState(next.era);
+    setYearState(next.year);
   }
 
   useEffect(() => {

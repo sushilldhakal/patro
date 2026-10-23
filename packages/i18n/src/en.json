@@ -1,5 +1,14 @@
 {
   "app_name": "Dhakal Patro",
+  "calendar_system": {
+    "label": "Calendar",
+    "bs": "BS",
+    "ad": "AD",
+    "bs_hint": "Bikram Sambat dates (Baisakh, Jestha...)",
+    "ad_hint": "Gregorian dates (January, February...)",
+    "switch_aria": "Choose calendar system",
+    "onboarding_title": "Which dates do you use?"
+  },
   "offline": {
     "group": {
       "calendar": {
@@ -1168,7 +1177,12 @@
     "col_ad_date": "AD Date",
     "col_days": "Days",
     "col_type": "Type",
-    "col_govt": "Gov't Holiday"
+    "col_govt": "Gov't Holiday",
+    "type_lunar": "Lunar",
+    "type_solar": "Solar",
+    "type_bs_fixed": "Fixed BS date",
+    "type_ad_fixed": "Fixed AD date",
+    "type_adhik_arambha": "Adhik Maas start"
   },
   "rel": {
     "today": "Today",

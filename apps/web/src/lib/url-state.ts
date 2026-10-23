@@ -1,13 +1,13 @@
 import type { LocationParams } from "@/lib/api";
 import {
   buildPageSearch,
-  getLanguageForEra,
   parseEraFromUrl,
   type Era,
   type EraSelection,
 } from "@vedic-patro/domain/calendar/era";
 import {
   readCalendarEra,
+  readUiLanguage,
   validatePatroBrowseMonth,
   type CalendarEra,
   type PatroMonthBrowseSearch,
@@ -171,13 +171,13 @@ export function hasPatroDayUrlIdentity(search: Record<string, unknown>): boolean
 }
 
 function fallbackLanguageFromUi(): "en" | "ne" {
-  return readCalendarEra() === "ad" ? "en" : "ne";
+  return readUiLanguage();
 }
 
 function eraSelectionFromYearBrowse(browse: PatroYearBrowse): EraSelection {
   return {
     era: browse.era,
-    language: getLanguageForEra(browse.era),
+    language: readUiLanguage(),
     year: browse.year,
   };
 }
@@ -185,7 +185,7 @@ function eraSelectionFromYearBrowse(browse: PatroYearBrowse): EraSelection {
 function eraSelectionFromMonthBrowse(browse: PatroMonthBrowse): EraSelection {
   return {
     era: browse.era,
-    language: getLanguageForEra(browse.era),
+    language: readUiLanguage(),
     year: browse.year,
     month: browse.month,
   };
@@ -269,7 +269,7 @@ export function buildDainikKrantiSearch(
 ): DainikKrantiSearch {
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
     year,
     month,
   };
@@ -290,7 +290,7 @@ export function buildPatroYearRangeSearch(
 ): PanchangaYearSearch & LocationSearch {
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
     year: startYear,
     month: startMonth > 1 ? startMonth : undefined,
   };
@@ -367,7 +367,7 @@ export function currentPatroMonthLinkSearch(
 ): DainikKrantiSearch {
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
   };
   return {
     ...locationToSearch(loc),
@@ -382,7 +382,7 @@ export function currentPatroYearLinkSearch(
 ): PatroYearBrowseSearch & LocationSearch {
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
   };
   return {
     ...locationToSearch(loc),
@@ -410,7 +410,7 @@ export function currentPatroDayLinkSearch(
   const displayEra = (browse.era ?? eraLegacy) as Era;
   const display = {
     era: displayEra,
-    language: getLanguageForEra(displayEra),
+    language: readUiLanguage(),
   };
 
   if (browse.year != null && browse.month != null && browse.day != null) {
@@ -475,7 +475,7 @@ export function patroElementLinkSearch(
   }
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
   };
   return {
     ...locationToSearch(loc),
@@ -537,7 +537,7 @@ export function patroYearLinkSearch(
 ): PatroYearBrowseSearch & LocationSearch {
   const selection: EraSelection = {
     era: era as Era,
-    language: getLanguageForEra(era as Era),
+    language: readUiLanguage(),
     year,
   };
   return {

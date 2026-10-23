@@ -14,7 +14,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import { patroBrowseTodayEra } from "@vedic-patro/domain/calendar/era";
 import { defaultMonthBrowseParts } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
-import { bsMonthLabel, adMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { isGregorianEraBrowse, monthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { shiftPatroBrowseMonth, stepPatroBrowseYear } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
@@ -44,7 +44,7 @@ export function usePatroCalendarHeader({
   const [invalid, setInvalid] = useState(false);
 
   const yearLabel = (y: number) => toNepaliDigits(y, lang);
-  const monthName = (isGregorianEraBrowse(era) ? adMonthLabel : bsMonthLabel)(month, lang);
+  const monthName = monthLabel(era, month, lang);
 
   const openPanel = (next: CalendarHeaderPanel | null) => {
     if (next === "month") {

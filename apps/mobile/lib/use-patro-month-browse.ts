@@ -1,7 +1,9 @@
 import { usePatroMonthBrowse as useSharedPatroMonthBrowse } from "@vedic-patro/features/patro-date";
-import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 
-/** Month + year browse (shared hook) starting in the onboarding era choice. */
+/**
+ * Month + year browse (shared hook). It starts in the era of the calendar-system
+ * preference (BS / AD) and follows that preference when it changes — never the language.
+ */
 export function usePatroMonthBrowse(initial?: { year?: number; month?: number }) {
-  return useSharedPatroMonthBrowse(initial, { era: getCachedCalendarEraPreference() });
+  return useSharedPatroMonthBrowse(initial);
 }

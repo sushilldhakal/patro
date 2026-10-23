@@ -8,7 +8,7 @@ import { DailyBriefingCard, RashifalNotificationCard, SectionTitle } from "@/com
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useLocale } from "@/lib/i18n";
+import { useCalendarSystem, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { syncNotifications } from "@/lib/notifications/sync";
@@ -26,6 +26,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 export default function SettingsScreen() {
   const { t, lang, setLang, digits } = useLocale();
   const l = lang === "en" ? "en" : "ne";
+  const { calendar, setCalendar } = useCalendarSystem();
   const router = useRouter();
   const colors = useThemeColors();
   const { preference, setPreference } = useTheme();
@@ -94,6 +95,14 @@ export default function SettingsScreen() {
           <Card className="flex-row flex-wrap gap-2">
             <Chip label={t("switch_to_nepali")} active={l === "ne"} onPress={() => void setLang("ne")} />
             <Chip label={t("switch_to_english")} active={l === "en"} onPress={() => void setLang("en")} />
+          </Card>
+        </View>
+
+        <View>
+          <SectionTitle>{t("calendar_system.label")}</SectionTitle>
+          <Card className="flex-row flex-wrap gap-2">
+            <Chip label={t("calendar_system.bs")} active={calendar === "bs"} onPress={() => setCalendar("bs")} />
+            <Chip label={t("calendar_system.ad")} active={calendar === "ad"} onPress={() => setCalendar("ad")} />
           </Card>
         </View>
 

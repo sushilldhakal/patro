@@ -4,7 +4,9 @@ import { setupI18n } from "@vedic-patro/i18n/setup";
 import { setLanguage, translateList as translateListIn, type Lang } from "@vedic-patro/i18n/runtime";
 import en from "@vedic-patro/i18n/en.json";
 import ne from "@vedic-patro/i18n/ne.json";
+import { configureCalendarPersistence } from "@vedic-patro/domain/calendar/calendar-system";
 import { getStoredLanguage, setStoredLanguage, type AppLanguage } from "@/lib/language-storage";
+import { setStoredCalendar } from "@/lib/calendar-system-storage";
 
 export type { AppLanguage };
 
@@ -15,7 +17,10 @@ export type { AppLanguage };
  */
 setupI18n({ bundles: { ne, en }, persist: (lang) => void setStoredLanguage(lang) });
 
-export { useLocale, useTranslation } from "@vedic-patro/i18n/react";
+/** The calendar system (BS/AD) is stored apart from the language and never follows it. */
+configureCalendarPersistence({ persist: (c) => void setStoredCalendar(c) });
+
+export { useLocale, useTranslation, useCalendarSystem } from "@vedic-patro/i18n/react";
 
 /** Read a key that holds a list (the SEO FAQ blocks) rather than a string. */
 export function translateList<T>(lang: AppLanguage, key: string): T[] {

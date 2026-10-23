@@ -66,13 +66,13 @@ export function useHolidaysPage({
   const [sort, setSort] = useState<HolidaySort>(null);
 
   const holidaysQ = useQuery({
-    queryKey: holidayKeys.holidays(year, era, location),
-    queryFn: () => fetchHolidays(year, era, location),
+    queryKey: holidayKeys.holidays(year, era, location, lang),
+    queryFn: () => fetchHolidays(year, era, location, lang),
     staleTime: HOUR,
   });
   const festivalsQ = useQuery({
-    queryKey: holidayKeys.festivals(year, era, undefined, location),
-    queryFn: () => fetchFestivals(year, { era, location }),
+    queryKey: holidayKeys.festivals(year, era, undefined, location, lang),
+    queryFn: () => fetchFestivals(year, { era, location, language: lang }),
     staleTime: HOUR,
   });
 

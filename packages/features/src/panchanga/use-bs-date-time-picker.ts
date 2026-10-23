@@ -13,10 +13,10 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMonthCalendarRaw, type CalendarDay, type LocationParams } from "@vedic-patro/api-client";
 import {
-  AD_MONTH_NAMES,
   BS_MONTH_NAMES,
   WEEKDAYS_MIN,
   WEEKDAYS_SHORT_NE,
+  adMonthLabel,
   adToBS,
   bsMonthLabel,
   bsToAdOrNull,
@@ -264,7 +264,7 @@ export function useBsDateTimePicker({
     setMonth: (m: number) => setMonthYear(dYear, m),
     setYear: (y: number) => setMonthYear(y, dMonth),
     monthOptions: isAd
-      ? AD_MONTH_NAMES.map((name, i) => ({ value: i + 1, label: name }))
+      ? Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: adMonthLabel(i + 1, lang) }))
       : BS_MONTH_NAMES.map((_, i) => ({ value: i + 1, label: bsMonthLabel(i + 1, lang) })),
     yearOptions: yearOptions.map((y) => ({ value: y, label: digits(y) })),
     prev: { disabled: dYear <= minYear && dMonth <= 1, go: () => stepMonth(-1), label: t("patro_date.prev_month") },

@@ -118,11 +118,11 @@ function HolidayCell({ row, column, yes }: { row: HolidayRow; column: HolidayCol
       return <Text className={holidaysClasses.cellName}>{row.name}</Text>;
     case "bsDate":
     case "adDate":
-      return <Text className={holidaysClasses.cellMono}>{row[column]}</Text>;
+      return <Text className={cn(holidaysClasses.cellMono, "whitespace-nowrap")}>{row[column]}</Text>;
     case "type":
       return (
         <span className={cn("inline-block", holidaysClasses.typeBadge)}>
-          <Text className={holidaysClasses.typeBadgeText}>{row.type}</Text>
+          <Text className={cn(holidaysClasses.typeBadgeText, "whitespace-nowrap")}>{row.type}</Text>
         </span>
       );
     case "isPublic":

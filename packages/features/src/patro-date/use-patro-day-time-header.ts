@@ -14,7 +14,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
 import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
-import { adMonthLabel, bsMonthLabel, isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { isGregorianEraBrowse, monthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { dayCells, firstWeekdayOfMonth, formatClock, monthOptions, parseClock, stepClock } from "./calendar-header-model";
@@ -71,7 +71,7 @@ export function usePatroDayTimeHeader({
 
   const digits = (v: string | number) => toNepaliDigits(v, lang);
   const pad = (n: number) => digits(String(n).padStart(2, "0"));
-  const monthName = (m: number) => (isGregorianEraBrowse(era) ? adMonthLabel : bsMonthLabel)(m, lang);
+  const monthName = (m: number) => monthLabel(era, m, lang);
   const lengthOf = (y: number, m: number) => monthLengthInBrowseEra(era, y, m);
   const select = (y: number, m: number, d: number) => onSelect(y, m, Math.min(d, lengthOf(y, m)));
 

@@ -13,7 +13,6 @@ import { Text } from "@/components/ui/Text";
 import { LoadingState } from "@/components/ui/States";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroNoteBox } from "@/lib/patro-classes";
-import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -28,8 +27,9 @@ export default function AdhikMaasScreen() {
   const params = useLocalSearchParams<{ year?: string }>();
   const linkedYear = Number(params.year);
   const linked = Number.isInteger(linkedYear) && linkedYear > 0;
+  // A linked year is a BS year; otherwise null falls back to the era of the calendar preference.
   const { era, setEra, year, setYear } = usePatroYearBrowse(linked ? { year: linkedYear } : undefined, {
-    era: linked ? "bs" : getCachedCalendarEraPreference(),
+    era: linked ? "bs" : null,
   });
   const page = useAdhikMaasPage({ year, era });
   const nearbyWidth = width >= 640 ? "19%" : "48%";

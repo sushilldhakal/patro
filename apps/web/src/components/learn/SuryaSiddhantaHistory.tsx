@@ -102,16 +102,16 @@ export function SuryaSiddhantaHistory() {
         href={HISTORY_SOURCE.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground transition-colors hover:border-secondary/50 hover:bg-secondary/5"
+        className="mt-5 inline-flex max-w-full items-center gap-2 rounded-2xl border border-border bg-card/80 px-4 py-2 text-sm text-foreground transition-colors hover:border-secondary/50 hover:bg-secondary/5"
       >
-        <Video className="size-4 text-destructive" />
-        {HISTORY_SOURCE.title}
-        <ExternalLink className="size-3.5" />
+        <Video className="size-4 shrink-0 text-destructive" />
+        <span className="min-w-0">{HISTORY_SOURCE.title}</span>
+        <ExternalLink className="size-3.5 shrink-0" />
       </a>
 
       <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {HISTORY_MILESTONES.map((m) => (
-          <div key={m.label} className={cn(tmFcard, "text-center")}>
+          <div key={m.label} className={cn(tmFcard, "min-w-0 text-center")}>
             <div className="big">{m.year}</div>
             <div className="lbl">{m.label}</div>
           </div>

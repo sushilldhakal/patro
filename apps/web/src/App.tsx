@@ -62,10 +62,18 @@ function LanguageBootstrap() {
     void applyStored();
     syncDocumentLang(stored ?? i18n.language);
 
+    let cachedLang = normalizeLang(i18n.language) as StoredLang;
     const onLanguageChanged = (lang: string) => {
       const next = normalizeLang(lang) as StoredLang;
       setStoredLanguage(next);
       syncDocumentLang(next);
+      if (next !== cachedLang) {
+        cachedLang = next;
+        // The same era (and so the same query key) is now served in two languages:
+        // drop what is cached for screens nobody is looking at and refetch the rest.
+        queryClient.removeQueries({ type: "inactive" });
+        void queryClient.invalidateQueries();
+      }
     };
     i18n.on("languageChanged", onLanguageChanged);
     return () => {

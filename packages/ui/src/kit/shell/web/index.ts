@@ -3,6 +3,7 @@ import { AccountMenu } from "./AccountMenu";
 import { AdhikMaasNotice } from "./AdhikMaasNotice";
 import { BsCalendarGrid } from "./BsCalendarGrid";
 import { BsNativeSelect } from "./BsNativeSelect";
+import { CalendarSystemToggle } from "./CalendarSystemToggle";
 import { AuthDialog } from "./AuthDialog";
 import { HomeQuickLinks } from "./HomeQuickLinks";
 import { HomeRashifalSignPicker } from "./HomeRashifalSignPicker";
@@ -52,6 +53,7 @@ export {
   PatroHeaderTabs,
   PatroMonthYearNav,
   PatroYearEraToggle,
+  CalendarSystemToggle,
   RelatedPageLinks,
   RituSeasons,
   PatroYearHeader,
@@ -74,6 +76,7 @@ export type {
   BsNativeSelectProps,
   AuthDialogViewProps,
   CalendarHeaderSegment,
+  CalendarSystemToggleProps,
   HomeQuickLinkGroup,
   HomeQuickLinkItem,
   HomeQuickLinksProps,
@@ -145,6 +148,7 @@ export const shellKit = {
   MuhurtaAsidePanel,
   PanchangaVivaranPanel,
   PatroYearEraToggle,
+  CalendarSystemToggle,
   RituSeasons,
   VerticalEdgeLabel,
   MatrixTable,

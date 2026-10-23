@@ -640,7 +640,7 @@ export function DainikKranti() {
             {gochar.rows.length === 0 ? (
               <p className={dainikKrantiClasses.panelText}>{gochar.emptyText}</p>
             ) : (
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2 xl:grid-cols-3">
                 {gochar.rows.map((g) => (
                   <div key={g.key} className={dainikKrantiClasses.legendPlanetRow}>
                     <span className={dainikKrantiClasses.legendMeaning}>{g.name}</span>

@@ -73,14 +73,19 @@ export const calendarPickerClasses = {
   webNavAside: "hidden shrink-0 flex-col items-end gap-2 md:flex",
   webStack: "relative flex w-full flex-col gap-3",
   // Day + time page header: 2 rows from phone to desktop (title / date picker left, tabs / location right).
-  webDtGrid: "relative grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3",
+  webDtGrid: "group/dt relative grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3",
   webDtTitle: "col-start-1 row-start-1",
-  webDtNav: "col-start-1 row-start-2",
+  // With no tabs/swap beside it, the date picker takes the whole row on phones (location only fills the row above).
+  webDtSolo: "dt-solo",
+  webDtNav: "col-start-1 row-start-2 group-[.dt-solo]/dt:max-md:col-span-2",
   webDtTabs: "col-start-2 row-start-2 justify-self-end max-md:hidden md:row-start-1",
   webDtSwap: "col-start-2 row-start-2 justify-self-end md:hidden",
   // Phones show month + day only; the year is already in the page title above.
   webDateFull: "truncate max-sm:hidden",
-  webDateShort: "truncate sm:hidden",
+  webDateShort: "truncate sm:hidden max-xs:text-sm",
+  // Below xs the date button's padding and the time beside the date tighten a step.
+  webDateDense: "max-xs:gap-1.5 max-xs:pl-2.5 max-xs:pr-2",
+  webDateTimeDense: "max-xs:pl-1.5 max-xs:text-sm",
   // The time always shows: on a phone the button is just "month day · time".
   webDateTimeHide: "",
   webDateIconHide: "max-xs:hidden",

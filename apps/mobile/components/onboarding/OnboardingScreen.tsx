@@ -10,12 +10,14 @@ import type { AppLanguage } from "@/lib/language-storage";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import {
   setOnboardingComplete,
-  setStoredCalendarEraPreference,
   setStoredDataMode,
-  type OnboardingCalendarEra,
   type OnboardingDataMode,
 } from "@/lib/onboarding-storage";
-import { setCachedCalendarEraPreference } from "@/lib/patro-era-preference";
+import {
+  DEFAULT_CALENDAR,
+  setCalendarSystem,
+  type CalendarSystem,
+} from "@vedic-patro/domain/calendar/calendar-system";
 
 import { neutral } from "@vedic-patro/design-tokens";
 import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
@@ -164,7 +166,8 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
   const [tour, setTour] = useState(false);
   const [language, setLanguage] = useState<AppLanguage>("ne");
-  const [era, setEra] = useState<OnboardingCalendarEra>("bs");
+  // Independent of the language picked above: BS unless the reader chooses AD.
+  const [calendar, setCalendar] = useState<CalendarSystem>(DEFAULT_CALENDAR);
   const [dataMode, setDataMode] = useState<OnboardingDataMode>("online");
   const [submitting, setSubmitting] = useState(false);
 
@@ -178,8 +181,9 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
     setSubmitting(true);
     try {
       setLang(language);
-      setCachedCalendarEraPreference(era);
-      await Promise.all([setStoredCalendarEraPreference(era), setStoredDataMode(dataMode)]);
+      // Updates the in-memory preference at once and persists it (hook set in lib/i18n.tsx).
+      setCalendarSystem(calendar);
+      await setStoredDataMode(dataMode);
       await setOnboardingComplete();
       // Which years to keep (and how big that is) is asked on the Offline Data
       // screen, which opens right after onboarding.
@@ -244,20 +248,21 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
         />
       </Section>
 
-      <Section label={tFor(undefined, "ui.onboarding.x_360302e9")}>
+      {/* The app language may not be applied yet, so this step reads in the language picked above. */}
+      <Section label={tFor(language, "calendar_system.onboarding_title")}>
         <OptionCard
           icon="calendar-outline"
-          title={tFor(undefined, "ui.onboarding.x_a2762b40")}
-          subtitle="Bikram Sambat"
-          selected={era === "bs"}
-          onPress={() => setEra("bs")}
+          title={tFor(language, "calendar_system.bs")}
+          subtitle={tFor(language, "calendar_system.bs_hint")}
+          selected={calendar === "bs"}
+          onPress={() => setCalendar("bs")}
         />
         <OptionCard
           icon="calendar-outline"
-          title={tFor(undefined, "ui.onboarding.x_514b3c9d")}
-          subtitle="Gregorian"
-          selected={era === "ad"}
-          onPress={() => setEra("ad")}
+          title={tFor(language, "calendar_system.ad")}
+          subtitle={tFor(language, "calendar_system.ad_hint")}
+          selected={calendar === "ad"}
+          onPress={() => setCalendar("ad")}
         />
       </Section>
 

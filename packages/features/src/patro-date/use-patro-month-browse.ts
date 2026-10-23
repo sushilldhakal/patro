@@ -1,15 +1,17 @@
 /**
  * Month + year browse state, shared by the website's
  * `hooks/use-patro-month-browse.ts` and the app's `lib/use-patro-month-browse.ts`:
- * positive year/month parts in the active era (no BS<->AD conversion), reset
- * to the language's default era when the UI language changes.
+ * positive year/month parts in the active era. The UI language never touches
+ * them; when the calendar preference (BS / AD) changes the browsed month is
+ * converted to the new system (see `convertBrowseMonth`).
  *
- * Each app passes its own starting era (the website's calendar-era store, the
- * app's onboarding choice) as `options.era`.
+ * Each app may pass its own starting era (the website's URL era) as `options.era`;
+ * without one the era follows the calendar preference.
  */
 import { useEffect, useState } from "react";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
-import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
+import { patroBrowseTodayEra, type Era } from "@vedic-patro/domain/calendar/era";
 import {
   coerceMonthBrowseFromUrl,
   defaultMonthBrowseParts,
@@ -18,8 +20,9 @@ import {
 } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { isValidBrowseYear, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem } from "@vedic-patro/i18n/react";
 import { rememberBrowse, rememberedMonth, rememberedYear } from "@vedic-patro/domain/calendar/remembered-browse";
+import { convertBrowseMonth } from "./convert-browse-month";
 
 function resolveInitialMonthBrowse(
   era: Era,
@@ -43,20 +46,24 @@ export function usePatroMonthBrowse(
   initial?: { year?: number; month?: number },
   options?: { era?: Era | null },
 ) {
-  const { lang } = useLocale();
-  const baseEra = options?.era ?? defaultEraForLanguage(lang === "en" ? "en" : "ne");
+  // Subscribe so the hook re-renders on a change, but read the live value: while a
+  // prerendered page hydrates, the hook still returns the server's default (BS), and
+  // seeding from that would convert a stored-AD reader's explicit ?era=bs link.
+  useCalendarSystem();
+  const calendar = getCalendarSystem();
+  const baseEra = options?.era ?? eraForCalendar(calendar);
   const initialParts = resolveInitialMonthBrowse(baseEra, initial);
 
   const [era, setEraState] = useState<Era>(() => initialParts.era);
   const [year, setYearState] = useState(() => initialParts.year);
   const [month, setMonthState] = useState(() => initialParts.month);
-  const [syncedLang, setSyncedLang] = useState(lang);
+  const [syncedCalendar, setSyncedCalendar] = useState(calendar);
 
-  if (lang !== syncedLang) {
-    setSyncedLang(lang);
-    const nextEra = defaultEraForLanguage(lang === "en" ? "en" : "ne");
-    setEraState(nextEra);
-    const next = defaultMonthBrowseParts(nextEra);
+  // The calendar preference changed: show the same month in the new system.
+  if (calendar !== syncedCalendar) {
+    setSyncedCalendar(calendar);
+    const next = convertBrowseMonth(era, year, month, calendar);
+    setEraState(next.era);
     setYearState(next.year);
     setMonthState(next.month);
   }

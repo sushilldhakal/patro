@@ -88,7 +88,13 @@ export const calendarHeaderClasses = {
   webLocation: "min-w-0 justify-self-end max-md:order-2 xs:relative",
   webMonthAnchor: "min-w-0 max-xs:flex-1 xs:relative",
   webChevronHide: "max-xs:hidden",
-  webLocationName: "max-w-32 truncate max-xs:max-w-16",
+  webLocationName: "max-w-32 truncate max-xs:max-w-22",
+  // Below xs the title and its date line wrap to two lines rather than ending in "…" (English runs long).
+  webTitleMain: "max-xs:line-clamp-2 max-xs:whitespace-normal max-xs:text-lg max-xs:leading-tight",
+  webTitleSub: "max-xs:line-clamp-2 max-xs:whitespace-normal",
+  // The calendar / day swap button: a step smaller below xs so its label ("Calendar Day") leaves room for the date.
+  webDenseSwap: "max-xs:gap-1 max-xs:px-2",
+  webDenseSwapLabel: "max-xs:text-xs",
   webPanel: "absolute top-full z-30 mt-2 shadow-lg max-xs:inset-x-0 xs:w-85",
   webScrim: "fixed inset-0 z-20 cursor-default",
   webBadgeHover: "flex flex-col transition-shadow hover:ring-3 hover:ring-secondary/20 active:scale-95",

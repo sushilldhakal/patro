@@ -60,7 +60,7 @@ import {
 import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/calendar/samvatsara";
 import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 type AngaEnd = { name_ne?: string; name?: string; end_local_time?: string; end_ghati_clock?: string; end_hours_clock?: string };
 type Anga = AngaEnd & { next?: AngaEnd };
@@ -71,6 +71,7 @@ export type AngaValue = { name: string; endTime?: string; next?: { name: string;
 /* ── sun, moon and samvat ── */
 export function useSunMoonSamvatSection(p: PanchangaDay) {
   const { lang, digits } = useLocale();
+  const { calendar } = useCalendarSystem();
   const solar = getSolarCorrections(p);
   const detail = getPanchangaDetail(p);
   const bs = (detail?.bs_date ?? p.bs_date) as
@@ -82,8 +83,8 @@ export function useSunMoonSamvatSection(p: PanchangaDay) {
     tithiIndex: tithiIndexFromPanchanga(p),
     sunrise: getSunriseDisplay(p) ?? "—",
     sunset: getSunsetDisplay(p) ?? "—",
-    moonrise: getMoonriseDisplay(p, lang) ?? "—",
-    moonset: getMoonsetDisplay(p, lang) ?? "—",
+    moonrise: getMoonriseDisplay(p, lang, calendar) ?? "—",
+    moonset: getMoonsetDisplay(p, lang, calendar) ?? "—",
     /** Equation of time and longitude correction, when the payload has them. */
     belaantar: formatSolarCorrectionDisplay(solar?.belaantar, lang) ?? null,
     deshaantar: formatSolarCorrectionDisplay(solar?.deshaantar, lang) ?? null,

@@ -24,8 +24,8 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
             webClassName="transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]"
           >
             <Box className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10">{item.icon}</Box>
-            <Box className="min-w-0 flex-1">
-              <Text numberOfLines={1} className="text-sm font-semibold text-foreground">
+            <Box className="flex min-w-0 flex-1 flex-col">
+              <Text numberOfLines={2} className="text-sm font-semibold text-foreground">
                 {item.label}
               </Text>
               {item.description ? <Text className="mt-0.5 text-xs leading-snug text-muted-foreground">{item.description}</Text> : null}

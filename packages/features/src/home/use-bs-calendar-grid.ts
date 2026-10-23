@@ -88,14 +88,15 @@ export function useBsCalendarGrid({
   publicHolidayDates?: Set<string>;
   selectedAdDate?: string;
   todayAd: string;
-  /** Which date system is primary in each cell; always AD in English. */
+  /** Which date system is primary in each cell (the calendar preference), independent of the UI language. */
   primaryDate?: "bs" | "ad";
   /** Only the dialog's day is requested, and only while it is open. */
   saitSource?: BsCalendarSaitSource;
 }) {
   const { t, lang, monoDigits, digits } = useLocale();
   const isEn = lang === "en";
-  const primaryDate: "bs" | "ad" = primaryDateProp === "ad" || isEn ? "ad" : "bs";
+  // The language only picks the text; the calendar preference picks the primary date.
+  const primaryDate: "bs" | "ad" = primaryDateProp;
   const [festivalDay, setFestivalDay] = useState<{ day: CalendarDay; festivals: string[] } | null>(null);
   const saitRequest = festivalDay && saitSource ? saitSource(festivalDay.day) : null;
   const saitQuery = useQuery({

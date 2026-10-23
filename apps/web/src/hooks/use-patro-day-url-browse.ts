@@ -3,6 +3,7 @@ import type { NavigateOptions } from "@tanstack/react-router";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
 import { useLocale } from "@/i18n/locale";
+import { useOnCalendarSwitch } from "@/hooks/use-on-calendar-switch";
 import {
   civilIsoFromDate,
   formatCivilIsoParts,
@@ -12,6 +13,7 @@ import {
   parsePatroDayUrl,
   patroDayFetchFromApiBsParts,
   patroDayFetchFromApiDateAd,
+  patroDayFetchForCalendar,
   patroDayFetchFromResolvedPanchanga,
   patroDayFetchStatesEqual,
   patroDayFetchWithBrowseEraToggle,
@@ -44,6 +46,26 @@ function useRememberDay(dayState: PatroDayFetchState) {
     rememberBrowse(dayState.inputEra, dayState.year, dayState.month);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
+}
+
+/**
+ * Calendar-system switch on a day page: the page stays on the same civil date and
+ * only its display calendar (and the y/m/d it is addressed by) changes. Language
+ * is untouched.
+ */
+function useFollowCalendarSwitch(
+  dayState: PatroDayFetchState,
+  replaceDayState: (next: PatroDayFetchState) => void,
+) {
+  const latest = useRef({ dayState, replaceDayState });
+  useEffect(() => {
+    latest.current = { dayState, replaceDayState };
+  });
+  useOnCalendarSwitch((calendar) => {
+    const cur = latest.current;
+    const next = patroDayFetchForCalendar(cur.dayState, calendar);
+    if (!patroDayFetchStatesEqual(cur.dayState, next)) cur.replaceDayState(next);
+  });
 }
 
 function fallbackLanguage(lang: string): "en" | "ne" {
@@ -127,6 +149,7 @@ export function usePatroDayUrlBrowse(
     },
     [location, navigate, mirrorUrl],
   );
+  useFollowCalendarSwitch(dayState, replaceDayState);
 
   useEffect(() => {
     if (!mirrorUrl) return;
@@ -287,6 +310,7 @@ export function usePatroPanchangaUrlBrowse(
     },
     [location, navigate],
   );
+  useFollowCalendarSwitch(dayState, replaceDayState);
 
   useEffect(() => {
     const desired = {

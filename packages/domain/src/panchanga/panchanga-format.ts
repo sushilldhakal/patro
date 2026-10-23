@@ -1,4 +1,5 @@
-import { adToBS, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "../calendar/bs-calendar";
+import { adToBS, AD_MONTH_NAMES_NE, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "../calendar/bs-calendar";
+import { getCalendarSystem, type CalendarSystem } from "../calendar/calendar-system";
 import { GRAHA_NAME, type GrahaKey } from "../jyotish/graha-details";
 import { formatRashiDisplay, getRashiName, rashiNeFromNumber } from "./rashi-i18n";
 import { NAKSHATRA_ICONS } from "./nakshatra-icons";
@@ -421,11 +422,11 @@ export function formatGregorianEventPartsLabel(
 }
 
 /**
- * Date a moon event falls on, in the reader's calendar: the BS date in Nepali
- * (जेठ २९), the Gregorian one in English (May 12) — matching the era each
- * language reads the rest of the app in.
+ * Date a moon event falls on, in the reader's calendar system (BS by default,
+ * AD when AD is on) and named in the UI language: जेठ २९ / Jestha 29 for BS,
+ * May 12 / मे १२ for AD. The language never decides the calendar.
  */
-export function formatEventDate(isoDate: string, lang?: string): string {
+export function formatEventDate(isoDate: string, lang?: string, calendar: CalendarSystem = getCalendarSystem()): string {
   const normalized = positiveGregorianCivilIso(isoDate);
   // `"-0020-04-16".split("-")` yields a leading empty field, so the old parse
   // produced year 0 and bailed to the raw string — a BCE moonrise read
@@ -439,11 +440,16 @@ export function formatEventDate(isoDate: string, lang?: string): string {
   const { month, day } = parts;
   if (!month || !day) return formatLocaleDigits(isoDate, lang);
   const date = parseCivilIsoToDate(normalized);
-  if (normalizeLang(lang) === "en") {
-    if (parts.year < 1) return `${AD_MONTHS_SHORT[month - 1]} ${day}`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const isEn = normalizeLang(lang) === "en";
+  if (calendar === "ad" || (isEn && parts.year < 1)) {
+    if (isEn) {
+      if (parts.year < 1) return `${AD_MONTHS_SHORT[month - 1]} ${day}`;
+      return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+    return `${AD_MONTH_NAMES_NE[month - 1]} ${formatLocaleDigits(day, lang)}`;
   }
   const bs = adToBS(date);
+  if (isEn) return `${BS_MONTH_NAMES[bs.month - 1]} ${bs.day}`;
   return `${BS_MONTHS_NE[bs.month - 1]} ${formatLocaleDigits(bs.day, lang)}`;
 }
 

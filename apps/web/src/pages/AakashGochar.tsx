@@ -16,6 +16,8 @@ import { GocharSkySection } from "@vedic-patro/ui/kit/panchanga";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
+import { useOnCalendarSwitch } from "@/hooks/use-on-calendar-switch";
+import { eraForCalendar } from "@vedic-patro/domain/calendar/calendar-system";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useRouteLoading } from "@/lib/route-loading";
 import type { Era } from "@vedic-patro/domain/calendar/era";
@@ -35,11 +37,16 @@ export function AakashGochar() {
 
   /* Which calendar the date nav browses in — page state rather than the URL:
      the era names the day on screen, the Date stays the one source of truth. */
-  const langEra = useCalendarEra();
-  const [era, setEra] = useState<Era>(() => (langEra === "ad" ? "ad" : "bs"));
+  const calendarEra = useCalendarEra();
+  const [era, setEra] = useState<Era>(() => (calendarEra === "ad" ? "ad" : "bs"));
   /* The Vikram day the nav shows when it came from a Vikram pick (adToBS cannot
      name a पू.वि.सं. day). */
   const [vikram, setVikram] = useState<{ era: Era; year: number; month: number; day: number } | null>(null);
+  /* Flipping the calendar system moves the nav to the new calendar on the same civil day. */
+  useOnCalendarSwitch((calendar) => {
+    setEra(eraForCalendar(calendar));
+    setVikram(null);
+  });
 
   /** A date from anywhere but a Vikram pick drops the Vikram parts of the day being left. */
   const changeDate = useCallback(

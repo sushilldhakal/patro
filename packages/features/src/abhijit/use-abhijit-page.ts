@@ -54,7 +54,7 @@ export function useAbhijitPage(
   // Kathmandu when the place has no zone, as the website always did.
   const todayAd = todayAdStringInTimezone(new Date(), scope.location?.timezone ?? "Asia/Kathmandu");
   const query = useQuery({
-    queryKey: ["panchanga", "month", scope.era, scope.year, scope.month, scope.location, "lite"] as const,
+    queryKey: ["panchanga", "month", scope.era, lang, scope.year, scope.month, scope.location, "lite"] as const,
     queryFn: () => fetchMonth(scope.year, scope.month, scope.location, { era: scope.era, full: false }),
     staleTime: 1000 * 60 * 60,
   });

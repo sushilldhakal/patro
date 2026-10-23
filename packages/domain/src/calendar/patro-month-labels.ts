@@ -45,3 +45,26 @@ export function bsMonthLabel(month: number, lang: string): string {
 export function isGregorianEraBrowse(era: Era): boolean {
   return era === "ad" || era === "bc";
 }
+
+/**
+ * Full month name for an era in a UI language (language and calendar are independent).
+ * bs/bbs: English → romanized Nepali months (Baisakh…), Nepali → वैशाख…
+ * ad/bc: English → January…, Nepali → जनवरी…
+ */
+export function monthLabel(era: Era, month: number, lang: string): string {
+  const i = month - 1;
+  const en = lang === "en";
+  if (isGregorianEraBrowse(era)) return (en ? AD_MONTH_NAMES[i] : AD_MONTH_NAMES_NE[i]) ?? "";
+  return (en ? BS_MONTH_NAMES[i] : BS_MONTHS_NE[i]) ?? "";
+}
+
+/**
+ * Short month name for an era in a UI language. There is no Nepali short table, so
+ * Nepali uses the full name (Nepali month names are already short).
+ */
+export function monthShortLabel(era: Era, month: number, lang: string): string {
+  const i = month - 1;
+  if (lang !== "en") return monthLabel(era, month, lang);
+  if (isGregorianEraBrowse(era)) return AD_MONTHS_SHORT[i] ?? "";
+  return BS_MONTHS_SHORT[i] ?? "";
+}

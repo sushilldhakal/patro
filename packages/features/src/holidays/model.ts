@@ -5,6 +5,7 @@
 import type { Festival, Holiday } from "@vedic-patro/api-client";
 import { bilingualText, formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
 import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { translate } from "@vedic-patro/i18n/runtime";
 
 export type HolidaysTab = "holidays" | "festivals";
 
@@ -48,6 +49,13 @@ export const HOLIDAY_COLUMNS: Record<HolidaysTab, readonly HolidayColumn[]> = {
   festivals: [NAME, BS_DATE, AD_DATE, TYPE, GOVT],
 };
 
+const KNOWN_TYPES = new Set(["lunar", "solar", "bs_fixed", "ad_fixed", "adhik_arambha"]);
+
+/** The API's rule type ("bs_fixed") as words in the reader's language; unknown types show as sent. */
+function typeLabel(type: string, lang: Lang): string {
+  return KNOWN_TYPES.has(type) ? translate(lang, `holidays.type_${type}`) : type;
+}
+
 export function toHolidayRow(item: Holiday | Festival, lang: Lang, index: number): HolidayRow {
   const start = item.start_date ?? "";
   const name = bilingualText(lang, item.name_ne ?? item.name_en, item.name_en ?? item.name_ne);
@@ -62,9 +70,9 @@ export function toHolidayRow(item: Holiday | Festival, lang: Lang, index: number
     bsDate: bsDate.replace(/,\s*[^,\s]+\s*[\u0966-\u096F0-9]+$/, ""),
     adDate: start || "—",
     days: formatLocaleDigits(days, lang),
-    type,
+    type: typeLabel(type, lang),
     isPublic,
-    sortValues: { name, bsDate: start, adDate: start, days, type, isPublic: isPublic ? 1 : 0 },
+    sortValues: { name, bsDate: start, adDate: start, days, type: typeLabel(type, lang), isPublic: isPublic ? 1 : 0 },
   };
 }
 

@@ -1,5 +1,5 @@
 /**
- * UI-default calendar era (language-driven) and shared browse search shapes.
+ * UI-default calendar era (calendar-preference driven) and shared browse search shapes.
  *
  * URL resolution and API era live in `@/lib/era`; browse hooks in
  * `@/hooks/use-patro-url-browse`, `@/hooks/use-patro-month-browse`,
@@ -7,20 +7,27 @@
  */
 import i18n from "@/i18n";
 import { normalizeLang } from "@/i18n/locale";
-import { getStoredLanguage } from "@/lib/user-preferences";
+import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+
+import type { Language } from "@vedic-patro/domain/calendar/era";
 
 export type { Era, Language } from "@vedic-patro/domain/calendar/era";
 
 /** Browse era in share URLs — same four codes as {@link Era}. */
 export type CalendarEra = Era;
 
-/** UI language default: English → AD Jan–Dec, Nepali → BS Baisakh–Chaitra. */
+/** Calendar-preference default era: BS → Baisakh–Chaitra, AD → Jan–Dec. Independent of the UI language. */
 export function readCalendarEra(): CalendarEra {
-  const lang = normalizeLang(i18n.resolvedLanguage ?? i18n.language);
-  if (lang === "en") return "ad";
-  if (getStoredLanguage() === "en") return "ad";
-  return "bs";
+  return eraForCalendar(getCalendarSystem());
+}
+
+/**
+ * The UI language (the language the reader picked), for URLs and API requests.
+ * Never derived from the era: language and calendar are independent preferences.
+ */
+export function readUiLanguage(): Language {
+  return normalizeLang(i18n.language) === "en" ? "en" : "ne";
 }
 
 export function validatePatroBrowseMonth(rawMonth: number | undefined): number | undefined {

@@ -24,6 +24,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { isJyotishRoute, isPanchangaRoute } from "@/lib/app-routes";
 import { useLocale } from "@/i18n/locale";
@@ -206,6 +207,10 @@ function MenuPreferences() {
         <LanguageSwitcher />
       </div>
       <div className="flex items-center justify-between gap-3">
+        <span className="text-sm text-foreground">{t("calendar_system.label")}</span>
+        <CalendarSystemToggle />
+      </div>
+      <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-foreground">{t("theme_toggle")}</span>
         <ThemeToggle showLabel />
       </div>
@@ -264,6 +269,7 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
+          <CalendarSystemToggle />
           <LanguageSwitcher />
           <ThemeToggle />
           <AccountMenu />
@@ -326,6 +332,7 @@ export function Header() {
           <BrandMark className="justify-center" />
 
           <div className="flex justify-end items-center gap-2">
+            <CalendarSystemToggle />
             <LanguageSwitcher />
             <ThemeToggle />
             <AccountMenu />

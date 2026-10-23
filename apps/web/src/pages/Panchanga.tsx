@@ -70,7 +70,7 @@ export function Panchanga() {
         enabled: wheel != null && (dayState.kind === "input" || (wheel.jd_ut != null && wheel.date_parts?.gregorian?.era !== "bc")),
       }),
       midnight: (civilDateAd) => ({
-        queryKey: panchangaKeys.civilDay(civilDateAd, location.params),
+        queryKey: panchangaKeys.civilDay(civilDateAd, dayState.display, location.params),
         queryFn: () => fetchPanchangaCivilDay(civilDateAd, dayState.display, location.params),
       }),
       civilEra: browseEra,

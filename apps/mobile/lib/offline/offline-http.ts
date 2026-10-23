@@ -225,14 +225,33 @@ export async function clearOfflineHttp(): Promise<void> {
   await db.execAsync("VACUUM").catch(() => undefined);
 }
 
+/**
+ * The saved copies that can answer `path`, best first. A request now carries
+ * the UI `language=` next to its era, but the payloads hold both languages (the
+ * parameter only stamps the response), so a copy saved in the other language —
+ * or by an older build, before the parameter was sent — answers the same screen.
+ * Festival listings are the exception: their names follow the language asked for,
+ * and the download saves both on purpose, so each is looked up on its own.
+ */
+function savedPathCandidates(path: string): string[] {
+  const out = [path];
+  if (!/[?&]language=/.test(path) || path.startsWith("/nepal/festivals")) return out;
+  out.push(path.replace(/([?&]language=)(ne|en)/, (_m, head: string, lang: string) => `${head}${lang === "en" ? "ne" : "en"}`));
+  out.push(path.replace(/([?&])language=[^&]*&?/, "$1").replace(/[?&]$/, ""));
+  return out;
+}
+
 async function readSaved<T>(path: string): Promise<T | null> {
-  const text = await getOfflineResponse(path);
-  if (text == null) return null;
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    return null;
+  for (const candidate of savedPathCandidates(path)) {
+    const text = await getOfflineResponse(candidate);
+    if (text == null) continue;
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      /* try the next copy */
+    }
   }
+  return null;
 }
 
 /**

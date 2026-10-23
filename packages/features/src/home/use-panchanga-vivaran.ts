@@ -22,7 +22,7 @@ import {
   getSunsetDisplay,
   isAyanaNorthMark,
 } from "@vedic-patro/read-models/panchanga/panchanga-format";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 type AngaBlock = {
   name_ne?: string;
@@ -50,6 +50,7 @@ function sameWord(a?: string, b?: string): boolean {
 
 export function usePanchangaVivaran({ p, selectedDay }: { p?: PanchangaDay; selectedDay?: CalendarDay | null }) {
   const { t, lang } = useLocale();
+  const { calendar } = useCalendarSystem();
   if (!p) return null;
 
   const angaName = (anga: AngaBlock | null | undefined) =>
@@ -61,7 +62,7 @@ export function usePanchangaVivaran({ p, selectedDay }: { p?: PanchangaDay; sele
 
   const sunrise = getSunriseDisplay(p, lang) ?? (selectedDay?.sunrise ? formatClockNepali(selectedDay.sunrise, lang) : undefined);
   const sunset = getSunsetDisplay(p, lang) ?? (selectedDay?.sunset ? formatClockNepali(selectedDay.sunset, lang) : undefined);
-  const moonrise = getMoonriseDisplay(p, lang) ?? (selectedDay ? formatMonthMoonEventDisplay(selectedDay, "moonrise", lang) : undefined);
+  const moonrise = getMoonriseDisplay(p, lang, calendar) ?? (selectedDay ? formatMonthMoonEventDisplay(selectedDay, "moonrise", lang, calendar) : undefined);
   const ayana = getAyanaDisplay(p, selectedDay, lang);
   const ritu = getRituDisplay(p, lang);
   const season = getRituSeason(p, lang);

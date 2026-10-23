@@ -110,7 +110,9 @@ export function formatPatroAdRangeHeadlineSubtitle(
   const isEn = lang.slice(0, 2) === "en";
   const monthsShort = isEn ? AD_MONTHS_SHORT : AD_MONTHS_SHORT_NE;
   const fmtMonth = (m: number) => monthsShort[m - 1]!;
-  const fmtYear = (y: number) => formatGregorianEraYearLabel(y, lang, digitFn);
+  // The secondary AD line under a BS month reads "Jul/Aug 2026" in both languages (no era suffix),
+  // like the Nepali one; BCE years still carry their era.
+  const fmtYear = (y: number) => (y < 1 ? formatGregorianEraYearLabel(y, lang, digitFn) : digitFn(y));
   const startKey = start.year * 12 + start.month;
   const endKey = end.year * 12 + end.month;
 
@@ -145,13 +147,27 @@ function formatAdMonthBsCrossEraSubtitle(
   return `${monthLabel(startBs.month)} ${digitFn(startBs.year)}–${monthLabel(endBs.month)} ${digitFn(endBs.year)} ${isEn ? "BS" : "वि.सं."}`;
 }
 
-/** Panchanga API `display` block (day nav). */
+/**
+ * Panchanga API `display` block (day nav): the line for the calendar NOT being
+ * browsed. In a Gregorian era that is the BS date, but the API's `bs_ne` is
+ * always Devanagari — when the UI is English and the civil date is known
+ * (`opts.dateAd`) the BS line is built client-side instead. In a Vikram era it
+ * is the Gregorian line (`gregorian_en`).
+ */
 export function crossEraSubtitleFromPanchangaDisplay(
   display?: { gregorian_en?: string; bs_ne?: string } | null,
   era?: Era,
+  opts?: { lang?: string; dateAd?: string | null; digitFn?: (n: number | string) => string },
 ): string | undefined {
-  if (!display) return undefined;
   const isGregorian = era != null && isGregorianEraBrowse(era);
+  if (isGregorian && opts?.lang && opts.lang.slice(0, 2) === "en" && opts.dateAd) {
+    try {
+      return formatPatroDayCrossEraSubtitle(opts.dateAd, era, opts.lang, opts.digitFn);
+    } catch {
+      // fall through to the API's own line
+    }
+  }
+  if (!display) return undefined;
   if (isGregorian) return display.bs_ne ?? display.gregorian_en;
   return display.gregorian_en ?? display.bs_ne;
 }

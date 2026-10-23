@@ -59,7 +59,7 @@ export function useGrahaAstaPage(scope: YearScope): GrahaPage<AstaPeriodView> {
       name: t(`grahas.${graha}`, { defaultValue: graha }),
       note: graha === "moon" ? t("graha_pages.asta.tara_asta") : undefined,
       count: periods.length ? t("graha_pages.asta.times", { count: digits(periods.length) }) : t("graha_pages.asta.none"),
-      items: periods.map((p) => astaPeriodView(p, lang, t)),
+      items: periods.map((p) => astaPeriodView(p, lang, t, scope.era)),
       empty: t("graha_pages.asta.no_asta_year"),
     })),
   };

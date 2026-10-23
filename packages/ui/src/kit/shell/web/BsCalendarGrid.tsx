@@ -108,6 +108,14 @@ export function BsCalendarGrid({
   );
 }
 
+/**
+ * Long English tithi names ("Chaturdashi") overflow a phone-width cell. A soft hyphen lets them wrap at a
+ * syllable boundary ("Chatur-dashi") only when they would not otherwise fit; Nepali names never match.
+ */
+function softBreakTithi(name: string): string {
+  return name.replace(/^(.{3,}?)(dashi|pada|thi|vasya)$/i, "$1\u00AD$2");
+}
+
 function DayCell({
   cell,
   primaryDate,
@@ -175,8 +183,12 @@ function DayCell({
       <Box className="relative z-[1] min-h-0 flex-1 flex-col pointer-events-none">
         <Text className="w-full items-start leading-none">
           {tithi ? (
-            <Text className={cn("w-full md:text-sm", cal.tithi, cal.tithiPhone)} numberOfLines={1}>
-              {tithi}
+            <Text
+              className={cn("w-full md:text-sm", cal.tithi, cal.tithiPhone)}
+              webClassName="max-md:line-clamp-2 max-md:whitespace-normal max-md:pt-2.5 max-md:leading-tight max-xs:text-diagram-xs"
+              numberOfLines={1}
+            >
+              {softBreakTithi(tithi)}
             </Text>
           ) : isEnriching && !isOutside ? (
             <Text className={cn("inline-block animate-pulse", cal.tithiPending)} />

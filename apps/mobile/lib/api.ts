@@ -7,11 +7,13 @@ import {
   instantCacheKey,
 } from "@vedic-patro/domain/calendar/instant-query";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { getRequestedLanguage } from "@vedic-patro/i18n/runtime";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 
 import {
   appendLocation,
   configureApiClient,
+  fetchFestivals as fetchFestivalsFor,
   fetchMonthCalendarRaw,
   fetchPersonalRashifalForDay,
   fetchRashifalForDay,
@@ -85,7 +87,6 @@ export {
   panchakKeys,
   saitKeys,
   fetchHolidays,
-  fetchFestivals,
   elementKeys,
   fetchElementSpans,
   fetchVastuSketch,
@@ -407,7 +408,36 @@ function networkPath(path: string): string {
  */
 const SCREEN_TIMEOUT_MS = 45_000;
 
-async function offlineAwareJson<T>(path: string): Promise<T> {
+/**
+ * Language and calendar are independent preferences, so the same era is now
+ * requested in either language (BS in English letters, AD in Nepali). The server
+ * defaults `language` from `era`, which is no longer what the reader asked for:
+ * the month request is stamped with the UI language (the shared client derives it
+ * from the era), and a day's panchanga — which names none — gets it added.
+ * Festival listings carry their own explicit language (see `fetchFestivals`).
+ */
+const MONTH_PATH = /^\/panchanga\/(?:(?:ad|bc)\/)?-?\d+\/\d+(?:\?|$)/;
+const DAY_PATH = /^\/panchanga\/\d{4}-\d{2}-\d{2}(?:\?|$)/;
+
+export function uiLanguage(): "ne" | "en" {
+  // The reader's pick, even while the English bundle is still loading — what the data should be asked in.
+  return getRequestedLanguage() === "en" ? "en" : "ne";
+}
+
+function withUiLanguage(path: string): string {
+  const isMonth = MONTH_PATH.test(path);
+  if (!isMonth && !DAY_PATH.test(path)) return path;
+  const lang = uiLanguage();
+  if (isMonth) {
+    return /[?&]language=/.test(path)
+      ? path.replace(/([?&]language=)[^&]*/, `$1${lang}`)
+      : `${path}${path.includes("?") ? "&" : "?"}language=${lang}`;
+  }
+  return /[?&]language=/.test(path) ? path : `${path}${path.includes("?") ? "&" : "?"}language=${lang}`;
+}
+
+async function offlineAwareJson<T>(rawPath: string): Promise<T> {
+  const path = withUiLanguage(rawPath);
   return offlineAwareGet<T>(
     path,
     () =>
@@ -431,23 +461,26 @@ configureApiClient({
   locationKey,
 });
 
+/**
+ * Query keys of requests that now go out with the UI language next to the era
+ * (see `withUiLanguage`). Bumped with the key shape, so a copy cached before the
+ * language joined the key (a Nepali payload under an English screen) is not reused.
+ */
+const LANGUAGE_KEY_VERSION = `${PANCHANGA_CACHE_VERSION}.l1`;
+
 export const panchangaKeys = {
   today: (loc?: LocationParams) => ["panchanga", "today", locationKey(loc)] as const,
   day: (date: string, era: string, loc?: LocationParams) =>
-    ["panchanga", "day", PANCHANGA_CACHE_VERSION, date, era, locationKey(loc)] as const,
+    ["panchanga", "day", LANGUAGE_KEY_VERSION, date, era, uiLanguage(), locationKey(loc)] as const,
   atTime: (datetime: string, loc?: LocationParams) =>
     ["panchanga", "at-time", PANCHANGA_CACHE_VERSION, datetime, locationKey(loc)] as const,
   civil: (date: string, loc?: LocationParams) =>
     ["panchanga", "civil", PANCHANGA_CACHE_VERSION, date, locationKey(loc)] as const,
 };
 
-function languageForBrowseEra(era: MonthBrowseEra): "en" | "ne" {
-  return era === "ad" || era === "bc" ? "en" : "ne";
-}
-
 export const apiKeys = {
   month: (y: number, m: number, loc?: LocationParams, era: MonthBrowseEra = "bs") =>
-    ["month", era, y, m, locationKey(loc)] as const,
+    ["month", LANGUAGE_KEY_VERSION, era, uiLanguage(), y, m, locationKey(loc)] as const,
   /** Same request as `panchangaKeys.day`, so the same key: the home panel's day is the panchanga page's. */
   panchanga: (date: string, era: string, loc?: LocationParams) => panchangaKeys.day(date, era, loc),
   today: (loc?: LocationParams) => ["panchanga", "today", locationKey(loc)] as const,
@@ -456,7 +489,7 @@ export const apiKeys = {
   convertBs: (d: string) => ["convert", "bs", d] as const,
   saitMonthAll: (y: number, m: number, loc?: LocationParams) =>
     ["sait", "month-all", SAIT_CACHE_VERSION, y, m, locationKey(loc)] as const,
-  festivals: (year: number, language: "ne" | "en" = "ne") =>
+  festivals: (year: number, language: "ne" | "en" = uiLanguage()) =>
     ["festivals", "bs", year, language] as const,
 };
 
@@ -469,6 +502,12 @@ export const fetchMonthCalendar = async (
   const data = await fetchMonthCalendarRaw(year, month, location, options);
   return { ...data, calendar: data.calendar.map(normalizeMonthDay) };
 };
+
+/** Festival listing in the UI language (an explicit `language` wins — the offline pack saves both). */
+export const fetchFestivals = (
+  year: number,
+  options: { era?: Era; language?: "ne" | "en"; month?: number; location?: LocationParams } = {},
+) => fetchFestivalsFor(year, { ...options, language: options.language ?? uiLanguage() });
 
 function normalizeMonthDay(day: CalendarDay): CalendarDay {
   const nested = day.panchanga;

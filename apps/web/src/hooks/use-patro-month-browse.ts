@@ -5,15 +5,15 @@ import { usePatroMonthBrowse as useSharedPatroMonthBrowse } from "@vedic-patro/f
 export { coerceMonthBrowseFromUrl } from "@vedic-patro/domain/calendar/patro-browse-params";
 export type { PatroMonthBrowse } from "@vedic-patro/features/patro-date";
 
-function calendarEraAsEra(raw: ReturnType<typeof useCalendarEra>): Era {
-  return raw === "bbs" || raw === "bs" || raw === "ad" ? raw : "bs";
-}
-
-/** Month+year browse (shared hook) starting in the site's calendar era. */
+/**
+ * Month+year browse (shared hook) starting in the site's calendar era. The shared
+ * hook moves the browsed month into the new calendar when the calendar system
+ * flips; the language never moves it.
+ */
 export function usePatroMonthBrowse(
   initial?: { year?: number; month?: number },
   options?: { era?: Era },
 ) {
-  const langEra = useCalendarEra();
-  return useSharedPatroMonthBrowse(initial, { era: options?.era ?? calendarEraAsEra(langEra) });
+  const calendarEra = useCalendarEra();
+  return useSharedPatroMonthBrowse(initial, { era: options?.era ?? calendarEra });
 }

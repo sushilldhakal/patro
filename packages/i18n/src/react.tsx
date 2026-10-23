@@ -21,6 +21,13 @@ import {
 } from "react";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import {
+  DEFAULT_CALENDAR,
+  getCalendarSystem,
+  setCalendarSystem,
+  subscribeCalendarSystem,
+  type CalendarSystem,
+} from "@vedic-patro/domain/calendar/calendar-system";
+import {
   ensureBundle,
   getLanguage,
   getStateKey,
@@ -42,6 +49,15 @@ export type { Lang, TFunction, TranslateOptions };
 export function useLanguage(): Lang {
   const state = useSyncExternalStore(subscribe, getStateKey, getStateKey);
   return state.slice(0, 2) as Lang;
+}
+
+/**
+ * The calendar system (BS / AD), independent of the UI language. Re-renders the
+ * caller when it changes. Server rendering always sees the default.
+ */
+export function useCalendarSystem(): { calendar: CalendarSystem; setCalendar: (c: CalendarSystem) => void } {
+  const calendar = useSyncExternalStore(subscribeCalendarSystem, getCalendarSystem, () => DEFAULT_CALENDAR);
+  return useMemo(() => ({ calendar, setCalendar: setCalendarSystem }), [calendar]);
 }
 
 // ─── i18next-shaped handle ──────────────────────────────────────────────────

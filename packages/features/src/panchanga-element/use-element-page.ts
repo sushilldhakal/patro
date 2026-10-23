@@ -26,7 +26,7 @@ import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panch
 import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
 import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
 import { elementTable, spanCards } from "./model";
 
@@ -51,7 +51,8 @@ export type ElementPageScope = {
 
 export function useElementPage({ name, location, month, day }: ElementPageScope) {
   const { t, lang, digits } = useLocale();
-  const text = useMemo(() => ({ t, lang, digits: (v: string | number) => digits(v) }), [t, lang, digits]);
+  const { calendar } = useCalendarSystem();
+  const text = useMemo(() => ({ t, lang, calendar, digits: (v: string | number) => digits(v) }), [t, lang, calendar, digits]);
   const meta = name ? ELEMENT_BY_ID[name] : undefined;
   const isSpan = meta?.kind === "span";
   const balam: "chandrabala" | "tarabala" | undefined = name === "chandrabala" || name === "tarabala" ? name : undefined;

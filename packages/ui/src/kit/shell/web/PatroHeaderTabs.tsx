@@ -31,9 +31,9 @@ export function PatroHeaderSwap({ tabs, className }: PatroHeaderSwapProps) {
   if (!other || tabs.length !== 2) return null;
   return (
     <Box className={className}>
-      <Pressable label={other.label} onPress={other.onPress} className={cls.swapButton} webClassName="hover:bg-muted">
+      <Pressable label={other.label} onPress={other.onPress} className={cls.swapButton} webClassName={cn("hover:bg-muted", cls.webDenseControl, cls.webDenseSwap)}>
         <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
-        <Text className={cls.swapLabel}>{other.label}</Text>
+        <Text className={cls.swapLabel} webClassName={cls.webDenseSwapLabel}>{other.label}</Text>
       </Pressable>
     </Box>
   );

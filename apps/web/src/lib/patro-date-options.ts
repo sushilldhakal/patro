@@ -4,7 +4,7 @@ import {
   getSupportedAdBounds,
 } from "@vedic-patro/domain/calendar/bs-calendar";
 import { fetchPanchangaDay, type LocationParams } from "@/lib/api";
-import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
+import { readUiLanguage } from "@/lib/patro-era";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import { DEFAULT_PANCHANGA_LOCATION } from "@/components/panchanga/use-panchanga-location";
 import {
@@ -104,7 +104,7 @@ export function pickBrowseVikramDate(
   void fetchPanchangaDay(
     patroDayFetchFromApiBsParts(parts, {
       era: displayEra,
-      language: getLanguageForEra(displayEra),
+      language: readUiLanguage(),
     }),
     params,
   ).then((p) => {

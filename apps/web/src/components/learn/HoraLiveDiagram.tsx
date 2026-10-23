@@ -8,7 +8,7 @@ import {
 import { useLocale } from "@/i18n/locale";
 import { fetchPanchangaDay, panchangaKeys } from "@/lib/api";
 import { tmCardPadLg } from "@/lib/learn-classes";
-import { AD_DISPLAY, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
+import { adDisplayContext, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
@@ -22,8 +22,8 @@ export function HoraLiveDiagram() {
     [location],
   );
   const panchangaQ = useQuery({
-    queryKey: panchangaKeys.day(todayAd, "ad", location.params),
-    queryFn: () => fetchPanchangaDay(patroDayFetchFromApiDateAd(todayAd, AD_DISPLAY), location.params),
+    queryKey: panchangaKeys.day(todayAd, "ad", lang, location.params),
+    queryFn: () => fetchPanchangaDay(patroDayFetchFromApiDateAd(todayAd, adDisplayContext(lang)), location.params),
     staleTime: 1000 * 60 * 30,
   });
   const p = panchangaQ.data;

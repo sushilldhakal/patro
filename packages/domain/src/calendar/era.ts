@@ -1,3 +1,5 @@
+import { eraForCalendar, getCalendarSystem, type CalendarSystem } from "./calendar-system";
+
 /** The four calendar eras a date can be named in (Bikram Sambat, AD, BC, pre-BS). */
 export const ERAS = ["ad", "bc", "bs", "bbs"] as const;
 
@@ -29,7 +31,7 @@ export const ERA_CODES = ERAS;
 
 export type Language = "en" | "ne";
 
-/** Era -> UI language. Vikram eras render Nepali, Gregorian eras English. */
+/** Era -> UI language. Vikram eras render Nepali, Gregorian eras English. Legacy: language and calendar are independent now. */
 const ERA_LANGUAGE: Record<Era, Language> = {
   bs: "ne",
   bbs: "ne",
@@ -52,7 +54,11 @@ export function isEra(value: unknown): value is Era {
   return typeof value === "string" && (ERA_CODES as readonly string[]).includes(value);
 }
 
-/** `ne` for bs/bbs, `en` for ad/bc. Localisation only — never arithmetic. */
+/**
+ * `ne` for bs/bbs, `en` for ad/bc. Localisation only — never arithmetic.
+ * @deprecated Language and calendar are independent preferences; use the language
+ * preference and `calendarForEra` / `eraForCalendar` instead.
+ */
 export function getLanguageForEra(era: Era): Language {
   return ERA_LANGUAGE[era];
 }
@@ -81,7 +87,10 @@ export function isPatroBrowseEraPair(era: Era): era is "bs" | "bbs" | "ad" | "bc
   return era === "bs" || era === "bbs" || era === "ad" || era === "bc";
 }
 
-/** The era a UI language defaults to when a URL names none. */
+/**
+ * The era a UI language defaults to when a URL names none.
+ * @deprecated The default era comes from the calendar preference: `eraForCalendar(getCalendarSystem())`.
+ */
 export function defaultEraForLanguage(language: Language): Era {
   return language === "ne" ? "bs" : "ad";
 }
@@ -92,11 +101,6 @@ function toPositiveInt(raw: unknown): number | undefined {
   if (!Number.isFinite(n)) return undefined;
   const truncated = Math.trunc(n);
   return truncated >= 1 ? truncated : undefined;
-}
-
-function parseLanguage(raw: unknown, era: Era): Language {
-  if (raw === "en" || raw === "ne") return raw;
-  return getLanguageForEra(era);
 }
 
 /**
@@ -110,11 +114,14 @@ function parseLanguage(raw: unknown, era: Era): Language {
 export function parseEraFromUrl(
   search: Record<string, unknown>,
   fallbackLanguage: Language = "ne",
+  fallbackEra?: Era,
 ): EraSelection {
-  const era = isEra(search.era) ? search.era : defaultEraForLanguage(fallbackLanguage);
+  const era = isEra(search.era) ? search.era : (fallbackEra ?? eraForCalendar(getCalendarSystem()));
+  const language: Language =
+    search.language === "en" || search.language === "ne" ? search.language : fallbackLanguage;
   return {
     era,
-    language: parseLanguage(search.language, era),
+    language,
     year: toPositiveInt(search.year),
     month: toPositiveInt(search.month),
     day: toPositiveInt(search.day),
@@ -178,9 +185,9 @@ export function buildPageSearch(
   return out;
 }
 
-/** Switch era, keeping the numbers. The backend re-interprets them in the new era. */
+/** Switch era, keeping the numbers and the language. The backend re-interprets them in the new era. */
 export function withEra(selection: EraSelection, era: Era): EraSelection {
-  return { ...selection, era, language: getLanguageForEra(era) };
+  return { ...selection, era };
 }
 
 /** Gregorian (AD/BC) rather than Vikram (BS/BBS) eras. */
@@ -188,9 +195,24 @@ export function isGregorianEra(era: Era): boolean {
   return era === "ad" || era === "bc";
 }
 
-/** Era toggle within the active language pair (Nepali: BS/BBS, English: AD/BC). */
+/**
+ * Era toggle within the active language pair (Nepali: BS/BBS, English: AD/BC).
+ * @deprecated Use {@link toggleEraForCalendar}; the pair follows the calendar, not the language.
+ */
 export function toggleEraForLanguage(era: Era, language: Language): Era {
   if (language === "en") {
+    if (era === "ad") return "bc";
+    if (era === "bc") return "ad";
+    return "ad";
+  }
+  if (era === "bs") return "bbs";
+  if (era === "bbs") return "bs";
+  return "bs";
+}
+
+/** Era toggle within the active calendar's pair (BS: BS/BBS, AD: AD/BC). */
+export function toggleEraForCalendar(era: Era, calendar: CalendarSystem): Era {
+  if (calendar === "ad") {
     if (era === "ad") return "bc";
     if (era === "bc") return "ad";
     return "ad";

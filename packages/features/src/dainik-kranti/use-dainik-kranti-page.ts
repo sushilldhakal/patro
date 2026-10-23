@@ -50,7 +50,7 @@ import {
 } from "@vedic-patro/read-models/jyotish/dainikKranti/month-patro-tables";
 import { buildRashyadiRangeTables } from "@vedic-patro/read-models/jyotish/dainikKranti/rashyadi-segments";
 import type { Era } from "@vedic-patro/domain/calendar/era";
-import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
+import { isGregorianEra } from "@vedic-patro/domain/calendar/era";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { formatBsDateKey } from "@vedic-patro/domain/calendar/patro-day";
@@ -104,7 +104,7 @@ export type DainikDayRow = {
   hasFestival: boolean;
   /** Saturday or festival: the day number is drawn in the holiday colour. */
   holiday: boolean;
-  /** Large day number (BS gate, or the AD day when browsing AD in English). */
+  /** Large day number (BS gate, or the AD day when browsing AD). */
   dayNumber: string;
   /** Small AD day under/after the gate; null when the AD day is the main number. */
   adDay: string | null;
@@ -159,7 +159,8 @@ export function useDainikKrantiPage({
   const isEn = lang === "en";
   const { era, year, month } = browse;
   const params = location.params;
-  const adBrowse = getLanguageForEra(era) === "en";
+  // The browse era (the calendar preference) decides AD vs BS; `isEn` only picks the text language.
+  const adBrowse = isGregorianEra(era);
   const nowKey = useMemo(() => todayAdString(), []);
   const at = (time: string) => t("dainik.at_time", { time: dg(time) });
   const angaEnd = (anga: CalendarDayAnga | undefined) => {
@@ -338,7 +339,7 @@ export function useDainikKrantiPage({
     const hasFestival = (d.festivals?.length ?? 0) > 0;
     const adDate = new Date(`${d.date_ad}T00:00:00`);
     const adDayNum = Number.isNaN(adDate.getTime()) ? null : adDate.getDate();
-    const adOnly = isEn && adBrowse && adDayNum != null;
+    const adOnly = adBrowse && adDayNum != null;
     const sunRashi = resolveRashiDisplay(det?.surya_rashi_ne, det?.surya_rashi, lang);
     const span = det?.chandra_rashi_spans?.[0];
     const moonLabel = span
@@ -420,7 +421,7 @@ export function useDainikKrantiPage({
   const gocharData = gocharQ.data;
   const legendDate = gocharData?.date_ad
     ? t("ui.dainik_kranti.position_on_datelabel", {
-        dateLabel: formatGocharBsLabel(gocharData.date_bs, gocharData.date_ad) ?? fmtAd(gocharData.date_ad, isEn),
+        dateLabel: (adBrowse ? undefined : formatGocharBsLabel(gocharData.date_bs, gocharData.date_ad, lang)) ?? fmtAd(gocharData.date_ad, isEn),
       })
     : null;
 

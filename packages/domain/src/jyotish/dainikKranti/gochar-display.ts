@@ -41,14 +41,14 @@ export const PAPA_GRAHA_ABBREV: Record<(typeof PAPA_GRAHA_ORDER)[number], string
   ketu: "के",
 };
 
-export function formatGocharBsLabel(dateBs?: string | null, dateAd?: string | null): string | undefined {
-  const fromBs = formatBsIsoDateNepali(dateBs);
+export function formatGocharBsLabel(dateBs?: string | null, dateAd?: string | null, lang?: string): string | undefined {
+  const fromBs = formatBsIsoDateNepali(dateBs, { lang });
   if (fromBs) return fromBs;
   if (!dateAd) return undefined;
   const [y, m, d] = dateAd.split("-").map(Number);
   if (!y || !m || !d) return undefined;
   const bs = adToBS(new Date(y, m - 1, d));
-  return formatBsIsoDateNepali(`${bs.year}-${bs.month}-${bs.day}`);
+  return formatBsIsoDateNepali(`${bs.year}-${bs.month}-${bs.day}`, { lang });
 }
 
 export function rashiEnFromNumber(rashi: number): string {

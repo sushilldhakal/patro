@@ -17,7 +17,8 @@ import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { formatPatroCivilDayLabel } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { toNepaliDigits } from "@vedic-patro/domain/jyotish/rashifal-ui";
-import { useLocale } from "@vedic-patro/i18n/react";
+import type { CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 export type RashifalLuckyKey = "color" | "number" | "direction" | "time";
 
@@ -26,21 +27,24 @@ type Domain = Bilingual<"label"> & { key: NonNullable<RashifalSignBlock["domains
 type Component = Bilingual<"label" | "note"> & { key: string; percent: number; tone?: NavataraTone };
 
 /**
- * Best/weak day of a weekly, monthly or yearly window. The server's own BS
- * label wins when it sends one; without it, Nepali still gets a Vikram date
- * from the offline table rather than a bare AD date.
+ * Best/weak day of a weekly, monthly or yearly window, in the reader's calendar
+ * (BS or AD; the language only names the parts). The server's own BS label wins
+ * for Nepali; without it, a Vikram date still comes from the offline table.
  */
-function dayMarkerLabel(marker: RashifalDayMarker, lang: string): string {
-  if (lang.slice(0, 2) !== "ne") return marker.date_ad;
-  return marker.date_bs ?? formatBsCivilIsoLong(marker.date_ad, lang, (n) => toNepaliDigits(n, lang));
+function dayMarkerLabel(marker: RashifalDayMarker, lang: string, calendar: CalendarSystem): string {
+  const digitFn = (n: number | string) => toNepaliDigits(n, lang);
+  const isNe = lang.slice(0, 2) === "ne";
+  if (calendar === "ad") return isNe ? formatPatroCivilDayLabel(marker.date_ad, lang, digitFn) : marker.date_ad;
+  if (isNe && marker.date_bs) return marker.date_bs;
+  return formatBsCivilIsoLong(marker.date_ad, lang, digitFn);
 }
 
-/** Dasha end date: the Vikram date in Nepali, the AD label in English. */
-function formatDasha(iso: string, lang: string): string {
+/** Dasha end date: the Vikram date by default, the AD label when AD is on (the language only names the parts). */
+function formatDasha(iso: string, lang: string, calendar: CalendarSystem): string {
   const digitFn = (n: number | string) => toNepaliDigits(n, lang);
   try {
     const civilIso = civilIsoFromDate(new Date(iso));
-    return lang.slice(0, 2) === "ne" ? formatBsCivilIsoLong(civilIso, lang, digitFn) : formatPatroCivilDayLabel(civilIso, lang, digitFn);
+    return calendar === "bs" ? formatBsCivilIsoLong(civilIso, lang, digitFn) : formatPatroCivilDayLabel(civilIso, lang, digitFn);
   } catch {
     return iso.slice(0, 10);
   }
@@ -62,6 +66,7 @@ function useCardBase({
   gochar?: RashifalGocharRow[];
 }) {
   const { t, lang } = useLocale();
+  const { calendar } = useCalendarSystem();
   const ne = lang === "ne";
   const [open, setOpen] = useState(false);
   const lucky = (key: RashifalLuckyKey, labelKey: string, value: string | null | undefined) =>
@@ -69,6 +74,7 @@ function useCardBase({
   return {
     t,
     lang,
+    calendar,
     ne,
     lucky,
     base: {
@@ -97,7 +103,7 @@ function useCardBase({
 }
 
 export function useRashifalSignCard({ sign, period }: { sign: RashifalSignBlock; period: RashifalPeriod }) {
-  const { t, lang, ne, lucky, base } = useCardBase({
+  const { t, lang, calendar, ne, lucky, base } = useCardBase({
     percent: sign.percent ?? 50,
     tone: sign.tone,
     stars: sign.stars ?? 3,
@@ -131,14 +137,14 @@ export function useRashifalSignCard({ sign, period }: { sign: RashifalSignBlock;
       : null,
     windowDays:
       period !== "daily" && sign.best_day && sign.weak_day
-        ? t("rashifal.window_days", { best: dayMarkerLabel(sign.best_day, lang), weak: dayMarkerLabel(sign.weak_day, lang) })
+        ? t("rashifal.window_days", { best: dayMarkerLabel(sign.best_day, lang, calendar), weak: dayMarkerLabel(sign.weak_day, lang, calendar) })
         : null,
     remedy: remedy ? `${t("rashifal.remedy")}: ${remedy}` : null,
   };
 }
 
 export function useRashifalPersonalCard({ personal }: { personal: RashifalPersonal }) {
-  const { t, lang, ne, lucky, base } = useCardBase({
+  const { t, lang, calendar, ne, lucky, base } = useCardBase({
     percent: personal.percent ?? 50,
     tone: personal.tone,
     stars: personal.stars ?? 3,
@@ -177,9 +183,9 @@ export function useRashifalPersonalCard({ personal }: { personal: RashifalPerson
     dashaRange: dasha
       ? t("rashifal.personal.dasha_range", {
           maha,
-          mahaEnd: formatDasha(dasha.mahadasha.end, lang),
+          mahaEnd: formatDasha(dasha.mahadasha.end, lang, calendar),
           antar,
-          antarEnd: formatDasha(dasha.antardasha.end, lang),
+          antarEnd: formatDasha(dasha.antardasha.end, lang, calendar),
         })
       : null,
   };

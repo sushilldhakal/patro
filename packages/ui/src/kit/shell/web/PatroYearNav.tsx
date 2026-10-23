@@ -40,7 +40,7 @@ export function PatroYearNav({
 
   return (
     <Box className={cn("flex w-full flex-col gap-2", className)}>
-      <Box className={pick.webDtGrid}>
+      <Box className={cn(pick.webDtGrid, !tabs && pick.webDtSolo)}>
         <PatroYearHeader
           className="contents"
           era={era}

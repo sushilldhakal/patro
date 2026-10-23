@@ -1,7 +1,10 @@
 import { setupI18n } from "@vedic-patro/i18n/setup";
 import { i18n, type Lang } from "@vedic-patro/i18n/react";
 import ne from "@vedic-patro/i18n/web/ne.json";
-import { getStoredLanguage } from "@/lib/user-preferences";
+import { getStoredLanguage, initCalendarPreference } from "@/lib/user-preferences";
+
+// Calendar system (BS/AD) is independent of language; load it before first render.
+initCalendarPreference();
 
 function clientInitialLng(): Lang {
   if (typeof window === "undefined") return "ne";

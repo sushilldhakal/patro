@@ -1,4 +1,4 @@
-import { fetchMonthCalendar, type LocationParams, type MonthBrowseEra, type MonthCalendar } from "@/lib/api";
+import { fetchMonthCalendar, uiLanguage, type LocationParams, type MonthBrowseEra, type MonthCalendar } from "@/lib/api";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { getCachedYear, OfflineUnavailableError } from "@/lib/offline/offline-store";
 import { yearWheelToMonthCalendar } from "@/lib/offline/year-wheel-adapter";
@@ -6,12 +6,14 @@ import { yearWheelToMonthCalendar } from "@/lib/offline/year-wheel-adapter";
 async function fromOfflineCache(year: number, month: number, location?: LocationParams): Promise<MonthCalendar | null> {
   const cachedYear = await getCachedYear(year, location);
   if (!cachedYear) return null;
-  return yearWheelToMonthCalendar(cachedYear, month);
+  // The saved year holds both languages; the month is cut in the one the UI is in (BS shows in English too).
+  return yearWheelToMonthCalendar(cachedYear, month, uiLanguage());
 }
 
 /**
  * Offline-aware drop-in for `fetchMonthCalendar`, for BS-era browsing only (the
- * bulk offline store is keyed by BS year — see `lib/offline/offline-store.ts`).
+ * bulk offline store is keyed by BS year — see `lib/offline/offline-store.ts`),
+ * in either UI language.
  * AD/BC/BBS browsing always goes straight to the network.
  *
  * Online: tries the live endpoint first (freshest data), falling back to the

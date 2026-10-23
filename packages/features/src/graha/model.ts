@@ -3,7 +3,8 @@
  * events by graha and turning each into display text.
  */
 import type { AstaStamp, GrahaAstaPeriod, GrahaVakriEvent } from "@vedic-patro/api-client";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
 import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { parsePatroDayDateKey } from "@vedic-patro/domain/calendar/patro-day";
@@ -23,11 +24,15 @@ export function groupByGraha<T extends { graha: string }>(order: readonly string
   return groups;
 }
 
-/** `2083-04-12` (era day key) → `साउन १२` / `Shrawan 12`. */
-export function eraDayLabel(eraDay: string, lang: Lang): string {
+/**
+ * `2083-04-12` (era day key) → `साउन १२` / `Shrawan 12`; in a Gregorian `era`
+ * the key is an AD day and reads `July 12` / `जुलाई १२`. The language only names the month.
+ */
+export function eraDayLabel(eraDay: string, lang: Lang, era?: Era): string {
   try {
     const { month, day } = parsePatroDayDateKey(eraDay);
-    const monthName = lang === "en" ? BS_MONTH_NAMES[month - 1] : BS_MONTHS_NE[month - 1];
+    const names = era && isGregorianEra(era) ? (lang === "en" ? AD_MONTH_NAMES : AD_MONTH_NAMES_NE) : lang === "en" ? BS_MONTH_NAMES : BS_MONTHS_NE;
+    const monthName = names[month - 1];
     return `${monthName} ${formatLocaleDigits(day, lang)}`;
   } catch {
     return formatBsIsoDateNepali(eraDay, { lang, includeYear: false }) ?? eraDay;
@@ -35,10 +40,10 @@ export function eraDayLabel(eraDay: string, lang: Lang): string {
 }
 
 /** The date an asta stamp shows: the era day when the API sends one, else its BS/AD date. */
-export function stampDate(stamp: AstaStamp, lang: Lang): string {
+export function stampDate(stamp: AstaStamp, lang: Lang, era?: Era): string {
   const eraDay = stamp.date?.trim();
-  if (eraDay) return eraDayLabel(eraDay, lang);
-  return lang === "en" ? (stamp.date_ad ?? stamp.date_bs ?? "") : (stamp.date_bs ?? stamp.date_ad ?? "");
+  if (eraDay) return eraDayLabel(eraDay, lang, era);
+  return era && isGregorianEra(era) ? (stamp.date_ad ?? stamp.date_bs ?? "") : (stamp.date_bs ?? stamp.date_ad ?? "");
 }
 
 export type AstaStampView = {
@@ -56,11 +61,11 @@ export type VakriEventView = { retrograde: boolean; arrow: string; label: string
 
 type T = (key: string, values?: Record<string, unknown>) => string;
 
-export function astaPeriodView(p: GrahaAstaPeriod, lang: Lang, t: T): AstaPeriodView {
+export function astaPeriodView(p: GrahaAstaPeriod, lang: Lang, t: T, era?: Era): AstaPeriodView {
   const digits = (v: string | number) => formatLocaleDigits(v, lang);
   const stamp = (s: AstaStamp | null, labelKey: string, tone: AstaStampView["tone"]): AstaStampView =>
     s
-      ? { label: t(labelKey), tone, date: digits(stampDate(s, lang)), time: digits(s.time_short ?? "") }
+      ? { label: t(labelKey), tone, date: digits(stampDate(s, lang, era)), time: digits(s.time_short ?? "") }
       : { label: t(labelKey), tone, outside: t("graha_pages.asta.outside_year") };
   return {
     stamps: [stamp(p.start, "graha_pages.asta.asta_begins", "asta"), stamp(p.end, "graha_pages.asta.udaya_ends", "udaya")],

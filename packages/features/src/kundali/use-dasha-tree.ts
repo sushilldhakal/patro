@@ -19,7 +19,7 @@ import {
   type DashaLord,
 } from "@vedic-patro/domain/jyotish/dasha";
 import { toSpan, type SpanWithChildren } from "@vedic-patro/read-models/jyotish/kundali/dasha-tree";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 
 /** Catalogue keys, outermost dasha level first. */
 const LEVEL_LABELS = [
@@ -43,10 +43,11 @@ const progressOf = (span: SpanWithChildren, now: number) => {
 
 function useDashaFormat(timeZone?: string) {
   const { t, lang: rawLang, digits } = useLocale();
+  const { calendar } = useCalendarSystem();
   const lang: "ne" | "en" = rawLang === "en" ? "en" : "ne";
-  /** A BS year means nothing in English — English shows the Gregorian date instead. */
+  /** The calendar preference picks BS or AD; the language only names the months. */
   const moment = (date: Date) =>
-    lang === "en" ? formatZonedAdMoment(date, { lang, timeZone, digits }) : formatZonedBsMoment(date, { lang, timeZone, digits });
+    calendar === "ad" ? formatZonedAdMoment(date, { lang, timeZone, digits }) : formatZonedBsMoment(date, { lang, timeZone, digits });
   const lordName = (span: SpanWithChildren, system: DashaSystem) => {
     if (system === "yogini") return span.lordNe;
     const lord = span.lord as DashaLord;

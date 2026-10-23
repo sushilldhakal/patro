@@ -1,14 +1,15 @@
 import { Clock } from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import {
-  BS_MONTHS_NE,
   BS_SUPPORTED_END_YEAR,
   BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   getSupportedAdBounds,
 } from "@vedic-patro/domain/calendar/bs-calendar";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
-import { useCalendarEra } from "@/hooks/use-calendar-era";
+import { eraForCalendar } from "@vedic-patro/domain/calendar/calendar-system";
+import { monthLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { useOnCalendarSwitch } from "@/hooks/use-on-calendar-switch";
+import { convertCivilParts } from "@/lib/patro-day-url";
 import { PatroHeaderLocation } from "@/components/patro-date";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
@@ -69,10 +70,19 @@ export function KundaliControls({
   location,
   onLocationChange,
 }: Props) {
-  const { t } = useTranslation();
-  const calendarEra = useCalendarEra();
+  const { t, lang, digits } = useLocale();
+  const { calendar } = useCalendarSystem();
+  // The pickers name the moment's own era; the calendar preference only decides
+  // the era of a moment that has none of these two (and moves it when switched).
   const era: "bs" | "ad" =
-    calendarEra === "ad" || calendarEra === "bc" ? "ad" : "bs";
+    moment.inputEra === "bs" || moment.inputEra === "ad" ? moment.inputEra : eraForCalendar(calendar);
+
+  useOnCalendarSwitch((next) => {
+    const target = eraForCalendar(next);
+    if (moment.inputEra === target) return;
+    const parts = convertCivilParts(moment.inputEra, moment, target);
+    if (parts) onMomentChange({ ...moment, inputEra: target, ...parts });
+  });
 
   const pick = (year: number, month: number, day: number) => {
     const monthLen = monthLengthForPicker(era, year, month);
@@ -102,7 +112,7 @@ export function KundaliControls({
           >
             {BS_YEARS.map((y) => (
               <option key={y} value={y}>
-                {toNepaliDigits(y)}
+                {digits(y)}
               </option>
             ))}
           </select>
@@ -113,9 +123,9 @@ export function KundaliControls({
             aria-label={t("kundali.month")}
             onChange={(e) => pick(year, Number(e.target.value) + 1, day)}
           >
-            {BS_MONTHS_NE.map((ne, i) => (
-              <option key={ne} value={i}>
-                {ne}
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>
+                {monthLabel("bs", i + 1, lang)}
               </option>
             ))}
           </select>
@@ -128,7 +138,7 @@ export function KundaliControls({
           >
             {Array.from({ length: monthLen }, (_, i) => i + 1).map((dd) => (
               <option key={dd} value={dd}>
-                {toNepaliDigits(dd)}
+                {digits(dd)}
               </option>
             ))}
           </select>
@@ -143,7 +153,7 @@ export function KundaliControls({
           >
             {AD_YEARS.map((y) => (
               <option key={y} value={y}>
-                {y}
+                {digits(y)}
               </option>
             ))}
           </select>
@@ -169,7 +179,7 @@ export function KundaliControls({
           >
             {Array.from({ length: monthLen }, (_, i) => i + 1).map((dd) => (
               <option key={dd} value={dd}>
-                {dd}
+                {digits(dd)}
               </option>
             ))}
           </select>

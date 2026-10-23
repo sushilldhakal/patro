@@ -23,11 +23,11 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
           </Box>
         </Pressable>
         <Box className="flex min-w-0 flex-col">
-          <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+          <Text as="h2" numberOfLines={1} className={cls.titleMain} webClassName={cls.webTitleMain}>
             {h.title.main}
           </Text>
           {h.title.sub ? (
-            <Text numberOfLines={1} className={cls.titleSub}>
+            <Text numberOfLines={1} className={cls.titleSub} webClassName={cls.webTitleSub}>
               {h.title.sub}
             </Text>
           ) : null}

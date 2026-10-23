@@ -1,5 +1,14 @@
 {
   "app_name": "वैदिक पात्रो",
+  "calendar_system": {
+    "label": "पात्रो",
+    "bs": "वि.सं.",
+    "ad": "ई.सं.",
+    "bs_hint": "विक्रम संवत् मितिहरू",
+    "ad_hint": "ग्रेगोरियन मितिहरू",
+    "switch_aria": "पात्रो प्रणाली छान्नुहोस्",
+    "onboarding_title": "तपाईंले कुन मिति प्रयोग गर्नुहुन्छ?"
+  },
   "offline": {
     "group": {
       "calendar": {
@@ -1168,7 +1177,12 @@
     "col_ad_date": "ई.सं. मिति",
     "col_days": "दिन",
     "col_type": "प्रकार",
-    "col_govt": "सरकारी बिदा"
+    "col_govt": "सरकारी बिदा",
+    "type_lunar": "चान्द्र",
+    "type_solar": "सौर",
+    "type_bs_fixed": "वि.सं. तोकिएको",
+    "type_ad_fixed": "ई.सं. तोकिएको",
+    "type_adhik_arambha": "अधिक मास आरम्भ"
   },
   "rel": {
     "today": "आज",

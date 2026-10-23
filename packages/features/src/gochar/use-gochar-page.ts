@@ -202,7 +202,8 @@ export function useGocharPage({
   };
 
   const dateLabel = useMemo(() => {
-    if (lng !== "en") {
+    // The browse era (the calendar preference) picks BS vs AD; the language only names the parts.
+    if (!gregorianBrowse) {
       const bsIso =
         vikram?.year != null && vikram.month != null && vikram.day != null
           ? `${vikram.year}-${pad(vikram.month)}-${pad(vikram.day)}`
@@ -214,7 +215,7 @@ export function useGocharPage({
       return formatPatroCivilDayLabel(`${gregorian.year}-${pad(gregorian.month)}-${pad(gregorian.day)}`, lang, digits);
     }
     return refDateAd ? formatPatroCivilDayLabel(refDateAd, lang, digits) : "—";
-  }, [lng, vikram, gregorian, day.dateBs, gocharQ.data?.date_bs, refDateAd, lang, digits]);
+  }, [gregorianBrowse, vikram, gregorian, day.dateBs, gocharQ.data?.date_bs, refDateAd, lang, digits]);
 
   const gochar = gocharQ.data?.gochar;
 

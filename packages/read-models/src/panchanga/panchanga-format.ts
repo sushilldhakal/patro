@@ -1,6 +1,7 @@
 import type { ApiHoraSlot, BalamBlock, NakshatraPadaSpan, NavataraTableBlock, PanchakaSegment, RashiSpan, UdayaLagnaRow } from "@vedic-patro/api-client";
 import type { CalendarDay, ElementStamp, Festival, NivasShoolBlock, PanchangaDay } from "@vedic-patro/api-client";
 import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { getCalendarSystem, type CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 import { formatRashiDisplayNe, rashiNeFromNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import { normalizeLang, pickLocale } from "@vedic-patro/domain/locale";
@@ -243,8 +244,16 @@ export function getAyanaDisplay(
   return { mark, label };
 }
 
-/** Vikram or Gregorian label for the civil day a moon event falls on. */
-function formatPatroMoonEventDate(p: PanchangaDay, eventCivilIso: string, lang?: string): string {
+/**
+ * Vikram or Gregorian label for the civil day a moon event falls on: the
+ * reader's calendar system picks BS or AD, the language only names the parts.
+ */
+function formatPatroMoonEventDate(
+  p: PanchangaDay,
+  eventCivilIso: string,
+  lang?: string,
+  calendar: CalendarSystem = getCalendarSystem(),
+): string {
   const normalized = positiveGregorianCivilIso(eventCivilIso);
   const greg = p.date_parts?.gregorian;
   const vikram = p.date_parts?.vikram;
@@ -252,9 +261,8 @@ function formatPatroMoonEventDate(p: PanchangaDay, eventCivilIso: string, lang?:
   if (vikram?.year && vikram.month && vikram.day && greg?.year && greg.month && greg.day && p.date_bs) {
     const anchor = formatCivilIsoParts(greg.year, greg.month, greg.day);
     const delta = civilDayDiffIso(normalized, anchor);
-    const bsIso = offsetBsIsoByCivilDayDelta(p.date_bs, delta);
 
-    if (normalizeLang(lang) === "en") {
+    if (calendar === "ad") {
       if (delta === 0) {
         return formatGregorianEventPartsLabel(greg, lang);
       }
@@ -265,11 +273,12 @@ function formatPatroMoonEventDate(p: PanchangaDay, eventCivilIso: string, lang?:
       );
     }
 
+    const bsIso = offsetBsIsoByCivilDayDelta(p.date_bs, delta);
     const label = formatBsIsoDateNepali(bsIso ?? p.date_bs, { includeYear: false, lang });
     if (label) return label;
   }
 
-  return formatEventDate(normalized, lang);
+  return formatEventDate(normalized, lang, calendar);
 }
 
 function getMoonTimeBlock(p: PanchangaDay, key: "moonrise" | "moonset"): MoonTimeBlock | undefined {
@@ -316,11 +325,12 @@ export function resolveMoonEventAdDate(
   return eventDate ?? dayDate;
 }
 
-/** Always show BS date + time — moonrise/moonset often fall on the next civil date. */
+/** Always show the date (in the reader's calendar) + time — moonrise/moonset often fall on the next civil date. */
 export function formatMoonEventDisplay(
   p: PanchangaDay,
   key: "moonrise" | "moonset",
   lang?: string,
+  calendar: CalendarSystem = getCalendarSystem(),
 ): string | undefined {
   const block = getMoonTimeBlock(p, key);
   if (!block?.local_time_short) return undefined;
@@ -329,20 +339,21 @@ export function formatMoonEventDisplay(
   const eventDate = resolveMoonEventAdDate(p, key, block);
   if (!time) return undefined;
   if (!eventDate) return time;
-  return `${formatPatroMoonEventDate(p, eventDate, lang)} · ${time}`;
+  return `${formatPatroMoonEventDate(p, eventDate, lang, calendar)} · ${time}`;
 }
 
 /** Span element boundary — locale-aware date + clock (tithi/nakshatra month pages). */
 export function formatElementStampDisplay(
   stamp: ElementStamp,
   lang?: string,
+  calendar: CalendarSystem = getCalendarSystem(),
 ): string {
   const time = formatTimeShort(stamp.time_label) ?? stamp.time_label;
   const timeOut = formatLocaleDigits(time, lang);
   const datePart = stamp.iso.includes("T") ? stamp.iso.split("T")[0]! : stamp.iso.slice(0, 10);
   let dateOut: string;
   try {
-    dateOut = formatEventDate(datePart, lang);
+    dateOut = formatEventDate(datePart, lang, calendar);
   } catch {
     dateOut = formatLocaleDigits(stamp.date_label, lang);
   }
@@ -365,6 +376,7 @@ export function formatMonthMoonEventDisplay(
   },
   key: "moonrise" | "moonset",
   lang?: string,
+  calendar: CalendarSystem = getCalendarSystem(),
 ): string | undefined {
   const time = key === "moonrise" ? day.moonrise : day.moonset;
   if (!time) return undefined;
@@ -381,7 +393,7 @@ export function formatMonthMoonEventDisplay(
   const timeLabel = formatLocaleDigits(short, lang);
   if (!timeLabel) return undefined;
   if (!eventDate) return timeLabel;
-  return `${formatPatroMoonEventDate(pseudo, eventDate, lang)} · ${timeLabel}`;
+  return `${formatPatroMoonEventDate(pseudo, eventDate, lang, calendar)} · ${timeLabel}`;
 }
 
 export function getMonthDayChandraRashi(
@@ -433,12 +445,12 @@ export function getMonthDayNakshatra(
   return raw || undefined;
 }
 
-export function getMoonriseDisplay(p: PanchangaDay, lang?: string): string | undefined {
-  return formatMoonEventDisplay(p, "moonrise", lang);
+export function getMoonriseDisplay(p: PanchangaDay, lang?: string, calendar?: CalendarSystem): string | undefined {
+  return formatMoonEventDisplay(p, "moonrise", lang, calendar);
 }
 
-export function getMoonsetDisplay(p: PanchangaDay, lang?: string): string | undefined {
-  return formatMoonEventDisplay(p, "moonset", lang);
+export function getMoonsetDisplay(p: PanchangaDay, lang?: string, calendar?: CalendarSystem): string | undefined {
+  return formatMoonEventDisplay(p, "moonset", lang, calendar);
 }
 
 export function getVaaraNe(p: PanchangaDay, fallback?: string): string | undefined {

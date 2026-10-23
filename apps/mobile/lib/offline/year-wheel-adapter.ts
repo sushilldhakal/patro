@@ -22,7 +22,7 @@ function rashiPair(value: unknown): { en?: string; ne?: string } {
 }
 
 /** One year-wheel day → the plain `CalendarDay` shape month screens render. */
-function yearWheelDayToCalendarDay(day: YearWheelCalendarDay): CalendarDay {
+function yearWheelDayToCalendarDay(day: YearWheelCalendarDay, lang: "ne" | "en"): CalendarDay {
   const weekdayIdx = parseCivilIsoToDate(day.date_ad).getDay();
   const p = day.panchanga;
   const rashi = rashiPair(p?.chandra_rashi);
@@ -55,7 +55,10 @@ function yearWheelDayToCalendarDay(day: YearWheelCalendarDay): CalendarDay {
     sunset: sunset ?? day.sunset,
     moonrise: p?.moonrise?.local_time_short ?? p?.moonrise?.local,
     moonset: p?.moonset?.local_time_short ?? p?.moonset?.local,
-    festivals: (p?.festivals ?? []).map((f) => f.name_ne ?? f.name_en ?? f.name ?? f.id ?? "").filter(Boolean),
+    // Names follow the UI language (BS is browsed in English too now).
+    festivals: (p?.festivals ?? [])
+      .map((f) => (lang === "en" ? (f.name_en ?? f.name ?? f.name_ne) : (f.name_ne ?? f.name_en ?? f.name)) ?? f.id ?? "")
+      .filter(Boolean),
     is_public_holiday: p?.is_public_holiday || (p?.festivals ?? []).some((f) => f.is_public_holiday),
   };
 }
@@ -66,7 +69,11 @@ function yearWheelDayToCalendarDay(day: YearWheelCalendarDay): CalendarDay {
  * `fetchMonthCalendar` — the year-wheel endpoint is one request per BS year
  * instead of twelve, which is what makes bulk offline downloads affordable.
  */
-export function yearWheelToMonthCalendar(yearWheel: YearWheelCalendar, month: number): MonthCalendar | null {
+export function yearWheelToMonthCalendar(
+  yearWheel: YearWheelCalendar,
+  month: number,
+  lang: "ne" | "en" = "ne",
+): MonthCalendar | null {
   const monthMeta = yearWheel.months.find((m) => m.month_bs === month);
   if (!monthMeta?.month_start_ad) return null;
 
@@ -75,7 +82,7 @@ export function yearWheelToMonthCalendar(yearWheel: YearWheelCalendar, month: nu
 
   const days = yearWheel.calendar
     .filter((d) => d.date_ad >= rangeStart && d.date_ad < rangeEndExclusive)
-    .map(yearWheelDayToCalendarDay);
+    .map((d) => yearWheelDayToCalendarDay(d, lang));
 
   return {
     year_bs: yearWheel.year_bs,

@@ -36,6 +36,7 @@ import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZONTAL_PADDING_WIDE, pageTopPadding } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { MONTH_SWIPE_ENABLED, todayPulse } from "@/components/home/calendar-grid-layout";
 import { Reveal } from "@/components/ui/Reveal";
@@ -182,7 +183,8 @@ export default function HomeScreen() {
     (() => {
       const y = Number(urlParams.year);
       const m = Number(urlParams.month);
-      const e = (urlParams.era ?? "bs") as Era;
+      // No ?era= in the link: the browse opens in the reader's calendar preference (BS or AD).
+      const e = (urlParams.era ?? eraForCalendar(getCalendarSystem())) as Era;
       if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) return null;
       if (!(ERAS as readonly string[]).includes(e)) return null;
       return { era: e, year: y, month: m };
@@ -362,6 +364,7 @@ export default function HomeScreen() {
               selectedAd={aside.highlightAd}
               loading={monthFetching}
               onPickDay={handleSelectDay}
+              primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
               edgeToEdge={isPhone}
             />
           ) : (

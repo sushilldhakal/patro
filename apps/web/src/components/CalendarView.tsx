@@ -9,13 +9,13 @@ import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/calen
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { PanchangaMonthGrid } from "@/components/panchanga/PanchangaMonthGrid";
 import { buildPatroDaySearch } from "@/lib/url-state";
-import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
 import {
   patroDayFetchFromApiBsParts,
   patroDayFetchFromApiDateAd,
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { PatroCalendarHeader } from "@/components/patro-date";
+import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
@@ -149,7 +149,7 @@ export function CalendarView({
 
   function selectDay(day: CalendarDay) {
     if (isPanchangaPatro && location) {
-      const display = { era, language: getLanguageForEra(era) };
+      const display = { era, language: lang };
       const state = day.date_ad
         ? patroDayFetchFromApiDateAd(day.date_ad, display)
         : patroDayFetchFromApiBsParts({ year, month, day: day.day }, display);
@@ -165,7 +165,7 @@ export function CalendarView({
 
   function goToPanchangaDay(d: Date) {
     if (!location) return;
-    const display = { era, language: getLanguageForEra(era) };
+    const display = { era, language: lang };
     navigate({
       to: "/panchanga",
       search: buildPatroDaySearch(
@@ -212,7 +212,7 @@ export function CalendarView({
           todayAd={todayAd}
           primaryDate={isGregorian ? "ad" : "bs"}
           saitSource={(day) => {
-            const state = patroDayFetchFromApiDateAd(day.date_ad, { era, language: getLanguageForEra(era) });
+            const state = patroDayFetchFromApiDateAd(day.date_ad, { era, language: lang });
             return { queryKey: panchangaKeys.daySelection(state, location?.params), queryFn: () => fetchPanchangaDay(state, location?.params) };
           }}
           className={calendarClasses.gridWide}
@@ -245,6 +245,11 @@ export function CalendarView({
 
   const monthHeader = showMonthHeader ? (
     <div className={cn(patroMdRail, "mb-4 mt-2 max-md:pt-3 md:pt-0")}>
+      {enablePatroToggle ? (
+        <div className="mb-2 flex justify-end max-md:px-2.5">
+          <CalendarSystemToggle />
+        </div>
+      ) : null}
       <PatroCalendarHeader
       era={era}
           year={year}

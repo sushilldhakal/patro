@@ -96,7 +96,7 @@ export function AbhijitMuhurta() {
         <p className={cn(ac.empty, "m-0")}>{page.copy.none}</p>
       ) : (
         <div className={ac.gridWrap}>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
             {page.days.map((d) => (
               <DayCard key={d.key} day={d} todayBadge={page.copy.todayBadge} noonLabel={page.copy.noon} />
             ))}

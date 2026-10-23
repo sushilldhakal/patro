@@ -93,7 +93,7 @@ export function useHomeMonth({
 
   const monthQueries = useQueries({
     queries: requiredMonths.map(({ year: y, month: m }) => ({
-      queryKey: ["panchanga", "month", era, y, m, locationCacheKey(location), "lite", "intl"] as const,
+      queryKey: ["panchanga", "month", era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
       queryFn: () => fetchMonth(y, m, location, { full: false, era }),
       staleTime: HOUR,
       enabled: !panchangaView && y !== 0,
@@ -124,8 +124,8 @@ export function useHomeMonth({
   );
   const festivalQueries = useQueries({
     queries: festivalYears.map((y) => ({
-      queryKey: holidayKeys.festivals(y, "bs", undefined, location),
-      queryFn: () => fetchFestivals(y, { location }),
+      queryKey: holidayKeys.festivals(y, "bs", undefined, location, lang),
+      queryFn: () => fetchFestivals(y, { location, language: lang }),
       staleTime: HOUR,
     })),
   });

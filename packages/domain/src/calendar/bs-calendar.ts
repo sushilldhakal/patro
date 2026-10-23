@@ -475,10 +475,8 @@ export function formatZonedBsMoment(
 
 /**
  * Zoned instant as AD (Gregorian) calendar date + weekday + clock — the
- * English-mode counterpart to {@link formatZonedBsMoment}. A BS year number
- * like "2076" means nothing to an English reader; a range like "2019–2036"
- * does, so callers showing a long-spanning date range (e.g. a dasha period)
- * in English should use this instead of translating BS month names.
+ * counterpart to {@link formatZonedBsMoment} for readers who turned the AD
+ * calendar on (the language does not decide the calendar).
  * e.g. December 13, 2019, Friday at 22:29
  */
 export function formatZonedAdMoment(
@@ -527,34 +525,36 @@ export function formatDigits(value: string | number, lang: "ne" | "en"): string 
 
 
 /**
- * Dasha period boundary — Bikram Sambat (Nepali) when lang is ne, Gregorian AD when en.
+ * Dasha period boundary — in the reader's calendar system (BS by default, AD when
+ * AD is on), named in the UI language. The language never picks the calendar.
  * Uses the chart place timezone so begin/end match the web kundali dasha view.
  */
 export function formatDashaInstant(
   date: Date,
   lang: "ne" | "en",
   timeZone?: string,
+  calendar: "bs" | "ad" = "bs",
 ): string {
   if (Number.isNaN(date.getTime())) return "";
   const z = getZonedParts(date, timeZone);
-  const civil = new Date(z.year, z.month - 1, z.day);
-  if (lang === "en") {
-    return `${AD_MONTHS_SHORT[z.month - 1]} ${z.day}, ${z.year}`;
+  if (calendar === "ad") {
+    if (lang === "en") return `${AD_MONTHS_SHORT[z.month - 1]} ${z.day}, ${z.year}`;
+    return `${AD_MONTH_NAMES_NE[z.month - 1]} ${toNepaliDigits(z.day)}, ${toNepaliDigits(z.year)}`;
   }
-  const bs = adToBS(civil);
+  const bs = adToBS(new Date(z.year, z.month - 1, z.day));
+  if (lang === "en") return `${BS_MONTH_NAMES[bs.month - 1]} ${bs.day}, ${bs.year}`;
   return `${BS_MONTHS_NE[bs.month - 1]} ${toNepaliDigits(bs.day)}, ${toNepaliDigits(bs.year)}`;
 }
 
 
-/** Dasha begin/end line — BS in Nepali, AD in English. */
+/** Dasha begin/end line — in the calendar system chosen (BS by default), named in `lang`. */
 export function formatDashaMoment(
   date: Date,
   lang: "ne" | "en",
   timeZone?: string,
   digits?: (v: string | number) => string,
+  calendar: "bs" | "ad" = "bs",
 ): string {
-  if (lang === "en") {
-    return formatZonedAdMoment(date, { timeZone, digits });
-  }
-  return formatZonedBsMoment(date, { lang: "ne", timeZone, digits });
+  if (calendar === "ad") return formatZonedAdMoment(date, { lang, timeZone, digits });
+  return formatZonedBsMoment(date, { lang, timeZone, digits });
 }

@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
+import { useCalendarSystem, useLocale } from "@/lib/i18n";
+import { formatBsDate } from "@vedic-patro/domain/calendar/bs-date-format";
 import type { PanchangaDay } from "@/lib/api";
 import { timeShort } from "@/lib/api";
 import { Card } from "./ui/Card";
@@ -24,18 +25,29 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
   const { pick, lang, digits } = useLocale();
+  const { calendar } = useCalendarSystem();
   const t = (ne?: string, en?: string) => (lang === "ne" ? ne || en : en || ne) || "—";
+
+  // The BS date in the UI language (Nepali months in Devanagari or English letters), and the
+  // AD date; which one leads is the calendar preference, not the language.
+  const bsParts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data.date_bs ?? "");
+  const bsText =
+    data.display?.bs_ne && lang === "ne"
+      ? data.display.bs_ne
+      : bsParts
+        ? formatBsDate({ year: Number(bsParts[1]), month: Number(bsParts[2]), day: Number(bsParts[3]) }, lang, digits)
+        : digits(data.date_bs ?? data.date_ad ?? "—");
+  const adText = digits(data.display?.gregorian_en ?? data.date_ad);
+  const [primaryDate, secondaryDate] = calendar === "ad" ? [adText, bsText] : [bsText, adText];
 
   return (
     <Card className="gap-0 p-0">
       <View className="border-b border-border/60 px-4 py-3">
         <Text className="text-title font-bold text-foreground">
-          {data.display?.bs_ne && lang === "ne"
-            ? data.display.bs_ne
-            : digits(data.date_bs ?? data.date_ad ?? "—")}
+          {primaryDate}
         </Text>
         <Text className="text-body text-muted-foreground">
-          {digits(data.display?.gregorian_en ?? data.date_ad)}
+          {secondaryDate}
           {data.weekday ? ` · ${data.weekday}` : ""}
         </Text>
         {data.samvatsara ? (

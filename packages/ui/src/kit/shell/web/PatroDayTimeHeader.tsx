@@ -58,10 +58,10 @@ export function PatroDayTimeHeader({
           </Box>
         </Pressable>
         <Box className="flex min-w-0 flex-col">
-          <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+          <Text as="h2" numberOfLines={1} className={cls.titleMain} webClassName={cls.webTitleMain}>
             {h.title.main}
           </Text>
-          <Text numberOfLines={1} className={cls.titleSub}>
+          <Text numberOfLines={1} className={cls.titleSub} webClassName={cls.webTitleSub}>
             {h.title.sub}
           </Text>
         </Box>
@@ -80,13 +80,13 @@ export function PatroDayTimeHeader({
         <Pressable
           label={labels.picker}
           onPress={h.toggle}
-          className={cn(pick.dateButton, h.open ? cls.selectButtonOpen : cls.selectButtonIdle)}
+          className={cn(pick.dateButton, pick.webDateDense, h.open ? cls.selectButtonOpen : cls.selectButtonIdle)}
           webClassName={cn("hover:bg-muted", cls.webDenseControl)}
         >
           <Icon node={shellIcons.calendar} size="sm" tone="secondary" webClassName={pick.webDateIconHide} />
           <Text className={cn(pick.dateButtonText, pick.webDateFull)}>{h.buttonText}</Text>
           <Text className={cn(pick.dateButtonText, pick.webDateShort)}>{h.buttonTextShort}</Text>
-          {h.timeText ? <Text className={cn(pick.dateButtonTime, pick.webDateTimeHide)}>{h.timeText}</Text> : null}
+          {h.timeText ? <Text className={cn(pick.dateButtonTime, pick.webDateTimeHide, pick.webDateTimeDense)}>{h.timeText}</Text> : null}
         </Pressable>
         <Pressable
           label={labels.nextDay}

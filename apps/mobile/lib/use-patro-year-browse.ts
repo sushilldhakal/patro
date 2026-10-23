@@ -1,9 +1,9 @@
 import { usePatroYearBrowse as useSharedPatroYearBrowse } from "@vedic-patro/features/patro-date";
-import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 
-/** Year browse (shared hook) for yearly pages, starting in the onboarding era choice. */
+/**
+ * Year browse (shared hook) for yearly pages. It starts in the era of the
+ * calendar-system preference (BS / AD) and follows that preference when it changes.
+ */
 export function usePatroYearBrowse(initialYear?: number) {
-  return useSharedPatroYearBrowse(initialYear == null ? undefined : { year: initialYear }, {
-    era: getCachedCalendarEraPreference(),
-  });
+  return useSharedPatroYearBrowse(initialYear == null ? undefined : { year: initialYear });
 }

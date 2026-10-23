@@ -42,11 +42,11 @@ export function PatroCalendarHeader({
           </Box>
         </Pressable>
         <Box className="flex min-w-0 flex-col">
-          <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+          <Text as="h2" numberOfLines={1} className={cls.titleMain} webClassName={cls.webTitleMain}>
             {[header.title.year, header.eraLabel, header.samvatsara].filter(Boolean).join(" ")}
           </Text>
           {nav.crossEraSubtitle ? (
-            <Text numberOfLines={1} className={cls.titleSub}>
+            <Text numberOfLines={1} className={cls.titleSub} webClassName={cls.webTitleSub}>
               {nav.crossEraSubtitle}
             </Text>
           ) : null}
@@ -146,9 +146,9 @@ export function PatroCalendarHeader({
           {segments
             .filter((seg) => !seg.active)
             .map((seg) => (
-              <Pressable key={seg.key} label={seg.label} onPress={seg.onPress} className={cls.swapButton} webClassName={cn("hover:bg-muted", cls.webDenseControl)}>
+              <Pressable key={seg.key} label={seg.label} onPress={seg.onPress} className={cls.swapButton} webClassName={cn("hover:bg-muted", cls.webDenseControl, cls.webDenseSwap)}>
                 <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
-                <Text className={cls.swapLabel}>{seg.label}</Text>
+                <Text className={cls.swapLabel} webClassName={cls.webDenseSwapLabel}>{seg.label}</Text>
               </Pressable>
             ))}
         </Box>

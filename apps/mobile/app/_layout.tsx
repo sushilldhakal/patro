@@ -6,9 +6,11 @@ import { deviceStore } from "@/lib/device-store";
 import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { setLanguage, tFor } from "@vedic-patro/i18n/runtime";
+import { useLanguage } from "@vedic-patro/i18n/react";
+import { getStoredLanguage } from "@/lib/language-storage";
 import { light, mobileTypeScale, radius, space } from "@vedic-patro/design-tokens";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { ApiError, TimeoutError } from "@vedic-patro/api-client";
 import { OfflineMissError } from "@/lib/offline/offline-http";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
@@ -25,7 +27,7 @@ import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
 import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LocaleProvider } from "@/lib/i18n";
@@ -37,7 +39,7 @@ import { NotificationsRuntime } from "@/components/notifications/NotificationsRu
 import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
-import { loadCalendarEraPreference } from "@/lib/patro-era-preference";
+import { loadCalendarSystemPreference } from "@/lib/calendar-system-storage";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
@@ -120,6 +122,32 @@ function isWorthRetrying(error: unknown): boolean {
   return true;
 }
 
+/**
+ * Bump when the shape of what the persisted query cache holds changes. 2: the
+ * calendar system became independent of the language, so the same era is cached
+ * in both languages (month / day keys carry the language); a Nepali payload
+ * saved before must not be shown under English.
+ */
+const QUERY_CACHE_BUSTER = "calendar-language-2";
+
+/**
+ * The shared month query's key names the era but not the language, so on a language
+ * switch its cached months (stamped with the other language) are refetched.
+ */
+function LanguageQueryRefresh() {
+  const lang = useLanguage();
+  const queryClient = useQueryClient();
+  const previous = useRef(lang);
+  useEffect(() => {
+    if (previous.current === lang) return;
+    previous.current = lang;
+    void queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey[0] === "panchanga" && query.queryKey[1] === "month",
+    });
+  }, [lang, queryClient]);
+  return null;
+}
+
 /** JS start, for the one-line cache-restore timing logged after restore. */
 const JS_START = Date.now();
 
@@ -193,7 +221,16 @@ function RootLayout() {
   useEffect(() => {
     let active = true;
     // The saved place is read here too, so the first screen fetches it rather than Kathmandu.
-    Promise.all([isOnboardingComplete(), loadCalendarEraPreference(), loadStoredLocation()]).then(([done]) => {
+    // The saved language is applied here too (not only by LocaleProvider after the first render), so
+    // the first month/day requests are already asked in it. The calendar system loads beside it —
+    // the two are stored apart, and the calendar migration reads the saved language.
+    const restoreLanguage = getStoredLanguage().then((stored) => (stored ? setLanguage(stored) : undefined));
+    Promise.all([
+      isOnboardingComplete(),
+      loadCalendarSystemPreference(),
+      loadStoredLocation(),
+      restoreLanguage.catch(() => undefined),
+    ]).then(([done]) => {
       if (active) setOnboarded(done);
     });
     return () => {
@@ -250,9 +287,11 @@ function RootLayout() {
                 persister: asyncStoragePersister,
                 maxAge: QUERY_GC_TIME,
                 dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
+                buster: QUERY_CACHE_BUSTER,
               }}
               onSuccess={logQueryCacheRestore}
             >
+              <LanguageQueryRefresh />
               <OfflineDataProvider>
                 <AuthProvider>
                   <BiometricLockProvider>

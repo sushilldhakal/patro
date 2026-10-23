@@ -55,11 +55,11 @@ export function usePanchangaMonthGrid({
   days: CalendarDay[];
   todayAd: string;
   selectedAd?: string;
-  /** AD makes the Gregorian day the big number; always AD in English. */
+  /** AD makes the Gregorian day the big number (the calendar preference, independent of the UI language). */
   primaryDate?: "bs" | "ad";
 }) {
   const { lang, monoDigits, isEnglish } = useLocale();
-  const isAd = primaryDate === "ad" || isEnglish;
+  const isAd = primaryDate === "ad";
 
   const weekdays: PanchangaMonthWeekday[] = WEEKDAYS_NE.map((ne, i) => ({
     key: ne,

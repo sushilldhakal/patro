@@ -1,9 +1,9 @@
 // Same-origin by default: nginx proxies "/api" → the FastAPI backend, so the
 // browser never makes a cross-origin request (no CORS). Override with
 // VITE_API_BASE_URL for a split host (e.g. http://localhost:8080 in dev).
-import type { Era } from "@vedic-patro/domain/calendar/era";
+import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
-import { getLanguageForEra } from "@vedic-patro/domain/calendar/era";
+import { readCalendarEra, readUiLanguage } from "@/lib/patro-era";
 import {
   buildPatroDayApiQuery,
   patroDayFetchFromApiDateAd,
@@ -365,7 +365,18 @@ export const API_DATA_BASE = DATA_BASE;
 // A 400 is usually a date the engine can't compute (out of era range, beyond
 // the ephemeris); the ApiError carries the backend's explanation. Timeouts and
 // "could not connect" come back as NetworkError / TimeoutError.
-const fetchJson = <T,>(path: string): Promise<T> => requestJson<T>(DATA_BASE, path);
+/**
+ * Every data request names its language explicitly. Language and calendar are
+ * independent preferences, so the API must never infer the language from `era`
+ * (its fallback for a request with none). A `language=` the caller already set
+ * (URL-carried or per-request) is kept as is.
+ */
+function withExplicitLanguage(path: string): string {
+  if (/[?&]language=/.test(path)) return path;
+  return `${path}${path.includes("?") ? "&" : "?"}language=${readUiLanguage()}`;
+}
+
+const fetchJson = <T,>(path: string): Promise<T> => requestJson<T>(DATA_BASE, withExplicitLanguage(path));
 
 function webLocationKey(location?: LocationParams): string {
   if (!location) return "default";
@@ -414,8 +425,10 @@ configureApiClient({
 export const panchangaKeys = {
   today: (location?: LocationParams) =>
     ["panchanga", "today", locationCacheKey(location)] as const,
-  day: (date: string, era: string, location?: LocationParams) =>
-    ["panchanga", "day", PANCHANGA_CACHE_VERSION, date, era, locationCacheKey(location)] as const,
+  // The same era can be requested in two languages — `language` is part of every key
+  // whose payload carries localized labels.
+  day: (date: string, era: string, language: Language, location?: LocationParams) =>
+    ["panchanga", "day", PANCHANGA_CACHE_VERSION, date, era, language, locationCacheKey(location)] as const,
   daySelection: (state: PatroDayFetchState, location?: LocationParams) =>
     [
       "panchanga",
@@ -435,18 +448,21 @@ export const panchangaKeys = {
     full = true,
     excludeInternational = false,
     era: Era = "bs",
+    language: Language = readUiLanguage(),
   ) =>
-    ["panchanga", "month", era, year, month, locationCacheKey(location), full ? "full" : "lite", excludeInternational ? "nointl" : "intl"] as const,
-  year: (year: number, location?: LocationParams, full = true) =>
-    ["panchanga", "year", year, locationCacheKey(location), full ? "full" : "lite"] as const,
+    ["panchanga", "month", era, language, year, month, locationCacheKey(location), full ? "full" : "lite", excludeInternational ? "nointl" : "intl"] as const,
+  year: (year: number, location?: LocationParams, full = true, era: Era = "bs", language: Language = readUiLanguage()) =>
+    ["panchanga", "year", era, language, year, locationCacheKey(location), full ? "full" : "lite"] as const,
   monthAtClock: (
     year: number,
     month: number,
     clock: string,
     location?: LocationParams,
     excludeInternational = false,
+    era: Era = "bs",
+    language: Language = readUiLanguage(),
   ) =>
-    ["panchanga", "month", "clock", year, month, clock, locationCacheKey(location), excludeInternational ? "nointl" : "intl"] as const,
+    ["panchanga", "month", "clock", era, language, year, month, clock, locationCacheKey(location), excludeInternational ? "nointl" : "intl"] as const,
   atTime: (jd: number, clock: string, location?: LocationParams) =>
     ["panchanga", "at-time", PANCHANGA_CACHE_VERSION, jd, clock, locationCacheKey(location)] as const,
   atTimeDay: (state: PatroDayFetchState, clock: string, location?: LocationParams) =>
@@ -456,24 +472,29 @@ export const panchangaKeys = {
       PANCHANGA_CACHE_VERSION,
       patroDayQueryCacheKey(state),
       state.display.era,
+      state.display.language,
       clock,
       locationCacheKey(location),
     ] as const,
   civil: (date: string, location?: LocationParams) =>
     ["panchanga", "civil", PANCHANGA_CACHE_VERSION, date, locationCacheKey(location)] as const,
-  civilDay: (date: string, location?: LocationParams) =>
-    ["panchanga", "civil-day", PANCHANGA_CACHE_VERSION, date, locationCacheKey(location)] as const,
+  civilDay: (date: string, display: PatroDisplayContext, location?: LocationParams) =>
+    ["panchanga", "civil-day", PANCHANGA_CACHE_VERSION, date, display.era, display.language, locationCacheKey(location)] as const,
   header: (year: number, month: number, location?: LocationParams) =>
     ["calendar", "header", year, month, locationCacheKey(location)] as const,
 };
 
-export const fetchTodayPanchanga = (location?: LocationParams, displayEra: Era = "ad") =>
+export const fetchTodayPanchanga = (
+  location?: LocationParams,
+  displayEra: Era = readCalendarEra(),
+  language: Language = readUiLanguage(),
+) =>
   fetchPanchangaDay(
     {
       kind: "today",
       display: {
         era: displayEra,
-        language: getLanguageForEra(displayEra),
+        language,
       },
     },
     location,
@@ -642,18 +663,23 @@ export const fetchMonthCalendar = async (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: { clock?: string; full?: boolean; excludeInternational?: boolean; era?: Era; slim?: boolean },
+  options?: { clock?: string; full?: boolean; excludeInternational?: boolean; era?: Era; slim?: boolean; language?: Language },
 ): Promise<MonthCalendar> => {
-  const data = await fetchMonthCalendarRaw(year, month, location, options);
+  // Always name the UI language — never let the API infer it from the era.
+  const data = await fetchMonthCalendarRaw(year, month, location, {
+    ...options,
+    language: options?.language ?? readUiLanguage(),
+  });
   return { ...data, calendar: data.calendar.map(normalizeMonthDay) };
 };
 
 export const fetchYearCalendar = async (
   year: number,
   location?: LocationParams,
-  options?: { full?: boolean; wheel?: boolean; era?: Era },
+  options?: { full?: boolean; wheel?: boolean; era?: Era; language?: Language },
 ): Promise<YearCalendar> => {
   const params = new URLSearchParams();
+  params.set("language", options?.language ?? readUiLanguage());
   if (options?.era === "bbs" || options?.era === "bs") {
     params.set("era", options.era);
   }

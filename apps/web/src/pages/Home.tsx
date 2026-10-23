@@ -13,7 +13,7 @@ import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroAsideTab } from "@/lib/patro-classes";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
-import { buildPageSearch, getLanguageForEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { buildPageSearch, type Era, type Language } from "@vedic-patro/domain/calendar/era";
 import { patroDayFetchFromApiDateAd, patroDayFetchFromBrowseGridParts, type PatroDayFetchState } from "@/lib/patro-day-url";
 import { PanchangaAsideTabPanel } from "@/components/home/PanchangaAsideTabs";
 import { prefetchAsidePanels } from "@/components/home/aside-prefetch";
@@ -26,6 +26,7 @@ import { PanchangaDirectory } from "@/components/panchanga/PanchangaDirectory";
 import { Button } from "@/components/ui/button";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { currentPatroDayLinkSearch, locationToSearch } from "@/lib/url-state";
+import { useLocale } from "@/i18n/locale";
 import { smoothScrollToElement } from "@/lib/scroll";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
@@ -36,8 +37,8 @@ const PANCHANGA_SCROLL_OFFSET = 72; // sticky header (h-16) + small gap
 const routeApi = getRouteApi("/");
 
 /** The web's request for the panel's day: by grid parts in a BS month (any era), else by civil date. */
-function asideDayStateFor(dayAd: string, picked: CalendarDay | null, ctx: CalendarMonthContext, browseEra: Era): PatroDayFetchState {
-  const display = { era: browseEra, language: getLanguageForEra(browseEra) };
+function asideDayStateFor(dayAd: string, picked: CalendarDay | null, ctx: CalendarMonthContext, browseEra: Era, language: Language): PatroDayFetchState {
+  const display = { era: browseEra, language };
   if (picked?.date_ad) return patroDayFetchFromApiDateAd(picked.date_ad, display);
   if (!ctx.isAdCalendar && ctx.year && ctx.month && dayAd) {
     try {
@@ -127,6 +128,8 @@ export function Home() {
   const search = routeApi.useSearch();
   const { location, setLocation } = usePanchangaLocation();
   const monthBrowse = usePatroMonthUrlBrowse(search, navigate, location, setLocation);
+  const { lang } = useLocale();
+  const language: Language = lang === "en" ? "en" : "ne";
   const { year: bsYear, month: bsMonth } = getCurrentBs();
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);
   const panchangaAsideRef = useRef<HTMLElement>(null);
@@ -145,13 +148,13 @@ export function Home() {
     context: monthContext,
     todayAd,
     source: (dayAd, picked) => {
-      const state = asideDayStateFor(dayAd, picked, monthContext, browseEra);
+      const state = asideDayStateFor(dayAd, picked, monthContext, browseEra, language);
       return { queryKey: panchangaKeys.daySelection(state, location.params), queryFn: () => fetchPanchangaDay(state, location.params) };
     },
   });
   const asideDayState = useMemo(
-    () => asideDayStateFor(aside.dayAd, aside.selectedDay, monthContext, browseEra),
-    [aside.dayAd, aside.selectedDay, monthContext, browseEra],
+    () => asideDayStateFor(aside.dayAd, aside.selectedDay, monthContext, browseEra, language),
+    [aside.dayAd, aside.selectedDay, monthContext, browseEra, language],
   );
   const { selectDay, selectedDay } = aside;
 
@@ -227,7 +230,7 @@ export function Home() {
               onMore={(year) =>
                 navigate({
                   to: "/adhik-maas",
-                  search: { ...locationToSearch(location), ...buildPageSearch({ era: "bs", language: getLanguageForEra("bs"), year }) } as never,
+                  search: { ...locationToSearch(location), ...buildPageSearch({ era: "bs", language, year }) } as never,
                 })
               }
               className="mt-3 max-sm:mx-2.5"
