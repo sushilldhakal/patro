@@ -25,11 +25,11 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
             </Box>
           </Pressable>
           <View className="min-w-0 flex-1">
-            <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+            <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
               {h.title.main}
             </Text>
             {h.title.sub ? (
-              <Text numberOfLines={1} className={cls.titleSub}>
+              <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
                 {h.title.sub}
               </Text>
             ) : null}

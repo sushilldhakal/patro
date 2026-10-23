@@ -21,7 +21,7 @@ export const sunTimesClasses = {
   legend: "items-start justify-between gap-3 border-b border-border px-4 pt-3.5 pb-2.5",
   legendTitle: "text-base font-bold",
   legendSub: "mt-0.5 text-sm",
-  legendItems: "shrink-0 gap-3",
+  legendItems: "max-w-full shrink-0 gap-x-3 gap-y-1",
   legendItem: "items-center gap-1",
   legendLabel: "text-sm",
 

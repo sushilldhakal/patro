@@ -40,7 +40,7 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
         <Box className={cls.locationPin}>
           <Icon node={shellIcons.mapPin} size="sm" tone="secondary" />
         </Box>
-        <Text numberOfLines={1} className={cn(cls.locationName, dense ? "max-w-20" : "max-w-32")}>
+        <Text numberOfLines={1} className={cn(cls.locationName, dense ? "max-w-24" : "max-w-32")}>
           {picker.labelMain}
         </Text>
         {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}

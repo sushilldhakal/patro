@@ -43,7 +43,7 @@ export default function AbhijitMuhurtaScreen() {
   );
 
   // Same column steps as the website's grid (3 / sm:4 / md:6 / lg:7 / xl:8).
-  const cols = width >= 1280 ? 8 : width >= 1024 ? 7 : width >= 768 ? 6 : width >= 640 ? 4 : 3;
+  const cols = width >= 1280 ? 8 : width >= 1024 ? 7 : width >= 768 ? 6 : width >= 640 ? 4 : 2;
 
   return (
     <AppShell title={t("nav.abhijit_muhurta")} showHeader={false}>

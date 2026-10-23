@@ -50,10 +50,10 @@ export function PatroDayTimeHeader({
             </Box>
           </Pressable>
           <View className="min-w-0 flex-1">
-            <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+            <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
               {h.title.main}
             </Text>
-            <Text numberOfLines={1} className={cls.titleSub}>
+            <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
               {h.title.sub}
             </Text>
           </View>
@@ -66,12 +66,12 @@ export function PatroDayTimeHeader({
           <Pressable label={labels.prevDay} onPress={() => { haptics.tick(); h.stepDay(-1); }} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
           </Pressable>
-          <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, "min-w-28 flex-none shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}>
+          <Pressable label={labels.picker} onPress={h.toggle} className={cn(pick.dateButton, "min-w-28 flex-none shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cn(cls.nativeDenseControl, pick.nativeDenseDate))}>
             {dense ? null : <Icon node={shellIcons.calendar} size="sm" tone="secondary" />}
-            <Text numberOfLines={1} className={pick.dateButtonText}>
+            <Text numberOfLines={1} className={cn(pick.dateButtonText, dense && pick.nativeDenseDateText)}>
               {shortDate ? h.buttonTextShort : h.buttonText}
             </Text>
-            {h.timeText ? <Text className={pick.dateButtonTime}>{h.timeText}</Text> : null}
+            {h.timeText ? <Text className={cn(pick.dateButtonTime, dense && pick.nativeDenseDateTime)}>{h.timeText}</Text> : null}
           </Pressable>
           <Pressable label={labels.nextDay} onPress={() => { haptics.tick(); h.stepDay(1); }} disabled={nextDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
             <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />

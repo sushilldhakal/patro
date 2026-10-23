@@ -36,6 +36,7 @@ export function PatroHeaderTabs({ tabs, label, className }: PatroHeaderTabsProps
 }
 
 export function PatroHeaderSwap({ tabs, className }: PatroHeaderSwapProps) {
+  const dense = useWindowDimensions().width < 420;
   const other = tabs.find((tab) => !tab.active);
   if (!other || tabs.length !== 2) return null;
   return (
@@ -45,10 +46,10 @@ export function PatroHeaderSwap({ tabs, className }: PatroHeaderSwapProps) {
         haptics.tick();
         other.onPress();
       }}
-      className={cn(cls.swapButton, cls.nativeDenseControl, className)}
+      className={cn(cls.swapButton, cls.nativeDenseControl, dense && cls.nativeDenseSwap, className)}
     >
       <Icon node={shellIcons.arrowLeftRight} size="sm" tone="secondary" />
-      <Text className={cls.swapLabel}>{other.label}</Text>
+      <Text className={cn(cls.swapLabel, dense && cls.nativeDenseSwapLabel)}>{other.label}</Text>
     </Pressable>
   );
 }

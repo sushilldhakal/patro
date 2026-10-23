@@ -1006,12 +1006,13 @@ export function DayTimeline({
                       </Text>
 {renderStatus?.({ planetKey, isRetrograde, isCombust, size: 13 })}
                     </View>
-                    <Text className="font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={1}>
+                    <Text className="font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={2}>
                       {coordText}
                     </Text>
                     {(nakWithPada || lordText) && (
-                      <View className="flex-row items-baseline justify-between gap-1.5">
-                        <Text className="text-sm min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle()}>
+                      <View className="flex-row flex-wrap items-baseline justify-between gap-x-1.5">
+                        {/* No `flex-1`: in a wrapping row it would never wrap; the lord drops to its own line when both don't fit. */}
+                        <Text className="text-sm min-w-0 shrink text-foreground" numberOfLines={2} style={nepaliTextStyle()}>
                           {nakWithPada}
                         </Text>
                         {lordText ? (

@@ -58,11 +58,11 @@ export function PatroCalendarHeader({
         </Box>
       </Pressable>
       <View className="min-w-0 flex-1">
-        <Text as="h2" numberOfLines={1} className={cls.titleMain}>
+        <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
           {[header.title.year, header.eraLabel, header.samvatsara].filter(Boolean).join(" ")}
         </Text>
         {nav.crossEraSubtitle ? (
-          <Text numberOfLines={1} className={cls.titleSub}>
+          <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
             {nav.crossEraSubtitle}
           </Text>
         ) : null}

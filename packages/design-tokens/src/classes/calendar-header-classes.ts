@@ -84,6 +84,9 @@ export const calendarHeaderClasses = {
   nativeDenseControl: "h-8.5",
   nativeDenseIcon: "size-8.5",
   nativeDenseText: "text-sm",
+  /** Phone widths: the swap button ("Calendar Day") a step smaller so the date beside it keeps its room. */
+  nativeDenseSwap: "gap-1 px-2",
+  nativeDenseSwapLabel: "text-xs",
   webSwap: "justify-self-end max-md:order-4 md:hidden",
   webLocation: "min-w-0 justify-self-end max-md:order-2 xs:relative",
   webMonthAnchor: "min-w-0 max-xs:flex-1 xs:relative",

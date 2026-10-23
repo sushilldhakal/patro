@@ -9,6 +9,10 @@ export const calendarPickerClasses = {
   dateButton: "flex h-9.5 min-w-0 flex-1 flex-row items-center gap-2.5 rounded-xl border bg-card pl-3.5 pr-3",
   dateButtonText: "shrink text-base font-semibold text-foreground",
   dateButtonTime: "border-l border-border pl-2.5 text-base font-bold text-secondary",
+  /** Phone widths: tighter padding and a step smaller text so "Kartik 6 | 12:54" fits beside the swap button. */
+  nativeDenseDate: "gap-1.5 pl-2.5 pr-2",
+  nativeDenseDateText: "text-sm",
+  nativeDenseDateTime: "pl-1.5 text-sm",
   yearButton: "flex h-9.5 min-w-28 flex-row items-center justify-between gap-2.5 rounded-xl border bg-card pl-3.5 pr-3",
   yearButtonText: "text-lg font-bold text-foreground",
 
