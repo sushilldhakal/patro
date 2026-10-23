@@ -74,6 +74,7 @@ export function BsCalendarGrid({
         onClose={grid.closeFestivals}
         title={grid.festivalDialog?.title}
         closeLabel={t("common.close")}
+        placement="center"
         className="max-w-sm"
       >
         {grid.festivalDialog ? (

@@ -13,9 +13,10 @@ const TOP_SHEET_INSET = Platform.OS === "android" ? (StatusBar.currentHeight ?? 
 /** A panel that rises from the bottom; the back button and a tap on the backdrop close it. */
 export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, placement, children, className, nativeClassName, testID }: SheetProps) {
   const top = placement === "top";
+  const center = placement === "center";
   return (
-    <Modal visible={open} transparent animationType={top ? "fade" : "slide"} onRequestClose={onClose} testID={testID}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className={cn("flex-1", top ? "justify-start" : "justify-end")}>
+    <Modal visible={open} transparent animationType={top || center ? "fade" : "slide"} onRequestClose={onClose} testID={testID}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className={cn("flex-1", top ? "justify-start" : center ? "justify-center px-5" : "justify-end")}>
         <Pressable
           className={cn("absolute bottom-0 left-0 right-0 top-0", sheetClass.backdrop)}
           onPress={onClose}
@@ -23,11 +24,11 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
           accessibilityLabel={closeLabel}
         />
         <View
-          className={cn(top ? sheetClass.panelTop : cn("pb-10", sheetClass.panel), className, nativeClassName)}
+          className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
           accessibilityViewIsModal
           style={{ maxHeight: `${maxHeightPercent ?? 85}%`, ...(top ? { paddingTop: TOP_SHEET_INSET } : null) }}
         >
-          {top ? null : <View className={sheetClass.handle} />}
+          {top || center ? null : <View className={sheetClass.handle} />}
           {title || closeLabel ? (
             <View className={sheetClass.header}>
               {title ? (

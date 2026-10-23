@@ -217,7 +217,7 @@ export function BsCalendarGrid({
         })()}
       </View>
 
-      <Sheet open={grid.festivalDialog != null} onClose={grid.closeFestivals} title={grid.festivalDialog?.title} closeLabel={t("common.close")}>
+      <Sheet open={grid.festivalDialog != null} onClose={grid.closeFestivals} title={grid.festivalDialog?.title} closeLabel={t("common.close")} placement="center">
         {grid.festivalDialog ? (
           <>
             <Text className="mb-3 text-sm text-muted-foreground">{grid.festivalDialog.description}</Text>
