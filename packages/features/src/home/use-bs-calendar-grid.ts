@@ -6,7 +6,8 @@
  * open. Each app draws the cells (and the dialog or sheet) itself.
  */
 import { useState } from "react";
-import type { CalendarDay } from "@vedic-patro/api-client";
+import { useQuery, type QueryKey } from "@tanstack/react-query";
+import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
 import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { getSecondaryCellDate } from "@vedic-patro/read-models/calendar/local-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
@@ -14,6 +15,7 @@ import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/read-models/panchan
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { buildSaitRows, saitNote, type SaitRow } from "../_shared/sait-rows";
 
 export type BsCalendarWeekday = {
   key: string;
@@ -59,10 +61,19 @@ export type BsCalendarCell = {
   ariaLabel: string;
 };
 
+/** How a day's panchanga (and so its saits) is requested, for the festival dialog. */
+export type BsCalendarSaitSource = (day: CalendarDay) => { queryKey: QueryKey; queryFn: () => Promise<PanchangaDay> };
+
 export type BsCalendarFestivalDialog = {
   title: string;
   description: string;
   festivals: string[];
+  /** The festival names on one line, "A / B / C". */
+  festivalLine: string;
+  saitHeading: string;
+  /** Rites with a sait on this day; empty while loading or when there is none. */
+  saits: SaitRow[];
+  saitNote: string;
 };
 
 export function useBsCalendarGrid({
@@ -71,6 +82,7 @@ export function useBsCalendarGrid({
   selectedAdDate,
   todayAd,
   primaryDate: primaryDateProp = "bs",
+  saitSource,
 }: {
   days: CalendarDay[];
   publicHolidayDates?: Set<string>;
@@ -78,11 +90,20 @@ export function useBsCalendarGrid({
   todayAd: string;
   /** Which date system is primary in each cell; always AD in English. */
   primaryDate?: "bs" | "ad";
+  /** Only the dialog's day is requested, and only while it is open. */
+  saitSource?: BsCalendarSaitSource;
 }) {
-  const { t, lang, monoDigits } = useLocale();
+  const { t, lang, monoDigits, digits } = useLocale();
   const isEn = lang === "en";
   const primaryDate: "bs" | "ad" = primaryDateProp === "ad" || isEn ? "ad" : "bs";
   const [festivalDay, setFestivalDay] = useState<{ day: CalendarDay; festivals: string[] } | null>(null);
+  const saitRequest = festivalDay && saitSource ? saitSource(festivalDay.day) : null;
+  const saitQuery = useQuery({
+    queryKey: saitRequest?.queryKey ?? (["bs-calendar", "dialog-sait", "idle"] as const),
+    queryFn: saitRequest?.queryFn ?? (() => Promise.reject(new Error("idle"))),
+    enabled: saitRequest != null,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const weekdays: BsCalendarWeekday[] = WEEKDAYS_NE.map((ne, i) => ({
     key: ne,
@@ -158,6 +179,10 @@ export function useBsCalendarGrid({
       title: t("calendar.festivals_dialog_title"),
       description: t("calendar.festivals_dialog_desc", { weekday, bsDay: monoDigits(day.day), adDate }),
       festivals: festivalDay.festivals,
+      festivalLine: festivalDay.festivals.join(" / "),
+      saitHeading: t("ui.home.sait_heading"),
+      saits: buildSaitRows(saitQuery.data?.festival_saits, { t, lang, digits, selectedAdDate: day.date_ad }),
+      saitNote: saitNote(saitQuery.data?.festival_saits, t),
     };
   }
 

@@ -5,6 +5,7 @@ import { useColorScheme } from "nativewind";
 import { mobileRoles } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
+import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useBsCalendarGrid } from "@vedic-patro/features/home";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Box, Sheet, Text } from "@vedic-patro/ui";
@@ -39,6 +40,7 @@ export function BsCalendarGrid({
   todayAd = TODAY_AD,
   todayPulse,
   primaryDate: primaryDateProp = "bs",
+  saitSource,
   moon,
   className,
 }: BsCalendarGridProps) {
@@ -46,7 +48,7 @@ export function BsCalendarGrid({
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const { width } = useWindowDimensions();
-  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp });
+  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp, saitSource });
   const { primaryDate } = grid;
   const { onLayout, col } = useGridWidth();
   const isCompact = width < 768;
@@ -220,14 +222,26 @@ export function BsCalendarGrid({
       <Sheet open={grid.festivalDialog != null} onClose={grid.closeFestivals} title={grid.festivalDialog?.title} closeLabel={t("common.close")} placement="center">
         {grid.festivalDialog ? (
           <>
-            <Text className="mb-3 text-sm text-muted-foreground">{grid.festivalDialog.description}</Text>
-            <Box className="gap-2">
-              {grid.festivalDialog.festivals.map((name, i) => (
-                <Text key={`${name}-${i}`} className={cn(cal.festivalItem, cal.festivalItemText)}>
-                  {name}
-                </Text>
-              ))}
-            </Box>
+            <Text className="mb-2 text-xs text-muted-foreground">{grid.festivalDialog.description}</Text>
+            <Text className="text-lg font-bold text-foreground">{grid.festivalDialog.festivalLine}</Text>
+            {grid.festivalDialog.saits.length ? (
+              <Box className={home.highlightSait}>
+                <Text className={home.highlightSaitHeading}>{grid.festivalDialog.saitHeading}</Text>
+                {grid.festivalDialog.saits.map((sait) => (
+                  <Box key={sait.key} className={home.highlightSaitItem}>
+                    <Text className={home.highlightSaitLabel}>{sait.label}</Text>
+                    {sait.times.map((slot) => (
+                      <Box key={slot.key} className={home.highlightSaitRow}>
+                        <Text className={home.highlightSaitTime}>{slot.time}</Text>
+                        {slot.detail ? <Text className={home.highlightSaitDetail}>{slot.detail}</Text> : null}
+                      </Box>
+                    ))}
+                    {sait.facing ? <Text className={home.highlightSaitFacing}>{sait.facing}</Text> : null}
+                  </Box>
+                ))}
+                <Text className={home.highlightSaitNote}>{grid.festivalDialog.saitNote}</Text>
+              </Box>
+            ) : null}
           </>
         ) : null}
       </Sheet>

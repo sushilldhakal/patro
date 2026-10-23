@@ -418,6 +418,10 @@ export type VastuPurushaWheelProps = {
   /** App edge length. The website stretches with `className`. */
   size?: number;
   className?: string;
+  /** App: drawn over the wheel's fullscreen view (a dialog the page opens from the wheel). */
+  fullscreenOverlay?: ReactNode;
+  /** App: told when the wheel goes fullscreen or comes back. */
+  onFullscreenChange?: (fullscreen: boolean) => void;
 };
 
 export type VastuCompassRingProps = {

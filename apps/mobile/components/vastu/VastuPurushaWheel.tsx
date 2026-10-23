@@ -15,12 +15,16 @@ export function VastuPurushaWheel({
   onSelect,
   centerContent,
   headingDeg = null,
+  fullscreenOverlay,
+  onFullscreenChange,
 }: {
   size: number;
   selected: VastuSelectionId;
   onSelect: (id: VastuSelectionId) => void;
   centerContent?: ReactNode;
   headingDeg?: number | null;
+  fullscreenOverlay?: ReactNode;
+  onFullscreenChange?: (fullscreen: boolean) => void;
 }) {
   const insets = useSafeAreaInsets();
   return (
@@ -31,6 +35,8 @@ export function VastuPurushaWheel({
       onSelect={onSelect}
       centerContent={centerContent}
       headingDeg={headingDeg}
+      fullscreenOverlay={fullscreenOverlay}
+      onFullscreenChange={onFullscreenChange}
       center={center}
       ink={VASTU_INK}
       marks={marks}

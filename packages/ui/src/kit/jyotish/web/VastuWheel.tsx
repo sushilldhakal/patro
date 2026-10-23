@@ -133,7 +133,7 @@ export function VastuPurushaWheel({
   return (
     <div>
     <ZoomStage>
-    {(_fullscreen, exitFullscreen) => (
+    {() => (
     <svg
       viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
       className={cn("block h-auto w-full", wheelFitScreen, className)}
@@ -435,11 +435,10 @@ export function VastuPurushaWheel({
         stroke={VASTU_ELEMENT_COLOR.space}
         strokeOpacity={0.55}
         strokeDasharray="5 4"
-        onClick={() => { exitFullscreen(); onSelect("center"); }}
+        onClick={() => onSelect("center")}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            exitFullscreen();
             onSelect("center");
           }
         }}

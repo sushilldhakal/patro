@@ -204,13 +204,17 @@ type ZoomStageProps = {
   height?: number;
   /** Rounded card around the inline stage. */
   rounded?: boolean;
+  /** Drawn over the fullscreen view: the page's own dialogs sit under it (a second Modal cannot present on top of this one). */
+  fullscreenOverlay?: ReactNode;
+  /** Told when fullscreen opens and closes, so the page can hold its own Modal back meanwhile. */
+  onFullscreenChange?: (fullscreen: boolean) => void;
 };
 
 /**
  * A chart on the panchanga wheel's sky that pinches to zoom, pans once
  * zoomed, and opens full screen (still pinchable) from its corner button.
  */
-export function ZoomStage({ children, size, height, rounded = true }: ZoomStageProps) {
+export function ZoomStage({ children, size, height, rounded = true, fullscreenOverlay, onFullscreenChange }: ZoomStageProps) {
   const { t } = useLocale();
   const insets = useContext(ZoomInsetsContext);
   const { width: screenW, height: screenH } = useWindowDimensions();
@@ -228,11 +232,13 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
   const open = useCallback(() => {
     resetInline.current?.();
     setFullscreen(true);
-  }, []);
+    onFullscreenChange?.(true);
+  }, [onFullscreenChange]);
   const close = useCallback(() => {
     setFsZoomed(false);
     setFullscreen(false);
-  }, []);
+    onFullscreenChange?.(false);
+  }, [onFullscreenChange]);
 
   const labels = {
     open: t("ui.zoom.fullscreen"),
@@ -285,6 +291,7 @@ export function ZoomStage({ children, size, height, rounded = true }: ZoomStageP
             {fsZoomed ? <StageButton node={rotateCcwIcon} label={labels.reset} onPress={() => resetFs.current?.()} /> : null}
             <StageButton node={minimizeIcon} label={labels.close} onPress={close} />
           </View>
+          {fullscreenOverlay}
         </View>
       </Modal>
     </>

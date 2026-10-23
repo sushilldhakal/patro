@@ -55,7 +55,7 @@ function HitSector({
 
 
 export function VastuPurushaWheel({
-  size, selected, onSelect, centerContent, headingDeg = null, center, ink, marks,
+  size, selected, onSelect, centerContent, headingDeg = null, center, ink, marks, fullscreenOverlay, onFullscreenChange,
 }: VastuPurushaWheelProps) {
   const w = useVastuPurushaWheel();
   const digits = w.digits;
@@ -103,23 +103,12 @@ export function VastuPurushaWheel({
   }
   
   
-  /* The fullscreen view is its own Modal and would cover the compass dialog the centre opens,
-     so leave it first and open the dialog once its fade-out is done. */
-  const selectCenter = (fullscreen: boolean, exitFullscreen: () => void) => {
-    if (!fullscreen) {
-      onSelect("center");
-      return;
-    }
-    exitFullscreen();
-    setTimeout(() => onSelect("center"), 400);
-  };
-
   const clipId = `vastu-purusha-${useId().replace(/:/g, "")}`;
 
   return (
     <View>
-      <ZoomStage size={size ?? WHEEL_SIZE}>
-      {(px, fullscreen, exitFullscreen) => (
+      <ZoomStage size={size ?? WHEEL_SIZE} fullscreenOverlay={fullscreenOverlay} onFullscreenChange={onFullscreenChange}>
+      {(px) => (
       <Svg
         width={px}
         height={px}
@@ -431,7 +420,7 @@ export function VastuPurushaWheel({
             stroke={VASTU_ELEMENT_COLOR.space}
             strokeOpacity={0.55}
             strokeDasharray="5 4"
-            onPress={press(() => selectCenter(fullscreen, exitFullscreen))}
+            onPress={press(() => onSelect("center"))}
           />
 
           {/* Degree rim on top — parchment, so triguna colour cannot leak into 0°–360° */}

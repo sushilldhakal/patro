@@ -8,6 +8,7 @@ import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
 import type { SunTimesPage } from "@vedic-patro/features/sun-times";
+import type { BsCalendarSaitSource } from "@vedic-patro/features/home";
 import type { usePatroDayTimeHeader } from "@vedic-patro/features/patro-date";
 
 export type StatCardProps = {
@@ -352,6 +353,8 @@ export type BsCalendarGridProps = {
   /** App only: today's cell rings once a day when given. The website ignores it. */
   todayPulse?: TodayPulseStore;
   primaryDate?: "bs" | "ad";
+  /** The festival dialog lists the day's saits when given. */
+  saitSource?: BsCalendarSaitSource;
   /** Moon artwork stays in each app (it is a panchanga drawing). */
   moon?: (info: BsCalendarMoon) => ReactNode;
   className?: string;

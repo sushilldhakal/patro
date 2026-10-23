@@ -373,6 +373,10 @@ export default function HomeScreen() {
               publicHolidayDates={publicHolidayDates}
               onSelectDay={handleSelectDay}
               isEnriching={monthFetching}
+              saitSource={(day) => ({
+                queryKey: apiKeys.panchanga(day.date_ad, "ad", location.params),
+                queryFn: () => fetchPanchanga(day.date_ad, "ad", location.params),
+              })}
               primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
               moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
             />

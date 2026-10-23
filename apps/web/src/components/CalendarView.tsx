@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useHomeMonth, type CalendarMonthContext } from "@vedic-patro/features/home";
-import { fetchMonthCalendar, type CalendarDay } from "@/lib/api";
+import { fetchMonthCalendar, fetchPanchangaDay, panchangaKeys, type CalendarDay } from "@/lib/api";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
 import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 
@@ -211,6 +211,10 @@ export function CalendarView({
           isEnriching={isEnriching}
           todayAd={todayAd}
           primaryDate={isGregorian ? "ad" : "bs"}
+          saitSource={(day) => {
+            const state = patroDayFetchFromApiDateAd(day.date_ad, { era, language: getLanguageForEra(era) });
+            return { queryKey: panchangaKeys.daySelection(state, location?.params), queryFn: () => fetchPanchangaDay(state, location?.params) };
+          }}
           className={calendarClasses.gridWide}
           moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} className="size-full" />}
         />

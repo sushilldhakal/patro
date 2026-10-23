@@ -198,7 +198,7 @@ export function Vastu() {
       </section>
 
       <Dialog open={dialog.open} onOpenChange={dialog.setOpen}>
-        <DialogContent>
+        <DialogContent className="z-[130]" overlayClassName="z-[130]">
           <DialogHeader>
             <DialogTitle>{copy.dialogTitle}</DialogTitle>
             <DialogDescription>{copy.dialogBody}</DialogDescription>

@@ -190,8 +190,31 @@ export default function VastuScreen() {
   const { copy, compass, dialog } = page;
   const { t, lang } = useLocale();
   const [show16, setShow16] = useState(false);
+  /* The wheel's fullscreen view is a Modal, and a second Modal opened from the page cannot present
+     over it: the compass dialog is drawn inside it instead, and the page's own copy waits. */
+  const [wheelFullscreen, setWheelFullscreen] = useState(false);
   /* iPad: 10% under the full column width. */
   const wheelSize = Math.round(Math.max(280, width - WHEEL_CHROME) * (isTablet ? 0.9 : 1));
+
+  const dialogBody = (
+    <View className="gap-3 p-4">
+      <Text className="text-lg font-semibold tracking-tight text-foreground" style={nepaliTextStyle(18)}>
+        {copy.dialogTitle}
+      </Text>
+      <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+        {copy.dialogBody}
+      </Text>
+      {dialog.error ? (
+        <Text className={vastuClasses.errorText} style={nepaliTextStyle(13)}>
+          {dialog.error}
+        </Text>
+      ) : null}
+      <View className="mt-1 flex-row justify-end gap-2">
+        <Button variant="outline" label={copy.cancel} onPress={() => dialog.setOpen(false)} />
+        <Button label={copy.done} onPress={dialog.confirm} />
+      </View>
+    </View>
+  );
 
   return (
     <AppShell title={copy.title} showHeader={false}>
@@ -215,7 +238,21 @@ export default function VastuScreen() {
 
           <View className="gap-5">
             <View className="items-center">
-              <VastuPurushaWheel size={wheelSize} selected={page.selected} onSelect={page.select} headingDeg={compass.heading} />
+              <VastuPurushaWheel
+                size={wheelSize}
+                selected={page.selected}
+                onSelect={page.select}
+                headingDeg={compass.heading}
+                onFullscreenChange={setWheelFullscreen}
+                fullscreenOverlay={
+                  dialog.open ? (
+                    <View className="absolute inset-0 justify-center px-5">
+                      <Pressable className="absolute inset-0 bg-foreground/40" onPress={() => dialog.setOpen(false)} accessibilityRole="button" accessibilityLabel={copy.cancel} />
+                      <View className="rounded-2xl border border-border bg-card">{dialogBody}</View>
+                    </View>
+                  ) : null
+                }
+              />
             </View>
 
             {compass.live ? (
@@ -338,24 +375,8 @@ export default function VastuScreen() {
         ))}
       </SectionCard>
 
-      <BottomSheetModal variant="center" visible={dialog.open} onClose={() => dialog.setOpen(false)}>
-        <View className="gap-3 p-4">
-          <Text className="text-lg font-semibold tracking-tight text-foreground" style={nepaliTextStyle(18)}>
-            {copy.dialogTitle}
-          </Text>
-          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
-            {copy.dialogBody}
-          </Text>
-          {dialog.error ? (
-            <Text className={vastuClasses.errorText} style={nepaliTextStyle(13)}>
-              {dialog.error}
-            </Text>
-          ) : null}
-          <View className="mt-1 flex-row justify-end gap-2">
-            <Button variant="outline" label={copy.cancel} onPress={() => dialog.setOpen(false)} />
-            <Button label={copy.done} onPress={dialog.confirm} />
-          </View>
-        </View>
+      <BottomSheetModal variant="center" visible={dialog.open && !wheelFullscreen} onClose={() => dialog.setOpen(false)}>
+        {dialogBody}
       </BottomSheetModal>
     </AppShell>
   );
