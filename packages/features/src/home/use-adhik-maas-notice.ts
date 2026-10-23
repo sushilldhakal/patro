@@ -2,14 +2,16 @@
  * The home page's one-line "this year's adhik maas" notice, shared by the
  * website's `components/home/AdhikMaasNotice.tsx` and the app's
  * `components/home/AdhikMaasNotice.tsx`: which lunar month is adhik in the
- * BS year, its span, and the way into the adhik maas page. Nothing is
- * shown when the year has no adhik maas or the lookup fails.
+ * BS year, its span, and the way into the adhik maas page. A kshaya (dropped)
+ * month is announced the same way, as its own item. Nothing is shown when the
+ * year has neither or the lookup fails.
  */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSpecialMonths, specialMonthsKeys } from "@vedic-patro/api-client";
 import { BS_MONTH_NAMES, BS_MONTHS_NE, formatBsCivilIsoRange } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { kshayaViewOf } from "../adhik-maas/kshaya-view";
 
 /** The engine spells Baisakh "Baishakh"; every other month matches `BS_MONTH_NAMES`. */
 function monthIndexOf(name: string): number {
@@ -26,19 +28,40 @@ export function useAdhikMaasNotice(bsYear: number) {
     staleTime: 1000 * 60 * 60 * 24,
   });
 
-  const adhik = data?.adhik_maas;
-  if (!adhik?.has_adhik_maas || !adhik.month_name || !adhik.start_date || !adhik.end_date) return null;
-
   const isEn = lang === "en";
-  const i = monthIndexOf(adhik.month_name);
-  const month = i < 0 ? adhik.month_name : isEn ? BS_MONTH_NAMES[i]! : BS_MONTHS_NE[i]!;
   const year = digits(bsYear);
-  const range = formatBsCivilIsoRange(adhik.start_date, adhik.end_date, lang, digits);
+  const items: Array<{ key: string; label: string; detail: string; extra?: string; why: string }> = [];
+
+  const adhik = data?.adhik_maas;
+  if (adhik?.has_adhik_maas && adhik.month_name && adhik.start_date && adhik.end_date) {
+    const i = monthIndexOf(adhik.month_name);
+    const month = i < 0 ? adhik.month_name : isEn ? BS_MONTH_NAMES[i]! : BS_MONTHS_NE[i]!;
+    const range = formatBsCivilIsoRange(adhik.start_date, adhik.end_date, lang, digits);
+    items.push({
+      key: "adhik",
+      label: t("ui.home.adhik_maas_label", { year, month }),
+      detail: t("ui.home.adhik_maas_detail", { month, range }),
+      why: t("ui.home.adhik_maas_why"),
+    });
+  }
+
+  const kshaya = kshayaViewOf(data?.kshaya_maas, { lang, digits, t });
+  if (kshaya) {
+    items.push({
+      key: "kshaya",
+      label: t("ui.home.kshaya_maas_label", { year, month: kshaya.months }),
+      detail: t("ui.home.kshaya_maas_detail", { month: kshaya.months, range: kshaya.range }),
+      extra: kshaya.adhik ? t("ui.home.kshaya_maas_adhik", { adhik: kshaya.adhik }) : undefined,
+      why: t("ui.home.kshaya_maas_why"),
+    });
+  }
+
+  if (items.length === 0) return null;
 
   return {
-    label: t("ui.home.adhik_maas_label", { year, month }),
-    detail: t("ui.home.adhik_maas_detail", { month, range }),
-    why: t("ui.home.adhik_maas_why"),
+    /** The row's headline — the adhik maas when there is one, else the kshaya. */
+    label: items[0]!.label,
+    items,
     moreLabel: t("ui.home.adhik_maas_more"),
     /** The BS year the adhik maas page opens on. */
     year: bsYear,

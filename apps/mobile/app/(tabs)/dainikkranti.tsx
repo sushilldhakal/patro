@@ -156,6 +156,18 @@ export default function DainikKrantiScreen() {
         </View>
       ) : null}
 
+      {page.kshayaNotice ? (
+        <View className={dainikKrantiClasses.adhikBox}>
+          <Text className={dainikKrantiClasses.adhikText} style={nepaliTextStyle()}>
+            <Trans
+              i18nKey={page.kshayaNotice.i18nKey}
+              values={page.kshayaNotice.values}
+              components={{ b: <Text className={cn(dainikKrantiClasses.adhikText, dainikKrantiClasses.adhikStrong)} /> }}
+            />
+          </Text>
+        </View>
+      ) : null}
+
       {firstLoad ? (
         <View className="py-16">
           <VedicPatroLoader />

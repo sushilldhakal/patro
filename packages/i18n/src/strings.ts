@@ -2249,9 +2249,10 @@ export const strings = {
     ne: "यसपछि आउने चान्द्र महिना निज (शुद्ध) {{month}} हो।",
     en: "The lunar month after it is nij (shuddha) {{month}}.",
   },
+  "adhik_page.kshaya_name": { ne: "{{months}} क्षय", en: "{{months}} Kshaya" },
   "adhik_page.kshaya_found": {
-    ne: "यस वर्ष क्षय मास पनि पर्छ: {{month}}।",
-    en: "This year also has a kshaya (lost) month: {{month}}.",
+    ne: "यस वर्ष क्षय मास पनि पर्छ: {{month}} ({{range}})। अधिक मास: {{adhik}}।",
+    en: "This year also has a kshaya (lost) month: {{month}} ({{range}}). Adhik months: {{adhik}}.",
   },
   "adhik_page.nearby_title": { ne: "नजिकका वर्षहरू", en: "Nearby years" },
   "adhik_page.nearby_none": { ne: "छैन", en: "None" },
@@ -5691,6 +5692,14 @@ export const strings = {
   "dainik.graha.saturn": { ne: "शनि", en: "Saturn" },
   "dainik.graha.rahu": { ne: "राहु", en: "Rahu" },
   "dainik.graha.ketu": { ne: "केतु", en: "Ketu" },
+  "dainik.kshaya_notice": {
+    ne: "<b>क्षय मास:</b> यो महिना <b>{{month}}</b> क्षय मास हो ({{range}}) — एउटै चान्द्र महिनामा दुई सङ्क्रान्ति परेकाले एक महिनाको नाम लोप भएको छ। {{adhikLine}}",
+    en: "<b>Kshaya Maas:</b> this month is the <b>{{month}}</b> kshaya ({{range}}) — two sankrantis fall in a single lunar month, so one month name is dropped. {{adhikLine}}",
+  },
+  "dainik.kshaya_notice_adhik": {
+    ne: "यसअघि र पछि अधिक मास पर्छ: {{adhik}}।",
+    en: "It is flanked by adhik months: {{adhik}}.",
+  },
   "dainik.adhik_notice": {
     ne: "<b>अधिक मास:</b> यस वर्ष <b>अधिक {{month}}</b> मास परेको छ — त्यसैले यो महिनामा अधिक र शुद्ध पक्षहरू छुट्टाछुट्टै देखाइएका छन्। (अधिक मास = मलमास / पुरुषोत्तम मास; यसमा सङ्क्रान्ति पर्दैन।)",
     en: "<b>Adhik Maas:</b> this year has an <b>Adhik {{month}}</b> month — so the adhik and shuddha pakshas are shown separately for this month. (Adhik Maas = Malamas / Purushottam Maas; it contains no sankranti.)",
@@ -7102,6 +7111,22 @@ export const strings = {
   "ui.home.adhik_maas_why": {
     ne: "यो चान्द्र महिनामा कुनै संक्रान्ति नपर्ने भएकाले यो थप (अधिक) महिना हो।",
     en: "No sankranti falls in this lunar month, so it is an extra (adhik) month.",
+  },
+  "ui.home.kshaya_maas_label": {
+    ne: "{{year}} सालको क्षय मास: {{month}}",
+    en: "Kshaya Maas in {{year}}: {{month}}",
+  },
+  "ui.home.kshaya_maas_detail": {
+    ne: "यस वर्ष {{month}} महिना क्षय (लोप) हुन्छ — {{range}}।",
+    en: "This year {{month}} is a kshaya (dropped) month — {{range}}.",
+  },
+  "ui.home.kshaya_maas_adhik": {
+    ne: "यसअघि र पछि एक-एक अधिक मास पर्छ: {{adhik}}।",
+    en: "It is flanked by two adhik months, one before and one after: {{adhik}}.",
+  },
+  "ui.home.kshaya_maas_why": {
+    ne: "यो चान्द्र महिनामा दुई सङ्क्रान्ति पर्ने भएकाले एउटा महिनाको नाम लोप भयो — अधिक मासको ठीक उल्टो, र अत्यन्त विरल।",
+    en: "Two sankrantis fall in this one lunar month, so a month name is dropped — the exact opposite of adhik maas, and extremely rare.",
   },
   "ui.home.adhik_maas_more": { ne: "अधिक मासबारे विस्तृत हेर्नुहोस्", en: "More about adhik maas" },
   "ui.home.muhurta_details_unavailable": { ne: "मुहूर्त विवरण उपलब्ध छैन।", en: "Muhurta details unavailable." },

@@ -4,9 +4,11 @@ A Kshaya month occurs when TWO solar Sankrantis fall within a single
 amanta lunar month (Aausi to next Aausi). Astronomically this happens
 when the lunar month is shorter than a solar transit through one rashi.
 
-Extremely rare — last occurred in BS 2020 (1963 CE Kartik/Mangsir); the
-next is predicted around BS 2198 (2141 CE). Included for historical
-accuracy and completeness.
+Extremely rare — the last one was in BS 2039 (Jan–Feb 1983 CE, Poush–Magha
+dropped); the next is due in 2124 CE (Poush again). It only happens in the
+perihelion months Kartik, Margashirsha and Pausha, when the Sun runs fastest.
+Each Kshaya year is flanked by two Adhik months (BS 2039: Adhik Ashwin before,
+Adhik Phalgun after).
 
 Mala Maas (impure month) is another name for Adhik Maas (extra month),
 NOT Kshaya Maas. They are opposite phenomena: Adhik = one lunar month
@@ -18,7 +20,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Optional
 
+from engine.calendar.constants import BS_MONTH_NAMES
 from engine.calendar.sankranti import RASHI_NAMES, find_sankranti, get_sun_rashi_at_time
+from engine.panchanga.names_ne import lunar_masa_name_ne
 
 
 def count_sankrantis_in_period(start: datetime, end: datetime) -> list[int]:
@@ -59,8 +63,18 @@ def get_kshaya_maas_info(
     sankrantis = count_sankrantis_in_period(lunar_month_start, lunar_month_end)
     if len(sankrantis) < 2:
         return None
+    # The month is named for the rashi the Sun holds when it opens; the next
+    # name in the sequence is the one that gets dropped (Poush–Magha in 1983).
+    kept = BS_MONTH_NAMES[(sankrantis[0] - 1) % 12]
+    dropped = BS_MONTH_NAMES[sankrantis[0] % 12]
     return {
         "is_kshaya": True,
+        "month_name": kept,
+        "dropped_month_name": dropped,
+        "full_name_en": f"{kept}–{dropped} Kshaya",
+        "full_name_ne": (
+            f"{lunar_masa_name_ne(kept)}–{lunar_masa_name_ne(dropped)} क्षय"
+        ),
         "first_sankranti_rashi": sankrantis[0],
         "second_sankranti_rashi": sankrantis[1],
         "first_rashi_name": RASHI_NAMES[sankrantis[0]],

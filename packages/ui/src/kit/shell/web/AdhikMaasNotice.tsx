@@ -5,7 +5,7 @@ import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { AdhikMaasNoticeProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
-/** "This year's adhik maas" — one quiet row under the calendar; a tap opens the month, its span and a link to the adhik maas page. */
+/** "This year's adhik / kshaya maas" — one quiet row under the calendar; a tap opens the month, its span and a link to the adhik maas page. */
 export function AdhikMaasNotice({ bsYear, onMore, className }: AdhikMaasNoticeProps) {
   const notice = useAdhikMaasNotice(bsYear);
   if (!notice) return null;
@@ -20,8 +20,13 @@ export function AdhikMaasNotice({ bsYear, onMore, className }: AdhikMaasNoticePr
       </Pressable>
       {notice.open ? (
         <Box className={a.noticeBody}>
-          <Text className={a.noticeDetail}>{notice.detail}</Text>
-          <Text className={a.noticeWhy}>{notice.why}</Text>
+          {notice.items.map((item) => (
+            <Box key={item.key}>
+              <Text className={a.noticeDetail}>{item.detail}</Text>
+              {item.extra ? <Text className={a.noticeDetail}>{item.extra}</Text> : null}
+              <Text className={a.noticeWhy}>{item.why}</Text>
+            </Box>
+          ))}
           <Pressable role="link" onPress={() => onMore(notice.year)} className={a.noticeMore} webClassName="hover:underline">
             <Text className={a.noticeMoreText}>{notice.moreLabel} →</Text>
           </Pressable>

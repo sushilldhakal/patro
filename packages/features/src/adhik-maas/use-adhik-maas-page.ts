@@ -19,6 +19,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import { formatBrowsePatroYear } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
+import { kshayaViewOf } from "./kshaya-view";
 
 /** AD year N begins in BS N+56 (Poush) and ends in BS N+57. */
 const AD_TO_BS = 56;
@@ -121,8 +122,10 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
         nijNote: t("adhik_page.nij_note", { month }),
       });
     }
-    const k = data?.kshaya_maas;
-    if (k?.is_kshaya && k.month_name) kshaya = t("adhik_page.kshaya_found", { month: monthLabel(k.month_name, isEn) });
+    const k = kshayaViewOf(data?.kshaya_maas, { lang, digits, t });
+    if (k) {
+      kshaya = t("adhik_page.kshaya_found", { month: k.name, range: k.range, adhik: k.adhik || "—" });
+    }
   }
 
   const nearby: AdhikNearbyYear[] = nearbyYears.map((y) => {
