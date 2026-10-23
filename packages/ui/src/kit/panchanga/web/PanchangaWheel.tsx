@@ -201,7 +201,7 @@ function WheelHead({
   className,
   showTitle = true,
 }: {
-  /** False when the title block is drawn above the wheel's card instead. */
+  /** False when the eyebrow and title are drawn above the wheel's card instead. */
   showTitle?: boolean;
   eyebrow: React.ReactNode;
   title: React.ReactNode;
@@ -233,10 +233,10 @@ function WheelHead({
         <>
           <div className={wheelHeadEyebrow}>{eyebrow}</div>
           <div className={wheelHeadTitle}>{title}</div>
-          <div className={wheelHeadSub}>{sub}</div>
-          {playRate ? <div className={wheelPlayRateBadge}>{playRate}</div> : null}
         </>
       ) : null}
+      <div className={wheelHeadSub}>{sub}</div>
+      {playRate ? <div className={wheelPlayRateBadge}>{playRate}</div> : null}
       {planetInfo ? (
         <div className={wheelInfo}>
           <div className={wheelInfoName}>
@@ -840,8 +840,6 @@ function PanchangaWheelBody({
       <header className="mb-3 px-1">
         <div className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{copy.eyebrow}</div>
         <h2 className="mt-1 text-xl font-bold leading-tight text-foreground [&_.yr]:font-num [&_.yr]:text-primary">{headTitle}</h2>
-        <p className="mt-1 font-num text-sm text-muted-foreground">{headSub}</p>
-        {headPlayRate ? <div className="mt-1.5 font-num text-base font-bold tabular-nums text-foreground">{headPlayRate}</div> : null}
       </header>
       {wheelNode}
     </div>

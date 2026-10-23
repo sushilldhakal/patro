@@ -827,6 +827,8 @@ function WheelBody({
         <Text className={compactHead ? "mt-1.5 text-lg font-bold leading-tight" : "mt-1.5 text-xl font-bold leading-tight"} style={title}>
           {copy.title(Boolean(isToday && !scrubPinned))}
         </Text>
+          </>
+        ) : null}
         <Text className="mt-1.5 text-base" style={sub} numberOfLines={compactHead ? 2 : 3}>
           {copy.sub({
             weekday: det.weekday,
@@ -849,8 +851,6 @@ function WheelBody({
             {yearScrub.playbackRateLabel}
             <Text style={{ color: W_INK }}> · {digits(yearScrub.speed)}×</Text>
           </Text>
-        ) : null}
-          </>
         ) : null}
         {planetInfo ? (
           <View className={fullscreen ? "mt-3 pt-2" : "pt-1"} style={{ borderTopWidth: 1, borderTopColor: withAlpha(W_INK, 0.18) }}>
@@ -1016,22 +1016,6 @@ function WheelBody({
         <Text className="mt-1 text-xl font-bold leading-tight text-foreground">
           {copy.title(Boolean(isToday && !scrubPinned))}
         </Text>
-        <Text className="mt-1 text-base text-muted-foreground">
-          {copy.sub({
-            weekday: det.weekday,
-            bsMonthNe,
-            bsDay,
-            bsYear,
-            clock: pickerClock,
-            tithi: { ne: tithiNe, en: tithiEn },
-            location: locationLabel ?? p?.location?.name,
-          })}
-        </Text>
-        {yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
-          <Text className="mt-1.5 text-base font-bold tabular-nums text-foreground">
-            {yearScrub.playbackRateLabel} · {digits(yearScrub.speed)}×
-          </Text>
-        ) : null}
       </View>
       <View
         className="overflow-hidden rounded-2xl border border-border"
