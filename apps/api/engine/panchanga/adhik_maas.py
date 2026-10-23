@@ -63,6 +63,7 @@ def find_adhik_maas_for_gregorian_year(gregorian_year: int) -> Optional[dict]:
     fall within or near the year.
     """
     from engine.panchanga.lunar_month import get_lunar_year
+    from engine.panchanga.names_ne import lunar_masa_name_ne
 
     lunar_year = get_lunar_year(gregorian_year)
     adhik_months = [m for m in lunar_year.months if m.is_adhik]
@@ -78,7 +79,7 @@ def find_adhik_maas_for_gregorian_year(gregorian_year: int) -> Optional[dict]:
         "has_adhik_maas": True,
         "month_name": m.month_name,
         "full_name_en": f"Adhik {m.month_name}",
-        "full_name_ne": f"अधिक {m.month_name}",
+        "full_name_ne": f"अधिक {lunar_masa_name_ne(m.month_name)}",
         "start_date": start_date.isoformat(),
         "end_date": end_date.isoformat(),
         "purnima_date": purnima_date.isoformat(),
