@@ -33,6 +33,7 @@ import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
 import {
   formatWheelDegree,
+  WHEEL_DEGREE_EVERY_LABEL_ZOOM,
   wheelDegreeClearsReadout,
   wheelDegreeMarks,
   wheelDegreeNumberSize,
@@ -1051,12 +1052,13 @@ function WheelChartImpl({
   // the rim. Kept apart from the layers above: only it depends on the zoom step
   // and the selected longitude.
   const degreeStep = wheelDegreeStep(zoom);
+  const numberEvery1 = zoom >= WHEEL_DEGREE_EVERY_LABEL_ZOOM;
   const selectedDeg = tw.show_today ? normDeg(planetLons[lineTarget] ?? moonLon) : null;
   const degreeRing = useMemo(() => {
     const nodes: ReactNode[] = [];
-    for (const { deg, major } of wheelDegreeMarks(degreeStep)) {
+    for (const { deg, major, labelled } of wheelDegreeMarks(degreeStep, numberEvery1)) {
       const [x1, y1] = pol(deg, R.rimOuter);
-      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : 5));
+      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : labelled ? 5 : 3.5));
       nodes.push(
         <Line
           key={`dgt${deg}`}
@@ -1068,7 +1070,7 @@ function WheelChartImpl({
           strokeWidth={major ? 1.1 : 0.7}
         />,
       );
-      if (!wheelDegreeClearsReadout(deg, selectedDeg)) continue;
+      if (!labelled || !wheelDegreeClearsReadout(deg, selectedDeg)) continue;
       nodes.push(
         <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} spin={spin} fill={W_INK_DIM} size={wheelDegreeNumberSize(degreeStep)}>
           {String(deg)}
@@ -1102,7 +1104,7 @@ function WheelChartImpl({
       );
     }
     return nodes;
-  }, [degreeStep, selectedDeg, spin, pol, FONT]);
+  }, [degreeStep, numberEvery1, selectedDeg, spin, pol, FONT]);
 
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
@@ -1125,13 +1127,15 @@ function WheelChartImpl({
         }}
       >
         <Reanimated.View style={settleStyle} pointerEvents="none">
-        {/* Android: rasterize the SVG once into a GPU texture so a drag-spin only
+        {/* Zoomed in, the cached texture would be scaled up and blur the text, so
+            it is dropped past 1.5× (a one-finger drag pans there, not spins).
+        Android: rasterize the SVG once into a GPU texture so a drag-spin only
             rotates that texture. Without it every frame re-draws the whole wheel
             (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}
         <Animated.View
           style={{ flex: 1, transform: [{ rotate: dragRotate }] }}
           pointerEvents="none"
-          renderToHardwareTextureAndroid
+          renderToHardwareTextureAndroid={zoom <= 1.5}
         >
         <Svg viewBox="0 0 1000 1000" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />

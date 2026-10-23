@@ -60,6 +60,7 @@ import {
 } from "@vedic-patro/domain/panchanga/wheel-bodies";
 import {
   formatWheelDegree,
+  WHEEL_DEGREE_EVERY_LABEL_ZOOM,
   wheelDegreeClearsReadout,
   wheelDegreeMarks,
   wheelDegreeNumberSize,
@@ -718,14 +719,15 @@ function WheelChartImpl({
   // the rim. Separate from the layers above because it alone depends on the
   // zoom step and the selected longitude.
   const degreeStep = wheelDegreeStep(zoom);
+  const numberEvery1 = zoom >= WHEEL_DEGREE_EVERY_LABEL_ZOOM;
   const selectedDeg = tw.show_today ? normDeg(planetLons[lineTarget] ?? moonLon) : null;
   const degreeRing = useMemo(() => {
     const nodes: React.ReactNode[] = [];
-    for (const { deg, major } of wheelDegreeMarks(degreeStep)) {
+    for (const { deg, major, labelled } of wheelDegreeMarks(degreeStep, numberEvery1)) {
       const [x1, y1] = pol(deg, R.rimOuter);
-      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : 5));
+      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : labelled ? 5 : 3.5));
       nodes.push(<line key={`dgt${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} className={wDegTick(major)} />);
-      if (!wheelDegreeClearsReadout(deg, selectedDeg)) continue;
+      if (!labelled || !wheelDegreeClearsReadout(deg, selectedDeg)) continue;
       nodes.push(
         <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} cls={wDegNum} spin={spin} size={wheelDegreeNumberSize(degreeStep)}>
           {deg}
@@ -757,7 +759,7 @@ function WheelChartImpl({
       );
     }
     return nodes;
-  }, [degreeStep, selectedDeg, spin, pol]);
+  }, [degreeStep, numberEvery1, selectedDeg, spin, pol]);
 
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();
