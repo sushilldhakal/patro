@@ -33,7 +33,7 @@ import {
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
 } from "@vedic-patro/domain/calendar/bs-calendar";
-import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
+import { useSkyBookmarks, useSkyFocusTargets, useSkyPlanetInfo, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
@@ -1361,6 +1361,8 @@ export function AakashGocharSky({
    * days from the epoch.
    */
   const simStamp = useSkyStamp({ simDate, zoneOffsetMs, timeZone, sunLongitude, sunSpeed });
+  /* The selected graha's card in the HUD — one for all three views. */
+  const planetInfo = useSkyPlanetInfo(selectedKey, selectedKey ? sample?.sky[selectedKey] : undefined);
   const focusTargets = useSkyFocusTargets();
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
@@ -2071,6 +2073,24 @@ export function AakashGocharSky({
               ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
               : t("ui.sky3d.paused_2")}
           </Text>
+          {planetInfo ? (
+            <View className="mt-1.5 border-t border-white/15 pt-1.5">
+              <Text className="text-caption font-bold text-amber-200" style={nepaliTextStyle(12, { dense: true })}>
+                {planetInfo.name}
+                {planetInfo.motion ? `  ${planetInfo.motion.label}` : ""}
+              </Text>
+              {planetInfo.rows.map((row) => (
+                <View key={row.label} className="flex-row gap-x-2">
+                  <Text className="text-caption" style={[nepaliTextStyle(10, { dense: true }), { color: LABEL_COLOR.hudDim }]}>
+                    {row.label}
+                  </Text>
+                  <Text className="text-caption font-semibold" style={[nepaliTextStyle(10, { dense: true }), { color: LABEL_COLOR.hud }]}>
+                    {row.value}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
 
         {/* The four view buttons, in the sky's own top-right corner — the same

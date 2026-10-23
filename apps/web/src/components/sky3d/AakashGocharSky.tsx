@@ -14,6 +14,7 @@
  */
 
 import {
+  Fragment,
   memo,
   Suspense,
   useCallback,
@@ -72,7 +73,7 @@ import { SkySearch } from "@/components/sky3d/SkySearch";
 import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/read-models/astronomy/sky3d/sky-catalogue";
 import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
+import { useSkyBookmarks, useSkyFocusTargets, useSkyPlanetInfo, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/astronomy/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -1647,6 +1648,8 @@ export function AakashGocharSky({
    * days from the epoch.
    */
   const simStamp = useSkyStamp({ simDate, zoneOffsetMs, timeZone, sunLongitude, sunSpeed });
+  /* The selected graha's card in the HUD — one for all three views. */
+  const planetInfo = useSkyPlanetInfo(selectedKey, selectedKey ? sample?.sky[selectedKey] : undefined);
   const focusTargets = useSkyFocusTargets();
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
@@ -1986,6 +1989,26 @@ export function AakashGocharSky({
               ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
               : pick(tFor(undefined, "ui.sky3d.paused_2"), tFor("en", "ui.sky3d.paused_2"))}
           </p>
+          {planetInfo ? (
+            <div className="mt-1.5 border-t border-white/15 pt-1.5">
+              <p className="m-0 flex items-baseline gap-1.5 text-sm font-bold text-amber-200">
+                {planetInfo.name}
+                {planetInfo.motion ? (
+                  <span className={cn("text-diagram-xs font-semibold", planetInfo.motion.retrograde ? "text-rose-300" : "text-white/60")}>
+                    {planetInfo.motion.label}
+                  </span>
+                ) : null}
+              </p>
+              <dl className="m-0 mt-0.5 grid grid-cols-[auto_1fr] gap-x-2 gap-y-px">
+                {planetInfo.rows.map((row) => (
+                  <Fragment key={row.label}>
+                    <dt className="text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>{row.label}</dt>
+                    <dd className="m-0 text-diagram-xs font-semibold tabular-nums text-white">{row.value}</dd>
+                  </Fragment>
+                ))}
+              </dl>
+            </div>
+          ) : null}
         </div>
 
         {phaseFlash !== null ? (

@@ -134,3 +134,14 @@ export const wPlanetGlow = "blur-[5px] opacity-55";
 
 export const wPlanetName =
   "fill-[var(--w-ink)] text-[13px] font-semibold [font-family:var(--pn-font)] [paint-order:stroke_fill] stroke-[rgba(6,31,33,0.92)] [stroke-width:1.6px]";
+
+/** The outer degree scale: its ticks (a rashi boundary is longer and brighter) and numbers. */
+export function wDegTick(major?: boolean) {
+  return cn(
+    "stroke-[var(--w-ink-faint)] [stroke-width:0.7] opacity-80",
+    major && "stroke-[var(--w-ink-dim)] [stroke-width:1.1] opacity-100",
+  );
+}
+
+export const wDegNum =
+  "fill-[var(--w-ink-dim)] font-semibold tabular-nums [font-family:var(--pn-font)]";

@@ -27,6 +27,8 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
 import {
   wDaytick,
+  wDegNum,
+  wDegTick,
   wKarLbl,
   wLabel,
   wLagnaCap,
@@ -56,6 +58,14 @@ import {
   wheelMoonShadow,
   type WheelPlace,
 } from "@vedic-patro/domain/panchanga/wheel-bodies";
+import {
+  formatWheelDegree,
+  wheelDegreeClearsReadout,
+  wheelDegreeMarks,
+  wheelDegreeNumberSize,
+  wheelDegreeStep,
+  WHEEL_DEGREE_READOUT_SIZE,
+} from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
 import { brand, illustration, midnight, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
@@ -204,7 +214,7 @@ function WheelChartImpl({
     if (!el) return;
     const measure = () => {
       const side = Math.min(el.clientWidth, el.clientHeight);
-      if (side > 0) setUnitPx((side / 916) * zoom);
+      if (side > 0) setUnitPx((side / 1000) * zoom);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -703,6 +713,52 @@ function WheelChartImpl({
     return { markerNodes, innerRings, core, bsLabels };
   }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom, place, unitPx]);
 
+  // The degree scale on the outermost ring: every 10°, every 5° once zoomed in,
+  // with the selected graha's exact longitude read out where its needle meets
+  // the rim. Separate from the layers above because it alone depends on the
+  // zoom step and the selected longitude.
+  const degreeStep = wheelDegreeStep(zoom);
+  const selectedDeg = tw.show_today ? normDeg(planetLons[lineTarget] ?? moonLon) : null;
+  const degreeRing = useMemo(() => {
+    const nodes: React.ReactNode[] = [];
+    for (const { deg, major } of wheelDegreeMarks(degreeStep)) {
+      const [x1, y1] = pol(deg, R.rimOuter);
+      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : 5));
+      nodes.push(<line key={`dgt${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} className={wDegTick(major)} />);
+      if (!wheelDegreeClearsReadout(deg, selectedDeg)) continue;
+      nodes.push(
+        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} cls={wDegNum} spin={spin} size={wheelDegreeNumberSize(degreeStep)}>
+          {deg}
+        </RingLabel>,
+      );
+    }
+    if (selectedDeg != null) {
+      const [x1, y1] = pol(selectedDeg, R.tickIn);
+      const [x2, y2] = pol(selectedDeg, R.rimOuter);
+      const a = normDeg(selectedDeg + spin);
+      const flip = a > 90 && a < 270;
+      const cy = CY - R.degNum;
+      nodes.push(<line key="dgsel-line" x1={x1} y1={y1} x2={x2} y2={y2} className={wLagnaLine} style={{ strokeDasharray: "none" }} />);
+      nodes.push(
+        <g key="dgsel" transform={`rotate(${-a} ${CX} ${CY})`} style={{ pointerEvents: "none" }}>
+          <rect x={CX - 25} y={cy - 6.5} width={50} height={13} rx={4} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
+          <text
+            x={CX}
+            y={cy}
+            textAnchor="middle"
+            dominantBaseline="central"
+            className={wLabel}
+            style={{ fontSize: WHEEL_DEGREE_READOUT_SIZE, fill: illustration.amber49 }}
+            transform={flip ? `rotate(180 ${CX} ${cy})` : undefined}
+          >
+            {formatWheelDegree(selectedDeg)}
+          </text>
+        </g>,
+      );
+    }
+    return nodes;
+  }, [degreeStep, selectedDeg, spin, pol]);
+
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();
     return (
@@ -811,7 +867,7 @@ function WheelChartImpl({
     >
       <svg
         ref={svgRef}
-        viewBox="42 42 916 916"
+        viewBox="0 0 1000 1000"
         className={wheelSvg(dragMoved)}
         onPointerDown={onDown}
         onPointerMove={onMove}
@@ -819,6 +875,7 @@ function WheelChartImpl({
         onPointerCancel={onUp}
       >
         <circle cx={CX} cy={CY} r={R.bsOut} className={wRimCircle} strokeWidth="1.4" />
+        <circle cx={CX} cy={CY} r={R.rimOuter} className={wRimCircle} strokeWidth="0.8" opacity="0.55" />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((r, k) => (
           <circle key={`rc${k}`} cx={CX} cy={CY} r={r} className={wRimCircle} strokeWidth="0.8" opacity="0.55" />
         ))}
@@ -838,6 +895,7 @@ function WheelChartImpl({
         {innerRings}
         {core}
         {markerNodes}
+        {degreeRing}
 
       </svg>
     </div>

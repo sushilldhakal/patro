@@ -11,6 +11,7 @@ import Svg, {
   Image as SvgImage,
   Line,
   Path,
+  Rect,
   Text as SvgText,
   TSpan,
 } from "react-native-svg";
@@ -30,6 +31,14 @@ import {
 } from "@vedic-patro/features/panchanga-drawing";
 import { getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bsMonthsForWheel, GRAHA_META, WHEEL_ORBIT_RADII, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/panchanga/wheel-data";
+import {
+  formatWheelDegree,
+  wheelDegreeClearsReadout,
+  wheelDegreeMarks,
+  wheelDegreeNumberSize,
+  wheelDegreeStep,
+  WHEEL_DEGREE_READOUT_SIZE,
+} from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
 
@@ -386,7 +395,7 @@ function WheelChartImpl({
   const layoutRef = useRef<LayoutMetrics>({ w: 0, h: 0 });
   const [layoutBox, setLayoutBox] = useState({ w: 0, h: 0 });
   const settleStyle = useWheelSettle(layoutBox.w);
-  const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
+  const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 1000) * zoom : 0;
   const spinRef = useRef(spin);
   spinRef.current = spin;
   const panRef = useRef(pan);
@@ -1037,6 +1046,64 @@ function WheelChartImpl({
     return { markerNodes, innerRings, core, bsLabels };
   }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, pol, arcSeg, pick, zoom, place, unitPx]);
 
+  // The degree scale on the outermost ring: every 10°, every 5° once zoomed in,
+  // with the selected graha's exact longitude read out where its needle meets
+  // the rim. Kept apart from the layers above: only it depends on the zoom step
+  // and the selected longitude.
+  const degreeStep = wheelDegreeStep(zoom);
+  const selectedDeg = tw.show_today ? normDeg(planetLons[lineTarget] ?? moonLon) : null;
+  const degreeRing = useMemo(() => {
+    const nodes: ReactNode[] = [];
+    for (const { deg, major } of wheelDegreeMarks(degreeStep)) {
+      const [x1, y1] = pol(deg, R.rimOuter);
+      const [x2, y2] = pol(deg, R.rimOuter - (major ? 9 : 5));
+      nodes.push(
+        <Line
+          key={`dgt${deg}`}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke={major ? W_INK_DIM : W_INK_FAINT}
+          strokeWidth={major ? 1.1 : 0.7}
+        />,
+      );
+      if (!wheelDegreeClearsReadout(deg, selectedDeg)) continue;
+      nodes.push(
+        <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum + 1.5} spin={spin} fill={W_INK_DIM} size={wheelDegreeNumberSize(degreeStep)}>
+          {String(deg)}
+        </RingLabel>,
+      );
+    }
+    if (selectedDeg != null) {
+      const [x1, y1] = pol(selectedDeg, R.tickIn);
+      const [x2, y2] = pol(selectedDeg, R.rimOuter);
+      const a = normDeg(selectedDeg + spin);
+      const flip = a > 90 && a < 270;
+      const cy = CY - R.degNum;
+      nodes.push(<Line key="dgsel-line" x1={x1} y1={y1} x2={x2} y2={y2} stroke={illustration.amber49} strokeWidth={1.4} />);
+      nodes.push(
+        <G key="dgsel" transform={`rotate(${-a} ${CX} ${CY})`} pointerEvents="none">
+          <Rect x={CX - 25} y={cy - 6.5} width={50} height={13} rx={4} fill={midnight.background} stroke={illustration.amber49} strokeWidth={0.8} />
+          <SvgText
+            x={CX}
+            y={cy}
+            textAnchor="middle"
+            fill={illustration.amber49}
+            fontSize={WHEEL_DEGREE_READOUT_SIZE}
+            fontWeight="bold"
+            fontFamily={FONT}
+            {...nepaliSvgTextCenter}
+            {...(flip ? { transform: `rotate(180 ${CX} ${cy})` } : {})}
+          >
+            {formatWheelDegree(selectedDeg)}
+          </SvgText>
+        </G>,
+      );
+    }
+    return nodes;
+  }, [degreeStep, selectedDeg, spin, pol, FONT]);
+
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
@@ -1066,8 +1133,9 @@ function WheelChartImpl({
           pointerEvents="none"
           renderToHardwareTextureAndroid
         >
-        <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
+        <Svg viewBox="0 0 1000 1000" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
+        <Circle cx={CX} cy={CY} r={R.rimOuter} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
           <Circle key={`rc${k}`} cx={CX} cy={CY} r={rad} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
         ))}
@@ -1087,6 +1155,7 @@ function WheelChartImpl({
         {innerRings}
         {core}
         {markerNodes}
+        {degreeRing}
       </Svg>
         </Animated.View>
         </Reanimated.View>

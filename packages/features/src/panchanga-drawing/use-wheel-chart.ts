@@ -13,6 +13,8 @@ import { useLocale } from "@vedic-patro/i18n/react";
 export const WHEEL_CHART_R = {
   rimOuter: 497,
   tickIn: 481,
+  /** Centre line of the degree numbers, in the band between `tickIn` and `rimOuter`. */
+  degNum: 489,
   gregOut: 481,
   gregMid: 467,
   gregIn: 453,
