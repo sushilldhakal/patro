@@ -786,7 +786,7 @@ function WheelBody({
   );
 
   /* The chart starts below the header (title + planet card), whatever its height. */
-  const [headerH, setHeaderH] = useState(0);
+  const [headerHs, setHeaderHs] = useState({ inline: 0, full: 0 });
   const [menuOverlay, setMenuOverlay] = useState<ReactNode>(null);
 
   const renderHeader = (fullscreen?: boolean) => {
@@ -807,7 +807,10 @@ function WheelBody({
     return (
       <View
         pointerEvents="none"
-        onLayout={(e) => setHeaderH(Math.ceil(e.nativeEvent.layout.height))}
+        onLayout={(e) => {
+          const h = Math.ceil(e.nativeEvent.layout.height);
+          setHeaderHs((prev) => (prev[fullscreen ? "full" : "inline"] === h ? prev : { ...prev, [fullscreen ? "full" : "inline"]: h }));
+        }}
         style={{
           position: "absolute",
           top,
@@ -816,6 +819,8 @@ function WheelBody({
           zIndex: 20,
         }}
       >
+        {fullscreen ? (
+          <>
         {!compactHead ? (
           <Text className="text-sm font-semibold uppercase" style={eyebrow}>{copy.eyebrow}</Text>
         ) : null}
@@ -845,8 +850,10 @@ function WheelBody({
             <Text style={{ color: W_INK }}> · {digits(yearScrub.speed)}×</Text>
           </Text>
         ) : null}
+          </>
+        ) : null}
         {planetInfo ? (
-          <View className="mt-3 pt-2" style={{ borderTopWidth: 1, borderTopColor: withAlpha(W_INK, 0.18) }}>
+          <View className={fullscreen ? "mt-3 pt-2" : "pt-1"} style={{ borderTopWidth: 1, borderTopColor: withAlpha(W_INK, 0.18) }}>
             <Text className="text-base font-bold" style={{ color: illustration.amber49 }}>
               {planetInfo.name}
               {planetInfo.motion ? (
@@ -893,7 +900,7 @@ function WheelBody({
       {/* Inline, the title block and the legend sat on top of the wheel: start the
           chart below the title and stop it above the dock. Fullscreen has room. */}
       <View className="flex-1" style={{
-          marginTop: headerH + (fullscreen ? safeTop + 6 : compactHead ? 8 : 10) + 8,
+          marginTop: headerHs[fullscreen ? "full" : "inline"] + (fullscreen ? safeTop + 6 : compactHead ? 8 : 10) + 8,
           ...(fullscreen ? null : { marginBottom: space["5xl"] + space.sm }),
         }}>
         {/* The page's copy sits behind the fullscreen modal. Drawing it too
@@ -1003,6 +1010,29 @@ function WheelBody({
 
   return (
     <>
+      {/* The title block is a header of its own, above the wheel's card. */}
+      <View className="mb-3 px-1">
+        <Text className="text-sm font-semibold uppercase text-muted-foreground" style={{ letterSpacing: 1.2 }}>{copy.eyebrow}</Text>
+        <Text className="mt-1 text-xl font-bold leading-tight text-foreground">
+          {copy.title(Boolean(isToday && !scrubPinned))}
+        </Text>
+        <Text className="mt-1 text-base text-muted-foreground">
+          {copy.sub({
+            weekday: det.weekday,
+            bsMonthNe,
+            bsDay,
+            bsYear,
+            clock: pickerClock,
+            tithi: { ne: tithiNe, en: tithiEn },
+            location: locationLabel ?? p?.location?.name,
+          })}
+        </Text>
+        {yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
+          <Text className="mt-1.5 text-base font-bold tabular-nums text-foreground">
+            {yearScrub.playbackRateLabel} · {digits(yearScrub.speed)}×
+          </Text>
+        ) : null}
+      </View>
       <View
         className="overflow-hidden rounded-2xl border border-border"
         style={{ backgroundColor: W_BG }}

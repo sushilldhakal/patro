@@ -199,7 +199,10 @@ function WheelHead({
   playRate,
   planetInfo,
   className,
+  showTitle = true,
 }: {
+  /** False when the title block is drawn above the wheel's card instead. */
+  showTitle?: boolean;
   eyebrow: React.ReactNode;
   title: React.ReactNode;
   sub: React.ReactNode;
@@ -226,10 +229,14 @@ function WheelHead({
   }, []);
   return (
     <div ref={headRef} className={cn(wheelHead, "top-4", className)}>
-      <div className={wheelHeadEyebrow}>{eyebrow}</div>
-      <div className={wheelHeadTitle}>{title}</div>
-      <div className={wheelHeadSub}>{sub}</div>
-      {playRate ? <div className={wheelPlayRateBadge}>{playRate}</div> : null}
+      {showTitle ? (
+        <>
+          <div className={wheelHeadEyebrow}>{eyebrow}</div>
+          <div className={wheelHeadTitle}>{title}</div>
+          <div className={wheelHeadSub}>{sub}</div>
+          {playRate ? <div className={wheelPlayRateBadge}>{playRate}</div> : null}
+        </>
+      ) : null}
       {planetInfo ? (
         <div className={wheelInfo}>
           <div className={wheelInfoName}>
@@ -625,6 +632,27 @@ function PanchangaWheelBody({
     );
   }
 
+  const headTitle = (
+    <>
+      {copy.title(Boolean(isToday && !scrubPinned))} <span className="yr">{num(bsYear)}</span>
+    </>
+  );
+  const headSub = (
+    <>
+      {pick(det.weekday.ne, det.weekday.en)}, {monthName(bsMonthNe)} {num(bsDay)}, {num(bsYear)} ·{" "}
+      <span className="font-num font-semibold tabular-nums">{num(scrubClock)}</span>
+      {" · "}
+      {pick(tithiNe, tithiEn)} · {locLabel ?? copy.defaultLocation}
+    </>
+  );
+  const headPlayRate =
+    yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
+      <span aria-live="polite">
+        {yearScrub.playbackRateLabel}
+        <span> · {copy.speed(yearScrub.speed)}</span>
+      </span>
+    ) : undefined;
+
   const wheelNode = (
     <div
       className={cn(
@@ -638,31 +666,12 @@ function PanchangaWheelBody({
         onMouseMove={onStageMove}
       >
         <WheelHead
+          showTitle={expanded}
           eyebrow={copy.eyebrow}
-          title={
-            <>
-              {copy.title(Boolean(isToday && !scrubPinned))}{" "}
-              <span className="yr">{num(bsYear)}</span>
-            </>
-          }
-          sub={
-            <>
-              {pick(det.weekday.ne, det.weekday.en)},{" "}
-              {monthName(bsMonthNe)} {num(bsDay)}, {num(bsYear)} ·{" "}
-              <span className="font-num tabular-nums text-[var(--w-ink)]">{num(scrubClock)}</span>
-              {" · "}
-              {pick(tithiNe, tithiEn)} · {locLabel ?? copy.defaultLocation}
-            </>
-          }
+          title={headTitle}
+          sub={headSub}
           planetInfo={planetInfo}
-          playRate={
-            yearScrub?.playbackRateLabel && yearScrub.direction !== 0 ? (
-              <span aria-live="polite">
-                {yearScrub.playbackRateLabel}
-                <span className="text-[var(--w-ink)]"> · {copy.speed(yearScrub.speed)}</span>
-              </span>
-            ) : undefined
-          }
+          playRate={headPlayRate}
         />
 
         <div className="pointer-events-auto absolute top-4 right-3 z-30 flex items-center gap-1.5">
@@ -824,7 +833,19 @@ function PanchangaWheelBody({
     </div>
   );
 
-  return expanded ? mountExpanded(wheelNode) : wheelNode;
+  if (expanded) return mountExpanded(wheelNode);
+  /* Inline, the title block is a header of its own above the wheel's card. */
+  return (
+    <div>
+      <header className="mb-3 px-1">
+        <div className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">{copy.eyebrow}</div>
+        <h2 className="mt-1 text-xl font-bold leading-tight text-foreground [&_.yr]:font-num [&_.yr]:text-primary">{headTitle}</h2>
+        <p className="mt-1 font-num text-sm text-muted-foreground">{headSub}</p>
+        {headPlayRate ? <div className="mt-1.5 font-num text-base font-bold tabular-nums text-foreground">{headPlayRate}</div> : null}
+      </header>
+      {wheelNode}
+    </div>
+  );
 }
 
 function PanchangaWheelImpl(props: Props) {
