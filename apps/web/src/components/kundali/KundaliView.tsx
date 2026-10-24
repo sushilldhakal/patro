@@ -55,38 +55,39 @@ import {
 import { KundaliSubTabs } from "@/components/kundali/KundaliSubTabs";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { importWithRetry } from "@/lib/lazy-route";
 const GrahaAstroTable = lazy(() =>
-  import("@/components/kundali/GrahaAstroTable").then((m) => ({ default: m.GrahaAstroTable })),
+  importWithRetry(() => import("@/components/kundali/GrahaAstroTable")).then((m) => ({ default: m.GrahaAstroTable })),
 );
 const UpagrahaTable = lazy(() =>
-  import("@/components/kundali/UpagrahaTable").then((m) => ({ default: m.UpagrahaTable })),
+  importWithRetry(() => import("@/components/kundali/UpagrahaTable")).then((m) => ({ default: m.UpagrahaTable })),
 );
 const YogaList = lazy(() =>
-  import("@/components/kundali/YogaList").then((m) => ({ default: m.YogaList })),
+  importWithRetry(() => import("@/components/kundali/YogaList")).then((m) => ({ default: m.YogaList })),
 );
 const YogaReferenceCatalog = lazy(() =>
-  import("@/components/kundali/YogaReferenceCatalog").then((m) => ({
+  importWithRetry(() => import("@/components/kundali/YogaReferenceCatalog")).then((m) => ({
     default: m.YogaReferenceCatalog,
   })),
 );
 const DashaSystemPanel = lazy(() =>
-  import("@/components/kundali/DashaSystemPanel").then((m) => ({ default: m.DashaSystemPanel })),
+  importWithRetry(() => import("@/components/kundali/DashaSystemPanel")).then((m) => ({ default: m.DashaSystemPanel })),
 );
 const ShadbalaCard = lazy(() =>
-  import("@/components/kundali/ShadbalaCard").then((m) => ({ default: m.ShadbalaCard })),
+  importWithRetry(() => import("@/components/kundali/ShadbalaCard")).then((m) => ({ default: m.ShadbalaCard })),
 );
 const BhavaBalaCard = lazy(() =>
-  import("@/components/kundali/BhavaBalaCard").then((m) => ({ default: m.BhavaBalaCard })),
+  importWithRetry(() => import("@/components/kundali/BhavaBalaCard")).then((m) => ({ default: m.BhavaBalaCard })),
 );
 const JanmaPhalaTables = lazy(() =>
-  import("@/components/kundali/JanmaPhalaTables").then((m) => ({ default: m.JanmaPhalaTables })),
+  importWithRetry(() => import("@/components/kundali/JanmaPhalaTables")).then((m) => ({ default: m.JanmaPhalaTables })),
 );
-const VimshopakaCard = lazy(() => import("@/components/kundali/VimshopakaCard"));
+const VimshopakaCard = lazy(() => importWithRetry(() => import("@/components/kundali/VimshopakaCard")));
 const AshtakavargaCard = lazy(() =>
-  import("@/components/kundali/AshtakavargaCard").then((m) => ({ default: m.AshtakavargaCard })),
+  importWithRetry(() => import("@/components/kundali/AshtakavargaCard")).then((m) => ({ default: m.AshtakavargaCard })),
 );
-const KundaliReport = lazy(() => import("@/components/kundali/KundaliReport"));
-const ShantiVidhiPanel = lazy(() => import("@/components/kundali/ShantiVidhiPanel"));
+const KundaliReport = lazy(() => importWithRetry(() => import("@/components/kundali/KundaliReport")));
+const ShantiVidhiPanel = lazy(() => importWithRetry(() => import("@/components/kundali/ShantiVidhiPanel")));
 
 /** Fallback for a lazy section chunk while it loads. */
 function SectionLoading() {

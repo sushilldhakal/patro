@@ -55,7 +55,18 @@ fi
 
 echo "==> Publishing apps/web/dist/ → ${WEB_ROOT}"
 sudo mkdir -p "${WEB_ROOT}"
-sudo rsync -a --delete "${WEB_DIR}/dist/" "${WEB_ROOT}/"
+# Hashed files under assets/ are never deleted at publish time. A tab that was open before this
+# deploy (or a cached page) still asks for the previous build's chunks; deleting them at once
+# turned every such visit into "Importing a module script failed". New assets go up first, then
+# everything else is synced (with --delete), then assets older than the grace period go.
+sudo mkdir -p "${WEB_ROOT}/assets"
+sudo rsync -a --ignore-existing "${WEB_DIR}/dist/assets/" "${WEB_ROOT}/assets/"
+sudo rsync -a --delete --exclude '/assets/' "${WEB_DIR}/dist/" "${WEB_ROOT}/"
+# A file this build reuses (same hash) keeps its old mtime; touch it so the prune below only
+# removes files no recent build has used.
+(cd "${WEB_DIR}/dist/assets" && find . -type f -print0) | (cd "${WEB_ROOT}/assets" && sudo xargs -0 -r touch -c --)
+ASSET_GRACE_DAYS="${ASSET_GRACE_DAYS:-14}"
+sudo find "${WEB_ROOT}/assets" -type f -mtime "+${ASSET_GRACE_DAYS}" -delete
 
 echo "==> Verifying published build"
 test -f "${WEB_ROOT}/index.html" || { echo "index.html missing after publish" >&2; exit 1; }
