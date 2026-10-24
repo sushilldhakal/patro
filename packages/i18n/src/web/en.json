@@ -4647,7 +4647,9 @@
     "zoom": {
       "fullscreen": "Full screen",
       "exit_fullscreen": "Exit full screen",
-      "reset": "Reset zoom"
+      "reset": "Reset zoom",
+      "zoom_in": "Zoom in",
+      "zoom_out": "Zoom out"
     },
     "reminders": {
       "reminders": "Reminders"

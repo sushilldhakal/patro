@@ -65,3 +65,5 @@ export type { WheelAtTimeClient } from "../wheel-clock";
 export type { WheelHover } from "@vedic-patro/features/panchanga-drawing";
 export type { PanchangaSidebarItemView, PanchangaSidebarLinkArgs, PanchangaSidebarSectionView } from "../sidebar-types";
 export { ZoomStage, ZoomStageInsets } from "./ZoomStage";
+/** The app holds its page scroll still while a chart is pinched; the website scrolls natively. */
+export const useZoomScrollLocked = (): boolean => false;

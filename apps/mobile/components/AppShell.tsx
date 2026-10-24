@@ -1,3 +1,4 @@
+import { useZoomScrollLocked } from "@vedic-patro/ui/kit/panchanga";
 import type { RefObject } from "react";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -45,6 +46,7 @@ export function AppShell({
   const { isTablet, isNarrow, isCompact } = useBreakpoint();
   const pageScrollRef = useScrollToTopOnRouteChange();
   const refreshControl = usePageRefreshControl();
+  const zoomLocked = useZoomScrollLocked();
   const inShell = useInPanchangaTabsShell();
   const shellScrollHost = usePanchangaTabsShellScrollHost();
   /* A tab switch or push waits for the new screen's whole first render before
@@ -97,6 +99,7 @@ export function AppShell({
 
   return (
     <ScrollView
+      scrollEnabled={!zoomLocked}
       ref={(node) => {
         if (scrollRef) scrollRef.current = node;
         pageScrollRef(node);

@@ -14,6 +14,7 @@ import {
   shouldShowPanchangaSidebar,
 } from "@/lib/panchanga-shell-paths";
 import { useBreakpoint } from "@/lib/responsive";
+import { useZoomScrollLocked } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import { PANCHANGA_SIDEBAR_RAIL_WIDTH, useShowPanchangaSidebar } from "./PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
@@ -44,8 +45,10 @@ function ShellMainScroll({
 }) {
   const pageScrollRef = useScrollToTopOnRouteChange();
   const refreshControl = usePageRefreshControl();
+  const zoomLocked = useZoomScrollLocked();
   return (
     <ScrollView
+      scrollEnabled={!zoomLocked}
       refreshControl={refreshControl}
       ref={pageScrollRef}
       className="min-h-0 min-w-0 flex-1 bg-background"
