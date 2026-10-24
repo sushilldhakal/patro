@@ -71,3 +71,4 @@ export type { WheelHover } from "@vedic-patro/features/panchanga-drawing";
 export type { WheelPick } from "./WheelChart";
 export type { PanchangaSidebarItemView, PanchangaSidebarLinkArgs, PanchangaSidebarSectionView } from "../sidebar-types";
 export { ZOOM_STAGE_BG, ZoomStage, ZoomStageInsets } from "./ZoomStage";
+export { useZoomScrollLocked } from "./zoom-scroll-lock";

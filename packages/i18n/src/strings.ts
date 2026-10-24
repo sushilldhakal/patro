@@ -7829,6 +7829,8 @@ export const strings = {
   "ui.zoom.fullscreen": { ne: "पूरा स्क्रिन", en: "Full screen" },
   "ui.zoom.exit_fullscreen": { ne: "पूरा स्क्रिन बन्द", en: "Exit full screen" },
   "ui.zoom.reset": { ne: "जुम रिसेट", en: "Reset zoom" },
+  "ui.zoom.zoom_in": { ne: "जुम इन", en: "Zoom in" },
+  "ui.zoom.zoom_out": { ne: "जुम आउट", en: "Zoom out" },
   "ui.panchanga.reload_reset_zoom_sunrise": { ne: "रिलोड · जुम रिसेट · सूर्योदय", en: "Reload · reset zoom · sunrise" },
   "ui.panchanga.status_at_instanttime": { ne: "{{instantTime}} बजेको अवस्था", en: "Status at {{instantTime}}" },
   "ui.panchanga.value_padas": { ne: "{{value}} पद", en: "{{value}} padas" },

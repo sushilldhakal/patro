@@ -4647,7 +4647,9 @@
     "zoom": {
       "fullscreen": "पूरा स्क्रिन",
       "exit_fullscreen": "पूरा स्क्रिन बन्द",
-      "reset": "जुम रिसेट"
+      "reset": "जुम रिसेट",
+      "zoom_in": "जुम इन",
+      "zoom_out": "जुम आउट"
     },
     "reminders": {
       "reminders": "रिमाइन्डर"
