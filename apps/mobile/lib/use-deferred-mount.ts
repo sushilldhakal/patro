@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { InteractionManager } from "react-native";
 
-/** Longest a deferred section waits, even if some interaction never finishes. */
+/** Longest a deferred section waits, even if the JS thread never goes idle. */
 const MAX_WAIT_MS = 400;
 
 /**
- * False on the first render, true once the screen has drawn and any running
- * navigation animation has finished. Use it to hold back below-the-fold
- * sections (and the requests they make) so the first screen appears sooner.
+ * False on the first render, true once the screen has drawn and the JS thread
+ * is idle. Use it to hold back below-the-fold sections (and the requests they
+ * make) so the first screen appears sooner.
  */
 export function useDeferredMount(): boolean {
   const [ready, setReady] = useState(false);
@@ -19,12 +18,10 @@ export function useDeferredMount(): boolean {
       done = true;
       frame = requestAnimationFrame(() => setReady(true));
     };
-    const task = InteractionManager.runAfterInteractions(finish);
-    const fallback = setTimeout(finish, MAX_WAIT_MS);
+    const idle = requestIdleCallback(finish, { timeout: MAX_WAIT_MS });
     return () => {
       done = true;
-      task.cancel();
-      clearTimeout(fallback);
+      cancelIdleCallback(idle);
       if (frame != null) cancelAnimationFrame(frame);
     };
   }, []);

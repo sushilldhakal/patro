@@ -32,11 +32,12 @@
     "decode-uri-component": "^0.5.0",
     "uuid": "^11.1.1",
     "postcss-selector-parser": "^7.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native-gesture-handler": "~2.32.0",
-    "react-native-reanimated": "4.5.1",
-    "react-native-screens": "~4.26.0",
-    "react-native-worklets": "0.10.1"
+    "@react-three/fiber": "^9.8.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-reanimated": "4.7.1",
+    "react-native-screens": "~4.30.0",
+    "react-native-worklets": "0.13.0"
   }
 }

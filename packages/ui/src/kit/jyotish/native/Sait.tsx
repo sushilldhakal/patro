@@ -1,4 +1,4 @@
-import { InteractionManager, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { SUITABILITY_STYLE } from "@vedic-patro/design-tokens/classes/sait-suitability-classes";
@@ -15,7 +15,7 @@ import { SaitRulesSection } from "./SaitRulesSection";
 /**
  * A year of muhurta days is often 100+ cards. Mounting every month in one frame
  * held the screen blank, so the first months draw at once and the rest follow
- * once they have (or after a short cap, if an interaction never settles).
+ * once the JS thread is idle (or after a short cap, if it never is).
  */
 function useStagedMonths<T>(months: T[], first: number): T[] {
   const [all, setAll] = useState(false);
@@ -27,12 +27,10 @@ function useStagedMonths<T>(months: T[], first: number): T[] {
         setAll(true);
       }
     };
-    const task = InteractionManager.runAfterInteractions(finish);
-    const fallback = setTimeout(finish, 400);
+    const idle = requestIdleCallback(finish, { timeout: 400 });
     return () => {
       done = true;
-      task.cancel();
-      clearTimeout(fallback);
+      cancelIdleCallback(idle);
     };
   }, []);
   return all ? months : months.slice(0, first);

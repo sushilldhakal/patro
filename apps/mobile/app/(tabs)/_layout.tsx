@@ -15,6 +15,43 @@ import { useThemeColors } from "@/lib/theme-context";
 const EDGE_SWIPE_WIDTH = 20;
 
 /**
+ * SDK 58 only draws a tab route that this layout declares. Undeclared file
+ * routes stay registered, then the navigator returns nothing. The floating
+ * bar is custom, so these do not add buttons — `href: null` would hide the
+ * page entirely and bounce navigation back to the first tab.
+ */
+const TAB_SCREENS = [
+  "index",
+  "more",
+  "ritu",
+  "vastu",
+  "learn",
+  "gochar",
+  "history",
+  "offline",
+  "kundali",
+  "holidays",
+  "rashifal",
+  "converter",
+  "reminders",
+  "sun-times",
+  "documents",
+  "panchanga",
+  "adhik-maas",
+  "vivah-sait",
+  "suryakranti",
+  "dainikkranti",
+  "shanti-vidhi",
+  "chandrakranti",
+  "kundali-milan",
+  "panchak-patro",
+  "abhijit-muhurta",
+  "jyotish/rashifal",
+  "jyotish/kundali-milan",
+  "sait/[category]",
+] as const;
+
+/**
  * Tab screens have no stack of their own, so there's no native swipe-back.
  * A drag that starts at the left edge and travels right goes back to the page
  * that was open before (lib/nav-history), or home when there's nothing earlier.
@@ -99,6 +136,10 @@ export default function TabsLayout() {
           shadowOpacity: 0, // design-ok: hide the stock tab bar; the floating bar draws its own shadow
         },
       }}
-    />
+    >
+      {TAB_SCREENS.map((name) => (
+        <Tabs.Screen key={name} name={name} />
+      ))}
+    </Tabs>
   );
 }
