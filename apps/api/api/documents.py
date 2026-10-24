@@ -28,11 +28,13 @@ redeploying invalidates exactly the cached entries that changed.
 
 from __future__ import annotations
 
+import hashlib
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+import config
 from services.scripture import document_views, documents_db
 from app import response_cache
 
@@ -55,6 +57,18 @@ _LIST_CACHE_CONTROL = "no-cache, max-age=0, must-revalidate"
 _LIST_CDN_CACHE_CONTROL = "public, s-maxage=30"
 
 
+def _cache_version() -> str:
+    """Cache-key version: the manifests' content hash plus the bucket URL.
+
+    The cached payload carries resolved audio and cover URLs (bucket URL + object key), so it
+    depends on ``R2_PUBLIC_BASE_URL`` as much as on the manifests. Keyed on manifests alone, one
+    answer given while the setting was missing or different — every recording link ``null`` —
+    was served for as long as the manifests stayed unchanged, even after the setting was fixed.
+    """
+    base = config.r2_public_base_url() or ""
+    return f"{documents_db.content_version()}-{hashlib.sha1(base.encode()).hexdigest()[:8]}"
+
+
 def _or_404(view, *args):
     """``view(*args)``, with a missing document, chapter or mantra as a 404."""
     def build():
@@ -69,7 +83,7 @@ def _or_404(view, *args):
 def list_documents(request: Request):
     build = document_views.documents_list
 
-    cache_key = f"documents_list_v{documents_db.content_version()}"
+    cache_key = f"documents_list_v{_cache_version()}"
     return response_cache.serve_cached_json(
         request,
         cache_key,
@@ -83,7 +97,7 @@ def list_documents(request: Request):
 def document_detail(slug: str, request: Request):
     build = _or_404(document_views.document_view, slug)
 
-    cache_key = f"documents_detail_v{documents_db.content_version()}_{slug}"
+    cache_key = f"documents_detail_v{_cache_version()}_{slug}"
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
@@ -91,7 +105,7 @@ def document_detail(slug: str, request: Request):
 def document_chapter_detail(slug: str, chapter_number: int, request: Request):
     build = _or_404(document_views.chapter_view, slug, chapter_number)
 
-    cache_key = f"documents_chapter_v{documents_db.content_version()}_{slug}_{chapter_number}"
+    cache_key = f"documents_chapter_v{_cache_version()}_{slug}_{chapter_number}"
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
@@ -111,7 +125,7 @@ def veda_daily(
 
     build = _or_404(document_views.daily_veda_view, when)
 
-    cache_key = f"veda_daily_f2_v{documents_db.content_version()}_{when.isoformat()}"
+    cache_key = f"veda_daily_f2_v{_cache_version()}_{when.isoformat()}"
     return response_cache.serve_cached_json(
         request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600"
     )
