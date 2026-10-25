@@ -17,6 +17,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+# The festival and zone-rule ports are plugged in by the composition root. app/main.py does it
+# for the server; a script that computes a panchanga has to do it itself or the first festival
+# lookup raises "no FestivalCalendar" (the daily Facebook post died on exactly that).
+from app.wiring import configure as configure_ports  # noqa: E402
+
+configure_ports()
+
 from engine.astronomy.location import DEFAULT_LOCATION
 from services.geography.observer_location import resolve_location_from_query
 from engine.calendar.bikram_sambat import iter_bs_month_days
