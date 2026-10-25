@@ -36,6 +36,13 @@ from datetime import date, datetime
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+# The festival and zone-rule ports are plugged in by the composition root. app/main.py does it
+# for the server; a script that computes a panchanga has to do it itself or the first festival
+# lookup raises "no FestivalCalendar" (the daily Facebook post died on exactly that).
+from app.wiring import configure as configure_ports  # noqa: E402
+
+configure_ports()
+
 import config  # noqa: E402
 from services.sharing.fb_post_content import (  # noqa: E402
     KATHMANDU_TZ,

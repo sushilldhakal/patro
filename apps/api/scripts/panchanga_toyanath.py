@@ -145,6 +145,13 @@ _PROJECT_ROOT = _SCRIPT_DIR.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
+# The festival and zone-rule ports are plugged in by the composition root. app/main.py does it
+# for the server; a script that computes a panchanga has to do it itself or the first festival
+# lookup raises "no FestivalCalendar" (the daily Facebook post died on exactly that).
+from app.wiring import configure as configure_ports  # noqa: E402
+
+configure_ports()
+
 try:
     from engine.panchanga.angas import (
         NAKSHATRA_NAMES,
