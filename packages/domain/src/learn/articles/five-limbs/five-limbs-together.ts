@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const fiveLimbsTogether: ArticleData = {
   slug: "five-limbs-together",
-  seeAlso: ["what-is-panchang", "vara", "tithi", "nakshatra"],
+  seeAlso: ["tithi", "nakshatra", "yoga", "karana", "vara"],
   sections: [
     {
       title: { ne: "एउटै दिन, पाँच नाप", en: "One day, five measurements" },
@@ -155,8 +155,8 @@ export const fiveLimbsTogether: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "पाँचै अङ्ग एउटै क्षणका फरक नाप हुन्, र प्रत्येक आफ्नै गतिमा बदलिन्छ। त्यसैले पञ्चाङ्गमा दिनको एउटा सङ्ख्या होइन — **पाँच समानान्तर घडी** चलिरहेका हुन्छन्।",
-            en: "All five are different readings of the same instant, and each turns at its own rate. A panchanga day is therefore not one number but **five parallel clocks** running at once.",
+            ne: "पाँचै अङ्ग एउटै क्षणका फरक नाप हुन्, र प्रत्येक आफ्नै गतिमा बदलिन्छ। त्यसैले पञ्चाङ्गमा दिनको एउटा सङ्ख्या होइन — **पाँच समानान्तर घडी** चलिरहेका हुन्छन्। प्रत्येक घडीको लेख छुट्टै छ: [[tithi|तिथि]], [[vara|वार]], [[nakshatra|नक्षत्र]], [[yoga|योग]], [[karana|करण]]।",
+            en: "All five are different readings of the same instant, and each turns at its own rate. A panchanga day is therefore not one number but **five parallel clocks**. Each clock has its own article: [[tithi|tithi]], [[vara|vāra]], [[nakshatra|nakshatra]], [[yoga|yoga]], [[karana|karana]].",
           },
         },
       ],

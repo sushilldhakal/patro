@@ -11,8 +11,8 @@ export const lunarLongitude: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "*चान्द्र देशान्तर* क्रान्तिवृत्तमा चन्द्रको स्थान हो। सूर्यको देशान्तरसँग मिलेर यसले पञ्चाङ्गका पाँचमध्ये चार अङ्ग बनाउँछ।",
-            en: "*Lunar longitude* is the Moon's place along the ecliptic. Together with the Sun's it produces four of the panchanga's five limbs.",
+            ne: "*चान्द्र देशान्तर* क्रान्तिवृत्तमा चन्द्रको स्थान हो। प्रत्येक अङ्गको अर्थ आ–आफ्नो लेखमा छ; यहाँ केवल कुन सूत्रमा चन्द्र पस्छ — एउटै सङ्ख्यामा सानो त्रुटि चार अङ्गमा एकसाथ जान्छ।",
+            en: "*Lunar longitude* is the Moon's place along the ecliptic. Each limb is explained in its own article; here is only which formula the Moon enters — a small error in this one number reaches four limbs at once.",
           },
         },
         {
@@ -27,21 +27,6 @@ export const lunarLongitude: ArticleData = {
             [{ ne: "नक्षत्र", en: "Nakshatra" }, "चन्द्र ÷ 13°20′"],
             [{ ne: "योग", en: "Yoga" }, "(सूर्य + चन्द्र) ÷ 13°20′"],
           ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "यसैले चन्द्रको देशान्तरमा सानो त्रुटि भए पनि पञ्चाङ्गका चार अङ्गमा एकसाथ असर पर्छ — गणनामा यो सबैभन्दा संवेदनशील सङ्ख्या हो।",
-            en: "A small error in lunar longitude therefore propagates into four limbs at once — it is the most sensitive number in the whole computation.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "moon-orbit-tilt",
-          caption: {
-            ne: "चन्द्रको कक्ष क्रान्तिवृत्तबाट ५.१° झुकेको — देशान्तर यही तलमा नापिन्छ।",
-            en: "The Moon's orbit tilted 5.1° from the ecliptic — longitude is measured on that plane.",
-          },
         },
       ],
     },

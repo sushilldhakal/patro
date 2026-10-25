@@ -11,8 +11,8 @@ export const precession: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "घुम्दै गरेको लट्टु ढल्किएपछि यसको अक्ष आफैँ बिस्तारै शङ्कु बनाउँदै घुम्छ। पृथ्वीको अक्षले पनि ठ्याक्कै त्यही गर्छ — तर एक फेरो पूरा गर्न `~२५,८००` वर्ष लाग्छ।",
-            en: "A leaning spinning top has its own axis swing slowly round in a cone. Earth's axis does exactly the same — but takes `~25,800` years for one turn.",
+            ne: "दुई राशिचक्रबीचको फरक [[sidereal-vs-tropical|निरयन र सायन]] मा छ। कारण यही हो: ढल्किएको लट्टुको अक्ष बिस्तारै शङ्कु बनाउँदै घुम्छ, र पृथ्वीको अक्षले पनि त्यही गर्छ — एक फेरो `~२५,८००` वर्ष।",
+            en: "The gap between the two zodiacs is [[sidereal-vs-tropical|sidereal and tropical]]. This is the cause: a leaning top's axis swings slowly round in a cone, and Earth's axis does the same — one turn in `~25,800` years.",
           },
         },
         {

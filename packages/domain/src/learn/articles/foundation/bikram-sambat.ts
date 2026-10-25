@@ -44,16 +44,8 @@ export const bikramSambat: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "यही छुट्याइ नबुझ्दा “वि.सं. ग्रेगोरियनभन्दा ५७ वर्ष अगाडि छ” भन्ने वाक्यले पूरै पात्रो व्याख्या गरेको भ्रम पर्छ — वास्तवमा त्यसले वर्षको सङ्ख्या मात्र बताउँछ।",
-            en: "Miss this distinction and \"BS runs 57 years ahead of the Gregorian\" starts to sound like a full account of the calendar — when in fact it describes only the year number.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "calendar-hierarchy",
-          caption: {
-            ne: "वर्ष, महिना, गते र तिथि — विक्रम सम्वत्‌का तहहरू कसरी एकमाथि अर्को बस्छन्।",
-            en: "Year, month, gate and tithi — how the layers of Bikram Sambat stack up.",
+            ne: "यही छुट्याइ नबुझ्दा “वि.सं. ग्रेगोरियनभन्दा ५७ वर्ष अगाडि छ” भन्ने वाक्यले पूरै पात्रो व्याख्या गरेको भ्रम पर्छ — वास्तवमा त्यसले वर्षको सङ्ख्या मात्र बताउँछ। तहहरूको चित्र यसै पृष्ठको पहिलो अध्यायमा छ।",
+            en: "Miss this distinction and \"BS runs 57 years ahead of the Gregorian\" starts to sound like a full account of the calendar — when in fact it describes only the year number. The picture of the layers is the first chapter of this page.",
           },
         },
       ],
@@ -72,41 +64,8 @@ export const bikramSambat: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "राशिचक्र बाह्र ~राशि~ मा बाँडिएको छ, प्रत्येक ठ्याक्कै `३०°` को।",
-            en: "The zodiac is divided into twelve ~rashis~, each of exactly `30°`.",
-          },
-        },
-        {
-          kind: "table",
-          caption: {
-            ne: "बाह्र राशि — राशि/संस्कृत र पश्चिमी समकक्ष",
-            en: "The twelve rashis — rashi/Sanskrit and Western equivalent",
-          },
-          headers: [
-            { ne: "राशि / संस्कृत", en: "Rashi / Sanskrit" },
-            { ne: "पश्चिमी समकक्ष", en: "Western equivalent" },
-            { ne: "देशान्तर", en: "Longitude" },
-          ],
-          rows: [
-            [{ ne: "मेष", en: "Mesha" }, "Aries", "0°–30°"],
-            [{ ne: "वृषभ", en: "Vrishabha" }, "Taurus", "30°–60°"],
-            [{ ne: "मिथुन", en: "Mithuna" }, "Gemini", "60°–90°"],
-            [{ ne: "कर्क", en: "Karka" }, "Cancer", "90°–120°"],
-            [{ ne: "सिंह", en: "Simha" }, "Leo", "120°–150°"],
-            [{ ne: "कन्या", en: "Kanya" }, "Virgo", "150°–180°"],
-            [{ ne: "तुला", en: "Tula" }, "Libra", "180°–210°"],
-            [{ ne: "वृश्चिक", en: "Vrishchika" }, "Scorpio", "210°–240°"],
-            [{ ne: "धनु", en: "Dhanu" }, "Sagittarius", "240°–270°"],
-            [{ ne: "मकर", en: "Makara" }, "Capricorn", "270°–300°"],
-            [{ ne: "कुम्भ", en: "Kumbha" }, "Aquarius", "300°–330°"],
-            [{ ne: "मीन", en: "Meena" }, "Pisces", "330°–360°"],
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "सूर्य एक राशिबाट अर्को राशिमा प्रवेश गर्ने त्यो सङ्क्रमणलाई ~सङ्क्रान्ति~ भनिन्छ। त्यसैले **मेष सङ्क्रान्ति** = सूर्य मेषमा प्रवेश, र **मकर सङ्क्रान्ति** = सूर्य मकरमा प्रवेश। यी सङ्क्रमण परम्परागत सौर पात्रोका आधारभूत बिन्दु हुन्।",
-            en: "The transition as the Sun moves from one rashi into the next is called a ~sankranti~. So **Mesha Sankranti** = the Sun enters Mesha, and **Makara Sankranti** = the Sun enters Makara. These transitions are fundamental to the traditional solar calendar.",
+            ne: "राशिचक्र बाह्र ~राशि~ मा बाँडिएको छ, प्रत्येक ठ्याक्कै `३०°` को। बाह्रवटाको तालिका [[rashi|राशि]] लेखमा छ — यहाँ दोहोर्याइँदैन। सूर्य एक राशिबाट अर्कोमा प्रवेश गर्नु ~सङ्क्रान्ति~ हो। **मेष सङ्क्रान्ति** ले बैशाख खोल्छ।",
+            en: "The zodiac is twelve ~rashis~, each exactly `30°`. The table of the twelve is the [[rashi|rashi]] article — it is not repeated here. The Sun's step from one rashi into the next is a ~sankranti~. **Mesha Sankranti** opens Baisakh.",
           },
         },
       ],

@@ -41,21 +41,19 @@ export const MERGED_PAGES: MergedPage[] = [
   {
     slug: "bikram-sambat",
     parts: [
+      P("nepali-calendar-basics", "नेपाली पात्रो के हो", "What the Nepali patro is"),
       P("bikram-sambat", "विक्रम सम्वत् के हो", "What Bikram Sambat is"),
       P("year-begins-baisakh", "वर्ष बैशाखमा किन सुरु हुन्छ", "Why the year begins in Baisakh"),
       P("bs-vs-ad", "वि.सं. र ई.सं. कसरी फरक छन्", "How BS and AD differ"),
       P("bs-ad-offset", "स्थिर फरक किन हुँदैन", "Why there is no fixed offset"),
       P("bs-calendar", "सौर, चान्द्र र चान्द्र–सौर पात्रो", "Solar, lunar and lunisolar calendars"),
-      P("sauramana", "सौरमान — सौर गणना", "Sauramāna — the solar reckoning"),
-      P("chandramana", "चान्द्रमान — चान्द्र गणना", "Chāndramāna — the lunar reckoning"),
     ],
   },
   {
     slug: "what-is-panchang",
     parts: [
       P("what-is-panchang", "पञ्चाङ्ग भनेको के हो", "What a panchanga is"),
-      P("nepali-calendar-basics", "नेपाली पात्रो कसरी चल्छ", "How the Nepali calendar runs"),
-      P("astronomy-basics", "गहिरो जानुअघि — खगोलीय आधार", "Sky basics, before going deeper"),
+      P("five-limbs-together", "पाँच अङ्ग एक दृष्टिमा", "The five limbs at a glance"),
     ],
   },
 
@@ -117,6 +115,8 @@ export const MERGED_PAGES: MergedPage[] = [
       P("lunar-month", "चान्द्र मास के हो", "What a lunar month is"),
       P("amavasya-purnima", "औंसी र पूर्णिमा", "Amāvasyā and Pūrṇimā"),
       P("shukla-krishna-paksha", "शुक्ल र कृष्ण पक्ष", "Shukla and Krishna paksha"),
+      P("lunar-solar-drift", "चान्द्र र सौर पात्रो किन छुट्टिन्छन्", "Why lunar and solar calendars drift apart"),
+      P("adhik-kshaya-maas", "अधिक र क्षय मास", "The extra and the skipped month"),
     ],
   },
   {
@@ -125,21 +125,6 @@ export const MERGED_PAGES: MergedPage[] = [
       P("tithi", "तिथि कसरी बन्छ", "How a tithi is formed"),
       P("tithi-not-24-hours", "तिथि २४ घण्टाको किन हुँदैन", "Why a tithi is not 24 hours"),
       P("tithi-vriddhi-kshaya", "तिथि वृद्धि र क्षय", "When a tithi repeats or skips"),
-      P("lunar-solar-drift", "चान्द्र र सौर पात्रो किन छुट्टिन्छन्", "Why lunar and solar calendars drift apart"),
-      P("adhik-kshaya-maas", "अधिक र क्षय मास", "The extra and the skipped month"),
-    ],
-  },
-
-  /* ── पञ्चाङ्ग ────────────────────────────────────────────────────── */
-  {
-    slug: "five-limbs-together",
-    parts: [
-      P("five-limbs-together", "पाँच अङ्ग सँगै कसरी काम गर्छन्", "How the five limbs work together"),
-      P("vara", "वार", "Vāra — the weekday"),
-      P("nakshatra", "नक्षत्र", "Nakshatra"),
-      P("yoga", "योग", "Yoga"),
-      P("karana", "करण", "Karana"),
-      P("hora", "होरा — ग्रहीय घडी", "Hora — the planetary hour"),
     ],
   },
 
@@ -229,8 +214,13 @@ const LEGACY_SLUG_REDIRECTS: Record<string, string> = {
   "sidereal-vs-tropical-year": "sidereal-vs-tropical",
   "tithi-vriddhi": "tithi#tithi-vriddhi-kshaya",
   "tithi-kshaya": "tithi#tithi-vriddhi-kshaya",
-  "adhik-maas": "tithi#adhik-kshaya-maas",
-  "kshaya-maas": "tithi#adhik-kshaya-maas",
+  "adhik-maas": "lunar-month#adhik-kshaya-maas",
+  "kshaya-maas": "lunar-month#adhik-kshaya-maas",
+  /* Full reckonings used to sit inside the patro page and repeat the Sun and Moon guides. */
+  sauramana: "rashi",
+  chandramana: "lunar-month",
+  /* The sky primer repeated rashi, tithi, nakshatra, yoga and karana. The sky guide keeps the motions. */
+  "astronomy-basics": "earth-rotation-day",
 };
 
 /** Every retired slug either app has ever used, in one lookup. */

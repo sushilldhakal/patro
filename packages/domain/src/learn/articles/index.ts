@@ -76,6 +76,7 @@ import { astronomyBasics } from "./chapters/astronomy-basics";
 import { ayanamsha } from "./chapters/ayanamsha";
 import { calendarDifferences } from "./chapters/calendar-differences";
 import { eclipses } from "./chapters/eclipses";
+import { choghadiya } from "./chapters/choghadiya";
 import { hora } from "./chapters/hora";
 import { howWeCalculate } from "./chapters/how-we-calculate";
 import { karana } from "./chapters/karana";
@@ -181,6 +182,7 @@ export const SHARED_ARTICLES: ArticleData[] = [
   ayanamsha,
   calendarDifferences,
   eclipses,
+  choghadiya,
   hora,
   howWeCalculate,
   karana,

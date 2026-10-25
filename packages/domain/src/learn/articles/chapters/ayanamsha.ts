@@ -14,8 +14,8 @@ export const ayanamsha: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "राशिचक्रको **शून्य अंश** कहाँबाट सुरु गर्ने? दुई जवाफ छन्। ~सायन (tropical)~ ले **वसन्त-विषुव** — जुन दिन सूर्य भूमध्यरेखा काटेर उत्तर लाग्छ — लाई शून्य मान्छ, त्यसैले यो **ऋतु** मा अडिन्छ। *निरयन (sidereal)* ले साँचो **तारापुञ्ज** (मेष राशिको आरम्भ) लाई शून्य मान्छ। यी दुई शून्यबीचको कोणीय फरक नै **अयनांश** हो।",
-            en: "Where do you start the **zero degree** of the zodiac? There are two answers. ~Tropical (sayana)~ takes the **vernal equinox** — the day the Sun crosses the equator heading north — as zero, so it stays anchored to the **seasons**. *Sidereal (nirayana)* takes the actual **star-cluster** (the start of Mesha) as zero. The angular gap between these two zeros is the **ayanamsha**.",
+            ne: "अघिल्लो खण्डका दुई शून्य — सायन विषुव र निरयन मेष — बीचको कोण नै **अयनांश** हो।",
+            en: "The angle between the previous chapter's two zeros — the tropical equinox and sidereal Mesha — is the **ayanamsha**.",
           },
         },
       ],
@@ -48,15 +48,11 @@ export const ayanamsha: ArticleData = {
       eyebrow: "Precession of the equinoxes",
       blocks: [
         {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "पृथ्वी ठ्याक्क सिधा घुम्दैन — लठ्ठा (lattu) झैँ यसको अक्ष ठूलो वृत्तमा बिस्तारै *डुल्छ*। एक फेरो पूरा गर्न झन्डै **२५८०० वर्ष** लाग्छ, अर्थात् विषुव बिन्दु प्रति वर्ष करिब **५०.३″** (हरेक **∼७२ वर्ष** मा १°) पछाडि सर्छ। त्यसैले अयनांश पनि वर्षेनि बढ्छ — आज लाहिरीमा झन्डै **२४°**।",
-            en: "The Earth does not spin perfectly upright — like a spinning top its axis slowly *wobbles* in a large circle. One full loop takes about **25,800 years**, i.e. the equinox point moves back about **50.3″** per year (1° every **∼72 years**). So the ayanamsha grows year by year — today about **24°** in Lahiri.",
+            ne: "फरक बढ्नु यही पृष्ठको सुरुको डगमगाहट हो — [[sidereal-vs-tropical|निरयन र सायन]]। शंकु र कारण [[precession|अयन चलन]] मा छन्। आज लाहिरीमा अयनांश झन्डै **२४°** छ; अर्को खण्डले अरू प्रणालीसँग दाँज्छ।",
+            en: "The gap grows by the wobble that opens this page — [[sidereal-vs-tropical|sidereal and tropical]]. The cone and its cause are in [[precession|precession]]. Lahiri is about **24°** today; the next section compares the other systems.",
           },
-        },
-        {
-          kind: "diagram",
-          id: "precession-cone",
         },
       ],
     },

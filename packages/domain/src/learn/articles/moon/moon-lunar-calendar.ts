@@ -11,24 +11,17 @@ export const moonLunarCalendar: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "चान्द्र पात्रोको संरचना सिधा छ — सबै एउटै कोणीय नापबाट क्रमशः बन्दै जान्छ।",
-            en: "The lunar calendar's structure is straightforward — everything builds up in steps from a single angular measure.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "tithi-elongation",
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "ध्यान दिनुहोस् — यहाँ कतै “दिन” आधार बनेको छैन। दिन पछि मात्र आउँछ, जब कोणीय अवस्थालाई सूर्योदयको सीमामा राखेर नागरिक मितिमा बाँडिन्छ।",
-            en: "Note that \"day\" is nowhere the basis here. The day enters only afterwards, when these angular states are mapped onto civil dates using the sunrise boundary.",
+            ne: "तिथि [[tithi|तिथि]] हो, दुई पक्ष [[shukla-krishna-paksha|शुक्ल र कृष्ण]], र तिनको जोड [[lunar-month|चान्द्र मास]]। आधार दिन होइन — दिन पछि आउँछ, जब ती कोण सूर्योदयको सीमामा नागरिक मितिमा बाँडिन्छन्।",
+            en: "A tithi is [[tithi|tithi]], the two halves are [[shukla-krishna-paksha|shukla and krishna paksha]], and together they are [[lunar-month|the lunar month]]. The day is not the basis — it enters afterwards, when those angles are placed on a civil date at the sunrise boundary.",
           },
         },
         {
           kind: "diagram",
           id: "moon-phases",
+          caption: {
+            ne: "कलाबाट पक्ष, पक्षबाट मास।",
+            en: "Phases into paksha, paksha into the month.",
+          },
         },
       ],
     },
@@ -76,31 +69,10 @@ export const moonLunarCalendar: ArticleData = {
       eyebrow: "Why Nepal is not purely lunar",
       blocks: [
         {
-          kind: "lede",
-          text: {
-            ne: "यदि पात्रो पूरै चान्द्र भए के हुन्थ्यो? इस्लामी पात्रो त्यस्तै हो — `१२` चान्द्र मास, कुनै सुधार बिना।",
-            en: "What if a calendar were purely lunar? The Islamic calendar is exactly that — `12` lunar months with no correction.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "परिणाम — त्यसका महिना हरेक वर्ष ऋतुभन्दा `११` दिन अगाडि सर्छन्, र झन्डै `३३` वर्षमा पूरै ऋतुचक्र घुमेर फर्किन्छन्। रमजान कहिले जाडोमा, कहिले गर्मीमा पर्छ।",
-            en: "The consequence is that its months run `11` days ahead of the seasons each year and cycle through the whole seasonal round in about `33` years. Ramadan falls in winter in one era and in summer in another.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "नेपाली परम्पराका पर्व **ऋतुसँग बाँधिएका** छन् — दसैँ शरद्‌मा, होली वसन्तमा, माघे सङ्क्रान्ति जाडोमा। त्यसैले शुद्ध चान्द्र पात्रो काम लाग्दैन; चन्द्रलाई सूर्यसँग बाँध्नै पर्छ।",
-            en: "Nepali observances, by contrast, are **bound to the seasons** — Dashain in autumn, Holi in spring, Maghe Sankranti in winter. A purely lunar calendar cannot serve them; the Moon has to be tied back to the Sun.",
-          },
-        },
-        {
           kind: "note",
           text: {
-            ne: "त्यो बाँध्ने काम ~अधिक मास~ ले गर्छ — अर्को लेखको विषय।",
-            en: "That tying-back is the job of ~adhika māsa~ — the subject of a later article.",
+            ne: "सुधार नभएको शुद्ध चान्द्र पात्रो इस्लामी पात्रो हो। त्यसको मूल्य — र नेपाली चलनले चन्द्रलाई सूर्यसँग किन बाँध्छ — [[bs-calendar|सौर, चान्द्र र चान्द्र–सौर]] मा छ। बाँध्ने साधन [[adhik-kshaya-maas|अधिक र क्षय मास]] हो।",
+            en: "A purely lunar calendar, with no correction, is the Islamic one. What that costs, and why Nepali practice ties the Moon back to the Sun, is [[bs-calendar|solar, lunar and lunisolar]]. The device that does the tying is [[adhik-kshaya-maas|the extra and the skipped month]].",
           },
         },
       ],

@@ -11,8 +11,8 @@ export const siderealTime: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "*नाक्षत्र काल* सूर्यको होइन, **ताराको सापेक्ष** नापिने समय हो। नाक्षत्र दिन `२३` घण्टा `५६` मिनेट `४` सेकेन्डको हुन्छ।",
-            en: "*Sidereal time* is measured not against the Sun but **against the stars**. A sidereal day runs `23` hours `56` minutes `4` seconds.",
+            ne: "*नाक्षत्र काल* [[what-is-a-day|दिन के हो]] ले सौर दिनबाट छुट्याएको घडी हो — ताराको सापेक्ष, `२३` घण्टा `५६` मिनेट `४` सेकेन्ड। यहाँको कुरा त्यसले आकाशमा के गर्छ भन्ने हो।",
+            en: "*Sidereal time* is the clock [[what-is-a-day|what a day is]] already separated from the solar day — against the stars, `23` hours `56` minutes `4` seconds. What matters here is what that does to the sky.",
           },
         },
         {

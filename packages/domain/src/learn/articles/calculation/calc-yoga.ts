@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const calcYoga: ArticleData = {
   slug: "calc-yoga",
-  seeAlso: ["yoga", "calc-nakshatra", "solar-longitude", "five-limbs-together"],
+  seeAlso: ["yoga", "nakshatra", "tithi", "how-we-calculate"],
   sections: [
     {
       title: { ne: "योग — घटाउ होइन, जोड", en: "Yoga — a sum, not a difference" },
@@ -84,8 +84,8 @@ export const calcYoga: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "योग मुख्यतः मुहूर्त छान्दा हेरिन्छ। `२७` योगमध्ये केही शुभ मानिन्छन्, केही टार्नुपर्ने।",
-            en: "Yoga is consulted mainly when choosing a muhurta. Of the `27`, some are held auspicious and some are avoided.",
+            ne: "योग के हो भन्ने [[yoga|योग]] मा छ। यहाँ केवल सूची कसरी चलिन्छ — मुहूर्त छान्दा `२७` मध्ये केही शुभ, केही टार्नुपर्ने।",
+            en: "What a yoga is lives in [[yoga|yoga]]. Here is only how the list is used — when choosing a muhurta, some of the `27` are held auspicious and some are avoided.",
           },
         },
         {
@@ -104,13 +104,9 @@ export const calcYoga: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "यहाँ ध्यान दिनुपर्ने कुरा — पञ्चाङ्गको *योग* र ज्योतिषका *राजयोग*, *गजकेसरी योग* आदि **फरक कुरा** हुन्। पहिलो पञ्चाङ्गको पाँचौँ अङ्ग हो; दोस्रो कुण्डलीमा ग्रहको विशेष संयोजन।",
-            en: "One caution: the panchanga's *yoga* and jyotish's *rājayoga*, *gajakesari yoga* and the like are **different things**. The first is a limb of the panchanga; the second is a special planetary configuration in a chart.",
+            ne: "यहाँ ध्यान दिनुपर्ने कुरा — पञ्चाङ्गको *योग* र ज्योतिषका *राजयोग*, *गजकेसरी योग* आदि **फरक कुरा** हुन्। पहिलो पञ्चाङ्गको अङ्ग हो; दोस्रो कुण्डलीमा ग्रहको विशेष संयोजन। सत्ताइस नामको तालिका [[yoga|योग]] मा छ।",
+            en: "One caution: the panchanga's *yoga* and jyotish's *rājayoga*, *gajakesari yoga* and the like are **different things**. The first is a limb of the panchanga; the second is a special planetary configuration in a chart. The table of twenty-seven names is in [[yoga|yoga]].",
           },
-        },
-        {
-          kind: "diagram",
-          id: "table-yoga",
         },
       ],
     },

@@ -3,6 +3,7 @@ import type { ArticleData } from "../../article-schema";
 /** Chapter text — written once, read by the website and the app. */
 export const yoga: ArticleData = {
   slug: "yoga",
+  seeAlso: ["what-is-panchang", "nakshatra", "tithi", "karana"],
   sections: [
     {
       title: {
@@ -14,8 +15,16 @@ export const yoga: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "योग पञ्चाङ्गको चौथो अङ्ग हो। यो सूर्य र चन्द्रको **देशान्तर जोडेर** निकालिन्छ — जोड हरेक **१३°२०′** बढ्दा नयाँ योग सुरु हुन्छ। जम्मा ~२७ योग~ छन् — विष्कम्भदेखि वैधृतिसम्म।",
-            en: "Yoga is the fourth limb of the almanac. It is found by **adding the longitudes** of the Sun and Moon — each time the sum increases by **13°20′** a new yoga begins. There are ~27 yogas~ in all — from Vishkambha to Vaidhriti.",
+            ne: "योग सूर्य र चन्द्रको **देशान्तर जोडेर** बन्छ। जोड हरेक **१३°२०′** बढ्दा नयाँ योग सुरु हुन्छ — नक्षत्रकै चौडाइ, तर नक्षत्र चन्द्रको स्थान मात्र हो। जम्मा ~२७ योग~ छन्, विष्कम्भदेखि वैधृतिसम्म।",
+            en: "A yoga is formed by **adding the longitudes** of the Sun and the Moon. Each time the sum grows by **13°20′** a new yoga begins — the same width as a nakshatra, but a nakshatra is only the Moon's place. There are ~27 yogas~, from Vishkambha to Vaidhriti.",
+          },
+        },
+        {
+          kind: "diagram",
+          id: "table-yoga",
+          caption: {
+            ne: "सत्ताइस योग। तिथि र करण घटाउ हुन्; योग जोड हो। काम गरेर देखाइएको भाग [[how-we-calculate|गणना]] मा छ।",
+            en: "The twenty-seven yogas. Tithi and karana are a difference; yoga is a sum. The worked division is in [[how-we-calculate|the calculation]].",
           },
         },
       ],

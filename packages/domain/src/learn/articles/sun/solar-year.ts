@@ -80,47 +80,10 @@ export const solarYear: ArticleData = {
       eyebrow: "The choice that defines a calendar",
       blocks: [
         {
-          kind: "lede",
-          text: {
-            ne: "“सूर्य सुरुको बिन्दुमा फर्कियो” भन्दा — **कुन सुरुको बिन्दु**? उत्तर फरक भए वर्षको लम्बाइ पनि फरक हुन्छ।",
-            en: "\"The Sun returns to its starting point\" — but **which starting point**? Different answers give different year lengths.",
-          },
-        },
-        {
-          kind: "table",
-          headers: [
-            { ne: "वर्ष", en: "Year" },
-            { ne: "सन्दर्भ बिन्दु", en: "Reference point" },
-            { ne: "लम्बाइ", en: "Length" },
-            { ne: "प्रयोग", en: "Used by" },
-          ],
-          rows: [
-            [
-              { ne: "नाक्षत्र वर्ष", en: "Sidereal year" },
-              { ne: "स्थिर तारा", en: "The fixed stars" },
-              "365.2564",
-              { ne: "नेपाली / वैदिक पात्रो", en: "Nepali / Vedic calendar" },
-            ],
-            [
-              { ne: "सायन वर्ष", en: "Tropical year" },
-              { ne: "वसन्त विषुव", en: "The vernal equinox" },
-              "365.2422",
-              { ne: "ग्रेगोरियन पात्रो", en: "Gregorian calendar" },
-            ],
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "नेपाली पात्रोले **नाक्षत्र वर्ष** रोज्छ — सूर्य ताराको सापेक्ष मेषको आरम्भमा फर्किँदा नयाँ वर्ष। ग्रेगोरियनले सायन वर्ष रोज्छ, जसले ऋतु स्थिर राख्छ।",
-            en: "The Nepali calendar chooses the **sidereal year** — a new year when the Sun returns to the start of Mesha against the stars. The Gregorian chooses the tropical year, which holds the seasons fixed.",
-          },
-        },
-        {
           kind: "note",
           text: {
-            ne: "दुवै सँगै स्थिर राख्न सकिँदैन — यही अनिवार्य छनोटको परिणाम ~ऋतु सर्ने~ घटना हो।",
-            en: "Both cannot be held fixed at once — and that unavoidable choice is what produces the ~drift of the ṛtus~.",
+            ne: "“सुरुको बिन्दु” तारा हो कि विषुव — यही [[sidereal-vs-tropical|निरयन र सायन]] को विषय हो। नेपाली वर्ष मेषको निरयन फिर्ती हो; ग्रेगोरियन वर्ष विषुवको सायन फिर्ती। दुवै सँगै स्थिर रहँदैनन्, त्यसैले ऋतु सर्छ।",
+            en: "Which starting point — the stars or the equinox — is [[sidereal-vs-tropical|sidereal and tropical]]. The Nepali year is the sidereal return to Mesha; the Gregorian year is the tropical return to the equinox. Both cannot stay fixed, which is why the ṛtus drift.",
           },
         },
       ],

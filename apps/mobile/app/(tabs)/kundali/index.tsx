@@ -67,7 +67,7 @@ export default function KundaliScreen() {
             />
             {/* Logged out, the card alone left half the screen empty: offer the reading
                 that explains a kundali's parts, which needs no account. */}
-            <LearnMoreCard slugs={["rashi", "sidereal-vs-tropical", "five-limbs-together"]} />
+            <LearnMoreCard slugs={["rashi", "sidereal-vs-tropical", "nakshatra"]} />
           </View>
         ) : (
           <View className="gap-4">

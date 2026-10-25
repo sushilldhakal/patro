@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const calcKarana: ArticleData = {
   slug: "calc-karana",
-  seeAlso: ["karana", "calc-tithi", "calc-yoga", "five-limbs-together"],
+  seeAlso: ["karana", "tithi", "yoga", "how-we-calculate"],
   sections: [
     {
       title: { ne: "करण — तिथिको आधा", en: "Karana — half a tithi" },
@@ -82,15 +82,8 @@ export const calcKarana: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "एघार करणमध्ये **विष्टि** विशेष रूपमा उल्लेख्य छ, किनभने यसलाई ~भद्रा~ भनिन्छ र यस अवधिमा शुभ कार्य गरिँदैन।",
-            en: "Among the eleven, **Vishti** stands out: it is called ~Bhadrā~, and auspicious undertakings are not begun during it.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "विष्टि चर करण भएकाले मासमा **आठ पटक** आउँछ — झन्डै हरेक चार दिनमा एक पटक, र प्रत्येक पटक करिब आधा दिन रहन्छ। त्यसैले पञ्चाङ्गमा भद्राको सुरु र अन्त्य समय छुट्टै देखाइन्छ।",
-            en: "Being a movable karana, Vishti comes round **eight times** a month — roughly every four days, lasting about half a day each time. Panchangas therefore print Bhadrā's start and end times separately.",
+            ne: "[[karana|करण]] ले विष्टिलाई ~भद्रा~ भन्छ र शुभ कार्य टार्ने बताउँछ। यो चर करण भएकाले मासमा **आठ पटक** आउँछ — झन्डै हरेक चार दिनमा एक पटक, प्रत्येक पटक करिब आधा दिन। त्यसैले पञ्चाङ्गमा भद्राको सुरु र अन्त्य छुट्टै देखाइन्छ।",
+            en: "[[karana|Karana]] already calls Vishti ~Bhadrā~ and says auspicious work is avoided. Because it is movable it returns **eight times** a month — roughly every four days, about half a day each time — so a panchanga prints Bhadrā's start and end separately.",
           },
         },
         {

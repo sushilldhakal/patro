@@ -61,15 +61,8 @@ export const calendarDrift: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "जुलियन पात्रोको `०.००७८` दिनको वार्षिक त्रुटि `१,२००` वर्षमा `१०` दिन बनिसकेको थियो। वसन्त विषुव `२१` मार्चको सट्टा `११` मार्चमा पर्न थालेको थियो।",
-            en: "The Julian calendar's `0.0078`-day annual error had grown to `10` days over `1,200` years. The vernal equinox was arriving on `11` March instead of `21`.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "`१५८२` अक्टोबरमा यसलाई एकैचोटि सच्याइयो — `४` अक्टोबरको भोलिपल्ट **`१५` अक्टोबर** भयो। बीचका दस दिन कहिल्यै अस्तित्वमा आएनन्।",
-            en: "In October `1582` it was corrected at a stroke — the day after `4` October was **`15` October**. The ten days in between never existed.",
+            ne: "जुलियन त्रुटि र ग्रेगोरियन नियम [[leap-years|लीप वर्ष]] मा छन्। सुधारको देखिने काम उछाल थियो — `१५८२` मा `४` अक्टोबरको भोलिपल्ट **`१५` अक्टोबर** भयो। बीचका दस दिन कहिल्यै अस्तित्वमा आएनन्।",
+            en: "The Julian error and the Gregorian rule are in [[leap-years|leap years]]. The reform's visible act was the jump — in `1582` the day after `4` October was **`15` October**. The ten days in between never existed.",
           },
         },
         {

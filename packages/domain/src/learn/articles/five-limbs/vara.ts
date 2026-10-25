@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const vara: ArticleData = {
   slug: "vara",
-  seeAlso: ["hora", "what-is-panchang", "five-limbs-together", "why-location-matters"],
+  seeAlso: ["what-is-panchang", "hora", "choghadiya"],
   sections: [
     {
       title: { ne: "वार — पञ्चाङ्गको सबैभन्दा परिचित अङ्ग", en: "Vāra — the most familiar limb" },

@@ -117,31 +117,8 @@ export const nepaliCalendarBasics: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "पञ्चाङ्गमा भने एउटै मितिले एकैसाथ यी सबै बताउन सक्छ:",
-            en: "In a Panchanga, however, a single date can simultaneously tell us all of this:",
-          },
-        },
-        {
-          kind: "list",
-          items: [
-            { ne: "कुन सौर महिना चलिरहेको छ", en: "which solar month is active" },
-            { ne: "कुन चान्द्र महिना चलिरहेको छ", en: "which lunar month is active" },
-            { ne: "कुन तिथि चलिरहेको छ", en: "which tithi is active" },
-            { ne: "चन्द्रमा कुन नक्षत्रमा छ", en: "which nakshatra the Moon occupies" },
-            { ne: "कुन योग र कुन करण चलिरहेको छ", en: "which yoga and which karana are active" },
-            { ne: "सूर्योदय र सूर्यास्त कति बजे हुन्छ", en: "when sunrise and sunset occur" },
-            { ne: "सङ्क्रान्ति कतिबेला पर्छ", en: "when a sankranti occurs" },
-            {
-              ne: "र यी सबै घटना अवलोकन गर्ने स्थानसँग कसरी जोडिन्छन्",
-              en: "and how these events relate to the observer's location",
-            },
-          ],
-        },
-        {
-          kind: "note",
-          text: {
-            ne: "त्यसैले पञ्चाङ्गलाई मितिको सूची भन्दा **खगोलीय समय प्रणाली** मान्नु बढी सही हुन्छ।",
-            en: "This is why a Panchanga is better understood as an **astronomical time system** than as a list of dates.",
+            ne: "पञ्चाङ्गमा भने एउटै मितिले सौर महिना र चान्द्र महिना सँगै बोक्न सक्छ। पाँच अङ्ग — तिथि, वार, नक्षत्र, योग, करण — के हुन् भन्ने [[what-is-panchang|अर्को लेख]] मा छ। यहाँ ती दोहोर्याइँदैन।",
+            en: "A panchanga date can carry a solar month and a lunar month at once. What the five limbs are — tithi, vara, nakshatra, yoga, karana — is the [[what-is-panchang|next article]]. They are not listed again here.",
           },
         },
       ],
@@ -164,8 +141,8 @@ export const nepaliCalendarBasics: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "यही जगमा टेकेर बाँकी सबै विषय बुझ्न सकिन्छ। अब क्रमैसँग अघि बढ्नुहोस् — पहिले *विक्रम सम्वत् के हो*, त्यसपछि सूर्य, चन्द्र र पञ्चाङ्गका पाँच अङ्ग।",
-            en: "Everything else in this library builds on this foundation. Move through it in order — first *what Bikram Sambat is*, then the Sun, the Moon, and the five limbs of the Panchanga.",
+            ne: "यही जगमा टेकेर बाँकी सबै विषय बुझ्न सकिन्छ। यसै पृष्ठमा *विक्रम सम्वत्* छ। पञ्चाङ्गका अङ्ग त्यसपछि आउँछन्, आकाश र सूर्य अझ पछि।",
+            en: "Everything else in this library builds on this foundation. *Bikram Sambat* is the rest of this page. The panchanga limbs come next, and the sky and the Sun after that.",
           },
         },
       ],

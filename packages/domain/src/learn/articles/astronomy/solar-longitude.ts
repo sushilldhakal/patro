@@ -33,19 +33,8 @@ export const solarLongitude: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "खगोलीय गणनाले सामान्यतया **सायन** देशान्तर दिन्छ — वसन्त विषुवबाट नापिएको। वैदिक पात्रोलाई **निरयन** चाहिन्छ।",
-            en: "Astronomical computation normally yields the **tropical** longitude, measured from the vernal equinox. The Vedic calendar needs the **sidereal** one.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "two-zero-points",
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "यही एउटा घटाउले नेपाली नयाँ वर्षलाई मार्चको अन्त्यबाट अप्रिल मध्यमा सार्छ। अयनांशको मान कुन प्रणाली (लाहिरी, रमन, केपी) प्रयोग गर्ने भन्नेमा निर्भर हुन्छ; नेपालको आधिकारिक पात्रो **लाहिरी** प्रयोग गर्छ।",
-            en: "That one subtraction is what moves the Nepali new year from late March to mid-April. Its value depends on which system is used — Lahiri, Raman, KP — and Nepal's official calendar uses **Lahiri**.",
+            ne: "गणनाले सायन देशान्तर दिन्छ। वैदिक पात्रोले अयनांश घटाएर निरयन निकाल्छ। पूरा विवरण [[sidereal-vs-tropical|निरयन र सायन]] मा छ, र त्यही घटाउले नयाँ वर्ष अप्रिलमा पार्ने कारण [[year-begins-baisakh|वर्ष बैशाखमा किन सुरु हुन्छ]] मा। नेपालको आधिकारिक पात्रो **लाहिरी** प्रयोग गर्छ।",
+            en: "Computation yields a tropical longitude. The Vedic calendar subtracts the ayanamsha to get the sidereal one. The full account is [[sidereal-vs-tropical|sidereal and tropical]], and why that subtraction puts the new year in April is [[year-begins-baisakh|why the year begins in Baisakh]]. Nepal's official calendar uses **Lahiri**.",
           },
         },
       ],
@@ -64,13 +53,9 @@ export const solarLongitude: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "पृथ्वीको कक्ष अण्डाकार भएकाले सूर्यको देखिने गति `०.९५३°` देखि `१.०१९°` प्रति दिनसम्म घटबढ हुन्छ। त्यसैले **मध्यम** (औसत) स्थानबाट **स्पष्ट** (वास्तविक) स्थानमा पुग्न सुधार आवश्यक हुन्छ।",
-            en: "Because Earth's orbit is elliptical, the Sun's apparent rate swings between `0.953°` and `1.019°` a day. Getting from the **mean** position to the **true** one therefore requires a correction.",
+            ne: "कक्ष अण्डाकार भएकाले गति स्थिर हुँदैन, त्यसैले **मध्यम** स्थानबाट **स्पष्ट** स्थानमा सुधार चाहिन्छ। त्यो घटबढ कति हो, र असार पुषभन्दा लामो किन हुन्छ, [[solar-year|सौर वर्ष]] मा छ।",
+            en: "The orbit is an ellipse, so the rate is not steady and a **mean** place has to be corrected to the **true** one. The size of that swing, and why Asar runs longer than Poush, is in [[solar-year|the solar year]].",
           },
-        },
-        {
-          kind: "diagram",
-          id: "earth-orbit",
         },
         {
           kind: "note",

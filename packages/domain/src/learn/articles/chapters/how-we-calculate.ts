@@ -25,51 +25,16 @@ export const howWeCalculate: ArticleData = {
     },
     {
       title: {
-        ne: "राशि भनेको के?",
-        en: "What is rashi?",
+        ne: "सर्भरले प्रयोग गर्ने भाग",
+        en: "The divisions the server uses",
       },
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "*राशि* भनेको क्रान्तिवृत्त मार्गमा बाँडिएका १२ बराबर खण्ड, प्रत्येक ~३०°~ — मेष ०° देखि मीन ३५०°–३६०° सम्म। यो *निरयन* चक्र तारापुञ्जसँग जोडिएको छ; पश्चिमी राशिफलको “सूर्य राशि” प्रायः सायन हुन्छ, नेपाली पात्रो/पञ्चाङ्ग निरयन।",
-            en: "*Rashi* is one of twelve equal sectors along the ecliptic, each ~30°~ wide — from Mesha 0° to Meena 350°–360°. This *sidereal (nirayana)* zodiac is tied to the star clusters; the “Sun sign” of Western horoscopes is usually tropical (sayana), while Nepali patro and panchanga are sidereal.",
+            ne: "राशि के हो भन्ने [[rashi|राशि]] लेखमा छ, नक्षत्र [[nakshatra|नक्षत्र]] लेखमा। यहाँ केवल सर्भरले देशान्तरलाई भाग गर्ने दुई सूत्र — परिभाषा होइन।",
+            en: "What a rashi is lives in the [[rashi|rashi]] article, and a nakshatra in the [[nakshatra|nakshatra]] article. Here are only the two divisions the server applies to a longitude — not the definitions again.",
           },
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: {
-                ne: "कक्षा (क्रान्तिवृत्त)",
-                en: "Ecliptic plane",
-              },
-              p: {
-                ne: "सूर्य, चन्द्र र ग्रहहरू प्रायः एउटै तल्लो कक्षीय तलमा हिँड्छन् — पृथ्वीको वरिपरि “राशि पट्टी” यही कक्षाको ३६०° कोठा हो।",
-                en: "The Sun, Moon and planets move near one flat plane — the “rashi belt” around Earth is how we partition that 360° circle.",
-              },
-            },
-            {
-              h: {
-                ne: "नक्षत्र",
-                en: "Nakshatra",
-              },
-              p: {
-                ne: "उही कक्षामा २७ भाग, प्रत्येक १३°२०′ — चन्द्रको नक्षत्र यही सूक्ष्म जालबाट।",
-                en: "The same circle split into 27 parts of 13°20′ each — the Moon’s nakshatra comes from this finer grid.",
-              },
-            },
-            {
-              h: {
-                ne: "लग्न",
-                en: "Lagna",
-              },
-              p: {
-                ne: "पूर्व क्षितिजमा उदाउँदै गरेको कक्षीय बिन्दु — तपाईंको अक्षांश, देशान्तर र घण्टाअनुसार ग्रहपातबाट लग्न कोण निकालिन्छ।",
-                en: "The ecliptic point rising on the eastern horizon — computed from your latitude, longitude, and clock time via the ephemeris ascendant.",
-              },
-            },
-          ],
         },
         {
           kind: "formula",
@@ -136,32 +101,6 @@ export const howWeCalculate: ArticleData = {
     },
     {
       title: {
-        ne: "झुकाव, विषुव र अयन चलन",
-        en: "Tilt, equinox & precession",
-      },
-      blocks: [
-        {
-          kind: "lede",
-          text: {
-            ne: "पृथ्वीको धुरी ~≈ २३°२६′~ ले कक्षासँग झुकिएको छ — त्यसैले वसन्त/शरद विषुव र ग्रीष्म/हेमन्त अयनान्त बन्छन्। अक्ष लट्टु झैँ *२६,००० वर्ष* को शंकुमा डुल्दा विषुव बिन्दु तारापुञ्ज माथि पछाडि सर्छ — अयनांश (लाहिरी)। एपीआईमा प्रत्येक क्षणको लाहिरी अयनांश स्विस एफेमेरिसबाट; दैनिक पेलोडमा उदय जुलियन दिनमा पनि लेखिन्छ।",
-            en: "Earth’s axis is tilted ~≈ 23°26′~ to the ecliptic — that is what creates the spring and autumn equinoxes and the summer and winter solstices. The axis wobbles like a top on a *∼26,000-year* cone, so the equinox point drifts backward against the star clusters — the Lahiri ayanamsha. The API reads Lahiri ayanamsha from Swiss Ephemeris for each instant; the daily payload also stores it at the sunrise Julian Day.",
-          },
-        },
-        {
-          kind: "lede",
-          text: {
-            ne: "पहिलो ठूलो चित्र: निरयन राशि चक्र स्थिर, विषुवत् रेखा र विषुव काट अयन चलन सँग घुम्छ। दोस्रो: ध्रुव तारा बदल्दै अक्ष शंकु — अयनांश किन वर्षेनि बढ्छ।",
-            en: "First large diagram: the sidereal rashi ring stays fixed while the equator and the equinox cross rotate with precession. Second: the axis cone changing pole stars — why ayanamsha grows every year.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "precession-sky",
-        },
-      ],
-    },
-    {
-      title: {
         ne: "आधार — स्थान, समय, ग्रहपात",
         en: "Foundation — place, time, ephemeris",
       },
@@ -182,8 +121,8 @@ export const howWeCalculate: ArticleData = {
                 en: "Swiss Ephemeris (JPL)",
               },
               p: {
-                ne: "सूर्य, चन्द्र, ग्रह, पातका ज्यामितीय स्थान — गति, उदय/अस्त, अयनांश सहित। सबै निरयन देशान्तर लाहिरी अयनांश घटाएर।",
-                en: "Geometric positions for Sun, Moon, planets, and nodes — speeds, rise/set, ayanamsa. Sidereal longitudes subtract Lahiri ayanamsa.",
+                ne: "सूर्य, चन्द्र, ग्रह, पातका ज्यामितीय स्थान — गति, उदय/अस्त सहित। निरयन देशान्तरमा लाहिरी अयनांश घटाइन्छ; मान हरेक क्षण पढिन्छ र सूर्योदयको जुलियन दिनमा पनि लेखिन्छ। झुकाव र अयन चलनको अर्थ [[axial-tilt|अक्ष झुकाव]] र [[sidereal-vs-tropical|निरयन र सायन]] मा छ।",
+                en: "Geometric positions for Sun, Moon, planets, and nodes — speeds, rise/set. Sidereal longitudes subtract Lahiri ayanamsa; the value is read for each instant and also stored at the sunrise Julian Day. What the tilt and the precession mean is in [[axial-tilt|axial tilt]] and [[sidereal-vs-tropical|sidereal and tropical]].",
               },
             },
             {
@@ -223,86 +162,9 @@ export const howWeCalculate: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "*पञ्चाङ्गका अङ्ग* सबै निरयन देशान्तरबाट — चन्द्र र सूर्यको कोणीय अन्तर वा जोड। ~उदय तिथि~ = तपाईंको स्थानमा सूर्योदय भएको क्षणमा; नक्षत्र/योग/करण पनि उही निरयन देशान्तरबाट।",
-            en: "*Panchanga limbs* all come from sidereal longitudes — the angular difference or sum of Moon and Sun. ~Udaya tithi~ is the tithi at the moment of sunrise at your place; nakshatra, yoga, and karana come from the same sidereal longitudes.",
+            ne: "चार चान्द्र अङ्ग उही निरयन देशान्तर हुन् — [[tithi|तिथि]], [[nakshatra|नक्षत्र]], [[yoga|योग]], [[karana|करण]]। ~उदय तिथि~ तपाईंको स्थानको सूर्योदयमा पढिन्छ; अरू तीन पनि त्यही क्षणका देशान्तरबाट।",
+            en: "The four lunar limbs are the same sidereal longitudes — [[tithi|tithi]], [[nakshatra|nakshatra]], [[yoga|yoga]], [[karana|karana]]. ~Udaya tithi~ is read at sunrise for your place; the other three use the longitudes at that same instant.",
           },
-        },
-        {
-          kind: "formula",
-          cards: [
-            {
-              big: {
-                ne: "(चन्द्र − सूर्य) ÷ 12°",
-                en: "(Moon − Sun) ÷ 12°",
-              },
-              unit: {
-                ne: "→ तिथि १–३०",
-                en: "→ tithi 1–30",
-              },
-              label: {
-                ne: "तिथि",
-                en: "Tithi",
-              },
-              desc: {
-                ne: "१२° = एक तिथि; शुक्ल/कृष्ण पक्ष चन्द्रको कोणान्तरबाट",
-                en: "12° per tithi; shukla/krishna paksha from the lunar elongation",
-              },
-            },
-            {
-              big: {
-                ne: "चन्द्र ÷ (360/27)",
-                en: "Moon ÷ (360/27)",
-              },
-              unit: {
-                ne: "→ नक्षत्र + पद",
-                en: "→ nakshatra + pada",
-              },
-              label: {
-                ne: "नक्षत्र",
-                en: "Nakshatra",
-              },
-              desc: {
-                ne: "२७ नक्षत्र, प्रत्येक १३°२०′, ४ पद",
-                en: "27 nakshatras of 13°20′, four padas each",
-              },
-            },
-            {
-              big: {
-                ne: "(सूर्य + चन्द्र) ÷ (360/27)",
-                en: "(Sun + Moon) ÷ (360/27)",
-              },
-              unit: {
-                ne: "→ योग",
-                en: "→ yoga",
-              },
-              label: {
-                ne: "योग",
-                en: "Yoga",
-              },
-              desc: {
-                ne: "२७ योग — देशान्तर जोड ३६०° मा बेरेर",
-                en: "27 yogas — the longitude sum wrapped to 360°",
-              },
-            },
-            {
-              big: {
-                ne: "(चन्द्र − सूर्य) ÷ 6°",
-                en: "(Moon − Sun) ÷ 6°",
-              },
-              unit: {
-                ne: "→ करण",
-                en: "→ karana",
-              },
-              label: {
-                ne: "करण",
-                en: "Karana",
-              },
-              desc: {
-                ne: "तिथिको आधा — ११ नाम + अन्तिम स्थिर करणहरू",
-                en: "Half of a tithi — eleven names plus the fixed tail karanas",
-              },
-            },
-          ],
         },
         {
           kind: "lede",

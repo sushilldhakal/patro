@@ -69,47 +69,10 @@ export const lunarSolarDrift: ArticleData = {
       eyebrow: "Intercalation",
       blocks: [
         {
-          kind: "lede",
-          text: {
-            ne: "समाधान चलाखीपूर्ण छ: चान्द्र मासको लम्बाइ नबदली, बीचमा **एउटा थप मास** राखिन्छ। यसलाई ~अन्तर्वेशन~ भनिन्छ।",
-            en: "The fix is neat: without altering the length of a lunar month, an **extra month** is inserted. This is ~intercalation~.",
-          },
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: { ne: "अधिक मास", en: "Adhika māsa" },
-              p: {
-                ne: "झन्डै हरेक `३२.५` महिनामा एक थप मास — जम्मा भएको `३०`+ दिनको फरक एकैचोटि मिल्छ।",
-                en: "An extra month roughly every `32.5` months — clearing the accumulated `30`+ day gap in one step.",
-              },
-            },
-            {
-              h: { ne: "क्षय मास", en: "Kṣaya māsa" },
-              p: {
-                ne: "दुर्लभ अवस्थामा एक मास घटाइन्छ — सूर्य द्रुत गतिमा हुँदा मात्र सम्भव।",
-                en: "In rare cases a month is dropped — possible only when the Sun is moving at its fastest.",
-              },
-            },
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "कुन मास थप्ने भन्ने निर्णय अनुमानले होइन, **सङ्क्रान्तिको परीक्षण**ले हुन्छ: कुनै चान्द्र मासभित्र एउटै सङ्क्रान्ति परेन भने त्यो अधिक मास हो। यसरी चन्द्रको गणना सूर्यको स्थितिले नै नियन्त्रण गर्छ।",
-            en: "Which month gets duplicated is not a guess but a **sankranti test**: a lunar month containing no sankranti at all is the extra one. In this way the Sun's position governs the Moon's count.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "adhik-maas",
-        },
-        {
           kind: "note",
           text: {
-            ne: "यही सन्तुलनले नेपाली पात्रोलाई *चान्द्र–सौर* बनाउँछ — पर्व चन्द्रले, ऋतु सूर्यले, र दुवै सँगै हिँड्छन्।",
-            en: "This balancing act is what makes the Nepali calendar *lunisolar* — festivals from the Moon, seasons from the Sun, and the two kept walking together.",
+            ne: "मिल्ने उपाय मास थप्नु वा, कहिलेकाहीँ, घटाउनु हो। नियम — चान्द्र मासभित्र कति सङ्क्रान्ति पर्छन् — र दुवै नतिजा अर्को खण्ड [[adhik-kshaya-maas|अधिक र क्षय मास]] मा छन्।",
+            en: "The fix is to insert a month or, rarely, to drop one. The rule — how many sankrantis fall inside a lunar month — and both outcomes are the next chapter, [[adhik-kshaya-maas|the extra and the skipped month]].",
           },
         },
       ],
