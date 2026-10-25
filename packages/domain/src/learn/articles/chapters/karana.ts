@@ -3,6 +3,7 @@ import type { ArticleData } from "../../article-schema";
 /** Chapter text — written once, read by the website and the app. */
 export const karana: ArticleData = {
   slug: "karana",
+  seeAlso: ["tithi", "what-is-panchang", "yoga"],
   sections: [
     {
       title: {
@@ -14,8 +15,8 @@ export const karana: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "करण भनेको **आधा तिथि** हो — चन्द्र–सूर्यको **६° कोणीय दूरी**। एक तिथिमा दुई करण पर्ने हुनाले महिनाभरि ~६० करण~ हुन्छन्, तर नाम जम्मा **११** — सात चर (बारम्बार दोहोरिने) र चार स्थिर।",
-            en: "A karana is **half a tithi** — a **6° angular gap** between Moon and Sun. Since each tithi contains two karanas, there are ~60 karanas~ across a month, but only **11** names — seven movable (repeating) and four fixed.",
+            ne: "करण **आधा तिथि** हो — चन्द्र–सूर्यको **६°**। तिथिको १२° [[tithi|तिथिको लेख]] मा छ; यहाँ केवल आधा भाग। एक तिथिमा दुई करण पर्ने हुनाले महिनाभरि ~६० खण्ड~ हुन्छन्, तर नाम जम्मा **११** — सात चर र चार स्थिर।",
+            en: "A karana is **half a tithi** — **6°** between Moon and Sun. The tithi's 12° is the [[tithi|tithi article]]; this page is only the half. Two karanas fall in each tithi, so a month holds ~60 slots~, but only **11** names — seven movable and four fixed.",
           },
         },
         {

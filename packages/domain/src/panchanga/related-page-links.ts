@@ -84,13 +84,13 @@ export const SITE_LINK_BLURB_KEY: Record<string, string> = {
  * that is quietly one link short.
  */
 export const PAGE_LEARN_SLUGS: Record<string, string[]> = {
-  panchanga: ["what-is-panchang", "five-limbs-together", "tithi"],
+  panchanga: ["what-is-panchang", "tithi", "nakshatra"],
   "panchanga-year": ["rashi", "what-is-panchang"],
   holidays: ["bikram-sambat", "calendar-differences"],
   converter: ["bikram-sambat", "calendar-differences"],
   suryakranti: ["rashi", "earth-rotation-day"],
   dainikkranti: ["rashi", "what-is-panchang"],
-  "panchak-patro": ["five-limbs-together", "what-is-panchang"],
+  "panchak-patro": ["nakshatra", "what-is-panchang"],
   ritu: ["sidereal-vs-tropical", "bikram-sambat"],
   gochar: ["geocentric-heliocentric", "earth-rotation-day"],
   "aakash-gochar": ["geocentric-heliocentric", "earth-rotation-day"],
@@ -98,18 +98,18 @@ export const PAGE_LEARN_SLUGS: Record<string, string[]> = {
   "graha-vakri": ["geocentric-heliocentric", "earth-rotation-day"],
   "chandra-grahan": ["geocentric-heliocentric"],
   "surya-grahan": ["geocentric-heliocentric"],
-  rashifal: ["rashi", "five-limbs-together"],
+  rashifal: ["rashi", "nakshatra"],
   kundali: ["sidereal-vs-tropical"],
   "kundali-milan": ["sidereal-vs-tropical"],
-  "abhijit-muhurta": ["five-limbs-together", "what-is-panchang"],
-  "avakahada-chakra": ["five-limbs-together", "what-is-panchang"],
+  "abhijit-muhurta": ["choghadiya", "what-is-panchang"],
+  "avakahada-chakra": ["nakshatra", "what-is-panchang"],
   "element:tithi": ["tithi", "lunar-month"],
-  "element:nakshatra": ["five-limbs-together"],
-  "element:yoga": ["five-limbs-together"],
-  "element:karana": ["five-limbs-together"],
+  "element:nakshatra": ["nakshatra"],
+  "element:yoga": ["yoga"],
+  "element:karana": ["karana"],
   "element:chandra-rashi": ["lunar-month", "rashi"],
-  "element:hora": ["five-limbs-together"],
-  "element:choghadiya": ["five-limbs-together"],
+  "element:hora": ["hora"],
+  "element:choghadiya": ["choghadiya"],
   "element:lagna": ["what-is-panchang"],
 };
 
@@ -179,7 +179,7 @@ export function getRelatedLearnSlugs(pageId: string, limit = RELATED_LEARN_LIMIT
   if (mapped?.length) return mapped.slice(0, limit);
 
   if (pageId.startsWith("sait:")) {
-    return ["what-is-panchang", "five-limbs-together"].slice(0, limit);
+    return ["what-is-panchang", "tithi"].slice(0, limit);
   }
 
   if (pageId === "learn-hub") return [];

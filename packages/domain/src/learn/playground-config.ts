@@ -292,7 +292,12 @@ export const PLAYGROUND_BY_SLUG: Record<string, PlaygroundConfig> = {
     /* Everything the almanac reads, at once — this topic is the assembly. */
     layers: { nakshatraBelt: true, moon: true, moonSightline: true, moonTrail: true },
   },
-  "what-is-panchang": { mode: "sun", layers: { moon: true, moonSightline: true } },
+  "what-is-panchang": {
+    mode: "sun",
+    layers: { nakshatraBelt: true, moon: true, moonSightline: true, moonTrail: true },
+  },
+  yoga: { mode: "sun", layers: { moon: true, moonSightline: true, sightline: true } },
+  karana: { mode: "sun", layers: { moon: true, moonSightline: true, sightline: true } },
   "geocentric-heliocentric": { mode: "year", layers: { sunOrbit: true } },
 
   /* ── the tilt and what it causes ─────────────────────────────────── */

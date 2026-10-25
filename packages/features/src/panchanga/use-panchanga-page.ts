@@ -200,7 +200,7 @@ export function usePanchangaPage({ location, date, clock, setClock, sources, ena
       error: errorDetail || t("panchanga.error_load"),
       learnHeading: t("panchanga.learn_heading"),
     },
-    learnSlugs: ["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"],
+    learnSlugs: ["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "choghadiya"],
     /** The udaya day (wheel, timeline, date sections). */
     wheelData,
     /** `wheelData` is still the previous day while the browsed one loads. */

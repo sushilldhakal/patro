@@ -40,17 +40,22 @@ export const SITEMAP_ROUTES: SitemapRoute[] = [
   { path: "/vivah-sait", get ne() { return tFor("ne", "ui.sitemap_routes.marriage_muhurta"); }, get en() { return tFor("en", "ui.sitemap_routes.marriage_muhurta"); }, icon: "heart-handshake", group: "sait" },
 ];
 
-/** The 12 published Learn guides — mirrors `LEARN_LIBRARY`'s reading order. */
+/** Published Learn guides — mirrors `LEARN_LIBRARY`'s reading order. */
 export const SITEMAP_LEARN_SLUGS = [
   "bikram-sambat",
   "what-is-panchang",
+  "tithi",
+  "nakshatra",
+  "yoga",
+  "karana",
+  "vara",
+  "choghadiya",
+  "hora",
   "earth-rotation-day",
   "axial-tilt",
   "rashi",
   "sidereal-vs-tropical",
   "lunar-month",
-  "tithi",
-  "five-limbs-together",
   "how-we-calculate",
   "geocentric-heliocentric",
   "calendar-differences",

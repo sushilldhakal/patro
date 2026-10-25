@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const calcKarana: ArticleData = {
   slug: "calc-karana",
-  seeAlso: ["karana", "calc-tithi", "calc-yoga", "five-limbs-together"],
+  seeAlso: ["karana", "tithi", "yoga", "how-we-calculate"],
   sections: [
     {
       title: { ne: "करण — तिथिको आधा", en: "Karana — half a tithi" },

@@ -3,6 +3,7 @@ import type { ArticleData } from "../../article-schema";
 /** Chapter text — written once, read by the website and the app. */
 export const hora: ArticleData = {
   slug: "hora",
+  seeAlso: ["vara", "choghadiya", "what-is-panchang"],
   sections: [
     {
       title: {
@@ -88,8 +89,8 @@ export const hora: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "शुभ कार्यको मुहूर्त छान्दा होरा हेरिन्छ — जस्तै यात्रा वा व्यापारका लागि **बुध/बृहस्पति** होरा, स्थिर कामका लागि **शनि** होरा अनुकूल मानिन्छ। माथिको चक्र अहिलेको होरामा केन्द्रित छ; तल स्लाइडर चलाएर वा प्ले थिचेर हप्ताभरि होरा कसरी सर्छ हेर्नुहोस्।",
-            en: "A hora is checked when choosing a muhurta for auspicious work — e.g. a **Mercury/Jupiter** hora for travel or business, a **Saturn** hora for steady work. The wheel above is centred on the current hora; move the slider or press play to see how the hora shifts across the week.",
+            ne: "शुभ कार्यको मुहूर्त छान्दा होरा हेरिन्छ — जस्तै यात्रा वा व्यापारका लागि **बुध/बृहस्पति** होरा, स्थिर कामका लागि **शनि** होरा अनुकूल मानिन्छ। [[choghadiya|चौघडिया]] पनि दिन बाँड्छ, तर आठ–आठ खण्डमा; होरा चौबीस ग्रहीय घण्टा हो, र यसको पहिलो घण्टाले नै [[vara|वार]] को नाम दिन्छ।",
+            en: "A hora is checked when choosing a muhurta — a **Mercury or Jupiter** hora for travel or business, a **Saturn** hora for steady work. [[choghadiya|Choghadiya]] also divides the day, but into eight and eight; hora is twenty-four planetary hours, and its first hour is what names the [[vara|weekday]].",
           },
         },
       ],

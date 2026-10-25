@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const calcYoga: ArticleData = {
   slug: "calc-yoga",
-  seeAlso: ["yoga", "calc-nakshatra", "solar-longitude", "five-limbs-together"],
+  seeAlso: ["yoga", "nakshatra", "tithi", "how-we-calculate"],
   sections: [
     {
       title: { ne: "योग — घटाउ होइन, जोड", en: "Yoga — a sum, not a difference" },

@@ -6,13 +6,12 @@ import type { Bi } from "./article-schema";
  * The Learn library — the single source of truth for what exists in the
  * knowledge section, in reading order.
  *
- * The section runs as one course rather than a bag of loose pages: a reader
- * who starts at "sky basics" and follows prev/next moves Earth → Sun →
- * zodiac → Moon → panchanga → how a BS date is built → how we compute it →
- * eclipses → deeper astronomy → comparison. The order follows the reader's
- * own questions: what moves, how we measure it, what it produces, and only
- * then how the computation runs. Array order *is* that path, so insert a
- * topic where it belongs in the sequence.
+ * The section runs as one course rather than a bag of loose pages. A reader
+ * who follows prev/next meets the Nepali patro and Bikram Sambat first, then
+ * a short account of the five panchanga limbs, then each limb on its own
+ * (tithi, nakshatra, yoga, karana, vara) plus choghadiya and hora. Only after
+ * that come the sky, the Sun, the Moon, the computation and the comparisons.
+ * Array order *is* that path, so insert a topic where it belongs in the sequence.
  *
  * `status` separates the map from the territory. `planned` entries hold a
  * slug and title so the outline stays visible in one place while the article
@@ -79,8 +78,17 @@ export const LEARN_SECTIONS: LibrarySection[] = [
     icon: "Compass",
     title: { ne: "सुरुवात", en: "Start Here" },
     blurb: {
-      ne: "पात्रो भनेको के हो, दिन कसरी नापिन्छ, विक्रम सम्वत् र पञ्चाङ्ग के हुन् — बाँकी सबै यहीँबाट सुरु हुन्छ।",
-      en: "What a calendar is, how a day is measured, what Bikram Sambat and a panchanga are — everything else starts here.",
+      ne: "नेपाली पात्रो के हो, विक्रम सम्वत् के हो, र वर्ष बैशाखमा किन सुरु हुन्छ।",
+      en: "What the Nepali patro is, what Bikram Sambat is, and why the year opens in Baisakh.",
+    },
+  },
+  {
+    id: "panchanga",
+    icon: "ScrollText",
+    title: { ne: "पञ्चाङ्ग", en: "The Panchanga" },
+    blurb: {
+      ne: "पाँच अङ्गको छोटो परिचय, त्यसपछि तिथि, नक्षत्र, योग, करण र चौघडिया — प्रत्येक आफ्नै लेखमा।",
+      en: "A short look at the five limbs, then tithi, nakshatra, yoga, karana and choghadiya — each in its own article.",
     },
   },
   {
@@ -106,17 +114,8 @@ export const LEARN_SECTIONS: LibrarySection[] = [
     icon: "Moon",
     title: { ne: "चन्द्र र चान्द्रमान", en: "The Moon and the Lunar Month" },
     blurb: {
-      ne: "तिथि, पक्ष, चान्द्र मास र अधिक–क्षय मास — चन्द्रले पात्रोमा ल्याउने लय।",
-      en: "Tithi, paksha, the lunar month and the extra or skipped month the Moon brings.",
-    },
-  },
-  {
-    id: "panchanga",
-    icon: "ScrollText",
-    title: { ne: "पञ्चाङ्ग", en: "The Panchanga" },
-    blurb: {
-      ne: "वार, नक्षत्र, योग, करण — पाँच अङ्ग, तिनको पारस्परिक सम्बन्ध र दिनभित्रका परम्परागत समय एकाइ।",
-      en: "Vara, nakshatra, yoga and karana — the five limbs, how they interlock, and the traditional units inside a day.",
+      ne: "पक्ष, औंसी–पूर्णिमा, चान्द्र मास, र अधिक वा क्षय मास — तिथिको विस्तार होइन, महिनाको कथा।",
+      en: "Paksha, new and full moon, the lunar month, and the extra or skipped month — the month's story, not a second tithi article.",
     },
   },
   {
@@ -162,17 +161,6 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     summary: {
       ne: "वि.सं. के हो, वर्ष बैशाखमा किन सुरु हुन्छ, ई.सं.सँगको फरक किन स्थिर हुँदैन, र सौर–चान्द्र–चान्द्रसौर गणना कसरी छुट्टिन्छन्।",
       en: "What Bikram Sambat is, why the year opens in Baisakh, why its offset from AD is never fixed, and how the solar, lunar and lunisolar reckonings differ.",
-    },
-  },
-  {
-    slug: "what-is-panchang",
-    section: "start",
-    status: "published",
-    icon: "ScrollText",
-    title: { ne: "पञ्चाङ्ग भनेको के हो", en: "What a Panchanga Is" },
-    summary: {
-      ne: "पञ्चाङ्ग भनेको के हो, नेपाली पात्रो कसरी चल्छ, र त्यसका पछाडिको खगोलीय आधार — सबै एकै ठाउँमा।",
-      en: "What a panchanga is, how the Nepali calendar runs, and the sky it rests on — in one place.",
     },
   },
   {
@@ -264,6 +252,127 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     },
   },
   {
+    slug: "what-is-panchang",
+    section: "panchanga",
+    status: "published",
+    icon: "ScrollText",
+    title: { ne: "पञ्चाङ्ग — पाँच अङ्ग एक दृष्टिमा", en: "The Panchanga — the Five Limbs at a Glance" },
+    summary: {
+      ne: "तिथि, वार, नक्षत्र, योग र करण — प्रत्येकले के नाप्छ, सूत्र नखोलीकन। विस्तार पछिका छुट्टाछुट्टै लेखमा।",
+      en: "Tithi, vara, nakshatra, yoga and karana — what each measures, without the formulas. The detail is the article that follows each one.",
+    },
+  },
+  {
+    slug: "tithi",
+    section: "panchanga",
+    status: "published",
+    icon: "Sigma",
+    title: { ne: "तिथि", en: "Tithi" },
+    summary: {
+      ne: "तिथि के हो, कसरी बन्छ, किन २४ घण्टाको हुँदैन, र कहिले दोहोरिन्छ वा हराउँछ।",
+      en: "What a tithi is, how it is formed, why it is never 24 hours, and when one repeats or disappears.",
+    },
+  },
+  {
+    slug: "nakshatra",
+    section: "panchanga",
+    status: "published",
+    icon: "Moon",
+    title: { ne: "नक्षत्र", en: "Nakshatra" },
+    summary: {
+      ne: "नक्षत्र के हो र कसरी बन्छ — ३६०° लाई २७ भागमा बाँड्ने नियम, पद, र चन्द्रको देशान्तर।",
+      en: "What a nakshatra is and how it is formed — the rule that splits 360° into 27 parts, the padas, and the Moon's longitude.",
+    },
+  },
+  {
+    slug: "yoga",
+    section: "panchanga",
+    status: "published",
+    icon: "Workflow",
+    title: { ne: "योग", en: "Yoga" },
+    summary: {
+      ne: "योग के हो र कसरी बन्छ — सूर्य र चन्द्रको देशान्तर जोडेर २७ योग।",
+      en: "What a yoga is and how it is formed — the 27 yogas from the sum of the Sun's and Moon's longitudes.",
+    },
+  },
+  {
+    slug: "karana",
+    section: "panchanga",
+    status: "published",
+    icon: "Layers",
+    title: { ne: "करण", en: "Karana" },
+    summary: {
+      ne: "करण के हो — आधा तिथि, ६° को खण्ड, सात चर र चार स्थिर नाम।",
+      en: "What a karana is — half a tithi, a 6° slot, seven movable names and four fixed ones.",
+    },
+  },
+  {
+    slug: "vara",
+    section: "panchanga",
+    status: "published",
+    icon: "CalendarClock",
+    title: { ne: "वार", en: "Vāra" },
+    summary: {
+      ne: "वार के हो — सूर्योदयदेखि सूर्योदयसम्मको बार, र दिनको नाम पहिलो होराबाट कसरी आउँछ।",
+      en: "What a vāra is — the weekday from sunrise to sunrise, and how the day's name comes from the first hora.",
+    },
+  },
+  {
+    slug: "choghadiya",
+    section: "panchanga",
+    status: "published",
+    icon: "Hourglass",
+    title: { ne: "चौघडिया", en: "Choghadiya" },
+    summary: {
+      ne: "चौघडिया के हो र कसरी बन्छ — दिन आठ र रात आठ खण्ड, वारअनुसार सुरु हुने क्रम।",
+      en: "What choghadiya is and how it is formed — eight parts of the day and eight of the night, starting from the weekday.",
+    },
+  },
+  {
+    slug: "hora",
+    section: "panchanga",
+    status: "published",
+    icon: "Timer",
+    title: { ne: "होरा", en: "Hora" },
+    summary: {
+      ne: "होरा के हो — सूर्योदयदेखि चौबीस ग्रहीय घण्टा, र त्यो चौघडियाभन्दा कसरी फरक छ।",
+      en: "What a hora is — twenty-four planetary hours from sunrise, and how that differs from choghadiya.",
+    },
+  },
+  {
+    slug: "day-night-divisions",
+    section: "panchanga",
+    status: "planned",
+    icon: "SunMoon",
+    title: { ne: "दिन र रात कसरी बाँडिन्छ", en: "How Day and Night Are Divided" },
+    summary: {
+      ne: "सूर्योदयदेखि सूर्यास्तसम्मको दिनमान र रात्रिमान — वैदिक दिन घडीको २४ घण्टासँग किन मिल्दैन।",
+      en: "Dinamana and ratrimana, from sunrise to sunset — why the Vedic day does not match a 24-hour clock.",
+    },
+  },
+  {
+    slug: "muhurta",
+    section: "panchanga",
+    status: "planned",
+    icon: "Timer",
+    title: { ne: "मुहूर्त", en: "Muhurta" },
+    summary: {
+      ne: "दिनलाई ३० भागमा बाँड्ने वैदिक समय एकाइ र शुभ–अशुभ मुहूर्तको आधार।",
+      en: "The Vedic time unit that splits the day into thirty parts, and the basis of auspicious timing.",
+    },
+  },
+  {
+    slug: "ghati-pala",
+    section: "panchanga",
+    status: "planned",
+    icon: "Hourglass",
+    title: { ne: "घटी, पला र विपला", en: "Ghati, Pala and Vipala" },
+    summary: {
+      ne: "पञ्चाङ्गमा समय लेख्ने परम्परागत एकाइ — घटी–पलालाई घण्टा–मिनेटमा कसरी पढ्ने।",
+      en: "The traditional units a panchanga writes time in — how to read ghati and pala as hours and minutes.",
+    },
+  },
+  {
     slug: "earth-rotation-day",
     section: "earth-sky",
     status: "published",
@@ -314,63 +423,8 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "CalendarClock",
     title: { ne: "चन्द्र मास, पक्ष र कला", en: "The Lunar Month, the Pakshas and the Phases" },
     summary: {
-      ne: "चन्द्रले पात्रो कसरी बनाउँछ — चान्द्र मास, औंसी–पूर्णिमा र दुई पक्ष।",
-      en: "How the Moon builds a calendar — the lunar month, new and full, and the two pakshas.",
-    },
-  },
-  {
-    slug: "tithi",
-    section: "moon",
-    status: "published",
-    icon: "Sigma",
-    title: { ne: "तिथि र अधिक/क्षय मास", en: "Tithi, and the Extra or Skipped Month" },
-    summary: {
-      ne: "तिथि कसरी बन्छ, किन २४ घण्टाको हुँदैन, किन कुनै दोहोरिन्छ; अनि वर्षेनि ११ दिनको फरक अधिक वा क्षय मासले कसरी मिलाउँछ।",
-      en: "How a tithi forms, why it is never 24 hours, why some repeat while others vanish — and how the 11-day annual shortfall is settled by an extra or a dropped month.",
-    },
-  },
-  {
-    slug: "five-limbs-together",
-    section: "panchanga",
-    status: "published",
-    icon: "Workflow",
-    title: { ne: "पञ्चाङ्गका पाँच अङ्ग", en: "The Five Limbs of the Panchanga" },
-    summary: {
-      ne: "वार, तिथि, नक्षत्र, योग र करण — पाँचै अङ्ग, तिनको सम्बन्ध र ग्रहीय होरा।",
-      en: "Vāra, tithi, nakshatra, yoga and karana — all five, how they interlock, and the planetary hora.",
-    },
-  },
-  {
-    slug: "day-night-divisions",
-    section: "panchanga",
-    status: "planned",
-    icon: "SunMoon",
-    title: { ne: "दिन र रात कसरी बाँडिन्छ", en: "How Day and Night Are Divided" },
-    summary: {
-      ne: "सूर्योदयदेखि सूर्यास्तसम्मको दिनमान र रात्रिमान — वैदिक दिन घडीको २४ घण्टासँग किन मिल्दैन।",
-      en: "Dinamana and ratrimana, from sunrise to sunset — why the Vedic day does not match a 24-hour clock.",
-    },
-  },
-  {
-    slug: "muhurta",
-    section: "panchanga",
-    status: "planned",
-    icon: "Timer",
-    title: { ne: "मुहूर्त", en: "Muhurta" },
-    summary: {
-      ne: "दिनलाई ३० भागमा बाँड्ने वैदिक समय एकाइ र शुभ–अशुभ मुहूर्तको आधार।",
-      en: "The Vedic time unit that splits the day into thirty parts, and the basis of auspicious timing.",
-    },
-  },
-  {
-    slug: "ghati-pala",
-    section: "panchanga",
-    status: "planned",
-    icon: "Hourglass",
-    title: { ne: "घटी, पला र विपला", en: "Ghati, Pala and Vipala" },
-    summary: {
-      ne: "पञ्चाङ्गमा समय लेख्ने परम्परागत एकाइ — घटी–पलालाई घण्टा–मिनेटमा कसरी पढ्ने।",
-      en: "The traditional units a panchanga writes time in — how to read ghati and pala as hours and minutes.",
+      ne: "चन्द्रले महिना कसरी बनाउँछ — पक्ष, औंसी–पूर्णिमा, र वर्षेनि ११ दिन मिलाउने अधिक वा क्षय मास।",
+      en: "How the Moon builds a month — the pakshas, new and full, and the extra or skipped month that settles the 11-day gap.",
     },
   },
   {
@@ -477,16 +531,25 @@ export interface LearnModule {
   sections: string[];
 }
 
-/** The hub's six learning paths, in order (both apps). */
+/** The hub's learning paths, in order (both apps). */
 export const LEARN_MODULES: LearnModule[] = [
   {
     id: "basics",
-    title: { ne: "पहिले बुझ्ने कुरा", en: "Start Here" },
+    title: { ne: "नेपाली पात्रो र विक्रम सम्वत्", en: "Nepali Patro and Bikram Sambat" },
     blurb: {
-      ne: "पात्रो, पञ्चाङ्ग र विक्रम सम्वत् बुझ्ने आधार।",
-      en: "The base ideas behind the patro, panchanga and Bikram Sambat.",
+      ne: "पात्रो के हो, वि.सं. के हो, र वर्ष बैशाखमा किन सुरु हुन्छ।",
+      en: "What the patro is, what Bikram Sambat is, and why the year opens in Baisakh.",
     },
     sections: ["start"],
+  },
+  {
+    id: "panchanga",
+    title: { ne: "पञ्चाङ्ग र अङ्गहरू", en: "The Panchanga and its Limbs" },
+    blurb: {
+      ne: "पाँच अङ्गको छोटो परिचय, त्यसपछि तिथि, नक्षत्र, योग, करण, चौघडिया र होरा छुट्टाछुट्टै।",
+      en: "A short look at the five limbs, then tithi, nakshatra, yoga, karana, choghadiya and hora each on their own.",
+    },
+    sections: ["panchanga"],
   },
   {
     id: "sky-sun",
@@ -498,20 +561,20 @@ export const LEARN_MODULES: LearnModule[] = [
     sections: ["earth-sky", "sun"],
   },
   {
-    id: "moon-panchanga",
-    title: { ne: "चन्द्र र पञ्चाङ्ग", en: "Moon and Panchanga" },
+    id: "moon",
+    title: { ne: "चन्द्र र चान्द्र मास", en: "The Moon and the Lunar Month" },
     blurb: {
-      ne: "तिथि, पक्ष, मास र पञ्चाङ्गका पाँच अङ्ग।",
-      en: "Tithi, paksha, months and the five limbs of the panchanga.",
+      ne: "पक्ष, औंसी–पूर्णिमा, र अधिक–क्षय मास।",
+      en: "Paksha, new and full moon, and the extra or skipped month.",
     },
-    sections: ["moon", "panchanga"],
+    sections: ["moon"],
   },
   {
     id: "calculation",
     title: { ne: "गणना कसरी हुन्छ", en: "How Calculation Works" },
     blurb: {
-      ne: "सूर्योदय, तिथि, नक्षत्र र स्थानअनुसार फरक पर्ने कारण।",
-      en: "Sunrise, tithi, nakshatra and why location changes the answer.",
+      ne: "सूर्योदय र प्रत्येक अङ्गको सूत्र — परिभाषा होइन, गणना।",
+      en: "Sunrise and the formula for each limb — the arithmetic, not another definition.",
     },
     sections: ["calculation"],
   },

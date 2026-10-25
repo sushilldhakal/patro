@@ -25,51 +25,16 @@ export const howWeCalculate: ArticleData = {
     },
     {
       title: {
-        ne: "राशि भनेको के?",
-        en: "What is rashi?",
+        ne: "सर्भरले प्रयोग गर्ने भाग",
+        en: "The divisions the server uses",
       },
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "*राशि* भनेको क्रान्तिवृत्त मार्गमा बाँडिएका १२ बराबर खण्ड, प्रत्येक ~३०°~ — मेष ०° देखि मीन ३५०°–३६०° सम्म। यो *निरयन* चक्र तारापुञ्जसँग जोडिएको छ; पश्चिमी राशिफलको “सूर्य राशि” प्रायः सायन हुन्छ, नेपाली पात्रो/पञ्चाङ्ग निरयन।",
-            en: "*Rashi* is one of twelve equal sectors along the ecliptic, each ~30°~ wide — from Mesha 0° to Meena 350°–360°. This *sidereal (nirayana)* zodiac is tied to the star clusters; the “Sun sign” of Western horoscopes is usually tropical (sayana), while Nepali patro and panchanga are sidereal.",
+            ne: "राशि के हो भन्ने [[rashi|राशि]] लेखमा छ, नक्षत्र [[nakshatra|नक्षत्र]] लेखमा। यहाँ केवल सर्भरले देशान्तरलाई भाग गर्ने दुई सूत्र — परिभाषा होइन।",
+            en: "What a rashi is lives in the [[rashi|rashi]] article, and a nakshatra in the [[nakshatra|nakshatra]] article. Here are only the two divisions the server applies to a longitude — not the definitions again.",
           },
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: {
-                ne: "कक्षा (क्रान्तिवृत्त)",
-                en: "Ecliptic plane",
-              },
-              p: {
-                ne: "सूर्य, चन्द्र र ग्रहहरू प्रायः एउटै तल्लो कक्षीय तलमा हिँड्छन् — पृथ्वीको वरिपरि “राशि पट्टी” यही कक्षाको ३६०° कोठा हो।",
-                en: "The Sun, Moon and planets move near one flat plane — the “rashi belt” around Earth is how we partition that 360° circle.",
-              },
-            },
-            {
-              h: {
-                ne: "नक्षत्र",
-                en: "Nakshatra",
-              },
-              p: {
-                ne: "उही कक्षामा २७ भाग, प्रत्येक १३°२०′ — चन्द्रको नक्षत्र यही सूक्ष्म जालबाट।",
-                en: "The same circle split into 27 parts of 13°20′ each — the Moon’s nakshatra comes from this finer grid.",
-              },
-            },
-            {
-              h: {
-                ne: "लग्न",
-                en: "Lagna",
-              },
-              p: {
-                ne: "पूर्व क्षितिजमा उदाउँदै गरेको कक्षीय बिन्दु — तपाईंको अक्षांश, देशान्तर र घण्टाअनुसार ग्रहपातबाट लग्न कोण निकालिन्छ।",
-                en: "The ecliptic point rising on the eastern horizon — computed from your latitude, longitude, and clock time via the ephemeris ascendant.",
-              },
-            },
-          ],
         },
         {
           kind: "formula",
