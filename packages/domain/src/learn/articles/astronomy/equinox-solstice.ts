@@ -205,8 +205,8 @@ export const equinoxSolstice: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "नेपाली पात्रो भने निरयन भएकाले विषुवलाई सन्दर्भ मान्दैन — त्यसैले नेपाली नयाँ वर्ष विषुवको दिन नभई त्यसको झन्डै `२४` दिनपछि पर्छ। यही अन्तर ~अयनांश~ हो।",
-            en: "The Nepali calendar, being sidereal, does not use the equinox as its reference — which is why its new year falls not on the equinox but about `24` days later. That interval is the ~ayanamsha~.",
+            ne: "नेपाली पात्रो निरयन भएकाले विषुवलाई सन्दर्भ मान्दैन। नयाँ वर्ष त्यसैले अप्रिलमा पर्छ — [[year-begins-baisakh|वर्ष बैशाखमा किन सुरु हुन्छ]] — र दुई शून्यको पूरा विवरण [[sidereal-vs-tropical|निरयन र सायन]] मा छ।",
+            en: "The Nepali calendar, being sidereal, does not use the equinox as its reference. That is why the new year falls in April — [[year-begins-baisakh|why the year begins in Baisakh]] — and the full account of the two zeros is [[sidereal-vs-tropical|sidereal and tropical]].",
           },
         },
         {

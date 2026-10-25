@@ -54,76 +54,10 @@ export const uttarayanaDakshinayana: ArticleData = {
       eyebrow: "±23.44°",
       blocks: [
         {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "“सूर्य उत्तर लाग्यो” भन्नुको खगोलीय अर्थ हो — सूर्यको ~क्रान्ति~ बढ्दै छ, अर्थात् सूर्य खगोलीय विषुवत् रेखाभन्दा उत्तरतिर सर्दै छ।",
-            en: "Astronomically, \"the Sun turns north\" means its ~declination~ is increasing — the Sun is moving north of the celestial equator.",
-          },
-        },
-        {
-          kind: "formula",
-          cards: [
-            {
-              big: "+23.44°",
-              label: { ne: "उत्तरतम क्रान्ति", en: "Northernmost declination" },
-              desc: { ne: "ग्रीष्म अयनान्त, ~असार ६–७ — उत्तरी गोलार्धमा सबैभन्दा लामो दिन।", en: "Summer solstice, ~21 June — the longest day in the northern hemisphere." },
-            },
-            {
-              big: "0°",
-              label: { ne: "विषुव", en: "Equinox" },
-              desc: { ne: "सूर्य विषुवत् रेखामा — दिन र रात झन्डै बराबर।", en: "The Sun on the celestial equator — day and night nearly equal." },
-            },
-            {
-              big: "−23.44°",
-              label: { ne: "दक्षिणतम क्रान्ति", en: "Southernmost declination" },
-              desc: { ne: "शीत अयनान्त, ~पुष ६–७ — सबैभन्दा छोटो दिन।", en: "Winter solstice, ~22 December — the shortest day." },
-            },
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "अयनान्त भनेको क्रान्ति **चरम बिन्दुमा पुगेर फर्किने क्षण** हो। त्यसैले अयनको वास्तविक सन्धि अयनान्तमै हुन्छ — पुष र असारमा। विषुव त बाटोको बीचमा पर्ने बिन्दु हो, जहाँ सूर्य सबैभन्दा छिटो हिँडिरहेको हुन्छ।",
-            en: "A solstice is the moment declination **reaches its extreme and reverses**. So the true hinge of an ayana is a solstice — in पुष and असार. An equinox is a midpoint along the way, where the Sun happens to be moving fastest.",
-          },
-        },
-      ],
-    },
-    {
-      title: { ne: "सङ्क्रान्ति र अयनान्त — दुई फरक नाप", en: "Sankranti and solstice measure different things" },
-      eyebrow: "Longitude vs declination",
-      blocks: [
-        {
-          kind: "lede",
-          text: {
-            ne: "सङ्क्रान्ति र अयनान्त दुवै सूर्यसँग सम्बन्धित छन्, र कहिलेकाहीँ नजिक पनि पर्छन् — तर यी **फरक सन्दर्भ प्रणालीमा** परिभाषित छन्।",
-            en: "Both a sankranti and a solstice concern the Sun, and they sometimes fall close together — but they are defined in **different reference systems**.",
-          },
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: { ne: "सङ्क्रान्ति", en: "Sankranti" },
-              p: {
-                ne: "प्रश्न: *सूर्य ताराको सापेक्ष कहाँ छ?* उत्तर देशान्तरमा — `३०°` को सीमा नाघ्नु।",
-                en: "The question is *where is the Sun against the stars?* — answered in longitude, at a `30°` boundary.",
-              },
-            },
-            {
-              h: { ne: "अयनान्त", en: "Solstice" },
-              p: {
-                ne: "प्रश्न: *सूर्य विषुवत् रेखाभन्दा कति उत्तर वा दक्षिण छ?* उत्तर क्रान्तिमा — चरम `±२३.४४°`।",
-                en: "The question is *how far north or south of the equator is the Sun?* — answered in declination, at the extreme of `±23.44°`.",
-              },
-            },
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "एउटा **कहाँ** भन्ने प्रश्न हो, अर्को **कति माथि/तल** भन्ने। यी दुई नाप एकअर्कासँग बाँधिएका छैनन् — त्यसैले तिनका मिति पनि सधैँ सँगै चल्दैनन्।",
-            en: "One asks **where along**, the other asks **how far above or below**. The two measurements are not locked to each other — so neither are their dates.",
+            ne: "“सूर्य उत्तर लाग्यो” भनेको क्रान्ति बढ्नु हो, र अयनको साँचो सन्धि अयनान्त हो। चार बिन्दु, ±२३.४४°, र सङ्क्रान्तिसँग नमिल्ने कारण [[equinox-solstice|विषुव र अयनान्त]] र [[declination|क्रान्ति]] मा छन्। यहाँबाट परम्परागत मिति र वास्तविक मिति मात्र।",
+            en: "\"The Sun turns north\" means declination is increasing, and an ayana's true hinge is a solstice. The four points, ±23.44°, and why that is not a sankranti are in [[equinox-solstice|equinoxes and solstices]] and [[declination|declination]]. From here, only the traditional date against the real one.",
           },
         },
       ],

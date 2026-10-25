@@ -74,40 +74,10 @@ export const karkaSankranti: ArticleData = {
       eyebrow: "The half-year pair",
       blocks: [
         {
-          kind: "lede",
-          text: {
-            ne: "यी दुई सङ्क्रान्तिले वर्षलाई दुई आधा भागमा बाँड्छन्, प्रत्येक छ महिनाको।",
-            en: "These two sankrantis cut the year into two halves of six months each.",
-          },
-        },
-        {
-          kind: "table",
-          headers: [
-            { ne: "सङ्क्रान्ति", en: "Sankranti" },
-            { ne: "देशान्तर", en: "Longitude" },
-            { ne: "अयन", en: "Ayana" },
-            { ne: "महिना", en: "Month" },
-          ],
-          rows: [
-            [
-              { ne: "मकर", en: "Makara" },
-              "270°",
-              { ne: "उत्तरायण आरम्भ (परम्परागत)", en: "Uttarāyaṇa begins (traditionally)" },
-              { ne: "माघ", en: "Magh" },
-            ],
-            [
-              { ne: "कर्क", en: "Karka" },
-              "90°",
-              { ne: "दक्षिणायन आरम्भ (परम्परागत)", en: "Dakshinayana begins (traditionally)" },
-              { ne: "साउन", en: "Shrawan" },
-            ],
-          ],
-        },
-        {
           kind: "note",
           text: {
-            ne: "मकरजस्तै यहाँ पनि उही सावधानी लागू हुन्छ: वास्तविक ग्रीष्म अयनान्त असार `६`–`७` तिर पर्छ, कर्क सङ्क्रान्तिभन्दा झन्डै `२४` दिन अघि। सङ्क्रान्ति निरयन घटना हो, अयनान्त सायन — पूरा कारण ~उत्तरायण र दक्षिणायन~ मा।",
-            en: "The same caveat as for Makara applies here: the actual summer solstice falls around असार `6`–`7`, some `24` days before Karka Sankranti. A sankranti is sidereal and a solstice tropical — the full reason is in ~Uttarāyaṇa and Dakṣiṇāyana~.",
+            ne: "कर्क र मकर परम्परागत दुई अयनका आरम्भ हुन्। खगोलीय मोड किन अब यी सङ्क्रान्तिसँग मिल्दैन भन्ने [[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]] मा छ। माथिको चित्रले साउन १ र वास्तविक ग्रीष्म अयनान्तबीचको अन्तर देखाउँछ।",
+            en: "Karka and Makara are the traditional starts of the two half-years. Why the astronomical turns no longer match these sankrantis is [[uttarayana-dakshinayana|Uttarāyaṇa and Dakṣiṇāyana]]. The figure above is the gap between Shrawan 1 and the true summer solstice.",
           },
         },
       ],

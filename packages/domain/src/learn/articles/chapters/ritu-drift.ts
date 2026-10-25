@@ -14,33 +14,16 @@ export const rituDrift: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "एउटै सूर्यलाई **दुई फरक शून्य** बाट नापिन्छ। ~ऋतु~ लाई **सायन** ले नाप्छ — शून्य अंश भनेको **वसन्त-विषुव** (सूर्य भूमध्यरेखा काटेर उत्तर लाग्ने क्षण), त्यसैले ऋतु सधैँ विषुव र अयनान्तमा अडिन्छ। तर वि.सं. का *महिना* लाई **निरयन** ले नाप्छ — शून्य भनेको आकाशको साँचो **मेष तारापुञ्ज**, र महिनाको पहिलो गते भनेको **सङ्क्रान्ति** (सूर्य नयाँ राशिमा पस्ने क्षण) हो। यी दुई शून्यबीचको कोण नै **अयनांश** — आज ∼**२४°**।",
-            en: "The same Sun is measured from **two different zeros**. The ~ṛtu (season)~ is measured by the **tropical** zodiac — zero degree is the **vernal equinox** (the moment the Sun crosses the equator heading north), so the seasons stay anchored to the equinoxes and solstices. But the BS *months* are measured by the **sidereal** zodiac — zero is the true **Mesha star-cluster**, and the first day of a month is the **sankranti** (the moment the Sun enters a new sign). The angle between these two zeros is the **ayanamsha** — today ∼**24°**.",
+            ne: "ऋतु सायनमा अडिन्छ, वि.सं. का महिना निरयनमा। दुई शून्य र आजको ∼**२४°** अयनांश यही पृष्ठको [[sidereal-vs-tropical|निरयन र सायन]] र [[ayanamsha|अयनांश]] मा छन्। यहाँको विषय त्यसको परिणाम हो — दुवै सँगै मिलाउन नसकिने।",
+            en: "The ṛtus stay tropical and the BS months stay sidereal. The two zeros, and today's ∼**24°** ayanamsha, are already [[sidereal-vs-tropical|sidereal and tropical]] and [[ayanamsha|the ayanamsha]] on this page. What follows here is the consequence — you cannot keep both aligned.",
           },
         },
         {
-          kind: "diagram",
-          id: "equinox-precession",
-        },
-      ],
-    },
-    {
-      title: {
-        ne: "किन सर्छ — अयन चलन",
-        en: "Why it drifts — precession",
-      },
-      eyebrow: "Why it drifts: precession",
-      blocks: [
-        {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "पृथ्वी लट्टु झैँ अक्षमा बिस्तारै *डुल्छ*। एक फेरो पूरा हुन ∼**२५८०० वर्ष** लाग्छ, अर्थात् विषुव बिन्दु प्रति वर्ष ∼**५०.३″** — हरेक ∼**७२ वर्ष** मा ठ्याक्क **१°** — पछाडि सर्छ। सूर्य दिनमा ∼**१°** हिँड्ने हुनाले, यो **१° = झन्डै १ दिन**। त्यसैले निरयन महिनाको सापेक्ष ऋतु ~हरेक ∼७२ वर्षमा १ दिन~ सर्दै जान्छ।",
-            en: "The Earth wobbles slowly on its axis like a spinning top. One full loop takes ∼**25,800 years**, i.e. the equinox point moves back ∼**50.3″** per year — exactly **1°** every ∼**72 years**. Since the Sun moves ∼**1°** per day, this **1° ≈ 1 day**. So relative to the sidereal months, the season drifts ~by 1 day every ∼72 years~.",
+            ne: "सूर्य दिनको झन्डै १° हिँड्ने हुनाले ऋतु निरयन महिनाको सापेक्ष ~हरेक ∼७२ वर्षमा १ दिन~ सर्छ।",
+            en: "The Sun moves about 1° a day, so the season drifts ~by 1 day every ∼72 years~ against the sidereal months.",
           },
-        },
-        {
-          kind: "diagram",
-          id: "precession-cone",
         },
       ],
     },

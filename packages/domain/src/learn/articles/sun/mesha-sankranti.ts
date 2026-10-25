@@ -78,25 +78,10 @@ export const meshaSankranti: ArticleData = {
       eyebrow: "The ayanamsha again",
       blocks: [
         {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "सायन प्रणालीमा मेषको आरम्भ वसन्त विषुव — `२१` मार्चतिर। नेपाली पात्रो निरयन भएकाले त्यो बिन्दु ~अयनांश~ जति पछाडि सरेको हुन्छ।",
-            en: "In the tropical system the start of Mesha is the vernal equinox, around `21` March. Because the Nepali calendar is sidereal, its Mesha sits behind that by the ~ayanamsha~.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "two-zero-points",
-        },
-        {
-          kind: "diagram",
-          id: "ayanamsha-wheel",
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "अयनांश हरेक वर्ष करिब `५०` विकला (arc-seconds) बढ्ने हुनाले नववर्ष पनि शताब्दीयौँमा बिस्तारै पछाडि सर्दै जान्छ — हरेक `७२` वर्षमा झन्डै एक दिन।",
-            en: "Since the ayanamsha grows by about `50` arc-seconds a year, the new year also creeps later across centuries — roughly one day every `72` years.",
+            ne: "मार्चको अन्त्य होइन, अप्रिल मध्य किन भन्ने कुरा [[year-begins-baisakh|वर्ष बैशाखमा किन सुरु हुन्छ]] मा छ — विषुव र निरयन मेषबीचको अयनांश।",
+            en: "Why it falls in mid-April rather than late March is [[year-begins-baisakh|why the year begins in Baisakh]] — the ayanamsha between the equinox and sidereal Mesha.",
           },
         },
       ],

@@ -50,8 +50,8 @@ export const eclipses: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "तलको **त्रिआयामिक** चित्रमा *क्रान्तिवृत्त तल* (सूर्यपथको समतल) र त्यसमाथि ~∼५° झुकेको~ चन्द्र-कक्ष देखिन्छ। पृथ्वीको बीचबाट~ सूर्य–पृथ्वी रेखा~ गएको छ। **▶ चलाउनुहोस्** — सूर्यसँगै यो रेखा घुम्छ; जब यो **राहु वा केतु** मा पुग्छ र त्यहीँ चन्द्र (पूर्णिमा/औंसी) पर्छ तब मात्र ग्रहण हुन्छ। तल्लो स्लाइडरले पात रेखालाई **∼१८.६ वर्षे** चक्रमा घुमाउँछ।",
-            en: "The **3-D** diagram below shows the *ecliptic plane* (the Sun's path) and the Moon's orbit tilted ~∼5°~ above it. The ~Sun–Earth line~ runs through the centre of the Earth. Press **▶ play** — this line turns with the Sun; an eclipse happens only when it reaches **Rahu or Ketu** and a moon (full/new) is there. The lower slider rotates the node line on its **∼18.6-year** cycle.",
+            ne: "झुकाव र १८.६ वर्षे पात चक्र [[rahu-ketu-nodes|पातको खण्ड]] मा छन्। यही दृश्य ग्रहणको जाँच हो। **▶ चलाउनुहोस्** — सूर्य–पृथ्वी रेखा **राहु वा केतु** मा पुग्दा र त्यहीँ पूर्णिमा/औंसी पर्दा मात्र ग्रहण हुन्छ।",
+            en: "The tilt and the 18.6-year nodal cycle are [[rahu-ketu-nodes|the node chapter]]. This view is the eclipse test. Press **▶ play** — an eclipse occurs only when the Sun–Earth line meets **Rahu or Ketu** with a new or full moon there.",
           },
         },
         {
@@ -70,8 +70,8 @@ export const eclipses: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "चन्द्रको कक्ष पृथ्वीको कक्षभन्दा **∼५° ढल्केको** छ, त्यसैले धेरैजसो पूर्णिमामा चन्द्र छायाँभन्दा माथि वा तल हुन्छ। ग्रहण त्यतिबेला मात्र हुन्छ जब पूर्णिमा ~राहु–केतु (पात बिन्दु)~ नजिक पर्छ।",
-            en: "The Moon's orbit is tilted **∼5°** to Earth's, so at most full moons the Moon is above or below the shadow. An eclipse happens only when the full moon falls near ~Rahu–Ketu (the nodes)~.",
+            ne: "पातको खण्डले भनेझैँ धेरैजसो पूर्णिमा छायाँबाट छुट्छन्। नछुट्दा ग्रहण तीन मध्ये एक प्रकारको हुन्छ।",
+            en: "As the node chapter explains, most full moons miss the shadow. When one does not, the eclipse is one of three kinds.",
           },
         },
         {

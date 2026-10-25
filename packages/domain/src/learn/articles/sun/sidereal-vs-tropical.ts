@@ -35,11 +35,10 @@ export const siderealVsTropical: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "ayanamsha-wheel",
-          caption: {
-            ne: "दुई राशिचक्र एकमाथि अर्को — बीचको कोणीय फरक नै अयनांश हो।",
-            en: "The two zodiacs superimposed — the angular gap between them is the ayanamsha.",
+          kind: "note",
+          text: {
+            ne: "दुई शून्यबीचको कोण नै अयनांश हो। अर्को खण्डको चक्रले त्यो खाँडो चलाएर देखाउँछ।",
+            en: "The angle between the two zeros is the ayanamsha. The wheel in the next chapter lets you move that wedge.",
           },
         },
       ],

@@ -11,8 +11,8 @@ export const locationDifferentResults: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "पञ्चाङ्गका परिमाणलाई दुई वर्गमा बाँड्न सकिन्छ — जुन विश्वभरि उही हुन्छन्, र जुन स्थानअनुसार बदलिन्छन्।",
-            en: "Panchanga quantities fall into two classes — those identical everywhere, and those that change with location.",
+            ne: "विचार [[why-location-matters|स्थानले किन फरक पार्छ]] मा छ। यहाँ केवल विभाजन — कुन सङ्ख्या सबैतिर उही हुन्छ, र कुनलाई स्थानले दिनमा राख्छ।",
+            en: "The idea is [[why-location-matters|why location matters]]. Here is only the split — which numbers are the same everywhere, and which the place assigns to a day.",
           },
         },
         {
@@ -61,10 +61,6 @@ export const locationDifferentResults: ArticleData = {
             ne: "ध्यान दिनुहोस् — पहिलो दुई **स्थाननिरपेक्ष** भए पनि, तिनलाई *कुन दिनमा राख्ने* भन्ने प्रश्न स्थानसापेक्ष हुन्छ। यही मोडमा भ्रम सुरु हुन्छ।",
             en: "Note that although the first two are **location-independent**, the question of *which day they belong to* is not. That turn is where the confusion begins.",
           },
-        },
-        {
-          kind: "diagram",
-          id: "sunrise-vriddhi",
         },
       ],
     },

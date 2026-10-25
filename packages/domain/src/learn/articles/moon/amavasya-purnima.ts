@@ -50,46 +50,11 @@ export const amavasyaPurnima: ArticleData = {
       eyebrow: "The 5° tilt",
       blocks: [
         {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "औंसीमा चन्द्र सूर्य र पृथ्वीको बीचमा पर्छ, र पूर्णिमामा पृथ्वी बीचमा — त्यसो भए हरेक महिना ग्रहण किन लाग्दैन?",
-            en: "At new moon the Moon sits between Sun and Earth; at full moon Earth sits between them. So why is there not an eclipse every month?",
+            ne: "हरेक औंसी वा पूर्णिमा ग्रहण होइन। चन्द्रको कक्ष झन्डै ५° ढल्केको छ, र ग्रहण पात नजिक मात्र लाग्छ — [[rahu-ketu-nodes|राहु–केतु र पात रेखा]] र [[eclipses|ग्रहण]]।",
+            en: "Not every new or full moon is an eclipse. The Moon's orbit is tilted about 5°, and an eclipse falls only near a node — [[rahu-ketu-nodes|Rāhu, Ketu and the nodes]] and [[eclipses|eclipses]].",
           },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "कारण — चन्द्रको कक्ष क्रान्तिवृत्तसँग ठ्याक्कै मिल्दैन, झन्डै `५°` झुकेको छ। त्यसैले प्रायः औंसीमा चन्द्र सूर्यभन्दा माथि वा तल हुन्छ, ठीक अगाडि हुँदैन।",
-            en: "Because the Moon's orbit is not flush with the ecliptic — it is tilted by about `5°`. At most new moons the Moon passes above or below the Sun rather than across it.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "moon-orbit-tilt",
-          caption: {
-            ne: "चन्द्र कक्षको ~५° झुकाव — यसैले ग्रहण दुर्लभ बन्छ।",
-            en: "The Moon's ~5° orbital tilt — what makes eclipses rare rather than monthly.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "ग्रहण त्यतिबेला मात्र सम्भव हुन्छ जब औंसी वा पूर्णिमा ~पात~ नजिक पर्छ — जहाँ चन्द्रको कक्ष क्रान्तिवृत्त काट्छ। परम्परामा यी दुई बिन्दुलाई **राहु** र **केतु** भनिन्छ।",
-            en: "An eclipse is possible only when a new or full moon falls near a ~node~ — where the Moon's orbit crosses the ecliptic. Tradition names those two points **Rāhu** and **Ketu**.",
-          },
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: { ne: "औंसी + पात", en: "New moon + node" },
-              p: { ne: "**सूर्यग्रहण** — चन्द्रले सूर्य छेक्छ।", en: "**Solar eclipse** — the Moon covers the Sun." },
-            },
-            {
-              h: { ne: "पूर्णिमा + पात", en: "Full moon + node" },
-              p: { ne: "**चन्द्रग्रहण** — पृथ्वीको छायाँ चन्द्रमा पर्छ।", en: "**Lunar eclipse** — Earth's shadow falls on the Moon." },
-            },
-          ],
         },
       ],
     },

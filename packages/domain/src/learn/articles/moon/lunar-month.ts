@@ -56,22 +56,11 @@ export const lunarMonth: ArticleData = {
       eyebrow: "The half-day remainder",
       blocks: [
         {
-          kind: "lede",
+          kind: "note",
           text: {
-            ne: "चान्द्र मासमा ठ्याक्कै `३०` तिथि हुन्छन् — यो परिभाषाबाटै आउँछ, किनभने `३६०° ÷ १२° = ३०`। तर मास `२९.५३` दिनको मात्र हुन्छ।",
-            en: "A lunar month contains exactly `30` tithis — that follows from the definition, since `360° ÷ 12° = 30`. Yet the month lasts only `29.53` days.",
+            ne: "चान्द्र मासमा ३० तिथि हुन्छन् र दिन झन्डै २९.५३ मात्र। तिथि २४ घण्टाको किन हुँदैन, र कहिले दोहोरिन्छ वा हराउँछ, [[tithi-not-24-hours|तिथि २४ घण्टाको किन हुँदैन]] र [[tithi-vriddhi-kshaya|तिथि वृद्धि र क्षय]] मा छ।",
+            en: "A lunar month holds 30 tithis and only about 29.53 days. Why a tithi is not 24 hours, and when one repeats or disappears, is [[tithi-not-24-hours|why a tithi is not 24 hours]] and [[tithi-vriddhi-kshaya|when a tithi repeats or skips]].",
           },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "अर्थात् औसतमा प्रत्येक तिथि `२४` घण्टाभन्दा **छोटो** हुन्छ — झन्डै `२३` घण्टा `३७` मिनेट। यही आधा दिनको बाँकीले ~तिथि क्षय~ लाई नियमित घटना बनाउँछ: औसत तिथि दिनभन्दा छोटो हुनाले कुनै तिथिले कुनै सूर्योदय नछुने अवस्था बेला–बेला आउँछ।",
-            en: "So on average each tithi is **shorter** than `24` hours — about `23` hours `37` minutes. That half-day shortfall is what makes ~tithi kshaya~ a regular event: since the average tithi is shorter than a day, now and then one touches no sunrise at all.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "sunrise-kshaya",
         },
       ],
     },
