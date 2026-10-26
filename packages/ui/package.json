@@ -11,6 +11,7 @@
     },
     "./web": "./src/web/index.ts",
     "./native": "./src/native/index.ts",
+    "./gestures": "./src/native/gestures.ts",
     "./contract": "./src/contract.ts",
     "./classes": "./src/classes.ts",
     "./motion": {
