@@ -46,7 +46,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
               {vedaCite ? <Text as="span" className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
             </Box>
           ) : null}
-          <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, isNote && "whitespace-pre-line")}>
+          <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "whitespace-pre-line")}>
             {card.tokens.map((tok, i) =>
               i === card.activeTokenIndex ? (
                 <Text as="span" key={i} className={cn(documentsClasses.verseWord, "transition-colors duration-150")}>{tok}</Text>
