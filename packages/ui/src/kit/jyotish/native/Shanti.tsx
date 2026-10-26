@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type ComponentRef } from "react";
 import { View } from "react-native";
 import { Trans } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -19,7 +19,7 @@ const REMEDY = {
 } as const;
 
 export function ShantiVidhiPanel({ grahaShanti, isError = false, renderGraha, scrollIntoView }: ShantiVidhiPanelProps) {
-  const detailRef = useRef<View>(null);
+  const detailRef = useRef<ComponentRef<typeof View>>(null);
   const panel = useShantiVidhiPanel({
     grahaShanti,
     isError,

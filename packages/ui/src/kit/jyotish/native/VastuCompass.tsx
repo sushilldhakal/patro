@@ -14,7 +14,6 @@ export function VastuCompassRing({ size, center, ink, marks }: VastuCompassRingP
   const edge = size ?? R.size;
   return (
     <Svg width={edge} height={edge} viewBox={`0 0 ${R.size} ${R.size}`} pointerEvents="none">
-      {/* @ts-expect-error react-native-svg Defs children typing */}
       <Defs>
         <ClipPath id={clipId}>
           <Circle cx={center.cx} cy={center.cy} r={R.rHouse} />

@@ -135,7 +135,6 @@ export function VastuPurushaWheel({
         viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
         accessibilityLabel={w.heading}
       >
-        {/* @ts-expect-error react-native-svg Defs children typing */}
         <Defs>
           <ClipPath id={clipId}>
             <Circle cx={CX} cy={CY} r={DIR16_INNER} />

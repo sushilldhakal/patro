@@ -1,3 +1,4 @@
+import type { ComponentRef } from "react";
 import type { RefObject } from "react";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
@@ -50,7 +51,7 @@ export function LearnArticleView({
   initialChapter,
 }: {
   article: LearnArticle;
-  scrollRef?: RefObject<ScrollView | null>;
+  scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>;
   initialChapter?: string;
 }) {
   const router = useRouter();

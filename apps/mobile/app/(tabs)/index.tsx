@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
 import { ScrollView, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
@@ -169,7 +169,7 @@ export default function HomeScreen() {
     stepMonth,
     goToday: goTodayBrowse,
   } = usePatroMonthBrowse();
-  const asideRef = useRef<View>(null);
+  const asideRef = useRef<ComponentRef<typeof View>>(null);
   const scrollToAsideRef = useRef(false);
   const [patroView, setPatroView] = useState<HomePatroView>("calendar");
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);

@@ -1,3 +1,4 @@
+import type { ComponentRef } from "react";
 import { useZoomScrollLocked } from "@vedic-patro/ui/kit/panchanga";
 import type { RefObject } from "react";
 import { ScrollView, View } from "react-native";
@@ -39,7 +40,7 @@ export function AppShell({
   showHeader?: boolean;
   /** Exposes the internal ScrollView for callers that need to scroll to a
    *  measured child (e.g. a chapter jump-list on a merged Learn page). */
-  scrollRef?: RefObject<ScrollView | null>;
+  scrollRef?: RefObject<ComponentRef<typeof ScrollView> | null>;
   /** @deprecated Sidebar comes from `PanchangaTabsShell` for shell routes. */
   panchangaSidebar?: boolean;
 }) {

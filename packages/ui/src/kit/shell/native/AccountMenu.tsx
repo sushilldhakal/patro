@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentRef } from "react";
 import { Modal, Pressable as RNPressable, View, useWindowDimensions } from "react-native";
 import Animated from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
@@ -83,7 +83,7 @@ export function AccountMenu({
   copy,
   auth,
 }: AccountMenuProps) {
-  const anchorRef = useRef<View>(null);
+  const anchorRef = useRef<ComponentRef<typeof View>>(null);
   const { width } = useWindowDimensions();
   const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
   const reduced = useReducedMotionPref();

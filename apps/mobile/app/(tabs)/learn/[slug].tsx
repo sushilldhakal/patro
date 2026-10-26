@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type ComponentRef } from "react";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { useLearnArticle } from "@vedic-patro/features/learn";
@@ -20,7 +20,7 @@ function resolveSlug(raw: string | string[] | undefined): string | undefined {
 export default function LearnArticleScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const params = useLocalSearchParams<{ slug: string | string[]; chapter?: string }>();
   const article = useLearnArticle(resolveSlug(params.slug));
   const { copy } = article;

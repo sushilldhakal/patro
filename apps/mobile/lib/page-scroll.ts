@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ComponentRef } from "react";
 import type { ScrollView, View } from "react-native";
 import { usePathname } from "expo-router";
 
@@ -8,21 +8,21 @@ import { usePathname } from "expo-router";
  * sibling section into view without being handed a ref — the native equivalent
  * of web's `scrollIntoView`.
  */
-let scroller: ScrollView | null = null;
+let scroller: ComponentRef<typeof ScrollView> | null = null;
 
-export function setPageScroller(node: ScrollView | null) {
+export function setPageScroller(node: ComponentRef<typeof ScrollView> | null) {
   if (node) scroller = node;
   else if (scroller === node) scroller = null;
 }
 
-export function scrollViewIntoView(target: View | null, offset = 12) {
+export function scrollViewIntoView(target: ComponentRef<typeof View> | null, offset = 12) {
   const host = scroller;
   if (!host || !target) return;
   /* measureLayout wants a native ref, not a numeric node handle (newer RN). */
   const content = (host as unknown as { getInnerViewRef?: () => unknown }).getInnerViewRef?.();
   if (!content) return;
   target.measureLayout(
-    content as Parameters<View["measureLayout"]>[0],
+    content as Parameters<ComponentRef<typeof View>["measureLayout"]>[0],
     (_x, y) => host.scrollTo({ y: Math.max(y - offset, 0), animated: true }),
     () => {},
   );
@@ -39,14 +39,14 @@ export function scrollPageToTop(animated = false) {
  */
 export function useScrollToTopOnRouteChange() {
   const pathname = usePathname();
-  const node = useRef<ScrollView | null>(null);
+  const node = useRef<ComponentRef<typeof ScrollView> | null>(null);
   const last = useRef(pathname);
   useEffect(() => {
     if (last.current === pathname) return;
     last.current = pathname;
     node.current?.scrollTo({ y: 0, animated: false });
   }, [pathname]);
-  return (n: ScrollView | null) => {
+  return (n: ComponentRef<typeof ScrollView> | null) => {
     node.current = n;
     setPageScroller(n);
   };

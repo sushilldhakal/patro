@@ -1,5 +1,5 @@
 import { fitWheelSize, isLandscape } from "./wheel-fit";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
 import { Animated, Modal, Platform, Pressable, StatusBar, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Svg, { Path } from "react-native-svg";
@@ -101,7 +101,7 @@ function ZoomSurface({
   sizeRef.current = { w: width, h: height };
   /* Scale is about the middle of the stage, which is what the gesture's coordinates are in. */
   const stageRef = useRef({ w: width, h: height });
-  const viewRef = useRef<View>(null);
+  const viewRef = useRef<ComponentRef<typeof View>>(null);
   /* react-native-gesture-handler reports a pinch's centre relative to the view on iOS and
      Android but in page coordinates on web; this is the offset that brings web in line. */
   const origin = useRef({ x: 0, y: 0 });
@@ -320,7 +320,7 @@ export function ZoomStage({ children, size, height, rounded = true, fullscreenOv
         supportedOrientations={["portrait", "portrait-upside-down", "landscape", "landscape-left", "landscape-right"]}
         onRequestClose={close}
       >
-        <StatusBar barStyle="light-content" backgroundColor={ZOOM_STAGE_BG} translucent />
+        <StatusBar barStyle="light-content" />
         {/* A Modal is its own window on Android: gestures need their own root inside it. */}
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: ZOOM_STAGE_BG, paddingTop: insets.top + FULLSCREEN_CHROME, paddingBottom: insets.bottom }}>
           {fullscreen ? (

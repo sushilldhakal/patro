@@ -62,7 +62,7 @@ function Layer({
 }: {
   size: number;
   id: string;
-  style?: StyleProp<ViewStyle>;
+  style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
   fade?: boolean;
   children: ReactNode;
 }) {

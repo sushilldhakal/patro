@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Dimensions, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
+import { Dimensions, type ScaledSize, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 import { makeMutable } from "react-native-reanimated";
 
 /**
@@ -9,7 +9,7 @@ import { makeMutable } from "react-native-reanimated";
 export const pageScrollY = makeMutable(0);
 export const pageViewportH = makeMutable(Dimensions.get("window").height);
 
-Dimensions.addEventListener("change", ({ window }) => {
+Dimensions.addEventListener("change", ({ window }: { window: ScaledSize }) => {
   pageViewportH.set(window.height);
 });
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { ScrollView, View } from "react-native";
 import Animated, {
   LinearTransition,
@@ -67,8 +67,8 @@ export function PanchangaSidebarNav({
   compact?: boolean;
 }) {
   const reduced = useReducedMotionPref();
-  const bodyRef = useRef<View>(null);
-  const itemRefs = useRef<Record<string, View | null>>({});
+  const bodyRef = useRef<ComponentRef<typeof View>>(null);
+  const itemRefs = useRef<Record<string, ComponentRef<typeof View> | null>>({});
   const [frames, setFrames] = useState<Record<string, Frame>>({});
   const [placed, setPlaced] = useState(false);
   const y = useSharedValue(0);

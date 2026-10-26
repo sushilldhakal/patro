@@ -1045,7 +1045,7 @@ function WheelBody({
         supportedOrientations={ALL_ORIENTATIONS}
         onRequestClose={toggleExpanded}
       >
-        <StatusBar barStyle="light-content" backgroundColor={W_BG} translucent />
+        <StatusBar barStyle="light-content" />
         {/* A Modal is its own native root: on Android the wheel's pinch / spin
             gestures only reach it through a root of their own. */}
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: W_BG }}>

@@ -10,7 +10,7 @@ import {
 /** CSS `ease-in-out` from the web favicon and loader SVGs. */
 const EASE_IN_OUT = Easing.bezier(0.42, 0, 0.58, 1);
 
-function appIsActive(state: AppStateStatus): boolean {
+function appIsActive(state: AppStateStatus | string | null | undefined): boolean {
   return state === "active" || state === "unknown";
 }
 

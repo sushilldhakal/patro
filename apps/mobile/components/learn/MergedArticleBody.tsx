@@ -8,7 +8,7 @@
  * each restart at ०१.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ComponentRef } from "react";
 import { Platform, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -49,11 +49,11 @@ export function MergedArticleBody({
   initialChapter,
 }: {
   page: MergedPage;
-  scrollRef?: React.RefObject<ScrollView | null>;
+  scrollRef?: React.RefObject<ComponentRef<typeof ScrollView> | null>;
   initialChapter?: string;
 }) {
   const { t, lang, pick } = useLocale();
-  const chapterRefs = useRef<Record<string, View | null>>({});
+  const chapterRefs = useRef<Record<string, ComponentRef<typeof View> | null>>({});
 
   // Section numbers run continuously across chapters, so each chapter's
   // offset depends on every one before it — threaded via `reduce` rather
@@ -87,7 +87,7 @@ export function MergedArticleBody({
       const content = (scroller as unknown as { getInnerViewRef?: () => unknown }).getInnerViewRef?.();
       if (!content) return;
       target.measureLayout(
-        content as Parameters<View["measureLayout"]>[0],
+        content as Parameters<ComponentRef<typeof View>["measureLayout"]>[0],
         (_x, y) => scroller.scrollTo({ y: Math.max(y - 12, 0), animated: true }),
         () => {},
       );

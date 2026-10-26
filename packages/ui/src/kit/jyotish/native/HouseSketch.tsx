@@ -152,7 +152,6 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
             accessibilityLabel={sketch.labels.aria}
             pointerEvents="none"
           >
-            {/* @ts-expect-error react-native-svg Defs children typing */}
             <Defs>
               <Pattern
                 id={hatchId}

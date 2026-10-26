@@ -8,7 +8,7 @@
  * second, which is also what positions the text labels over the canvas.
  */
 
-import { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
 import {
   Modal,
   PanResponder,
@@ -854,7 +854,7 @@ export function AakashGocharSky({
    * same for every node — so with the view's own origin measured once they
    * convert to canvas-local pixels exactly, whatever the touch landed on.
    */
-  const viewRef = useRef<View>(null);
+  const viewRef = useRef<ComponentRef<typeof View>>(null);
   const viewOrigin = useRef({ x: 0, y: 0 });
   const measureView = useCallback(() => {
     viewRef.current?.measureInWindow((x, y) => {

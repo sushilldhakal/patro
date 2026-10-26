@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type ComponentRef } from "react";
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 import type { WheelGraha } from "@vedic-patro/domain/panchanga/wheel-data";
 import { usePlanetSelectMenu } from "@vedic-patro/features/panchanga";
@@ -29,7 +29,7 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, compact = false, 
   const { open, setOpen } = menu;
   const { width: sw, height: sh } = useWindowDimensions();
   const [anchor, setAnchor] = useState({ x: 0, y: 0, w: 36, h: 36 });
-  const btnRef = useRef<View>(null);
+  const btnRef = useRef<ComponentRef<typeof View>>(null);
   const size = compact ? 32 : 36;
 
   const openMenu = useCallback(() => {

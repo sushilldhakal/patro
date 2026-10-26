@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type ComponentRef } from "react";
 import { PanResponder, Text, View } from "react-native";
 import { fontFamily, illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
 import {
@@ -30,7 +30,7 @@ export function CompassControl({
   const sensorActive = gyroMode || cameraOn;
   const glyphColor = cameraOn ? illustration.green58 : gyroMode ? illustration.amber61 : withAlpha(neutral.white, 0.8);
   const center = useRef({ x: 0, y: 0 });
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<ComponentRef<typeof View>>(null);
   const gesture = useRef<CompassGesture | null>(null);
   const headingRef = useRef(heading);
   headingRef.current = heading;
