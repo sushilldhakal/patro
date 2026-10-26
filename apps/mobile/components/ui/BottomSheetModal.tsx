@@ -116,13 +116,15 @@ export function BottomSheetModal({
 
   /* Everything each animated view needs is in its one animated style, with nothing plain beside
      it: a `style={[plain, animated]}` array drops the plain part. */
+  /* `withAlpha` is plain JS: called inside the worklet it throws on the UI thread and kills the app. */
+  const backdropColor = withAlpha(neutral.black, 0.45);
   const backdropStyle = useAnimatedStyle(() => ({
     position: "absolute",
     top: 0,
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: withAlpha(neutral.black, 0.45),
+    backgroundColor: backdropColor,
     opacity: isCenter ? open.get() : backdropProgress.get(),
   }));
   const panelStyle = useAnimatedStyle(() => {

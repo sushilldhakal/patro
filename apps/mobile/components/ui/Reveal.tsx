@@ -7,10 +7,9 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { EASE_OUT, SPRING_SNAP, useReducedMotionPref } from "@vedic-patro/ui/motion";
+import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { ScrollRevealScope, pageScrollY, pageViewportH } from "@/lib/scroll-motion";
 
 /** How far a block rises as it arrives. */
@@ -68,7 +67,7 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
       progress.set(
         withDelay(
           delay,
-          reduced ? withTiming(1, { duration: REDUCED_FADE_MS, easing: EASE_OUT }) : withSpring(1, SPRING_SNAP),
+          withTiming(1, { duration: reduced ? REDUCED_FADE_MS : 560, easing: EASE_OUT }),
         ),
       );
     },
