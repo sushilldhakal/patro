@@ -4,6 +4,8 @@ import { cancelAnimation, useAnimatedStyle, useSharedValue, withSpring } from "r
 import { scheduleOnRN } from "react-native-worklets";
 import { SPRING_SNAP, haptics } from "./motion";
 
+type Spring = typeof SPRING_SNAP;
+
 type Axis = "x" | "y" | "both";
 
 /** How far ahead of the finger a release is judged, in seconds: a flick lands where it was headed. */
@@ -51,8 +53,12 @@ export function useSpringPan(options: {
   /** Where the thing rests to begin with, as an index into the snap points. Default 0. */
   initialIndex?: number;
   onSnap?: (axis: "x" | "y", index: number) => void;
+  /** Off, the pan never claims a touch. Default on. */
+  enabled?: boolean;
+  /** Spring used on release and by `snapTo`. Default `SPRING_SNAP`; sheets pass `SPRING_SHEET`. */
+  spring?: Spring;
 }) {
-  const { axis = "both", snapPoints, initialIndex = 0, onSnap } = options;
+  const { axis = "both", snapPoints, initialIndex = 0, onSnap, enabled = true, spring = SPRING_SNAP } = options;
   const xs = snapPoints.x ?? [0];
   const ys = snapPoints.y ?? [0];
   const x = useSharedValue(xs[initialIndex] ?? xs[0]!);
@@ -72,6 +78,7 @@ export function useSpringPan(options: {
     const yMax = Math.max(...ys);
 
     const pan = Gesture.Pan()
+      .enabled(enabled)
       .onBegin(() => {
         cancelAnimation(x);
         cancelAnimation(y);
@@ -85,12 +92,12 @@ export function useSpringPan(options: {
       .onEnd((e) => {
         if (moveX) {
           const index = nearest(xs, x.get() + e.velocityX * PROJECTION_S);
-          x.set(withSpring(xs[index]!, { ...SPRING_SNAP, velocity: e.velocityX }));
+          x.set(withSpring(xs[index]!, { ...spring, velocity: e.velocityX }));
           if (onSnap) scheduleOnRN(onSnap, "x", index);
         }
         if (moveY) {
           const index = nearest(ys, y.get() + e.velocityY * PROJECTION_S);
-          y.set(withSpring(ys[index]!, { ...SPRING_SNAP, velocity: e.velocityY }));
+          y.set(withSpring(ys[index]!, { ...spring, velocity: e.velocityY }));
           if (onSnap) scheduleOnRN(onSnap, "y", index);
         }
         scheduleOnRN(haptics.snap);
@@ -102,16 +109,22 @@ export function useSpringPan(options: {
     return pan;
     // The snap arrays are compared by value (xKey / yKey), not identity: callers pass literals.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [axis, xKey, yKey, onSnap, x, y, startX, startY]);
+  }, [axis, xKey, yKey, onSnap, enabled, spring, x, y, startX, startY]);
 
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: x.get() }, { translateY: y.get() }],
   }));
 
-  /** Spring to a snap point from code (a button that opens the sheet). */
-  const snapTo = (target: { x?: number; y?: number }) => {
-    if (target.x !== undefined) x.set(withSpring(xs[target.x] ?? x.get(), SPRING_SNAP));
-    if (target.y !== undefined) y.set(withSpring(ys[target.y] ?? y.get(), SPRING_SNAP));
+  /** Spring to a snap point from code (a button that opens the sheet). `onDone` runs on the JS thread once it lands. */
+  const snapTo = (target: { x?: number; y?: number }, onDone?: () => void) => {
+    const landed = onDone
+      ? (finished?: boolean) => {
+          "worklet";
+          if (finished) scheduleOnRN(onDone);
+        }
+      : undefined;
+    if (target.x !== undefined) x.set(withSpring(xs[target.x] ?? x.get(), spring, landed));
+    if (target.y !== undefined) y.set(withSpring(ys[target.y] ?? y.get(), spring, landed));
   };
 
   return { gesture, x, y, style, snapTo };

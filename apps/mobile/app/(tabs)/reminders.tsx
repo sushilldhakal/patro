@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Alert, Linking, Pressable, Switch, View } from "react-native";
+import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion } from "react-native-reanimated";
+import { SwipeableRow } from "@/components/ui/SwipeableRow";
 import { AppShell } from "@/components/AppShell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
@@ -36,6 +38,11 @@ import { useThemeColors } from "@/lib/theme-context";
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
+
+/** Rows glide into their new places when one is added or removed; Reduce Motion cuts straight there. */
+const ROW_LAYOUT = LinearTransition.springify().damping(22).stiffness(240).reduceMotion(ReduceMotion.System);
+const ROW_ENTER = FadeIn.duration(180).reduceMotion(ReduceMotion.System);
+const ROW_EXIT = FadeOut.duration(140).reduceMotion(ReduceMotion.System);
 
 function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
   const rows: { label: string; lines: string[]; tone: string }[] = [
@@ -256,7 +263,14 @@ export default function RemindersScreen() {
             ) : (
               <View className="gap-2">
                 {rules.map((rule) => (
-                  <Card key={rule.id} className="flex-row items-center gap-3">
+                  <Animated.View
+                    key={rule.id}
+                    layout={ROW_LAYOUT}
+                    entering={ROW_ENTER}
+                    exiting={ROW_EXIT}
+                  >
+                  <SwipeableRow actionLabel={t("ui.reminders.delete")} onAction={() => removeRule(rule)}>
+                  <Card className="flex-row items-center gap-3">
                     <View
                       style={{ backgroundColor: rule.window_kind === "shubh" ? illustration.green36 : illustration.red46 }}
                       className="h-9 w-1.5 rounded-full"
@@ -272,6 +286,8 @@ export default function RemindersScreen() {
                       <Ionicons name="trash-outline" size={20} color={colors.danger} />
                     </Pressable>
                   </Card>
+                  </SwipeableRow>
+                  </Animated.View>
                 ))}
               </View>
             )}

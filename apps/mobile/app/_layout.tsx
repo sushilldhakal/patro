@@ -351,7 +351,11 @@ function RootShell({
             ...(reducedMotion ? { animationMatchesGesture: true } : {}),
             contentStyle: { backgroundColor: colors.background },
           }}
-        />
+        >
+          {/* These open out of a card (ZoomTransition does the travelling), so the stack only fades. */}
+          <Stack.Screen name="aakash-gochar" options={{ animation: "fade", animationDuration: 160 }} />
+          <Stack.Screen name="day/[ad]" options={{ animation: "fade", animationDuration: 160 }} />
+        </Stack>
       )}
       {ready && onboarded ? <NotificationsRuntime /> : null}
       {ready ? <ThemedStatusBar /> : null}

@@ -7,14 +7,16 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
+import { EASE_OUT, SPRING_SNAP, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { ScrollRevealScope, pageScrollY, pageViewportH } from "@/lib/scroll-motion";
 
-/** How far a block rises as it arrives, and how long it takes. */
+/** How far a block rises as it arrives. */
 const RISE = 32;
-const ENTER_MS = 560;
+/** Reduce Motion keeps a plain fade of this length. */
+const REDUCED_FADE_MS = 220;
 /** Blocks that arrive together follow one another by this much, up to MAX_STAGGER of them. */
 const STAGGER_MS = 80;
 const MAX_STAGGER = 6;
@@ -22,7 +24,7 @@ const MAX_STAGGER = 6;
 const VIEW_EDGE = 56;
 
 /**
- * Content that rises into place and fades in: when its page opens, again every time you come back
+ * Content that springs into place and fades in (a touch of overshoot, then settle): when its page opens, again every time you come back
  * to the page, and — for blocks below the fold — as they scroll into view, like a banking app's
  * cards. `index` staggers blocks that arrive together.
  *
@@ -40,8 +42,7 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
   const epoch = useSharedValue(0);
   const delay = Math.min(index, MAX_STAGGER) * STAGGER_MS;
   const rise = reduced ? 0 : RISE;
-  const duration = reduced ? 220 : ENTER_MS;
-  const firstFocus = useRef(true);
+    const firstFocus = useRef(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,9 +65,14 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
         if (box !== null && box.pageY > pageViewportH.get() - VIEW_EDGE) return;
       }
       played.set(true);
-      progress.set(withDelay(delay, withTiming(1, { duration, easing: EASE_OUT })));
+      progress.set(
+        withDelay(
+          delay,
+          reduced ? withTiming(1, { duration: REDUCED_FADE_MS, easing: EASE_OUT }) : withSpring(1, SPRING_SNAP),
+        ),
+      );
     },
-    [waitsForScroll, delay, duration],
+    [waitsForScroll, delay, reduced],
   );
 
   /* One animated style and nothing plain beside it: a `style={[plain, animated]}` array drops the plain part. */

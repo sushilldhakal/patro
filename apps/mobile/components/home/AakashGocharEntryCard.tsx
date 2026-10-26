@@ -1,7 +1,8 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
+import { PressCard } from "@/components/ui/PressCard";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -15,11 +16,11 @@ export function AakashGocharEntryCard() {
   const colors = useThemeColors();
   const card = useAakashGocharEntryCard();
   return (
-    <Pressable
+    <PressCard
       onPress={() => router.push("/aakash-gochar")}
-      className={cn(homeClasses.aakashCard, "active:opacity-80")}
-      accessibilityRole="button"
-      accessibilityLabel={card.label}
+      className={cn(homeClasses.aakashCard)}
+      label={card.label}
+      zoomToScreen
     >
       <AppNavIcon name="orbit" size={20} color={colors.secondary} />
       <View className="min-w-0 flex-1">
@@ -31,6 +32,6 @@ export function AakashGocharEntryCard() {
         {card.tag}
       </Text>
       <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-    </Pressable>
+    </PressCard>
   );
 }
