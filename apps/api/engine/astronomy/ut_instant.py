@@ -431,7 +431,13 @@ def parse_local_wall_iso(text: str, timezone_name: str) -> datetime | UtInstant:
     )
 
 
-def local_hhmm(instant: datetime | UtInstant, timezone_name: str) -> str:
+def local_hhmm(
+    instant: datetime | UtInstant, timezone_name: str, *, nearest_minute: bool = False
+) -> str:
+    """Observer-local ``HH:MM``. Truncates by default; ``nearest_minute`` rounds
+    (truncating ``instant + 30 s``), the convention published rise/set tables use."""
+    if nearest_minute:
+        instant = instant + timedelta(seconds=30)
     if isinstance(instant, UtInstant):
         return format_ut_instant_local(instant, timezone_name)["local_time_short"]
     tz = resolve_observer_timezone(timezone_name)

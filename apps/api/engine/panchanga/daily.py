@@ -59,24 +59,29 @@ from engine.panchanga.rashifal import build_daily_rashifal
 from engine.panchanga.tithi import calculate_tithi
 
 
-def _time_block(dt, timezone_name: str) -> dict[str, str] | None:
+def _time_block(dt, timezone_name: str, *, nearest_minute: bool = False) -> dict[str, str] | None:
+    """``nearest_minute`` rounds ``local_time_short`` the way almanacs print rise
+    and set; otherwise it truncates, which keeps a window end at or before the
+    real instant."""
     if dt is None:
         return None
-    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local, local_hhmm
 
     if isinstance(dt, UtInstant):
         block = format_ut_instant_local(dt, timezone_name)
         # Same expanded-ISO shape the CE branch emits below, not a jd: sentinel.
         block["utc"] = dt.isoformat()
-        return block
-    local_tz = resolve_observer_timezone(timezone_name)
-    local = dt.astimezone(local_tz)
-    return {
-        "utc": dt.isoformat(),
-        "local": local.isoformat(),
-        "local_time": local.strftime("%H:%M:%S"),
-        "local_time_short": local.strftime("%H:%M"),
-    }
+    else:
+        local = dt.astimezone(resolve_observer_timezone(timezone_name))
+        block = {
+            "utc": dt.isoformat(),
+            "local": local.isoformat(),
+            "local_time": local.strftime("%H:%M:%S"),
+            "local_time_short": local.strftime("%H:%M"),
+        }
+    if nearest_minute:
+        block["local_time_short"] = local_hhmm(dt, timezone_name, nearest_minute=True)
+    return block
 
 
 def _tithi_name_ne(display: int, paksha: str) -> str:
@@ -265,8 +270,8 @@ def _assemble_udaya_panchanga(
         weekday_py=weekday_py,
         timezone_name=location.timezone,
     )
-    sunrise_block = _time_block(sunrise_utc, location.timezone)
-    sunset_block = _time_block(sunset_utc, location.timezone)
+    sunrise_block = _time_block(sunrise_utc, location.timezone, nearest_minute=True)
+    sunset_block = _time_block(sunset_utc, location.timezone, nearest_minute=True)
     day_ghati = day_ghati_from_sun_times(
         sunrise_block.get("local_time_short"),
         sunset_block.get("local_time_short"),

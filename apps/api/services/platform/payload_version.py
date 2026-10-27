@@ -53,7 +53,11 @@ from __future__ import annotations
 #    .se1 files. Sub-arcsecond on modern dates, but a different number, and a
 #    hard failure outside 3000 BCE … 3000 CE. Fixed in AstronomyEngine; this
 #    bump retires every payload computed the old way.
-ASTRONOMY_VERSION = 3
+# 4: rise/set refraction moved from an undocumented 0 °C to the standard
+#    1010 mbar / 10 °C atmosphere behind the published −0.833° horizon (sunrise
+#    ~13 s later, sunset ~10 s earlier), and printed sunrise/sunset round to the
+#    nearest minute instead of truncating.
+ASTRONOMY_VERSION = 4
 
 # Guards compose()'s decimal packing. Raise the multiplier below before this.
 _MAX_ASTRONOMY_VERSION = 99

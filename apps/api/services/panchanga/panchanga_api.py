@@ -789,7 +789,7 @@ def build_year_sun_times(
     """
     from engine.astronomy.rashi import rashi_service
     from engine.astronomy.sun import calculate_sunrise, calculate_sunset
-    from engine.astronomy.ut_instant import as_julian_day
+    from engine.astronomy.ut_instant import as_julian_day, local_hhmm
     from engine.calendar.bikram_sambat import BS_MONTH_NAMES_NEPALI
 
     tz = resolve_observer_timezone(location.timezone)
@@ -811,8 +811,8 @@ def build_year_sun_times(
                 {
                     "day": bs_day,
                     "date_ad": greg.isoformat(),
-                    "sunrise": sunrise_utc.astimezone(tz).strftime("%H:%M"),
-                    "sunset": sunset_utc.astimezone(tz).strftime("%H:%M"),
+                    "sunrise": local_hhmm(sunrise_utc, location.timezone, nearest_minute=True),
+                    "sunset": local_hhmm(sunset_utc, location.timezone, nearest_minute=True),
                     "aayan": aayan.get("name"),
                     "aayan_ne": aayan.get("name_ne"),
                     "ayana_mark": ayana_kranti_mark(aayan),

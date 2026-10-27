@@ -82,8 +82,9 @@ def test_year_sun_times_api_siraha_before_kathmandu():
     # Siraha (~86.21°E) is east of Kathmandu, so it still rises first. The gap is
     # narrower than longitude alone would give: Siraha is also ~1.06° further
     # south, and in Ashadh (near the northern solstice) a southern observer rises
-    # later. Was 05:10 under the reference-latitude shortcut.
-    assert day_s["sunrise"] == "05:12"
+    # later. Was 05:10 under the reference-latitude shortcut, and 05:12 while
+    # sunrise was truncated to the minute (it is 05:13:03; NOAA gives 05:13:05).
+    assert day_s["sunrise"] == "05:13"
     assert day_k["sunrise"] == "05:14"
 
 

@@ -116,20 +116,16 @@ def _is_ephe_file_missing(exc: Exception) -> bool:
 # ``swe.rise_trans_true_hor``, which uses them to compute refraction at the
 # horizon.
 #
-# Current values preserved for compatibility. Their numerical effect was
-# measured during the Phase 2 investigation: pressure 0.0 is Swiss Ephemeris'
-# "derive from the observer's altitude" sentinel and reproduces an explicit
-# 1013.25 mbar exactly at sea level, so it is inert there; temperature 0.0 means
-# literally 0 °C and shifts sunrise by about 42 seconds against the ISA standard
-# 15 °C (Kathmandu, 2026-06-10).
+# 1010 mbar / 10 °C is the atmosphere behind the standard −0.833° sunrise
+# horizon (34′ refraction + 16′ solar semi-diameter) that NOAA, USNO and
+# timeanddate publish. Swiss Ephemeris with these values agrees with the NOAA
+# solar algorithm to within ~5 s all year at Kathmandu.
 #
-# No evidence was found that 0 °C was chosen deliberately — it is undocumented
-# and predates the current code. Validation, and any change, are deferred to
-# future accuracy work; see docs/phase-2-investigation-report.md §4.1. Do not
-# "correct" these without a golden-test baseline: doing so moves every sunrise
-# and sunset the service publishes.
-REFRACTION_PRESSURE = 0.0
-REFRACTION_TEMPERATURE = 0.0
+# The old 0 °C was undocumented (docs/phase-2-investigation-report.md §4.1). Its
+# denser air over-refracted the Sun, so every sunrise came ~13 s early and every
+# sunset ~10 s late against the published standard.
+REFRACTION_PRESSURE = 1010.0
+REFRACTION_TEMPERATURE = 10.0
 
 # Geometric horizon dip in arcminutes per √metre — the standard geodetic
 # approximation dip = 1.76 * sqrt(h).
