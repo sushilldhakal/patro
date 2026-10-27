@@ -1822,9 +1822,9 @@
   "sun_times": {
     "title": "Sun Revolution",
     "subtitle": "Annual sunrise & sunset · B.S. {{year}}",
-    "ayana_note": "Each day's <strong>N</strong> or <strong>S</strong> mark is set by the Sun's sign at sunrise — not by the whole month. It changes twice a year at sankranti (Cancer and Capricorn).",
+    "ayana_note": "Each day's <strong>N</strong> or <strong>S</strong> mark is set by which way the Sun is moving at sunrise — not by the whole month. It changes twice a year, at the solstices (June and December).",
     "ayana_title": "Uttarayana and Dakshinayana",
-    "ayana_body": "The Sun's course divides the year into two halves. From Capricorn sankranti to Cancer sankranti it moves northward — <north>Uttarayana</north>; from Cancer sankranti back to Capricorn it moves southward — <south>Dakshinayana</south>. Each day's mark in the table is set by the Sun's sign at sunrise.",
+    "ayana_body": "The Sun's course divides the year into two halves. From the December solstice (around Poush 6) to the June solstice (around Ashadh 6) it moves northward — <north>Uttarayana</north>; from there back to the December solstice it moves southward — <south>Dakshinayana</south>. Because of the precession of the equinoxes, Makar and Karka Sankranti now fall about 24 days after these real turns and drift about 20 minutes later every year, so the table follows the Sun's actual motion at sunrise, not the sankranti.",
     "col_ayana": "Sun's course",
     "col_sun_sign": "Sun sign (at sunrise)",
     "north_ayana": "Northern (Uttarayana)",

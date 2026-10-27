@@ -1,11 +1,11 @@
 {
   "aayan": {
-    "basis": "sidereal",
+    "basis": "tropical",
     "kranti_mark": "उ",
     "name": "Uttarayana",
     "name_ne": "उत्तरायण",
     "name_sanskrit": "Uttarayana",
-    "sun_rashi": 2
+    "sun_rashi": 3
   },
   "aayan_pauranik": {
     "basis": "sidereal",

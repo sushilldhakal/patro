@@ -318,7 +318,9 @@ def build_day_panchanga(
     nak_num = panchanga_service.nakshatra(sunrise_jd)["number"]
     vaara_num = panchanga_service.vara(sunrise_jd, location.timezone)["number"]
     surya = rashi_service.surya(sunrise_jd)
-    aayan = rashi_service.aayan(sunrise_jd)
+    # Muhurta texts define Uttarayana by the Sun's sidereal rashi (Makara → Mithuna),
+    # so eligibility keeps that rule; the displayed ayana is the true (tropical) one.
+    aayan = rashi_service.aayan(sunrise_jd, sidereal=True)
     yoga_num = panchanga_service.yoga(sunrise_jd)["number"]
     karana_name = panchanga_service.karana(sunrise_jd)["name"]
 

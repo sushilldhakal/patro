@@ -3435,13 +3435,13 @@ export const strings = {
     en: "Annual sunrise & sunset · B.S. {{year}}",
   },
   "sun_times.ayana_note": {
-    ne: "प्रत्येक दिनको <strong>उ</strong> वा <strong>द</strong> सूर्योदयको बेला सूर्य कुन राशिमा छ भन्ने आधारमा तय हुन्छ — पूरै महिनाले होइन। वर्षमा दुई पटक सङ्क्रान्तिमा परिवर्तन हुन्छ (कर्कट र मकर)।",
-    en: "Each day's <strong>N</strong> or <strong>S</strong> mark is set by the Sun's sign at sunrise — not by the whole month. It changes twice a year at sankranti (Cancer and Capricorn).",
+    ne: "प्रत्येक दिनको <strong>उ</strong> वा <strong>द</strong> सूर्योदयको बेला सूर्य कुन दिशातर्फ सर्दैछ भन्ने आधारमा तय हुन्छ — पूरै महिनाले होइन। वर्षमा दुई पटक अयनान्तमा परिवर्तन हुन्छ (जुन र डिसेम्बर)।",
+    en: "Each day's <strong>N</strong> or <strong>S</strong> mark is set by which way the Sun is moving at sunrise — not by the whole month. It changes twice a year, at the solstices (June and December).",
   },
   "sun_times.ayana_title": { ne: "उत्तरायण र दक्षिणायन", en: "Uttarayana and Dakshinayana" },
   "sun_times.ayana_body": {
-    ne: "वर्षलाई सूर्यको गतिले दुई अयनमा बाँड्छ। मकर सङ्क्रान्तिदेखि कर्कट सङ्क्रान्तिसम्म सूर्य उत्तरतर्फ सर्छ — यो <north>उत्तरायण</north>; कर्कट सङ्क्रान्तिदेखि मकर सङ्क्रान्तिसम्म दक्षिणतर्फ फर्किन्छ — यो <south>दक्षिणायन</south>। तालिकाको प्रत्येक दिनको चिह्न सूर्योदयको बेलाको सूर्य राशिबाट तय हुन्छ।",
-    en: "The Sun's course divides the year into two halves. From Capricorn sankranti to Cancer sankranti it moves northward — <north>Uttarayana</north>; from Cancer sankranti back to Capricorn it moves southward — <south>Dakshinayana</south>. Each day's mark in the table is set by the Sun's sign at sunrise.",
+    ne: "वर्षलाई सूर्यको गतिले दुई अयनमा बाँड्छ। उत्तर अयनान्त (पुस ६ तिर) देखि दक्षिण अयनान्त (असार ६ तिर) सम्म सूर्य उत्तरतर्फ सर्छ — यो <north>उत्तरायण</north>; त्यसपछि फेरि उत्तर अयनान्तसम्म दक्षिणतर्फ फर्किन्छ — यो <south>दक्षिणायन</south>। अयन चलनका कारण मकर र कर्कट सङ्क्रान्ति यी वास्तविक मोडभन्दा करिब २४ दिन पछि पर्छन्, र हरेक वर्ष करिब २० मिनेट थप पछि सर्छन्; त्यसैले तालिकाले सङ्क्रान्ति होइन, सूर्योदयको बेलाको वास्तविक सूर्य गति देखाउँछ।",
+    en: "The Sun's course divides the year into two halves. From the December solstice (around Poush 6) to the June solstice (around Ashadh 6) it moves northward — <north>Uttarayana</north>; from there back to the December solstice it moves southward — <south>Dakshinayana</south>. Because of the precession of the equinoxes, Makar and Karka Sankranti now fall about 24 days after these real turns and drift about 20 minutes later every year, so the table follows the Sun's actual motion at sunrise, not the sankranti.",
   },
   "sun_times.col_ayana": { ne: "अयन", en: "Sun's course" },
   "sun_times.col_sun_sign": { ne: "सूर्य राशि (उदयकाल)", en: "Sun sign (at sunrise)" },

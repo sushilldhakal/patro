@@ -161,7 +161,11 @@ logger = logging.getLogger(__name__)
 #     first hours after the Aausi, so BS 2039 (Poush–Magh) and BS 2020 had no
 #     Kshaya; the answer also lists every Adhik month of the year
 #     (`adhik_months`). Cached special-months responses are stale.
-PANCHANGA_PAYLOAD_VERSION = 53
+# 54: ayana (and the सूर्यक्रान्ति उ/द mark) is now tropical — Uttarayana from the
+#     winter solstice (~Poush 6) to the summer solstice (~Ashadh 6), not Makar →
+#     Karka Sankranti, which lag the real turns by the ayanamsa (~24 days and
+#     growing). Day, month, year and year-sun payloads carry the mark per day.
+PANCHANGA_PAYLOAD_VERSION = 54
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

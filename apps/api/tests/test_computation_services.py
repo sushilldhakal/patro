@@ -110,7 +110,8 @@ class TestServicesMatchTheFunctionsTheyReplace:
         jd = row["jd"]
         assert rashi_service.surya(jd).to_payload() == row["surya_rashi"]
         assert rashi_service.chandra(jd).to_payload() == row["chandra_rashi"]
-        assert rashi_service.aayan(jd) == row["aayan"]
+        # The golden rows were recorded on the sidereal (Makara → Mithuna) rule.
+        assert rashi_service.aayan(jd, sidereal=True) == row["aayan"]
         assert rashi_service.ritu(jd, sidereal=True) == row["ritu"]
 
     @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
@@ -338,7 +339,7 @@ class TestRashiService:
         assert south["name"] == "Shishira"
 
     def test_aayan_flips_at_the_makara_boundary(self):
-        """Uttarayana is Makara→Mithuna; the mark must agree with the name."""
+        """Uttarayana is tropical Makara→Mithuna (solstice to solstice); the mark agrees with the name."""
         for jd in SAMPLE_JDS:
             aayan = rashi_service.aayan(jd)
             uttara = aayan["sun_rashi"] in (10, 11, 12, 1, 2, 3)

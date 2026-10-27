@@ -330,7 +330,8 @@ def _assemble_udaya_panchanga(
             "name": "Lahiri",
             "degrees": round(lahiri_ayanamsa, 6),
         },
-        "aayan": aayan_pauranik,
+        # The ayana shown everywhere is the real one: the Sun turns at the solstices.
+        "aayan": aayan_vedic,
         "aayan_pauranik": aayan_pauranik,
         "aayan_vedic": aayan_vedic,
         "vaara": {

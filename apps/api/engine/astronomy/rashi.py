@@ -46,7 +46,8 @@ SOUTHERN_MONTH_RITU: dict[int, int] = {
     9: 1, 10: 1, 11: 1,   # Sep–Nov spring
 }
 
-# Makara → Mithuna (rashi index 9, 10, 11, 0, 1, 2) is the sun's northward half.
+# Makara → Mithuna (rashi index 9, 10, 11, 0, 1, 2) is the sun's northward half. Read on the
+# tropical zodiac that is exactly winter solstice → summer solstice.
 UTTARAYANA_RASHI_INDICES = frozenset({9, 10, 11, 0, 1, 2})
 
 
@@ -168,8 +169,16 @@ class RashiService:
 
     # ── ayana ───────────────────────────────────────────────────────────────
 
-    def aayan(self, jd: float, *, sidereal: bool = True) -> dict[str, Any]:
-        """Uttarayana / Dakshinayana from the Sun's rashi."""
+    def aayan(self, jd: float, *, sidereal: bool = False) -> dict[str, Any]:
+        """Uttarayana / Dakshinayana from the Sun's rashi.
+
+        Tropical by default: the Sun really turns north at the winter solstice
+        (tropical 270°, ~Poush 6) and south at the summer solstice (90°, ~Ashadh 6).
+        The sidereal rashi (Makar Sankranti → Karka Sankranti) lags those turns by
+        the ayanamsa — about 24 days now, and ~50″ (~20 min of the Sun's motion)
+        more every year — so it is kept only for the classical muhurta rules that
+        are defined by it (``sidereal=True``).
+        """
         index = self.sun_index(jd, sidereal=sidereal)
         uttara = index in UTTARAYANA_RASHI_INDICES
         return {
