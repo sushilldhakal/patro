@@ -281,6 +281,8 @@
     "tithi_kshaya": "Kshaya tithi",
     "tithi_vriddhi_hint": "Spans two sunrises — the tithi of both days",
     "tithi_kshaya_hint": "Touches no sunrise — skipped in the patro",
+    "tithi_vriddhi_days": "The tithi of both {{first}} and {{second}}",
+    "tithi_kshaya_day": "Starts after sunrise on {{day}} and ends before the next — skipped in the patro",
     "retrograde": "Retrograde",
     "combust": "Combust",
     "exit_fullscreen": "Exit fullscreen",

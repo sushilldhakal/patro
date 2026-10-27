@@ -13,6 +13,7 @@ import {
   choghadiyaTone,
 } from "@vedic-patro/domain/panchanga/choghadiya-display";
 import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { formatEventDate } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import type { TFunction } from "@vedic-patro/i18n/react";
 import type { CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
@@ -38,6 +39,21 @@ export type SpanCard = {
   ends: SpanBoundaryView;
 };
 
+/** Why the badge: the days it names (vriddhi) or the day it falls inside (kshaya). */
+function udayaHint(s: ElementSpan, text: Text): string {
+  const { t, lang, calendar } = text;
+  const days = (s.udaya_days ?? []).map((d) => {
+    try {
+      return formatEventDate(d, lang, calendar);
+    } catch {
+      return null;
+    }
+  });
+  if (s.udaya === "vriddhi" && days[0] && days[1]) return t("common.tithi_vriddhi_days", { first: days[0], second: days[1] });
+  if (s.udaya === "kshaya" && days[0]) return t("common.tithi_kshaya_day", { day: days[0] });
+  return t(`common.tithi_${s.udaya}_hint`);
+}
+
 export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[] {
   const { t, lang, digits, calendar } = text;
   const boundary = (label: string, stamp: ElementSpan["begins"]): SpanBoundaryView => ({
@@ -50,9 +66,7 @@ export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[]
     span: s,
     name: pick(lang, s.name_ne || s.name, s.name || s.name_ne),
     paksha: s.paksha ? t(s.paksha === "shukla" ? "common.paksha_shukla" : "common.paksha_krishna") : undefined,
-    udaya: s.udaya
-      ? { kind: s.udaya, label: t(`common.tithi_${s.udaya}`), hint: t(`common.tithi_${s.udaya}_hint`) }
-      : undefined,
+    udaya: s.udaya ? { kind: s.udaya, label: t(`common.tithi_${s.udaya}`), hint: udayaHint(s, text) } : undefined,
     begins: boundary(t("common.begins"), s.begins),
     ends: boundary(t("common.ends"), s.ends),
   }));

@@ -235,13 +235,18 @@ def _find_start_generic(
     return hi
 
 
-def _tithi_udaya(begins: datetime, ends: datetime, location: ObserverLocation) -> str | None:
+def _tithi_udaya(begins: datetime, ends: datetime, location: ObserverLocation, tz) -> dict[str, Any] | None:
     """``"kshaya"`` when no sunrise falls inside the tithi, ``"vriddhi"`` when two do.
 
     The udaya tithi is the one live at sunrise, so a tithi that misses every
     sunrise never names a day (kshaya) and one that spans two names both (vriddhi).
+    ``udaya_days`` are the local dates involved: both days a vriddhi tithi names,
+    or the one day a kshaya tithi begins and ends inside.
     """
     from engine.astronomy.sun import sun_service
+
+    def day(dt: datetime) -> str:
+        return _as_utc(dt).astimezone(tz).date().isoformat()
 
     try:
         first = sun_service.sunrise_after(begins, location)
@@ -249,10 +254,10 @@ def _tithi_udaya(begins: datetime, ends: datetime, location: ObserverLocation) -
             return None
         first = _as_utc(first)
         if first >= ends:
-            return "kshaya"
+            return {"udaya": "kshaya", "udaya_days": [day(first - timedelta(days=1))]}
         second = sun_service.sunrise_after(first + timedelta(minutes=1), location)
         if second is not None and _as_utc(second) < ends:
-            return "vriddhi"
+            return {"udaya": "vriddhi", "udaya_days": [day(first), day(second)]}
     except (TypeError, ValueError):
         return None  # pre-1 CE instants — leave the span untagged
     return None
@@ -300,9 +305,9 @@ def element_spans(
         if extra:
             span.update(extra)
         if name == "tithi":
-            udaya = _tithi_udaya(seg_start, seg_end, location)
+            udaya = _tithi_udaya(seg_start, seg_end, location, tz)
             if udaya:
-                span["udaya"] = udaya
+                span.update(udaya)
         spans.append(span)
         prev_end = seg_end
         cursor = seg_end + timedelta(seconds=1)

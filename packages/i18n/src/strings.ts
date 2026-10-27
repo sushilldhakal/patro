@@ -495,6 +495,8 @@ export const strings = {
   "common.tithi_kshaya": { ne: "क्षय तिथि", en: "Kshaya tithi" },
   "common.tithi_vriddhi_hint": { ne: "दुई सूर्योदय पार गर्ने तिथि — दुवै दिनको तिथि", en: "Spans two sunrises — the tithi of both days" },
   "common.tithi_kshaya_hint": { ne: "कुनै सूर्योदयमा नपर्ने तिथि — पात्रोमा छुट्छ", en: "Touches no sunrise — skipped in the patro" },
+  "common.tithi_vriddhi_days": { ne: "{{first}} र {{second}} दुवै दिन यही तिथि", en: "The tithi of both {{first}} and {{second}}" },
+  "common.tithi_kshaya_day": { ne: "{{day}} कै सूर्योदयपछि सुरु भई अर्को सूर्योदयअघि सकिन्छ — पात्रोमा छुट्छ", en: "Starts after sunrise on {{day}} and ends before the next — skipped in the patro" },
   "common.retrograde": { ne: "वक्री", en: "Retrograde" },
   "common.combust": { ne: "अस्त", en: "Combust" },
   "common.exit_fullscreen": { ne: "सामान्य दृश्य", en: "Exit fullscreen" },

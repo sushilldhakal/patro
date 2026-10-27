@@ -281,6 +281,8 @@
     "tithi_kshaya": "क्षय तिथि",
     "tithi_vriddhi_hint": "दुई सूर्योदय पार गर्ने तिथि — दुवै दिनको तिथि",
     "tithi_kshaya_hint": "कुनै सूर्योदयमा नपर्ने तिथि — पात्रोमा छुट्छ",
+    "tithi_vriddhi_days": "{{first}} र {{second}} दुवै दिन यही तिथि",
+    "tithi_kshaya_day": "{{day}} कै सूर्योदयपछि सुरु भई अर्को सूर्योदयअघि सकिन्छ — पात्रोमा छुट्छ",
     "retrograde": "वक्री",
     "combust": "अस्त",
     "exit_fullscreen": "सामान्य दृश्य",
