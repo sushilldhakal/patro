@@ -236,12 +236,11 @@ def _find_start_generic(
 
 
 def _tithi_udaya(begins: datetime, ends: datetime, location: ObserverLocation, tz) -> dict[str, Any] | None:
-    """``"kshaya"`` when no sunrise falls inside the tithi, ``"vriddhi"`` when two do.
+    """The patro day(s) a tithi names: the local dates of the sunrises it is live at.
 
-    The udaya tithi is the one live at sunrise, so a tithi that misses every
-    sunrise never names a day (kshaya) and one that spans two names both (vriddhi).
-    ``udaya_days`` are the local dates involved: both days a vriddhi tithi names,
-    or the one day a kshaya tithi begins and ends inside.
+    The udaya tithi is the one live at sunrise, so ``udaya_days`` usually holds one
+    date. Two sunrises make it ``"vriddhi"`` (adhik: it names both days); none makes
+    it ``"kshaya"`` (it names no day), and ``kshaya_day`` is the day it falls inside.
     """
     from engine.astronomy.sun import sun_service
 
@@ -249,18 +248,22 @@ def _tithi_udaya(begins: datetime, ends: datetime, location: ObserverLocation, t
         return _as_utc(dt).astimezone(tz).date().isoformat()
 
     try:
-        first = sun_service.sunrise_after(begins, location)
-        if first is None:
+        days: list[str] = []
+        rise = sun_service.sunrise_after(begins, location)
+        while rise is not None and _as_utc(rise) < ends and len(days) < 3:
+            days.append(day(rise))
+            rise = sun_service.sunrise_after(_as_utc(rise) + timedelta(minutes=1), location)
+        if rise is None and not days:
             return None
-        first = _as_utc(first)
-        if first >= ends:
-            return {"udaya": "kshaya", "udaya_days": [day(first - timedelta(days=1))]}
-        second = sun_service.sunrise_after(first + timedelta(minutes=1), location)
-        if second is not None and _as_utc(second) < ends:
-            return {"udaya": "vriddhi", "udaya_days": [day(first), day(second)]}
     except (TypeError, ValueError):
         return None  # pre-1 CE instants — leave the span untagged
-    return None
+    out: dict[str, Any] = {"udaya_days": days}
+    if not days:
+        out["udaya"] = "kshaya"
+        out["kshaya_day"] = day(_as_utc(rise) - timedelta(days=1))
+    elif len(days) > 1:
+        out["udaya"] = "vriddhi"
+    return out
 
 
 def element_spans(

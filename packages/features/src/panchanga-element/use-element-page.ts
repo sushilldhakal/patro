@@ -28,7 +28,7 @@ import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
-import { elementTable, spanCards } from "./model";
+import { elementTable, spanCards, udayaSummary } from "./model";
 
 export * from "./model";
 
@@ -87,6 +87,7 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
   });
 
   const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
+  const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
   const table = useMemo(
     () => (dayQuery.data ? elementTable(dayQuery.data.data, dayQuery.data.sunrise, name ?? "", text) : undefined),
     [dayQuery.data, name, text],
@@ -137,6 +138,8 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
     /** First load (for the website's route loader). */
     loading: Boolean(meta) && status === "loading",
     spans,
+    /** Tithi: the month's adhik and kshaya tithis, when it has any. */
+    udaya,
     table,
     balam: balamView,
     /** The day's panchanga (the app's date nav reads it). */

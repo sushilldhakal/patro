@@ -359,8 +359,10 @@ export interface ElementSpan {
   progress?: number;
   /** Tithi only: spans two sunrises (vriddhi) or none (kshaya). */
   udaya?: "vriddhi" | "kshaya";
-  /** Local dates (YYYY-MM-DD): both days a vriddhi tithi names, or the day a kshaya tithi falls inside. */
+  /** Tithi only: local dates (YYYY-MM-DD) of the sunrises it is live at — the patro days it names. */
   udaya_days?: string[];
+  /** Kshaya tithi only: the local date it begins and ends inside. */
+  kshaya_day?: string;
 }
 
 export interface ElementSpansResponse {

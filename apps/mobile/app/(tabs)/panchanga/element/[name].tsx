@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
-import { useElementPage, type ElementPage, type SpanBoundaryView, type SpanCard, type ToneRowView } from "@vedic-patro/features/panchanga-element";
+import { useElementPage, type ElementPage, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
 import { AppShell } from "@/components/AppShell";
 import { AllElementsLink, ElementDescription, GrahaBanner } from "@vedic-patro/ui/kit/panchanga";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
@@ -57,15 +57,81 @@ function SpanBoundary({ view, tone }: { view: SpanBoundaryView; tone: "begin" | 
   );
 }
 
-function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }) {
+/** The patro day(s) a tithi names — the line that says which date it belongs to. */
+function PatroDays({ card }: { card: SpanCard }) {
+  if (!card.days) return null;
+  const kind = card.udaya?.kind;
   return (
-    <Grid cols={SPAN_COLS} gap={10}>
-      {spans.map((s) => (
-        <Card key={s.key} className="gap-2 p-3">
-          <View className="flex-row items-center gap-2.5">
-            <ElementSpanIcon elementId={elementId} span={s.span} size={34} />
-            <View className="min-w-0 flex-1">
-              <View className="flex-row items-baseline justify-between gap-2">
+    <View
+      className={cn(
+        "flex-row flex-wrap items-center gap-1.5 rounded-md px-2 py-1.5",
+        kind === "kshaya" ? "bg-danger/10" : kind === "vriddhi" ? "bg-secondary/15" : "bg-muted/40",
+      )}
+    >
+      <Text className="text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(11)}>
+        {card.days.label}
+      </Text>
+      {card.days.list.map((d) => (
+        <View key={d} className="rounded-full bg-card px-2 py-px">
+          <Text className="font-num text-sm font-bold text-foreground" style={nepaliTextStyle(13)}>
+            {d}
+          </Text>
+        </View>
+      ))}
+      {card.days.empty ? (
+        <Text className="text-sm font-bold text-danger" style={nepaliTextStyle(13)}>
+          {card.days.empty}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function UdayaBadge({ kind, label }: { kind: "vriddhi" | "kshaya"; label: string }) {
+  return (
+    <View className={cn("rounded-full px-2 py-0.5", kind === "kshaya" ? "bg-danger" : "bg-secondary")}>
+      <Text className="text-xs font-bold text-white" style={nepaliTextStyle(11)}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+function UdayaSummaryCard({ summary }: { summary: UdayaSummary }) {
+  return (
+    <Card className="gap-2 p-3">
+      <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(13)}>
+        {summary.title}
+      </Text>
+      {summary.groups.map((g) => (
+        <View key={g.kind} className="flex-row flex-wrap items-center gap-1.5">
+          <UdayaBadge kind={g.kind} label={g.label} />
+          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+            {g.items.join(" · ")}
+          </Text>
+        </View>
+      ))}
+    </Card>
+  );
+}
+
+function SpanList({ spans, elementId, udaya }: { spans: SpanCard[]; elementId: string; udaya?: UdayaSummary | null }) {
+  return (
+    <View className="gap-2.5">
+      {udaya ? <UdayaSummaryCard summary={udaya} /> : null}
+      <Grid cols={SPAN_COLS} gap={10}>
+        {spans.map((s) => (
+          <Card
+            key={s.key}
+            className={cn(
+              "gap-2 p-3",
+              s.udaya?.kind === "vriddhi" && "border-2 border-secondary/50",
+              s.udaya?.kind === "kshaya" && "border-2 border-dashed border-danger/40",
+            )}
+          >
+            <View className="flex-row items-center gap-2.5">
+              <ElementSpanIcon elementId={elementId} span={s.span} size={34} />
+              <View className="min-w-0 flex-1">
                 <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
                   {s.name}
                 </Text>
@@ -75,30 +141,22 @@ function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }
                   </Text>
                 ) : null}
               </View>
-              {s.udaya ? (
-                <View className="mt-1 items-start gap-0.5">
-                  <View className={cn("rounded-full px-2 py-px", s.udaya.kind === "kshaya" ? "bg-danger/10" : "bg-secondary/15")}>
-                    <Text
-                      className={cn("text-xs font-bold", s.udaya.kind === "kshaya" ? "text-danger" : "text-secondary")}
-                      style={nepaliTextStyle(11)}
-                    >
-                      {s.udaya.label}
-                    </Text>
-                  </View>
-                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-                    {s.udaya.hint}
-                  </Text>
-                </View>
-              ) : null}
+              {s.udaya ? <UdayaBadge kind={s.udaya.kind} label={s.udaya.label} /> : null}
             </View>
-          </View>
-          <View className="gap-1.5">
-            <SpanBoundary view={s.begins} tone="begin" />
-            <SpanBoundary view={s.ends} tone="end" />
-          </View>
-        </Card>
-      ))}
-    </Grid>
+            <PatroDays card={s} />
+            {s.udaya ? (
+              <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+                {s.udaya.note}
+              </Text>
+            ) : null}
+            <View className="gap-1.5">
+              <SpanBoundary view={s.begins} tone="begin" />
+              <SpanBoundary view={s.ends} tone="end" />
+            </View>
+          </Card>
+        ))}
+      </Grid>
+    </View>
   );
 }
 
@@ -301,7 +359,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
   const body = () => {
     if (page.status === "loading") return <LoadingState />;
     if (page.status === "error") return <ErrorState />;
-    if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} />;
+    if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} udaya={page.udaya} />;
     return (
       <Card className="p-3.5">
         {page.kind === "balam" && page.balam ? (

@@ -33,25 +33,28 @@ export type SpanCard = {
   span: ElementSpan;
   name: string;
   paksha?: string;
+  /** Tithi only: the patro day(s) it names — one, two (adhik) or none (kshaya). */
+  days?: { label: string; list: string[]; empty?: string };
   /** "Adhik tithi" / "Kshaya tithi" badge, with a one-line why. */
-  udaya?: { kind: "vriddhi" | "kshaya"; label: string; hint: string };
+  udaya?: { kind: "vriddhi" | "kshaya"; label: string; note: string };
   begins: SpanBoundaryView;
   ends: SpanBoundaryView;
 };
 
-/** Why the badge: the days it names (vriddhi) or the day it falls inside (kshaya). */
-function udayaHint(s: ElementSpan, text: Text): string {
-  const { t, lang, calendar } = text;
-  const days = (s.udaya_days ?? []).map((d) => {
-    try {
-      return formatEventDate(d, lang, calendar);
-    } catch {
-      return null;
-    }
-  });
-  if (s.udaya === "vriddhi" && days[0] && days[1]) return t("common.tithi_vriddhi_days", { first: days[0], second: days[1] });
-  if (s.udaya === "kshaya" && days[0]) return t("common.tithi_kshaya_day", { day: days[0] });
-  return t(`common.tithi_${s.udaya}_hint`);
+/** Adhik and kshaya tithis of the browsed month, for the summary above the cards. */
+export type UdayaSummary = { title: string; groups: { kind: "vriddhi" | "kshaya"; label: string; items: string[] }[] };
+
+function patroDay(iso: string | undefined, text: Text): string | null {
+  if (!iso) return null;
+  try {
+    return formatEventDate(iso, text.lang, text.calendar);
+  } catch {
+    return null;
+  }
+}
+
+function joinDays(days: string[], t: TFunction): string {
+  return days.join(t("common.tithi_day_join"));
 }
 
 export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[] {
@@ -61,15 +64,49 @@ export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[]
     time: digits(stamp.time_label),
     when: formatElementStampDisplay(stamp, lang, calendar),
   });
-  return spans.map((s, i) => ({
-    key: `${s.name}-${i}`,
-    span: s,
-    name: pick(lang, s.name_ne || s.name, s.name || s.name_ne),
-    paksha: s.paksha ? t(s.paksha === "shukla" ? "common.paksha_shukla" : "common.paksha_krishna") : undefined,
-    udaya: s.udaya ? { kind: s.udaya, label: t(`common.tithi_${s.udaya}`), hint: udayaHint(s, text) } : undefined,
-    begins: boundary(t("common.begins"), s.begins),
-    ends: boundary(t("common.ends"), s.ends),
-  }));
+  return spans.map((s, i) => {
+    const days = s.udaya_days?.map((d) => patroDay(d, text)).filter((d): d is string => Boolean(d));
+    const inside = patroDay(s.kshaya_day, text);
+    return {
+      key: `${s.name}-${i}`,
+      span: s,
+      name: pick(lang, s.name_ne || s.name, s.name || s.name_ne),
+      paksha: s.paksha ? t(s.paksha === "shukla" ? "common.paksha_shukla" : "common.paksha_krishna") : undefined,
+      days: days
+        ? { label: t("common.tithi_patro_day"), list: days, empty: days.length ? undefined : t("common.tithi_no_day") }
+        : undefined,
+      udaya: s.udaya
+        ? {
+            kind: s.udaya,
+            label: t(`common.tithi_${s.udaya}`),
+            note:
+              s.udaya === "kshaya"
+                ? t("common.tithi_kshaya_note", { day: inside ?? "—" })
+                : t("common.tithi_vriddhi_note", { days: joinDays(days ?? [], t) }),
+          }
+        : undefined,
+      begins: boundary(t("common.begins"), s.begins),
+      ends: boundary(t("common.ends"), s.ends),
+    };
+  });
+}
+
+export function udayaSummary(cards: readonly SpanCard[], text: Text): UdayaSummary | null {
+  const { t } = text;
+  const groups = (["vriddhi", "kshaya"] as const)
+    .map((kind) => ({
+      kind,
+      label: t(`common.tithi_${kind}`),
+      items: cards
+        .filter((c) => c.udaya?.kind === kind)
+        .map((c) =>
+          kind === "vriddhi"
+            ? t("common.tithi_summary_vriddhi", { name: c.name, days: joinDays(c.days?.list ?? [], t) })
+            : t("common.tithi_summary_kshaya", { name: c.name, day: patroDay(c.span.kshaya_day, text) ?? "—" }),
+        ),
+    }))
+    .filter((g) => g.items.length > 0);
+  return groups.length ? { title: t("common.tithi_summary_title"), groups } : null;
 }
 
 export type ToneRowView = {
