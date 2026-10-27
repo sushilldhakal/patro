@@ -46,7 +46,12 @@ import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
 import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
 import * as Updates from "expo-updates";
 import { Observe, ObserveRoot } from "@/lib/observe";
-import { useReducedMotionPref } from "@vedic-patro/ui/motion";
+import { PAGE_CHROME_ROUTES, PageChrome } from "@/components/navigation/PageChrome";
+import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
+import { useDropPagesBehindTabs } from "@/lib/root-stack";
+
+/** Deep links to a page (`/holidays`) still open over the tabs, so back always has somewhere to go. */
+export const unstable_settings = { anchor: "(tabs)" };
 
 /*
  * EAS Observe: startup timing (TTR is measured by `ObserveRoot.wrap` below, TTI by the
@@ -317,10 +322,11 @@ function RootShell({
   onOnboarded: () => void;
 }) {
   const { colors } = useTheme();
-  const reducedMotion = useReducedMotionPref();
+  const railFade = useRailPageAnimation();
   usePatroCapabilities();
   const router = useRouter();
   const navState = useRootNavigationState();
+  useDropPagesBehindTabs();
 
   // Someone who chose "offline" at onboarding lands on the Offline Data screen
   // once, to pick their years and see the size before anything downloads.
@@ -345,13 +351,23 @@ function RootShell({
         <Stack
           screenOptions={{
             headerShown: false,
-            // Phone keeps the root rise. Reduce Motion drops the travel and fades.
-            animation: reducedMotion ? "fade" : "fade_from_bottom",
-            animationDuration: 220,
-            ...(reducedMotion ? { animationMatchesGesture: true } : {}),
+            // Pages push in with the platform's own slide and swipe back from anywhere on the
+            // screen, finger-tracked. A wide layout (the sidebar rail stays put) and Reduce
+            // Motion fade instead.
+            animation: "default",
+            fullScreenGestureEnabled: true,
+            gestureEnabled: true,
+            freezeOnBlur: true,
+            ...(railFade ?? {}),
             contentStyle: { backgroundColor: colors.background },
           }}
+          screenLayout={({ route, children }) =>
+            PAGE_CHROME_ROUTES.has(route.name) ? <PageChrome routeName={route.name}>{children}</PageChrome> : children
+          }
         >
+          {/* The tabs are the base of the stack and there is only ever one of them: a link to a
+              tab page from a pushed page brings this instance back instead of stacking a copy. */}
+          <Stack.Screen name="(tabs)" dangerouslySingular options={{ gestureEnabled: false }} />
           {/* These open out of a card (ZoomTransition does the travelling), so the stack only fades. */}
           <Stack.Screen name="aakash-gochar" options={{ animation: "fade", animationDuration: 160 }} />
           <Stack.Screen name="day/[ad]" options={{ animation: "fade", animationDuration: 160 }} />

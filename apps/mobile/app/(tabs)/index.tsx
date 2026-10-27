@@ -43,7 +43,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
-import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
+import { scrollViewIntoView, usePageScrollerRef } from "@/lib/page-scroll";
 import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
@@ -169,6 +169,7 @@ export default function HomeScreen() {
     stepMonth,
     goToday: goTodayBrowse,
   } = usePatroMonthBrowse();
+  const pageScrollerRef = usePageScrollerRef();
   const asideRef = useRef<ComponentRef<typeof View>>(null);
   const scrollToAsideRef = useRef(false);
   const [patroView, setPatroView] = useState<HomePatroView>("calendar");
@@ -448,7 +449,7 @@ export default function HomeScreen() {
   return (
     <>
       <ScrollView
-        ref={setPageScroller}
+        ref={pageScrollerRef}
         refreshControl={refreshControl}
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-page"

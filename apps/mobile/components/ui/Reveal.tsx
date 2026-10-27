@@ -1,5 +1,4 @@
-import { useCallback, useContext, useRef, type ReactNode } from "react";
-import { useFocusEffect } from "expo-router";
+import { useContext, type ReactNode } from "react";
 import Animated, {
   measure,
   useAnimatedReaction,
@@ -23,9 +22,10 @@ const MAX_STAGGER = 6;
 const VIEW_EDGE = 56;
 
 /**
- * Content that springs into place and fades in (a touch of overshoot, then settle): when its page opens, again every time you come back
- * to the page, and — for blocks below the fold — as they scroll into view, like a banking app's
- * cards. `index` staggers blocks that arrive together.
+ * Content that rises into place and fades in once: when its page first opens and — for blocks below
+ * the fold — as they first scroll into view. Coming back to a page (a swipe-back, a tab switch)
+ * shows it as it was, the way a native app does; replaying it on every visit was motion the user
+ * paid for dozens of times a session. `index` staggers blocks that arrive together.
  *
  * It wraps its children in one view and animates only that view's opacity and translateY, so the
  * layout inside is untouched. Reduce Motion keeps the fade and drops the rise.
@@ -37,26 +37,11 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
   const progress = useSharedValue(0);
   const played = useSharedValue(false);
   const laidOut = useSharedValue(false);
-  /** Bumped when the page is shown again, so the reaction below runs once more. */
-  const epoch = useSharedValue(0);
   const delay = Math.min(index, MAX_STAGGER) * STAGGER_MS;
   const rise = reduced ? 0 : RISE;
-    const firstFocus = useRef(true);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (firstFocus.current) {
-        firstFocus.current = false;
-        return;
-      }
-      played.set(false);
-      progress.set(0);
-      epoch.set(epoch.get() + 1);
-    }, [epoch, played, progress]),
-  );
 
   useAnimatedReaction(
-    () => pageScrollY.get() + epoch.get() * 1_000_000 + (laidOut.get() ? 10_000_000 : 0),
+    () => pageScrollY.get() + (laidOut.get() ? 10_000_000 : 0),
     () => {
       if (played.get() || !laidOut.get()) return;
       if (waitsForScroll) {

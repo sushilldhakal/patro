@@ -19,37 +19,11 @@ const EDGE_SWIPE_WIDTH = 20;
  * routes stay registered, then the navigator returns nothing. The floating
  * bar is custom, so these do not add buttons — `href: null` would hide the
  * page entirely and bounce navigation back to the first tab.
+ *
+ * Only the floating-nav destinations are tabs. Every other page lives in the
+ * root stack (app/_layout.tsx), so it pushes over these and swipes back natively.
  */
-const TAB_SCREENS = [
-  "index",
-  "more",
-  "ritu",
-  "vastu",
-  "learn",
-  "gochar",
-  "history",
-  "offline",
-  "kundali",
-  "holidays",
-  "rashifal",
-  "converter",
-  "reminders",
-  "sun-times",
-  "documents",
-  "panchanga",
-  "adhik-maas",
-  "vivah-sait",
-  "suryakranti",
-  "dainikkranti",
-  "shanti-vidhi",
-  "chandrakranti",
-  "kundali-milan",
-  "panchak-patro",
-  "abhijit-muhurta",
-  "jyotish/rashifal",
-  "jyotish/kundali-milan",
-  "sait/[category]",
-] as const;
+const TAB_SCREENS = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
 
 /**
  * Tab screens have no stack of their own, so there's no native swipe-back.

@@ -1,10 +1,15 @@
 import { useCallback } from "react";
 import { usePathname, useRouter } from "expo-router";
-import { isNavActive, normalizeMobilePathname } from "@/lib/mobile-nav";
+import { FLOATING_NAV, isNavActive, normalizeMobilePathname } from "@/lib/mobile-nav";
 import { scrollPageToTop } from "@/lib/page-scroll";
 
 /** Tabs that host their own stack: a sub-page sits on top of the tab's root page. */
 const STACK_TABS = new Set(["/panchanga", "/kundali", "/learn", "/documents"]);
+
+/** A floating-nav tab or a page inside one; everything else is pushed in the root stack. */
+function isTabPath(path: string): boolean {
+  return FLOATING_NAV.some((item) => (item.href === "/" ? path === "/" : path === item.href || path.startsWith(`${item.href}/`)));
+}
 
 /**
  * What a top-level nav button (floating nav, header logo) does when pressed.
@@ -26,6 +31,12 @@ export function useNavPress() {
         return;
       }
       if (STACK_TABS.has(href) && here.startsWith(`${href}/`)) {
+        router.dismissTo(href as never);
+        return;
+      }
+      /* On a page pushed over the tabs, a tab is back down the stack: pop to it (the
+         native pop animation) rather than bringing the tabs forward over the page. */
+      if (isTabPath(href) && !isTabPath(here)) {
         router.dismissTo(href as never);
         return;
       }
