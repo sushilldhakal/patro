@@ -131,9 +131,10 @@ function isWorthRetrying(error: unknown): boolean {
  * Bump when the shape of what the persisted query cache holds changes. 2: the
  * calendar system became independent of the language, so the same era is cached
  * in both languages (month / day keys carry the language); a Nepali payload
- * saved before must not be shown under English.
+ * saved before must not be shown under English. 3: the उ/द ayana mark moved to the
+ * real solstices, so days saved before carry the Makar Sankranti mark.
  */
-const QUERY_CACHE_BUSTER = "calendar-language-2";
+const QUERY_CACHE_BUSTER = "ayana-solstice-3";
 
 /**
  * The shared month query's key names the era but not the language, so on a language

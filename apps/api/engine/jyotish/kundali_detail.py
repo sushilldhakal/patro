@@ -2216,7 +2216,9 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 # v7: every `grahaShanti` finding now carries a `tier` ("critical" | "core")
 #     so a chart with many simultaneous afflictions can be shown headline-
 #     first instead of as one flat, unranked list.
-KUNDALI_DETAIL_VERSION = 7
+# v8: the birth panchanga's ayana is the real (tropical, solstice-to-solstice)
+#     one, not Makar → Karka Sankranti; cached charts carry the old name.
+KUNDALI_DETAIL_VERSION = 8
 
 
 def assemble_kundali_detail(
