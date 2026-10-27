@@ -357,6 +357,8 @@ export interface ElementSpan {
   ends: ElementStamp;
   paksha?: string;
   progress?: number;
+  /** Tithi only: spans two sunrises (vriddhi) or none (kshaya). */
+  udaya?: "vriddhi" | "kshaya";
 }
 
 export interface ElementSpansResponse {

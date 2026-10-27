@@ -27,7 +27,16 @@ const ASHUBHA = "\u0905\u0936\u0941\u092d"; // copy-ok: API value
 const pick = (lang: string, ne: unknown, en: unknown) => String((lang === "en" ? en : ne) ?? "");
 
 export type SpanBoundaryView = { label: string; time: string; when: string };
-export type SpanCard = { key: string; span: ElementSpan; name: string; paksha?: string; begins: SpanBoundaryView; ends: SpanBoundaryView };
+export type SpanCard = {
+  key: string;
+  span: ElementSpan;
+  name: string;
+  paksha?: string;
+  /** "Adhik tithi" / "Kshaya tithi" badge, with a one-line why. */
+  udaya?: { kind: "vriddhi" | "kshaya"; label: string; hint: string };
+  begins: SpanBoundaryView;
+  ends: SpanBoundaryView;
+};
 
 export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[] {
   const { t, lang, digits, calendar } = text;
@@ -41,6 +50,9 @@ export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[]
     span: s,
     name: pick(lang, s.name_ne || s.name, s.name || s.name_ne),
     paksha: s.paksha ? t(s.paksha === "shukla" ? "common.paksha_shukla" : "common.paksha_krishna") : undefined,
+    udaya: s.udaya
+      ? { kind: s.udaya, label: t(`common.tithi_${s.udaya}`), hint: t(`common.tithi_${s.udaya}_hint`) }
+      : undefined,
     begins: boundary(t("common.begins"), s.begins),
     ends: boundary(t("common.ends"), s.ends),
   }));

@@ -75,6 +75,21 @@ function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }
                   </Text>
                 ) : null}
               </View>
+              {s.udaya ? (
+                <View className="mt-1 items-start gap-0.5">
+                  <View className={cn("rounded-full px-2 py-px", s.udaya.kind === "kshaya" ? "bg-danger/10" : "bg-secondary/15")}>
+                    <Text
+                      className={cn("text-xs font-bold", s.udaya.kind === "kshaya" ? "text-danger" : "text-secondary")}
+                      style={nepaliTextStyle(11)}
+                    >
+                      {s.udaya.label}
+                    </Text>
+                  </View>
+                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+                    {s.udaya.hint}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           </View>
           <View className="gap-1.5">

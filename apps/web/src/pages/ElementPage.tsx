@@ -53,6 +53,19 @@ function SpanList({ spans, elementId }: { spans: SpanCard[]; elementId: string }
                 <span className="text-base font-bold text-foreground">{s.name}</span>
                 {s.paksha ? <span className="text-xs text-base">{s.paksha}</span> : null}
               </div>
+              {s.udaya ? (
+                <div className="mt-1 flex flex-col items-start gap-0.5">
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-px text-xs font-bold",
+                      s.udaya.kind === "kshaya" ? "bg-danger/10 text-danger" : "bg-secondary/15 text-secondary dark:text-accent",
+                    )}
+                  >
+                    {s.udaya.label}
+                  </span>
+                  <span className="text-xs leading-snug text-muted-foreground">{s.udaya.hint}</span>
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
