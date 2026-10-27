@@ -1,5 +1,6 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
 import type { PressableProps } from "../contract";
+import { withFlexDisplay } from "./flex-display";
 
 export function Pressable({ onPress, disabled, label, role = "button", selected, className, webClassName, children, testID }: PressableProps) {
   return (
@@ -12,7 +13,7 @@ export function Pressable({ onPress, disabled, label, role = "button", selected,
       disabled={disabled}
       onClick={onPress}
       data-testid={testID}
-      className={cn("text-left", disabled ? "cursor-not-allowed" : "cursor-pointer", className, webClassName)}
+      className={withFlexDisplay(cn("text-left", disabled ? "cursor-not-allowed" : "cursor-pointer", className, webClassName))}
     >
       {children}
     </button>

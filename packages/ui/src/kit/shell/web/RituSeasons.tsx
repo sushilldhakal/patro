@@ -41,9 +41,12 @@ export function RituSeasons({ location, showHeader = true, placeLabel, headerIco
               <Box className={ritu.nameWrap}>
                 <Text className={ritu.name}>{card.name}</Text>
               </Box>
-              <Box className={cn(ritu.dateChip, ritu.dateChipBox)}>
-                <Text className={ritu.dateDay}>{card.day}</Text>
-                <Text className={ritu.dateMonth}>{card.month}</Text>
+              {/* The season's first day in BS — labelled, as in the app; a bare "६ / कात्तिक" chip read as a stray number. */}
+              <Box className="flex-col items-end">
+                <Text className="text-xs text-muted-foreground">{page.copy.startsLabel}</Text>
+                <Text className="text-sm font-semibold text-accent">
+                  {card.month} {card.day}
+                </Text>
               </Box>
             </Box>
             <Box className={cn("flex-row", ritu.metaRow)}>

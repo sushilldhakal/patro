@@ -1,8 +1,8 @@
 /**
  * Ritu (seasons) page and the RituSeasons card list. Shared by the website and
  * the app. Container and text classes are separate keys because React Native
- * does not inherit text style from a View; `flex` / `flex-row`, the grid and
- * the date-chip size stay in each platform's file.
+ * does not inherit text style from a View; `flex` / `flex-row` and the grid stay in
+ * each platform's file.
  */
 export const rituClasses = {
   headerRow: "items-start justify-between gap-4",
@@ -19,16 +19,12 @@ export const rituClasses = {
 
   card: "gap-2 rounded-xl bg-card p-3.5 shadow-xs",
   cardCurrent: "shadow-[0_0_0_1.5px_color-mix(in_srgb,var(--secondary)_38%,transparent)] dark:shadow-[0_0_0_1.5px_color-mix(in_srgb,var(--primary)_38%,transparent)]",
-  dateChipBox: "h-[46px] w-[46px] flex-col bg-secondary/13",
   kicker: "text-sm font-bold uppercase tracking-eyebrow",
   kickerCurrent: "text-secondary dark:text-primary",
   seasonRow: "items-center gap-3",
   emoji: "shrink-0 text-lg leading-none",
   nameWrap: "min-w-0 flex-1",
   name: "text-xl font-bold leading-tight text-foreground",
-  dateChip: "shrink-0 items-center justify-center gap-px rounded-lg",
-  dateDay: "text-base font-bold leading-none font-num text-accent",
-  dateMonth: "text-sm font-semibold leading-none text-accent",
 
   metaRow: "items-baseline justify-between gap-2",
   metaText: "text-sm font-semibold text-foreground",
