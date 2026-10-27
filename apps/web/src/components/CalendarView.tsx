@@ -15,7 +15,6 @@ import {
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { PatroCalendarHeader } from "@/components/patro-date";
-import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
@@ -245,11 +244,7 @@ export function CalendarView({
 
   const monthHeader = showMonthHeader ? (
     <div className={cn(patroMdRail, "mb-4 mt-2 max-md:pt-3 md:pt-0")}>
-      {enablePatroToggle ? (
-        <div className="mb-2 flex justify-end max-md:px-2.5">
-          <CalendarSystemToggle />
-        </div>
-      ) : null}
+      {/* वि.सं. / ई.सं. lives in the site header (tablet, desktop) and the menu drawer (phone), not here. */}
       <PatroCalendarHeader
       era={era}
           year={year}
