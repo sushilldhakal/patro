@@ -72,10 +72,22 @@ export function AppHeader() {
   const navPress = useNavPress();
   useOpenMenuRequest(useCallback(() => setMenuOpen(true), []));
 
+  /* From the drawer, navigate once it has slid away: pushing while its Modal is still on screen
+     made iOS drop the drawer in one frame and hold the push until the new page had rendered. */
+  const pendingHref = useRef<string | null>(null);
   const go = (href: string) => {
+    if (!menuOpen) {
+      navPress(href);
+      return;
+    }
+    pendingHref.current = href;
     setMenuOpen(false);
-    navPress(href);
   };
+  const onDrawerClosed = useCallback(() => {
+    const href = pendingHref.current;
+    pendingHref.current = null;
+    if (href) navPress(href);
+  }, [navPress]);
 
   return (
     <View
@@ -105,6 +117,7 @@ export function AppHeader() {
       <NavDrawer
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
+        onClosed={onDrawerClosed}
         onNavigate={go}
       />
     </View>
@@ -114,10 +127,13 @@ export function AppHeader() {
 function NavDrawer({
   open,
   onClose,
+  onClosed,
   onNavigate,
 }: {
   open: boolean;
   onClose: () => void;
+  /** The drawer has finished sliding away and is unmounted. */
+  onClosed: () => void;
   onNavigate: (href: string) => void;
 }) {
   const { t, pick } = useLocale();
@@ -144,10 +160,15 @@ function NavDrawer({
     widthSv.set(drawerWidth);
   }, [widthSv, drawerWidth]);
 
+  const onClosedRef = useRef(onClosed);
+  useEffect(() => {
+    onClosedRef.current = onClosed;
+  }, [onClosed]);
   const finishClose = useCallback(() => {
     if (openRef.current) return;
     committed.current = false;
     setMounted(false);
+    onClosedRef.current();
   }, []);
 
   /** A drag let go past the threshold: tell the parent now, the spring carries on off screen. */

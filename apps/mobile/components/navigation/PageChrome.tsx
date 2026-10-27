@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { AppHeader } from "@/components/AppHeader";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
@@ -35,12 +35,28 @@ export const PAGE_CHROME_ROUTES: ReadonlySet<string> = new Set([
   "vivah-sait",
 ]);
 
+/**
+ * The native push only starts once the new screen's first render has committed. A full page is
+ * a slow first render (over a second in a development build), so the tap froze and the page then
+ * jumped in. The first render is just the chrome; the page fills in a frame later, while UIKit is
+ * already sliding it in on the UI thread.
+ */
+function useMountAfterFirstFrame(): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return ready;
+}
+
 export function PageChrome({ routeName, children }: { routeName: string; children: ReactNode }) {
+  const ready = useMountAfterFirstFrame();
   return (
     <View className="flex-1 bg-background" style={{ flex: 1 }}>
       <AppHeader />
       <View className="min-h-0 flex-1">
-        <PanchangaTabsShell routeName={routeName}>{children}</PanchangaTabsShell>
+        {ready ? <PanchangaTabsShell routeName={routeName}>{children}</PanchangaTabsShell> : null}
       </View>
       <FloatingNavBar />
     </View>
