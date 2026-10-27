@@ -46,7 +46,6 @@ import {
   getPanchangaDetail,
   getPlanetRows,
   getPlanetsAnchorLabel,
-  getRituPauranik,
   getRituVedic,
   getSolarCorrections,
   getSunriseDisplay,
@@ -231,7 +230,7 @@ export function usePanchakaLagnaSection(p: PanchangaDay, clock?: string) {
   };
 }
 
-/* ── ritu and ayana (pauranik struck through when the vedic one differs) ── */
+/* ── ritu (the Sun's path) and ayana (pauranik struck through when the vedic one differs) ── */
 export type DualValue = { struck?: string; value?: string };
 
 export function useRituSection(p: PanchangaDay) {
@@ -241,12 +240,12 @@ export function useRituSection(p: PanchangaDay) {
     const strike = differs ?? (pauranik != null && vedic != null && pauranik !== vedic);
     return { struck: strike && pauranik ? pauranik : undefined, value: vedic ?? pauranik };
   };
-  const rituP = getRituPauranik(p);
   const rituV = getRituVedic(p);
   const aayanP = getAayanPauranik(p);
   const aayanV = getAayanVedic(p);
   return {
-    ritu: dual(formatRituLabel(rituP, lang), formatRituLabel(rituV, lang), rituP?.name !== rituV?.name),
+    // Ritu is the Sun's real position on its path, never the solar month.
+    ritu: dual(undefined, formatRituLabel(rituV, lang)),
     ayana: dual(formatAayanLabel(aayanP, lang), formatAayanLabel(aayanV, lang), aayanP?.name !== aayanV?.name),
     dinamana: formatDurationFull(p, "dinamaan", lang) ?? "—",
     ratrimana: formatDurationFull(p, "ratrimana", lang) ?? "—",

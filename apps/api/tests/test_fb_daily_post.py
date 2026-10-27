@@ -66,7 +66,7 @@ def test_anga_transition_lines_match_the_day():
 
     assert lines["तिथि"] == "तिथि: एकादशी → द्वादशी (११:४९)"  # ends 11:49:48
     assert lines["नक्षत्र"] == "नक्षत्र: ज्येष्ठा (दिनभर)"  # no change this day
-    assert lines["योग"] == "योग: ब्रह्म → इन्द्र (२१:२४)"
+    assert lines["योग"] == "योग: ब्रह्म → इन्द्र (२१:२३)"  # ends 21:23:59
     assert lines["करण"] == "करण: विष्टि → बव (११:४९) → बालव (०१:०१)"  # two changes
 
 

@@ -354,7 +354,8 @@ def _assemble_udaya_panchanga(
         "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": rashi_service.surya(sunrise_jd).to_payload(),
         "surya_nakshatra": surya_nakshatra,
-        "ritu": ritu_pauranik,
+        # The real season, from where the Sun is on its path — not the month.
+        "ritu": ritu_vedic,
         "ritu_pauranik": ritu_pauranik,
         "ritu_vedic": ritu_vedic,
         "lunar_month": lunar,

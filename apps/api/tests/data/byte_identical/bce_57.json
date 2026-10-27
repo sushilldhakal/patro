@@ -2013,7 +2013,7 @@
     "vipala": 37
   },
   "ritu": {
-    "basis": "sidereal",
+    "basis": "tropical",
     "name": "Vasanta",
     "name_ne": "वसन्त",
     "name_sanskrit": "Vasanta",
@@ -2032,11 +2032,11 @@
   },
   "ritu_vedic": {
     "basis": "tropical",
-    "name": "Shishira",
-    "name_ne": "शिशिर",
-    "name_sanskrit": "Shishira",
-    "number": 6,
-    "season": "Winter",
+    "name": "Vasanta",
+    "name_ne": "वसन्त",
+    "name_sanskrit": "Vasanta",
+    "number": 1,
+    "season": "Spring",
     "sun_rashi": 12
   },
   "samvatsara": {

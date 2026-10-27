@@ -19,9 +19,10 @@ export const RITU_SEASON_EMOJI: Record<RituSeasonKey, string> = {
   winter: "❄️",
 };
 
+/** Ritus are 60° arcs from 330°: the solstices open Varsha (slot 2) and Shishira (slot 5). */
 export const RITU_MARKER_KEYS: Partial<Record<number, string>> = {
-  0: "ritu.vernal_equinox",
-  3: "ritu.autumnal_equinox",
+  2: "ritu.june_solstice",
+  5: "ritu.december_solstice",
 };
 
 export function displayRituSlot(solarSlot: number, southern: boolean): number {

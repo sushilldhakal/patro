@@ -4816,8 +4816,8 @@ export const strings = {
   "ritu.autumn": { ne: "शरद्", en: "Autumn" },
   "ritu.pre_winter": { ne: "हेमन्त", en: "Pre-winter" },
   "ritu.winter": { ne: "शिशिर", en: "Winter" },
-  "ritu.vernal_equinox": { ne: "वसन्त विषुव", en: "Vernal equinox" },
-  "ritu.autumnal_equinox": { ne: "शरद् विषुव", en: "Autumnal equinox" },
+  "ritu.june_solstice": { ne: "जुन अयनान्त", en: "June solstice" },
+  "ritu.december_solstice": { ne: "डिसेम्बर अयनान्त", en: "December solstice" },
   "ritu.southern_hemisphere_note": {
     ne: "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
     en: "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",

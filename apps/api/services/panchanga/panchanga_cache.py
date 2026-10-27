@@ -165,7 +165,9 @@ logger = logging.getLogger(__name__)
 #     winter solstice (~Poush 6) to the summer solstice (~Ashadh 6), not Makar →
 #     Karka Sankranti, which lag the real turns by the ayanamsa (~24 days and
 #     growing). Day, month, year and year-sun payloads carry the mark per day.
-PANCHANGA_PAYLOAD_VERSION = 54
+# v55: ``ritu`` is the Sun's real 60° arc of its path (Shishira from the
+#     winter solstice, Varsha from the summer one), not the solar month.
+PANCHANGA_PAYLOAD_VERSION = 55
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

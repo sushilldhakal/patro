@@ -2822,8 +2822,8 @@
     "autumn": "Autumn",
     "pre_winter": "Pre-winter",
     "winter": "Winter",
-    "vernal_equinox": "Vernal equinox",
-    "autumnal_equinox": "Autumnal equinox",
+    "june_solstice": "June solstice",
+    "december_solstice": "December solstice",
     "southern_hemisphere_note": "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same)."
   },
   "rashis": {

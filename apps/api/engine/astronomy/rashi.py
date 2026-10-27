@@ -136,12 +136,13 @@ class RashiService:
 
     def _ritu_from_sun(self, jd: float, *, sidereal: bool) -> dict[str, Any]:
         index = self.sun_index(jd, sidereal=sidereal)
-        # Sidereal (pauranik) ritu follows the solar months: Vasanta is Chaitra +
-        # Baisakh (Sun in Meena + Mesha), Grishma Jestha + Asar, …, Shishira
-        # Magh + Falgun (Makara + Kumbha). Pairing from Mesha instead put every
-        # ritu a month late (Jestha read Vasanta). The tropical ritu is anchored
-        # on the equinox, Vasanta from the vernal one, as the ritu page draws it.
-        ritu = RITU_DATA[((index + 1) % 12) // 2] if sidereal else RITU_DATA[index // 2]
+        # Six 60° arcs of the Sun's path, paired Meena + Mesha (Vasanta) … Makara +
+        # Kumbha (Shishira). Read tropically that is the real sky: Shishira opens
+        # at the winter solstice with Uttarayana, Varsha at the summer solstice
+        # with Dakshinayana, and each equinox falls mid-Vasanta / mid-Sharad.
+        # Read sidereally it is the solar-month (pauranik) ritu, Chaitra–Baisakh
+        # Vasanta, which lags the real seasons by the ayanamsa.
+        ritu = RITU_DATA[((index + 1) % 12) // 2]
         return {
             **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
             "sun_rashi": index + 1,

@@ -2508,13 +2508,13 @@
     "vipala": 45
   },
   "ritu": {
-    "basis": "sidereal",
-    "name": "Sharad",
-    "name_ne": "शरद",
-    "name_sanskrit": "Sharad",
-    "number": 4,
-    "season": "Autumn",
-    "sun_rashi": 7
+    "basis": "tropical",
+    "name": "Hemanta",
+    "name_ne": "हेमन्त",
+    "name_sanskrit": "Hemanta",
+    "number": 5,
+    "season": "Pre-winter",
+    "sun_rashi": 8
   },
   "ritu_pauranik": {
     "basis": "sidereal",
@@ -2527,11 +2527,11 @@
   },
   "ritu_vedic": {
     "basis": "tropical",
-    "name": "Sharad",
-    "name_ne": "शरद",
-    "name_sanskrit": "Sharad",
-    "number": 4,
-    "season": "Autumn",
+    "name": "Hemanta",
+    "name_ne": "हेमन्त",
+    "name_sanskrit": "Hemanta",
+    "number": 5,
+    "season": "Pre-winter",
     "sun_rashi": 8
   },
   "samvatsara": {

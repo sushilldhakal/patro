@@ -2530,13 +2530,13 @@
     "vipala": 22
   },
   "ritu": {
-    "basis": "sidereal",
+    "basis": "tropical",
     "name": "Vasanta",
     "name_ne": "वसन्त",
     "name_sanskrit": "Vasanta",
     "number": 1,
     "season": "Spring",
-    "sun_rashi": 12
+    "sun_rashi": 1
   },
   "ritu_pauranik": {
     "basis": "sidereal",

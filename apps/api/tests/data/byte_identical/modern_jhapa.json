@@ -2457,13 +2457,13 @@
     "vipala": 32
   },
   "ritu": {
-    "basis": "sidereal",
+    "basis": "tropical",
     "name": "Grishma",
     "name_ne": "ग्रीष्म",
     "name_sanskrit": "Grishma",
     "number": 2,
     "season": "Summer",
-    "sun_rashi": 2
+    "sun_rashi": 3
   },
   "ritu_pauranik": {
     "basis": "sidereal",

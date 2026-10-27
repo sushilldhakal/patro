@@ -1,4 +1,9 @@
-"""Tropical (sāyana) six-season cycle — equinox/solstice anchored ऋतु boundaries."""
+"""Tropical (sāyana) six-season cycle — ऋतु as six 60° arcs of the Sun's path.
+
+Slot 0 (Vasanta) opens at 330°, so the solstices are boundaries — Varsha starts
+at 90° (summer solstice), Shishira at 270° (winter solstice) — and the equinoxes
+sit exactly mid-Vasanta (0°) and mid-Sharad (180°). Same arcs as ``RashiService.ritu``.
+"""
 
 from __future__ import annotations
 
@@ -10,6 +15,8 @@ from engine.calendar.bikram_sambat import format_bs_date, gregorian_to_bs
 
 DAY_MS = 86_400_000
 SUN_DEG_PER_DAY = 360 / 365.2422
+# Tropical longitude where Vasanta (slot 0) begins.
+VASANTA_START_DEG = 330
 
 
 def _signed_angular_diff(deg: float) -> float:
@@ -53,19 +60,19 @@ def _refine_crossing(target_deg: float, guess: datetime) -> datetime:
     return datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc)
 
 
-def tropical_season_cycle(now: datetime | None = None) -> list[dict[str, Any]]:
+def tropical_season_cycle(now: datetime | None = None, tz: Any = None) -> list[dict[str, Any]]:
     """Six boundaries: current ऋतु first, then next five season starts."""
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     lambda_now = solar_apparent_longitude(now)
-    current_slot = int(lambda_now // 60) % 6
+    current_slot = int(((lambda_now - VASANTA_START_DEG) % 360) // 60)
     out: list[dict[str, Any]] = []
     now_ms = now.timestamp() * 1000
 
     for i in range(6):
         slot = (current_slot + i) % 6
-        angle = slot * 60
+        angle = (VASANTA_START_DEG + slot * 60) % 360
         if i == 0:
             offset_deg = _signed_angular_diff(angle - lambda_now)
         else:
@@ -75,8 +82,9 @@ def tropical_season_cycle(now: datetime | None = None) -> list[dict[str, Any]]:
             tz=timezone.utc,
         )
         start = _refine_crossing(angle, guess)
-        start_ad = start.date().isoformat()
-        bs = gregorian_to_bs(start.date())
+        local_day = start.astimezone(tz).date() if tz is not None else start.date()
+        start_ad = local_day.isoformat()
+        bs = gregorian_to_bs(local_day)
         out.append(
             {
                 "slot": slot,
@@ -99,7 +107,7 @@ def build_tropical_seasons_response(
 
     tz = resolve_observer_timezone(timezone_name)
     now = datetime.now(tz)
-    cycle = tropical_season_cycle(now)
+    cycle = tropical_season_cycle(now, tz)
     south = lat is not None and lat < 0
     return {
         "timezone": timezone_name,

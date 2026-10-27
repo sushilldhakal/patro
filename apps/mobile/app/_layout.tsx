@@ -134,7 +134,7 @@ function isWorthRetrying(error: unknown): boolean {
  * saved before must not be shown under English. 3: the उ/द ayana mark moved to the
  * real solstices, so days saved before carry the Makar Sankranti mark.
  */
-const QUERY_CACHE_BUSTER = "calc-audit-1";
+const QUERY_CACHE_BUSTER = "ritu-sun-path-1";
 
 /**
  * The shared month query's key names the era but not the language, so on a language
