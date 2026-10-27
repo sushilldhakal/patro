@@ -3,7 +3,7 @@ import type { ArticleData } from "../../article-schema";
 /**
  * Choghadiya is not one of the five angas. It divides the daytime and the
  * night. The sequence matches `apps/api/engine/panchanga/choghadiya.py`:
- * vaara 0 is Sunday, and each slot steps through the seven names.
+ * vaara 0 is Sunday; a day slot steps one name forward, a night slot five.
  */
 export const choghadiya: ArticleData = {
   slug: "choghadiya",
@@ -55,8 +55,8 @@ export const choghadiya: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "पहिले दिनको उज्यालो र रातको लम्बाइ चाहिन्छ — दुवै सूर्योदय र सूर्यास्तबाट। त्यसपछि वारले *कुन नामबाट सुरु गर्ने* तय गर्छ। नामहरू सधैँ एउटै क्रममा अघि बढ्छन्।",
-            en: "First you need the length of daylight and of night — both from sunrise and sunset. The weekday then decides *which name starts*. The names always advance in the same order.",
+            ne: "पहिले दिनको उज्यालो र रातको लम्बाइ चाहिन्छ — दुवै सूर्योदय र सूर्यास्तबाट। त्यसपछि वारले *कुन नामबाट सुरु गर्ने* तय गर्छ। दिनमा नाम क्रमैसँग अघि बढ्छन् — उद्वेग, चर, लाभ, अमृत, काल, शुभ, रोग। रातमा भने हरेक खण्डमा पाँच नाम अघि सर्छन् (दुई पछाडि), त्यसैले आइतबार राति शुभ, अमृत, चर, रोग, काल, लाभ, उद्वेग, शुभ पर्छ।",
+            en: "First you need the length of daylight and of night — both from sunrise and sunset. The weekday then decides *which name starts*. By day the names advance in order — Udvega, Chara, Labha, Amrita, Kala, Shubha, Roga. By night each slot jumps five names ahead (two back), so Sunday night runs Shubha, Amrita, Chara, Roga, Kala, Labha, Udvega, Shubha.",
           },
         },
         {

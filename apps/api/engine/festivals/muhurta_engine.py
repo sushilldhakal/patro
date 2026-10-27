@@ -575,7 +575,7 @@ def relax_rule(category: str, rule: CeremonyRule, disabled_ids) -> CeremonyRule:
 _SCAN_HOURS = 24.0
 _STEP = timedelta(minutes=30)
 MIN_WINDOW = timedelta(minutes=5)
-_REFINE_TOLERANCE = timedelta(seconds=30)
+_REFINE_TOLERANCE = timedelta(seconds=1)
 
 
 @dataclass(frozen=True)
@@ -626,7 +626,7 @@ def _sankranti_moment_between(start_iso: str, end_iso: str) -> str | None:
     if r0 == r1:
         return None
     target_degree = (r1 - 1) * 30
-    moment = find_sankranti_brent(target_degree, start, end, tolerance_seconds=30)
+    moment = find_sankranti_brent(target_degree, start, end, tolerance_seconds=1)
     return moment.isoformat()
 
 

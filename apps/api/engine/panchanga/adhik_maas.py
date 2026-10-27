@@ -71,9 +71,9 @@ def find_adhik_maas_for_gregorian_year(gregorian_year: int) -> Optional[dict]:
         return None
 
     m = adhik_months[0]
-    start_date = m.start_Aausi.date()
-    end_date = (m.end_Aausi - timedelta(days=1)).date()
-    purnima_date = m.end_purnima.date()
+    start_date = m.first_day
+    end_date = m.last_day
+    purnima_date = m.purnima_day
 
     return {
         "has_adhik_maas": True,

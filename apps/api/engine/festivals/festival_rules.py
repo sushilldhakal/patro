@@ -206,9 +206,9 @@ def get_special_months_for_gregorian_year(
             "month_name": m.month_name,
             "full_name_en": m.full_name,
             "full_name_ne": f"अधिक {lunar_masa_name_ne(m.month_name)}",
-            "start_date": m.start_Aausi.date().isoformat(),
-            "end_date": (m.end_Aausi - timedelta(days=1)).date().isoformat(),
-            "purnima_date": m.end_purnima.date().isoformat(),
+            "start_date": m.first_day.isoformat(),
+            "end_date": m.last_day.isoformat(),
+            "purnima_date": m.purnima_day.isoformat(),
         }
         for m in lunar_year.months
         if m.is_adhik
@@ -217,8 +217,8 @@ def get_special_months_for_gregorian_year(
         if is_kshaya_maas(month.start_Aausi, month.end_Aausi):
             info = get_kshaya_maas_info(month.start_Aausi, month.end_Aausi)
             if info:
-                info["start_date"] = month.start_Aausi.date().isoformat()
-                info["end_date"] = (month.end_Aausi - timedelta(days=1)).date().isoformat()
+                info["start_date"] = month.first_day.isoformat()
+                info["end_date"] = month.last_day.isoformat()
                 info["adhik_months"] = [
                     {k: a[k] for k in ("month_name", "full_name_en", "full_name_ne", "start_date", "end_date")}
                     for a in adhik_months

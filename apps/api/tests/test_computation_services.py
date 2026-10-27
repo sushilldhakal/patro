@@ -327,7 +327,8 @@ class TestRashiService:
     def test_ritu_follows_the_sun_two_signs_at_a_time(self):
         for jd in SAMPLE_JDS:
             ritu = rashi_service.ritu(jd, sidereal=True)
-            assert ritu["number"] == RITU_DATA[(ritu["sun_rashi"] - 1) // 2]["number"]
+            # Meena + Mesha is Vasanta (Chaitra–Baisakh), … Makara + Kumbha Shishira.
+            assert ritu["number"] == RITU_DATA[ritu["sun_rashi"] % 12 // 2]["number"]
 
     def test_southern_hemisphere_gets_the_inverted_season(self):
         """Sydney in July is winter, Kathmandu in July is monsoon."""

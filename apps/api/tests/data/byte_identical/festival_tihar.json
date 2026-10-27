@@ -234,7 +234,7 @@
   "choghadiya": [
     {
       "bad": true,
-      "end_g": 3.4166666666666665,
+      "end_g": 3.4151011059182825,
       "name": "Udvega",
       "name_en": "Udvega",
       "name_ne": "उद्वेग",
@@ -245,157 +245,157 @@
     },
     {
       "bad": false,
-      "end_g": 6.833333333333333,
+      "end_g": 6.830202211836565,
       "name": "Chara",
       "name_en": "Chara",
       "name_ne": "चर",
       "phase": "day",
       "quality_en": "Good for Movement & Travel",
       "quality_ne": "यात्रा र चलचलका लागि राम्रो",
-      "start_g": 3.4166666666666665
+      "start_g": 3.4151011059182825
     },
     {
       "bad": false,
-      "end_g": 10.25,
+      "end_g": 10.245303317754848,
       "name": "Labha",
       "name_en": "Labha",
       "name_ne": "लाभ",
       "phase": "day",
       "quality_en": "Gain",
       "quality_ne": "लाभ",
-      "start_g": 6.833333333333333
+      "start_g": 6.830202211836565
     },
     {
       "bad": false,
-      "end_g": 13.666666666666666,
+      "end_g": 13.66040442367313,
       "name": "Amrita",
       "name_en": "Amrita",
       "name_ne": "अमृत",
       "phase": "day",
       "quality_en": "Excellent (Highly Auspicious)",
       "quality_ne": "उत्तम (अत्यन्त शुभ)",
-      "start_g": 10.25
+      "start_g": 10.245303317754848
     },
     {
       "bad": true,
-      "end_g": 17.083333333333332,
+      "end_g": 17.075505529591414,
       "name": "Kala",
       "name_en": "Kala",
       "name_ne": "काल",
       "phase": "day",
       "quality_en": "Inauspicious",
       "quality_ne": "अशुभ",
-      "start_g": 13.666666666666666
+      "start_g": 13.66040442367313
     },
     {
       "bad": false,
-      "end_g": 20.5,
+      "end_g": 20.490606635509696,
       "name": "Shubha",
       "name_en": "Shubha",
       "name_ne": "शुभ",
       "phase": "day",
       "quality_en": "Auspicious",
       "quality_ne": "शुभ",
-      "start_g": 17.083333333333332
+      "start_g": 17.075505529591414
     },
     {
       "bad": true,
-      "end_g": 23.916666666666664,
+      "end_g": 23.905707741427978,
       "name": "Roga",
       "name_en": "Roga",
       "name_ne": "रोग",
       "phase": "day",
       "quality_en": "Disease (Avoid Important Tasks)",
       "quality_ne": "रोग (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-      "start_g": 20.5
+      "start_g": 20.490606635509696
     },
     {
       "bad": true,
-      "end_g": 27.333333333333332,
+      "end_g": 27.32080884734626,
       "name": "Udvega",
       "name_en": "Udvega",
       "name_ne": "उद्वेग",
       "phase": "day",
       "quality_en": "Anxiety (Avoid Important Tasks)",
       "quality_ne": "चिन्ता (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-      "start_g": 23.916666666666664
+      "start_g": 23.905707741427978
     },
     {
       "bad": false,
-      "end_g": 31.416666666666664,
+      "end_g": 31.405707741427978,
       "name": "Shubha",
       "name_en": "Shubha",
       "name_ne": "शुभ",
       "phase": "night",
       "quality_en": "Auspicious",
       "quality_ne": "शुभ",
-      "start_g": 27.333333333333332
-    },
-    {
-      "bad": true,
-      "end_g": 35.5,
-      "name": "Roga",
-      "name_en": "Roga",
-      "name_ne": "रोग",
-      "phase": "night",
-      "quality_en": "Disease (Avoid Important Tasks)",
-      "quality_ne": "रोग (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-      "start_g": 31.416666666666664
-    },
-    {
-      "bad": true,
-      "end_g": 39.583333333333336,
-      "name": "Udvega",
-      "name_en": "Udvega",
-      "name_ne": "उद्वेग",
-      "phase": "night",
-      "quality_en": "Anxiety (Avoid Important Tasks)",
-      "quality_ne": "चिन्ता (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
-      "start_g": 35.5
+      "start_g": 27.32080884734626
     },
     {
       "bad": false,
-      "end_g": 43.66666666666667,
+      "end_g": 35.49060663550969,
+      "name": "Amrita",
+      "name_en": "Amrita",
+      "name_ne": "अमृत",
+      "phase": "night",
+      "quality_en": "Excellent (Highly Auspicious)",
+      "quality_ne": "उत्तम (अत्यन्त शुभ)",
+      "start_g": 31.405707741427978
+    },
+    {
+      "bad": false,
+      "end_g": 39.57550552959141,
       "name": "Chara",
       "name_en": "Chara",
       "name_ne": "चर",
       "phase": "night",
       "quality_en": "Good for Movement & Travel",
       "quality_ne": "यात्रा र चलचलका लागि राम्रो",
-      "start_g": 39.583333333333336
-    },
-    {
-      "bad": false,
-      "end_g": 47.75,
-      "name": "Labha",
-      "name_en": "Labha",
-      "name_ne": "लाभ",
-      "phase": "night",
-      "quality_en": "Gain",
-      "quality_ne": "लाभ",
-      "start_g": 43.66666666666667
-    },
-    {
-      "bad": false,
-      "end_g": 51.833333333333336,
-      "name": "Amrita",
-      "name_en": "Amrita",
-      "name_ne": "अमृत",
-      "phase": "night",
-      "quality_en": "Excellent (Highly Auspicious)",
-      "quality_ne": "उत्तम (अत्यन्त शुभ)",
-      "start_g": 47.75
+      "start_g": 35.49060663550969
     },
     {
       "bad": true,
-      "end_g": 55.91666666666667,
+      "end_g": 43.66040442367313,
+      "name": "Roga",
+      "name_en": "Roga",
+      "name_ne": "रोग",
+      "phase": "night",
+      "quality_en": "Disease (Avoid Important Tasks)",
+      "quality_ne": "रोग (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
+      "start_g": 39.57550552959141
+    },
+    {
+      "bad": true,
+      "end_g": 47.745303317754846,
       "name": "Kala",
       "name_en": "Kala",
       "name_ne": "काल",
       "phase": "night",
       "quality_en": "Inauspicious",
       "quality_ne": "अशुभ",
-      "start_g": 51.833333333333336
+      "start_g": 43.66040442367313
+    },
+    {
+      "bad": false,
+      "end_g": 51.830202211836564,
+      "name": "Labha",
+      "name_en": "Labha",
+      "name_ne": "लाभ",
+      "phase": "night",
+      "quality_en": "Gain",
+      "quality_ne": "लाभ",
+      "start_g": 47.745303317754846
+    },
+    {
+      "bad": true,
+      "end_g": 55.91510110591828,
+      "name": "Udvega",
+      "name_en": "Udvega",
+      "name_ne": "उद्वेग",
+      "phase": "night",
+      "quality_en": "Anxiety (Avoid Important Tasks)",
+      "quality_ne": "चिन्ता (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
+      "start_g": 51.830202211836564
     },
     {
       "bad": false,
@@ -406,12 +406,12 @@
       "phase": "night",
       "quality_en": "Auspicious",
       "quality_ne": "शुभ",
-      "start_g": 55.91666666666667
+      "start_g": 55.91510110591828
     }
   ],
   "date": "2026-11-08",
   "date_ad": "2026-11-08",
-  "day_ghati": 27.333333333333332,
+  "day_ghati": 27.32080884734626,
   "dinamaan": {
     "ghadi": 27,
     "hours": 10,
@@ -553,7 +553,7 @@
   "hora": [
     {
       "bad": true,
-      "end_g": 2.2778,
+      "end_g": 2.2767,
       "end_local_time_short": "07:13",
       "index": 1,
       "phase": "day",
@@ -568,7 +568,7 @@
     },
     {
       "bad": false,
-      "end_g": 4.5556,
+      "end_g": 4.5535,
       "end_local_time_short": "08:08",
       "index": 2,
       "phase": "day",
@@ -577,13 +577,13 @@
       "planet_en": "Venus",
       "planet_ne": "शुक्र",
       "quality_ne": "शुभ",
-      "start_g": 2.2778,
+      "start_g": 2.2767,
       "start_local_time_short": "07:13",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 6.8333,
+      "end_g": 6.8302,
       "end_local_time_short": "09:03",
       "index": 3,
       "phase": "day",
@@ -592,13 +592,13 @@
       "planet_en": "Mercury",
       "planet_ne": "बुध",
       "quality_ne": "शुभ",
-      "start_g": 4.5556,
+      "start_g": 4.5535,
       "start_local_time_short": "08:08",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 9.1111,
+      "end_g": 9.1069,
       "end_local_time_short": "09:57",
       "index": 4,
       "phase": "day",
@@ -607,13 +607,13 @@
       "planet_en": "Moon",
       "planet_ne": "चन्द्र",
       "quality_ne": "शुभ",
-      "start_g": 6.8333,
+      "start_g": 6.8302,
       "start_local_time_short": "09:03",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 11.3889,
+      "end_g": 11.3837,
       "end_local_time_short": "10:52",
       "index": 5,
       "phase": "day",
@@ -622,13 +622,13 @@
       "planet_en": "Saturn",
       "planet_ne": "शनि",
       "quality_ne": "अशुभ",
-      "start_g": 9.1111,
+      "start_g": 9.1069,
       "start_local_time_short": "09:57",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 13.6667,
+      "end_g": 13.6604,
       "end_local_time_short": "11:47",
       "index": 6,
       "phase": "day",
@@ -637,13 +637,13 @@
       "planet_en": "Jupiter",
       "planet_ne": "बृहस्पति",
       "quality_ne": "शुभ",
-      "start_g": 11.3889,
+      "start_g": 11.3837,
       "start_local_time_short": "10:52",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 15.9444,
+      "end_g": 15.9371,
       "end_local_time_short": "12:41",
       "index": 7,
       "phase": "day",
@@ -652,13 +652,13 @@
       "planet_en": "Mars",
       "planet_ne": "मङ्गल",
       "quality_ne": "अशुभ",
-      "start_g": 13.6667,
+      "start_g": 13.6604,
       "start_local_time_short": "11:47",
       "tone": "bad"
     },
     {
       "bad": true,
-      "end_g": 18.2222,
+      "end_g": 18.2139,
       "end_local_time_short": "13:36",
       "index": 8,
       "phase": "day",
@@ -667,13 +667,13 @@
       "planet_en": "Sun",
       "planet_ne": "आदित्य",
       "quality_ne": "अशुभ",
-      "start_g": 15.9444,
+      "start_g": 15.9371,
       "start_local_time_short": "12:41",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 20.5,
+      "end_g": 20.4906,
       "end_local_time_short": "14:31",
       "index": 9,
       "phase": "day",
@@ -682,13 +682,13 @@
       "planet_en": "Venus",
       "planet_ne": "शुक्र",
       "quality_ne": "शुभ",
-      "start_g": 18.2222,
+      "start_g": 18.2139,
       "start_local_time_short": "13:36",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 22.7778,
+      "end_g": 22.7673,
       "end_local_time_short": "15:25",
       "index": 10,
       "phase": "day",
@@ -697,13 +697,13 @@
       "planet_en": "Mercury",
       "planet_ne": "बुध",
       "quality_ne": "शुभ",
-      "start_g": 20.5,
+      "start_g": 20.4906,
       "start_local_time_short": "14:31",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 25.0556,
+      "end_g": 25.0441,
       "end_local_time_short": "16:20",
       "index": 11,
       "phase": "day",
@@ -712,13 +712,13 @@
       "planet_en": "Moon",
       "planet_ne": "चन्द्र",
       "quality_ne": "शुभ",
-      "start_g": 22.7778,
+      "start_g": 22.7673,
       "start_local_time_short": "15:25",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 27.3333,
+      "end_g": 27.3208,
       "end_local_time_short": "17:15",
       "index": 12,
       "phase": "day",
@@ -727,13 +727,13 @@
       "planet_en": "Saturn",
       "planet_ne": "शनि",
       "quality_ne": "अशुभ",
-      "start_g": 25.0556,
+      "start_g": 25.0441,
       "start_local_time_short": "16:20",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 30.0556,
+      "end_g": 30.0441,
       "end_local_time_short": "18:20",
       "index": 1,
       "phase": "night",
@@ -742,13 +742,13 @@
       "planet_en": "Jupiter",
       "planet_ne": "बृहस्पति",
       "quality_ne": "शुभ",
-      "start_g": 27.3333,
+      "start_g": 27.3208,
       "start_local_time_short": "17:15",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 32.7778,
+      "end_g": 32.7673,
       "end_local_time_short": "19:26",
       "index": 2,
       "phase": "night",
@@ -757,13 +757,13 @@
       "planet_en": "Mars",
       "planet_ne": "मङ्गल",
       "quality_ne": "अशुभ",
-      "start_g": 30.0556,
+      "start_g": 30.0441,
       "start_local_time_short": "18:20",
       "tone": "bad"
     },
     {
       "bad": true,
-      "end_g": 35.5,
+      "end_g": 35.4906,
       "end_local_time_short": "20:31",
       "index": 3,
       "phase": "night",
@@ -772,13 +772,13 @@
       "planet_en": "Sun",
       "planet_ne": "आदित्य",
       "quality_ne": "अशुभ",
-      "start_g": 32.7778,
+      "start_g": 32.7673,
       "start_local_time_short": "19:26",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 38.2222,
+      "end_g": 38.2139,
       "end_local_time_short": "21:36",
       "index": 4,
       "phase": "night",
@@ -787,13 +787,13 @@
       "planet_en": "Venus",
       "planet_ne": "शुक्र",
       "quality_ne": "शुभ",
-      "start_g": 35.5,
+      "start_g": 35.4906,
       "start_local_time_short": "20:31",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 40.9444,
+      "end_g": 40.9371,
       "end_local_time_short": "22:42",
       "index": 5,
       "phase": "night",
@@ -802,13 +802,13 @@
       "planet_en": "Mercury",
       "planet_ne": "बुध",
       "quality_ne": "शुभ",
-      "start_g": 38.2222,
+      "start_g": 38.2139,
       "start_local_time_short": "21:36",
       "tone": "good"
     },
     {
       "bad": false,
-      "end_g": 43.6667,
+      "end_g": 43.6604,
       "end_local_time_short": "23:47",
       "index": 6,
       "phase": "night",
@@ -817,13 +817,13 @@
       "planet_en": "Moon",
       "planet_ne": "चन्द्र",
       "quality_ne": "शुभ",
-      "start_g": 40.9444,
+      "start_g": 40.9371,
       "start_local_time_short": "22:42",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 46.3889,
+      "end_g": 46.3837,
       "end_local_time_short": "00:53",
       "index": 7,
       "phase": "night",
@@ -832,13 +832,13 @@
       "planet_en": "Saturn",
       "planet_ne": "शनि",
       "quality_ne": "अशुभ",
-      "start_g": 43.6667,
+      "start_g": 43.6604,
       "start_local_time_short": "23:47",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 49.1111,
+      "end_g": 49.1069,
       "end_local_time_short": "01:58",
       "index": 8,
       "phase": "night",
@@ -847,13 +847,13 @@
       "planet_en": "Jupiter",
       "planet_ne": "बृहस्पति",
       "quality_ne": "शुभ",
-      "start_g": 46.3889,
+      "start_g": 46.3837,
       "start_local_time_short": "00:53",
       "tone": "good"
     },
     {
       "bad": true,
-      "end_g": 51.8333,
+      "end_g": 51.8302,
       "end_local_time_short": "03:03",
       "index": 9,
       "phase": "night",
@@ -862,13 +862,13 @@
       "planet_en": "Mars",
       "planet_ne": "मङ्गल",
       "quality_ne": "अशुभ",
-      "start_g": 49.1111,
+      "start_g": 49.1069,
       "start_local_time_short": "01:58",
       "tone": "bad"
     },
     {
       "bad": true,
-      "end_g": 54.5556,
+      "end_g": 54.5535,
       "end_local_time_short": "04:09",
       "index": 10,
       "phase": "night",
@@ -877,13 +877,13 @@
       "planet_en": "Sun",
       "planet_ne": "आदित्य",
       "quality_ne": "अशुभ",
-      "start_g": 51.8333,
+      "start_g": 51.8302,
       "start_local_time_short": "03:03",
       "tone": "bad"
     },
     {
       "bad": false,
-      "end_g": 57.2778,
+      "end_g": 57.2767,
       "end_local_time_short": "05:14",
       "index": 11,
       "phase": "night",
@@ -892,7 +892,7 @@
       "planet_en": "Venus",
       "planet_ne": "शुक्र",
       "quality_ne": "शुभ",
-      "start_g": 54.5556,
+      "start_g": 54.5535,
       "start_local_time_short": "04:09",
       "tone": "good"
     },
@@ -907,34 +907,34 @@
       "planet_en": "Mercury",
       "planet_ne": "बुध",
       "quality_ne": "शुभ",
-      "start_g": 57.2778,
+      "start_g": 57.2767,
       "start_local_time_short": "05:14",
       "tone": "good"
     }
   ],
   "jd_ut": 2461352.5,
   "karana": {
-    "end_ghati_clock": "13:30:47",
-    "end_hours_clock": "5:24:18",
-    "end_local_time": "11:43:33",
-    "end_time": "2026-11-08T05:58:33.984375+00:00",
+    "end_ghati_clock": "13:30:20",
+    "end_hours_clock": "5:24:08",
+    "end_local_time": "11:43:23",
+    "end_time": "2026-11-08T05:58:23.272705+00:00",
     "name": "Shakuni",
     "name_ne": "शकुनि",
     "next": {
-      "end_ghati_clock": "44:44:24",
-      "end_hours_clock": "17:53:45",
-      "end_local_time": "00:13:00",
-      "end_time": "2026-11-08T18:28:00.937500+00:00",
+      "end_ghati_clock": "44:42:25",
+      "end_hours_clock": "17:52:58",
+      "end_local_time": "00:12:13",
+      "end_time": "2026-11-08T18:27:13.146972+00:00",
       "name": "Chatushpada",
       "name_ne": "चतुष्पाद",
       "number": 59
     },
     "number": 58,
     "progress": null,
-    "start_ghati_clock": "42:34:06",
-    "start_hours_clock": "17:01:38",
-    "start_local_time": "23:20:53",
-    "start_time": "2026-11-07T17:35:53.437500+00:00"
+    "start_ghati_clock": "42:33:08",
+    "start_hours_clock": "17:01:15",
+    "start_local_time": "23:20:30",
+    "start_time": "2026-11-07T17:35:30.366211+00:00"
   },
   "lagna": {
     "anchor": "sunrise",
@@ -947,10 +947,10 @@
   "lagna_spans": [
     {
       "degree_in_rashi": 20.5211,
-      "end_ghati_clock": "1:51:19",
-      "end_hours_clock": "0:44:31",
-      "end_local_time": "07:03:46",
-      "end_time": "2026-11-08T01:18:46.874987+00:00",
+      "end_ghati_clock": "1:50:29",
+      "end_hours_clock": "0:44:11",
+      "end_local_time": "07:03:26",
+      "end_time": "2026-11-08T01:18:26.660129+00:00",
       "longitude": 200.521077,
       "name": "Tula",
       "name_ne": "तुला",
@@ -959,7 +959,7 @@
         {
           "degree": 23.3333,
           "degree_dms": "23°20'",
-          "local_time": "06:32:21",
+          "local_time": "06:32:20",
           "local_time_short": "06:32"
         }
       ],
@@ -969,12 +969,12 @@
       "start_time": "2026-11-08T00:34:15+00:00"
     },
     {
-      "degree_in_rashi": 0.0711,
-      "end_ghati_clock": "7:35:51",
-      "end_hours_clock": "3:02:20",
-      "end_local_time": "09:21:35",
-      "end_time": "2026-11-08T03:36:35.624987+00:00",
-      "longitude": 210.071066,
+      "degree_in_rashi": 0.002,
+      "end_ghati_clock": "7:35:44",
+      "end_hours_clock": "3:02:17",
+      "end_local_time": "09:21:32",
+      "end_time": "2026-11-08T03:36:32.988227+00:00",
+      "longitude": 210.002038,
       "name": "Vrishchika",
       "name_ne": "वृश्चिक",
       "number": 8,
@@ -982,76 +982,83 @@
         {
           "degree": 0.0,
           "degree_dms": "0°00'",
-          "local_time": "07:03:46",
+          "local_time": "07:03:26",
           "local_time_short": "07:03"
-        },
-        {
-          "degree": 6.6667,
-          "degree_dms": "6°40'",
-          "local_time": "07:34:33",
-          "local_time_short": "07:34"
         }
       ],
-      "start_ghati_clock": "1:51:19",
-      "start_hours_clock": "0:44:31",
-      "start_local_time": "07:03:46",
-      "start_time": "2026-11-08T01:18:46.874987+00:00"
+      "start_ghati_clock": "1:50:29",
+      "start_hours_clock": "0:44:11",
+      "start_local_time": "07:03:26",
+      "start_time": "2026-11-08T01:18:26.660129+00:00"
     },
     {
-      "degree_in_rashi": 0.0107,
-      "end_ghati_clock": "12:46:24",
-      "end_hours_clock": "5:06:33",
-      "end_local_time": "11:25:48",
-      "end_time": "2026-11-08T05:40:48.750000+00:00",
-      "longitude": 240.010671,
+      "degree_in_rashi": 0.0031,
+      "end_ghati_clock": "12:46:08",
+      "end_hours_clock": "5:06:27",
+      "end_local_time": "11:25:42",
+      "end_time": "2026-11-08T05:40:42.597589+00:00",
+      "longitude": 240.003137,
       "name": "Dhanu",
       "name_ne": "धनु",
       "number": 9,
-      "pushkara_navamsha": [],
-      "start_ghati_clock": "7:35:51",
-      "start_hours_clock": "3:02:20",
-      "start_local_time": "09:21:35",
-      "start_time": "2026-11-08T03:36:35.624987+00:00"
+      "pushkara_navamsha": [
+        {
+          "degree": 20.0,
+          "degree_dms": "20°00'",
+          "local_time": "10:46:37",
+          "local_time_short": "10:46"
+        },
+        {
+          "degree": 26.6667,
+          "degree_dms": "26°40'",
+          "local_time": "11:12:57",
+          "local_time_short": "11:12"
+        }
+      ],
+      "start_ghati_clock": "7:35:44",
+      "start_hours_clock": "3:02:17",
+      "start_local_time": "09:21:32",
+      "start_time": "2026-11-08T03:36:32.988227+00:00"
     },
     {
-      "degree_in_rashi": 0.0248,
-      "end_ghati_clock": "17:04:13",
-      "end_hours_clock": "6:49:41",
-      "end_local_time": "13:08:56",
-      "end_time": "2026-11-08T07:23:56.250013+00:00",
-      "longitude": 270.024828,
+      "degree_in_rashi": 0.001,
+      "end_ghati_clock": "17:03:40",
+      "end_hours_clock": "6:49:28",
+      "end_local_time": "13:08:43",
+      "end_time": "2026-11-08T07:23:43.066339+00:00",
+      "longitude": 270.001021,
       "name": "Makara",
       "name_ne": "मकर",
       "number": 10,
       "pushkara_navamsha": [],
-      "start_ghati_clock": "12:46:24",
-      "start_hours_clock": "5:06:33",
-      "start_local_time": "11:25:48",
-      "start_time": "2026-11-08T05:40:48.750000+00:00"
+      "start_ghati_clock": "12:46:08",
+      "start_hours_clock": "5:06:27",
+      "start_local_time": "11:25:42",
+      "start_time": "2026-11-08T05:40:42.597589+00:00"
     },
     {
-      "degree_in_rashi": 0.0713,
-      "end_ghati_clock": "20:45:42",
-      "end_hours_clock": "8:18:16",
-      "end_local_time": "14:37:31",
-      "end_time": "2026-11-08T08:52:31.875013+00:00",
-      "longitude": 300.071259,
+      "degree_in_rashi": 0.0023,
+      "end_ghati_clock": "20:44:38",
+      "end_hours_clock": "8:17:51",
+      "end_local_time": "14:37:06",
+      "end_time": "2026-11-08T08:52:06.386638+00:00",
+      "longitude": 300.002331,
       "name": "Kumbha",
       "name_ne": "कुम्भ",
       "number": 11,
       "pushkara_navamsha": [],
-      "start_ghati_clock": "17:04:13",
-      "start_hours_clock": "6:49:41",
-      "start_local_time": "13:08:56",
-      "start_time": "2026-11-08T07:23:56.250013+00:00"
+      "start_ghati_clock": "17:03:40",
+      "start_hours_clock": "6:49:28",
+      "start_local_time": "13:08:43",
+      "start_time": "2026-11-08T07:23:43.066339+00:00"
     },
     {
-      "degree_in_rashi": 0.1487,
-      "end_ghati_clock": "24:20:09",
-      "end_hours_clock": "9:44:03",
-      "end_local_time": "16:03:18",
-      "end_time": "2026-11-08T10:18:18.750013+00:00",
-      "longitude": 330.148714,
+      "degree_in_rashi": 0.004,
+      "end_ghati_clock": "24:19:27",
+      "end_hours_clock": "9:43:47",
+      "end_local_time": "16:03:02",
+      "end_time": "2026-11-08T10:18:02.050687+00:00",
+      "longitude": 330.003963,
       "name": "Meena",
       "name_ne": "मीन",
       "number": 12,
@@ -1059,57 +1066,44 @@
         {
           "degree": 0.0,
           "degree_dms": "0°00'",
-          "local_time": "14:37:31",
+          "local_time": "14:37:06",
           "local_time_short": "14:37"
         },
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "14:55:58",
+          "local_time": "14:55:57",
           "local_time_short": "14:55"
         }
       ],
-      "start_ghati_clock": "20:45:42",
-      "start_hours_clock": "8:18:16",
-      "start_local_time": "14:37:31",
-      "start_time": "2026-11-08T08:52:31.875013+00:00"
+      "start_ghati_clock": "20:44:38",
+      "start_hours_clock": "8:17:51",
+      "start_local_time": "14:37:06",
+      "start_time": "2026-11-08T08:52:06.386638+00:00"
     },
     {
-      "degree_in_rashi": 0.0924,
-      "end_ghati_clock": "28:20:23",
-      "end_hours_clock": "11:20:09",
-      "end_local_time": "17:39:24",
-      "end_time": "2026-11-08T11:54:24.375026+00:00",
-      "longitude": 0.092439,
+      "degree_in_rashi": 0.0028,
+      "end_ghati_clock": "28:19:43",
+      "end_hours_clock": "11:19:53",
+      "end_local_time": "17:39:08",
+      "end_time": "2026-11-08T11:54:08.554593+00:00",
+      "longitude": 0.002819,
       "name": "Mesha",
       "name_ne": "मेष",
       "number": 1,
-      "pushkara_navamsha": [
-        {
-          "degree": 20.0,
-          "degree_dms": "20°00'",
-          "local_time": "17:05:14",
-          "local_time_short": "17:05"
-        },
-        {
-          "degree": 26.6667,
-          "degree_dms": "26°40'",
-          "local_time": "17:27:35",
-          "local_time_short": "17:27"
-        }
-      ],
-      "start_ghati_clock": "24:20:09",
-      "start_hours_clock": "9:44:03",
-      "start_local_time": "16:03:18",
-      "start_time": "2026-11-08T10:18:18.750013+00:00"
+      "pushkara_navamsha": [],
+      "start_ghati_clock": "24:19:27",
+      "start_hours_clock": "9:43:47",
+      "start_local_time": "16:03:02",
+      "start_time": "2026-11-08T10:18:02.050687+00:00"
     },
     {
-      "degree_in_rashi": 0.0771,
-      "end_ghati_clock": "33:09:50",
-      "end_hours_clock": "13:15:56",
-      "end_local_time": "19:35:11",
-      "end_time": "2026-11-08T13:50:11.250039+00:00",
-      "longitude": 30.077122,
+      "degree_in_rashi": 0.0036,
+      "end_ghati_clock": "33:09:48",
+      "end_hours_clock": "13:15:55",
+      "end_local_time": "19:35:10",
+      "end_time": "2026-11-08T13:50:10.370986+00:00",
+      "longitude": 30.003622,
       "name": "Vrishabha",
       "name_ne": "वृष",
       "number": 2,
@@ -1117,7 +1111,7 @@
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "18:03:01",
+          "local_time": "18:03:00",
           "local_time_short": "18:03"
         },
         {
@@ -1127,66 +1121,86 @@
           "local_time_short": "18:27"
         }
       ],
-      "start_ghati_clock": "28:20:23",
-      "start_hours_clock": "11:20:09",
-      "start_local_time": "17:39:24",
-      "start_time": "2026-11-08T11:54:24.375026+00:00"
+      "start_ghati_clock": "28:19:43",
+      "start_hours_clock": "11:19:53",
+      "start_local_time": "17:39:08",
+      "start_time": "2026-11-08T11:54:08.554593+00:00"
     },
     {
-      "degree_in_rashi": 0.0027,
-      "end_ghati_clock": "38:46:10",
-      "end_hours_clock": "15:30:28",
-      "end_local_time": "21:49:43",
-      "end_time": "2026-11-08T16:04:43.125026+00:00",
-      "longitude": 60.002674,
+      "degree_in_rashi": 0.0002,
+      "end_ghati_clock": "38:45:54",
+      "end_hours_clock": "15:30:21",
+      "end_local_time": "21:49:36",
+      "end_time": "2026-11-08T16:04:36.972535+00:00",
+      "longitude": 60.000195,
       "name": "Mithuna",
       "name_ne": "मिथुन",
       "number": 3,
       "pushkara_navamsha": [],
-      "start_ghati_clock": "33:09:50",
-      "start_hours_clock": "13:15:56",
-      "start_local_time": "19:35:11",
-      "start_time": "2026-11-08T13:50:11.250039+00:00"
+      "start_ghati_clock": "33:09:48",
+      "start_hours_clock": "13:15:55",
+      "start_local_time": "19:35:10",
+      "start_time": "2026-11-08T13:50:10.370986+00:00"
     },
     {
-      "degree_in_rashi": 0.0246,
-      "end_ghati_clock": "44:35:23",
-      "end_hours_clock": "17:50:09",
-      "end_local_time": "00:09:24",
-      "end_time": "2026-11-08T18:24:24.374999+00:00",
-      "longitude": 90.024554,
+      "degree_in_rashi": 0.0029,
+      "end_ghati_clock": "44:34:52",
+      "end_hours_clock": "17:49:57",
+      "end_local_time": "00:09:12",
+      "end_time": "2026-11-08T18:24:12.070178+00:00",
+      "longitude": 90.002934,
       "name": "Karka",
       "name_ne": "कर्कट",
       "number": 4,
-      "pushkara_navamsha": [],
-      "start_ghati_clock": "38:46:10",
-      "start_hours_clock": "15:30:28",
-      "start_local_time": "21:49:43",
-      "start_time": "2026-11-08T16:04:43.125026+00:00"
+      "pushkara_navamsha": [
+        {
+          "degree": 0.0,
+          "degree_dms": "0°00'",
+          "local_time": "21:49:36",
+          "local_time_short": "21:49"
+        }
+      ],
+      "start_ghati_clock": "38:45:54",
+      "start_hours_clock": "15:30:21",
+      "start_local_time": "21:49:36",
+      "start_time": "2026-11-08T16:04:36.972535+00:00"
     },
     {
-      "degree_in_rashi": 0.0462,
-      "end_ghati_clock": "50:16:24",
-      "end_hours_clock": "20:06:33",
-      "end_local_time": "02:25:48",
-      "end_time": "2026-11-08T20:40:48.749999+00:00",
-      "longitude": 120.046172,
+      "degree_in_rashi": 0.003,
+      "end_ghati_clock": "50:15:42",
+      "end_hours_clock": "20:06:17",
+      "end_local_time": "02:25:32",
+      "end_time": "2026-11-08T20:40:32.050633+00:00",
+      "longitude": 120.003042,
       "name": "Simha",
       "name_ne": "सिंह",
       "number": 5,
-      "pushkara_navamsha": [],
-      "start_ghati_clock": "44:35:23",
-      "start_hours_clock": "17:50:09",
-      "start_local_time": "00:09:24",
-      "start_time": "2026-11-08T18:24:24.374999+00:00"
+      "pushkara_navamsha": [
+        {
+          "degree": 20.0,
+          "degree_dms": "20°00'",
+          "local_time": "01:40:27",
+          "local_time_short": "01:40"
+        },
+        {
+          "degree": 26.6667,
+          "degree_dms": "26°40'",
+          "local_time": "02:10:32",
+          "local_time_short": "02:10"
+        }
+      ],
+      "start_ghati_clock": "44:34:52",
+      "start_hours_clock": "17:49:57",
+      "start_local_time": "00:09:12",
+      "start_time": "2026-11-08T18:24:12.070178+00:00"
     },
     {
-      "degree_in_rashi": 0.0613,
+      "degree_in_rashi": 0.0022,
       "end_ghati_clock": "60:01:50",
       "end_hours_clock": "24:00:44",
       "end_local_time": "06:19:59",
       "end_time": "2026-11-09T00:34:59+00:00",
-      "longitude": 150.061267,
+      "longitude": 150.00216,
       "name": "Kanya",
       "name_ne": "कन्या",
       "number": 6,
@@ -1200,14 +1214,14 @@
         {
           "degree": 13.3333,
           "degree_dms": "13°20'",
-          "local_time": "03:25:27",
+          "local_time": "03:25:26",
           "local_time_short": "03:25"
         }
       ],
-      "start_ghati_clock": "50:16:24",
-      "start_hours_clock": "20:06:33",
-      "start_local_time": "02:25:48",
-      "start_time": "2026-11-08T20:40:48.749999+00:00"
+      "start_ghati_clock": "50:15:42",
+      "start_hours_clock": "20:06:17",
+      "start_local_time": "02:25:32",
+      "start_time": "2026-11-08T20:40:32.050633+00:00"
     }
   ],
   "lahiri_ayanamsa": {
@@ -1235,8 +1249,8 @@
       "paksha_model": "amanta",
       "solar_name": "Ashwin",
       "type": "nija",
-      "window_end": "2026-11-08",
-      "window_start": "2026-10-10"
+      "window_end": "2026-11-09",
+      "window_start": "2026-10-11"
     },
     "festival_masa": {
       "festival_masa": "Kartik",
@@ -1259,8 +1273,8 @@
       "paksha_model": "purnimant",
       "solar_name": "Ashwin",
       "type": "nija",
-      "window_end": "2026-11-08",
-      "window_start": "2026-10-10"
+      "window_end": "2026-11-09",
+      "window_start": "2026-10-11"
     }
   },
   "lunar_month": {
@@ -1279,8 +1293,8 @@
     "purnimanta_type": "nija",
     "solar_name": "Ashwin",
     "type": "nija",
-    "window_end": "2026-11-08",
-    "window_start": "2026-10-10"
+    "window_end": "2026-11-09",
+    "window_start": "2026-10-11"
   },
   "madhyahna": {
     "local": "2026-11-08T11:47:16+05:45",
@@ -1337,12 +1351,12 @@
         "name_ne": "अमृत काल",
         "segments": [
           {
-            "end_local_time": "00:00:10",
-            "end_local_time_short": "00:00",
-            "end_time": "2026-11-08T18:15:10.664062+00:00",
-            "start_local_time": "2026-11-08T22:18:02.929687+05:45",
-            "start_local_time_short": "22:18",
-            "start_time": "2026-11-08T16:33:02.929687+00:00"
+            "end_local_time": "23:59:48",
+            "end_local_time_short": "23:59",
+            "end_time": "2026-11-08T18:14:48.416747+00:00",
+            "start_local_time": "2026-11-08T22:17:41.781005+05:45",
+            "start_local_time_short": "22:17",
+            "start_time": "2026-11-08T16:32:41.781005+00:00"
           }
         ]
       },
@@ -1520,12 +1534,12 @@
         "name_ne": "वर्ज्यम्",
         "segments": [
           {
-            "end_local_time": "13:47:24",
+            "end_local_time": "13:47:08",
             "end_local_time_short": "13:47",
-            "end_time": "2026-11-08T08:02:24.257812+00:00",
-            "start_local_time": "2026-11-08T12:05:16.523437+05:45",
+            "end_time": "2026-11-08T08:02:08.602294+00:00",
+            "start_local_time": "2026-11-08T12:05:01.966552+05:45",
             "start_local_time_short": "12:05",
-            "start_time": "2026-11-08T06:20:16.523437+00:00"
+            "start_time": "2026-11-08T06:20:01.966552+00:00"
           }
         ]
       },
@@ -1568,9 +1582,9 @@
         "name_ne": "तिथि",
         "segments": [
           {
-            "end_local_time": "11:43:33",
+            "end_local_time": "11:43:23",
             "end_local_time_short": "11:43",
-            "end_time": "2026-11-08T05:58:33.984375+00:00",
+            "end_time": "2026-11-08T05:58:23.272705+00:00",
             "start_local_time": "2026-11-08T06:19:15+05:45",
             "start_local_time_short": "06:19",
             "start_time": "2026-11-08T00:34:15+00:00"
@@ -1578,9 +1592,9 @@
           {
             "end_time": "2026-11-09T00:34:59+00:00",
             "spans_midnight": true,
-            "start_local_time": "2026-11-08T11:44:11.250000+05:45",
-            "start_local_time_short": "11:44",
-            "start_time": "2026-11-08T05:59:11.250000+00:00",
+            "start_local_time": "2026-11-08T11:43:23.459472+05:45",
+            "start_local_time_short": "11:43",
+            "start_time": "2026-11-08T05:58:23.459472+00:00",
             "until_full_night": true
           }
         ]
@@ -1592,12 +1606,12 @@
         "name_ne": "तिथि विष",
         "segments": [
           {
-            "end_local_time": "13:24:26",
-            "end_local_time_short": "13:24",
-            "end_time": "2026-11-08T07:39:26.484375+00:00",
-            "start_local_time": "2026-11-08T11:44:11.250000+05:45",
-            "start_local_time_short": "11:44",
-            "start_time": "2026-11-08T05:59:11.250000+00:00"
+            "end_local_time": "13:23:38",
+            "end_local_time_short": "13:23",
+            "end_time": "2026-11-08T07:38:38.419188+00:00",
+            "start_local_time": "2026-11-08T11:43:23.459472+05:45",
+            "start_local_time_short": "11:43",
+            "start_time": "2026-11-08T05:58:23.459472+00:00"
           }
         ]
       }
@@ -1627,17 +1641,17 @@
     }
   },
   "nakshatra": {
-    "end_ghati_clock": "63:21:16",
-    "end_hours_clock": "25:20:30",
-    "end_local_time": "07:39:45",
-    "end_time": "2026-11-09T01:54:45.468750+00:00",
+    "end_ghati_clock": "63:20:08",
+    "end_hours_clock": "25:20:03",
+    "end_local_time": "07:39:18",
+    "end_time": "2026-11-09T01:54:18.277588+00:00",
     "name": "Swati",
     "name_ne": "स्वाती",
     "next": {
-      "end_ghati_clock": "128:09:47",
-      "end_hours_clock": "51:15:54",
-      "end_local_time": "09:35:09",
-      "end_time": "2026-11-10T03:50:09.843750+00:00",
+      "end_ghati_clock": "128:08:08",
+      "end_hours_clock": "51:15:15",
+      "end_local_time": "09:34:30",
+      "end_time": "2026-11-10T03:49:30.292969+00:00",
       "name": "Vishakha",
       "name_ne": "विशाखा",
       "number": 16
@@ -1645,18 +1659,18 @@
     "number": 15,
     "pada": 1,
     "progress": 0.0076,
-    "start_ghati_clock": "59:31:26",
-    "start_hours_clock": "23:48:34",
-    "start_local_time": "06:07:49",
-    "start_time": "2026-11-08T00:22:49.453125+00:00"
+    "start_ghati_clock": "59:30:59",
+    "start_hours_clock": "23:48:23",
+    "start_local_time": "06:07:38",
+    "start_time": "2026-11-08T00:22:38.741455+00:00"
   },
   "nakshatra_pada_spans": [
     {
-      "end_ghati_clock": "15:23:26",
-      "end_hours_clock": "6:09:22",
-      "end_local_time": "12:28:37",
+      "end_ghati_clock": "15:22:53",
+      "end_hours_clock": "6:09:09",
+      "end_local_time": "12:28:24",
       "end_local_time_short": "12:28",
-      "end_time": "2026-11-08T06:43:37.500000+00:00",
+      "end_time": "2026-11-08T06:43:24.316406+00:00",
       "nakshatra_name": "Swati",
       "nakshatra_name_ne": "स्वाती",
       "nakshatra_number": 15,
@@ -1664,11 +1678,11 @@
       "pada_ne": "१"
     },
     {
-      "end_ghati_clock": "31:18:45",
-      "end_hours_clock": "12:31:30",
-      "end_local_time": "18:50:45",
+      "end_ghati_clock": "31:18:20",
+      "end_hours_clock": "12:31:20",
+      "end_local_time": "18:50:35",
       "end_local_time_short": "18:50",
-      "end_time": "2026-11-08T13:05:45+00:00",
+      "end_time": "2026-11-08T13:05:35.332031+00:00",
       "nakshatra_name": "Swati",
       "nakshatra_name_ne": "स्वाती",
       "nakshatra_number": 15,
@@ -1676,11 +1690,11 @@
       "pada_ne": "२"
     },
     {
-      "end_ghati_clock": "47:18:45",
-      "end_hours_clock": "18:55:30",
-      "end_local_time": "01:14:45",
+      "end_ghati_clock": "47:17:25",
+      "end_hours_clock": "18:54:58",
+      "end_local_time": "01:14:13",
       "end_local_time_short": "01:14",
-      "end_time": "2026-11-08T19:29:45+00:00",
+      "end_time": "2026-11-08T19:29:13.359374+00:00",
       "nakshatra_name": "Swati",
       "nakshatra_name_ne": "स्वाती",
       "nakshatra_number": 15,
@@ -1698,9 +1712,9 @@
   "nivas_shool": {
     "agnivasa": {
       "current": {
-        "end_local_time": "11:43:33",
+        "end_local_time": "11:43:23",
         "end_local_time_short": "11:43",
-        "end_time": "2026-11-08T05:58:33.984375+00:00",
+        "end_time": "2026-11-08T05:58:23.272705+00:00",
         "is_auspicious": true,
         "name_en": "Prithvi",
         "name_ne": "पृथ्वी",
@@ -1711,9 +1725,9 @@
       },
       "segments": [
         {
-          "end_local_time": "11:43:33",
+          "end_local_time": "11:43:23",
           "end_local_time_short": "11:43",
-          "end_time": "2026-11-08T05:58:33.984375+00:00",
+          "end_time": "2026-11-08T05:58:23.272705+00:00",
           "is_auspicious": true,
           "name_en": "Prithvi",
           "name_ne": "पृथ्वी",
@@ -1727,7 +1741,7 @@
           "name_en": "Prithvi",
           "name_ne": "पृथ्वी",
           "start_local_time_short": "11:43",
-          "start_time": "2026-11-08T05:58:33.984375+00:00",
+          "start_time": "2026-11-08T05:58:23.272705+00:00",
           "subtitle_en": "Earth",
           "subtitle_ne": "भूमि",
           "until_full_night": true
@@ -1782,9 +1796,9 @@
     },
     "homahuti": {
       "current": {
-        "end_local_time": "11:43:33",
+        "end_local_time": "11:43:23",
         "end_local_time_short": "11:43",
-        "end_time": "2026-11-08T05:58:33.984375+00:00",
+        "end_time": "2026-11-08T05:58:23.272705+00:00",
         "is_auspicious": false,
         "key": "ketu",
         "name_en": "Ketu",
@@ -1795,9 +1809,9 @@
       },
       "segments": [
         {
-          "end_local_time": "11:43:33",
+          "end_local_time": "11:43:23",
           "end_local_time_short": "11:43",
-          "end_time": "2026-11-08T05:58:33.984375+00:00",
+          "end_time": "2026-11-08T05:58:23.272705+00:00",
           "is_auspicious": false,
           "key": "ketu",
           "name_en": "Ketu",
@@ -1812,7 +1826,7 @@
           "name_en": "Ketu",
           "name_ne": "केतु",
           "start_local_time_short": "11:43",
-          "start_time": "2026-11-08T05:58:33.984375+00:00",
+          "start_time": "2026-11-08T05:58:23.272705+00:00",
           "symbol": "☋",
           "until_full_night": true
         }
@@ -1820,9 +1834,9 @@
     },
     "kumbha_chakra": {
       "current": {
-        "end_local_time": "11:43:33",
+        "end_local_time": "11:43:23",
         "end_local_time_short": "11:43",
-        "end_time": "2026-11-08T05:58:33.984375+00:00",
+        "end_time": "2026-11-08T05:58:23.272705+00:00",
         "index": 6,
         "is_auspicious": false,
         "name_en": "Thighs",
@@ -1832,9 +1846,9 @@
       },
       "segments": [
         {
-          "end_local_time": "11:43:33",
+          "end_local_time": "11:43:23",
           "end_local_time_short": "11:43",
-          "end_time": "2026-11-08T05:58:33.984375+00:00",
+          "end_time": "2026-11-08T05:58:23.272705+00:00",
           "index": 6,
           "is_auspicious": false,
           "name_en": "Thighs",
@@ -1848,7 +1862,7 @@
           "name_en": "Head",
           "name_ne": "शिर",
           "start_local_time_short": "11:43",
-          "start_time": "2026-11-08T05:58:33.984375+00:00",
+          "start_time": "2026-11-08T05:58:23.272705+00:00",
           "until_full_night": true
         }
       ]
@@ -1860,9 +1874,9 @@
     },
     "shivavasa": {
       "current": {
-        "end_local_time": "11:43:33",
+        "end_local_time": "11:43:23",
         "end_local_time_short": "11:43",
-        "end_time": "2026-11-08T05:58:33.984375+00:00",
+        "end_time": "2026-11-08T05:58:23.272705+00:00",
         "is_auspicious": false,
         "name_en": "Bhojane",
         "name_ne": "भोजन",
@@ -1871,9 +1885,9 @@
       },
       "segments": [
         {
-          "end_local_time": "11:43:33",
+          "end_local_time": "11:43:23",
           "end_local_time_short": "11:43",
-          "end_time": "2026-11-08T05:58:33.984375+00:00",
+          "end_time": "2026-11-08T05:58:23.272705+00:00",
           "is_auspicious": false,
           "name_en": "Bhojane",
           "name_ne": "भोजन",
@@ -1885,7 +1899,7 @@
           "name_en": "Shmashane",
           "name_ne": "श्मशान",
           "start_local_time_short": "11:43",
-          "start_time": "2026-11-08T05:58:33.984375+00:00",
+          "start_time": "2026-11-08T05:58:23.272705+00:00",
           "until_full_night": true
         }
       ]
@@ -1915,10 +1929,10 @@
   },
   "panchaka_rahita": [
     {
-      "end_hours_clock": "0:44:31",
-      "end_local_time": "07:03:46",
+      "end_hours_clock": "0:44:11",
+      "end_local_time": "07:03:26",
       "end_local_time_short": "07:03",
-      "end_time": "2026-11-08T01:18:46.874987+00:00",
+      "end_time": "2026-11-08T01:18:26.660129+00:00",
       "good": true,
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
@@ -1929,144 +1943,144 @@
       "start_time": "2026-11-08T00:34:15+00:00"
     },
     {
-      "end_hours_clock": "3:02:20",
-      "end_local_time": "09:21:35",
+      "end_hours_clock": "3:02:17",
+      "end_local_time": "09:21:32",
       "end_local_time_short": "09:21",
-      "end_time": "2026-11-08T03:36:35.624987+00:00",
+      "end_time": "2026-11-08T03:36:32.988227+00:00",
       "good": false,
       "name": "Roga Panchaka",
       "name_ne": "रोग पञ्चक",
       "remainder": 8,
-      "start_hours_clock": "0:44:31",
-      "start_local_time": "07:03:46",
+      "start_hours_clock": "0:44:11",
+      "start_local_time": "07:03:26",
       "start_local_time_short": "07:03",
-      "start_time": "2026-11-08T01:18:46.874987+00:00"
+      "start_time": "2026-11-08T01:18:26.660129+00:00"
     },
     {
-      "end_hours_clock": "5:06:33",
-      "end_local_time": "11:25:48",
+      "end_hours_clock": "5:06:27",
+      "end_local_time": "11:25:42",
       "end_local_time_short": "11:25",
-      "end_time": "2026-11-08T05:40:48.750000+00:00",
+      "end_time": "2026-11-08T05:40:42.597589+00:00",
       "good": true,
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
       "remainder": 0,
-      "start_hours_clock": "3:02:20",
-      "start_local_time": "09:21:35",
+      "start_hours_clock": "3:02:17",
+      "start_local_time": "09:21:32",
       "start_local_time_short": "09:21",
-      "start_time": "2026-11-08T03:36:35.624987+00:00"
+      "start_time": "2026-11-08T03:36:32.988227+00:00"
     },
     {
-      "end_hours_clock": "6:49:41",
-      "end_local_time": "13:08:56",
+      "end_hours_clock": "6:49:28",
+      "end_local_time": "13:08:43",
       "end_local_time_short": "13:08",
-      "end_time": "2026-11-08T07:23:56.250013+00:00",
+      "end_time": "2026-11-08T07:23:43.066339+00:00",
       "good": false,
       "name": "Mrityu Panchaka",
       "name_ne": "मृत्यु पञ्चक",
       "remainder": 1,
-      "start_hours_clock": "5:06:33",
-      "start_local_time": "11:25:48",
+      "start_hours_clock": "5:06:27",
+      "start_local_time": "11:25:42",
       "start_local_time_short": "11:25",
-      "start_time": "2026-11-08T05:40:48.750000+00:00"
+      "start_time": "2026-11-08T05:40:42.597589+00:00"
     },
     {
-      "end_hours_clock": "8:18:16",
-      "end_local_time": "14:37:31",
+      "end_hours_clock": "8:17:51",
+      "end_local_time": "14:37:06",
       "end_local_time_short": "14:37",
-      "end_time": "2026-11-08T08:52:31.875013+00:00",
+      "end_time": "2026-11-08T08:52:06.386638+00:00",
       "good": true,
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
       "remainder": 3,
-      "start_hours_clock": "6:49:41",
-      "start_local_time": "13:08:56",
+      "start_hours_clock": "6:49:28",
+      "start_local_time": "13:08:43",
       "start_local_time_short": "13:08",
-      "start_time": "2026-11-08T07:23:56.250013+00:00"
+      "start_time": "2026-11-08T07:23:43.066339+00:00"
     },
     {
-      "end_hours_clock": "9:44:03",
-      "end_local_time": "16:03:18",
+      "end_hours_clock": "9:43:47",
+      "end_local_time": "16:03:02",
       "end_local_time_short": "16:03",
-      "end_time": "2026-11-08T10:18:18.750013+00:00",
+      "end_time": "2026-11-08T10:18:02.050687+00:00",
       "good": false,
       "name": "Raja Panchaka",
       "name_ne": "राज पञ्चक",
       "remainder": 4,
-      "start_hours_clock": "8:18:16",
-      "start_local_time": "14:37:31",
+      "start_hours_clock": "8:17:51",
+      "start_local_time": "14:37:06",
       "start_local_time_short": "14:37",
-      "start_time": "2026-11-08T08:52:31.875013+00:00"
+      "start_time": "2026-11-08T08:52:06.386638+00:00"
     },
     {
-      "end_hours_clock": "11:20:09",
-      "end_local_time": "17:39:24",
+      "end_hours_clock": "11:19:53",
+      "end_local_time": "17:39:08",
       "end_local_time_short": "17:39",
-      "end_time": "2026-11-08T11:54:24.375026+00:00",
+      "end_time": "2026-11-08T11:54:08.554593+00:00",
       "good": false,
       "name": "Agni Panchaka",
       "name_ne": "अग्नि पञ्चक",
       "remainder": 2,
-      "start_hours_clock": "9:44:03",
-      "start_local_time": "16:03:18",
+      "start_hours_clock": "9:43:47",
+      "start_local_time": "16:03:02",
       "start_local_time_short": "16:03",
-      "start_time": "2026-11-08T10:18:18.750013+00:00"
+      "start_time": "2026-11-08T10:18:02.050687+00:00"
     },
     {
-      "end_hours_clock": "13:15:56",
-      "end_local_time": "19:35:11",
+      "end_hours_clock": "13:15:55",
+      "end_local_time": "19:35:10",
       "end_local_time_short": "19:35",
-      "end_time": "2026-11-08T13:50:11.250039+00:00",
+      "end_time": "2026-11-08T13:50:10.370986+00:00",
       "good": true,
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
       "remainder": 3,
-      "start_hours_clock": "11:20:09",
-      "start_local_time": "17:39:24",
+      "start_hours_clock": "11:19:53",
+      "start_local_time": "17:39:08",
       "start_local_time_short": "17:39",
-      "start_time": "2026-11-08T11:54:24.375026+00:00"
+      "start_time": "2026-11-08T11:54:08.554593+00:00"
     },
     {
-      "end_hours_clock": "15:30:28",
-      "end_local_time": "21:49:43",
+      "end_hours_clock": "15:30:21",
+      "end_local_time": "21:49:36",
       "end_local_time_short": "21:49",
-      "end_time": "2026-11-08T16:04:43.125026+00:00",
+      "end_time": "2026-11-08T16:04:36.972535+00:00",
       "good": false,
       "name": "Raja Panchaka",
       "name_ne": "राज पञ्चक",
       "remainder": 4,
-      "start_hours_clock": "13:15:56",
-      "start_local_time": "19:35:11",
+      "start_hours_clock": "13:15:55",
+      "start_local_time": "19:35:10",
       "start_local_time_short": "19:35",
-      "start_time": "2026-11-08T13:50:11.250039+00:00"
+      "start_time": "2026-11-08T13:50:10.370986+00:00"
     },
     {
-      "end_hours_clock": "17:50:09",
-      "end_local_time": "00:09:24",
+      "end_hours_clock": "17:49:57",
+      "end_local_time": "00:09:12",
       "end_local_time_short": "00:09",
-      "end_time": "2026-11-08T18:24:24.374999+00:00",
+      "end_time": "2026-11-08T18:24:12.070178+00:00",
       "good": true,
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
       "remainder": 5,
-      "start_hours_clock": "15:30:28",
-      "start_local_time": "21:49:43",
+      "start_hours_clock": "15:30:21",
+      "start_local_time": "21:49:36",
       "start_local_time_short": "21:49",
-      "start_time": "2026-11-08T16:04:43.125026+00:00"
+      "start_time": "2026-11-08T16:04:36.972535+00:00"
     },
     {
-      "end_hours_clock": "20:06:33",
-      "end_local_time": "02:25:48",
+      "end_hours_clock": "20:06:17",
+      "end_local_time": "02:25:32",
       "end_local_time_short": "02:25",
-      "end_time": "2026-11-08T20:40:48.749999+00:00",
+      "end_time": "2026-11-08T20:40:32.050633+00:00",
       "good": false,
       "name": "Chora Panchaka",
       "name_ne": "चोर पञ्चक",
       "remainder": 6,
-      "start_hours_clock": "17:50:09",
-      "start_local_time": "00:09:24",
+      "start_hours_clock": "17:49:57",
+      "start_local_time": "00:09:12",
       "start_local_time_short": "00:09",
-      "start_time": "2026-11-08T18:24:24.374999+00:00"
+      "start_time": "2026-11-08T18:24:12.070178+00:00"
     },
     {
       "end_hours_clock": "24:00:44",
@@ -2077,10 +2091,10 @@
       "name": "Shubha Muhurta",
       "name_ne": "शुभ मुहूर्त",
       "remainder": 7,
-      "start_hours_clock": "20:06:33",
-      "start_local_time": "02:25:48",
+      "start_hours_clock": "20:06:17",
+      "start_local_time": "02:25:32",
       "start_local_time_short": "02:25",
-      "start_time": "2026-11-08T20:40:48.749999+00:00"
+      "start_time": "2026-11-08T20:40:32.050633+00:00"
     }
   ],
   "planets": {
@@ -2983,42 +2997,42 @@
       }
     ],
     "till": {
-      "end_ghati_clock": "63:21:16",
-      "end_hours_clock": "25:20:30",
-      "end_local_time": "07:39:45",
+      "end_ghati_clock": "63:20:08",
+      "end_hours_clock": "25:20:03",
+      "end_local_time": "07:39:18",
       "end_local_time_short": "07:39",
-      "end_time": "2026-11-09T01:54:45.468750+00:00"
+      "end_time": "2026-11-09T01:54:18.277588+00:00"
     }
   },
   "tithi": {
-    "end_ghati_clock": "13:30:47",
-    "end_hours_clock": "5:24:18",
-    "end_local_time": "11:43:33",
-    "end_time": "2026-11-08T05:58:33.984375+00:00",
+    "end_ghati_clock": "13:30:20",
+    "end_hours_clock": "5:24:08",
+    "end_local_time": "11:43:23",
+    "end_time": "2026-11-08T05:58:23.272705+00:00",
     "name": "Chaturdashi",
     "name_ne": "चतुर्दशी",
     "next": {
-      "end_ghati_clock": "76:11:51",
-      "end_hours_clock": "30:28:44",
-      "end_local_time": "12:47:59",
-      "end_time": "2026-11-09T07:02:59.765625+00:00",
+      "end_ghati_clock": "76:09:42",
+      "end_hours_clock": "30:27:52",
+      "end_local_time": "12:47:07",
+      "end_time": "2026-11-09T07:02:07.855225+00:00",
       "name": "Aausi",
       "name_ne": "औंसी",
       "number": 30
     },
     "number": 29,
     "progress": 0.7823,
-    "start_ghati_clock": "11:50:35",
-    "start_hours_clock": "4:44:14",
-    "start_local_time": "11:03:29",
-    "start_time": "2026-11-07T05:18:29.296875+00:00"
+    "start_ghati_clock": "11:50:25",
+    "start_hours_clock": "4:44:10",
+    "start_local_time": "11:03:25",
+    "start_time": "2026-11-07T05:18:25.177001+00:00"
   },
   "udaya_lagna": [
     {
-      "end_hours_clock": "0:44:31",
-      "end_local_time": "07:03:46",
+      "end_hours_clock": "0:44:11",
+      "end_local_time": "07:03:26",
       "end_local_time_short": "07:03",
-      "end_time": "2026-11-08T01:18:46.874987+00:00",
+      "end_time": "2026-11-08T01:18:26.660129+00:00",
       "name": "Tula",
       "name_ne": "तुला",
       "number": 7,
@@ -3026,7 +3040,7 @@
         {
           "degree": 23.3333,
           "degree_dms": "23°20'",
-          "local_time": "06:32:21",
+          "local_time": "06:32:20",
           "local_time_short": "06:32"
         }
       ],
@@ -3036,10 +3050,10 @@
       "start_time": "2026-11-08T00:34:15+00:00"
     },
     {
-      "end_hours_clock": "3:02:20",
-      "end_local_time": "09:21:35",
+      "end_hours_clock": "3:02:17",
+      "end_local_time": "09:21:32",
       "end_local_time_short": "09:21",
-      "end_time": "2026-11-08T03:36:35.624987+00:00",
+      "end_time": "2026-11-08T03:36:32.988227+00:00",
       "name": "Vrishchika",
       "name_ne": "वृश्चिक",
       "number": 8,
@@ -3047,68 +3061,75 @@
         {
           "degree": 0.0,
           "degree_dms": "0°00'",
-          "local_time": "07:03:46",
+          "local_time": "07:03:26",
           "local_time_short": "07:03"
-        },
-        {
-          "degree": 6.6667,
-          "degree_dms": "6°40'",
-          "local_time": "07:34:33",
-          "local_time_short": "07:34"
         }
       ],
-      "start_hours_clock": "0:44:31",
-      "start_local_time": "07:03:46",
+      "start_hours_clock": "0:44:11",
+      "start_local_time": "07:03:26",
       "start_local_time_short": "07:03",
-      "start_time": "2026-11-08T01:18:46.874987+00:00"
+      "start_time": "2026-11-08T01:18:26.660129+00:00"
     },
     {
-      "end_hours_clock": "5:06:33",
-      "end_local_time": "11:25:48",
+      "end_hours_clock": "5:06:27",
+      "end_local_time": "11:25:42",
       "end_local_time_short": "11:25",
-      "end_time": "2026-11-08T05:40:48.750000+00:00",
+      "end_time": "2026-11-08T05:40:42.597589+00:00",
       "name": "Dhanu",
       "name_ne": "धनु",
       "number": 9,
-      "pushkara_navamsha": [],
-      "start_hours_clock": "3:02:20",
-      "start_local_time": "09:21:35",
+      "pushkara_navamsha": [
+        {
+          "degree": 20.0,
+          "degree_dms": "20°00'",
+          "local_time": "10:46:37",
+          "local_time_short": "10:46"
+        },
+        {
+          "degree": 26.6667,
+          "degree_dms": "26°40'",
+          "local_time": "11:12:57",
+          "local_time_short": "11:12"
+        }
+      ],
+      "start_hours_clock": "3:02:17",
+      "start_local_time": "09:21:32",
       "start_local_time_short": "09:21",
-      "start_time": "2026-11-08T03:36:35.624987+00:00"
+      "start_time": "2026-11-08T03:36:32.988227+00:00"
     },
     {
-      "end_hours_clock": "6:49:41",
-      "end_local_time": "13:08:56",
+      "end_hours_clock": "6:49:28",
+      "end_local_time": "13:08:43",
       "end_local_time_short": "13:08",
-      "end_time": "2026-11-08T07:23:56.250013+00:00",
+      "end_time": "2026-11-08T07:23:43.066339+00:00",
       "name": "Makara",
       "name_ne": "मकर",
       "number": 10,
       "pushkara_navamsha": [],
-      "start_hours_clock": "5:06:33",
-      "start_local_time": "11:25:48",
+      "start_hours_clock": "5:06:27",
+      "start_local_time": "11:25:42",
       "start_local_time_short": "11:25",
-      "start_time": "2026-11-08T05:40:48.750000+00:00"
+      "start_time": "2026-11-08T05:40:42.597589+00:00"
     },
     {
-      "end_hours_clock": "8:18:16",
-      "end_local_time": "14:37:31",
+      "end_hours_clock": "8:17:51",
+      "end_local_time": "14:37:06",
       "end_local_time_short": "14:37",
-      "end_time": "2026-11-08T08:52:31.875013+00:00",
+      "end_time": "2026-11-08T08:52:06.386638+00:00",
       "name": "Kumbha",
       "name_ne": "कुम्भ",
       "number": 11,
       "pushkara_navamsha": [],
-      "start_hours_clock": "6:49:41",
-      "start_local_time": "13:08:56",
+      "start_hours_clock": "6:49:28",
+      "start_local_time": "13:08:43",
       "start_local_time_short": "13:08",
-      "start_time": "2026-11-08T07:23:56.250013+00:00"
+      "start_time": "2026-11-08T07:23:43.066339+00:00"
     },
     {
-      "end_hours_clock": "9:44:03",
-      "end_local_time": "16:03:18",
+      "end_hours_clock": "9:43:47",
+      "end_local_time": "16:03:02",
       "end_local_time_short": "16:03",
-      "end_time": "2026-11-08T10:18:18.750013+00:00",
+      "end_time": "2026-11-08T10:18:02.050687+00:00",
       "name": "Meena",
       "name_ne": "मीन",
       "number": 12,
@@ -3116,53 +3137,40 @@
         {
           "degree": 0.0,
           "degree_dms": "0°00'",
-          "local_time": "14:37:31",
+          "local_time": "14:37:06",
           "local_time_short": "14:37"
         },
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "14:55:58",
+          "local_time": "14:55:57",
           "local_time_short": "14:55"
         }
       ],
-      "start_hours_clock": "8:18:16",
-      "start_local_time": "14:37:31",
+      "start_hours_clock": "8:17:51",
+      "start_local_time": "14:37:06",
       "start_local_time_short": "14:37",
-      "start_time": "2026-11-08T08:52:31.875013+00:00"
+      "start_time": "2026-11-08T08:52:06.386638+00:00"
     },
     {
-      "end_hours_clock": "11:20:09",
-      "end_local_time": "17:39:24",
+      "end_hours_clock": "11:19:53",
+      "end_local_time": "17:39:08",
       "end_local_time_short": "17:39",
-      "end_time": "2026-11-08T11:54:24.375026+00:00",
+      "end_time": "2026-11-08T11:54:08.554593+00:00",
       "name": "Mesha",
       "name_ne": "मेष",
       "number": 1,
-      "pushkara_navamsha": [
-        {
-          "degree": 20.0,
-          "degree_dms": "20°00'",
-          "local_time": "17:05:14",
-          "local_time_short": "17:05"
-        },
-        {
-          "degree": 26.6667,
-          "degree_dms": "26°40'",
-          "local_time": "17:27:35",
-          "local_time_short": "17:27"
-        }
-      ],
-      "start_hours_clock": "9:44:03",
-      "start_local_time": "16:03:18",
+      "pushkara_navamsha": [],
+      "start_hours_clock": "9:43:47",
+      "start_local_time": "16:03:02",
       "start_local_time_short": "16:03",
-      "start_time": "2026-11-08T10:18:18.750013+00:00"
+      "start_time": "2026-11-08T10:18:02.050687+00:00"
     },
     {
-      "end_hours_clock": "13:15:56",
-      "end_local_time": "19:35:11",
+      "end_hours_clock": "13:15:55",
+      "end_local_time": "19:35:10",
       "end_local_time_short": "19:35",
-      "end_time": "2026-11-08T13:50:11.250039+00:00",
+      "end_time": "2026-11-08T13:50:10.370986+00:00",
       "name": "Vrishabha",
       "name_ne": "वृष",
       "number": 2,
@@ -3170,7 +3178,7 @@
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "18:03:01",
+          "local_time": "18:03:00",
           "local_time_short": "18:03"
         },
         {
@@ -3180,52 +3188,72 @@
           "local_time_short": "18:27"
         }
       ],
-      "start_hours_clock": "11:20:09",
-      "start_local_time": "17:39:24",
+      "start_hours_clock": "11:19:53",
+      "start_local_time": "17:39:08",
       "start_local_time_short": "17:39",
-      "start_time": "2026-11-08T11:54:24.375026+00:00"
+      "start_time": "2026-11-08T11:54:08.554593+00:00"
     },
     {
-      "end_hours_clock": "15:30:28",
-      "end_local_time": "21:49:43",
+      "end_hours_clock": "15:30:21",
+      "end_local_time": "21:49:36",
       "end_local_time_short": "21:49",
-      "end_time": "2026-11-08T16:04:43.125026+00:00",
+      "end_time": "2026-11-08T16:04:36.972535+00:00",
       "name": "Mithuna",
       "name_ne": "मिथुन",
       "number": 3,
       "pushkara_navamsha": [],
-      "start_hours_clock": "13:15:56",
-      "start_local_time": "19:35:11",
+      "start_hours_clock": "13:15:55",
+      "start_local_time": "19:35:10",
       "start_local_time_short": "19:35",
-      "start_time": "2026-11-08T13:50:11.250039+00:00"
+      "start_time": "2026-11-08T13:50:10.370986+00:00"
     },
     {
-      "end_hours_clock": "17:50:09",
-      "end_local_time": "00:09:24",
+      "end_hours_clock": "17:49:57",
+      "end_local_time": "00:09:12",
       "end_local_time_short": "00:09",
-      "end_time": "2026-11-08T18:24:24.374999+00:00",
+      "end_time": "2026-11-08T18:24:12.070178+00:00",
       "name": "Karka",
       "name_ne": "कर्कट",
       "number": 4,
-      "pushkara_navamsha": [],
-      "start_hours_clock": "15:30:28",
-      "start_local_time": "21:49:43",
+      "pushkara_navamsha": [
+        {
+          "degree": 0.0,
+          "degree_dms": "0°00'",
+          "local_time": "21:49:36",
+          "local_time_short": "21:49"
+        }
+      ],
+      "start_hours_clock": "15:30:21",
+      "start_local_time": "21:49:36",
       "start_local_time_short": "21:49",
-      "start_time": "2026-11-08T16:04:43.125026+00:00"
+      "start_time": "2026-11-08T16:04:36.972535+00:00"
     },
     {
-      "end_hours_clock": "20:06:33",
-      "end_local_time": "02:25:48",
+      "end_hours_clock": "20:06:17",
+      "end_local_time": "02:25:32",
       "end_local_time_short": "02:25",
-      "end_time": "2026-11-08T20:40:48.749999+00:00",
+      "end_time": "2026-11-08T20:40:32.050633+00:00",
       "name": "Simha",
       "name_ne": "सिंह",
       "number": 5,
-      "pushkara_navamsha": [],
-      "start_hours_clock": "17:50:09",
-      "start_local_time": "00:09:24",
+      "pushkara_navamsha": [
+        {
+          "degree": 20.0,
+          "degree_dms": "20°00'",
+          "local_time": "01:40:27",
+          "local_time_short": "01:40"
+        },
+        {
+          "degree": 26.6667,
+          "degree_dms": "26°40'",
+          "local_time": "02:10:32",
+          "local_time_short": "02:10"
+        }
+      ],
+      "start_hours_clock": "17:49:57",
+      "start_local_time": "00:09:12",
       "start_local_time_short": "00:09",
-      "start_time": "2026-11-08T18:24:24.374999+00:00"
+      "start_time": "2026-11-08T18:24:12.070178+00:00"
     },
     {
       "end_hours_clock": "24:00:44",
@@ -3245,14 +3273,14 @@
         {
           "degree": 13.3333,
           "degree_dms": "13°20'",
-          "local_time": "03:25:27",
+          "local_time": "03:25:26",
           "local_time_short": "03:25"
         }
       ],
-      "start_hours_clock": "20:06:33",
-      "start_local_time": "02:25:48",
+      "start_hours_clock": "20:06:17",
+      "start_local_time": "02:25:32",
       "start_local_time_short": "02:25",
-      "start_time": "2026-11-08T20:40:48.749999+00:00"
+      "start_time": "2026-11-08T20:40:32.050633+00:00"
     }
   ],
   "vaara": {
@@ -3262,26 +3290,26 @@
     "number": 0
   },
   "yoga": {
-    "end_ghati_clock": "52:28:40",
-    "end_hours_clock": "20:59:28",
-    "end_local_time": "03:18:43",
-    "end_time": "2026-11-08T21:33:43.359375+00:00",
+    "end_ghati_clock": "52:27:26",
+    "end_hours_clock": "20:58:58",
+    "end_local_time": "03:18:13",
+    "end_time": "2026-11-08T21:33:13.696289+00:00",
     "name": "Ayushman",
     "name_ne": "आयुष्मान",
     "next": {
-      "end_ghati_clock": "112:13:58",
-      "end_hours_clock": "44:53:35",
-      "end_local_time": "03:12:50",
-      "end_time": "2026-11-09T21:27:50.390625+00:00",
+      "end_ghati_clock": "112:12:19",
+      "end_hours_clock": "44:52:55",
+      "end_local_time": "03:12:10",
+      "end_time": "2026-11-09T21:27:10.839844+00:00",
       "name": "Saubhagya",
       "name_ne": "सौभाग्य",
       "number": 4
     },
     "number": 3,
     "progress": 0.1112,
-    "start_ghati_clock": "53:28:53",
-    "start_hours_clock": "21:23:33",
-    "start_local_time": "03:42:48",
-    "start_time": "2026-11-07T21:57:48.281250+00:00"
+    "start_ghati_clock": "53:28:49",
+    "start_hours_clock": "21:23:31",
+    "start_local_time": "03:42:46",
+    "start_time": "2026-11-07T21:57:46.633301+00:00"
   }
 }

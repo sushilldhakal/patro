@@ -64,10 +64,10 @@ def test_anga_transition_lines_match_the_day():
     payload = build_daily_state(day, loc, include_festivals=False, include_detail=True)
     lines = {ln.split(":", 1)[0]: ln for ln in anga_transition_lines(payload, day, loc)}
 
-    assert lines["तिथि"] == "तिथि: एकादशी → द्वादशी (११:५०)"
+    assert lines["तिथि"] == "तिथि: एकादशी → द्वादशी (११:४९)"  # ends 11:49:48
     assert lines["नक्षत्र"] == "नक्षत्र: ज्येष्ठा (दिनभर)"  # no change this day
     assert lines["योग"] == "योग: ब्रह्म → इन्द्र (२१:२४)"
-    assert lines["करण"] == "करण: विष्टि → बव (११:५०) → बालव (०१:०२)"  # two changes
+    assert lines["करण"] == "करण: विष्टि → बव (११:४९) → बालव (०१:०१)"  # two changes
 
 
 def test_post_photo_by_url_builds_request(monkeypatch):

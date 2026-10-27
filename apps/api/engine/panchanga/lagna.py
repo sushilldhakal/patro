@@ -22,9 +22,9 @@ from engine.astronomy.rashi import RashiPlacement, rashi_index
 # Bisection window for the next rashi boundary. The ascendant crosses a sign in
 # roughly two hours at Kathmandu's latitude; four hours brackets even the slowest
 # sign at high latitude, and 50 halvings take a 4-hour window well below the
-# 30-second tolerance.
+# one-second tolerance.
 _SEARCH_WINDOW_DAYS = 4.0 / 24.0
-_TOLERANCE_DAYS = 30.0 / 86400.0
+_TOLERANCE_DAYS = 1.0 / 86400.0
 _MAX_BISECTIONS = 50
 
 

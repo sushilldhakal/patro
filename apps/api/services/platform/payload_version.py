@@ -57,7 +57,14 @@ from __future__ import annotations
 #    1010 mbar / 10 °C atmosphere behind the published −0.833° horizon (sunrise
 #    ~13 s later, sunset ~10 s earlier), and printed sunrise/sunset round to the
 #    nearest minute instead of truncating.
-ASTRONOMY_VERSION = 4
+# 5: calculation audit. Tithi / nakshatra / yoga / karana / sankranti / lagna /
+#    gochar / udayast boundaries were bisected to 30 s – 15 min and reported the
+#    late edge (now 1 s). Yamaganda sat in the 8th/7th slot on Fri/Sat (now
+#    7th/6th); night choghadiya stepped one name instead of five; pauranik ritu
+#    paired rashis from Mesha (a month late); the lunar month was cut at
+#    12:00 UTC and UTC dates instead of at sunrise; moonrise/moonset after the
+#    next sunrise were shown as this day's.
+ASTRONOMY_VERSION = 5
 
 # Guards compose()'s decimal packing. Raise the multiplier below before this.
 _MAX_ASTRONOMY_VERSION = 99

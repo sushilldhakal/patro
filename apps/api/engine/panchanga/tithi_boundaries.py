@@ -8,7 +8,7 @@ from engine.astronomy.ut_instant import as_julian_day, day_instant_utc
 from engine.panchanga.tithi import calculate_tithi
 
 
-def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: int = 60) -> datetime:
+def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: float = 1) -> datetime:
     current_elongation = panchanga_service.elongation(as_julian_day(dt))
     current_tithi = int(current_elongation / TITHI_SPAN)
     start_dt = dt
@@ -27,7 +27,7 @@ def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: in
     return end_dt
 
 
-def find_tithi_start(dt: datetime, max_iterations: int = 50, tolerance_seconds: int = 60) -> datetime:
+def find_tithi_start(dt: datetime, max_iterations: int = 50, tolerance_seconds: float = 1) -> datetime:
     current_tithi = int(panchanga_service.elongation(as_julian_day(dt)) / TITHI_SPAN)
     start_dt = dt - timedelta(hours=30)
     end_dt = dt

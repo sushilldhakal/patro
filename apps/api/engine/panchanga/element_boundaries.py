@@ -63,7 +63,7 @@ def _find_span_start(
     get_index: Callable[[datetime], int],
     *,
     max_hours: float = 30,
-    tolerance_seconds: int = 60,
+    tolerance_seconds: float = 1,
 ) -> datetime:
     current = get_index(dt)
     start_dt = dt - timedelta(hours=max_hours)
@@ -100,7 +100,7 @@ def _find_span_end(
     get_value: Callable[[datetime], float],
     *,
     max_hours: float = 30,
-    tolerance_seconds: int = 60,
+    tolerance_seconds: float = 1,
 ) -> datetime:
     current = get_index(dt)
     start_dt = dt

@@ -28,7 +28,7 @@ from engine.jyotish.gochar import (
 )
 
 _SCAN_STEP = timedelta(hours=2)
-_TOLERANCE = timedelta(minutes=5)
+_TOLERANCE = timedelta(seconds=1)
 
 
 def _elongation(graha: str, dt: datetime) -> tuple[float, bool, bool]:

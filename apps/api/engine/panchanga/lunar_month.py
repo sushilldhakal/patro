@@ -21,6 +21,8 @@ from engine.panchanga.kaal import Kaal, KAAL_NAMES, vyapini_date
 from engine.panchanga.tithi import get_udaya_tithi
 from engine.panchanga.tithi_boundaries import find_next_tithi, find_tithi_end
 from engine.astronomy.jd_calendar import CivilDay
+from engine.astronomy.sun import calculate_sunrise
+from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import day_instant_utc
 
 MonthModel = Literal["amanta", "purnimant", "festival"]
@@ -50,6 +52,42 @@ class LunarMonth:
     @property
     def full_name(self) -> str:
         return f"Adhik {self.month_name}" if self.is_adhik else self.month_name
+
+    @property
+    def first_day(self) -> date:
+        """First civil day of the month: the first sunrise after its opening Aausi."""
+        return udaya_day_on_or_after(self.start_Aausi)
+
+    @property
+    def last_day(self) -> date:
+        """Last civil day: the closing Aausi still prevails at its sunrise."""
+        return udaya_day_on_or_after(self.end_Aausi) - timedelta(days=1)
+
+    @property
+    def purnima_day(self) -> date:
+        """The day whose sunrise Purnima prevails at."""
+        return udaya_day_on_or_after(self.end_purnima) - timedelta(days=1)
+
+
+def udaya_day_on_or_after(instant: datetime) -> date:
+    """First Nepal civil day whose sunrise is at or after *instant*.
+
+    A patro day belongs to whatever prevails at its sunrise, so a lunar month
+    bounded by the instants ``[A, B)`` holds exactly the days from
+    ``udaya_day_on_or_after(A)`` to ``udaya_day_on_or_after(B) - 1``. Cutting at
+    a UTC date (or at 12:00 UTC) instead gave an Aausi falling after sunrise to
+    the month it opens, and dated a new moon before 05:45 NPT a day early.
+    """
+    tz = resolve_observer_timezone(DEFAULT_LOCATION.timezone)
+    day = instant.astimezone(tz).date()
+    if calculate_sunrise(
+        day,
+        latitude=DEFAULT_LOCATION.lat,
+        longitude=DEFAULT_LOCATION.lon,
+        timezone_name=DEFAULT_LOCATION.timezone,
+    ) < instant:
+        day += timedelta(days=1)
+    return day
 
 
 @dataclass
@@ -192,8 +230,13 @@ def build_purnimant_months(lunar_year: LunarYear) -> list[PurnimantMonth]:
         )
         windows.append(
             PurnimantMonth(
-                start=start_dt.date(),
-                end_purnima=month.end_purnima.date(),
+                # The day after the previous Purnima day, in udaya reckoning.
+                start=(
+                    udaya_day_on_or_after(prev_purnima)
+                    if prev_purnima is not None
+                    else month.first_day
+                ),
+                end_purnima=month.purnima_day,
                 start_dt=start_dt,
                 end_dt=month.end_purnima,
                 solar_name=month.month_name,
@@ -235,19 +278,18 @@ def _lunar_month_payload(
 
 
 def _find_amanta_month_for_date(target: date) -> dict:
-    check = day_instant_utc(target, hour=12)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         for month in lunar_year.months:
-            if month.start_Aausi <= check < month.end_Aausi:
+            if month.first_day <= target <= month.last_day:
                 return _lunar_month_payload(
                     month.month_name,
                     full_name=month.full_name,
                     is_adhik=month.is_adhik,
                     month_type="adhik" if month.is_adhik else "nija",
                     paksha_model="amanta",
-                    window_start=month.start_Aausi.date(),
-                    window_end=(month.end_Aausi - timedelta(days=1)).date(),
+                    window_start=month.first_day,
+                    window_end=month.last_day,
                     solar_name=month.month_name,
                     festival_masa=month.month_name,
                 )
@@ -300,12 +342,11 @@ def _amanta_context(target: date) -> tuple[Optional[LunarMonth], Optional[LunarM
     """The amanta month covering ``target`` plus the one before it — used to
     attribute the junction Aausi to the month it closes rather than the one it
     opens."""
-    check = day_instant_utc(target, hour=12)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         prev: Optional[LunarMonth] = None
         for month in lunar_year.months:
-            if month.start_Aausi <= check < month.end_Aausi:
+            if month.first_day <= target <= month.last_day:
                 return month, prev
             prev = month
     return None, None
@@ -341,7 +382,7 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
     if (
         paksha == "krishna"
         and prev_month is not None
-        and target == month.start_Aausi.date()
+        and target == month.first_day
     ):
         month = prev_month
 
@@ -365,8 +406,8 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
         is_adhik=is_adhik,
         month_type=month_type,
         paksha_model="purnimant",
-        window_start=month.start_Aausi.date(),
-        window_end=(month.end_Aausi - timedelta(days=1)).date(),
+        window_start=month.first_day,
+        window_end=month.last_day,
         solar_name=month.month_name,
         festival_masa=name,
     )

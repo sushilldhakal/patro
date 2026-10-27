@@ -352,7 +352,13 @@ class AstronomyEngine:
         if dt.tzinfo is None:
             raise EphemerisError(f"Datetime must have timezone info: {dt}")
         utc = dt.astimezone(timezone.utc)
-        hour = utc.hour + utc.minute / 60.0 + utc.second / 3600.0
+        # Microseconds included: dropping them moved every instant up to a second
+        # early, enough to land a just-found boundary back in the span before it.
+        hour = (
+            utc.hour
+            + utc.minute / 60.0
+            + (utc.second + utc.microsecond / 1_000_000) / 3600.0
+        )
         # GREG_CAL unconditionally, unlike ``civil_day_jd_ut``: a ``datetime`` is
         # proleptic Gregorian *by definition*, at every epoch. Julian labels never
         # reach this method — ``date_if_supported`` refuses to build a ``datetime``

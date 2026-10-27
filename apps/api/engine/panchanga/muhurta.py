@@ -6,7 +6,7 @@ All three inauspicious periods divide the daytime (sunrise → sunset) into
 
     Day (vaara_index 0–6):  Sun  Mon  Tue  Wed  Thu  Fri  Sat
     Rahu Kalam period:        8    2    7    5    6    4    3
-    Yamaganda period:         5    4    3    2    1    8    7
+    Yamaganda period:         5    4    3    2    1    7    6
     Gulika period:            7    6    5    4    3    2    1
 
     Mnemonic (Rahu Kalam):  "8-2-7-5-6-4-3" for Sun through Sat.
@@ -31,7 +31,7 @@ from engine.astronomy.timescale import resolve_observer_timezone
 # ─── Period tables (1-based index into 8 equal Hora Kalas) ───────────────────
 
 _RAHU_KALAM_PERIOD:  list[int] = [8, 2, 7, 5, 6, 4, 3]
-_YAMAGANDA_PERIOD:   list[int] = [5, 4, 3, 2, 1, 8, 7]
+_YAMAGANDA_PERIOD:   list[int] = [5, 4, 3, 2, 1, 7, 6]
 _GULIKA_PERIOD:      list[int] = [7, 6, 5, 4, 3, 2, 1]
 
 # The 15 traditional muhurta names (ordered 1 → 15, Abhijit = index 7 = 8th)

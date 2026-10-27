@@ -52,7 +52,7 @@ from engine.panchanga.names_ne import (
 )
 from engine.panchanga.nepal_sambat import gregorian_to_ns
 from engine.calendar.samvatsara import samvatsara_payload_for_bs_year
-from engine.panchanga.choghadiya import build_choghadiya, day_ghati_from_sun_times
+from engine.panchanga.choghadiya import build_choghadiya
 from engine.panchanga.hora import build_hora
 from engine.panchanga.navatara import build_chandrabalam_table, build_tarabala_table
 from engine.panchanga.rashifal import build_daily_rashifal
@@ -272,23 +272,18 @@ def _assemble_udaya_panchanga(
     )
     sunrise_block = _time_block(sunrise_utc, location.timezone, nearest_minute=True)
     sunset_block = _time_block(sunset_utc, location.timezone, nearest_minute=True)
-    day_ghati = day_ghati_from_sun_times(
-        sunrise_block.get("local_time_short"),
-        sunset_block.get("local_time_short"),
-    )
-    choghadiya = (
-        build_choghadiya(day_ghati, vaara_num)
-        if day_ghati is not None
-        else []
-    )
+    # Daylight's share of this sunrise→sunrise day on the 60-ghati scale, from
+    # the exact instants — not the printed HH:MM, which is a minute coarse.
+    day_s = (sunset_utc - sunrise_utc).total_seconds()
+    night_s = (next_sunrise_utc - sunset_utc).total_seconds()
+    day_ghati = min(day_s / (day_s + night_s) * 60.0, 60.0)
+    choghadiya = build_choghadiya(day_ghati, vaara_num)
     hora = build_hora(
         sunrise_utc,
         sunset_utc,
         next_sunrise_utc,
         vaara_num,
         location.timezone,
-        sunrise_short=sunrise_block.get("local_time_short"),
-        sunset_short=sunset_block.get("local_time_short"),
     )
 
     # No `bs_year >= 1` gate: the Jovian walk is JD-based and table-backed now, so
@@ -502,6 +497,13 @@ def build_daily_panchanga_at_jd(
         timezone_name=location.timezone,
     )
     next_sunrise_utc = sun_service.sunrise(civil_day_add(jd, 1), location)
+    # The panchanga day runs sunrise to sunrise. Near Aausi and Purnima the Moon
+    # can rise (or set) on neither side of it; the next event then belongs to
+    # the following day, which prints it too, so this day has none.
+    if moonrise_utc is not None and moonrise_utc >= next_sunrise_utc:
+        moonrise_utc = None
+    if moonset_utc is not None and moonset_utc >= next_sunrise_utc:
+        moonset_utc = None
 
     tithi_info = calculate_tithi(sunrise_utc)
     vara = panchanga_service.vara(as_julian_day(sunrise_utc), location.timezone)

@@ -57,11 +57,11 @@
         "kranti_mark": "द"
       },
       "ritu": {
-        "number": 2,
-        "name": "Grishma",
-        "name_sanskrit": "Grishma",
-        "name_ne": "ग्रीष्म",
-        "season": "Summer",
+        "number": 3,
+        "name": "Varsha",
+        "name_sanskrit": "Varsha",
+        "name_ne": "वर्षा",
+        "season": "Monsoon",
         "sun_rashi": 4,
         "basis": "sidereal"
       },
@@ -413,11 +413,11 @@
         "kranti_mark": "द"
       },
       "ritu": {
-        "number": 3,
-        "name": "Varsha",
-        "name_sanskrit": "Varsha",
-        "name_ne": "वर्षा",
-        "season": "Monsoon",
+        "number": 4,
+        "name": "Sharad",
+        "name_sanskrit": "Sharad",
+        "name_ne": "शरद",
+        "season": "Autumn",
         "sun_rashi": 6,
         "basis": "sidereal"
       },
@@ -591,11 +591,11 @@
         "kranti_mark": "द"
       },
       "ritu": {
-        "number": 4,
-        "name": "Sharad",
-        "name_sanskrit": "Sharad",
-        "name_ne": "शरद",
-        "season": "Autumn",
+        "number": 5,
+        "name": "Hemanta",
+        "name_sanskrit": "Hemanta",
+        "name_ne": "हेमन्त",
+        "season": "Pre-winter",
         "sun_rashi": 8,
         "basis": "sidereal"
       },
@@ -947,11 +947,11 @@
         "kranti_mark": "उ"
       },
       "ritu": {
-        "number": 5,
-        "name": "Hemanta",
-        "name_sanskrit": "Hemanta",
-        "name_ne": "हेमन्त",
-        "season": "Pre-winter",
+        "number": 6,
+        "name": "Shishira",
+        "name_sanskrit": "Shishira",
+        "name_ne": "शिशिर",
+        "season": "Winter",
         "sun_rashi": 10,
         "basis": "sidereal"
       },
@@ -1481,11 +1481,11 @@
         "kranti_mark": "उ"
       },
       "ritu": {
-        "number": 1,
-        "name": "Vasanta",
-        "name_sanskrit": "Vasanta",
-        "name_ne": "वसन्त",
-        "season": "Spring",
+        "number": 2,
+        "name": "Grishma",
+        "name_sanskrit": "Grishma",
+        "name_ne": "ग्रीष्म",
+        "season": "Summer",
         "sun_rashi": 2,
         "basis": "sidereal"
       },

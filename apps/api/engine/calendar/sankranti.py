@@ -88,7 +88,7 @@ def find_sankranti_brent_jd(
     target_degree: float,
     low_jd: float,
     high_jd: float,
-    tolerance_days: float = 60 / 86400,
+    tolerance_days: float = 1 / 86400,
     max_iterations: int = 50,
 ) -> float:
     """Refine a sankranti instant in JD (UT), including BCE dates."""
@@ -191,11 +191,11 @@ def find_sankranti_after_jd(
         else:
             return None
 
-    return find_sankranti_brent_jd(target_degree, low, high, tolerance_days=60 / 86400)
+    return find_sankranti_brent_jd(target_degree, low, high, tolerance_days=1 / 86400)
 
 
 def _bisect_sankranti(
-    target_degree: float, low: datetime, high: datetime, tolerance_seconds: int = 60
+    target_degree: float, low: datetime, high: datetime, tolerance_seconds: float = 1
 ) -> datetime:
     tolerance = timedelta(seconds=tolerance_seconds)
     for _ in range(60):
@@ -219,7 +219,7 @@ def find_sankranti_brent(
     target_degree: float,
     low: datetime,
     high: datetime,
-    tolerance_seconds: int = 60,
+    tolerance_seconds: float = 1,
     max_iterations: int = 50,
 ) -> datetime:
     tol = float(tolerance_seconds)
@@ -319,7 +319,7 @@ def find_sankranti(target_rashi: int, after: datetime, max_days: int = 40) -> Op
         else:
             return None
 
-    return find_sankranti_brent(target_degree, low, high, tolerance_seconds=60)
+    return find_sankranti_brent(target_degree, low, high, tolerance_seconds=1)
 
 
 def find_mesh_sankranti(year: int) -> Optional[datetime]:

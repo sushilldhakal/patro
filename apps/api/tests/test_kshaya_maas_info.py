@@ -45,13 +45,13 @@ def test_bs_2039_has_two_adhik_months_and_one_kshaya():
 
     r = get_special_months_for_bs_year(2039)
     assert [(a["month_name"], a["start_date"]) for a in r["adhik_months"]] == [
-        ("Ashwin", "1982-09-17"),
+        ("Ashwin", "1982-09-18"),  # new moon 17 Sep 17:39 local, after sunrise
         ("Falgun", "1983-02-13"),
     ]
     assert r["adhik_maas"]["month_name"] == "Ashwin"
     assert r["kshaya_maas"]["is_kshaya"] is True
     assert r["kshaya_maas"]["full_name_en"] == "Poush–Magh Kshaya"
-    assert r["kshaya_maas"]["start_date"] == "1983-01-14"
+    assert r["kshaya_maas"]["start_date"] == "1983-01-15"  # new moon 14 Jan 10:37 local
 
 
 def test_bs_2020_kshaya_between_two_adhik_months():

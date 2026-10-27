@@ -102,8 +102,10 @@ def build_choghadiya(day_ghati: float, vaara_num: int) -> list[dict[str, Any]]:
                 "phase": "day",
             }
         )
+    # Night choghadiyas advance five places a slot, not one: Sunday night runs
+    # Shubha, Amrita, Chara, Roga, Kala, Labha, Udvega, Shubha.
     for i in range(8):
-        c = CHOGHADIYA[(CHO_NIGHT_START[dow] + i) % 7]
+        c = CHOGHADIYA[(CHO_NIGHT_START[dow] + 5 * i) % 7]
         segments.append(
             {
                 "name_ne": c["name_ne"],

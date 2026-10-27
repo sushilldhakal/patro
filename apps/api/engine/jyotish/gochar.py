@@ -225,7 +225,7 @@ def _bisect_index_change(
     *,
     get_index,
     max_days: float,
-    tolerance_hours: float = 0.25,
+    tolerance_hours: float = 1 / 3600,
 ) -> datetime | None:
     """Return UTC instant when `get_index(graha, dt)` first changes after from_dt."""
     current = get_index(graha, from_dt)
@@ -392,7 +392,7 @@ def find_next_rashi_entry(
     graha: str,
     from_dt: datetime,
     *,
-    tolerance_hours: float = 0.25,
+    tolerance_hours: float = 1 / 3600,
 ) -> dict[str, Any] | None:
     """
     Find the next moment a graha enters a new rashi after from_dt.
@@ -401,7 +401,7 @@ def find_next_rashi_entry(
     ----------
     graha           Name of the graha (e.g. "jupiter").
     from_dt         Search start (UTC datetime).
-    tolerance_hours Precision required, default 15 minutes.
+    tolerance_hours Precision required, default one second.
 
     Returns
     -------
@@ -475,7 +475,7 @@ def find_next_nakshatra_entry(
     graha: str,
     from_dt: datetime,
     *,
-    tolerance_hours: float = 0.25,
+    tolerance_hours: float = 1 / 3600,
 ) -> dict[str, Any] | None:
     """Next nakshatra ingress (13°20′ step) for a graha after from_dt."""
     if graha not in GRAHA_META:
@@ -514,7 +514,7 @@ def find_next_pada_entry(
     graha: str,
     from_dt: datetime,
     *,
-    tolerance_hours: float = 0.25,
+    tolerance_hours: float = 1 / 3600,
 ) -> dict[str, Any] | None:
     """Next nakshatra-pada ingress (3°20′ step) for a graha after from_dt."""
     if graha not in GRAHA_META:
@@ -564,7 +564,7 @@ def _bisect_retrograde_change(
     *,
     target_retrograde: bool,
 ) -> datetime:
-    tolerance = timedelta(minutes=5)
+    tolerance = timedelta(seconds=1)
     for _ in range(50):
         if t_hi - t_lo < tolerance:
             break

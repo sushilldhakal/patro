@@ -136,7 +136,7 @@ def test_moon_tara_asta_matches_reference_window():
     ]
     assert jan, "expected a Moon Tara Asta window starting 2026-01-17"
     p = jan[0]
-    assert p["start"]["time_short"] == "05:50"
+    assert p["start"]["time_short"] == "05:51"  # moonrise 05:51:09 at the standard horizon
     end_civil = CivilDay.from_jd_ut(p["end"]["jd"])
     assert (end_civil.year, end_civil.month, end_civil.day) == (2026, 1, 20)
     assert p["end"]["time_short"] == "19:02"
