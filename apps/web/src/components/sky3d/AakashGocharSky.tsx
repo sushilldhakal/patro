@@ -2505,6 +2505,7 @@ export function AakashGocharSky({
       {/* In-tree, not portalled: this has to paint inside the fullscreen layer. */}
       {datePickerOpen ? (
         <SkyTimeSheet
+          centered
           timeMs={sample?.timeMs ?? date.getTime()}
           zoneOffsetMs={zoneOffsetMs}
           timeRate={timeRate}

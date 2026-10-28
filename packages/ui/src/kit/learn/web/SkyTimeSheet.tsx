@@ -37,12 +37,23 @@ export function SkyTimeSheet({
   };
   const closeRef = useRef(close);
   closeRef.current = close;
+  const rootRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === "Escape") closeRef.current();
     };
+    /* The backdrop only covers the sheet's own box (the sky, the wheel): a click anywhere else on
+       the page closes it too. Capture phase, so nothing that stops the event can keep it open. */
+    const onPointerDown = (e: PointerEvent) => {
+      const root = rootRef.current;
+      if (root && e.target instanceof Node && !root.contains(e.target)) closeRef.current();
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onPointerDown, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointerDown, true);
+    };
   }, []);
 
   const focusField = (field: SkyTimeField) => {
@@ -127,7 +138,7 @@ export function SkyTimeSheet({
     );
 
   return (
-    <div className={cn("absolute inset-0 z-50 flex flex-col", centered ? "justify-center px-3" : "justify-end")}>
+    <div ref={rootRef} className={cn("absolute inset-0 z-50 flex flex-col", centered ? "justify-center px-3" : "justify-end")}>
       <button type="button" aria-label={v.labels.close} className="absolute inset-0 cursor-default bg-black/40" onClick={close} />
       <div
         data-sky-controls

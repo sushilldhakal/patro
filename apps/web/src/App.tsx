@@ -108,6 +108,10 @@ export function AppProviders({
         enableSystem
         storageKey={THEME_STORAGE_KEY}
         disableTransitionOnChange
+        /* index.html already applies the stored theme before first paint; next-themes' own inline
+           script never runs when React renders it on the client and only drew React's
+           "Encountered a script tag" warning. As a data block it is inert and silent. */
+        scriptProps={{ type: "application/json" }}
       >
         <QueryClientProvider client={queryClient}>
           <AuthProvider ssr={ssr}>
