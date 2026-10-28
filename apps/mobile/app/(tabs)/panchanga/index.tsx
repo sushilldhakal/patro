@@ -123,7 +123,7 @@ export default function PanchangaScreen() {
           />
           </ScrollHero>
           </Reveal>
-          {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
+          {page.timeBased ? <EphemerisModeBanner p={page.ephemeris ? data : undefined} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
             <Reveal index={1}>
             <DayTimeline

@@ -154,9 +154,7 @@ export function Panchanga() {
             onLocationChange={setLocation}
           />
 
-          {page.ephemeris && data && (
-            <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} />
-          )}
+          {page.timeBased && <EphemerisModeBanner p={page.ephemeris ? data : undefined} clock={clock} viewedDateAd={page.civilAnchor} />}
 
           {/* Timeline shares the wheel's udaya (sunrise-to-sunrise) day for the
               viewed civil date so the two never disagree. Feeding it the

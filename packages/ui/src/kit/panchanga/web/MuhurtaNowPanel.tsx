@@ -2,7 +2,7 @@ import { Box, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useEphemerisModeBanner, useMuhurtaNow } from "@vedic-patro/features/panchanga";
 import { panchangaPageClasses as cls } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import type { MuhurtaNowPanelProps } from "../contract";
+import type { EphemerisModeBannerProps, MuhurtaNowPanelProps } from "../contract";
 
 const aside = cls.aside;
 
@@ -40,7 +40,7 @@ export function MuhurtaNowPanel({ p, clock }: MuhurtaNowPanelProps) {
   );
 }
 
-export function EphemerisModeBanner({ p, clock, viewedDateAd }: MuhurtaNowPanelProps) {
+export function EphemerisModeBanner({ p, clock, viewedDateAd }: EphemerisModeBannerProps) {
   const banner = useEphemerisModeBanner({ p, clock, viewedDateAd });
   return (
     <Box className={aside.banner}>

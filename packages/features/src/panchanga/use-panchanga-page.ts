@@ -82,10 +82,11 @@ export function usePanchangaPage({ location, date, clock, setClock, sources, ena
   }, [wheelData?.date_parts?.gregorian?.era, civilAnchor, hasCivilAnchor]);
 
   const atTimeSource = sources.atTime({ clock, wheel: wheelData });
+  const atTimeEnabled = enabled && (atTimeSource.enabled ?? true);
   const instantQuery = useQuery({
     queryKey: atTimeSource.queryKey,
     queryFn: atTimeSource.queryFn,
-    enabled: enabled && (atTimeSource.enabled ?? true),
+    enabled: atTimeEnabled,
     staleTime: 1000 * 60 * 5,
     placeholderData: keepPreviousData,
   });
@@ -210,6 +211,11 @@ export function usePanchangaPage({ location, date, clock, setClock, sources, ena
     /** What the moving-anga sections read. */
     angaData,
     ephemeris: isEphemerisPanchanga(instantData),
+    /**
+     * A time-based (ephemeris) reading is on its way or here: the banner that explains it shows
+     * from the start, not when the slower at-time request lands and pushes the page down.
+     */
+    timeBased: instantData ? isEphemerisPanchanga(instantData) : atTimeEnabled,
     showWheelSkeleton: udayaQuery.isLoading && !wheelData,
     loadError,
     /** The at-time request failed too (nothing at all to show). */

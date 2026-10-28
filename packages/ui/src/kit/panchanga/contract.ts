@@ -24,6 +24,11 @@ export type MuhurtaNowPanelProps = {
   viewedDateAd?: string;
 };
 
+export type EphemerisModeBannerProps = Omit<MuhurtaNowPanelProps, "p"> & {
+  /** The at-time reading, once it arrives; the banner shows from the clock alone before that. */
+  p?: PanchangaDay;
+};
+
 export type GocharPromoCardProps = {
   onPress: () => void;
   className?: string;

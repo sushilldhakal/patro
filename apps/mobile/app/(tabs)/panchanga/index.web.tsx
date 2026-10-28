@@ -64,7 +64,7 @@ export default function PanchangaScreen() {
             location={location}
             onLocationChange={setLocation}
           />
-          {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
+          {page.timeBased ? <EphemerisModeBanner p={page.ephemeris ? data : undefined} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
             <DayTimeline
               p={wheelData}

@@ -38,10 +38,10 @@ export function useMuhurtaNow({ p, clock }: { p: PanchangaDay; clock?: string })
   };
 }
 
-export function useEphemerisModeBanner({ p, clock, viewedDateAd }: { p: PanchangaDay; clock?: string; viewedDateAd?: string }) {
+export function useEphemerisModeBanner({ p, clock, viewedDateAd }: { p?: PanchangaDay; clock?: string; viewedDateAd?: string }) {
   const { t, lang, digits } = useLocale();
-  const time = p.query_instant_local?.split(" ")[1] ?? clock;
-  const viewedAd = viewedDateAd ?? p.query_instant_local?.split(" ")[0];
+  const time = p?.query_instant_local?.split(" ")[1] ?? clock;
+  const viewedAd = viewedDateAd ?? p?.query_instant_local?.split(" ")[0];
   const viewedDateLabel = viewedAd ? formatBsDateLong(parseAdStr(viewedAd), lang, digits) : null;
   const body: MuhurtaTextRun[] = time
     ? lang === "en"
@@ -52,7 +52,7 @@ export function useEphemerisModeBanner({ p, clock, viewedDateAd }: { p: Panchang
         ]
       : [{ text: digits(time), mono: true }, { text: t("ui.panchanga.x_324ebf10") }]
     : [{ text: t("panchanga.muhurta_now.ephemeris_no_time") }];
-  if (p.before_sunrise_of_civil_day) {
+  if (p?.before_sunrise_of_civil_day) {
     body.push({
       text: viewedDateLabel
         ? t("ui.panchanga.this_time_is_before_sunrise_on", { viewedDateLabel, viewedDateLabel2: viewedDateLabel })

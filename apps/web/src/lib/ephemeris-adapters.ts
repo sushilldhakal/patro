@@ -18,7 +18,10 @@ export async function fetchEphemerisPanchangaDay(
   location?: LocationParams,
   options?: { ayanamsha?: string; resolvedJdUt?: number },
 ): Promise<PanchangaDay> {
-  const raw = await fetchPanchangaAtTimeForDay(dayState, clock, location, options);
-  const daily = await fetchPanchangaDay(dayState, location);
+  // Both at once: the daily is the page's own day request, so it is usually answered from cache.
+  const [raw, daily] = await Promise.all([
+    fetchPanchangaAtTimeForDay(dayState, clock, location, options),
+    fetchPanchangaDay(dayState, location),
+  ]);
   return mergeEphemerisAtTimeWithDaily(raw, daily);
 }
