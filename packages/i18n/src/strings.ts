@@ -5399,12 +5399,7 @@ export const strings = {
     en: "From Brahmā's whole lifespan down to the four Yugas — the Surya Siddhanta's complete ladder of time",
   },
   "brahma_mana.tree_title": { ne: "पूरा क्रम", en: "The complete hierarchy" },
-  "brahma_mana.tree_hint": {
-    ne: "कुनै पनि तह थिचेर खोल्नुहोस् वा बन्द गर्नुहोस्। रङ लागेको बाटोले हामी अहिले भएको ठाउँ देखाउँछ।",
-    en: "Tap any level to open or close it. The coloured path leads to where we are now.",
-  },
   "brahma_mana.show_now": { ne: "अहिलेको बाटो", en: "Path to now" },
-  "brahma_mana.collapse_all": { ne: "सबै बन्द गर्नुहोस्", en: "Collapse all" },
   "brahma_mana.divya_unit": { ne: "१ दिव्य वर्ष = ३६० सौर वर्ष", en: "1 divya varṣa = 360 solar years" },
   "brahma_mana.divya": { ne: "{{n}} दिव्य वर्ष", en: "{{n}} divya varṣa" },
   "brahma_mana.rough_solar": { ne: "≈ {{rough}} सौर वर्ष", en: "≈ {{rough}} solar years" },

@@ -1,5 +1,5 @@
 /**
- * Brahma Māna page — the parts that need no React: the tree of time units as rows each app draws,
+ * Brahma Māna page — the parts that need no React: the tree of time units one level at a time,
  * the pāda table, the solar-year table and the "where we are now" path. Numbers come from
  * `@vedic-patro/domain/calendar/brahma-mana`; all wording from `t()`.
  */
@@ -21,7 +21,6 @@ import {
   kaliYearsElapsed,
   kalpaYearsElapsed,
   SOLAR_YEARS_PER_DIVYA,
-  TIME_ROOT,
   timeAncestry,
   timeChildren,
   type TimeKind,
@@ -77,28 +76,6 @@ export function roughYears(n: number, text: Text): string {
   return parts.join(" ");
 }
 
-export type BrahmaTreeRow = {
-  key: string;
-  kind: TimeKind;
-  /** Depth in the tree: 0 is Brahmā's life. */
-  depth: number;
-  hasChildren: boolean;
-  open: boolean;
-  /** Last child of its parent: its rail stops at its own elbow. */
-  last: boolean;
-  /** Per ancestor column except the nearest: whether that branch's rail runs on past this row. */
-  rails: boolean[];
-  /** On the path to now. */
-  current: boolean;
-  /** "Prājāpatya māna" above the first Manvantara of a Kalpa, "divya māna" above the first Mahāyuga. */
-  mana?: string;
-  name: string;
-  /** "12,000,000 divya varṣa". */
-  divya: string;
-  /** "≈ 4.32 billion solar years" — the exact figure is in the tables. */
-  solar: string;
-};
-
 function instanceName(n: TimeNode, text: Text): string {
   const { t, digits } = text;
   const num = n.index != null ? digits(n.index) : "";
@@ -120,41 +97,6 @@ function manaLabel(n: TimeNode, firstOfKind: boolean, text: Text): string | unde
   if (n.kind === "manvantara_full") return text.t("brahma_mana.mana.prajapatya");
   if (n.kind === "mahayuga") return text.t("brahma_mana.mana.divya");
   return undefined;
-}
-
-/** The rows to draw: every node whose ancestors are all open, in reading order. */
-export function brahmaTreeRows(open: ReadonlySet<string>, text: Text): BrahmaTreeRow[] {
-  const { t } = text;
-  const rows: BrahmaTreeRow[] = [];
-  const walk = (n: TimeNode, depth: number, last: boolean, lasts: boolean[], firstOfKind: boolean) => {
-    const isOpen = n.hasChildren && open.has(n.key);
-    const solarYears = n.divya * SOLAR_YEARS_PER_DIVYA;
-    rows.push({
-      key: n.key,
-      kind: n.kind,
-      depth,
-      hasChildren: n.hasChildren,
-      open: isOpen,
-      last,
-      rails: lasts.slice(0, -1).map((l) => !l),
-      current: n.current,
-      mana: manaLabel(n, firstOfKind, text),
-      name: instanceName(n, text),
-      divya: t("brahma_mana.divya", { n: groupedYears(n.divya, text) }),
-      solar: t("brahma_mana.rough_solar", { rough: roughYears(solarYears, text) }),
-    });
-    if (!isOpen) return;
-    const kids = timeChildren(n);
-    const seen = new Set<TimeKind>();
-    kids.forEach((c, i) => {
-      const childLast = i === kids.length - 1;
-      const first = !seen.has(c.kind);
-      seen.add(c.kind);
-      walk(c, depth + 1, childLast, depth === 0 ? [childLast] : [...lasts, childLast], first);
-    });
-  };
-  walk(TIME_ROOT, 0, true, [], false);
-  return rows;
 }
 
 /** Stretches between the named ones — pralaya, sandhyā, jalaplāva: drawn quieter. */
@@ -205,7 +147,7 @@ function trailMana(n: TimeNode, text: Text): string | undefined {
 }
 
 /**
- * The phone view of the same tree: one level at a time. The path from Brahmā's life down to the
+ * Brahmā's time one level at a time. The path from Brahmā's life down to the
  * focus, the focus itself, and the parts it is made of — no indentation, however deep.
  */
 export function brahmaLadder(focusKey: string, text: Text): BrahmaLadder {

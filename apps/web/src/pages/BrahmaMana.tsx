@@ -1,87 +1,11 @@
-import { ArrowUp, ChevronDown, ChevronRight, Hourglass, LocateFixed } from "lucide-react";
+import { ArrowUp, ChevronRight, Hourglass, LocateFixed } from "lucide-react";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useBrahmaManaPage, type BrahmaManaPage, type BrahmaTreeRow } from "@vedic-patro/features/brahma-mana";
+import { useBrahmaManaPage, type BrahmaManaPage } from "@vedic-patro/features/brahma-mana";
 import { useRouteLoading } from "@/lib/route-loading";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-
-/** Indent per level, in px. Fifteen levels deep still leaves a phone most of its width. */
-const STEP = 16;
-
-/** One stretch of time: rails of the levels above, a triangle if it opens, name, [divya varṣa]. */
-function TreeRow({ row, tree }: { row: BrahmaTreeRow; tree: BrahmaManaPage["tree"] }) {
-  const line = row.current ? "bg-secondary" : "bg-border";
-  const rails = row.rails.map((on, i) => (
-    <span key={i} aria-hidden className="relative shrink-0" style={{ width: STEP }}>
-      {on ? <span className="absolute left-1.5 top-0 h-full w-px bg-border" /> : null}
-    </span>
-  ));
-  const elbow =
-    row.depth > 0 ? (
-      <span aria-hidden className="relative shrink-0" style={{ width: STEP }}>
-        <span className={cn("absolute left-1.5 top-0 w-px", line, row.last ? "h-3.5" : "h-full")} />
-        <span className={cn("absolute left-1.5 top-3.5 h-px w-2", line)} />
-      </span>
-    ) : null;
-  const label = (
-    <span className="min-w-0 py-0.5 text-left leading-snug">
-      <span
-        className={cn(
-          "font-semibold",
-          row.current ? "text-secondary underline decoration-dashed decoration-1 underline-offset-4 dark:text-accent" : "text-foreground",
-        )}
-      >
-        {row.name}
-      </span>{" "}
-      <span className="font-num text-sm text-muted-foreground">[{row.divya}]</span>{" "}
-      <span className="font-num text-xs text-muted-foreground/80">{row.solar}</span>
-    </span>
-  );
-  const triangle = row.hasChildren ? (
-    <ChevronDown aria-hidden className={cn("mt-1 size-3.5 shrink-0 text-foreground transition-transform", !row.open && "-rotate-90")} />
-  ) : (
-    <span aria-hidden className="w-3.5 shrink-0" />
-  );
-
-  return (
-    <>
-      {row.mana ? (
-        <li className="flex">
-          {rails}
-          {/* The parent's rail runs on through the label to this row's elbow. */}
-          {row.depth > 0 ? (
-            <span aria-hidden className="relative shrink-0" style={{ width: STEP }}>
-              <span className={cn("absolute left-1.5 top-0 h-full w-px", row.current ? "bg-secondary" : "bg-border")} />
-            </span>
-          ) : null}
-          <span className="pl-5 text-sm italic text-danger">{row.mana}:</span>
-        </li>
-      ) : null}
-      <li className="flex items-stretch">
-        {rails}
-        {elbow}
-        {row.hasChildren ? (
-          <button
-            type="button"
-            onClick={() => tree.toggle(row.key)}
-            aria-expanded={row.open}
-            className="flex min-w-0 items-start gap-1.5 rounded px-1 hover:bg-muted/50"
-          >
-            {triangle}
-            {label}
-          </button>
-        ) : (
-          <span className="flex min-w-0 items-start gap-1.5 px-1">
-            {triangle}
-            {label}
-          </span>
-        )}
-      </li>
-    </>
-  );
-}
 
 type Ladder = BrahmaManaPage["ladder"];
 
@@ -89,144 +13,196 @@ function Mana({ text }: { text?: string }) {
   return text ? <span className="block text-xs italic text-danger">{text}:</span> : null;
 }
 
-/** The phone view: one level of Brahmā's time at a time, the way down above it, its parts below. */
+const NOW_PILL = "shrink-0 rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-secondary-foreground";
+
+/** The way down from Brahmā's life to the level in view, on one rail; the last step is the level itself. */
+function Trail({ ladder }: { ladder: Ladder }) {
+  const steps = [...ladder.trail, ladder.focus];
+  return (
+    <ol className="m-0 list-none p-0">
+      {steps.map((step, i) => {
+        const here = i === steps.length - 1;
+        const rail = step.current ? "bg-secondary" : "bg-border";
+        return (
+          <li key={step.key}>
+            <button
+              type="button"
+              onClick={() => ladder.focusOn(step.key)}
+              aria-current={here ? "step" : undefined}
+              className={cn("flex w-full gap-3 rounded-lg px-1 text-left", here ? "bg-secondary/10" : "hover:bg-muted/60")}
+            >
+              <span aria-hidden className="flex w-3 shrink-0 flex-col items-center">
+                <span className={cn("w-px flex-1", i === 0 ? "bg-transparent" : rail)} />
+                <span
+                  className={cn(
+                    "rounded-full",
+                    here
+                      ? "size-3 bg-secondary ring-4 ring-secondary/20"
+                      : step.current
+                        ? "size-2.5 bg-secondary"
+                        : "size-2.5 border border-border bg-card",
+                  )}
+                />
+                <span className={cn("w-px flex-1", here ? "bg-transparent" : rail)} />
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col py-1.5 leading-snug">
+                <Mana text={step.mana} />
+                <span className={cn("font-semibold", here && "text-lg", step.current ? "text-secondary dark:text-accent" : "text-foreground")}>
+                  {step.name}
+                </span>
+                <span className="font-num text-xs text-muted-foreground">{step.divya}</span>
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** The parts drawn to scale — Kṛta 4 : Tretā 3 : Dvāpara 2 : Kali 1 — each a way in. */
+function ProportionBar({ ladder }: { ladder: Ladder }) {
+  if (ladder.parts.length < 2) return null;
+  return (
+    <div className="flex h-4 gap-px overflow-hidden rounded-full">
+      {ladder.parts.map((p) => {
+        const tone = p.current ? "bg-secondary" : p.pause ? "bg-muted" : "bg-secondary/25 hover:bg-secondary/50";
+        const style = { flexGrow: p.share, flexBasis: 0, minWidth: 2 };
+        return p.hasChildren ? (
+          <button key={p.key} type="button" title={p.name} aria-label={p.name} onClick={() => ladder.focusOn(p.key)} className={tone} style={style} />
+        ) : (
+          <span key={p.key} title={p.name} className={tone} style={style} />
+        );
+      })}
+    </div>
+  );
+}
+
+function PartCard({ part, ladder }: { part: Ladder["parts"][number]; ladder: Ladder }) {
+  const body = (
+    <span
+      className={cn(
+        "flex h-full w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors",
+        part.current
+          ? "border-2 border-secondary bg-secondary/10"
+          : part.pause
+            ? "border border-dashed border-border bg-muted/50"
+            : "border border-border bg-card",
+        part.hasChildren && !part.current && "hover:border-secondary/60 hover:bg-secondary/5",
+      )}
+    >
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span
+          className={cn(
+            "font-semibold",
+            part.current ? "text-secondary dark:text-accent" : part.pause ? "italic text-muted-foreground" : "text-foreground",
+          )}
+        >
+          {part.name}
+        </span>
+        <span className="font-num text-sm text-muted-foreground">{part.divya}</span>
+        <span className="font-num text-xs text-muted-foreground">{part.solar}</span>
+      </span>
+      {part.current ? <span className={NOW_PILL}>{ladder.nowLabel}</span> : null}
+      {part.hasChildren ? <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" /> : null}
+    </span>
+  );
+  return part.hasChildren ? (
+    <button type="button" onClick={() => ladder.focusOn(part.key)} className="h-full w-full active:opacity-70">
+      {body}
+    </button>
+  ) : (
+    body
+  );
+}
+
+/**
+ * Brahmā's time one level at a time: the way down on the left (above, on a phone), the level in
+ * view with its parts to scale, and the parts to step into.
+ */
 function LadderCard({ page }: { page: BrahmaManaPage }) {
   const ladder: Ladder = page.ladder;
   return (
-    <section className={cn(patroCard, "flex flex-col gap-3 p-4 md:hidden")}>
-      <h2 className="m-0 text-lg font-bold text-foreground">{page.tree.title}</h2>
-      <p className="m-0 text-sm text-muted-foreground">{ladder.hint}</p>
-      <p className="m-0 font-num text-sm font-semibold text-foreground">{page.tree.unit}</p>
-      <div className="flex flex-wrap gap-2">
-        {ladder.up ? (
-          <button
-            type="button"
-            onClick={ladder.up}
-            className="flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground active:opacity-70"
-          >
-            <ArrowUp className="size-3.5" aria-hidden />
-            {ladder.upLabel}
-          </button>
-        ) : null}
-        {ladder.atNow ? null : (
-          <button
-            type="button"
-            onClick={ladder.toNow}
-            className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground active:opacity-70"
-          >
-            <LocateFixed className="size-3.5" aria-hidden />
-            {ladder.toNowLabel}
-          </button>
-        )}
+    <section className={cn(patroCard, "flex flex-col gap-4 p-4 md:p-6")}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 className="m-0 text-lg font-bold text-foreground md:text-xl">{page.tree.title}</h2>
+          <p className="m-0 max-w-2xl text-sm text-muted-foreground">{ladder.hint}</p>
+          <p className="m-0 font-num text-sm font-semibold text-foreground">{page.tree.unit}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {ladder.up ? (
+            <button
+              type="button"
+              onClick={ladder.up}
+              className="flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground hover:bg-muted/60 active:opacity-70"
+            >
+              <ArrowUp className="size-3.5" aria-hidden />
+              {ladder.upLabel}
+            </button>
+          ) : null}
+          {ladder.atNow ? null : (
+            <button
+              type="button"
+              onClick={ladder.toNow}
+              className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground hover:opacity-90 active:opacity-70"
+            >
+              <LocateFixed className="size-3.5" aria-hidden />
+              {ladder.toNowLabel}
+            </button>
+          )}
+        </div>
       </div>
 
-      {ladder.trail.length ? (
-        <ol className="m-0 list-none p-0">
-          {ladder.trail.map((step) => (
-            <li key={step.key}>
-              <button type="button" onClick={() => ladder.focusOn(step.key)} className="flex w-full gap-3 text-left active:opacity-70">
-                <span aria-hidden className="flex w-3 shrink-0 flex-col items-center">
-                  <span className={cn("w-px flex-1", step.current ? "bg-secondary" : "bg-border")} />
-                  <span className={cn("size-2.5 rounded-full", step.current ? "bg-secondary" : "border border-border bg-card")} />
-                  <span className={cn("w-px flex-1", step.current ? "bg-secondary" : "bg-border")} />
-                </span>
-                <span className="min-w-0 flex-1 py-1 leading-snug">
-                  <Mana text={step.mana} />
-                  <span className={cn("font-semibold", step.current ? "text-secondary dark:text-accent" : "text-foreground")}>{step.name}</span>
-                  <span className="font-num text-xs text-muted-foreground">
-                    {"  "}
-                    {step.divya}
-                  </span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
-      ) : null}
+      <div className="grid gap-4 md:grid-cols-[minmax(14rem,17rem)_minmax(0,1fr)] md:gap-6">
+        <aside className="md:sticky md:top-24 md:self-start md:border-r md:border-border md:pr-4">
+          <Trail ladder={ladder} />
+        </aside>
 
-      <div key={ladder.focus.key} className="flex animate-in flex-col gap-3 fade-in duration-200 motion-reduce:animate-none">
-        <div
-          className={cn(
-            "flex flex-col gap-1 rounded-2xl p-4",
-            ladder.focus.current ? "border-2 border-secondary bg-secondary/10" : "border border-border bg-muted/50",
-          )}
-        >
-          <Mana text={ladder.focus.mana} />
-          <div className="flex items-start gap-2">
-            <h3 className={cn("m-0 min-w-0 flex-1 text-xl font-bold", ladder.focus.current ? "text-secondary dark:text-accent" : "text-foreground")}>
-              {ladder.focus.name}
-            </h3>
-            {ladder.focus.current ? (
-              <span className="mt-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-secondary-foreground">{ladder.nowLabel}</span>
-            ) : null}
+        <div key={ladder.focus.key} className="flex min-w-0 animate-in flex-col gap-3 fade-in duration-200 motion-reduce:animate-none">
+          <div
+            className={cn(
+              "flex flex-col gap-1 rounded-2xl p-4 md:p-5",
+              ladder.focus.current ? "border-2 border-secondary bg-secondary/10" : "border border-border bg-muted/50",
+            )}
+          >
+            <Mana text={ladder.focus.mana} />
+            <div className="flex items-start gap-2">
+              <h3
+                className={cn(
+                  "m-0 min-w-0 flex-1 text-xl font-bold md:text-2xl",
+                  ladder.focus.current ? "text-secondary dark:text-accent" : "text-foreground",
+                )}
+              >
+                {ladder.focus.name}
+              </h3>
+              {ladder.focus.current ? <span className={cn(NOW_PILL, "mt-1")}>{ladder.nowLabel}</span> : null}
+            </div>
+            <p className="m-0 font-num text-base font-semibold text-foreground md:text-lg">{ladder.focus.divya}</p>
+            <p className="m-0 font-num text-xs text-muted-foreground md:text-sm">{ladder.focus.solar}</p>
           </div>
-          <p className="m-0 font-num text-base font-semibold text-foreground">{ladder.focus.divya}</p>
-          <p className="m-0 font-num text-xs text-muted-foreground">{ladder.focus.solar}</p>
-        </div>
 
-        {ladder.parts.length ? (
-          <>
-            <p className="m-0 text-sm font-semibold text-muted-foreground">{ladder.partsLabel}</p>
-            {ladder.parts.length > 1 ? (
-              <div aria-hidden className="flex h-3 gap-px overflow-hidden rounded-full">
-                {ladder.parts.map((p) => (
-                  <span
-                    key={p.key}
-                    className={cn(p.current ? "bg-secondary" : p.pause ? "bg-muted" : "bg-secondary/25")}
-                    style={{ flexGrow: p.share, flexBasis: 0, minWidth: 2 }}
-                  />
-                ))}
-              </div>
-            ) : null}
-            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-              {ladder.parts.map((part) => {
-                const body = (
-                  <span
-                    className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left",
-                      part.current
-                        ? "border-2 border-secondary bg-secondary/10"
-                        : part.pause
-                          ? "border border-dashed border-border bg-muted/50"
-                          : "border border-border bg-card",
-                    )}
-                  >
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span
-                        className={cn(
-                          "font-semibold",
-                          part.current ? "text-secondary dark:text-accent" : part.pause ? "italic text-muted-foreground" : "text-foreground",
-                        )}
-                      >
-                        {part.name}
-                      </span>
-                      <span className="font-num text-sm text-muted-foreground">{part.divya}</span>
-                      <span className="font-num text-xs text-muted-foreground">{part.solar}</span>
-                    </span>
-                    {part.current ? (
-                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-secondary-foreground">{ladder.nowLabel}</span>
-                    ) : null}
-                    {part.hasChildren ? <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" /> : null}
-                  </span>
-                );
-                return (
-                  <li key={part.key} className="flex flex-col gap-1">
-                    <Mana text={part.mana} />
-                    {part.hasChildren ? (
-                      <button type="button" onClick={() => ladder.focusOn(part.key)} className="active:opacity-70">
-                        {body}
-                      </button>
-                    ) : (
-                      body
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </>
-        ) : (
-          <p className="m-0 text-sm text-muted-foreground">{ladder.endLabel}</p>
-        )}
+          {ladder.parts.length ? (
+            <>
+              <p className="m-0 text-sm font-semibold text-muted-foreground">{ladder.partsLabel}</p>
+              <ProportionBar ladder={ladder} />
+              <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2 xl:grid-cols-3">
+                {ladder.parts.flatMap((part) => [
+                  part.mana ? (
+                    <li key={`${part.key}-mana`} className="col-span-full pt-1">
+                      <Mana text={part.mana} />
+                    </li>
+                  ) : null,
+                  <li key={part.key}>
+                    <PartCard part={part} ladder={ladder} />
+                  </li>,
+                ])}
+              </ul>
+            </>
+          ) : (
+            <p className="m-0 text-sm text-muted-foreground">{ladder.endLabel}</p>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -245,29 +221,6 @@ export function BrahmaMana() {
       />
 
       <LadderCard page={page} />
-
-      <section className={cn(patroCard, "hidden flex-col gap-3 p-4 md:flex")}>
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="m-0 text-lg font-bold text-foreground">{page.tree.title}</h2>
-          <div className="flex gap-3">
-            <button type="button" onClick={page.tree.showNow} className="text-sm font-semibold text-secondary hover:underline">
-              {page.tree.showNowLabel}
-            </button>
-            <button type="button" onClick={page.tree.collapseAll} className="text-sm font-semibold text-secondary hover:underline">
-              {page.tree.collapseAllLabel}
-            </button>
-          </div>
-        </div>
-        <p className="m-0 text-sm text-muted-foreground">
-          {page.tree.hint} <span className="font-num font-semibold text-foreground">{page.tree.unit}</span>
-        </p>
-        <p className="m-0 text-sm italic text-danger">{page.tree.rootMana}:</p>
-        <ul className="m-0 list-none overflow-x-auto p-0">
-          {page.tree.rows.map((row) => (
-            <TreeRow key={row.key} row={row} tree={page.tree} />
-          ))}
-        </ul>
-      </section>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <section className={cn(patroCard, "flex flex-col gap-2 p-4")}>

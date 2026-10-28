@@ -1,34 +1,19 @@
 /**
  * The Brahma Māna page, shared by the website's `pages/BrahmaMana.tsx` and the app's
- * `app/brahma-mana.tsx`: the instance tree (parārdha #2 → … → Kali Yuga) with which nodes are
- * open, the two tables, the path to now and the notes. Opens on the path to now.
+ * `app/brahma-mana.tsx`: the instance tree (parārdha #2 → … → Kali Yuga) seen one level at a
+ * time, the two tables, the path to now and the notes. Opens on the Mahāyuga we are in.
  */
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { nowPathKeys } from "@vedic-patro/domain/calendar/brahma-mana";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { brahmaLadder, brahmaNotes, brahmaTreeRows, nowLines, padaRows, yearsRows } from "./model";
+import { brahmaLadder, brahmaNotes, nowLines, padaRows, yearsRows } from "./model";
 
 const LEARN_SLUGS = ["ghati-pala", "calendar-differences"];
 
 export function useBrahmaManaPage() {
   const { t, lang, digits } = useLocale();
   const text = useMemo(() => ({ t, lang, digits }), [t, lang, digits]);
-  /** Open node keys. The page opens on the path to now; everything else is built only when opened. */
-  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set(nowPathKeys()));
-  const rows = useMemo(() => brahmaTreeRows(open, text), [open, text]);
-
-  const toggle = useCallback((key: string) => {
-    setOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }, []);
-  const showNow = useCallback(() => setOpen(new Set(nowPathKeys())), []);
-  const collapseAll = useCallback(() => setOpen(new Set(["L"])), []);
-
-  /** The phone view's level: it opens on the Mahāyuga we are in, its four Yugas below. */
+  /** The level in view: it opens on the Mahāyuga we are in, its four Yugas below. */
   const nowFocus = useMemo(() => {
     const keys = nowPathKeys();
     return keys[keys.length - 3]!;
@@ -48,16 +33,7 @@ export function useBrahmaManaPage() {
     subtitle: t("brahma_mana.subtitle"),
     tree: {
       title: t("brahma_mana.tree_title"),
-      hint: t("brahma_mana.tree_hint"),
       unit: t("brahma_mana.divya_unit"),
-      rootMana: t("brahma_mana.mana.brahma"),
-      rows,
-      toggle,
-      showNow,
-      showNowLabel: t("brahma_mana.show_now"),
-      collapseAll,
-      collapseAllLabel: t("brahma_mana.collapse_all"),
-      nowLabel: t("brahma_mana.now"),
     },
     ladder: {
       ...ladder,
