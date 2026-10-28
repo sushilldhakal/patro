@@ -3217,6 +3217,64 @@
     "hours": "{{h}} h",
     "hours_minutes": "{{h}} h {{m}} min"
   },
+  "muhurta_board": {
+    "upcoming": "Next",
+    "starts_in": "Starts in {{time}}",
+    "then": "Then — in {{time}}",
+    "lagna": {
+      "day": "Day lagnas",
+      "night": "Night lagnas",
+      "chara": "Movable — travel and quick work",
+      "sthira": "Fixed — home, marriage and lasting work",
+      "dvi": "Dual — most everyday work"
+    },
+    "panchaka": {
+      "day": "Day windows",
+      "night": "Night windows",
+      "shubha": {
+        "name": "Shubha muhurta",
+        "use": "Panchaka-free — good to begin work"
+      },
+      "mrityu": {
+        "name": "Mrityu panchaka",
+        "use": "Worst — start nothing new"
+      },
+      "agni": {
+        "name": "Agni panchaka",
+        "use": "Risk of fire and accidents"
+      },
+      "raja": {
+        "name": "Raja panchaka",
+        "use": "Trouble with authority"
+      },
+      "chora": {
+        "name": "Chora panchaka",
+        "use": "Risk of theft and loss — avoid travel"
+      },
+      "roga": {
+        "name": "Roga panchaka",
+        "use": "Risk of illness and hardship"
+      }
+    },
+    "pushkara": {
+      "day": "Day pushkara navamshas",
+      "night": "Night pushkara navamshas"
+    },
+    "pushkara_at": "{{name}} lagna at {{deg}} — an auspicious moment",
+    "balam": {
+      "good": "Very auspicious · Auspicious",
+      "neutral": "Medium",
+      "bad": "Inauspicious · Fatal"
+    },
+    "chandrabala": {
+      "day": "Chandrabala by day",
+      "night": "Chandrabala by night"
+    },
+    "tarabala": {
+      "day": "Tarabala by day",
+      "night": "Tarabala by night"
+    }
+  },
   "hora_board": {
     "day": "Day horas",
     "night": "Night horas",

@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
-import { useElementPage, type ElementPage, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
+import { useElementPage, type ElementPage, type MuhurtaSlot, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
 import { AppShell } from "@/components/AppShell";
 import { AllElementsLink, ElementDescription, GrahaBanner } from "@vedic-patro/ui/kit/panchanga";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
@@ -160,6 +160,14 @@ function SpanList({ spans, elementId, udaya }: { spans: SpanCard[]; elementId: s
   );
 }
 
+/** A board row's glyph: its rashi or nakshatra, or the hora planet. */
+function SlotGlyph({ slot, elementId }: { slot: MuhurtaSlot; elementId: string }) {
+  if (slot.glyph?.kind === "nakshatra") return <NakshatraGlyphIcon name={slot.glyph.name} number={slot.glyph.number} size={26} />;
+  if (slot.glyph) return <RashiGlyphIcon name={slot.glyph.name} number={slot.glyph.number} size={26} />;
+  if (elementId === "hora") return <ElementDayRowIcon elementId={elementId} row={slot.raw} size={26} />;
+  return null;
+}
+
 /* ── table (per-day) view ──────────────────────────────────────────────── */
 
 function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
@@ -307,11 +315,12 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
     if (page.status === "loading") return <LoadingState />;
     if (page.status === "error") return <ErrorState />;
     if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} udaya={page.udaya} />;
-    if (page.table?.kind === "board") {
+    const board = page.table?.kind === "board" ? page.table.board : page.balam?.board;
+    if (board) {
       return (
         <MuhurtaBoard
-          board={page.table.board}
-          leading={meta.id === "hora" ? (slot) => <ElementDayRowIcon elementId={meta.id} row={slot.raw} size={26} /> : undefined}
+          board={board}
+          leading={(slot) => <SlotGlyph slot={slot} elementId={meta.id} />}
           icons={{
             day: <Ionicons name="sunny-outline" size={18} color={colors.warning} />,
             night: <Ionicons name="moon-outline" size={18} color={colors.mutedForeground} />,

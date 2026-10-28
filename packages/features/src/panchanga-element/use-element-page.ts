@@ -21,7 +21,7 @@ import {
 import { getChandraBalamCards, getTaraBalamCards, type BalamCardItem } from "@vedic-patro/read-models/panchanga/balam-cards";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
-import { getChandrabalamTable, getTarabalaTable } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { getChandrabalamTable, getSunrise, getSunset, getTarabalaTable } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
 import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
@@ -29,7 +29,7 @@ import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
-import { elementTable, spanCards, udayaSummary } from "./model";
+import { balamBoard, elementTable, spanCards, udayaSummary } from "./model";
 
 export * from "./model";
 
@@ -89,8 +89,8 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
 
   const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
   const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
-  // On today the choghadiya and hora boards follow the clock: which slot is on, and how long it has left.
-  const live = (name === "choghadiya" || name === "hora") && dateAd === todayAd;
+  // On today the boards follow the clock: which slot is on, and how long it has left.
+  const live = Boolean(meta && !isSpan) && dateAd === todayAd;
   const [tick, setTick] = useState(0);
   useEffect(() => {
     if (!live) return;
@@ -104,7 +104,7 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
   }, [live, tick, timeZone]);
 
   const table = useMemo(
-    () => (dayQuery.data ? elementTable(dayQuery.data.data, dayQuery.data.sunrise, name ?? "", text, nowMin) : undefined),
+    () => (dayQuery.data ? elementTable(dayQuery.data.data, dayQuery.data.sunrise, name ?? "", text, nowMin, dayQuery.data.sunset) : undefined),
     [dayQuery.data, name, text, nowMin],
   );
 
@@ -115,18 +115,23 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
     const tbl = isChandra ? getChandrabalamTable(panchanga) : getTarabalaTable(panchanga);
     const pickName = (ne: string, en?: string) => (lang === "en" ? (en ?? ne) : ne);
     const moonLabel = isChandra ? formatRashiDisplay(tbl?.moon_label, tbl?.moon_label_en, lang) : pickName(tbl?.moon_label ?? "", tbl?.moon_label_en);
+    const cardName = (card: BalamCardItem) =>
+      (isChandra ? formatRashiDisplay(card.name, card.nameEn, lang) : undefined) ?? pickName(card.name, card.nameEn);
+    const moonRef =
+      tbl?.moon_label && moonLabel
+        ? t(isChandra ? "element_page.moon_sign_sunrise" : "element_page.moon_nakshatra_sunrise", { label: moonLabel })
+        : undefined;
     return {
       variant: balam as "chandrabala" | "tarabala",
       cards,
-      cardName: (card: BalamCardItem) =>
-        (isChandra ? formatRashiDisplay(card.name, card.nameEn, lang) : undefined) ?? pickName(card.name, card.nameEn),
-      moonRef:
-        tbl?.moon_label && moonLabel
-          ? t(isChandra ? "element_page.moon_sign_sunrise" : "element_page.moon_nakshatra_sunrise", { label: moonLabel })
-          : undefined,
+      cardName,
+      moonRef,
+      board: cards.length
+        ? balamBoard(cards, balam, cardName, { sunrise: getSunrise(panchanga), sunset: getSunset(panchanga), nowMin, note: moonRef }, text)
+        : undefined,
       empty: cards.length === 0 ? t("common.no_data") : undefined,
     };
-  }, [balam, panchanga, lang, t]);
+  }, [balam, panchanga, lang, t, nowMin, text]);
 
   const statusOf = (loading: boolean, data: unknown): PageStatus => (data ? "ready" : loading ? "loading" : "error");
   const status: PageStatus = isSpan

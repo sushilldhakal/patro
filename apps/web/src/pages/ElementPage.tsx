@@ -1,6 +1,6 @@
 import { getRouteApi, Navigate, useParams } from "@tanstack/react-router";
 import { Moon, Sparkles, Sun } from "lucide-react";
-import { useElementPage, type ElementPage as ElementPageView, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
+import { useElementPage, type ElementPage as ElementPageView, type MuhurtaSlot, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { GrahaBanner, ElementDescription } from "@vedic-patro/ui/kit/panchanga";
 import { RoutePageState } from "@/components/common/RoutePageState";
@@ -125,6 +125,14 @@ function SpanList({ spans, elementId, udaya }: { spans: SpanCard[]; elementId: s
       </div>
     </div>
   );
+}
+
+/** A board row's glyph: its rashi or nakshatra, or the hora planet. */
+function SlotGlyph({ slot, elementId }: { slot: MuhurtaSlot; elementId: string }) {
+  if (slot.glyph?.kind === "nakshatra") return <NakshatraGlyphIcon name={slot.glyph.name} number={slot.glyph.number} size={26} />;
+  if (slot.glyph) return <RashiGlyphIcon name={slot.glyph.name} number={slot.glyph.number} size={26} />;
+  if (elementId === "hora") return <ElementDayRowIcon elementId={elementId} row={slot.raw} size={26} />;
+  return null;
 }
 
 /* ── table (per-day) view ──────────────────────────────────────────────── */
@@ -291,11 +299,11 @@ export function ElementPage() {
         {(p) =>
           p.kind === "span" ? (
             <SpanList spans={p.spans} elementId={meta.id} udaya={p.udaya} />
-          ) : p.table?.kind === "board" ? (
+          ) : p.table?.kind === "board" || p.balam?.board ? (
             <MuhurtaBoard
-              board={p.table.board}
+              board={p.table?.kind === "board" ? p.table.board : p.balam!.board!}
               icons={{ day: <Sun className="size-5" />, night: <Moon className="size-5" /> }}
-              leading={meta.id === "hora" ? (slot) => <ElementDayRowIcon elementId={meta.id} row={slot.raw} size={26} /> : undefined}
+              leading={(slot) => <SlotGlyph slot={slot} elementId={meta.id} />}
             />
           ) : (
             <div className={cn(patroCard, "p-3.5")}>
