@@ -89,8 +89,8 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
 
   const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
   const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
-  // On today the choghadiya board follows the clock: which slot is on, and how long it has left.
-  const live = name === "choghadiya" && dateAd === todayAd;
+  // On today the choghadiya and hora boards follow the clock: which slot is on, and how long it has left.
+  const live = (name === "choghadiya" || name === "hora") && dateAd === todayAd;
   const [tick, setTick] = useState(0);
   useEffect(() => {
     if (!live) return;

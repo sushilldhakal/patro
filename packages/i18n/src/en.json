@@ -3217,6 +3217,28 @@
     "hours": "{{h}} h",
     "hours_minutes": "{{h}} h {{m}} min"
   },
+  "hora_board": {
+    "day": "Day horas",
+    "night": "Night horas",
+    "lords": {
+      "sun": "Sun",
+      "moon": "Moon",
+      "mars": "Mars",
+      "mercury": "Mercury",
+      "jupiter": "Jupiter",
+      "venus": "Venus",
+      "saturn": "Saturn"
+    },
+    "use": {
+      "sun": "Government and authority work",
+      "moon": "Travel, meetings and dealing with people",
+      "mars": "Disputes and risk — start nothing new",
+      "mercury": "Study, writing and trade",
+      "jupiter": "Religious work, learning and marriage",
+      "venus": "Arts, purchases and romance",
+      "saturn": "Hard labour — put off auspicious work"
+    }
+  },
   "element_descriptions": {
     "tithi": {
       "what": "A tithi is a lunar day — one of the 30 phases of the Moon in a lunar month. It is the time the Moon takes to gain 12° of angular separation (elongation) from the Sun.",

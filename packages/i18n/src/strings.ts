@@ -5226,6 +5226,22 @@ export const strings = {
   "choghadiya.minutes": { ne: "{{m}} मिनेट", en: "{{m}} min" },
   "choghadiya.hours": { ne: "{{h}} घण्टा", en: "{{h}} h" },
   "choghadiya.hours_minutes": { ne: "{{h}} घण्टा {{m}} मिनेट", en: "{{h}} h {{m}} min" },
+  "hora_board.day": { ne: "दिनको होरा", en: "Day horas" },
+  "hora_board.night": { ne: "रातको होरा", en: "Night horas" },
+  "hora_board.lords.sun": { ne: "आदित्य", en: "Sun" },
+  "hora_board.lords.moon": { ne: "चन्द्र", en: "Moon" },
+  "hora_board.lords.mars": { ne: "मङ्गल", en: "Mars" },
+  "hora_board.lords.mercury": { ne: "बुध", en: "Mercury" },
+  "hora_board.lords.jupiter": { ne: "बृहस्पति", en: "Jupiter" },
+  "hora_board.lords.venus": { ne: "शुक्र", en: "Venus" },
+  "hora_board.lords.saturn": { ne: "शनि", en: "Saturn" },
+  "hora_board.use.sun": { ne: "सरकारी र अधिकारका काम", en: "Government and authority work" },
+  "hora_board.use.moon": { ne: "यात्रा, भेटघाट र जनसम्पर्क", en: "Travel, meetings and dealing with people" },
+  "hora_board.use.mars": { ne: "विवाद र जोखिम — नयाँ काम नथाल्नुहोस्", en: "Disputes and risk — start nothing new" },
+  "hora_board.use.mercury": { ne: "पढाइ, लेखन र व्यापार", en: "Study, writing and trade" },
+  "hora_board.use.jupiter": { ne: "धार्मिक काम, शिक्षा र विवाह", en: "Religious work, learning and marriage" },
+  "hora_board.use.venus": { ne: "कला, खरिद र प्रेम", en: "Arts, purchases and romance" },
+  "hora_board.use.saturn": { ne: "परिश्रमका काम — शुभ काम टार्नुहोस्", en: "Hard labour — put off auspicious work" },
 
   /* ── element_descriptions ────────────────────────────────────────────── */
   "element_descriptions.tithi.what": {

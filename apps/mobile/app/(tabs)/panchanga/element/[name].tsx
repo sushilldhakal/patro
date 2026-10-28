@@ -11,7 +11,7 @@ import {
   NakshatraGlyphIcon,
   RashiGlyphIcon,
 } from "@/components/panchanga/element/ElementGlyphIcon";
-import { ChoghadiyaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { MuhurtaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { Card } from "@/components/ui/Card";
@@ -207,7 +207,7 @@ function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
 }
 
 function TableView({ table, elementId }: { table: NonNullable<ElementPage["table"]>; elementId: string }) {
-  if (table.kind === "choghadiya") return null;
+  if (table.kind === "board") return null;
   if (table.kind === "message") {
     return (
       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
@@ -234,36 +234,7 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
       </View>
     );
   }
-  if (elementId === "hora") {
-    return (
-      <>
-        <HoraLegend />
-        {rows(ROW_COLS)}
-      </>
-    );
-  }
   return rows(ROW_COLS);
-}
-
-/** Hora rows are tinted green / red; say what the colours mean. */
-function HoraLegend() {
-  const { t } = useLocale();
-  const items = [
-    { key: "good", dot: "bg-success", label: t("choghadiya.quality_good") },
-    { key: "bad", dot: "bg-destructive", label: t("choghadiya.quality_bad") },
-  ];
-  return (
-    <View className="mb-3 flex-row gap-4">
-      {items.map((item) => (
-        <View key={item.key} className="flex-row items-center gap-2">
-          <View className={cn("h-2.5 w-2.5 rounded-full", item.dot)} />
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-            {item.label}
-          </Text>
-        </View>
-      ))}
-    </View>
-  );
 }
 
 function BalamView({ balam, clock }: { balam: NonNullable<ElementPage["balam"]>; clock?: string }) {
@@ -336,10 +307,11 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
     if (page.status === "loading") return <LoadingState />;
     if (page.status === "error") return <ErrorState />;
     if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} udaya={page.udaya} />;
-    if (page.table?.kind === "choghadiya") {
+    if (page.table?.kind === "board") {
       return (
-        <ChoghadiyaBoard
+        <MuhurtaBoard
           board={page.table.board}
+          leading={meta.id === "hora" ? (slot) => <ElementDayRowIcon elementId={meta.id} row={slot.raw} size={26} /> : undefined}
           icons={{
             day: <Ionicons name="sunny-outline" size={18} color={colors.warning} />,
             night: <Ionicons name="moon-outline" size={18} color={colors.mutedForeground} />,

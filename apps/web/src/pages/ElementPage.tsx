@@ -12,7 +12,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { ChoghadiyaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { MuhurtaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
@@ -161,7 +161,7 @@ function ToneRow({ row, elementId, compact }: { row: ToneRowView; elementId: str
 
 function TableView({ table, elementId }: { table: NonNullable<ElementPageView["table"]>; elementId: string }) {
   switch (table.kind) {
-    case "choghadiya":
+    case "board":
       return null;
     case "message":
       return <p className="text-sm">{table.text}</p>;
@@ -291,8 +291,12 @@ export function ElementPage() {
         {(p) =>
           p.kind === "span" ? (
             <SpanList spans={p.spans} elementId={meta.id} udaya={p.udaya} />
-          ) : p.table?.kind === "choghadiya" ? (
-            <ChoghadiyaBoard board={p.table.board} icons={{ day: <Sun className="size-5" />, night: <Moon className="size-5" /> }} />
+          ) : p.table?.kind === "board" ? (
+            <MuhurtaBoard
+              board={p.table.board}
+              icons={{ day: <Sun className="size-5" />, night: <Moon className="size-5" /> }}
+              leading={meta.id === "hora" ? (slot) => <ElementDayRowIcon elementId={meta.id} row={slot.raw} size={26} /> : undefined}
+            />
           ) : (
             <div className={cn(patroCard, "p-3.5")}>
               {p.kind === "balam" && p.balam ? (

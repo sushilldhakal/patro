@@ -1,9 +1,14 @@
 import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import type { ChoghadiyaBoard as Board, ChoghadiyaSlot } from "@vedic-patro/features/panchanga-element";
+import type { MuhurtaBoard as Board, MuhurtaSlot } from "@vedic-patro/features/panchanga-element";
 import type { ChoghadiyaTone } from "@vedic-patro/domain/panchanga/choghadiya-display";
 
-export type ChoghadiyaBoardProps = { board: Board; icons: { day: ReactNode; night: ReactNode } };
+export type MuhurtaBoardProps = {
+  board: Board;
+  icons: { day: ReactNode; night: ReactNode };
+  /** Drawn before a slot's name (the hora planet). */
+  leading?: (slot: MuhurtaSlot) => ReactNode;
+};
 
 const DOT: Record<ChoghadiyaTone, string> = { good: "bg-success", neutral: "bg-warning", bad: "bg-danger" };
 const INK: Record<ChoghadiyaTone, string> = { good: "text-success", neutral: "text-foreground", bad: "text-danger" };
@@ -79,7 +84,7 @@ function NowCard({ now }: { now: NonNullable<Board["now"]> }) {
   );
 }
 
-function SlotRow({ slot, nowLabel }: { slot: ChoghadiyaSlot; nowLabel: string }) {
+function SlotRow({ slot, nowLabel, leading }: { slot: MuhurtaSlot; nowLabel: string; leading?: MuhurtaBoardProps["leading"] }) {
   const now = slot.state === "now";
   return (
     <li
@@ -90,6 +95,7 @@ function SlotRow({ slot, nowLabel }: { slot: ChoghadiyaSlot; nowLabel: string })
       )}
     >
       <span className={cn("h-9 w-1 shrink-0 rounded-full", DOT[slot.tone])} />
+      {leading?.(slot)}
       <div className="min-w-0 flex-1">
         <p className="m-0 flex items-center gap-2">
           <span className={cn("text-base font-bold", INK[slot.tone])}>{slot.name}</span>
@@ -103,10 +109,10 @@ function SlotRow({ slot, nowLabel }: { slot: ChoghadiyaSlot; nowLabel: string })
 }
 
 /**
- * Choghadiya for one day: what is on now (today), a strip of the whole day,
+ * Choghadiya or hora for one day: what is on now (today), a strip of the whole day,
  * and the eight day and eight night slots side by side on wide screens.
  */
-export function ChoghadiyaBoard({ board, icons }: ChoghadiyaBoardProps) {
+export function MuhurtaBoard({ board, icons, leading }: MuhurtaBoardProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4">
@@ -126,7 +132,7 @@ export function ChoghadiyaBoard({ board, icons }: ChoghadiyaBoardProps) {
             </header>
             <ul className="m-0 flex list-none flex-col gap-1 p-0">
               {phase.slots.map((s) => (
-                <SlotRow key={s.key} slot={s} nowLabel={board.nowLabel} />
+                <SlotRow key={s.key} slot={s} nowLabel={board.nowLabel} leading={leading} />
               ))}
             </ul>
           </section>

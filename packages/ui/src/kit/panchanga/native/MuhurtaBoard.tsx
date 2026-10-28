@@ -1,11 +1,16 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import type { ChoghadiyaBoard as Board, ChoghadiyaSlot } from "@vedic-patro/features/panchanga-element";
+import type { MuhurtaBoard as Board, MuhurtaSlot } from "@vedic-patro/features/panchanga-element";
 import type { ChoghadiyaTone } from "@vedic-patro/domain/panchanga/choghadiya-display";
 import { Text } from "@vedic-patro/ui";
 
-export type ChoghadiyaBoardProps = { board: Board; icons: { day: ReactNode; night: ReactNode } };
+export type MuhurtaBoardProps = {
+  board: Board;
+  icons: { day: ReactNode; night: ReactNode };
+  /** Drawn before a slot's name (the hora planet). */
+  leading?: (slot: MuhurtaSlot) => ReactNode;
+};
 
 const DOT: Record<ChoghadiyaTone, string> = { good: "bg-success", neutral: "bg-warning", bad: "bg-danger" };
 const INK: Record<ChoghadiyaTone, string> = { good: "text-success", neutral: "text-foreground", bad: "text-danger" };
@@ -83,7 +88,7 @@ function NowCard({ now }: { now: NonNullable<Board["now"]> }) {
   );
 }
 
-function SlotRow({ slot, index, nowLabel }: { slot: ChoghadiyaSlot; index: number; nowLabel: string }) {
+function SlotRow({ slot, index, nowLabel, leading }: { slot: MuhurtaSlot; index: number; nowLabel: string; leading?: MuhurtaBoardProps["leading"] }) {
   const now = slot.state === "now";
   return (
     <View
@@ -94,6 +99,7 @@ function SlotRow({ slot, index, nowLabel }: { slot: ChoghadiyaSlot; index: numbe
       )}
     >
       <View className={cn("h-9 w-1 rounded-full", DOT[slot.tone])} />
+      {leading?.(slot)}
       <View className="min-w-0 flex-1">
         <View className="flex-row items-center gap-2">
           <Text className={cn("text-base font-bold", INK[slot.tone])}>{slot.name}</Text>
@@ -113,10 +119,10 @@ function SlotRow({ slot, index, nowLabel }: { slot: ChoghadiyaSlot; index: numbe
 }
 
 /**
- * Choghadiya for one day: what is on now (today), a strip of the whole day,
+ * Choghadiya or hora for one day: what is on now (today), a strip of the whole day,
  * then the eight day and eight night slots.
  */
-export function ChoghadiyaBoard({ board, icons }: ChoghadiyaBoardProps) {
+export function MuhurtaBoard({ board, icons, leading }: MuhurtaBoardProps) {
   return (
     <View className="gap-4">
       <View className="gap-4 rounded-2xl border border-border bg-card p-4">
@@ -137,7 +143,7 @@ export function ChoghadiyaBoard({ board, icons }: ChoghadiyaBoardProps) {
           </View>
           <View className="gap-1">
             {phase.slots.map((s, i) => (
-              <SlotRow key={s.key} slot={s} index={i} nowLabel={board.nowLabel} />
+              <SlotRow key={s.key} slot={s} index={i} nowLabel={board.nowLabel} leading={leading} />
             ))}
           </View>
         </View>
