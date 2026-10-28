@@ -11,6 +11,7 @@ export { MoonPhaseIcon } from "./MoonPhaseIcon";
 export { GhatiClock } from "./GhatiClock";
 export { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 export { MuhurtaBoard } from "./MuhurtaBoard";
+export { SpanTimeline } from "./SpanTimeline";
 export { PlanetSelectMenu } from "./PlanetSelectMenu";
 export { WheelDateSheet } from "./WheelDateSheet";
 export { DayTimeline, type TimelinePeriod } from "./DayTimeline";

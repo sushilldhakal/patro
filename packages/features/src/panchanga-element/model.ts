@@ -34,7 +34,14 @@ export type SpanCard = {
   udaya?: { kind: "vriddhi" | "kshaya"; label: string; note: string };
   begins: SpanBoundaryView;
   ends: SpanBoundaryView;
+  /** `21 घण्टा 40 मिनेट`. */
+  length: string;
+  /** Before, at or after the clock. */
+  state: "past" | "now" | "next";
 };
+
+/** The span the clock is in, how far through it is, and the one after. */
+export type SpanNow = { label: string; card: SpanCard; progress: number; left: string; endsAt: string; next?: { label: string; card: SpanCard } };
 
 /** Adhik and kshaya tithis of the browsed month, for the summary above the cards. */
 export type UdayaSummary = { title: string; groups: { kind: "vriddhi" | "kshaya"; label: string; items: string[] }[] };
@@ -52,7 +59,7 @@ function joinDays(days: string[], t: TFunction): string {
   return days.join(t("common.tithi_day_join"));
 }
 
-export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[] {
+export function spanCards(spans: readonly ElementSpan[], text: Text, nowMs: number = Date.now()): SpanCard[] {
   const { t, lang, digits, calendar } = text;
   const boundary = (label: string, stamp: ElementSpan["begins"]): SpanBoundaryView => ({
     label,
@@ -82,8 +89,39 @@ export function spanCards(spans: readonly ElementSpan[], text: Text): SpanCard[]
         : undefined,
       begins: boundary(t("common.begins"), s.begins),
       ends: boundary(t("common.ends"), s.ends),
+      length: spanLength(Date.parse(s.ends.iso) - Date.parse(s.begins.iso), t, digits),
+      state: nowMs >= Date.parse(s.ends.iso) ? "past" : nowMs >= Date.parse(s.begins.iso) ? "now" : "next",
     };
   });
+}
+
+function spanLength(ms: number, t: TFunction, digits: Text["digits"]): string {
+  if (!Number.isFinite(ms) || ms <= 0) return "";
+  const total = Math.round(ms / 60_000);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (h === 0) return t("choghadiya.minutes", { m: digits(m) });
+  if (m === 0) return t("choghadiya.hours", { h: digits(h) });
+  return t("choghadiya.hours_minutes", { h: digits(h), m: digits(m) });
+}
+
+/** The current span of the browsed month, when the clock falls inside it. */
+export function spanNow(cards: readonly SpanCard[], text: Text, nowMs: number = Date.now()): SpanNow | null {
+  const { t, digits } = text;
+  const at = cards.findIndex((c) => c.state === "now");
+  if (at < 0) return null;
+  const card = cards[at]!;
+  const start = Date.parse(card.span.begins.iso);
+  const end = Date.parse(card.span.ends.iso);
+  const next = cards[at + 1];
+  return {
+    label: t("choghadiya.now"),
+    card,
+    progress: Math.min(1, Math.max(0, (nowMs - start) / (end - start || 1))),
+    left: t("choghadiya.left", { time: spanLength(end - nowMs, t, digits) }),
+    endsAt: card.ends.when,
+    next: next ? { label: t("muhurta_board.then", { time: spanLength(end - nowMs, t, digits) }), card: next } : undefined,
+  };
 }
 
 export function udayaSummary(cards: readonly SpanCard[], text: Text): UdayaSummary | null {

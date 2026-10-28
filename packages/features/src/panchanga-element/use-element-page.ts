@@ -29,7 +29,7 @@ import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
-import { balamBoard, elementTable, spanCards, udayaSummary } from "./model";
+import { balamBoard, elementTable, spanCards, spanNow, udayaSummary } from "./model";
 
 export * from "./model";
 
@@ -91,7 +91,18 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
   const timeZone = resolveTimeZone(typeof apiZone === "string" ? apiZone : undefined, params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), timeZone);
 
-  const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
+  // Span pages mark the span the clock is in; a minute tick keeps it moving.
+  const [spanTick, setSpanTick] = useState(0);
+  useEffect(() => {
+    if (!isSpan) return;
+    const id = setInterval(() => setSpanTick((n) => n + 1), 60_000);
+    return () => clearInterval(id);
+  }, [isSpan]);
+  const spans = useMemo(() => {
+    void spanTick;
+    return spanQuery.data ? spanCards(spanQuery.data.spans, text) : [];
+  }, [spanQuery.data, text, spanTick]);
+  const current = useMemo(() => spanNow(spans, text), [spans, text]);
   const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
   // On today the boards follow the clock: which slot is on, and how long it has left.
   const live = Boolean(meta && !isSpan) && dateAd === todayAd;
@@ -154,6 +165,7 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
       blurb: meta ? t(`panchanga_elements.${meta.id}.blurb`) : "",
       unknown: t("element_page.unknown_element"),
       backToDetails: t("element_page.back_to_details"),
+      now: t("choghadiya.now"),
     },
     todayAd,
     /** Clock for the strength cards: now on today, none on other days. */
@@ -162,6 +174,8 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
     /** First load (for the website's route loader). */
     loading: Boolean(meta) && status === "loading",
     spans,
+    /** Span elements: the span on now (when the browsed month holds the clock). */
+    current,
     /** Tithi: the month's adhik and kshaya tithis, when it has any. */
     udaya,
     table,

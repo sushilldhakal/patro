@@ -1,17 +1,16 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
-import { useElementPage, type ElementPage, type MuhurtaSlot, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
+import { useElementPage, type ElementPage, type MuhurtaSlot, type ToneRowView } from "@vedic-patro/features/panchanga-element";
 import { AppShell } from "@/components/AppShell";
 import { AllElementsLink, ElementDescription, GrahaBanner } from "@vedic-patro/ui/kit/panchanga";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
 import {
   ElementDayRowIcon,
-  ElementSpanIcon,
   NakshatraGlyphIcon,
   RashiGlyphIcon,
 } from "@/components/panchanga/element/ElementGlyphIcon";
-import { MuhurtaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { MuhurtaBoard, NavataraBalamCardGrid, SpanTimeline } from "@vedic-patro/ui/kit/panchanga";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { Card } from "@/components/ui/Card";
@@ -38,127 +37,6 @@ import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 const SPAN_COLS = { base: 1, sm: 2, lg: 4 } as const;
 const ROW_COLS = { base: 1, sm: 2, lg: 3 } as const;
 const BALA_COLS = { base: 1, sm: 2, lg: 4 } as const;
-
-/* ── span (begin→end) view ─────────────────────────────────────────────── */
-
-function SpanBoundary({ view, tone }: { view: SpanBoundaryView; tone: "begin" | "end" }) {
-  const colors = useThemeColors();
-  const accent = tone === "begin" ? colors.success : colors.danger;
-  return (
-    <View className={cn("gap-0.5 rounded-md px-2 py-1.5", tone === "begin" ? "bg-success/10" : "bg-danger/10")}>
-      {/* The time is already in `when`; repeating it in the corner showed it twice. */}
-      <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
-        {view.label}
-      </Text>
-      <Text className="m-0 font-num text-sm font-semibold leading-snug text-foreground md:text-base" style={nepaliTextStyle(14)}>
-        {view.when}
-      </Text>
-    </View>
-  );
-}
-
-/** The patro day(s) a tithi names — the line that says which date it belongs to. */
-function PatroDays({ card }: { card: SpanCard }) {
-  if (!card.days) return null;
-  const kind = card.udaya?.kind;
-  return (
-    <View
-      className={cn(
-        "flex-row flex-wrap items-center gap-1.5 rounded-md px-2 py-1.5",
-        kind === "kshaya" ? "bg-danger/10" : kind === "vriddhi" ? "bg-secondary/15" : "bg-muted/40",
-      )}
-    >
-      <Text className="text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(11)}>
-        {card.days.label}
-      </Text>
-      {card.days.list.map((d) => (
-        <View key={d} className="rounded-full bg-card px-2 py-px">
-          <Text className="font-num text-sm font-bold text-foreground" style={nepaliTextStyle(13)}>
-            {d}
-          </Text>
-        </View>
-      ))}
-      {card.days.empty ? (
-        <Text className="text-sm font-bold text-danger" style={nepaliTextStyle(13)}>
-          {card.days.empty}
-        </Text>
-      ) : null}
-    </View>
-  );
-}
-
-function UdayaBadge({ kind, label }: { kind: "vriddhi" | "kshaya"; label: string }) {
-  return (
-    <View className={cn("rounded-full px-2 py-0.5", kind === "kshaya" ? "bg-danger" : "bg-secondary")}>
-      <Text className="text-xs font-bold text-white" style={nepaliTextStyle(11)}>
-        {label}
-      </Text>
-    </View>
-  );
-}
-
-function UdayaSummaryCard({ summary }: { summary: UdayaSummary }) {
-  return (
-    <Card className="gap-2 p-3">
-      <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(13)}>
-        {summary.title}
-      </Text>
-      {summary.groups.map((g) => (
-        <View key={g.kind} className="flex-row flex-wrap items-center gap-1.5">
-          <UdayaBadge kind={g.kind} label={g.label} />
-          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
-            {g.items.join(" · ")}
-          </Text>
-        </View>
-      ))}
-    </Card>
-  );
-}
-
-function SpanList({ spans, elementId, udaya }: { spans: SpanCard[]; elementId: string; udaya?: UdayaSummary | null }) {
-  return (
-    <View className="gap-2.5">
-      {udaya ? <UdayaSummaryCard summary={udaya} /> : null}
-      <Grid cols={SPAN_COLS} gap={10}>
-        {spans.map((s) => (
-          <Card
-            key={s.key}
-            className={cn(
-              "gap-2 p-3",
-              s.udaya?.kind === "vriddhi" && "border-2 border-secondary/50",
-              s.udaya?.kind === "kshaya" && "border-2 border-dashed border-danger/40",
-            )}
-          >
-            <View className="flex-row items-center gap-2.5">
-              <ElementSpanIcon elementId={elementId} span={s.span} size={34} />
-              <View className="min-w-0 flex-1">
-                <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
-                  {s.name}
-                </Text>
-                {s.paksha ? (
-                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-                    {s.paksha}
-                  </Text>
-                ) : null}
-              </View>
-              {s.udaya ? <UdayaBadge kind={s.udaya.kind} label={s.udaya.label} /> : null}
-            </View>
-            <PatroDays card={s} />
-            {s.udaya ? (
-              <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-                {s.udaya.note}
-              </Text>
-            ) : null}
-            <View className="gap-1.5">
-              <SpanBoundary view={s.begins} tone="begin" />
-              <SpanBoundary view={s.ends} tone="end" />
-            </View>
-          </Card>
-        ))}
-      </Grid>
-    </View>
-  );
-}
 
 /** A board row's glyph: its rashi or nakshatra, or the hora planet. */
 function SlotGlyph({ slot, elementId }: { slot: MuhurtaSlot; elementId: string }) {
@@ -314,7 +192,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
   const body = () => {
     if (page.status === "loading") return <LoadingState />;
     if (page.status === "error") return <ErrorState />;
-    if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} udaya={page.udaya} />;
+    if (page.kind === "span") return <SpanTimeline elementId={meta.id} spans={page.spans} udaya={page.udaya} current={page.current} nowLabel={page.copy.now} />;
     const board = page.table?.kind === "board" ? page.table.board : page.balam?.board;
     if (board) {
       return (
