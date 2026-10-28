@@ -5,6 +5,7 @@ import { renderedEclipseDate } from "@vedic-patro/read-models/astronomy/eclipse-
 import { formatLocaleDigits, type Lang } from "@vedic-patro/domain/locale";
 import { localTimeShortFromIso } from "@vedic-patro/domain/panchanga/time-format";
 import { statusOf, useYearData, type PageStatus, type YearScope } from "../_shared";
+import { eclipseOverview, yearRange } from "./overview";
 
 export type EclipseKind = "solar" | "lunar";
 
@@ -25,17 +26,23 @@ export type EclipseCardView = {
   visible: boolean;
   visibility: string;
   rows: { label: string; value: string; strong?: boolean }[];
+  /** Before or after now; the first one still to come is `next`. */
+  state: "past" | "next" | "later";
+  /** `३५ दिन पछि` / `आज`, for eclipses still to come. */
+  countdown?: string;
 };
 
 type T = (key: string, values?: Record<string, unknown>) => string;
 
-export function eclipseCardView(ev: EclipseEvent, kind: EclipseKind, lang: Lang, t: T, index: number): EclipseCardView {
+export function eclipseCardView(ev: EclipseEvent, kind: EclipseKind, lang: Lang, t: T, index: number, nowMs: number = Date.now()): EclipseCardView {
   const digits = (v: string) => formatLocaleDigits(v, lang);
   const visible = eclipseVisible(ev);
   const begin = localTimeShortFromIso(ev.begin_local);
   const end = localTimeShortFromIso(ev.end_local);
   const max = eclipseMaxTime(ev);
   const lunar = kind === "lunar";
+  const maxUtc = (ev as { max_utc?: string | null }).max_utc;
+  const at = maxUtc ? Date.parse(maxUtc) : ev.max_local ? Date.parse(ev.max_local) : NaN;
   const rows: EclipseCardView["rows"] = [
     { label: t("graha_pages.eclipse.date"), value: digits(renderedEclipseDate(ev)), strong: true },
     { label: t("graha_pages.eclipse.maximum"), value: max ? digits(max) : "—" },
@@ -48,7 +55,15 @@ export function eclipseCardView(ev: EclipseEvent, kind: EclipseKind, lang: Lang,
     visible,
     visibility: t(visible ? "graha_pages.eclipse.visible_nepal" : "graha_pages.eclipse.not_visible_nepal"),
     rows,
+    state: Number.isFinite(at) && at < nowMs - 6 * 3_600_000 ? "past" : "later",
+    countdown: Number.isFinite(at) && at >= nowMs - 6 * 3_600_000 ? countdown(at - nowMs, lang, t) : undefined,
   };
+}
+
+function countdown(ms: number, lang: Lang, t: T): string {
+  const days = Math.round(ms / 86_400_000);
+  if (days <= 0) return t("graha_pages.overview.today");
+  return t("graha_pages.overview.in_days", { count: formatLocaleDigits(String(days), lang) });
 }
 
 export function useEclipsePage(kind: EclipseKind, scope: YearScope) {
@@ -69,6 +84,19 @@ export function useEclipsePage(kind: EclipseKind, scope: YearScope) {
     descriptionPageId: kind === "solar" ? ("surya-grahan" as const) : ("chandra-grahan" as const),
     status: statusOf(query) as PageStatus,
     gregorianRange: query.data?.gregorian_range,
-    cards: (query.data?.events ?? []).map((ev, i) => eclipseCardView(ev, kind, lang, t, i)),
+    cards: markNext((query.data?.events ?? []).map((ev, i) => eclipseCardView(ev, kind, lang, t, i))),
+    overview: (() => {
+      const range = yearRange(query.data as Parameters<typeof yearRange>[0]);
+      return range
+        ? eclipseOverview(kind === "solar" ? "sun" : "moon", (query.data?.events ?? []) as Parameters<typeof eclipseOverview>[1], range, lang, t, scope.era)
+        : undefined;
+    })(),
+    nextLabel: t("graha_pages.overview.eclipse_upcoming"),
   };
+}
+
+/** The first eclipse still to come is the one to watch for. */
+function markNext(cards: EclipseCardView[]): EclipseCardView[] {
+  const i = cards.findIndex((c) => c.state === "later");
+  return i < 0 ? cards : cards.map((c, j) => (j === i ? { ...c, state: "next" } : c));
 }

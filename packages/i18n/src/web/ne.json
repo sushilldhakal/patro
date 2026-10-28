@@ -3172,6 +3172,26 @@
       "first_contact": "स्पर्श (आरम्भ)",
       "last_contact": "मोक्ष (अन्त्य)",
       "no_eclipses_year": "यस वर्ष कुनै ग्रहण छैन।"
+    },
+    "overview": {
+      "today": "आज",
+      "asta_title": "वर्षभरिको अस्त",
+      "asta_legend": "अस्त अवधि",
+      "asta_now": "अहिले अस्त — {{count}} दिन बाँकी",
+      "asta_next": "अर्को अस्त — {{date}}",
+      "asta_none": "यस वर्ष अब अस्त छैन",
+      "in_days": "{{count}} दिन पछि",
+      "eclipse_title": "वर्षभरिका ग्रहण",
+      "eclipse_legend": "ग्रहण",
+      "eclipse_now": "आज ग्रहण",
+      "eclipse_next": "अर्को ग्रहण — {{date}}",
+      "eclipse_none": "यस वर्ष अब ग्रहण छैन",
+      "eclipse_upcoming": "अर्को ग्रहण",
+      "vakri_title": "वर्षभरिको वक्री",
+      "vakri_legend": "वक्री अवधि",
+      "vakri_now": "अहिले वक्री — {{count}} दिन बाँकी",
+      "vakri_next": "अर्को वक्री — {{date}}",
+      "vakri_none": "यस वर्ष अब वक्री छैन"
     }
   },
   "choghadiya": {

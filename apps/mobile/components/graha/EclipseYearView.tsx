@@ -5,7 +5,8 @@ import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
-import { AllElementsLink, GrahaBanner, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
+import { AllElementsLink, GrahaBanner, GrahaDescription, GrahaYearOverview } from "@vedic-patro/ui/kit/panchanga";
+import { Text } from "@vedic-patro/ui";
 import { EclipseCard, EmptyHint } from "@/components/graha/GrahaEventCards";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
@@ -44,13 +45,29 @@ export function EclipseYearView({ kind }: { kind: EclipseKind }) {
       ) : !page.cards.length ? (
         <EmptyHint text={page.copy.none} />
       ) : (
-        <View className={cn("flex-row flex-wrap", grahaClasses.eclipseGrid)}>
-          {page.cards.map((card) => (
-            <View key={card.key} style={{ width: cols === 2 ? "48%" : "100%" }}>
-              <EclipseCard card={card} />
-            </View>
-          ))}
-        </View>
+        <>
+          {page.overview ? <GrahaYearOverview overview={page.overview} tone="eclipse" /> : null}
+          <View className={cn("flex-row flex-wrap", grahaClasses.eclipseGrid)}>
+            {page.cards.map((card) => (
+              <View
+                key={card.key}
+                style={{ width: cols === 2 ? "48%" : "100%" }}
+                className={cn("gap-1.5", card.state === "past" && "opacity-50", card.state === "next" && "rounded-2xl border-2 border-primary/60")}
+              >
+                {card.countdown ? (
+                  <View className="flex-row">
+                    <View className={cn("rounded-full px-2.5 py-0.5", card.state === "next" ? "bg-primary" : "bg-surface-inset")}>
+                      <Text className={cn("text-xs font-bold", card.state === "next" ? "text-primary-foreground" : "text-muted-foreground")}>
+                        {card.state === "next" ? `${page.nextLabel} · ${card.countdown}` : card.countdown}
+                      </Text>
+                    </View>
+                  </View>
+                ) : null}
+                <EclipseCard card={card} />
+              </View>
+            ))}
+          </View>
+        </>
       )}
 
       <GrahaDescription pageId={page.descriptionPageId} />

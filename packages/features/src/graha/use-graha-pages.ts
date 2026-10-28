@@ -15,8 +15,10 @@ import {
   type AstaPeriodView,
   type VakriEventView,
 } from "./model";
+import { astaOverview, vakriOverview, yearRange, type YearOverview } from "./overview";
 
 export * from "./model";
+export * from "./overview";
 
 export type GrahaGroup<Item> = {
   graha: string;
@@ -36,6 +38,8 @@ export type GrahaPage<Item> = {
   status: PageStatus;
   gregorianRange?: { start: string; end: string };
   groups: GrahaGroup<Item>[];
+  /** The year at a glance: a strip per graha, today marked. */
+  overview?: YearOverview;
 };
 
 function useCopy(page: "graha-asta" | "graha-vakri") {
@@ -49,7 +53,9 @@ export function useGrahaAstaPage(scope: YearScope): GrahaPage<AstaPeriodView> {
   const { t, lang, digits } = useLocale();
   const query = useYearData(scope, { queryKey: grahaDetailKeys.asta, queryFn: fetchGrahaAstaYear });
   const groups = groupByGraha(ASTA_ORDER, query.data?.periods ?? []);
+  const range = yearRange(query.data as Parameters<typeof yearRange>[0]);
   return {
+    overview: range ? astaOverview(ASTA_ORDER, query.data?.periods ?? [], range, lang, t, scope.era) : undefined,
     copy: useCopy("graha-asta"),
     descriptionPageId: "graha-asta",
     status: statusOf(query),
@@ -69,7 +75,9 @@ export function useGrahaVakriPage(scope: YearScope): GrahaPage<VakriEventView> {
   const { t, lang, digits } = useLocale();
   const query = useYearData(scope, { queryKey: grahaDetailKeys.vakri, queryFn: fetchGrahaVakriYear });
   const groups = groupByGraha(VAKRI_ORDER, query.data?.events ?? []);
+  const range = yearRange(query.data as Parameters<typeof yearRange>[0]);
   return {
+    overview: range ? vakriOverview(VAKRI_ORDER, query.data?.events ?? [], range, lang, t, scope.era) : undefined,
     copy: useCopy("graha-vakri"),
     descriptionPageId: "graha-vakri",
     status: statusOf(query),

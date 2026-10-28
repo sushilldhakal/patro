@@ -72,6 +72,8 @@ export const grahaClasses = {
   eclipseHeadHidden: "bg-secondary/[0.09] dark:bg-secondary/20",
   eclipseType: "text-base font-bold text-foreground",
   eclipseBadge: "shrink-0 rounded-full px-2 py-0.5 text-xs font-bold",
+  /** The countdown pill over an eclipse still to come. */
+  eclipseCountdown: "self-start rounded-full px-2.5 py-0.5 text-xs font-bold",
   eclipseBadgeText: "text-xs font-bold",
   eclipseBadgeVisible: "bg-success/20 text-success",
   eclipseBadgeHidden: "bg-foreground/10 text-muted-foreground",

@@ -5,7 +5,7 @@ import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
-import { AllElementsLink, GrahaBanner, GrahaColumnCard, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
+import { AllElementsLink, GrahaBanner, GrahaColumnCard, GrahaDescription, GrahaYearOverview } from "@vedic-patro/ui/kit/panchanga";
 import { Grid } from "@vedic-patro/ui";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { Text } from "@/components/ui/Text";
@@ -47,19 +47,22 @@ export default function GrahaAstaScreen() {
       {page.status === "loading" ? (
         <LoadingState label={t("common.loading")} />
       ) : page.status === "ready" ? (
-        <Grid cols={cols} gapX={12} className={grahaClasses.columns}>
-          {page.groups.map((g) => (
-            <GrahaColumnCard key={g.graha} width="100%" name={g.name} note={g.note} count={g.count}>
-              {g.items.length ? (
-                g.items.map((p, i) => <PeriodCard key={i} period={p} />)
-              ) : (
-                <Text className={grahaClasses.columnEmpty} style={nepaliTextStyle(14)}>
-                  {g.empty}
-                </Text>
-              )}
-            </GrahaColumnCard>
-          ))}
-        </Grid>
+        <>
+          {page.overview ? <GrahaYearOverview overview={page.overview} tone="asta" /> : null}
+          <Grid cols={cols} gapX={12} className={grahaClasses.columns}>
+            {page.groups.map((g) => (
+              <GrahaColumnCard key={g.graha} width="100%" name={g.name} note={g.note} count={g.count}>
+                {g.items.length ? (
+                  g.items.map((p, i) => <PeriodCard key={i} period={p} />)
+                ) : (
+                  <Text className={grahaClasses.columnEmpty} style={nepaliTextStyle(14)}>
+                    {g.empty}
+                  </Text>
+                )}
+              </GrahaColumnCard>
+            ))}
+          </Grid>
+        </>
       ) : (
         <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
           {t("common.load_error")}
@@ -78,10 +81,7 @@ function PeriodCard({ period }: { period: AstaPeriodView }) {
     <View style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }} className={cn("border", grahaClasses.periodCard)}>
       {period.stamps.map((s) => (
         <View key={s.label} className={cn("flex-row", grahaClasses.stampRow)}>
-          <Text
-            style={{ color: s.tone === "asta" ? colors.danger : colors.success, ...nepaliTextStyle(13) }}
-            className={grahaClasses.stampLabel}
-          >
+          <Text style={{ color: s.tone === "asta" ? colors.danger : colors.success, ...nepaliTextStyle(13) }} className={grahaClasses.stampLabel}>
             {s.label}
           </Text>
           {s.date !== undefined ? (

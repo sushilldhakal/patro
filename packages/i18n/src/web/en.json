@@ -3172,6 +3172,26 @@
       "first_contact": "First contact",
       "last_contact": "Last contact",
       "no_eclipses_year": "There are no eclipses of this kind this year."
+    },
+    "overview": {
+      "today": "Today",
+      "asta_title": "Asta through the year",
+      "asta_legend": "Asta period",
+      "asta_now": "Asta now — {{count}} days left",
+      "asta_next": "Next asta — {{date}}",
+      "asta_none": "No more asta this year",
+      "in_days": "In {{count}} days",
+      "eclipse_title": "Eclipses through the year",
+      "eclipse_legend": "Eclipse",
+      "eclipse_now": "Eclipse today",
+      "eclipse_next": "Next eclipse — {{date}}",
+      "eclipse_none": "No more eclipses this year",
+      "eclipse_upcoming": "Next eclipse",
+      "vakri_title": "Retrograde through the year",
+      "vakri_legend": "Retrograde period",
+      "vakri_now": "Retrograde now — {{count}} days left",
+      "vakri_next": "Next retrograde — {{date}}",
+      "vakri_none": "No more retrograde this year"
     }
   },
   "choghadiya": {

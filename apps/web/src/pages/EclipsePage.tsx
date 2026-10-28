@@ -4,6 +4,7 @@ import { useEclipsePage, type EclipseCardView, type EclipseKind } from "@vedic-p
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { RoutePageState } from "@/components/common/RoutePageState";
+import { GrahaYearOverview } from "@vedic-patro/ui/kit/panchanga";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
@@ -69,11 +70,29 @@ function EclipseView({ kind }: { kind: EclipseKind }) {
       <RoutePageState isLoading={page.status === "loading"} data={page.status === "ready" ? page.cards : undefined}>
         {(cards) =>
           cards.length ? (
-            <div className={cn(grahaClasses.eclipseGrid, "grid grid-cols-1 sm:grid-cols-2")}>
-              {cards.map((card) => (
-                <EclipseCard key={card.key} card={card} />
-              ))}
-            </div>
+            <>
+              {page.overview ? <GrahaYearOverview overview={page.overview} tone="eclipse" /> : null}
+              <div className={cn(grahaClasses.eclipseGrid, "grid grid-cols-1 sm:grid-cols-2")}>
+                {cards.map((card) => (
+                  <div
+                    key={card.key}
+                    className={cn("flex flex-col gap-1.5", card.state === "past" && "opacity-55", card.state === "next" && "rounded-2xl ring-2 ring-primary/60")}
+                  >
+                    {card.countdown ? (
+                      <span
+                        className={cn(
+                          grahaClasses.eclipseCountdown,
+                          card.state === "next" ? "bg-primary text-primary-foreground" : "bg-surface-inset text-muted-foreground",
+                        )}
+                      >
+                        {card.state === "next" ? `${page.nextLabel} · ${card.countdown}` : card.countdown}
+                      </span>
+                    ) : null}
+                    <EclipseCard card={card} />
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <p className={cn(patroCard, grahaClasses.eclipseNone, grahaClasses.eclipseNoneText)}>{page.copy.none}</p>
           )

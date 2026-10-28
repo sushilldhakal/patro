@@ -4,6 +4,7 @@ import { useGrahaVakriPage, type VakriEventView } from "@vedic-patro/features/gr
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { RoutePageState } from "@/components/common/RoutePageState";
+import { GrahaYearOverview } from "@vedic-patro/ui/kit/panchanga";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { GrahaGroupedEventCards } from "@/components/graha/GrahaGroupedEventCards";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
@@ -43,22 +44,25 @@ export function GrahaVakri() {
     >
       <RoutePageState isLoading={page.status === "loading"} data={page.status === "ready" ? page.groups : undefined}>
         {() => (
-          <GrahaGroupedEventCards
-            order={page.groups.map((g) => g.graha)}
-            groups={new Map(page.groups.map((g) => [g.graha, g.items]))}
-            bodyClassName={grahaClasses.columnBodyTight}
-            renderCardHeader={(g) => {
-              const group = byGraha.get(g)!;
-              return (
-                <>
-                  <span className={grahaClasses.columnTitle}>{group.name}</span>
-                  <span className={grahaClasses.columnCount}>{group.count}</span>
-                </>
-              );
-            }}
-            renderItem={(ev, i) => <EventRow key={i} ev={ev} />}
-            emptyInGroup={<p className={grahaClasses.columnEmpty}>{page.groups[0]?.empty}</p>}
-          />
+          <>
+            {page.overview ? <GrahaYearOverview overview={page.overview} tone="vakri" /> : null}
+            <GrahaGroupedEventCards
+              order={page.groups.map((g) => g.graha)}
+              groups={new Map(page.groups.map((g) => [g.graha, g.items]))}
+              bodyClassName={grahaClasses.columnBodyTight}
+              renderCardHeader={(g) => {
+                const group = byGraha.get(g)!;
+                return (
+                  <>
+                    <span className={grahaClasses.columnTitle}>{group.name}</span>
+                    <span className={grahaClasses.columnCount}>{group.count}</span>
+                  </>
+                );
+              }}
+              renderItem={(ev, i) => <EventRow key={i} ev={ev} />}
+              emptyInGroup={<p className={grahaClasses.columnEmpty}>{page.groups[0]?.empty}</p>}
+            />
+          </>
         )}
       </RoutePageState>
     </GrahaDetailPageFrame>

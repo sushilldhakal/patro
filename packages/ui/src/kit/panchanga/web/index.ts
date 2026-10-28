@@ -12,6 +12,7 @@ export { GhatiClock } from "./GhatiClock";
 export { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 export { MuhurtaBoard } from "./MuhurtaBoard";
 export { SpanTimeline } from "./SpanTimeline";
+export { GrahaYearOverview } from "./GrahaYearOverview";
 export { PlanetSelectMenu } from "./PlanetSelectMenu";
 export { WheelDateSheet } from "./WheelDateSheet";
 export { DayCycleToggle, DayTimeline } from "./DayTimeline";
