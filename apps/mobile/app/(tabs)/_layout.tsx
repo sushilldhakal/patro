@@ -1,4 +1,4 @@
-import { Tabs, usePathname, useRouter } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,11 +7,10 @@ import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight, normalizeMobilePathname } from "@/lib/mobile-nav";
 import { requestOpenMenu } from "@/lib/menu-request";
-import { goBackInHistory, useTrackNavHistory } from "@/lib/nav-history";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
-/** Width of the left-edge strip that starts a swipe-back, in points. */
+/** Width of the left-edge strip that starts the menu swipe on home, in points. */
 const EDGE_SWIPE_WIDTH = 20;
 
 /**
@@ -26,26 +25,19 @@ const EDGE_SWIPE_WIDTH = 20;
 const TAB_SCREENS = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
 
 /**
- * Tab screens have no stack of their own, so there's no native swipe-back.
- * A drag that starts at the left edge and travels right goes back to the page
- * that was open before (lib/nav-history), or home when there's nothing earlier.
- * On home itself it opens the side menu.
+ * On home, a drag from the left edge opens the side menu. Other tabs have no edge swipe: tabs are
+ * peers, not a history, so there is nothing to swipe back to (Android's back button still walks
+ * the tab history, `backBehavior="history"`), and every page pushed from a tab has the native
+ * stack's own interactive swipe-back.
  */
-function useEdgeSwipeBack() {
-  const router = useRouter();
-  const pathname = usePathname();
+function useEdgeSwipeMenu() {
   return Gesture.Pan()
     .runOnJS(true)
     .activeOffsetX(10)
     .failOffsetY([-40, 40])
     .onEnd((e) => {
       if (e.translationX < 60 && e.velocityX < 500) return;
-      const here = normalizeMobilePathname(pathname);
-      if (here === "/" || here === "/index") {
-        requestOpenMenu();
-        return;
-      }
-      goBackInHistory(router, pathname);
+      requestOpenMenu();
     });
 }
 
@@ -55,9 +47,11 @@ function useEdgeSwipeBack() {
  * (a row of chips, the page itself) and that took it, so back never fired.
  */
 function EdgeSwipeStrip({ bottom }: { bottom: number }) {
-  const swipeBack = useEdgeSwipeBack();
+  const swipeMenu = useEdgeSwipeMenu();
+  const here = normalizeMobilePathname(usePathname());
+  if (here !== "/" && here !== "/index") return null;
   return (
-    <GestureDetector gesture={swipeBack}>
+    <GestureDetector gesture={swipeMenu}>
       <View
         collapsable={false}
         style={{ position: "absolute", left: 0, top: 0, bottom, width: EDGE_SWIPE_WIDTH, zIndex: 50 }}
@@ -67,7 +61,6 @@ function EdgeSwipeStrip({ bottom }: { bottom: number }) {
 }
 
 export default function TabsLayout() {
-  useTrackNavHistory();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();

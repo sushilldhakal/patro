@@ -369,9 +369,7 @@ function RootShell({
           {/* The tabs are the base of the stack and there is only ever one of them: a link to a
               tab page from a pushed page brings this instance back instead of stacking a copy. */}
           <Stack.Screen name="(tabs)" dangerouslySingular options={{ gestureEnabled: false }} />
-          {/* These open out of a card (ZoomTransition does the travelling), so the stack only fades. */}
-          <Stack.Screen name="aakash-gochar" options={{ animation: "fade", animationDuration: 160 }} />
-          <Stack.Screen name="day/[ad]" options={{ animation: "fade", animationDuration: 160 }} />
+          {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
       )}
       {ready && onboarded ? <NotificationsRuntime /> : null}

@@ -1,4 +1,4 @@
-import { useContext, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Animated, {
   measure,
   useAnimatedReaction,
@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
-import { ScrollRevealScope, pageScrollY, pageViewportH } from "@/lib/scroll-motion";
+import { pageViewportH, usePageScrollY } from "@/lib/scroll-motion";
 
 /** How far a block rises as it arrives. */
 const RISE = 32;
@@ -32,7 +32,7 @@ const VIEW_EDGE = 56;
  */
 export function Reveal({ children, index = 0 }: { children: ReactNode; index?: number }) {
   const reduced = useReducedMotionPref();
-  const waitsForScroll = useContext(ScrollRevealScope);
+  const { scrollY, scrolls: waitsForScroll } = usePageScrollY();
   const ref = useAnimatedRef<Animated.View>();
   const progress = useSharedValue(0);
   const played = useSharedValue(false);
@@ -41,7 +41,8 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
   const rise = reduced ? 0 : RISE;
 
   useAnimatedReaction(
-    () => pageScrollY.get() + (laidOut.get() ? 10_000_000 : 0),
+    // Re-runs on this page's scroll and once on layout; does nothing after it has played.
+    () => (played.get() ? -1 : scrollY.get() + (laidOut.get() ? 10_000_000 : 0)),
     () => {
       if (played.get() || !laidOut.get()) return;
       if (waitsForScroll) {
@@ -56,7 +57,7 @@ export function Reveal({ children, index = 0 }: { children: ReactNode; index?: n
         ),
       );
     },
-    [waitsForScroll, delay, reduced],
+    [scrollY, waitsForScroll, delay, reduced],
   );
 
   /* One animated style and nothing plain beside it: a `style={[plain, animated]}` array drops the plain part. */

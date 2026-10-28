@@ -14,7 +14,6 @@ import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { GocharSkySection } from "@vedic-patro/ui/kit/panchanga";
 import { Text } from "@/components/ui/Text";
-import { ZoomTransition } from "@/components/ui/ZoomTransition";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -56,9 +55,8 @@ export default function AakashGocharScreen() {
 
   return (
     /* Outside the (tabs) group, so this route has to bring the app chrome the
-       tab layout gives every other page — same header and floating nav. The
-       screen grows out of the home card that opened it (ZoomTransition). */
-    <ZoomTransition>
+       tab layout gives every other page — same header and floating nav. On iOS
+       18+ it grows out of the home card natively (Link.AppleZoom there). */
     <View className="flex-1 bg-background">
       <AppHeader />
       <AppShell title={page.copy.title} showHeader={false}>
@@ -126,6 +124,5 @@ export default function AakashGocharScreen() {
       </AppShell>
       <FloatingNavBar />
     </View>
-    </ZoomTransition>
   );
 }

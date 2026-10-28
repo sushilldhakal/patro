@@ -124,7 +124,7 @@ export function HomeReminderCard({ p }: { p: PanchangaDay | undefined }) {
         </Card>
       </Pressable>
 
-      <BottomSheetModal visible={open} onClose={close} maxHeight="88%">
+      <BottomSheetModal variant="page" visible={open} onClose={close} maxHeight="88%">
         {target ? (
           <View>
             <Pressable

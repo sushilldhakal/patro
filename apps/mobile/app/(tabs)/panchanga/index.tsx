@@ -35,7 +35,8 @@ import { useWindowReminder } from "@/components/reminders/use-window-reminder";
 import { resolveWindowKey } from "@/lib/notifications/window-key";
 import { useLocale } from "@/lib/i18n";
 import { Reveal } from "@/components/ui/Reveal";
-import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
+import { ScrollHero } from "@/components/ui/ScrollHero";
+import { PageScrollView } from "@/components/ui/PageScrollView";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 /** Under the page (no sidebar), this much width fits the chart and the planet events side by side. */
@@ -87,7 +88,7 @@ export default function PanchangaScreen() {
   }
 
   return (
-    <ScrollView
+    <PageScrollView
       refreshControl={refreshControl}
       className="mx-auto w-full max-w-page flex-1 bg-background"
       contentContainerStyle={{
@@ -96,10 +97,8 @@ export default function PanchangaScreen() {
         paddingHorizontal: pagePadH,
       }}
       showsVerticalScrollIndicator={false}
-      onScroll={onPageScroll}
-      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
     >
-      <ScrollRevealScope.Provider value>
+      <>
       <View
         className="gap-4"
         style={splitSidebar ? { flexDirection: "row", alignItems: "flex-start", gap: 20 } : undefined}
@@ -108,6 +107,7 @@ export default function PanchangaScreen() {
             basis and was squeezed under the aside when that mounted. */}
         <View className={cn(splitSidebar && "flex-1", panchangaPageClasses.page.mainColumn)}>
           <Reveal index={0}>
+          <ScrollHero>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}
@@ -121,6 +121,7 @@ export default function PanchangaScreen() {
             location={location}
             onLocationChange={setLocation}
           />
+          </ScrollHero>
           </Reveal>
           {page.ephemeris && data ? <EphemerisModeBanner p={data} clock={clock} viewedDateAd={page.civilAnchor} /> : null}
           {wheelData || showWheelSkeleton ? (
@@ -253,7 +254,7 @@ export default function PanchangaScreen() {
       </View>
       ) : null}
       {reminder.element}
-      </ScrollRevealScope.Provider>
-    </ScrollView>
+      </>
+    </PageScrollView>
   );
 }

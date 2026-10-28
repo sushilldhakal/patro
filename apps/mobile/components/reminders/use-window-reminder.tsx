@@ -66,7 +66,7 @@ export function useWindowReminder() {
 
   const element = (
     <>
-      <BottomSheetModal visible={target != null} onClose={() => setTarget(null)} maxHeight="88%">
+      <BottomSheetModal variant="page" visible={target != null} onClose={() => setTarget(null)} maxHeight="88%">
         <AddReminderForm
           active={target != null}
           profiles={prep.profiles}

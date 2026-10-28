@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import type { View } from "react-native";
 import { measure, useAnimatedReaction, useAnimatedRef, useSharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { pageScrollY, pageViewportH } from "@/lib/scroll-motion";
+import { pageViewportH, usePageScrollY } from "@/lib/scroll-motion";
 
 /**
  * Whether a block is on the screen (or within `margin` px of it), updated as the page scrolls.
@@ -14,9 +14,10 @@ export function useOnScreen(margin = 200, initial = true) {
   const [onScreen, setOnScreen] = useState(initial);
   const last = useSharedValue(initial);
   const laidOut = useSharedValue(false);
+  const { scrollY } = usePageScrollY();
 
   useAnimatedReaction(
-    () => pageScrollY.get() + (laidOut.get() ? 10_000_000 : 0),
+    () => scrollY.get() + (laidOut.get() ? 10_000_000 : 0),
     () => {
       if (!laidOut.get()) return;
       const box = measure(ref);
@@ -27,7 +28,7 @@ export function useOnScreen(margin = 200, initial = true) {
         scheduleOnRN(setOnScreen, visible);
       }
     },
-    [margin],
+    [margin, scrollY],
   );
 
   const onLayout = useCallback(() => laidOut.set(true), [laidOut]);

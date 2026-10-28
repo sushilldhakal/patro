@@ -4,8 +4,9 @@ import type { RefObject } from "react";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
-import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
+import { PageScrollView } from "@/components/ui/PageScrollView";
 import { Reveal } from "@/components/ui/Reveal";
+import { ScrollHero } from "@/components/ui/ScrollHero";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
@@ -76,7 +77,11 @@ export function AppShell({
   if (shellScrollHost) {
     return (
       <View className="min-h-0 w-full">
-        {header ? <Reveal index={0}>{header}</Reveal> : null}
+        {header ? (
+          <Reveal index={0}>
+            <ScrollHero>{header}</ScrollHero>
+          </Reveal>
+        ) : null}
         {body ? <Reveal index={1}>{body}</Reveal> : null}
       </View>
     );
@@ -99,7 +104,7 @@ export function AppShell({
   }
 
   return (
-    <ScrollView
+    <PageScrollView
       scrollEnabled={!zoomLocked}
       ref={(node) => {
         if (scrollRef) scrollRef.current = node;
@@ -120,11 +125,13 @@ export function AppShell({
       automaticallyAdjustKeyboardInsets
       keyboardDismissMode="interactive"
       showsVerticalScrollIndicator={false}
-      onScroll={onPageScroll}
-      scrollEventThrottle={SCROLL_EVENT_THROTTLE}
     >
-      <ScrollRevealScope.Provider value>
-        {header ? <Reveal index={0}>{header}</Reveal> : null}
+      <>
+        {header ? (
+          <Reveal index={0}>
+            <ScrollHero>{header}</ScrollHero>
+          </Reveal>
+        ) : null}
         {body ? <Reveal index={1}>{body}</Reveal> : null}
         {bodyReady ? (
           <Reveal index={2}>
@@ -132,8 +139,8 @@ export function AppShell({
             <SiteFooter />
           </Reveal>
         ) : null}
-      </ScrollRevealScope.Provider>
-    </ScrollView>
+      </>
+    </PageScrollView>
   );
 }
 

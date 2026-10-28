@@ -1,28 +1,29 @@
-import { createContext } from "react";
-import { Dimensions, type ScaledSize, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
-import { makeMutable } from "react-native-reanimated";
+import { createContext, useContext } from "react";
+import { Dimensions, type ScaledSize } from "react-native";
+import { makeMutable, type SharedValue } from "react-native-reanimated";
 
 /**
- * What `Reveal` reads to know when a block has scrolled into view. One value for the whole app:
- * only the page being scrolled changes it, and a page that is not on screen is frozen.
+ * The scroll offset of the page a block sits on, written on the UI thread by `PageScrollView`.
+ * One value per page: a page that is not on screen keeps its own offset, and scrolling one page
+ * never wakes the blocks of another.
  */
-export const pageScrollY = makeMutable(0);
+export const PageScrollContext = createContext<SharedValue<number> | null>(null);
+
+/** Read by blocks outside any `PageScrollView`: never changes, so nothing there waits for a scroll. */
+const NO_SCROLL = makeMutable(0);
+
 export const pageViewportH = makeMutable(Dimensions.get("window").height);
 
 Dimensions.addEventListener("change", ({ window }: { window: ScaledSize }) => {
   pageViewportH.set(window.height);
 });
 
-/** Pass to a page ScrollView as `onScroll`, with `scrollEventThrottle={SCROLL_EVENT_THROTTLE}`. */
-export function onPageScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-  pageScrollY.set(event.nativeEvent.contentOffset.y);
-}
-
-export const SCROLL_EVENT_THROTTLE = 16;
-
 /**
- * True inside a ScrollView that reports its scroll (`onPageScroll`): a `Reveal` there waits for its
- * block to come into view. Outside one there is nothing to wait for, so it plays when it mounts —
- * a block waiting for a scroll that never comes would stay invisible.
+ * This page's scroll offset, and whether there is one. Outside a `PageScrollView` there is nothing to
+ * wait for, so a `Reveal` there plays when it mounts — a block waiting for a scroll that never comes
+ * would stay invisible.
  */
-export const ScrollRevealScope = createContext(false);
+export function usePageScrollY(): { scrollY: SharedValue<number>; scrolls: boolean } {
+  const scrollY = useContext(PageScrollContext);
+  return { scrollY: scrollY ?? NO_SCROLL, scrolls: scrollY !== null };
+}

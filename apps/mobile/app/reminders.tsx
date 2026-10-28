@@ -322,7 +322,7 @@ export default function RemindersScreen() {
         </View>
       )}
 
-      <BottomSheetModal visible={sheetOpen} onClose={() => setSheetOpen(false)} maxHeight="88%">
+      <BottomSheetModal variant="page" visible={sheetOpen} onClose={() => setSheetOpen(false)} maxHeight="88%">
         <AddReminderForm
           active={sheetOpen}
           profiles={profiles}

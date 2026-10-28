@@ -1,7 +1,7 @@
 import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { Modal, Pressable, ScrollView, View } from "react-native";
+import { Modal, Platform, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -270,8 +270,9 @@ function ProfilePickModal({
   const colors = useThemeColors();
 
   return (
-    <Modal visible={open} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+    <Modal visible={open} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      {/* iOS: the native page sheet starts below the status bar and drags down to dismiss. */}
+      <View className="flex-1 bg-background" style={{ paddingTop: Platform.OS === "ios" ? 0 : insets.top }}>
         <View className="flex-row items-center border-b border-border px-4 py-3">
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color={colors.foreground} />

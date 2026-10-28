@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Dimensions, KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View, type ViewStyle } from "react-native";
+import { Dimensions, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, type ViewStyle } from "react-native";
 import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
@@ -23,8 +23,10 @@ type Props = {
   keyboardAvoiding?: boolean;
   /** Lift the sheet above the software keyboard (use instead of double-stacking with KAV). */
   keyboardInset?: number;
-  /** Phone: slide from bottom. Tablet pickers: fade + scale centered. */
-  variant?: "bottom" | "center";
+  /** Phone: slide from bottom. Tablet pickers: fade + scale centered. `page`: a page-sized
+   *  form or list — on iOS the native page sheet (UIKit: drag to dismiss, the page behind
+   *  scales back); on Android the bottom sheet. */
+  variant?: "bottom" | "center" | "page";
 };
 
 /** `maxHeight` as pixels. A percentage has nothing to resolve against inside a content-sized sheet. */
@@ -41,7 +43,39 @@ function toPixels(value: ViewStyle["maxHeight"], windowHeight: number): number {
  *
  * Centred variant (tablets): fades and scales in on the same spring.
  */
-export function BottomSheetModal({
+export function BottomSheetModal(props: Props) {
+  if (props.variant === "page" && Platform.OS === "ios") return <NativePageSheet {...props} />;
+  return <DrawnSheet {...props} variant={props.variant === "page" ? "bottom" : props.variant} />;
+}
+
+/**
+ * The system page sheet. Everything about its motion is UIKit's own: it rises with the system
+ * curve, follows a drag on any part of it, dismisses on a flick, and the screen behind it scales
+ * back. A swipe-down dismissal reports through `onRequestClose`, so `onClose` runs either way.
+ */
+function NativePageSheet({ visible, onClose, children, sheetStyle }: Props) {
+  const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <GestureHandlerRootView style={[styles.fill, { backgroundColor: colors.card }]}>
+        <View style={styles.grabber}>
+          <View style={[styles.pill, { backgroundColor: colors.border }]} />
+        </View>
+        <ScrollView
+          style={styles.fill}
+          contentContainerStyle={[{ paddingBottom: Math.max(insets.bottom, 16) }, sheetStyle]}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
+        >
+          {children}
+        </ScrollView>
+      </GestureHandlerRootView>
+    </Modal>
+  );
+}
+
+function DrawnSheet({
   visible,
   onClose,
   children,
@@ -50,7 +84,7 @@ export function BottomSheetModal({
   keyboardAvoiding = false,
   keyboardInset = 0,
   variant = "bottom",
-}: Props) {
+}: Props & { variant?: "bottom" | "center" }) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const [mounted, setMounted] = useState(visible);

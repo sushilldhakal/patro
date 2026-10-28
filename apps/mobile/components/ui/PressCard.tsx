@@ -1,17 +1,15 @@
-import { useRef, type ComponentRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import { usePressScale } from "@vedic-patro/ui/gestures";
-import { setZoomOrigin } from "@/lib/zoom-origin";
 
 type Props = {
   children: ReactNode;
-  onPress: () => void;
+  /** Optional when a `Link asChild` wraps the card and hands it the press. */
+  onPress?: () => void;
   className?: string;
   label?: string;
   disabled?: boolean;
-  /** The card opens a full screen: note where it sits first, so that screen's `ZoomTransition` can grow out of it. */
-  zoomToScreen?: boolean;
 };
 
 /**
@@ -19,26 +17,12 @@ type Props = {
  * an outer view that carries only that animated style, and the look (`className`) on the pressable
  * inside it, so NativeWind and Reanimated never share one `style`.
  */
-export function PressCard({ children, onPress, className, label, disabled, zoomToScreen }: Props) {
+export function PressCard({ children, onPress, className, label, disabled }: Props) {
   const press = usePressScale({ disabled });
-  const box = useRef<ComponentRef<typeof Pressable>>(null);
-
-  const open = () => {
-    if (!zoomToScreen || !box.current) {
-      onPress();
-      return;
-    }
-    box.current.measureInWindow((x, y, w, h) => {
-      if (w > 0 && h > 0) setZoomOrigin({ x, y, w, h });
-      onPress();
-    });
-  };
-
   return (
     <Animated.View style={press.animatedStyle}>
       <Pressable
-        ref={box}
-        onPress={open}
+        onPress={onPress}
         disabled={disabled}
         accessibilityRole="button"
         accessibilityLabel={label}

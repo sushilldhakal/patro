@@ -1,7 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { ZoomTransition } from "@/components/ui/ZoomTransition";
 import { useQuery } from "@tanstack/react-query";
 import { PanchangaDetailCard } from "@/components/PanchangaDetailCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
@@ -22,7 +21,6 @@ export default function DayDetailScreen() {
   });
 
   return (
-    <ZoomTransition>
     <StandaloneChrome>
     <View className={msc.dayScreen}>
       <View className={msc.dayHeader} style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
@@ -40,6 +38,5 @@ export default function DayDetailScreen() {
       </ScrollView>
     </View>
     </StandaloneChrome>
-    </ZoomTransition>
   );
 }

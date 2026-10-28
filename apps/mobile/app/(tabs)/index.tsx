@@ -40,7 +40,8 @@ import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { MONTH_SWIPE_ENABLED, todayPulse } from "@/components/home/calendar-grid-layout";
 import { Reveal } from "@/components/ui/Reveal";
-import { SCROLL_EVENT_THROTTLE, ScrollRevealScope, onPageScroll } from "@/lib/scroll-motion";
+import { ScrollHero } from "@/components/ui/ScrollHero";
+import { PageScrollView } from "@/components/ui/PageScrollView";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, usePageScrollerRef } from "@/lib/page-scroll";
@@ -331,7 +332,9 @@ export default function HomeScreen() {
 
   const calendarBlock = (
     <View className={columnClass}>
-      <Reveal index={0}>{monthHeaderBlock}</Reveal>
+      <Reveal index={0}>
+        <ScrollHero>{monthHeaderBlock}</ScrollHero>
+      </Reveal>
 
       {monthLoading ? (
         <View className="py-16" style={{ paddingHorizontal: contentInset }}>
@@ -448,7 +451,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <ScrollView
+      <PageScrollView
         ref={pageScrollerRef}
         refreshControl={refreshControl}
         className="flex-1 bg-background"
@@ -458,10 +461,8 @@ export default function HomeScreen() {
           paddingHorizontal: pageInset,
           paddingTop: pageTopPadding(isCompact),
         }}
-        onScroll={onPageScroll}
-        scrollEventThrottle={SCROLL_EVENT_THROTTLE}
       >
-        <ScrollRevealScope.Provider value>
+        <>
         <View className={splitAside ? "flex-row items-start gap-4" : "gap-4"}>
           {leftColumn}
           {splitAside ? asideBlock : null}
@@ -505,8 +506,8 @@ export default function HomeScreen() {
             </Reveal>
             </>
           ) : null}
-        </ScrollRevealScope.Provider>
-        </ScrollView>
+        </>
+        </PageScrollView>
 
     </>
   );
