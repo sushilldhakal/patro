@@ -98,17 +98,13 @@ export type BrahmaTreeRow = {
   solar: string;
 };
 
-/** Kalpas 1–7 carry their names (Śveta … Bṛhat); the rest of the month's 30 go by number. */
-const NAMED_KALPAS = 7;
-
 function instanceName(n: TimeNode, text: Text): string {
   const { t, digits } = text;
   const num = n.index != null ? digits(n.index) : "";
   switch (n.kind) {
     case "kalpa":
-      return n.index != null && n.index <= NAMED_KALPAS
-        ? t("brahma_mana.inst.kalpa_named", { n: num, name: t(`brahma_mana.kalpa_name.${n.index}`) })
-        : t("brahma_mana.inst.kalpa", { n: num });
+      // The 30 Kalpas of a Brahma month, Śveta to Pitṛ.
+      return t("brahma_mana.inst.kalpa_named", { n: num, name: t(`brahma_mana.kalpa_name.${n.index}`) });
     case "manvantara_full":
       return t("brahma_mana.inst.manvantara_full", { n: num, name: t(`brahma_mana.manvantara_name.${n.index}`) });
     case "yuga":
