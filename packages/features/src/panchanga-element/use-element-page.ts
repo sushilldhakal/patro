@@ -58,8 +58,6 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
   const isSpan = meta?.kind === "span";
   const balam: "chandrabala" | "tarabala" | undefined = name === "chandrabala" || name === "tarabala" ? name : undefined;
   const params = location.params;
-  const timeZone = resolveTimeZone(undefined, params.timezone);
-  const todayAd = todayAdStringInTimezone(new Date(), timeZone);
   const dateAd = day.dateAd ?? "";
 
   const spanQuery = useQuery({
@@ -86,6 +84,12 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
     staleTime: HALF_HOUR,
     placeholderData: keepPreviousData,
   });
+
+  // "Today" and "now" are the place's, not the device's: a phone abroad browsing Kathmandu
+  // still gets Kathmandu's clock. The API names the zone when the saved location does not.
+  const apiZone = (dayQuery.data as { location?: { timezone?: unknown } } | undefined)?.location?.timezone ?? panchanga?.location?.timezone;
+  const timeZone = resolveTimeZone(typeof apiZone === "string" ? apiZone : undefined, params.timezone);
+  const todayAd = todayAdStringInTimezone(new Date(), timeZone);
 
   const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
   const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
