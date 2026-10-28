@@ -29,7 +29,7 @@ function TreeRow({ row, tree }: { row: BrahmaTreeRow; tree: BrahmaManaPage["tree
   ));
 
   const label = (
-    <View className="min-w-0 flex-1 flex-row items-start gap-1.5 py-0.5">
+    <View className="flex-row items-start gap-1.5 py-0.5">
       {row.hasChildren ? (
         <View className="mt-0.5" style={{ transform: [{ rotate: row.open ? "0deg" : "-90deg" }] }}>
           <Ionicons name="chevron-down" size={14} color={colors.foreground} />

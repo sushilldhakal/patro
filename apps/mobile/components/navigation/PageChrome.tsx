@@ -13,6 +13,7 @@ import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 export const PAGE_CHROME_ROUTES: ReadonlySet<string> = new Set([
   "abhijit-muhurta",
   "adhik-maas",
+  "brahma-mana",
   "chandrakranti",
   "converter",
   "documents",
