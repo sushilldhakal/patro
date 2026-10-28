@@ -1,9 +1,9 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { useEffect, useRef, type ComponentRef, type ReactNode } from "react";
+import { Keyboard, Platform, Pressable, TextInput, View } from "react-native";
 import { Text } from "@vedic-patro/ui";
 import { fontFamily, illustration, neutral, webTypeScale, withAlpha } from "@vedic-patro/design-tokens";
 import { DAYLIGHT_STOPS } from "@vedic-patro/design-tokens/classes/learn/daylight-stops";
-import { skySheetTransport, useSkyTimeSheet, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
+import { SKY_TIME_FIELDS, skySheetTransport, useSkyTimeSheet, type SkyTimeField, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 import type { SkyTimeSheetProps } from "../contract";
 
 export function SkyTimeSheet({
@@ -30,6 +30,22 @@ export function SkyTimeSheet({
     playing: v.playing,
   });
 
+  const inputRefs = useRef<Partial<Record<SkyTimeField, ComponentRef<typeof TextInput> | null>>>({});
+  /** Closing applies a half-typed field first: the iPhone number pad has no return key, so a year
+   * typed and then a tap outside used to close without the year. */
+  const close = () => {
+    v.flush();
+    Keyboard.dismiss();
+    onClose();
+  };
+  /** Return commits the field and moves on: year → month → day → hour → minute → second. */
+  const submit = (field: SkyTimeField, text: string) => {
+    v.commitField(field, text);
+    const next = SKY_TIME_FIELDS[SKY_TIME_FIELDS.indexOf(field) + 1];
+    if (next) inputRefs.current[next]?.focus();
+    else Keyboard.dismiss();
+  };
+
   const stepper = (f: SkyTimeFieldView) => (
     <View key={f.field} className="items-center" style={{ width: f.wide ? 52 : 36 }}>
       <Hold label={f.upLabel} onStep={f.up}>
@@ -37,10 +53,16 @@ export function SkyTimeSheet({
       </Hold>
       {/* The website's field: semibold digits in the app font, committed when editing ends (return or blur). */}
       <TextInput
+        ref={(el) => {
+          inputRefs.current[f.field] = el;
+        }}
         value={f.value}
         accessibilityLabel={f.label}
-        keyboardType={f.allowMinus ? "numbers-and-punctuation" : "number-pad"}
-        returnKeyType="done"
+        // iOS's number pad has no return key; this one keeps the digits and adds Next / Done.
+        keyboardType={f.allowMinus || Platform.OS === "ios" ? "numbers-and-punctuation" : "number-pad"}
+        returnKeyType={f.field === "second" ? "done" : "next"}
+        submitBehavior={f.field === "second" ? "blurAndSubmit" : "submit"}
+        onSubmitEditing={(e) => submit(f.field, e.nativeEvent.text)}
         selectTextOnFocus
         selectionColor={neutral.white}
         onFocus={() => v.startEdit(f.field)}
@@ -78,7 +100,7 @@ export function SkyTimeSheet({
   return (
     <View className={centered ? "absolute inset-0 items-center justify-center px-3" : "absolute inset-0 justify-end"}>
       <Pressable
-        onPress={onClose}
+        onPress={close}
         accessibilityRole="button"
         accessibilityLabel={v.labels.close}
         style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: withAlpha(neutral.black, 0.4) }}

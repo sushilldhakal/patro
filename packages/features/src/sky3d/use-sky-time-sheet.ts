@@ -239,6 +239,11 @@ export function useSkyTimeSheet({
     setEdit((cur) => (cur === field ? null : cur));
   };
 
+  /** Applies a half-typed field before the sheet closes, so a year typed without return is not lost. */
+  const flush = () => {
+    if (edit) commitField(edit, draft);
+  };
+
   const startEdit = (field: SkyTimeField) => {
     setEdit(field);
     setDraftRaw(plain(field));
@@ -278,6 +283,7 @@ export function useSkyTimeSheet({
     clockFields: fields.slice(3),
     edit,
     startEdit,
+    flush,
     endEdit: () => setEdit(null),
     setDraft: (field: SkyTimeField, raw: string) => setDraftRaw(filterDraft(raw, field === "year")),
     draft,

@@ -30,6 +30,21 @@ export function SkyTimeSheet({
   });
   const inputRefs = useRef<Partial<Record<SkyTimeField, HTMLInputElement | null>>>({});
 
+  /** Closing applies a half-typed field first. */
+  const close = () => {
+    v.flush();
+    onClose();
+  };
+  const closeRef = useRef(close);
+  closeRef.current = close;
+  useEffect(() => {
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") closeRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const focusField = (field: SkyTimeField) => {
     v.startEdit(field);
     requestAnimationFrame(() => inputRefs.current[field]?.select());
@@ -37,13 +52,21 @@ export function SkyTimeSheet({
 
   const onFieldKey = (field: SkyTimeField, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      // Commit and move on: year → month → day → hour → minute → second; the last one just commits.
       e.preventDefault();
       v.commitField(field, v.draft);
+      const next = SKY_TIME_FIELDS[SKY_TIME_FIELDS.indexOf(field) + 1];
+      if (next) focusField(next);
+      else e.currentTarget.blur();
       return;
     }
     if (e.key === "Escape") {
+      // First Escape drops the typing, a second one (handled on the window) closes the sheet.
       e.preventDefault();
+      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation();
       v.endEdit();
+      e.currentTarget.blur();
       return;
     }
     if (e.key === "ArrowUp") {
@@ -76,7 +99,7 @@ export function SkyTimeSheet({
         }}
         value={f.value}
         inputMode={f.allowMinus ? "text" : "numeric"}
-        enterKeyHint="next"
+        enterKeyHint={f.field === "second" ? "done" : "next"}
         autoComplete="off"
         aria-label={f.label}
         className="w-full bg-transparent p-0 text-center text-lg font-semibold tabular-nums leading-none text-white outline-none caret-white xs:text-xl"
@@ -105,7 +128,7 @@ export function SkyTimeSheet({
 
   return (
     <div className={cn("absolute inset-0 z-50 flex flex-col", centered ? "justify-center px-3" : "justify-end")}>
-      <button type="button" aria-label={v.labels.close} className="absolute inset-0 cursor-default bg-black/40" onClick={onClose} />
+      <button type="button" aria-label={v.labels.close} className="absolute inset-0 cursor-default bg-black/40" onClick={close} />
       <div
         data-sky-controls
         className={cn(

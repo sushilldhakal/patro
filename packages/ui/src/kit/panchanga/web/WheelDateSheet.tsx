@@ -45,8 +45,10 @@ export function WheelDateSheet({
     zoneOffsetMs: sheet.zoneOffsetMs,
     onApplyMs: sheet.apply,
     onClose: () => {
-      sheet.commit();
+      // Close first, jump after: moving the wheel to another year is heavy, and doing it before
+      // the sheet left kept the sheet on screen, so a tap outside looked like it did nothing.
       onClose();
+      requestAnimationFrame(() => setTimeout(sheet.commit, 0));
     },
   };
   return <div className="fixed inset-0 z-[140]">{renderSheet(slot)}</div>;

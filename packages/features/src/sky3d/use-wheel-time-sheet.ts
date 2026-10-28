@@ -5,7 +5,7 @@
  * back into a calendar day and clock when the sheet closes. The website and
  * the app both draw the sheet and call this.
  */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { adToBS, bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { civilGregorianToUtcMs } from "@vedic-patro/domain/calendar/patro-day";
@@ -55,16 +55,22 @@ export function useWheelTimeSheet({
   const committedMs = civilMs + clockMs(clock) - zoneOffsetMs;
 
   const [draftMs, setDraftMs] = useState<number | null>(null);
+  /** The same draft, readable at once: a field flushed on close is applied in the same tick as `commit`. */
+  const draftRef = useRef<number | null>(null);
 
   return {
     timeMs: draftMs ?? committedMs,
     zoneOffsetMs,
     /** Each stepper, typed field or jump of the sheet lands here; nothing is applied until `commit`. */
-    apply: setDraftMs,
+    apply: (ms: number) => {
+      draftRef.current = ms;
+      setDraftMs(ms);
+    },
     /** Applies the edit (if any) through `onCommit`. */
     commit: () => {
-      if (draftMs == null || draftMs === committedMs) return;
-      const p = wallPartsFromMs(draftMs, zoneOffsetMs);
+      const draft = draftRef.current;
+      if (draft == null || draft === committedMs) return;
+      const p = wallPartsFromMs(draft, zoneOffsetMs);
       const hh = String(p.hour).padStart(2, "0");
       const mm = String(p.minute).padStart(2, "0");
       if (gregorian) {

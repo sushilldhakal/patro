@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "@vedic-patro/i18n/react";
@@ -20,6 +21,20 @@ function RouteSeoInner() {
   const normalized = pathname.replace(/\/$/, "") || "/";
   const ogImage = ogImageForRoute(normalized);
   const ogImageType = ogImageTypeForRoute(normalized);
+  const jsonLdText = JSON.stringify(jsonLd);
+
+  /* JSON-LD is written straight into <head>: rendered as a <script> inside React it drew the
+     "Encountered a script tag while rendering React component" warning on every page. The
+     prerendered page's own block is reused, so there is only ever one. */
+  useEffect(() => {
+    let el = document.head.querySelector<HTMLScriptElement>('script[type="application/ld+json"]');
+    if (!el) {
+      el = document.createElement("script");
+      el.type = "application/ld+json";
+      document.head.appendChild(el);
+    }
+    el.textContent = jsonLdText;
+  }, [jsonLdText]);
 
   return (
     <Helmet>
@@ -51,7 +66,6 @@ function RouteSeoInner() {
       <meta name="twitter:description" content={meta.description} />
       <meta name="twitter:image" content={ogImage} />
 
-      <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
   );
 }
