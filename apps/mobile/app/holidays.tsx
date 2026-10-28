@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { TextInput } from "react-native";
 import { __iconNode as flag } from "lucide-react/dist/esm/icons/flag";
 import { __iconNode as partyPopper } from "lucide-react/dist/esm/icons/party-popper";
@@ -45,6 +46,7 @@ export default function HolidaysScreen() {
         onYearChange={setYear}
         gregorianRange={page.gregorianRange}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <Box className={cn("mb-8", holidaysClasses.tabBar)} label={page.copy.title}>
         {page.tabs.map((tab) => (

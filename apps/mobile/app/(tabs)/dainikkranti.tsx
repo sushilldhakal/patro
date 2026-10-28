@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Fragment, useMemo, useState } from "react";
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
@@ -128,6 +129,7 @@ export default function DainikKrantiScreen() {
         onLocationChange={setLocation}
       />
 
+      {page.hero ? <NowHero hero={page.hero} className="mb-3" /> : null}
       <View className={cn(dainikKrantiClasses.monthHead, "gap-1")}>
         <Text className={dainikKrantiClasses.monthTitle} style={nepaliTextStyle()}>
           {header.title}

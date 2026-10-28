@@ -12,6 +12,7 @@
  * source (the app reads it through its offline store).
  */
 import { useEffect, useMemo, useState } from "react";
+import type { NowHeroView } from "../common/now-hero";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
 import {
   fetchGochar,
@@ -358,7 +359,7 @@ export function useDainikKrantiPage({
 
   /* ── day rows ── */
   const pickName = (ne?: string | null, en?: string | null) => bilingualText(lang, ne ?? en, en ?? ne) ?? "—";
-  const rows: DainikDayRow[] = days.map((d) => {
+  const rowOf = (d: CalendarDay): DainikDayRow => {
     const det = d.panchanga;
     const isSaturday = dowOf(d.date_ad) === 6;
     const hasFestival = (d.festivals?.length ?? 0) > 0;
@@ -415,7 +416,29 @@ export function useDainikKrantiPage({
       toggle: () => toggleDay(d.date_ad),
       ariaLabel: t("ui.dainik_kranti.lagna_planets_for_day_day", { day: dg(d.day) }),
     };
-  });
+  };
+  const rows: DainikDayRow[] = days.map(rowOf);
+
+  // Today's panchanga on top, whichever paksha the table shows.
+  const todayDay = allDays.find((d) => d.date_ad === nowKey);
+  const todayRow = todayDay ? rowOf(todayDay) : undefined;
+  const hero: NowHeroView | undefined = todayRow
+    ? {
+        eyebrow: t("now_hero.dainik_today"),
+        live: true,
+        tone: todayRow.holiday ? "bad" : "plain",
+        title: todayRow.tithi.value,
+        subtitle: [todayRow.weekday, todayRow.dayNumber].join(" · "),
+        foot: { left: todayRow.tithi.until ?? undefined, right: todayRow.festivals ?? undefined },
+        facts: [
+          { label: t("dainik.nakshatra"), value: todayRow.nakshatra.value, sub: todayRow.nakshatra.until ?? undefined },
+          { label: t("dainik.yoga"), value: todayRow.yoga.value, sub: todayRow.yoga.until ?? undefined },
+          { label: t("dainik.karana"), value: todayRow.karana.value, sub: todayRow.karana.until ?? undefined },
+          { label: t("dainik.moon_sign"), value: todayRow.moon.value, sub: todayRow.moon.until ?? undefined },
+          { label: t("dainik.sun_rise_set"), value: todayRow.sun.times, sub: todayRow.sun.sign },
+        ],
+      }
+    : undefined;
 
   /* ── gochar list and legend ── */
   const gocharRows: DainikGocharRow[] = grahas.map((g) => {
@@ -505,6 +528,7 @@ export function useDainikKrantiPage({
           }
         : null,
     rows,
+    hero,
     tables: { lagnaMatrix, grahaMatrix, calcNotes, rashyadiRange, papanshaLine, gapanshaLine },
     sunRef: refDay
       ? {

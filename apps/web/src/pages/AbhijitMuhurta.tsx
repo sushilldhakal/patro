@@ -1,5 +1,6 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Link, getRouteApi } from "@tanstack/react-router";
-import { ArrowLeft, Sparkles, Sun } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { useAbhijitPage, type AbhijitDayView } from "@vedic-patro/features/abhijit";
 import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -25,7 +26,6 @@ export function AbhijitMuhurta() {
     fetchMonthCalendar,
   );
   useRouteLoading(page.status === "loading");
-  const today = page.today;
 
   return (
     <PageShell className="pb-16 space-y-6">
@@ -50,31 +50,8 @@ export function AbhijitMuhurta() {
         location={location}
         onLocationChange={setLocation}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
-      {today ? (
-        <section className={cn(ac.hero, "relative bg-linear-to-br from-secondary/15 via-card to-card dark:from-primary/15")}>
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-secondary/10 blur-2xl dark:bg-primary/10" />
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className={ac.heroEyebrow}>{page.copy.todayHero}</p>
-              <p className={ac.heroDate}>
-                {today.day} · {today.weekday} · <span className={ac.heroDateAd}>{today.dateAd}</span>
-              </p>
-              <p className={cn(ac.heroRange, "mono text-[clamp(1.5rem,5vw,2rem)]")}>{today.range}</p>
-              <p className={ac.heroNoon}>
-                {page.copy.noon}: <span className={cn(ac.heroNoonValue, "mono")}>{today.noon}</span>
-              </p>
-            </div>
-            <div className={cn(ac.sunPanel, "backdrop-blur-sm")}>
-              <div className="flex items-center gap-2">
-                <Sun className="w-4 h-4 shrink-0 text-amber-500" />
-                <span>{page.copy.sunContext}</span>
-              </div>
-              <p className={cn(ac.sunDate, "mono")}>{today.dateAd}</p>
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       <div className={cn(ac.noteBox, ac.noteText)}>
         <div className={ac.noteRow}>

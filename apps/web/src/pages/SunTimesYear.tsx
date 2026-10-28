@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { Trans } from "@vedic-patro/i18n/react";
 import { ArrowLeft, CalendarRange } from "lucide-react";
@@ -46,6 +47,7 @@ export function SunTimesYear() {
         onLocationChange={setLocation}
         className=""
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <SunTimesYearGrid page={page} hideHeader />
 

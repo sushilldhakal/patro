@@ -7,6 +7,7 @@
  * and only the adhik months that begin inside the AD year are kept.
  */
 import { useQueries } from "@tanstack/react-query";
+import { spanText, useNowMs, type NowHeroView } from "../common/now-hero";
 import { fetchSpecialMonths, specialMonthsKeys, type SpecialMonthsResponse } from "@vedic-patro/api-client";
 import {
   AD_MONTH_NAMES,
@@ -106,6 +107,7 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
         : "loading";
 
   const months: AdhikMaasView[] = [];
+  const spans: { start: string; end: string }[] = [];
   let kshaya: string | null = null;
   for (const y of bsYears) {
     const data = answer(y);
@@ -113,6 +115,7 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
       if (!adhik.has_adhik_maas || !adhik.month_name || !adhik.start_date || !adhik.end_date) continue;
       if (era === "ad" && Number(adhik.start_date.slice(0, 4)) !== year) continue;
       const month = monthLabel(adhik.month_name, isEn);
+      spans.push({ start: adhik.start_date, end: adhik.end_date });
       months.push({
         key: adhik.start_date,
         name: t("adhik_page.adhik_name", { month }),
@@ -141,7 +144,40 @@ export function useAdhikMaasPage({ year, era }: { year: number; era: Era }) {
     };
   });
 
+  // The year's adhik maas, against the Nepal clock: on now, still to come, or over.
+  const nowMs = useNowMs();
+  let hero: NowHeroView | undefined;
+  const dayMs = (iso: string) => Date.parse(`${iso}T00:00:00+05:45`);
+  const pick = spans.findIndex((sp) => nowMs < dayMs(sp.end) + 86_400_000);
+  const shown = pick >= 0 ? pick : spans.length - 1;
+  if (shown >= 0) {
+    const sp = spans[shown]!;
+    const m = months[shown]!;
+    const start = dayMs(sp.start);
+    const end = dayMs(sp.end) + 86_400_000;
+    const state = nowMs >= end ? "past" : nowMs >= start ? "on" : "next";
+    hero = {
+      eyebrow: t(state === "on" ? "now_hero.adhik_now" : state === "next" ? "now_hero.adhik_next" : "now_hero.adhik_past"),
+      live: state === "on",
+      tone: state === "past" ? "plain" : "neutral",
+      title: m.name,
+      subtitle: m.bsRange,
+      progress: state === "on" ? (nowMs - start) / (end - start) : undefined,
+      foot: {
+        left: m.days,
+        right:
+          state === "on"
+            ? t("now_hero.left", { time: spanText(end - nowMs, t, digits) })
+            : state === "next"
+              ? t("now_hero.starts_in", { time: spanText(start - nowMs, t, digits) })
+              : undefined,
+      },
+      facts: [{ label: t("adhik_page.ad_label"), value: m.adRange }],
+    };
+  }
+
   return {
+    hero,
     copy: {
       title: t("adhik_page.title"),
       subtitle: t("adhik_page.subtitle"),

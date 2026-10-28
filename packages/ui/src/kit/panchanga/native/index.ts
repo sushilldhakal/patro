@@ -13,6 +13,7 @@ export { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 export { MuhurtaBoard } from "./MuhurtaBoard";
 export { SpanTimeline } from "./SpanTimeline";
 export { GrahaYearOverview } from "./GrahaYearOverview";
+export { NowHero } from "./NowHero";
 export { PlanetSelectMenu } from "./PlanetSelectMenu";
 export { WheelDateSheet } from "./WheelDateSheet";
 export { DayTimeline, type TimelinePeriod } from "./DayTimeline";

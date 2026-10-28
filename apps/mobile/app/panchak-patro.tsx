@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { View } from "react-native";
 import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
@@ -45,6 +46,7 @@ export default function PanchakPatroScreen() {
         location={location}
         onLocationChange={setLocation}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <View className={cn(patroNoteBox, "mt-4")}>
         <Text className={pc.introText} style={nepaliTextStyle()}>

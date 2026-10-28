@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAdhikMaasPage, type AdhikMaasView } from "@vedic-patro/features/adhik-maas";
@@ -53,6 +54,7 @@ export default function AdhikMaasScreen() {
         location={location}
         onLocationChange={setLocation}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <View className={cn(patroNoteBox, "mt-4")}>
         <Text className={pc.introText} style={nepaliTextStyle()}>

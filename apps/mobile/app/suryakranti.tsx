@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { View } from "react-native";
 import { useSunTimesPage } from "@vedic-patro/features/sun-times";
 import { Trans } from "@vedic-patro/i18n/react";
@@ -46,6 +47,7 @@ export default function SuryakrantiScreen() {
         onLocationChange={setLocation}
         onToday={() => setYear(getCurrentBs().year)}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <SunTimesYearGrid page={page} />
 

@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { getRouteApi } from "@tanstack/react-router";
 import { __iconNode as flag } from "lucide-react/dist/esm/icons/flag.mjs";
 import { __iconNode as partyPopper } from "lucide-react/dist/esm/icons/party-popper.mjs";
@@ -41,6 +42,7 @@ export function Holidays() {
         onLocationChange={setLocation}
         className=""
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <Box className={cn("flex", holidaysClasses.tabBar)} label={page.copy.title}>
         {page.tabs.map((tab) => (

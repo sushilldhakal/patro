@@ -42,7 +42,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { DayPatroExpandPanel, MonthCalcNotes, MonthGrahaSpashta, MonthLagnaMatrix } from "@vedic-patro/ui/kit/panchanga";
+import { DayPatroExpandPanel, MonthCalcNotes, MonthGrahaSpashta, MonthLagnaMatrix, NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { GocharKundaliChart, GocharRashyadiTable } from "@vedic-patro/ui/kit/panchanga";
 import {
@@ -321,6 +321,7 @@ export function DainikKranti() {
         segments={pakshaSegments}
         segmentsLabel={copy.pakshaAria}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <div className={dainikKrantiClasses.monthHead}>
         <div className={dainikKrantiClasses.monthTitleRow}>

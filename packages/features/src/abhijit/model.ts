@@ -39,3 +39,10 @@ export function abhijitDays(days: readonly CalendarDay[], todayAd: string, lang:
     ];
   });
 }
+
+/** The raw abhijit window of a day (its `HH:MM` start and end). */
+export function abhijitClock(day: CalendarDay): { start?: string; end?: string } | null {
+  const nested = day.panchanga as { muhurta?: { abhijit?: { start_time?: string; end_time?: string } } } | undefined;
+  const w = (day.abhijit as { start_time?: string; end_time?: string } | undefined) ?? nested?.muhurta?.abhijit;
+  return w ? { start: w.start_time, end: w.end_time } : null;
+}

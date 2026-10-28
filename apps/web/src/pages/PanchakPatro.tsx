@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { AlertTriangle, ArrowLeft, CalendarClock } from "lucide-react";
 import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
@@ -44,6 +45,7 @@ export function PanchakPatro() {
         onLocationChange={setLocation}
         className=""
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <p className={cn(patroNoteBox, pc.introText)}>{page.copy.intro}</p>
 

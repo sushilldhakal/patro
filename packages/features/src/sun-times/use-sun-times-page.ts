@@ -11,6 +11,9 @@ import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
+import { clockMinutes, spanText, useNowMs, type NowHeroView } from "../common/now-hero";
+import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { buildSunGrid, buildSunLayout, buildSunMatrix, buildSunMonths, type SunMatrixRow, type SunMonth } from "./model";
 
 export * from "./model";
@@ -47,6 +50,8 @@ export type SunTimesPage = {
   months: SunMonth[];
   /** Accordion value of the month to open first. */
   defaultMonth: string;
+  /** Today's sun, when the year holds today: up or down, the countdown, the day's length. */
+  hero?: NowHeroView;
 };
 
 export function useSunTimesPage({ year, era, location }: { year: number; era: Era; location: PanchangaLocation }): SunTimesPage {
@@ -71,6 +76,57 @@ export function useSunTimesPage({ year, era, location }: { year: number; era: Er
   }, [data, year, gregorian, lang, timeZone, t, digits]);
 
   const locationLabel = displayLocationLabel(location, undefined, lang);
+
+  // Today in the place's own zone (the API names it), counted on its clock.
+  const nowMs = useNowMs();
+  const hero = useMemo((): NowHeroView | undefined => {
+    const zone = (data?.location?.timezone as string | undefined) ?? location.params.timezone ?? "Asia/Kathmandu";
+    const todayAd = todayAdStringInTimezone(new Date(nowMs), zone);
+    const all = (data?.months ?? []).flatMap((m) => m.calendar);
+    const at = all.findIndex((d) => d.date_ad === todayAd);
+    if (at < 0) return undefined;
+    const day = all[at]!;
+    const tomorrow = all[at + 1];
+    const rise = parseHHMM(day.sunrise);
+    const set = parseHHMM(day.sunset);
+    if (rise == null || set == null) return undefined;
+    const now = clockMinutes(nowMs, zone);
+    const up = now >= rise && now < set;
+    const length = (d?: { sunrise?: string; sunset?: string }) => {
+      const a = parseHHMM(d?.sunrise);
+      const b = parseHHMM(d?.sunset);
+      return a != null && b != null ? b - a : null;
+    };
+    const len = set - rise;
+    const nextLen = length(tomorrow);
+    const diff = nextLen != null ? nextLen - len : null;
+    const toNext = up ? set - now : now < rise ? rise - now : 24 * 60 - now + (parseHHMM(tomorrow?.sunrise) ?? rise);
+    return {
+      eyebrow: t("now_hero.sun_today"),
+      live: up,
+      tone: up ? "neutral" : "plain",
+      title: `↑ ${digits(day.sunrise ?? "")}  ↓ ${digits(day.sunset ?? "")}`,
+      subtitle: lang === "en" ? day.aayan : (day.aayan_ne ?? day.aayan),
+      progress: up ? (now - rise) / (len || 1) : undefined,
+      foot: {
+        left: digits(todayAd),
+        right: t(up ? "now_hero.sunset_in" : "now_hero.sunrise_in", { time: spanText(toNext * 60_000, t, digits) }),
+      },
+      facts: [{ label: t("now_hero.day_length"), value: spanText(len * 60_000, t, digits) }],
+      next: tomorrow
+        ? {
+            label: t("now_hero.tomorrow"),
+            title: `↑ ${digits(tomorrow.sunrise ?? "")}  ↓ ${digits(tomorrow.sunset ?? "")}`,
+            detail:
+              diff == null
+                ? undefined
+                : diff === 0
+                  ? t("now_hero.same_length")
+                  : t(diff > 0 ? "now_hero.longer" : "now_hero.shorter", { time: spanText(Math.abs(diff) * 60_000, t, digits) }),
+          }
+        : undefined,
+    };
+  }, [data, nowMs, location.params.timezone, lang, t, digits]);
 
   return {
     copy: {
@@ -100,5 +156,6 @@ export function useSunTimesPage({ year, era, location }: { year: number; era: Er
     matrix: view.matrix,
     months: view.months,
     defaultMonth: view.layout.defaultMonth,
+    hero,
   };
 }

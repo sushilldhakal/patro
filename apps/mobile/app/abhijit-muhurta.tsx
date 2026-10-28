@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
@@ -31,7 +32,6 @@ export default function AbhijitMuhurtaScreen() {
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
-  const today = page.today;
 
   useEffect(() => {
     applyMonthLimits(page.data?.limits);
@@ -68,44 +68,8 @@ export default function AbhijitMuhurtaScreen() {
         onPrev={() => stepMonth(-1)}
         onNext={() => stepMonth(1)}
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
-      {today ? (
-        <View className={cn(ac.hero, "mt-6 gap-4 bg-secondary/10")}>
-          <View>
-            <Text className={ac.heroEyebrow} style={nepaliTextStyle()}>
-              {page.copy.todayHero}
-            </Text>
-            <Text className={ac.heroDate} style={nepaliTextStyle()}>
-              {today.day} · {today.weekday} · <Text className={ac.heroDateAd}>{today.dateAd}</Text>
-            </Text>
-            <Text className={cn(ac.heroRange, "text-2xl sm:text-3xl")} style={nepaliTextStyle()}>
-              {today.range}
-            </Text>
-            <Text className={ac.heroNoon} style={nepaliTextStyle()}>
-              {page.copy.noon}: <Text className={ac.heroNoonValue} style={nepaliTextStyle()}>{today.noon}</Text>
-            </Text>
-          </View>
-          <View className={ac.sunPanel}>
-            <View className="flex-row flex-wrap items-center gap-x-3 gap-y-2">
-              <View className="flex-row items-center gap-2">
-                <SunriseSunsetIcon variant="rise" size={16} color={colors.primary} />
-                <Text className="font-num text-sm" style={nepaliTextStyle()}>
-                  {today.sunrise}
-                </Text>
-              </View>
-              <View className="flex-row items-center gap-2">
-                <SunriseSunsetIcon variant="set" size={16} color={colors.secondary} />
-                <Text className="font-num text-sm" style={nepaliTextStyle()}>
-                  {today.sunset}
-                </Text>
-              </View>
-            </View>
-            <Text className={ac.sunDate} style={nepaliTextStyle()}>
-              {today.dateAd}
-            </Text>
-          </View>
-        </View>
-      ) : null}
 
       <View className={cn(ac.noteBox, ac.noteRow, "mt-6")}>
         <Ionicons name="sparkles-outline" size={16} color={colors.secondary} style={{ marginTop: space.hair }} />

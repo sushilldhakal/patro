@@ -1,3 +1,4 @@
+import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { ArrowLeft, CalendarPlus } from "lucide-react";
 import { useAdhikMaasPage, type AdhikMaasView } from "@vedic-patro/features/adhik-maas";
@@ -43,6 +44,7 @@ export function AdhikMaas() {
         onLocationChange={setLocation}
         className=""
       />
+      {page.hero ? <NowHero hero={page.hero} /> : null}
 
       <p className={cn(patroNoteBox, pc.introText)}>{page.copy.intro}</p>
 
