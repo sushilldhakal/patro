@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
+import { crossTabBackListeners } from "@/lib/cross-tab-back";
 
 /** Shell sidebar is provided by `PanchangaTabsShell` in `(tabs)/_layout.tsx`. */
 export default function PanchangaLayout() {
@@ -8,6 +9,7 @@ export default function PanchangaLayout() {
   const fade = useRailPageAnimation();
   return (
     <Stack
+      screenListeners={crossTabBackListeners("/panchanga")}
       screenOptions={{
         headerShown: false,
         // Opaque: a transparent screen lets the page being left show through

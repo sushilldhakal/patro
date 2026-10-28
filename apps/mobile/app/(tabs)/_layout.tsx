@@ -105,7 +105,9 @@ export default function TabsLayout() {
       }}
     >
       {TAB_SCREENS.map((name) => (
-        <Tabs.Screen key={name} name={name} />
+        // Leaving the panchanga tab drops the pages opened in it, so coming back
+        // through a link never lands on top of an old one.
+        <Tabs.Screen key={name} name={name} options={name === "panchanga" ? { popToTopOnBlur: true } : undefined} />
       ))}
     </Tabs>
   );

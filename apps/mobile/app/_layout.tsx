@@ -1,3 +1,4 @@
+import { useTrackPathname } from "@/lib/cross-tab-back";
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
 import { Stack, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
@@ -203,6 +204,7 @@ const WEB_NOTO_FONTS = {
 };
 
 function RootLayout() {
+  useTrackPathname();
   usePreviewAutoUpdate();
   const navigationRef = useNavigationContainerRef();
   useEffect(() => {
