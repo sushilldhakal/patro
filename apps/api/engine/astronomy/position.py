@@ -25,6 +25,18 @@ from engine.astronomy.motion import is_retrograde, motion_label, motion_label_ne
 from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE, rashi_index
 
 
+def stable_round(value: float, places: int = 6) -> float:
+    """Round to ``places`` decimals the same way on every machine.
+
+    The ephemeris returns the last bits of a double differently on macOS and Linux (different libm),
+    which is harmless except right at a rounding edge: Rahu's speed, about -0.0529925°/day, came out
+    -0.052992 on a Mac and -0.052993 in CI. Rounding first to three more places drops that noise, so
+    the final rounding sees the same number everywhere; it only changes a value within half a
+    billionth of an edge.
+    """
+    return round(round(value, places + 3), places)
+
+
 def dms_absolute(longitude: float) -> str:
     """``DDD°MM'SS"`` of a longitude in [0, 360)."""
     d = int(longitude)
@@ -130,8 +142,8 @@ class BodyPosition:
         """
         return BodyPosition(
             body=body,
-            longitude=round((self.longitude + 180.0) % 360, 6),
-            speed=round(-self.speed, 6),
+            longitude=stable_round((self.longitude + 180.0) % 360),
+            speed=stable_round(-self.speed),
         )
 
     def with_coordinates(self, coordinates: CelestialCoordinates) -> BodyPosition:

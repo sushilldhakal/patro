@@ -420,8 +420,9 @@ class AstronomyEngine:
         if body is None:
             raise EphemerisError(f"Unknown planet: {planet!r}")
         lon, speed = self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-        return _position().BodyPosition(
-            body=planet, longitude=round(lon, 6), speed=round(speed, 6)
+        position = _position()
+        return position.BodyPosition(
+            body=planet, longitude=position.stable_round(lon), speed=position.stable_round(speed)
         )
 
     def all_planet_positions(

@@ -19,7 +19,7 @@ from typing import Any
 
 from engine.astronomy.engine import PLANET_KEYS, SIDM_LAHIRI, default_engine
 from engine.astronomy.motion import is_retrograde, motion_label, motion_label_ne
-from engine.astronomy.position import BodyPosition
+from engine.astronomy.position import BodyPosition, stable_round
 
 # Sun through Saturn, plus both nodes. Ketu is derived (Rahu + 180°), so it is
 # not in the engine's PLANET_KEYS but is a graha everywhere above this layer.
@@ -117,7 +117,7 @@ class PlanetService:
         longitude = self.longitude(jd, graha, sidereal=sidereal, ayanamsa=ayanamsa)
         speed = self.speed(jd, graha, sidereal=sidereal, ayanamsa=ayanamsa)
         return BodyPosition(
-            body=graha, longitude=round(longitude, 6), speed=round(speed, 6)
+            body=graha, longitude=stable_round(longitude), speed=stable_round(speed)
         )
 
     def position_with_extras(
