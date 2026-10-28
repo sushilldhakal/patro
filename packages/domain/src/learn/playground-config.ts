@@ -310,8 +310,15 @@ export const PLAYGROUND_BY_SLUG: Record<string, PlaygroundConfig> = {
   "ritu-drift": { mode: "tilt" },
 };
 
+/**
+ * Topics whose page shows its playground for now. Each topic is to get an animation of its own,
+ * so the shared one stays only where it was made for; the configs above are kept for when each
+ * topic's own animation is built.
+ */
+export const PLAYGROUND_SHOWN: ReadonlySet<string> = new Set(["earth-rotation-day"]);
+
 export function playgroundFor(slug: string): PlaygroundConfig | undefined {
-  return PLAYGROUND_BY_SLUG[slug];
+  return PLAYGROUND_SHOWN.has(slug) ? PLAYGROUND_BY_SLUG[slug] : undefined;
 }
 
 /** The config resolved into the full state the playground opens with. */
