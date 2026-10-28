@@ -37,6 +37,7 @@ export const FEATURE_ICON = {
   "panchak-patro": "calendar-x",
   "adhik-maas": "calendar-plus",
   ritu: "leaf",
+  "brahma-mana": "hourglass",
   reminders: "bell",
   // Jyotish
   avakahada: "grid-3x3",

@@ -9,6 +9,7 @@ export const PANCHANGA_SHELL_PATHS: readonly string[] = [
   "/converter",
   "/holidays",
   "/ritu",
+  "/brahma-mana",
   "/kundali",
   "/kundali/$profileId",
   "/jyotish/kundali-milan",

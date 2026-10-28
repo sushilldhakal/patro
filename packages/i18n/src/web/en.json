@@ -138,6 +138,11 @@
         "description": "Annual Panchak windows, prohibited acts, and Panchak types per Vedic jyotish.",
         "keywords": "Panchak, Panchak patro, Panchaka rahita, moment"
       },
+      "brahma_mana": {
+        "title": "Brahma Māna — From Brahmā's Lifespan to the Four Yugas | Vedic Patro",
+        "description": "The complete Brahma Māna hierarchy from the Surya Siddhanta: Parārdhas, Brahma years, Kalpas, Manvantaras, Mahāyugas and the four Yugas in the ratio 4 : 3 : 2 : 1, in solar years.",
+        "keywords": "Brahma Mana, Kalpa, Manvantara, Mahayuga, Chaturyuga, Satya Yuga, Treta Yuga, Dvapara Yuga, Kali Yuga, Parardha, Surya Siddhanta"
+      },
       "adhik_maas": {
         "title": "Adhik Maas (Mala Maas) | Vedic Patro",
         "description": "Which month is adhik (mala / purushottam) maas in each year, its dates, and how and why it happens.",
@@ -3319,6 +3324,9 @@
       "ritu": {
         "label": "Seasons"
       },
+      "brahma-mana": {
+        "label": "Brahma Māna"
+      },
       "avakahada": {
         "label": "Avakahada chakra"
       },
@@ -3364,6 +3372,109 @@
       }
     },
     "sait_label": "{{category}} moment"
+  },
+  "brahma_mana": {
+    "title": "Brahma Māna",
+    "subtitle": "From Brahmā's whole lifespan down to the four Yugas — the Surya Siddhanta's complete ladder of time",
+    "tree_title": "The complete hierarchy",
+    "tree_hint": "Tap a level to open or close it. The gold line traces the path to where we are now.",
+    "expand_all": "Expand all",
+    "collapse_all": "Collapse all",
+    "times": "× {{n}}",
+    "solar_years": "{{years}} solar years",
+    "now": "Now",
+    "padas": "{{n}} pādas",
+    "pada_one": "1 pāda",
+    "yuga_split": "Dawn {{dawn}} · Yuga {{core}} · Dusk {{dusk}}",
+    "node": {
+      "lifespan": {
+        "name": "Brahmā's full lifespan",
+        "holds": "100 Brahma years = 2 Parārdhas × 50 years"
+      },
+      "parardha": {
+        "name": "Parārdha",
+        "holds": "50 Brahma years — half of Brahmā's life"
+      },
+      "year": {
+        "name": "Brahma year",
+        "holds": "12 Brahma months = 360 day-nights"
+      },
+      "month": {
+        "name": "Brahma month",
+        "holds": "30 day-nights (not one Kalpa)"
+      },
+      "ahoratra": {
+        "name": "Brahmā's day and night",
+        "holds": "One day (a Kalpa) and a night as long"
+      },
+      "day": {
+        "name": "Brahma day — Kalpa",
+        "holds": "14 Manvantaras + 15 sandhis = 1,000 Mahāyugas"
+      },
+      "night": {
+        "name": "Brahma night — pralaya",
+        "holds": "A rest as long as the Kalpa"
+      },
+      "manvantara": {
+        "name": "Manvantara",
+        "holds": "71 Mahāyugas, not counting its junction"
+      },
+      "kalpa_sandhi": {
+        "name": "Kalpa junctions (sandhi)",
+        "holds": "Each as long as a Kṛta Yuga — the 15 add 6 Mahāyugas"
+      },
+      "mahayuga": {
+        "name": "Mahāyuga (Chaturyuga)",
+        "holds": "4 Yugas in the ratio 4 : 3 : 2 : 1"
+      },
+      "krta": {
+        "name": "Kṛta / Satya Yuga"
+      },
+      "treta": {
+        "name": "Tretā Yuga"
+      },
+      "dvapara": {
+        "name": "Dvāpara Yuga"
+      },
+      "kali": {
+        "name": "Kali Yuga"
+      }
+    },
+    "now_title": "Where we are now",
+    "now_year": "The first day of year {{year}} of Brahmā's life — the second Parārdha has just begun",
+    "now_kalpa": "Śvetavarāha Kalpa",
+    "now_manvantara": "Manvantara {{n}} — Vaivasvata",
+    "now_mahayuga": "Mahāyuga {{n}}",
+    "now_kali": "{{years}} years of the Kali Yuga gone (since 3102 BCE)",
+    "now_kalpa_elapsed": "Years gone in this Kalpa: {{years}}",
+    "pada_title": "The Yugas by pāda",
+    "pada_caption": "Surya Siddhanta 1.17: one tenth of the Mahāyuga ({{pada}} years, one pāda) times 4, 3, 2 and 1.",
+    "col_yuga": "Yuga",
+    "col_padas": "Pādas",
+    "col_calc": "Calculation",
+    "col_years": "Solar years",
+    "col_unit": "Unit",
+    "col_roughly": "Roughly",
+    "pada_note": "Each figure includes the yuga's dawn and dusk, a twelfth of it each.",
+    "years_title": "In solar years",
+    "notes_title": "Worth knowing",
+    "note_month": "A Brahma month is not one Kalpa: it holds 30 of Brahmā's day-nights.",
+    "note_sandhi": "14 Manvantaras × 71 make only {{core}} Mahāyugas; the 15 sandhis ({{sandhi}} years each) make up the other {{rest}}, for {{total}} in all.",
+    "note_night": "A Kalpa is Brahmā's daytime only; his night is as long, so one day-night is {{years}} solar years.",
+    "note_year": "The Brahma year follows the conventional count of 360 day-nights.",
+    "source": "Source: Surya Siddhanta, chapter 1, verses 15–24",
+    "scale": {
+      "thousand": "thousand",
+      "lakh": "lakh",
+      "crore": "crore",
+      "arab": "arab",
+      "kharab": "kharab",
+      "nil": "nil",
+      "million": "million",
+      "billion": "billion",
+      "trillion": "trillion",
+      "quadrillion": "quadrillion"
+    }
   },
   "gochar": {
     "page_title": "Planetary Transits (Gochar)",

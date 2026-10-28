@@ -54,6 +54,7 @@ export const ROUTES: RouteMeta[] = [
   { id: "converter", path: "/converter", seoKey: "seo.routes.converter", sitemap: { changefreq: "monthly", priority: "0.8" }, prerender: true },
   { id: "holidays", path: "/holidays", seoKey: "seo.routes.holidays", sitemap: { changefreq: "weekly", priority: "0.8" }, prerender: true },
   { id: "ritu", path: "/ritu", seoKey: "seo.routes.ritu", sitemap: { changefreq: "weekly", priority: "0.7" }, prerender: true },
+  { id: "brahma-mana", path: "/brahma-mana", seoKey: "seo.routes.brahma_mana", sitemap: { changefreq: "monthly", priority: "0.6" }, prerender: true },
   { id: "kundali", path: "/kundali", seoKey: "seo.routes.kundali", sitemap: { changefreq: "monthly", priority: "0.7" }, prerender: true },
   { id: "kundali-detail", path: "/kundali/$profileId", noindex: true },
   { id: "kundali-milan", path: "/jyotish/kundali-milan", seoKey: "seo.routes.kundali_milan", sitemap: { changefreq: "monthly", priority: "0.7" }, prerender: true },

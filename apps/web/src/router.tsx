@@ -42,6 +42,7 @@ const ShantiVidhi = lazyRoute(() => import("./pages/ShantiVidhi"), "ShantiVidhi"
 const Converter = lazyRoute(() => import("./pages/Converter"), "Converter");
 const Holidays = lazyRoute(() => import("./pages/Holidays"), "Holidays");
 const Ritu = lazyRoute(() => import("./pages/Ritu"), "Ritu");
+const BrahmaMana = lazyRoute(() => import("./pages/BrahmaMana"), "BrahmaMana");
 const Kundali = lazyRoute(() => import("./pages/Kundali"), "Kundali");
 const KundaliDetail = lazyRoute(() => import("./pages/KundaliDetail"), "KundaliDetail");
 const KundaliMilan = lazyRoute(() => import("./pages/KundaliMilan"), "KundaliMilan");
@@ -181,6 +182,11 @@ const rituRoute = createRoute({
   path: "/ritu",
   validateSearch: validateLocationSearch,
   component: Ritu,
+});
+const brahmaManaRoute = createRoute({
+  getParentRoute: () => panchangaShellRoute,
+  path: "/brahma-mana",
+  component: BrahmaMana,
 });
 const kundaliRoute = createRoute({ getParentRoute: () => panchangaShellRoute, path: "/kundali", component: Kundali });
 const kundaliDetailRoute = createRoute({ getParentRoute: () => panchangaShellRoute, path: "/kundali/$profileId", component: KundaliDetail });
@@ -336,6 +342,7 @@ const panchangaShellChildRoutes = [
   converterRoute,
   holidaysRoute,
   rituRoute,
+  brahmaManaRoute,
   kundaliRoute,
   kundaliDetailRoute,
   kundaliMilanRoute,

@@ -20,6 +20,7 @@ export const SITE_LINK_PATH: Record<string, string> = {
   dainikkranti: "/dainikkranti",
   "panchak-patro": "/panchak-patro",
   ritu: "/ritu",
+  "brahma-mana": "/brahma-mana",
   "avakahada-chakra": "/panchanga/avakahada-chakra",
   "abhijit-muhurta": "/abhijit-muhurta",
   kundali: "/kundali",
