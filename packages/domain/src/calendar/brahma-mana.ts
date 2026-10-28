@@ -180,6 +180,24 @@ export function timeChildren(n: TimeNode): TimeNode[] {
   }
 }
 
+/**
+ * The node at `key` and every node above it, root first: ["L", "L/p2", …, key]. Rebuilds only the
+ * one branch, so it is cheap at any depth. An unknown key stops at the deepest node that exists.
+ */
+export function timeAncestry(key: string): TimeNode[] {
+  const segs = key.split("/");
+  const path: TimeNode[] = [TIME_ROOT];
+  let at = TIME_ROOT;
+  for (let i = 1; i < segs.length; i++) {
+    const want = segs.slice(0, i + 1).join("/");
+    const next = timeChildren(at).find((c) => c.key === want);
+    if (!next) break;
+    path.push(next);
+    at = next;
+  }
+  return path;
+}
+
 /** Keys of every node on the path to now — what the page opens with. */
 export function nowPathKeys(): string[] {
   const keys: string[] = [];

@@ -5470,6 +5470,13 @@ export const strings = {
   "brahma_mana.manvantara_name.13": { ne: "देवसावर्णि", en: "deva sāvarṇi" },
   "brahma_mana.manvantara_name.14": { ne: "इन्द्रसावर्णि", en: "indra sāvarṇi" },
   "brahma_mana.now": { ne: "अहिले", en: "Now" },
+  "brahma_mana.ladder_hint": {
+    ne: "तलको कुनै भाग थिचेर भित्र जानुहोस्; माथिको बाटो थिचेर फर्कनुहोस्। रङ लागेको बाटो हामी अहिले भएको ठाउँ हो।",
+    en: "Tap a part below to step inside it; tap the path above to step back out. The coloured path is where we are now.",
+  },
+  "brahma_mana.ladder_parts": { ne: "भित्र {{n}} भाग", en: "{{n}} parts inside" },
+  "brahma_mana.ladder_up": { ne: "एक तह माथि", en: "One level up" },
+  "brahma_mana.ladder_end": { ne: "यो सबैभन्दा सानो तह हो।", en: "This is the smallest level." },
   "brahma_mana.node.lifespan.name": { ne: "ब्रह्माको पूर्ण आयु", en: "Brahmā's full lifespan" },
   "brahma_mana.node.parardha.name": { ne: "परार्ध", en: "Parārdha" },
   "brahma_mana.node.year.name": { ne: "ब्रह्म वर्ष", en: "Brahma year" },

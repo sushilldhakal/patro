@@ -3453,6 +3453,10 @@
       "14": "indra sāvarṇi"
     },
     "now": "Now",
+    "ladder_hint": "Tap a part below to step inside it; tap the path above to step back out. The coloured path is where we are now.",
+    "ladder_parts": "{{n}} parts inside",
+    "ladder_up": "One level up",
+    "ladder_end": "This is the smallest level.",
     "node": {
       "lifespan": {
         "name": "Brahmā's full lifespan"

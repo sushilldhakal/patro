@@ -14,6 +14,7 @@ import {
   kaliYearsElapsed,
   kalpaYearsElapsed,
   nowPathKeys,
+  timeAncestry,
   timeChildren,
   type TimeNode,
 } from "../src/calendar/brahma-mana";
@@ -66,6 +67,14 @@ test("along the path to now, every node's children fill it exactly", () => {
 
 test("the page opens on the path to now", () => {
   assert.deepEqual(nowPathKeys(), ["L", "L/p2", "L/p2/v1", "L/p2/v1/m1", "L/p2/v1/m1/k1", "L/p2/v1/m1/k1/n7", "L/p2/v1/m1/k1/n7/m", "L/p2/v1/m1/k1/n7/m/y28", "L/p2/v1/m1/k1/n7/m/y28/kali", "L/p2/v1/m1/k1/n7/m/y28/kali/core"]);
+});
+
+test("a key's ancestry rebuilds just its branch", () => {
+  const keys = nowPathKeys();
+  const deepest = keys[keys.length - 1]!;
+  assert.deepEqual(timeAncestry(deepest).map((n) => n.key), keys);
+  assert.ok(timeAncestry(deepest).every((n) => n.current));
+  assert.deepEqual(timeAncestry("L/p1/v3/zz").map((n) => n.key), ["L", "L/p1", "L/p1/v3"]);
 });
 
 test("where we are now", () => {

@@ -22,6 +22,7 @@ import {
   kalpaYearsElapsed,
   SOLAR_YEARS_PER_DIVYA,
   TIME_ROOT,
+  timeAncestry,
   timeChildren,
   type TimeKind,
   type TimeNode,
@@ -154,6 +155,70 @@ export function brahmaTreeRows(open: ReadonlySet<string>, text: Text): BrahmaTre
   };
   walk(TIME_ROOT, 0, true, [], false);
   return rows;
+}
+
+/** Stretches between the named ones — pralaya, sandhyā, jalaplāva: drawn quieter. */
+const PAUSE_KINDS: ReadonlySet<TimeKind> = new Set(["pralaya", "adi_sandhya", "jalaplava", "yuga_sandhya"]);
+
+export type LadderStep = {
+  key: string;
+  /** "Prājāpatya māna" etc. where a new measure begins. */
+  mana?: string;
+  name: string;
+  divya: string;
+  solar: string;
+  current: boolean;
+  hasChildren: boolean;
+  /** A pause between named stretches (pralaya, sandhyā, jalaplāva). */
+  pause: boolean;
+  /** Its share of the parent, 0–1, for the proportion bar. */
+  share: number;
+};
+
+export type BrahmaLadder = {
+  /** Root down to, but not including, the focus. */
+  trail: LadderStep[];
+  focus: LadderStep;
+  /** What the focus is made of, in order. Empty at a pāda or a pause. */
+  parts: LadderStep[];
+};
+
+function ladderStep(n: TimeNode, parentDivya: number, mana: string | undefined, text: Text): LadderStep {
+  const { t } = text;
+  return {
+    key: n.key,
+    mana,
+    name: instanceName(n, text),
+    divya: t("brahma_mana.divya", { n: groupedYears(n.divya, text) }),
+    solar: t("brahma_mana.rough_solar", { rough: roughYears(n.divya * SOLAR_YEARS_PER_DIVYA, text) }),
+    current: n.current,
+    hasChildren: n.hasChildren,
+    pause: PAUSE_KINDS.has(n.kind),
+    share: n.divya / parentDivya,
+  };
+}
+
+/** The māna a node's measure belongs to, on the trail: brāhma from the top, then prājāpatya, then divya. */
+function trailMana(n: TimeNode, text: Text): string | undefined {
+  if (n.kind === "lifespan") return text.t("brahma_mana.mana.brahma");
+  return manaLabel(n, true, text);
+}
+
+/**
+ * The phone view of the same tree: one level at a time. The path from Brahmā's life down to the
+ * focus, the focus itself, and the parts it is made of — no indentation, however deep.
+ */
+export function brahmaLadder(focusKey: string, text: Text): BrahmaLadder {
+  const path = timeAncestry(focusKey);
+  const steps = path.map((n, i) => ladderStep(n, i === 0 ? n.divya : path[i - 1]!.divya, trailMana(n, text), text));
+  const focusNode = path[path.length - 1]!;
+  const seen = new Set<TimeKind>();
+  const parts = timeChildren(focusNode).map((c) => {
+    const first = !seen.has(c.kind);
+    seen.add(c.kind);
+    return ladderStep(c, focusNode.divya, manaLabel(c, first, text), text);
+  });
+  return { trail: steps.slice(0, -1), focus: steps[steps.length - 1]!, parts };
 }
 
 export type PadaRow = { key: YugaId | "mahayuga"; name: string; padas: string; calc: string; years: string; total?: boolean };

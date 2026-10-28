@@ -6,7 +6,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { nowPathKeys } from "@vedic-patro/domain/calendar/brahma-mana";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { brahmaNotes, brahmaTreeRows, nowLines, padaRows, yearsRows } from "./model";
+import { brahmaLadder, brahmaNotes, brahmaTreeRows, nowLines, padaRows, yearsRows } from "./model";
 
 const LEARN_SLUGS = ["ghati-pala", "calendar-differences"];
 
@@ -27,6 +27,15 @@ export function useBrahmaManaPage() {
   }, []);
   const showNow = useCallback(() => setOpen(new Set(nowPathKeys())), []);
   const collapseAll = useCallback(() => setOpen(new Set(["L"])), []);
+
+  /** The phone view's level: it opens on the Mahāyuga we are in, its four Yugas below. */
+  const nowFocus = useMemo(() => {
+    const keys = nowPathKeys();
+    return keys[keys.length - 3]!;
+  }, []);
+  const [focusKey, setFocusKey] = useState(nowFocus);
+  const ladder = useMemo(() => brahmaLadder(focusKey, text), [focusKey, text]);
+  const parentKey = ladder.trail.length ? ladder.trail[ladder.trail.length - 1]!.key : null;
 
   const ceYear = new Date().getFullYear();
   const now = useMemo(() => nowLines(ceYear, text), [ceYear, text]);
@@ -49,6 +58,19 @@ export function useBrahmaManaPage() {
       collapseAll,
       collapseAllLabel: t("brahma_mana.collapse_all"),
       nowLabel: t("brahma_mana.now"),
+    },
+    ladder: {
+      ...ladder,
+      hint: t("brahma_mana.ladder_hint"),
+      partsLabel: t("brahma_mana.ladder_parts", { n: digits(ladder.parts.length) }),
+      endLabel: t("brahma_mana.ladder_end"),
+      nowLabel: t("brahma_mana.now"),
+      focusOn: setFocusKey,
+      up: parentKey ? () => setFocusKey(parentKey) : undefined,
+      upLabel: t("brahma_mana.ladder_up"),
+      toNow: () => setFocusKey(nowFocus),
+      toNowLabel: t("brahma_mana.show_now"),
+      atNow: focusKey === nowFocus,
     },
     now: { title: t("brahma_mana.now_title"), lines: now },
     pada: {
