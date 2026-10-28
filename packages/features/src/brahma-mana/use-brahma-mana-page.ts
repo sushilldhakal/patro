@@ -1,36 +1,32 @@
 /**
  * The Brahma Māna page, shared by the website's `pages/BrahmaMana.tsx` and the app's
- * `app/brahma-mana.tsx`: the tree rows with which branches are open, the two tables, the path to
- * now and the notes. Opens fully, so the whole ladder reads top to bottom at first sight.
+ * `app/brahma-mana.tsx`: the instance tree (parārdha #2 → … → Kali Yuga) with which nodes are
+ * open, the two tables, the path to now and the notes. Opens on the path to now.
  */
 import { useCallback, useMemo, useState } from "react";
-import type { BrahmaNodeId } from "@vedic-patro/domain/calendar/brahma-mana";
+import { nowPathKeys } from "@vedic-patro/domain/calendar/brahma-mana";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { BRAHMA_BRANCH_IDS, brahmaNotes, brahmaTreeRows, nowLines, padaRows, yearsRows, type BrahmaTreeRow } from "./model";
+import { brahmaNotes, brahmaTreeRows, nowLines, padaRows, yearsRows } from "./model";
 
 const LEARN_SLUGS = ["ghati-pala", "calendar-differences"];
 
 export function useBrahmaManaPage() {
   const { t, lang, digits } = useLocale();
   const text = useMemo(() => ({ t, lang, digits }), [t, lang, digits]);
-  const [open, setOpen] = useState<ReadonlySet<BrahmaNodeId>>(() => new Set(BRAHMA_BRANCH_IDS));
+  /** Open node keys. The page opens on the path to now; everything else is built only when opened. */
+  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set(nowPathKeys()));
+  const rows = useMemo(() => brahmaTreeRows(open, text), [open, text]);
 
-  const allRows = useMemo(() => brahmaTreeRows(text), [text]);
-  /** Rows under a closed branch are left out. */
-  const rows = useMemo(() => allRows.filter((r) => r.ancestors.every((a) => open.has(a))), [allRows, open]);
-
-  const toggle = useCallback((id: BrahmaNodeId) => {
+  const toggle = useCallback((key: string) => {
     setOpen((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }, []);
-  const allOpen = open.size === BRAHMA_BRANCH_IDS.length;
-  const toggleAll = useCallback(() => {
-    setOpen((prev) => (prev.size === BRAHMA_BRANCH_IDS.length ? new Set<BrahmaNodeId>([BRAHMA_BRANCH_IDS[0]!]) : new Set(BRAHMA_BRANCH_IDS)));
-  }, []);
+  const showNow = useCallback(() => setOpen(new Set(nowPathKeys())), []);
+  const collapseAll = useCallback(() => setOpen(new Set(["L"])), []);
 
   const ceYear = new Date().getFullYear();
   const now = useMemo(() => nowLines(ceYear, text), [ceYear, text]);
@@ -44,12 +40,14 @@ export function useBrahmaManaPage() {
     tree: {
       title: t("brahma_mana.tree_title"),
       hint: t("brahma_mana.tree_hint"),
+      unit: t("brahma_mana.divya_unit"),
+      rootMana: t("brahma_mana.mana.brahma"),
       rows,
-      isOpen: (row: BrahmaTreeRow) => open.has(row.id),
       toggle,
-      allOpen,
-      toggleAll,
-      toggleAllLabel: allOpen ? t("brahma_mana.collapse_all") : t("brahma_mana.expand_all"),
+      showNow,
+      showNowLabel: t("brahma_mana.show_now"),
+      collapseAll,
+      collapseAllLabel: t("brahma_mana.collapse_all"),
       nowLabel: t("brahma_mana.now"),
     },
     now: { title: t("brahma_mana.now_title"), lines: now },
@@ -62,7 +60,7 @@ export function useBrahmaManaPage() {
     },
     years: {
       title: t("brahma_mana.years_title"),
-      cols: [t("brahma_mana.col_unit"), t("brahma_mana.col_years"), t("brahma_mana.col_roughly")] as const,
+      cols: [t("brahma_mana.col_unit"), t("brahma_mana.col_divya"), t("brahma_mana.col_years"), t("brahma_mana.col_roughly")] as const,
       rows: years,
     },
     notes: { title: t("brahma_mana.notes_title"), items: notes },

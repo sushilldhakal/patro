@@ -6,7 +6,6 @@
 import {
   AHORATRA_YEARS,
   BRAHMA_LIFESPAN_YEARS,
-  BRAHMA_TREE,
   BRAHMA_YEAR_YEARS,
   KALPA_SANDHI_YEARS,
   KALPA_YEARS,
@@ -21,8 +20,11 @@ import {
   YUGAS,
   kaliYearsElapsed,
   kalpaYearsElapsed,
-  type BrahmaNode,
-  type BrahmaNodeId,
+  SOLAR_YEARS_PER_DIVYA,
+  TIME_ROOT,
+  timeChildren,
+  type TimeKind,
+  type TimeNode,
   type YugaId,
 } from "@vedic-patro/domain/calendar/brahma-mana";
 import type { TFunction } from "@vedic-patro/i18n/react";
@@ -75,84 +77,88 @@ export function roughYears(n: number, text: Text): string {
 }
 
 export type BrahmaTreeRow = {
-  id: BrahmaNodeId;
+  key: string;
+  kind: TimeKind;
   /** Depth in the tree: 0 is Brahmā's life. */
   depth: number;
-  /** Ids from the root down to this row's parent — a row shows while all of them are open. */
-  ancestors: BrahmaNodeId[];
   hasChildren: boolean;
-  /** Last child of its parent: its rail stops at its own dot. */
+  open: boolean;
+  /** Last child of its parent: its rail stops at its own elbow. */
   last: boolean;
   /** Per ancestor column except the nearest: whether that branch's rail runs on past this row. */
   rails: boolean[];
+  /** On the path to now. */
   current: boolean;
+  /** "Prājāpatya māna" above the first Manvantara of a Kalpa, "divya māna" above the first Mahāyuga. */
+  mana?: string;
   name: string;
-  /** What one of these holds ("12 Brahma months = 360 day-nights"), or the yuga's pādas. */
-  holds: string;
-  /** "× 14" — how many its parent holds; absent when one. */
-  count?: string;
-  years: string;
-  rough: string;
-  /** Yugas: dawn · yuga · dusk. */
-  split?: string;
+  /** "12,000,000 divya varṣa". */
+  divya: string;
+  /** "≈ 4.32 billion solar years" — the exact figure is in the tables. */
+  solar: string;
 };
 
-function nodeHolds(node: BrahmaNode, text: Text): string {
+/** Kalpas 1–7 carry their names (Śveta … Bṛhat); the rest of the month's 30 go by number. */
+const NAMED_KALPAS = 7;
+
+function instanceName(n: TimeNode, text: Text): string {
   const { t, digits } = text;
-  const yuga = YUGAS.find((y) => y.id === node.id);
-  if (yuga) return yuga.padas === 1 ? t("brahma_mana.pada_one") : t("brahma_mana.padas", { n: digits(yuga.padas) });
-  return t(`brahma_mana.node.${node.id}.holds`);
+  const num = n.index != null ? digits(n.index) : "";
+  switch (n.kind) {
+    case "kalpa":
+      return n.index != null && n.index <= NAMED_KALPAS
+        ? t("brahma_mana.inst.kalpa_named", { n: num, name: t(`brahma_mana.kalpa_name.${n.index}`) })
+        : t("brahma_mana.inst.kalpa", { n: num });
+    case "manvantara_full":
+      return t("brahma_mana.inst.manvantara_full", { n: num, name: t(`brahma_mana.manvantara_name.${n.index}`) });
+    case "yuga":
+      return t(`brahma_mana.node.${n.yuga}.name`);
+    default:
+      return t(`brahma_mana.inst.${n.kind}`, { n: num });
+  }
 }
 
-/** Every row of the tree in reading order; each app hides the ones under a closed node. */
-export function brahmaTreeRows(text: Text): BrahmaTreeRow[] {
-  const { t, digits } = text;
+function manaLabel(n: TimeNode, firstOfKind: boolean, text: Text): string | undefined {
+  if (!firstOfKind) return undefined;
+  if (n.kind === "manvantara_full") return text.t("brahma_mana.mana.prajapatya");
+  if (n.kind === "mahayuga") return text.t("brahma_mana.mana.divya");
+  return undefined;
+}
+
+/** The rows to draw: every node whose ancestors are all open, in reading order. */
+export function brahmaTreeRows(open: ReadonlySet<string>, text: Text): BrahmaTreeRow[] {
+  const { t } = text;
   const rows: BrahmaTreeRow[] = [];
-  const walk = (node: BrahmaNode, depth: number, ancestors: BrahmaNodeId[], last: boolean, lasts: boolean[]) => {
-    const yuga = YUGAS.find((y) => y.id === node.id);
+  const walk = (n: TimeNode, depth: number, last: boolean, lasts: boolean[], firstOfKind: boolean) => {
+    const isOpen = n.hasChildren && open.has(n.key);
+    const solarYears = n.divya * SOLAR_YEARS_PER_DIVYA;
     rows.push({
-      id: node.id,
+      key: n.key,
+      kind: n.kind,
       depth,
-      ancestors,
-      hasChildren: Boolean(node.children?.length),
+      hasChildren: n.hasChildren,
+      open: isOpen,
       last,
       rails: lasts.slice(0, -1).map((l) => !l),
-      current: Boolean(node.current),
-      name: t(`brahma_mana.node.${node.id}.name`),
-      holds: nodeHolds(node, text),
-      count: node.count > 1 ? t("brahma_mana.times", { n: digits(node.count) }) : undefined,
-      years: t("brahma_mana.solar_years", { years: groupedYears(node.years, text) }),
-      rough: roughYears(node.years, text),
-      split: yuga
-        ? t("brahma_mana.yuga_split", {
-            dawn: groupedYears(yuga.sandhya, text),
-            core: groupedYears(yuga.core, text),
-            dusk: groupedYears(yuga.sandhya, text),
-          })
-        : undefined,
+      current: n.current,
+      mana: manaLabel(n, firstOfKind, text),
+      name: instanceName(n, text),
+      divya: t("brahma_mana.divya", { n: groupedYears(n.divya, text) }),
+      solar: t("brahma_mana.rough_solar", { rough: roughYears(solarYears, text) }),
     });
-    const kids = node.children ?? [];
-    kids.forEach((child, i) => {
+    if (!isOpen) return;
+    const kids = timeChildren(n);
+    const seen = new Set<TimeKind>();
+    kids.forEach((c, i) => {
       const childLast = i === kids.length - 1;
-      walk(child, depth + 1, [...ancestors, node.id], childLast, depth === 0 ? [childLast] : [...lasts, childLast]);
+      const first = !seen.has(c.kind);
+      seen.add(c.kind);
+      walk(c, depth + 1, childLast, depth === 0 ? [childLast] : [...lasts, childLast], first);
     });
   };
-  walk(BRAHMA_TREE, 0, [], true, []);
+  walk(TIME_ROOT, 0, true, [], false);
   return rows;
 }
-
-/** Ids of every node that has children — what "expand all" opens. */
-export const BRAHMA_BRANCH_IDS: BrahmaNodeId[] = (() => {
-  const ids: BrahmaNodeId[] = [];
-  const walk = (n: BrahmaNode) => {
-    if (n.children?.length) {
-      ids.push(n.id);
-      n.children.forEach(walk);
-    }
-  };
-  walk(BRAHMA_TREE);
-  return ids;
-})();
 
 export type PadaRow = { key: YugaId | "mahayuga"; name: string; padas: string; calc: string; years: string; total?: boolean };
 
@@ -177,13 +183,14 @@ export function padaRows(text: Text): PadaRow[] {
   return rows;
 }
 
-export type YearsRow = { key: string; unit: string; years: string; rough: string };
+export type YearsRow = { key: string; unit: string; divya: string; years: string; rough: string };
 
 export function yearsRows(text: Text): YearsRow[] {
   const { t } = text;
   const row = (key: string, unit: string, years: number): YearsRow => ({
     key,
     unit,
+    divya: groupedYears(years / SOLAR_YEARS_PER_DIVYA, text),
     years: groupedYears(years, text),
     rough: roughYears(years, text),
   });

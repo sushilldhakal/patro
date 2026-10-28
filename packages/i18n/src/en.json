@@ -3377,55 +3377,90 @@
     "title": "Brahma Māna",
     "subtitle": "From Brahmā's whole lifespan down to the four Yugas — the Surya Siddhanta's complete ladder of time",
     "tree_title": "The complete hierarchy",
-    "tree_hint": "Tap a level to open or close it. The gold line traces the path to where we are now.",
-    "expand_all": "Expand all",
+    "tree_hint": "Tap any level to open or close it. The coloured path leads to where we are now.",
+    "show_now": "Path to now",
     "collapse_all": "Collapse all",
-    "times": "× {{n}}",
-    "solar_years": "{{years}} solar years",
+    "divya_unit": "1 divya varṣa = 360 solar years",
+    "divya": "{{n}} divya varṣa",
+    "rough_solar": "≈ {{rough}} solar years",
+    "mana": {
+      "brahma": "brāhma māna",
+      "prajapatya": "prājāpatya māna",
+      "divya": "divya māna"
+    },
+    "inst": {
+      "lifespan": "Lifespan of Brahmā",
+      "parardha": "parārdha #{{n}}",
+      "varsha": "brāhma varṣa #{{n}}",
+      "masa": "brāhma māsa #{{n}}",
+      "kalpa_named": "{{n}}. {{name}} kalpa",
+      "kalpa": "kalpa #{{n}}",
+      "pralaya": "pralaya",
+      "adi_sandhya": "ādi sandhyā",
+      "manvantara_full": "{{n}}. {{name}} manvantara",
+      "manvantara": "manvantara",
+      "jalaplava": "jalaplāva",
+      "mahayuga": "mahāyuga #{{n}}",
+      "yuga_sandhya": "yuga sandhyā",
+      "yuga_core": "yuga",
+      "pada": "pāda #{{n}}"
+    },
+    "kalpa_name": {
+      "1": "śveta",
+      "2": "nīlalohita",
+      "3": "vāmadeva",
+      "4": "rāthantara",
+      "5": "raurava",
+      "6": "prāṇa",
+      "7": "bṛhat"
+    },
+    "manvantara_name": {
+      "1": "svāyambhuva",
+      "2": "svārociṣa",
+      "3": "uttama",
+      "4": "tāmasa",
+      "5": "raivata",
+      "6": "cākṣuṣa",
+      "7": "vaivasvata",
+      "8": "sāvarṇi",
+      "9": "dakṣa sāvarṇi",
+      "10": "brahma sāvarṇi",
+      "11": "dharma sāvarṇi",
+      "12": "rudra sāvarṇi",
+      "13": "deva sāvarṇi",
+      "14": "indra sāvarṇi"
+    },
     "now": "Now",
-    "padas": "{{n}} pādas",
-    "pada_one": "1 pāda",
-    "yuga_split": "Dawn {{dawn}} · Yuga {{core}} · Dusk {{dusk}}",
     "node": {
       "lifespan": {
-        "name": "Brahmā's full lifespan",
-        "holds": "100 Brahma years = 2 Parārdhas × 50 years"
+        "name": "Brahmā's full lifespan"
       },
       "parardha": {
-        "name": "Parārdha",
-        "holds": "50 Brahma years — half of Brahmā's life"
+        "name": "Parārdha"
       },
       "year": {
-        "name": "Brahma year",
-        "holds": "12 Brahma months = 360 day-nights"
+        "name": "Brahma year"
       },
       "month": {
-        "name": "Brahma month",
-        "holds": "30 day-nights (not one Kalpa)"
+        "name": "Brahma month"
       },
       "ahoratra": {
-        "name": "Brahmā's day and night",
-        "holds": "One day (a Kalpa) and a night as long"
+        "name": "Brahmā's day and night"
       },
       "day": {
-        "name": "Brahma day — Kalpa",
-        "holds": "14 Manvantaras + 15 sandhis = 1,000 Mahāyugas"
+        "name": "Brahma day — Kalpa"
       },
       "night": {
-        "name": "Brahma night — pralaya",
-        "holds": "A rest as long as the Kalpa"
+        "name": "Brahma night — pralaya"
       },
       "manvantara": {
-        "name": "Manvantara",
-        "holds": "71 Mahāyugas, not counting its junction"
+        "name": "Manvantara"
       },
       "kalpa_sandhi": {
-        "name": "Kalpa junctions (sandhi)",
-        "holds": "Each as long as a Kṛta Yuga — the 15 add 6 Mahāyugas"
+        "name": "Kalpa junctions (sandhi)"
       },
       "mahayuga": {
-        "name": "Mahāyuga (Chaturyuga)",
-        "holds": "4 Yugas in the ratio 4 : 3 : 2 : 1"
+        "name": "Mahāyuga (Chaturyuga)"
       },
       "krta": {
         "name": "Kṛta / Satya Yuga"
@@ -3454,6 +3489,7 @@
     "col_calc": "Calculation",
     "col_years": "Solar years",
     "col_unit": "Unit",
+    "col_divya": "Divya varṣa",
     "col_roughly": "Roughly",
     "pada_note": "Each figure includes the yuga's dawn and dusk, a twelfth of it each.",
     "years_title": "In solar years",

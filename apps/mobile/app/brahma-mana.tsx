@@ -1,5 +1,5 @@
 import { Pressable, View } from "react-native";
-import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Animated, { FadeIn, LayoutAnimationConfig } from "react-native-reanimated";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
@@ -14,104 +14,81 @@ import { haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useBrahmaManaPage, type BrahmaManaPage, type BrahmaTreeRow } from "@vedic-patro/features/brahma-mana";
 
-/** Indent per level, in points. Nine levels deep still leaves a phone most of its width. */
+/** Indent per level, in points: eleven levels deep still leaves the names most of a phone's width. */
 const STEP = 14;
-/** Rows settle into place on open and close; Reduce Motion drops it. */
-const ROW_LAYOUT = LinearTransition.duration(200);
 
-/** One level of the ladder: the rails of its ancestors, its own elbow, then the card. */
+/** One stretch of time: rails of the levels above, a triangle if it opens, name, [divya varṣa]. */
 function TreeRow({ row, tree }: { row: BrahmaTreeRow; tree: BrahmaManaPage["tree"] }) {
   const { colors } = useTheme();
   const reduced = useReducedMotionPref();
-  const open = tree.isOpen(row);
-  const here = row.current && !row.hasChildren;
-  const rail = row.current ? colors.secondary : colors.border;
+  const line = row.current ? colors.secondary : colors.border;
+  const rails = row.rails.map((on, i) => (
+    <View key={i} style={{ width: STEP }}>
+      {on ? <View style={{ position: "absolute", left: 6, top: 0, bottom: 0, width: 1, backgroundColor: colors.border }} /> : null}
+    </View>
+  ));
 
-  const body = (
-    <View
-      className={cn(
-        "min-w-0 flex-1 gap-0.5 rounded-lg border px-3 py-2",
-        row.current ? "border-secondary/40 bg-secondary/10" : "border-border bg-card",
+  const label = (
+    <View className="min-w-0 flex-1 flex-row items-start gap-1.5 py-0.5">
+      {row.hasChildren ? (
+        <View className="mt-0.5" style={{ transform: [{ rotate: row.open ? "0deg" : "-90deg" }] }}>
+          <Ionicons name="chevron-down" size={14} color={colors.foreground} />
+        </View>
+      ) : (
+        <View style={{ width: 14 }} />
       )}
-    >
-      <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
-        <Text className="font-bold text-foreground" style={nepaliTextStyle(15)}>
+      <Text className="min-w-0 flex-1 leading-snug" style={nepaliTextStyle(14)}>
+        <Text
+          className={cn("font-semibold", row.current ? "text-secondary underline" : "text-foreground")}
+          style={row.current ? { textDecorationStyle: "dashed" } : undefined}
+        >
           {row.name}
         </Text>
-        {row.count ? (
-          <View className="rounded-full bg-muted px-2 py-px">
-            <Text className="font-num text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(11)}>
-              {row.count}
-            </Text>
-          </View>
-        ) : null}
-        {here ? (
-          <View className="rounded-full bg-secondary px-2 py-px">
-            <Text className="text-xs font-bold text-white" style={nepaliTextStyle(11)}>
-              {tree.nowLabel}
-            </Text>
-          </View>
-        ) : null}
-        {row.hasChildren ? (
-          <View className="ml-auto" style={{ transform: [{ rotate: open ? "0deg" : "-90deg" }] }}>
-            <Ionicons name="chevron-down" size={16} color={colors.mutedForeground} />
-          </View>
-        ) : null}
-      </View>
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
-        {row.holds}
+        <Text className="font-num text-sm text-muted-foreground">{` [${row.divya}] `}</Text>
+        <Text className="font-num text-xs text-muted-foreground">{row.solar}</Text>
       </Text>
-      <Text className="font-num text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
-        {row.years}
-        <Text className="font-normal text-muted-foreground">{` · ${row.rough}`}</Text>
-      </Text>
-      {row.split ? (
-        <Text className="font-num text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-          {row.split}
-        </Text>
-      ) : null}
     </View>
   );
 
   return (
-    <Animated.View
-      entering={reduced ? undefined : FadeIn.duration(160)}
-      exiting={reduced ? undefined : FadeOut.duration(120)}
-      layout={reduced ? undefined : ROW_LAYOUT}
-      style={{ flexDirection: "row", alignItems: "stretch" }}
-    >
-      {/* Rails of the levels above: each runs on while that level has children still to come. */}
-      {row.ancestors.map((id, i) => {
-        const nearest = i === row.ancestors.length - 1;
-        return (
-          <View key={id} style={{ width: STEP }}>
-            {nearest ? (
-              <>
-                <View style={{ position: "absolute", left: 6, top: 0, width: 1, height: row.last ? 20 : "100%", backgroundColor: rail }} />
-                <View style={{ position: "absolute", left: 6, top: 20, width: 8, height: 1, backgroundColor: rail }} />
-              </>
-            ) : row.rails[i] ? (
-              <View style={{ position: "absolute", left: 6, top: 0, bottom: 0, width: 1, backgroundColor: colors.border }} />
-            ) : null}
+    <Animated.View entering={reduced ? undefined : FadeIn.duration(160)}>
+      {row.mana ? (
+        <View style={{ flexDirection: "row" }}>
+          {rails}
+          {row.depth > 0 ? (
+            <View style={{ width: STEP }}>
+              <View style={{ position: "absolute", left: 6, top: 0, bottom: 0, width: 1, backgroundColor: line }} />
+            </View>
+          ) : null}
+          <Text className="pl-5 text-sm italic text-danger" style={nepaliTextStyle(13)}>
+            {`${row.mana}:`}
+          </Text>
+        </View>
+      ) : null}
+      <View style={{ flexDirection: "row", alignItems: "stretch" }}>
+        {rails}
+        {row.depth > 0 ? (
+          <View style={{ width: STEP }}>
+            <View style={{ position: "absolute", left: 6, top: 0, width: 1, height: row.last ? 13 : "100%", backgroundColor: line }} />
+            <View style={{ position: "absolute", left: 6, top: 13, width: 8, height: 1, backgroundColor: line }} />
           </View>
-        );
-      })}
-      <View className="min-w-0 flex-1 py-1">
+        ) : null}
         {row.hasChildren ? (
           <Pressable
             onPress={() => {
               haptics.tick();
-              tree.toggle(row.id);
+              tree.toggle(row.key);
             }}
             accessibilityRole="button"
-            accessibilityState={{ expanded: open }}
+            accessibilityState={{ expanded: row.open }}
             pressRetentionOffset={16}
-            className="rounded-lg active:opacity-80"
+            hitSlop={{ top: 4, bottom: 4 }}
+            className="min-w-0 flex-1 rounded px-1 active:bg-muted/50"
           >
-            {body}
+            {label}
           </Pressable>
         ) : (
-          body
+          <View className="min-w-0 flex-1 px-1">{label}</View>
         )}
       </View>
     </Animated.View>
@@ -154,21 +131,35 @@ export default function BrahmaManaScreen() {
 
       <View className="gap-4">
         <SectionCard title={page.tree.title}>
-          <View className="flex-row flex-wrap items-center justify-between gap-2">
-            <Text className="min-w-0 flex-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
-              {page.tree.hint}
-            </Text>
-            <Pressable onPress={page.tree.toggleAll} hitSlop={10} accessibilityRole="button">
+          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            {page.tree.hint}
+          </Text>
+          <Text className="font-num text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+            {page.tree.unit}
+          </Text>
+          <View className="flex-row gap-4">
+            <Pressable onPress={page.tree.showNow} hitSlop={10} accessibilityRole="button">
               <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(13)}>
-                {page.tree.toggleAllLabel}
+                {page.tree.showNowLabel}
+              </Text>
+            </Pressable>
+            <Pressable onPress={page.tree.collapseAll} hitSlop={10} accessibilityRole="button">
+              <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(13)}>
+                {page.tree.collapseAllLabel}
               </Text>
             </Pressable>
           </View>
-          <View>
-            {page.tree.rows.map((row) => (
-              <TreeRow key={row.id} row={row} tree={page.tree} />
-            ))}
-          </View>
+          <Text className="text-sm italic text-danger" style={nepaliTextStyle(13)}>
+            {`${page.tree.rootMana}:`}
+          </Text>
+          {/* The ~220 rows of the opening view appear at once; only rows opened later fade in. */}
+          <LayoutAnimationConfig skipEntering>
+            <View>
+              {page.tree.rows.map((row) => (
+                <TreeRow key={row.key} row={row} tree={page.tree} />
+              ))}
+            </View>
+          </LayoutAnimationConfig>
         </SectionCard>
 
         <SectionCard title={page.now.title}>
@@ -204,8 +195,8 @@ export default function BrahmaManaScreen() {
 
         <SectionCard title={page.years.title}>
           <DataTable
-            columns={columnsOf(page.years.cols, [150, 190, 170])}
-            rows={page.years.rows.map((r) => ({ key: r.key, cells: [cell(r.unit), cell(r.years), cell(r.rough)] }))}
+            columns={columnsOf(page.years.cols, [150, 160, 190, 170])}
+            rows={page.years.rows.map((r) => ({ key: r.key, cells: [cell(r.unit), cell(r.divya), cell(r.years), cell(r.rough)] }))}
           />
           <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
             {page.source}

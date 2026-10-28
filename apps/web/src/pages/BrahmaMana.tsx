@@ -7,75 +7,82 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
-/** Indent per level, in px. Nine levels deep still leaves a phone most of its width. */
-const STEP = 14;
+/** Indent per level, in px. Fifteen levels deep still leaves a phone most of its width. */
+const STEP = 16;
 
-/** One level of the ladder: the rails of its ancestors, its own elbow and dot, then the card. */
+/** One stretch of time: rails of the levels above, a triangle if it opens, name, [divya varṣa]. */
 function TreeRow({ row, tree }: { row: BrahmaTreeRow; tree: BrahmaManaPage["tree"] }) {
-  const open = tree.isOpen(row);
-  const here = row.current && !row.hasChildren;
-  const body = (
-    <div
-      className={cn(
-        "flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg border px-3 py-2 text-left",
-        row.current ? "border-secondary/40 bg-secondary/[0.06] dark:bg-secondary/15" : "border-border bg-card",
-      )}
-    >
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className="font-bold text-foreground">{row.name}</span>
-        {row.count ? (
-          <span className="rounded-full bg-muted px-2 py-px font-num text-xs font-semibold text-muted-foreground">{row.count}</span>
-        ) : null}
-        {here ? (
-          <span className="rounded-full bg-secondary px-2 py-px text-xs font-bold text-white">{tree.nowLabel}</span>
-        ) : null}
-        {row.hasChildren ? (
-          <ChevronDown
-            aria-hidden
-            className={cn("ml-auto size-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
-          />
-        ) : null}
-      </div>
-      <span className="text-sm text-muted-foreground">{row.holds}</span>
-      <span className="font-num text-sm font-semibold text-foreground">
-        {row.years} <span className="font-normal text-muted-foreground">· {row.rough}</span>
+  const line = row.current ? "bg-secondary" : "bg-border";
+  const rails = row.rails.map((on, i) => (
+    <span key={i} aria-hidden className="relative shrink-0" style={{ width: STEP }}>
+      {on ? <span className="absolute left-1.5 top-0 h-full w-px bg-border" /> : null}
+    </span>
+  ));
+  const elbow =
+    row.depth > 0 ? (
+      <span aria-hidden className="relative shrink-0" style={{ width: STEP }}>
+        <span className={cn("absolute left-1.5 top-0 w-px", line, row.last ? "h-3.5" : "h-full")} />
+        <span className={cn("absolute left-1.5 top-3.5 h-px w-2", line)} />
       </span>
-      {row.split ? <span className="font-num text-xs text-muted-foreground">{row.split}</span> : null}
-    </div>
+    ) : null;
+  const label = (
+    <span className="min-w-0 py-0.5 text-left leading-snug">
+      <span
+        className={cn(
+          "font-semibold",
+          row.current ? "text-secondary underline decoration-dashed decoration-1 underline-offset-4 dark:text-accent" : "text-foreground",
+        )}
+      >
+        {row.name}
+      </span>{" "}
+      <span className="font-num text-sm text-muted-foreground">[{row.divya}]</span>{" "}
+      <span className="font-num text-xs text-muted-foreground/80">{row.solar}</span>
+    </span>
+  );
+  const triangle = row.hasChildren ? (
+    <ChevronDown
+      aria-hidden
+      className={cn("mt-1 size-3.5 shrink-0 text-foreground transition-transform", !row.open && "-rotate-90")}
+    />
+  ) : (
+    <span aria-hidden className="w-3.5 shrink-0" />
   );
 
   return (
-    <li className="relative flex items-stretch">
-      {/* Rails of the levels above: each runs on while that level has children still to come. */}
-      {row.ancestors.map((id, i) => (
-        <span key={id} aria-hidden className="relative shrink-0" style={{ width: STEP }}>
-          {i === row.ancestors.length - 1 ? (
-            <>
-              <span
-                className={cn("absolute left-1.5 top-0 w-px", row.current ? "bg-secondary" : "bg-border", row.last ? "h-5" : "h-full")}
-              />
-              <span className={cn("absolute left-1.5 top-5 h-px w-2", row.current ? "bg-secondary" : "bg-border")} />
-            </>
-          ) : row.rails[i] ? (
-            <span className="absolute left-1.5 top-0 h-full w-px bg-border" />
+    <>
+      {row.mana ? (
+        <li className="flex">
+          {rails}
+          {/* The parent's rail runs on through the label to this row's elbow. */}
+          {row.depth > 0 ? (
+            <span aria-hidden className="relative shrink-0" style={{ width: STEP }}>
+              <span className={cn("absolute left-1.5 top-0 h-full w-px", row.current ? "bg-secondary" : "bg-border")} />
+            </span>
           ) : null}
-        </span>
-      ))}
-      <div className="flex min-w-0 flex-1 py-1">
+          <span className="pl-5 text-sm italic text-danger">{row.mana}:</span>
+        </li>
+      ) : null}
+      <li className="flex items-stretch">
+        {rails}
+        {elbow}
         {row.hasChildren ? (
           <button
             type="button"
-            onClick={() => tree.toggle(row.id)}
-            aria-expanded={open}
-            className="flex min-w-0 flex-1 rounded-lg transition-transform active:scale-[0.99]"
+            onClick={() => tree.toggle(row.key)}
+            aria-expanded={row.open}
+            className="flex min-w-0 items-start gap-1.5 rounded px-1 hover:bg-muted/50"
           >
-            {body}
+            {triangle}
+            {label}
           </button>
         ) : (
-          body
+          <span className="flex min-w-0 items-start gap-1.5 px-1">
+            {triangle}
+            {label}
+          </span>
         )}
-      </div>
-    </li>
+      </li>
+    </>
   );
 }
 
@@ -94,14 +101,22 @@ export function BrahmaMana() {
       <section className={cn(patroCard, "flex flex-col gap-3 p-4")}>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="m-0 text-lg font-bold text-foreground">{page.tree.title}</h2>
-          <button type="button" onClick={page.tree.toggleAll} className="text-sm font-semibold text-secondary hover:underline">
-            {page.tree.toggleAllLabel}
-          </button>
+          <div className="flex gap-3">
+            <button type="button" onClick={page.tree.showNow} className="text-sm font-semibold text-secondary hover:underline">
+              {page.tree.showNowLabel}
+            </button>
+            <button type="button" onClick={page.tree.collapseAll} className="text-sm font-semibold text-secondary hover:underline">
+              {page.tree.collapseAllLabel}
+            </button>
+          </div>
         </div>
-        <p className="m-0 text-sm text-muted-foreground">{page.tree.hint}</p>
-        <ul className="m-0 list-none p-0">
+        <p className="m-0 text-sm text-muted-foreground">
+          {page.tree.hint} <span className="font-num font-semibold text-foreground">{page.tree.unit}</span>
+        </p>
+        <p className="m-0 text-sm italic text-danger">{page.tree.rootMana}:</p>
+        <ul className="m-0 list-none overflow-x-auto p-0">
           {page.tree.rows.map((row) => (
-            <TreeRow key={row.id} row={row} tree={page.tree} />
+            <TreeRow key={row.key} row={row} tree={page.tree} />
           ))}
         </ul>
       </section>
@@ -174,6 +189,7 @@ export function BrahmaMana() {
             {page.years.rows.map((r) => (
               <TableRow key={r.key}>
                 <TableCell>{r.unit}</TableCell>
+                <TableCell className="text-right font-num whitespace-nowrap">{r.divya}</TableCell>
                 <TableCell className="text-right font-num whitespace-nowrap">{r.years}</TableCell>
                 <TableCell className="text-right text-muted-foreground">{r.rough}</TableCell>
               </TableRow>

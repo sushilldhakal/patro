@@ -53,98 +53,143 @@ function yuga(id: YugaId, padas: number): Yuga {
 
 export const YUGAS: readonly Yuga[] = [yuga("krta", 4), yuga("treta", 3), yuga("dvapara", 2), yuga("kali", 1)];
 
-export type BrahmaNodeId =
+/** One divya varṣa (a year of the gods) is 360 solar years. Every count below is in divya varṣa. */
+export const SOLAR_YEARS_PER_DIVYA = 360;
+
+export const DIVYA = {
+  lifespan: BRAHMA_LIFESPAN_YEARS / SOLAR_YEARS_PER_DIVYA,
+  parardha: PARARDHA_YEARS / SOLAR_YEARS_PER_DIVYA,
+  varsha: BRAHMA_YEAR_YEARS / SOLAR_YEARS_PER_DIVYA,
+  masa: BRAHMA_MONTH_YEARS / SOLAR_YEARS_PER_DIVYA,
+  kalpa: KALPA_YEARS / SOLAR_YEARS_PER_DIVYA,
+  /** Before the first Manvantara of a Kalpa. */
+  adiSandhya: KALPA_SANDHI_YEARS / SOLAR_YEARS_PER_DIVYA,
+  /** A Manvantara with the flood (jalaplāva) that closes it. */
+  manvantaraFull: (MANVANTARA_YEARS + KALPA_SANDHI_YEARS) / SOLAR_YEARS_PER_DIVYA,
+  manvantara: MANVANTARA_YEARS / SOLAR_YEARS_PER_DIVYA,
+  jalaplava: KALPA_SANDHI_YEARS / SOLAR_YEARS_PER_DIVYA,
+  mahayuga: MAHAYUGA_YEARS / SOLAR_YEARS_PER_DIVYA,
+  /** One pāda of a yuga proper. */
+  pada: 1000,
+} as const;
+
+/** Kalpas in a Brahma month, each followed by a pralaya as long. */
+export const KALPAS_PER_MONTH = AHORATRAS_PER_MONTH;
+
+export type TimeKind =
   | "lifespan"
   | "parardha"
-  | "year"
-  | "month"
-  | "ahoratra"
-  | "day"
-  | "night"
+  | "varsha"
+  | "masa"
+  | "kalpa"
+  | "pralaya"
+  | "adi_sandhya"
+  | "manvantara_full"
   | "manvantara"
-  | "kalpa_sandhi"
+  | "jalaplava"
   | "mahayuga"
-  | YugaId;
+  | "yuga"
+  | "yuga_sandhya"
+  | "yuga_core"
+  | "pada";
 
-export type BrahmaNode = {
-  id: BrahmaNodeId;
-  /** Length of one of these, in solar years. */
-  years: number;
-  /** How many of these its parent holds. */
-  count: number;
-  /** On the path to now: the second parārdha, the 51st year, … the Kali Yuga. */
-  current?: boolean;
-  children?: readonly BrahmaNode[];
+/** A real stretch of time in Brahmā's life: parārdha #2, its 1st year, …, Kali Yuga's pāda #1. */
+export type TimeNode = {
+  /** Path from the root, unique: "L/p2/v1/m1/k1/n7/m/y28/kali/core". */
+  key: string;
+  kind: TimeKind;
+  /** 1-based position among its kind in the parent (parārdha #2, kalpa 1, mahāyuga #28). */
+  index?: number;
+  /** Yuga nodes and their parts: which of the four. */
+  yuga?: YugaId;
+  /** Length in divya varṣa. */
+  divya: number;
+  /** On the path to now. */
+  current: boolean;
+  hasChildren: boolean;
 };
 
-const yugaNodes: BrahmaNode[] = YUGAS.map((y) => ({ id: y.id, years: y.years, count: 1, current: y.id === "kali" }));
+/** Now, by instance: parārdha #2, its year 1, month 1, kalpa 1 (Śveta), Manvantara 7, Mahāyuga 28, Kali. */
+export const NOW_PATH = { parardha: 2, varsha: 1, masa: 1, kalpa: 1, manvantara: 7, mahayuga: 28, yuga: "kali" as YugaId } as const;
 
-/** The whole ladder, Brahmā's life at the root. */
-export const BRAHMA_TREE: BrahmaNode = {
-  id: "lifespan",
-  years: BRAHMA_LIFESPAN_YEARS,
-  count: 1,
-  current: true,
-  children: [
-    {
-      id: "parardha",
-      years: PARARDHA_YEARS,
-      count: 2,
-      current: true,
-      children: [
-        {
-          id: "year",
-          years: BRAHMA_YEAR_YEARS,
-          count: BRAHMA_YEARS_PER_PARARDHA,
-          current: true,
-          children: [
-            {
-              id: "month",
-              years: BRAHMA_MONTH_YEARS,
-              count: MONTHS_PER_BRAHMA_YEAR,
-              current: true,
-              children: [
-                {
-                  id: "ahoratra",
-                  years: AHORATRA_YEARS,
-                  count: AHORATRAS_PER_MONTH,
-                  current: true,
-                  children: [
-                    {
-                      id: "day",
-                      years: KALPA_YEARS,
-                      count: 1,
-                      current: true,
-                      children: [
-                        {
-                          id: "manvantara",
-                          years: MANVANTARA_YEARS,
-                          count: MANVANTARAS_PER_KALPA,
-                          current: true,
-                          children: [
-                            {
-                              id: "mahayuga",
-                              years: MAHAYUGA_YEARS,
-                              count: MAHAYUGAS_PER_MANVANTARA,
-                              current: true,
-                              children: yugaNodes,
-                            },
-                          ],
-                        },
-                        { id: "kalpa_sandhi", years: KALPA_SANDHI_YEARS, count: KALPA_SANDHIS },
-                      ],
-                    },
-                    { id: "night", years: KALPA_YEARS, count: 1 },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+function node(parent: TimeNode | null, seg: string, kind: TimeKind, divya: number, current: boolean, extra: Partial<TimeNode> = {}): TimeNode {
+  return {
+    key: parent ? `${parent.key}/${seg}` : seg,
+    kind,
+    divya,
+    current,
+    hasChildren: !["pralaya", "adi_sandhya", "jalaplava", "yuga_sandhya", "pada"].includes(kind),
+    ...extra,
+  };
+}
+
+function range(n: number): number[] {
+  return Array.from({ length: n }, (_, i) => i + 1);
+}
+
+export const TIME_ROOT: TimeNode = node(null, "L", "lifespan", DIVYA.lifespan, true);
+
+/**
+ * The children of one stretch, built only when asked for: Brahmā's life holds 2 × 50 × 12 × 30
+ * Kalpas and some 2.6 billion pādas, so nothing below an open node exists until it is opened.
+ */
+export function timeChildren(n: TimeNode): TimeNode[] {
+  const cur = n.current;
+  switch (n.kind) {
+    case "lifespan":
+      return range(2).map((i) => node(n, `p${i}`, "parardha", DIVYA.parardha, cur && i === NOW_PATH.parardha, { index: i }));
+    case "parardha":
+      return range(BRAHMA_YEARS_PER_PARARDHA).map((i) => node(n, `v${i}`, "varsha", DIVYA.varsha, cur && i === NOW_PATH.varsha, { index: i }));
+    case "varsha":
+      return range(MONTHS_PER_BRAHMA_YEAR).map((i) => node(n, `m${i}`, "masa", DIVYA.masa, cur && i === NOW_PATH.masa, { index: i }));
+    case "masa":
+      return range(KALPAS_PER_MONTH).flatMap((i) => [
+        node(n, `k${i}`, "kalpa", DIVYA.kalpa, cur && i === NOW_PATH.kalpa, { index: i }),
+        node(n, `r${i}`, "pralaya", DIVYA.kalpa, false, { index: i }),
+      ]);
+    case "kalpa":
+      return [
+        node(n, "s", "adi_sandhya", DIVYA.adiSandhya, false),
+        ...range(MANVANTARAS_PER_KALPA).map((i) =>
+          node(n, `n${i}`, "manvantara_full", DIVYA.manvantaraFull, cur && i === NOW_PATH.manvantara, { index: i }),
+        ),
+      ];
+    case "manvantara_full":
+      return [
+        node(n, "m", "manvantara", DIVYA.manvantara, cur, { index: n.index }),
+        node(n, "j", "jalaplava", DIVYA.jalaplava, false),
+      ];
+    case "manvantara":
+      return range(MAHAYUGAS_PER_MANVANTARA).map((i) => node(n, `y${i}`, "mahayuga", DIVYA.mahayuga, cur && i === NOW_PATH.mahayuga, { index: i }));
+    case "mahayuga":
+      return YUGAS.map((y) => node(n, y.id, "yuga", y.padas * 1200, cur && y.id === NOW_PATH.yuga, { yuga: y.id }));
+    case "yuga": {
+      const padas = YUGAS.find((y) => y.id === n.yuga)!.padas;
+      return [
+        node(n, "dawn", "yuga_sandhya", padas * 100, false, { yuga: n.yuga }),
+        node(n, "core", "yuga_core", padas * DIVYA.pada, cur, { yuga: n.yuga }),
+        node(n, "dusk", "yuga_sandhya", padas * 100, false, { yuga: n.yuga }),
+      ];
+    }
+    case "yuga_core": {
+      const padas = YUGAS.find((y) => y.id === n.yuga)!.padas;
+      return range(padas).map((i) => node(n, `d${i}`, "pada", DIVYA.pada, false, { index: i, yuga: n.yuga }));
+    }
+    default:
+      return [];
+  }
+}
+
+/** Keys of every node on the path to now — what the page opens with. */
+export function nowPathKeys(): string[] {
+  const keys: string[] = [];
+  let at: TimeNode | undefined = TIME_ROOT;
+  while (at && at.hasChildren) {
+    keys.push(at.key);
+    at = timeChildren(at).find((c) => c.current);
+  }
+  return keys;
+}
 
 /**
  * Where we stand, by the traditional reckoning: the first day of Brahmā's 51st year (the
