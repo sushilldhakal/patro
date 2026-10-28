@@ -67,7 +67,10 @@ export function SkyTimeSheet({
         selectionColor={neutral.white}
         onFocus={() => v.startEdit(f.field)}
         onChangeText={(raw) => v.setDraft(f.field, raw)}
-        onEndEditing={(e) => v.commitField(f.field, e.nativeEvent.text)}
+        // Only the field still being typed in commits when editing ends (see the web sheet).
+        onEndEditing={() => {
+          if (v.edit === f.field) v.commitField(f.field, v.draft);
+        }}
         style={{
           width: "100%",
           padding: 0,

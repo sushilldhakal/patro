@@ -174,7 +174,14 @@ export function useSkyTimeSheet({
   const { calendar } = useCalendarSystem();
   /** The calendar preference (not the language) decides BS vs Gregorian fields. */
   const nepaliCal = calendar === "bs";
-  const parts = wallPartsFromMs(timeMs, zoneOffsetMs);
+  /*
+   * The last jump this sheet made, until the owner's `timeMs` moves on. The sky hands its time back
+   * a frame or more later (its sample), and in between the sheet showed — and built the next
+   * field on — the old instant: a typed 2000 snapped back to 2083 when Enter moved on to the month.
+   */
+  const [pending, setPending] = useState<{ ms: number; base: number } | null>(null);
+  const shownMs = pending && pending.base === timeMs ? pending.ms : timeMs;
+  const parts = wallPartsFromMs(shownMs, zoneOffsetMs);
   const ne = nepaliCal ? nepaliYmd(parts) : null;
   const paused = timeRate === 0;
   const daySec = parts.hour * 3600 + parts.minute * 60 + parts.second;
@@ -182,7 +189,11 @@ export function useSkyTimeSheet({
   const [edit, setEdit] = useState<SkyTimeField | null>(null);
   const [draft, setDraftRaw] = useState("");
 
-  const apply = (next: WallParts) => onApplyMs(utcMsFromWall(next) - zoneOffsetMs);
+  const applyMs = (ms: number) => {
+    setPending({ ms, base: timeMs });
+    onApplyMs(ms);
+  };
+  const apply = (next: WallParts) => applyMs(utcMsFromWall(next) - zoneOffsetMs);
   const step = (field: SkyTimeField, delta: number) => {
     setEdit(null);
     if (nepaliCal && (field === "year" || field === "month" || field === "day")) {
@@ -304,9 +315,9 @@ export function useSkyTimeSheet({
       active: band.id === activePeriod,
     })),
     jumps: [
-      { id: "prev" as const, label: t("ui.sky3d.previous_night"), run: () => onApplyMs(timeMs - DAY_MS) },
-      { id: "now" as const, label: t("ui.sky3d.set_time_to_now"), run: () => onApplyMs(Date.now()) },
-      { id: "next" as const, label: t("ui.sky3d.next_night"), run: () => onApplyMs(timeMs + DAY_MS) },
+      { id: "prev" as const, label: t("ui.sky3d.previous_night"), run: () => applyMs(shownMs - DAY_MS) },
+      { id: "now" as const, label: t("ui.sky3d.set_time_to_now"), run: () => applyMs(Date.now()) },
+      { id: "next" as const, label: t("ui.sky3d.next_night"), run: () => applyMs(shownMs + DAY_MS) },
     ],
     labels: {
       close: t("ui.common.close"),

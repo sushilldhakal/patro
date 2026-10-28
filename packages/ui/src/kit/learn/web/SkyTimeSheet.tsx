@@ -116,7 +116,11 @@ export function SkyTimeSheet({
         className="w-full bg-transparent p-0 text-center text-lg font-semibold tabular-nums leading-none text-white outline-none caret-white xs:text-xl"
         onFocus={() => focusField(f.field)}
         onChange={(e) => v.setDraft(f.field, e.target.value)}
-        onBlur={(e) => v.commitField(f.field, e.currentTarget.value)}
+        // Only the field still being typed in commits on blur, and with what was typed: after Enter
+        // moved on, this field shows a value that may be a frame old, and committing it undid the jump.
+        onBlur={() => {
+          if (v.edit === f.field) v.commitField(f.field, v.draft);
+        }}
         onKeyDown={(e) => onFieldKey(f.field, e)}
       />
       <HoldButton label={f.downLabel} onStep={f.down}>
