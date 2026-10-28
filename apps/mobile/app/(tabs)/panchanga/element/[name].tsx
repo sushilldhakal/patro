@@ -11,7 +11,8 @@ import {
   NakshatraGlyphIcon,
   RashiGlyphIcon,
 } from "@/components/panchanga/element/ElementGlyphIcon";
-import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { ChoghadiyaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { Card } from "@/components/ui/Card";
 import { Grid } from "@vedic-patro/ui";
@@ -37,7 +38,6 @@ import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 const SPAN_COLS = { base: 1, sm: 2, lg: 4 } as const;
 const ROW_COLS = { base: 1, sm: 2, lg: 3 } as const;
 const BALA_COLS = { base: 1, sm: 2, lg: 4 } as const;
-const LEGEND_COLS = { base: 1, sm: 2 } as const;
 
 /* ── span (begin→end) view ─────────────────────────────────────────────── */
 
@@ -168,17 +168,14 @@ function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
     ? { bg: undefined, cls: "bg-danger/10", fg: colors.danger }
     : row.good
       ? { bg: undefined, cls: "bg-success/12", fg: colors.success }
-      : elementId === "choghadiya"
-        ? /* Chara is neutral, not missing: amber like its legend dot, not grey. */
-          { bg: undefined, cls: "bg-warning/12", fg: colors.foreground }
-        : { bg: colors.surfaceInset, cls: "", fg: colors.foreground };
+      : { bg: colors.surfaceInset, cls: "", fg: colors.foreground };
   const leading: ReactNode = row.glyph ? (
     row.glyph.kind === "nakshatra" ? (
       <NakshatraGlyphIcon name={row.glyph.name} number={row.glyph.number} size={24} />
     ) : (
       <RashiGlyphIcon name={row.glyph.name} number={row.glyph.number} size={24} />
     )
-  ) : elementId === "choghadiya" ? null : (
+  ) : (
     <ElementDayRowIcon elementId={elementId} row={row.raw} size={24} />
   );
 
@@ -210,6 +207,7 @@ function ToneRow({ row, elementId }: { row: ToneRowView; elementId: string }) {
 }
 
 function TableView({ table, elementId }: { table: NonNullable<ElementPage["table"]>; elementId: string }) {
+  if (table.kind === "choghadiya") return null;
   if (table.kind === "message") {
     return (
       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
@@ -234,28 +232,6 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPage["table
         ) : null}
         {rows(BALA_COLS)}
       </View>
-    );
-  }
-  if (table.kind === "choghadiya") {
-    return (
-      <>
-        <Grid cols={LEGEND_COLS} gapX={16} gapY={4} className="mb-3">
-          {table.legend.map((item) => (
-            <View key={item.key} className="flex-row items-center gap-2">
-              <View
-                className={cn(
-                  "h-2.5 w-2.5 rounded-full",
-                  item.tone === "good" ? "bg-success" : item.tone === "bad" ? "bg-destructive" : "bg-warning",
-                )}
-              />
-              <Text style={nepaliTextStyle(14)} className="flex-1 text-sm text-muted-foreground">
-                {item.label}
-              </Text>
-            </View>
-          ))}
-        </Grid>
-        {rows(ROW_COLS)}
-      </>
     );
   }
   if (elementId === "hora") {
@@ -360,6 +336,17 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
     if (page.status === "loading") return <LoadingState />;
     if (page.status === "error") return <ErrorState />;
     if (page.kind === "span") return <SpanList spans={page.spans} elementId={meta.id} udaya={page.udaya} />;
+    if (page.table?.kind === "choghadiya") {
+      return (
+        <ChoghadiyaBoard
+          board={page.table.board}
+          icons={{
+            day: <Ionicons name="sunny-outline" size={18} color={colors.warning} />,
+            night: <Ionicons name="moon-outline" size={18} color={colors.mutedForeground} />,
+          }}
+        />
+      );
+    }
     return (
       <Card className="p-3.5">
         {page.kind === "balam" && page.balam ? (

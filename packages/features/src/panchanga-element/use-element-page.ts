@@ -7,7 +7,7 @@
  * chandrabala/tarabala show the day's strength cards. Each app keeps the
  * browsed month/day where it likes and passes it in.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   elementKeys,
@@ -24,6 +24,7 @@ import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements"
 import { getChandrabalamTable, getTarabalaTable } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
+import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
@@ -88,9 +89,23 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
 
   const spans = useMemo(() => (spanQuery.data ? spanCards(spanQuery.data.spans, text) : []), [spanQuery.data, text]);
   const udaya = useMemo(() => udayaSummary(spans, text), [spans, text]);
+  // On today the choghadiya board follows the clock: which slot is on, and how long it has left.
+  const live = name === "choghadiya" && dateAd === todayAd;
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    if (!live) return;
+    const id = setInterval(() => setTick((n) => n + 1), 30_000);
+    return () => clearInterval(id);
+  }, [live]);
+  const nowMin = useMemo(() => {
+    if (!live) return undefined;
+    void tick;
+    return parseHHMM(defaultClockForTimezone(timeZone)) ?? undefined;
+  }, [live, tick, timeZone]);
+
   const table = useMemo(
-    () => (dayQuery.data ? elementTable(dayQuery.data.data, dayQuery.data.sunrise, name ?? "", text) : undefined),
-    [dayQuery.data, name, text],
+    () => (dayQuery.data ? elementTable(dayQuery.data.data, dayQuery.data.sunrise, name ?? "", text, nowMin) : undefined),
+    [dayQuery.data, name, text, nowMin],
   );
 
   const balamView = useMemo(() => {

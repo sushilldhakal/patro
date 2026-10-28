@@ -5218,6 +5218,14 @@ export const strings = {
   "choghadiya.quality_good": { ne: "शुभ", en: "Good" },
   "choghadiya.quality_bad": { ne: "अशुभ", en: "Inauspicious" },
   "choghadiya.quality_neutral": { ne: "सामान्य", en: "Neutral" },
+  "choghadiya.day": { ne: "दिनको चौघडिया", en: "Day choghadiya" },
+  "choghadiya.night": { ne: "रातको चौघडिया", en: "Night choghadiya" },
+  "choghadiya.now": { ne: "अहिले", en: "Now" },
+  "choghadiya.left": { ne: "{{time}} बाँकी", en: "{{time}} left" },
+  "choghadiya.next_good": { ne: "अर्को शुभ — {{time}} पछि", en: "Next good — in {{time}}" },
+  "choghadiya.minutes": { ne: "{{m}} मिनेट", en: "{{m}} min" },
+  "choghadiya.hours": { ne: "{{h}} घण्टा", en: "{{h}} h" },
+  "choghadiya.hours_minutes": { ne: "{{h}} घण्टा {{m}} मिनेट", en: "{{h}} h {{m}} min" },
 
   /* ── element_descriptions ────────────────────────────────────────────── */
   "element_descriptions.tithi.what": {

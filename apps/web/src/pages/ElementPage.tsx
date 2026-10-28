@@ -1,5 +1,5 @@
 import { getRouteApi, Navigate, useParams } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
+import { Moon, Sparkles, Sun } from "lucide-react";
 import { useElementPage, type ElementPage as ElementPageView, type SpanBoundaryView, type SpanCard, type ToneRowView, type UdayaSummary } from "@vedic-patro/features/panchanga-element";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { GrahaBanner, ElementDescription } from "@vedic-patro/ui/kit/panchanga";
@@ -12,7 +12,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { ChoghadiyaBoard, NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
@@ -136,7 +136,7 @@ function ToneRow({ row, elementId, compact }: { row: ToneRowView; elementId: str
     ) : (
       <RashiGlyphIcon name={row.glyph.name} number={row.glyph.number} size={24} />
     )
-  ) : elementId === "choghadiya" ? null : (
+  ) : (
     <ElementDayRowIcon elementId={elementId} row={row.raw} size={24} />
   );
   return (
@@ -161,6 +161,8 @@ function ToneRow({ row, elementId, compact }: { row: ToneRowView; elementId: str
 
 function TableView({ table, elementId }: { table: NonNullable<ElementPageView["table"]>; elementId: string }) {
   switch (table.kind) {
+    case "choghadiya":
+      return null;
     case "message":
       return <p className="text-sm">{table.text}</p>;
     case "strength":
@@ -177,23 +179,6 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPageView["t
             ))}
           </div>
         </div>
-      );
-    case "choghadiya":
-      return (
-        <>
-          <ul className="m-0 mb-3 grid list-none grid-cols-1 gap-1 p-0 sm:grid-cols-2">
-            {table.legend.map((item) => (
-              <li key={item.key} className="text-sm leading-snug text-muted-foreground">
-                {item.text}
-              </li>
-            ))}
-          </ul>
-          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
-            {table.rows.map((row) => (
-              <ToneRow key={row.key} row={row} elementId={elementId} />
-            ))}
-          </div>
-        </>
       );
     default:
       return (
@@ -306,6 +291,8 @@ export function ElementPage() {
         {(p) =>
           p.kind === "span" ? (
             <SpanList spans={p.spans} elementId={meta.id} udaya={p.udaya} />
+          ) : p.table?.kind === "choghadiya" ? (
+            <ChoghadiyaBoard board={p.table.board} icons={{ day: <Sun className="size-5" />, night: <Moon className="size-5" /> }} />
           ) : (
             <div className={cn(patroCard, "p-3.5")}>
               {p.kind === "balam" && p.balam ? (

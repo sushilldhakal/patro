@@ -10,6 +10,7 @@ export { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 export { MoonPhaseIcon } from "./MoonPhaseIcon";
 export { GhatiClock } from "./GhatiClock";
 export { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
+export { ChoghadiyaBoard } from "./ChoghadiyaBoard";
 export { PlanetSelectMenu } from "./PlanetSelectMenu";
 export { WheelDateSheet } from "./WheelDateSheet";
 export { DayTimeline, type TimelinePeriod } from "./DayTimeline";

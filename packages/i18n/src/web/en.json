@@ -3207,7 +3207,15 @@
     },
     "quality_good": "Good",
     "quality_bad": "Inauspicious",
-    "quality_neutral": "Neutral"
+    "quality_neutral": "Neutral",
+    "day": "Day choghadiya",
+    "night": "Night choghadiya",
+    "now": "Now",
+    "left": "{{time}} left",
+    "next_good": "Next good — in {{time}}",
+    "minutes": "{{m}} min",
+    "hours": "{{h}} h",
+    "hours_minutes": "{{h}} h {{m}} min"
   },
   "element_descriptions": {
     "tithi": {

@@ -3207,7 +3207,15 @@
     },
     "quality_good": "शुभ",
     "quality_bad": "अशुभ",
-    "quality_neutral": "सामान्य"
+    "quality_neutral": "सामान्य",
+    "day": "दिनको चौघडिया",
+    "night": "रातको चौघडिया",
+    "now": "अहिले",
+    "left": "{{time}} बाँकी",
+    "next_good": "अर्को शुभ — {{time}} पछि",
+    "minutes": "{{m}} मिनेट",
+    "hours": "{{h}} घण्टा",
+    "hours_minutes": "{{h}} घण्टा {{m}} मिनेट"
   },
   "element_descriptions": {
     "tithi": {
