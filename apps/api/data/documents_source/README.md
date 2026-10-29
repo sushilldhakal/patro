@@ -144,8 +144,10 @@ the audio in R2.
 
 ## Puranas
 
-The Purana library is not copied into this folder. `services/purana_documents.py`
-reads the CSV dataset in `calender-patro/purana/` (override with
-`PURANA_SOURCE_DIR`) and seeds one chaptered document per file into the same
-`documents` table, category `purana`. Verse text is served by the API; the
-app does not ship the CSVs.
+The eighteen-Purana files (`brahma-purana.json` … `devi-gita.json`) are
+generated, not hand-written: `python scripts/ingest_puranas.py` reads the CSV
+dataset in `calender-patro/purana/` (override with `PURANA_SOURCE_DIR`) and
+writes one chaptered manifest per Purana here. The mapping (slug, topic,
+titles) lives in `services/scripture/purana_documents.py`; re-run the script
+after changing it. The server only needs these JSON files, like the
+Mahabharata and the Ramayana.

@@ -1,9 +1,9 @@
-"""Seed the Purana library from the CSV dataset next to this API.
+"""Read the Purana CSV dataset (`calender-patro/purana/*.csv`, or `PURANA_SOURCE_DIR`).
 
-The verse text stays on the server (`calender-patro/purana/*.csv`, or
-`PURANA_SOURCE_DIR`). Documents are inserted into `documents.db` alongside the
-hand-authored JSON manifests; the app only receives them through
-`/v1/documents`.
+Only `scripts/ingest_puranas.py` runs this: it seeds a scratch database here and
+writes each Purana out as a JSON manifest in `data/documents_source/`, which is
+what the API seeds from. `PURANAS` also names the Purana slugs for
+`shloka_sources` (which verses a ritual text quotes).
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from pathlib import Path
 
 csv.field_size_limit(sys.maxsize)
 
-# Bump when the mapping below changes so an unchanged CSV still reseeds.
+# Recorded for the converter; re-run scripts/ingest_puranas.py after changing the mapping.
 PURANA_IMPORT_VERSION = b"purana-csv-8"
 
 _DEVANAGARI_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")

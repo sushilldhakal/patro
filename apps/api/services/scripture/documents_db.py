@@ -147,19 +147,13 @@ def _manifest_paths() -> list[Path]:
 
 
 def _content_version(paths: list[Path]) -> str:
-    from services.scripture.purana_documents import PURANA_IMPORT_VERSION, purana_source_paths
-
     digest = hashlib.sha256()
     for path in paths:
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
-    digest.update(PURANA_IMPORT_VERSION)
     from services.scripture.shloka_sources import SOURCE_LOGIC_VERSION
 
     digest.update(SOURCE_LOGIC_VERSION)
-    for path in purana_source_paths():
-        digest.update(path.name.encode("utf-8"))
-        digest.update(path.read_bytes())
     return digest.hexdigest()
 
 
@@ -433,13 +427,11 @@ def ensure_seeded() -> None:
                 _seeded_stamp = stamp
                 return
 
+            # The Puranas are manifests too (scripts/ingest_puranas.py writes them
+            # from the CSV dataset), so the server needs nothing beyond git.
             for path in paths:
                 manifest = json.loads(path.read_text(encoding="utf-8"))
                 _seed_from_manifest(conn, manifest)
-
-            from services.scripture.purana_documents import seed_puranas
-
-            seed_puranas(conn)
 
             from services.scripture.shloka_sources import fill_sources
 
