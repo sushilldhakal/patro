@@ -21,6 +21,8 @@ const CLOSE_TIMING = { duration: 200, easing: Easing.bezier(0.32, 0.72, 0, 1) } 
 /** A release past a quarter of the panel, or a flick, dismisses it. */
 const DISMISS_FRACTION = 0.25;
 const DISMISS_VELOCITY = 900;
+/** How dark the page behind gets, the same in both themes. */
+const SCRIM_OPACITY = 0.45;
 
 /**
  * A panel that rises from the bottom (or drops from the top, or appears in the centre). The
@@ -57,7 +59,7 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
     }
   }, [open, mounted, reduced, shown, drag]);
 
-  const backdropStyle = useAnimatedStyle(() => ({ opacity: shown.get() }));
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: shown.get() * SCRIM_OPACITY }));
   const panelStyle = useAnimatedStyle(() => {
     const p = shown.get();
     if (reduced) return { opacity: p };
@@ -92,10 +94,14 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className={cn("flex-1", top ? "justify-start" : center ? "justify-center px-5" : "justify-end")}>
           {/* Colour and shape sit on plain views: NativeWind classes on a reanimated view are
-              dropped, which left the panel see-through and the backdrop without a size to tap. */}
-          <Animated.View style={[StyleSheet.absoluteFill, backdropStyle]}>
-            <Pressable className={cn("flex-1", sheetClass.backdrop)} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} />
-          </Animated.View>
+              dropped, which left the panel see-through. */}
+          {/* The backdrop is sized and coloured by plain styles: with classes it still came out
+              without a size, so it neither dimmed the page nor caught a tap outside the panel. */}
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel}>
+            <Animated.View pointerEvents="none" style={[{ flex: 1 }, backdropStyle]}>
+              <View className="flex-1 bg-black" />
+            </Animated.View>
+          </Pressable>
           <Animated.View
             accessibilityViewIsModal
             onLayout={onPanelLayout}
@@ -137,3 +143,4 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
     </Modal>
   );
 }
+

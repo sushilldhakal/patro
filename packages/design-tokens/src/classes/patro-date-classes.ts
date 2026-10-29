@@ -49,7 +49,7 @@ export const patroDateClasses = {
   yearPickerSearch: "border-b border-border px-2 py-1.5",
   yearPickerEmpty: "px-2 py-2 text-center text-xs text-muted-foreground",
   chipProminent: "w-[3rem] sm:w-[3.75rem] sm:rounded-xl",
-  chipCompact: "mt-0 w-[1.85rem] rounded-lg sm:w-[2.15rem] sm:rounded-xl",
+  chipCompact: "mt-0 w-13 rounded-lg sm:w-14 sm:rounded-xl",
   chipHeadCompact: "px-0 py-0.5 text-diagram-xs sm:px-0.5 sm:py-1 sm:text-xs",
   chipDayProminent: "text-base sm:min-h-[2.25rem] sm:text-lg",
   chipDayCompact: "min-h-0 py-0.5 text-xs sm:min-h-[1.35rem] sm:pb-0.5 sm:pt-0.5 sm:text-sm",

@@ -7,8 +7,8 @@
  * style from a View.
  */
 export const calendarHeaderClasses = {
-  badge: "h-14 w-13 shrink-0 overflow-hidden rounded-xl border border-border bg-card",
-  badgeMonth: "bg-secondary px-1 py-0.5 text-center text-sm font-bold text-secondary-foreground",
+  badge: "h-16 w-15 shrink-0 overflow-hidden rounded-xl border border-border bg-card",
+  badgeMonth: "bg-secondary px-1 pb-1 pt-1.5 text-center text-sm font-bold leading-5 text-secondary-foreground",
   badgeDays: "flex flex-1 items-center justify-center",
   badgeDaysText: "text-sm font-bold text-secondary",
 
