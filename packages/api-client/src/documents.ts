@@ -120,7 +120,7 @@ export interface DocumentChapterDetail extends DocumentSummary {
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "9";
+const DOCUMENTS_LIST_CACHE_VERSION = "11";
 
 export const documentsKeys = {
   list: () => ["documents", "list", DOCUMENTS_LIST_CACHE_VERSION] as const,

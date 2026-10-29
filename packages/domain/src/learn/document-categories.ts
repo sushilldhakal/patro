@@ -19,6 +19,8 @@ export interface DocumentCategoryGroup {
   emoji: string;
   ne: string;
   en: string;
+  /** One-line blurb for the library hub cards. */
+  blurb?: { ne: string; en: string };
   /** Small heading above the topic chips, when the topics share a label. */
   lead?: { ne: string; en: string };
   topics: DocumentTopic[];
@@ -30,6 +32,8 @@ export type DocumentCategoryId =
   | "mantra"
   | "stotram"
   | "puja"
+  | "katha"
+  | "shraddha"
   | "gita"
   | "purana"
   | "darshana"
@@ -41,6 +45,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "🕉️",
     ne: "वेद / श्रुति",
     en: "Veda / Shruti",
+    blurb: { ne: "ऋग्, यजुर्, साम र अथर्व — श्रुतिको मूल पाठ", en: "Rig, Yajur, Sama and Atharva — the root of Shruti" },
     topics: [
       { id: "rigveda", ne: "ऋग्वेद", en: "Rigveda" },
       { id: "yajurveda", ne: "यजुर्वेद", en: "Yajurveda" },
@@ -57,6 +62,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "📖",
     ne: "उपनिषद्",
     en: "Upanishad",
+    blurb: { ne: "प्रमुख उपनिषद् — ज्ञानका मूल ग्रन्थ", en: "The principal Upanishads — the root texts of knowledge" },
     lead: { ne: "प्रमुख उपनिषद्", en: "Principal Upanishads" },
     topics: [
       { id: "isha", ne: "ईश", en: "Isha" },
@@ -78,6 +84,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "📜",
     ne: "मन्त्र",
     en: "Mantra",
+    blurb: { ne: "गायत्री, मृत्युञ्जय र अन्य वैदिक मन्त्र", en: "Gayatri, Mrityunjaya and other Vedic mantras" },
     topics: [
       { id: "vaidik", ne: "वैदिक मन्त्र", en: "Vedic mantras" },
       { id: "bija", ne: "बीज मन्त्र", en: "Bija mantras" },
@@ -95,6 +102,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "🙏",
     ne: "स्तोत्र",
     en: "Stotra",
+    blurb: { ne: "स्तोत्र, अष्टक, चालीसा र सहस्रनाम", en: "Stotras, ashtakams, chalisas and sahasranamas" },
     topics: [
       { id: "shiva", ne: "शिव स्तोत्र", en: "Shiva stotra" },
       { id: "vishnu", ne: "विष्णु स्तोत्र", en: "Vishnu stotra" },
@@ -116,6 +124,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "🪔",
     ne: "पूजा तथा कर्मकाण्ड",
     en: "Puja and ritual",
+    blurb: { ne: "पूजा विधि, रुद्री, होम र गृहशान्ति", en: "Puja procedures, Rudri, homa and home rites" },
     topics: [
       { id: "nityakarma", ne: "नित्यकर्म", en: "Daily rites" },
       { id: "puja-vidhi", ne: "पूजा विधि", en: "Puja procedure" },
@@ -129,7 +138,8 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
       { id: "rudrabhisheka", ne: "रुद्राभिषेक", en: "Rudrabhisheka" },
       { id: "homa", ne: "होम / हवन", en: "Homa / havan" },
       { id: "agnihotra", ne: "अग्निहोत्र", en: "Agnihotra" },
-      { id: "shraddha", ne: "श्राद्ध", en: "Shraddha" },
+      { id: "shraddha", ne: "श्राद्ध", en: "Shraddha", opens: "shraddha" },
+      { id: "katha", ne: "व्रतकथा", en: "Vrat katha", opens: "katha" },
       { id: "sanskara", ne: "संस्कार", en: "Samskara" },
       { id: "vivaha", ne: "विवाह कर्म", en: "Marriage rites" },
       { id: "grihapravesh", ne: "गृहप्रवेश", en: "Grihapravesha" },
@@ -138,10 +148,40 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     ],
   },
   {
+    id: "katha",
+    emoji: "📕",
+    ne: "कथा",
+    en: "Katha",
+    blurb: { ne: "व्रतकथा — सत्यनारायण, हरितालिका, ऋषिपञ्चमी", en: "Vrat kathas — Satyanarayan, Haritalika, Rishi Panchami" },
+    topics: [
+      { id: "vrat-katha", ne: "व्रतकथा", en: "Vrat katha" },
+      { id: "purana-katha", ne: "पौराणिक कथा", en: "Puranic katha" },
+      { id: "satyanarayan", ne: "सत्यनारायण", en: "Satyanarayan" },
+      { id: "haritalika", ne: "हरितालिका", en: "Haritalika" },
+      { id: "rishi-panchami", ne: "ऋषिपञ्चमी", en: "Rishi Panchami" },
+    ],
+  },
+  {
+    id: "shraddha",
+    emoji: "🕊️",
+    ne: "श्राद्ध",
+    en: "Shraddha",
+    blurb: { ne: "पार्वण, एकोद्दिष्ट, एकैकपार्वण र त्रिपिण्डी", en: "Parvana, Ekoddishta, Ekaikaparvana and Tripindi" },
+    topics: [
+      { id: "parvana", ne: "पार्वण श्राद्ध", en: "Parvana Shraddha" },
+      { id: "ekoddishta", ne: "एकोद्दिष्ट श्राद्ध", en: "Ekoddishta Shraddha" },
+      { id: "ekaikaparvana", ne: "एकैकपार्वण श्राद्ध", en: "Ekaikaparvana Shraddha" },
+      { id: "tripindi", ne: "त्रिपिण्डी श्राद्ध", en: "Tripindi Shraddha" },
+      { id: "tarpan", ne: "तर्पण", en: "Tarpan" },
+      { id: "pitri", ne: "पितृ कर्म", en: "Pitri rites" },
+    ],
+  },
+  {
     id: "gita",
     emoji: "📗",
     ne: "गीता",
     en: "Gita",
+    blurb: { ne: "भगवद्गीता र अन्य गीताहरू", en: "The Bhagavad Gita and the other Gitas" },
     topics: [
       { id: "bhagavad", ne: "श्रीमद्भगवद्गीता", en: "Bhagavad Gita" },
       { id: "bhashya", ne: "गीता विभिन्न भाष्य", en: "Gita commentaries" },
@@ -156,6 +196,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "📚",
     ne: "पुराण",
     en: "Purana",
+    blurb: { ne: "पुराण, रामायण, महाभारत र तन्त्र", en: "Puranas, Ramayana, Mahabharata and Tantra" },
     topics: [
       { id: "bhagavata", ne: "श्रीमद्भागवत", en: "Bhagavata Purana" },
       { id: "vishnu", ne: "विष्णु पुराण", en: "Vishnu Purana" },
@@ -174,6 +215,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "🔱",
     ne: "दर्शन / शास्त्र",
     en: "Darshana",
+    blurb: { ne: "षड्दर्शन, वेदान्त र तन्त्र", en: "The six darshanas, Vedanta and Tantra" },
     topics: [
       { id: "sankhya", ne: "सांख्य", en: "Sankhya" },
       { id: "yoga", ne: "योग", en: "Yoga" },
@@ -191,6 +233,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "🌿",
     ne: "आयुर्वेद / ज्योतिष / वास्तु",
     en: "Ayurveda, jyotisha, and vastu",
+    blurb: { ne: "आयुर्वेद, ज्योतिष र वास्तुशास्त्र", en: "Ayurveda, jyotisha and Vastu shastra" },
     topics: [
       { id: "ayurveda", ne: "आयुर्वेद", en: "Ayurveda" },
       { id: "jyotish", ne: "ज्योतिष", en: "Jyotisha" },

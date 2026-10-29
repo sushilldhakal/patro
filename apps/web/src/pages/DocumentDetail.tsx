@@ -1,9 +1,19 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { chapterAnchor, shlokaAnchor, useDocumentDetail, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
+import { BookOpen, ChevronRight } from "lucide-react";
+import {
+  bilingual,
+  chapterAnchor,
+  shlokaAnchor,
+  useDocumentDetail,
+  useDocumentLibraryOptions,
+  useDocumentSiblings,
+} from "@vedic-patro/features/documents";
+import { categoryGroup } from "@vedic-patro/domain/learn/document-categories";
+import { useLocale } from "@vedic-patro/i18n/react";
 import { PageShell } from "@/components/PageShell";
 import { ChapterCard } from "@/components/documents/ChapterCard";
+import { DocumentsBreadcrumb, type Crumb } from "@/components/documents/DocumentLibraryViews";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
@@ -19,12 +29,15 @@ const SHELL = "min-w-0 max-w-full [overflow-wrap:anywhere]";
 export function DocumentDetail() {
   const navigate = useNavigate();
   const { slug } = useParams({ strict: false }) as { slug?: string };
-  // Which list-page tab this document was opened from (see DocumentCard) — so
-  // "back to list" returns there instead of always resetting to "all".
-  const { category, topic } = useSearch({ strict: false }) as DocumentDetailSearch;
+  // Which list-page tab and view this document was opened from (see DocumentCard),
+  // carried on to its chapters and back to the library.
+  const { category, topic, view } = useSearch({ strict: false }) as DocumentDetailSearch;
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
+  const { t, lang, digits } = useLocale();
   const { doc, copy } = page;
+  const siblings = useDocumentSiblings(doc?.slug, doc?.category);
+  const libraryLabel = t("documents.library");
 
   useRouteLoading(page.status === "loading");
 
@@ -40,15 +53,10 @@ export function DocumentDetail() {
     });
   }, [doc]);
 
-  const backLink = (
-    <Link
-      to="/documents"
-      search={documentsListSearch(category ?? "all", topic)}
-      className={cn(documentsClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
-    >
-      <ArrowLeft className="size-4" /> {copy.backToList}
-    </Link>
-  );
+  const group = doc ? categoryGroup(doc.category) : undefined;
+  const crumbs: Crumb[] = [{ label: libraryLabel, category: "all" }];
+  if (group) crumbs.push({ label: bilingual(lang, group.ne, group.en), category: group.id });
+  const backLink = <DocumentsBreadcrumb crumbs={crumbs} current={page.title || undefined} view={view} />;
 
   if (page.status === "not-found" || page.status === "error") {
     return (
@@ -69,62 +77,107 @@ export function DocumentDetail() {
 
   const { header } = page;
   const headerBlock = (
-    <header className={cn(documentsClasses.header, "space-y-1.5")}>
-      <p className={documentsClasses.headerSanskrit}>{header.sanskrit}</p>
-      <h1 className={documentsClasses.headerTitle}>{header.title}</h1>
-      {header.subtitle ? <p className={documentsClasses.headerSubtitle}>{header.subtitle}</p> : null}
-      {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
-      {header.source ? <p className={documentsClasses.headerSource}>{header.source}</p> : null}
+    <header className={documentsClasses.readerHero}>
+      {group ? (
+        <span className={documentsClasses.readerHeroMark} aria-hidden="true">
+          {group.emoji}
+        </span>
+      ) : null}
+      <div className={documentsClasses.readerHeroBody}>
+        <p className={documentsClasses.headerSanskrit}>{header.sanskrit}</p>
+        <h1 className={documentsClasses.headerTitle}>{header.title}</h1>
+        {header.subtitle ? <p className={documentsClasses.headerSubtitle}>{header.subtitle}</p> : null}
+        {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
+        <div className={documentsClasses.readerFacts}>
+          {group ? (
+            <Link
+              to="/documents"
+              search={documentsListSearch(group.id, undefined, view)}
+              className={cn(documentsClasses.readerFactLink, "transition-colors hover:bg-secondary/20")}
+            >
+              <span aria-hidden="true">{group.emoji}</span>
+              {bilingual(lang, group.ne, group.en)}
+            </Link>
+          ) : null}
+          {(page.stats ?? [t("documents.shlokas_count", { count: digits(doc.shloka_count) })]).map((fact) => (
+            <span key={fact} className={documentsClasses.readerFact}>
+              {fact}
+            </span>
+          ))}
+        </div>
+        {header.source ? <p className={cn(documentsClasses.headerSource, "pt-1")}>{header.source}</p> : null}
+      </div>
     </header>
   );
-  const stats = page.stats ? (
-    <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
-      <span>{page.stats[0]}</span>
-      <span aria-hidden="true">·</span>
-      <span>{page.stats[1]}</span>
-    </div>
-  ) : null;
+
+  const moreShelf =
+    siblings.documents.length > 0 ? (
+      <section className="space-y-3 border-t border-border pt-6" aria-labelledby="documents-more">
+        <h2 id="documents-more" className={documentsClasses.sectionLabel}>
+          {siblings.title}
+        </h2>
+        <div className={documentsClasses.moreGrid}>
+          {siblings.documents.map((other) => (
+            <Link
+              key={other.slug}
+              to="/documents/$slug"
+              params={{ slug: other.slug }}
+              search={documentsListSearch(other.category, undefined, view)}
+              className={cn(documentsClasses.moreCard, "group transition-colors hover:border-secondary/50")}
+            >
+              <span className={documentsClasses.listDocIcon} aria-hidden="true">
+                <BookOpen className="size-4" />
+              </span>
+              <span className={cn(documentsClasses.listDocTitle, "min-w-0 flex-1")}>{bilingual(lang, other.title_ne, other.title_en)}</span>
+              <ChevronRight className={documentsClasses.rowChevron} aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
+      </section>
+    ) : null;
 
   const hasFullRecording = Boolean(page.fullAudioUrl);
   const playThrough = page.shlokas.find((s) => s.audio_url);
-  const listSearch = category ? documentsListSearch(category, topic) : undefined;
+  const listSearch = category ? documentsListSearch(category, topic, view) : undefined;
 
   const jumpForm = (
-    <DocumentJumpForm
-      chapterNumbers={page.chapterNumbers}
-      documents={library}
-      currentSlug={doc.slug}
-      onSelectDocument={(next) => {
-        navigate({ to: "/documents/$slug", params: { slug: next }, search: listSearch });
-      }}
-      onJump={(chapter, verse) => {
-        // Chapter-picker layout: open that chapter (and verse hash when typed).
-        if (page.layout === "chapters") {
-          if (chapter < 1) return false;
-          navigate({
-            to: "/documents/$slug/$chapter",
-            params: { slug: doc.slug, chapter: String(chapter) },
-            search: listSearch,
-            hash: verse ? shlokaAnchor(verse) : undefined,
-          });
-          return true;
-        }
-        // Reader layout (inline chapters or a flat stotram): scroll on this page.
-        if (verse) {
-          const el = document.getElementById(shlokaAnchor(verse));
-          if (!el) return false;
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-          return true;
-        }
-        if (chapter > 0) {
-          const el = document.getElementById(chapterAnchor(chapter));
-          if (!el) return false;
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          return true;
-        }
-        return false;
-      }}
-    />
+    <div className={documentsClasses.jumpPanel}>
+      <DocumentJumpForm
+        chapterNumbers={page.chapterNumbers}
+        documents={library}
+        currentSlug={doc.slug}
+        onSelectDocument={(next) => {
+          navigate({ to: "/documents/$slug", params: { slug: next }, search: listSearch });
+        }}
+        onJump={(chapter, verse) => {
+          // Chapter-picker layout: open that chapter (and verse hash when typed).
+          if (page.layout === "chapters") {
+            if (chapter < 1) return false;
+            navigate({
+              to: "/documents/$slug/$chapter",
+              params: { slug: doc.slug, chapter: String(chapter) },
+              search: listSearch,
+              hash: verse ? shlokaAnchor(verse) : undefined,
+            });
+            return true;
+          }
+          // Reader layout (inline chapters or a flat stotram): scroll on this page.
+          if (verse) {
+            const el = document.getElementById(shlokaAnchor(verse));
+            if (!el) return false;
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            return true;
+          }
+          if (chapter > 0) {
+            const el = document.getElementById(chapterAnchor(chapter));
+            if (!el) return false;
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+            return true;
+          }
+          return false;
+        }}
+      />
+    </div>
   );
 
   // Paginated books (Gita, Ashtavakra): chapter cards, then a separate route
@@ -134,13 +187,18 @@ export function DocumentDetail() {
       <PageShell showRelatedLinks={false} className={`${SHELL} ${hasFullRecording ? "pb-28" : ""}`}>
         {backLink}
         {headerBlock}
-        {stats}
         {jumpForm}
-        <div className={documentsClasses.sectionColumns}>
-          {page.chapters.map((card) => (
-            <ChapterCard key={card.number} slug={doc.slug} card={card} category={category} topic={topic} />
-          ))}
-        </div>
+        <section className="space-y-3" aria-labelledby="documents-chapters">
+          <h2 id="documents-chapters" className={documentsClasses.sectionLabel}>
+            {copy.chapterNav}
+          </h2>
+          <div className={documentsClasses.sectionColumns}>
+            {page.chapters.map((card) => (
+              <ChapterCard key={card.number} slug={doc.slug} card={card} category={category} topic={topic} />
+            ))}
+          </div>
+        </section>
+        {moreShelf}
         {fullAudio.audioElement}
         <PlaybackBar
           mode={mode === "verse" ? null : mode}
@@ -171,16 +229,15 @@ export function DocumentDetail() {
     <PageShell showRelatedLinks={false} className={`${SHELL} pb-28`}>
       {backLink}
       {headerBlock}
-      {stats}
       {jumpForm}
 
       {page.chapterPills.length > 0 ? (
-        <nav aria-label={copy.chapterNav} className="flex gap-1.5 overflow-x-auto pb-1">
+        <nav aria-label={copy.chapterNav} className={documentsClasses.pillsSticky}>
           {page.chapterPills.map((pill) => (
             <a
               key={pill.number}
               href={`#${pill.anchor}`}
-              className={cn(documentsClasses.chapterPill, documentsClasses.chapterPillText, "transition-colors hover:border-secondary/60 hover:text-secondary")}
+              className={cn(documentsClasses.chapterPill, documentsClasses.chapterPillText, "bg-card transition-colors hover:border-secondary/60 hover:text-secondary")}
             >
               {pill.label}
             </a>
@@ -189,6 +246,7 @@ export function DocumentDetail() {
       ) : null}
 
       <ReaderRows rows={page.rows} versePlayer={versePlayer} fullRecording={fullRecordingControls} />
+      {moreShelf}
 
       {fullAudio.audioElement}
       <PlaybackBar

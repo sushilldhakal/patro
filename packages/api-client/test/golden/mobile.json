@@ -480,7 +480,7 @@
   "https://www.vedicpatro.com/api/meta/capabilities"
  ],
  "fetchDocuments": [
-  "https://www.vedicpatro.com/api/v1/documents?v=9"
+  "https://www.vedicpatro.com/api/v1/documents?v=11"
  ],
  "fetchDocumentDetail": [
   "https://www.vedicpatro.com/api/v1/documents/hanuman%20chalisa"

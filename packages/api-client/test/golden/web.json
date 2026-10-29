@@ -756,7 +756,7 @@
   "/api/meta/capabilities"
  ],
  "fetchDocuments": [
-  "/api/v1/documents?v=9&language=ne"
+  "/api/v1/documents?v=11&language=ne"
  ],
  "fetchDocumentDetail": [
   "/api/v1/documents/hanuman%20chalisa?language=ne"

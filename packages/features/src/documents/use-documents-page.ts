@@ -1,21 +1,41 @@
 /**
  * Documents library page logic, shared by the website (`apps/web/src/pages/Documents.tsx`)
  * and the app (`apps/mobile/app/(tabs)/documents/index.tsx`): the list, the
- * category tabs with their counts, and the sections shown for the chosen tab.
+ * category tabs with their counts, the sections shown for the chosen tab, and
+ * the title search.
  */
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { documentsKeys, fetchDocuments, type DocumentSummary } from "@vedic-patro/api-client";
-import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryGroup, type DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
+import { DOCUMENT_CATEGORY_GROUPS, categoryGroup, type DocumentCategoryGroup, type DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
 import { bilingual } from "./reader-rows";
 import type { DocumentLibraryOption } from "./use-document-jump-form";
 
 export type DocumentsTab = "all" | DocumentCategoryId;
+export type DocumentsViewMode = "grid" | "list";
+
+/** Titles a hub card lists before "+N more". */
+const PREVIEW_TITLES = 3;
 
 export function documentsInGroup(documents: readonly DocumentSummary[], groupId: DocumentCategoryId): DocumentSummary[] {
   return documents.filter((doc) => doc.category === groupId);
+}
+
+/** Lower-case, accent-free text for matching typed queries ("ramayana" finds "Rāmāyaṇa"). */
+function fold(text: string | null | undefined): string {
+  return (text ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+/** Documents whose titles or subtitles contain every word of `query`, in library order. */
+export function searchDocuments(documents: readonly DocumentSummary[], query: string): DocumentSummary[] {
+  const words = fold(query).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
+  return documents.filter((doc) => {
+    const hay = fold([doc.title_sa, doc.title_ne, doc.title_en, doc.subtitle_ne, doc.subtitle_en, doc.slug].join(" "));
+    return words.every((w) => hay.includes(w));
+  });
 }
 
 /** Library titles for the in-reader document picker (same order as `/documents`). */
@@ -36,17 +56,47 @@ export function useDocumentLibraryOptions(): DocumentLibraryOption[] {
   );
 }
 
+/** Other documents in a document's own group — the reader's "More in …" shelf. */
+export function useDocumentSiblings(slug: string | undefined, category: DocumentCategoryId | undefined) {
+  const { t, lang } = useLocale();
+  const query = useQuery({
+    queryKey: documentsKeys.list(),
+    queryFn: fetchDocuments,
+    staleTime: 0,
+  });
+  const group = category ? categoryGroup(category) : undefined;
+  const documents = useMemo(
+    () => (category ? documentsInGroup(query.data?.documents ?? [], category).filter((doc) => doc.slug !== slug) : []),
+    [query.data?.documents, category, slug],
+  );
+  return {
+    group,
+    groupName: group ? bilingual(lang, group.ne, group.en) : "",
+    title: group ? t("documents.more_in_category", { category: bilingual(lang, group.ne, group.en) }) : "",
+    documents,
+  };
+}
+
 export type DocumentsSection = {
   group: DocumentCategoryGroup;
   /** 1-based position among the groups that have documents. */
   index: number;
   indexLabel: string;
+  /** Emoji + name, for headings that draw no separate emoji tile. */
   title: string;
+  /** Name alone. */
+  name: string;
+  blurb: string;
   countLabel: string;
+  count: number;
   documents: DocumentSummary[];
+  /** First few titles, for the hub card. */
+  preview: string[];
+  /** "+N more" under the preview, or "" when every title is shown. */
+  moreLabel: string;
 };
 
-export function useDocumentsPage(active: DocumentsTab) {
+export function useDocumentsPage(active: DocumentsTab, search = "") {
   const { t, lang, digits } = useLocale();
   const query = useQuery({
     queryKey: documentsKeys.list(),
@@ -64,6 +114,7 @@ export function useDocumentsPage(active: DocumentsTab) {
   );
   const counts = useMemo(() => Object.fromEntries(nonEmpty.map((e) => [e.group.id, e.docs.length])) as Record<DocumentCategoryId, number>, [nonEmpty]);
   const name = (g: DocumentCategoryGroup) => (lang === "en" ? g.en : g.ne);
+  const blurbOf = (g: DocumentCategoryGroup) => (g.blurb ? (lang === "en" ? g.blurb.en : g.blurb.ne) : "");
 
   const sections: DocumentsSection[] = nonEmpty
     .map((e, i) => ({
@@ -71,10 +122,24 @@ export function useDocumentsPage(active: DocumentsTab) {
       index: i + 1,
       indexLabel: digits(i + 1),
       title: `${e.group.emoji} ${name(e.group)}`,
+      name: name(e.group),
+      blurb: blurbOf(e.group),
       countLabel: digits(e.docs.length),
+      count: e.docs.length,
       documents: e.docs,
+      preview: e.docs.slice(0, PREVIEW_TITLES).map((doc) => bilingual(lang, doc.title_ne, doc.title_en)),
+      moreLabel: e.docs.length > PREVIEW_TITLES ? t("documents.more_count", { count: digits(e.docs.length - PREVIEW_TITLES) }) : "",
     }))
     .filter((s) => active === "all" || s.group.id === active);
+
+  const isHub = active === "all";
+  const activeSection = isHub ? undefined : sections[0];
+  const searching = search.trim().length > 0;
+  // Search covers the open group only; on the hub it covers the whole library.
+  const results = useMemo(
+    () => (searching ? searchDocuments(isHub ? documents : documentsInGroup(documents, active as DocumentCategoryId), search) : []),
+    [searching, isHub, documents, active, search],
+  );
 
   return {
     copy: {
@@ -83,11 +148,35 @@ export function useDocumentsPage(active: DocumentsTab) {
       loadError: t("documents.load_error"),
       empty: t("documents.empty"),
       tabsLabel: t("documents.category_tabs_label"),
+      hubTitle: t("documents.hub_title"),
+      hubSubtitle: t("documents.hub_subtitle"),
+      viewGrid: t("documents.view_grid"),
+      viewList: t("documents.view_list"),
+      viewLabel: t("documents.view_label"),
+      openCategory: t("documents.open_category"),
+      docsInCategory: (count: number) => t("documents.docs_in_category", { count: digits(count) }),
+      chaptersExpand: t("documents.chapters_expand"),
+      openDocument: t("documents.open_document"),
+      emptyCategory: t("documents.empty_category"),
+      library: t("documents.library"),
+      allCategories: t("documents.all_categories"),
+      searchPlaceholder: isHub
+        ? t("documents.search_placeholder")
+        : t("documents.search_in_category", { category: activeSection?.name ?? "" }),
+      searchClear: t("documents.search_clear"),
+      noResults: t("documents.search_empty", { query: search.trim() }),
+      resultsLabel: t("documents.search_results", { count: digits(results.length) }),
+      /** "42 texts in 9 categories". */
+      totals: t("documents.library_totals", { texts: digits(documents.length), categories: digits(nonEmpty.length) }),
     },
     status: statusOf(query) as PageStatus,
     retry: () => void query.refetch(),
     documents,
     counts,
+    isHub,
+    activeSection,
+    searching,
+    results,
     tabs: [
       { id: "all" as DocumentsTab, label: t("documents.category.all"), active: active === "all" },
       ...nonEmpty.map((e) => ({
@@ -97,7 +186,7 @@ export function useDocumentsPage(active: DocumentsTab) {
         label: name(e.group),
         count: e.docs.length,
         countLabel: digits(e.docs.length),
-        active: active === e.group.id,
+        active: e.group.id === active,
       })),
     ],
     sections,

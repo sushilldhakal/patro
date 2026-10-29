@@ -27,7 +27,11 @@ Groups:
 - `puja` — ritual procedure (`nityakarma`, `puja-vidhi`, `karmakanda`,
   `svasti-shanti`, `griha-shanti`, `vastu-shanti`, `graha-shanti`,
   `nakshatra-shanti`, `rudri`, `rudrabhisheka`, `homa`, `agnihotra`,
-  `shraddha`, `sanskara`, `vivaha`, `grihapravesh`, `ayushya`, `pitri`).
+  `sanskara`, `vivaha`, `grihapravesh`, `ayushya`, `pitri`).
+- `katha` — vrat katha and related story texts (`vrat-katha`, `purana-katha`,
+  `satyanarayan`, `haritalika`, `rishi-panchami`).
+- `shraddha` — ancestral rites (`parvana`, `ekoddishta`, `ekaikaparvana`,
+  `tripindi`, `tarpan`, `pitri`).
 - `gita` — Bhagavad Gita and the other Gitas (`bhagavad`, `bhashya`, `nepali`,
   `sanskrit`, `by-chapter`, `other`).
 - `purana` — a Purana, and the itihasa kept in this library (the Valmiki
