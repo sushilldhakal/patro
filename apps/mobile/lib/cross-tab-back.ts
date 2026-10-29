@@ -7,29 +7,71 @@
  * an hour ago) instead of home. The tab stack now remembers, for a page
  * pushed from outside the tab, the page it was opened from, and going back
  * from it returns there.
+ *
+ * Two signals say a page was opened from outside: the pathname moving from
+ * outside the tab into it, and the page's first focus. They arrive in either
+ * order, so each waits briefly for the other instead of trusting a timer.
  */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { router, usePathname, type Href } from "expo-router";
 
-/** The last pathnames, newest last (kept by `useTrackPathname` in the root layout). */
-const history: string[] = [];
+/** How far apart the pathname change and the focus may land and still be one navigation. */
+const PAIR_WINDOW_MS = 2000;
+
 /** Stack route key → the pathname it was opened from, for pages opened from another tab. */
 const originByKey = new Map<string, string>();
 /** Stack route keys already focused once: only the first focus says where a page was opened from. */
 const seen = new Set<string>();
-
-/** Kept once, at the root: every pathname the app shows, in order. */
-export function useTrackPathname() {
-  const pathname = usePathname();
-  useEffect(() => {
-    if (history[history.length - 1] === pathname) return;
-    history.push(pathname);
-    if (history.length > 20) history.shift();
-  }, [pathname]);
-}
+/** Per tab prefix: an entry from outside still waiting for its page's focus. */
+const pendingEntry = new Map<string, { origin: string; at: number }>();
+/** Per tab prefix: a first focus still waiting to learn whether it came from outside. */
+const pendingFocus = new Map<string, { key: string; at: number }>();
+/** The tab prefixes with listeners (`/panchanga`, `/kundali`, `/learn`). */
+const prefixes = new Set<string>();
 
 function inTab(prefix: string, path: string): boolean {
   return path === prefix || path.startsWith(`${prefix}/`);
+}
+
+function pair(prefix: string) {
+  const entry = pendingEntry.get(prefix);
+  const focus = pendingFocus.get(prefix);
+  if (!entry || !focus) return;
+  // Too far apart: the older one is stale (a focus from a move inside the tab); keep the newer waiting.
+  if (Math.abs(entry.at - focus.at) > PAIR_WINDOW_MS) {
+    if (entry.at < focus.at) pendingEntry.delete(prefix);
+    else pendingFocus.delete(prefix);
+    return;
+  }
+  pendingEntry.delete(prefix);
+  pendingFocus.delete(prefix);
+  originByKey.set(focus.key, entry.origin);
+}
+
+function onPathChange(prev: string, now: string) {
+  const at = Date.now();
+  for (const prefix of prefixes) {
+    // A tab's own first page needs nothing: from there back is the tab history.
+    if (inTab(prefix, now) && now !== prefix && !inTab(prefix, prev)) {
+      pendingEntry.set(prefix, { origin: prev, at });
+      pair(prefix);
+    } else {
+      // A move inside the tab (or out of it): any waiting focus was not an entry from outside.
+      pendingEntry.delete(prefix);
+      if (inTab(prefix, now)) pendingFocus.delete(prefix);
+    }
+  }
+}
+
+/** Kept once, at the root: notices every pathname change. */
+export function useTrackPathname() {
+  const pathname = usePathname();
+  const last = useRef<string | null>(null);
+  useEffect(() => {
+    const prev = last.current;
+    last.current = pathname;
+    if (prev != null && prev !== pathname) onPathChange(prev, pathname);
+  }, [pathname]);
 }
 
 type ListenerArgs = { route: { key: string; name: string } };
@@ -37,19 +79,15 @@ type RemoveEvent = { data?: { action?: { type?: string } } };
 
 /**
  * `screenListeners` for a tab's stack. `prefix` is the tab's path (`/panchanga`).
- * The tab's own first page needs nothing: from there back is the tab history.
  */
 export function crossTabBackListeners(prefix: string) {
+  prefixes.add(prefix);
   return ({ route }: ListenerArgs) => ({
     focus: () => {
       if (route.name === "index" || seen.has(route.key)) return;
       seen.add(route.key);
-      // The pathname updates just after the focus; read it once it has.
-      setTimeout(() => {
-        const prev = history[history.length - 2];
-        const now = history[history.length - 1];
-        if (now && inTab(prefix, now) && prev && !inTab(prefix, prev)) originByKey.set(route.key, prev);
-      }, 120);
+      pendingFocus.set(prefix, { key: route.key, at: Date.now() });
+      pair(prefix);
     },
     beforeRemove: (e: RemoveEvent) => {
       const origin = originByKey.get(route.key);

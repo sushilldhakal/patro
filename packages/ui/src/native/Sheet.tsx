@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, View, type LayoutChangeEvent } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
@@ -16,7 +16,7 @@ import { Text } from "./Text";
 const TOP_SHEET_INSET = Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 12 : 56;
 
 /** In: a spring that settles without overshoot. Out: a short ease, since nobody watches a sheet leave. */
-const OPEN_SPRING = { duration: 380, dampingRatio: 0.9 } as const;
+const OPEN_SPRING = { duration: 340, dampingRatio: 1 } as const;
 const CLOSE_TIMING = { duration: 200, easing: Easing.bezier(0.32, 0.72, 0, 1) } as const;
 /** A release past a quarter of the panel, or a flick, dismisses it. */
 const DISMISS_FRACTION = 0.25;
@@ -91,40 +91,46 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
       {/* A modal is its own native root: gestures inside it need their own handler root. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className={cn("flex-1", top ? "justify-start" : center ? "justify-center px-5" : "justify-end")}>
-          <Animated.View className={cn("absolute bottom-0 left-0 right-0 top-0", sheetClass.backdrop)} style={backdropStyle}>
-            <Pressable className="flex-1" onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} />
+          {/* Colour and shape sit on plain views: NativeWind classes on a reanimated view are
+              dropped, which left the panel see-through and the backdrop without a size to tap. */}
+          <Animated.View style={[StyleSheet.absoluteFill, backdropStyle]}>
+            <Pressable className={cn("flex-1", sheetClass.backdrop)} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} />
           </Animated.View>
           <Animated.View
-            className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
             accessibilityViewIsModal
             onLayout={onPanelLayout}
-            style={[{ maxHeight: `${maxHeightPercent ?? 85}%`, ...(top ? { paddingTop: TOP_SHEET_INSET } : null) }, panelStyle]}
+            style={[{ maxHeight: `${maxHeightPercent ?? 85}%` }, panelStyle]}
           >
-            {/* The handle and title are the drag area; the list below keeps its own scrolling. */}
-            <GestureDetector gesture={pan}>
-              <View>
-                {top || center ? null : <View className={sheetClass.handle} />}
-                {title || closeLabel ? (
-                  <View className={sheetClass.header}>
-                    {title ? (
-                      <Text as="h2" className={sheetClass.title}>
-                        {title}
-                      </Text>
-                    ) : (
-                      <View />
-                    )}
-                    {closeLabel ? (
-                      <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} hitSlop={8} className="p-1 active:opacity-70">
-                        <Icon node={kitIcons.x} size="md" tone="muted" />
-                      </Pressable>
-                    ) : null}
-                  </View>
-                ) : null}
-              </View>
-            </GestureDetector>
-            <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-              {children}
-            </ScrollView>
+            <View
+              className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
+              style={[{ flexShrink: 1 }, top ? { paddingTop: TOP_SHEET_INSET } : null]}
+            >
+              {/* The handle and title are the drag area; the list below keeps its own scrolling. */}
+              <GestureDetector gesture={pan}>
+                <View>
+                  {top || center ? null : <View className={sheetClass.handle} />}
+                  {title || closeLabel ? (
+                    <View className={sheetClass.header}>
+                      {title ? (
+                        <Text as="h2" className={sheetClass.title}>
+                          {title}
+                        </Text>
+                      ) : (
+                        <View />
+                      )}
+                      {closeLabel ? (
+                        <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} hitSlop={8} className="p-1 active:opacity-70">
+                          <Icon node={kitIcons.x} size="md" tone="muted" />
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  ) : null}
+                </View>
+              </GestureDetector>
+              <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+                {children}
+              </ScrollView>
+            </View>
           </Animated.View>
         </KeyboardAvoidingView>
       </GestureHandlerRootView>
