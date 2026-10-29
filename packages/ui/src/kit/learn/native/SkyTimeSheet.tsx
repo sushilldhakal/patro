@@ -31,6 +31,17 @@ export function SkyTimeSheet({
   });
 
   const inputRefs = useRef<Partial<Record<SkyTimeField, ComponentRef<typeof TextInput> | null>>>({});
+  /* Tapping a field selects all of it, so typing replaces the year (or month, day, time) at once.
+     `selectTextOnFocus` alone lost the selection: the field swaps to plain digits as it focuses. */
+  useEffect(() => {
+    if (!v.edit) return;
+    const input = inputRefs.current[v.edit];
+    const length = v.draft.length;
+    const id = requestAnimationFrame(() => input?.setSelection(0, length));
+    return () => cancelAnimationFrame(id);
+    // Only when a field starts being edited, not on every keystroke.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v.edit]);
   /** Closing applies a half-typed field first: the iPhone number pad has no return key, so a year
    * typed and then a tap outside used to close without the year. */
   const close = () => {
