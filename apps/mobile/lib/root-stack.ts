@@ -9,9 +9,12 @@ import { useNavigationContainerRef, useRootNavigationState } from "expo-router";
  */
 export function useDropPagesBehindTabs() {
   const navigation = useNavigationContainerRef();
-  const state = useRootNavigationState();
+  const container = useRootNavigationState();
   useEffect(() => {
-    if (!state || state.type !== "stack" || state.index === 0) return;
+    // The container's state holds one `__root` route; the root stack is that route's state. Read at
+    // the container level this never matched, so pages piled up under the tabs (2-4 GB in a session).
+    const state = rootStackState(container);
+    if (!state || state.index === 0) return;
     const top = state.routes[state.index];
     if (top?.name !== "(tabs)") return;
     navigation.dispatch({
@@ -19,5 +22,14 @@ export function useDropPagesBehindTabs() {
       payload: { ...state, index: 0, routes: [top] },
       target: state.key,
     });
-  }, [navigation, state]);
+  }, [navigation, container]);
+}
+
+type NavState = { type?: string; key?: string; index?: number; routes: { name: string; key: string; state?: NavState }[] };
+
+function rootStackState(container: unknown): (NavState & { key: string; index: number }) | null {
+  let state = container as NavState | undefined;
+  while (state && state.routes.length === 1 && state.routes[0]?.name === "__root") state = state.routes[0].state;
+  if (!state || state.type !== "stack" || !state.key || state.index == null) return null;
+  return state as NavState & { key: string; index: number };
 }
