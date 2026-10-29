@@ -20,6 +20,23 @@ export const learnPageClasses = {
   searchWrap: "w-full max-w-md",
   searchInput: "h-12 text-base",
   searchClear: "flex size-8 items-center justify-center rounded-md",
+  /** Website: copy beside the path map from `lg` up. */
+  heroGrid: "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] lg:items-center",
+  searchIcon: "pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground",
+
+  // ── Path map (website hero) ───────────────────────────────────────────────
+  pathMap: "rounded-2xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm sm:p-5",
+  pathMapHead: "mb-3 flex items-center gap-2 px-1 text-sm font-semibold text-foreground",
+  pathList: "relative space-y-1 before:absolute before:bottom-5 before:left-[1.45rem] before:top-5 before:w-px before:bg-border",
+  pathItem: "relative flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left",
+  pathNum: "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-secondary/30 bg-card text-sm font-bold text-secondary",
+  pathTitle: "block truncate text-sm font-semibold text-foreground",
+  pathCount: "block text-xs text-muted-foreground",
+
+  // ── Filter strip (website) ────────────────────────────────────────────────
+  filterBar: "flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-3",
+  chipStrip: "-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0",
+  resultsPill: "shrink-0 px-2 text-sm font-medium text-muted-foreground",
 
   // ── Category filter ───────────────────────────────────────────────────────
   chip: "gap-1.5 rounded-full border px-4 py-2",
@@ -78,6 +95,12 @@ export const learnPageClasses = {
   catTitleText: "text-sm font-bold text-foreground",
   catCount: "font-medium text-muted-foreground",
   catLink: "text-sm font-semibold text-secondary",
+  /** Website: numbered path heading ("१  आधारभूत …"). */
+  moduleHead: "mb-6 flex items-start gap-4 border-b border-border pb-5",
+  moduleNum: "flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-xl font-bold text-secondary-foreground shadow-sm",
+  moduleCount: "hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground sm:inline-flex",
+  catHead: "mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-secondary/[0.06] px-3 py-2",
+  topicGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-3",
 
   // ── Article chrome ────────────────────────────────────────────────────────
   backLink: "items-center gap-1.5 text-sm",

@@ -36,7 +36,11 @@ export type LearnHubSection = { id: string; label: string; countLabel: string; i
 
 export type LearnHubModule = {
   id: string;
+  /** "१" … position among the paths that have articles. */
+  indexLabel: string;
   title: string;
+  /** "4 articles". */
+  countLabel: string;
   /** "Blurb · 4 articles". */
   blurb: string;
   /** "2 more being written" (when any). */
@@ -86,31 +90,31 @@ export function useLearnHub() {
     [activeCategory, normalized],
   );
 
-  const modules: LearnHubModule[] = isFiltering
-    ? []
-    : LEARN_MODULES.flatMap((module) => {
-      const moduleTopics = views.published.filter((topic) => module.sections.includes(topic.section));
-      if (moduleTopics.length === 0) return [];
-      const upcoming = module.sections.reduce((n, id) => n + views.plannedInSection(id).length, 0);
-      const sections = LEARN_SECTIONS.filter((s) => module.sections.includes(s.id)).flatMap((s) => {
-        const topics = views.publishedInSection(s.id);
-        if (topics.length === 0) return [];
-        return [{ id: s.id, label: pick(s.title), countLabel: articles(topics.length), icon: s.icon, topics: topics.map(card) }];
-      });
-      return [
-        {
-          id: module.id,
-          title: pick(module.title),
-          blurb: `${pick(module.blurb)} · ${articles(moduleTopics.length)}`,
-          more: upcoming > 0 ? t("learn_page.more_coming", { count: digits(upcoming) }) : undefined,
-          icon: views.sectionsById[module.sections[0] ?? ""]?.icon ?? "ScrollText",
-          sections,
-          showSectionHeads: sections.length > 1,
-        },
-      ];
+  const allModules: LearnHubModule[] = LEARN_MODULES.flatMap((module) => {
+    const moduleTopics = views.published.filter((topic) => module.sections.includes(topic.section));
+    if (moduleTopics.length === 0) return [];
+    const upcoming = module.sections.reduce((n, id) => n + views.plannedInSection(id).length, 0);
+    const sections = LEARN_SECTIONS.filter((s) => module.sections.includes(s.id)).flatMap((s) => {
+      const topics = views.publishedInSection(s.id);
+      if (topics.length === 0) return [];
+      return [{ id: s.id, label: pick(s.title), countLabel: articles(topics.length), icon: s.icon, topics: topics.map(card) }];
     });
+    return [
+      {
+        id: module.id,
+        indexLabel: "",
+        title: pick(module.title),
+        countLabel: articles(moduleTopics.length),
+        blurb: `${pick(module.blurb)} · ${articles(moduleTopics.length)}`,
+        more: upcoming > 0 ? t("learn_page.more_coming", { count: digits(upcoming) }) : undefined,
+        icon: views.sectionsById[module.sections[0] ?? ""]?.icon ?? "ScrollText",
+        sections,
+        showSectionHeads: sections.length > 1,
+      },
+    ];
+  }).map((module, i) => ({ ...module, indexLabel: digits(i + 1) }));
 
-  const liveModules = LEARN_MODULES.filter((m) => views.published.some((topic) => m.sections.includes(topic.section))).length;
+  const liveModules = allModules.length;
 
   const chips: LearnChip[] = [
     { id: "all", label: t("common.all"), active: activeCategory === "all" },
@@ -154,7 +158,9 @@ export function useLearnHub() {
     /** The matching topics, shown flat while a search or chip is active. */
     results: filtered.map(card),
     /** The learning paths, shown when nothing is filtered. */
-    modules,
+    modules: isFiltering ? [] : allModules,
+    /** Every learning path, filtered or not — the hub's path map. */
+    paths: allModules,
   };
 }
 
