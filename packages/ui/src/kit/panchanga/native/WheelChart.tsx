@@ -202,6 +202,23 @@ function untransformTouch(
   };
 }
 
+/**
+ * The viewBox that shows the wheel at `zoom` and `pan` (view points, scaled about the view's
+ * centre). At 1x with no pan it is the wheel's own box, `42 42 916 916`, fitted into the view.
+ */
+function zoomedViewBox(box: LayoutMetrics, zoom: number, pan: { x: number; y: number }): string {
+  const { w, h } = box;
+  if (w <= 0 || h <= 0 || (zoom === 1 && pan.x === 0 && pan.y === 0)) return "42 42 916 916";
+  const k = Math.min(w, h) / 916;
+  // The whole view in wheel units (the default `meet` centres the wheel's box in it).
+  const x0 = 42 - (w - 916 * k) / 2 / k;
+  const y0 = 42 - (h - 916 * k) / 2 / k;
+  // The part of the view on screen: p = c + (s - c - pan) / zoom for s from 0 to the edge.
+  const left = (w / 2) * (1 - 1 / zoom) - pan.x / zoom;
+  const top = (h / 2) * (1 - 1 / zoom) - pan.y / zoom;
+  return `${x0 + left / k} ${y0 + top / k} ${w / k / zoom} ${h / k / zoom}`;
+}
+
 function clampZoom(z: number): number {
   return Math.max(0.55, Math.min(14, z));
 }
@@ -1083,6 +1100,15 @@ function WheelChartImpl({
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels } = staticLayers;
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
+  /* The committed zoom and pan are drawn by the SVG itself, through its viewBox, so the wheel is
+     redrawn sharp at every zoom. Scaling the view instead stretched a picture drawn at 1x, and
+     zoomed in the planets and their names were blurred. The transform carries only what a pinch
+     or pan in progress adds on top, and is back to none once it is committed. */
+  const viewBox = zoomedViewBox(layoutBox, zoom, pan);
+  const stageScale = Animated.multiply(liveZoom, 1 / zoom);
+  const stageX = Animated.subtract(liveX, Animated.multiply(liveZoom, pan.x / zoom));
+  const stageY = Animated.subtract(liveY, Animated.multiply(liveZoom, pan.y / zoom));
+
   return (
     <GestureDetector gesture={wheelGesture}>
     <View
@@ -1097,7 +1123,7 @@ function WheelChartImpl({
       <Animated.View
         style={{
           flex: 1,
-          transform: [{ translateX: liveX }, { translateY: liveY }, { scale: liveZoom }],
+          transform: [{ translateX: stageX }, { translateY: stageY }, { scale: stageScale }],
         }}
       >
         <Reanimated.View style={settleStyle} pointerEvents="none">
@@ -1111,7 +1137,7 @@ function WheelChartImpl({
           pointerEvents="none"
           renderToHardwareTextureAndroid={zoom <= 1.5}
         >
-        <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
+        <Svg viewBox={viewBox} width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
           <Circle key={`rc${k}`} cx={CX} cy={CY} r={rad} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
