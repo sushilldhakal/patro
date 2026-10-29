@@ -1,7 +1,7 @@
 /**
  * Graha asta and graha vakri page logic, shared by the website
  * (`apps/web/src/pages/GrahaAsta.tsx`, `GrahaVakri.tsx`) and the app
- * (`apps/mobile/app/(tabs)/panchanga/graha-asta.tsx`, `graha-vakri.tsx`).
+ * (`apps/mobile/app/panchanga/graha-asta.tsx`, `graha-vakri.tsx`).
  */
 import { fetchGrahaAstaYear, fetchGrahaVakriYear, grahaDetailKeys } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";

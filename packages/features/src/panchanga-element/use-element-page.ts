@@ -1,6 +1,6 @@
 /**
  * Panchanga element page logic, shared by the website (`apps/web/src/pages/ElementPage.tsx`)
- * and the app (`apps/mobile/app/(tabs)/panchanga/element/[name].tsx`).
+ * and the app (`apps/mobile/app/panchanga/element/[name].tsx`).
  *
  * A "span" element (tithi, nakshatra, …) is browsed by month and lists its
  * spans; a "table" element is browsed by day and shows that day's rows;

@@ -1,7 +1,7 @@
 /**
  * Panchanga details hub logic, shared by the website
  * (`apps/web/src/pages/PanchangaDetailsHub.tsx` + `components/panchanga/PanchangaDirectory.tsx`)
- * and the app (`apps/mobile/app/(tabs)/panchanga/details.tsx` +
+ * and the app (`apps/mobile/app/panchanga/details.tsx` +
  * `components/panchanga/PanchangaDirectoryMobile.tsx`): which links, in which
  * sections, with which text. Each app turns a link into its own route.
  */

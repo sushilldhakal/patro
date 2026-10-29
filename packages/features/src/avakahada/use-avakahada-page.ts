@@ -1,7 +1,7 @@
 /**
  * Avakahada chakra page logic, shared by the website
  * (`apps/web/src/pages/AvakahadaChakra.tsx`) and the app
- * (`apps/mobile/app/(tabs)/panchanga/avakahada-chakra.tsx`).
+ * (`apps/mobile/app/panchanga/avakahada-chakra.tsx`).
  */
 import { useMemo, useState } from "react";
 import { BHAUMA_DOSHA_SHLOKAS, MANGLI_VARGAS } from "@vedic-patro/domain/jyotish/avakahada-data";

@@ -1,4 +1,4 @@
-/** Shared by apps/web/src/pages/PanchangaYear.tsx and apps/mobile/app/(tabs)/panchanga/year.tsx (moved here from both, unchanged). */
+/** Shared by apps/web/src/pages/PanchangaYear.tsx and apps/mobile/app/panchanga/year.tsx (moved here from both, unchanged). */
 import { adToBS, shiftBsMonth, bsToAD, getBSMonthLength } from "../calendar/bs-calendar";
 
 export function parseAdStr(s: string): Date {

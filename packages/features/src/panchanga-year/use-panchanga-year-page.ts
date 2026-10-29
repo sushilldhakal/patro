@@ -1,7 +1,7 @@
 /**
  * Annual panchanga wheel logic, shared by the website
  * (`apps/web/src/pages/PanchangaYear.tsx`) and the app
- * (`apps/mobile/app/(tabs)/panchanga/year.tsx`).
+ * (`apps/mobile/app/panchanga/year.tsx`).
  *
  * The wheel shows a moving window of days around a chosen date (two months to
  * start). Playback walks it a day at a time; the window grows ahead of

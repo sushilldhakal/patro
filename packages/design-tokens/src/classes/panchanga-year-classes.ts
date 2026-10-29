@@ -1,7 +1,7 @@
 import { panchangaPageClasses } from "./panchanga-page-classes";
 
 /**
- * Panchanga year wheel page (pages/PanchangaYear.tsx, app/(tabs)/panchanga/year).
+ * Panchanga year wheel page (pages/PanchangaYear.tsx, app/panchanga/year).
  * The website is the source; both apps import these strings. The error box is
  * the panchanga page's own.
  */

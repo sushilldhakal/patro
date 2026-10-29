@@ -10,6 +10,26 @@ import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
  * floating nav, so the whole page slides in as one card and a swipe-back shows
  * the page underneath exactly as it was — the native stack does the motion.
  */
+/** The pages under app/panchanga: every panchanga page but the daily one (the panchanga tab). */
+const PANCHANGA_PAGE_ROUTES = [
+  "panchanga/avakahada-chakra",
+  "panchanga/chandra-grahan",
+  "panchanga/chandrabala",
+  "panchanga/choghadiya",
+  "panchanga/details",
+  "panchanga/element/[name]",
+  "panchanga/graha-asta",
+  "panchanga/graha-sthiti",
+  "panchanga/graha-vakri",
+  "panchanga/hora",
+  "panchanga/lagna",
+  "panchanga/panchaka-rahita",
+  "panchanga/pushkara",
+  "panchanga/surya-grahan",
+  "panchanga/tarabala",
+  "panchanga/year",
+];
+
 export const PAGE_CHROME_ROUTES: ReadonlySet<string> = new Set([
   "abhijit-muhurta",
   "adhik-maas",
@@ -34,6 +54,9 @@ export const PAGE_CHROME_ROUTES: ReadonlySet<string> = new Set([
   "sun-times",
   "suryakranti",
   "vivah-sait",
+  // The panchanga pages (tithi, choghadiya, graha asta, …) live here too, not in the panchanga
+  // tab's own stack: opened from home they slide in over home, so a swipe back shows home.
+  ...PANCHANGA_PAGE_ROUTES,
 ]);
 
 /**
@@ -57,7 +80,12 @@ export function PageChrome({ routeName, children }: { routeName: string; childre
     <View className="flex-1 bg-background" style={{ flex: 1 }}>
       <AppHeader />
       <View className="min-h-0 flex-1">
-        {ready ? <PanchangaTabsShell routeName={routeName}>{children}</PanchangaTabsShell> : null}
+        {ready ? (
+          // Panchanga pages scroll themselves, as they did in the panchanga tab: the shell stays plain views.
+          <PanchangaTabsShell routeName={routeName} stableTree={routeName.startsWith("panchanga/")}>
+            {children}
+          </PanchangaTabsShell>
+        ) : null}
       </View>
       <FloatingNavBar />
     </View>

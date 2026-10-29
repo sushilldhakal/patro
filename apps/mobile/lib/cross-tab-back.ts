@@ -1,12 +1,12 @@
 /**
  * Back goes where you came from, across tabs.
  *
- * A page inside a tab's stack (a tithi page under the panchanga tab) opened
- * from another tab (a home card) used to land on top of whatever that stack
- * held from earlier, so swiping back showed some old page (the nakshatra seen
- * an hour ago) instead of home. The tab stack now remembers, for a page
- * pushed from outside the tab, the page it was opened from, and going back
- * from it returns there.
+ * A page inside a tab's stack (a kundali profile, a learn article) opened
+ * from another tab used to land on top of whatever that stack held from
+ * earlier, so swiping back showed some old page instead of the one it was
+ * opened from. The tab stack now remembers, for a page pushed from outside the
+ * tab, the page it was opened from, and going back from it returns there. (The
+ * panchanga pages need none of this: they are in the root stack.)
  *
  * Two signals say a page was opened from outside: the pathname moving from
  * outside the tab into it, and the page's first focus. They arrive in either
@@ -26,7 +26,7 @@ const seen = new Set<string>();
 const pendingEntry = new Map<string, { origin: string; at: number }>();
 /** Per tab prefix: a first focus still waiting to learn whether it came from outside. */
 const pendingFocus = new Map<string, { key: string; at: number }>();
-/** The tab prefixes with listeners (`/panchanga`, `/kundali`, `/learn`). */
+/** The tab prefixes with listeners (`/kundali`, `/learn`). */
 const prefixes = new Set<string>();
 
 function inTab(prefix: string, path: string): boolean {
@@ -78,7 +78,7 @@ type ListenerArgs = { route: { key: string; name: string } };
 type RemoveEvent = { data?: { action?: { type?: string } } };
 
 /**
- * `screenListeners` for a tab's stack. `prefix` is the tab's path (`/panchanga`).
+ * `screenListeners` for a tab's stack. `prefix` is the tab's path (`/kundali`).
  */
 export function crossTabBackListeners(prefix: string) {
   prefixes.add(prefix);
