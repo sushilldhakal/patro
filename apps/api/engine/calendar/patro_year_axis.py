@@ -13,14 +13,14 @@ numbers wrong:
 
 ``PATRO_SIGNED_YEAR_MIN/MAX``
     The **axis** — what a URL, picker or label may name. Sized to the full Swiss
-    Ephemeris span (11 Aug 13000 BCE, JD −3026604.5 … 7 Jan 17000 CE), i.e. the
-    deepest the library can ever go once every ``.se1`` file is installed.
+    Ephemeris span (11 Aug 13000 BCE, JD −3026604.5 … 7 Jan 17000 CE), the
+    deepest the library can ever go, plus one invalid year each side.
 
 ``PATRO_EPHEMERIS_SIGNED_MIN/MAX``
     What **this host** can actually compute, measured against the installed
-    ``data/ephemeris/*.se1`` set (``seplm/semom`` through ``…72``, ``sepl_/semo_``
-    through ``…168`` when ``--extended`` / ``--far-ce`` is installed). Positions
-    outside it raise, so month/day builds are gated on this, not on the axis.
+    ``data/ephemeris/*.se1`` set: the whole years whose every month builds.
+    Positions outside it raise, so month/day builds are gated on this, not on
+    the axis.
 
 Re-measure the ephemeris pair after adding or removing ``.se1`` files — probe
 ``swe.calc_ut`` for the full graha set and take the widest whole patro years
@@ -29,22 +29,24 @@ inside the working JD window.
 
 from __future__ import annotations
 
-# ── The axis: full Swiss Ephemeris span ───────────────────────────────────────
-# JD −3026604.5 = 11 Aug 13000 BCE (civil −12999); the first *whole* patro year
-# inside that is BBS 12942. Extended product window targets BBS 13201 (13201 BCE).
-PATRO_SIGNED_YEAR_MIN = -13202  # one step below product floor (invalid browse)
-PATRO_SIGNED_YEAR_MAX = 17248  # one step above product ceiling (invalid browse)
+# ── The axis: one year past the computable window on each side ────────────────
+# Swiss Ephemeris stops at 11 Aug 13000 BCE (JD −3026604.5) and 7 Jan 17000 CE
+# whatever .se1 files are installed; DE431-based files cannot go further.
+PATRO_SIGNED_YEAR_MIN = -12942  # one step below the floor (invalid browse)
+PATRO_SIGNED_YEAR_MAX = 17053  # one step above the ceiling (invalid browse)
 
-# ── What the installed .se1 files actually cover ──────────────────────────────
-# Target navigation: BBS 13201 (13201 BCE) … BS 17247 (through AD 17191 CE).
-# Re-measure after ``install_ephemeris.py --extended`` (deep BCE through seplm132,
-# far CE through sepl_168 on the GitHub ephe mirror).
-PATRO_EPHEMERIS_SIGNED_MIN = -13201  # BBS 13201 ≈ 13201 BCE
-PATRO_EPHEMERIS_SIGNED_MAX = 17247  # BS 17247 ≈ AD 17191 CE
+# ── What the ephemeris actually computes ─────────────────────────────────────
+# Measured on the production host (29 Oct 2026): the at-time panchanga answers
+# from BBS 12942-01-09 (27 Dec 13000 BCE) to BS 17053-03-31 (30 Jan 16997 CE),
+# and month calendars for every month of BBS 12941 … BS 17052. Those are the
+# whole years offered; the old BBS 13201 … BS 17247 target was never reachable.
+PATRO_EPHEMERIS_SIGNED_MIN = -12941  # BBS 12941 ≈ 12998 BCE
+PATRO_EPHEMERIS_SIGNED_MAX = 17052  # BS 17052 ≈ AD 16995 CE
 
-# JD window for ``era=ad``/``era=bc`` range checks (~35-day margin past patro year).
-EPHEMERIS_JD_MIN = -3100277.5  # BBS 13201 civil start − 35d
-EPHEMERIS_JD_MAX = 8000342.5  # AD 17191 civil end + 35d
+# JD window for ``era=ad``/``era=bc`` range checks: the measured first and last
+# at-time days, 35 days in.
+EPHEMERIS_JD_MIN = -3026431.5
+EPHEMERIS_JD_MAX = 7929081.5
 
 
 def jd_span_within_ephemeris(jd_start: float, jd_end: float) -> bool:

@@ -60,8 +60,8 @@ const OBLIQUITY_PERIOD_U = 41040 / 10000;
  * equator, the ~23.44° that gives us the ayana and the seasons.
  *
  * Not a constant: the tilt nods between about 22.0° and 24.5° over some 41,000
- * years, and this sky runs to both ends of the बिक्रम axis — पू.वि.सं. 13201 at
- * one end, वि.सं. 17247 at the other — so the value has to travel with it.
+ * years, and this sky runs to both ends of the बिक्रम axis — पू.वि.सं. 12941 at
+ * one end, वि.सं. 17052 at the other — so the value has to travel with it.
  *
  * Laskar's polynomial holds inside ±10,000 Julian years of J2000 and diverges
  * violently outside it (it is a fit, not a physical model — one more millennium

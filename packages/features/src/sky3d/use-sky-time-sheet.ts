@@ -10,7 +10,7 @@ import { useState } from "react";
 import { adToBS, bsToAdOrNull, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/calendar/bs-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { civilGregorianToUtcMs } from "@vedic-patro/domain/calendar/patro-day";
-import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/calendar/patro-year-axis";
+import { getPatroLimits, PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { DAY_PERIODS, periodIdAtHour, wallCivilUtc, wallPartsFromMs, type WallParts } from "@vedic-patro/domain/astronomy/sky3d/sky-time";
 import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/astronomy/sky3d/time-steps";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
@@ -193,7 +193,18 @@ export function useSkyTimeSheet({
     setPending({ ms, base: timeMs });
     onApplyMs(ms);
   };
-  const apply = (next: WallParts) => applyMs(utcMsFromWall(next) - zoneOffsetMs);
+  /* A year the server cannot compute (past BBS 12941 or BS 17052, the ephemeris's reach) snaps to
+     the last one it can, so a typed or stepped year never leaves the wheel on an error. */
+  const apply = (next: WallParts) => {
+    const { ephemerisSignedMin: lo, ephemerisSignedMax: hi } = getPatroLimits();
+    const bs = nepaliYmd(next);
+    if (bs.year < lo || bs.year > hi) {
+      const edge = applyBsYmd(next, bs.year < lo ? lo : hi, bs.month, bs.day);
+      if (!edge) return;
+      next = edge;
+    }
+    applyMs(utcMsFromWall(next) - zoneOffsetMs);
+  };
   const step = (field: SkyTimeField, delta: number) => {
     setEdit(null);
     if (nepaliCal && (field === "year" || field === "month" || field === "day")) {

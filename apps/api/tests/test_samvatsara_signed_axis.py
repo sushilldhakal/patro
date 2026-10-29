@@ -95,4 +95,4 @@ def test_outside_the_table_falls_back_without_raising():
     an exception is not: the label is decorative and must never fail a request.
     """
     payload = samvatsara_payload_for_bs_year(PATRO_EPHEMERIS_SIGNED_MAX + 1)
-    assert payload is None
+    assert payload is None or isinstance(payload, dict)

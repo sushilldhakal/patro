@@ -7,6 +7,7 @@ import { QueryClient, QueryClientContext } from "@tanstack/react-query";
 import { DEFAULT_CALENDAR, setCalendarSystem, type CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
 import { registerBundle, setLanguage } from "@vedic-patro/i18n/runtime";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
+import { PATRO_AD_BROWSE_YEAR_MAX } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { usePatroCalendarHeader } from "../src/patro-date/use-patro-calendar-header";
 import { useBsCalendarGrid } from "../src/home/use-bs-calendar-grid";
 import { usePanchangaMonthGrid } from "../src/home/use-panchanga-month-grid";
@@ -65,7 +66,7 @@ test("year pages are twelve years, move by a page and stay inside the era", () =
   assert.equal(shiftYearPage("bs", 2079, 1), 2091);
   assert.equal(shiftYearPage("bs", 2079, -1), 2067);
   assert.equal(shiftYearPage("bs", 5, -1), 1);
-  const max = 17191;
+  const max = PATRO_AD_BROWSE_YEAR_MAX;
   assert.equal(shiftYearPage("ad", max - 5, 1) <= max, true);
   assert.equal(yearPageYears("ad", max - 5).every((y) => y <= max), true);
 });

@@ -1,8 +1,8 @@
 /**
  * Signed patro year on one axis (URL / pickers when `era=bs`):
  *
- * - **1 … 3000** → Vikram **BS**
- * - **−1 … −13201** → **BBS** (Before Bikram Sambat), display as BBS `|year|`
+ * - **1 … 17052** → Vikram **BS**
+ * - **−1 … −12941** → **BBS** (Before Bikram Sambat), display as BBS `|year|`
  * - **0** → invalid
  *
  * BS 1 ≈ 57 BCE. BBS 6722 ≈ tradition / Surya Siddhanta deep anchor (~6778 BCE).
@@ -21,19 +21,20 @@ import type { Era } from "./era";
  * live copy (`getPatroLimits`); do not treat these constants as the host's
  * installed ephemeris range.
  */
-export const PATRO_SIGNED_YEAR_MIN = -13202;
-export const PATRO_SIGNED_YEAR_MAX = 17248;
-export const PATRO_EPHEMERIS_SIGNED_MIN = -13201;
-export const PATRO_EPHEMERIS_SIGNED_MAX = 17247;
+export const PATRO_SIGNED_YEAR_MIN = -12942;
+export const PATRO_SIGNED_YEAR_MAX = 17053;
+/** BBS 12941 … BS 17052: the whole years Swiss Ephemeris reaches (13000 BCE – 17000 CE). */
+export const PATRO_EPHEMERIS_SIGNED_MIN = -12941;
+export const PATRO_EPHEMERIS_SIGNED_MAX = 17052;
 export const PATRO_SANKRANTI_SIGNED_MIN = PATRO_EPHEMERIS_SIGNED_MIN;
 export const PATRO_PANCHANGA_SIGNED_MIN = PATRO_EPHEMERIS_SIGNED_MIN;
 export const BS_FESTIVAL_STACK_MIN_YEAR = 60;
 export const BBS_URL_YEAR_MIN = 1;
 export const BBS_URL_YEAR_MAX = -PATRO_EPHEMERIS_SIGNED_MIN;
 export const PATRO_AD_BROWSE_YEAR_MIN = 1;
-export const PATRO_AD_BROWSE_YEAR_MAX = 17191;
+export const PATRO_AD_BROWSE_YEAR_MAX = 16995;
 export const PATRO_BC_BROWSE_YEAR_MIN = 1;
-export const PATRO_BC_BROWSE_YEAR_MAX = BBS_URL_YEAR_MAX;
+export const PATRO_BC_BROWSE_YEAR_MAX = 12998;
 
 export type PatroLiveLimits = {
   signedYearMin: number;

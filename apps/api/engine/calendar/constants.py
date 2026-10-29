@@ -194,14 +194,12 @@ BS_ESTIMATED_MIN_YEAR = BS_PANCHANGA_MIN_YEAR
 BS_SUPPORTED_MAX_YEAR = 3000
 
 # What ``era=ad`` / ``era=bc`` browse endpoints accept — aligned with the installed
-# ephemeris Vikram window (``PATRO_EPHEMERIS_SIGNED_*``): AD CE years through the
-# civil span of BS 17247, BC years through BBS 13201 (13201 BCE).
-from engine.calendar.patro_year_axis import PATRO_EPHEMERIS_SIGNED_MIN
+# ephemeris Vikram window (``PATRO_EPHEMERIS_SIGNED_*``, BBS 12941 … BS 17052).
 
 AD_YEAR_MIN = 1
-AD_YEAR_MAX = 17191  # last CE year in BS 17247 (extended far-CE ephemeris)
+AD_YEAR_MAX = 16995  # last whole CE year whose months all build (see patro_year_axis)
 BC_YEAR_MIN = 1
-BC_YEAR_MAX = -PATRO_EPHEMERIS_SIGNED_MIN  # 13201 — mirrors ``era=bbs`` depth
+BC_YEAR_MAX = 12998  # deepest whole BCE year whose months all build (see patro_year_axis)
 
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD
 BS_REFERENCE_START = date(2025, 4, 14)
