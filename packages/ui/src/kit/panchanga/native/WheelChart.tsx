@@ -38,6 +38,7 @@ import {
   wheelDegreeNumberSize,
   wheelDegreeStep,
   WHEEL_DEGREE_READOUT_SIZE,
+  wheelNameScale,
 } from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
@@ -932,7 +933,7 @@ function WheelChartImpl({
         }
 
         planetNames.push(
-          <G key={`pn${i}`} transform={`translate(${px} ${py}) scale(${1 / zoom})`} pointerEvents="none">
+          <G key={`pn${i}`} transform={`translate(${px} ${py}) scale(${wheelNameScale(zoom)})`} pointerEvents="none">
             <SvgText
               x={0}
               y={0}

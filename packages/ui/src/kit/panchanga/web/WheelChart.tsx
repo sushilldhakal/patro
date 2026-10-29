@@ -64,6 +64,7 @@ import {
   wheelDegreeNumberSize,
   wheelDegreeStep,
   WHEEL_DEGREE_READOUT_SIZE,
+  wheelNameScale,
 } from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 
@@ -626,7 +627,7 @@ function WheelChartImpl({
       }
 
       planetNames.push(
-        <g key={`pn${i}`} transform={`translate(${px} ${py}) scale(${1 / zoom})`} style={{ pointerEvents: "none" }}>
+        <g key={`pn${i}`} transform={`translate(${px} ${py}) scale(${wheelNameScale(zoom)})`} style={{ pointerEvents: "none" }}>
           <text x={0} y={0} textAnchor="middle" dominantBaseline="central" className={wPlanetName}>
             {pick(g.ne, g.en)}
           </text>

@@ -58,3 +58,13 @@ export const WHEEL_DEGREE_READOUT_SIZE = 9;
 export function wheelDegreeNumberSize(step: WheelDegreeStep): number {
   return step === 1 ? 5.5 : step === 5 ? 6.5 : 7.5;
 }
+
+/**
+ * How much a planet's name is scaled as the wheel zooms. Held at one size it
+ * stayed a speck beside planets that had grown many times over; scaled with
+ * the wheel it would fill the screen. It grows slower than the wheel, and no
+ * more than three times its size at 1x.
+ */
+export function wheelNameScale(zoom: number): number {
+  return Math.min(Math.pow(zoom, -0.4), 3 / zoom);
+}
