@@ -4623,15 +4623,17 @@
     "sukta_devata": "Devata",
     "sukta_chhanda": "Chhanda",
     "chapter_label": "Chapter {{number}}",
-    "chapter_progress": "Chapter {{current}} of {{total}}",
-    "back_to_chapters": "All chapters",
-    "prev_chapter": "Previous chapter",
-    "next_chapter": "Next chapter",
+    "chapter_progress": "Section {{current}} of {{total}}",
+    "back_to_chapters": "All sections",
+    "prev_chapter": "Previous section",
+    "next_chapter": "Next section",
+    "jump_section_label": "Section",
+    "jump_document_label": "Document",
     "jump_chapter_label": "Chapter",
     "jump_verse_label": "Verse",
     "jump_verse_placeholder": "e.g. 5.2",
     "jump_button": "Go",
-    "jump_not_found": "That chapter or verse couldn't be found."
+    "jump_not_found": "That section or verse couldn't be found."
   },
   "ui": {
     "aakash_gochar": {

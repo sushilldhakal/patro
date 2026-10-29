@@ -52,6 +52,15 @@ def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
     return {**s, "audio_url": _resolve_asset_url(audio_key)}
 
 
+def _resolve_chapter(chapter: dict[str, Any]) -> dict[str, Any]:
+    """Resolve ritual diagram keys on a chapter to public image URLs."""
+    images = chapter.pop("images", None) or []
+    urls = [url for key in images if (url := _resolve_asset_url(key))]
+    if urls:
+        chapter["image_urls"] = urls
+    return chapter
+
+
 _VEDA_NAMES = {
     "rigveda": ("ऋग्वेद", "Rigveda"),
     "yajurveda": ("यजुर्वेद", "Yajurveda"),
@@ -98,10 +107,10 @@ def document_view(slug: str) -> dict[str, Any]:
     for chapter in doc["chapters"]:
         if embed_shlokas:
             shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
-            chapters.append({**chapter, "shlokas": shlokas})
+            chapters.append(_resolve_chapter({**chapter, "shlokas": shlokas}))
         else:
             # Metadata only — already shaped this way by get_document_summary.
-            chapters.append(chapter)
+            chapters.append(_resolve_chapter(dict(chapter)))
 
     return {**_resolve_document_summary(doc), "chapters": chapters}
 
@@ -116,15 +125,19 @@ def chapter_view(slug: str, chapter_number: int) -> dict[str, Any]:
         raise LookupError(f"No such chapter: {chapter_number}")
 
     shlokas = [_resolve_shloka(dict(s)) for s in chapter["shlokas"]]
-
-    return {
-        **_resolve_document_summary(summary),
-        "chapter": {
+    resolved = _resolve_chapter(
+        {
             "number": chapter["number"],
             "title_ne": chapter["title_ne"],
             "title_en": chapter["title_en"],
             "shlokas": shlokas,
-        },
+            "images": chapter.get("images"),
+        }
+    )
+
+    return {
+        **_resolve_document_summary(summary),
+        "chapter": resolved,
     }
 
 

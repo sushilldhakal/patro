@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, Navigate, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { shlokaAnchor, useDocumentChapter } from "@vedic-patro/features/documents";
+import { shlokaAnchor, useDocumentChapter, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
@@ -25,6 +25,7 @@ export function DocumentChapterDetail() {
   const chapterNumber = chapterParam != null ? Number(chapterParam) : NaN;
   const { category, topic } = useSearch({ strict: false }) as DocumentDetailSearch;
   const page = useDocumentChapter(slug, chapterNumber);
+  const library = useDocumentLibraryOptions();
   const { copy } = page;
   const search = category ? documentsListSearch(category, topic) : undefined;
 
@@ -98,22 +99,22 @@ export function DocumentChapterDetail() {
           <p className={documentsClasses.headerSanskrit}>{page.docTitle}</p>
           {page.progress ? <p className={documentsClasses.chapterProgress}>{page.progress}</p> : null}
         </div>
-        <div className={documentsClasses.statsRow}>
-          <span className={cn(documentsClasses.chapterBubble, documentsClasses.chapterBubbleText)}>{page.numberLabel}</span>
-          <h1 className={documentsClasses.chapterTitle}>
-            {page.heading}
-            {page.chapterTitle ? <span className={cn(documentsClasses.chapterTitleSub, "block")}>{page.chapterTitle}</span> : null}
-          </h1>
-        </div>
+        <h1 className={documentsClasses.chapterTitle}>{page.displayTitle}</h1>
       </header>
 
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
         currentChapter={chapterNumber}
+        documents={library}
+        currentSlug={slug}
+        onSelectDocument={(next) => {
+          navigate({ to: "/documents/$slug", params: { slug: next }, search });
+        }}
         onJump={(chapter, verse) => {
           const hash = verse ? shlokaAnchor(verse) : undefined;
           if (chapter === chapterNumber) {
-            const el = hash ? document.getElementById(hash) : null;
+            if (!hash) return true;
+            const el = document.getElementById(hash);
             if (!el) return false;
             el.scrollIntoView({ behavior: "smooth", block: "center" });
             return true;

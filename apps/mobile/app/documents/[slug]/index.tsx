@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useDocumentDetail, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
+import { useDocumentDetail, useDocumentLibraryOptions, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { DocumentReader } from "@/components/documents/DocumentReader";
@@ -10,7 +9,6 @@ import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
-import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
@@ -60,28 +58,17 @@ function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpCh
 
 function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard }) {
   const router = useRouter();
-  const colors = useThemeColors();
+  const title = card.title || card.heading;
   return (
     <Pressable
       onPress={() => router.push(`/documents/${slug}/${card.number}` as never)}
       accessibilityRole="button"
-      className={cn(documentsClasses.chapterRow, "mb-2 active:opacity-80")}
+      className={cn(documentsClasses.sectionCard, "mb-0 flex-1 active:opacity-80")}
     >
-      <View className={documentsClasses.chapterRowNumber}>
-        <Text className={documentsClasses.chapterRowNumberText}>{card.numberLabel}</Text>
-      </View>
-      <View className={documentsClasses.fill}>
-        <Text className={documentsClasses.chapterRowTitle} numberOfLines={1}>
-          {card.heading}
-        </Text>
-        {card.title ? (
-          <Text className={documentsClasses.chapterRowSub} numberOfLines={1}>
-            {card.title}
-          </Text>
-        ) : null}
-        {card.count ? <Text className={documentsClasses.chapterRowCount}>{card.count}</Text> : null}
-      </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+      <Text className={documentsClasses.sectionCardTitle} numberOfLines={2}>
+        {title}
+      </Text>
+      {card.count ? <Text className={documentsClasses.sectionCardCount}>{card.count}</Text> : null}
     </Pressable>
   );
 }
@@ -91,9 +78,11 @@ export default function DocumentDetailScreen() {
   const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const page = useDocumentDetail(slug);
+  const library = useDocumentLibraryOptions();
   const { doc, copy } = page;
   const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl);
   const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
+  const [jumpLabel, setJumpLabel] = useState<{ label: string; nonce: number } | null>(null);
 
   if (page.status === "loading") {
     return (
@@ -129,6 +118,9 @@ export default function DocumentDetailScreen() {
               <DocHeader page={page} />
               <DocumentJumpForm
                 chapterNumbers={page.chapterNumbers}
+                documents={library}
+                currentSlug={doc.slug}
+                onSelectDocument={(next) => router.push(`/documents/${next}` as never)}
                 onJump={(chapter, verse) => {
                   router.push(
                     (verse
@@ -140,7 +132,9 @@ export default function DocumentDetailScreen() {
               />
             </View>
           }
-          contentContainerClassName="mx-auto w-full max-w-page px-4 pb-48 pt-3 sm:px-6 md:pt-4"
+          numColumns={2}
+          columnWrapperClassName="gap-3"
+          contentContainerClassName="mx-auto w-full max-w-page gap-3 px-4 pb-48 pt-3 sm:px-6 md:pt-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />
@@ -156,9 +150,30 @@ export default function DocumentDetailScreen() {
         audio={audio}
         documentTitle={page.title}
         scrollToKey={jumpKey}
+        scrollToLabel={jumpLabel?.label}
+        scrollNonce={jumpLabel?.nonce}
         header={
-          <View className="pb-8">
+          <View className="gap-8 pb-8">
             <DocHeader page={page} onJumpChapter={(anchor) => setJumpKey({ key: anchor, nonce: Date.now() })} />
+            <DocumentJumpForm
+              chapterNumbers={page.chapterNumbers}
+              documents={library}
+              currentSlug={doc.slug}
+              onSelectDocument={(next) => router.push(`/documents/${next}` as never)}
+              onJump={(chapter, verse) => {
+                if (verse) {
+                  const exists = page.shlokas.some((s) => s.verse_label.trim() === verse);
+                  if (!exists) return false;
+                  setJumpLabel({ label: verse, nonce: Date.now() });
+                  return true;
+                }
+                if (chapter > 0) {
+                  setJumpKey({ key: `chapter-${chapter}`, nonce: Date.now() });
+                  return true;
+                }
+                return false;
+              }}
+            />
           </View>
         }
       />

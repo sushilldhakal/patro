@@ -151,11 +151,27 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
   });
   const data = chapterQ.data;
   const shlokas: Shloka[] = useMemo(() => data?.chapter.shlokas ?? [], [data]);
-  const rows = useMemo(() => versesToRows(shlokas, text), [shlokas, text]);
+  const rows = useMemo(() => {
+    const verseRows = versesToRows(shlokas, text);
+    const urls = data?.chapter.image_urls ?? [];
+    if (urls.length === 0) return verseRows;
+    return [{ kind: "images" as const, key: `images-c${chapterNumber}`, urls }, ...verseRows];
+  }, [shlokas, text, data?.chapter.image_urls, chapterNumber]);
   // Sibling chapters come from the (cached) document summary; a deep link
   // opened straight to this chapter has none until it loads.
   const numbers = chapterNumbersOf(docQ.data);
   const idx = numbers.indexOf(chapterNumber);
+  const docTitle = data
+    ? bilingual(lang, data.title_ne, data.title_en)
+    : docQ.data
+      ? bilingual(lang, docQ.data.title_ne, docQ.data.title_en)
+      : "";
+  const chapterTitle = data ? bilingual(lang, data.chapter.title_ne, data.chapter.title_en) || undefined : undefined;
+  const sections = (docQ.data?.chapters ?? []).flatMap((c) => {
+    if (c.number == null) return [];
+    const title = bilingual(lang, c.title_ne, c.title_en) || t("documents.chapter_label", { number: digits(c.number) });
+    return [{ number: c.number, title }];
+  });
 
   return {
     status: statusFrom(chapterQ, valid),
@@ -164,12 +180,15 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
     redirectToDocument: Boolean(docQ.data?.inline_chapters && valid) ? { anchor: chapterAnchor(chapterNumber) } : undefined,
     valid,
     loading: docQ.isLoading || chapterQ.isLoading,
-    docTitle: data ? bilingual(lang, data.title_ne, data.title_en) : "",
+    docTitle,
     numberLabel: digits(chapterNumber),
     heading: t("documents.chapter_label", { number: digits(chapterNumber) }),
-    chapterTitle: data ? bilingual(lang, data.chapter.title_ne, data.chapter.title_en) || undefined : undefined,
+    chapterTitle,
+    /** Prefer the section's own title; fall back to "Chapter N". */
+    displayTitle: chapterTitle || t("documents.chapter_label", { number: digits(chapterNumber) }),
     progress: numbers.length > 0 ? t("documents.chapter_progress", { current: digits(chapterNumber), total: digits(numbers.length) }) : undefined,
     chapterNumbers: numbers,
+    sections,
     prev: idx > 0 ? numbers[idx - 1]! : null,
     next: idx >= 0 && idx < numbers.length - 1 ? numbers[idx + 1]! : null,
     rows,

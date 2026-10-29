@@ -7123,19 +7123,21 @@ export const strings = {
   "documents.sukta_chhanda": { ne: "छन्द", en: "Chhanda" },
   "documents.chapter_label": { ne: "अध्याय {{number}}", en: "Chapter {{number}}" },
   "documents.chapter_progress": {
-    ne: "अध्याय {{current}} / {{total}}",
-    en: "Chapter {{current}} of {{total}}",
+    ne: "पाठ {{current}} / {{total}}",
+    en: "Section {{current}} of {{total}}",
   },
-  "documents.back_to_chapters": { ne: "सबै अध्याय", en: "All chapters" },
-  "documents.prev_chapter": { ne: "अघिल्लो अध्याय", en: "Previous chapter" },
-  "documents.next_chapter": { ne: "अर्को अध्याय", en: "Next chapter" },
+  "documents.back_to_chapters": { ne: "सबै पाठ", en: "All sections" },
+  "documents.prev_chapter": { ne: "अघिल्लो पाठ", en: "Previous section" },
+  "documents.next_chapter": { ne: "अर्को पाठ", en: "Next section" },
+  "documents.jump_section_label": { ne: "पाठ", en: "Section" },
+  "documents.jump_document_label": { ne: "ग्रन्थ", en: "Document" },
   "documents.jump_chapter_label": { ne: "अध्याय", en: "Chapter" },
   "documents.jump_verse_label": { ne: "श्लोक", en: "Verse" },
   "documents.jump_verse_placeholder": { ne: "जस्तै: ५.२", en: "e.g. 5.2" },
   "documents.jump_button": { ne: "जानुहोस्", en: "Go" },
   "documents.jump_not_found": {
-    ne: "यो अध्याय वा श्लोक फेला परेन।",
-    en: "That chapter or verse couldn't be found.",
+    ne: "यो पाठ वा श्लोक फेला परेन।",
+    en: "That section or verse couldn't be found.",
   },
 
   /* ── ui.aakash_gochar ───────────────────────────────────────────────────── */

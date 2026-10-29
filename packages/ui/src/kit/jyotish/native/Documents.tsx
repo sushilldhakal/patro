@@ -26,7 +26,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
           </Pressable>
         ) : (
           <Box className={documentsClasses.verseLabelSlot}>
-            <Text className={documentsClasses.verseLabelSlotText}>{shloka.verse_label}</Text>
+            <Text className={documentsClasses.verseLabelSlotText}>{card.label}</Text>
           </Box>
         )}
         <Box className={documentsClasses.verseBody}>
@@ -34,7 +34,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
             <Box className={documentsClasses.verseMetaRow} nativeClassName="flex-row">
               {canPlay ? (
                 <Box className={cn(documentsClasses.verseBadge, "self-start")}>
-                  <Text className={documentsClasses.verseBadgeText}>{shloka.verse_label}</Text>
+                  <Text className={documentsClasses.verseBadgeText}>{card.label}</Text>
                 </Box>
               ) : (
                 <Box />

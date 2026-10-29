@@ -4623,15 +4623,17 @@
     "sukta_devata": "देवता",
     "sukta_chhanda": "छन्द",
     "chapter_label": "अध्याय {{number}}",
-    "chapter_progress": "अध्याय {{current}} / {{total}}",
-    "back_to_chapters": "सबै अध्याय",
-    "prev_chapter": "अघिल्लो अध्याय",
-    "next_chapter": "अर्को अध्याय",
+    "chapter_progress": "पाठ {{current}} / {{total}}",
+    "back_to_chapters": "सबै पाठ",
+    "prev_chapter": "अघिल्लो पाठ",
+    "next_chapter": "अर्को पाठ",
+    "jump_section_label": "पाठ",
+    "jump_document_label": "ग्रन्थ",
     "jump_chapter_label": "अध्याय",
     "jump_verse_label": "श्लोक",
     "jump_verse_placeholder": "जस्तै: ५.२",
     "jump_button": "जानुहोस्",
-    "jump_not_found": "यो अध्याय वा श्लोक फेला परेन।"
+    "jump_not_found": "यो पाठ वा श्लोक फेला परेन।"
   },
   "ui": {
     "aakash_gochar": {

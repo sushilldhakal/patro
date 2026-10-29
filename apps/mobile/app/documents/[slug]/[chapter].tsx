@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useDocumentChapter } from "@vedic-patro/features/documents";
+import { useDocumentChapter, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { DocumentReader } from "@/components/documents/DocumentReader";
@@ -20,6 +20,7 @@ export default function DocumentChapterScreen() {
   const { slug, chapter: chapterParam, verse } = useLocalSearchParams<{ slug: string; chapter: string; verse?: string }>();
   const chapterNumber = chapterParam != null ? Number(chapterParam) : NaN;
   const page = useDocumentChapter(slug, chapterNumber);
+  const library = useDocumentLibraryOptions();
   const { copy } = page;
   const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl);
   const [jump, setJump] = useState<{ label: string; nonce: number } | null>(null);
@@ -52,20 +53,24 @@ export default function DocumentChapterScreen() {
           </Text>
           {page.progress ? <Text className={documentsClasses.chapterProgress}>{page.progress}</Text> : null}
         </View>
-        <View className={documentsClasses.statsRow}>
-          <View className={documentsClasses.chapterBubble}>
-            <Text className={documentsClasses.chapterBubbleText}>{page.numberLabel}</Text>
-          </View>
-          <View className={documentsClasses.fill}>
-            <Text className={documentsClasses.chapterTitle}>{page.heading}</Text>
-            {page.chapterTitle ? <Text className={documentsClasses.chapterTitleSub}>{page.chapterTitle}</Text> : null}
-          </View>
-        </View>
+        <Text className={documentsClasses.chapterTitle}>{page.displayTitle}</Text>
       </View>
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
         currentChapter={chapterNumber}
-        onJump={(_, label) => {
+        documents={library}
+        currentSlug={slug}
+        onSelectDocument={(next) => router.push(`/documents/${next}` as never)}
+        onJump={(chapter, label) => {
+          if (chapter !== chapterNumber) {
+            router.push(
+              (label
+                ? `/documents/${slug}/${chapter}?verse=${encodeURIComponent(label)}`
+                : `/documents/${slug}/${chapter}`) as never,
+            );
+            return true;
+          }
+          if (!label) return true;
           const exists = page.shlokas.some((s) => s.verse_label.trim() === label);
           if (exists) setJump({ label, nonce: Date.now() });
           return exists;

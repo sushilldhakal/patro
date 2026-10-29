@@ -16,7 +16,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
       id={card.domId}
       className={cn(
         documentsClasses.verse,
-        "scroll-mt-24 min-w-0 max-w-full [overflow-wrap:anywhere] transition-colors",
+        "scroll-mt-24 min-w-0 max-w-full transition-colors",
         isActive ? documentsClasses.verseActive : documentsClasses.verseIdle,
         isClosing && !isActive && documentsClasses.verseClosing,
         isNote && !isActive && documentsClasses.verseNote,
@@ -37,16 +37,16 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
             <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="onSecondary" filled className={isPlaying ? undefined : "ml-0.5"} />
           </button>
         ) : (
-          <Text as="span" className={cn(documentsClasses.verseLabelSlot, documentsClasses.verseLabelSlotText)}>{shloka.verse_label}</Text>
+          <Text as="span" className={cn(documentsClasses.verseLabelSlot, documentsClasses.verseLabelSlotText)}>{card.label}</Text>
         )}
         <Box className={documentsClasses.fill}>
           {canPlay || vedaCite ? (
             <Box className={documentsClasses.verseMetaRow}>
-              {canPlay ? <Text as="span" className={cn(documentsClasses.verseBadge, documentsClasses.verseBadgeText)}>{shloka.verse_label}</Text> : <span />}
+              {canPlay ? <Text as="span" className={cn(documentsClasses.verseBadge, documentsClasses.verseBadgeText)}>{card.label}</Text> : <span />}
               {vedaCite ? <Text as="span" className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
             </Box>
           ) : null}
-          <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "whitespace-pre-line")}>
+          <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, isNote ? undefined : "whitespace-normal")}>
             {card.tokens.map((tok, i) =>
               i === card.activeTokenIndex ? (
                 <Text as="span" key={i} className={cn(documentsClasses.verseWord, "transition-colors duration-150")}>{tok}</Text>

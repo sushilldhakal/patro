@@ -1,4 +1,4 @@
-import { TextInput } from "react-native";
+import { Pressable, ScrollView, TextInput } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { Box, Button, Text } from "@vedic-patro/ui";
@@ -8,21 +8,55 @@ import { useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import type { DocumentJumpFormProps } from "../contract";
 
-export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: DocumentJumpFormProps) {
+export function DocumentJumpForm({
+  chapterNumbers,
+  currentChapter,
+  documents,
+  currentSlug,
+  onJump,
+  onSelectDocument,
+}: DocumentJumpFormProps) {
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const placeholder = roles.mutedForeground;
   const form = useDocumentJumpForm({
     chapterNumbers,
     currentChapter,
+    documents,
+    currentSlug,
     onJump,
+    onSelectDocument,
   });
   const { copy } = form;
 
   return (
-    <Box>
+    <Box className="gap-2">
+      {form.hasDocuments ? (
+        <Box className={documentsClasses.jumpField}>
+          <Text className={documentsClasses.jumpLabel}>{copy.documentLabel}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="flex-row gap-1.5">
+            {form.documents.map((doc) => {
+              const active = doc.slug === form.currentSlug;
+              return (
+                <Pressable
+                  key={doc.slug}
+                  onPress={() => form.selectDocument(doc.slug)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  className={cn("rounded-lg border px-3 py-2", active ? "border-secondary bg-secondary/10" : "border-border bg-card")}
+                >
+                  <Text className={cn("text-sm font-semibold", active ? "text-secondary" : "text-foreground")} numberOfLines={1}>
+                    {doc.title}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </Box>
+      ) : null}
+
       <Box className={documentsClasses.jumpForm}>
-        {form.showChapter ? (
+        {form.showChapterField ? (
           <Box className={documentsClasses.jumpField}>
             <Text className={documentsClasses.jumpLabel}>{copy.chapterLabel}</Text>
             <TextInput

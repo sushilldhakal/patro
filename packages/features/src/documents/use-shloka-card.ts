@@ -17,6 +17,8 @@ const CLOSING_PREFIX = "\u0907\u0924\u093f"; // copy-ok
 const CLOSING_LABEL = "\u0927\u094d\u092f\u093e\u0928\u092e\u094d"; // copy-ok
 /** Procedure text (tika / samagri lists) is instructions, not a mantra. */
 const NOTE_LABEL = /^(\u091f\u0940\u0915\u093e|\u0938\u093e\u092e\u0917\u094d\u0930\u0940)/; // copy-ok
+/** Strip trailing numbers from note labels — "टीका 1.1" → "टीका". */
+const NOTE_NUMBER_SUFFIX = /\s*[\d\u0966-\u096F]+(?:[.\-][\d\u0966-\u096F]+)*\s*$/;
 
 /** A verse with no clip of its own plays from its timestamp in the document's full recording. */
 export function playsFromFullRecording(shloka: Shloka, hasFullRecording: boolean): boolean {
@@ -42,8 +44,10 @@ export function useShlokaCard({
   clip?: { currentTime: number; duration: number };
 }) {
   const { t, lang } = useLocale();
-  const label = shloka.verse_label;
-  const isNote = NOTE_LABEL.test(label);
+  const rawLabel = shloka.verse_label;
+  const isNote = NOTE_LABEL.test(rawLabel);
+  // Notes are "what to do" cards — never show a verse number on them.
+  const label = isNote ? rawLabel.replace(NOTE_NUMBER_SUFFIX, "").trim() || rawLabel : rawLabel;
 
   // Estimated word timing; see domain/word-tracking.
   const wordTrack = useMemo(() => buildWordTrack(shloka.sanskrit), [shloka.sanskrit]);
@@ -54,9 +58,9 @@ export function useShlokaCard({
   return {
     canPlay: Boolean(shloka.audio_url) || playsFromFull,
     label,
-    /** Anchor id for the verse, `shloka-<label>`. */
-    domId: `shloka-${label.replace(/\s+/g, "-")}`,
-    isClosing: label.startsWith(CLOSING_PREFIX) || label === CLOSING_LABEL,
+    /** Anchor id — notes share the bare label, so pin uniqueness on the row id. */
+    domId: isNote ? `shloka-note-${shloka.id}` : `shloka-${label.replace(/\s+/g, "-")}`,
+    isClosing: rawLabel.startsWith(CLOSING_PREFIX) || rawLabel === CLOSING_LABEL,
     isNote,
     vedaCite: formatVedaCite(shloka.veda_cite, lang),
     tokens: wordTrack.tokens,

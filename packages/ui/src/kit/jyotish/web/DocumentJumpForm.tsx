@@ -9,8 +9,22 @@ import { iconSearch } from "../icons";
 const inputWeb =
   "bg-transparent transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
-export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: DocumentJumpFormProps) {
-  const form = useDocumentJumpForm({ chapterNumbers, currentChapter, onJump: onJump ?? (() => false) });
+export function DocumentJumpForm({
+  chapterNumbers,
+  currentChapter,
+  documents,
+  currentSlug,
+  onJump,
+  onSelectDocument,
+}: DocumentJumpFormProps) {
+  const form = useDocumentJumpForm({
+    chapterNumbers,
+    currentChapter,
+    documents,
+    currentSlug,
+    onJump: onJump ?? (() => false),
+    onSelectDocument,
+  });
   const { copy } = form;
 
   const handleSubmit = (e: FormEvent) => {
@@ -20,7 +34,25 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Doc
 
   return (
     <form onSubmit={handleSubmit} className={documentsClasses.jumpForm}>
-      {form.showChapter ? (
+      {form.hasDocuments ? (
+        <label className={cn(documentsClasses.jumpField, "min-w-0 flex-1 sm:flex-none")}>
+          <Text as="span" className={documentsClasses.jumpLabel}>
+            {copy.documentLabel}
+          </Text>
+          <select
+            value={form.currentSlug}
+            onChange={(e) => form.selectDocument(e.target.value)}
+            aria-label={copy.documentLabel}
+            className={cn(documentsClasses.jumpSectionSelect, inputWeb)}
+          >
+            {form.documents.map((doc) => (
+              <option key={doc.slug} value={doc.slug}>
+                {doc.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : form.showChapterField ? (
         <label className={documentsClasses.jumpField}>
           <Text as="span" className={documentsClasses.jumpLabel}>
             {copy.chapterLabel}

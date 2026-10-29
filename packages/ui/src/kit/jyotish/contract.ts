@@ -76,10 +76,15 @@ export type SaitRulesSectionProps = {
 
 export type DocumentJumpFormProps = {
   chapterNumbers: number[];
-  /** On a chapter page the chapter field is hidden and fixed to this. */
+  /** On a chapter page, verse jumps stay inside this chapter. */
   currentChapter?: number;
+  /** Full library list for the document picker. */
+  documents?: { slug: string; title: string }[];
+  currentSlug?: string;
   /** Open the chapter, or scroll to the verse. Return false when it cannot be found. */
   onJump: (chapter: number, verse: string) => boolean;
+  /** Open another library document. */
+  onSelectDocument?: (slug: string) => void;
 };
 
 export type DocumentCardProps = {

@@ -66,6 +66,12 @@ export const documentsClasses = {
   chapterRowSub: "text-sm text-muted-foreground",
   chapterRowCount: "mt-0.5 text-xs text-muted-foreground/80",
 
+  // ── Section title cards (multi-column picker) ─────────────────────────────
+  sectionColumns: "columns-1 gap-3 sm:columns-2 lg:columns-3 [column-fill:balance]",
+  sectionCard: "mb-3 inline-flex w-full break-inside-avoid flex-col gap-1 rounded-xl border border-border bg-card px-4 py-3.5 text-left",
+  sectionCardTitle: "text-sm font-semibold leading-snug text-foreground",
+  sectionCardCount: "text-xs text-muted-foreground/80",
+
   // ── Chapter page ──────────────────────────────────────────────────────────
   chapterTitleRow: "flex flex-row items-center justify-between gap-3",
   chapterProgress: "text-xs font-semibold text-muted-foreground",
@@ -84,6 +90,7 @@ export const documentsClasses = {
   /** Text input box on the app; the website renders its ui/Input with the same box. */
   jumpInput: "h-9 rounded-lg border border-border px-3 py-2 text-sm text-foreground",
   jumpChapterInput: "w-20",
+  jumpSectionSelect: "h-9 min-w-[12rem] max-w-full flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground sm:min-w-[16rem]",
   jumpVerseInput: "w-28",
   jumpError: "text-xs text-destructive",
 
@@ -106,8 +113,11 @@ export const documentsClasses = {
   verseBadge: "rounded-md bg-muted px-1.5 py-0.5",
   verseBadgeText: "text-xs font-semibold tabular-nums text-muted-foreground",
   verseCite: "ml-auto shrink-0 pt-0.5 text-right text-xs font-medium text-muted-foreground",
-  verseText: "mt-1 leading-relaxed text-lg sm:text-xl",
-  verseTextNote: "mt-1 leading-relaxed text-base text-foreground/85 sm:text-lg",
+  /* Keep Devanagari intact — avoid mid-akshara wraps from overflow-wrap:anywhere. */
+  verseText: "mt-1 break-normal [overflow-wrap:normal] [word-break:normal] leading-relaxed text-lg sm:text-xl",
+  verseTextNote: "mt-1 whitespace-pre-line break-normal [overflow-wrap:normal] leading-relaxed text-base text-foreground/85 sm:text-lg",
+  chapterImages: "grid gap-3 sm:grid-cols-2",
+  chapterImage: "w-full rounded-xl border border-border bg-card object-contain",
   verseWord: "rounded bg-yellow-300/70 px-0.5 dark:bg-yellow-400/30",
   verseTranslit: "mt-1.5 text-sm italic text-muted-foreground",
   verseProgress: "mt-3 h-0.5 w-full overflow-hidden rounded-full bg-border",

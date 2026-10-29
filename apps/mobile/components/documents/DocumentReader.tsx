@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, Image, View } from "react-native";
 import { spaceUnit } from "@vedic-patro/design-tokens";
 import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
@@ -115,6 +115,15 @@ export function DocumentReader({
                 {item.meta}
               </Text>
             ) : null}
+          </View>
+        );
+      }
+      if (item.kind === "images") {
+        return (
+          <View className={cn(documentsClasses.chapterImages, "mb-3")}>
+            {item.urls.map((url) => (
+              <Image key={url} source={{ uri: url }} className={documentsClasses.chapterImage} resizeMode="contain" accessibilityIgnoresInvertColors />
+            ))}
           </View>
         );
       }

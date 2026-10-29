@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { shlokaAnchor, useDocumentDetail } from "@vedic-patro/features/documents";
+import { chapterAnchor, shlokaAnchor, useDocumentDetail, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
 import { ChapterCard } from "@/components/documents/ChapterCard";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
@@ -23,6 +23,7 @@ export function DocumentDetail() {
   // "back to list" returns there instead of always resetting to "all".
   const { category, topic } = useSearch({ strict: false }) as DocumentDetailSearch;
   const page = useDocumentDetail(slug);
+  const library = useDocumentLibraryOptions();
   const { doc, copy } = page;
 
   useRouteLoading(page.status === "loading");
@@ -86,6 +87,45 @@ export function DocumentDetail() {
 
   const hasFullRecording = Boolean(page.fullAudioUrl);
   const playThrough = page.shlokas.find((s) => s.audio_url);
+  const listSearch = category ? documentsListSearch(category, topic) : undefined;
+
+  const jumpForm = (
+    <DocumentJumpForm
+      chapterNumbers={page.chapterNumbers}
+      documents={library}
+      currentSlug={doc.slug}
+      onSelectDocument={(next) => {
+        navigate({ to: "/documents/$slug", params: { slug: next }, search: listSearch });
+      }}
+      onJump={(chapter, verse) => {
+        // Chapter-picker layout: open that chapter (and verse hash when typed).
+        if (page.layout === "chapters") {
+          if (chapter < 1) return false;
+          navigate({
+            to: "/documents/$slug/$chapter",
+            params: { slug: doc.slug, chapter: String(chapter) },
+            search: listSearch,
+            hash: verse ? shlokaAnchor(verse) : undefined,
+          });
+          return true;
+        }
+        // Reader layout (inline chapters or a flat stotram): scroll on this page.
+        if (verse) {
+          const el = document.getElementById(shlokaAnchor(verse));
+          if (!el) return false;
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          return true;
+        }
+        if (chapter > 0) {
+          const el = document.getElementById(chapterAnchor(chapter));
+          if (!el) return false;
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          return true;
+        }
+        return false;
+      }}
+    />
+  );
 
   // Paginated books (Gita, Ashtavakra): chapter cards, then a separate route
   // for verses. Inline-chapter documents stay on this page.
@@ -95,19 +135,8 @@ export function DocumentDetail() {
         {backLink}
         {headerBlock}
         {stats}
-        <DocumentJumpForm
-          chapterNumbers={page.chapterNumbers}
-          onJump={(chapter, verse) => {
-            navigate({
-              to: "/documents/$slug/$chapter",
-              params: { slug: doc.slug, chapter: String(chapter) },
-              search: category ? documentsListSearch(category, topic) : undefined,
-              hash: verse ? shlokaAnchor(verse) : undefined,
-            });
-            return true;
-          }}
-        />
-        <div className="space-y-2">
+        {jumpForm}
+        <div className={documentsClasses.sectionColumns}>
           {page.chapters.map((card) => (
             <ChapterCard key={card.number} slug={doc.slug} card={card} category={category} topic={topic} />
           ))}
@@ -143,6 +172,7 @@ export function DocumentDetail() {
       {backLink}
       {headerBlock}
       {stats}
+      {jumpForm}
 
       {page.chapterPills.length > 0 ? (
         <nav aria-label={copy.chapterNav} className="flex gap-1.5 overflow-x-auto pb-1">

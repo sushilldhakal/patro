@@ -38,6 +38,15 @@ export function ReaderRows({
             </div>
           );
         }
+        if (row.kind === "images") {
+          return (
+            <div key={row.key} className={documentsClasses.chapterImages}>
+              {row.urls.map((url) => (
+                <img key={url} src={url} alt="" className={documentsClasses.chapterImage} loading="lazy" />
+              ))}
+            </div>
+          );
+        }
         return <ShlokaCard key={row.key} shloka={row.shloka} player={versePlayer} fullRecording={fullRecording} />;
       })}
     </div>

@@ -95,6 +95,8 @@ export interface DocumentChapter {
   shlokas?: Shloka[];
   /** Present only for a chaptered document's chapter entries (see above). */
   shloka_count?: number;
+  /** Ritual diagrams / mandalas shown above this chapter's verses. */
+  image_urls?: string[];
 }
 
 export interface DocumentDetail extends DocumentSummary {
@@ -111,17 +113,18 @@ export interface DocumentChapterDetail extends DocumentSummary {
     title_ne?: string | null;
     title_en?: string | null;
     shlokas: Shloka[];
+    image_urls?: string[];
   };
 }
 
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "6";
+const DOCUMENTS_LIST_CACHE_VERSION = "9";
 
 export const documentsKeys = {
   list: () => ["documents", "list", DOCUMENTS_LIST_CACHE_VERSION] as const,
-  detail: (slug: string) => ["documents", "detail", slug] as const,
+  detail: (slug: string) => ["documents", "detail", slug, DOCUMENTS_LIST_CACHE_VERSION] as const,
   chapter: (slug: string, chapterNumber: number) =>
     ["documents", "detail", slug, "chapter", chapterNumber, DOCUMENTS_LIST_CACHE_VERSION] as const,
 };

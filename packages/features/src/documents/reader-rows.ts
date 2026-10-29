@@ -19,6 +19,7 @@ export type ReaderRow =
       title?: string;
     }
   | { kind: "sukta"; key: string; heading: string; meta?: string }
+  | { kind: "images"; key: string; urls: string[] }
   | { kind: "verse"; key: string; shloka: Shloka };
 
 export type RowText = { t: TFunction; lang: string; digits: (n: number) => string };
@@ -71,6 +72,9 @@ export function inlineChapterRows(chapters: readonly DocumentChapter[], text: Ro
             title: bilingual(lang, chapter.title_ne, chapter.title_en) || undefined,
           },
         ]
+      : []),
+    ...((chapter.image_urls?.length ?? 0) > 0
+      ? [{ kind: "images" as const, key: `images-c${chapter.number ?? 0}`, urls: chapter.image_urls! }]
       : []),
     ...versesToRows(chapter.shlokas ?? [], text, `c${chapter.number ?? 0}-`),
   ]);

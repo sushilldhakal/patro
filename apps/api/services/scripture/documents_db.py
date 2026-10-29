@@ -29,6 +29,8 @@ _ADDED_COLUMNS: list[tuple[str, str]] = [
     ("category", "TEXT NOT NULL DEFAULT 'stotram'"),
     ("subcategory", "TEXT"),
     ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
+    # JSON object: {"1": ["documents/slug/a.png", ...]} — ritual diagrams etc.
+    ("chapter_images", "TEXT"),
 ]
 
 # Same additive/nullable/idempotent pattern as _ADDED_COLUMNS, but for the
@@ -66,7 +68,8 @@ CREATE TABLE IF NOT EXISTS documents (
     inline_chapters INTEGER NOT NULL DEFAULT 0,
     chapter_count   INTEGER NOT NULL DEFAULT 0,
     shloka_count    INTEGER NOT NULL DEFAULT 0,
-    full_audio_key  TEXT
+    full_audio_key  TEXT,
+    chapter_images  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS shlokas (
@@ -298,6 +301,12 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     audio_coverage = manifest.get("audio_coverage") or None
     full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
     chapters = manifest.get("chapters") or []
+    chapter_images: dict[str, list[str]] = {}
+    for chapter in chapters:
+        number = chapter.get("number")
+        images = chapter.get("images") or []
+        if number is not None and images:
+            chapter_images[str(number)] = [str(k).strip() for k in images if str(k).strip()]
 
     global_order = 0
     shloka_count = 0
@@ -350,8 +359,8 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO documents
             (slug, order_index, category, subcategory, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
-             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key, chapter_images)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
@@ -373,6 +382,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             chapter_count,
             shloka_count,
             full_audio_key,
+            json.dumps(chapter_images, ensure_ascii=False) if chapter_images else None,
         ),
     )
     conn.executemany(
@@ -487,6 +497,38 @@ def _document_detail_base(doc_row: sqlite3.Row) -> dict[str, Any]:
     return detail
 
 
+def _chapter_images_map(doc_row: sqlite3.Row) -> dict[str, list[str]]:
+    if "chapter_images" not in doc_row.keys():
+        return {}
+    raw = doc_row["chapter_images"]
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    out: dict[str, list[str]] = {}
+    for key, value in data.items():
+        if isinstance(value, list):
+            out[str(key)] = [str(v) for v in value if v]
+    return out
+
+
+def _attach_chapter_images(chapters: list[dict[str, Any]], doc_row: sqlite3.Row) -> None:
+    images = _chapter_images_map(doc_row)
+    if not images:
+        return
+    for chapter in chapters:
+        number = chapter.get("number")
+        if number is None:
+            continue
+        keys = images.get(str(number)) or []
+        if keys:
+            chapter["images"] = keys
+
+
 def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
     return {
         "id": r["id"],
@@ -545,6 +587,7 @@ def get_document_detail(slug: str) -> dict[str, Any] | None:
             chapters.append(chapter)
         chapter["shlokas"].append(_shloka_row_to_dict(r))
 
+    _attach_chapter_images(chapters, doc_row)
     detail = _document_detail_base(doc_row)
     detail["chapters"] = chapters
     return detail
@@ -609,6 +652,7 @@ def get_document_summary(slug: str) -> dict[str, Any] | None:
                 for r in chapter_rows
             ]
 
+    _attach_chapter_images(chapters, doc_row)
     detail = _document_detail_base(doc_row)
     detail["chapters"] = chapters
     return detail
@@ -636,6 +680,7 @@ def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None
     """
     ensure_seeded()
     with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
         shloka_rows = conn.execute(
             "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
             "ORDER BY global_order ASC",
@@ -644,12 +689,15 @@ def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None
     if not shloka_rows:
         return None
     first = shloka_rows[0]
-    return {
+    chapter = {
         "number": first["chapter_number"],
         "title_ne": first["chapter_title_ne"],
         "title_en": first["chapter_title_en"],
         "shlokas": [_shloka_row_to_dict(r) for r in shloka_rows],
     }
+    if doc_row is not None:
+        _attach_chapter_images([chapter], doc_row)
+    return chapter
 
 
 VEDA_SLUGS = ("rigveda", "yajurveda", "samaveda", "atharvaveda")

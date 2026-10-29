@@ -9,11 +9,31 @@ import { documentsKeys, fetchDocuments, type DocumentSummary } from "@vedic-patr
 import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryGroup, type DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { statusOf, type PageStatus } from "../_shared";
+import { bilingual } from "./reader-rows";
+import type { DocumentLibraryOption } from "./use-document-jump-form";
 
 export type DocumentsTab = "all" | DocumentCategoryId;
 
 export function documentsInGroup(documents: readonly DocumentSummary[], groupId: DocumentCategoryId): DocumentSummary[] {
   return documents.filter((doc) => doc.category === groupId);
+}
+
+/** Library titles for the in-reader document picker (same order as `/documents`). */
+export function useDocumentLibraryOptions(): DocumentLibraryOption[] {
+  const { lang } = useLocale();
+  const query = useQuery({
+    queryKey: documentsKeys.list(),
+    queryFn: fetchDocuments,
+    staleTime: 0,
+  });
+  return useMemo(
+    () =>
+      (query.data?.documents ?? []).map((doc) => ({
+        slug: doc.slug,
+        title: bilingual(lang, doc.title_ne, doc.title_en),
+      })),
+    [query.data?.documents, lang],
+  );
 }
 
 export type DocumentsSection = {
