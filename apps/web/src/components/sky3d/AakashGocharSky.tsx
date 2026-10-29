@@ -80,6 +80,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
+import { formatWheelDegree } from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import { KATHMANDU, type Observer } from "@vedic-patro/domain/astronomy/sky3d/horizon";
 import {
   ayanamsa,
@@ -2874,6 +2875,27 @@ const SkyLabels = memo(function SkyLabels({
               {label.text === "earth"
                 ? tFor(lang, "ui.common.earth_s_axis")
                 : tFor(lang, "ui.sky3d.orbit_s_perpendicular")}
+            </span>
+          );
+        }
+        /* The selected graha's longitude at the rim of the belt — the same
+           readout the panchanga wheel prints where its needle meets the rim. */
+        if (label.kind === "grahadeg" && label.deg != null) {
+          return (
+            <span
+              key={label.id}
+              className="rounded-md border bg-black/80 px-1.5 py-px text-xs font-bold tabular-nums"
+              style={{
+                position: "absolute",
+                left: label.x,
+                top: label.y,
+                transform: "translate(-50%, -50%)",
+                whiteSpace: "nowrap",
+                borderColor: label.key ? GRAHA_COLOR[label.key] : illustration.amber49,
+                color: illustration.amber49,
+              }}
+            >
+              {digits(formatWheelDegree(label.deg))}
             </span>
           );
         }

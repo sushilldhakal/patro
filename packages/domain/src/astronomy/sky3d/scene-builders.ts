@@ -72,7 +72,8 @@ export type ScreenLabel = {
     | "star"
     | "culture"
     | "outerplanet"
-    | "nebula";
+    | "nebula"
+    | "grahadeg";
   /**
    * 1–12 for rashi, 1–27 for nakshatra, 1–4 for a पाद; for a pole star, 1 marks
    * the one the pole is nearest at the moment on screen.
@@ -94,7 +95,8 @@ export type ScreenLabel = {
   side?: "left" | "right" | "top" | "bottom" | "horizon" | "meridian";
   /** Pole stars only: the Gregorian year the pole passes closest to this one. */
   year?: number;
-  /** The obliquity marker: the angle it is calling out, degrees. */
+  /** The obliquity marker: the angle it is calling out, degrees. The graha
+      degree readout: the selected graha's sidereal longitude, to 0.01°. */
   deg?: number;
   /**
    * How far under the point the name has to sit to clear the object, px.
@@ -935,6 +937,9 @@ export function labelsMoved(prev: ScreenLabel[], next: ScreenLabel[]): boolean {
          a label sits, only how brightly it is drawn, so on a paused sky the
          fade would never be handed over. */
       a.below !== b.below ||
+      /* A graha the camera is following holds still on screen while its
+         longitude keeps counting, so the readout has to count as movement. */
+      a.deg !== b.deg ||
       Math.abs(a.x - b.x) >= 0.5 ||
       Math.abs(a.y - b.y) >= 0.5
     )

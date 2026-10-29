@@ -59,7 +59,7 @@ export function useAakashGocharPage({ location, ready = true }: { location: Panc
     if (!clockChosen) setClockState(clockStringInTimezone(new Date(), tz));
   }
 
-  const [selectedKey, setSelectedKey] = useState<GrahaKey | null>(null);
+  const [selectedKey, setSelectedKey] = useState<GrahaKey | null>("sun");
   /** Clicking the card already selected clears it, matching the canvas. */
   const toggleSelected = useCallback((key: GrahaKey) => setSelectedKey((prev) => (prev === key ? null : key)), []);
 

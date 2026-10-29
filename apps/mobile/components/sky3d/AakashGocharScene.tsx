@@ -88,6 +88,7 @@ import {
   NAKSHATRA_DIVIDERS,
   PADA_TICKS,
   RASHI_DIVIDERS,
+  RASHI_BAND_LAT,
   RASHI_LABEL_LAT,
   type eclipticPoint,
 } from "@vedic-patro/domain/astronomy/sky3d/sky-geometry";
@@ -3843,6 +3844,18 @@ export function AakashGocharScene({
             }
           }
         }
+      }
+    }
+
+    /* The selected graha's longitude, read out where its sightline meets the
+       belt — the panchanga wheel's rim readout, in the sky. Only with the
+       grid on: it is a number on the degree cage, not a name. */
+    if (collect && toggles.grid && !horizon) {
+      const at = space
+        ? place(beltLon, 0, NAK_OUTER + 1.6)
+        : place(beltLon, RASHI_BAND_LAT + 2.5, RASHI_MID);
+      if (labelVisible(at)) {
+        project({ id: "grahadeg", kind: "grahadeg", key: beltKey, deg: Math.round(beltLon * 100) / 100 }, at);
       }
     }
 

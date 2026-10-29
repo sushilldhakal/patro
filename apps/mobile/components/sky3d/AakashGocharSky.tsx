@@ -43,6 +43,7 @@ import { formatRashiByNumber, getRashiList } from "@vedic-patro/domain/panchanga
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { GRAHA_COLOR, normalizeDeg } from "@vedic-patro/domain/astronomy/sky3d/geocentric-model";
+import { formatWheelDegree } from "@vedic-patro/domain/panchanga/wheel-degree-ring";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { LIVE_GRAHA_KEYS, liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 /* The one zoom→field-of-view mapping, shared with the scene. This file used to
@@ -95,7 +96,7 @@ import { useDeviceOrientation } from "@/lib/sky3d/device-orientation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { formatPoleYear } from "@vedic-patro/domain/astronomy/sky3d/pole-year";
 
-import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { illustration, midnight, neutral, radius, space, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
 const Scene = memo(AakashGocharScene);
 
@@ -303,7 +304,7 @@ export function AakashGocharSky({
   const [playing, setPlaying] = useState(true);
   const [speedIndex, setSpeedIndex] = useState(DEFAULT_STEP_INDEX);
   const [reverse, setReverse] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<GrahaKey | null>(null);
+  const [selectedKey, setSelectedKey] = useState<GrahaKey | null>("sun");
   const [sample, setSample] = useState<SkySample | null>(null);
   /* `onSample` is handed to the scene and deliberately keeps a stable
      identity, so it reads the current view through a ref rather than closing
@@ -2634,6 +2635,41 @@ const SkyLabels = memo(function SkyLabels({
                 ? t("ui.common.earth_s_axis")
                 : t("ui.sky3d.orbit_s_perpendicular")}
             </Text>
+          );
+        }
+        /* The selected graha's longitude at the rim of the belt — the same
+           readout the panchanga wheel prints where its needle meets the rim. */
+        if (label.kind === "grahadeg" && label.deg != null) {
+          return (
+            <View
+              key={label.id}
+              style={{
+                position: "absolute",
+                left: label.x - 40,
+                top: label.y - 9,
+                width: 80,
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={[
+                  {
+                    color: illustration.amber49,
+                    borderColor: label.key ? GRAHA_COLOR[label.key] : illustration.amber49,
+                    borderWidth: 1,
+                    borderRadius: radius.lg,
+                    paddingHorizontal: space.xs,
+                    backgroundColor: withAlpha(midnight.background, 0.85),
+                    fontVariant: ["tabular-nums"],
+                  },
+                  nepaliTextStyle(11, { dense: true }),
+                ]}
+                className="text-caption font-bold"
+                numberOfLines={1}
+              >
+                {digits(formatWheelDegree(label.deg))}
+              </Text>
+            </View>
           );
         }
         if (label.kind === "obliquity") {
