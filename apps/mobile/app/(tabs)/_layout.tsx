@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppHeader } from "@/components/AppHeader";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
+import { UnloadWhenAway } from "@/components/navigation/UnloadWhenAway";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight, normalizeMobilePathname } from "@/lib/mobile-nav";
 import { requestOpenMenu } from "@/lib/menu-request";
@@ -78,16 +79,17 @@ export default function TabsLayout() {
           </View>
         </View>
       )}
-      screenLayout={({ route, children }) => (
-        <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>
+      screenLayout={({ route, navigation, children }) => (
+        <UnloadWhenAway navigation={navigation}>
+          <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>
+        </UnloadWhenAway>
       )}
       tabBar={() => <FloatingNavBar />}
       screenOptions={{
         headerShown: false,
-        // Tab screens stay mounted once visited, and each one's shell reads the
-        // pathname — so without this every navigation re-rendered every page
-        // seen so far, and the app got slower the more of it was opened.
-        freezeOnBlur: true,
+        // Not frozen: a tab left for a while unloads instead (UnloadWhenAway), and a frozen tab
+        // could neither render its empty stand-in nor give its memory back when unmounted.
+        freezeOnBlur: false,
         // Opaque: a transparent scene lets the previous screen show through
         // (overlapping) while a newly opened tab is still mounting its content.
         sceneStyle: { backgroundColor: colors.background, flex: 1 },
