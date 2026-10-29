@@ -85,6 +85,16 @@ export function useAakashGocharPage({ location, ready = true }: { location: Panc
     placeholderData: keepPreviousData,
   });
 
+  /* The rows are positions at sunrise, so the sky has to be pinned to them
+     at sunrise. Pinned at the clock instead, every graha sat where it stood
+     at dawn — the Moon a good 5° behind by the afternoon. */
+  const computedAtUtc = query.data?.computed_at?.utc;
+  const gocharAt = useMemo(() => {
+    if (!computedAtUtc) return undefined;
+    const at = new Date(computedAtUtc);
+    return Number.isNaN(at.getTime()) ? undefined : at;
+  }, [computedAtUtc]);
+
   /* Once the sky has been on screen it stays: swapping it for the loader
      would unmount the scene and lose its state. */
   const [skyShown, setSkyShown] = useState(false);
@@ -123,6 +133,7 @@ export function useAakashGocharPage({ location, ready = true }: { location: Panc
     setSelectedKey,
     toggleSelected,
     gochar: query.data?.gochar,
+    gocharAt,
     ayanamsaDeg: query.data?.ayanamsa?.degrees,
     vedicStars: query.data?.vedic_stars,
     /** Show the loader instead of the scene (before it first appears). */

@@ -117,6 +117,7 @@ export function AakashGochar() {
       ) : (
         <AakashGocharSky
           gochar={page.gochar}
+          gocharAt={page.gocharAt}
           ayanamsaDeg={page.ayanamsaDeg}
           vedicStars={page.vedicStars}
           date={page.sceneDate}

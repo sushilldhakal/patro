@@ -425,6 +425,9 @@ const beltFontSize = (base: number, scale: number) =>
 export type AakashGocharSkyProps = {
   /** Gochar rows for {@link date} — the API longitudes the model is pinned to. */
   gochar?: Record<string, GocharGraha>;
+  /** The instant {@link gochar} is for (sunrise on the day). The model is
+      pinned to the rows there; without it, at {@link date}. */
+  gocharAt?: Date;
   /**
    * The server's Lahiri ayanamsa for {@link date}, degrees — where the sidereal
    * zero stands against the equinox. The scene pins its own fit to it.
@@ -489,6 +492,7 @@ export type AakashGocharSkyProps = {
 
 export function AakashGocharSky({
   gochar,
+  gocharAt,
   ayanamsaDeg,
   vedicStars,
   date,
@@ -510,8 +514,8 @@ export function AakashGocharSky({
   /* The API is the source of truth: pin the model onto it for this date, so the
      scene is exact here and merely smooth as the clock runs away from it. */
   const calibration: SkyCalibration = useMemo(
-    () => (gochar ? calibrate(date, gochar) : {}),
-    [gochar, date],
+    () => (gochar ? calibrate(gocharAt ?? date, gochar) : {}),
+    [gochar, gocharAt, date],
   );
 
   /* Same idea for the frame the longitudes live in: the offset that carries the
@@ -519,8 +523,8 @@ export function AakashGocharSky({
      already sub-arcminute near now, but it drifts by a third of a degree a
      thousand years out — enough to slide the whole belt off its stars. */
   const ayanamsaShift = useMemo(
-    () => (ayanamsaDeg == null ? 0 : ayanamsaDeg - ayanamsa(daysSinceJ2000(date))),
-    [ayanamsaDeg, date],
+    () => (ayanamsaDeg == null ? 0 : ayanamsaDeg - ayanamsa(daysSinceJ2000(gocharAt ?? date))),
+    [ayanamsaDeg, gocharAt, date],
   );
 
   const sim = useRef<SimState>({

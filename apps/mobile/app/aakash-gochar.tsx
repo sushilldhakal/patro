@@ -86,6 +86,7 @@ export default function AakashGocharScreen() {
                the day on screen, not the view itself. */
             <AakashGocharSky
               gochar={page.gochar}
+              gocharAt={page.gocharAt}
               vedicStars={page.vedicStars}
               ayanamsaDeg={page.ayanamsaDeg}
               date={page.sceneDate}

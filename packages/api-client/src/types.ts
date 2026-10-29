@@ -1695,6 +1695,11 @@ export interface GocharResponse {
    * predate the field.
    */
   ayanamsa?: { name: string; degrees: number };
+  /**
+   * The instant the rows are for — local sunrise on the day, not the day's
+   * clock. Optional: older cached responses predate the field.
+   */
+  computed_at?: { utc: string; local: string; note?: string };
   gochar: Record<string, GocharGraha>;
   /** Optional: older cached responses predate the field. */
   vedic_stars?: VedicStarPosition[];
