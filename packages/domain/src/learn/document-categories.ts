@@ -12,6 +12,17 @@ export interface DocumentTopic {
   en: string;
   /** Jump to this group instead of filtering the current one. */
   opens?: DocumentCategoryId;
+  /** Which of the group's `sets` this topic is listed under (the first set when absent). */
+  set?: string;
+}
+
+/** A titled run of topics inside a group, e.g. the eighteen Mahapuranas. */
+export interface DocumentTopicSet {
+  id: string;
+  ne: string;
+  en: string;
+  /** A canonical, counted list: draw every topic as a numbered tile, filed or not. */
+  numbered?: boolean;
 }
 
 export interface DocumentCategoryGroup {
@@ -23,6 +34,8 @@ export interface DocumentCategoryGroup {
   blurb?: { ne: string; en: string };
   /** Small heading above the topic chips, when the topics share a label. */
   lead?: { ne: string; en: string };
+  /** Titled sub-lists of `topics`; a group without them shows its topics as one list under `lead`. */
+  sets?: DocumentTopicSet[];
   topics: DocumentTopic[];
 }
 
@@ -196,18 +209,38 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "📚",
     ne: "पुराण",
     en: "Purana",
-    blurb: { ne: "पुराण, रामायण, महाभारत र तन्त्र", en: "Puranas, Ramayana, Mahabharata and Tantra" },
+    blurb: { ne: "अष्टादश महापुराण, रामायण, महाभारत र तन्त्र", en: "The 18 Mahapuranas, Ramayana, Mahabharata and Tantra" },
+    sets: [
+      { id: "mahapurana", ne: "अष्टादश महापुराण", en: "The 18 Mahapuranas", numbered: true },
+      { id: "itihasa", ne: "इतिहास, उपपुराण तथा अन्य", en: "Itihasa, Upapuranas and others" },
+    ],
+    /* The eighteen in the Vishnu Purana's own order (3.6). The fourth is Shiva in
+       some lists and Vayu in others, so it carries both names. */
     topics: [
-      { id: "bhagavata", ne: "श्रीमद्भागवत", en: "Bhagavata Purana" },
-      { id: "vishnu", ne: "विष्णु पुराण", en: "Vishnu Purana" },
-      { id: "shiva", ne: "शिव पुराण", en: "Shiva Purana" },
-      { id: "devi-bhagavata", ne: "देवी भागवत", en: "Devi Bhagavata" },
-      { id: "markandeya", ne: "मार्कण्डेय पुराण", en: "Markandeya Purana" },
-      { id: "garuda", ne: "गरुड पुराण", en: "Garuda Purana" },
-      { id: "skanda", ne: "स्कन्द पुराण", en: "Skanda Purana" },
+      { id: "brahma", ne: "ब्रह्म पुराण", en: "Brahma Purana" },
       { id: "padma", ne: "पद्म पुराण", en: "Padma Purana" },
+      { id: "vishnu", ne: "विष्णु पुराण", en: "Vishnu Purana" },
+      { id: "shiva", ne: "शिव (वायु) पुराण", en: "Shiva (Vayu) Purana" },
+      { id: "bhagavata", ne: "श्रीमद्भागवत", en: "Bhagavata Purana" },
+      { id: "narada", ne: "नारद पुराण", en: "Narada Purana" },
+      { id: "markandeya", ne: "मार्कण्डेय पुराण", en: "Markandeya Purana" },
+      { id: "agni", ne: "अग्नि पुराण", en: "Agni Purana" },
       { id: "bhavishya", ne: "भविष्य पुराण", en: "Bhavishya Purana" },
-      { id: "adi", ne: "आदि", en: "Others" },
+      { id: "brahmavaivarta", ne: "ब्रह्मवैवर्त पुराण", en: "Brahmavaivarta Purana" },
+      { id: "linga", ne: "लिङ्ग पुराण", en: "Linga Purana" },
+      { id: "varaha", ne: "वराह पुराण", en: "Varaha Purana" },
+      { id: "skanda", ne: "स्कन्द पुराण", en: "Skanda Purana" },
+      { id: "vamana", ne: "वामन पुराण", en: "Vamana Purana" },
+      { id: "kurma", ne: "कूर्म पुराण", en: "Kurma Purana" },
+      { id: "matsya", ne: "मत्स्य पुराण", en: "Matsya Purana" },
+      { id: "garuda", ne: "गरुड पुराण", en: "Garuda Purana" },
+      { id: "brahmanda", ne: "ब्रह्माण्ड पुराण", en: "Brahmanda Purana" },
+      { id: "valmiki", ne: "वाल्मीकि रामायण", en: "Valmiki Ramayana", set: "itihasa" },
+      { id: "mahabharata", ne: "महाभारत", en: "Mahabharata", set: "itihasa" },
+      { id: "devi-bhagavata", ne: "देवी भागवत", en: "Devi Bhagavata", set: "itihasa" },
+      { id: "upapurana", ne: "उपपुराण", en: "Upapuranas", set: "itihasa" },
+      { id: "tantra", ne: "तन्त्र", en: "Tantra", set: "itihasa" },
+      { id: "adi", ne: "आदि", en: "Others", set: "itihasa" },
     ],
   },
   {

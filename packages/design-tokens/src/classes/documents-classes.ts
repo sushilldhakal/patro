@@ -71,6 +71,22 @@ export const documentsClasses = {
   categoryHeroBlurb: "mt-1 text-sm leading-relaxed text-muted-foreground",
   categoryHeroCount: "mt-2 text-xs font-semibold tabular-nums text-secondary",
 
+  // ── Topic tiles (inside one group) ────────────────────────────────────────
+  topicPanel: "flex flex-col gap-5 rounded-2xl border border-border bg-card p-4 sm:p-5",
+  topicSetHead: "flex flex-row items-center justify-between gap-3",
+  /** A canonical list (the eighteen Mahapuranas): numbered tiles, filed or not. */
+  topicGrid: "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6",
+  topicTile: "flex min-w-0 flex-col gap-1 rounded-xl border px-3 py-2.5 text-left",
+  topicTileActive: "border-secondary bg-secondary/10",
+  topicTileIdle: "border-border bg-background",
+  topicTileEmpty: "border-dashed border-border/80 bg-muted/20 opacity-70",
+  topicNum: "flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-xs font-bold tabular-nums text-secondary",
+  topicName: "text-sm font-semibold leading-snug text-foreground",
+  topicCount: "text-xs tabular-nums text-muted-foreground",
+  topicChips: "flex flex-row flex-wrap gap-1.5",
+  topicChipEmpty: "border-dashed border-border/80 text-muted-foreground/70",
+  topicReset: "inline-flex items-center gap-1 text-xs font-semibold text-secondary",
+
   // ── Accordion list view ───────────────────────────────────────────────────
   listShell: "overflow-hidden rounded-2xl border border-border bg-card",
   listItem: "border-b border-border last:border-b-0",

@@ -19,7 +19,7 @@ from pathlib import Path
 csv.field_size_limit(sys.maxsize)
 
 # Bump when the mapping below changes so an unchanged CSV still reseeds.
-PURANA_IMPORT_VERSION = b"purana-csv-7"
+PURANA_IMPORT_VERSION = b"purana-csv-8"
 
 _DEVANAGARI_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")
 
@@ -45,7 +45,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Brahmapurana_cleaned_with_devanagari.csv",
         "brahma-purana",
         30,
-        "adi",
+        "brahma",
         "ब्रह्मपुराणम्",
         "ब्रह्मपुराण",
         "Brahma Purana",
@@ -98,7 +98,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Naradapurana_cleaned_with_devanagari.csv",
         "narada-purana",
         34,
-        "adi",
+        "narada",
         "नारदपुराणम्",
         "नारदपुराण",
         "Narada Purana",
@@ -124,7 +124,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Agnipurana_cleaned_with_devanagari.csv",
         "agni-purana",
         36,
-        "adi",
+        "agni",
         "अग्निपुराणम्",
         "अग्निपुराण",
         "Agni Purana",
@@ -150,7 +150,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Vamanapurana_Saromahatmya_cleaned_with_devanagari.csv",
         "vamana-purana",
         38,
-        "adi",
+        "vamana",
         "वामनपुराणम्",
         "वामनपुराण (सरोमाहात्म्य)",
         "Vamana Purana (Saromahatmya)",
@@ -163,7 +163,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Kurmapurana_cleaned_with_devanagari.csv",
         "kurma-purana",
         39,
-        "adi",
+        "kurma",
         "कूर्मपुराणम्",
         "कूर्मपुराण",
         "Kurma Purana",
@@ -176,7 +176,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Matsyapurana_cleaned_with_devanagari.csv",
         "matsya-purana",
         40,
-        "adi",
+        "matsya",
         "मत्स्यपुराणम्",
         "मत्स्यपुराण",
         "Matsya Purana",
@@ -202,7 +202,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Brahmandapurana_cleaned_with_devanagari.csv",
         "brahmanda-purana",
         42,
-        "adi",
+        "brahmanda",
         "ब्रह्माण्डपुराणम्",
         "ब्रह्माण्डपुराण",
         "Brahmanda Purana",
@@ -215,7 +215,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Vayupurana_Revakhanda_cleaned_with_devanagari.csv",
         "vayu-purana",
         43,
-        "adi",
+        "shiva",
         "वायुपुराणम्",
         "वायुपुराण (रेवाखण्ड)",
         "Vayu Purana (Reva Khanda)",
@@ -228,7 +228,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Narasimhapurana_cleaned_with_devanagari.csv",
         "narasimha-purana",
         44,
-        "adi",
+        "upapurana",
         "नृसिंहपुराणम्",
         "नृसिंहपुराण",
         "Narasimha Purana",

@@ -8,7 +8,7 @@ import {
   fetchDocumentDetail,
   type DocumentSummary,
 } from "@vedic-patro/api-client";
-import { bilingual, useDocumentCard, type DocumentsSection } from "@vedic-patro/features/documents";
+import { bilingual, useDocumentCard, type DocumentsSection, type DocumentsTopicSet } from "@vedic-patro/features/documents";
 import { categoryGroup } from "@vedic-patro/domain/learn/document-categories";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
@@ -231,6 +231,100 @@ export function DocumentCategoryHero({ section, countLabel }: { section: Documen
         <p className={documentsClasses.categoryHeroCount}>{countLabel}</p>
       </div>
     </header>
+  );
+}
+
+// ── Topics (inside a category) ─────────────────────────────────────────────
+
+/**
+ * The open group's topics. A canonical list (the eighteen Mahapuranas) is drawn
+ * as numbered tiles, every one shown whether or not a text is filed under it
+ * yet; other topic lists are chips. A filed topic filters the group; picking it
+ * again clears the filter.
+ */
+export function DocumentTopicPanel({
+  sets,
+  category,
+  view,
+  resetLabel,
+  showReset,
+}: {
+  sets: DocumentsTopicSet[];
+  category: DocumentCategoryTab;
+  view: DocumentsViewMode;
+  resetLabel: string;
+  showReset: boolean;
+}) {
+  if (sets.length === 0) return null;
+  return (
+    <section className={documentsClasses.topicPanel}>
+      {sets.map((set, i) => (
+        <div key={set.id || "topics"} className="space-y-2.5">
+          <div className={documentsClasses.topicSetHead}>
+            <h3 className={documentsClasses.sectionLabel}>{set.title}</h3>
+            {showReset && i === 0 ? (
+              <Link to="/documents" search={documentsListSearch(category, undefined, view)} replace className={cn(documentsClasses.topicReset, "hover:opacity-80")}>
+                <X className="size-3.5" aria-hidden="true" />
+                {resetLabel}
+              </Link>
+            ) : null}
+          </div>
+          <div className={set.numbered ? documentsClasses.topicGrid : documentsClasses.topicChips}>
+            {set.topics.map((topic) => {
+              const filed = topic.count > 0;
+              const to = topic.opens
+                ? documentsListSearch(topic.opens, undefined, view)
+                : documentsListSearch(category, topic.active ? undefined : topic.id, view);
+              if (!set.numbered) {
+                const chipClass = cn(
+                  documentsClasses.chip,
+                  topic.active ? documentsClasses.chipActive : filed ? cn(documentsClasses.chipIdle, "hover:border-secondary/50 hover:text-foreground") : documentsClasses.topicChipEmpty,
+                );
+                return filed ? (
+                  <Link key={topic.id} to="/documents" search={to} replace={!topic.opens} aria-current={topic.active ? "true" : undefined} className={cn(chipClass, "transition-colors")}>
+                    {topic.label}
+                    <span className={documentsClasses.chipCount}>{topic.count}</span>
+                  </Link>
+                ) : (
+                  <span key={topic.id} className={chipClass} title={topic.countLabel}>
+                    {topic.label}
+                  </span>
+                );
+              }
+              const body = (
+                <>
+                  <span className="flex flex-row items-center gap-2">
+                    <span className={documentsClasses.topicNum}>{topic.numberLabel}</span>
+                    <span className={cn(documentsClasses.topicName, "min-w-0 truncate")}>{topic.label}</span>
+                  </span>
+                  <span className={cn(documentsClasses.topicCount, "pl-8")}>{topic.countLabel}</span>
+                </>
+              );
+              return filed ? (
+                <Link
+                  key={topic.id}
+                  to="/documents"
+                  search={to}
+                  replace={!topic.opens}
+                  aria-current={topic.active ? "true" : undefined}
+                  className={cn(
+                    documentsClasses.topicTile,
+                    topic.active ? documentsClasses.topicTileActive : cn(documentsClasses.topicTileIdle, "hover:border-secondary/50"),
+                    "transition-colors",
+                  )}
+                >
+                  {body}
+                </Link>
+              ) : (
+                <div key={topic.id} className={cn(documentsClasses.topicTile, documentsClasses.topicTileEmpty)}>
+                  {body}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 

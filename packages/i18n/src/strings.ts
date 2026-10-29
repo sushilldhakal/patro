@@ -7125,6 +7125,9 @@ export const strings = {
   "documents.chapters_expand": { ne: "अध्यायहरू", en: "Chapters" },
   "documents.open_document": { ne: "ग्रन्थ खोल्नुहोस्", en: "Open text" },
   "documents.library": { ne: "पुस्तकालय", en: "Library" },
+  "documents.topics": { ne: "विषय", en: "Topics" },
+  "documents.all_topics": { ne: "सबै", en: "All" },
+  "documents.coming_soon": { ne: "छिट्टै आउँदैछ", en: "Coming soon" },
   "documents.breadcrumb_label": { ne: "तपाईं यहाँ हुनुहुन्छ", en: "You are here" },
   "documents.all_categories": { ne: "सबै वर्ग", en: "All categories" },
   "documents.library_totals": {

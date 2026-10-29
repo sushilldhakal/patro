@@ -11,10 +11,11 @@ import {
   DocumentCategoryHub,
   DocumentLibraryList,
   DocumentRows,
+  DocumentTopicPanel,
   DocumentsBreadcrumb,
   DocumentsToolbar,
 } from "@/components/documents/DocumentLibraryViews";
-import type { DocumentsViewMode } from "@/lib/documents-api";
+import { documentsListSearch, type DocumentsViewMode } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
 
 const routeApi = getRouteApi("/documents");
@@ -28,7 +29,7 @@ const routeApi = getRouteApi("/documents");
  * titles across the library, or inside the open category.
  */
 export function Documents() {
-  const { category: activeCategory, view: viewParam } = routeApi.useSearch();
+  const { category: activeCategory, topic, view: viewParam } = routeApi.useSearch();
   const view: DocumentsViewMode = viewParam === "list" ? "list" : "grid";
   const navigate = routeApi.useNavigate();
   // A search typed in one category means nothing in the next, so it is kept
@@ -36,11 +37,11 @@ export function Documents() {
   const [typed, setTyped] = useState({ category: activeCategory, text: "" });
   const search = typed.category === activeCategory ? typed.text : "";
   const setSearch = (text: string) => setTyped({ category: activeCategory, text });
-  const page = useDocumentsPage(activeCategory, search);
+  const page = useDocumentsPage(activeCategory, search, topic);
   useRouteLoading(page.status === "loading");
 
   const setView = (next: DocumentsViewMode) =>
-    navigate({ search: next === "list" ? { category: activeCategory, view: "list" } : { category: activeCategory }, replace: true });
+    navigate({ search: documentsListSearch(activeCategory, topic, next), replace: true });
 
   const section = page.activeSection;
 
@@ -56,9 +57,23 @@ export function Documents() {
         <div className="space-y-5">
           {section ? (
             <div className="space-y-4">
-              <DocumentsBreadcrumb crumbs={[{ label: page.copy.library, category: "all" }]} current={section.name} view={view} />
-              <DocumentCategoryHero section={section} countLabel={page.copy.docsInCategory(section.count)} />
+              <DocumentsBreadcrumb
+                crumbs={[
+                  { label: page.copy.library, category: "all" },
+                  ...(page.activeTopic ? [{ label: section.name, category: section.group.id }] : []),
+                ]}
+                current={page.activeTopic?.label ?? section.name}
+                view={view}
+              />
+              <DocumentCategoryHero section={section} countLabel={page.copy.docsInCategory(page.counts[section.group.id] ?? section.count)} />
               <DocumentCategoryChips tabs={page.tabs} label={page.copy.tabsLabel} view={view} />
+              <DocumentTopicPanel
+                sets={page.topicSets}
+                category={section.group.id}
+                view={view}
+                resetLabel={page.copy.allTopics}
+                showReset={Boolean(page.activeTopic)}
+              />
             </div>
           ) : null}
 

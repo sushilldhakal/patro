@@ -77,6 +77,21 @@ export function useDocumentSiblings(slug: string | undefined, category: Document
   };
 }
 
+export type DocumentsTopicTile = {
+  id: string;
+  label: string;
+  /** "१" … "१८" on a numbered (canonical) list, else "". */
+  numberLabel: string;
+  count: number;
+  /** "3 texts", or "Coming soon" when nothing is filed under it yet. */
+  countLabel: string;
+  active: boolean;
+  /** A cross-link to another group (Veda → Upanishad) rather than a filter. */
+  opens?: DocumentCategoryId;
+};
+
+export type DocumentsTopicSet = { id: string; title: string; numbered: boolean; topics: DocumentsTopicTile[] };
+
 export type DocumentsSection = {
   group: DocumentCategoryGroup;
   /** 1-based position among the groups that have documents. */
@@ -96,7 +111,7 @@ export type DocumentsSection = {
   moreLabel: string;
 };
 
-export function useDocumentsPage(active: DocumentsTab, search = "") {
+export function useDocumentsPage(active: DocumentsTab, search = "", topic?: string) {
   const { t, lang, digits } = useLocale();
   const query = useQuery({
     queryKey: documentsKeys.list(),
@@ -133,7 +148,42 @@ export function useDocumentsPage(active: DocumentsTab, search = "") {
     .filter((s) => active === "all" || s.group.id === active);
 
   const isHub = active === "all";
-  const activeSection = isHub ? undefined : sections[0];
+  const openSection = isHub ? undefined : sections[0];
+  const group = openSection?.group;
+  const topicOk = group && topic && group.topics.some((x) => x.id === topic && !x.opens) ? topic : undefined;
+
+  /* The open group's topics, in its sets: each tile counts the texts filed
+     under it, so an unfiled entry of a canonical list still shows its place. */
+  const topicSets: DocumentsTopicSet[] = [];
+  if (group && openSection) {
+    const sets = group.sets ?? [{ id: "", ne: group.lead?.ne ?? "", en: group.lead?.en ?? "", numbered: false }];
+    for (const set of sets) {
+      const tiles = group.topics
+        .filter((x) => (x.set ?? sets[0]!.id) === set.id)
+        .map((x, i): DocumentsTopicTile => {
+          const count = x.opens ? (counts[x.opens] ?? 0) : openSection.documents.filter((doc) => doc.subcategory === x.id).length;
+          return {
+            id: x.id,
+            label: lang === "en" ? x.en : x.ne,
+            numberLabel: set.numbered ? digits(i + 1) : "",
+            count,
+            countLabel: count > 0 ? t("documents.docs_in_category", { count: digits(count) }) : t("documents.coming_soon"),
+            active: x.id === topicOk,
+            opens: x.opens,
+          };
+        });
+      // A canonical list keeps its order; any other puts what is filed first.
+      if (!set.numbered) tiles.sort((a, b) => Number(b.count > 0) - Number(a.count > 0));
+      if (tiles.length > 0) {
+        topicSets.push({ id: set.id, title: (lang === "en" ? set.en : set.ne) || t("documents.topics"), numbered: Boolean(set.numbered), topics: tiles });
+      }
+    }
+  }
+
+  const activeTopic = topicSets.flatMap((set) => set.topics).find((x) => x.active);
+  const activeSection = openSection && topicOk
+    ? { ...openSection, documents: openSection.documents.filter((doc) => doc.subcategory === topicOk) }
+    : openSection;
   const searching = search.trim().length > 0;
   // Search covers the open group only; on the hub it covers the whole library.
   const results = useMemo(
@@ -159,6 +209,7 @@ export function useDocumentsPage(active: DocumentsTab, search = "") {
       openDocument: t("documents.open_document"),
       emptyCategory: t("documents.empty_category"),
       library: t("documents.library"),
+      allTopics: t("documents.all_topics"),
       allCategories: t("documents.all_categories"),
       searchPlaceholder: isHub
         ? t("documents.search_placeholder")
@@ -175,6 +226,8 @@ export function useDocumentsPage(active: DocumentsTab, search = "") {
     counts,
     isHub,
     activeSection,
+    topicSets,
+    activeTopic,
     searching,
     results,
     tabs: [

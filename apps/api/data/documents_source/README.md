@@ -35,9 +35,12 @@ Groups:
 - `gita` — Bhagavad Gita and the other Gitas (`bhagavad`, `bhashya`, `nepali`,
   `sanskrit`, `by-chapter`, `other`).
 - `purana` — a Purana, and the itihasa kept in this library (the Valmiki
-  Ramayana, the Mahabharata, the Vijnana Bhairava Tantra). Topic ids:
-  `bhagavata`, `vishnu`, `shiva`, `devi-bhagavata`, `markandeya`, `garuda`,
-  `skanda`, `padma`, `bhavishya`, `adi`.
+  Ramayana, the Mahabharata, the Vijnana Bhairava Tantra). The eighteen
+  Mahapuranas, in order (the library shows all eighteen, filed or not):
+  `brahma`, `padma`, `vishnu`, `shiva` (Shiva and Vayu), `bhagavata`, `narada`,
+  `markandeya`, `agni`, `bhavishya`, `brahmavaivarta`, `linga`, `varaha`,
+  `skanda`, `vamana`, `kurma`, `matsya`, `garuda`, `brahmanda`. Then
+  `valmiki`, `mahabharata`, `devi-bhagavata`, `upapurana`, `tantra`, `adi`.
 - `darshana` — the six darshanas and related shastra (`sankhya`, `yoga`,
   `nyaya`, `vaisheshika`, `purva-mimamsa`, `vedanta`, `brahmasutra`,
   `bhashya`, `tantra`).
