@@ -875,6 +875,9 @@ function WheelBody({
     );
   };
 
+  const chartTop = (fullscreen: boolean) =>
+    headerHs[fullscreen ? "full" : "inline"] + (fullscreen ? safeTop + 6 : compactHead ? 8 : 10) + 8;
+
   const renderStage = (size: number | "fill", fullscreen: boolean) => (
     <View
       style={
@@ -900,7 +903,7 @@ function WheelBody({
       {/* Inline, the title block and the legend sat on top of the wheel: start the
           chart below the title and stop it above the dock. Fullscreen has room. */}
       <View className="flex-1" style={{
-          marginTop: headerHs[fullscreen ? "full" : "inline"] + (fullscreen ? safeTop + 6 : compactHead ? 8 : 10) + 8,
+          marginTop: chartTop(fullscreen),
           ...(fullscreen ? null : { marginBottom: space["5xl"] + space.sm }),
         }}>
         {/* The page's copy sits behind the fullscreen modal. Drawing it too
@@ -926,6 +929,9 @@ function WheelBody({
           onLineTargetChange={setLineTarget}
           place={place}
           assets={chartAssets}
+          // Zoomed in, the wheel fills the stage behind the title and the dock instead of stopping at its box.
+          bleedTop={chartTop(fullscreen)}
+          bleedBottom={fullscreen ? 0 : space["5xl"] + space.sm}
         />
         )}
       </View>

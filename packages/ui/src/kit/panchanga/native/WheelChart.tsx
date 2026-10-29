@@ -203,20 +203,21 @@ function untransformTouch(
 }
 
 /**
- * The viewBox that shows the wheel at `zoom` and `pan` (view points, scaled about the view's
- * centre). At 1x with no pan it is the wheel's own box, `42 42 916 916`, fitted into the view.
+ * The viewBox that shows the wheel at `zoom` and `pan` (view points, scaled about the box's
+ * centre) across the box plus its bleed. At 1x the wheel's own box, `42 42 916 916`, sits fitted
+ * in the chart's box as before; the bleed only shows what a zoomed wheel spills into.
  */
-function zoomedViewBox(box: LayoutMetrics, zoom: number, pan: { x: number; y: number }): string {
+function zoomedViewBox(box: LayoutMetrics, zoom: number, pan: { x: number; y: number }, bleed: { top: number; bottom: number }): string {
   const { w, h } = box;
-  if (w <= 0 || h <= 0 || (zoom === 1 && pan.x === 0 && pan.y === 0)) return "42 42 916 916";
+  if (w <= 0 || h <= 0) return "42 42 916 916";
   const k = Math.min(w, h) / 916;
-  // The whole view in wheel units (the default `meet` centres the wheel's box in it).
+  // The chart's box in wheel units (the default `meet` centres the wheel's box in it).
   const x0 = 42 - (w - 916 * k) / 2 / k;
   const y0 = 42 - (h - 916 * k) / 2 / k;
-  // The part of the view on screen: p = c + (s - c - pan) / zoom for s from 0 to the edge.
+  // The part of the box on screen: p = c + (s - c - pan) / zoom, for s from the top of the bleed.
   const left = (w / 2) * (1 - 1 / zoom) - pan.x / zoom;
-  const top = (h / 2) * (1 - 1 / zoom) - pan.y / zoom;
-  return `${x0 + left / k} ${y0 + top / k} ${w / k / zoom} ${h / k / zoom}`;
+  const top = (h / 2) * (1 - 1 / zoom) - (pan.y + bleed.top) / zoom;
+  return `${x0 + left / k} ${y0 + top / k} ${w / k / zoom} ${(h + bleed.top + bleed.bottom) / k / zoom}`;
 }
 
 function clampZoom(z: number): number {
@@ -385,6 +386,10 @@ interface WheelChartProps {
   onLineTargetChange?: (index: number) => void;
   place?: WheelPlace | null;
   assets: WheelChartAssets;
+  /** Points of the stage above and below the chart's box (behind the title and the dock) that a
+   * zoomed-in wheel may draw into. */
+  bleedTop?: number;
+  bleedBottom?: number;
 }
 
 function WheelChartImpl({
@@ -404,6 +409,8 @@ function WheelChartImpl({
   onPan,
   lineTarget: lineTargetProp,
   place,
+  bleedTop = 0,
+  bleedBottom = 0,
 }: WheelChartProps) {
   const { skyTop: SKY_TOP, earthTop: EARTH_TOP, nodeIcons: WHEEL_NODE_ICONS, fontFamily: FONT } = useWheelAssets();
 
@@ -1104,7 +1111,7 @@ function WheelChartImpl({
      redrawn sharp at every zoom. Scaling the view instead stretched a picture drawn at 1x, and
      zoomed in the planets and their names were blurred. The transform carries only what a pinch
      or pan in progress adds on top, and is back to none once it is committed. */
-  const viewBox = zoomedViewBox(layoutBox, zoom, pan);
+  const viewBox = zoomedViewBox(layoutBox, zoom, pan, { top: bleedTop, bottom: bleedBottom });
   const stageScale = Animated.multiply(liveZoom, 1 / zoom);
   const stageX = Animated.subtract(liveX, Animated.multiply(liveZoom, pan.x / zoom));
   const stageY = Animated.subtract(liveY, Animated.multiply(liveZoom, pan.y / zoom));
@@ -1127,16 +1134,17 @@ function WheelChartImpl({
         }}
       >
         <Reanimated.View style={settleStyle} pointerEvents="none">
-        {/* Zoomed in, the cached texture would be scaled up and blur the text, so
-            it is dropped past 1.5× (a one-finger drag pans there, not spins).
+        {/* Zoomed in, the cached texture would stop at the chart's box and cut off the
+            bleed, so it is dropped past 1× (a one-finger drag pans there, not spins).
         Android: rasterize the SVG once into a GPU texture so a drag-spin only
             rotates that texture. Without it every frame re-draws the whole wheel
             (~300 ms/frame on a phone). The texture refreshes when the SVG changes. */}
         <Animated.View
           style={{ flex: 1, transform: [{ rotate: dragRotate }] }}
           pointerEvents="none"
-          renderToHardwareTextureAndroid={zoom <= 1.5}
+          renderToHardwareTextureAndroid={zoom <= 1}
         >
+        <View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, top: -bleedTop, bottom: -bleedBottom }}>
         <Svg viewBox={viewBox} width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
@@ -1159,6 +1167,7 @@ function WheelChartImpl({
         {markerNodes}
         {degreeRing}
       </Svg>
+        </View>
         </Animated.View>
         </Reanimated.View>
       </Animated.View>
