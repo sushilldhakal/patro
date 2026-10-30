@@ -100,7 +100,6 @@ export function ApsidesOrbit() {
   const nowBs = new Date().getFullYear() + CE_TO_BS;
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
-  const [seasonFrame, setSeasonFrame] = useState(true);
   const raf = useRef(0);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoom = useSvgZoom(svgRef, VB.W, VB.H);
@@ -125,10 +124,9 @@ export function ApsidesOrbit() {
   const ayan = (year - BS_AYAN_ZERO) * RATE;
   /** Sidereal longitude of the Sun at the March equinox. */
   const eqSid = norm360(-ayan);
-  /* "Seasons fixed": turn the whole sky so the equinox stays where it is today. */
-  const rot = seasonFrame ? norm360(-(nowBs - BS_AYAN_ZERO) * RATE) - eqSid : 0;
+  /* The rashi mandala is the stars and never moves; the season Earths and the orbit move against it. */
   /** Earth's heliocentric longitude is the Sun's geocentric one + 180°. */
-  const earthAt = (sunLon: number) => sunLon + 180 + rot;
+  const earthAt = (sunLon: number) => sunLon + 180;
 
   const periSun = perihelionSiderealLongitude(yearCe, ayan);
   const periLon = earthAt(periSun);
@@ -146,7 +144,7 @@ export function ApsidesOrbit() {
   const summer = northernSummer(yearCe);
 
   /* Earth's axis keeps one direction in space: its north end leans toward where the Sun is at the June solstice. */
-  const axisA = alphaOf(eqSid + 90 + rot) * D2R;
+  const axisA = alphaOf(eqSid + 90) * D2R;
   const axisVec = (len: number): [number, number] => [
     RX * len * Math.sin(TILT * D2R) * Math.cos(axisA),
     -RY * len * Math.sin(TILT * D2R) * Math.sin(axisA) - ZY * len * Math.cos(TILT * D2R),
@@ -221,7 +219,7 @@ export function ApsidesOrbit() {
         <ellipse cx={CX} cy={CY} rx={RX * BAND_OUT} ry={RY * BAND_OUT} fill="color-mix(in srgb, var(--tm-teal) 14%, var(--tm-card))" stroke="var(--tm-border)" strokeWidth={1} />
         <ellipse cx={CX} cy={CY} rx={RX * BAND_IN} ry={RY * BAND_IN} fill={card} stroke="var(--tm-border)" strokeWidth={1} />
         {RASHI.map((name, i) => {
-          const a0 = i * 30 + rot;
+          const a0 = i * 30;
           const [ix, iy] = projPlane(alphaOf(a0), BAND_IN);
           const [ox, oy] = projPlane(alphaOf(a0), BAND_OUT);
           const [lx, ly] = projPlane(alphaOf(a0 + 15), (BAND_IN + BAND_OUT) / 2);
@@ -334,16 +332,6 @@ export function ApsidesOrbit() {
           </div>
         </div>
 
-        <div className={edPresets}>
-          {[
-            { key: "learn.apsides.frame_seasons", on: true },
-            { key: "learn.apsides.frame_stars", on: false },
-          ].map((f) => (
-            <button key={f.key} type="button" className={edPreset(seasonFrame === f.on)} onClick={() => setSeasonFrame(f.on)}>
-              {t(f.key)}
-            </button>
-          ))}
-        </div>
         <div className={edPresets}>
           {presets.map((p) => (
             <button key={p.key} type="button" className={edPreset(Math.abs(year - p.bs) < 150)} onClick={() => { setPlaying(false); setYear(p.bs); }}>
