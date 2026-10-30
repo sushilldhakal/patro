@@ -8,6 +8,14 @@ import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { RashiGlyph } from "./rashi-icons";
+import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
+import {
+  northernSummer,
+  perihelionBsDate,
+  perihelionNearestCardinal,
+  perihelionSiderealLongitude,
+  solsticeSunlight,
+} from "@vedic-patro/domain/learn/apsidal-precession";
 
 import { illustration } from "@vedic-patro/design-tokens";
 /**
@@ -26,6 +34,11 @@ import { illustration } from "@vedic-patro/design-tokens";
  * The cross + equator rotate with the year slider (वि.सं. ० → +26,000) at the
  * precession rate (≈ 50.29″/yr ≈ 1° / 72 yr); the राशि ring stays put. Watch the
  * spring equinox slide from राशि to राशि — one full lap ≈ 25,772 years.
+ *
+ * With `apsides`, perihelion (उपसौर) and aphelion (अपसौर) are drawn too. They
+ * drift the other way (~11.6″/yr against the stars, from the turning orbit), so
+ * the angle between them and the cross goes round in ~21,000 years — the cycle
+ * that decides which ऋतु gets the Sun's close pass (apsidal-precession.ts).
  */
 
 const TAU = Math.PI * 2;
@@ -75,6 +88,18 @@ const fmtPt = (p: [number, number]) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`;
  * so it is its own key — the English bundle is loaded on demand and cannot be
  * read while the app is in Nepali.
  */
+/* Apsides mode: from the last ice age to beyond the next perihelion-in-June. */
+const AP_MIN = -11000;
+const AP_MAX = 14000;
+const CE_TO_BS = 57;
+/** perihelionNearestCardinal's 0–3, as ui keys (December solstice first). */
+const SEASON_POINT_KEYS = [
+  "learn.study.equinox.hemanta_solstice",
+  "learn.study.spring_equinox",
+  "learn.study.summer_solstice",
+  "learn.study.autumn_equinox",
+] as const;
+
 const CARDINALS = [
   { key: "learn.study.spring_equinox", gloss: null, point0: true },
   { key: "learn.study.summer_solstice", gloss: "learn.study.equinox.gloss_summer_solstice", point0: false },
@@ -82,7 +107,7 @@ const CARDINALS = [
   { key: "learn.study.equinox.hemanta_solstice", gloss: "learn.study.equinox.gloss_winter_solstice", point0: false },
 ] as const;
 
-export function EquinoxPrecession() {
+export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {}) {
   const { t } = useTranslation();
   const N = useLocaleDigits();
   const { lang } = useLocale();
@@ -91,6 +116,8 @@ export function EquinoxPrecession() {
     `${N(Math.floor(a))}°${N(String(Math.round((a - Math.floor(a)) * 60)).padStart(2, "0"))}′`;
 
   const nowBs = new Date().getFullYear() + 57; // ≈ current वि.सं.
+  const yMin = apsides ? AP_MIN : Y_MIN;
+  const yMax = apsides ? AP_MAX : Y_MAX;
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
@@ -102,14 +129,14 @@ export function EquinoxPrecession() {
       const dt = (now - last) / 1000;
       last = now;
       setYear((y) => {
-        const next = y + dt * 320; // ~320 वि.सं. years / second
-        return next > Y_MAX ? Y_MIN : next;
+        const next = y + dt * (apsides ? 900 : 320); // वि.सं. years / second
+        return next > yMax ? yMin : next;
       });
       raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf.current);
-  }, [playing]);
+  }, [playing, apsides, yMin, yMax]);
 
   const model = useMemo(() => {
     // sidereal longitude of the spring equinox at this वि.सं. year
@@ -146,6 +173,22 @@ export function EquinoxPrecession() {
   }, [year]);
 
   const eqRashi = RASHI[rashiIndex(model.eqSid)];
+
+  /* Apsides: where the Sun stands among the stars at perihelion, from the same ayanamsha. */
+  const yearCe = year - CE_TO_BS;
+  const periSid = perihelionSiderealLongitude(yearCe, model.ayanamsha);
+  const periBs = perihelionBsDate(yearCe, model.ayanamsha);
+  const periSeason = perihelionNearestCardinal(yearCe);
+  const pointName = t(SEASON_POINT_KEYS[periSeason.point]);
+  const seasonText =
+    periSeason.days === 0
+      ? t("learn.apsides.on_point", { point: pointName })
+      : t(periSeason.days > 0 ? "learn.apsides.days_after" : "learn.apsides.days_before", {
+          point: pointName,
+          days: N(Math.abs(periSeason.days)),
+        });
+  const summerSun = solsticeSunlight(yearCe).june;
+  const summer = northernSummer(yearCe);
 
   const amber = "var(--tm-amber)";
   const gold = "var(--tm-gold)";
@@ -246,6 +289,36 @@ export function EquinoxPrecession() {
           ε {fmtDeg(EPS)}
         </text>
 
+        {/* perihelion / aphelion — moved by the orbit, not the axis */}
+        {apsides ? (() => {
+          const a = alphaOf(periSid);
+          const [px, py] = projPlane(a, 1);
+          const [qx, qy] = projPlane(a + 180, 1);
+          const [plx, ply] = projPlane(a, 0.74);
+          const [qlx, qly] = projPlane(a + 180, 0.74);
+          const peri = illustration.orange53;
+          const aph = illustration.sky51;
+          return (
+            <g>
+              <line x1={px} y1={py} x2={qx} y2={qy} stroke={peri} strokeWidth={2} strokeDasharray="7 5" opacity={0.75} />
+              <circle cx={px} cy={py} r={8} fill={peri} stroke={card} strokeWidth={2} />
+              <circle cx={qx} cy={qy} r={8} fill={aph} stroke={card} strokeWidth={2} />
+              <text x={plx} y={ply - 6} fill={peri} textAnchor="middle" dominantBaseline="central" style={{ font: "700 12px var(--pn-font)" }}>
+                {t("learn.apsides.perihelion")}
+              </text>
+              <text x={plx} y={ply + 8} fill={dim} textAnchor="middle" dominantBaseline="central" style={{ font: "500 10px var(--pn-font)" }}>
+                {t("learn.apsides.perihelion_gloss")}
+              </text>
+              <text x={qlx} y={qly - 6} fill={aph} textAnchor="middle" dominantBaseline="central" style={{ font: "700 12px var(--pn-font)" }}>
+                {t("learn.apsides.aphelion")}
+              </text>
+              <text x={qlx} y={qly + 8} fill={dim} textAnchor="middle" dominantBaseline="central" style={{ font: "500 10px var(--pn-font)" }}>
+                {t("learn.apsides.aphelion_gloss")}
+              </text>
+            </g>
+          );
+        })() : null}
+
         {/* Earth + tilted axis */}
         <line x1={psX} y1={psY} x2={pnX} y2={pnY} stroke={dim} strokeWidth={1.6} />
         <text x={pnX} y={pnY - 8} fill={dim} textAnchor="middle" style={{ font: "700 11px var(--pn-font)" }}>N</text>
@@ -271,67 +344,130 @@ export function EquinoxPrecession() {
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
             {t("learn.study.equinox.legend_equator")}
           </text>
+          {apsides ? (
+            <>
+              <line x1={0} y1={42} x2={22} y2={42} stroke={red} strokeWidth={1.8} strokeDasharray="3 5" />
+              <text x={28} y={42} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
+                {t("learn.apsides.legend_cross")}
+              </text>
+              <line x1={0} y1={60} x2={22} y2={60} stroke={illustration.orange53} strokeWidth={2} strokeDasharray="7 5" />
+              <text x={28} y={60} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
+                {t("learn.apsides.legend_apsides")}
+              </text>
+            </>
+          ) : null}
         </g>
       </svg>
 
       <div className={edControls}>
+        {apsides ? (
+          <div className={edReadout}>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.study.year")}</span>
+              <span className={edRoV({ mono: true })}>{t("learn.study.year_bs", { year: N(Math.round(year)) })}</span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.apsides.perihelion_bs")}</span>
+              <span className={edRoV({ amber: true })}>
+                {t("learn.apsides.bs_date", { month: bsMonthLabel(periBs.month, lang), day: N(periBs.day) })}
+              </span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.apsides.vs_season")}</span>
+              <span className={edRoV()}>{seasonText}</span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.apsides.north_summer")}</span>
+              <span className={edRoV({ amber: summer === "intense" })}>
+                {t(`learn.apsides.${summer}`)} · {t("learn.apsides.summer_sun")} {summerSun >= 0 ? "+" : "−"}{N(Math.abs(summerSun).toFixed(1))}%
+              </span>
+            </div>
+          </div>
+        ) : (
         <div className={edReadout}>
-          <div className={edRo}>
-            <span className={edRoK}>{t("learn.study.year")}</span>
-            <span className={edRoV({ mono: true })}>
-              {t("learn.study.year_bs", { year: N(Math.round(year)) })}
-            </span>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.study.year")}</span>
+              <span className={edRoV({ mono: true })}>
+                {t("learn.study.year_bs", { year: N(Math.round(year)) })}
+              </span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.study.equinox.equinox_now")}</span>
+              <span className={edRoV({ amber: true })}>{eqRashi}</span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.study.equinox.shift_since_bs0")}</span>
+              <span className={edRoV({ mono: true, amber: true })}>{fmtDeg(model.sinceBs0)}</span>
+            </div>
+            <div className={edRo}>
+              <span className={edRoK}>{t("learn.study.equinox.ayanamsha_from_mesha")}</span>
+              <span className={edRoV({ mono: true })}>{model.ayanamsha < 0 ? `−${fmtDeg(-model.ayanamsha)}` : fmtDeg(model.ayanamsha)}</span>
+            </div>
           </div>
-          <div className={edRo}>
-            <span className={edRoK}>{t("learn.study.equinox.equinox_now")}</span>
-            <span className={edRoV({ amber: true })}>{eqRashi}</span>
-          </div>
-          <div className={edRo}>
-            <span className={edRoK}>{t("learn.study.equinox.shift_since_bs0")}</span>
-            <span className={edRoV({ mono: true, amber: true })}>{fmtDeg(model.sinceBs0)}</span>
-          </div>
-          <div className={edRo}>
-            <span className={edRoK}>{t("learn.study.equinox.ayanamsha_from_mesha")}</span>
-            <span className={edRoV({ mono: true })}>{model.ayanamsha < 0 ? `−${fmtDeg(-model.ayanamsha)}` : fmtDeg(model.ayanamsha)}</span>
-          </div>
-        </div>
+        )}
 
         <div className={motSliderRow}>
           <span className={motSliderLabel}>
-            {t("learn.study.equinox.slider", {
-              from: N(Y_MIN),
-              to: N(Y_MAX),
-              cycle: N(CYCLE),
-            })}
+            {apsides
+              ? t("learn.apsides.slider", { from: N(AP_MIN), to: N(AP_MAX) })
+              : t("learn.study.equinox.slider", {
+                  from: N(Y_MIN),
+                  to: N(Y_MAX),
+                  cycle: N(CYCLE),
+                })}
           </span>
           <div className={edScrubWrap}>
             <button type="button" className={edPlayBtn} onClick={() => setPlaying((p) => !p)}
               title={playing ? t("learn.pause") : t("learn.play")} aria-label={playing ? t("learn.pause") : t("learn.play")}>
               {playing ? <Pause size={16} /> : <Play size={16} />}
             </button>
-            <input className={edScrub} type="range" min={Y_MIN} max={Y_MAX} step={1} value={Math.round(year)}
-              style={{ "--fill": `${((year - Y_MIN) / (Y_MAX - Y_MIN)) * 100}%` } as React.CSSProperties}
+            <input className={edScrub} type="range" min={yMin} max={yMax} step={1} value={Math.round(year)}
+              style={{ "--fill": `${((year - yMin) / (yMax - yMin)) * 100}%` } as React.CSSProperties}
               onChange={(e) => { setPlaying(false); setYear(+e.target.value); }} />
           </div>
         </div>
 
+        {apsides ? (
+          <div className={edPresets}>
+            {[
+              { key: "learn.apsides.preset_ice", bs: -9000 + CE_TO_BS },
+              { key: "learn.apsides.preset_aligned", bs: 1250 + CE_TO_BS },
+              { key: "learn.apsides.preset_today", bs: nowBs },
+              { key: "learn.apsides.preset_future", bs: 11750 + CE_TO_BS },
+            ].map((p) => (
+              <button key={p.key} type="button" className={edPreset(Math.abs(year - p.bs) < 150)} onClick={() => { setPlaying(false); setYear(p.bs); }}>
+                {t(p.key)}
+              </button>
+            ))}
+          </div>
+        ) : (
         <div className={edPresets}>
-          <button type="button" className={edPreset()} onClick={() => { setPlaying(false); setYear(0); }}>
-            {t("learn.study.equinox.preset_bs_start")}
-          </button>
-          <button type="button" className={edPreset()} onClick={() => { setPlaying(false); setYear(nowBs); }}>
-            {t("learn.study.equinox.preset_now")}
-          </button>
-        </div>
+            <button type="button" className={edPreset()} onClick={() => { setPlaying(false); setYear(0); }}>
+              {t("learn.study.equinox.preset_bs_start")}
+            </button>
+            <button type="button" className={edPreset()} onClick={() => { setPlaying(false); setYear(nowBs); }}>
+              {t("learn.study.equinox.preset_now")}
+            </button>
+          </div>
+        )}
       </div>
 
+      {apsides ? (
+        <p className={tmCardCap}>{t("learn.apsides.caption")}</p>
+      ) : (
       <p className={tmCardCap}>
-        {t("learn.study.equinox.caption_lead")}{" "}
-        <span className={cn("hl")}>{t("learn.study.equinox.caption_fixed")}</span>{" "}
-        {t("learn.study.equinox.caption_wobble")}{" "}
-        <span className={cn("hl-amber")}>{t("learn.study.equinox.caption_point_zero")}</span>{" "}
-        {t("learn.study.equinox.caption_tail", { years: N(72), rashi: eqRashi })}
-      </p>
+          {t("learn.study.equinox.caption_lead")}{" "}
+          <span className={cn("hl")}>{t("learn.study.equinox.caption_fixed")}</span>{" "}
+          {t("learn.study.equinox.caption_wobble")}{" "}
+          <span className={cn("hl-amber")}>{t("learn.study.equinox.caption_point_zero")}</span>{" "}
+          {t("learn.study.equinox.caption_tail", { years: N(72), rashi: eqRashi })}
+        </p>
+      )}
     </div>
   );
+}
+
+/** The same study with perihelion and aphelion drawn in (sayana/nirayana guide, chapter 07). */
+export function EquinoxPrecessionApsides() {
+  return <EquinoxPrecession apsides />;
 }
