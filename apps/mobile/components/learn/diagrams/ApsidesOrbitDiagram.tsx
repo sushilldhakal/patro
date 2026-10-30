@@ -35,8 +35,9 @@ const RATE = 50.2879 / 3600; // precession, degrees per year
 const BS_AYAN_ZERO = 342;
 const CE_TO_BS = 57;
 const NOW_BS = 2083;
-const Y_MIN = -50000;
-const Y_MAX = 50000;
+/* Wide enough for the orbit's oval to turn almost twice round as it plays. */
+const Y_MIN = -100000;
+const Y_MAX = 100000;
 /** Beyond this many years from today the constant-rate model is only indicative. */
 const RELIABLE_YEARS = 20000;
 const TILT = 23.44;
@@ -188,7 +189,9 @@ export function ApsidesOrbitDiagram() {
     initial: NOW_BS,
     min: Y_MIN,
     max: Y_MAX,
-    speed: 2500,
+    /* ~20°/s for the oval, a lap in ~4 s for the season Earths; starts playing so the orbit is seen moving. */
+    speed: 6000,
+    autoPlay: true,
   });
 
   const copy = useMemo<Copy>(
