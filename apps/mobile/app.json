@@ -172,7 +172,6 @@
         "android.permission.READ_PHONE_STATE",
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
-        "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_LOCATION",
         "android.permission.ACTIVITY_RECOGNITION"
       ],
@@ -285,7 +284,7 @@
         "expo-audio",
         {
           "microphonePermission": false,
-          "enableBackgroundPlayback": false,
+          "enableBackgroundPlayback": true,
           "recordAudioAndroid": false
         }
       ],

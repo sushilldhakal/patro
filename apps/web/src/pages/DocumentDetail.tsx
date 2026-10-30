@@ -78,11 +78,9 @@ export function DocumentDetail() {
   const { header } = page;
   const headerBlock = (
     <header className={documentsClasses.readerHero}>
-      {group ? (
-        <span className={documentsClasses.readerHeroMark} aria-hidden="true">
-          {group.emoji}
-        </span>
-      ) : null}
+      <span className={documentsClasses.readerHeroMark} aria-hidden="true">
+        {t("documents.hero_mark")}
+      </span>
       <div className={documentsClasses.readerHeroBody}>
         <p className={documentsClasses.headerSanskrit}>{header.sanskrit}</p>
         <h1 className={documentsClasses.headerTitle}>{header.title}</h1>
@@ -95,7 +93,6 @@ export function DocumentDetail() {
               search={documentsListSearch(group.id, undefined, view)}
               className={cn(documentsClasses.readerFactLink, "transition-colors hover:bg-secondary/20")}
             >
-              <span aria-hidden="true">{group.emoji}</span>
               {bilingual(lang, group.ne, group.en)}
             </Link>
           ) : null}

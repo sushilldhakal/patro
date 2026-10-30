@@ -65,6 +65,9 @@ function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard })
       accessibilityRole="button"
       className={cn(documentsClasses.sectionCard, "mb-0 flex-1 active:opacity-80")}
     >
+      <View className={cn(documentsClasses.chapterRowNumber, "mb-1 size-8")}>
+        <Text className={documentsClasses.chapterRowNumberText}>{card.numberLabel}</Text>
+      </View>
       <Text className={documentsClasses.sectionCardTitle} numberOfLines={2}>
         {title}
       </Text>
@@ -80,7 +83,7 @@ export default function DocumentDetailScreen() {
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
   const { doc, copy } = page;
-  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl);
+  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.title);
   const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
   const [jumpLabel, setJumpLabel] = useState<{ label: string; nonce: number } | null>(null);
 

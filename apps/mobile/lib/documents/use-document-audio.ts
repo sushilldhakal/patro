@@ -1,45 +1,71 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import {
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  useAudioPlaylist,
+  useAudioPlaylistStatus,
+  type AudioMetadata,
+  type AudioPlaylist,
+} from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
 import { isAudioAvailable } from "@vedic-patro/api-client";
 
 export type AudioMode = "full" | "verse" | null;
 
+/** A track change this soon after the listener picked a verse is theirs, not a clip ending. */
+const USER_SKIP_WINDOW_MS = 1500;
+
 /**
  * Two audio sources a reading view can have — per-verse clips and the single
  * whole-document recording — driven from one place so a verse list and the
  * floating transport bar stay in step. Mirrors the web `useDocumentPlayback`.
+ *
+ * The verse clips play as one native playlist: the OS queue moves from one verse
+ * to the next by itself, so a play-through keeps going with the screen locked or
+ * the app in the background (no JavaScript has to run between clips), and the
+ * lock screen / notification gets next and previous buttons. Needs the
+ * `enableBackgroundPlayback` flag on the expo-audio plugin in app.json.
  */
-export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null | undefined) {
-  // Two verse players used in turn: while one sounds, the other already holds the
-  // next verse, so a clip ends and the next starts with no loading pause (the web
-  // gets the same effect from sample-accurate Web Audio scheduling).
-  const playerA = useAudioPlayer(null, { updateInterval: 100 });
-  const playerB = useAudioPlayer(null, { updateInterval: 100 });
-  const statusA = useAudioPlayerStatus(playerA);
-  const statusB = useAudioPlayerStatus(playerB);
-  const [slot, setSlot] = useState<0 | 1>(0);
-  const versePlayer = slot === 0 ? playerA : playerB;
-  const verseStatus = slot === 0 ? statusA : statusB;
-  const standbyPlayer = slot === 0 ? playerB : playerA;
-  /** Verse id currently loaded (paused) in the standby player. */
-  const standbyFor = useRef<number | null>(null);
+export function useDocumentAudio(
+  shlokas: Shloka[],
+  fullAudioUrl: string | null | undefined,
+  documentTitle?: string,
+) {
+  /** Verses that have a clip of their own, in reading order — the playlist's tracks. */
+  const playable = useMemo(() => shlokas.filter((s) => s.audio_url), [shlokas]);
+  const sources = useMemo(() => playable.map((s) => ({ uri: s.audio_url! })), [playable]);
+  const playlist = useAudioPlaylist({ sources, updateInterval: 100 });
+  const verseStatus = useAudioPlaylistStatus(playlist);
+
+  /* Verse id at each playlist index. Kept in step by hand as missing recordings are
+     taken out, and started afresh whenever the playlist itself is rebuilt. */
+  const tracks = useRef<{ playlist: AudioPlaylist; ids: number[] } | null>(null);
+  if (tracks.current?.playlist !== playlist) {
+    tracks.current = { playlist, ids: playable.map((s) => s.id) };
+  }
+  const trackIds = () => tracks.current!.ids;
+
   const fullPlayer = useAudioPlayer(fullAudioUrl ? { uri: fullAudioUrl } : null, {
     updateInterval: 250,
   });
   const fullStatus = useAudioPlayerStatus(fullPlayer);
 
   const [mode, setMode] = useState<AudioMode>(null);
-  const [activeVerseId, setActiveVerseId] = useState<number | null>(null);
   const [openMeaningIds, setOpenMeaningIds] = useState<ReadonlySet<number>>(() => new Set());
+  const openMeaningRef = useRef(openMeaningIds);
+  openMeaningRef.current = openMeaningIds;
+  const userSkipAt = useRef(0);
 
   useEffect(() => {
-    // Recitation should be audible with the iPhone's silent switch on.
+    // Recitation should be audible with the iPhone's silent switch on, and keep going
+    // when the phone locks or the listener switches apps. `doNotMix` is what lets the
+    // OS hand this app the lock-screen controls.
     void setAudioModeAsync({
       playsInSilentMode: true,
-      interruptionMode: "duckOthers",
+      interruptionMode: "doNotMix",
       allowsRecording: false,
-      shouldPlayInBackground: false,
+      shouldPlayInBackground: true,
       shouldRouteThroughEarpiece: false,
     }).catch(() => {});
   }, []);
@@ -47,147 +73,160 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
   /** Verses whose recording turned out not to be in storage; skipped from then on. */
   const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
 
-  const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
   const byId = useMemo(() => new Map(shlokas.map((s) => [s.id, s])), [shlokas]);
 
-  const nextAudioAfter = useCallback(
-    (id: number): Shloka | null => {
-      const i = order.indexOf(id);
-      for (let j = i + 1; j < order.length; j++) {
-        const candidate = byId.get(order[j]!);
-        if (candidate?.audio_url && !missingIds.has(candidate.id)) return candidate;
-      }
-      return null;
+  const metadataFor = useCallback(
+    (id: number | undefined): AudioMetadata => {
+      const label = id != null ? byId.get(id)?.verse_label : undefined;
+      return label
+        ? { title: label, artist: documentTitle, albumTitle: documentTitle }
+        : { title: documentTitle, albumTitle: documentTitle };
     },
-    [order, byId, missingIds],
+    [byId, documentTitle],
   );
 
-  /** Load the verse after `id` into `player` (paused) so it is ready the instant the current clip ends. */
-  const preloadAfter = useCallback(
-    (id: number, player: typeof playerA) => {
-      const next = nextAudioAfter(id);
-      if (!next?.audio_url) {
-        standbyFor.current = null;
-        return;
-      }
-      try {
-        player.pause();
-        player.replace({ uri: next.audio_url });
-        standbyFor.current = next.id;
-      } catch {
-        standbyFor.current = null;
-      }
-    },
-    [nextAudioAfter],
-  );
-
-  /* The latest `playVerse`, for the availability check that resolves after a render. */
-  const playVerseRef = useRef<(id: number) => void>(() => {});
-
-  const playVerse = useCallback(
-    (id: number) => {
-      const shloka = byId.get(id);
-      if (!shloka?.audio_url || missingIds.has(id)) return;
-      fullPlayer.pause();
-      standbyPlayer.pause();
-      setMode("verse");
-      setActiveVerseId(id);
-      versePlayer.replace({ uri: shloka.audio_url });
-      versePlayer.play();
-      preloadAfter(id, standbyPlayer);
-      /* Started straight away; checked alongside. A recording that was never uploaded
-         plays nothing, so mark it, drop its button and carry on with the next verse. */
-      const url = shloka.audio_url;
+  /* A recording that was never uploaded would stop the queue dead (or play
+     nothing), so each verse is checked as it comes up — the one sounding and the
+     one after it — and a missing one is taken out of the playlist before the
+     queue reaches it. */
+  const verify = useCallback(
+    (index: number) => {
+      const id = trackIds()[index];
+      const url = id != null ? byId.get(id)?.audio_url : null;
+      if (id == null || !url) return;
       void isAudioAvailable(url).then((ok) => {
         if (ok) return;
+        const t = tracks.current;
+        if (!t || t.playlist !== playlist) return;
+        const at = t.ids.indexOf(id);
+        if (at < 0) return;
+        const wasCurrent = playlist.currentIndex === at;
+        t.ids.splice(at, 1);
         setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
-        const i = order.indexOf(id);
-        for (let j = i + 1; j < order.length; j++) {
-          const candidate = byId.get(order[j]!);
-          if (candidate?.audio_url && candidate.id !== id) {
-            playVerseRef.current(candidate.id);
-            return;
+        try {
+          playlist.remove(at);
+          if (wasCurrent && at < t.ids.length) {
+            // The queue moved on to the verse after the missing one; keep it going.
+            playlist.play();
+            verify(at);
+            verify(at + 1);
           }
+        } catch {
+          /* playlist already released */
         }
       });
     },
-    [byId, order, missingIds, fullPlayer, standbyPlayer, versePlayer, preloadAfter],
+    [byId, playlist],
   );
-  playVerseRef.current = playVerse;
+
+  const claimLockScreen = useCallback(
+    (target: "verse" | "full", id?: number) => {
+      try {
+        if (target === "verse") {
+          playlist.setActiveForLockScreen(true, metadataFor(id), {
+            showNextTrack: true,
+            showPreviousTrack: true,
+          });
+        } else {
+          fullPlayer.setActiveForLockScreen(true, metadataFor(undefined), {
+            showSeekForward: true,
+            showSeekBackward: true,
+          });
+        }
+      } catch {
+        /* lock-screen controls are a nicety; playback goes on without them */
+      }
+    },
+    [playlist, fullPlayer, metadataFor],
+  );
+
+  const playVerse = useCallback(
+    (id: number) => {
+      const index = trackIds().indexOf(id);
+      if (index < 0) return;
+      fullPlayer.pause();
+      setMode("verse");
+      userSkipAt.current = Date.now();
+      if (playlist.currentIndex !== index) playlist.skipTo(index);
+      playlist.play();
+      claimLockScreen("verse", id);
+      verify(index);
+      verify(index + 1);
+    },
+    [fullPlayer, playlist, claimLockScreen, verify],
+  );
+
+  const currentIndex = verseStatus.currentIndex;
+  const activeVerseId = mode === "verse" ? (trackIds()[currentIndex] ?? null) : null;
+
+  // Every verse change — a clip ending (also while the app is in the background)
+  // or a skip from the lock screen — refreshes the lock-screen title and checks the
+  // verse after it. When a clip ends on its own and the listener has that verse's
+  // meaning open, they are reading rather than listening straight through: stop at
+  // the start of the next verse.
+  useEffect(() => {
+    const sub = playlist.addListener("trackChanged", ({ previousIndex, currentIndex: index }) => {
+      const ids = trackIds();
+      const id = ids[index];
+      if (id == null) return;
+      const userSkip = Date.now() - userSkipAt.current < USER_SKIP_WINDOW_MS;
+      const prevId = ids[previousIndex];
+      if (!userSkip && index === previousIndex + 1 && prevId != null && openMeaningRef.current.has(prevId)) {
+        playlist.pause();
+      }
+      try {
+        playlist.updateLockScreenMetadata(metadataFor(id));
+      } catch {
+        /* not the lock-screen player right now */
+      }
+      verify(index + 1);
+    });
+    return () => sub.remove();
+  }, [playlist, metadataFor, verify]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleVerse = useCallback(
     (id: number) => {
-      if (mode === "verse" && activeVerseId === id && verseStatus.playing) {
-        versePlayer.pause();
-        return;
-      }
-      if (mode === "verse" && activeVerseId === id && !verseStatus.playing && verseStatus.isLoaded) {
-        versePlayer.play();
+      if (mode === "verse" && activeVerseId === id) {
+        if (verseStatus.playing) playlist.pause();
+        else {
+          playlist.play();
+          claimLockScreen("verse", id);
+        }
         return;
       }
       playVerse(id);
     },
-    [mode, activeVerseId, verseStatus.playing, verseStatus.isLoaded, versePlayer, playVerse],
+    [mode, activeVerseId, verseStatus.playing, playlist, claimLockScreen, playVerse],
   );
 
   const stepVerse = useCallback(
     (delta: 1 | -1) => {
-      const i = activeVerseId == null ? -1 : order.indexOf(activeVerseId);
-      for (let j = i + delta; j >= 0 && j < order.length; j += delta) {
-        const candidate = byId.get(order[j]!);
-        if (candidate?.audio_url && !missingIds.has(candidate.id)) {
-          playVerse(candidate.id);
-          return;
-        }
-      }
+      const ids = trackIds();
+      const target = ids[(activeVerseId == null ? -1 : ids.indexOf(activeVerseId)) + delta];
+      if (target != null) playVerse(target);
     },
-    [activeVerseId, order, byId, missingIds, playVerse],
+    [activeVerseId, playVerse],
   );
 
-  // When a clip ends, hand straight over to the pre-loaded next verse — unless the
-  // listener has this verse's meaning open (reading, not listening straight through).
-  /* Native raises `didJustFinish`; expo-audio on web never does (its `onended`
-     emits nothing), so autoplay silently stopped after one verse in the browser.
-     The browser does fire `pause` as a clip ends, which arrives as
-     playing=false with the position at the duration — treat that as finished too. */
-  const verseEnded =
-    verseStatus.didJustFinish ||
-    (verseStatus.isLoaded &&
-      !verseStatus.playing &&
-      verseStatus.duration > 0 &&
-      verseStatus.currentTime >= verseStatus.duration - 0.25);
-
-  useEffect(() => {
-    if (mode !== "verse" || !verseEnded || activeVerseId == null) return;
-    if (openMeaningIds.has(activeVerseId)) return;
-    const next = nextAudioAfter(activeVerseId);
-    if (!next) return;
-    if (standbyFor.current === next.id) {
-      const finished = versePlayer;
-      standbyPlayer.play();
-      setSlot((v) => (v === 0 ? 1 : 0));
-      setActiveVerseId(next.id);
-      preloadAfter(next.id, finished);
-    } else {
-      playVerse(next.id);
-    }
-  }, [verseEnded]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const startFull = useCallback(() => {
-    versePlayer.pause();
+    playlist.pause();
     setMode("full");
     fullPlayer.play();
-  }, [versePlayer, fullPlayer]);
+    claimLockScreen("full");
+  }, [playlist, fullPlayer, claimLockScreen]);
 
   const startPlayThrough = useCallback(() => {
-    const first = shlokas.find((s) => s.audio_url);
-    if (first) playVerse(first.id);
-  }, [shlokas, playVerse]);
+    const first = trackIds()[0];
+    if (first != null) playVerse(first);
+  }, [playVerse]);
 
   const toggleFull = useCallback(() => {
     if (fullStatus.playing) fullPlayer.pause();
-    else fullPlayer.play();
-  }, [fullStatus.playing, fullPlayer]);
+    else {
+      fullPlayer.play();
+      claimLockScreen("full");
+    }
+  }, [fullStatus.playing, fullPlayer, claimLockScreen]);
 
   const seekFull = useCallback(
     (seconds: number) => {
@@ -205,23 +244,25 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
         fullPlayer.pause();
         return;
       }
-      versePlayer.pause();
+      playlist.pause();
       setMode("full");
       void fullPlayer.seekTo(shloka.full_audio_start);
       fullPlayer.play();
+      claimLockScreen("full");
     },
-    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, versePlayer, fullPlayer],
+    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, playlist, fullPlayer, claimLockScreen],
   );
 
   const switchToFull = useCallback(() => {
     if (activeVerseId == null) return;
     const shloka = byId.get(activeVerseId);
     if (shloka?.full_audio_start == null) return;
-    versePlayer.pause();
+    playlist.pause();
     setMode("full");
     void fullPlayer.seekTo(shloka.full_audio_start);
     fullPlayer.play();
-  }, [activeVerseId, byId, versePlayer, fullPlayer]);
+    claimLockScreen("full");
+  }, [activeVerseId, byId, playlist, fullPlayer, claimLockScreen]);
 
   const toggleMeaning = useCallback((id: number) => {
     setOpenMeaningIds((prev) => {
@@ -254,21 +295,24 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
   const activeProgress = mode === "full" ? (fullHighlight?.progress ?? 0) : verseProgress;
   const activePlaying = mode === "full" ? fullStatus.playing : mode === "verse" ? verseStatus.playing : false;
 
-  // Pause everything when the reader leaves the screen.
+  // Pause everything and give up the lock screen when the reader leaves the screen.
+  // Going to the home screen or locking the phone does not unmount it, so that
+  // keeps playing.
   useEffect(
     () => () => {
-      try {
-        playerA.pause();
-        playerB.pause();
-        fullPlayer.pause();
-      } catch {
-        /* player already released */
+      for (const p of [playlist, fullPlayer]) {
+        try {
+          p.pause();
+          p.clearLockScreenControls();
+        } catch {
+          /* player already released */
+        }
       }
     },
-    [playerA, playerB, fullPlayer],
+    [playlist, fullPlayer],
   );
 
-  const verseIndex = activeVerseId == null ? -1 : order.indexOf(activeVerseId);
+  const verseIndex = activeVerseId == null ? -1 : trackIds().indexOf(activeVerseId);
 
   return {
     missingIds,
@@ -283,7 +327,7 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
     playVerse,
     nextVerse: () => stepVerse(1),
     prevVerse: () => stepVerse(-1),
-    hasNext: verseIndex >= 0 && verseIndex < order.length - 1,
+    hasNext: verseIndex >= 0 && verseIndex < trackIds().length - 1,
     hasPrev: verseIndex > 0,
     verse: {
       playing: verseStatus.playing,

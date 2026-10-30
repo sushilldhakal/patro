@@ -7125,6 +7125,8 @@ export const strings = {
   "documents.chapters_expand": { ne: "अध्यायहरू", en: "Chapters" },
   "documents.open_document": { ne: "ग्रन्थ खोल्नुहोस्", en: "Open text" },
   "documents.library": { ne: "पुस्तकालय", en: "Library" },
+  /** Faint watermark glyph in a document's hero card (the letter, not the 🕉️ emoji). */
+  "documents.hero_mark": { ne: "ॐ", en: "ॐ" },
   "documents.topics": { ne: "विषय", en: "Topics" },
   "documents.all_topics": { ne: "सबै", en: "All" },
   "documents.coming_soon": { ne: "छिट्टै आउँदैछ", en: "Coming soon" },

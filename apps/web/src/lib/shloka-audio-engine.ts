@@ -182,7 +182,8 @@ export class ShlokaAudioEngine {
   private scheduleUpcoming(afterId: number, startAt: number) {
     if (this.upcoming) return;
     const idx = this.indexOf(afterId);
-    const next = idx >= 0 ? this.tracks[idx + 1] : undefined;
+    // Step over verses with no recording so the run carries on to the next one that has.
+    const next = idx >= 0 ? this.tracks.slice(idx + 1).find((t) => t.audioUrl) : undefined;
     if (!next?.audioUrl) return;
     const generation = this.generation;
     this.decode(next.audioUrl)

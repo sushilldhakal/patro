@@ -116,7 +116,8 @@ export const documentsClasses = {
 
   // ── Document reader chrome ────────────────────────────────────────────────
   readerHero: "relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-secondary/10 via-card to-card p-5 sm:p-7",
-  readerHeroMark: "pointer-events-none absolute -right-4 -top-6 select-none text-8xl opacity-10 sm:text-9xl",
+  /** A plain ॐ glyph (not the emoji, which iOS draws as a purple tile) as a faint watermark. */
+  readerHeroMark: "pointer-events-none absolute -bottom-8 right-2 select-none text-[8rem] font-bold leading-none text-secondary/[0.07] sm:-bottom-10 sm:right-6 sm:text-[11rem]",
   readerHeroBody: "relative flex max-w-3xl flex-col gap-2",
   readerFacts: "flex flex-row flex-wrap items-center gap-1.5 pt-2",
   readerFact: "inline-flex items-center gap-1 rounded-full border border-border/70 bg-card/80 px-2.5 py-1 text-xs font-semibold text-muted-foreground",
@@ -166,8 +167,10 @@ export const documentsClasses = {
   chapterRowCount: "mt-0.5 text-xs text-muted-foreground/80",
 
   // ── Section title cards (multi-column picker) ─────────────────────────────
-  sectionColumns: "columns-1 gap-3 sm:columns-2 lg:columns-3 [column-fill:balance]",
-  sectionCard: "mb-3 inline-flex w-full break-inside-avoid flex-col gap-1 rounded-xl border border-border bg-card px-4 py-3.5 text-left",
+  sectionColumns: "grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4",
+  sectionCard: "flex w-full flex-col gap-1 rounded-xl border border-border bg-card px-3.5 py-3 text-left sm:px-4 sm:py-3.5",
+  sectionCardTop: "mb-1 flex flex-row items-center justify-between gap-2",
+  sectionCardNumber: "flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-sm font-bold tabular-nums text-secondary",
   sectionCardTitle: "text-sm font-semibold leading-snug text-foreground",
   sectionCardCount: "text-xs text-muted-foreground/80",
 
@@ -189,7 +192,11 @@ export const documentsClasses = {
   /** Text input box on the app; the website renders its ui/Input with the same box. */
   jumpInput: "h-9 rounded-lg border border-border px-3 py-2 text-sm text-foreground",
   jumpChapterInput: "w-20",
-  jumpSectionSelect: "h-9 min-w-[12rem] max-w-full flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground sm:min-w-[16rem]",
+  /** Full row on phones (it used to overflow onto the verse box), inline from `sm`. */
+  jumpSectionSelect: "h-10 w-full min-w-0 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground sm:h-9 sm:w-auto sm:min-w-[16rem]",
+  jumpSectionField: "basis-full sm:basis-auto",
+  jumpVerseField: "min-w-0 flex-1 sm:flex-none",
+  jumpVerseInputWeb: "h-10 w-full bg-card sm:h-9 sm:w-28",
   jumpVerseInput: "w-28",
   jumpError: "text-xs text-destructive",
 

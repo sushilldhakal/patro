@@ -109,7 +109,8 @@ export function useDocumentDetail(slug: string | undefined) {
               number: c.number,
               numberLabel: digits(c.number),
               heading: t("documents.chapter_label", { number: digits(c.number) }),
-              title: bilingual(lang, c.title_ne, c.title_en) || undefined,
+              // Source titles carry ASCII numerals ("मण्डल 1"); show them in the reader's digits.
+              title: bilingual(lang, c.title_ne, c.title_en).replace(/\d/g, (d) => digits(Number(d))) || undefined,
               count: c.shloka_count != null ? t("documents.shlokas_count", { count: digits(c.shloka_count) }) : undefined,
             },
           ],

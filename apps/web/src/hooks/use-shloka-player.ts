@@ -163,12 +163,16 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
 
   const advance = useCallback(
     (delta: 1 | -1) => {
-      const i = indexOf(engineActiveId);
-      const nextIndex = i + delta;
-      if (nextIndex < 0 || nextIndex >= order.length) return;
-      play(order[nextIndex]!);
+      // Skip verses with no recording, as the engines do when a clip ends.
+      for (let i = indexOf(engineActiveId) + delta; i >= 0 && i < shlokas.length; i += delta) {
+        const s = shlokas[i]!;
+        if (s.audio_url && !missingIds.has(s.id)) {
+          play(s.id);
+          return;
+        }
+      }
     },
-    [engineActiveId, indexOf, order, play],
+    [engineActiveId, indexOf, shlokas, missingIds, play],
   );
 
   const next = useCallback(() => advance(1), [advance]);

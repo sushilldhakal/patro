@@ -35,7 +35,7 @@ export function DocumentJumpForm({
   return (
     <form onSubmit={handleSubmit} className={documentsClasses.jumpForm}>
       {form.hasDocuments ? (
-        <label className={cn(documentsClasses.jumpField, "min-w-0 flex-1 sm:flex-none")}>
+        <label className={cn(documentsClasses.jumpField, documentsClasses.jumpSectionField)}>
           <Text as="span" className={documentsClasses.jumpLabel}>
             {copy.documentLabel}
           </Text>
@@ -66,7 +66,7 @@ export function DocumentJumpForm({
           />
         </label>
       ) : null}
-      <label className={documentsClasses.jumpField}>
+      <label className={cn(documentsClasses.jumpField, documentsClasses.jumpVerseField)}>
         <Text as="span" className={documentsClasses.jumpLabel}>
           {copy.verseLabel}
         </Text>
@@ -75,10 +75,10 @@ export function DocumentJumpForm({
           onChange={(e) => form.setVerseInput(e.target.value)}
           placeholder={copy.versePlaceholder}
           aria-label={copy.verseLabel}
-          className={cn(documentsClasses.jumpInput, documentsClasses.jumpVerseInput, inputWeb)}
+          className={cn(documentsClasses.jumpInput, documentsClasses.jumpVerseInputWeb, inputWeb)}
         />
       </label>
-      <Button type="submit" size="sm" variant="secondary" label={copy.button} className="gap-1.5" icon={<Icon node={iconSearch} size="sm" tone="foreground" className="text-secondary-foreground" />} />
+      <Button type="submit" size="sm" variant="secondary" label={copy.button} className="h-10 shrink-0 gap-1.5 sm:h-9" icon={<Icon node={iconSearch} size="sm" tone="foreground" className="text-secondary-foreground" />} />
       {form.notFound ? (
         <Text as="p" className={documentsClasses.jumpError} webClassName="basis-full">
           {copy.notFound}
