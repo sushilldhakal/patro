@@ -2,12 +2,13 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";
 import { motSliderLabel, motSliderRow, tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap, edSvg } from "@/lib/learn-classes";
-import { Pause, Play } from "lucide-react";
+import { Minus, Pause, Play, Plus, RotateCcw } from "lucide-react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { RashiGlyph } from "./rashi-icons";
+import { useSvgZoom } from "./use-svg-zoom";
 import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
   northernSummer,
@@ -121,6 +122,8 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const zoom = useSvgZoom(svgRef, VB.W, VB.H);
 
   useEffect(() => {
     if (!playing) return;
@@ -212,11 +215,14 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
 
   return (
     <div className={tmCardPadLg}>
+      <div className="relative">
       <svg
-        viewBox={`0 0 ${VB.W} ${VB.H}`}
+        ref={svgRef}
+        viewBox={zoom.viewBox}
         className={edSvg()}
         role="img"
         aria-label={t("learn.study.equinox.aria")}
+        {...zoom.bind}
       >
         <defs>
           <radialGradient id="ep-earth" cx="42%" cy="38%" r="65%">
@@ -358,6 +364,19 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
           ) : null}
         </g>
       </svg>
+        <div className="absolute bottom-1 right-1 flex flex-col gap-1.5">
+          {[
+            { label: t("ui.learn.zoom_in"), icon: <Plus size={14} />, onClick: zoom.zoomIn },
+            { label: t("ui.learn.zoom_out"), icon: <Minus size={14} />, onClick: zoom.zoomOut },
+            ...(zoom.scale > 1 ? [{ label: t("ui.learn.reset_view"), icon: <RotateCcw size={13} />, onClick: zoom.reset }] : []),
+          ].map((b) => (
+            <button key={b.label} type="button" className="flex size-8 items-center justify-center rounded-full border border-border bg-card/75 shadow-sm" onClick={b.onClick} title={b.label} aria-label={b.label}>
+              {b.icon}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="mt-1 text-center text-xs text-muted-foreground">{t("learn.zoom_hint")}</p>
 
       <div className={edControls}>
         {apsides ? (
