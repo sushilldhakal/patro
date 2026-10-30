@@ -23,6 +23,7 @@ import {
 } from "@/components/learn/ComputationSkyDiagrams";
 import { EclipseStudy } from "@/components/learn/EclipseStudy";
 import { EquinoxPrecession } from "@/components/learn/EquinoxPrecession";
+import { ApsidesSeasons } from "@/components/learn/ApsidesSeasons";
 import { HeliocentricOrbitStudy } from "@/components/learn/HeliocentricOrbitStudy";
 import { HierarchyDiagram } from "@/components/learn/HierarchyDiagram";
 import { MoonOrbitTiltStudy } from "@/components/learn/MoonOrbitTilt";
@@ -103,6 +104,7 @@ export const LEARN_DIAGRAMS = {
   /* Zodiac reference frames */
   "ayanamsha-wheel": AyanamshaWheel,
   "equinox-precession": EquinoxPrecession,
+  "apsides-seasons": ApsidesSeasons,
   "precession-cone": PrecessionCone,
   "precession-sky": PrecessionSkyStudy,
   "computation-reference": ComputationReferenceTables,
