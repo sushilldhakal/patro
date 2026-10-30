@@ -13,69 +13,38 @@ export const sayanaNirayanaYear: ArticleData = {
   seeAlso: ["sidereal-vs-tropical", "year-begins-baisakh", "bs-ad-offset", "ritu-drift"],
   sections: [
     {
-      title: { ne: "छोटकरीमा — यो विषय के हो?", en: "In brief — what this topic is about" },
-      eyebrow: "Overview",
+      title: { ne: "वर्षलाई कसरी नापिन्छ?", en: "How is a year measured?" },
+      eyebrow: "Start here",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "सूर्य घुमेर उही ठाउँमा फर्किन लाग्ने समय नै एक वर्ष हो। तर “उही ठाउँ” दुई तरिकाले नाप्न सकिन्छ — **ऋतु**ले (वसन्त विषुव) वा **तारा**ले (मेष राशिको सुरु)। ऋतुले नापेको वर्ष *सायन*, ताराले नापेको *निरयन*। दुईबीच वर्षमा जम्मा `२०` मिनेटको फरक हुन्छ, तर १,७०० वर्षमा त्यो जम्मा भएर ~२४ दिन~ पुगिसकेको छ।",
-            en: "A year is the time the Sun takes to come back to the same place. But \"the same place\" can be measured two ways — by the **seasons** (the vernal equinox) or by the **stars** (the start of Mesha). The year measured by the seasons is *sāyana* (tropical); the one measured by the stars is *nirayana* (sidereal). They differ by only `20` minutes a year, but over 1,700 years that has added up to ~24 days~.",
+            ne: "वर्ष, महिना र ऋतु हामी कसरी तय गर्छौँ? यो पाठ त्यही प्रश्नबाट सुरु हुन्छ। पृथ्वीको परिक्रमा एउटै हो, तर त्यसलाई नाप्ने घडी तीन किसिमका छन् — र तीनवटा छुट्याएर बुझेपछि मात्र वि.सं. किन निरयन छ, बैशाख १ किन अप्रिलमा पर्छ, र माघे सङ्क्रान्ति र उत्तरायण किन फरक छन् भन्ने कुरा आफैँ खुल्छ।",
+            en: "How do we fix the year, the month and the seasons? This lesson starts from that question. The Earth's orbit is one, but there are three kinds of clock to measure it by — and only once the three are kept apart does it fall into place why BS is sidereal, why Baisakh 1 falls in April, and why Maghe Sankranti and Uttarayana differ.",
           },
         },
         {
           kind: "keys",
           items: [
             {
-              h: { ne: "सायन = ऋतुको घडी", en: "Sāyana = the clock of the seasons" },
+              h: { ne: "ऋतुको समय", en: "Season time" },
               p: {
-                ne: "मौसम कहिल्यै नसर्ने गरी बनेको वर्ष। ई.सं. (अङ्ग्रेजी) क्यालेन्डर र पश्चिमी राशिफल यसैमा चल्छन्। त्यसैले २१ मार्च सधैँ वसन्तको सुरु हुन्छ।",
-                en: "A year built so the seasons never move. The AD (Gregorian) calendar and Western sun signs run on it — which is why 21 March always opens spring.",
+                ne: "पृथ्वीको अक्षीय झुकाव र परिक्रमाले ल्याउने गर्मी–जाडो। एक वसन्त विषुवदेखि अर्कोसम्म — *सायन वर्ष*।",
+                en: "Summer and winter, brought by Earth's tilted axis as it orbits. One vernal equinox to the next — the *tropical (sāyana) year*.",
               },
             },
             {
-              h: { ne: "निरयन = ताराको घडी", en: "Nirayana = the clock of the stars" },
+              h: { ne: "ताराको समय", en: "Star time" },
               p: {
-                ne: "तारा र नक्षत्र कहिल्यै नसर्ने गरी बनेको वर्ष। विक्रम सम्वत्, सङ्क्रान्ति, वैदिक ज्योतिष र पञ्चाङ्ग यसैमा चल्छन्। त्यसैले बैशाखभर सूर्य सधैँ मेष राशिमै हुन्छ।",
-                en: "A year built so the stars and nakshatras never move. Bikram Sambat, the sankrantis, Vedic jyotish and the panchanga run on it — which is why the Sun is in Mesha all through Baisakh.",
-              },
-            },
-          ],
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: { ne: "✓ सायनको राम्रो पक्ष", en: "✓ Sāyana — pros" },
-              p: {
-                ne: "महिना र ऋतु सधैँ मेल खान्छन्। खेती, मौसम र ई.सं. मितिसँग जोड्न सजिलो — बैशाख सधैँ वसन्तमै पर्थ्यो।",
-                en: "Months always match the seasons. Easy to tie to farming, weather and AD dates — Baisakh would always open spring.",
+                ne: "ताराहरूको तुलनामा सूर्य एक फेरो घुमेर उही ठाउँमा फर्किने। मेषको सुरुदेखि फेरि मेषसम्म — *निरयन वर्ष*।",
+                en: "The Sun's return to the same place among the stars. From the start of Mesha back to Mesha — the *sidereal (nirayana) year*.",
               },
             },
             {
-              h: { ne: "✓ निरयनको राम्रो पक्ष", en: "✓ Nirayana — pros" },
+              h: { ne: "पात्रोको समय", en: "Calendar time" },
               p: {
-                ne: "राशि, नक्षत्र र ग्रहको स्थिति आकाशमा देखिने तारासँग मेल खान्छ। ज्योतिष, मुहूर्त र चन्द्र महिनाको नाम सबै एउटै आधारमा रहन्छन्।",
-                en: "Rashi, nakshatra and planet positions match the stars you can see. Jyotish, muhurta and the lunar month names all stand on one footing.",
-              },
-            },
-          ],
-        },
-        {
-          kind: "keys",
-          items: [
-            {
-              h: { ne: "✗ सायनको कमजोर पक्ष", en: "✗ Sāyana — cons" },
-              p: {
-                ne: "राशि ताराबाट टाढिँदै जान्छ — “मेष” लेखिएको ठाउँमा आज धेरैजसो मीनका तारा छन्, र नक्षत्रसँग मेल रहँदैन।",
-                en: "The signs drift off the stars — where \"Aries\" is written, mostly Meena's stars stand today, and the nakshatras no longer fit.",
-              },
-            },
-            {
-              h: { ne: "✗ निरयनको कमजोर पक्ष", en: "✗ Nirayana — cons" },
-              p: {
-                ne: "महिना ऋतुबाट बिस्तारै छुट्छन् — करिब ७१ वर्षमा १ दिन। माघे सङ्क्रान्ति वास्तविक उत्तरायणभन्दा करिब २४ दिन पछि पर्छ।",
-                en: "Months slowly slip off the seasons — 1 day in about 71 years. Maghe Sankranti now falls about 24 days after the real turn north.",
+                ne: "सूर्यको सङ्क्रान्ति, चन्द्रको तिथि र अधिक मास मिलाएर बनेको वास्तविक पात्रो। नेपाली पात्रोले सौर भाग ताराको घडीमा मिलाउँछ ([[lunar-month|चान्द्र मास]])।",
+                en: "The working calendar, built from the Sun's sankrantis, the Moon's tithis and the adhik maas. The Nepali patro sets its solar part by the star clock ([[lunar-month|the lunar month]]).",
               },
             },
           ],
@@ -83,21 +52,31 @@ export const sayanaNirayanaYear: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "**तपाईंमा असर:** तपाईंको जन्म राशि, बैशाख १ (१३–१५ अप्रिल) र चाडपर्वका मिति निरयनबाट आउँछन्। पत्रिकाको पश्चिमी राशिफल सायनमा चल्छ — त्यसैले धेरैजसो मानिसको पश्चिमी राशि वैदिक राशिभन्दा एक राशि पछिको हुन्छ (जस्तै वैदिक मेष → पश्चिमी वृष)।",
-            en: "**What it means for you:** your birth rashi, Baisakh 1 (13–15 April) and festival dates come from nirayana. Newspaper Western horoscopes run on sāyana — which is why most people's Western sign is one sign later than their Vedic rashi (Vedic Mesha → Western Taurus, for example).",
+            ne: "सूर्य घुमेर उही ठाउँमा फर्किन लाग्ने समय नै एक वर्ष हो। तर “उही ठाउँ” दुई तरिकाले नाप्न सकिन्छ — **ऋतु**ले (वसन्त विषुव) वा **तारा**ले (मेष राशिको सुरु)। ऋतुले नापेको वर्ष *सायन*, ताराले नापेको *निरयन*। दुईबीच वर्षमा जम्मा `२०` मिनेटको फरक हुन्छ, तर १,७०० वर्षमा त्यो जम्मा भएर ~२४ दिन~ पुगिसकेको छ।",
+            en: "A year is the time the Sun takes to come back to the same place. But \"the same place\" can be measured two ways — by the **seasons** (the vernal equinox) or by the **stars** (the start of Mesha). The year measured by the seasons is *sāyana* (tropical); the one measured by the stars is *nirayana* (sidereal). They differ by only `20` minutes a year, but over 1,700 years that has added up to ~24 days~.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "**यो पाठको क्रम:** पहिले प्रकृति, त्यसपछि गणित, अनि पात्रो, र अन्त्यमा हाम्रो जीवनमा पर्ने प्रभाव।",
+            en: "**How this lesson runs:** nature first, then the arithmetic, then the calendar, and last what it means for our lives.",
           },
         },
         {
           kind: "list",
           ordered: true,
           items: [
-            { ne: "**दुई वर्षको परिभाषा** र लम्बाइ — किन मिनेटको फरक मात्र।", en: "**The two years** defined, and their lengths — why the gap is only minutes." },
-            { ne: "**फरक किन** — पृथ्वीको अक्ष डगमगाउँदा विषुव बिन्दु सर्छ (अयन चलन)।", en: "**Why they differ** — Earth's wobbling axis moves the equinox (precession)." },
-            { ne: "**वि.सं.ले कुन मान्छ** — र बैशाख १ ई.सं.मा किन सर्दै जान्छ।", en: "**Which one BS keeps** — and why Baisakh 1 creeps later in AD." },
-            { ne: "**१,७०० वर्षको फरक** — अयनांश, र माघे सङ्क्रान्ति उत्तरायणबाट किन टाढा।", en: "**The 1,700-year gap** — the ayanamsha, and why Maghe Sankranti left the solstice." },
-            { ne: "**वि.सं. सायन भए** बैशाख, चाडपर्व र राशिमा के बदलिन्थ्यो।", en: "**If BS were tropical** — what would change for Baisakh, festivals and your rashi." },
-            { ne: "**निरयनको बलियो पक्ष** — सूर्य, चन्द्र र ग्रह एउटै ताराको नक्सामा।", en: "**The strength of nirayana** — Sun, Moon and planets on one star map." },
-            { ne: "**महिना २९–३२ दिनका किन** — र शताब्दीपछि बैशाख कहाँ पुग्छ।", en: "**Why months run 29–32 days** — and where Baisakh will be centuries from now." },
+            { ne: "**वर्षलाई कसरी नापिन्छ?** — ऋतु, तारा र पात्रोका तीन घडी।", en: "**How is a year measured?** — the three clocks: seasons, stars, calendar." },
+            { ne: "**सायन र निरयन वर्ष** — परिभाषा, लम्बाइ, राम्रा र कमजोर पक्ष।", en: "**The tropical and sidereal year** — definitions, lengths, pros and cons." },
+            { ne: "**२० मिनेटको फरक किन?** — पृथ्वीको अक्ष डगमगाउँदा विषुव सर्छ।", en: "**Why the 20-minute gap?** — Earth's wobbling axis moves the equinox." },
+            { ne: "**एउटै ग्रह, दुई राशि** — सायन र निरयन राशिचक्र, अयनांश।", en: "**One planet, two rashis** — the two zodiacs and the ayanamsha." },
+            { ne: "**वि.सं. कुन आधारमा?** — मेष सङ्क्रान्ति, बैशाख १ र ई.सं.।", en: "**What BS runs on** — Mesha Sankranti, Baisakh 1 and AD." },
+            { ne: "**सूर्य, चन्द्र र ग्रह** — सबै एउटै ताराको नक्सामा।", en: "**Sun, Moon and planets** — all on one star map." },
+            { ne: "**महिना २९–३२ दिनका किन?** — सूर्यको असमान गति।", en: "**Why months run 29–32 days** — the Sun's uneven pace." },
+            { ne: "**२४ दिनको ऐतिहासिक फरक** — अयनांश कसरी जम्मा भयो।", en: "**The 24-day historical gap** — how the ayanamsha built up." },
+            { ne: "**चाडपर्व, उत्तरायण र ऋतु** — फरकले हाम्रो जीवनमा के गर्छ।", en: "**Festivals, Uttarayana and the seasons** — what the gap does to daily life." },
+            { ne: "**भविष्यको वि.सं.** — सायन भएको भए के हुन्थ्यो, र हजारौँ वर्षपछि के हुन्छ।", en: "**BS in the future** — what a tropical BS would be, and where ours is heading." },
           ],
         },
         {
@@ -110,7 +89,7 @@ export const sayanaNirayanaYear: ArticleData = {
       ],
     },
     {
-      title: { ne: "एउटै परिक्रमा, दुई किसिमको वर्ष", en: "One orbit, two kinds of year" },
+      title: { ne: "सायन र निरयन वर्ष", en: "The tropical and sidereal year" },
       eyebrow: "Sāyana · Nirayana",
       blocks: [
         {
@@ -170,10 +149,55 @@ export const sayanaNirayanaYear: ArticleData = {
             en: "The year lengths on one ladder — the gaps are minutes, but they add up every year.",
           },
         },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "✓ सायनको राम्रो पक्ष", en: "✓ Sāyana — pros" },
+              p: {
+                ne: "महिना र ऋतु सधैँ मेल खान्छन्। खेती, मौसम र ई.सं. मितिसँग जोड्न सजिलो — बैशाख सधैँ वसन्तमै पर्थ्यो।",
+                en: "Months always match the seasons. Easy to tie to farming, weather and AD dates — Baisakh would always open spring.",
+              },
+            },
+            {
+              h: { ne: "✓ निरयनको राम्रो पक्ष", en: "✓ Nirayana — pros" },
+              p: {
+                ne: "राशि, नक्षत्र र ग्रहको स्थिति आकाशमा देखिने तारासँग मेल खान्छ। ज्योतिष, मुहूर्त र चन्द्र महिनाको नाम सबै एउटै आधारमा रहन्छन्।",
+                en: "Rashi, nakshatra and planet positions match the stars you can see. Jyotish, muhurta and the lunar month names all stand on one footing.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "✗ सायनको कमजोर पक्ष", en: "✗ Sāyana — cons" },
+              p: {
+                ne: "राशि ताराबाट टाढिँदै जान्छ — “मेष” लेखिएको ठाउँमा आज धेरैजसो मीनका तारा छन्, र नक्षत्रसँग मेल रहँदैन।",
+                en: "The signs drift off the stars — where \"Aries\" is written, mostly Meena's stars stand today, and the nakshatras no longer fit.",
+              },
+            },
+            {
+              h: { ne: "✗ निरयनको कमजोर पक्ष", en: "✗ Nirayana — cons" },
+              p: {
+                ne: "महिना ऋतुबाट बिस्तारै छुट्छन् — करिब ७१ वर्षमा १ दिन। माघे सङ्क्रान्ति वास्तविक उत्तरायणभन्दा करिब २४ दिन पछि पर्छ।",
+                en: "Months slowly slip off the seasons — 1 day in about 71 years. Maghe Sankranti now falls about 24 days after the real turn north.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: **सायनले ऋतु स्थिर राख्छ, निरयनले तारा।** दुवै उत्तिकै सही नाप हुन् — फरक केवल के स्थिर राख्ने भन्नेमा छ।",
+            en: "Remember: **sāyana holds the seasons fixed, nirayana the stars.** Both are equally correct measurements — they differ only in what they hold still.",
+          },
+        },
       ],
     },
     {
-      title: { ne: "फरक किन? — विषुव बिन्दु सर्छ", en: "Why they differ — the equinox moves" },
+      title: { ne: "२० मिनेटको फरक किन हुन्छ?", en: "Why is there a 20-minute gap?" },
       eyebrow: "Precession",
       blocks: [
         {
@@ -222,11 +246,73 @@ export const sayanaNirayanaYear: ArticleData = {
             },
           ],
         },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: तारा सर्दैनन्, **विषुव बिन्दु सर्छ** — वर्षमा `५०″`। त्यही सानो सराइले हरेक वर्ष २० मिनेटको फरक ल्याउँछ। माथिका दुई गणना छुट्टै प्रणाली हुन्: आधुनिक मापन र सूर्य सिद्धान्तको परम्परागत वर्ष।",
+            en: "Remember: the stars stay put; **the equinox point moves** — `50″` a year. That small slide makes the 20-minute gap every year. The two calculations above are separate systems: the modern measurement, and the traditional Surya Siddhanta year.",
+          },
+        },
       ],
     },
     {
-      title: { ne: "विक्रम सम्वत्ले कुन वर्ष मान्छ?", en: "Which year does Bikram Sambat follow?" },
-      eyebrow: "Nirayana",
+      title: { ne: "एउटै ग्रह, दुई राशि", en: "One planet, two rashis" },
+      eyebrow: "Two zodiacs",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "राशिचक्र `३६०°` को घेरा हो, १२ राशि × `३०°`। प्रश्न केवल **शून्य कहाँ राख्ने** भन्ने हो। सायन राशिचक्रले शून्य वसन्त विषुवमा राख्छ, निरयनले ताराको एउटा निश्चित बिन्दुमा (अश्विनीको सुरु)। दुई शून्यबीचको कोण नै ~अयनांश~ हो।",
+            en: "The zodiac is a `360°` circle, 12 rashis × `30°`. The only question is **where to put zero**. The tropical zodiac puts it at the vernal equinox; the sidereal one at a fixed point among the stars (the start of Ashvini). The angle between the two zeros is the ~ayanamsha~.",
+          },
+        },
+        {
+          kind: "calc",
+          rule: [
+            { ne: "सायन देशान्तर = निरयन देशान्तर + अयनांश", en: "Tropical longitude = sidereal longitude + ayanamsha" },
+          ],
+          where: [
+            { sym: "अयनांश", is: { ne: "दुई राशिचक्रको शून्यबीचको कोण — आज करिब `२४.२°` (लाहिरी)", en: "the angle between the two zodiacs' zeros — about `24.2°` today (Lahiri)" } },
+          ],
+          example: [
+            { k: { ne: "ग्रह, निरयन (मीन १५°)", en: "Planet, sidereal (Meena 15°)" }, v: "330° + 15° = 345°" },
+            { k: { ne: "+ अयनांश", en: "+ ayanamsha" }, v: "345° + 24.2° = 369.2°" },
+            { k: { ne: "३६०° घटाउँदा (मेष ९°१२′)", en: "Less 360° (Mesha 9°12′)" }, v: "369.2° − 360° = 9.2°" },
+          ],
+          result: { ne: "एउटै ग्रह — निरयनमा **मीन**, सायनमा **मेष**। आकाशमा ग्रह एउटै ठाउँमा छ; फरक केवल नाप्ने शून्यमा।", en: "One planet — **Meena** in sidereal, **Mesha** in tropical. It sits in one place in the sky; only the zero it is measured from differs." },
+          caption: { ne: "राशि बदल्ने सूत्र", en: "Turning one rashi into the other" },
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "राशि र नक्षत्र ठ्याक्कै मिल्छन्", en: "Rashi and nakshatra fit exactly" },
+              p: {
+                ne: "२७ नक्षत्र × `१३°२०′` = `३६०°`, एक राशिमा `२¼` नक्षत्र। मेष = अश्विनी + भरणी + कृत्तिकाको पहिलो पाद। निरयनमा यो जोड कहिल्यै सर्दैन; सायन मेषको सुरु भने आज उत्तर भाद्रपदमा (निरयन मीन `~५°४८′`) पर्छ र हरेक ७२ वर्षमा `१°` थप सर्छ।",
+                en: "27 nakshatras × `13°20′` = `360°`, `2¼` nakshatras to a rashi. Mesha = Ashvini + Bharani + the first pada of Krittika. In nirayana this fit never moves; the start of tropical Mesha already falls in Uttara Bhadrapada (sidereal Meena `~5°48′`) and slides `1°` more every 72 years.",
+              },
+            },
+            {
+              h: { ne: "अयनांश एउटै होइन", en: "There is more than one ayanamsha" },
+              p: {
+                ne: "निरयन शून्य कुन तारामा राख्ने भन्नेमा परम्परा फरक छन्। भारत सरकारको पञ्चाङ्ग र यो एपले *लाहिरी* प्रयोग गर्छन्; रमण, कृष्णमूर्ति आदि अरू अयनांश यसभन्दा बढीमा करिब `१½°` फरक पर्छन्। त्यसैले दुई निरयन पात्रोमा पनि सङ्क्रान्तिको समय केही घण्टा फरक हुन सक्छ।",
+                en: "Traditions differ on which star fixes the sidereal zero. India's official panchanga and this app use *Lahiri*; others (Raman, Krishnamurti and more) differ from it by up to about `1½°`. So even two sidereal patros can give a sankranti a few hours apart.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: ग्रह आकाशमा एउटै ठाउँमा हुन्छ। आज सायन राशि धेरैजसो एक राशि पछिको हुन्छ — त्यसैले पत्रिकाको पश्चिमी राशिफल र तपाईंको वैदिक जन्म राशि फरक देखिन्छन्।",
+            en: "Remember: a planet sits in one place in the sky. Today the tropical rashi is mostly one sign later — which is why a newspaper's Western horoscope and your Vedic birth rashi disagree.",
+          },
+        },
+      ],
+    },
+    {
+      title: { ne: "विक्रम सम्वत् कुन आधारमा चल्छ?", en: "What does Bikram Sambat run on?" },
+      eyebrow: "Mesha Sankranti",
       blocks: [
         {
           kind: "lede",
@@ -262,6 +348,13 @@ export const sayanaNirayanaYear: ArticleData = {
           },
         },
         {
+          kind: "para",
+          text: {
+            ne: "बैशाख भनेको सूर्य निरयन मेषमा रहने समय हो, साउन कर्कटमा रहने समय। सङ्क्रान्ति दिनको कुन बेला पर्छ भन्ने नियमले महिनाको पहिलो दिन तय गर्छ, त्यसैले महिनाको किनारा ठ्याक्कै सङ्क्रान्तिको क्षणसँग नभई एक दिनसम्म यता–उता पर्न सक्छ।",
+            en: "Baisakh is the time the Sun spends in sidereal Mesha, Saun the time it spends in Karka. Which day counts as the 1st is set by a rule about when in the day the sankranti falls, so a month's edge can sit up to a day off the exact moment of the sankranti.",
+          },
+        },
+        {
           kind: "note",
           text: {
             ne: "परम्परागत पात्रो सूर्य सिद्धान्तको वर्ष (३६५.२५८८ दिन) ले, र आधुनिक *दृक्* पात्रो (यो एपसहित, लाहिरी अयनांशमा) मापन गरिएको निरयन वर्षले चल्छन्। दुवै निरयन हुन् — फरक सङ्क्रान्तिको समयमा केही घण्टाको मात्र पर्छ, ऋतुसँगको सम्बन्धमा होइन।",
@@ -271,125 +364,8 @@ export const sayanaNirayanaYear: ArticleData = {
       ],
     },
     {
-      title: { ne: "१,७०० वर्षमा जम्मा भएको फरक", en: "The gap 1,700 years have built" },
-      eyebrow: "≈ 24 days",
-      blocks: [
-        {
-          kind: "lede",
-          text: {
-            ne: "करिब `२८५` ई.सं.मा दुई शून्य एकै ठाउँमा थिए — निरयन मेष सङ्क्रान्ति र वसन्त विषुव एकै दिन पर्थे। त्यसपछि हरेक वर्ष २० मिनेट थपिँदै आज ~अयनांश~ झन्डै `२४.२°` पुगेको छ। सूर्य दिनको झन्डै `१°` हिँड्ने हुनाले यो **करिब २४ दिन** हो।",
-            en: "Around `285` CE the two zeros coincided — sidereal Mesha Sankranti and the vernal equinox fell on the same day. Adding 20 minutes a year since then, the ~ayanamsha~ is now about `24.2°`. With the Sun moving about `1°` a day, that is **roughly 24 days**.",
-          },
-        },
-        {
-          kind: "table",
-          caption: {
-            ne: "सायन घटना र त्यसको निरयन “जोडी” — आज करिब २४ दिनको फरक",
-            en: "Each tropical event and its sidereal \"partner\" — about 24 days apart today",
-          },
-          headers: [
-            { ne: "सायन (ऋतु) घटना", en: "Tropical (season) event" },
-            { ne: "मिति", en: "Date" },
-            { ne: "निरयन सङ्क्रान्ति", en: "Sidereal sankranti" },
-            { ne: "मिति", en: "Date" },
-          ],
-          rows: [
-            [{ ne: "वसन्त विषुव", en: "Vernal equinox" }, { ne: "२०–२१ मार्च", en: "20–21 Mar" }, { ne: "मेष (बैशाख १)", en: "Mesha (Baisakh 1)" }, { ne: "१३–१५ अप्रिल", en: "13–15 Apr" }],
-            [{ ne: "ग्रीष्म अयनान्त", en: "Summer solstice" }, { ne: "२१ जुन", en: "21 Jun" }, { ne: "कर्कट (साउन १)", en: "Karka (Saun 1)" }, { ne: "१६–१७ जुलाई", en: "16–17 Jul" }],
-            [{ ne: "शरद विषुव", en: "Autumn equinox" }, { ne: "२२–२३ सेप्टेम्बर", en: "22–23 Sep" }, { ne: "तुला (कात्तिक १)", en: "Tula (Kartik 1)" }, { ne: "१७–१८ अक्टोबर", en: "17–18 Oct" }],
-            [{ ne: "शिशिर अयनान्त", en: "Winter solstice" }, { ne: "२१–२२ डिसेम्बर", en: "21–22 Dec" }, { ne: "मकर (माघ १)", en: "Makara (Magh 1)" }, { ne: "१४–१५ जनवरी", en: "14–15 Jan" }],
-          ],
-        },
-        {
-          kind: "diagram",
-          id: "ayanamsha-wheel",
-          caption: {
-            ne: "दुई शून्यबीचको खाँडो नै अयनांश — यही कोण दिनमा बदल्दा माथिको २४ दिन आउँछ।",
-            en: "The wedge between the two zeros is the ayanamsha — turned into days, it is the 24 days above.",
-          },
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "सबैभन्दा चिनिने उदाहरण माघे सङ्क्रान्ति हो। यसलाई ~उत्तरायण~ को सुरु भनिन्छ, तर सूर्य वास्तवमा २१–२२ डिसेम्बरमै उत्तरतर्फ फर्किसकेको हुन्छ। १,७०० वर्षअघि यी दुई एकै दिन पर्थे; आज **निरयन नाम** र **सायन घटना**बीच तीन हप्ताभन्दा बढी छ ([[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]])।",
-            en: "The best-known case is Maghe Sankranti. It is called the start of ~Uttarayana~, yet the Sun actually turns north on 21–22 December. Seventeen centuries ago the two fell on the same day; today more than three weeks separate the **sidereal name** from the **tropical event** ([[uttarayana-dakshinayana|Uttarayana and Dakshinayana]]).",
-          },
-        },
-      ],
-    },
-    {
-      title: { ne: "वि.सं. सायन भएको भए के हुन्थ्यो?", en: "What if Bikram Sambat were tropical?" },
-      eyebrow: "Two results side by side",
-      blocks: [
-        {
-          kind: "lede",
-          text: {
-            ne: "एउटै पात्रो दुई तरिकाले चलाउँदा नतिजा कति फरक हुन्छ? तलको तालिकाले आजको वि.सं. (निरयन) लाई सायन वर्षमा चलाइएको काल्पनिक वि.सं.सँग दाँज्छ।",
-            en: "How different are the results when the same calendar runs on each year? The table compares today's BS (sidereal) with an imagined BS run on the tropical year.",
-          },
-        },
-        {
-          kind: "table",
-          headers: [
-            { ne: "कुरा", en: "Aspect" },
-            { ne: "सायन वर्ष मानेमा", en: "If tropical (sāyana)" },
-            { ne: "निरयन वर्ष (आजको वि.सं.)", en: "Sidereal (today's BS)" },
-          ],
-          rows: [
-            [
-              { ne: "वर्षको लम्बाइ", en: "Year length" },
-              { ne: "३६५.२४२२ दिन", en: "365.2422 days" },
-              { ne: "३६५.२५६४ दिन (सिद्धान्तमा ३६५.२५८८)", en: "365.2564 days (365.2588 in Siddhanta)" },
-            ],
-            [
-              { ne: "बैशाख १ गते", en: "Baisakh 1" },
-              { ne: "सधैँ २०–२१ मार्च, शताब्दीऔँसम्म नसर्ने", en: "Always 20–21 March, unmoving for centuries" },
-              { ne: "आज १३–१५ अप्रिल, ~७१ वर्षमा १ दिन पछि सर्दै", en: "13–15 April today, 1 day later every ~71 years" },
-            ],
-            [
-              { ne: "ऋतुसँग सम्बन्ध", en: "Tie to the seasons" },
-              { ne: "स्थिर — बैशाख सधैँ वसन्तको सुरु", en: "Fixed — Baisakh always opens spring" },
-              { ne: "सर्दै — आज झन्डै २४ दिन ढिला", en: "Drifting — about 24 days late today" },
-            ],
-            [
-              { ne: "तारा र नक्षत्रसँग सम्बन्ध", en: "Tie to the stars and nakshatras" },
-              { ne: "सर्दै — ७२ वर्षमा १°", en: "Drifting — 1° in 72 years" },
-              { ne: "स्थिर — बैशाख १ मा सूर्य सधैँ अश्विनीको सुरुमा", en: "Fixed — on Baisakh 1 the Sun is always at the start of Ashvini" },
-            ],
-            [
-              { ne: "माघे सङ्क्रान्ति", en: "Maghe Sankranti" },
-              { ne: "२१–२२ डिसेम्बर — वास्तविक उत्तरायणकै दिन", en: "21–22 December — on the real turn north" },
-              { ne: "१४–१५ जनवरी — अयनान्तभन्दा ~२४ दिन पछि", en: "14–15 January — ~24 days after the solstice" },
-            ],
-            [
-              { ne: "चाडपर्व (दशैँ, तिहार…)", en: "Festivals (Dashain, Tihar…)" },
-              { ne: "सङ्क्रान्ति २४ दिन चाँडो हुँदा धेरैजसो वर्ष (करिब ५ मा ४) एक चान्द्र मास अघि", en: "With sankrantis 24 days earlier, most years (about 4 in 5) one lunar month earlier" },
-              { ne: "आजकै समय — असोज–कात्तिकतिर", en: "Where they are now — around Asoj–Kartik" },
-            ],
-            [
-              { ne: "जन्म राशि", en: "Birth rashi" },
-              { ne: "पश्चिमी (सायन) राशि — धेरैको एक राशि पछि", en: "The Western (tropical) sign — one sign later for most people" },
-              { ne: "वैदिक (निरयन) राशि", en: "The Vedic (sidereal) sign" },
-            ],
-            [
-              { ne: "ई.सं.सँगको नक्सा", en: "Mapping to AD" },
-              { ne: "झन्डै स्थिर — भारतको राष्ट्रिय (शक) पात्रोजस्तै", en: "Nearly fixed — like India's national (Saka) calendar" },
-              { ne: "हरेक वर्ष फरक, बिस्तारै सर्दै", en: "Different every year, slowly sliding" },
-            ],
-          ],
-        },
-        {
-          kind: "para",
-          text: {
-            ne: "सायन सौर पात्रो काल्पनिक मात्र होइन। इरानको सौर पात्रोको नयाँ वर्ष (नौरोज) वसन्त विषुवमै पर्छ, र भारतले १९५७ मा अपनाएको राष्ट्रिय पात्रोको चैत्र १ सधैँ २२ मार्च (लीप वर्षमा २१) मा पर्छ। दुवैले ऋतु स्थिर राखे, तर ताराको सम्बन्ध छाडे।",
-            en: "A tropical solar calendar is not just hypothetical. Iran's solar calendar opens its year (Nowruz) at the vernal equinox, and the national calendar India adopted in 1957 puts Chaitra 1 on 22 March (21 in leap years) every year. Both fixed the seasons and let go of the stars.",
-          },
-        },
-      ],
-    },
-    {
-      title: { ne: "निरयनको बलियो पक्ष — सूर्य राशिमा कसरी हिँड्छ", en: "The strength of nirayana — how the Sun walks the rashis" },
-      eyebrow: "23 h 56 min 4 s",
+      title: { ne: "निरयन प्रणालीमा सूर्य, चन्द्र र ग्रह", en: "Sun, Moon and planets in the sidereal system" },
+      eyebrow: "One star map",
       blocks: [
         {
           kind: "lede",
@@ -486,14 +462,8 @@ export const sayanaNirayanaYear: ArticleData = {
             en: "The sidereal year is exactly one full round of this walk: the Sun from one point among the stars back to the same point. That is why in BS the **month's name, the Sun's rashi and the stars in the sky** always say the same thing. All through Baisakh the Sun is in Mesha, all through Saun in Karka — today, and a thousand years from now.",
           },
         },
-      ],
-    },
-    {
-      title: { ne: "सबै ग्रह एउटै ताराको नक्सामा", en: "Every graha on one star map" },
-      eyebrow: "One frame",
-      blocks: [
         {
-          kind: "lede",
+          kind: "para",
           text: {
             ne: "सूर्यमात्र होइन — चन्द्र, मङ्गल, गुरु, शनि सबै ताराको पृष्ठभूमिमा आ-आफ्नो गतिमा राशि पार गर्छन्। निरयनमा सबैको स्थिति **एउटै स्थिर नक्सा**मा नापिन्छ, त्यसैले कुनै पनि दुई ग्रहको सम्बन्ध, नक्षत्र र राशि सिधै दाँज्न मिल्छ।",
             en: "Not just the Sun — the Moon, Mars, Jupiter and Saturn all cross the rashis against the stars, each at its own pace. In nirayana every position is measured on **one fixed map**, so any two grahas, nakshatras and rashis can be compared directly.",
@@ -521,24 +491,17 @@ export const sayanaNirayanaYear: ArticleData = {
           kind: "keys",
           items: [
             {
-              h: { ne: "राशि र नक्षत्र ठ्याक्कै मिल्छन्", en: "Rashi and nakshatra fit exactly" },
-              p: {
-                ne: "२७ नक्षत्र × `१३°२०′` = `३६०°`, एक राशिमा `२¼` नक्षत्र। मेष = अश्विनी + भरणी + कृत्तिकाको पहिलो पाद। निरयनमा यो जोड कहिल्यै सर्दैन; सायन मेषको सुरु भने आज उत्तर भाद्रपदमा (निरयन मीन `~५°४८′`) पर्छ र हरेक ७२ वर्षमा `१°` थप सर्छ।",
-                en: "27 nakshatras × `13°20′` = `360°`, `2¼` nakshatras to a rashi. Mesha = Ashvini + Bharani + the first pada of Krittika. In nirayana this fit never moves; the start of tropical Mesha already falls in Uttara Bhadrapada (sidereal Meena `~5°48′`) and slides `1°` more every 72 years.",
-              },
-            },
-            {
               h: { ne: "चान्द्र मासको नाम पनि ताराबाट", en: "Lunar month names come from the stars too" },
               p: {
-                ne: "पूर्णिमाको चन्द्र सूर्यको ठीक उल्टो राशिमा हुन्छ। सूर्य निरयन मेषमा हुँदा पूर्णिमा चित्रा–विशाखातिर पर्छ — त्यसैले *वैशाख*। सौर महिना र चान्द्र मासको यो नाता पनि निरयन आधारमै टिक्छ।",
-                en: "The full Moon stands in the rashi opposite the Sun. With the Sun in sidereal Mesha, the full Moon falls near Chitra–Vishakha — hence *Vaishakha*. This bond between solar and lunar months also holds only on the sidereal footing.",
+                ne: "पूर्णिमाको क्षणमा चन्द्र सूर्यबाट ठ्याक्कै `१८०°` टाढा, अर्थात् उल्टो राशिमा हुन्छ। सूर्य निरयन मेषमा हुँदा पूर्णिमा चित्रा–विशाखातिर पर्छ — त्यसैले *वैशाख*। सौर महिना र चान्द्र मासको यो नाता पनि निरयन आधारमै टिक्छ।",
+                en: "At the moment of full Moon the Moon is exactly `180°` from the Sun — in the opposite rashi. With the Sun in sidereal Mesha, the full Moon falls near Chitra–Vishakha — hence *Vaishakha*. This bond between solar and lunar months also holds only on the sidereal footing.",
               },
             },
             {
               h: { ne: "सूर्योदयको लग्न = सूर्यको राशि", en: "Sunrise lagna = the Sun's rashi" },
               p: {
-                ne: "पूर्वी क्षितिजमा उदाउने राशि नै *लग्न* हो। एक नाक्षत्र दिनमा बाह्रै लग्न उदाउँछन् — औसत करिब २ घण्टा प्रति लग्न। सूर्य जुन राशिमा छ, सूर्योदयमा त्यही राशि उदाउँछ: बैशाखभरि सूर्योदय लग्न मेष, साउनभरि कर्कट। उही घडी-समयको लग्न भने हरेक दिन ४ मिनेट चाँडो, महिनामा एक राशि सर्छ — मुहूर्त गणना यही नियममा चल्छ।",
-                en: "The rashi rising on the eastern horizon is the *lagna*. All twelve rise in one star day — about 2 hours each on average. Whatever rashi the Sun is in rises with it at sunrise: the sunrise lagna is Mesha all through Baisakh, Karka all through Saun. The lagna at a fixed clock time comes 4 minutes earlier each day, a whole rashi in a month — the rule muhurta reckoning runs on.",
+                ne: "पूर्वी क्षितिजमा उदाउने राशि नै *लग्न* हो। एक नाक्षत्र दिनमा बाह्रै लग्न उदाउँछन् — औसत करिब २ घण्टा प्रति लग्न। सूर्योदयको क्षणमा सूर्य आफैँ पूर्वी क्षितिजमा हुन्छ, त्यसैले उदाउँदो बिन्दु सूर्यकै अंश हो — सूर्य जुन राशिमा छ, सूर्योदयमा त्यही राशि उदाउँछ: बैशाखभरि सूर्योदय लग्न मेष, साउनभरि कर्कट। उही घडी-समयको लग्न भने हरेक दिन ४ मिनेट चाँडो, महिनामा एक राशि सर्छ — मुहूर्त गणना यही नियममा चल्छ।",
+                en: "The rashi rising on the eastern horizon is the *lagna*. All twelve rise in one star day — about 2 hours each on average. At the moment of sunrise the Sun itself is on the eastern horizon, so the rising degree is the Sun's own — whatever rashi the Sun is in rises with it: the sunrise lagna is Mesha all through Baisakh, Karka all through Saun. The lagna at a fixed clock time comes 4 minutes earlier each day, a whole rashi in a month — the rule muhurta reckoning runs on.",
               },
             },
           ],
@@ -550,11 +513,18 @@ export const sayanaNirayanaYear: ArticleData = {
             en: "The biggest gain is that **you can check it in the sky yourself**. The rashi overhead at midnight is the one opposite the Sun, and the stars rising in the east before dawn point to the Sun's rashi. The rashi a sidereal patro gives for the Sun, the Moon and the planets is confirmed by simply looking at the stars — a tropical rashi is written nearly one rashi ahead today and does not match them.",
           },
         },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: सौर दिन नाक्षत्र दिनभन्दा ४ मिनेट लामो छ — त्यही ४ मिनेट नै सूर्यको राशि यात्रा हो। निरयनमा सबै ग्रह एउटै ताराको नक्सामा नापिन्छन्।",
+            en: "Remember: the solar day is 4 minutes longer than the star day — those 4 minutes are the Sun's walk through the rashis. In nirayana every graha is measured on the one star map.",
+          },
+        },
       ],
     },
     {
-      title: { ne: "महिना किन २९ देखि ३२ दिनका?", en: "Why months run 29 to 32 days" },
-      eyebrow: "The Sun's real pace",
+      title: { ne: "नेपाली महिनाहरू २९–३२ दिनका किन हुन्छन्?", en: "Why Nepali months run 29–32 days" },
+      eyebrow: "Perihelion · Aphelion",
       blocks: [
         {
           kind: "lede",
@@ -591,14 +561,180 @@ export const sayanaNirayanaYear: ArticleData = {
             en: "A 32-day month in BS is not an error but a faithful picture of the sky. AD fixes a month's days by rule; BS asks the Sun. This too is a good result of a sidereal, sankranti-based calendar.",
           },
         },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: वि.सं.को महिना नियमले होइन, सूर्यको वास्तविक गतिले तय हुन्छ — सूर्य टाढा हुँदा ढिलो, त्यसैले असार–साउन लामा।",
+            en: "Remember: a BS month is set by the Sun's real motion, not by a rule — the Sun is slowest when farthest away, so Asar–Saun run long.",
+          },
+        },
       ],
     },
     {
-      title: { ne: "निरयन मान्दाको लामो नतिजा", en: "The long result of staying sidereal" },
+      title: { ne: "अयनांश र २४ दिनको ऐतिहासिक फरक", en: "The ayanamsha and the 24-day gap" },
+      eyebrow: "≈ 24°",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "यो एपले प्रयोग गर्ने लाहिरी अयनांशअनुसार करिब `२८५` ई.सं.मा दुई शून्य एकै ठाउँमा थिए — निरयन मेष सङ्क्रान्ति र वसन्त विषुव एकै दिन पर्थे (अरू अयनांशले यो वर्ष केही शताब्दी यता–उता राख्छन्)। त्यसपछि हरेक वर्ष २० मिनेट थपिँदै आज ~अयनांश~ झन्डै `२४.२°` पुगेको छ। सूर्य दिनको झन्डै `१°` हिँड्ने हुनाले यो **करिब २४ दिन** हो।",
+            en: "By the Lahiri ayanamsha this app uses, the two zeros coincided around `285` CE — sidereal Mesha Sankranti and the vernal equinox fell on the same day (other ayanamshas put that year a few centuries either way). Adding 20 minutes a year since then, the ~ayanamsha~ is now about `24.2°`. With the Sun moving about `1°` a day, that is **roughly 24 days**.",
+          },
+        },
+        {
+          kind: "table",
+          caption: {
+            ne: "सायन घटना र त्यसको निरयन “जोडी” — आज करिब २४ दिनको फरक",
+            en: "Each tropical event and its sidereal \"partner\" — about 24 days apart today",
+          },
+          headers: [
+            { ne: "सायन (ऋतु) घटना", en: "Tropical (season) event" },
+            { ne: "मिति", en: "Date" },
+            { ne: "निरयन सङ्क्रान्ति", en: "Sidereal sankranti" },
+            { ne: "मिति", en: "Date" },
+          ],
+          rows: [
+            [{ ne: "वसन्त विषुव", en: "Vernal equinox" }, { ne: "२०–२१ मार्च", en: "20–21 Mar" }, { ne: "मेष (बैशाख १)", en: "Mesha (Baisakh 1)" }, { ne: "१३–१५ अप्रिल", en: "13–15 Apr" }],
+            [{ ne: "ग्रीष्म अयनान्त", en: "Summer solstice" }, { ne: "२१ जुन", en: "21 Jun" }, { ne: "कर्कट (साउन १)", en: "Karka (Saun 1)" }, { ne: "१६–१७ जुलाई", en: "16–17 Jul" }],
+            [{ ne: "शरद विषुव", en: "Autumn equinox" }, { ne: "२२–२३ सेप्टेम्बर", en: "22–23 Sep" }, { ne: "तुला (कात्तिक १)", en: "Tula (Kartik 1)" }, { ne: "१७–१८ अक्टोबर", en: "17–18 Oct" }],
+            [{ ne: "शिशिर अयनान्त", en: "Winter solstice" }, { ne: "२१–२२ डिसेम्बर", en: "21–22 Dec" }, { ne: "मकर (माघ १)", en: "Makara (Magh 1)" }, { ne: "१४–१५ जनवरी", en: "14–15 Jan" }],
+          ],
+        },
+        {
+          kind: "diagram",
+          id: "ayanamsha-wheel",
+          caption: {
+            ne: "दुई शून्यबीचको खाँडो नै अयनांश — यही कोण दिनमा बदल्दा माथिको २४ दिन आउँछ।",
+            en: "The wedge between the two zeros is the ayanamsha — turned into days, it is the 24 days above.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "**२४ दिन** भनेको `२४°` अयनांशलाई सूर्यको औसत दैनिक गति (`~१°`) ले भाग गर्दा आउने अनुमान हो। सूर्य वर्षभरि एकै गतिमा नहिँड्ने हुनाले (अध्याय ०७) माथिका जोडीबीच वास्तविक फरक २३ देखि २६ दिनसम्म पर्छ — जाडोमा छोटो, गर्मीमा लामो।",
+            en: "**24 days** is the `24°` ayanamsha divided by the Sun's mean daily motion (`~1°`). Because the Sun does not move at one pace through the year (chapter 07), the real gap between the pairs above runs 23 to 26 days — shorter in winter, longer in summer.",
+          },
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: अयनांश कोण हो, दिन होइन। आज करिब `२४.२°` छ र हरेक ७२ वर्षमा `१°` बढ्छ।",
+            en: "Remember: the ayanamsha is an angle, not a number of days. It is about `24.2°` today and grows `1°` every 72 years.",
+          },
+        },
+      ],
+    },
+    {
+      title: { ne: "चाडपर्व, उत्तरायण र ऋतुमा पर्ने प्रभाव", en: "What it does to festivals, Uttarayana and the seasons" },
+      eyebrow: "Daily life",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "अयनांशको फरक किताबको हिसाबमा मात्र सीमित छैन — यसले हाम्रा चाडपर्व र ऋतुको नाममा सिधै असर गर्छ।",
+            en: "The ayanamsha gap is not just bookkeeping — it reaches straight into our festivals and the names of our seasons.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "सबैभन्दा चिनिने उदाहरण माघे सङ्क्रान्ति हो। यसलाई ~उत्तरायण~ को सुरु भनिन्छ, तर सूर्य वास्तवमा २१–२२ डिसेम्बरमै उत्तरतर्फ फर्किसकेको हुन्छ। १,७०० वर्षअघि यी दुई एकै दिन पर्थे; आज **निरयन नाम** र **सायन घटना**बीच तीन हप्ताभन्दा बढी छ ([[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]])।",
+            en: "The best-known case is Maghe Sankranti. It is called the start of ~Uttarayana~, yet the Sun actually turns north on 21–22 December. Seventeen centuries ago the two fell on the same day; today more than three weeks separate the **sidereal name** from the **tropical event** ([[uttarayana-dakshinayana|Uttarayana and Dakshinayana]]).",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "दशैँ, तिहारजस्ता चाडपर्व चान्द्र तिथिमा पर्छन्, तर चान्द्र मास कुन हो भन्ने कुरा त्यसभित्र पर्ने **निरयन सङ्क्रान्ति**ले तय गर्छ, र सङ्क्रान्ति नपर्ने महिनालाई अधिक मास बनाइन्छ ([[lunar-month|चान्द्र मास]])। त्यसैले चाडपर्व पनि निरयन सङ्क्रान्तिसँगै बाँधिएका छन् र ऋतुको तुलनामा करिब ७१ वर्षमा १ दिनको दरले पछि सर्छन्।",
+            en: "Festivals such as Dashain and Tihar fall on lunar tithis, but which lunar month it is gets decided by the **sidereal sankranti** that falls inside it, and a month with no sankranti becomes an adhik maas ([[lunar-month|the lunar month]]). So the festivals are tied to the sidereal sankrantis too, and move later against the seasons at about 1 day in 71 years.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "ऋतुका नाम पनि यसै कारण ढिलो देखिन्छन्। ग्रन्थमा “वसन्त = चैत–बैशाख” भनिएको छ, तर ऋतुको वसन्त (सूर्य सायन मीन–मेषमा) आज चैत लाग्नुभन्दा करिब तीन हप्ता अगाडि, फागुनको दोस्रो हप्तातिरै सुरु हुन्छ ([[ritu-drift|ऋतु किन सर्छ]])।",
+            en: "The season names look late for the same reason. The texts say \"spring = Chait–Baisakh\", but the season of spring (the Sun in tropical Meena–Mesha) now begins about three weeks before Chait does, in the second week of Phagun ([[ritu-drift|why the ṛtus drift]]).",
+          },
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "सम्झनुहोस्: **नाम** निरयन (तारा) बाट आउँछ, **ऋतु** सायन (पृथ्वीको झुकाव) बाट। माघे सङ्क्रान्ति र वास्तविक उत्तरायणबीचको तीन हप्ता यही दुईको फरक हो।",
+            en: "Remember: the **names** come from nirayana (the stars), the **seasons** from sāyana (Earth's tilt). The three weeks between Maghe Sankranti and the real Uttarayana are exactly that difference.",
+          },
+        },
+      ],
+    },
+    {
+      title: { ne: "भविष्यमा विक्रम सम्वत् कहाँ पुग्छ?", en: "Where is Bikram Sambat heading?" },
       eyebrow: "Centuries ahead",
       blocks: [
         {
           kind: "lede",
+          text: {
+            ne: "एउटै पात्रो दुई तरिकाले चलाउँदा नतिजा कति फरक हुन्छ? तलको तालिकाले आजको वि.सं. (निरयन) लाई सायन वर्षमा चलाइएको काल्पनिक वि.सं.सँग दाँज्छ।",
+            en: "How different are the results when the same calendar runs on each year? The table compares today's BS (sidereal) with an imagined BS run on the tropical year.",
+          },
+        },
+        {
+          kind: "table",
+          headers: [
+            { ne: "कुरा", en: "Aspect" },
+            { ne: "सायन वर्ष मानेमा", en: "If tropical (sāyana)" },
+            { ne: "निरयन वर्ष (आजको वि.सं.)", en: "Sidereal (today's BS)" },
+          ],
+          rows: [
+            [
+              { ne: "वर्षको लम्बाइ", en: "Year length" },
+              { ne: "३६५.२४२२ दिन", en: "365.2422 days" },
+              { ne: "३६५.२५६४ दिन (सिद्धान्तमा ३६५.२५८८)", en: "365.2564 days (365.2588 in Siddhanta)" },
+            ],
+            [
+              { ne: "बैशाख १ गते", en: "Baisakh 1" },
+              { ne: "सधैँ २०–२१ मार्च, शताब्दीऔँसम्म नसर्ने", en: "Always 20–21 March, unmoving for centuries" },
+              { ne: "आज १३–१५ अप्रिल, ~७१ वर्षमा १ दिन पछि सर्दै", en: "13–15 April today, 1 day later every ~71 years" },
+            ],
+            [
+              { ne: "ऋतुसँग सम्बन्ध", en: "Tie to the seasons" },
+              { ne: "स्थिर — बैशाख सधैँ वसन्तको सुरु", en: "Fixed — Baisakh always opens spring" },
+              { ne: "सर्दै — आज झन्डै २४ दिन ढिला", en: "Drifting — about 24 days late today" },
+            ],
+            [
+              { ne: "तारा र नक्षत्रसँग सम्बन्ध", en: "Tie to the stars and nakshatras" },
+              { ne: "सर्दै — ७२ वर्षमा १°", en: "Drifting — 1° in 72 years" },
+              { ne: "स्थिर — बैशाख १ मा सूर्य सधैँ अश्विनीको सुरुमा", en: "Fixed — on Baisakh 1 the Sun is always at the start of Ashvini" },
+            ],
+            [
+              { ne: "माघे सङ्क्रान्ति", en: "Maghe Sankranti" },
+              { ne: "२१–२२ डिसेम्बर — वास्तविक उत्तरायणकै दिन", en: "21–22 December — on the real turn north" },
+              { ne: "१४–१५ जनवरी — अयनान्तभन्दा ~२४ दिन पछि", en: "14–15 January — ~24 days after the solstice" },
+            ],
+            [
+              { ne: "चाडपर्व (दशैँ, तिहार…)", en: "Festivals (Dashain, Tihar…)" },
+              { ne: "सङ्क्रान्ति २४ दिन चाँडो हुँदा धेरैजसो वर्ष (करिब ५ मा ४) एक चान्द्र मास अघि", en: "With sankrantis 24 days earlier, most years (about 4 in 5) one lunar month earlier" },
+              { ne: "आजकै समय — असोज–कात्तिकतिर", en: "Where they are now — around Asoj–Kartik" },
+            ],
+            [
+              { ne: "जन्म राशि", en: "Birth rashi" },
+              { ne: "पश्चिमी (सायन) राशि — धेरैको एक राशि पछि", en: "The Western (tropical) sign — one sign later for most people" },
+              { ne: "वैदिक (निरयन) राशि", en: "The Vedic (sidereal) sign" },
+            ],
+            [
+              { ne: "ई.सं.सँगको नक्सा", en: "Mapping to AD" },
+              { ne: "झन्डै स्थिर — भारतको राष्ट्रिय (शक) पात्रोजस्तै", en: "Nearly fixed — like India's national (Saka) calendar" },
+              { ne: "हरेक वर्ष फरक, बिस्तारै सर्दै", en: "Different every year, slowly sliding" },
+            ],
+          ],
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "सायन सौर पात्रो काल्पनिक मात्र होइन। इरानको सौर पात्रोको नयाँ वर्ष (नौरोज) वसन्त विषुवमै पर्छ, र भारतले १९५७ मा अपनाएको राष्ट्रिय पात्रोको चैत्र १ सधैँ २२ मार्च (लीप वर्षमा २१) मा पर्छ। दुवैले ऋतु स्थिर राखे, तर ताराको सम्बन्ध छाडे।",
+            en: "A tropical solar calendar is not just hypothetical. Iran's solar calendar opens its year (Nowruz) at the vernal equinox, and the national calendar India adopted in 1957 puts Chaitra 1 on 22 March (21 in leap years) every year. Both fixed the seasons and let go of the stars.",
+          },
+        },
+        {
+          kind: "para",
           text: {
             ne: "वि.सं. निरयन नै रहे बैशाख १ ई.सं.मा पछि सर्दै जान्छ। अयन चलनको दर अलि बदलिने हुनाले यी मिति अनुमान हुन्, तर दिशा निश्चित छ।",
             en: "If BS stays sidereal, Baisakh 1 keeps moving later in AD. The rate of precession itself varies a little, so these dates are estimates — but the direction is certain.",
