@@ -1,4 +1,5 @@
 import { Minus, Plus, RotateCcw } from "lucide-react";
+import type { ReactNode } from "react";
 import type { useSvgZoom } from "./use-svg-zoom";
 
 /**
@@ -9,15 +10,19 @@ export function ZoomBar({
   zoom,
   hint,
   labels,
+  extra = [],
 }: {
   zoom: ReturnType<typeof useSvgZoom>;
   hint: string;
   labels: { in: string; out: string; reset: string };
+  /** More buttons after the zoom ones, e.g. fullscreen. */
+  extra?: { label: string; icon: ReactNode; onClick: () => void }[];
 }) {
   const buttons = [
     { label: labels.in, icon: <Plus size={14} />, onClick: zoom.zoomIn },
     { label: labels.out, icon: <Minus size={14} />, onClick: zoom.zoomOut },
     ...(zoom.scale > 1 ? [{ label: labels.reset, icon: <RotateCcw size={13} />, onClick: zoom.reset }] : []),
+    ...extra,
   ];
   return (
     <div className="mt-1 flex items-center justify-between gap-2">

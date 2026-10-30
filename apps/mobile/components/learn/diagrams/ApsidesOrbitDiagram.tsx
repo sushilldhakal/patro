@@ -189,9 +189,9 @@ export function ApsidesOrbitDiagram() {
     initial: NOW_BS,
     min: Y_MIN,
     max: Y_MAX,
-    /* ~5°/s for the oval, a lap in ~17 s for the season Earths; starts playing so the orbit is seen moving. */
-    speed: 1500,
-    autoPlay: true,
+    /* ~2°/s for the oval, a lap in ~43 s for the season Earths; waits for the play button. */
+    speed: 600,
+    autoPlay: false,
   });
 
   const copy = useMemo<Copy>(

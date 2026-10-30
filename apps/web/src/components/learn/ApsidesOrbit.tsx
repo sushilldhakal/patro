@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Maximize2, Minimize2, Pause, Play } from "lucide-react";
+import { cn } from "@vedic-patro/design-tokens/cn";
 import { illustration } from "@vedic-patro/design-tokens";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
@@ -31,6 +33,7 @@ import {
 } from "@/lib/learn-classes";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
+import { useFullscreen } from "@/lib/use-fullscreen";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 import { RashiGlyph } from "./rashi-icons";
 import { useSvgZoom } from "./use-svg-zoom";
@@ -55,8 +58,8 @@ const CE_TO_BS = 57;
 /* Wide enough for the orbit's oval to turn almost twice round as it plays. */
 const Y_MIN = -100000;
 const Y_MAX = 100000;
-/** Playback, years per second: the oval turns ~5°/s, the season Earths a lap in ~17 s. */
-const SPEED = 1500;
+/** Playback, years per second: the oval turns ~2°/s, the season Earths a lap in ~43 s. */
+const SPEED = 600;
 /** Beyond this many years from today the constant-rate model is only indicative. */
 const RELIABLE_YEARS = 20000;
 const TILT = 23.44;
@@ -108,24 +111,8 @@ export function ApsidesOrbit() {
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
   const svgRef = useRef<SVGSVGElement>(null);
-  const zoom = useSvgZoom(svgRef, VB.W, VB.H);
-
-  /* Start playing the first time the diagram scrolls into view, so the orbit is seen moving. */
-  useEffect(() => {
-    const el = svgRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setPlaying(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.4 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const { active: fullscreen, ref: overlayRef, toggle: toggleFullscreen } = useFullscreen();
+  const zoom = useSvgZoom(svgRef, VB.W, VB.H, 4, fullscreen);
 
   useEffect(() => {
     if (!playing) return;
@@ -228,9 +215,9 @@ export function ApsidesOrbit() {
     );
   };
 
-  return (
-    <div className={tmCardPadLg}>
-      <svg ref={svgRef} viewBox={zoom.viewBox} className={edSvg()} role="img" aria-label={t("learn.apsides.aria")} {...zoom.bind}>
+  const body = (
+    <>
+      <svg ref={svgRef} viewBox={zoom.viewBox} className={cn(edSvg(), fullscreen && "h-full min-h-[50vh] flex-1")} role="img" aria-label={t("learn.apsides.aria")} {...zoom.bind}>
         <defs>
           <radialGradient id="ao-sun" cx="50%" cy="45%" r="60%">
             <stop offset="0%" stopColor={illustration.amber92} />
@@ -291,13 +278,14 @@ export function ApsidesOrbit() {
           const [ex, ey] = projPlane(alphaOf(lon), f);
           const lx = ex;
           const ly = ey + 38;
-          const [vx, vy] = axisVec(0.28);
+          const [vx, vy] = axisVec(0.34);
           /* Lean the globe image the way the drawn axis leans on screen. */
           const lean = Math.atan2(vx, -vy) / D2R;
           return (
             <g key={s.key}>
               <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
-              <EarthGlobeImage cx={ex} cy={ey} r={26} tilt={lean} rim={false} />
+              {/* The globe fills only the middle half of earth_rotating.svg, so r={52} draws a globe of radius 26. */}
+              <EarthGlobeImage cx={ex} cy={ey} r={52} tilt={lean} rim={false} />
               <text x={ex + vx} y={ey + vy - 5} fill={dim} textAnchor="middle" style={{ font: "700 9px var(--pn-font)" }}>N</text>
               <text x={lx} y={ly} fill={red} textAnchor="middle" dominantBaseline="central" style={{ font: "700 11.5px var(--pn-font)" }}>
                 {t(s.key)}
@@ -311,7 +299,7 @@ export function ApsidesOrbit() {
         <g transform="translate(14 14)">
           <line x1={0} y1={6} x2={22} y2={6} stroke={orbitCol} strokeWidth={2.4} />
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_orbit")}</text>
-          <EarthGlobeImage cx={11} cy={24} r={7} tilt={0} rim={false} />
+          <EarthGlobeImage cx={11} cy={24} r={14} tilt={0} rim={false} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_earths")}</text>
           <circle cx={6} cy={42} r={5} fill={peri} />
           <circle cx={18} cy={42} r={3.5} fill={aph} />
@@ -324,7 +312,18 @@ export function ApsidesOrbit() {
           ) : null}
         </g>
       </svg>
-      <ZoomBar zoom={zoom} hint={t("learn.zoom_hint")} labels={{ in: t("ui.learn.zoom_in"), out: t("ui.learn.zoom_out"), reset: t("ui.learn.reset_view") }} />
+      <ZoomBar
+        zoom={zoom}
+        hint={t("learn.zoom_hint")}
+        labels={{ in: t("ui.learn.zoom_in"), out: t("ui.learn.zoom_out"), reset: t("ui.learn.reset_view") }}
+        extra={[
+          {
+            label: fullscreen ? t("common.exit_fullscreen") : t("common.fullscreen"),
+            icon: fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />,
+            onClick: toggleFullscreen,
+          },
+        ]}
+      />
 
       <div className={edControls}>
         <div className={edReadout}>
@@ -376,7 +375,28 @@ export function ApsidesOrbit() {
       {Math.abs(yearCe - 2026) > RELIABLE_YEARS ? (
         <p className="mt-2 text-center text-xs font-semibold text-muted-foreground">{t("learn.apsides.far_note")}</p>
       ) : null}
-      <p className={tmCardCap}>{t("learn.apsides.caption")}</p>
+    </>
+  );
+
+  if (!fullscreen) {
+    return (
+      <div className={tmCardPadLg}>
+        {body}
+        <p className={tmCardCap}>{t("learn.apsides.caption")}</p>
+      </div>
+    );
+  }
+
+  /* Portalled to <body> to escape the article's stacking context (see TwoSystemsStudy). */
+  return (
+    <div className={tmCardPadLg}>
+      <p className={tmCardCap}>{t("learn.playground.fullscreen_notice")}</p>
+      {createPortal(
+        <div ref={overlayRef} className="tm-tokens fixed inset-0 z-[100] overflow-auto overscroll-contain">
+          <div className="flex min-h-full flex-col bg-[var(--tm-card)] p-3">{body}</div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

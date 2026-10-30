@@ -14,7 +14,8 @@ import type { PointerEvent as ReactPointerEvent, RefObject } from "react";
 type View = { s: number; cx: number; cy: number };
 type Gesture = { dist: number; mid: { x: number; y: number }; view: View };
 
-export function useSvgZoom(svgRef: RefObject<SVGSVGElement | null>, width: number, height: number, maxScale = 4) {
+/** `mount` changes when the svg is remounted elsewhere (a fullscreen portal), so the wheel listener moves with it. */
+export function useSvgZoom(svgRef: RefObject<SVGSVGElement | null>, width: number, height: number, maxScale = 4, mount?: unknown) {
   const viewRef = useRef<View>({ s: 1, cx: width / 2, cy: height / 2 });
   const [view, setViewState] = useState<View>(() => ({ s: 1, cx: width / 2, cy: height / 2 }));
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -134,7 +135,7 @@ export function useSvgZoom(svgRef: RefObject<SVGSVGElement | null>, width: numbe
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [svgRef, norm, setView, zoomFrom]);
+  }, [svgRef, norm, setView, zoomFrom, mount]);
 
   const vw = width / view.s;
   const vh = height / view.s;
