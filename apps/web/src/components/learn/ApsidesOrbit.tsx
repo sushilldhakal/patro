@@ -290,14 +290,14 @@ export function ApsidesOrbit() {
           const f = orbitR(lon, periLon);
           const [ex, ey] = projPlane(alphaOf(lon), f);
           const lx = ex;
-          const ly = ey + 25;
-          const [vx, vy] = axisVec(0.15);
+          const ly = ey + 38;
+          const [vx, vy] = axisVec(0.28);
           /* Lean the globe image the way the drawn axis leans on screen. */
           const lean = Math.atan2(vx, -vy) / D2R;
           return (
             <g key={s.key}>
               <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
-              <EarthGlobeImage cx={ex} cy={ey} r={13} tilt={lean} />
+              <EarthGlobeImage cx={ex} cy={ey} r={26} tilt={lean} rim={false} />
               <text x={ex + vx} y={ey + vy - 5} fill={dim} textAnchor="middle" style={{ font: "700 9px var(--pn-font)" }}>N</text>
               <text x={lx} y={ly} fill={red} textAnchor="middle" dominantBaseline="central" style={{ font: "700 11.5px var(--pn-font)" }}>
                 {t(s.key)}
@@ -311,7 +311,7 @@ export function ApsidesOrbit() {
         <g transform="translate(14 14)">
           <line x1={0} y1={6} x2={22} y2={6} stroke={orbitCol} strokeWidth={2.4} />
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_orbit")}</text>
-          <EarthGlobeImage cx={11} cy={24} r={6} tilt={0} />
+          <EarthGlobeImage cx={11} cy={24} r={7} tilt={0} rim={false} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_earths")}</text>
           <circle cx={6} cy={42} r={5} fill={peri} />
           <circle cx={18} cy={42} r={3.5} fill={aph} />

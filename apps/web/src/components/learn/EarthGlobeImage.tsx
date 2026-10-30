@@ -14,6 +14,8 @@ interface Props {
   glowPad?: number;
   /** Axial tilt in degrees — applied to the asset; rotation is built into earth_rotating.svg. */
   tilt?: number;
+  /** Outline ring round the globe. */
+  rim?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ export const EarthGlobeImage = memo(function EarthGlobeImage({
   glowClassName = hoEarthGlow,
   glowPad = 14,
   tilt = EARTH_AXIAL_TILT,
+  rim = true,
 }: Props) {
   const uid = useId().replace(/:/g, "");
   const clipId = `earth-clip-${uid}`;
@@ -58,7 +61,7 @@ export const EarthGlobeImage = memo(function EarthGlobeImage({
           aria-hidden="true"
         />
       </g>
-      <circle cx={cx} cy={cy} r={r} fill="none" className={earthGlobeRim} />
+      {rim && <circle cx={cx} cy={cy} r={r} fill="none" className={earthGlobeRim} />}
     </>
   );
 });
