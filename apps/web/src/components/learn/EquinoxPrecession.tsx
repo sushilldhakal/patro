@@ -96,6 +96,10 @@ const AP_MAX = 50000;
 const CE_TO_BS = 57;
 /** Beyond this many years from today the constant-rate model is only indicative. */
 const AP_RELIABLE_YEARS = 20000;
+/* The orbit's oval in apsides mode, in units of the ecliptic radius. Earth's
+   real eccentricity (0.017) would look like a circle, so it is exaggerated. */
+const ORBIT_E = 0.3;
+const ORBIT_A = 0.94 / (1 + ORBIT_E);
 /** perihelionNearestCardinal's 0–3, as ui keys (December solstice first). */
 const SEASON_POINT_KEYS = [
   "learn.study.equinox.hemanta_solstice",
@@ -124,6 +128,7 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
   const yMax = apsides ? AP_MAX : Y_MAX;
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
+  const [seasonFrame, setSeasonFrame] = useState(true);
   const raf = useRef(0);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoom = useSvgZoom(svgRef, VB.W, VB.H);
@@ -149,7 +154,11 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
     const eqSid = norm360((BS_AYAN_ZERO - year) * RATE);
     const ayanamsha = (year - BS_AYAN_ZERO) * RATE; // shift from मेष ०°
     const sinceBs0 = year * RATE; // shift since वि.सं. ०
-    const alphaEq = alphaOf(eqSid);
+    /* "Seasons fixed" view: turn the whole sky so the equinox stays where it is
+       today — then the stars drift and the orbit's oval visibly swings round
+       the seasons once in ~21,000 years. */
+    const rot = apsides && seasonFrame ? norm360((BS_AYAN_ZERO - nowBs) * RATE) - eqSid : 0;
+    const alphaEq = alphaOf(eqSid + rot);
 
     // celestial equator polyline: ecliptic circle tilted by ε about the equinox axis
     const ce = Math.cos(EPS * D2R);
@@ -175,8 +184,8 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
     // Earth's axis (celestial north pole) = ecliptic north tilted ε about equinox axis
     const poleVec: [number, number, number] = [sAeq * se, -cAeq * se, ce];
 
-    return { eqSid, ayanamsha, sinceBs0, alphaEq, equatorPath, poleVec };
-  }, [year]);
+    return { eqSid, ayanamsha, sinceBs0, alphaEq, equatorPath, poleVec, rot };
+  }, [year, apsides, seasonFrame, nowBs]);
 
   const eqRashi = RASHI[rashiIndex(model.eqSid)];
 
@@ -245,9 +254,9 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
         <ellipse cx={CX} cy={CY} rx={RX * bandInner} ry={RY * bandInner} fill={card} stroke="var(--tm-border)" strokeWidth={1} />
         {RASHI.map((name, i) => {
           const a0 = i * 30;
-          const [ix, iy] = projPlane(alphaOf(a0), bandInner);
-          const [ox, oy] = projPlane(alphaOf(a0), bandOuter);
-          const [lx, ly] = projPlane(alphaOf(a0 + 15), (bandInner + bandOuter) / 2);
+          const [ix, iy] = projPlane(alphaOf(a0 + model.rot), bandInner);
+          const [ox, oy] = projPlane(alphaOf(a0 + model.rot), bandOuter);
+          const [lx, ly] = projPlane(alphaOf(a0 + 15 + model.rot), (bandInner + bandOuter) / 2);
           const here = i === rashiIndex(model.eqSid);
           const col = here ? amber : dim;
           return (
@@ -299,13 +308,23 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
           ε {fmtDeg(EPS)}
         </text>
 
-        {/* perihelion / aphelion — points on the Sun's path (yellow), moved by the orbit, not the axis */}
+        {/* perihelion / aphelion — the ends of the orbit's oval, which the orbit (not the axis) turns.
+            Drawn geocentrically and exaggerated: the Sun comes nearest Earth at perihelion. */}
         {apsides ? (() => {
-          const a = alphaOf(periSid);
-          const [px, py] = projPlane(a, 1);
-          const [qx, qy] = projPlane(a + 180, 1);
-          const [plx, ply] = projPlane(a, 0.72);
-          const [qlx, qly] = projPlane(a + 180, 0.72);
+          const a = alphaOf(periSid + model.rot);
+          const fPeri = ORBIT_A * (1 - ORBIT_E);
+          const fAph = ORBIT_A * (1 + ORBIT_E);
+          const [px, py] = projPlane(a, fPeri);
+          const [qx, qy] = projPlane(a + 180, fAph);
+          const [plx, ply] = projPlane(a, fPeri + 0.15);
+          const [qlx, qly] = projPlane(a + 180, fAph - 0.2);
+          /* The oval itself: Earth at one focus, its near end toward perihelion. */
+          const orbitPath = Array.from({ length: 91 }, (_, k) => {
+            const nu = k * 4;
+            const r = (ORBIT_A * (1 - ORBIT_E * ORBIT_E)) / (1 + ORBIT_E * Math.cos(nu * D2R));
+            const [x, y] = projPlane(a + nu, r);
+            return `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+          }).join(" ");
           const peri = illustration.orange53;
           const aph = illustration.violet65;
           /* The gap from the nearest equinox/solstice to perihelion, along the Sun's path. */
@@ -314,15 +333,16 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
           gap = ((gap % 360) + 540) % 360 - 180;
           const steps = Math.max(2, Math.ceil(Math.abs(gap) / 2));
           const arc = Array.from({ length: steps + 1 }, (_, k) => {
-            const [x, y] = projPlane(alphaOf(cardSid + (gap * k) / steps), 1);
+            const [x, y] = projPlane(alphaOf(cardSid + (gap * k) / steps + model.rot), 1);
             return `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
           }).join(" ");
           /* Outside the yellow ring, on a pill, so it never sits on the perihelion label. */
-          const [gx, gy] = projPlane(alphaOf(cardSid + gap / 2), 1.11);
+          const [gx, gy] = projPlane(alphaOf(cardSid + gap / 2 + model.rot), 1.11);
           const gapText = t("learn.apsides.gap_days", { days: N(Math.abs(periSeason.days)) });
           return (
             <g>
-              <line x1={px} y1={py} x2={qx} y2={qy} stroke={peri} strokeWidth={2} strokeDasharray="7 5" opacity={0.7} />
+              <path d={orbitPath} fill={peri} fillOpacity={0.06} stroke={peri} strokeWidth={2.2} opacity={0.85} />
+              <line x1={px} y1={py} x2={qx} y2={qy} stroke={peri} strokeWidth={1.6} strokeDasharray="7 5" opacity={0.6} />
               {Math.abs(periSeason.days) >= 1 ? (
                 <>
                   <path d={arc} fill="none" stroke={peri} strokeWidth={9} strokeLinecap="round" opacity={0.35} />
@@ -474,6 +494,19 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
               onChange={(e) => { setPlaying(false); setYear(+e.target.value); }} />
           </div>
         </div>
+
+        {apsides ? (
+          <div className={edPresets}>
+            {[
+              { key: "learn.apsides.frame_seasons", on: true },
+              { key: "learn.apsides.frame_stars", on: false },
+            ].map((f) => (
+              <button key={f.key} type="button" className={edPreset(seasonFrame === f.on)} onClick={() => setSeasonFrame(f.on)}>
+                {t(f.key)}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {apsides ? (
           <div className={edPresets}>
