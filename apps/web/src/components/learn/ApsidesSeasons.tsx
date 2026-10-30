@@ -113,7 +113,7 @@ function Scene({
     if (fitted.current !== key) {
       fitted.current = key;
       const aspect = size.width / Math.max(size.height, 1);
-      const d = Math.max(3.6, 1.95 / (Math.tan((45 / 2) * RAD) * aspect));
+      const d = Math.max(4.5, 2.1 / (Math.tan((45 / 2) * RAD) * aspect));
       camera.position.copy(CAMERA_DIR).multiplyScalar(d);
       camera.lookAt(0, 0, 0);
     }
