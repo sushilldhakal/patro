@@ -170,8 +170,8 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "Hourglass",
     title: { ne: "सायन र निरयन वर्ष", en: "Tropical and Sidereal Year" },
     summary: {
-      ne: "ऋतुको वर्ष र ताराको वर्षबीच २० मिनेटको फरक किन, वि.सं.ले कुन मान्छ, र प्रत्येक मान्दा बैशाख १, सङ्क्रान्ति र चाडपर्वमा के नतिजा आउँछ।",
-      en: "Why the year of the seasons and the year of the stars differ by 20 minutes, which one Bikram Sambat keeps, and what each would do to Baisakh 1, the sankrantis and the festivals.",
+      ne: "ऋतुले नापिने सायन वर्ष र ताराले नापिने निरयन वर्ष — अर्थ, राम्रा र कमजोर पक्ष, २० मिनेटको फरक किन, वि.सं.ले कुन मान्छ, र बैशाख १, सङ्क्रान्ति र चाडपर्वमा त्यसको नतिजा।",
+      en: "The tropical year (measured by the seasons) and the sidereal year (measured by the stars) — what each means, their pros and cons, why they differ by 20 minutes, which one Bikram Sambat keeps, and what that does to Baisakh 1, the sankrantis and the festivals.",
     },
   },
   {
