@@ -34,6 +34,7 @@ import {
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { useFullscreen } from "@/lib/use-fullscreen";
+import { EarthSphereGlobe } from "./EarthSphereGlobe";
 import { EarthTextureGlobe } from "./EarthTextureGlobe";
 import { RashiGlyph } from "./rashi-icons";
 import { useSvgZoom } from "./use-svg-zoom";
@@ -76,6 +77,8 @@ const CY = 372;
 const RX = 270;
 /* Seen from well above the plane, so the orbit's oval is not flattened away. */
 const RY = 196;
+/** The camera's height above the orbit plane that gives the RY/RX squash (radians). */
+const VIEW_ELEV = Math.asin(RY / RX);
 const BAND_IN = 1.06;
 const BAND_OUT = 1.4;
 
@@ -153,12 +156,14 @@ export function ApsidesOrbit() {
   const summer = northernSummer(yearCe);
 
   /* Earth's axis keeps one direction in space: its north end leans toward where the Sun is at the June solstice. */
+  /* World coords: x right, y into the picture along the orbit plane, z the orbit's north. The axis
+     is worked out from precession alone, independent of the orbit's turning oval. */
   const axisA = alphaOf(eqSid + 90) * D2R;
-  /* The globes are drawn side-on, so lean them by the axis's side-on tilt (never more than the
-     real 23.44°). Leaning by the axis as seen from above swung them past 60°, and the spinning
-     map then ran north–south instead of west–east. */
-  const lean = Math.atan2(Math.sin(TILT * D2R) * Math.cos(axisA), Math.cos(TILT * D2R)) / D2R;
-  const axisVec = (len: number): [number, number] => [len * Math.sin(lean * D2R), -len * Math.cos(lean * D2R)];
+  const axis: [number, number, number] = [
+    Math.sin(TILT * D2R) * Math.cos(axisA),
+    Math.sin(TILT * D2R) * Math.sin(axisA),
+    Math.cos(TILT * D2R),
+  ];
 
   const ovalPath = (pLon: number) =>
     Array.from({ length: 121 }, (_, k) => {
@@ -278,12 +283,10 @@ export function ApsidesOrbit() {
           const [ex, ey] = projPlane(alphaOf(lon), f);
           const lx = ex;
           const ly = ey + 38;
-          const [vx, vy] = axisVec(40);
+          const a = alphaOf(lon) * D2R;
           return (
             <g key={s.key}>
-              <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
-              <EarthTextureGlobe cx={ex} cy={ey} r={26} tilt={lean} sun={[CX, CY]} />
-              <text x={ex + vx} y={ey + vy - 5} fill={dim} textAnchor="middle" style={{ font: "700 9px var(--pn-font)" }}>N</text>
+              <EarthSphereGlobe cx={ex} cy={ey} r={26} axis={axis} sun={[-Math.cos(a), -Math.sin(a), 0]} elev={VIEW_ELEV} labelColor={dim} />
               <text x={lx} y={ly} fill={red} textAnchor="middle" dominantBaseline="central" style={{ font: "700 11.5px var(--pn-font)" }}>
                 {t(s.key)}
               </text>
