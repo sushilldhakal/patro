@@ -21,7 +21,9 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
+import { illustration } from "@vedic-patro/design-tokens";
 import {
+  CLIMATIC_PRECESSION_YEARS,
   northernSummer,
   perihelionBsDate,
   perihelionNearestCardinal,
@@ -35,8 +37,12 @@ const CYCLE = Math.round(360 / RATE); // ~25,772 years
 const R = 0.5;
 const CE_TO_BS = 57;
 /* Apsides variant: from the last ice age to beyond the next perihelion-in-June. */
-const AP_MIN = -11000;
-const AP_MAX = 14000;
+const AP_MIN = -50000;
+const AP_MAX = 50000;
+/** Beyond this many years from today the constant-rate model is only indicative. */
+const AP_RELIABLE_YEARS = 20000;
+/** Aphelion's colour — violet, so it never reads as part of a blue ring. */
+const APHELION_COLOR = illustration.violet65;
 const SEASON_POINT_KEYS = [
   "learn.study.equinox.hemanta_solstice",
   "learn.study.spring_equinox",
@@ -90,7 +96,7 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
           projector.push({ id: `card-${k}`, text, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid + k * 90, R * 1.22, 0.08));
         });
         projector.push({ id: "peri", text: copy.perihelion ?? "", color: DIAGRAM_COLOR.tropical, size: 10 }, ringPoint(periSid, R * 0.55, 0.08));
-        projector.push({ id: "aph", text: copy.aphelion ?? "", color: DIAGRAM_LABEL_COLOR.earth, size: 10 }, ringPoint(periSid + 180, R * 0.55, 0.08));
+        projector.push({ id: "aph", text: copy.aphelion ?? "", color: APHELION_COLOR, size: 10 }, ringPoint(periSid + 180, R * 0.55, 0.08));
       } else {
         projector.push({ id: "equinox", text: copy.equinox, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid, R * 1.2, 0.1));
       }
@@ -140,13 +146,14 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
               <cylinderGeometry args={[0.004, 0.004, R * 1.6, 6]} />
               <meshBasicMaterial color={DIAGRAM_COLOR.tropical} transparent opacity={0.8} />
             </mesh>
+            {/* Perihelion drawn larger than aphelion — the Sun is closer there. */}
             <mesh position={ringPoint(0, R * 0.8, 0.03)}>
-              <sphereGeometry args={[0.034, 16, 16]} />
+              <sphereGeometry args={[0.04, 16, 16]} />
               <meshBasicMaterial color={DIAGRAM_COLOR.tropical} />
             </mesh>
             <mesh position={ringPoint(180, R * 0.8, 0.03)}>
-              <sphereGeometry args={[0.034, 16, 16]} />
-              <meshBasicMaterial color={DIAGRAM_LABEL_COLOR.earth} />
+              <sphereGeometry args={[0.026, 16, 16]} />
+              <meshBasicMaterial color={APHELION_COLOR} />
             </mesh>
           </group>
         </>
@@ -234,7 +241,7 @@ export function EquinoxPrecessionApsidesDiagram() {
     initial: 2083,
     min: AP_MIN,
     max: AP_MAX,
-    speed: 900,
+    speed: 2500,
   });
   const copy = useEquinoxCopy(true);
 
@@ -261,7 +268,8 @@ export function EquinoxPrecessionApsidesDiagram() {
       legend={[
         { color: DIAGRAM_COLOR.sidereal, label: copy.ring },
         { color: DIAGRAM_LABEL_COLOR.warn, label: t("learn.apsides.legend_cross") },
-        { color: DIAGRAM_COLOR.tropical, label: t("learn.apsides.legend_apsides") },
+        { color: DIAGRAM_COLOR.tropical, label: t("learn.apsides.perihelion") },
+        { color: APHELION_COLOR, label: t("learn.apsides.aphelion") },
       ]}
       readouts={[
         { k: t("holidays.bs_year"), v: digits(Math.round(year)) },
@@ -285,15 +293,21 @@ export function EquinoxPrecessionApsidesDiagram() {
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
+        { label: t("learn.apsides.preset_prev_cycle"), value: Math.round(2083 - CLIMATIC_PRECESSION_YEARS) },
         { label: t("learn.apsides.preset_ice"), value: -9000 + CE_TO_BS },
         { label: t("learn.apsides.preset_aligned"), value: 1250 + CE_TO_BS },
         { label: t("learn.apsides.preset_today"), value: 2083 },
         { label: t("learn.apsides.preset_future"), value: 11750 + CE_TO_BS },
+        { label: t("learn.apsides.preset_next_cycle"), value: Math.round(2083 + CLIMATIC_PRECESSION_YEARS) },
       ]}
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={150}
-      caption={t("learn.apsides.caption")}
+      caption={
+        Math.abs(yearCe - 2026) > AP_RELIABLE_YEARS
+          ? `${t("learn.apsides.far_note")} ${t("learn.apsides.caption")}`
+          : t("learn.apsides.caption")
+      }
     >
       {({ onLabels }) => (
         <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} apsides />
