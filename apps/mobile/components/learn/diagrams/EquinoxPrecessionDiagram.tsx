@@ -9,14 +9,15 @@
  * (~50.3″/yr backwards), the apsides by the turning orbit (~11.6″/yr forwards),
  * so the angle between them goes round in ~21,000 years (apsidal-precession.ts).
  */
-import { memo, useRef } from "react";
+import { memo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
+import { ChipRow } from "@/components/learn/diagrams/LearnDiagramWidgets";
 import { useDiagramClock, useSceneClock } from "@/components/learn/diagrams/diagram-clock";
 import type { DiagramClockRef } from "@/components/learn/diagrams/diagram-clock";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
-import { RashiRing } from "@/components/learn/diagrams/scene-parts";
+import { OrbitPath, RashiRing, ellipsePoints } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
@@ -35,6 +36,13 @@ const RATE = 50.2879 / 3600; // deg / BS year
 const BS_AYAN_ZERO = 342;
 const CYCLE = Math.round(360 / RATE); // ~25,772 years
 const R = 0.5;
+/* The orbit's oval in the apsides variant: exaggerated (Earth's real 0.017
+   would look round), Earth at one focus, far end just inside the ecliptic. */
+const ORBIT_E = 0.3;
+const ORBIT_A = (R * 0.76) / (1 + ORBIT_E);
+const PERI_R = ORBIT_A * (1 - ORBIT_E);
+const APH_R = ORBIT_A * (1 + ORBIT_E);
+const ORBIT_POINTS = ellipsePoints(ORBIT_A, ORBIT_E, 96, 0.025);
 const CE_TO_BS = 57;
 /* Apsides variant: from the last ice age to beyond the next perihelion-in-June. */
 const AP_MIN = -50000;
@@ -71,14 +79,20 @@ type SceneProps = {
   onLabels?: (labels: DiagramLabel[]) => void;
   copy: SceneCopy;
   apsides?: boolean;
+  /** Turn the whole sky so the equinox stays put: the orbit's oval then swings round the seasons. */
+  seasonFrame?: boolean;
 };
 
-const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onSample, onLabels, copy, apsides }: SceneProps) {
+/** Where the equinox sits among the stars today — the "seasons fixed" view holds it here. */
+const EQ_SID_TODAY = eqSidOf(2083);
+
+const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onSample, onLabels, copy, apsides, seasonFrame }: SceneProps) {
   const readClock = useSceneClock(clock, onSample);
   const projector = useLabelProjector(onLabels);
   const markerRef = useRef<THREE.Mesh>(null);
   const crossRef = useRef<THREE.Group>(null);
   const apsisRef = useRef<THREE.Group>(null);
+  const frameRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     const year = readClock(0.016);
@@ -89,14 +103,16 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
     if (crossRef.current) crossRef.current.rotation.y = -a;
     const periSid = perihelionSiderealLongitude(year - CE_TO_BS, ayanamshaOf(year));
     if (apsisRef.current) apsisRef.current.rotation.y = (-periSid * Math.PI) / 180;
+    const rot = apsides && seasonFrame ? EQ_SID_TODAY - eqSid : 0;
+    if (frameRef.current) frameRef.current.rotation.y = (-rot * Math.PI) / 180;
 
     if (projector.begin()) {
       if (apsides && copy.cardinals) {
         copy.cardinals.forEach((text, k) => {
-          projector.push({ id: `card-${k}`, text, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid + k * 90, R * 1.22, 0.08));
+          projector.push({ id: `card-${k}`, text, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid + k * 90 + rot, R * 1.22, 0.08));
         });
-        projector.push({ id: "peri", text: copy.perihelion ?? "", color: DIAGRAM_COLOR.tropical, size: 10 }, ringPoint(periSid, R * 0.55, 0.08));
-        projector.push({ id: "aph", text: copy.aphelion ?? "", color: APHELION_COLOR, size: 10 }, ringPoint(periSid + 180, R * 0.55, 0.08));
+        projector.push({ id: "peri", text: copy.perihelion ?? "", color: DIAGRAM_COLOR.tropical, size: 10 }, ringPoint(periSid + rot, PERI_R + 0.07, 0.08));
+        projector.push({ id: "aph", text: copy.aphelion ?? "", color: APHELION_COLOR, size: 10 }, ringPoint(periSid + 180 + rot, APH_R - 0.08, 0.08));
       } else {
         projector.push({ id: "equinox", text: copy.equinox, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid, R * 1.2, 0.1));
       }
@@ -108,6 +124,7 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
     <>
       <ambientLight intensity={0.55} />
       <pointLight position={[0, 1.2, 0.4]} intensity={1.3} />
+      <group ref={frameRef}>
       <RashiRing inner={R * 0.8} outer={R} opacity={0.55} />
       {/* the ecliptic circle */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
@@ -140,24 +157,26 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
               </mesh>
             ))}
           </group>
-          {/* Moved by the orbit: perihelion and aphelion. */}
+          {/* Moved by the orbit: the whole oval turns, carrying perihelion (near end) and aphelion (far end). */}
           <group ref={apsisRef}>
-            <mesh rotation={[0, 0, Math.PI / 2]} position={[0, 0.02, 0]}>
-              <cylinderGeometry args={[0.004, 0.004, R * 1.6, 6]} />
-              <meshBasicMaterial color={DIAGRAM_COLOR.tropical} transparent opacity={0.8} />
+            <OrbitPath points={ORBIT_POINTS} color={DIAGRAM_COLOR.tropical} opacity={0.85} radius={0.004} />
+            <mesh rotation={[0, 0, Math.PI / 2]} position={[(PERI_R - APH_R) / 2, 0.02, 0]}>
+              <cylinderGeometry args={[0.0025, 0.0025, PERI_R + APH_R, 6]} />
+              <meshBasicMaterial color={DIAGRAM_COLOR.tropical} transparent opacity={0.5} />
             </mesh>
             {/* Perihelion drawn larger than aphelion — the Sun is closer there. */}
-            <mesh position={ringPoint(0, R * 0.8, 0.03)}>
+            <mesh position={ringPoint(0, PERI_R, 0.03)}>
               <sphereGeometry args={[0.04, 16, 16]} />
               <meshBasicMaterial color={DIAGRAM_COLOR.tropical} />
             </mesh>
-            <mesh position={ringPoint(180, R * 0.8, 0.03)}>
+            <mesh position={ringPoint(180, APH_R, 0.03)}>
               <sphereGeometry args={[0.026, 16, 16]} />
               <meshBasicMaterial color={APHELION_COLOR} />
             </mesh>
           </group>
         </>
       ) : null}
+      </group>
     </>
   );
 });
@@ -244,6 +263,7 @@ export function EquinoxPrecessionApsidesDiagram() {
     speed: 2500,
   });
   const copy = useEquinoxCopy(true);
+  const [seasonFrame, setSeasonFrame] = useState(1);
 
   const yearCe = year - CE_TO_BS;
   const periBs = perihelionBsDate(yearCe, ayanamshaOf(year));
@@ -303,6 +323,17 @@ export function EquinoxPrecessionApsidesDiagram() {
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={150}
+      extraControls={
+        <ChipRow
+          label={t("learn.apsides.view")}
+          options={[
+            { label: t("learn.apsides.frame_seasons"), value: 1 },
+            { label: t("learn.apsides.frame_stars"), value: 0 },
+          ]}
+          value={seasonFrame}
+          onChange={setSeasonFrame}
+        />
+      }
       caption={
         Math.abs(yearCe - 2026) > AP_RELIABLE_YEARS
           ? `${t("learn.apsides.far_note")} ${t("learn.apsides.caption")}`
@@ -310,7 +341,7 @@ export function EquinoxPrecessionApsidesDiagram() {
       }
     >
       {({ onLabels }) => (
-        <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} apsides />
+        <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} apsides seasonFrame={seasonFrame === 1} />
       )}
     </LearnDiagram3D>
   );

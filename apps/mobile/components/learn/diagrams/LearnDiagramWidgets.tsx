@@ -506,7 +506,7 @@ export function SeasonsDiagram() {
 
 /* ── shared control ───────────────────────────────────────────────────── */
 
-function ChipRow({
+export function ChipRow({
   label,
   options,
   value,
