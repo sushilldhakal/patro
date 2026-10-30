@@ -48,6 +48,7 @@ from services.sharing.fb_post_content import (  # noqa: E402
     KATHMANDU_TZ,
     anga_transition_lines,
     card_page_url,
+    dated_page_url,
     d1_caption,
     dated_header,
     image_url,
@@ -110,7 +111,7 @@ def _build_post(kind: str, day: date, payload: dict, fields: dict, location) -> 
     if kind == "d1":
         link = card_page_url("d1", day)
         return link, d1_caption(fields, payload, link)
-    return page_url(), _build_caption(fields, anga_transition_lines(payload, day, location))
+    return dated_page_url(day), _build_caption(fields, anga_transition_lines(payload, day, location))
 
 
 def main() -> int:
@@ -169,13 +170,16 @@ def main() -> int:
             print()
         return 0
 
-    from services.sharing.fb_page import FacebookPostError, post_link
+    from services.sharing.fb_page import FacebookPostError, post_link, warm_link_preview
 
     failed = 0
     for i, kind in enumerate(kinds):
         if i:
             time.sleep(_POST_GAP_S)
         link, caption = _build_post(kind, day, payload, fields, location)
+        # Render the card before Facebook asks for it: it fetches the image the
+        # moment the post is made, and a cold render was too slow for it.
+        warm_link_preview(link)
         try:
             # Link posts (not photo uploads): Facebook crawls `link` for the card, and
             # the card's image is tappable — a plain photo upload never links anywhere.

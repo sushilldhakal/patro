@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -34,6 +35,42 @@ def _graph_post(*, node: str, fields: dict[str, str], timeout: int) -> dict:
         raise FacebookPostError(f"Graph API HTTP {exc.code}: {detail}") from exc
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise FacebookPostError(f"Graph API request failed: {exc}") from exc
+
+
+# Facebook's own link-preview crawler; nginx routes it to /share/panchanga.
+_CRAWLER_UA = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
+_OG_IMAGE = re.compile(r'<meta property="og:image" content="([^"]+)"')
+
+
+def warm_link_preview(link: str, *, timeout: int = 120) -> str | None:
+    """Fetch `link` the way Facebook's crawler will, then its og:image, so the
+    card is rendered and cached before the post asks Facebook to fetch it.
+
+    A day's card is rendered on first request (several seconds), and Facebook
+    fetches it the moment the post is created; a slow first fetch left the
+    posts with an empty grey image. Returns the image URL, or None (logged)
+    when the page or the image does not come back — the post still goes out."""
+    def fetch(url: str) -> tuple[str, bytes]:
+        request = urllib.request.Request(url, headers={"User-Agent": _CRAWLER_UA})
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return response.headers.get_content_type(), response.read()
+
+    try:
+        _, page = fetch(link)
+        match = _OG_IMAGE.search(page.decode("utf-8", errors="replace"))
+        if not match:
+            logger.warning("No og:image on %s — the post will have no picture.", link)
+            return None
+        image = match.group(1).replace("&amp;", "&")
+        kind, body = fetch(image)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        logger.warning("Could not warm the preview of %s: %s", link, exc)
+        return None
+    if not kind.startswith("image/"):
+        logger.warning("og:image %s answered %s, not an image.", image, kind)
+        return None
+    logger.info("Warmed %s (%d bytes).", image, len(body))
+    return image
 
 
 def post_link(

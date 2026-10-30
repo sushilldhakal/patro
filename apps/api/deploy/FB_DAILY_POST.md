@@ -4,13 +4,13 @@
 
 | Kind | Link | Card image |
 |---|---|---|
-| `main` | `/panchanga` | दिन-चक्र chart + anga changes (original post) |
+| `main` | `/panchanga?date=YYYY-MM-DD` | दिन-चक्र chart + anga changes (original post) |
 | `periods` | `/panchanga?card=periods&date=YYYY-MM-DD` | अशुभ समय \| शुभ समय lists |
 | `d1` | `/panchanga?card=d1&date=YYYY-MM-DD` | D1 चक्र + उदयकालिक स्पष्टग्रह (planet positions at sunrise) |
 
 Each kind has its own once-a-day guard file, so a failure in one never blocks or
-duplicates the others. The `date` in the extra links makes each day's URL unique
-(Facebook caches link previews by URL). Settings (all optional, in `.env`):
+duplicates the others. The `date` in every link makes each day's URL unique
+(Facebook caches link previews, image included, by URL). Settings (all optional, in `.env`):
 
 ```ini
 FB_POST_KINDS=main,periods,d1   # which posts to publish; drop a name to stop that post
@@ -65,6 +65,15 @@ string is needed.
 
 The poster is **dormant** until `FB_PAGE_ID` and `FB_PAGE_ACCESS_TOKEN` are set —
 nothing posts without them.
+
+> **Grey box instead of the card image.** Facebook fetches the og:image the
+> moment the post is made. Two things used to make that fetch fail: a day's
+> card is rendered on first request (6–7 s cold), and `vedicpatro.com` 301s to
+> `www.vedicpatro.com`. The poster now fetches every link and its image as
+> Facebook's crawler before posting (`warm_link_preview`, logged as
+> `Warmed …`), and `/share/panchanga` puts og:url / og:image on the host the
+> crawler asked for. Setting `FRONTEND_URL=https://www.vedicpatro.com` in
+> `.env` also takes the redirect out of the posted links.
 
 ## 1. Create a Page access token (one-time, only a Page admin can do this)
 

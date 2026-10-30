@@ -11,6 +11,7 @@ from __future__ import annotations
 import html
 import logging
 from datetime import date
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse, Response
@@ -103,6 +104,23 @@ def og_image(
     )
 
 
+def _site_base(request: Request) -> str:
+    """The site origin for og:url / og:image: the configured one, moved onto the
+    host the crawler actually asked for when that is its www / bare twin.
+
+    vedicpatro.com answers with a 301 to www.vedicpatro.com, so an og:image on
+    the configured bare host cost Facebook a redirect on top of a cold render,
+    and the daily posts came out with a grey box where the card should be. The
+    page that carries the tags was fetched without one, so its host is safe."""
+    base = config.frontend_url() or "https://vedicpatro.com"
+    configured = urlsplit(base)
+    asked = (request.headers.get("host") or "").split(":")[0].lower()
+    bare = (configured.hostname or "").removeprefix("www.")
+    if bare and asked in (bare, f"www.{bare}"):
+        return f"{configured.scheme}://{asked}"
+    return base
+
+
 def _share_html(*, title: str, description: str, page_url: str, image_url: str) -> str:
     """Minimal HTML doc carrying the Open Graph tags a link-preview crawler reads.
     Humans who land here (rare — nginx only routes bots) are redirected to the app."""
@@ -156,7 +174,7 @@ def share_panchanga(
         payload, date_ad=greg.isoformat(), label=label, card=request.query_params.get("card"),
     )
 
-    base = config.frontend_url() or "https://vedicpatro.com"
+    base = _site_base(request)
     qs = request.url.query
     suffix = f"?{qs}" if qs else ""
     page_url = f"{base}/panchanga{suffix}"

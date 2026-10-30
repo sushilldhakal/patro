@@ -151,3 +151,44 @@ def test_post_photo_raises_on_bad_response(monkeypatch):
         fb_page.post_photo_by_url(
             image_url="x", caption="y", page_id="1", access_token="t"
         )
+
+
+def test_warm_link_preview_fetches_page_then_image(monkeypatch):
+    """The poster renders each card before posting, as Facebook's crawler would."""
+    from services.sharing import fb_page
+
+    fetched: list[tuple[str, str]] = []
+
+    class _Resp(io.BytesIO):
+        def __init__(self, body: bytes, kind: str):
+            super().__init__(body)
+            self.headers = type("H", (), {"get_content_type": staticmethod(lambda: kind)})()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(request, timeout=0):
+        fetched.append((request.full_url, request.get_header("User-agent")))
+        if "og-image" in request.full_url:
+            return _Resp(b"\x89PNG", "image/png")
+        page = '<meta property="og:image" content="https://www.vedicpatro.com/api/og-image?card=d1&amp;v=4">'
+        return _Resp(page.encode(), "text/html")
+
+    monkeypatch.setattr(fb_page.urllib.request, "urlopen", fake_urlopen)
+    image = fb_page.warm_link_preview("https://vedicpatro.com/panchanga?card=d1")
+    assert image == "https://www.vedicpatro.com/api/og-image?card=d1&v=4"
+    assert [url for url, _ in fetched] == ["https://vedicpatro.com/panchanga?card=d1", image]
+    assert all("facebookexternalhit" in ua for _, ua in fetched)
+
+
+def test_warm_link_preview_never_raises(monkeypatch):
+    from services.sharing import fb_page
+
+    def broken(request, timeout=0):
+        raise fb_page.urllib.error.URLError("down")
+
+    monkeypatch.setattr(fb_page.urllib.request, "urlopen", broken)
+    assert fb_page.warm_link_preview("https://vedicpatro.com/panchanga") is None

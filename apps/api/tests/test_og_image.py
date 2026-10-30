@@ -76,3 +76,40 @@ def test_share_title_uses_bikram_sambat_date():
     f = og_fields(_payload(), date_ad="2026-07-25", location_name="Kathmandu")
     assert f["bs_line"] and f["bs_line"] in title
     assert f["ad_line"] not in title
+
+
+def test_share_tags_follow_the_host_the_crawler_asked_for(monkeypatch):
+    """vedicpatro.com 301s to www: og:image / og:url on the www host the crawler
+    came in on cost Facebook no redirect. A foreign Host never leaks into them."""
+    from app.main import app
+    import config
+
+    monkeypatch.setattr(config, "frontend_url", lambda: "https://vedicpatro.com")
+    client = TestClient(app)
+    www = client.get("/share/panchanga", params={"date": "2026-07-25"}, headers={"host": "www.vedicpatro.com"})
+    assert 'content="https://www.vedicpatro.com/api/og-image?date=2026-07-25&amp;v=4"' in www.text
+    assert 'property="og:url" content="https://www.vedicpatro.com/panchanga?date=2026-07-25"' in www.text
+    other = client.get("/share/panchanga", params={"date": "2026-07-25"}, headers={"host": "evil.example"})
+    assert "https://vedicpatro.com/api/og-image" in other.text
+    assert "evil.example" not in other.text
+
+
+def test_undated_render_cache_rolls_with_the_kathmandu_day(monkeypatch):
+    """The bare card draws "today": its cache entry must not outlive the day."""
+    from services.sharing import og_screenshot
+
+    class _Day:
+        value = "2026-10-29"
+
+        @classmethod
+        def now(cls, tz=None):
+            from datetime import datetime as real
+
+            return real.fromisoformat(f"{cls.value}T06:00:00")
+
+    monkeypatch.setattr(og_screenshot, "datetime", _Day)
+    first = og_screenshot._cache_path("v=4")
+    dated = og_screenshot._cache_path("date=2026-10-29&v=4")
+    _Day.value = "2026-10-30"
+    assert og_screenshot._cache_path("v=4") != first
+    assert og_screenshot._cache_path("date=2026-10-29&v=4") == dated

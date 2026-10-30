@@ -19,7 +19,9 @@ import io
 import logging
 import threading
 import time
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import config
 
@@ -56,7 +58,11 @@ _RENDER_VERSION = "4"  # 4: D1 card legend fits; 3: added the periods / d1 cards
 
 
 def _cache_path(query: str) -> Path:
-    digest = hashlib.sha256(f"{_RENDER_VERSION}:{query}".encode("utf-8")).hexdigest()[:24]
+    # A query without a date draws "today", so today's Kathmandu date is part of
+    # its key: under the 24 h TTL alone, the daily post's bare /panchanga card
+    # rendered mid-morning yesterday was still served at this morning's sunrise.
+    day = "" if "date=" in query else datetime.now(ZoneInfo("Asia/Kathmandu")).date().isoformat()
+    digest = hashlib.sha256(f"{_RENDER_VERSION}:{day}:{query}".encode("utf-8")).hexdigest()[:24]
     return _CACHE_DIR / f"{digest}.png"
 
 

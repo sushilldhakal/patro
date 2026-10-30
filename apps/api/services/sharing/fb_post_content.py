@@ -46,6 +46,14 @@ def page_url() -> str:
     return f"{config.frontend_url()}/panchanga"
 
 
+def dated_page_url(day: date) -> str:
+    """The main post's link: /panchanga for `day`. Facebook caches a link's
+    preview — image included — by URL, so the same bare /panchanga every
+    morning could keep showing an old or failed card; the date makes each
+    day's link its own, like the extra cards'."""
+    return f"{config.frontend_url()}/panchanga?{urlencode({'date': day.isoformat()})}"
+
+
 def card_page_url(card: str, day: date) -> str:
     """Link for an extra daily post (``periods`` / ``d1``). The ``card`` param picks
     the share image (see services.sharing.og_screenshot / the web og-preview page); ``date``
