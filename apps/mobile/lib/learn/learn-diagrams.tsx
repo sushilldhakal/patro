@@ -41,7 +41,7 @@ import { PakshaStripDiagram } from "@/components/learn/diagrams/PakshaStripDiagr
 import { EclipseSeasonWindowDiagram } from "@/components/learn/diagrams/EclipseSeasonWindowDiagram";
 import { SolarMonthLengthsDiagram } from "@/components/learn/diagrams/SolarMonthLengthsDiagram";
 import { CalendarHierarchyDiagram } from "@/components/learn/diagrams/CalendarHierarchyDiagram";
-import { EquinoxPrecessionDiagram } from "@/components/learn/diagrams/EquinoxPrecessionDiagram";
+import { EquinoxPrecessionApsidesDiagram, EquinoxPrecessionDiagram } from "@/components/learn/diagrams/EquinoxPrecessionDiagram";
 import { RetrogradeLoopDiagram } from "@/components/learn/diagrams/RetrogradeLoopDiagram";
 import { MandaShighraDiagram } from "@/components/learn/diagrams/MandaShighraDiagram";
 import { PrecessionConeDiagram } from "@/components/learn/diagrams/PrecessionConeDiagram";
@@ -66,7 +66,6 @@ function ServerPipelineDiagram() {
 import {
   SunEarthMoonDiagram,
   AyanamshaDiagram,
-  ApsidesDiagram,
   TithiAngleDiagram,
   EclipseDiagram,
 } from "@/components/learn/diagrams/LearnDiagramWidgets";
@@ -113,7 +112,7 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
 
   /* Zodiac reference frames — has native equivalent */
   "ayanamsha-wheel": AyanamshaDiagram,
-  "apsides-seasons": ApsidesDiagram,
+  "apsides-seasons": EquinoxPrecessionApsidesDiagram,
 
   /* Zodiac reference frames — placeholder, Phase 3 Tier 2/3 */
   "equinox-precession": EquinoxPrecessionDiagram,

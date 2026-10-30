@@ -36,13 +36,34 @@ export function perihelionAngle(yearCe: number): number {
 }
 
 /**
- * Perihelion as a calendar date in that era: month index 0–11 and day of month.
- * Uses the Sun's mean pace, so it is good to a day or two — enough to show the drift.
+ * Where the Sun stands among the stars (sidereal longitude, degrees) when Earth
+ * is at perihelion, for a given ayanamsha. Today ≈ धनु 18.7°, i.e. पुस १९.
  */
-export function perihelionDate(yearCe: number): { month: number; day: number } {
-  const days = (perihelionAngle(yearCe) / 360) * TROPICAL_YEAR_DAYS;
-  const d = new Date(Date.UTC(2025, 11, 21) + Math.round(days) * 86_400_000);
-  return { month: d.getUTCMonth(), day: d.getUTCDate() };
+export function perihelionSiderealLongitude(yearCe: number, ayanamshaDeg: number): number {
+  return wrap360(270 + perihelionAngle(yearCe) - ayanamshaDeg);
+}
+
+/**
+ * Perihelion as a Bikram Sambat date: a solar month is the Sun's time in one
+ * sidereal rashi (मेष → बैशाख = 1), and near perihelion the Sun covers about a
+ * degree a day — good to a day, enough to show the slow drift.
+ */
+export function perihelionBsDate(yearCe: number, ayanamshaDeg: number): { month: number; day: number } {
+  const lon = perihelionSiderealLongitude(yearCe, ayanamshaDeg);
+  return { month: Math.floor(lon / 30) + 1, day: Math.floor(lon % 30) + 1 };
+}
+
+/**
+ * Perihelion against the nearest equinox or solstice: which one (0 = December
+ * solstice, 1 = March equinox, 2 = June solstice, 3 = September equinox) and
+ * how many days after (+) or before (−) it.
+ */
+export function perihelionNearestCardinal(yearCe: number): { point: 0 | 1 | 2 | 3; days: number } {
+  const a = perihelionAngle(yearCe);
+  const k = Math.round(a / 90) % 4;
+  let off = a - k * 90;
+  if (off > 180) off -= 360;
+  return { point: k as 0 | 1 | 2 | 3, days: Math.round((off / 360) * TROPICAL_YEAR_DAYS) };
 }
 
 /** Sun–Earth distance at a seasonal angle, given where perihelion sits. */

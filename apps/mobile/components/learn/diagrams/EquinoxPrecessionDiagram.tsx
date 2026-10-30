@@ -3,6 +3,11 @@
  * sidereal zodiac — the real mechanism behind ṛtu drift and the growing
  * ayanamsha. Native 3D reimagining of web's `EquinoxPrecession`
  * (pseudo-3D-in-SVG); Tier 2.
+ *
+ * The apsides variant also draws the whole equinox–solstice cross and
+ * perihelion (उपसौर) / aphelion (अपसौर). The cross is moved by the axis
+ * (~50.3″/yr backwards), the apsides by the turning orbit (~11.6″/yr forwards),
+ * so the angle between them goes round in ~21,000 years (apsidal-precession.ts).
  */
 import { memo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -15,28 +20,80 @@ import { RashiRing } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
+import {
+  northernSummer,
+  perihelionBsDate,
+  perihelionNearestCardinal,
+  perihelionSiderealLongitude,
+  solsticeSunlight,
+} from "@vedic-patro/domain/learn/apsidal-precession";
 
 const RATE = 50.2879 / 3600; // deg / BS year
 const BS_AYAN_ZERO = 342;
 const CYCLE = Math.round(360 / RATE); // ~25,772 years
 const R = 0.5;
+const CE_TO_BS = 57;
+/* Apsides variant: from the last ice age to beyond the next perihelion-in-June. */
+const AP_MIN = -11000;
+const AP_MAX = 14000;
+const SEASON_POINT_KEYS = [
+  "learn.study.equinox.hemanta_solstice",
+  "learn.study.spring_equinox",
+  "learn.study.summer_solstice",
+  "learn.study.autumn_equinox",
+] as const;
 
-type SceneProps = { clock: DiagramClockRef; onSample?: (year: number) => void; onLabels?: (labels: DiagramLabel[]) => void; copy: { equinox: string; ring: string } };
+const eqSidOf = (year: number) => ((((BS_AYAN_ZERO - year) * RATE) % 360) + 360) % 360;
+const ayanamshaOf = (year: number) => (year - BS_AYAN_ZERO) * RATE;
+const ringPoint = (lonDeg: number, r: number, y = 0.02): [number, number, number] => {
+  const a = (lonDeg * Math.PI) / 180;
+  return [r * Math.cos(a), y, r * Math.sin(a)];
+};
 
-const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onSample, onLabels, copy }: SceneProps) {
+type SceneCopy = {
+  equinox: string;
+  ring: string;
+  /** Spring equinox, June solstice, autumn equinox, December solstice — anticlockwise from the equinox. */
+  cardinals?: [string, string, string, string];
+  perihelion?: string;
+  aphelion?: string;
+};
+type SceneProps = {
+  clock: DiagramClockRef;
+  onSample?: (year: number) => void;
+  onLabels?: (labels: DiagramLabel[]) => void;
+  copy: SceneCopy;
+  apsides?: boolean;
+};
+
+const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onSample, onLabels, copy, apsides }: SceneProps) {
   const readClock = useSceneClock(clock, onSample);
   const projector = useLabelProjector(onLabels);
   const markerRef = useRef<THREE.Mesh>(null);
+  const crossRef = useRef<THREE.Group>(null);
+  const apsisRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
     const year = readClock(0.016);
-    const eqSid = (((BS_AYAN_ZERO - year) * RATE) % 360 + 360) % 360;
+    const eqSid = eqSidOf(year);
     const a = (eqSid * Math.PI) / 180;
     markerRef.current?.position.set(R * Math.cos(a), 0.02, R * Math.sin(a));
+    /* Groups are built along +x; turning about y by −angle lands +x on (cos, sin) of the ring. */
+    if (crossRef.current) crossRef.current.rotation.y = -a;
+    const periSid = perihelionSiderealLongitude(year - CE_TO_BS, ayanamshaOf(year));
+    if (apsisRef.current) apsisRef.current.rotation.y = (-periSid * Math.PI) / 180;
 
     if (projector.begin()) {
-      const [mx, , mz] = [R * 1.2 * Math.cos(a), 0, R * 1.2 * Math.sin(a)];
-      projector.push({ id: "equinox", text: copy.equinox, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, [mx, 0.1, mz]);
+      if (apsides && copy.cardinals) {
+        copy.cardinals.forEach((text, k) => {
+          projector.push({ id: `card-${k}`, text, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid + k * 90, R * 1.22, 0.08));
+        });
+        projector.push({ id: "peri", text: copy.perihelion ?? "", color: DIAGRAM_COLOR.tropical, size: 10 }, ringPoint(periSid, R * 0.55, 0.08));
+        projector.push({ id: "aph", text: copy.aphelion ?? "", color: DIAGRAM_LABEL_COLOR.earth, size: 10 }, ringPoint(periSid + 180, R * 0.55, 0.08));
+      } else {
+        projector.push({ id: "equinox", text: copy.equinox, color: DIAGRAM_LABEL_COLOR.warn, size: 9 }, ringPoint(eqSid, R * 1.2, 0.1));
+      }
       projector.end();
     }
   });
@@ -59,9 +116,64 @@ const EquinoxPrecessionScene = memo(function EquinoxPrecessionScene({ clock, onS
         <sphereGeometry args={[0.028, 14, 14]} />
         <meshBasicMaterial color={DIAGRAM_LABEL_COLOR.warn} />
       </mesh>
+
+      {apsides ? (
+        <>
+          {/* Moved by the axis: the equinox–solstice cross. */}
+          <group ref={crossRef}>
+            {[0, Math.PI / 2].map((rot) => (
+              <mesh key={rot} rotation={[0, rot, Math.PI / 2]} position={[0, 0.012, 0]}>
+                <cylinderGeometry args={[0.0035, 0.0035, R * 2.1, 6]} />
+                <meshBasicMaterial color={DIAGRAM_LABEL_COLOR.warn} transparent opacity={0.7} />
+              </mesh>
+            ))}
+            {[0, 1, 2, 3].map((k) => (
+              <mesh key={k} position={ringPoint(k * 90, R * 1.05)}>
+                <sphereGeometry args={[0.018, 12, 12]} />
+                <meshBasicMaterial color={DIAGRAM_LABEL_COLOR.warn} />
+              </mesh>
+            ))}
+          </group>
+          {/* Moved by the orbit: perihelion and aphelion. */}
+          <group ref={apsisRef}>
+            <mesh rotation={[0, 0, Math.PI / 2]} position={[0, 0.02, 0]}>
+              <cylinderGeometry args={[0.004, 0.004, R * 1.6, 6]} />
+              <meshBasicMaterial color={DIAGRAM_COLOR.tropical} transparent opacity={0.8} />
+            </mesh>
+            <mesh position={ringPoint(0, R * 0.8, 0.03)}>
+              <sphereGeometry args={[0.034, 16, 16]} />
+              <meshBasicMaterial color={DIAGRAM_COLOR.tropical} />
+            </mesh>
+            <mesh position={ringPoint(180, R * 0.8, 0.03)}>
+              <sphereGeometry args={[0.034, 16, 16]} />
+              <meshBasicMaterial color={DIAGRAM_LABEL_COLOR.earth} />
+            </mesh>
+          </group>
+        </>
+      ) : null}
     </>
   );
 });
+
+function useEquinoxCopy(apsides: boolean): SceneCopy {
+  const { t } = useLocale();
+  return {
+    equinox: t("ui.learn.spring_equinox_point"),
+    ring: t("ui.learn.sidereal_rashi_fixed"),
+    ...(apsides
+      ? {
+          cardinals: [
+            t("learn.study.spring_equinox"),
+            t("learn.study.summer_solstice"),
+            t("learn.study.autumn_equinox"),
+            t("learn.study.equinox.hemanta_solstice"),
+          ] as [string, string, string, string],
+          perihelion: t("learn.apsides.perihelion"),
+          aphelion: t("learn.apsides.aphelion"),
+        }
+      : {}),
+  };
+}
 
 export function EquinoxPrecessionDiagram() {
   const { t, digits, lang } = useLocale();
@@ -72,10 +184,10 @@ export function EquinoxPrecessionDiagram() {
     speed: 320,
   });
 
-  const eqSid = (((BS_AYAN_ZERO - year) * RATE) % 360 + 360) % 360;
+  const eqSid = eqSidOf(year);
   const rashiIdx = Math.floor(eqSid / 30);
-  const ayanamsha = (year - BS_AYAN_ZERO) * RATE;
-  const copy = { equinox: t("ui.learn.spring_equinox_point"), ring: t("ui.learn.sidereal_rashi_fixed") };
+  const ayanamsha = ayanamshaOf(year);
+  const copy = useEquinoxCopy(false);
 
   return (
     <LearnDiagram3D
@@ -111,6 +223,81 @@ export function EquinoxPrecessionDiagram() {
       caption={t("ui.learn.the_sidereal_zodiac_outer_ring_is")}
     >
       {({ onLabels }) => <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
+    </LearnDiagram3D>
+  );
+}
+
+/** The same study with the full cross and perihelion / aphelion (sayana/nirayana guide, chapter 07). */
+export function EquinoxPrecessionApsidesDiagram() {
+  const { t, digits, lang } = useLocale();
+  const { clock, value: year, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
+    initial: 2083,
+    min: AP_MIN,
+    max: AP_MAX,
+    speed: 900,
+  });
+  const copy = useEquinoxCopy(true);
+
+  const yearCe = year - CE_TO_BS;
+  const periBs = perihelionBsDate(yearCe, ayanamshaOf(year));
+  const season = perihelionNearestCardinal(yearCe);
+  const pointName = t(SEASON_POINT_KEYS[season.point]);
+  const seasonText =
+    season.days === 0
+      ? t("learn.apsides.on_point", { point: pointName })
+      : t(season.days > 0 ? "learn.apsides.days_after" : "learn.apsides.days_before", {
+          point: pointName,
+          days: digits(Math.abs(season.days)),
+        });
+  const summerSun = solsticeSunlight(yearCe).june;
+  const summer = northernSummer(yearCe);
+
+  return (
+    <LearnDiagram3D
+      title={t("learn.apsides.title")}
+      height={300}
+      camera={{ yaw: 0.3, pitch: 0.95 }}
+      frame={{ width: 1.5, height: 0.85 }}
+      legend={[
+        { color: DIAGRAM_COLOR.sidereal, label: copy.ring },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("learn.apsides.legend_cross") },
+        { color: DIAGRAM_COLOR.tropical, label: t("learn.apsides.legend_apsides") },
+      ]}
+      readouts={[
+        { k: t("holidays.bs_year"), v: digits(Math.round(year)) },
+        {
+          k: t("learn.apsides.perihelion_bs"),
+          v: t("learn.apsides.bs_date", { month: bsMonthLabel(periBs.month, lang), day: digits(periBs.day) }),
+          tone: "accent",
+        },
+        { k: t("learn.apsides.vs_season"), v: seasonText },
+        { k: t("learn.apsides.summer_sun"), v: `${summerSun >= 0 ? "+" : "−"}${digits(Math.abs(summerSun).toFixed(1))}%` },
+        { k: t("learn.apsides.north_summer"), v: t(`learn.apsides.${summer}`), tone: summer === "intense" ? "warn" : undefined },
+      ]}
+      slider={{
+        value: year,
+        min: AP_MIN,
+        max: AP_MAX,
+        step: 25,
+        label: t("ui.learn.bs_year_2", { year: digits(Math.round(year)) }),
+        onChange: scrubTo,
+      }}
+      playing={playing}
+      onPlayToggle={() => setPlaying(!playing)}
+      presets={[
+        { label: t("learn.apsides.preset_ice"), value: -9000 + CE_TO_BS },
+        { label: t("learn.apsides.preset_aligned"), value: 1250 + CE_TO_BS },
+        { label: t("learn.apsides.preset_today"), value: 2083 },
+        { label: t("learn.apsides.preset_future"), value: 11750 + CE_TO_BS },
+      ]}
+      onPreset={scrubTo}
+      presetValue={year}
+      presetTolerance={150}
+      caption={t("learn.apsides.caption")}
+    >
+      {({ onLabels }) => (
+        <EquinoxPrecessionScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} apsides />
+      )}
     </LearnDiagram3D>
   );
 }

@@ -542,8 +542,8 @@ export const sayanaNirayanaYear: ArticleData = {
             { ne: "वि.सं. महिना", en: "BS month" },
           ],
           rows: [
-            [{ ne: "सूर्यको नजिक (जनवरी सुरु)", en: "Nearest the Sun (early January)" }, "≈ 1.02°", { ne: "≈ २९.४ दिन", en: "≈ 29.4 days" }, { ne: "पुस–माघ: २९–३० दिन", en: "Push–Magh: 29–30 days" }],
-            [{ ne: "सूर्यबाट टाढा (जुलाई सुरु)", en: "Farthest from the Sun (early July)" }, "≈ 0.95°", { ne: "≈ ३१.५ दिन", en: "≈ 31.5 days" }, { ne: "असार–साउन: ३१–३२ दिन", en: "Asar–Saun: 31–32 days" }],
+            [{ ne: "सूर्यको नजिक (पुस १९ तिर)", en: "Nearest the Sun (early January)" }, "≈ 1.02°", { ne: "≈ २९.४ दिन", en: "≈ 29.4 days" }, { ne: "पुस–माघ: २९–३० दिन", en: "Push–Magh: 29–30 days" }],
+            [{ ne: "सूर्यबाट टाढा (असार २० तिर)", en: "Farthest from the Sun (early July)" }, "≈ 0.95°", { ne: "≈ ३१.५ दिन", en: "≈ 31.5 days" }, { ne: "असार–साउन: ३१–३२ दिन", en: "Asar–Saun: 31–32 days" }],
           ],
         },
         {
@@ -574,7 +574,7 @@ export const sayanaNirayanaYear: ArticleData = {
             {
               h: { ne: "अयनान्त — अक्षले तय गर्छ", en: "Solstices — set by the axis" },
               p: {
-                ne: "पृथ्वीको अक्ष करिब `२३.४४°` झुकेको छ। जुन अयनान्तमा उत्तरी गोलार्ध सूर्यतिर सबैभन्दा बढी ढल्किन्छ (सबैभन्दा लामो दिन), डिसेम्बर अयनान्तमा सबैभन्दा टाढा। पृथ्वी नजिक होस् वा टाढा — अयनान्त यही झुकावले मात्र बन्छ।",
+                ne: "पृथ्वीको अक्ष करिब `२३.४४°` झुकेको छ। ग्रीष्म अयनान्तमा (असार ७ तिर) उत्तरी गोलार्ध सूर्यतिर सबैभन्दा बढी ढल्किन्छ (सबैभन्दा लामो दिन), हेमन्त अयनान्तमा (पुस ६ तिर) सबैभन्दा टाढा। पृथ्वी नजिक होस् वा टाढा — अयनान्त यही झुकावले मात्र बन्छ।",
                 en: "Earth's axis is tilted about `23.44°`. At the June solstice the northern hemisphere leans most toward the Sun (longest day), at the December solstice most away. Near or far, the solstices come from this tilt alone.",
               },
             },
@@ -596,24 +596,24 @@ export const sayanaNirayanaYear: ArticleData = {
             { ne: "कक्षामा पृथ्वी", en: "Earth in its orbit" },
           ],
           rows: [
-            [{ ne: "डिसेम्बर अयनान्त", en: "December solstice" }, { ne: "२१ डिसेम्बर", en: "21 December" }, { ne: "उपसौरतिर जाँदै", en: "Heading toward perihelion" }],
-            [{ ne: "उपसौर", en: "Perihelion" }, { ne: "३ जनवरी", en: "3 January" }, { ne: "सूर्यको सबैभन्दा नजिक — १४.७ करोड किमी", en: "Closest to the Sun — 147.1 million km" }],
-            [{ ne: "जुन अयनान्त", en: "June solstice" }, { ne: "२१ जुन", en: "21 June" }, { ne: "अपसौरतिर जाँदै", en: "Heading toward aphelion" }],
-            [{ ne: "अपसौर", en: "Aphelion" }, { ne: "४ जुलाई", en: "4 July" }, { ne: "सूर्यको सबैभन्दा टाढा — १५.२ करोड किमी", en: "Farthest from the Sun — 152.1 million km" }],
+            [{ ne: "हेमन्त अयनान्त", en: "December solstice" }, { ne: "पुस ६", en: "21 December" }, { ne: "उपसौरतिर जाँदै", en: "Heading toward perihelion" }],
+            [{ ne: "उपसौर", en: "Perihelion" }, { ne: "पुस १९", en: "3 January" }, { ne: "सूर्यको सबैभन्दा नजिक — १४.७ करोड किमी", en: "Closest to the Sun — 147.1 million km" }],
+            [{ ne: "ग्रीष्म अयनान्त", en: "June solstice" }, { ne: "असार ७", en: "21 June" }, { ne: "अपसौरतिर जाँदै", en: "Heading toward aphelion" }],
+            [{ ne: "अपसौर", en: "Aphelion" }, { ne: "असार २०", en: "4 July" }, { ne: "सूर्यको सबैभन्दा टाढा — १५.२ करोड किमी", en: "Farthest from the Sun — 152.1 million km" }],
           ],
         },
         {
           kind: "diagram",
           id: "apsides-seasons",
           caption: {
-            ne: "स्लाइडर सार्नुहोस् — अयनान्त रेखा स्थिर रहन्छ, उपसौर–अपसौर रेखा घुम्छ। उपसौर जुनमा पुग्दा उत्तरी गर्मी कडा हुन्छ।",
-            en: "Move the slider — the solstice line stays put while the perihelion–aphelion line turns. When perihelion reaches June, northern summers turn sharp.",
+            ne: "स्लाइडर सार्नुहोस् — राशि घेरा स्थिर रहन्छ; विषुव–अयनान्त क्रस र उपसौर–अपसौर रेखा आ–आफ्नै गतिमा, उल्टो दिशामा घुम्छन्। उपसौर ग्रीष्म अयनान्तमा पुग्दा उत्तरी गर्मी कडा हुन्छ।",
+            en: "Move the slider — the rashi ring stays fixed; the equinox–solstice cross and the perihelion–aphelion line each turn at their own pace, in opposite directions. When perihelion reaches the June solstice, northern summers turn sharp.",
           },
         },
         {
           kind: "para",
           text: {
-            ne: "उपसौर ऋतुको तुलनामा वर्षमा करिब `६२″` अगाडि सर्छ — हरेक **~५७ वर्षमा १ दिन** पछि। करिब १२५० ई.सं.तिर उपसौर ठ्याक्कै डिसेम्बर अयनान्तमै पर्थ्यो; आज १३ दिनपछि पर्छ; करिब ११,७०० ई.सं.तिर जुन अयनान्तमा पुग्नेछ। ऋतुहरूभरि एक फेरो पूरा गर्न करिब **२१,००० वर्ष** लाग्छ (वास्तविक अवधि १९,००० देखि २३,००० वर्षबीच घटबढ हुन्छ)। ध्यान दिनुहोस्: उपसौर सर्दा अयनान्त सर्दैन — दुई रेखाको आपसी कोण मात्र बदलिन्छ।",
+            ne: "उपसौर ऋतुको तुलनामा वर्षमा करिब `६२″` अगाडि सर्छ — हरेक **~५७ वर्षमा १ दिन** पछि। करिब १२५० ई.सं.तिर उपसौर ठ्याक्कै हेमन्त अयनान्तमै पर्थ्यो; आज १३ दिनपछि (पुस १९ तिर) पर्छ; करिब ११,७०० ई.सं.तिर ग्रीष्म अयनान्तमा पुग्नेछ। ऋतुहरूभरि एक फेरो पूरा गर्न करिब **२१,००० वर्ष** लाग्छ (वास्तविक अवधि १९,००० देखि २३,००० वर्षबीच घटबढ हुन्छ)। ध्यान दिनुहोस्: उपसौर सर्दा अयनान्त सर्दैन — दुई रेखाको आपसी कोण मात्र बदलिन्छ।",
             en: "Against the seasons perihelion moves about `62″` a year — **1 day later every ~57 years**. Around 1250 CE it fell exactly on the December solstice; today it comes 13 days after; around 11,700 CE it will reach the June solstice. One round through the seasons takes about **21,000 years** (the real period wanders between 19,000 and 23,000). Note: the solstices do not move because perihelion moves — only the angle between the two lines changes.",
           },
         },
@@ -626,7 +626,7 @@ export const sayanaNirayanaYear: ArticleData = {
             { ne: "~११,७०० ई.सं.: गर्मीमा उपसौर", en: "~11,700 CE: perihelion in summer" },
           ],
           rows: [
-            [{ ne: "जुनमा घाम (औसतको तुलनामा)", en: "June sunlight (vs average)" }, "−3.3%", "+3.4%"],
+            [{ ne: "ग्रीष्म अयनान्तमा घाम (औसतको तुलनामा)", en: "June sunlight (vs average)" }, "−3.3%", "+3.4%"],
             [{ ne: "उत्तरी गर्मी", en: "Northern summer" }, { ne: "कम तातो", en: "Cooler" }, { ne: "झन् तातो", en: "Hotter" }],
             [{ ne: "उत्तरी जाडो", en: "Northern winter" }, { ne: "कम चिसो", en: "Gentler" }, { ne: "झन् चिसो", en: "Colder" }],
             [{ ne: "दक्षिणी गोलार्ध", en: "Southern hemisphere" }, { ne: "ठीक उल्टो — कडा ऋतु", en: "The reverse — sharper seasons" }, { ne: "ठीक उल्टो — नरम ऋतु", en: "The reverse — milder seasons" }],
@@ -653,7 +653,7 @@ export const sayanaNirayanaYear: ArticleData = {
             {
               h: { ne: "हिमयुग कसरी अन्त्य हुन्छ", en: "How an ice age ends" },
               p: {
-                ne: "उपसौर उत्तरी गर्मीमा आउँदा र झुकाव बढ्दा गर्मी कडा हुन्छ, हिउँका पाता पग्लिन थाल्छन्। करिब ११,००० वर्षअघि उपसौर जुन अयनान्ततिर थियो — अन्तिम हिमयुग त्यही बेला सकियो। यी तीन चक्रलाई (२१,०००, ४१,००० र १,००,००० वर्ष) *मिलान्कोभिच चक्र* भनिन्छ।",
+                ne: "उपसौर उत्तरी गर्मीमा आउँदा र झुकाव बढ्दा गर्मी कडा हुन्छ, हिउँका पाता पग्लिन थाल्छन्। करिब ११,००० वर्षअघि उपसौर ग्रीष्म अयनान्ततिर थियो — अन्तिम हिमयुग त्यही बेला सकियो। यी तीन चक्रलाई (२१,०००, ४१,००० र १,००,००० वर्ष) *मिलान्कोभिच चक्र* भनिन्छ।",
                 en: "When perihelion comes in the northern summer and the tilt grows, summers turn strong and the ice sheets start to melt. About 11,000 years ago perihelion was near the June solstice — and that is when the last ice age ended. These three cycles (21,000, 41,000 and 100,000 years) are the *Milankovitch cycles*.",
               },
             },

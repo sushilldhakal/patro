@@ -11,8 +11,6 @@ import { Pressable, View } from "react-native";
 import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useDiagramClock } from "@/components/learn/diagrams/diagram-clock";
 import { AyanamshaScene } from "@/components/learn/diagrams/AyanamshaScene";
-import { ApsidesScene } from "@/components/learn/diagrams/ApsidesScene";
-import { northernSummer, perihelionDate, solsticeSunlight } from "@vedic-patro/domain/learn/apsidal-precession";
 import { EclipseScene, type EclipseSample } from "@/components/learn/diagrams/EclipseScene";
 import { SeasonsScene } from "@/components/learn/diagrams/SeasonsScene";
 import { SunEarthMoonScene } from "@/components/learn/diagrams/SunEarthMoonScene";
@@ -425,90 +423,6 @@ export function AyanamshaDiagram() {
           digits={digits}
         />
       )}
-    </LearnDiagram3D>
-  );
-}
-
-/* ── perihelion / aphelion against the seasons ─────────────────────────── */
-
-const APSIDES_MONTH_KEYS = [
-  "kundali.x.month_january", "kundali.x.month_february", "kundali.x.month_march", "kundali.x.month_april",
-  "kundali.x.month_may", "kundali.x.month_june", "kundali.x.month_july", "kundali.x.month_august",
-  "kundali.x.month_september", "kundali.x.month_october", "kundali.x.month_november", "kundali.x.month_december",
-] as const;
-const APSIDES_MIN = -10000;
-const APSIDES_MAX = 14000;
-
-export function ApsidesDiagram() {
-  const { t, pick, digits } = useLocale();
-  const { clock, value: year, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
-    initial: 2026,
-    min: APSIDES_MIN,
-    max: APSIDES_MAX,
-    speed: 1400,
-  });
-
-  const copy = useMemo(
-    () => ({
-      sun: t("kundali.report.meta_sun"),
-      perihelion: t("learn.apsides.perihelion"),
-      aphelion: t("learn.apsides.aphelion"),
-      stations: [
-        t("ui.learn.december_solstice"),
-        t("ui.learn.march_equinox"),
-        t("ui.learn.june_solstice"),
-        t("ui.learn.september_equinox"),
-      ] as [string, string, string, string],
-    }),
-    [pick],
-  );
-
-  const y = Math.round(year);
-  const yearText = y < 1 ? t("learn.apsides.bce", { year: digits(1 - y) }) : t("learn.apsides.ce", { year: digits(y) });
-  const peri = perihelionDate(year);
-  const dateText = `${digits(peri.day)} ${t(APSIDES_MONTH_KEYS[peri.month]!)}`;
-  const june = solsticeSunlight(year).june;
-  const summer = northernSummer(year);
-
-  return (
-    <LearnDiagram3D
-      title={t("learn.apsides.title")}
-      height={290}
-      camera={{ yaw: 0.35, pitch: 0.95 }}
-      frame={{ width: 3.4, height: 1.6 }}
-      legend={[
-        { color: DIAGRAM_COLOR.sun, label: t("learn.apsides.solstice_line") },
-        { color: DIAGRAM_COLOR.tropical, label: t("learn.apsides.apsis_line") },
-        { color: DIAGRAM_COLOR.orbit, label: t("learn.apsides.orbit") },
-      ]}
-      readouts={[
-        { k: t("learn.apsides.year"), v: yearText },
-        { k: t("learn.apsides.perihelion_date"), v: dateText, tone: "accent" },
-        { k: t("learn.apsides.june_sun"), v: `${june >= 0 ? "+" : "−"}${digits(Math.abs(june).toFixed(1))}%` },
-        { k: t("learn.apsides.north_summer"), v: t(`learn.apsides.${summer}`), tone: summer === "intense" ? "warn" : undefined },
-      ]}
-      slider={{
-        value: year,
-        min: APSIDES_MIN,
-        max: APSIDES_MAX,
-        step: 50,
-        label: t("learn.apsides.slider", { year: yearText, date: dateText }),
-        onChange: scrubTo,
-      }}
-      playing={playing}
-      onPlayToggle={() => setPlaying(!playing)}
-      presets={[
-        { label: t("learn.apsides.preset_ice"), value: -9000 },
-        { label: t("learn.apsides.preset_aligned"), value: 1250 },
-        { label: t("learn.apsides.preset_today"), value: 2026 },
-        { label: t("learn.apsides.preset_future"), value: 11750 },
-      ]}
-      onPreset={scrubTo}
-      presetValue={year}
-      presetTolerance={200}
-      caption={t("learn.apsides.caption")}
-    >
-      {({ onLabels }) => <ApsidesScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>
   );
 }
