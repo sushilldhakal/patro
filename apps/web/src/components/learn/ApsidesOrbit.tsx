@@ -31,6 +31,7 @@ import {
 } from "@/lib/learn-classes";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
+import { EarthGlobeImage } from "./EarthGlobeImage";
 import { RashiGlyph } from "./rashi-icons";
 import { useSvgZoom } from "./use-svg-zoom";
 import { ZoomBar } from "./ZoomBar";
@@ -54,8 +55,8 @@ const CE_TO_BS = 57;
 /* Wide enough for the orbit's oval to turn almost twice round as it plays. */
 const Y_MIN = -100000;
 const Y_MAX = 100000;
-/** Playback, years per second: the oval turns ~20°/s, the season Earths a lap in ~4 s. */
-const SPEED = 6000;
+/** Playback, years per second: the oval turns ~5°/s, the season Earths a lap in ~17 s. */
+const SPEED = 1500;
 /** Beyond this many years from today the constant-rate model is only indicative. */
 const RELIABLE_YEARS = 20000;
 const TILT = 23.44;
@@ -231,11 +232,6 @@ export function ApsidesOrbit() {
     <div className={tmCardPadLg}>
       <svg ref={svgRef} viewBox={zoom.viewBox} className={edSvg()} role="img" aria-label={t("learn.apsides.aria")} {...zoom.bind}>
         <defs>
-          <radialGradient id="ao-earth" cx="42%" cy="38%" r="65%">
-            <stop offset="0%" stopColor={illustration.sky86} />
-            <stop offset="45%" stopColor={illustration.sky51} />
-            <stop offset="100%" stopColor={illustration.sky22} />
-          </radialGradient>
           <radialGradient id="ao-sun" cx="50%" cy="45%" r="60%">
             <stop offset="0%" stopColor={illustration.amber92} />
             <stop offset="55%" stopColor={illustration.amber67} />
@@ -295,11 +291,13 @@ export function ApsidesOrbit() {
           const [ex, ey] = projPlane(alphaOf(lon), f);
           const lx = ex;
           const ly = ey + 25;
-          const [vx, vy] = axisVec(0.1);
+          const [vx, vy] = axisVec(0.15);
+          /* Lean the globe image the way the drawn axis leans on screen. */
+          const lean = Math.atan2(vx, -vy) / D2R;
           return (
             <g key={s.key}>
               <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
-              <circle cx={ex} cy={ey} r={12} fill="url(#ao-earth)" stroke={illustration.sky19} strokeWidth={1} />
+              <EarthGlobeImage cx={ex} cy={ey} r={13} tilt={lean} />
               <text x={ex + vx} y={ey + vy - 5} fill={dim} textAnchor="middle" style={{ font: "700 9px var(--pn-font)" }}>N</text>
               <text x={lx} y={ly} fill={red} textAnchor="middle" dominantBaseline="central" style={{ font: "700 11.5px var(--pn-font)" }}>
                 {t(s.key)}
@@ -313,7 +311,7 @@ export function ApsidesOrbit() {
         <g transform="translate(14 14)">
           <line x1={0} y1={6} x2={22} y2={6} stroke={orbitCol} strokeWidth={2.4} />
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_orbit")}</text>
-          <circle cx={11} cy={24} r={6} fill="url(#ao-earth)" />
+          <EarthGlobeImage cx={11} cy={24} r={6} tilt={0} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_earths")}</text>
           <circle cx={6} cy={42} r={5} fill={peri} />
           <circle cx={18} cy={42} r={3.5} fill={aph} />

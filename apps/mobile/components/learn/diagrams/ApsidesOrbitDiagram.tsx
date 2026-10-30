@@ -189,8 +189,8 @@ export function ApsidesOrbitDiagram() {
     initial: NOW_BS,
     min: Y_MIN,
     max: Y_MAX,
-    /* ~20°/s for the oval, a lap in ~4 s for the season Earths; starts playing so the orbit is seen moving. */
-    speed: 6000,
+    /* ~5°/s for the oval, a lap in ~17 s for the season Earths; starts playing so the orbit is seen moving. */
+    speed: 1500,
     autoPlay: true,
   });
 
