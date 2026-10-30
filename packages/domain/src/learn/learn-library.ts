@@ -164,6 +164,17 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     },
   },
   {
+    slug: "sayana-nirayana-year",
+    section: "start",
+    status: "published",
+    icon: "Hourglass",
+    title: { ne: "सायन र निरयन वर्ष", en: "Tropical and Sidereal Year" },
+    summary: {
+      ne: "ऋतुको वर्ष र ताराको वर्षबीच २० मिनेटको फरक किन, वि.सं.ले कुन मान्छ, र प्रत्येक मान्दा बैशाख १, सङ्क्रान्ति र चाडपर्वमा के नतिजा आउँछ।",
+      en: "Why the year of the seasons and the year of the stars differ by 20 minutes, which one Bikram Sambat keeps, and what each would do to Baisakh 1, the sankrantis and the festivals.",
+    },
+  },
+  {
     slug: "baisakh-1",
     section: "start",
     status: "planned",

@@ -41,11 +41,12 @@ test("every merged chapter has a body", () => {
   }
 });
 
-test("the course opens with the patro, then a surface panchanga, then each limb", () => {
+test("the course opens with the patro and its year, then a surface panchanga, then each limb", () => {
   assert.deepEqual(
-    views.published.map((topic) => topic.slug).slice(0, 9),
+    views.published.map((topic) => topic.slug).slice(0, 10),
     [
       "bikram-sambat",
+      "sayana-nirayana-year",
       "what-is-panchang",
       "tithi",
       "nakshatra",

@@ -44,6 +44,7 @@ export const SITEMAP_ROUTES: SitemapRoute[] = [
 /** Published Learn guides — mirrors `LEARN_LIBRARY`'s reading order. */
 export const SITEMAP_LEARN_SLUGS = [
   "bikram-sambat",
+  "sayana-nirayana-year",
   "what-is-panchang",
   "tithi",
   "nakshatra",
