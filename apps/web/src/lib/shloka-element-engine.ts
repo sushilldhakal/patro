@@ -52,14 +52,26 @@ export class ShlokaElementEngine {
     return id == null ? -1 : this.tracks.findIndex((t) => t.id === id);
   }
 
+  /**
+   * The nearest verse in `delta`'s direction that has a recording. Verses without a
+   * clip (an unrecorded verse, a missing upload) are stepped over rather than ending
+   * the run there, so a play-through carries on to the next verse that can sound.
+   */
+  private playableFrom(id: number | null, delta: 1 | -1): ShlokaAudioTrack | null {
+    const start = this.indexOf(id);
+    if (start < 0) return null;
+    for (let i = start + delta; i >= 0 && i < this.tracks.length; i += delta) {
+      if (this.tracks[i]!.audioUrl) return this.tracks[i]!;
+    }
+    return null;
+  }
+
   private nextPlayable(id: number | null): ShlokaAudioTrack | null {
-    const next = this.tracks[this.indexOf(id) + 1];
-    return next?.audioUrl ? next : null;
+    return this.playableFrom(id, 1);
   }
 
   private prevPlayable(id: number | null): ShlokaAudioTrack | null {
-    const prev = this.tracks[this.indexOf(id) - 1];
-    return prev?.audioUrl ? prev : null;
+    return this.playableFrom(id, -1);
   }
 
   private onPlay = () => {

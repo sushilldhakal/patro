@@ -47,6 +47,8 @@ Two features only:
 1) Panchanga: tap the location chip → “Use my location” (or search a city).
 2) 3D sky: open Aakash Gochar from the menu → tap the compass so the sky follows the phone (iOS uses location for true north).
 
+Background audio — Documents (stotra / Veda) recitation only. Once the listener presses play, the recitation keeps going with the screen locked or the app in the background, with lock-screen / notification controls (Android: a mediaPlayback foreground service). Nothing plays until the user starts it; leaving the reader stops it.
+
 Camera — Aakash Gochar only. After pointing is on, tap the compass centre to show the live sky behind the map. We do not take photos, record, or upload. Deny camera: pointing still works without the overlay.
 
 Motion — same screen; phone tilt/turn aims the sky. On-device only. Deny: drag the sky by hand.

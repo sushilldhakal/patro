@@ -22,7 +22,7 @@ export default function DocumentChapterScreen() {
   const page = useDocumentChapter(slug, chapterNumber);
   const library = useDocumentLibraryOptions();
   const { copy } = page;
-  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl);
+  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.docTitle);
   const [jump, setJump] = useState<{ label: string; nonce: number } | null>(null);
 
   if (page.redirectToDocument && slug) {
