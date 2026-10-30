@@ -73,7 +73,7 @@ export const sayanaNirayanaYear: ArticleData = {
             { ne: "**एउटै ग्रह, दुई राशि** — सायन र निरयन राशिचक्र, अयनांश।", en: "**One planet, two rashis** — the two zodiacs and the ayanamsha." },
             { ne: "**वि.सं. कुन आधारमा?** — मेष सङ्क्रान्ति, बैशाख १ र ई.सं.।", en: "**What BS runs on** — Mesha Sankranti, Baisakh 1 and AD." },
             { ne: "**सूर्य, चन्द्र र ग्रह** — सबै एउटै ताराको नक्सामा।", en: "**Sun, Moon and planets** — all on one star map." },
-            { ne: "**महिना २९–३२ दिनका किन?** — सूर्यको असमान गति।", en: "**Why months run 29–32 days** — the Sun's uneven pace." },
+            { ne: "**महिना २९–३२ दिनका किन?** — सूर्यको असमान गति, उपसौर–अपसौर कसरी सर्छन्, र हिमयुगसँग त्यसको नाता।", en: "**Why months run 29–32 days** — the Sun's uneven pace, how perihelion and aphelion move, and their link to the ice ages." },
             { ne: "**२४ दिनको ऐतिहासिक फरक** — अयनांश कसरी जम्मा भयो।", en: "**The 24-day historical gap** — how the ayanamsha built up." },
             { ne: "**चाडपर्व, उत्तरायण र ऋतु** — फरकले हाम्रो जीवनमा के गर्छ।", en: "**Festivals, Uttarayana and the seasons** — what the gap does to daily life." },
             { ne: "**भविष्यको वि.सं.** — सायन भएको भए के हुन्थ्यो, र हजारौँ वर्षपछि के हुन्छ।", en: "**BS in the future** — what a tropical BS would be, and where ours is heading." },
@@ -523,7 +523,7 @@ export const sayanaNirayanaYear: ArticleData = {
       ],
     },
     {
-      title: { ne: "नेपाली महिनाहरू २९–३२ दिनका किन हुन्छन्?", en: "Why Nepali months run 29–32 days" },
+      title: { ne: "महिना २९–३२ दिनका किन? — उपसौर, अपसौर र हिमयुग", en: "Why months run 29–32 days — perihelion, aphelion and the ice ages" },
       eyebrow: "Perihelion · Aphelion",
       blocks: [
         {
@@ -562,10 +562,122 @@ export const sayanaNirayanaYear: ArticleData = {
           },
         },
         {
+          kind: "para",
+          text: {
+            ne: "तर उपसौर र अपसौर सधैँ उही ठाउँमा रहँदैनन्। यहाँ दुई फरक कुरा छुट्याउनुपर्छ — **अयनान्त** पृथ्वीको अक्षले तय गर्छ, **उपसौर–अपसौर** कक्षाको आकार र दिशाले। दुवै बिस्तारै घुम्छन्, त्यसैले तिनको आपसी सम्बन्ध हजारौँ वर्षमा बदलिन्छ।",
+            en: "But perihelion and aphelion do not stay in one place. Two different things have to be kept apart here — the **solstices** are set by Earth's axis, **perihelion and aphelion** by the shape and direction of its orbit. Both turn slowly, so the relation between them changes over thousands of years.",
+          },
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "अयनान्त — अक्षले तय गर्छ", en: "Solstices — set by the axis" },
+              p: {
+                ne: "पृथ्वीको अक्ष करिब `२३.४४°` झुकेको छ। जुन अयनान्तमा उत्तरी गोलार्ध सूर्यतिर सबैभन्दा बढी ढल्किन्छ (सबैभन्दा लामो दिन), डिसेम्बर अयनान्तमा सबैभन्दा टाढा। पृथ्वी नजिक होस् वा टाढा — अयनान्त यही झुकावले मात्र बन्छ।",
+                en: "Earth's axis is tilted about `23.44°`. At the June solstice the northern hemisphere leans most toward the Sun (longest day), at the December solstice most away. Near or far, the solstices come from this tilt alone.",
+              },
+            },
+            {
+              h: { ne: "उपसौर–अपसौर — कक्षाले तय गर्छ", en: "Perihelion and aphelion — set by the orbit" },
+              p: {
+                ne: "कक्षा अलिकति अण्डाकार छ। *उपसौर*मा पृथ्वी सूर्यको सबैभन्दा नजिक, *अपसौर*मा सबैभन्दा टाढा हुन्छ। कक्षाको यो लामो अक्ष (~अपसौरीय चलन~) र पृथ्वीको अक्ष (~अयन चलन~) दुवै घुम्दा उपसौर ऋतुहरूबीच सर्दै जान्छ।",
+                en: "The orbit is slightly oval. At *perihelion* Earth is closest to the Sun, at *aphelion* farthest. The orbit's long axis turns (~apsidal precession~) and so does Earth's axis (~precession~), so perihelion moves through the seasons.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "table",
+          caption: { ne: "आज — अयनान्त र उपसौर–अपसौर एउटै बिन्दु होइनन्, करिब १२–१३ दिनको फरकमा छन्", en: "Today — solstices and apsides are not the same points; they sit about 12–13 days apart" },
+          headers: [
+            { ne: "घटना", en: "Event" },
+            { ne: "करिब मिति", en: "Approximate date" },
+            { ne: "कक्षामा पृथ्वी", en: "Earth in its orbit" },
+          ],
+          rows: [
+            [{ ne: "डिसेम्बर अयनान्त", en: "December solstice" }, { ne: "२१ डिसेम्बर", en: "21 December" }, { ne: "उपसौरतिर जाँदै", en: "Heading toward perihelion" }],
+            [{ ne: "उपसौर", en: "Perihelion" }, { ne: "३ जनवरी", en: "3 January" }, { ne: "सूर्यको सबैभन्दा नजिक — १४.७ करोड किमी", en: "Closest to the Sun — 147.1 million km" }],
+            [{ ne: "जुन अयनान्त", en: "June solstice" }, { ne: "२१ जुन", en: "21 June" }, { ne: "अपसौरतिर जाँदै", en: "Heading toward aphelion" }],
+            [{ ne: "अपसौर", en: "Aphelion" }, { ne: "४ जुलाई", en: "4 July" }, { ne: "सूर्यको सबैभन्दा टाढा — १५.२ करोड किमी", en: "Farthest from the Sun — 152.1 million km" }],
+          ],
+        },
+        {
+          kind: "diagram",
+          id: "apsides-seasons",
+          caption: {
+            ne: "स्लाइडर सार्नुहोस् — अयनान्त रेखा स्थिर रहन्छ, उपसौर–अपसौर रेखा घुम्छ। उपसौर जुनमा पुग्दा उत्तरी गर्मी कडा हुन्छ।",
+            en: "Move the slider — the solstice line stays put while the perihelion–aphelion line turns. When perihelion reaches June, northern summers turn sharp.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "उपसौर ऋतुको तुलनामा वर्षमा करिब `६२″` अगाडि सर्छ — हरेक **~५७ वर्षमा १ दिन** पछि। करिब १२५० ई.सं.तिर उपसौर ठ्याक्कै डिसेम्बर अयनान्तमै पर्थ्यो; आज १३ दिनपछि पर्छ; करिब ११,७०० ई.सं.तिर जुन अयनान्तमा पुग्नेछ। ऋतुहरूभरि एक फेरो पूरा गर्न करिब **२१,००० वर्ष** लाग्छ (वास्तविक अवधि १९,००० देखि २३,००० वर्षबीच घटबढ हुन्छ)। ध्यान दिनुहोस्: उपसौर सर्दा अयनान्त सर्दैन — दुई रेखाको आपसी कोण मात्र बदलिन्छ।",
+            en: "Against the seasons perihelion moves about `62″` a year — **1 day later every ~57 years**. Around 1250 CE it fell exactly on the December solstice; today it comes 13 days after; around 11,700 CE it will reach the June solstice. One round through the seasons takes about **21,000 years** (the real period wanders between 19,000 and 23,000). Note: the solstices do not move because perihelion moves — only the angle between the two lines changes.",
+          },
+        },
+        {
+          kind: "table",
+          caption: { ne: "उपसौर कहाँ पर्छ भन्नेले उत्तरी गोलार्धको ऋतुमा पार्ने असर", en: "What the timing of perihelion does to the northern seasons" },
+          headers: [
+            { ne: "", en: "" },
+            { ne: "आज: गर्मीमा अपसौर", en: "Today: aphelion in summer" },
+            { ne: "~११,७०० ई.सं.: गर्मीमा उपसौर", en: "~11,700 CE: perihelion in summer" },
+          ],
+          rows: [
+            [{ ne: "जुनमा घाम (औसतको तुलनामा)", en: "June sunlight (vs average)" }, "−3.3%", "+3.4%"],
+            [{ ne: "उत्तरी गर्मी", en: "Northern summer" }, { ne: "कम तातो", en: "Cooler" }, { ne: "झन् तातो", en: "Hotter" }],
+            [{ ne: "उत्तरी जाडो", en: "Northern winter" }, { ne: "कम चिसो", en: "Gentler" }, { ne: "झन् चिसो", en: "Colder" }],
+            [{ ne: "दक्षिणी गोलार्ध", en: "Southern hemisphere" }, { ne: "ठीक उल्टो — कडा ऋतु", en: "The reverse — sharper seasons" }, { ne: "ठीक उल्टो — नरम ऋतु", en: "The reverse — milder seasons" }],
+            [{ ne: "उत्तरमा लामो ऋतु", en: "Longer season in the north" }, { ne: "गर्मी (सूर्य ढिलो हिँड्छ)", en: "Summer (the Sun moves slowly)" }, { ne: "जाडो", en: "Winter" }],
+          ],
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "तर ऋतुको मुख्य कारण दूरी होइन, **झुकाव** हो। अपसौर उत्तरी जाडोमा परे पनि जाडो चाहिँ उत्तरी गोलार्ध सूर्यबाट टाढा ढल्किएकैले हुन्छ — दूरीले त्यसलाई अलिकति कडा वा नरम मात्र बनाउँछ। आजको कक्षामा उपसौर र अपसौरबीच घामको फरक करिब `७%` छ; कक्षा सबैभन्दा अण्डाकार हुँदा (उत्केन्द्रता `०.०५८` सम्म, ~१,००,००० वर्षको चक्रमा) यो फरक `२०%` भन्दा बढी पुग्छ।",
+            en: "Still, the main cause of the seasons is **tilt**, not distance. Even with aphelion in the northern winter, winter happens because the north leans away from the Sun — distance only makes it a little sharper or gentler. On today's orbit the sunlight differs by about `7%` between perihelion and aphelion; when the orbit is at its most oval (eccentricity up to `0.058`, on ~100,000-year cycles) the difference passes `20%`.",
+          },
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "हिमयुग कसरी सुरु हुन्छ", en: "How an ice age starts" },
+              p: {
+                ne: "हिमयुग जाडो धेरै चिसो भएर होइन, **गर्मी कम तातो** भएर सुरु हुन्छ। उत्तरी गर्मीमा अपसौर, कम झुकाव (`२२.१°` तिर) र अण्डाकार कक्षा एकै साथ परे उत्तरी क्यानडा र साइबेरियाको हिउँ गर्मीभरि पग्लँदैन — वर्षेनी थपिँदै हिउँको पाता बन्छ, र सेतो हिउँले घाम फर्काएर अझ चिसो बनाउँछ।",
+                en: "An ice age starts not with colder winters but with **cooler summers**. When aphelion falls in the northern summer, the tilt is low (near `22.1°`) and the orbit is oval, snow in northern Canada and Siberia survives the summer — it piles up year on year into ice sheets, and the white ice reflects sunlight and cools things further.",
+              },
+            },
+            {
+              h: { ne: "हिमयुग कसरी अन्त्य हुन्छ", en: "How an ice age ends" },
+              p: {
+                ne: "उपसौर उत्तरी गर्मीमा आउँदा र झुकाव बढ्दा गर्मी कडा हुन्छ, हिउँका पाता पग्लिन थाल्छन्। करिब ११,००० वर्षअघि उपसौर जुन अयनान्ततिर थियो — अन्तिम हिमयुग त्यही बेला सकियो। यी तीन चक्रलाई (२१,०००, ४१,००० र १,००,००० वर्ष) *मिलान्कोभिच चक्र* भनिन्छ।",
+                en: "When perihelion comes in the northern summer and the tilt grows, summers turn strong and the ice sheets start to melt. About 11,000 years ago perihelion was near the June solstice — and that is when the last ice age ended. These three cycles (21,000, 41,000 and 100,000 years) are the *Milankovitch cycles*.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "आज उत्तरी गर्मी अपसौरतिरै छ, तर कक्षा लगभग गोलो (उत्केन्द्रता `०.०१७`, घट्दै) भएकाले यो असर कमजोर छ। अनुसन्धानअनुसार अर्को हिमयुग प्राकृतिक रूपमा पनि झन्डै ५०,००० वर्षसम्म आउने छैन, र मानिसले थपेको कार्बन डाइअक्साइडले त्यसलाई अझ पर धकेल्छ।",
+            en: "Today the northern summer is near aphelion, but with the orbit almost round (eccentricity `0.017`, and falling) the effect is weak. Studies suggest that even naturally the next ice age would not come for about 50,000 years, and the carbon dioxide people have added pushes it further off.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "**वि.सं.मा यसको असर:** ताराको तुलनामा उपसौर वर्षमा जम्मा `~११.६″` सर्छ — एक राशि सर्न करिब ९,३०० वर्ष। आज अपसौर निरयन मिथुन `~१९°` मा छ, त्यसैले असार सबैभन्दा लामो महिना हो। करिब ८,००० वर्षपछि अपसौर कर्कट राशिको बीचमा पुग्दा साउन सबैभन्दा लामो र पुस–माघको सट्टा माघ–फागुन सबैभन्दा छोटा हुनेछन्।",
+            en: "**What it means for BS:** against the stars perihelion moves only `~11.6″` a year — about 9,300 years per rashi. Today aphelion sits at sidereal Mithuna `~19°`, which is why Asar is the longest month. In about 8,000 years, with aphelion near the middle of Karka, Saun will be the longest month and Magh–Phagun rather than Push–Magh the shortest.",
+          },
+        },
+        {
           kind: "note",
           text: {
-            ne: "सम्झनुहोस्: वि.सं.को महिना नियमले होइन, सूर्यको वास्तविक गतिले तय हुन्छ — सूर्य टाढा हुँदा ढिलो, त्यसैले असार–साउन लामा।",
-            en: "Remember: a BS month is set by the Sun's real motion, not by a rule — the Sun is slowest when farthest away, so Asar–Saun run long.",
+            ne: "सम्झनुहोस्: वि.सं.को महिना सूर्यको वास्तविक गतिले तय हुन्छ — सूर्य टाढा हुँदा ढिलो, त्यसैले असार–साउन लामा। **अयनान्त अक्षले, उपसौर–अपसौर कक्षाले** तय गर्छन्; दुईको सम्बन्ध २१,००० वर्षमा एक फेरो घुम्छ र त्यसले नै हिमयुग ल्याउने–लैजाने काममा भूमिका खेल्छ।",
+            en: "Remember: a BS month is set by the Sun's real motion — slowest when farthest away, so Asar–Saun run long. **The axis sets the solstices, the orbit sets perihelion and aphelion**; their relation turns once in about 21,000 years, and that turning helps bring the ice ages and end them.",
           },
         },
       ],
@@ -589,9 +701,9 @@ export const sayanaNirayanaYear: ArticleData = {
           },
           headers: [
             { ne: "सायन (ऋतु) घटना", en: "Tropical (season) event" },
-            { ne: "मिति", en: "Date" },
+            { ne: "ऋतु घटनाको मिति", en: "Season date" },
             { ne: "निरयन सङ्क्रान्ति", en: "Sidereal sankranti" },
-            { ne: "मिति", en: "Date" },
+            { ne: "सङ्क्रान्तिको मिति", en: "Sankranti date" },
           ],
           rows: [
             [{ ne: "वसन्त विषुव", en: "Vernal equinox" }, { ne: "२०–२१ मार्च", en: "20–21 Mar" }, { ne: "मेष (बैशाख १)", en: "Mesha (Baisakh 1)" }, { ne: "१३–१५ अप्रिल", en: "13–15 Apr" }],

@@ -33,6 +33,7 @@ export const DIAGRAM_IDS = [
   "calendar-hierarchy",
   "ayanamsha-wheel",
   "equinox-precession",
+  "apsides-seasons",
   "precession-cone",
   "precession-sky",
   "tithi-elongation",

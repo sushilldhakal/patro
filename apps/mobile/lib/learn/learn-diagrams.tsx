@@ -66,6 +66,7 @@ function ServerPipelineDiagram() {
 import {
   SunEarthMoonDiagram,
   AyanamshaDiagram,
+  ApsidesDiagram,
   TithiAngleDiagram,
   EclipseDiagram,
 } from "@/components/learn/diagrams/LearnDiagramWidgets";
@@ -112,6 +113,7 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
 
   /* Zodiac reference frames — has native equivalent */
   "ayanamsha-wheel": AyanamshaDiagram,
+  "apsides-seasons": ApsidesDiagram,
 
   /* Zodiac reference frames — placeholder, Phase 3 Tier 2/3 */
   "equinox-precession": EquinoxPrecessionDiagram,
