@@ -76,7 +76,6 @@ const CY = 372;
 const RX = 270;
 /* Seen from well above the plane, so the orbit's oval is not flattened away. */
 const RY = 196;
-const ZY = 100;
 const BAND_IN = 1.06;
 const BAND_OUT = 1.4;
 
@@ -155,10 +154,11 @@ export function ApsidesOrbit() {
 
   /* Earth's axis keeps one direction in space: its north end leans toward where the Sun is at the June solstice. */
   const axisA = alphaOf(eqSid + 90) * D2R;
-  const axisVec = (len: number): [number, number] => [
-    RX * len * Math.sin(TILT * D2R) * Math.cos(axisA),
-    -RY * len * Math.sin(TILT * D2R) * Math.sin(axisA) - ZY * len * Math.cos(TILT * D2R),
-  ];
+  /* The globes are drawn side-on, so lean them by the axis's side-on tilt (never more than the
+     real 23.44°). Leaning by the axis as seen from above swung them past 60°, and the spinning
+     map then ran north–south instead of west–east. */
+  const lean = Math.atan2(Math.sin(TILT * D2R) * Math.cos(axisA), Math.cos(TILT * D2R)) / D2R;
+  const axisVec = (len: number): [number, number] => [len * Math.sin(lean * D2R), -len * Math.cos(lean * D2R)];
 
   const ovalPath = (pLon: number) =>
     Array.from({ length: 121 }, (_, k) => {
@@ -278,9 +278,7 @@ export function ApsidesOrbit() {
           const [ex, ey] = projPlane(alphaOf(lon), f);
           const lx = ex;
           const ly = ey + 38;
-          const [vx, vy] = axisVec(0.34);
-          /* Lean the globe image the way the drawn axis leans on screen. */
-          const lean = Math.atan2(vx, -vy) / D2R;
+          const [vx, vy] = axisVec(40);
           return (
             <g key={s.key}>
               <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
