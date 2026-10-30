@@ -11,6 +11,7 @@ import { RashiGlyph } from "./rashi-icons";
 import { useSvgZoom } from "./use-svg-zoom";
 import { bsMonthLabel } from "@vedic-patro/domain/calendar/bs-calendar";
 import {
+  CLIMATIC_PRECESSION_YEARS,
   northernSummer,
   perihelionBsDate,
   perihelionNearestCardinal,
@@ -90,9 +91,11 @@ const fmtPt = (p: [number, number]) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`;
  * read while the app is in Nepali.
  */
 /* Apsides mode: from the last ice age to beyond the next perihelion-in-June. */
-const AP_MIN = -11000;
-const AP_MAX = 14000;
+const AP_MIN = -50000;
+const AP_MAX = 50000;
 const CE_TO_BS = 57;
+/** Beyond this many years from today the constant-rate model is only indicative. */
+const AP_RELIABLE_YEARS = 20000;
 /** perihelionNearestCardinal's 0–3, as ui keys (December solstice first). */
 const SEASON_POINT_KEYS = [
   "learn.study.equinox.hemanta_solstice",
@@ -132,7 +135,7 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
       const dt = (now - last) / 1000;
       last = now;
       setYear((y) => {
-        const next = y + dt * (apsides ? 900 : 320); // वि.सं. years / second
+        const next = y + dt * (apsides ? 2500 : 320); // वि.सं. years / second
         return next > yMax ? yMin : next;
       });
       raf.current = requestAnimationFrame(tick);
@@ -262,7 +265,8 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
         {/* ── yellow ecliptic (राशि plane) ── */}
         <ellipse cx={CX} cy={CY} rx={RX} ry={RY} fill="none" stroke={gold} strokeWidth={2.4} />
         {/* ── blue celestial equator (tilted by ε) ── */}
-        <path d={model.equatorPath} fill="none" stroke={illustration.sky51} strokeWidth={2.4} />
+        {/* Faded in apsides mode so the Sun's path (yellow), where perihelion and aphelion lie, leads. */}
+        <path d={model.equatorPath} fill="none" stroke={illustration.sky51} strokeWidth={apsides ? 1.6 : 2.4} opacity={apsides ? 0.45 : 1} />
 
         {/* ── red विषुव / अयनान्त cross (rotates with precession) ── */}
         {[0, 1].map((d) => {
@@ -295,20 +299,41 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
           ε {fmtDeg(EPS)}
         </text>
 
-        {/* perihelion / aphelion — moved by the orbit, not the axis */}
+        {/* perihelion / aphelion — points on the Sun's path (yellow), moved by the orbit, not the axis */}
         {apsides ? (() => {
           const a = alphaOf(periSid);
           const [px, py] = projPlane(a, 1);
           const [qx, qy] = projPlane(a + 180, 1);
-          const [plx, ply] = projPlane(a, 0.74);
-          const [qlx, qly] = projPlane(a + 180, 0.74);
+          const [plx, ply] = projPlane(a, 0.72);
+          const [qlx, qly] = projPlane(a + 180, 0.72);
           const peri = illustration.orange53;
-          const aph = illustration.sky51;
+          const aph = illustration.violet65;
+          /* The gap from the nearest equinox/solstice to perihelion, along the Sun's path. */
+          const cardSid = model.eqSid + ((periSeason.point + 3) % 4) * 90;
+          let gap = periSid - cardSid;
+          gap = ((gap % 360) + 540) % 360 - 180;
+          const steps = Math.max(2, Math.ceil(Math.abs(gap) / 2));
+          const arc = Array.from({ length: steps + 1 }, (_, k) => {
+            const [x, y] = projPlane(alphaOf(cardSid + (gap * k) / steps), 1);
+            return `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+          }).join(" ");
+          /* Outside the yellow ring, on a pill, so it never sits on the perihelion label. */
+          const [gx, gy] = projPlane(alphaOf(cardSid + gap / 2), 1.11);
+          const gapText = t("learn.apsides.gap_days", { days: N(Math.abs(periSeason.days)) });
           return (
             <g>
-              <line x1={px} y1={py} x2={qx} y2={qy} stroke={peri} strokeWidth={2} strokeDasharray="7 5" opacity={0.75} />
-              <circle cx={px} cy={py} r={8} fill={peri} stroke={card} strokeWidth={2} />
-              <circle cx={qx} cy={qy} r={8} fill={aph} stroke={card} strokeWidth={2} />
+              <line x1={px} y1={py} x2={qx} y2={qy} stroke={peri} strokeWidth={2} strokeDasharray="7 5" opacity={0.7} />
+              {Math.abs(periSeason.days) >= 1 ? (
+                <>
+                  <path d={arc} fill="none" stroke={peri} strokeWidth={9} strokeLinecap="round" opacity={0.35} />
+                  <rect x={gx - 6 - gapText.length * 3.6} y={gy - 10} width={12 + gapText.length * 7.2} height={20} rx={10} fill={card} stroke={peri} strokeWidth={1.2} />
+                  <text x={gx} y={gy} fill={peri} textAnchor="middle" dominantBaseline="central" style={{ font: "700 12px var(--pn-num)" }}>
+                    {gapText}
+                  </text>
+                </>
+              ) : null}
+              <circle cx={px} cy={py} r={10} fill={peri} stroke={card} strokeWidth={2.5} />
+              <circle cx={qx} cy={qy} r={6.5} fill={aph} stroke={card} strokeWidth={2} />
               <text x={plx} y={ply - 6} fill={peri} textAnchor="middle" dominantBaseline="central" style={{ font: "700 12px var(--pn-font)" }}>
                 {t("learn.apsides.perihelion")}
               </text>
@@ -344,11 +369,11 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
         <g transform="translate(14 14)">
           <line x1={0} y1={6} x2={22} y2={6} stroke={gold} strokeWidth={2.4} />
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
-            {t("learn.study.equinox.legend_ecliptic")}
+            {t(apsides ? "learn.apsides.legend_ecliptic" : "learn.study.equinox.legend_ecliptic")}
           </text>
           <line x1={0} y1={24} x2={22} y2={24} stroke={illustration.sky51} strokeWidth={2.4} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
-            {t("learn.study.equinox.legend_equator")}
+            {t(apsides ? "learn.apsides.legend_equator" : "learn.study.equinox.legend_equator")}
           </text>
           {apsides ? (
             <>
@@ -356,7 +381,8 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
               <text x={28} y={42} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
                 {t("learn.apsides.legend_cross")}
               </text>
-              <line x1={0} y1={60} x2={22} y2={60} stroke={illustration.orange53} strokeWidth={2} strokeDasharray="7 5" />
+              <circle cx={6} cy={60} r={5} fill={illustration.orange53} />
+              <circle cx={18} cy={60} r={3.5} fill={illustration.violet65} />
               <text x={28} y={60} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
                 {t("learn.apsides.legend_apsides")}
               </text>
@@ -364,19 +390,22 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
           ) : null}
         </g>
       </svg>
-        <div className="absolute bottom-1 right-1 flex flex-col gap-1.5">
+      </div>
+      {/* Zoom controls sit under the drawing, so they never cover a label on a phone. */}
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">{t("learn.zoom_hint")}</p>
+        <div className="flex shrink-0 gap-1.5">
           {[
-            { label: t("ui.learn.zoom_in"), icon: <Plus size={14} />, onClick: zoom.zoomIn },
-            { label: t("ui.learn.zoom_out"), icon: <Minus size={14} />, onClick: zoom.zoomOut },
-            ...(zoom.scale > 1 ? [{ label: t("ui.learn.reset_view"), icon: <RotateCcw size={13} />, onClick: zoom.reset }] : []),
-          ].map((b) => (
-            <button key={b.label} type="button" className="flex size-8 items-center justify-center rounded-full border border-border bg-card/75 shadow-sm" onClick={b.onClick} title={b.label} aria-label={b.label}>
-              {b.icon}
-            </button>
-          ))}
+              { label: t("ui.learn.zoom_in"), icon: <Plus size={14} />, onClick: zoom.zoomIn },
+              { label: t("ui.learn.zoom_out"), icon: <Minus size={14} />, onClick: zoom.zoomOut },
+              ...(zoom.scale > 1 ? [{ label: t("ui.learn.reset_view"), icon: <RotateCcw size={13} />, onClick: zoom.reset }] : []),
+            ].map((b) => (
+              <button key={b.label} type="button" className="flex size-8 items-center justify-center rounded-full border border-border bg-card/75 shadow-sm" onClick={b.onClick} title={b.label} aria-label={b.label}>
+                {b.icon}
+              </button>
+            ))}
         </div>
       </div>
-      <p className="mt-1 text-center text-xs text-muted-foreground">{t("learn.zoom_hint")}</p>
 
       <div className={edControls}>
         {apsides ? (
@@ -449,10 +478,12 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
         {apsides ? (
           <div className={edPresets}>
             {[
+              { key: "learn.apsides.preset_prev_cycle", bs: Math.round(nowBs - CLIMATIC_PRECESSION_YEARS) },
               { key: "learn.apsides.preset_ice", bs: -9000 + CE_TO_BS },
               { key: "learn.apsides.preset_aligned", bs: 1250 + CE_TO_BS },
               { key: "learn.apsides.preset_today", bs: nowBs },
               { key: "learn.apsides.preset_future", bs: 11750 + CE_TO_BS },
+              { key: "learn.apsides.preset_next_cycle", bs: Math.round(nowBs + CLIMATIC_PRECESSION_YEARS) },
             ].map((p) => (
               <button key={p.key} type="button" className={edPreset(Math.abs(year - p.bs) < 150)} onClick={() => { setPlaying(false); setYear(p.bs); }}>
                 {t(p.key)}
@@ -472,7 +503,12 @@ export function EquinoxPrecession({ apsides = false }: { apsides?: boolean } = {
       </div>
 
       {apsides ? (
-        <p className={tmCardCap}>{t("learn.apsides.caption")}</p>
+        <>
+          {Math.abs(yearCe - 2026) > AP_RELIABLE_YEARS ? (
+            <p className="mt-2 text-center text-xs font-semibold text-muted-foreground">{t("learn.apsides.far_note")}</p>
+          ) : null}
+          <p className={tmCardCap}>{t("learn.apsides.caption")}</p>
+        </>
       ) : (
       <p className={tmCardCap}>
           {t("learn.study.equinox.caption_lead")}{" "}
