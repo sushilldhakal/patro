@@ -5,7 +5,8 @@ import type { ArticleData } from "../../article-schema";
  * value the BS engine extrapolates sankrantis with, engine/calendar/
  * bikram_sambat.py), Surya Siddhanta year 365.258756 d. Baisakh 1 dates are
  * from the official BS table (engine/calendar/constants.py). Lahiri ayanamsha
- * ≈ 24.2° in 2026, zero ≈ 285 CE.
+ * ≈ 24.2° in 2026, zero ≈ 285 CE. Sidereal day 86,164.09 s; Sun's mean motion
+ * 0.9856°/d, 1.019° at perihelion and 0.953° at aphelion.
  */
 export const sayanaNirayanaYear: ArticleData = {
   slug: "sayana-nirayana-year",
@@ -290,6 +291,212 @@ export const sayanaNirayanaYear: ArticleData = {
       ],
     },
     {
+      title: { ne: "निरयनको बलियो पक्ष — सूर्य राशिमा कसरी हिँड्छ", en: "The strength of nirayana — how the Sun walks the rashis" },
+      eyebrow: "23 h 56 min 4 s",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "राशि ताराको आकाशका बाह्र स्थिर टुक्रा हुन् — हरेक `३०°`। सूर्य कुन राशिमा छ भनेर नाप्न ताराकै सापेक्ष नाप्नुपर्छ। आकाश आफैँले हरेक दिन यो नाप दिन्छ: **ताराको दिन** र **सूर्यको दिन**बीचको फरकमा।",
+            en: "The rashis are twelve fixed slices of the starry sky — `30°` each. To know which one the Sun is in, you have to measure against the stars. The sky gives that measurement every day: in the gap between the **star day** and the **Sun's day**.",
+          },
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "नाक्षत्र दिन — २३ घ ५६ मि ४ से", en: "Sidereal day — 23 h 56 min 4 s" },
+              p: {
+                ne: "ताराको सापेक्ष पृथ्वीको एक पूरा फेरो। कुनै तारा फेरि ठ्याक्कै उही ठाउँमा आउन यति समय लाग्छ, र यो सधैँ उही रहन्छ।",
+                en: "One full turn of the Earth against the stars. It is the time a star takes to return to exactly the same place, and it never varies.",
+              },
+            },
+            {
+              h: { ne: "सौर दिन — २४ घण्टा", en: "Solar day — 24 hours" },
+              p: {
+                ne: "सूर्य एक मध्याह्नबाट अर्को मध्याह्नसम्म। त्यो बीचमा पृथ्वी आफ्नो कक्षामा अलि अगाडि बढ्छ, त्यसैले सूर्यलाई फेरि माथि ल्याउन `~१°` थप घुम्नुपर्छ — त्यही `३` मि `५६` से।",
+                en: "The Sun from one noon to the next. Meanwhile the Earth moves a little along its orbit, so it must turn `~1°` more to bring the Sun overhead again — those `3` min `56` s.",
+              },
+            },
+            {
+              h: { ne: "त्यो १° नै राशिको यात्रा", en: "That 1° is the walk through the rashis" },
+              p: {
+                ne: "सूर्य ताराको सापेक्ष हरेक दिन `~१°` पूर्वतिर सर्छ। `३०` दिनमा एक राशि, `३६५` दिनमा बाह्रै राशि — यही हो *सङ्क्रान्ति*, महिना र निरयन वर्ष।",
+                en: "Against the stars the Sun shifts `~1°` east every day. One rashi in `30` days, all twelve in `365` — this is the *sankranti*, the month and the sidereal year.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "diagram",
+          id: "sidereal-solar-day",
+          caption: {
+            ne: "ताराको हिसाबले फेरो २३ घ ५६ मि मै पूरा हुन्छ; सूर्य फेरि माथि आउन ~४ मिनेट थप — त्यो थप कोण नै सूर्यको दैनिक राशि-यात्रा हो।",
+            en: "Against the stars the turn is done in 23 h 56 min; bringing the Sun back overhead takes ~4 minutes more — that extra angle is the Sun's daily step through the rashis.",
+          },
+        },
+        {
+          kind: "calc",
+          caption: { ne: "४ मिनेटबाट राशिसम्म", en: "From 4 minutes to a rashi" },
+          rule: [
+            { ne: "दैनिक फरक = सौर दिन − नाक्षत्र दिन", en: "Daily gap = solar day − sidereal day" },
+            { ne: "सूर्यको दैनिक गति = ३६०° × फरक ÷ नाक्षत्र दिन", en: "Sun's daily motion = 360° × gap ÷ sidereal day" },
+            { ne: "एक राशिका दिन = ३०° ÷ दैनिक गति", en: "Days per rashi = 30° ÷ daily motion" },
+          ],
+          example: [
+            { k: { ne: "८६,४०० − ८६,१६४.१ से", en: "86,400 − 86,164.1 s" }, v: "235.9 s ≈ 3 min 56 s" },
+            { k: { ne: "३६०° × २३५.९ ÷ ८६,१६४.१", en: "360° × 235.9 ÷ 86,164.1" }, v: "≈ 0.9856°" },
+            { k: { ne: "३०° ÷ ०.९८५६°", en: "30° ÷ 0.9856°" }, v: "≈ 30.4 d" },
+            { k: { ne: "३६०° ÷ ०.९८५६°", en: "360° ÷ 0.9856°" }, v: "≈ 365.26 d" },
+          ],
+          result: {
+            ne: "दिनको ४ मिनेट जम्मा हुँदा महिनामा **२ घण्टा = एक राशि**, वर्षमा **२४ घण्टा = पूरा एक फेरो**। त्यसैले एक निरयन वर्षमा `३६५.२६` सौर दिन तर `३६६.२६` नाक्षत्र दिन हुन्छन्।",
+            en: "Four minutes a day add up to **2 hours = one rashi** in a month and **24 hours = one whole extra turn** in a year. So a sidereal year holds `365.26` solar days but `366.26` star days.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "उल्टो सोचौँ। सूर्यको दिन पनि ताराको दिनजत्तै २३ घ ५६ मि ४ से हुन्थ्यो भने सूर्य हरेक दिन ताराको ठ्याक्कै उही बिन्दुमा फर्कन्थ्यो — ऊ **सधैँ मेषमै** रहन्थ्यो। न सङ्क्रान्ति, न महिना, न वर्ष। हाम्रो २४ घण्टे घडी सूर्यसँग बाँधिएको छ, त्यसैले त्यो घडीमा सूर्य हरेक दिन उही ठाउँ (मध्याह्न) मा देखिन्छ र सर्दैन जस्तो लाग्छ। सर्ने कुरा ताराको घडीमा मात्र देखिन्छ — र राशि त्यही घडीले नापिन्छ।",
+            en: "Turn it around. If the Sun's day were as short as the star day, 23 h 56 min 4 s, the Sun would come back to exactly the same point among the stars every day — it would **stay in Mesha forever**. No sankranti, no month, no year. Our 24-hour clock is tied to the Sun, so on that clock the Sun is in the same place (noon) every day and seems not to move. Its motion only shows on the star clock — and the rashis are measured on that clock.",
+          },
+        },
+        {
+          kind: "table",
+          caption: {
+            ne: "हरेक राति उही घडी-समयमा (जस्तै ९ बजे) आकाश हेर्दा — तारा हरेक दिन ४ मिनेट चाँडो आउँछन्",
+            en: "Looking at the sky at the same clock time every night (say 9 pm) — the stars arrive 4 minutes earlier each day",
+          },
+          headers: [
+            { ne: "दिनपछि", en: "After" },
+            { ne: "तारा कति चाँडो", en: "Stars earlier by" },
+            { ne: "आकाश सरेको", en: "Sky turned" },
+            { ne: "सूर्य कहाँ", en: "Where the Sun is" },
+          ],
+          rows: [
+            [{ ne: "१ दिन", en: "1 day" }, "3 min 56 s", "≈ 1°", { ne: "उही राशिमा १° अगाडि", en: "1° further in the same rashi" }],
+            [{ ne: "१५ दिन", en: "15 days" }, { ne: "≈ १ घण्टा", en: "≈ 1 hour" }, "≈ 15°", { ne: "राशिको आधा बाटो", en: "Halfway through the rashi" }],
+            [{ ne: "३०.४ दिन", en: "30.4 days" }, { ne: "≈ २ घण्टा", en: "≈ 2 hours" }, "30°", { ne: "अर्को राशि — सङ्क्रान्ति", en: "Next rashi — a sankranti" }],
+            [{ ne: "१८२.६ दिन", en: "182.6 days" }, { ne: "≈ १२ घण्टा", en: "≈ 12 hours" }, "180°", { ne: "मेषबाट तुला — आधा वर्ष", en: "Mesha to Tula — half a year" }],
+            [{ ne: "३६५.२६ दिन", en: "365.26 days" }, { ne: "२४ घण्टा", en: "24 hours" }, "360°", { ne: "फेरि मेष — नयाँ वर्ष", en: "Mesha again — a new year" }],
+          ],
+          highlightRow: 2,
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "निरयन वर्ष भनेको यही यात्राको पूरा फेरो हो: सूर्य ताराको एउटै बिन्दुबाट फेरि त्यही बिन्दुसम्म। त्यसैले वि.सं.मा **महिनाको नाम, सूर्यको राशि र आकाशका तारा** तीनै सधैँ एउटै कुरा भन्छन्। बैशाखभरि सूर्य मेषमा, साउनभरि कर्कटमा — आज पनि, हजार वर्षपछि पनि।",
+            en: "The sidereal year is exactly one full round of this walk: the Sun from one point among the stars back to the same point. That is why in BS the **month's name, the Sun's rashi and the stars in the sky** always say the same thing. All through Baisakh the Sun is in Mesha, all through Saun in Karka — today, and a thousand years from now.",
+          },
+        },
+      ],
+    },
+    {
+      title: { ne: "सबै ग्रह एउटै ताराको नक्सामा", en: "Every graha on one star map" },
+      eyebrow: "One frame",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "सूर्यमात्र होइन — चन्द्र, मङ्गल, गुरु, शनि सबै ताराको पृष्ठभूमिमा आ-आफ्नो गतिमा राशि पार गर्छन्। निरयनमा सबैको स्थिति **एउटै स्थिर नक्सा**मा नापिन्छ, त्यसैले कुनै पनि दुई ग्रहको सम्बन्ध, नक्षत्र र राशि सिधै दाँज्न मिल्छ।",
+            en: "Not just the Sun — the Moon, Mars, Jupiter and Saturn all cross the rashis against the stars, each at its own pace. In nirayana every position is measured on **one fixed map**, so any two grahas, nakshatras and rashis can be compared directly.",
+          },
+        },
+        {
+          kind: "table",
+          caption: { ne: "ताराको सापेक्ष औसत गति — सबै उही निरयन राशिचक्रमा", en: "Mean motion against the stars — all on the same sidereal zodiac" },
+          headers: [
+            { ne: "ग्रह", en: "Graha" },
+            { ne: "दिनको गति", en: "Per day" },
+            { ne: "एक राशिमा", en: "In one rashi" },
+            { ne: "पूरा चक्र", en: "Full round" },
+          ],
+          rows: [
+            [{ ne: "सूर्य", en: "Sun" }, "≈ 0°59′", { ne: "≈ ३०.४ दिन (एक महिना)", en: "≈ 30.4 days (a month)" }, { ne: "१ वर्ष", en: "1 year" }],
+            [{ ne: "चन्द्र", en: "Moon" }, "≈ 13°11′", { ne: "≈ २¼ दिन", en: "≈ 2¼ days" }, { ne: "२७.३ दिन", en: "27.3 days" }],
+            [{ ne: "मङ्गल", en: "Mars" }, "≈ 0°31′", { ne: "≈ ५७ दिन", en: "≈ 57 days" }, { ne: "≈ १.९ वर्ष", en: "≈ 1.9 years" }],
+            [{ ne: "गुरु", en: "Jupiter" }, "≈ 0°5′", { ne: "≈ १ वर्ष", en: "≈ 1 year" }, { ne: "≈ १२ वर्ष", en: "≈ 12 years" }],
+            [{ ne: "शनि", en: "Saturn" }, "≈ 0°2′", { ne: "≈ २½ वर्ष", en: "≈ 2½ years" }, { ne: "≈ २९½ वर्ष", en: "≈ 29½ years" }],
+            [{ ne: "राहु–केतु", en: "Rahu–Ketu" }, { ne: "≈ 0°3′ (उल्टो)", en: "≈ 0°3′ (backwards)" }, { ne: "≈ १½ वर्ष", en: "≈ 1½ years" }, { ne: "≈ १८.६ वर्ष", en: "≈ 18.6 years" }],
+          ],
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "राशि र नक्षत्र ठ्याक्कै मिल्छन्", en: "Rashi and nakshatra fit exactly" },
+              p: {
+                ne: "२७ नक्षत्र × `१३°२०′` = `३६०°`, एक राशिमा `२¼` नक्षत्र। मेष = अश्विनी + भरणी + कृत्तिकाको पहिलो पाद। निरयनमा यो जोड कहिल्यै सर्दैन; सायन मेषको सुरु भने आज उत्तर भाद्रपदमा (निरयन मीन `~५°४८′`) पर्छ र हरेक ७२ वर्षमा `१°` थप सर्छ।",
+                en: "27 nakshatras × `13°20′` = `360°`, `2¼` nakshatras to a rashi. Mesha = Ashvini + Bharani + the first pada of Krittika. In nirayana this fit never moves; the start of tropical Mesha already falls in Uttara Bhadrapada (sidereal Meena `~5°48′`) and slides `1°` more every 72 years.",
+              },
+            },
+            {
+              h: { ne: "चान्द्र मासको नाम पनि ताराबाट", en: "Lunar month names come from the stars too" },
+              p: {
+                ne: "पूर्णिमाको चन्द्र सूर्यको ठीक उल्टो राशिमा हुन्छ। सूर्य निरयन मेषमा हुँदा पूर्णिमा चित्रा–विशाखातिर पर्छ — त्यसैले *वैशाख*। सौर महिना र चान्द्र मासको यो नाता पनि निरयन आधारमै टिक्छ।",
+                en: "The full Moon stands in the rashi opposite the Sun. With the Sun in sidereal Mesha, the full Moon falls near Chitra–Vishakha — hence *Vaishakha*. This bond between solar and lunar months also holds only on the sidereal footing.",
+              },
+            },
+            {
+              h: { ne: "सूर्योदयको लग्न = सूर्यको राशि", en: "Sunrise lagna = the Sun's rashi" },
+              p: {
+                ne: "पूर्वी क्षितिजमा उदाउने राशि नै *लग्न* हो। एक नाक्षत्र दिनमा बाह्रै लग्न उदाउँछन् — औसत करिब २ घण्टा प्रति लग्न। सूर्य जुन राशिमा छ, सूर्योदयमा त्यही राशि उदाउँछ: बैशाखभरि सूर्योदय लग्न मेष, साउनभरि कर्कट। उही घडी-समयको लग्न भने हरेक दिन ४ मिनेट चाँडो, महिनामा एक राशि सर्छ — मुहूर्त गणना यही नियममा चल्छ।",
+                en: "The rashi rising on the eastern horizon is the *lagna*. All twelve rise in one star day — about 2 hours each on average. Whatever rashi the Sun is in rises with it at sunrise: the sunrise lagna is Mesha all through Baisakh, Karka all through Saun. The lagna at a fixed clock time comes 4 minutes earlier each day, a whole rashi in a month — the rule muhurta reckoning runs on.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "यसको सबैभन्दा ठूलो फाइदा भनेको **आकाशमा आफैँ जाँच्न मिल्नु** हो। मध्यरातमा टाउकोमाथि देखिने राशि सूर्यको ठीक उल्टो हुन्छ, र बिहानीअघि पूर्वमा उदाउने तारा सूर्यको राशितिर देखाउँछन्। निरयन पात्रोले भनेको सूर्य, चन्द्र र ग्रहको राशि रातको आकाशमा तारा हेरेरै पुष्टि हुन्छ — सायन राशि भने आज करिब एक राशि अगाडि लेखिन्छ, र तारासँग मेल खाँदैन।",
+            en: "The biggest gain is that **you can check it in the sky yourself**. The rashi overhead at midnight is the one opposite the Sun, and the stars rising in the east before dawn point to the Sun's rashi. The rashi a sidereal patro gives for the Sun, the Moon and the planets is confirmed by simply looking at the stars — a tropical rashi is written nearly one rashi ahead today and does not match them.",
+          },
+        },
+      ],
+    },
+    {
+      title: { ne: "महिना किन २९ देखि ३२ दिनका?", en: "Why months run 29 to 32 days" },
+      eyebrow: "The Sun's real pace",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "निरयन सौर पात्रोले सूर्यको **वास्तविक** गति पछ्याउँछ, औसत होइन। पृथ्वीको कक्षा अलि अण्डाकार छ, त्यसैले सूर्य ताराको सापेक्ष कहिले छिटो, कहिले ढिलो हिँड्छ — र महिनाको लम्बाइ त्यसै अनुसार बदलिन्छ।",
+            en: "A sidereal solar calendar follows the Sun's **true** motion, not an average. Earth's orbit is slightly oval, so against the stars the Sun walks sometimes faster, sometimes slower — and the months grow and shrink with it.",
+          },
+        },
+        {
+          kind: "table",
+          headers: [
+            { ne: "पृथ्वी", en: "Earth" },
+            { ne: "सूर्यको दैनिक गति", en: "Sun's daily motion" },
+            { ne: "३०° पार गर्न", en: "To cross 30°" },
+            { ne: "वि.सं. महिना", en: "BS month" },
+          ],
+          rows: [
+            [{ ne: "सूर्यको नजिक (जनवरी सुरु)", en: "Nearest the Sun (early January)" }, "≈ 1.02°", { ne: "≈ २९.४ दिन", en: "≈ 29.4 days" }, { ne: "पुस–माघ: २९–३० दिन", en: "Push–Magh: 29–30 days" }],
+            [{ ne: "सूर्यबाट टाढा (जुलाई सुरु)", en: "Farthest from the Sun (early July)" }, "≈ 0.95°", { ne: "≈ ३१.५ दिन", en: "≈ 31.5 days" }, { ne: "असार–साउन: ३१–३२ दिन", en: "Asar–Saun: 31–32 days" }],
+          ],
+        },
+        {
+          kind: "diagram",
+          id: "solar-month-lengths",
+          caption: {
+            ne: "सूर्य ढिलो हिँड्दा राशि पार गर्न धेरै दिन — गर्मीका महिना लामा, जाडोका छोटा।",
+            en: "When the Sun walks slowly it needs more days per rashi — the summer months are long, the winter ones short.",
+          },
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "वि.सं.को महिना ३२ दिनको हुनु गल्ती होइन, आकाशको सही प्रतिबिम्ब हो। ई.सं.ले महिनाका दिन नियमले तोक्छ; वि.सं.ले सूर्यलाई नै सोध्छ। यो पनि निरयन (सङ्क्रान्तिमा आधारित) पात्रोको एउटा राम्रो नतिजा हो।",
+            en: "A 32-day month in BS is not an error but a faithful picture of the sky. AD fixes a month's days by rule; BS asks the Sun. This too is a good result of a sidereal, sankranti-based calendar.",
+          },
+        },
+      ],
+    },
+    {
       title: { ne: "निरयन मान्दाको लामो नतिजा", en: "The long result of staying sidereal" },
       eyebrow: "Centuries ahead",
       blocks: [
@@ -322,8 +529,8 @@ export const sayanaNirayanaYear: ArticleData = {
           kind: "list",
           items: [
             {
-              ne: "**राम्रो पक्ष:** राशि, नक्षत्र र ग्रहको स्थिति ताराको आकाशसँग सधैँ मेल खान्छ — ज्योतिष, मुहूर्त र नक्षत्रमा आधारित सबै गणना एउटै आधारमा रहन्छन्।",
-              en: "**The gain:** rashi, nakshatra and planetary positions always match the starry sky — astrology, muhurta and everything built on the nakshatras stay on one footing.",
+              ne: "**राम्रो पक्ष:** राशि, नक्षत्र र ग्रहको स्थिति ताराको आकाशसँग सधैँ मेल खान्छ — ज्योतिष, मुहूर्त र नक्षत्रमा आधारित सबै गणना एउटै आधारमा रहन्छन्। महिनाको नाम, सूर्यको राशि र आकाशका तारा सधैँ एउटै कुरा भन्छन्।",
+              en: "**The gain:** rashi, nakshatra and planetary positions always match the starry sky — astrology, muhurta and everything built on the nakshatras stay on one footing. The month's name, the Sun's rashi and the stars overhead always agree.",
             },
             {
               ne: "**मूल्य:** महिना र ऋतुको जोडी बिस्तारै छुट्छ। ग्रन्थमा “वसन्त = चैत–बैशाख” भनिएको अहिले नै करिब तीन हप्ता ढिलो छ ([[ritu-drift|ऋतु किन सर्छ]])।",
