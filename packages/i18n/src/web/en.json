@@ -4010,6 +4010,7 @@
       "legend_earths": "Earth at the equinoxes and solstices — its axis always tilted the same way",
       "legend_apsides": "Perihelion (orange, Sun closest) and aphelion (violet, Sun farthest)",
       "caption": "The Sun in the middle, Earth's orbit the first ring, the rashi mandala outside — the stars, which never move. The four Earths show where Earth is at the equinoxes and solstices; those places are set by Earth's axis and drift 50″ a year backwards (clockwise) with precession — once round in about 26,000 years. Perihelion and aphelion are the orbit's near and far ends; the orbit itself turns 11.6″ a year forwards. Moving in opposite directions, perihelion passes through every season in about 21,000 years. When perihelion reaches the June solstice, northern summers turn hotter and winters colder.",
+      "legend_today": "Today's orbit (to compare how far it has turned)",
       "title": "Perihelion, aphelion and the seasons — a 21,000-year cycle",
       "perihelion": "Perihelion",
       "aphelion": "Aphelion",

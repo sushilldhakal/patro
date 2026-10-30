@@ -45,7 +45,8 @@ const RAD = Math.PI / 180;
 const RING_IN = 0.52;
 const RING_OUT = 0.64;
 /* Drawn orbit: exaggerated (Earth's real 0.017 looks round), far end inside the rashi ring. */
-const ORBIT_E = 0.15;
+/* Clearly oval so the near end (perihelion) and far end (aphelion) read at a glance. */
+const ORBIT_E = 0.35;
 const ORBIT_A = 0.44 / (1 + ORBIT_E);
 const PERI_R = ORBIT_A * (1 - ORBIT_E);
 const APH_R = ORBIT_A * (1 + ORBIT_E);
@@ -79,6 +80,9 @@ function layout(year: number) {
   };
 }
 
+/** Where perihelion sits today — the faint reference orbit. */
+const TODAY_PERI_LON = layout(NOW_BS).periLon;
+
 type Copy = { sun: string; seasons: string[]; perihelion: string; aphelion: string; rashis: string[] };
 
 const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
@@ -96,6 +100,7 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
   const readClock = useSceneClock(clock, onSample);
   const projector = useLabelProjector(onLabels);
   const orbitRef = useRef<THREE.Group>(null);
+  const todayRef = useRef<THREE.Group>(null);
   const earthRefs = useRef<(THREE.Group | null)[]>([]);
   const tiltRefs = useRef<(THREE.Group | null)[]>([]);
 
@@ -103,6 +108,8 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
     const year = readClock(0.016);
     const l = layout(year);
     if (orbitRef.current) orbitRef.current.rotation.y = l.periLon * RAD;
+    /* Today's orbit stays as a faint reference once the slider leaves today. */
+    if (todayRef.current) todayRef.current.visible = Math.abs(year - NOW_BS) > 200;
     l.seasonLons.forEach((lon, k) => {
       earthRefs.current[k]?.position.set(...at(lon, orbitR(lon, l.periLon)));
       /* Globe leans its pole toward +x; turn it to face the June-solstice Sun direction. */
@@ -114,16 +121,18 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
       l.seasonLons.forEach((lon, k) => {
         projector.push(
           { id: `season-${k}`, text: copy.seasons[k] ?? "", color: DIAGRAM_LABEL_COLOR.warn, size: 9 },
-          at(lon, orbitR(lon, l.periLon) - 0.1, 0.06),
+          /* Just outside each Earth — inside would crowd the Sun on this oval orbit. */
+          at(lon, orbitR(lon, l.periLon) + 0.07, 0.03),
         );
       });
       projector.push(
         { id: "peri", text: copy.perihelion, color: DIAGRAM_COLOR.tropical, size: 10 },
-        at(l.periLon, PERI_R + 0.06, 0.05),
+        at(l.periLon, PERI_R + 0.12, 0.05),
       );
       projector.push(
         { id: "aph", text: copy.aphelion, color: APHELION_COLOR, size: 10 },
-        at(l.periLon + 180, APH_R + 0.06, 0.05),
+        /* The far end sits near the rashi ring; label it just inside the orbit. */
+        at(l.periLon + 180, APH_R - 0.08, 0.05),
       );
       copy.rashis.forEach((name, i) => {
         projector.push(
@@ -143,6 +152,9 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
       {/* The rashi mandala — the stars — stays put. */}
       <RashiRing inner={RING_IN} outer={RING_OUT} opacity={0.5} />
       {/* Turned by the orbit: the oval, its long axis and its two ends. */}
+      <group ref={todayRef} rotation={[0, TODAY_PERI_LON * RAD, 0]}>
+        <OrbitPath points={ORBIT_POINTS} color={DIAGRAM_COLOR.orbitFaint} opacity={0.45} radius={0.002} />
+      </group>
       <group ref={orbitRef}>
         <OrbitPath points={ORBIT_POINTS} color={DIAGRAM_COLOR.orbit} opacity={0.8} radius={0.0035} />
         <mesh rotation={[0, 0, Math.PI / 2]} position={[(PERI_R - APH_R) / 2, 0, 0]}>
@@ -215,7 +227,7 @@ export function ApsidesOrbitDiagram() {
     <LearnDiagram3D
       title={t("learn.apsides.title")}
       height={320}
-      camera={{ yaw: 0.25, pitch: 0.95 }}
+      camera={{ yaw: 0.25, pitch: 1.2 }}
       /* No idle camera spin: a turning view would make the fixed rashi mandala look as if it moves. */
       idleSpin={0}
       frame={{ width: RING_OUT * 1.45, height: RING_OUT * 0.75 }}
@@ -224,6 +236,7 @@ export function ApsidesOrbitDiagram() {
         { color: DIAGRAM_COLOR.earth, label: t("learn.apsides.legend_earths") },
         { color: DIAGRAM_COLOR.tropical, label: t("learn.apsides.perihelion") },
         { color: APHELION_COLOR, label: t("learn.apsides.aphelion") },
+        { color: DIAGRAM_COLOR.orbitFaint, label: t("learn.apsides.legend_today") },
       ]}
       readouts={[
         { k: t("holidays.bs_year"), v: digits(Math.round(year)) },
