@@ -13,6 +13,103 @@ export const sayanaNirayanaYear: ArticleData = {
   seeAlso: ["sidereal-vs-tropical", "year-begins-baisakh", "bs-ad-offset", "ritu-drift"],
   sections: [
     {
+      title: { ne: "छोटकरीमा — यो विषय के हो?", en: "In brief — what this topic is about" },
+      eyebrow: "Overview",
+      blocks: [
+        {
+          kind: "lede",
+          text: {
+            ne: "सूर्य घुमेर उही ठाउँमा फर्किन लाग्ने समय नै एक वर्ष हो। तर “उही ठाउँ” दुई तरिकाले नाप्न सकिन्छ — **ऋतु**ले (वसन्त विषुव) वा **तारा**ले (मेष राशिको सुरु)। ऋतुले नापेको वर्ष *सायन*, ताराले नापेको *निरयन*। दुईबीच वर्षमा जम्मा `२०` मिनेटको फरक हुन्छ, तर १,७०० वर्षमा त्यो जम्मा भएर ~२४ दिन~ पुगिसकेको छ।",
+            en: "A year is the time the Sun takes to come back to the same place. But \"the same place\" can be measured two ways — by the **seasons** (the vernal equinox) or by the **stars** (the start of Mesha). The year measured by the seasons is *sāyana* (tropical); the one measured by the stars is *nirayana* (sidereal). They differ by only `20` minutes a year, but over 1,700 years that has added up to ~24 days~.",
+          },
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "सायन = ऋतुको घडी", en: "Sāyana = the clock of the seasons" },
+              p: {
+                ne: "मौसम कहिल्यै नसर्ने गरी बनेको वर्ष। ई.सं. (अङ्ग्रेजी) क्यालेन्डर र पश्चिमी राशिफल यसैमा चल्छन्। त्यसैले २१ मार्च सधैँ वसन्तको सुरु हुन्छ।",
+                en: "A year built so the seasons never move. The AD (Gregorian) calendar and Western sun signs run on it — which is why 21 March always opens spring.",
+              },
+            },
+            {
+              h: { ne: "निरयन = ताराको घडी", en: "Nirayana = the clock of the stars" },
+              p: {
+                ne: "तारा र नक्षत्र कहिल्यै नसर्ने गरी बनेको वर्ष। विक्रम सम्वत्, सङ्क्रान्ति, वैदिक ज्योतिष र पञ्चाङ्ग यसैमा चल्छन्। त्यसैले बैशाखभर सूर्य सधैँ मेष राशिमै हुन्छ।",
+                en: "A year built so the stars and nakshatras never move. Bikram Sambat, the sankrantis, Vedic jyotish and the panchanga run on it — which is why the Sun is in Mesha all through Baisakh.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "✓ सायनको राम्रो पक्ष", en: "✓ Sāyana — pros" },
+              p: {
+                ne: "महिना र ऋतु सधैँ मेल खान्छन्। खेती, मौसम र ई.सं. मितिसँग जोड्न सजिलो — बैशाख सधैँ वसन्तमै पर्थ्यो।",
+                en: "Months always match the seasons. Easy to tie to farming, weather and AD dates — Baisakh would always open spring.",
+              },
+            },
+            {
+              h: { ne: "✓ निरयनको राम्रो पक्ष", en: "✓ Nirayana — pros" },
+              p: {
+                ne: "राशि, नक्षत्र र ग्रहको स्थिति आकाशमा देखिने तारासँग मेल खान्छ। ज्योतिष, मुहूर्त र चन्द्र महिनाको नाम सबै एउटै आधारमा रहन्छन्।",
+                en: "Rashi, nakshatra and planet positions match the stars you can see. Jyotish, muhurta and the lunar month names all stand on one footing.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "keys",
+          items: [
+            {
+              h: { ne: "✗ सायनको कमजोर पक्ष", en: "✗ Sāyana — cons" },
+              p: {
+                ne: "राशि ताराबाट टाढिँदै जान्छ — “मेष” लेखिएको ठाउँमा आज धेरैजसो मीनका तारा छन्, र नक्षत्रसँग मेल रहँदैन।",
+                en: "The signs drift off the stars — where \"Aries\" is written, mostly Meena's stars stand today, and the nakshatras no longer fit.",
+              },
+            },
+            {
+              h: { ne: "✗ निरयनको कमजोर पक्ष", en: "✗ Nirayana — cons" },
+              p: {
+                ne: "महिना ऋतुबाट बिस्तारै छुट्छन् — करिब ७१ वर्षमा १ दिन। माघे सङ्क्रान्ति वास्तविक उत्तरायणभन्दा करिब २४ दिन पछि पर्छ।",
+                en: "Months slowly slip off the seasons — 1 day in about 71 years. Maghe Sankranti now falls about 24 days after the real turn north.",
+              },
+            },
+          ],
+        },
+        {
+          kind: "para",
+          text: {
+            ne: "**तपाईंमा असर:** तपाईंको जन्म राशि, बैशाख १ (१३–१५ अप्रिल) र चाडपर्वका मिति निरयनबाट आउँछन्। पत्रिकाको पश्चिमी राशिफल सायनमा चल्छ — त्यसैले धेरैजसो मानिसको पश्चिमी राशि वैदिक राशिभन्दा एक राशि पछिको हुन्छ (जस्तै वैदिक मेष → पश्चिमी वृष)।",
+            en: "**What it means for you:** your birth rashi, Baisakh 1 (13–15 April) and festival dates come from nirayana. Newspaper Western horoscopes run on sāyana — which is why most people's Western sign is one sign later than their Vedic rashi (Vedic Mesha → Western Taurus, for example).",
+          },
+        },
+        {
+          kind: "list",
+          ordered: true,
+          items: [
+            { ne: "**दुई वर्षको परिभाषा** र लम्बाइ — किन मिनेटको फरक मात्र।", en: "**The two years** defined, and their lengths — why the gap is only minutes." },
+            { ne: "**फरक किन** — पृथ्वीको अक्ष डगमगाउँदा विषुव बिन्दु सर्छ (अयन चलन)।", en: "**Why they differ** — Earth's wobbling axis moves the equinox (precession)." },
+            { ne: "**वि.सं.ले कुन मान्छ** — र बैशाख १ ई.सं.मा किन सर्दै जान्छ।", en: "**Which one BS keeps** — and why Baisakh 1 creeps later in AD." },
+            { ne: "**१,७०० वर्षको फरक** — अयनांश, र माघे सङ्क्रान्ति उत्तरायणबाट किन टाढा।", en: "**The 1,700-year gap** — the ayanamsha, and why Maghe Sankranti left the solstice." },
+            { ne: "**वि.सं. सायन भए** बैशाख, चाडपर्व र राशिमा के बदलिन्थ्यो।", en: "**If BS were tropical** — what would change for Baisakh, festivals and your rashi." },
+            { ne: "**निरयनको बलियो पक्ष** — सूर्य, चन्द्र र ग्रह एउटै ताराको नक्सामा।", en: "**The strength of nirayana** — Sun, Moon and planets on one star map." },
+            { ne: "**महिना २९–३२ दिनका किन** — र शताब्दीपछि बैशाख कहाँ पुग्छ।", en: "**Why months run 29–32 days** — and where Baisakh will be centuries from now." },
+          ],
+        },
+        {
+          kind: "note",
+          text: {
+            ne: "एक वाक्यमा सम्झनुहोस्: **सायन = ऋतु, निरयन = तारा।** कुनै गलत होइन — प्रश्न केवल “के स्थिर राख्ने?” भन्ने हो। नेपाली पात्रोले तारा स्थिर राखेको छ।",
+            en: "Remember it in one line: **sāyana = seasons, nirayana = stars.** Neither is wrong — the only question is \"what do we hold fixed?\" The Nepali patro holds the stars fixed.",
+          },
+        },
+      ],
+    },
+    {
       title: { ne: "एउटै परिक्रमा, दुई किसिमको वर्ष", en: "One orbit, two kinds of year" },
       eyebrow: "Sāyana · Nirayana",
       blocks: [
