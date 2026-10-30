@@ -41,7 +41,8 @@ import { PakshaStripDiagram } from "@/components/learn/diagrams/PakshaStripDiagr
 import { EclipseSeasonWindowDiagram } from "@/components/learn/diagrams/EclipseSeasonWindowDiagram";
 import { SolarMonthLengthsDiagram } from "@/components/learn/diagrams/SolarMonthLengthsDiagram";
 import { CalendarHierarchyDiagram } from "@/components/learn/diagrams/CalendarHierarchyDiagram";
-import { EquinoxPrecessionApsidesDiagram, EquinoxPrecessionDiagram } from "@/components/learn/diagrams/EquinoxPrecessionDiagram";
+import { EquinoxPrecessionDiagram } from "@/components/learn/diagrams/EquinoxPrecessionDiagram";
+import { ApsidesOrbitDiagram } from "@/components/learn/diagrams/ApsidesOrbitDiagram";
 import { RetrogradeLoopDiagram } from "@/components/learn/diagrams/RetrogradeLoopDiagram";
 import { MandaShighraDiagram } from "@/components/learn/diagrams/MandaShighraDiagram";
 import { PrecessionConeDiagram } from "@/components/learn/diagrams/PrecessionConeDiagram";
@@ -112,7 +113,7 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
 
   /* Zodiac reference frames — has native equivalent */
   "ayanamsha-wheel": AyanamshaDiagram,
-  "apsides-seasons": EquinoxPrecessionApsidesDiagram,
+  "apsides-seasons": ApsidesOrbitDiagram,
 
   /* Zodiac reference frames — placeholder, Phase 3 Tier 2/3 */
   "equinox-precession": EquinoxPrecessionDiagram,
