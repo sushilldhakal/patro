@@ -6117,6 +6117,7 @@ export const strings = {
   "learn.apsides.preset_today": { ne: "आज", en: "Today" },
   "learn.apsides.preset_future": { ne: "ग्रीष्म अयनान्तमा उपसौर", en: "Perihelion at June solstice" },
   "learn.apsides.caption": { ne: "बाहिरको राशि घेरा ताराअनुसार स्थिर छ। रातो क्रस (विषुव र अयनान्त) लाई पृथ्वीको अक्षले सार्छ — वर्षमा ५०″ पछाडि। सुन्तला उपसौर र निलो अपसौरलाई कक्षाको घुमाइले सार्छ — वर्षमा ११.६″ अगाडि। दुई उल्टो दिशामा सर्दा तिनबीचको कोण करिब २१,००० वर्षमा एक फेरो घुम्छ। उपसौर ग्रीष्म अयनान्तमा पुग्दा उत्तरको गर्मी झन् तातो र जाडो झन् चिसो हुन्छ।", en: "The outer rashi ring is fixed to the stars. The red cross (equinoxes and solstices) is moved by Earth's axis — 50″ a year backwards. Orange perihelion and blue aphelion are moved by the turning orbit — 11.6″ a year forwards. Moving in opposite directions, the angle between them goes once round in about 21,000 years. When perihelion reaches the June solstice, northern summers turn hotter and winters colder." },
+  "learn.zoom_hint": { ne: "दुई औंलाले (वा Ctrl + स्क्रोलले) जुम गर्नुहोस् · जुम भएपछि तानेर सार्नुहोस्", en: "Pinch with two fingers (or Ctrl + scroll) to zoom · drag to move once zoomed" },
   "learn.pause": { ne: "रोक्नुहोस्", en: "Pause" },
   "learn.play": { ne: "चलाउनुहोस्", en: "Play" },
   "learn.purnima": { ne: "पूर्णिमा", en: "Purnima" },

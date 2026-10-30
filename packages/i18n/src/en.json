@@ -4027,6 +4027,7 @@
       "preset_future": "Perihelion at June solstice",
       "caption": "The outer rashi ring is fixed to the stars. The red cross (equinoxes and solstices) is moved by Earth's axis — 50″ a year backwards. Orange perihelion and blue aphelion are moved by the turning orbit — 11.6″ a year forwards. Moving in opposite directions, the angle between them goes once round in about 21,000 years. When perihelion reaches the June solstice, northern summers turn hotter and winters colder."
     },
+    "zoom_hint": "Pinch with two fingers (or Ctrl + scroll) to zoom · drag to move once zoomed",
     "pause": "Pause",
     "play": "Play",
     "purnima": "Purnima",
