@@ -59,14 +59,16 @@ const TILT = 23.44;
 const D2R = Math.PI / 180;
 
 /* Drawn orbit: exaggerated (Earth's real 0.017 looks round), far end inside the rashi ring. */
-const ORBIT_E = 0.15;
+/* Clearly oval so the near end (perihelion) and far end (aphelion) read at a glance. */
+const ORBIT_E = 0.35;
 const ORBIT_A = 0.84 / (1 + ORBIT_E);
 
-const VB = { W: 900, H: 600 };
+const VB = { W: 900, H: 700 };
 const CX = 450;
-const CY = 304;
+const CY = 372;
 const RX = 270;
-const RY = 122;
+/* Seen from well above the plane, so the orbit's oval is not flattened away. */
+const RY = 196;
 const ZY = 100;
 const BAND_IN = 1.06;
 const BAND_OUT = 1.4;
@@ -150,11 +152,16 @@ export function ApsidesOrbit() {
     -RY * len * Math.sin(TILT * D2R) * Math.sin(axisA) - ZY * len * Math.cos(TILT * D2R),
   ];
 
-  const orbitPath = Array.from({ length: 121 }, (_, k) => {
-    const lon = k * 3;
-    const [x, y] = projPlane(alphaOf(lon), orbitR(lon, periLon));
-    return `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(" ");
+  const ovalPath = (pLon: number) =>
+    Array.from({ length: 121 }, (_, k) => {
+      const lon = k * 3;
+      const [x, y] = projPlane(alphaOf(lon), orbitR(lon, pLon));
+      return `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+  const orbitPath = ovalPath(periLon);
+  /* Today's orbit, faint, so you can see how far the oval has turned. */
+  const todayPeriLon = earthAt(perihelionSiderealLongitude(nowBs - CE_TO_BS, (nowBs - BS_AYAN_ZERO) * RATE));
+  const showToday = Math.abs(year - nowBs) > 200;
 
   /* The gap from the nearest equinox/solstice Earth to perihelion, along the orbit. */
   const cardLon = earthAt(eqSid + CARDINAL_TO_SEASON[season.point] * 90);
@@ -185,7 +192,8 @@ export function ApsidesOrbit() {
   const apsis = (lon: number, color: string, r: number, nameKey: string, glossKey: string) => {
     const f = orbitR(lon, periLon);
     const [x, y] = projPlane(alphaOf(lon), f);
-    const [lx, ly] = projPlane(alphaOf(lon), f + 0.13);
+    /* Name outside the orbit, so it clears a season Earth sitting right beside the dot. */
+    const [lx, ly] = projPlane(alphaOf(lon), f + 0.21);
     return (
       <g>
         <circle cx={x} cy={y} r={r} fill={color} stroke={card} strokeWidth={2} />
@@ -235,7 +243,8 @@ export function ApsidesOrbit() {
         })}
 
         {/* ── first ring: Earth's orbit, turned by the orbit itself ── */}
-        <path d={orbitPath} fill="none" stroke={orbitCol} strokeWidth={2.2} />
+        {showToday ? <path d={ovalPath(todayPeriLon)} fill="none" stroke={orbitCol} strokeWidth={1.2} strokeDasharray="4 5" opacity={0.45} /> : null}
+        <path d={orbitPath} fill={orbitCol} fillOpacity={0.05} stroke={orbitCol} strokeWidth={2.4} />
         {(() => {
           const [px, py] = projPlane(alphaOf(periLon), orbitR(periLon, periLon));
           const [qx, qy] = projPlane(alphaOf(periLon + 180), orbitR(periLon + 180, periLon));
@@ -254,16 +263,18 @@ export function ApsidesOrbit() {
             return <line key={k} x1={28 * Math.cos(a)} y1={28 * Math.sin(a)} x2={35 * Math.cos(a)} y2={35 * Math.sin(a)} stroke={illustration.orange53b} strokeWidth={2} strokeLinecap="round" />;
           })}
         </g>
-        <text x={CX} y={CY + 50} fill={dim} textAnchor="middle" style={{ font: "700 12px var(--pn-font)" }}>
-          {t("kundali.report.meta_sun")}
-        </text>
+
+        {/* ── perihelion and aphelion — the near and far ends of the orbit (under the Earths, so a name is never covered) ── */}
+        {apsis(periLon, peri, 9, "learn.apsides.perihelion", "learn.apsides.perihelion_gloss")}
+        {apsis(periLon + 180, aph, 6.5, "learn.apsides.aphelion", "learn.apsides.aphelion_gloss")}
 
         {/* ── four Earths at the equinoxes and solstices — set by the axis ── */}
         {SEASONS.map((s, k) => {
           const lon = earthAt(eqSid + k * 90);
           const f = orbitR(lon, periLon);
           const [ex, ey] = projPlane(alphaOf(lon), f);
-          const [lx, ly] = projPlane(alphaOf(lon), f - 0.24);
+          const lx = ex;
+          const ly = ey + 25;
           const [vx, vy] = axisVec(0.1);
           return (
             <g key={s.key}>
@@ -277,9 +288,6 @@ export function ApsidesOrbit() {
           );
         })}
 
-        {/* ── perihelion and aphelion — the near and far ends of the orbit ── */}
-        {apsis(periLon, peri, 9, "learn.apsides.perihelion", "learn.apsides.perihelion_gloss")}
-        {apsis(periLon + 180, aph, 6.5, "learn.apsides.aphelion", "learn.apsides.aphelion_gloss")}
 
         {/* legend */}
         <g transform="translate(14 14)">
@@ -290,6 +298,12 @@ export function ApsidesOrbit() {
           <circle cx={6} cy={42} r={5} fill={peri} />
           <circle cx={18} cy={42} r={3.5} fill={aph} />
           <text x={28} y={42} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_apsides")}</text>
+          {showToday ? (
+            <>
+              <line x1={0} y1={60} x2={22} y2={60} stroke={orbitCol} strokeWidth={1.2} strokeDasharray="4 5" opacity={0.6} />
+              <text x={28} y={60} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_today")}</text>
+            </>
+          ) : null}
         </g>
       </svg>
       <ZoomBar zoom={zoom} hint={t("learn.zoom_hint")} labels={{ in: t("ui.learn.zoom_in"), out: t("ui.learn.zoom_out"), reset: t("ui.learn.reset_view") }} />
