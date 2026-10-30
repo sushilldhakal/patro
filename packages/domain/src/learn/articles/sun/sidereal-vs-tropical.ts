@@ -2,7 +2,7 @@ import type { ArticleData } from "../../article-schema";
 
 export const siderealVsTropical: ArticleData = {
   slug: "sidereal-vs-tropical",
-  seeAlso: ["ayanamsha", "ritu-drift", "precession", "equinox-solstice"],
+  seeAlso: ["ayanamsha", "sayana-nirayana-year", "ritu-drift", "precession", "equinox-solstice"],
   sections: [
     {
       title: { ne: "राशिचक्र कहाँबाट नाप्ने?", en: "Where do you start measuring the zodiac?" },

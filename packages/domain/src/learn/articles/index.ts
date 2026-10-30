@@ -7,6 +7,7 @@ import { bsVsAd } from "./foundation/bs-vs-ad";
 import { chandramana } from "./foundation/chandramana";
 import { nepaliCalendarBasics } from "./foundation/nepali-calendar-basics";
 import { sauramana } from "./foundation/sauramana";
+import { sayanaNirayanaYear } from "./foundation/sayana-nirayana-year";
 import { whatIsADay } from "./foundation/what-is-a-day";
 import { whyLocationMatters } from "./foundation/why-location-matters";
 import { yearBeginsBaisakh } from "./foundation/year-begins-baisakh";
@@ -103,6 +104,7 @@ export const SHARED_ARTICLES: ArticleData[] = [
   yearBeginsBaisakh,
   bsVsAd,
   bsAdOffset,
+  sayanaNirayanaYear,
   sauramana,
   chandramana,
   whyLocationMatters,
