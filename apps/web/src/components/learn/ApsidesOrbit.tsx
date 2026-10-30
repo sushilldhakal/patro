@@ -51,8 +51,11 @@ import { ZoomBar } from "./ZoomBar";
 const RATE = 50.2879 / 3600; // precession, degrees per year
 const BS_AYAN_ZERO = 342; // वि.सं. year the Lahiri ayanamsha was zero
 const CE_TO_BS = 57;
-const Y_MIN = -50000;
-const Y_MAX = 50000;
+/* Wide enough for the orbit's oval to turn almost twice round as it plays. */
+const Y_MIN = -100000;
+const Y_MAX = 100000;
+/** Playback, years per second: the oval turns ~20°/s, the season Earths a lap in ~4 s. */
+const SPEED = 6000;
 /** Beyond this many years from today the constant-rate model is only indicative. */
 const RELIABLE_YEARS = 20000;
 const TILT = 23.44;
@@ -106,6 +109,23 @@ export function ApsidesOrbit() {
   const svgRef = useRef<SVGSVGElement>(null);
   const zoom = useSvgZoom(svgRef, VB.W, VB.H);
 
+  /* Start playing the first time the diagram scrolls into view, so the orbit is seen moving. */
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setPlaying(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!playing) return;
     let last = performance.now();
@@ -113,7 +133,7 @@ export function ApsidesOrbit() {
       const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
       setYear((y) => {
-        const next = y + dt * 2500;
+        const next = y + dt * SPEED;
         return next > Y_MAX ? Y_MIN : next;
       });
       raf.current = requestAnimationFrame(tick);
