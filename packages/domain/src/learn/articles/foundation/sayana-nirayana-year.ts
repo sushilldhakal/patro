@@ -606,8 +606,8 @@ export const sayanaNirayanaYear: ArticleData = {
           kind: "diagram",
           id: "apsides-seasons",
           caption: {
-            ne: "स्लाइडर सार्नुहोस् वा चलाउनुहोस् — ऋतु स्थिर राखेर हेर्दा अण्डाकार कक्षा पूरै घुम्छ र उपसौर हेमन्त अयनान्तबाट वसन्त विषुव, ग्रीष्म अयनान्त हुँदै फेरि फर्किन्छ। उपसौर ग्रीष्म अयनान्तमा पुग्दा उत्तरी गर्मी कडा हुन्छ।",
-            en: "Move or play the slider — with the seasons fixed the orbit's oval turns all the way round, carrying perihelion from the December solstice past the March equinox to the June solstice and back. When perihelion reaches the June solstice, northern summers turn sharp.",
+            ne: "स्लाइडर सार्नुहोस् वा चलाउनुहोस् — बाहिरको राशि मण्डल (तारा) स्थिर रहन्छ; विषुव र अयनान्तका चार पृथ्वी अयन चलनले पछाडि सर्छन्, उपसौर–अपसौर कक्षासँगै बिस्तारै अगाडि। उपसौर ग्रीष्म अयनान्तको पृथ्वीमा पुग्दा उत्तरी गर्मी कडा हुन्छ।",
+            en: "Move or play the slider — the outer rashi mandala (the stars) stays fixed; the four equinox and solstice Earths drift backwards with precession, while perihelion and aphelion move slowly forwards with the orbit. When perihelion reaches the June-solstice Earth, northern summers turn sharp.",
           },
         },
         {

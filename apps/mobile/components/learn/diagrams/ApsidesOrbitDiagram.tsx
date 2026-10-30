@@ -9,7 +9,7 @@
  * the orbit's oval turns the other way, carrying perihelion and aphelion, so
  * the two drift through each other once in ~21,000 years.
  */
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { illustration } from "@vedic-patro/design-tokens";
@@ -24,7 +24,6 @@ import {
   solsticeSunlight,
 } from "@vedic-patro/domain/learn/apsidal-precession";
 import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
-import { ChipRow } from "@/components/learn/diagrams/LearnDiagramWidgets";
 import { useDiagramClock, useSceneClock, type DiagramClockRef } from "@/components/learn/diagrams/diagram-clock";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { useLearnTextures } from "@/components/learn/diagrams/learn-textures";
@@ -65,19 +64,18 @@ const orbitR = (lon: number, periLon: number) =>
   (ORBIT_A * (1 - ORBIT_E * ORBIT_E)) / (1 + ORBIT_E * Math.cos((lon - periLon) * RAD));
 
 /** Everything the scene needs for one year, from the shared apsidal model. */
-function layout(year: number, seasonFrame: boolean) {
+/* The rashi mandala is the stars and never moves; the season Earths and the orbit move against it. */
+function layout(year: number) {
   const ayan = (year - BS_AYAN_ZERO) * RATE;
   const eqSid = norm360(-ayan); // the Sun's sidereal longitude at the March equinox
-  const rot = seasonFrame ? norm360(-(NOW_BS - BS_AYAN_ZERO) * RATE) - eqSid : 0;
-  const earthAt = (sunLon: number) => sunLon + 180 + rot;
+  const earthAt = (sunLon: number) => sunLon + 180;
   return {
     ayan,
     eqSid,
-    rot,
     periLon: earthAt(perihelionSiderealLongitude(year - CE_TO_BS, ayan)),
     seasonLons: [0, 1, 2, 3].map((k) => earthAt(eqSid + k * 90)),
     /** North end of the axis leans toward where the Sun is at the June solstice. */
-    axisLon: eqSid + 90 + rot,
+    axisLon: eqSid + 90,
   };
 }
 
@@ -88,27 +86,22 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
   onSample,
   onLabels,
   copy,
-  seasonFrame,
 }: {
   clock: DiagramClockRef;
   onSample?: (year: number) => void;
   onLabels?: (labels: DiagramLabel[]) => void;
   copy: Copy;
-  seasonFrame: boolean;
 }) {
   const textures = useLearnTextures();
   const readClock = useSceneClock(clock, onSample);
   const projector = useLabelProjector(onLabels);
-  const ringRef = useRef<THREE.Group>(null);
   const orbitRef = useRef<THREE.Group>(null);
   const earthRefs = useRef<(THREE.Group | null)[]>([]);
   const tiltRefs = useRef<(THREE.Group | null)[]>([]);
 
   useFrame(() => {
     const year = readClock(0.016);
-    const l = layout(year, seasonFrame);
-    /* RashiRing turns by −rotationDeg; spin its wrapper the other way so a +rot lands right. */
-    if (ringRef.current) ringRef.current.rotation.y = l.rot * RAD;
+    const l = layout(year);
     if (orbitRef.current) orbitRef.current.rotation.y = l.periLon * RAD;
     l.seasonLons.forEach((lon, k) => {
       earthRefs.current[k]?.position.set(...at(lon, orbitR(lon, l.periLon)));
@@ -135,7 +128,7 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
       copy.rashis.forEach((name, i) => {
         projector.push(
           { id: `rashi-${i}`, text: name, color: DIAGRAM_LABEL_COLOR.dim, size: 8 },
-          at(i * 30 + 15 + l.rot, (RING_IN + RING_OUT) / 2, 0.02),
+          at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 0.02),
         );
       });
       projector.end();
@@ -147,9 +140,8 @@ const ApsidesOrbitScene = memo(function ApsidesOrbitScene({
       <ambientLight intensity={0.28} />
       <pointLight position={[0, 0, 0]} intensity={3.2} distance={0} decay={0} />
       <SunBody radius={0.06} map={textures.sun} />
-      <group ref={ringRef}>
-        <RashiRing inner={RING_IN} outer={RING_OUT} opacity={0.5} />
-      </group>
+      {/* The rashi mandala — the stars — stays put. */}
+      <RashiRing inner={RING_IN} outer={RING_OUT} opacity={0.5} />
       {/* Turned by the orbit: the oval, its long axis and its two ends. */}
       <group ref={orbitRef}>
         <OrbitPath points={ORBIT_POINTS} color={DIAGRAM_COLOR.orbit} opacity={0.8} radius={0.0035} />
@@ -186,7 +178,6 @@ export function ApsidesOrbitDiagram() {
     max: Y_MAX,
     speed: 2500,
   });
-  const [seasonFrame, setSeasonFrame] = useState(1);
 
   const copy = useMemo<Copy>(
     () => ({
@@ -205,7 +196,7 @@ export function ApsidesOrbitDiagram() {
   );
 
   const yearCe = year - CE_TO_BS;
-  const { ayan } = layout(year, false);
+  const { ayan } = layout(year);
   const periBs = perihelionBsDate(yearCe, ayan);
   const season = perihelionNearestCardinal(yearCe);
   /* perihelionNearestCardinal counts from the December solstice; copy.seasons from the March equinox. */
@@ -225,6 +216,8 @@ export function ApsidesOrbitDiagram() {
       title={t("learn.apsides.title")}
       height={320}
       camera={{ yaw: 0.25, pitch: 0.95 }}
+      /* No idle camera spin: a turning view would make the fixed rashi mandala look as if it moves. */
+      idleSpin={0}
       frame={{ width: RING_OUT * 1.45, height: RING_OUT * 0.75 }}
       legend={[
         { color: DIAGRAM_COLOR.orbit, label: t("learn.apsides.legend_orbit") },
@@ -264,17 +257,6 @@ export function ApsidesOrbitDiagram() {
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={150}
-      extraControls={
-        <ChipRow
-          label={t("learn.apsides.view")}
-          options={[
-            { label: t("learn.apsides.frame_seasons"), value: 1 },
-            { label: t("learn.apsides.frame_stars"), value: 0 },
-          ]}
-          value={seasonFrame}
-          onChange={setSeasonFrame}
-        />
-      }
       caption={
         Math.abs(yearCe - 2026) > RELIABLE_YEARS
           ? `${t("learn.apsides.far_note")} ${t("learn.apsides.caption")}`
@@ -282,7 +264,7 @@ export function ApsidesOrbitDiagram() {
       }
     >
       {({ onLabels }) => (
-        <ApsidesOrbitScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} seasonFrame={seasonFrame === 1} />
+        <ApsidesOrbitScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />
       )}
     </LearnDiagram3D>
   );
