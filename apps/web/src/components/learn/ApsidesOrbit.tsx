@@ -34,7 +34,7 @@ import {
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { useFullscreen } from "@/lib/use-fullscreen";
-import { EarthGlobeImage } from "./EarthGlobeImage";
+import { EarthTextureGlobe } from "./EarthTextureGlobe";
 import { RashiGlyph } from "./rashi-icons";
 import { useSvgZoom } from "./use-svg-zoom";
 import { ZoomBar } from "./ZoomBar";
@@ -284,8 +284,7 @@ export function ApsidesOrbit() {
           return (
             <g key={s.key}>
               <line x1={ex - vx} y1={ey - vy} x2={ex + vx} y2={ey + vy} stroke={dim} strokeWidth={1.5} />
-              {/* The globe fills only the middle half of earth_rotating.svg, so r={52} draws a globe of radius 26. */}
-              <EarthGlobeImage cx={ex} cy={ey} r={52} tilt={lean} rim={false} />
+              <EarthTextureGlobe cx={ex} cy={ey} r={26} tilt={lean} sun={[CX, CY]} />
               <text x={ex + vx} y={ey + vy - 5} fill={dim} textAnchor="middle" style={{ font: "700 9px var(--pn-font)" }}>N</text>
               <text x={lx} y={ly} fill={red} textAnchor="middle" dominantBaseline="central" style={{ font: "700 11.5px var(--pn-font)" }}>
                 {t(s.key)}
@@ -299,7 +298,7 @@ export function ApsidesOrbit() {
         <g transform="translate(14 14)">
           <line x1={0} y1={6} x2={22} y2={6} stroke={orbitCol} strokeWidth={2.4} />
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_orbit")}</text>
-          <EarthGlobeImage cx={11} cy={24} r={14} tilt={0} rim={false} />
+          <EarthTextureGlobe cx={11} cy={24} r={7} tilt={23.4} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>{t("learn.apsides.legend_earths")}</text>
           <circle cx={6} cy={42} r={5} fill={peri} />
           <circle cx={18} cy={42} r={3.5} fill={aph} />
