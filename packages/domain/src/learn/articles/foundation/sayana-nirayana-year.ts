@@ -57,29 +57,6 @@ export const sayanaNirayanaYear: ArticleData = {
           },
         },
         {
-          kind: "para",
-          text: {
-            ne: "**यो पाठको क्रम:** पहिले प्रकृति, त्यसपछि गणित, अनि पात्रो, र अन्त्यमा हाम्रो जीवनमा पर्ने प्रभाव।",
-            en: "**How this lesson runs:** nature first, then the arithmetic, then the calendar, and last what it means for our lives.",
-          },
-        },
-        {
-          kind: "list",
-          ordered: true,
-          items: [
-            { ne: "**वर्षलाई कसरी नापिन्छ?** — ऋतु, तारा र पात्रोका तीन घडी।", en: "**How is a year measured?** — the three clocks: seasons, stars, calendar." },
-            { ne: "**सायन र निरयन वर्ष** — परिभाषा, लम्बाइ, राम्रा र कमजोर पक्ष।", en: "**The tropical and sidereal year** — definitions, lengths, pros and cons." },
-            { ne: "**२० मिनेटको फरक किन?** — पृथ्वीको अक्ष डगमगाउँदा विषुव सर्छ।", en: "**Why the 20-minute gap?** — Earth's wobbling axis moves the equinox." },
-            { ne: "**एउटै ग्रह, दुई राशि** — सायन र निरयन राशिचक्र, अयनांश।", en: "**One planet, two rashis** — the two zodiacs and the ayanamsha." },
-            { ne: "**वि.सं. कुन आधारमा?** — मेष सङ्क्रान्ति, बैशाख १ र ई.सं.।", en: "**What BS runs on** — Mesha Sankranti, Baisakh 1 and AD." },
-            { ne: "**सूर्य, चन्द्र र ग्रह** — सबै एउटै ताराको नक्सामा।", en: "**Sun, Moon and planets** — all on one star map." },
-            { ne: "**महिना २९–३२ दिनका किन?** — सूर्यको असमान गति, उपसौर–अपसौर कसरी सर्छन्, र हिमयुगसँग त्यसको नाता।", en: "**Why months run 29–32 days** — the Sun's uneven pace, how perihelion and aphelion move, and their link to the ice ages." },
-            { ne: "**२४ दिनको ऐतिहासिक फरक** — अयनांश कसरी जम्मा भयो।", en: "**The 24-day historical gap** — how the ayanamsha built up." },
-            { ne: "**चाडपर्व, उत्तरायण र ऋतु** — फरकले हाम्रो जीवनमा के गर्छ।", en: "**Festivals, Uttarayana and the seasons** — what the gap does to daily life." },
-            { ne: "**भविष्यको वि.सं.** — सायन भएको भए के हुन्थ्यो, र हजारौँ वर्षपछि के हुन्छ।", en: "**BS in the future** — what a tropical BS would be, and where ours is heading." },
-          ],
-        },
-        {
           kind: "note",
           text: {
             ne: "एक वाक्यमा सम्झनुहोस्: **सायन = ऋतु, निरयन = तारा।** कुनै गलत होइन — प्रश्न केवल “के स्थिर राख्ने?” भन्ने हो। नेपाली पात्रोले तारा स्थिर राखेको छ।",

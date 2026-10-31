@@ -7,7 +7,6 @@ import { bsVsAd } from "./foundation/bs-vs-ad";
 import { chandramana } from "./foundation/chandramana";
 import { nepaliCalendarBasics } from "./foundation/nepali-calendar-basics";
 import { sauramana } from "./foundation/sauramana";
-import { sayanaNirayanaYear } from "./foundation/sayana-nirayana-year";
 import { whatIsADay } from "./foundation/what-is-a-day";
 import { whyLocationMatters } from "./foundation/why-location-matters";
 import { yearBeginsBaisakh } from "./foundation/year-begins-baisakh";
@@ -24,9 +23,7 @@ import { karkaSankranti } from "./sun/karka-sankranti";
 import { makaraSankranti } from "./sun/makara-sankranti";
 import { meshaSankranti } from "./sun/mesha-sankranti";
 import { rashi } from "./sun/rashi";
-import { siderealVsTropical } from "./sun/sidereal-vs-tropical";
 import { solarYear } from "./sun/solar-year";
-import { uttarayanaDakshinayana } from "./sun/uttarayana-dakshinayana";
 
 import { fiveLimbsTogether } from "./five-limbs/five-limbs-together";
 import { vara } from "./five-limbs/vara";
@@ -36,7 +33,6 @@ import { rahuKetuNodes } from "./eclipses/rahu-ketu-nodes";
 
 import { ancientSky } from "./astronomy/ancient-sky";
 import { axialTilt } from "./astronomy/axial-tilt";
-import { declination } from "./astronomy/declination";
 import { equinoxSolstice } from "./astronomy/equinox-solstice";
 import { earthRotationDay } from "./astronomy/earth-rotation-day";
 import { lunarLongitude } from "./astronomy/lunar-longitude";
@@ -79,7 +75,6 @@ import { calendarDifferences } from "./chapters/calendar-differences";
 import { eclipses } from "./chapters/eclipses";
 import { choghadiya } from "./chapters/choghadiya";
 import { hora } from "./chapters/hora";
-import { howWeCalculate } from "./chapters/how-we-calculate";
 import { karana } from "./chapters/karana";
 import { nakshatra } from "./chapters/nakshatra";
 import { rituDrift } from "./chapters/ritu-drift";
@@ -89,6 +84,8 @@ import { tithiVriddhiKshaya } from "./chapters/tithi-vriddhi-kshaya";
 import { tithi } from "./chapters/tithi";
 import { whatIsPanchang } from "./chapters/what-is-panchang";
 import { yoga } from "./chapters/yoga";
+
+import { REGROUPED_ARTICLES } from "./regroup";
 
 /**
  * Every data-driven article body, keyed by slug.
@@ -104,7 +101,6 @@ export const SHARED_ARTICLES: ArticleData[] = [
   yearBeginsBaisakh,
   bsVsAd,
   bsAdOffset,
-  sayanaNirayanaYear,
   sauramana,
   chandramana,
   whyLocationMatters,
@@ -125,8 +121,6 @@ export const SHARED_ARTICLES: ArticleData[] = [
   meshaSankranti,
   makaraSankranti,
   karkaSankranti,
-  uttarayanaDakshinayana,
-  siderealVsTropical,
 
   /* The Five Limbs */
   vara,
@@ -147,7 +141,6 @@ export const SHARED_ARTICLES: ArticleData[] = [
   siderealTime,
   solarLongitude,
   lunarLongitude,
-  declination,
 
   /* How a date is calculated */
   calcSunrise,
@@ -186,7 +179,6 @@ export const SHARED_ARTICLES: ArticleData[] = [
   eclipses,
   choghadiya,
   hora,
-  howWeCalculate,
   karana,
   nakshatra,
   rituDrift,
@@ -196,6 +188,9 @@ export const SHARED_ARTICLES: ArticleData[] = [
   tithi,
   whatIsPanchang,
   yoga,
+
+  /* Articles cut into chapters on different pages of the course (see regroup.ts) */
+  ...REGROUPED_ARTICLES,
 ];
 
 export const DATA_ARTICLES: Record<string, ArticleData | undefined> = Object.fromEntries(

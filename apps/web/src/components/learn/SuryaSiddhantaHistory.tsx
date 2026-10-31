@@ -1,8 +1,8 @@
 /**
  * The Surya Siddhanta history, as a chapter body.
  *
- * This used to be its own page at `/learn/history`. It now runs as the closing
- * chapter of the calendar-comparison guide, so everything that belonged to a
+ * This used to be its own page at `/learn/history`. It now runs as the
+ * chapter of the founding-texts guide (`/learn/surya-siddhanta`), so everything that belonged to a
  * standalone page — the shell, the back link, the hero — is gone; the chapter
  * heading above it does that job. What remains is the material itself: the
  * milestones, the era note the dates need to be read with, the sections, and

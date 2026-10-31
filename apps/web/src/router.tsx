@@ -248,13 +248,13 @@ const sunTimesLegacyRoute = createRoute({
   path: "/sun-times",
   component: () => <Navigate to="/suryakranti" replace />,
 });
-/* The Surya Siddhanta history is now the closing chapter of the calendar
-   comparison guide, so its old address lands on that chapter. */
+/* The Surya Siddhanta history is now the chapter of the founding-texts
+   guide, so its old address lands on that chapter. */
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/learn/history",
   component: () => (
-    <Navigate to="/learn/$slug" params={{ slug: "calendar-differences" }} hash="history" replace />
+    <Navigate to="/learn/$slug" params={{ slug: "surya-siddhanta" }} hash="history" replace />
   ),
 });
 const historyLegacyRoute = createRoute({
