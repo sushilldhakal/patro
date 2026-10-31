@@ -4,6 +4,7 @@ import { DATA_ARTICLES } from "../src/learn/articles/index.ts";
 import { DIAGRAM_IDS } from "../src/learn/diagram-ids.ts";
 import { assertLearnLibrary, buildLearnViews, LEARN_LIBRARY, LEARN_SECTIONS } from "../src/learn/learn-library.ts";
 import { MERGED_PAGES, RETIRED_SLUG_REDIRECTS } from "../src/learn/merged-pages.ts";
+import { ARTICLE_SPLITS } from "../src/learn/articles/regroup.ts";
 
 const views = buildLearnViews(LEARN_SECTIONS, LEARN_LIBRARY);
 
@@ -41,24 +42,47 @@ test("every merged chapter has a body", () => {
   }
 });
 
-test("the course opens with the patro and its year, then a surface panchanga, then each limb", () => {
+test("the course runs nature → calendar → computation → history", () => {
   assert.deepEqual(
-    views.published.map((topic) => topic.slug).slice(0, 10),
-    [
-      "bikram-sambat",
-      "sayana-nirayana-year",
-      "what-is-panchang",
-      "tithi",
-      "nakshatra",
-      "yoga",
-      "karana",
-      "vara",
-      "choghadiya",
-      "hora",
-    ],
+    LEARN_SECTIONS.map((section) => section.id),
+    ["start", "earth-sky", "sun", "moon", "panchanga", "calculation", "deeper", "comparison"],
   );
+  assert.deepEqual(
+    views.published.map((topic) => topic.slug).slice(0, 7),
+    ["bikram-sambat", "earth-rotation-day", "solar-system", "celestial-sphere", "sky-rotation", "why-seasons", "sayana-nirayana-year"],
+  );
+  /* Published topics run section by section, never doubling back. */
+  const order = LEARN_SECTIONS.map((section) => section.id);
+  const sectionIndex = views.published.map((topic) => order.indexOf(topic.section));
+  assert.deepEqual(sectionIndex, [...sectionIndex].sort((a, b) => a - b));
   assert.equal(RETIRED_SLUG_REDIRECTS["five-limbs-together"], "what-is-panchang#five-limbs-together");
-  assert.equal(views.bySlug["tithi"]?.section, "panchanga");
-  assert.equal(views.bySlug["nakshatra"]?.section, "panchanga");
-  assert.equal(views.bySlug["choghadiya"]?.section, "panchanga");
+  assert.equal(RETIRED_SLUG_REDIRECTS["choghadiya"], "hora#choghadiya");
+});
+
+test("every split article section lands in exactly one chapter", () => {
+  for (const { source, pieces } of ARTICLE_SPLITS) {
+    const used = pieces.flatMap((piece) => piece.sections).sort((a, b) => a - b);
+    assert.deepEqual(used, source.sections.map((_, i) => i), source.slug);
+  }
+});
+
+test("each article is read in one place only", () => {
+  const seen = new Map<string, string>();
+  const place = (slug: string, where: string) => {
+    assert.equal(seen.get(slug), undefined, `${slug} is in both ${seen.get(slug)} and ${where}`);
+    seen.set(slug, where);
+  };
+  for (const page of MERGED_PAGES) for (const part of page.parts) place(part.slug, page.slug);
+  for (const topic of views.published) if (!MERGED_PAGES.some((page) => page.slug === topic.slug)) place(topic.slug, topic.slug);
+});
+
+test("every retired slug lands on a published page and a chapter that exists", () => {
+  for (const [from, to] of Object.entries(RETIRED_SLUG_REDIRECTS)) {
+    const [page, anchor] = to.split("#") as [string, string | undefined];
+    assert.equal(views.bySlug[page]?.status, "published", `${from} → ${to}`);
+    if (anchor) {
+      const merged = MERGED_PAGES.find((p) => p.slug === page);
+      assert.ok(merged?.parts.some((part) => part.slug === anchor), `${from} → ${to}`);
+    }
+  }
 });

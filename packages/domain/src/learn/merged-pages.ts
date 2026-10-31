@@ -37,144 +37,209 @@ const P = (slug: string, ne: string, en: string): MergedPart => ({ slug, title: 
  * slug keeps that URL, so the best-known address of a topic survives the merge.
  */
 export const MERGED_PAGES: MergedPage[] = [
-  /* ── सुरुवात ─────────────────────────────────────────────────────── */
+  /* ── १ · पात्रो, समय र विक्रम सम्वत् ─────────────────────────────── */
   {
     slug: "bikram-sambat",
     parts: [
-      P("nepali-calendar-basics", "नेपाली पात्रो के हो", "What the Nepali patro is"),
-      P("bikram-sambat", "विक्रम सम्वत् के हो", "What Bikram Sambat is"),
-      P("year-begins-baisakh", "वर्ष बैशाखमा किन सुरु हुन्छ", "Why the year begins in Baisakh"),
-      P("bs-vs-ad", "वि.सं. र ई.सं. कसरी फरक छन्", "How BS and AD differ"),
-      P("bs-ad-offset", "स्थिर फरक किन हुँदैन", "Why there is no fixed offset"),
+      P("nepali-calendar-basics", "नेपाली पात्रो के हो?", "What is the Nepali patro?"),
+      P("bikram-sambat", "विक्रम सम्वत् के हो?", "What is Bikram Sambat?"),
       P("bs-calendar", "सौर, चान्द्र र चान्द्र–सौर पात्रो", "Solar, lunar and lunisolar calendars"),
-    ],
-  },
-  {
-    slug: "what-is-panchang",
-    parts: [
-      P("what-is-panchang", "पञ्चाङ्ग भनेको के हो", "What a panchanga is"),
-      P("five-limbs-together", "पाँच अङ्ग एक दृष्टिमा", "The five limbs at a glance"),
+      P("bs-vs-ad", "विक्रम सम्वत् र ग्रेगोरियन पात्रो", "Bikram Sambat and the Gregorian calendar"),
+      P("bs-ad-offset", "५६–५७ वर्षको अन्तर सधैँ एउटै किन हुँदैन?", "Why the 56–57-year gap is never fixed"),
     ],
   },
 
-  /* ── पृथ्वी र आकाश ───────────────────────────────────────────────── */
+  /* ── २ · पृथ्वी र खगोलीय आधार ──────────────────────────────────── */
   {
     slug: "earth-rotation-day",
     parts: [
-      P("what-is-a-day", "दिन के हो", "What a day is"),
-      P("earth-rotation-day", "पृथ्वीको घुर्णन र दिनको लम्बाइ", "Earth's rotation and the length of a day"),
-      P("solar-system", "सौर्यमण्डल र चन्द्र गति", "The solar system and the Moon's motion"),
-      P("sky-rotation", "आकाश कसरी घुमेको देखिन्छ", "How the sky appears to turn"),
-      P("celestial-sphere", "खगोलीय गोला", "The celestial sphere"),
-      P("ecliptic", "क्रान्तिवृत्त", "The ecliptic"),
-      P("celestial-equator", "खगोलीय विषुवत् रेखा", "The celestial equator"),
-      P("zodiac-belt", "राशि पट्टी", "The zodiac belt"),
-      P("right-ascension", "विषुवांश", "Right ascension"),
-      P("sidereal-time", "नाक्षत्र काल", "Sidereal time"),
-      P("solar-longitude", "सूर्यको देशान्तर", "Solar longitude"),
-      P("lunar-longitude", "चन्द्रको देशान्तर", "Lunar longitude"),
+      P("what-is-a-day", "दिन र रात — एक दिन भनेको के हो?", "Day and night — what is a day?"),
+      P("earth-rotation-day", "नाक्षत्र दिन र सौर दिन", "The sidereal day and the solar day"),
     ],
   },
   {
-    slug: "axial-tilt",
+    slug: "solar-system",
     parts: [
-      P("axial-tilt", "पृथ्वीको २३.४४° अक्ष झुकाव", "Earth's 23.44° axial tilt"),
-      P("why-seasons", "ऋतु किन हुन्छन्", "Why the seasons happen"),
+      P("solar-system", "सूर्य, पृथ्वी र चन्द्रको आपसी गति", "How the Sun, Earth and Moon move"),
+      P("geocentric-heliocentric", "भूकेन्द्रित र सूर्यकेन्द्रित दृष्टिकोण", "Geocentric and heliocentric views"),
+    ],
+  },
+  {
+    slug: "celestial-sphere",
+    parts: [
+      P("celestial-sphere", "खगोलीय गोला के हो?", "What is the celestial sphere?"),
+      P("celestial-equator", "आकाशीय विषुवत् रेखा", "The celestial equator"),
+      P("ecliptic", "क्रान्तिवृत्त", "The ecliptic"),
+      P("right-ascension", "देशान्तर र विषुवांश", "Longitude and right ascension"),
+      P("coordinate-systems", "खगोलीय निर्देशाङ्कका दुई प्रमुख प्रणाली", "The two main coordinate systems"),
+      P("sidereal-time", "नाक्षत्र काल र लग्न", "Sidereal time and the lagna"),
+    ],
+  },
+  {
+    slug: "sky-rotation",
+    parts: [
+      P("sky-rotation", "आकाश घुमेको किन देखिन्छ?", "Why does the sky appear to turn?"),
+      P("zodiac-belt", "ग्रहको मार्ग र राशि पट्टी", "The planets' path and the zodiac belt"),
+    ],
+  },
+  {
+    slug: "why-seasons",
+    parts: [
+      /* Opens this page rather than closing "Earth and its motion": that page is the
+         guided day tour, which shows the tour in place of its prose. */
+      P("axial-tilt", "पृथ्वीको अक्ष झुकाव — २३.४४°", "Earth's axial tilt — 23.44°"),
+      P("why-seasons", "ऋतु किन परिवर्तन हुन्छन्?", "Why do the seasons change?"),
       P("equinox-solstice", "विषुव र अयनान्त", "Equinoxes and solstices"),
-      P("declination", "क्रान्ति — सूर्यको उत्तर–दक्षिण गति", "Declination — the Sun's north–south motion"),
+      P("uttarayana-dakshinayana", "उत्तरायण र दक्षिणायनको खगोलीय अर्थ", "Uttarayana and Dakshinayana in the sky"),
+      P("declination", "सूर्यको उत्तर–दक्षिण गति (क्रान्ति)", "The Sun's north–south motion (declination)"),
     ],
   },
 
-  /* ── सूर्य ───────────────────────────────────────────────────────── */
+  /* ── ३ · सौरमान, राशि र विक्रम सम्वत् ──────────────────────────── */
   {
-    slug: "rashi",
+    slug: "sayana-nirayana-year",
     parts: [
-      P("solar-year", "सूर्यले सौर वर्ष कसरी तय गर्छ", "How the Sun fixes the solar year"),
-      P("rashi", "राशि के हो", "What a rashi is"),
-      P("sankranti", "सङ्क्रान्ति", "Sankranti"),
-      P("mesha-sankranti", "मेष सङ्क्रान्ति — बैशाखको आरम्भ", "Mesha Sankranti — the start of Baisakh"),
-      P("makara-sankranti", "मकर सङ्क्रान्ति — माघे", "Makara Sankranti — Maghe"),
-      P("karka-sankranti", "कर्क सङ्क्रान्ति — साउने", "Karka Sankranti — Shrawan"),
+      P("solar-year", "सौर वर्ष भनेको के हो?", "What is the solar year?"),
+      P("sayana-nirayana-year", "सायन र निरयन वर्ष", "The tropical and sidereal year"),
+      P("tropical-year-gap", "२० मिनेटको फरक कसरी जम्मा हुन्छ?", "How the 20-minute gap builds up"),
     ],
   },
   {
     slug: "sidereal-vs-tropical",
     parts: [
-      P("sidereal-vs-tropical", "निरयन र सायन राशिचक्र", "The sidereal and tropical zodiacs"),
-      P("ayanamsha", "अयनांश", "The ayanamsha"),
-      P("uttarayana-dakshinayana", "उत्तरायण र दक्षिणायन", "Uttarāyaṇa and Dakṣiṇāyana"),
-      P("ritu-drift", "ऋतु किन सर्छ", "Why the ṛtus drift"),
+      P("sidereal-vs-tropical", "एउटै आकाश, दुई राशिचक्र", "One sky, two zodiacs"),
+      P("sayana-nirayana-rashi", "एउटै ग्रह, दुई राशि — र २४ दिनको ऐतिहासिक फरक", "One planet, two rashis — and the 24-day gap"),
+      P("ayanamsha", "अयनांश र यसका प्रमुख प्रणाली", "The ayanamsha and its main systems"),
+    ],
+  },
+  {
+    slug: "sankranti",
+    parts: [
+      P("sankranti", "सङ्क्रान्ति भनेको के हो?", "What is a sankranti?"),
+      P("mesha-sankranti", "मेष सङ्क्रान्ति र वैशाखको सुरुवात", "Mesha Sankranti and the start of Baisakh"),
+      P("karka-sankranti", "कर्क सङ्क्रान्ति", "Karka Sankranti"),
+      P("makara-sankranti", "मकर सङ्क्रान्ति", "Makara Sankranti"),
+    ],
+  },
+  {
+    slug: "year-begins-baisakh",
+    parts: [
+      P("year-begins-baisakh", "विक्रम सम्वत्को वर्ष वैशाखमा किन सुरु हुन्छ?", "Why the BS year begins in Baisakh"),
+      P("month-lengths-apsides", "सौर महिना २९–३२ दिनका किन? — उपसौर र अपसौर", "Why solar months run 29–32 days — perihelion and aphelion"),
+      P("ritu-drift", "ऋतु र निरयन महिनाको सम्बन्ध", "Seasons and the sidereal months"),
+      P("uttarayana-in-calendar", "उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग", "Uttarayana and Dakshinayana in the calendar"),
+      P("sayana-nirayana-seasons", "ऋतु र पात्रोबीचको दीर्घकालीन अन्तर", "The long-term gap between seasons and calendar"),
     ],
   },
 
-  /* ── चन्द्र ──────────────────────────────────────────────────────── */
+  /* ── ४ · चन्द्रमान ──────────────────────────────────────────────── */
   {
     slug: "lunar-month",
     parts: [
       P("moon-lunar-calendar", "चन्द्रले चान्द्र पात्रो कसरी बनाउँछ", "How the Moon makes a calendar"),
-      P("lunar-month", "चान्द्र मास के हो", "What a lunar month is"),
-      P("amavasya-purnima", "औंसी र पूर्णिमा", "Amāvasyā and Pūrṇimā"),
-      P("shukla-krishna-paksha", "शुक्ल र कृष्ण पक्ष", "Shukla and Krishna paksha"),
-      P("lunar-solar-drift", "चान्द्र र सौर पात्रो किन छुट्टिन्छन्", "Why lunar and solar calendars drift apart"),
-      P("adhik-kshaya-maas", "अधिक र क्षय मास", "The extra and the skipped month"),
+      P("lunar-month", "सांयोगिक चान्द्र मास", "The synodic lunar month"),
     ],
   },
   {
     slug: "tithi",
     parts: [
-      P("tithi", "तिथि कसरी बन्छ", "How a tithi is formed"),
-      P("tithi-not-24-hours", "तिथि २४ घण्टाको किन हुँदैन", "Why a tithi is not 24 hours"),
-      P("tithi-vriddhi-kshaya", "तिथि वृद्धि र क्षय", "When a tithi repeats or skips"),
+      P("tithi", "तिथि भनेको के हो?", "What is a tithi?"),
+      P("tithi-not-24-hours", "तिथि र २४ घण्टाको दिनबीचको फरक", "A tithi against the 24-hour day"),
+      P("shukla-krishna-paksha", "शुक्ल पक्ष र कृष्ण पक्ष", "Shukla and Krishna paksha"),
+    ],
+  },
+  {
+    slug: "adhik-kshaya-maas",
+    parts: [
+      P("lunar-solar-drift", "सौर र चान्द्र वर्षबीचको अन्तर", "The gap between the solar and lunar years"),
+      P("adhik-kshaya-maas", "अधिक मास र क्षय मास", "The extra and the skipped month"),
     ],
   },
 
-  /* ── गणना ───────────────────────────────────────────────────────── */
+  /* ── ५ · पञ्चाङ्ग ───────────────────────────────────────────────── */
   {
-    slug: "how-we-calculate",
+    slug: "what-is-panchang",
     parts: [
-      P("how-we-calculate", "हामी यो कसरी गणना गर्छौं", "How we compute it"),
-      P("time-scales", "शुद्ध काल मापन किन चाहिन्छ", "Why a precise time scale is needed"),
-      P("calc-sunrise", "सूर्योदय", "Sunrise"),
-      P("calc-sunset", "सूर्यास्त", "Sunset"),
-      P("calc-moonrise", "चन्द्रोदय र चन्द्रास्त", "Moonrise and moonset"),
-      P("calc-sankranti", "सङ्क्रान्तिको गणना", "Computing the sankranti"),
-      P("calc-tithi", "तिथिको गणना", "Computing the tithi"),
-      P("calc-nakshatra", "नक्षत्रको गणना", "Computing the nakshatra"),
+      P("what-is-panchang", "पञ्चाङ्ग भनेको के हो?", "What is a panchanga?"),
+      P("five-limbs-together", "पाँच अङ्ग एकसाथ कसरी पढ्ने?", "How to read the five limbs together"),
+    ],
+  },
+  {
+    slug: "hora",
+    parts: [
+      P("hora", "होरा", "Hora"),
+      P("choghadiya", "चौघडिया", "Choghadiya"),
+    ],
+  },
+
+  /* ── ६ · गणना ───────────────────────────────────────────────────── */
+  {
+    slug: "solar-longitude",
+    parts: [
+      P("solar-longitude", "सूर्यको वास्तविक देशान्तर", "The Sun's true longitude"),
+      P("lunar-longitude", "चन्द्रको वास्तविक देशान्तर", "The Moon's true longitude"),
+      P("mean-vs-true-motion", "मध्यम गति र स्पष्ट गति", "Mean motion and true motion"),
+    ],
+  },
+  {
+    slug: "calc-sunrise",
+    parts: [
+      P("calc-sunrise", "सूर्योदयको गणना", "Computing sunrise"),
+      P("calc-sunset", "सूर्यास्त, दिनमान र सन्ध्याकाल", "Sunset, day length and twilight"),
+    ],
+  },
+  {
+    slug: "calc-tithi",
+    parts: [
+      P("calc-tithi", "तिथिको सङ्ख्या र समाप्ति समय", "The tithi's number and end time"),
+      P("calc-nakshatra", "नक्षत्र र पदको गणना", "Computing the nakshatra and pada"),
       P("calc-yoga", "योगको गणना", "Computing the yoga"),
       P("calc-karana", "करणको गणना", "Computing the karana"),
-      P("why-location-matters", "स्थानले किन फरक पार्छ", "Why location matters"),
-      P("location-different-results", "दुई स्थानमा पञ्चाङ्ग किन फरक हुन्छ", "Why two places differ"),
     ],
   },
-
-  /* ── गहिराइ ─────────────────────────────────────────────────────── */
   {
-    slug: "geocentric-heliocentric",
+    slug: "why-location-matters",
     parts: [
-      P("geocentric-heliocentric", "भूकेन्द्रित र सूर्यकेन्द्रित दृष्टिकोण", "Geocentric and heliocentric views"),
-      P("mean-vs-true-motion", "मध्यम गति र स्पष्ट गति", "Mean motion and true motion"),
-      P("retrograde-motion", "वक्री गति", "Retrograde motion"),
-      P("ancient-planetary-motion", "प्राचीन ज्योतिषको वर्णन", "How the ancients described it"),
-      P("precession", "पृथ्वीको अक्षको अयन चलन", "Precession of Earth's axis"),
-      P("pole-star-changes", "ध्रुव तारा किन फेरिन्छ", "Why the pole star changes"),
-      P("ancient-sky", "प्राचीन आकाश कस्तो देखिन्थ्यो", "How the ancient sky looked"),
-      P("rahu-ketu-nodes", "राहु–केतु र पात रेखा", "Rahu, Ketu and the node line"),
-      P("eclipses", "ग्रहण — सूर्य र चन्द्र", "Eclipses, solar and lunar"),
-      P("eclipse-seasons", "ग्रहण ऋतु र चक्र", "Eclipse seasons and cycles"),
+      P("why-location-matters", "पञ्चाङ्ग स्थाननिरपेक्ष हुँदैन", "A panchanga is not location-independent"),
+      P("location-different-results", "एउटै क्षण, फरक स्थान", "One instant, different places"),
     ],
   },
 
-  /* ── तुलना ──────────────────────────────────────────────────────── */
+  /* ── ७ · उन्नत खगोलशास्त्र ─────────────────────────────────────── */
+  {
+    slug: "pole-star-changes",
+    parts: [
+      P("pole-star-changes", "ध्रुव तारा किन परिवर्तन हुन्छ?", "Why does the pole star change?"),
+      P("ancient-sky", "हजारौँ वर्षअघि आकाश कस्तो देखिन्थ्यो?", "How the sky looked thousands of years ago"),
+    ],
+  },
+  {
+    slug: "eclipses",
+    parts: [
+      P("rahu-ketu-nodes", "राहु, केतु र पात बिन्दु", "Rahu, Ketu and the lunar nodes"),
+      P("eclipses", "सूर्यग्रहण र चन्द्रग्रहण", "Solar and lunar eclipses"),
+      P("eclipse-seasons", "ग्रहण ऋतु, जोडी ग्रहण र सरोस चक्र", "Eclipse seasons, eclipse pairs and the saros"),
+    ],
+  },
+
+  /* ── ८ · इतिहास र तुलना ─────────────────────────────────────────── */
   {
     slug: "calendar-differences",
     parts: [
-      P("calendar-differences", "नेपाली, वैदिक र ग्रेगोरियन", "Nepali, Vedic and Gregorian"),
-      P("leap-years", "लीप वर्ष किन चाहिन्छ", "Why leap years exist"),
-      P("calendar-drift", "मिति बिस्तारै किन सर्छ", "Why dates slowly drift"),
-      P("calendars-aligned-with-nature", "पात्रो प्रकृतिसँग कसरी मिलिरहन्छ", "Keeping a calendar aligned with nature"),
-      P("ancient-calendars", "प्राचीन पात्रोले समय कसरी नाप्थे", "How ancient calendars measured time"),
-      P("history", "मयासुरको सूर्य सिद्धान्त", "Mayasura's Surya Siddhanta"),
+      P("calendar-differences", "नेपाली, वैदिक र ग्रेगोरियन पात्रो", "The Nepali, Vedic and Gregorian calendars"),
+      P("calendars-aligned-with-nature", "पात्रोलाई प्रकृतिसँग कसरी मिलाइन्छ", "How a calendar is kept in step with nature"),
     ],
+  },
+  {
+    slug: "leap-years",
+    parts: [
+      P("leap-years", "लीप वर्ष किन आवश्यक भयो?", "Why leap years became necessary"),
+      P("calendar-drift", "ग्रेगोरियन सुधार र मिति सर्ने कारण", "The Gregorian reform and why dates drift"),
+    ],
+  },
+  {
+    slug: "surya-siddhanta",
+    parts: [P("history", "मयासुरको सूर्य सिद्धान्त", "Mayasura's Surya Siddhanta")],
   },
 ];
 
@@ -204,20 +269,20 @@ export const partAnchor = (slug: string) => slug;
  * entry to derive from. Mirrors web's `MERGED_SLUGS` map 1:1.
  */
 const LEGACY_SLUG_REDIRECTS: Record<string, string> = {
-  "lunar-eclipse": "geocentric-heliocentric#eclipses",
-  "solar-eclipse": "geocentric-heliocentric#eclipses",
-  equinoxes: "axial-tilt#equinox-solstice",
-  solstices: "axial-tilt#equinox-solstice",
-  "sankranti-vs-solstice": "sidereal-vs-tropical#uttarayana-dakshinayana",
+  "lunar-eclipse": "eclipses#eclipses",
+  "solar-eclipse": "eclipses#eclipses",
+  equinoxes: "why-seasons#equinox-solstice",
+  solstices: "why-seasons#equinox-solstice",
+  "sankranti-vs-solstice": "why-seasons#uttarayana-dakshinayana",
   "twelve-rashis": "rashi",
   "solar-vs-lunar-calendar": "bikram-sambat#bs-calendar",
   "sidereal-vs-tropical-year": "sayana-nirayana-year",
-  "tithi-vriddhi": "tithi#tithi-vriddhi-kshaya",
-  "tithi-kshaya": "tithi#tithi-vriddhi-kshaya",
-  "adhik-maas": "lunar-month#adhik-kshaya-maas",
-  "kshaya-maas": "lunar-month#adhik-kshaya-maas",
+  "tithi-vriddhi": "tithi-vriddhi-kshaya",
+  "tithi-kshaya": "tithi-vriddhi-kshaya",
+  "adhik-maas": "adhik-kshaya-maas#adhik-kshaya-maas",
+  "kshaya-maas": "adhik-kshaya-maas#adhik-kshaya-maas",
   /* Full reckonings used to sit inside the patro page and repeat the Sun and Moon guides. */
-  sauramana: "rashi",
+  sauramana: "sankranti",
   chandramana: "lunar-month",
   /* The sky primer repeated rashi, tithi, nakshatra, yoga and karana. The sky guide keeps the motions. */
   "astronomy-basics": "earth-rotation-day",

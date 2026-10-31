@@ -8,7 +8,7 @@ import { nowPathKeys } from "@vedic-patro/domain/calendar/brahma-mana";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { brahmaLadder, brahmaNotes, nowLines, padaRows, yearsRows } from "./model";
 
-const LEARN_SLUGS = ["ghati-pala", "calendar-differences"];
+const LEARN_SLUGS = ["ancient-calendars", "calendar-differences"];
 
 export function useBrahmaManaPage() {
   const { t, lang, digits } = useLocale();
