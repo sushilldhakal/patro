@@ -37,7 +37,7 @@ export const calendarDrift: ArticleData = {
             [
               { ne: "निरयन (ऋतुको सापेक्ष)", en: "Sidereal (against the seasons)" },
               "+0.0142 दिन/day",
-              { ne: "~७२ वर्ष", en: "~72 years" },
+              { ne: "~७१ वर्ष", en: "~71 years" },
             ],
           ],
         },
@@ -49,8 +49,11 @@ export const calendarDrift: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "equinox-precession",
+          kind: "para",
+          text: {
+            ne: "निरयन मिति ऋतुको सापेक्ष कसरी सर्दै जान्छ भन्ने चलचित्र [[tropical-year-gap|२० मिनेटको फरकले पात्रोमा के गर्छ]] मा छ।",
+            en: "How a sidereal date moves against the seasons is animated in [[tropical-year-gap|what the 20-minute gap does to a calendar]].",
+          },
         },
       ],
     },

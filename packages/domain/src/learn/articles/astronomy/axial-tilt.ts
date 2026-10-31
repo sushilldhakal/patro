@@ -23,11 +23,10 @@ export const axialTilt: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "earth-rotation",
-          caption: {
-            ne: "झुकिएको अक्ष — यही झुकावले ऋतु, अयन र दिनको लम्बाइको फेरबदल जन्माउँछ।",
-            en: "The tilted axis — the source of the seasons, the ayanas and the changing length of day.",
+          kind: "para",
+          text: {
+            ne: "ढल्किएको अक्षमा घुम्दै गरेको पृथ्वी [[sky-rotation|आकाश घुमेको किन देखिन्छ?]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The Earth turning on its tilted axis can be run in [[sky-rotation|why the sky appears to turn]].",
           },
         },
       ],

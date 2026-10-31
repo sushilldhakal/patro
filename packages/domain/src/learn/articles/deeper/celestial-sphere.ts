@@ -69,8 +69,11 @@ export const celestialSphere: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "ecliptic-belt",
+          kind: "para",
+          text: {
+            ne: "क्रान्तिवृत्त र त्यसमा बाँडिएका राशि–नक्षत्र खण्ड तल क्रान्तिवृत्तको अध्यायमा चलाएर हेर्न सकिन्छ।",
+            en: "The ecliptic, with its rashi and nakshatra divisions, can be run in the ecliptic chapter below.",
+          },
         },
       ],
     },

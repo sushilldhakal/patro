@@ -93,23 +93,15 @@ export const bsVsAd: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "पृथ्वीको कक्ष अण्डाकार भएकाले सूर्यको देखिने गति वर्षभरि घटबढ हुन्छ। उपसौर (perihelion) नजिक सूर्य छिटो हिँड्छ, अपसौर (aphelion) नजिक ढिलो। त्यसैले कुनै राशिमा `२९` दिन, कुनैमा `३२` दिनसम्म बस्छ।",
-            en: "Because Earth's orbit is elliptical, the Sun's apparent speed varies through the year — faster near perihelion, slower near aphelion. So it spends as few as `29` and as many as `32` days in a sign.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "earth-orbit",
-          caption: {
-            ne: "अण्डाकार कक्षमा पृथ्वीको गति — सूर्यसँगको दूरी घटबढ हुँदा देखिने कोणीय गति पनि बदलिन्छ।",
-            en: "Earth on its elliptical orbit — as the distance to the Sun changes, so does the apparent angular speed.",
+            ne: "सूर्य कुनै राशिमा `२९` दिन र कुनैमा `३२` दिनसम्म बस्छ — किन, त्यो [[month-lengths-apsides|महिना २९–३२ दिनका किन]] मा कक्षाको चित्रसहित छ।",
+            en: "The Sun spends as few as `29` and as many as `32` days in a sign — why, with the orbit drawn out, is in [[month-lengths-apsides|why months run 29–32 days]].",
           },
         },
         {
           kind: "note",
           text: {
-            ne: "यसैले नेपाली पात्रो प्रत्येक वर्ष **गणना गरेर** बनाइन्छ, पुरानो पात्रो सारेर होइन। यो प्रणाली वेदिक पात्रोभित्र कसरी चल्छ भन्ने *हामी यो कसरी गणना गर्छौं* मा छ।",
-            en: "This is why the Nepali calendar is **computed** each year rather than copied forward. How that computation runs inside Vedic Patro is covered in *How We Calculate It*.",
+            ne: "यसैले नेपाली पात्रो प्रत्येक वर्ष **गणना गरेर** बनाइन्छ, पुरानो पात्रो सारेर होइन। यो प्रणाली वेदिक पात्रोभित्र कसरी चल्छ भन्ने [[how-we-calculate|वेदिक पात्रोको गणना प्रणाली]] मा छ।",
+            en: "This is why the Nepali calendar is **computed** each year rather than copied forward. How that computation runs inside Vedic Patro is in [[how-we-calculate|how Vedic Patro computes]].",
           },
         },
       ],

@@ -16,11 +16,10 @@ export const precession: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "precession-cone",
-          caption: {
-            ne: "पृथ्वीको अक्षले आकाशमा बनाउने शङ्कु — २३.४४° अर्धकोणको वृत्त।",
-            en: "The cone Earth's axis traces on the sky — a circle of 23.44° half-angle.",
+          kind: "para",
+          text: {
+            ne: "अक्षले बनाउने शङ्कुको चलचित्र [[sidereal-vs-tropical|एउटै आकाश, दुई राशिचक्र]] मा छ।",
+            en: "The cone the axis traces is animated in [[sidereal-vs-tropical|one sky, two zodiacs]].",
           },
         },
         {
@@ -71,14 +70,17 @@ export const precession: ArticleData = {
               en: "**The pole star** changes — the north celestial pole points at different stars over the centuries.",
             },
             {
-              ne: "**ऋतु र निरयन महिना** बिस्तारै छुट्टिन्छन् — हरेक `७२` वर्षमा झन्डै एक दिन।",
-              en: "**Seasons and sidereal months** drift apart — roughly a day every `72` years.",
+              ne: "**ऋतु र निरयन महिना** बिस्तारै छुट्टिन्छन् — हरेक `७१` वर्षमा झन्डै एक दिन।",
+              en: "**Seasons and sidereal months** drift apart — roughly a day every `71` years.",
             },
           ],
         },
         {
-          kind: "diagram",
-          id: "precession-sky",
+          kind: "para",
+          text: {
+            ne: "आकाशीय ध्रुवले हजारौँ वर्षमा बनाउने वृत्त र त्यसमा पर्ने तारा [[pole-star-changes|ध्रुव तारा किन परिवर्तन हुन्छ?]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The circle the celestial pole traces over millennia, and the stars along it, can be run in [[pole-star-changes|why the pole star changes]].",
+          },
         },
       ],
     },

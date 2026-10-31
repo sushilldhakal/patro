@@ -42,6 +42,13 @@ export const rahuKetuNodes: ArticleData = {
             en: "The Moon's orbit tilted ~5° to the ecliptic — the two crossing points are Rāhu and Ketu.",
           },
         },
+        {
+          kind: "para",
+          text: {
+            ne: "**▶ चलाउनुहोस्** — सूर्य–पृथ्वी रेखा **राहु वा केतु**मा पर्दा त्यहाँ औंसी वा पूर्णिमा भए मात्र ग्रहण हुन्छ।",
+            en: "Press **▶ play** — an eclipse happens only when the Sun–Earth line meets **Rahu or Ketu** with a new or full moon there.",
+          },
+        },
       ],
     },
     {

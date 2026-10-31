@@ -74,16 +74,8 @@ export const bsAdOffset: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "पृथ्वीको अक्ष बिस्तारै घुम्ने (अयन चलन) हुनाले यी दुई सन्दर्भ प्रणालीको सम्बन्ध पनि बिस्तारै बदलिन्छ। यो चक्र झन्डै `२६,०००` वर्षको हुन्छ — त्यसैले हजारौँ वर्षको दायरामा विषुवको स्थान तारा–राशिचक्रको सापेक्षमा उल्लेख्य रूपमा सर्छ।",
-            en: "Because Earth's axis slowly changes orientation through precession, the relationship between those two reference systems changes too. The cycle runs about `26,000` years, so across millennia the equinox shifts significantly against the stellar zodiac.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "precession-cone",
-          caption: {
-            ne: "पृथ्वीको अक्षले बनाउने शङ्कु — एक फेरो पूरा हुन झन्डै २६,००० वर्ष लाग्छ।",
-            en: "The cone traced by Earth's axis — one full turn takes roughly 26,000 years.",
+            ne: "पृथ्वीको अक्ष बिस्तारै घुम्ने (~अयन चलन~) हुनाले यी दुई सन्दर्भको सम्बन्ध पनि बिस्तारै बदलिन्छ — अक्षको शङ्कुसहित [[sidereal-vs-tropical|एउटै आकाश, दुई राशिचक्र]] मा।",
+            en: "Because Earth's axis slowly changes direction (~precession~), the relationship between those two references changes too — the axis cone is drawn in [[sidereal-vs-tropical|one sky, two zodiacs]].",
           },
         },
         {
@@ -107,50 +99,17 @@ export const bsAdOffset: ArticleData = {
           },
         },
         {
-          kind: "formula",
-          cards: [
-            {
-              big: "365.2422",
-              unit: { ne: "दिन", en: "days" },
-              label: { ne: "सायन वर्ष (tropical)", en: "Tropical year" },
-              desc: {
-                ne: "ऋतुचक्रसँग जोडिएको अवधि — विषुवदेखि विषुवसम्म। ग्रेगोरियन पात्रोले यही पछ्याउँछ।",
-                en: "The period tied to the seasonal cycle, equinox to equinox. This is what the Gregorian calendar follows.",
-              },
-            },
-            {
-              big: "365.2564",
-              unit: { ne: "दिन", en: "days" },
-              label: { ne: "नाक्षत्र वर्ष (sidereal)", en: "Sidereal year" },
-              desc: {
-                ne: "पृथ्वी टाढाका ताराको सापेक्ष उही स्थानमा फर्किन लाग्ने समय। निरयन पात्रोले यही पछ्याउँछ।",
-                en: "The time for Earth to return to the same place against the distant stars. This is what a sidereal calendar follows.",
-              },
-            },
-            {
-              big: "0.0142",
-              unit: { ne: "दिन / वर्ष", en: "day / year" },
-              label: { ne: "फरक", en: "The difference" },
-              desc: {
-                ne: "झन्डै २० मिनेट प्रति वर्ष — देखिनसक्नु सानो, तर शताब्दीयौँमा जम्मा हुन्छ।",
-                en: "Roughly 20 minutes a year — vanishingly small, yet it accumulates over centuries.",
-              },
-            },
-          ],
+          kind: "para",
+          text: {
+            ne: "ऋतुबाट नापिने *सायन वर्ष* र ताराबाट नापिने *निरयन वर्ष* बीच वर्षमा झन्डै `२०` मिनेटको फरक छ — एक वर्षमा नदेखिने, तर शताब्दीऔँमा दिन र राशिसम्म जम्मा हुने। दुवै वर्ष र तिनको फरक [[sayana-nirayana-year|सायन र निरयन वर्ष]] मा छ।",
+            en: "The *tropical year*, measured by the seasons, and the *sidereal year*, measured by the stars, differ by about `20` minutes a year — invisible in one year, yet over centuries it adds up to days and then whole signs. Both years and the gap between them are in [[sayana-nirayana-year|the tropical and sidereal year]].",
+          },
         },
         {
           kind: "para",
           text: {
-            ne: "प्रति वर्ष २० मिनेट भन्ने फरक `७२` वर्षमा झन्डै एक दिन, र `२,१६०` वर्षमा एक पूरै राशि (३०°) बन्छ। त्यसैले शताब्दी र सहस्राब्दीको दायरामा पात्रो बनाउँदा **कुन खगोलीय सन्दर्भ चुन्यो** भन्ने प्रश्न अत्यन्तै महत्त्वपूर्ण हुन्छ।",
-            en: "Twenty minutes a year becomes about one day in `72` years, and a full sign of `30°` in `2,160` years. That is why, when building a calendar meant to last centuries or millennia, **which astronomical reference you choose** matters enormously.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "equinox-precession",
-          caption: {
-            ne: "विषुव बिन्दु तारापुञ्जको सापेक्ष बिस्तारै सर्दै — सायन र निरयन वर्षबीचको फरकको मूल।",
-            en: "The equinox point slowly sliding against the stars — the origin of the gap between the tropical and sidereal year.",
+            ne: "त्यसैले शताब्दी र सहस्राब्दीको दायरामा चल्ने पात्रोमा **कुन खगोलीय सन्दर्भ चुन्ने** भन्ने प्रश्न अत्यन्तै महत्त्वपूर्ण हुन्छ — र वि.सं. र ई.सं.ले फरक सन्दर्भ चुनेका छन्।",
+            en: "That is why, for a calendar meant to run for centuries or millennia, **which astronomical reference you choose** matters enormously — and BS and AD chose different ones.",
           },
         },
       ],

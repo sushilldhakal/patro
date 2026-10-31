@@ -45,8 +45,11 @@ export const eclipseSeasons: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "moon-orbit-tilt",
+          kind: "para",
+          text: {
+            ne: "सूर्य पात रेखा नजिक कहिले पुग्छ भन्ने माथि राहु–केतुको अध्यायको ढल्किएको कक्षामा चलाएर हेर्न सकिन्छ।",
+            en: "When the Sun reaches the node line can be run on the tilted orbit above, in the Rahu–Ketu chapter.",
+          },
         },
       ],
     },

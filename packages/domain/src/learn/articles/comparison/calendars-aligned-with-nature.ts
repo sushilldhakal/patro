@@ -57,14 +57,6 @@ export const calendarsAlignedWithNature: ArticleData = {
             en: "The `19`-year cycle used by the Hebrew and Chinese calendars is the ~Metonic cycle~, resting on the near-exact equality of `19` solar years with `235` lunar months.",
           },
         },
-        {
-          kind: "diagram",
-          id: "equinox-precession",
-          caption: {
-            ne: "विषुव बिन्दु ताराको सापेक्ष सर्दै — पात्रोलाई प्रकृतिसँग बाँध्न कुन सन्दर्भ रोज्ने भन्ने प्रश्नको जड।",
-            en: "The equinox point sliding against the stars — the root of which reference a calendar must pick.",
-          },
-        },
       ],
     },
     {

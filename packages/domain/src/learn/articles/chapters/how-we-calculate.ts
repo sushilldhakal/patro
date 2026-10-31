@@ -80,21 +80,10 @@ export const howWeCalculate: ArticleData = {
       },
       blocks: [
         {
-          kind: "lede",
+          kind: "para",
           text: {
-            ne: "तलको चित्र *भूकेन्द्रित* दृश्य हो: पृथ्वी बीचमा, सूर्य दूर (दिशा मात्र), चन्द्रको कक्ष, र बाहिर ~१२ राशि + २७ नक्षत्र~ को जाल — सूर्यको निरयन देशान्तर अनुसार कुन खण्ड उज्यालो हुन्छ हेर्नुहोस्। वर्ष स्लाइडर / चलाउनुहोस् ले सूर्यलाई पट्टीमा सार्छ; पढाइमा सूर्य राशि, नक्षत्र, तिथि कोण (चन्द्र−सूर्य) देखिन्छ — यही कोण सर्भरमा तिथि बनाउँछ।",
-            en: "The diagram below is a *geocentric* teaching view: Earth at the centre, the Sun as a direction only, the Moon’s orbit, and an outer ~12-rashi + 27-nakshatra~ grid — watch which sector lights up from the Sun’s sidereal longitude. The year slider and play button move the Sun along the belt; the readouts show the Sun sign, the nakshatra, and the tithi angle (Moon − Sun) — the same angle the server turns into a tithi.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "ecliptic-belt",
-        },
-        {
-          kind: "note",
-          text: {
-            ne: "यो चित्र शिक्षाका लागि सरलीकृत कक्ष हो; उत्पादनमा स्विस एफेमेरिसले जेपीएल ग्रहपात, अपवर्तन र अवलोककको उचाइ प्रयोग गर्छ।",
-            en: "The orbits here are simplified for teaching; in production Swiss Ephemeris uses the JPL ephemeris, refraction, and the observer’s elevation.",
+            ne: "सर्भरले बाँड्ने यी खण्ड — पृथ्वी बीचमा, बाहिर १२ राशि र २७ नक्षत्रको जाली — [[ecliptic|क्रान्तिवृत्त]] मा चलाएर हेर्न सकिन्छ। त्यो चित्र शिक्षाका लागि सरलीकृत छ; उत्पादनमा स्विस एफेमेरिसले जेपीएल ग्रहपात, अपवर्तन र अवलोककको उचाइ प्रयोग गर्छ।",
+            en: "These divisions the server applies — Earth in the middle, the 12-rashi and 27-nakshatra grid around it — can be run in [[ecliptic|the ecliptic]]. That picture is simplified for teaching; in production Swiss Ephemeris uses the JPL ephemeris, refraction and the observer's elevation.",
           },
         },
       ],

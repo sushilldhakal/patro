@@ -31,13 +31,9 @@ export const declination: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "सूर्यको क्रान्ति वर्षभरि `+२३.४४°` देखि `−२३.४४°` सम्म ओहोरदोहोर गर्छ — यही ओहोरदोहोरले ऋतु, अयन र दिनको लम्बाइ तय गर्छ।",
-            en: "The Sun's declination swings between `+23.44°` and `−23.44°` through the year — and that swing sets the seasons, the ayanas and the length of the day.",
+            ne: "सूर्यको क्रान्ति वर्षभरि `+२३.४४°` देखि `−२३.४४°` सम्म ओहोरदोहोर गर्छ — यही ओहोरदोहोरले ऋतु, अयन र दिनको लम्बाइ तय गर्छ — माथि विषुव र अयनान्तको वक्रमा देखिएझैँ।",
+            en: "The Sun's declination swings between `+23.44°` and `−23.44°` through the year — and that swing sets the seasons, the ayanas and the length of the day — the curve above, in the equinoxes and solstices.",
           },
-        },
-        {
-          kind: "diagram",
-          id: "declination-year",
         },
       ],
     },

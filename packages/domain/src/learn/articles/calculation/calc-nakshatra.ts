@@ -102,8 +102,11 @@ export const calcNakshatra: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "table-nakshatra",
+          kind: "para",
+          text: {
+            ne: "२७ नक्षत्रको नाम, स्वामी र पादको तालिका [[nakshatra|नक्षत्र]] मा छ।",
+            en: "The table of the twenty-seven nakshatras — names, lords and padas — is in [[nakshatra|nakshatra]].",
+          },
         },
       ],
     },

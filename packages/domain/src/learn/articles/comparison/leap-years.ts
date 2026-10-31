@@ -22,14 +22,6 @@ export const leapYears: ArticleData = {
             en: "Left unabsorbed it accumulates — nearly a day in four years, `24` days in a century. The leap day is the device that gives it back.",
           },
         },
-        {
-          kind: "diagram",
-          id: "equinox-precession",
-          caption: {
-            ne: "लीप वर्षको नियम विषुवलाई एउटै मितिमा अड्याउन बनेको हो।",
-            en: "The leap-year rule exists to hold the equinox on one date.",
-          },
-        },
       ],
     },
     {
@@ -44,8 +36,11 @@ export const leapYears: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "year-length-ladder",
+          kind: "para",
+          text: {
+            ne: "सायन, निरयन र सिद्धान्तका वर्षहरू एउटै भर्याङमा [[sayana-nirayana-year|सायन र निरयन वर्ष]] मा देखाइएका छन्।",
+            en: "The tropical, sidereal and siddhantic years are set side by side on one ladder in [[sayana-nirayana-year|the tropical and sidereal year]].",
+          },
         },
         {
           kind: "para",

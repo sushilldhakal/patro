@@ -35,8 +35,11 @@ export const shuklaKrishnaPaksha: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "moon-phases",
+          kind: "para",
+          text: {
+            ne: "चन्द्र बढ्ने र घट्ने कला [[solar-system|सूर्य, पृथ्वी र चन्द्रको आपसी गति]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The waxing and waning phases can be run in [[solar-system|how the Sun, Earth and Moon move]].",
+          },
         },
       ],
     },

@@ -136,29 +136,6 @@ export const siderealVsTropical: ArticleData = {
           },
         },
         {
-          kind: "formula",
-          cards: [
-            {
-              big: "365.2564",
-              unit: { ne: "दिन", en: "days" },
-              label: { ne: "नाक्षत्र वर्ष", en: "Sidereal year" },
-              desc: { ne: "पृथ्वी ताराको सापेक्ष उही स्थानमा — वास्तविक परिक्रमा काल।", en: "Earth back to the same place against the stars — the true orbital period." },
-            },
-            {
-              big: "365.2422",
-              unit: { ne: "दिन", en: "days" },
-              label: { ne: "सायन वर्ष", en: "Tropical year" },
-              desc: { ne: "विषुवदेखि विषुव — ऋतुचक्रको वास्तविक अवधि।", en: "Equinox to equinox — the real period of the seasonal cycle." },
-            },
-            {
-              big: "0.0142",
-              unit: { ne: "दिन", en: "day" },
-              label: { ne: "फरक", en: "The difference" },
-              desc: { ne: "२० मिनेट २४ सेकेन्ड — अयन चलनको प्रत्यक्ष परिणाम।", en: "20 minutes 24 seconds — a direct consequence of precession." },
-            },
-          ],
-        },
-        {
           kind: "para",
           text: {
             ne: "ग्रेगोरियन पात्रोले वर्ष **विषुवबाट** गन्छ, वि.सं.ले **ताराबाट**। त्यसैले वि.सं.को हरेक मिति ऋतुको तुलनामा वर्षेनि करिब २० मिनेट ढिलो पर्छ — झन्डै **७१ वर्षमा एक दिन**। एक वर्षमा यो देखिँदैन; शताब्दीऔँमा जम्मा भएर मात्र देखिन्छ।",
@@ -169,7 +146,7 @@ export const siderealVsTropical: ArticleData = {
     },
     {
       title: { ne: "जम्मा हुँदै जाने", en: "How it accumulates" },
-      eyebrow: "One day in 72 years",
+      eyebrow: "One day in about 71 years",
       blocks: [
         {
           kind: "para",

@@ -46,8 +46,8 @@ export const sankranti: ArticleData = {
                 en: "Makar Sankranti",
               },
               p: {
-                ne: "माघे सङ्क्रान्ति — सूर्य उत्तरायण हुने पर्व।",
-                en: "Maghe Sankranti — the festival when the Sun turns north (Uttarayana).",
+                ne: "माघे सङ्क्रान्ति — परम्परामा उत्तरायणको आरम्भ मानिने पर्व (सूर्यको वास्तविक उत्तरतर्फी मोड पुषको अयनान्तमै हुन्छ)।",
+                en: "Maghe Sankranti — traditionally the start of Uttarayana (the Sun's real northward turn comes earlier, at the solstice in Poush).",
               },
             },
             {

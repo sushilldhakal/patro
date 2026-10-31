@@ -49,11 +49,10 @@ export const calcSunrise: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "sunrise-vriddhi",
-          caption: {
-            ne: "सूर्योदयको क्षण स्थानसापेक्ष — अक्षांश, देशान्तर र उचाइ तीनैले सार्छ।",
-            en: "The instant of sunrise is local — latitude, longitude and altitude all move it.",
+          kind: "para",
+          text: {
+            ne: "सूर्योदयको क्षणले कुन तिथि कुन दिनमा पर्छ भन्ने कसरी तय गर्छ भन्ने चित्र [[tithi-vriddhi-kshaya|तिथि — वृद्धि, क्षय र सूर्योदय]] मा छ।",
+            en: "How the instant of sunrise decides which tithi lands on which day is drawn in [[tithi-vriddhi-kshaya|tithi — repeats, skips and sunrise]].",
           },
         },
       ],

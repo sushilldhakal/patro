@@ -42,26 +42,6 @@ export const eclipses: ArticleData = {
     },
     {
       title: {
-        ne: "चन्द्र कक्षको ५° झुकाव र ग्रहण रेखा",
-        en: "The 5° tilted orbit, eclipse line & 18.6-year nodal cycle",
-      },
-      eyebrow: "The tilted orbit, the eclipse line & 18.6-year nodal cycle",
-      blocks: [
-        {
-          kind: "lede",
-          text: {
-            ne: "झुकाव र १८.६ वर्षे पात चक्र [[rahu-ketu-nodes|पातको खण्ड]] मा छन्। यही दृश्य ग्रहणको जाँच हो। **▶ चलाउनुहोस्** — सूर्य–पृथ्वी रेखा **राहु वा केतु** मा पुग्दा र त्यहीँ पूर्णिमा/औंसी पर्दा मात्र ग्रहण हुन्छ।",
-            en: "The tilt and the 18.6-year nodal cycle are [[rahu-ketu-nodes|the node chapter]]. This view is the eclipse test. Press **▶ play** — an eclipse occurs only when the Sun–Earth line meets **Rahu or Ketu** with a new or full moon there.",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "moon-orbit-tilt",
-        },
-      ],
-    },
-    {
-      title: {
         ne: "चन्द्रग्रहण — प्रकार र सुरक्षा",
         en: "Lunar eclipse — types & safety",
       },
@@ -208,13 +188,6 @@ export const eclipses: ArticleData = {
               },
             },
           ],
-        },
-        {
-          kind: "note",
-          text: {
-            ne: "राहु–केतु आकाशका भौतिक पिण्ड होइनन् — चन्द्रको कक्ष र सूर्यपथ (क्रान्तिवृत्त) काट्ने दुई गणितीय बिन्दु हुन्। यी पात बिस्तारै घुम्छन् (∼१८.६ वर्षमा एक फेरो), त्यसैले ग्रहण ऋतु पनि सर्दै जान्छ। औंसी/पूर्णिमा पनि राहु–केतु नजिक परेमा मात्र ग्रहण हुन्छ — त्यसैले हरेक महिना हुँदैन। सूर्यग्रहणमा चन्द्रको छायाँ सानो हुनाले पृथ्वीको सीमित पट्टीबाट मात्र देखिन्छ।",
-            en: "Rahu–Ketu are not physical bodies in the sky — they are two mathematical points where the Moon's orbit crosses the Sun's path (ecliptic). These nodes rotate slowly (one loop in ∼18.6 years), so the eclipse seasons also drift. A new/full moon causes an eclipse only when it falls near Rahu–Ketu — which is why it doesn't happen every month. In a solar eclipse the Moon's shadow is small, so it is seen only from a limited strip of the Earth.",
-          },
         },
       ],
     },

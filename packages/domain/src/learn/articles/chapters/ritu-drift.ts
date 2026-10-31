@@ -21,8 +21,8 @@ export const rituDrift: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "सूर्य दिनको झन्डै १° हिँड्ने हुनाले ऋतु निरयन महिनाको सापेक्ष ~हरेक ∼७२ वर्षमा १ दिन~ सर्छ।",
-            en: "The Sun moves about 1° a day, so the season drifts ~by 1 day every ∼72 years~ against the sidereal months.",
+            ne: "सूर्य दिनको झन्डै १° हिँड्ने हुनाले ऋतु निरयन महिनाको सापेक्ष ~हरेक ∼७१ वर्षमा १ दिन~ सर्छ।",
+            en: "The Sun moves about 1° a day, so the season drifts ~by 1 day every ∼71 years~ against the sidereal months.",
           },
         },
       ],
@@ -50,8 +50,8 @@ export const rituDrift: ArticleData = {
                 en: "Anchor months to signs (current practice)",
               },
               p: {
-                ne: "वैशाख सधैँ मेष सङ्क्रान्तिमै सुरु हुन्छ — कुण्डली, नक्षत्र र ग्रह-राशि **ताराका सापेक्ष स्थिर** रहन्छन्। तर ऋतु निरयनको सापेक्ष ∼**७२ वर्षमा १ दिन** (∼२१६० वर्षमा पूरा १ महिना) सर्छ — धेरै शताब्दीपछि वैशाख वसन्त नभई अर्कै ऋतुमा पर्न सक्छ।",
-                en: "Baisakh always starts at Mesha Sankranti — the chart, nakshatra and planet-signs stay **fixed relative to the stars**. But the season drifts ∼**1 day every 72 years** (a full month in ∼2,160 years) relative to the sidereal zodiac — after many centuries Baisakh may fall in a different season than spring.",
+                ne: "वैशाख सधैँ मेष सङ्क्रान्तिमै सुरु हुन्छ — कुण्डली, नक्षत्र र ग्रह-राशि **ताराका सापेक्ष स्थिर** रहन्छन्। तर ऋतु निरयनको सापेक्ष ∼**७१ वर्षमा १ दिन** (∼२,१५० वर्षमा पूरा १ महिना) सर्छ — धेरै शताब्दीपछि वैशाख वसन्त नभई अर्कै ऋतुमा पर्न सक्छ।",
+                en: "Baisakh always starts at Mesha Sankranti — the chart, nakshatra and planet-signs stay **fixed relative to the stars**. But the season drifts ∼**1 day every 71 years** (a full month in ∼2,150 years) relative to the sidereal zodiac — after many centuries Baisakh may fall in a different season than spring.",
               },
             },
             {
@@ -80,13 +80,6 @@ export const rituDrift: ArticleData = {
           text: {
             ne: "यो पात्रोले **दुवै** देखाउँछ — महिना/गते *निरयन सङ्क्रान्ति* ले (तारा स्थिर), अनि गृहपृष्ठको ~ऋतु पट्टी सायन~ (विषुव–अयनान्त) ले गणना गर्छ, ताकि ऋतु वास्तविक मौसमसँगै रहोस्। त्यसैले बैशाख कहिलेकाहीँ वसन्तसँग ठ्याक्क नमिल्न सक्छ — त्यो भुल होइन, अयन चलनको असर हो।",
             en: "This patro shows **both** — the month/gate is computed by *sidereal sankranti* (stars fixed), while the home-page ~ṛtu strip is tropical~ (equinox–solstice), so the season stays with the real weather. That's why Baisakh may not line up exactly with spring — that's not a bug, it's the effect of precession.",
-          },
-        },
-        {
-          kind: "note",
-          text: {
-            ne: "पश्चिमी ज्योतिष प्रायः **सायन** (ऋतु-केन्द्रित) चलाउँछ, नेपाली–वैदिक वैदिक ज्योतिष **निरयन** (तारा-केन्द्रित)। अयनांशको गहिराइ [[ayanamsha|अयनांश]] लेखमा छ।",
-            en: "Western astrology mostly uses **tropical** (season-centred), Nepali–Vedic astrology uses **sidereal** (star-centred). The depth of ayanamsha is in the [[ayanamsha|Ayanamsha]] article.",
           },
         },
       ],

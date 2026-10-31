@@ -23,11 +23,10 @@ export const ancientPlanetaryMotion: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "two-systems",
-          caption: {
-            ne: "भूकेन्द्रित ढाँचामा वक्री गति देखाउन मन्द र शीघ्र सुधार चाहिन्थ्यो।",
-            en: "Explaining retrograde motion in a geocentric frame is what the manda and shighra corrections were for.",
+          kind: "para",
+          text: {
+            ne: "भूकेन्द्रित ढाँचामा वक्री गति देखाउन मन्द र शीघ्र सुधार चाहिन्थ्यो — दुवै ढाँचा [[geocentric-heliocentric|भूकेन्द्रित र सूर्यकेन्द्रित दृष्टिकोण]] मा छेउछाउ छन्।",
+            en: "Showing retrograde motion in a geocentric frame is what the manda and shighra corrections were for — the two frames are side by side in [[geocentric-heliocentric|geocentric and heliocentric views]].",
           },
         },
       ],

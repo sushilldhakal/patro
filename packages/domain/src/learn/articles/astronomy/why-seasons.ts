@@ -123,15 +123,8 @@ export const whySeasons: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "तर ध्यान दिनुहोस् — ऋतुको **नाम** महिनाले दिन्छ, ऋतु **बनाउने** कुरा भने सूर्यको उत्तर–दक्षिण यात्रा हो। महिना निरयन ढाँचामा (राशि सीमा) चल्छन्, ऋतु सायन ढाँचामा (विषुव–अयनान्त) — र अयन चलनले दुईलाई हरेक `७२` वर्षमा `१°` का दरले छुट्याउँदै लैजान्छ।",
-            en: "Note, though, that the months give a ṛtu its **name** while what **makes** a ṛtu is the Sun's north–south journey. The months run on the sidereal frame (sign boundaries), the ṛtus on the tropical one (equinox–solstice) — and precession parts the two by `1°` every `72` years.",
-          },
-        },
-        {
-          kind: "note",
-          text: {
-            ne: "त्यसैले ऋतुको कुरा गर्दा भरपर्दो सन्दर्भ महिना होइन, ~उत्तरायण र दक्षिणायन~ हो — ती सूर्यको क्रान्तिले नै परिभाषित हुन्छन्, र ऋतुसँग कहिल्यै छुट्टिँदैनन्।",
-            en: "So the dependable reference for a ṛtu is not the month but ~Uttarāyaṇa and Dakṣiṇāyana~ — those are defined by the Sun's declination itself, and never part company with the seasons.",
+            ne: "ऋतुको **नाम** महिनाबाट आए पनि ऋतु **बनाउने** कुरा सूर्यको उत्तर–दक्षिण यात्रा हो — त्यो तल विषुव र अयनान्तमा छ। महिना र ऋतु बिस्तारै किन छुट्टिन्छन् भन्ने [[ritu-drift|ऋतु र निरयन महिनाको सम्बन्ध]] मा।",
+            en: "The months give a ṛtu its **name**, but what **makes** a ṛtu is the Sun's north–south journey — which is the equinoxes and solstices below. Why the months and ṛtus slowly part is in [[ritu-drift|seasons and the sidereal months]].",
           },
         },
         {

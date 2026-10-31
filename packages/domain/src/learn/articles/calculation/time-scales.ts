@@ -42,11 +42,10 @@ export const timeScales: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "earth-rotation",
-          caption: {
-            ne: "पृथ्वीको घुर्णनले UT दिन्छ, तर त्यो एकनास छैन — त्यसैले गणनाका लागि TT चाहिन्छ।",
-            en: "Earth's rotation gives UT, but it is not uniform — which is why the computation needs TT.",
+          kind: "para",
+          text: {
+            ne: "पृथ्वीको घुर्णनले UT दिन्छ, तर त्यो एकनास छैन — त्यसैले TT चाहिन्छ। घुम्दै गरेको पृथ्वी [[sky-rotation|आकाश घुमेको किन देखिन्छ?]] मा छ।",
+            en: "Earth's rotation gives UT, but it is not uniform — which is why TT is needed. The turning Earth is drawn in [[sky-rotation|why the sky appears to turn]].",
           },
         },
       ],

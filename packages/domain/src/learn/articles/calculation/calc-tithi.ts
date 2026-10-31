@@ -81,8 +81,11 @@ export const calcTithi: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "tithi-elongation",
+          kind: "para",
+          text: {
+            ne: "कोण `१२°` को अर्को गुणाङ्क पार गर्ने क्षण नै सीमा हो — त्यो कोण [[tithi|तिथि भनेको के हो?]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The boundary is the instant the angle crosses the next multiple of `12°` — that angle can be run in [[tithi|what is a tithi?]].",
+          },
         },
       ],
     },
@@ -109,7 +112,7 @@ export const calcTithi: ArticleData = {
           items: [
             {
               h: { ne: "दुई सूर्योदय छोयो", en: "Touches two sunrises" },
-              p: { ne: "**तिथि वृद्धि** — एउटै तिथि दुई दिनमा देखिन्छ।", en: "**Tithi vriddhi** — the same tithi appears on two days." },
+              p: { ne: "[[tithi-vriddhi-kshaya|तिथि वृद्धि]] — एउटै तिथि दुई दिनमा देखिन्छ।", en: "[[tithi-vriddhi-kshaya|Tithi vriddhi]] — the same tithi appears on two days." },
             },
             {
               h: { ne: "कुनै सूर्योदय छोएन", en: "Touches no sunrise" },

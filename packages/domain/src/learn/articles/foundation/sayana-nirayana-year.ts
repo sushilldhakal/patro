@@ -164,13 +164,6 @@ export const sayanaNirayanaYear: ArticleData = {
             },
           ],
         },
-        {
-          kind: "note",
-          text: {
-            ne: "सम्झनुहोस्: **सायनले ऋतु स्थिर राख्छ, निरयनले तारा।** दुवै उत्तिकै सही नाप हुन् — फरक केवल के स्थिर राख्ने भन्नेमा छ।",
-            en: "Remember: **sāyana holds the seasons fixed, nirayana the stars.** Both are equally correct measurements — they differ only in what they hold still.",
-          },
-        },
       ],
     },
     {
@@ -239,8 +232,8 @@ export const sayanaNirayanaYear: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "राशिचक्र `३६०°` को घेरा हो, १२ राशि × `३०°`। प्रश्न केवल **शून्य कहाँ राख्ने** भन्ने हो। सायन राशिचक्रले शून्य वसन्त विषुवमा राख्छ, निरयनले ताराको एउटा निश्चित बिन्दुमा (अश्विनीको सुरु)। दुई शून्यबीचको कोण नै ~अयनांश~ हो।",
-            en: "The zodiac is a `360°` circle, 12 rashis × `30°`. The only question is **where to put zero**. The tropical zodiac puts it at the vernal equinox; the sidereal one at a fixed point among the stars (the start of Ashvini). The angle between the two zeros is the ~ayanamsha~.",
+            ne: "माथि दुई राशिचक्रको शून्य र बीचको ~अयनांश~ आइसक्यो। यहाँ त्यसको व्यावहारिक नतिजा — एउटै ग्रहको राशि कसरी बदलिन्छ।",
+            en: "The two zodiacs' zeros and the ~ayanamsha~ between them came above. Here is what that does in practice — how one planet's rashi changes.",
           },
         },
         {
@@ -272,8 +265,8 @@ export const sayanaNirayanaYear: ArticleData = {
             {
               h: { ne: "अयनांश एउटै होइन", en: "There is more than one ayanamsha" },
               p: {
-                ne: "निरयन शून्य कुन तारामा राख्ने भन्नेमा परम्परा फरक छन्। भारत सरकारको पञ्चाङ्ग र यो एपले *लाहिरी* प्रयोग गर्छन्; रमण, कृष्णमूर्ति आदि अरू अयनांश यसभन्दा बढीमा करिब `१½°` फरक पर्छन्। त्यसैले दुई निरयन पात्रोमा पनि सङ्क्रान्तिको समय केही घण्टा फरक हुन सक्छ।",
-                en: "Traditions differ on which star fixes the sidereal zero. India's official panchanga and this app use *Lahiri*; others (Raman, Krishnamurti and more) differ from it by up to about `1½°`. So even two sidereal patros can give a sankranti a few hours apart.",
+                ne: "प्रमुख प्रणाली माथि [[ayanamsha|अयनांश]] मा छन् — यिनको फरक बढीमा करिब `१½°` छ। त्यसैले दुई निरयन पात्रोमा पनि सङ्क्रान्तिको समय केही घण्टा फरक हुन सक्छ।",
+                en: "The main systems are above, in [[ayanamsha|the ayanamsha]] — they differ by up to about `1½°`. So even two sidereal patros can give a sankranti a few hours apart.",
               },
             },
           ],
@@ -347,27 +340,13 @@ export const sayanaNirayanaYear: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "राशि ताराको आकाशका बाह्र स्थिर टुक्रा हुन् — हरेक `३०°`। सूर्य कुन राशिमा छ भनेर नाप्न ताराकै सापेक्ष नाप्नुपर्छ। आकाश आफैँले हरेक दिन यो नाप दिन्छ: **ताराको दिन** र **सूर्यको दिन**बीचको फरकमा।",
-            en: "The rashis are twelve fixed slices of the starry sky — `30°` each. To know which one the Sun is in, you have to measure against the stars. The sky gives that measurement every day: in the gap between the **star day** and the **Sun's day**.",
+            ne: "राशि ताराको आकाशका बाह्र स्थिर टुक्रा हुन् — हरेक `३०°`। सूर्य कुन राशिमा छ भनेर नाप्न ताराकै सापेक्ष नाप्नुपर्छ। आकाश आफैँले हरेक दिन यो नाप दिन्छ: **ताराको दिन** र **सूर्यको दिन**बीचको फरकमा — दुवै दिनको परिभाषा [[sidereal-time|नाक्षत्र काल र लग्न]] मा छ।",
+            en: "The rashis are twelve fixed slices of the starry sky — `30°` each. To know which one the Sun is in, you have to measure against the stars. The sky gives that measurement every day: in the gap between the **star day** and the **Sun's day** — both are defined in [[sidereal-time|sidereal time and the lagna]].",
           },
         },
         {
           kind: "keys",
           items: [
-            {
-              h: { ne: "नाक्षत्र दिन — २३ घ ५६ मि ४ से", en: "Sidereal day — 23 h 56 min 4 s" },
-              p: {
-                ne: "ताराको सापेक्ष पृथ्वीको एक पूरा फेरो। कुनै तारा फेरि ठ्याक्कै उही ठाउँमा आउन यति समय लाग्छ, र यो सधैँ उही रहन्छ।",
-                en: "One full turn of the Earth against the stars. It is the time a star takes to return to exactly the same place, and it never varies.",
-              },
-            },
-            {
-              h: { ne: "सौर दिन — २४ घण्टा", en: "Solar day — 24 hours" },
-              p: {
-                ne: "सूर्य एक मध्याह्नबाट अर्को मध्याह्नसम्म। त्यो बीचमा पृथ्वी आफ्नो कक्षामा अलि अगाडि बढ्छ, त्यसैले सूर्यलाई फेरि माथि ल्याउन `~१°` थप घुम्नुपर्छ — त्यही `३` मि `५६` से।",
-                en: "The Sun from one noon to the next. Meanwhile the Earth moves a little along its orbit, so it must turn `~1°` more to bring the Sun overhead again — those `3` min `56` s.",
-              },
-            },
             {
               h: { ne: "त्यो १° नै राशिको यात्रा", en: "That 1° is the walk through the rashis" },
               p: {
@@ -733,8 +712,8 @@ export const sayanaNirayanaYear: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "सबैभन्दा चिनिने उदाहरण माघे सङ्क्रान्ति हो। यसलाई ~उत्तरायण~ को सुरु भनिन्छ, तर सूर्य वास्तवमा २१–२२ डिसेम्बरमै उत्तरतर्फ फर्किसकेको हुन्छ। १,७०० वर्षअघि यी दुई एकै दिन पर्थे; आज **निरयन नाम** र **सायन घटना**बीच तीन हप्ताभन्दा बढी छ ([[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]])।",
-            en: "The best-known case is Maghe Sankranti. It is called the start of ~Uttarayana~, yet the Sun actually turns north on 21–22 December. Seventeen centuries ago the two fell on the same day; today more than three weeks separate the **sidereal name** from the **tropical event** ([[uttarayana-dakshinayana|Uttarayana and Dakshinayana]]).",
+            ne: "सबैभन्दा चिनिने उदाहरण माघे सङ्क्रान्ति हो — परम्परामा उत्तरायणको सुरु, तर सूर्य वास्तवमा तीन हप्ता अगाडि पुषमै उत्तर फर्किसक्छ। त्यो माथि [[uttarayana-in-calendar|उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग]] मा छ।",
+            en: "The best-known case is Maghe Sankranti — traditionally the start of Uttarayana, though the Sun actually turns north three weeks earlier, in Poush. That is above, in [[uttarayana-in-calendar|Uttarayana and Dakshinayana in the calendar]].",
           },
         },
         {

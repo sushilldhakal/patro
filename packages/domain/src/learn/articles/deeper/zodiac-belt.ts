@@ -27,8 +27,11 @@ export const zodiacBelt: ArticleData = {
           id: "zodiac-belt-width",
         },
         {
-          kind: "diagram",
-          id: "ecliptic-belt",
+          kind: "para",
+          text: {
+            ne: "पट्टीको बीचको रेखा र त्यसका राशि–नक्षत्र खण्ड [[ecliptic|क्रान्तिवृत्त]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The line down the middle of the belt, with its rashi and nakshatra divisions, can be run in [[ecliptic|the ecliptic]].",
+          },
         },
       ],
     },

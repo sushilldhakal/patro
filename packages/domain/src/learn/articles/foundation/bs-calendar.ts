@@ -179,13 +179,6 @@ export const bsCalendar: ArticleData = {
               },
             },
             {
-              h: { ne: "महिनाको अस्थिर लम्बाइ", en: "Variable month length" },
-              p: {
-                ne: "पृथ्वीको कक्ष अण्डाकार भएकाले सूर्यको देखिने गति घटबढ हुन्छ।",
-                en: "Because Earth's orbit is elliptical, the Sun's apparent speed rises and falls.",
-              },
-            },
-            {
               h: { ne: "नयाँ वर्ष बैशाखमा", en: "The year starts in Baisakh" },
               p: {
                 ne: "~मेष सङ्क्रान्ति~ — बैशाख १, ग्रेगोरियन पात्रोमा अप्रिल मध्यतिर।",
@@ -197,8 +190,8 @@ export const bsCalendar: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "यसैकारण आउँदो वर्षको पात्रो पहिल्यै ठ्याक्कै भन्न **खगोलीय गणना** चाहिन्छ — महिनाको दिन–सङ्ख्या सूर्यको वास्तविक स्थितिले तय गर्छ, कुनै निश्चित नियमले होइन।",
-            en: "This is why stating next year's calendar exactly in advance needs **astronomical calculation** — the number of days in a month is set by the Sun's actual position, not by a fixed rule.",
+            ne: "यही कारण वि.सं.को पात्रो हरेक वर्ष गणना गरेर बनाइन्छ — माथि वि.सं.को महिनामा भनिएझैँ।",
+            en: "This is why the BS calendar is computed afresh each year — as set out above, under how a BS month is formed.",
           },
         },
       ],

@@ -41,10 +41,6 @@ export const ancientCalendars: ArticleData = {
             },
           ],
         },
-        {
-          kind: "diagram",
-          id: "earth-rotation",
-        },
       ],
     },
     {

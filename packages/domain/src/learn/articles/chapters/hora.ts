@@ -89,8 +89,8 @@ export const hora: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "शुभ कार्यको मुहूर्त छान्दा होरा हेरिन्छ — जस्तै यात्रा वा व्यापारका लागि **बुध/बृहस्पति** होरा, स्थिर कामका लागि **शनि** होरा अनुकूल मानिन्छ। [[choghadiya|चौघडिया]] पनि दिन बाँड्छ, तर आठ–आठ खण्डमा; होरा चौबीस ग्रहीय घण्टा हो, र यसको पहिलो घण्टाले नै [[vara|वार]] को नाम दिन्छ।",
-            en: "A hora is checked when choosing a muhurta — a **Mercury or Jupiter** hora for travel or business, a **Saturn** hora for steady work. [[choghadiya|Choghadiya]] also divides the day, but into eight and eight; hora is twenty-four planetary hours, and its first hour is what names the [[vara|weekday]].",
+            ne: "शुभ कार्यको मुहूर्त छान्दा होरा हेरिन्छ — जस्तै यात्रा वा व्यापारका लागि **बुध/बृहस्पति** होरा, स्थिर कामका लागि **शनि** होरा अनुकूल मानिन्छ। होरा र चौघडिया कसरी फरक छन् भन्ने तल चौघडियामा छ।",
+            en: "A hora is checked when choosing a muhurta — a **Mercury or Jupiter** hora for travel or business, a **Saturn** hora for steady work. How hora and choghadiya differ is below, under choghadiya.",
           },
         },
       ],

@@ -44,8 +44,11 @@ export const uttarayanaDakshinayana: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "declination-year",
+          kind: "para",
+          text: {
+            ne: "यो ओहोरदोहोर माथि विषुव र अयनान्तको वक्रमा देखिन्छ — वक्रको उकालो आधा उत्तरायण, ओरालो आधा दक्षिणायन।",
+            en: "That swing is the curve above, in the equinoxes and solstices — its rising half is Uttarāyaṇa, its falling half Dakṣiṇāyana.",
+          },
         },
       ],
     },
@@ -56,8 +59,8 @@ export const uttarayanaDakshinayana: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "“सूर्य उत्तर लाग्यो” भनेको क्रान्ति बढ्नु हो, र अयनको साँचो सन्धि अयनान्त हो। चार बिन्दु, ±२३.४४°, र सङ्क्रान्तिसँग नमिल्ने कारण [[equinox-solstice|विषुव र अयनान्त]] र [[declination|क्रान्ति]] मा छन्। यहाँबाट परम्परागत मिति र वास्तविक मिति मात्र।",
-            en: "\"The Sun turns north\" means declination is increasing, and an ayana's true hinge is a solstice. The four points, ±23.44°, and why that is not a sankranti are in [[equinox-solstice|equinoxes and solstices]] and [[declination|declination]]. From here, only the traditional date against the real one.",
+            ne: "“सूर्य उत्तर लाग्यो” भनेको क्रान्ति बढ्नु हो, र अयनको साँचो सन्धि अयनान्त हो। चार बिन्दु, ±२३.४४°, र सङ्क्रान्तिसँग नमिल्ने कारण [[equinox-solstice|विषुव र अयनान्त]] र [[declination|क्रान्ति]] मा छन्। परम्परागत मिति र वास्तविक मिति [[uttarayana-in-calendar|उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग]] मा छन्।",
+            en: "\"The Sun turns north\" means declination is increasing, and an ayana's true hinge is a solstice. The four points, ±23.44°, and why that is not a sankranti are in [[equinox-solstice|equinoxes and solstices]] and [[declination|declination]]. The traditional dates against the real ones are in [[uttarayana-in-calendar|Uttarayana and Dakshinayana in the calendar]].",
           },
         },
       ],
@@ -101,8 +104,11 @@ export const uttarayanaDakshinayana: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "equinox-precession",
+          kind: "para",
+          text: {
+            ne: "विषुव बिन्दु ताराको सापेक्ष कसरी सर्दै आयो भन्ने चलचित्र [[tropical-year-gap|२० मिनेटको फरकले पात्रोमा के गर्छ]] मा छ।",
+            en: "How the equinox point has slid against the stars is animated in [[tropical-year-gap|what the 20-minute gap does to a calendar]].",
+          },
         },
         {
           kind: "note",

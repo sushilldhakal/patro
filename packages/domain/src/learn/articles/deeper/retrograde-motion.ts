@@ -23,11 +23,10 @@ export const retrogradeMotion: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "two-systems",
-          caption: {
-            ne: "एउटै गति दुई दृष्टिबाट — सूर्यकेन्द्रित चित्रमा कुनै ग्रह पछाडि हिँड्दैन।",
-            en: "One motion from two viewpoints — in the heliocentric picture no planet ever moves backwards.",
+          kind: "para",
+          text: {
+            ne: "एउटै गतिलाई दुई दृष्टिबाट हेर्दा — सूर्यकेन्द्रित चित्रमा कुनै ग्रह पछाडि हिँड्दैन। दुवै चित्र छेउछाउ [[geocentric-heliocentric|भूकेन्द्रित र सूर्यकेन्द्रित दृष्टिकोण]] मा छन्; तलको चित्रले उछिन्ने क्षण देखाउँछ।",
+            en: "Seen from the two viewpoints, one motion — in the heliocentric picture no planet ever moves backwards. Both pictures sit side by side in [[geocentric-heliocentric|geocentric and heliocentric views]]; the figure below shows the moment of overtaking.",
           },
         },
       ],
