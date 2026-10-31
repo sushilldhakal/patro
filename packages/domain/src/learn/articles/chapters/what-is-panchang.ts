@@ -76,8 +76,8 @@ export const whatIsPanchang: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "यही पृष्ठले पाँचै अङ्ग एक दृष्टिमा राख्छ। [[tithi|तिथि]], [[nakshatra|नक्षत्र]], [[yoga|योग]], [[karana|करण]] र [[vara|वार]] पछिका लेख हुन्। [[choghadiya|चौघडिया]] अङ्ग होइन — दिन र रातका खण्ड हो, त्यो पनि छुट्टै।",
-            en: "This page only sets the five limbs side by side. [[tithi|Tithi]], [[nakshatra|nakshatra]], [[yoga|yoga]], [[karana|karana]] and [[vara|vara]] each follow in their own article. [[choghadiya|Choghadiya]] is not a limb — it splits day and night, and it has its own page too.",
+            ne: "यही पृष्ठले पाँचै अङ्ग एक दृष्टिमा राख्छ। [[tithi|तिथि]], [[nakshatra|नक्षत्र]], [[yoga|योग]], [[karana|करण]] र [[vara|वार]] पछिका लेख हुन्। [[choghadiya|चौघडिया]] र [[hora|होरा]] अङ्ग होइनन् — दिन र रातका खण्ड हुन्, र अङ्गहरूपछि एउटै लेखमा आउँछन्।",
+            en: "This page only sets the five limbs side by side. [[tithi|Tithi]], [[nakshatra|nakshatra]], [[yoga|yoga]], [[karana|karana]] and [[vara|vara]] each follow in their own article. [[choghadiya|Choghadiya]] and [[hora|hora]] are not limbs — they divide day and night, and come together in one article after the limbs.",
           },
         },
       ],

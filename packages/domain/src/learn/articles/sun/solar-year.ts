@@ -82,8 +82,8 @@ export const solarYear: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "“सुरुको बिन्दु” तारा हो कि विषुव — यही [[sidereal-vs-tropical|निरयन र सायन]] को विषय हो। नेपाली वर्ष मेषको निरयन फिर्ती हो; ग्रेगोरियन वर्ष विषुवको सायन फिर्ती। दुवै सँगै स्थिर रहँदैनन्, त्यसैले ऋतु सर्छ।",
-            en: "Which starting point — the stars or the equinox — is [[sidereal-vs-tropical|sidereal and tropical]]. The Nepali year is the sidereal return to Mesha; the Gregorian year is the tropical return to the equinox. Both cannot stay fixed, which is why the ṛtus drift.",
+            ne: "“सुरुको बिन्दु” तारा हो कि विषुव — त्यो अर्को अध्याय [[sayana-nirayana-year|सायन र निरयन वर्ष]] को विषय हो। नेपाली वर्ष मेषको निरयन फिर्ती हो; ग्रेगोरियन वर्ष विषुवको सायन फिर्ती। दुवै सँगै स्थिर रहँदैनन्, त्यसैले ऋतु सर्छ।",
+            en: "Which starting point — the stars or the equinox — is the next chapter, [[sayana-nirayana-year|the tropical and sidereal year]]. The Nepali year is the sidereal return to Mesha; the Gregorian year is the tropical return to the equinox. Both cannot stay fixed, which is why the ṛtus drift.",
           },
         },
       ],

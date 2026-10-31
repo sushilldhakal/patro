@@ -141,8 +141,8 @@ export const nepaliCalendarBasics: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "यही जगमा टेकेर बाँकी सबै विषय बुझ्न सकिन्छ। यसै पृष्ठमा *विक्रम सम्वत्* छ। पञ्चाङ्गका अङ्ग त्यसपछि आउँछन्, आकाश र सूर्य अझ पछि।",
-            en: "Everything else in this library builds on this foundation. *Bikram Sambat* is the rest of this page. The panchanga limbs come next, and the sky and the Sun after that.",
+            ne: "यही जगमा टेकेर बाँकी सबै विषय बुझ्न सकिन्छ। यसै पृष्ठमा *विक्रम सम्वत्* छ। त्यसपछि पृथ्वी र आकाश, सूर्य र चन्द्र, अनि पञ्चाङ्गका अङ्ग क्रमैसँग आउँछन्।",
+            en: "Everything else in this library builds on this foundation. *Bikram Sambat* is the rest of this page. After it come Earth and the sky, the Sun and the Moon, and then the panchanga limbs, in that order.",
           },
         },
       ],

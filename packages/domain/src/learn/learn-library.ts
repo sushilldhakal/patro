@@ -14,11 +14,16 @@ import type { Bi } from "./article-schema";
  * parts compute or extend it rather than define it again.
  * Array order *is* that path, so insert a topic where it belongs in the sequence.
  *
- * `status` separates the map from the territory. `planned` entries hold a
- * slug and title so the outline stays visible in one place while the article
- * is written, but they are filtered out of the hub, the router, the sitemap
- * and SEO metadata — nothing ships as an empty page. Writing the body and
- * flipping `planned` → `published` is all a new article needs.
+ * `status` separates the map from the territory:
+ *
+ *   - `published` — written, reviewed and visible.
+ *   - `draft` — the body exists but is not ready to show.
+ *   - `planned` — the slug and title are reserved; nothing is written yet.
+ *
+ * Only `published` topics reach the hub, the router, the sitemap and SEO
+ * metadata, so nothing ships as an empty or half-finished page. The other two
+ * keep the outline visible in one place and count towards the hub's "more
+ * coming" line. A new article goes `planned` → `draft` → `published`.
  */
 
 /** Icon names the library uses; each app maps them to its own icon set. */
@@ -52,7 +57,7 @@ export const LEARN_ICON_KEYS = [
 
 export type LearnIconKey = (typeof LEARN_ICON_KEYS)[number];
 
-export type TopicStatus = "published" | "planned";
+export type TopicStatus = "published" | "draft" | "planned";
 
 export interface LibraryTopic<I = LearnIconKey> {
   slug: string;
@@ -759,6 +764,7 @@ export function buildLearnViews<S extends { id: string }, T extends TopicLike>(
 ) {
   const published = topics.filter((t) => t.status === "published");
   const planned = topics.filter((t) => t.status === "planned");
+  const upcoming = topics.filter((t) => t.status !== "published");
   return {
     bySlug: Object.fromEntries(topics.map((t) => [t.slug, t])) as Record<string, T | undefined>,
     sectionsById: Object.fromEntries(sections.map((s) => [s.id, s])) as Record<string, S | undefined>,
@@ -766,6 +772,8 @@ export function buildLearnViews<S extends { id: string }, T extends TopicLike>(
     planned,
     publishedInSection: (sectionId: string): T[] => published.filter((t) => t.section === sectionId),
     plannedInSection: (sectionId: string): T[] => planned.filter((t) => t.section === sectionId),
+    /** Drafts and planned topics — everything not yet shown. */
+    upcomingInSection: (sectionId: string): T[] => upcoming.filter((t) => t.section === sectionId),
     adjacentPublished: (slug: string): { prev: T | null; next: T | null } => {
       const i = published.findIndex((t) => t.slug === slug);
       return {
