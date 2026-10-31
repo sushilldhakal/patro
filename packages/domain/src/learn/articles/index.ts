@@ -4,6 +4,7 @@ import { bikramSambat } from "./foundation/bikram-sambat";
 import { bsAdOffset } from "./foundation/bs-ad-offset";
 import { bsCalendar } from "./foundation/bs-calendar";
 import { bsVsAd } from "./foundation/bs-vs-ad";
+import { calendarUnits } from "./foundation/calendar-units";
 import { chandramana } from "./foundation/chandramana";
 import { nepaliCalendarBasics } from "./foundation/nepali-calendar-basics";
 import { sauramana } from "./foundation/sauramana";
@@ -43,6 +44,7 @@ import { solarLongitude } from "./astronomy/solar-longitude";
 import { whySeasons } from "./astronomy/why-seasons";
 
 import { calcKarana } from "./calculation/calc-karana";
+import { calcLunarMonth } from "./calculation/calc-lunar-month";
 import { calcMoonrise } from "./calculation/calc-moonrise";
 import { calcNakshatra } from "./calculation/calc-nakshatra";
 import { calcSankranti } from "./calculation/calc-sankranti";
@@ -51,6 +53,7 @@ import { calcSunset } from "./calculation/calc-sunset";
 import { calcTithi } from "./calculation/calc-tithi";
 import { calcYoga } from "./calculation/calc-yoga";
 import { locationDifferentResults } from "./calculation/location-different-results";
+import { julianDay } from "./calculation/julian-day";
 import { timeScales } from "./calculation/time-scales";
 
 import { ancientCalendars } from "./comparison/ancient-calendars";
@@ -101,6 +104,7 @@ export const SHARED_ARTICLES: ArticleData[] = [
   yearBeginsBaisakh,
   bsVsAd,
   bsAdOffset,
+  calendarUnits,
   sauramana,
   chandramana,
   whyLocationMatters,
@@ -153,6 +157,8 @@ export const SHARED_ARTICLES: ArticleData[] = [
   calcMoonrise,
   locationDifferentResults,
   timeScales,
+  julianDay,
+  calcLunarMonth,
 
   /* Calendar comparison */
   leapYears,

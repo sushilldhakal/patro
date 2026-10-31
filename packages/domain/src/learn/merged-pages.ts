@@ -46,6 +46,7 @@ export const MERGED_PAGES: MergedPage[] = [
       P("bs-calendar", "सौर, चान्द्र र चान्द्र–सौर पात्रो", "Solar, lunar and lunisolar calendars"),
       P("bs-vs-ad", "विक्रम सम्वत् र ग्रेगोरियन पात्रो", "Bikram Sambat and the Gregorian calendar"),
       P("bs-ad-offset", "५६–५७ वर्षको अन्तर सधैँ एउटै किन हुँदैन?", "Why the 56–57-year gap is never fixed"),
+      P("calendar-units", "पात्रोमा वर्ष, महिना र दिन", "Year, month and day in the calendar"),
     ],
   },
 
@@ -175,6 +176,13 @@ export const MERGED_PAGES: MergedPage[] = [
 
   /* ── ६ · गणना ───────────────────────────────────────────────────── */
   {
+    slug: "time-scales",
+    parts: [
+      P("time-scales", "कुन घडीमा गणना गर्ने? — UT, TT र ΔT", "Which clock to compute in — UT, TT and ΔT"),
+      P("julian-day", "जुलियन डे, समय क्षेत्र र समय मापन", "The Julian Day, time zones and time standards"),
+    ],
+  },
+  {
     slug: "solar-longitude",
     parts: [
       P("solar-longitude", "सूर्यको वास्तविक देशान्तर", "The Sun's true longitude"),
@@ -196,6 +204,13 @@ export const MERGED_PAGES: MergedPage[] = [
       P("calc-nakshatra", "नक्षत्र र पदको गणना", "Computing the nakshatra and pada"),
       P("calc-yoga", "योगको गणना", "Computing the yoga"),
       P("calc-karana", "करणको गणना", "Computing the karana"),
+    ],
+  },
+  {
+    slug: "calc-sankranti",
+    parts: [
+      P("calc-sankranti", "सङ्क्रान्तिको सटीक समय", "The exact sankranti instant"),
+      P("calc-lunar-month", "चान्द्र मास, अधिक र क्षय मासको गणना", "Computing the lunar month, adhik and kshaya maas"),
     ],
   },
   {

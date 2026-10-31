@@ -60,8 +60,8 @@ export const meshaSankranti: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "नेपाली परम्पराले प्रयोग गर्ने नियम सरल छ: सङ्क्रान्तिको क्षण **मध्यरातअघि** परे त्यही दिन १ गते; मध्यरातपछि (अर्थात् भोलिपल्ट) परे भोलिपल्ट १ गते। यही कारण नयाँ वर्ष कुनै वर्ष `१३` अप्रिल, कुनै वर्ष `१४` मा पर्छ।",
-            en: "The rule Nepali practice uses is simple: if the instant falls before midnight, that day is gate 1; if after, the next day is. This is why the new year lands on `13` April in one year and `14` in another.",
+            ne: "नेपाली पात्रोको नियम सूर्योदयमा टेक्छ: सङ्क्रान्तिको क्षण त्यस दिनको काठमाडौँको **सूर्योदयसम्म** परे त्यही दिन १ गते; सूर्योदयपछि परे भोलिपल्ट १ गते — किनभने पात्रोको दिन सूर्योदयबाट सुरु हुन्छ। (वि.सं. २०००–२०९९ का लागि वेदिक पात्रोले आधिकारिक प्रकाशित तालिका नै मान्छ।) यही कारण नयाँ वर्ष कुनै वर्ष `१३` अप्रिल, कुनै वर्ष `१४` मा पर्छ।",
+            en: "The Nepali calendar's rule rests on sunrise: if the instant falls at or before that day's sunrise in Kathmandu, that day is gate 1; if after it, the next day is — because a patro day begins at sunrise. (For BS 2000–2099 Vedic Patro follows the official published table.) This is why the new year lands on `13` April in one year and `14` in another.",
           },
         },
         {
