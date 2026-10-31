@@ -125,14 +125,14 @@ export const siderealVsTropical: ArticleData = {
     },
 
     {
-      title: { ne: "२० मिनेटको फरक", en: "Twenty minutes" },
+      title: { ne: "२० मिनेटको फरक — पात्रोमा नतिजा", en: "Twenty minutes — what it does to a calendar" },
       eyebrow: "365.2564 vs 365.2422",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "दुई किसिमका “वर्ष” छन्, र यीबीचको फरक प्रति वर्ष झन्डै `२०` मिनेटको मात्र छ। तर यही सानो फरकले वैदिक र पश्चिमी पात्रोलाई अलग बाटोमा लैजान्छ।",
-            en: "There are two kinds of \"year\", and they differ by only about `20` minutes. Yet that small gap is what sends the Vedic and Western calendars down separate roads.",
+            ne: "फरकको भौतिक कारण माथि [[sayana-nirayana-year|सायन र निरयन वर्ष]] मा आयो — विषुव बिन्दु वर्षमा `५०″` पछाडि सर्छ। यहाँ त्यसको पात्रोमा पर्ने नतिजा: दुई “वर्ष”बीच प्रति वर्ष झन्डै `२०` मिनेट मात्र छुट्छ, तर यही सानो फरकले वैदिक र पश्चिमी पात्रोलाई अलग बाटोमा लैजान्छ।",
+            en: "The physical cause came above, in [[sayana-nirayana-year|the tropical and sidereal year]] — the equinox point slides back `50″` a year. Here is what that does to a calendar: the two \"years\" part by only about `20` minutes a year, yet that small gap is what sends the Vedic and Western calendars down separate roads.",
           },
         },
         {
@@ -161,8 +161,8 @@ export const siderealVsTropical: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "किन फरक? किनभने विषुव बिन्दु आफैँ **पछाडि सर्दै** छ। पृथ्वीले तारासँग मेल खान पूरा परिक्रमा पूरा गर्नुपर्छ; तर विषुवसँग मेल खान त्योभन्दा **अलिकति कम** पुग्छ, किनभने विषुव आफैँ भेट्न आउँदै छ।",
-            en: "Why the gap? Because the equinox point is itself **sliding backwards**. To meet the stars Earth must finish a full orbit; to meet the equinox it needs **slightly less**, since the equinox is coming to meet it.",
+            ne: "ग्रेगोरियन पात्रोले वर्ष **विषुवबाट** गन्छ, वि.सं.ले **ताराबाट**। त्यसैले वि.सं.को हरेक मिति ऋतुको तुलनामा वर्षेनि करिब २० मिनेट ढिलो पर्छ — झन्डै **७१ वर्षमा एक दिन**। एक वर्षमा यो देखिँदैन; शताब्दीऔँमा जम्मा भएर मात्र देखिन्छ।",
+            en: "The Gregorian calendar counts its year **from the equinox**, Bikram Sambat **from the stars**. So every BS date falls about 20 minutes later against the seasons each year — roughly **one day in 71 years**. In a single year you cannot see it; only over centuries does it add up.",
           },
         },
       ],

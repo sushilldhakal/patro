@@ -511,6 +511,13 @@ export const sayanaNirayanaYear: ArticleData = {
           },
         },
         {
+          kind: "note",
+          text: {
+            ne: "यसलाई सायन–निरयन वर्षको `२०` मिनेटको फरकसँग नमिसाउनुहोस्। त्यो फरक **वर्षका दुई परिभाषा**बीचको हो (विषुवबाट गन्ने कि ताराबाट), र वर्षेनि जम्मा हुँदै जान्छ। यहाँको कुरा भने एउटै निरयन वर्ष **महिनाहरूमा कसरी बाँडिन्छ** भन्ने हो — वर्ष उत्तिकै लामो रहन्छ, सूर्य मात्र कुनै राशिमा छिटो र कुनैमा ढिलो हिँड्छ।",
+            en: "Don't confuse this with the `20`-minute gap between the tropical and sidereal years. That gap lies between **two definitions of the year** (counted from the equinox or from the stars), and it accumulates year after year. This is about how one sidereal year **is shared out among its months** — the year stays the same length; the Sun simply crosses some rashis faster than others.",
+          },
+        },
+        {
           kind: "table",
           headers: [
             { ne: "पृथ्वी", en: "Earth" },
@@ -690,18 +697,17 @@ export const sayanaNirayanaYear: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "ayanamsha-wheel",
-          caption: {
-            ne: "दुई शून्यबीचको खाँडो नै अयनांश — यही कोण दिनमा बदल्दा माथिको २४ दिन आउँछ।",
-            en: "The wedge between the two zeros is the ayanamsha — turned into days, it is the 24 days above.",
+          kind: "para",
+          text: {
+            ne: "दुई शून्यबीचको खाँडो नै अयनांश हो — [[ayanamsha|अयनांश चक्र]] मा त्यसलाई वर्ष अघि सारेर बढेको हेर्न सकिन्छ। यही कोण दिनमा बदल्दा माथिको २४ दिन आउँछ।",
+            en: "The wedge between the two zeros is the ayanamsha — the [[ayanamsha|ayanamsha wheel]] lets you run the years forward and watch it grow. Turned into days, that angle is the 24 days above.",
           },
         },
         {
           kind: "para",
           text: {
-            ne: "**२४ दिन** भनेको `२४°` अयनांशलाई सूर्यको औसत दैनिक गति (`~१°`) ले भाग गर्दा आउने अनुमान हो। सूर्य वर्षभरि एकै गतिमा नहिँड्ने हुनाले (अध्याय ०७) माथिका जोडीबीच वास्तविक फरक २३ देखि २६ दिनसम्म पर्छ — जाडोमा छोटो, गर्मीमा लामो।",
-            en: "**24 days** is the `24°` ayanamsha divided by the Sun's mean daily motion (`~1°`). Because the Sun does not move at one pace through the year (chapter 07), the real gap between the pairs above runs 23 to 26 days — shorter in winter, longer in summer.",
+            ne: "**२४ दिन** भनेको `२४°` अयनांशलाई सूर्यको औसत दैनिक गति (`~१°`) ले भाग गर्दा आउने अनुमान हो। सूर्य वर्षभरि एकै गतिमा नहिँड्ने हुनाले ([[month-lengths-apsides|महिना २९–३२ दिनका किन]]) माथिका जोडीबीच वास्तविक फरक २३ देखि २६ दिनसम्म पर्छ — जाडोमा छोटो, गर्मीमा लामो।",
+            en: "**24 days** is the `24°` ayanamsha divided by the Sun's mean daily motion (`~1°`). Because the Sun does not move at one pace through the year ([[month-lengths-apsides|why months run 29–32 days]]), the real gap between the pairs above runs 23 to 26 days — shorter in winter, longer in summer.",
           },
         },
         {

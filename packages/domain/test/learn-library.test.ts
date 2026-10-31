@@ -86,3 +86,17 @@ test("every retired slug lands on a published page and a chapter that exists", (
     }
   }
 });
+
+test("only published topics are shown; drafts and planned topics count as upcoming", () => {
+  const v = buildLearnViews(
+    [{ id: "s" }],
+    [
+      { slug: "a", section: "s", status: "published" },
+      { slug: "b", section: "s", status: "draft" },
+      { slug: "c", section: "s", status: "planned" },
+    ],
+  );
+  assert.deepEqual(v.publishedInSection("s").map((t) => t.slug), ["a"]);
+  assert.deepEqual(v.upcomingInSection("s").map((t) => t.slug), ["b", "c"]);
+  assert.deepEqual(v.adjacentPublished("a"), { prev: null, next: null });
+});

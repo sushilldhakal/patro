@@ -93,7 +93,7 @@ export function useLearnHub() {
   const allModules: LearnHubModule[] = LEARN_MODULES.flatMap((module) => {
     const moduleTopics = views.published.filter((topic) => module.sections.includes(topic.section));
     if (moduleTopics.length === 0) return [];
-    const upcoming = module.sections.reduce((n, id) => n + views.plannedInSection(id).length, 0);
+    const upcoming = module.sections.reduce((n, id) => n + views.upcomingInSection(id).length, 0);
     const sections = LEARN_SECTIONS.filter((s) => module.sections.includes(s.id)).flatMap((s) => {
       const topics = views.publishedInSection(s.id);
       if (topics.length === 0) return [];

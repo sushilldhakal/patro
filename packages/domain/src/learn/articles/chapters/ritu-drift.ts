@@ -14,8 +14,8 @@ export const rituDrift: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "ऋतु सायनमा अडिन्छ, वि.सं. का महिना निरयनमा। दुई शून्य र आजको ∼**२४°** अयनांश यही पृष्ठको [[sidereal-vs-tropical|निरयन र सायन]] र [[ayanamsha|अयनांश]] मा छन्। यहाँको विषय त्यसको परिणाम हो — दुवै सँगै मिलाउन नसकिने।",
-            en: "The ṛtus stay tropical and the BS months stay sidereal. The two zeros, and today's ∼**24°** ayanamsha, are already [[sidereal-vs-tropical|sidereal and tropical]] and [[ayanamsha|the ayanamsha]] on this page. What follows here is the consequence — you cannot keep both aligned.",
+            ne: "ऋतु सायनमा अडिन्छ, वि.सं. का महिना निरयनमा। दुई शून्य र आजको ∼**२४°** अयनांश [[sidereal-vs-tropical|निरयन र सायन]] र [[ayanamsha|अयनांश]] पाठमा आइसकेका छन्। यहाँको विषय त्यसको परिणाम हो — दुवै सँगै मिलाउन नसकिने।",
+            en: "The ṛtus stay tropical and the BS months stay sidereal. The two zeros, and today's ∼**24°** ayanamsha, are covered in [[sidereal-vs-tropical|sidereal and tropical]] and [[ayanamsha|the ayanamsha]]. What follows here is the consequence — you cannot keep both aligned.",
           },
         },
         {

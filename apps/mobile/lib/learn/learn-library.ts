@@ -67,9 +67,9 @@ export const LEARN_SECTIONS_BY_ID = views.sectionsById;
 export const publishedInSection = views.publishedInSection;
 export const adjacentPublishedTopics = views.adjacentPublished;
 
-/** Outlined-but-unwritten articles per section, for the hub's "N more being written" line. */
+/** Drafts and outlined-but-unwritten articles per section, for the hub's "N more being written" line. */
 export function plannedCountInSection(sectionId: string): number {
-  return views.plannedInSection(sectionId).length;
+  return views.upcomingInSection(sectionId).length;
 }
 
 if (__DEV__) assertLearnLibrary(LEARN_SECTIONS, LEARN_LIBRARY);

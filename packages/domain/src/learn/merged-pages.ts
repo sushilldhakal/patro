@@ -101,15 +101,16 @@ export const MERGED_PAGES: MergedPage[] = [
     parts: [
       P("solar-year", "सौर वर्ष भनेको के हो?", "What is the solar year?"),
       P("sayana-nirayana-year", "सायन र निरयन वर्ष", "The tropical and sidereal year"),
-      P("tropical-year-gap", "२० मिनेटको फरक कसरी जम्मा हुन्छ?", "How the 20-minute gap builds up"),
+      P("tropical-year-gap", "२० मिनेटको फरकले पात्रोमा के गर्छ?", "What the 20-minute gap does to a calendar"),
     ],
   },
   {
     slug: "sidereal-vs-tropical",
     parts: [
       P("sidereal-vs-tropical", "एउटै आकाश, दुई राशिचक्र", "One sky, two zodiacs"),
-      P("sayana-nirayana-rashi", "एउटै ग्रह, दुई राशि — र २४ दिनको ऐतिहासिक फरक", "One planet, two rashis — and the 24-day gap"),
       P("ayanamsha", "अयनांश र यसका प्रमुख प्रणाली", "The ayanamsha and its main systems"),
+      P("ayanamsha-history", "ऐतिहासिक अयनांश र आजको २४ दिनको फरक", "The historical ayanamsha and today's 24-day gap"),
+      P("sayana-nirayana-rashi", "एउटै ग्रह, दुई राशि — कुन प्रणाली केका लागि", "One planet, two rashis — which system for what"),
     ],
   },
   {

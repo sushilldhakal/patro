@@ -26,8 +26,10 @@ export const ARTICLE_SPLITS: ArticleSplit[] = [
     pieces: [
       /* 3.1 — what the two years are and which one BS keeps. */
       { slug: "sayana-nirayana-year", sections: [0, 1, 2, 4] },
-      /* 3.3 — the two zodiacs and the ayanamsha. */
-      { slug: "sayana-nirayana-rashi", sections: [3, 5, 7] },
+      /* 3.3 — one planet in two zodiacs; which system serves what. */
+      { slug: "sayana-nirayana-rashi", sections: [3, 5] },
+      /* 3.3 — the 24-day historical gap, after the ayanamsha wheel it points back to. */
+      { slug: "ayanamsha-history", sections: [7] },
       /* 3.5 — month lengths, perihelion and aphelion. */
       { slug: "month-lengths-apsides", sections: [6] },
       /* 3.5 — festivals, seasons and where BS is heading. */
