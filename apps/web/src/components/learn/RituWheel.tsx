@@ -185,7 +185,7 @@ export function RituWheel() {
           {t("learn.study.ritu.two_months_each")}
         </text>
       </svg>
-      <figcaption className="mt-2 text-xs leading-snug text-white/45">
+      <figcaption className="mt-2 text-xs leading-snug text-muted-foreground">
         {t("learn.study.ritu.caption")}
       </figcaption>
     </figure>

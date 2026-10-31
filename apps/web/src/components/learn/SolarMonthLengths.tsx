@@ -166,7 +166,7 @@ export function SolarMonthLengths() {
           {t("learn.study.month_lengths.aphelion")}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">
         {t("learn.study.month_lengths.caption")}
       </figcaption>
     </figure>

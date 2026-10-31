@@ -44,7 +44,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">{caption}</figcaption>
     </figure>
   );
 }
@@ -158,28 +158,29 @@ export function RetrogradeLoop() {
 export function MandaShighra() {
   const { t } = useTranslation();
   const W = 540;
-  const H = 210;
-  const L = 96;
+  const H = 264;
+  /* Labels sit above each row, so the curves can run the full width. */
+  const L = 16;
   const Rr = W - 20;
   const x = (f: number) => L + f * (Rr - L);
 
   const rows = [
     {
-      y: 46,
+      y: 50,
       title: "learn.diagrams.manda_row_mean",
       sub: "learn.diagrams.manda_row_mean_note",
       c: INK,
       f: () => 0,
     },
     {
-      y: 106,
+      y: 130,
       title: "learn.diagrams.manda_row_manda",
       sub: "learn.diagrams.manda_row_manda_note",
       c: MARK,
       f: (f: number) => Math.sin(f * Math.PI * 2) * 15,
     },
     {
-      y: 168,
+      y: 220,
       title: "learn.diagrams.manda_row_shighra",
       sub: "learn.diagrams.manda_row_shighra_note",
       c: WARN,
@@ -196,11 +197,9 @@ export function MandaShighra() {
     >
       {rows.map((r) => (
         <g key={r.title}>
-          <text x={L - 8} y={r.y + 2} textAnchor="end" className="fill-current text-diagram-2xs font-semibold opacity-75">
-            {t(r.title)}
-          </text>
-          <text x={L - 8} y={r.y + 13} textAnchor="end" className="fill-current text-5xl opacity-45">
-            {t(r.sub)}
+          <text x={L} y={r.y - 34} className="fill-current text-diagram-2xs">
+            <tspan className="font-semibold opacity-75">{t(r.title)}</tspan>
+            <tspan className="opacity-55"> · {t(r.sub)}</tspan>
           </text>
           <line x1={L} y1={r.y} x2={Rr} y2={r.y} stroke={INK} strokeOpacity={0.12} strokeWidth={0.7} strokeDasharray="3 3" />
           <path

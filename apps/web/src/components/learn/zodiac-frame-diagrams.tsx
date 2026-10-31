@@ -45,7 +45,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">{caption}</figcaption>
     </figure>
   );
 }
@@ -107,7 +107,7 @@ export function TwoZeroPoints() {
           <text x={x(d + AYAN)} y={130} textAnchor="middle" className="text-diagram-2xs" style={{ fill: SIDEREAL }}>
             {n(d)}°
           </text>
-          <text x={x(d + AYAN)} y={142} textAnchor="middle" className="fill-current text-5xl opacity-55">
+          <text x={x(d + AYAN)} y={142} textAnchor="middle" className="fill-current text-diagram-2xs opacity-55">
             {monthNames[(d / 30) % 12]}
           </text>
         </g>
@@ -147,7 +147,7 @@ export function ZodiacBeltWidth() {
   const n = (v: string | number) => digits(lang, v);
   const W = 540;
   const H = 190;
-  const L = 92;
+  const L = 132;
   const Rr = W - 88;
   const mid = 96;
   const scale = 7.2;
@@ -194,11 +194,10 @@ export function ZodiacBeltWidth() {
               />
             ),
           )}
-          <text x={L - 8} y={y(b.lat) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-70">
-            {t(b.body)}
-          </text>
-          <text x={L - 8} y={y(b.lat) + 13} textAnchor="end" className="fill-current text-5xl opacity-45">
-            {t(b.note)}
+          {/* Name and latitude on one line: the Moon's and Mercury's rows are only ~14 units apart. */}
+          <text x={L - 8} y={y(b.lat) + 3} textAnchor="end" className="fill-current text-diagram-2xs">
+            <tspan className="opacity-80 font-semibold">{t(b.body)}</tspan>
+            <tspan className="opacity-55"> {t(b.note)}</tspan>
           </text>
         </g>
       ))}
