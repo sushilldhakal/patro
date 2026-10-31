@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from engine.astronomy.engine import SIDM_KRISHNAMURTI, SIDM_LAHIRI, SIDM_RAMAN, SIDM_TRUE_CITRA
+from engine.astronomy.engine import SIDM_KRISHNAMURTI, SIDM_LAHIRI, SIDM_RAMAN, SIDM_TRUE_CITRA, SIDM_TRUE_PUSHYA
 
 AYANAMSHA_MODES: dict[str, int] = {
     "nepal": SIDM_LAHIRI,
@@ -11,6 +11,7 @@ AYANAMSHA_MODES: dict[str, int] = {
     "kp": SIDM_KRISHNAMURTI,
     "krishnamurti": SIDM_KRISHNAMURTI,
     "true_citra": SIDM_TRUE_CITRA,
+    "true_pushya": SIDM_TRUE_PUSHYA,
 }
 
 DEFAULT_AYANAMSHA = "lahiri"

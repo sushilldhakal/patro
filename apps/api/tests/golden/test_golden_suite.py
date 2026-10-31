@@ -357,7 +357,8 @@ class TestAyanamsha:
     DATASET = "ayanamsha"
 
     MODES = {"lahiri": "SIDM_LAHIRI", "raman": "SIDM_RAMAN",
-             "krishnamurti": "SIDM_KRISHNAMURTI", "true_citra": "SIDM_TRUE_CITRA"}
+             "krishnamurti": "SIDM_KRISHNAMURTI", "true_citra": "SIDM_TRUE_CITRA",
+             "true_pushya": "SIDM_TRUE_PUSHYA"}
 
     def test_production_matches_the_definition(self):
         """After the unification, the engine's published ayanamsa must equal the

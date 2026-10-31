@@ -1,4 +1,4 @@
-export type AyanamshaMode = "nepal" | "lahiri" | "raman" | "kp" | "true_citra";
+export type AyanamshaMode = "nepal" | "lahiri" | "raman" | "kp" | "true_citra" | "true_pushya";
 
 export interface AyanamshaModeInfo {
   id: AyanamshaMode;
@@ -48,6 +48,14 @@ export const AYANAMSHA_MODES: AyanamshaModeInfo[] = [
     labelNe: "ट्रू चित्रपक्ष",
     tagline: "Most astronomically precise — tracks the star Spica directly",
     taglineNe: "चित्रा तारा (स्पाइका) को वास्तविक स्थितिमा आधारित — अनुसन्धान/उन्नत प्रयोगका लागि",
+    tier: "advanced",
+  },
+  {
+    id: "true_pushya",
+    label: "True Pushyapaksha",
+    labelNe: "ट्रू पुष्यपक्ष",
+    tagline: "Pins Pushya's yogatara δ Cancri at 16° Karka — zodiacs met 27 Oct 368 CE",
+    taglineNe: "पुष्यको योगतारा (δ कर्कट) लाई कर्क १६° मा अडाउने — दुई राशिचक्र ३६८ ई. अक्टोबर २७ मा मिलेका",
     tier: "advanced",
   },
 ];

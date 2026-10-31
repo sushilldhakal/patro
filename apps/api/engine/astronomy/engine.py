@@ -225,6 +225,9 @@ SIDM_LAHIRI = swe.SIDM_LAHIRI
 SIDM_RAMAN = swe.SIDM_RAMAN
 SIDM_KRISHNAMURTI = swe.SIDM_KRISHNAMURTI
 SIDM_TRUE_CITRA = swe.SIDM_TRUE_CITRA
+# Pushya-paksha: δ Cancri (Asellus Australis), Pushya's yogatara, held at
+# exactly 106° sidereal (16° Karka); the two zodiacs coincided 27 Oct 368 CE.
+SIDM_TRUE_PUSHYA = swe.SIDM_TRUE_PUSHYA
 
 CALC_RISE = swe.CALC_RISE
 CALC_SET = swe.CALC_SET
@@ -250,6 +253,7 @@ class AstronomyEngine:
     RAMAN = SIDM_RAMAN
     KP = SIDM_KRISHNAMURTI
     TRUE_CITRA = SIDM_TRUE_CITRA
+    TRUE_PUSHYA = SIDM_TRUE_PUSHYA
 
     # Bound on the in-process astronomy memo. ~16k entries ≈ a full year of
     # sub-second instants across the bodies a panchanga build touches.
@@ -306,7 +310,7 @@ class AstronomyEngine:
                 raise EphemerisError(f"calc_ut failed for body {body}: {exc}") from exc
             else:
                 # pyswisseph fails on FLG_SIDEREAL for the lunar nodes under
-                # star-anchored sid modes (e.g. SIDM_TRUE_CITRA). Sidereal
+                # star-anchored sid modes (SIDM_TRUE_CITRA, SIDM_TRUE_PUSHYA). Sidereal
                 # longitude = tropical − ayanamsha, so compute it manually.
                 try:
                     tropical = swe.calc_ut(jd, body, _TROPICAL_SPEED)[0]

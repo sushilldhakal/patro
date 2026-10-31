@@ -26,7 +26,7 @@ def panchanga_at_time(
         None,
         description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
     ),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
 ):
     """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
@@ -69,7 +69,7 @@ def planetary_positions(
         None,
         description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
     ),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
 ):
     """Nine grahas + lagna at an instant."""
     from datetime import timezone
@@ -120,7 +120,7 @@ def kundali_vimshottari(
         None,
         description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
     ),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
     cycles: int = Query(1, ge=1, le=3, description="Full 120-year cycles after birth dasha"),
 ):
     """Vimshottari Mahadasha from Moon sidereal longitude at birth."""
@@ -180,7 +180,7 @@ def kundali_report(
         None,
         description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
     ),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
     lang: str | None = Query(None, description="Report language: en or ne"),
     force: bool = Query(False, description="Bypass cache and regenerate the report"),
 ):
@@ -350,7 +350,7 @@ def kundali_detail(
         None,
         description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
     ),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
     from engine.jyotish.kundali_detail import KUNDALI_DETAIL_VERSION
@@ -452,7 +452,7 @@ def kundali_milan(
     girl_lat: float | None = Query(None),
     girl_lon: float | None = Query(None),
     girl_timezone: str | None = Query(None, description="IANA tz for the bride's birthplace"),
-    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya"),
     lang: str = Query("ne", description="Response language for kuta values: ne or en"),
 ):
     """Ashtakoota (Guna Milan) compatibility, computed entirely server-side."""
