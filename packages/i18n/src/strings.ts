@@ -6939,6 +6939,35 @@ export const strings = {
   "learn.study.precession.star_polaris": { ne: "ध्रुव", en: "Polaris" },
   "learn.study.precession.star_thuban": { ne: "थुबन", en: "Thuban" },
   "learn.study.precession.star_vega": { ne: "अभिजित", en: "Vega" },
+  "learn.study.rashi_stars.aria": {
+    ne: "राशिचक्रका तारापुञ्जलाई ३६०° वृत्तमा बराबर १२ राशिमा काटिएको",
+    en: "The zodiac star figures around the 360° circle, cut into twelve equal rashis",
+  },
+  "learn.study.rashi_stars.caption_1": {
+    ne: "पृथ्वीबाट हेर्दा सूर्यको वार्षिक बाटो (क्रान्तिवृत्त) का छेउछाउ बाह्र तारापुञ्ज छन्। प्रत्येक तारा यहाँ आफ्नै वास्तविक देशान्तर र शरमा राखिएको छ।",
+    en: "Seen from Earth, twelve star figures lie along the Sun's yearly path, the ecliptic. Every star here sits at its real longitude and latitude.",
+  },
+  "learn.study.rashi_stars.caption_2": {
+    ne: "तर तारापुञ्ज बराबर छैनन् — कन्या ~४६° फैलिन्छ, कर्क ~१३° मात्र, र कतै बीचमा खाली ठाउँ छ। यस्तो असमान आकारले गणना हुँदैन।",
+    en: "But the figures are not equal — Kanya sprawls over ~46°, Karka barely ~13°, and there are gaps between some. Ragged shapes like these cannot be calculated with.",
+  },
+  "learn.study.rashi_stars.caption_3": {
+    ne: "त्यसैले ३६०° वृत्तलाई मेषको ०° बाट सुरु गरी ठ्याक्कै ३०° का १२ भागमा काटिन्छ। प्रत्येक भागले नजिकको तारापुञ्जको नाम लिन्छ — सीमा भने गणितीय हो।",
+    en: "So the 360° circle is cut, starting from Mesha 0°, into twelve slices of exactly 30°. Each slice takes the name of the star figure it holds — but the boundary is mathematical.",
+  },
+  "learn.study.rashi_stars.caption_4": {
+    ne: "अब सूर्य वर्षभरि यो चक्र घुम्छ। सूर्य जुन ३०° खण्डमा छ, त्यही राशि — र सूर्य नयाँ खण्डमा पस्ने क्षण सङ्क्रान्ति, नयाँ नेपाली महिना।",
+    en: "Now the Sun walks this wheel over a year. Whichever 30° slice it is in is its rashi — and the moment it crosses into the next slice is a sankranti, a new Nepali month.",
+  },
+  "learn.study.rashi_stars.lon_in_rashi": { ne: "राशिभित्र", en: "Within rashi" },
+  "learn.study.rashi_stars.scrub": { ne: "समय — चार चरण", en: "Timeline — four steps" },
+  "learn.study.rashi_stars.span": { ne: "फैलावट", en: "Span" },
+  "learn.study.rashi_stars.step": { ne: "चरण", en: "Step" },
+  "learn.study.rashi_stars.step_1": { ne: "१ · तारा", en: "1 · Stars" },
+  "learn.study.rashi_stars.step_2": { ne: "२ · असमान आकार", en: "2 · Uneven shapes" },
+  "learn.study.rashi_stars.step_3": { ne: "३ · १२ × ३०°", en: "3 · 12 × 30°" },
+  "learn.study.rashi_stars.step_4": { ne: "४ · सूर्यको यात्रा", en: "4 · The Sun's walk" },
+  "learn.study.rashi_stars.sun_lon": { ne: "सूर्य देशान्तर", en: "Sun longitude" },
   "learn.study.ritu.aria": {
     ne: "छ ऋतु, बाह्र महिना र चार सायन बिन्दु एउटै चक्रमा",
     en: "The six ṛtus, twelve months and four tropical markers on one wheel",

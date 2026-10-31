@@ -4518,6 +4518,22 @@
         "star_thuban": "Thuban",
         "star_vega": "Vega"
       },
+      "rashi_stars": {
+        "aria": "The zodiac star figures around the 360° circle, cut into twelve equal rashis",
+        "caption_1": "Seen from Earth, twelve star figures lie along the Sun's yearly path, the ecliptic. Every star here sits at its real longitude and latitude.",
+        "caption_2": "But the figures are not equal — Kanya sprawls over ~46°, Karka barely ~13°, and there are gaps between some. Ragged shapes like these cannot be calculated with.",
+        "caption_3": "So the 360° circle is cut, starting from Mesha 0°, into twelve slices of exactly 30°. Each slice takes the name of the star figure it holds — but the boundary is mathematical.",
+        "caption_4": "Now the Sun walks this wheel over a year. Whichever 30° slice it is in is its rashi — and the moment it crosses into the next slice is a sankranti, a new Nepali month.",
+        "lon_in_rashi": "Within rashi",
+        "scrub": "Timeline — four steps",
+        "span": "Span",
+        "step": "Step",
+        "step_1": "1 · Stars",
+        "step_2": "2 · Uneven shapes",
+        "step_3": "3 · 12 × 30°",
+        "step_4": "4 · The Sun's walk",
+        "sun_lon": "Sun longitude"
+      },
       "ritu": {
         "aria": "The six ṛtus, twelve months and four tropical markers on one wheel",
         "caption": "The ṛtus take their names from the months, but what makes a ṛtu is the Sun's north–south journey. Because those are two different frames, all four tropical markers (green = equinox, amber = solstice) fall inside a month rather than on its boundary — the summer solstice sits within Asar, not at the Jestha–Asar seam. Precession moves these markers 1° every 72 years, which is why the dependable reference for a ṛtu argument is Uttarāyaṇa and Dakṣiṇāyana, not the months.",

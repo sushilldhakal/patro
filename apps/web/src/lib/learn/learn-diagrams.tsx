@@ -14,6 +14,7 @@ import {
   SunriseTimeline,
 } from "@/components/tithi-mechanics/tithi-mechanics-diagrams";
 import { AyanamshaWheel } from "@/components/learn/AyanamshaWheel";
+import { RashiFromStars } from "@/components/learn/RashiFromStars";
 import { HoraLiveDiagram } from "@/components/learn/HoraLiveDiagram";
 import { EarthRotationDiagram, ServerPipelineDiagram } from "./learn-diagram-figures";
 import {
@@ -102,6 +103,7 @@ export const LEARN_DIAGRAMS = {
   "calendar-hierarchy": HierarchyDiagram,
 
   /* Zodiac reference frames */
+  "rashi-from-stars": RashiFromStars,
   "ayanamsha-wheel": AyanamshaWheel,
   "equinox-precession": EquinoxPrecession,
   "apsides-seasons": ApsidesOrbit,

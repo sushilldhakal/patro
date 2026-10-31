@@ -43,6 +43,10 @@ export const rashi: ArticleData = {
           },
         },
         {
+          kind: "diagram",
+          id: "rashi-from-stars",
+        },
+        {
           kind: "keys",
           items: [
             {

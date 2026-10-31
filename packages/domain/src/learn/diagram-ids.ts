@@ -44,6 +44,7 @@ export const DIAGRAM_IDS = [
   "sunrise-kshaya",
   "lunar-eclipse",
   "solar-eclipse",
+  "rashi-from-stars",
   "table-rashi",
   "table-graha",
   "table-nakshatra",
