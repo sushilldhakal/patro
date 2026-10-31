@@ -240,7 +240,7 @@ export function SolarDeclinationYear() {
           );
         })}
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">
         {t("learn.study.declination.caption")}
       </figcaption>
     </figure>

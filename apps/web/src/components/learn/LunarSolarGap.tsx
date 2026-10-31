@@ -160,7 +160,7 @@ export function LunarSolarGap() {
           {t("learn.study.lunar_gap.three_year_total", { days: num((DRIFT * 3).toFixed(1)) })}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">
         {t("learn.study.lunar_gap.caption")}
       </figcaption>
     </figure>

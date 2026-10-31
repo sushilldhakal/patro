@@ -49,7 +49,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">{caption}</figcaption>
     </figure>
   );
 }
@@ -317,7 +317,7 @@ export function MoonriseSlip() {
               x={x(row.rises[0]!) + (row.rises[0]! > 20 ? -9 : 9)}
               y={rowY(i) + 3}
               textAnchor={row.rises[0]! > 20 ? "end" : "start"}
-              className="fill-current text-5xl opacity-45"
+              className="fill-current text-diagram-2xs opacity-45"
             >
               +{n(50)}m
             </text>

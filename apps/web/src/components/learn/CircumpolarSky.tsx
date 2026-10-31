@@ -205,7 +205,7 @@ export function CircumpolarSky() {
           {t("learn.study.circumpolar.crux_range")}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-muted-foreground">
         {t("learn.study.circumpolar.caption")}
       </figcaption>
     </figure>
