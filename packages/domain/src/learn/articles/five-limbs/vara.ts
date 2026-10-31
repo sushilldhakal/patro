@@ -77,8 +77,11 @@ export const vara: ArticleData = {
           id: "hora-weekday-cycle",
         },
         {
-          kind: "diagram",
-          id: "table-graha",
+          kind: "para",
+          text: {
+            ne: "सात ग्रह र तिनले स्वामित्व गर्ने राशिको तालिका [[rashi|राशि र राशिचक्र]] मा छ।",
+            en: "The table of the seven grahas and the rashis they rule is in [[rashi|rashi and the zodiac]].",
+          },
         },
       ],
     },

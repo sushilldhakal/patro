@@ -23,11 +23,10 @@ export const rashi: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "ecliptic-belt",
-          caption: {
-            ne: "क्रान्तिवृत्तको वरिपरि बाह्र बराबर राशि खण्ड।",
-            en: "The twelve equal rashi slices laid around the ecliptic.",
+          kind: "para",
+          text: {
+            ne: "क्रान्तिवृत्तको वरिपरि बाह्र बराबर राशि खण्ड [[ecliptic|क्रान्तिवृत्त]] मा चलाएर हेर्न सकिन्छ।",
+            en: "The twelve equal rashi slices around the ecliptic can be run in [[ecliptic|the ecliptic]].",
           },
         },
       ],

@@ -23,11 +23,10 @@ export const karkaSankranti: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "declination-year",
-          caption: {
-            ne: "कर्क सङ्क्रान्ति (साउन १) र वास्तविक ग्रीष्म अयनान्त (~असार ६–७) — बीचमा झन्डै २४ दिन।",
-            en: "Karka Sankranti (साउन १) and the true summer solstice (~असार ६–७) — some 24 days apart.",
+          kind: "para",
+          text: {
+            ne: "साउन १ र वास्तविक ग्रीष्म अयनान्त (~असार ६–७) बीच आज झन्डै `२४` दिन छ — सूर्यको क्रान्तिको वक्र [[equinox-solstice|विषुव र अयनान्त]] मा छ।",
+            en: "Shrawan 1 and the true summer solstice (~Asar 6–7) now sit some `24` days apart — the curve of the Sun's declination is in [[equinox-solstice|equinoxes and solstices]].",
           },
         },
       ],
@@ -63,8 +62,8 @@ export const karkaSankranti: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "तर ध्यान दिनुहोस् — यो मेल **अहिलेको लागि** हो। महिना निरयन प्रणालीमा चल्ने हुनाले शताब्दीयौँमा साउन र वर्षाको सम्बन्ध बिस्तारै टुट्दै जान्छ।",
-            en: "But note that this alignment holds **for now**. Because the months run on the sidereal frame, the link between Shrawan and the rains will slowly loosen over the centuries.",
+            ne: "तर ध्यान दिनुहोस् — यो मेल **अहिलेको लागि** हो। महिना निरयन प्रणालीमा चल्ने हुनाले शताब्दीयौँमा साउन र वर्षाको सम्बन्ध बिस्तारै टुट्दै जान्छ ([[ritu-drift|ऋतु र निरयन महिनाको सम्बन्ध]])।",
+            en: "But note that this alignment holds **for now**. Because the months run on the sidereal frame, the link between Shrawan and the rains will slowly loosen over the centuries ([[ritu-drift|seasons and the sidereal months]]).",
           },
         },
       ],
@@ -76,8 +75,8 @@ export const karkaSankranti: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "कर्क र मकर परम्परागत दुई अयनका आरम्भ हुन्। खगोलीय मोड किन अब यी सङ्क्रान्तिसँग मिल्दैन भन्ने [[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]] मा छ। माथिको चित्रले साउन १ र वास्तविक ग्रीष्म अयनान्तबीचको अन्तर देखाउँछ।",
-            en: "Karka and Makara are the traditional starts of the two half-years. Why the astronomical turns no longer match these sankrantis is [[uttarayana-dakshinayana|Uttarāyaṇa and Dakṣiṇāyana]]. The figure above is the gap between Shrawan 1 and the true summer solstice.",
+            ne: "कर्क र मकर परम्परागत दुई अयनका आरम्भ हुन्। खगोलीय मोड किन अब यी सङ्क्रान्तिसँग मिल्दैन भन्ने [[uttarayana-in-calendar|उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग]] मा छ।",
+            en: "Karka and Makara are the traditional starts of the two half-years. Why the astronomical turns no longer match these sankrantis is in [[uttarayana-in-calendar|Uttarayana and Dakshinayana in the calendar]].",
           },
         },
       ],

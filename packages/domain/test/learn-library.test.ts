@@ -5,6 +5,8 @@ import { DIAGRAM_IDS } from "../src/learn/diagram-ids.ts";
 import { assertLearnLibrary, buildLearnViews, LEARN_LIBRARY, LEARN_SECTIONS } from "../src/learn/learn-library.ts";
 import { MERGED_PAGES, RETIRED_SLUG_REDIRECTS } from "../src/learn/merged-pages.ts";
 import { ARTICLE_SPLITS } from "../src/learn/articles/regroup.ts";
+import { playgroundFor } from "../src/learn/playground-config.ts";
+import { parseInlineMarkup } from "../src/learn/article-model.ts";
 
 const views = buildLearnViews(LEARN_SECTIONS, LEARN_LIBRARY);
 
@@ -99,4 +101,52 @@ test("only published topics are shown; drafts and planned topics count as upcomi
   assert.deepEqual(v.publishedInSection("s").map((t) => t.slug), ["a"]);
   assert.deepEqual(v.upcomingInSection("s").map((t) => t.slug), ["b", "c"]);
   assert.deepEqual(v.adjacentPublished("a"), { prev: null, next: null });
+});
+
+test("every diagram is shown exactly once on the pages readers can see", () => {
+  /* A page that runs a guided tour shows the tour in place of its prose. */
+  const visible = views.published.filter((topic) => !playgroundFor(topic.slug)?.guided);
+  const shown = new Map<string, string[]>();
+  for (const topic of visible) {
+    const merged = MERGED_PAGES.find((page) => page.slug === topic.slug);
+    for (const slug of merged ? merged.parts.map((part) => part.slug) : [topic.slug]) {
+      for (const section of DATA_ARTICLES[slug]?.sections ?? []) {
+        for (const block of section.blocks) {
+          if (block.kind === "diagram") shown.set(block.id, [...(shown.get(block.id) ?? []), `${topic.slug}#${slug}`]);
+        }
+      }
+    }
+  }
+  /* A repeat should be a link to the chapter that holds the diagram, not a second copy. */
+  for (const [id, places] of shown) assert.equal(places.length, 1, `${id} appears at ${places.join(", ")}`);
+  /* And nothing an article draws is left only on a page nobody sees. */
+  for (const article of Object.values(DATA_ARTICLES)) {
+    for (const section of article?.sections ?? []) {
+      for (const block of section.blocks) {
+        if (block.kind === "diagram") assert.ok(shown.has(block.id), `${block.id} (in ${article?.slug}) is not shown anywhere`);
+      }
+    }
+  }
+});
+
+test("every [[link]] in an article opens a published page, and none is swallowed by other markup", () => {
+  const strings: string[] = [];
+  const walk = (value: unknown) => {
+    if (typeof value === "string") strings.push(value);
+    else if (value && typeof value === "object") Object.values(value).forEach(walk);
+  };
+  for (const article of Object.values(DATA_ARTICLES)) {
+    strings.length = 0;
+    walk(article?.sections);
+    for (const text of strings) {
+      for (const part of parseInlineMarkup(text)) {
+        if (part.kind === "link") {
+          const target = views.bySlug[part.slug]?.status === "published" ? part.slug : RETIRED_SLUG_REDIRECTS[part.slug];
+          assert.ok(target, `${article?.slug} links to unknown "${part.slug}"`);
+        } else {
+          assert.ok(!part.text.includes("[["), `${article?.slug}: a link inside other markup — ${part.text.slice(0, 60)}`);
+        }
+      }
+    }
+  }
 });

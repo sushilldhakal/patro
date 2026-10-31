@@ -71,10 +71,6 @@ export const calcSunset: ArticleData = {
             en: "All these units are therefore **elastic** — in summer the day horas run long and the night ones short; in winter the reverse. The fixed sixty-minute hour is a modern idea.",
           },
         },
-        {
-          kind: "diagram",
-          id: "sunrise-vriddhi",
-        },
       ],
     },
     {

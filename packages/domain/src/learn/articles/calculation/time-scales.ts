@@ -42,11 +42,10 @@ export const timeScales: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "earth-rotation",
-          caption: {
-            ne: "पृथ्वीको घुर्णनले UT दिन्छ, तर त्यो एकनास छैन — त्यसैले गणनाका लागि TT चाहिन्छ।",
-            en: "Earth's rotation gives UT, but it is not uniform — which is why the computation needs TT.",
+          kind: "para",
+          text: {
+            ne: "पृथ्वीको घुर्णनले UT दिन्छ, तर त्यो एकनास छैन — त्यसैले TT चाहिन्छ। घुम्दै गरेको पृथ्वी [[sky-rotation|आकाश घुमेको किन देखिन्छ?]] मा छ।",
+            en: "Earth's rotation gives UT, but it is not uniform — which is why TT is needed. The turning Earth is drawn in [[sky-rotation|why the sky appears to turn]].",
           },
         },
       ],
@@ -105,8 +104,8 @@ export const timeScales: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "पुराना वि.सं. मितिका लागि भने यो निर्णायक हुन्छ। `ΔT` बेवास्ता गरेर `१०००` ई.को सङ्क्रान्ति गणना गर्दा `२६` मिनेटको त्रुटि आउँछ — र त्यो मध्यरात नजिक परे **गते नै एक दिन फरक** हुन्छ।",
-            en: "For older BS dates it is decisive. Computing a `1000` CE sankranti without `ΔT` is off by `26` minutes — and near midnight that shifts the **gate by a full day**.",
+            ne: "पुराना वि.सं. मितिका लागि भने यो निर्णायक हुन्छ। `ΔT` बेवास्ता गरेर `१०००` ई.को सङ्क्रान्ति गणना गर्दा `२६` मिनेटको त्रुटि आउँछ — र त्यो सूर्योदय नजिक परे **गते नै एक दिन फरक** हुन्छ।",
+            en: "For older BS dates it is decisive. Computing a `1000` CE sankranti without `ΔT` is off by `26` minutes — and near sunrise that shifts the **gate by a full day**.",
           },
         },
         {

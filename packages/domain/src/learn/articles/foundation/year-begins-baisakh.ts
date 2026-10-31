@@ -54,8 +54,11 @@ export const yearBeginsBaisakh: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "table-rashi",
+          kind: "para",
+          text: {
+            ne: "बाह्र राशिको पूरा तालिका — क्रम, नाम र खुल्ने महिना — [[rashi|राशि र राशिचक्र]] मा छ।",
+            en: "The full table of the twelve rashis — order, names and the month each opens — is in [[rashi|rashi and the zodiac]].",
+          },
         },
       ],
     },

@@ -116,8 +116,8 @@ export const calcSankranti: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "पुराना वि.सं. मितिको गणना गर्दा यो फरक पर्छ — `१९८५` अघिको सङ्क्रान्ति `+०५:४५` मान्दा `१५` मिनेट चुक्छ, र त्यो मध्यरातको सिमानामा परे **गते नै एक दिन फरक** हुन सक्छ।",
-            en: "This matters for older BS dates — assuming `+05:45` before `1985` is off by `15` minutes, and near the midnight boundary that can shift the **gate by a whole day**.",
+            ne: "पुराना वि.सं. मितिको गणना गर्दा यो फरक पर्छ — `१९८५` अघिको सङ्क्रान्ति `+०५:४५` मान्दा `१५` मिनेट चुक्छ, र त्यो सूर्योदयको सिमानामा परे **गते नै एक दिन फरक** हुन सक्छ।",
+            en: "This matters for older BS dates — assuming `+05:45` before `1985` is off by `15` minutes, and near the sunrise boundary that can shift the **gate by a whole day**.",
           },
         },
       ],

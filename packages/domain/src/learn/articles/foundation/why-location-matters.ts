@@ -71,11 +71,10 @@ export const whyLocationMatters: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "sunrise-vriddhi",
-          caption: {
-            ne: "सूर्योदय–सीमाले तिथि दिनमा कसरी बाँडिन्छ देखाउँछ — यहाँ एउटै तिथि दुई दिन (वृद्धि) परेको।",
-            en: "How the sunrise boundary distributes tithis across days — here one tithi spanning two days (vriddhi).",
+          kind: "para",
+          text: {
+            ne: "एउटै तिथि दुई दिन पर्ने वा हराउने कुरा [[tithi-vriddhi-kshaya|तिथि — वृद्धि, क्षय र सूर्योदय]] मा छ।",
+            en: "How one tithi can cover two days, or vanish, is in [[tithi-vriddhi-kshaya|tithi — repeats, skips and sunrise]].",
           },
         },
       ],

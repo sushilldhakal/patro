@@ -111,11 +111,10 @@ export const fiveLimbsTogether: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "tithi-elongation",
-          caption: {
-            ne: "सूर्य र चन्द्रको कोणीय सम्बन्ध — तिथि, करण र योग सबै यहीँबाट निस्कन्छन्।",
-            en: "The angular relationship of Sun and Moon — tithi, karana and yoga all come from here.",
+          kind: "para",
+          text: {
+            ne: "सूर्य–चन्द्रको यो कोणीय सम्बन्ध — जसबाट तिथि, करण र योग बन्छन् — [[tithi|तिथि भनेको के हो?]] मा चलाएर हेर्न सकिन्छ।",
+            en: "This angular relationship of Sun and Moon — the source of tithi, karana and yoga — can be run in [[tithi|what is a tithi?]].",
           },
         },
       ],

@@ -112,8 +112,8 @@ export const equinoxSolstice: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "ऋतुको कुरा गर्दा यही सायन वक्र नै सन्दर्भ हो — वि.सं. महिना होइन। महिना निरयन छन्, वक्र सायन; त्यसैले दुई बिस्तारै छुट्टिन्छन्।",
-            en: "When the subject is the ṛtus, this tropical curve is the reference — not the वि.सं. months. The months are sidereal and the curve is tropical, so the two slowly part company.",
+            ne: "यो वक्र सायन हो, वि.सं.का महिना निरयन — दुईको सम्बन्ध [[ritu-drift|ऋतु र निरयन महिनाको सम्बन्ध]] मा छ।",
+            en: "This curve is tropical and the BS months are sidereal — how the two relate is in [[ritu-drift|seasons and the sidereal months]].",
           },
         },
       ],
@@ -176,17 +176,10 @@ export const equinoxSolstice: ArticleData = {
           },
         },
         {
-          kind: "para",
-          text: {
-            ne: "आज यीबीच झन्डै `२४` दिनको अन्तर छ, र अयन चलनका कारण यो बढ्दै जान्छ। कुनै समय यी मिल्थे — त्यसैले परम्परागत नामले अझै पुरानो मेल झल्काउँछ।",
-            en: "Today they sit about `24` days apart, and precession keeps widening the gap. They once coincided, which is why the traditional names still echo the old alignment.",
-          },
-        },
-        {
           kind: "note",
           text: {
-            ne: "छोटोमा: सबैभन्दा छोटो दिन पुषमा हुन्छ, माघे सङ्क्रान्तिमा होइन।",
-            en: "In short: the shortest day falls in पुष, not at Maghe Sankranti.",
+            ne: "छोटोमा: सबैभन्दा छोटो दिन पुषमा हुन्छ, माघे सङ्क्रान्तिमा होइन। आज यीबीच झन्डै `२४` दिन किन छ र पात्रोले दुवैलाई कसरी राख्छ भन्ने [[uttarayana-in-calendar|उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग]] मा छ।",
+            en: "In short: the shortest day falls in पुष, not at Maghe Sankranti. Why the two now sit about `24` days apart, and how the calendar keeps both, is in [[uttarayana-in-calendar|Uttarayana and Dakshinayana in the calendar]].",
           },
         },
       ],
@@ -207,14 +200,6 @@ export const equinoxSolstice: ArticleData = {
           text: {
             ne: "नेपाली पात्रो निरयन भएकाले विषुवलाई सन्दर्भ मान्दैन। नयाँ वर्ष त्यसैले अप्रिलमा पर्छ — [[year-begins-baisakh|वर्ष बैशाखमा किन सुरु हुन्छ]] — र दुई शून्यको पूरा विवरण [[sidereal-vs-tropical|निरयन र सायन]] मा छ।",
             en: "The Nepali calendar, being sidereal, does not use the equinox as its reference. That is why the new year falls in April — [[year-begins-baisakh|why the year begins in Baisakh]] — and the full account of the two zeros is [[sidereal-vs-tropical|sidereal and tropical]].",
-          },
-        },
-        {
-          kind: "diagram",
-          id: "equinox-precession",
-          caption: {
-            ne: "विषुव बिन्दु ताराको सापेक्ष बिस्तारै सर्दै — सायन र निरयन प्रणालीको मूल भिन्नता।",
-            en: "The equinox point sliding against the stars — the root difference between the tropical and sidereal systems.",
           },
         },
       ],

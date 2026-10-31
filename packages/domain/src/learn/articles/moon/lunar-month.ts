@@ -45,10 +45,6 @@ export const lunarMonth: ArticleData = {
             en: "Why do they differ? Because while the Moon completes one orbit, Earth itself has moved about `27°` along its own orbit. To restore the same angle with the Sun the Moon must **chase for roughly two more days**.",
           },
         },
-        {
-          kind: "diagram",
-          id: "moon-phases",
-        },
       ],
     },
     {

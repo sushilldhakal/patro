@@ -11,8 +11,8 @@ export const siderealTime: ArticleData = {
         {
           kind: "lede",
           text: {
-            ne: "*नाक्षत्र काल* [[what-is-a-day|दिन के हो]] ले सौर दिनबाट छुट्याएको घडी हो — ताराको सापेक्ष, `२३` घण्टा `५६` मिनेट `४` सेकेन्ड। यहाँको कुरा त्यसले आकाशमा के गर्छ भन्ने हो।",
-            en: "*Sidereal time* is the clock [[what-is-a-day|what a day is]] already separated from the solar day — against the stars, `23` hours `56` minutes `4` seconds. What matters here is what that does to the sky.",
+            ne: "*नाक्षत्र काल* ताराको घडी हो। पृथ्वी ताराको सापेक्ष एक फेरो `२३` घण्टा `५६` मिनेट `४` सेकेन्डमा घुम्छ — यो *नाक्षत्र दिन* हो। तर त्यति बेरमा पृथ्वी कक्षमा अलिकति अघि बढिसक्ने हुनाले सूर्यलाई फेरि उही ठाउँमा ल्याउन झन्डै `४` मिनेट थप घुम्नुपर्छ — त्यो `२४` घण्टाको *सौर दिन* हो ([[earth-rotation-day|निर्देशित भ्रमणमा]] यो चरणबद्ध छ)। यहाँको कुरा त्यसले आकाशमा के गर्छ भन्ने हो।",
+            en: "*Sidereal time* is the clock the stars keep. Against the stars Earth turns once in `23` hours `56` minutes `4` seconds — the *sidereal day*. But in that time Earth has moved a little along its orbit, so it must turn about `4` minutes more to bring the Sun back to the same place — the `24`-hour *solar day* (the [[earth-rotation-day|guided tour]] takes it step by step). What matters here is what that does to the sky.",
           },
         },
         {
@@ -45,11 +45,10 @@ export const siderealTime: ArticleData = {
           ],
         },
         {
-          kind: "diagram",
-          id: "earth-rotation",
-          caption: {
-            ne: "नाक्षत्र दिन र सौर दिनको ~४ मिनेटको फरक — नाक्षत्र समय यही छोटो दिनमा चल्छ।",
-            en: "The ~4-minute gap between a sidereal and a solar day — sidereal time runs on the shorter one.",
+          kind: "para",
+          text: {
+            ne: "घुम्दै गरेको पृथ्वीको चित्र [[sky-rotation|आकाश घुमेको किन देखिन्छ?]] मा छ।",
+            en: "The turning Earth is drawn in [[sky-rotation|why the sky appears to turn]].",
           },
         },
       ],

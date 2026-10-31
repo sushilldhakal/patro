@@ -16,11 +16,10 @@ export const moonLunarCalendar: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "moon-phases",
-          caption: {
-            ne: "कलाबाट पक्ष, पक्षबाट मास।",
-            en: "Phases into paksha, paksha into the month.",
+          kind: "para",
+          text: {
+            ne: "कलाबाट पक्ष, पक्षबाट मास — चन्द्रका कला कसरी बन्छन् भन्ने चलचित्र [[solar-system|सूर्य, पृथ्वी र चन्द्रको आपसी गति]] मा छ।",
+            en: "Phases into paksha, paksha into the month — how the Moon's phases arise is animated in [[solar-system|how the Sun, Earth and Moon move]].",
           },
         },
       ],

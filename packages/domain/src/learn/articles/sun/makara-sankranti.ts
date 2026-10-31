@@ -22,10 +22,6 @@ export const makaraSankranti: ArticleData = {
             en: "In the Gregorian calendar it usually falls on `14`–`15` January, and it is the most widely observed of the year's sankrantis — marked with yam, chaku, sesame sweets and ghee.",
           },
         },
-        {
-          kind: "diagram",
-          id: "equinox-precession",
-        },
       ],
     },
     {
@@ -35,8 +31,8 @@ export const makaraSankranti: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "माघे सङ्क्रान्तिलाई प्रायः सबैभन्दा छोटो दिन ठानिन्छ। होइन। अयनान्त सायन हो, सङ्क्रान्ति निरयन — [[equinox-solstice|विषुव र अयनान्त]] ले छुट्याउँछ। परम्पराले उत्तरायण यहीँबाट गन्ने कारण, र आजको उत्तर मोड पुषतिर परिसकेको कारण, [[uttarayana-dakshinayana|उत्तरायण र दक्षिणायन]] मा छ।",
-            en: "Maghe Sankranti is often taken for the shortest day. It is not. A solstice is tropical and a sankranti is sidereal — [[equinox-solstice|equinoxes and solstices]] separates them. Why tradition still starts Uttarāyaṇa here, while today's northward turn already falls in Poush, is [[uttarayana-dakshinayana|Uttarāyaṇa and Dakṣiṇāyana]].",
+            ne: "माघे सङ्क्रान्तिलाई प्रायः सबैभन्दा छोटो दिन ठानिन्छ। होइन। अयनान्त सायन हो, सङ्क्रान्ति निरयन — [[equinox-solstice|विषुव र अयनान्त]] ले छुट्याउँछ। परम्पराले उत्तरायण यहीँबाट गन्ने कारण, र आजको उत्तर मोड पुषतिर परिसकेको कारण, [[uttarayana-in-calendar|उत्तरायण र दक्षिणायनको पात्रोमा प्रयोग]] मा छ।",
+            en: "Maghe Sankranti is often taken for the shortest day. It is not. A solstice is tropical and a sankranti is sidereal — [[equinox-solstice|equinoxes and solstices]] separates them. Why tradition still starts Uttarāyaṇa here, while today's northward turn already falls in Poush, is in [[uttarayana-in-calendar|Uttarayana and Dakshinayana in the calendar]].",
           },
         },
       ],

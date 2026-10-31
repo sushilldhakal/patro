@@ -109,10 +109,6 @@ export const calcMoonrise: ArticleData = {
             },
           ],
         },
-        {
-          kind: "diagram",
-          id: "moon-phases",
-        },
       ],
     },
   ],

@@ -42,11 +42,10 @@ export const celestialEquator: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "declination-year",
-          caption: {
-            ne: "क्रान्ति शून्य हुने रेखा नै खगोलीय विषुवत् रेखा — वर्षमा दुई पटक सूर्यले यसलाई काट्छ।",
-            en: "The line where declination is zero is the celestial equator — the Sun crosses it twice a year.",
+          kind: "para",
+          text: {
+            ne: "सूर्यले यो रेखा वर्षमा दुई पटक काट्छ। सूर्यको क्रान्ति वर्षभरि कसरी ओहोरदोहोर गर्छ भन्ने वक्र [[equinox-solstice|विषुव र अयनान्त]] मा छ।",
+            en: "The Sun crosses this line twice a year. The curve of how its declination swings through the year is in [[equinox-solstice|equinoxes and solstices]].",
           },
         },
       ],
@@ -69,8 +68,8 @@ export const celestialEquator: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "तर यो बिन्दु स्थिर छैन — अयन चलनका कारण यो ताराको सापेक्ष प्रति वर्ष `~५०` विकला सर्छ। यही सरणले सायन र निरयन प्रणालीलाई अलग गर्छ।",
-            en: "But that point is not fixed — precession slides it `~50` arc-seconds a year against the stars. That slide is exactly what separates the tropical and sidereal systems.",
+            ne: "तर यो बिन्दु स्थिर छैन — अयन चलनका कारण यो ताराको सापेक्ष प्रति वर्ष `~५०` विकला सर्छ। यही सरणले ([[sidereal-vs-tropical|एउटै आकाश, दुई राशिचक्र]]) सायन र निरयन प्रणालीलाई अलग गर्छ।",
+            en: "But that point is not fixed — precession slides it `~50` arc-seconds a year against the stars. That slide is exactly what separates the tropical and sidereal systems ([[sidereal-vs-tropical|one sky, two zodiacs]]).",
           },
         },
       ],

@@ -165,8 +165,8 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "CalendarRange",
     title: { ne: "नेपाली पात्रो र यसको आधार", en: "The Nepali Calendar and Its Basis" },
     summary: {
-      ne: "पात्रो के हो, विक्रम सम्वत् के हो, सौर–चान्द्र–चान्द्रसौर पात्रो कसरी छुट्टिन्छन्, र ई.सं.सँगको ५६–५७ वर्षको फरक किन सधैँ एउटै हुँदैन।",
-      en: "What a calendar is, what Bikram Sambat is, how solar, lunar and lunisolar calendars differ, and why its 56–57-year gap from AD is never fixed.",
+      ne: "पात्रो के हो, विक्रम सम्वत् के हो, सौर–चान्द्र–चान्द्रसौर पात्रो कसरी छुट्टिन्छन्, ई.सं.सँगको ५६–५७ वर्षको फरक किन सधैँ एउटै हुँदैन, र पात्रोमा वर्ष, महिना र दिन कसरी तय हुन्छन्।",
+      en: "What a calendar is, what Bikram Sambat is, how solar, lunar and lunisolar calendars differ, why its 56–57-year gap from AD is never fixed, and how the calendar fixes its years, months and days.",
     },
   },
   {
@@ -506,8 +506,8 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "Timer",
     title: { ne: "खगोलीय गणनाको आधार", en: "The Basis of Astronomical Computation" },
     summary: {
-      ne: "कुन घडीमा गणना गर्ने, पृथ्वीको घूर्णन किन सुस्ताउँदै छ, र पञ्चाङ्गमा त्यसको असर।",
-      en: "Which clock to compute in, why Earth's rotation is slowing, and what that means for a panchanga.",
+      ne: "कुन घडीमा गणना गर्ने (UT, TT, ΔT), पृथ्वीको घूर्णन किन सुस्ताउँदै छ, जुलियन डे, समय क्षेत्र र UTC — र वेदिक पात्रोले मितिलाई JD मा कसरी बदल्छ।",
+      en: "Which clock to compute in (UT, TT, ΔT), why Earth's rotation is slowing, the Julian Day, time zones and UTC — and how Vedic Patro turns a date into a JD.",
     },
   },
   {
@@ -561,8 +561,8 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     icon: "Milestone",
     title: { ne: "सौरमान र चान्द्रमानको गणना", en: "Computing the Solar and Lunar Reckonings" },
     summary: {
-      ne: "सङ्क्रान्तिको सटीक क्षण — कोण ३०° को गुणाङ्क कहिले हुन्छ, ब्रेन्ट र द्विभाजन विधि, र क्षणबाट गतेसम्म।",
-      en: "The exact sankranti instant — when the angle is a multiple of 30°, Brent's method and bisection, and from the instant to the gate.",
+      ne: "सङ्क्रान्तिको सटीक क्षण र क्षणबाट गतेसम्म, अनि चान्द्र मासको सीमा, नाम, अधिक मास र क्षय मास कसरी गणना हुन्छन्।",
+      en: "The exact sankranti instant and how it becomes a gate, then how the lunar month's edges, its name, the adhik maas and the kshaya maas are computed.",
     },
   },
   {

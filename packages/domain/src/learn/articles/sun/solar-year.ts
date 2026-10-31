@@ -23,11 +23,10 @@ export const solarYear: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "earth-orbit",
-          caption: {
-            ne: "पृथ्वीको परिक्रमा — पृथ्वीबाट हेर्दा यही गति सूर्यको राशिचक्र यात्रा बनेर देखिन्छ।",
-            en: "Earth's orbit — seen from Earth, this same motion appears as the Sun's journey through the zodiac.",
+          kind: "para",
+          text: {
+            ne: "पृथ्वीबाट हेर्दा यही परिक्रमा सूर्यको राशिचक्र यात्रा बनेर देखिन्छ — परिक्रमाको चित्र [[solar-system|सूर्य, पृथ्वी र चन्द्रको आपसी गति]] मा छ।",
+            en: "Seen from Earth, this same orbit appears as the Sun's journey through the zodiac — the orbit is drawn in [[solar-system|how the Sun, Earth and Moon move]].",
           },
         },
       ],
@@ -69,8 +68,8 @@ export const solarYear: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "यो `०.९५°`–`१.०२°` को घटबढ सानो देखिन्छ, तर यसैले नेपाली महिनाको लम्बाइ तय गर्छ। सूर्य ढिलो हिँड्दा राशि पार गर्न बढी दिन लाग्छ — त्यसैले **असार `३२` दिनको र पुष `२९` दिनको** हुन सक्छ।",
-            en: "That swing between `0.95°` and `1.02°` looks small, but it is what sets Nepali month lengths. When the Sun moves slowly it needs more days to cross a sign — which is why **Asar can run to `32` days while Poush runs to `29`**.",
+            ne: "यो `०.९५°`–`१.०२°` को घटबढ सानो देखिन्छ, तर यसैले नेपाली महिनाको लम्बाइ तय गर्छ। सूर्य ढिलो हिँड्दा राशि पार गर्न बढी दिन लाग्छ — त्यसैले **असार `३२` दिनको र पुष `२९` दिनको** हुन सक्छ ([[month-lengths-apsides|महिना २९–३२ दिनका किन]])।",
+            en: "That swing between `0.95°` and `1.02°` looks small, but it is what sets Nepali month lengths. When the Sun moves slowly it needs more days to cross a sign — which is why **Asar can run to `32` days while Poush runs to `29`** ([[month-lengths-apsides|why months run 29–32 days]]).",
           },
         },
       ],

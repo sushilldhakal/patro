@@ -75,11 +75,10 @@ export const tithiNot24Hours: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "tithi-elongation",
-          caption: {
-            ne: "कोणान्तर बढ्ने दर सधैँ उही हुँदैन — त्यही कारण तिथिको लम्बाइ फरक पर्छ।",
-            en: "The separation does not grow at a steady rate — which is exactly why tithi lengths differ.",
+          kind: "para",
+          text: {
+            ne: "माथिको तिथि चित्रमा चलाएर हेर्नुहोस् — सूर्य–चन्द्रबीचको कोण एकनास दरले बढ्दैन।",
+            en: "Run the tithi figure above and watch — the Sun–Moon angle does not grow at a steady rate.",
           },
         },
       ],
@@ -106,8 +105,8 @@ export const tithiNot24Hours: ArticleData = {
         {
           kind: "para",
           text: {
-            ne: "यही कारण कुनै तिथि एउटै नागरिक मितिभित्र सुरु भई सकिन्छ, भने अर्को तिथि दुई मितिमा फैलिन्छ। दुई सूर्योदय छुने तिथि दुई दिनको हुन्छ (~तिथि वृद्धि~), र कुनै सूर्योदय नछुने तिथि पात्रोबाट हराउँछ (~तिथि क्षय~)।",
-            en: "This is why one tithi can begin and end inside a single civil date while another spans two. A tithi that touches two sunrises occupies two days (~tithi vriddhi~); one that touches no sunrise drops out of the calendar entirely (~tithi kshaya~).",
+            ne: "यही कारण कुनै तिथि एउटै नागरिक मितिभित्र सुरु भई सकिन्छ, भने अर्को तिथि दुई मितिमा फैलिन्छ। त्यसले पात्रोमा तिथि दोहोरिने वा हराउने कसरी बनाउँछ भन्ने [[tithi-vriddhi-kshaya|तिथि — वृद्धि, क्षय र सूर्योदय]] मा छ।",
+            en: "This is why one tithi can begin and end inside a single civil date while another spans two. How that makes a tithi repeat or vanish in the calendar is in [[tithi-vriddhi-kshaya|tithi — repeats, skips and sunrise]].",
           },
         },
         {

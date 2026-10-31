@@ -43,11 +43,10 @@ export const rightAscension: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "ecliptic-belt",
-          caption: {
-            ne: "विषुवत् रेखामा नापिने देशान्तर नै विषुवांश — क्रान्तिवृत्तको देशान्तरभन्दा फरक ढाँचा।",
-            en: "Longitude measured along the equator is right ascension — a different frame from ecliptic longitude.",
+          kind: "para",
+          text: {
+            ne: "विषुवत् रेखामा नापिने देशान्तर नै विषुवांश — माथि क्रान्तिवृत्तमा देखिएको देशान्तरभन्दा फरक ढाँचा।",
+            en: "Longitude measured along the equator is right ascension — a different frame from the ecliptic longitude shown above.",
           },
         },
       ],
@@ -121,8 +120,11 @@ export const rightAscension: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "ecliptic-equator-cross",
+          kind: "para",
+          text: {
+            ne: "दुई प्रणाली कहाँ काटिन्छन् भन्ने चित्र माथि खगोलीय विषुवत् रेखाको अध्यायमा छ।",
+            en: "Where the two systems cross is drawn above, in the celestial equator chapter.",
+          },
         },
       ],
     },

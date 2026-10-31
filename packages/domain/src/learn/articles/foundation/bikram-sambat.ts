@@ -89,8 +89,8 @@ export const bikramSambat: ArticleData = {
               unit: { ne: "दिन", en: "days" },
               label: { ne: "महिनाको लम्बाइ", en: "Month length" },
               desc: {
-                ne: "पृथ्वीको कक्ष अण्डाकार भएकाले सूर्यको देखिने गति घटबढ हुन्छ, त्यसैले हरेक महिना बराबर हुँदैन।",
-                en: "Earth's orbit is elliptical, so the Sun's apparent speed varies — no two months are equal.",
+                ne: "सूर्य जति दिन एक राशिमा बस्छ, महिना त्यति दिनको — त्यसैले हरेक महिना बराबर हुँदैन।",
+                en: "As many days as the Sun spends in a rashi — so no two months are equal.",
               },
             },
             {
@@ -116,8 +116,8 @@ export const bikramSambat: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "यसैकारण आउँदो वर्षको पात्रो पहिल्यै ठ्याक्क भन्न खगोलीय गणना चाहिन्छ — महिनाको दिन–सङ्ख्या कुनै निश्चित नियमले नभई सूर्यको वास्तविक स्थितिले तय गर्छ।",
-            en: "This is why next year's calendar cannot be written from a fixed rule — the number of days in a month is set by the Sun's actual position, and has to be computed.",
+            ne: "यसैकारण आउँदो वर्षको पात्रो पहिल्यै ठ्याक्क भन्न खगोलीय गणना चाहिन्छ — महिनाको दिन–सङ्ख्या कुनै निश्चित नियमले नभई सूर्यको वास्तविक स्थितिले तय गर्छ। सूर्य कुनै राशि छिटो र कुनै ढिलो किन पार गर्छ भन्ने [[month-lengths-apsides|महिना २९–३२ दिनका किन]] मा छ।",
+            en: "This is why next year's calendar cannot be written from a fixed rule — the number of days in a month is set by the Sun's actual position, and has to be computed. Why the Sun crosses some rashis faster than others is in [[month-lengths-apsides|why months run 29–32 days]].",
           },
         },
       ],

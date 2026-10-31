@@ -23,11 +23,10 @@ export const ancientSky: ArticleData = {
           },
         },
         {
-          kind: "diagram",
-          id: "precession-sky",
-          caption: {
-            ne: "अयन चलनले शताब्दीयौँमा आकाश बदल्छ — प्राचीन अवलोकन आजकै आकाशमा मिल्दैन।",
-            en: "Precession reshapes the sky over centuries — ancient observations do not match today's.",
+          kind: "para",
+          text: {
+            ne: "माथिको ध्रुव–वृत्तले नै यो देखाउँछ — वर्ष पछाडि सार्दा आकाश कसरी फेरिन्छ।",
+            en: "The pole's circle above shows exactly this — run the years back and watch the sky change.",
           },
         },
       ],
