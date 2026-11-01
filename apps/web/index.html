@@ -30,6 +30,32 @@
         } catch (_) {}
       })();
     </script>
+    <script>
+      // iPhone Duo only: mark <html data-iphone-duo> so the header clears the Duo's system toolbar
+      // (index.css). Decided from the device, never the window width, so resizing a window (an iPad
+      // in Stage Manager, a desktop browser) can never turn it on:
+      //  - the UA must say "iPhone": iPads say "iPad", or "Macintosh" when asking for the desktop
+      //    site, so they never match;
+      //  - the device's own screen (screen.width/height, which a window resize does not change)
+      //    must be wider on its short side than any regular iPhone (440 px at most), which only
+      //    the unfolded Duo is.
+      // Mirrors apps/mobile/lib/iphone-duo.ts.
+      (function () {
+        try {
+          var root = document.documentElement;
+          var iphone = /\biPhone\b/.test(navigator.userAgent || "");
+          function check() {
+            var s = window.screen;
+            var duo = iphone && !!s && Math.min(s.width, s.height) > 500;
+            if (duo) root.setAttribute("data-iphone-duo", "");
+            else root.removeAttribute("data-iphone-duo");
+          }
+          check();
+          // Folding or unfolding changes the screen; a plain window resize leaves it as it was.
+          if (iphone) window.addEventListener("resize", check);
+        } catch (_) {}
+      })();
+    </script>
     <style>
       html{background:#f8f6f2;color-scheme:light}
       html.dark{background:#0f1220;color-scheme:dark}

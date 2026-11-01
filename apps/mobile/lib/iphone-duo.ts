@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
  * reported top safe-area inset, so a header padded by `insets.top` alone draws under the toolbar.
  *
  * Every other iPhone keeps the layout it has always had: `useDuoShellInsets` returns zeros there.
+ * The web app does the same in apps/web/index.html + src/index.css (`html[data-iphone-duo]`).
  */
 
 /**
