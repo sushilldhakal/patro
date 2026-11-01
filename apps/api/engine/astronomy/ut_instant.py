@@ -15,7 +15,7 @@ from engine.astronomy.timescale import resolve_observer_timezone
 
 
 _EXPANDED_ISO_RE = re.compile(
-    r"^(?P<year>-?\d{1,6})-(?P<month>\d{2})-(?P<day>\d{2})"
+    r"^(?P<year>-?\d{1,8})-(?P<month>\d{2})-(?P<day>\d{2})"
     r"[T ](?P<hour>\d{2}):(?P<minute>\d{2})(?::(?P<second>\d{2}(?:\.\d+)?))?"
 )
 

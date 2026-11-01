@@ -9,6 +9,7 @@ from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from services.festivals.sait_generator import get_generated_sait
+from engine.astronomy.system_cache import system_lru_cache
 
 ROOT = Path(__file__).resolve().parents[2]
 SAIT_RULES_PATH = ROOT / "rules" / "sait_dates_v1.json"
@@ -125,7 +126,7 @@ def _format_month_entries(by_month: dict[str, list[int]]) -> list[dict[str, Any]
     return months
 
 
-@lru_cache(maxsize=256)
+@system_lru_cache(maxsize=256)
 def _custom_year_by_month(
     bs_year: int,
     category: str,

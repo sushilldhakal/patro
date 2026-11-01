@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.era_middleware import EraMiddleware
+from app.siddhanta_middleware import SiddhantaMiddleware
 from engine.astronomy.engine import EphemerisError
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -127,7 +128,7 @@ def _cors_origins() -> list[str]:
 # Middleware order matters, and Starlette applies it outermost-last: whatever is
 # added last wraps everything added before it. The stack below is, outside in:
 #
-#   CORS  ->  EraMiddleware  ->  GZip  ->  routes
+#   CORS  ->  Siddhanta  ->  EraMiddleware  ->  GZip  ->  routes
 #
 # JSON here compresses ~10×+ (full month: 1.17 MB → ~100 KB over the wire).
 # Skips responses that already set Content-Encoding (pre-gzipped year cache).
@@ -138,6 +139,10 @@ app.add_middleware(GZipMiddleware, minimum_size=1024)
 # body (the year cache serves pre-gzipped bytes); it decompresses, rewrites the
 # JSON, and recompresses.
 app.add_middleware(EraMiddleware)
+
+# Calculation system (drik / Surya Siddhanta) for the whole request. Outside the
+# era gate, which already computes (a BS date's Julian Day can need sankrantis).
+app.add_middleware(SiddhantaMiddleware)
 
 # CORS must be the OUTERMOST layer. EraMiddleware short-circuits invalid dates
 # with its own 400 without calling the rest of the stack, so anything inside it

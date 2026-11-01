@@ -75,6 +75,11 @@ _ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
 
 
 def cache_enabled() -> bool:
+    """Off for a Surya Siddhanta request: these rows are drik reports."""
+    from engine.astronomy.engine import SYSTEM_DRIK, active_system
+
+    if active_system() != SYSTEM_DRIK:
+        return False
     return os.environ.get("KUNDALI_REPORT_CACHE", "true").lower() not in {"0", "false", "no"}
 
 

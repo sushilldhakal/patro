@@ -8,6 +8,9 @@ from __future__ import annotations
 
 import math
 from collections import OrderedDict
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, datetime, time, timezone
 from typing import TYPE_CHECKING, Any
 
@@ -906,13 +909,8 @@ class AstronomyEngine:
         local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
         jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
         try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            value = None if event_jd is None else self.datetime_from_jd(event_jd)
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Rise/set failed for {body!r} on {date_val}: {exc}") from exc
         self._rise_cache[cache_key] = value
@@ -979,13 +977,8 @@ class AstronomyEngine:
         # as this day's, which is a whole-day error, not a rounding one.
         jd_start = civil.to_jd_ut() - self._utc_offset_days(civil, observer_tz)
         try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            value = None if event_jd is None else self.datetime_from_jd(event_jd)
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(
                 f"Rise/set failed for {body!r} on civil {civil}: {exc}"
@@ -1015,6 +1008,22 @@ class AstronomyEngine:
             raise EphemerisError(f"fixstar2_ut failed for {star!r}: {exc}") from exc
         return xx[0] % 360.0, xx[1], mag
 
+    def _rise_trans_jd(
+        self, jd_start: float, body_id: int, calc_flag: int, lat: float, lon: float, alt: float
+    ) -> float | None:
+        """JD (UT) of the next rise/set after *jd_start*, or None when the body never crosses.
+
+        The one place the three rise/set paths ask the ephemeris, so another engine
+        (the Surya Siddhanta one) can answer the same question its own way.
+        """
+        result = swe.rise_trans_true_hor(
+            jd_start, body_id, calc_flag, (lon, lat, alt),
+            REFRACTION_PRESSURE,
+            REFRACTION_TEMPERATURE,
+            _horizon_dip_degrees(alt),
+        )
+        return None if result[0] < 0 else float(result[1][0])
+
     def _rise_set_after(
         self,
         after_dt: datetime,
@@ -1030,19 +1039,89 @@ class AstronomyEngine:
             raise EphemerisError(f"Unknown body: {body!r}")
         jd_start = self.julian_day(after_dt.astimezone(timezone.utc))
         try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            if result[0] < 0:
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            if event_jd is None:
                 return None
-            return self.datetime_from_jd(result[1][0])
+            return self.datetime_from_jd(event_jd)
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Rise/set after {after_dt} failed for {body!r}: {exc}") from exc
 
 
+# ── calculation system: drik (Swiss Ephemeris) or the Surya Siddhanta ──────
+#
+# A request picks one (``?siddhanta=``; app/siddhanta_middleware.py). The choice
+# lives in a ContextVar, so it follows the request into the threadpool and never
+# leaks into another request, and ``default_engine`` hands every call to the
+# engine for the current choice. Every module that imported ``default_engine``
+# therefore computes in the requested system without knowing there are two.
+
+SYSTEM_DRIK = "drik"
+SYSTEM_SURYA_SIDDHANTA = "surya_siddhanta"
+CALCULATION_SYSTEMS = (SYSTEM_DRIK, SYSTEM_SURYA_SIDDHANTA)
+
+_ACTIVE_SYSTEM: ContextVar[str] = ContextVar("calculation_system", default=SYSTEM_DRIK)
+_ENGINES: dict[str, AstronomyEngine] = {SYSTEM_DRIK: AstronomyEngine()}
+_ENGINES_LOCK = threading.Lock()
+
+
+def resolve_system(raw: str | None) -> str:
+    """A ``siddhanta`` query value → a system id (drik when absent). Raises ValueError when unknown."""
+    if raw is None or raw == "":
+        return SYSTEM_DRIK
+    value = raw.strip().lower().replace("-", "_")
+    if value in ("surya", "surya_siddhanta", "ss"):
+        return SYSTEM_SURYA_SIDDHANTA
+    if value in ("drik", "drig", "modern"):
+        return SYSTEM_DRIK
+    raise ValueError(f"siddhanta must be one of {', '.join(CALCULATION_SYSTEMS)}; got {raw!r}")
+
+
+def active_system() -> str:
+    """The calculation system of the current request (drik outside one)."""
+    return _ACTIVE_SYSTEM.get()
+
+
+def system_cache_key(key: str) -> str:
+    """*key* for a persistent cache: unchanged under drik, suffixed with the system otherwise."""
+    system = _ACTIVE_SYSTEM.get()
+    return key if system == SYSTEM_DRIK else f"{key}~{system}"
+
+
+def engine_for(system: str) -> AstronomyEngine:
+    engine = _ENGINES.get(system)
+    if engine is not None:
+        return engine
+    if system != SYSTEM_SURYA_SIDDHANTA:
+        raise ValueError(f"Unknown calculation system {system!r}")
+    with _ENGINES_LOCK:
+        if system not in _ENGINES:
+            from engine.astronomy.surya_siddhanta_engine import SuryaSiddhantaEngine
+
+            _ENGINES[system] = SuryaSiddhantaEngine()
+        return _ENGINES[system]
+
+
+@contextmanager
+def use_system(system: str) -> Iterator[None]:
+    """Compute in *system* for the duration of the block."""
+    engine_for(system)  # validate before switching
+    token = _ACTIVE_SYSTEM.set(system)
+    try:
+        yield
+    finally:
+        _ACTIVE_SYSTEM.reset(token)
+
+
+class _ActiveEngine:
+    """``default_engine``: forwards every attribute to the current system's engine."""
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(engine_for(_ACTIVE_SYSTEM.get()), name)
+
+    def __repr__(self) -> str:
+        return f"<default_engine → {_ACTIVE_SYSTEM.get()}>"
+
+
 # Module-level singleton — existing code can import this directly
 # while the migration to passing the engine instance is in progress.
-default_engine = AstronomyEngine()
+default_engine: AstronomyEngine = _ActiveEngine()  # type: ignore[assignment]

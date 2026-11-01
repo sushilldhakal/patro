@@ -1,0 +1,317 @@
+"""सूर्य सिद्धान्त — graha positions computed the way the Surya Siddhanta prescribes.
+
+Pure arithmetic, no ephemeris files and no ΔT: the text's own model, followed as
+written (Burgess's translation, chapters I–III), so it answers for any day of the
+current mahayuga — back to the start of सत्य युग and beyond.
+
+How a position is found
+-----------------------
+1. **Ahargana** — civil days elapsed since the moment the text counts from. The
+   Kali Yuga began at midnight on the Lanka/Ujjain meridian at the start of
+   18 Feb 3102 BCE (Julian), JD 588465.5 for 0h UT of that date; Ujjain lies at
+   75°46′ E, so its midnight was 75°46′/360° of a day earlier in UT. Planetary
+   motion had then run for 1,955,880,000 years (6 manus, 7 sandhis, 27 mahayugas
+   and the सत्य, त्रेता and द्वापर of the 28th, less the 17,064,000 years of
+   creation), which is 452.75 mahayugas of 1,577,917,828 civil days each.
+2. **Mean longitude** — revolutions per mahayuga (or per kalpa, for apsides and
+   nodes) × days ÷ days per mahayuga, kept exact with integers: the day count is
+   ~7×10¹¹ and a float would lose the Moon's position entirely.
+3. **True longitude** — the Sun and Moon take the manda (equation of centre)
+   correction; the five star-planets take the four-step manda + शीघ्र procedure
+   of chapter II. Epicycles shrink from their even-quadrant to their
+   odd-quadrant size with |sin anomaly|, as the text gives them.
+4. **Ayanamsha** — the libration of the equinox: 600 revolutions per mahayuga,
+   the bhuja of the revolution's arc × 3/10, so it swings ±27°.
+
+Positions are निरयण (sidereal) by construction; sayana ones add the ayanamsha.
+"""
+
+from __future__ import annotations
+
+import math
+
+# ── the yuga frame ──────────────────────────────────────────────────────────
+
+MAHAYUGA_YEARS = 4_320_000
+#: Civil (savana) days in a mahayuga.
+MAHAYUGA_DAYS = 1_577_917_828
+KALPA_DAYS = 1000 * MAHAYUGA_DAYS
+#: Days of planetary motion from creation to the start of Kali Yuga (452.75 mahayugas).
+DAYS_CREATION_TO_KALI = MAHAYUGA_DAYS * 45_275 // 100
+#: JD (UT) of 0h on 18 Feb 3102 BCE (Julian) and Ujjain's longitude.
+KALI_JD_0H_UT = 588465.5
+UJJAIN_LONGITUDE = 75.0 + 46.0 / 60.0
+#: JD (UT) of the Kali epoch: midnight on the Ujjain meridian.
+KALI_EPOCH_JD = KALI_JD_0H_UT - UJJAIN_LONGITUDE / 360.0
+#: One sidereal-solar year of the text, in days.
+YEAR_DAYS = MAHAYUGA_DAYS / MAHAYUGA_YEARS
+
+#: सत्य + त्रेता + द्वापर of this mahayuga, in years, before Kali.
+YEARS_SATYA_TO_KALI = 1_728_000 + 1_296_000 + 864_000
+#: JD of the start of this mahayuga's सत्य युग — the earliest day the app offers.
+SATYA_YUGA_START_JD = KALI_EPOCH_JD - YEARS_SATYA_TO_KALI * YEAR_DAYS
+
+# ── revolutions (Burgess I.29–44) ───────────────────────────────────────────
+
+#: Revolutions per mahayuga of the mean planets (Mercury and Venus: their शीघ्रोच्च).
+REVS_MAHAYUGA = {
+    "sun": 4_320_000,
+    "moon": 57_753_336,
+    "mars": 2_296_832,
+    "mercury_sighra": 17_937_060,
+    "jupiter": 364_220,
+    "venus_sighra": 7_022_376,
+    "saturn": 146_568,
+    "moon_apogee": 488_203,
+    "moon_node": -232_238,  # retrograde
+}
+
+#: Revolutions per kalpa of the apsides (मन्दोच्च) and nodes (पात, retrograde).
+APSIS_REVS_KALPA = {"sun": 387, "mars": 204, "mercury": 368, "jupiter": 900, "venus": 535, "saturn": 39}
+NODE_REVS_KALPA = {"mars": -214, "mercury": -488, "jupiter": -174, "venus": -903, "saturn": -662}
+
+#: Epicycle circumferences in degrees: (end of even quadrant, end of odd quadrant).
+MANDA_EPICYCLE = {
+    "sun": (14.0, 13.0 + 40.0 / 60.0),
+    "moon": (32.0, 31.0 + 40.0 / 60.0),
+    "mars": (75.0, 72.0),
+    "mercury": (30.0, 28.0),
+    "jupiter": (33.0, 32.0),
+    "venus": (12.0, 11.0),
+    "saturn": (49.0, 48.0),
+}
+SIGHRA_EPICYCLE = {
+    "mars": (235.0, 232.0),
+    "mercury": (133.0, 132.0),
+    "jupiter": (70.0, 72.0),
+    "venus": (262.0, 260.0),
+    "saturn": (39.0, 40.0),
+}
+
+#: Greatest latitudes (Burgess I.68–70), degrees.
+MAX_LATITUDE = {"moon": 4.5, "mars": 1.5, "mercury": 2.0, "jupiter": 1.0, "venus": 2.0, "saturn": 2.0}
+
+#: Obliquity of the ecliptic (Burgess II.28): 24°.
+OBLIQUITY = 24.0
+#: Revolutions of the equinox's libration per mahayuga, and its amplitude.
+AYANA_REVS_MAHAYUGA = 600
+AYANA_AMPLITUDE = 27.0
+
+STAR_PLANETS = ("mars", "mercury", "jupiter", "venus", "saturn")
+BODIES = ("sun", "moon", *STAR_PLANETS, "rahu")
+
+
+def _wrap(deg: float) -> float:
+    return deg % 360.0
+
+
+def _signed(deg: float) -> float:
+    """Into (−180, 180]."""
+    d = deg % 360.0
+    return d - 360.0 if d > 180.0 else d
+
+
+def ahargana(jd_ut: float) -> float:
+    """Civil days since the Kali epoch (negative before it)."""
+    return jd_ut - KALI_EPOCH_JD
+
+
+def _revolution_fraction(revs: int, period_days: int, jd_ut: float) -> float:
+    """Fractional revolution after the days of motion up to *jd_ut*, exactly.
+
+    The whole days go through integer arithmetic (the count is ~7×10¹¹); only
+    the fraction of the current day is a float.
+    """
+    days = DAYS_CREATION_TO_KALI + ahargana(jd_ut)
+    whole = math.floor(days)
+    part = days - whole
+    numerator = (revs * whole) % period_days
+    return ((numerator + revs * part) / period_days) % 1.0
+
+
+def mean_longitude(key: str, jd_ut: float) -> float:
+    """Mean longitude (degrees) of a REVS_MAHAYUGA body."""
+    return 360.0 * _revolution_fraction(REVS_MAHAYUGA[key], MAHAYUGA_DAYS, jd_ut)
+
+
+def apsis_longitude(planet: str, jd_ut: float) -> float:
+    if planet == "moon":
+        return mean_longitude("moon_apogee", jd_ut)
+    return 360.0 * _revolution_fraction(APSIS_REVS_KALPA[planet], KALPA_DAYS, jd_ut)
+
+
+def node_longitude(planet: str, jd_ut: float) -> float:
+    if planet == "moon":
+        return mean_longitude("moon_node", jd_ut)
+    return 360.0 * _revolution_fraction(NODE_REVS_KALPA[planet], KALPA_DAYS, jd_ut)
+
+
+def _epicycle(sizes: tuple[float, float], anomaly: float) -> float:
+    even, odd = sizes
+    return even - (even - odd) * abs(math.sin(math.radians(anomaly)))
+
+
+def manda_equation(planet: str, longitude: float, apsis: float) -> float:
+    """Correction (degrees) to add: negative while the planet runs from its apsis to 180° past it."""
+    anomaly = longitude - apsis
+    c = _epicycle(MANDA_EPICYCLE[planet], anomaly)
+    return -math.degrees(math.asin(c / 360.0 * math.sin(math.radians(anomaly))))
+
+
+def sighra_equation(planet: str, longitude: float, sighrocca: float) -> tuple[float, float]:
+    """(correction to add, शीघ्र कर्ण as a fraction of the radius)."""
+    anomaly = sighrocca - longitude
+    c = _epicycle(SIGHRA_EPICYCLE[planet], anomaly) / 360.0
+    a = math.radians(anomaly)
+    across, along = c * math.sin(a), 1.0 + c * math.cos(a)
+    return math.degrees(math.atan2(across, along)), math.hypot(across, along)
+
+
+def _star_planet(planet: str, jd_ut: float) -> tuple[float, float]:
+    """(true longitude, latitude) of a star-planet by the four steps of chapter II."""
+    sun = mean_longitude("sun", jd_ut)
+    if planet in ("mercury", "venus"):
+        mean, sighrocca = sun, mean_longitude(f"{planet}_sighra", jd_ut)
+    else:
+        mean, sighrocca = mean_longitude(planet, jd_ut), sun
+    apsis = apsis_longitude(planet, jd_ut)
+    p1 = mean + sighra_equation(planet, mean, sighrocca)[0] / 2.0
+    p2 = p1 + manda_equation(planet, p1, apsis) / 2.0
+    p3 = mean + manda_equation(planet, p2, apsis)
+    sighra, karna = sighra_equation(planet, p3, sighrocca)
+    true = _wrap(p3 + sighra)
+    # Latitude: from the manda planet (superior) or the शीघ्रोच्च (inferior), scaled by the कर्ण.
+    argument = (sighrocca if planet in ("mercury", "venus") else p3) - node_longitude(planet, jd_ut)
+    latitude = MAX_LATITUDE[planet] * math.sin(math.radians(argument)) / karna
+    return true, latitude
+
+
+def mean_sign_ingresses_since_kali(key: str, jd_ut: float) -> int:
+    """Whole signs a mean planet has entered since the Kali epoch (negative before it).
+
+    For Jupiter this is the count of बार्हस्पत्य years, which is what advances the
+    60-year samvatsara cycle.
+    """
+    days = ahargana(jd_ut)
+    whole = math.floor(days)
+    signs_per_day_numerator = 12 * REVS_MAHAYUGA[key]
+    quotient, remainder = divmod(signs_per_day_numerator * whole, MAHAYUGA_DAYS)  # exact
+    return quotient + math.floor((remainder + signs_per_day_numerator * (days - whole)) / MAHAYUGA_DAYS)
+
+
+def true_position(body: str, jd_ut: float) -> tuple[float, float]:
+    """(निरयण true longitude, latitude) in degrees. ``rahu`` is the mean ascending node."""
+    if body == "sun":
+        mean = mean_longitude("sun", jd_ut)
+        return _wrap(mean + manda_equation("sun", mean, apsis_longitude("sun", jd_ut))), 0.0
+    if body == "moon":
+        mean = mean_longitude("moon", jd_ut)
+        true = _wrap(mean + manda_equation("moon", mean, apsis_longitude("moon", jd_ut)))
+        node = node_longitude("moon", jd_ut)
+        return true, MAX_LATITUDE["moon"] * math.sin(math.radians(true - node))
+    if body == "rahu":
+        return node_longitude("moon", jd_ut), 0.0
+    if body in STAR_PLANETS:
+        return _star_planet(body, jd_ut)
+    raise ValueError(f"Surya Siddhanta has no body {body!r}")
+
+
+#: Half-width (days) of the central difference that gives speeds.
+SPEED_HALF_STEP = 0.5
+
+
+def true_longitude_and_speed(body: str, jd_ut: float) -> tuple[float, float]:
+    lon = true_position(body, jd_ut)[0]
+    ahead = true_position(body, jd_ut + SPEED_HALF_STEP)[0]
+    behind = true_position(body, jd_ut - SPEED_HALF_STEP)[0]
+    return lon, _signed(ahead - behind) / (2.0 * SPEED_HALF_STEP)
+
+
+def ayanamsha(jd_ut: float) -> float:
+    """अयनांश: sayana − nirayana, the libration of the equinox (±27°).
+
+    Zero at the Kali epoch and again 3600 years later (~499 CE); negative between
+    them, positive since — about +22.9° in 2026.
+    """
+    arc = 360.0 * _revolution_fraction(AYANA_REVS_MAHAYUGA, MAHAYUGA_DAYS, jd_ut)
+    quadrant_arc = arc % 180.0
+    bhuja = quadrant_arc if quadrant_arc <= 90.0 else 180.0 - quadrant_arc
+    sign = -1.0 if arc < 180.0 else 1.0
+    return sign * bhuja * AYANA_AMPLITUDE / 90.0
+
+
+def equatorial(sayana_longitude: float, latitude: float = 0.0) -> tuple[float, float]:
+    """(right ascension, declination) in degrees for the text's 24° obliquity."""
+    lam, beta, eps = (math.radians(x) for x in (sayana_longitude, latitude, OBLIQUITY))
+    ra = math.atan2(math.sin(lam) * math.cos(eps) - math.tan(beta) * math.sin(eps), math.cos(lam))
+    dec = math.asin(math.sin(beta) * math.cos(eps) + math.cos(beta) * math.sin(eps) * math.sin(lam))
+    return _wrap(math.degrees(ra)), math.degrees(dec)
+
+
+def local_sidereal_degrees(jd_ut: float, longitude: float) -> float:
+    """Local sidereal time as an angle: the mean Sun's sayana longitude + the mean-solar hour angle."""
+    mean_sun = mean_longitude("sun", jd_ut) + ayanamsha(jd_ut)
+    local_mean_days = jd_ut + longitude / 360.0 + 0.5
+    return _wrap(mean_sun + 360.0 * (local_mean_days % 1.0) - 180.0)
+
+
+def equation_of_time_days(jd_ut: float) -> float:
+    """Apparent − mean solar time, in days."""
+    mean_sun = mean_longitude("sun", jd_ut) + ayanamsha(jd_ut)
+    ra, _ = equatorial(true_position("sun", jd_ut)[0] + ayanamsha(jd_ut))
+    return _signed(mean_sun - ra) / 360.0
+
+
+def altitude(body: str, jd_ut: float, latitude: float, longitude: float) -> float:
+    """Geometric altitude (degrees) of a body's centre."""
+    lon, lat = true_position(body, jd_ut)
+    ra, dec = equatorial(lon + ayanamsha(jd_ut), lat)
+    hour = math.radians(local_sidereal_degrees(jd_ut, longitude) - ra)
+    phi, d = math.radians(latitude), math.radians(dec)
+    return math.degrees(math.asin(math.sin(phi) * math.sin(d) + math.cos(phi) * math.cos(d) * math.cos(hour)))
+
+
+#: Scan step and window for rise/set searches (days). The Moon can take ~25 h to rise again.
+_SCAN_STEP = 1.0 / 48.0
+_SCAN_WINDOW = 1.6
+
+
+def next_rise_or_set(
+    body: str, jd_start: float, latitude: float, longitude: float, *, rising: bool, horizon: float = 0.0
+) -> float | None:
+    """First JD (UT) after *jd_start* when the body's centre crosses *horizon*; None if it never does.
+
+    The text takes rise and set at the centre on the true horizon, with no refraction.
+    """
+    def above(t: float) -> float:
+        return altitude(body, t, latitude, longitude) - horizon
+
+    t0, a0 = jd_start, above(jd_start)
+    steps = int(_SCAN_WINDOW / _SCAN_STEP)
+    for _ in range(steps):
+        t1 = t0 + _SCAN_STEP
+        a1 = above(t1)
+        if (rising and a0 < 0.0 <= a1) or (not rising and a0 >= 0.0 > a1):
+            lo, hi = t0, t1
+            for _ in range(32):  # ~1 ms
+                mid = (lo + hi) / 2.0
+                if (above(mid) >= 0.0) == rising:
+                    hi = mid
+                else:
+                    lo = mid
+            return (lo + hi) / 2.0
+        t0, a0 = t1, a1
+    return None
+
+
+def ascendant_sayana(jd_ut: float, latitude: float, longitude: float) -> float:
+    """The rising point of the ecliptic (sayana), for the text's obliquity."""
+    ramc = math.radians(local_sidereal_degrees(jd_ut, longitude))
+    eps, phi = math.radians(OBLIQUITY), math.radians(latitude)
+    asc = math.atan2(math.cos(ramc), -(math.sin(ramc) * math.cos(eps) + math.tan(phi) * math.sin(eps)))
+    return _wrap(math.degrees(asc))
+
+
+def ascendant(jd_ut: float, latitude: float, longitude: float) -> float:
+    """लग्न (निरयण)."""
+    return _wrap(ascendant_sayana(jd_ut, latitude, longitude) - ayanamsha(jd_ut))

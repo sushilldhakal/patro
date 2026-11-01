@@ -23,6 +23,7 @@ from engine.calendar.constants import (
     get_bs_year_data,
 )
 from engine.calendar.sankranti import find_mesh_sankranti
+from engine.astronomy.system_cache import system_lru_cache
 
 _OFFICIAL_YEAR_RANGES: tuple[tuple[date, date, int], ...] = tuple(
     (
@@ -173,7 +174,7 @@ def _get_bs_month_start_estimated(bs_year: int, bs_month: int) -> date:
     return d
 
 
-@lru_cache(maxsize=1)
+@system_lru_cache(maxsize=1)
 def _mesha_anchor() -> tuple[int, float]:
     """``(year_index, jd)`` of a Mesha sankranti we know from authoritative data.
 
@@ -196,7 +197,7 @@ def _mesha_start_estimate_jd(bs_year: int) -> float:
     return anchor_jd + (_year_index(bs_year) - anchor_index) * _SIDEREAL_YEAR_DAYS
 
 
-@lru_cache(maxsize=16384)
+@system_lru_cache(maxsize=16384)
 def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     # Pure function of (year, month) — the sankranti instant that opens a BS
     # month never changes. Locating one civil day probes up to ~50 month starts
@@ -313,7 +314,7 @@ def iter_bs_month_civil_days(bs_year: int, bs_month: int):
         yield offset + 1, format_civil_iso(civil.year, civil.month, civil.day)
 
 
-@lru_cache(maxsize=4096)
+@system_lru_cache(maxsize=4096)
 def _patro_year_start_jd(signed: int) -> float:
     # A year start is a fixed astronomical constant, but resolving one costs a
     # sankranti solve. The year-locating search below probes ~15 of them per

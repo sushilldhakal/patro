@@ -290,9 +290,11 @@ def _decode_payload(stored: Any) -> dict[str, Any]:
 
 
 def cache_enabled() -> bool:
+    """Off for a Surya Siddhanta request: these rows are drik panchangas."""
     import config
+    from engine.astronomy.engine import SYSTEM_DRIK, active_system
 
-    return config.panchanga_sqlite_cache_enabled()
+    return active_system() == SYSTEM_DRIK and config.panchanga_sqlite_cache_enabled()
 
 
 def _connect() -> sqlite3.Connection:

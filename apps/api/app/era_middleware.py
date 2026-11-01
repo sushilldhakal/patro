@@ -43,9 +43,9 @@ _JD_SUFFIX = "_jd"
 # must not run to_jd() here (400s when they disagree with the path or when month
 # lengths were bad — see bikram_sambat._get_bs_month_start_civil).
 _PATH_BS_MONTH_BROWSE = re.compile(
-    r"/panchanga/(?!(?:ad/|bc/|year/|today|element/|elements|at-time|og-preview))(\d{1,5})/(\d{1,2})(?:/|$|\?)"
+    r"/panchanga/(?!(?:ad/|bc/|year/|today|element/|elements|at-time|og-preview))(\d{1,7})/(\d{1,2})(?:/|$|\?)"
 )
-_PATH_BS_YEAR_BROWSE = re.compile(r"/panchanga/year/(\d{1,5})(?:/|$|\?)")
+_PATH_BS_YEAR_BROWSE = re.compile(r"/panchanga/year/(\d{1,7})(?:/|$|\?)")
 
 
 def _path_addressed_browse_grid(path: str) -> bool:
