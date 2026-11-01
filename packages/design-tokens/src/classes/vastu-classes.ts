@@ -66,7 +66,6 @@ export const vastuClasses = {
   groupLabel: "mb-2 text-xs font-semibold text-muted-foreground",
   selectControl:
     "h-9 min-w-0 rounded-lg border border-border bg-card px-2 text-sm text-foreground",
-  dateControl: "h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm text-foreground",
   requirementsHeading: "text-sm font-semibold text-foreground",
   requirementsBlurb: "mt-1 text-sm text-muted-foreground",
   spaceChip: "rounded-md border px-2 py-1",

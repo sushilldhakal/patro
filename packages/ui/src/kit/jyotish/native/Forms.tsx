@@ -152,7 +152,7 @@ export function HouseRequirementsForm({ plan, onChange, renderSelect }: HouseReq
 
 export function OwnerCompatibility({ fetchDay, renderProfile, renderPlace, renderSelect }: OwnerCompatibilityProps) {
   const v = useOwnerCompatibility({ fetchDay });
-  const date = v.dateParts;
+  const dateFields = v.dateFields;
   return (
     <Box className={vastuClasses.ownerCard}>
       <Box className={vastuClasses.ownerHeader} nativeClassName="flex-row">
@@ -165,13 +165,15 @@ export function OwnerCompatibility({ fetchDay, renderProfile, renderPlace, rende
         {v.hasProfile ? (
           <>
             <Text className={vastuClasses.fieldLabel}>{v.copy.dateLabel}</Text>
+            {/* Each select fills only its third: the app's select is width 100%, so in a bare row the
+                year took the whole width and pushed month and day off the card. */}
             <Box nativeClassName="flex-row" className="gap-2">
               {renderSelect ? (
-                <>
-                  {renderSelect({ id: "year", label: v.copy.dateLabel, value: date.year, onChange: date.setYear, options: date.yearOptions.map((o) => ({ id: o.value, label: o.label })) })}
-                  {renderSelect({ id: "month", label: v.copy.dateLabel, value: date.month, onChange: date.setMonth, options: date.monthOptions.map((o) => ({ id: o.value, label: o.label })) })}
-                  {renderSelect({ id: "day", label: v.copy.dateLabel, value: date.day, onChange: date.setDay, options: date.dayOptions.map((o) => ({ id: o.value, label: o.label })) })}
-                </>
+                dateFields.map((field) => (
+                  <Box key={field.id} className="min-w-0 flex-1">
+                    {renderSelect(field)}
+                  </Box>
+                ))
               ) : (
                 <Text>{v.candidateDate}</Text>
               )}

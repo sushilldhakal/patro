@@ -12,8 +12,16 @@ import { fetchJanmaRashi, type LocationParams, type NavataraTone, type Panchanga
 import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { DEFAULT_PANCHANGA_LOCATION, resolveLocationTimezone, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
-import { useLocale, type Lang } from "@vedic-patro/i18n/react";
-import { lazyList } from "@vedic-patro/i18n/runtime";
+import { useCalendarSystem, useLocale, type Lang } from "@vedic-patro/i18n/react";
+import {
+  adMonthLabel,
+  adToBS,
+  bsFromCivilIso,
+  bsMonthLabel,
+  bsToAdOrNull,
+  getBSMonthLength,
+} from "@vedic-patro/domain/calendar/bs-calendar";
+import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 
 const TONE_LABEL_KEY: Record<NavataraTone, string> = {
   best: "vastu.plot.tone.best",
@@ -22,22 +30,6 @@ const TONE_LABEL_KEY: Record<NavataraTone, string> = {
   bad: "vastu.plot.tone.bad",
   worst: "vastu.plot.tone.worst",
 };
-
-const AD_MONTHS_EN = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const AD_MONTHS_NE = lazyList("ne", "ui.panchanga_og_preview.x_483e5df7");
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const isoOf = (y: number, m: number, d: number) => `${y}-${pad(m)}-${pad(d)}`;
@@ -63,7 +55,9 @@ export function useOwnerCompatibility({ fetchDay }: { fetchDay: FetchCivilDay })
   // overwritten by what is picked here.
   const [plotLocation, setPlotLocation] = useState<PanchangaLocation>(DEFAULT_PANCHANGA_LOCATION);
   const [candidateDate, setCandidateDate] = useState(() => todayIso());
+  const { calendar } = useCalendarSystem();
   const [thisYear] = useState(() => new Date().getFullYear());
+  const [thisBsYear] = useState(() => adToBS(new Date()).year);
 
   const janmaQ = useQuery({
     queryKey: ["vastu-owner-nakshatra", chartParams?.moment, chartParams?.location.params],
@@ -86,9 +80,7 @@ export function useOwnerCompatibility({ fetchDay }: { fetchDay: FetchCivilDay })
   const isLoading = chartParams != null && (janmaQ.isLoading || dayQ.isLoading);
   const isError = chartParams != null && (janmaQ.isError || dayQ.isError);
 
-  const [y, m, d] = candidateDate.split("-").map(Number) as [number, number, number];
-  const setParts = (year: number, month: number, day: number) =>
-    setCandidateDate(isoOf(year, month, Math.min(day, daysInMonth(year, month))));
+  const dateParts = calendar === "ad" ? adDateParts(candidateDate, thisYear, lang, digits, setCandidateDate) : bsDateParts(candidateDate, thisBsYear, lang, digits, setCandidateDate);
 
   return {
     selectedProfile,
@@ -98,21 +90,12 @@ export function useOwnerCompatibility({ fetchDay }: { fetchDay: FetchCivilDay })
     setPlotLocation,
     candidateDate,
     setCandidateDate,
-    /** The date as three selects (the app's date picker). */
-    dateParts: {
-      year: String(y),
-      month: String(m),
-      day: String(d),
-      yearOptions: Array.from({ length: 12 }, (_, i) => {
-        const year = thisYear - 1 + i;
-        return { value: String(year), label: digits(year) };
-      }),
-      monthOptions: AD_MONTHS_EN.map((en, i) => ({ value: String(i + 1), label: bilingualText(lang, AD_MONTHS_NE[i]!, en) })),
-      dayOptions: Array.from({ length: daysInMonth(y, m) }, (_, i) => ({ value: String(i + 1), label: digits(i + 1) })),
-      setYear: (v: string) => setParts(Number(v), m, d),
-      setMonth: (v: string) => setParts(y, Number(v), d),
-      setDay: (v: string) => setParts(y, m, Number(v)),
-    },
+    /** The date as three selects (year, month, day) in the calendar system the reader has chosen. */
+    dateFields: [
+      { id: "vastu-construction-year", label: t("vastu.plot.construction_year"), value: dateParts.year, onChange: dateParts.setYear, options: dateParts.yearOptions },
+      { id: "vastu-construction-month", label: t("vastu.plot.construction_month"), value: dateParts.month, onChange: dateParts.setMonth, options: dateParts.monthOptions },
+      { id: "vastu-construction-day", label: t("vastu.plot.construction_day"), value: dateParts.day, onChange: dateParts.setDay, options: dateParts.dayOptions },
+    ].map((field) => ({ ...field, options: field.options.map((o) => ({ id: o.value, label: o.label })) })),
     status: isLoading ? t("vastu.plot.owner_loading") : null,
     error: isError ? t("vastu.plot.owner_error") : null,
     result: row
@@ -129,5 +112,68 @@ export function useOwnerCompatibility({ fetchDay }: { fetchDay: FetchCivilDay })
       dateLabel: t("vastu.plot.construction_date_label"),
       placeLabel: t("vastu.plot.construction_place_label"),
     },
+  };
+}
+
+type DateOption = { value: string; label: string };
+
+export type OwnerDateParts = {
+  year: string;
+  month: string;
+  day: string;
+  yearOptions: DateOption[];
+  monthOptions: DateOption[];
+  dayOptions: DateOption[];
+  setYear: (v: string) => void;
+  setMonth: (v: string) => void;
+  setDay: (v: string) => void;
+};
+
+type Digits = (n: number) => string;
+
+/** Twelve years around this one: last year, this year and ten ahead. */
+const yearsAround = (thisYear: number, digits: Digits): DateOption[] =>
+  Array.from({ length: 12 }, (_, i) => {
+    const year = thisYear - 1 + i;
+    return { value: String(year), label: digits(year) };
+  });
+
+const dayRange = (count: number, digits: Digits): DateOption[] =>
+  Array.from({ length: count }, (_, i) => ({ value: String(i + 1), label: digits(i + 1) }));
+
+/** Gregorian selects — only when the reader has switched the calendar to AD. */
+function adDateParts(iso: string, thisYear: number, lang: Lang, digits: Digits, setIso: (iso: string) => void): OwnerDateParts {
+  const [y, m, d] = iso.split("-").map(Number) as [number, number, number];
+  const set = (year: number, month: number, day: number) => setIso(isoOf(year, month, Math.min(day, daysInMonth(year, month))));
+  return {
+    year: String(y),
+    month: String(m),
+    day: String(d),
+    yearOptions: yearsAround(thisYear, digits),
+    monthOptions: Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1), label: adMonthLabel(i + 1, lang) })),
+    dayOptions: dayRange(daysInMonth(y, m), digits),
+    setYear: (v) => set(Number(v), m, d),
+    setMonth: (v) => set(y, Number(v), d),
+    setDay: (v) => set(y, m, Number(v)),
+  };
+}
+
+/** Bikram Sambat selects (वैशाख … चैत), the default. Each pick is stored back as its AD day. */
+function bsDateParts(iso: string, thisBsYear: number, lang: Lang, digits: Digits, setIso: (iso: string) => void): OwnerDateParts {
+  const bs = bsFromCivilIso(iso);
+  const set = (year: number, month: number, day: number) => {
+    const ad = bsToAdOrNull(year, month, Math.min(day, getBSMonthLength(year, month)));
+    if (ad) setIso(civilIsoFromDate(ad));
+  };
+  return {
+    year: String(bs.year),
+    month: String(bs.month),
+    day: String(bs.day),
+    yearOptions: yearsAround(thisBsYear, digits),
+    monthOptions: Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1), label: bsMonthLabel(i + 1, lang) })),
+    dayOptions: dayRange(getBSMonthLength(bs.year, bs.month), digits),
+    setYear: (v) => set(Number(v), bs.month, bs.day),
+    setMonth: (v) => set(bs.year, Number(v), bs.day),
+    setDay: (v) => set(bs.year, bs.month, Number(v)),
   };
 }
