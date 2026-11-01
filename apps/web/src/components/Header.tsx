@@ -246,7 +246,8 @@ export function Header() {
   return (
     <header
       lang={lang}
-      className={cn("app-header sticky top-0 z-50 backdrop-blur-md", shellClasses.header)}
+      data-app-header=""
+      className={cn("sticky top-0 z-50 backdrop-blur-md", shellClasses.header)}
     >
       <div className={cn("py-4 h-16 flex gap-3", shellClasses.headerInner)}>
         {/* Desktop — brand left, nav center, theme right */}

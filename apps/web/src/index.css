@@ -949,7 +949,7 @@
    and location buttons are. `data-iphone-duo` is set in index.html from the device (iPhone UA and
    its physical screen), never from the window width, so other iPhones, iPads and resized windows
    keep the header exactly as it is. Mirrors DUO_TOOLBAR_HEIGHT in apps/mobile/lib/iphone-duo.ts. */
-html[data-iphone-duo] .app-header {
+html[data-iphone-duo] [data-app-header] {
   padding-top: calc(env(safe-area-inset-top, 0px) + 52px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
