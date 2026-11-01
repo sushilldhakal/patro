@@ -5102,7 +5102,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -5115,7 +5115,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },
@@ -5594,7 +5594,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -5607,7 +5607,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },
@@ -5730,7 +5730,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -5743,7 +5743,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },
@@ -5954,7 +5954,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -5967,7 +5967,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },
@@ -11036,7 +11036,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -11049,7 +11049,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },
@@ -13966,7 +13966,7 @@
       }
      },
      {
-      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+      "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
       "in": "query",
       "name": "ayanamsha",
       "required": false,
@@ -13979,7 +13979,7 @@
          "type": "null"
         }
        ],
-       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+       "description": "Ayanamsha mode: lahiri, nepal, raman, kp, true_citra, true_pushya",
        "title": "Ayanamsha"
       }
      },

@@ -29,10 +29,10 @@ def stable_round(value: float, places: int = 6) -> float:
     """Round to ``places`` decimals the same way on every machine.
 
     The ephemeris returns the last bits of a double differently on macOS and Linux (different libm),
-    which is harmless except right at a rounding edge: Rahu's speed, about -0.0529925°/day, came out
-    -0.052992 on a Mac and -0.052993 in CI. Rounding first to three more places drops that noise, so
-    the final rounding sees the same number everywhere; it only changes a value within half a
-    billionth of an edge.
+    which is harmless except right at a rounding edge. Rounding first to three more places drops that
+    noise, so the final rounding sees the same number everywhere; it only changes a value within half
+    a billionth of an edge. (Rahu's speed flipping between -0.052992 and -0.052993 on 10 Jun 1500 was
+    not this: swisseph's node speed is quantised far more coarsely. See ``_mean_node_speed``.)
     """
     return round(round(value, places + 3), places)
 
