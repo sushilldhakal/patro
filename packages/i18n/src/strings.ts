@@ -3688,6 +3688,9 @@ export const strings = {
     en: "Select your profile, then check whether a date you're considering for starting construction is favorable for your birth star — using the traditional Tara Bala method.",
   },
   "vastu.plot.construction_date_label": { ne: "निर्माण सुरु गर्ने मिति", en: "Construction start date" },
+  "vastu.plot.construction_year": { ne: "साल", en: "Year" },
+  "vastu.plot.construction_month": { ne: "महिना", en: "Month" },
+  "vastu.plot.construction_day": { ne: "गते", en: "Day" },
   "vastu.plot.construction_place_label": { ne: "जग्गाको स्थान", en: "Plot's location" },
   "vastu.plot.owner_loading": { ne: "गणना गर्दै…", en: "Calculating…" },
   "vastu.plot.owner_error": {

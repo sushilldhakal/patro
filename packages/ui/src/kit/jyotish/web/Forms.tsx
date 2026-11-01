@@ -218,11 +218,22 @@ export function OwnerCompatibility({ fetchDay, renderProfile, renderPlace }: Own
         {v.hasProfile ? (
           <>
             <Box className="grid gap-3 sm:grid-cols-2">
-              <Box>
-                <label htmlFor="vastu-construction-date" className={cn(vastuClasses.fieldLabel, "block")}>{v.copy.dateLabel}</label>
-                <input id="vastu-construction-date" type="date" value={v.candidateDate} onChange={(event) => v.setCandidateDate(event.target.value)} className={vastuClasses.dateControl} />
+              {/* Year, month, day in the reader's calendar (BS months by default, AD only when AD
+                  is on). A browser date input always showed the Gregorian date ("1 Nov 2026")
+                  and, on a phone, was wider than the card. */}
+              <Box label={v.copy.dateLabel} className="min-w-0">
+                <Text as="p" className={vastuClasses.fieldLabel}>{v.copy.dateLabel}</Text>
+                <Box className="grid grid-cols-3 gap-2">
+                  {v.dateFields.map((field) => (
+                    <select key={field.id} id={field.id} aria-label={field.label} className={cn(vastuClasses.selectControl, "w-full min-w-0 cursor-pointer")} value={field.value} onChange={(event) => field.onChange(event.target.value)}>
+                      {field.options.map((option) => (
+                        <option key={option.id} value={option.id}>{option.label}</option>
+                      ))}
+                    </select>
+                  ))}
+                </Box>
               </Box>
-              <Box>
+              <Box className="min-w-0">
                 <Text as="p" className={vastuClasses.fieldLabel}>{v.copy.placeLabel}</Text>
                 {renderPlace({ location: v.plotLocation, onChange: v.setPlotLocation })}
               </Box>
