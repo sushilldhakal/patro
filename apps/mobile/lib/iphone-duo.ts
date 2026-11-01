@@ -3,7 +3,8 @@ import * as Device from "expo-device";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
- * iPhone Duo only. On the Duo the system toolbar sits over the top-right of the window, where the
+ * iPhone Duo only, folded or unfolded (detection is by hardware, so both states match). On the Duo
+ * the system toolbar sits over the top-right of the window, where the
  * header's sign-in button and the page's location button are. Its height is not part of the
  * reported top safe-area inset, so a header padded by `insets.top` alone draws under the toolbar.
  *

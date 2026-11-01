@@ -32,27 +32,36 @@
     </script>
     <script>
       // iPhone Duo only: mark <html data-iphone-duo> so the header clears the Duo's system toolbar
-      // (index.css). Decided from the device, never the window width, so resizing a window (an iPad
-      // in Stage Manager, a desktop browser) can never turn it on:
+      // (index.css), folded or unfolded. Decided from the device, never the window width, so
+      // resizing a window (an iPad in Stage Manager, a desktop browser) can never turn it on:
       //  - the UA must say "iPhone": iPads say "iPad", or "Macintosh" when asking for the desktop
       //    site, so they never match;
-      //  - the device's own screen (screen.width/height, which a window resize does not change)
-      //    must be wider on its short side than any regular iPhone (440 px at most), which only
-      //    the unfolded Duo is.
+      //  - unfolded, the device's own screen (screen.width/height, which a window resize does not
+      //    change) is wider on its short side than any regular iPhone (440 px at most);
+      //  - folded, its screen is iPhone-sized, so a Duo seen unfolded once is remembered on this
+      //    browser ("iphone-duo" in localStorage) and keeps the offset when folded.
       // Mirrors apps/mobile/lib/iphone-duo.ts.
       (function () {
         try {
           var root = document.documentElement;
           var iphone = /\biPhone\b/.test(navigator.userAgent || "");
+          if (!iphone) return;
+          var KEY = "iphone-duo";
+          function remembered() {
+            try { return localStorage.getItem(KEY) === "1"; } catch (_) { return false; }
+          }
           function check() {
             var s = window.screen;
-            var duo = iphone && !!s && Math.min(s.width, s.height) > 500;
-            if (duo) root.setAttribute("data-iphone-duo", "");
+            var unfolded = !!s && Math.min(s.width, s.height) > 500;
+            if (unfolded) {
+              try { localStorage.setItem(KEY, "1"); } catch (_) {}
+            }
+            if (unfolded || remembered()) root.setAttribute("data-iphone-duo", "");
             else root.removeAttribute("data-iphone-duo");
           }
           check();
           // Folding or unfolding changes the screen; a plain window resize leaves it as it was.
-          if (iphone) window.addEventListener("resize", check);
+          window.addEventListener("resize", check);
         } catch (_) {}
       })();
     </script>

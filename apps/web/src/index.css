@@ -945,7 +945,7 @@
   }
 }
 
-/* iPhone Duo only: the system toolbar sits over the top-right of the window, where the sign-in
+/* iPhone Duo only, folded or unfolded: the system toolbar sits over the top-right of the window, where the sign-in
    and location buttons are. `data-iphone-duo` is set in index.html from the device (iPhone UA and
    its physical screen), never from the window width, so other iPhones, iPads and resized windows
    keep the header exactly as it is. Mirrors DUO_TOOLBAR_HEIGHT in apps/mobile/lib/iphone-duo.ts. */
