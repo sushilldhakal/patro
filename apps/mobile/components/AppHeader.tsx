@@ -7,6 +7,7 @@ import { Text } from "@/components/ui/Text";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { IS_IPHONE_DUO, useDuoShellInsets } from "@/lib/iphone-duo";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
@@ -68,6 +69,7 @@ export function AppHeader() {
   const { t, pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
+  const duo = useDuoShellInsets();
   const [menuOpen, setMenuOpen] = useState(false);
   const navPress = useNavPress();
   useOpenMenuRequest(useCallback(() => setMenuOpen(true), []));
@@ -91,7 +93,12 @@ export function AppHeader() {
 
   return (
     <View
-      style={{ paddingTop: insets.top }}
+      style={
+        IS_IPHONE_DUO
+          ? // iPhone Duo: clear the system toolbar over the top-right corner (lib/iphone-duo.ts).
+            { paddingTop: insets.top + duo.top, paddingLeft: duo.left, paddingRight: duo.right }
+          : { paddingTop: insets.top }
+      }
       className={shellClasses.header}
     >
       <View className={cn("min-h-16 w-full flex-row py-2", shellClasses.headerInner)}>
