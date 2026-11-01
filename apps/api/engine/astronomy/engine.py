@@ -221,6 +221,38 @@ _BODY_MAP: dict[str, int] = {
     "rahu": _MEAN_NODE,
 }
 
+# Half-width, in days, of the central difference that gives Rahu's (mean node's) speed.
+#
+# swisseph's own FLG_SPEED value for the mean node is quantised: it moves in steps of
+# ~6.6e-8 °/day, so the 6th decimal the payload prints is noise. On 10 Jun 1500 the
+# step lands right on a rounding edge, and nudging swisseph's tidal-acceleration
+# constant alone flips the printed speed between -0.052992 and -0.052993, which is
+# what made CI and a local run disagree on the julian_1500 byte-identical fixture.
+# The mean node is a smooth polynomial in time, so a ±0.5 day difference is exact to
+# ~1e-13 °/day and the same on every machine.
+_NODE_SPEED_HALF_STEP = 0.5
+
+
+def _mean_node_speed(jd: float, *, sidereal: bool) -> float:
+    """Rahu's speed in °/day as a central difference of its longitude (see above).
+
+    Under the star-anchored sid modes swisseph refuses FLG_SIDEREAL for the nodes,
+    and ``_calc`` falls back to the tropical speed there; this does the same.
+    """
+    h = _NODE_SPEED_HALF_STEP
+
+    def lon(t: float) -> float:
+        if sidereal:
+            try:
+                return swe.calc_ut(t, _MEAN_NODE, swe.FLG_SIDEREAL)[0][0]
+            except swe.Error:
+                pass
+        return swe.calc_ut(t, _MEAN_NODE, 0)[0][0]
+
+    delta = (lon(jd + h) - lon(jd - h) + 540.0) % 360.0 - 180.0
+    return delta / (2.0 * h)
+
+
 SIDM_LAHIRI = swe.SIDM_LAHIRI
 SIDM_RAMAN = swe.SIDM_RAMAN
 SIDM_KRISHNAMURTI = swe.SIDM_KRISHNAMURTI
@@ -325,7 +357,10 @@ class AstronomyEngine:
         except (IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"calc_ut failed for body {body}: {exc}") from exc
 
-        result = (values[0] % 360, values[3])
+        speed = values[3]
+        if body == _MEAN_NODE:
+            speed = _mean_node_speed(jd, sidereal=sidereal)
+        result = (values[0] % 360, speed)
         self._calc_cache[key] = result
         if len(self._calc_cache) > self._CACHE_MAX:
             self._calc_cache.popitem(last=False)
