@@ -7,9 +7,9 @@ shares only the date and rise/set day logic of :class:`EngineBase` with drik,
 never drik's ephemeris, ayanamsha modes or Lahiri. Positions are the text's own
 निरयण longitudes; the ``ayanamsa`` argument the shared builders pass is ignored.
 
-Eclipses and the yogatara stars are not implemented (the text has its own eclipse
-chapters); asking for them raises :class:`NotInThisSiddhanta` rather than
-answering from the ephemeris.
+Eclipses follow the text's own chapters IV and V. Fixed stars are not implemented
+yet; asking for one raises :class:`NotInThisSiddhanta` rather than answering from
+the ephemeris.
 """
 
 from __future__ import annotations
@@ -136,3 +136,40 @@ class SuryaSiddhantaEngine(EngineBase):
         return ss.next_rise_or_set(
             self._body_name(body_id), jd_start, lat, lon, rising=bool(calc_flag & CALC_RISE)
         )
+
+    # ── eclipses (chapters IV–V) ─────────────────────────────────────────────
+
+    def next_solar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        found = ss.next_eclipse(jd, "solar", backward=backward)
+        return None if found is None else float(found["max_jd"])
+
+    def next_lunar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        found = ss.next_eclipse(jd, "lunar", backward=backward)
+        return None if found is None else float(found["max_jd"])
+
+    def next_solar_eclipse(
+        self, jd: float, *, backward: bool = False, geopos: tuple[float, float, float] | None = None
+    ) -> dict | None:
+        """Next/previous solar eclipse; with ``geopos`` (lon, lat, alt), as seen from there."""
+        found = ss.next_eclipse(jd, "solar", backward=backward)
+        if found is None:
+            return None
+        out = {**found, "visible": False}
+        if geopos is not None:
+            lon, lat = geopos[0], geopos[1]
+            out.update(ss.solar_eclipse_local(found["max_jd"], lat, lon))
+        return out
+
+    def next_lunar_eclipse(
+        self, jd: float, *, backward: bool = False, geopos: tuple[float, float, float] | None = None
+    ) -> dict | None:
+        """Next/previous lunar eclipse; with ``geopos``, whether the Moon is up at its middle."""
+        found = ss.next_eclipse(jd, "lunar", backward=backward)
+        if found is None:
+            return None
+        out = {**found, "visible": False}
+        if geopos is not None:
+            lon, lat = geopos[0], geopos[1]
+            out["visible"] = ss.altitude("moon", found["max_jd"], lat, lon) > 0.0
+            out["local_max_jd"] = found["max_jd"]
+        return out

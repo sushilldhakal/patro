@@ -117,9 +117,45 @@ def test_each_siddhanta_resolves_its_own_ayanamsha():
 
 def test_what_the_surya_siddhanta_does_not_compute_is_refused_not_borrowed():
     with pytest.raises(NotInThisSiddhanta):
-        siddhanta(SURYA_SIDDHANTA).engine.next_solar_eclipse_max(NOV_2026)
-    with pytest.raises(NotInThisSiddhanta):
         siddhanta(SURYA_SIDDHANTA).engine.fixed_star_sidereal("Spica", NOV_2026)
+
+
+# ── eclipses, chapters IV–V ──────────────────────────────────────────────────
+
+
+def test_the_texts_shadow_and_discs_have_their_classical_size():
+    m = ss.eclipse_measures(NOV_2026)
+    assert 29 < m["moon"] < 36  # minutes
+    assert 29 < m["sun"] < 35
+    assert 75 < m["shadow"] < 92
+    assert 44 < m["parallax"] < 58  # four ghatis of relative motion
+
+
+def test_lunar_eclipse_of_3_march_2026_is_total_by_the_text():
+    found = siddhanta(SURYA_SIDDHANTA).engine.next_lunar_eclipse(swe.julday(2026, 2, 1, 0))
+    year, month, day, _ = swe.revjul(found["max_jd"])
+    assert (year, month, day) == (2026, 3, 3)
+    assert found["type"] == "total"
+    assert found["partial_begin_jd"] < found["total_begin_jd"] < found["max_jd"] < found["total_end_jd"] < found["partial_end_jd"]
+
+
+def test_solar_eclipses_fall_on_the_same_new_moons_as_drik():
+    surya = siddhanta(SURYA_SIDDHANTA).engine
+    drik = siddhanta(DRIK).engine
+    for start in (swe.julday(2024, 1, 1, 0), swe.julday(2024, 6, 1, 0)):
+        assert surya.next_solar_eclipse_max(start) == pytest.approx(drik.next_solar_eclipse_max(start), abs=0.2)
+
+
+def test_the_annular_eclipse_of_june_2020_is_seen_from_kathmandu():
+    found = siddhanta(SURYA_SIDDHANTA).engine.next_solar_eclipse(swe.julday(2020, 6, 15, 0), geopos=(85.32, 27.7, 0.0))
+    assert found["visible"] is True
+    assert found["local_begin_jd"] < found["local_max_jd"] < found["local_end_jd"]
+
+
+def test_eclipses_are_found_long_before_any_ephemeris_reaches():
+    deep = ss.SATYA_YUGA_START_JD + 1_000_000
+    assert ss.next_eclipse(deep, "lunar") is not None
+    assert ss.next_eclipse(deep, "solar", backward=True) is not None
 
 
 def test_each_siddhanta_owns_its_range_and_cache_namespace():

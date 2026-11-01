@@ -29,6 +29,7 @@ Positions are निरयण (sidereal) by construction; sayana ones add the ay
 from __future__ import annotations
 
 import math
+from typing import Any
 
 # ── the yuga frame ──────────────────────────────────────────────────────────
 
@@ -315,3 +316,227 @@ def ascendant_sayana(jd_ut: float, latitude: float, longitude: float) -> float:
 def ascendant(jd_ut: float, latitude: float, longitude: float) -> float:
     """लग्न (निरयण)."""
     return _wrap(ascendant_sayana(jd_ut, latitude, longitude) - ayanamsha(jd_ut))
+
+
+# ── Eclipses (Burgess, chapters IV and V) ────────────────────────────────────
+#
+# Lunar (ch. IV): at the opposition the Moon's disc and the Earth's shadow are
+# measured in minutes; the Moon's latitude against half their sum says whether,
+# and how much, she is eclipsed, and the half-durations follow from it.
+# Solar (ch. V): the same at the conjunction, but seen from the observer, so the
+# Moon's parallax in longitude (लम्बन) moves the middle of the eclipse and its
+# parallax in latitude (नति) moves her latitude.
+
+#: Diameters in yojanas (IV.1, I.59) and orbits in yojanas (XII.80–90).
+SUN_DIAMETER_YOJANAS = 6500.0
+MOON_DIAMETER_YOJANAS = 480.0
+EARTH_DIAMETER_YOJANAS = 1600.0
+MOON_ORBIT_YOJANAS = 324_000.0
+SUN_ORBIT_YOJANAS = 4_331_500.0
+#: Yojanas per minute of arc on the Moon's orbit (IV.3: "divide by 15").
+YOJANAS_PER_MINUTE = 15.0
+#: The Moon's greatest latitude, in minutes (I.68).
+MOON_MAX_LATITUDE_MINUTES = 270.0
+
+MEAN_DAILY_MOTION = {
+    "sun": 360.0 * REVS_MAHAYUGA["sun"] / MAHAYUGA_DAYS,
+    "moon": 360.0 * REVS_MAHAYUGA["moon"] / MAHAYUGA_DAYS,
+}
+
+#: Lunations searched before giving up on finding an eclipse (several per year occur).
+_MAX_LUNATIONS = 48
+_SYNODIC_DAYS = 29.530588
+
+
+def elongation(jd_ut: float) -> float:
+    """Moon − Sun, degrees [0, 360)."""
+    return _wrap(true_position("moon", jd_ut)[0] - true_position("sun", jd_ut)[0])
+
+
+def next_syzygy(jd_ut: float, target: float, *, backward: bool = False) -> float:
+    """JD of the next (or previous) moment the elongation equals *target* (0 new, 180 full)."""
+    now = elongation(jd_ut)
+    ahead = (target - now) % 360.0
+    if backward:
+        ahead = ahead - 360.0 if ahead > 1e-6 else -360.0
+    elif ahead < 1e-6:
+        ahead = 360.0
+    t = jd_ut + ahead / (360.0 / _SYNODIC_DAYS)
+    for _ in range(8):
+        _, moon_speed = true_longitude_and_speed("moon", t)
+        _, sun_speed = true_longitude_and_speed("sun", t)
+        step = _signed(target - elongation(t)) / (moon_speed - sun_speed)
+        t += step
+        if abs(step) < 1e-7:
+            break
+    return t
+
+
+def moon_latitude_minutes(jd_ut: float) -> float:
+    """The Moon's latitude in minutes, north positive."""
+    return true_position("moon", jd_ut)[1] * 60.0
+
+
+def eclipse_measures(jd_ut: float) -> dict[str, float]:
+    """The discs of Sun and Moon, the Earth's shadow and the relative motion, in minutes.
+
+    IV.2–5: each body's diameter is scaled by its true over mean daily motion; the
+    Sun's is brought to the Moon's orbit; the shadow is the सूची (the Earth's
+    diameter scaled like the Moon's) less the Sun's excess over the Earth, scaled
+    by the Moon's diameter over the Sun's.
+    """
+    _, moon_speed = true_longitude_and_speed("moon", jd_ut)
+    _, sun_speed = true_longitude_and_speed("sun", jd_ut)
+    moon_ratio = moon_speed / MEAN_DAILY_MOTION["moon"]
+    sun_ratio = sun_speed / MEAN_DAILY_MOTION["sun"]
+    sun_yojanas = SUN_DIAMETER_YOJANAS * sun_ratio
+    moon_yojanas = MOON_DIAMETER_YOJANAS * moon_ratio
+    suchi = EARTH_DIAMETER_YOJANAS * moon_ratio
+    shadow_yojanas = suchi - (sun_yojanas - EARTH_DIAMETER_YOJANAS) * MOON_DIAMETER_YOJANAS / SUN_DIAMETER_YOJANAS
+    relative = (moon_speed - sun_speed) * 60.0  # minutes of arc per day
+    return {
+        "sun": sun_yojanas * MOON_ORBIT_YOJANAS / SUN_ORBIT_YOJANAS / YOJANAS_PER_MINUTE,
+        "moon": moon_yojanas / YOJANAS_PER_MINUTE,
+        "shadow": shadow_yojanas / YOJANAS_PER_MINUTE,
+        "relative": relative,
+        # The greatest parallax: four ghatis of the Moon's motion from the Sun (V.9).
+        "parallax": relative / YOJANAS_PER_MINUTE,
+    }
+
+
+def _half_duration(middle: float, reach: float, relative: float, latitude_at, *, before: bool) -> float | None:
+    """Half-duration in days for a contact at *reach* minutes, refined (IV.12–13).
+
+    The text recomputes the Moon's latitude at the found contact and repeats; so
+    does this, three times.
+    """
+    latitude = latitude_at(middle)
+    if abs(latitude) >= reach:
+        return None
+    half = math.sqrt(reach * reach - latitude * latitude) / relative
+    for _ in range(3):
+        latitude = latitude_at(middle - half if before else middle + half)
+        if abs(latitude) >= reach:
+            return half
+        half = math.sqrt(reach * reach - latitude * latitude) / relative
+    return half
+
+
+def lunar_eclipse_at(full_moon_jd: float) -> dict[str, Any] | None:
+    """The lunar eclipse at this opposition, or None when the Moon passes clear of the shadow."""
+    m = eclipse_measures(full_moon_jd)
+    latitude = moon_latitude_minutes(full_moon_jd)
+    half_sum = (m["shadow"] + m["moon"]) / 2.0
+    if abs(latitude) >= half_sum:
+        return None
+    eclipsed = half_sum - abs(latitude)  # ग्रास
+    total = eclipsed >= m["moon"]
+    out: dict[str, Any] = {
+        "kind": "lunar",
+        "type": "total" if total else "partial",
+        "max_jd": full_moon_jd,
+        "magnitude": eclipsed / m["moon"],
+        "partial_begin_jd": None,
+        "partial_end_jd": None,
+        "total_begin_jd": None,
+        "total_end_jd": None,
+        "penumbral_begin_jd": None,  # the text has no penumbra
+        "penumbral_end_jd": None,
+    }
+    before = _half_duration(full_moon_jd, half_sum, m["relative"], moon_latitude_minutes, before=True)
+    after = _half_duration(full_moon_jd, half_sum, m["relative"], moon_latitude_minutes, before=False)
+    if before is not None and after is not None:
+        out["partial_begin_jd"] = full_moon_jd - before
+        out["partial_end_jd"] = full_moon_jd + after
+    if total:
+        half_difference = (m["shadow"] - m["moon"]) / 2.0
+        before = _half_duration(full_moon_jd, half_difference, m["relative"], moon_latitude_minutes, before=True)
+        after = _half_duration(full_moon_jd, half_difference, m["relative"], moon_latitude_minutes, before=False)
+        if before is not None and after is not None:
+            out["total_begin_jd"] = full_moon_jd - before
+            out["total_end_jd"] = full_moon_jd + after
+    return out
+
+
+def _solar_type(sun: float, moon: float, latitude: float) -> str:
+    if abs(latitude) < abs(moon - sun) / 2.0:
+        return "total" if moon >= sun else "annular"
+    return "partial"
+
+
+def solar_eclipse_global(new_moon_jd: float) -> dict[str, Any] | None:
+    """A solar eclipse somewhere on Earth: the Moon's parallax can carry her onto the Sun
+    from some place when her latitude is under half the discs plus the greatest parallax."""
+    m = eclipse_measures(new_moon_jd)
+    latitude = moon_latitude_minutes(new_moon_jd)
+    half_sum = (m["sun"] + m["moon"]) / 2.0
+    if abs(latitude) >= half_sum + m["parallax"]:
+        return None
+    central = abs(latitude) < m["parallax"]
+    return {
+        "kind": "solar",
+        "type": ("total" if m["moon"] >= m["sun"] else "annular") if central else "partial",
+        "max_jd": new_moon_jd,
+    }
+
+
+def _nonagesimal_parallax(jd_ut: float, latitude: float, longitude: float, relative: float) -> tuple[float, float]:
+    """(लम्बन in minutes of longitude, नति in minutes of latitude, north +) for the Moon.
+
+    The greatest parallax P is four ghatis of the Moon's motion from the Sun (V.9).
+    Its part in longitude is P·cos z·sin(λ − λ_V) and in latitude P·sin z, where V is
+    the nonagesimal (त्रिभोन लग्न) and z its zenith distance — the altitude of the
+    ecliptic's pole.
+    """
+    p = relative / YOJANAS_PER_MINUTE
+    ayan = ayanamsha(jd_ut)
+    nonagesimal = _wrap(ascendant_sayana(jd_ut, latitude, longitude) - 90.0)
+    sun_sayana = _wrap(true_position("sun", jd_ut)[0] + ayan)
+    # Altitude of the north ecliptic pole (RA 270°, dec 90° − obliquity).
+    hour = math.radians(local_sidereal_degrees(jd_ut, longitude) - 270.0)
+    phi, dec = math.radians(latitude), math.radians(90.0 - OBLIQUITY)
+    pole_altitude = math.asin(math.sin(phi) * math.sin(dec) + math.cos(phi) * math.cos(dec) * math.cos(hour))
+    in_longitude = p * math.cos(pole_altitude) * math.sin(math.radians(sun_sayana - nonagesimal))
+    in_latitude = -p * math.sin(pole_altitude)
+    return in_longitude, in_latitude
+
+
+def solar_eclipse_local(new_moon_jd: float, latitude: float, longitude: float) -> dict[str, Any]:
+    """The eclipse as seen from one place: the middle moved by लम्बन, the latitude by नति."""
+    m = eclipse_measures(new_moon_jd)
+    middle = new_moon_jd
+    for _ in range(4):  # the text iterates the लम्बन until it settles
+        shift, _ = _nonagesimal_parallax(middle, latitude, longitude, m["relative"])
+        middle = new_moon_jd - shift / m["relative"]
+
+    def apparent_latitude(t: float) -> float:
+        return moon_latitude_minutes(t) + _nonagesimal_parallax(t, latitude, longitude, m["relative"])[1]
+
+    half_sum = (m["sun"] + m["moon"]) / 2.0
+    at_middle = apparent_latitude(middle)
+    sun_up = altitude("sun", middle, latitude, longitude) > 0.0
+    if abs(at_middle) >= half_sum:
+        return {"visible": False}
+    before = _half_duration(middle, half_sum, m["relative"], apparent_latitude, before=True)
+    after = _half_duration(middle, half_sum, m["relative"], apparent_latitude, before=False)
+    return {
+        "visible": sun_up,
+        "local_type": _solar_type(m["sun"], m["moon"], at_middle),
+        "local_max_jd": middle,
+        "local_begin_jd": None if before is None else middle - before,
+        "local_end_jd": None if after is None else middle + after,
+        "local_magnitude": (half_sum - abs(at_middle)) / m["sun"],
+    }
+
+
+def next_eclipse(jd_ut: float, kind: str, *, backward: bool = False) -> dict[str, Any] | None:
+    """The next (or previous) lunar or solar eclipse after *jd_ut*, by the text's rules."""
+    target = 180.0 if kind == "lunar" else 0.0
+    t = jd_ut
+    for _ in range(_MAX_LUNATIONS):
+        t = next_syzygy(t, target, backward=backward)
+        found = lunar_eclipse_at(t) if kind == "lunar" else solar_eclipse_global(t)
+        if found is not None:
+            return found
+        t += -1.0 if backward else 1.0
+    return None
