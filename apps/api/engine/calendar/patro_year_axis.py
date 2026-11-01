@@ -12,104 +12,87 @@ Two different limits live here, and conflating them is what made the earlier
 numbers wrong:
 
 ``PATRO_SIGNED_YEAR_MIN/MAX``
-    The **axis** — what a URL, picker or label may name. Sized to the full Swiss
-    Ephemeris span (11 Aug 13000 BCE, JD −3026604.5 … 7 Jan 17000 CE), the
-    deepest the library can ever go, plus one invalid year each side.
+    The **axis** — what a URL, picker or label may name: the computable years
+    plus one invalid year each side.
 
 ``PATRO_EPHEMERIS_SIGNED_MIN/MAX``
-    What **this host** can actually compute, measured against the installed
-    ``data/ephemeris/*.se1`` set: the whole years whose every month builds.
-    Positions outside it raise, so month/day builds are gated on this, not on
-    the axis.
+    What the **request's siddhanta** can compute: the whole years whose every
+    month builds. For drik that is the installed Swiss Ephemeris set, measured
+    (BBS 12941 … BS 17052); for the Surya Siddhanta, back to सत्य युग. Positions
+    outside it raise, so month/day builds are gated on this, not on the axis.
 
-Re-measure the ephemeris pair after adding or removing ``.se1`` files — probe
-``swe.calc_ut`` for the full graha set and take the widest whole patro years
-inside the working JD window.
+Both are read live from the siddhanta's ``ComputableRange`` (see
+``engine.astronomy.siddhanta``); this module only turns days into patro years.
 """
 
 from __future__ import annotations
 
-# ── The axis: one year past the computable window on each side ────────────────
-# Swiss Ephemeris stops at 11 Aug 13000 BCE (JD −3026604.5) and 7 Jan 17000 CE
-# whatever .se1 files are installed; DE431-based files cannot go further.
-_DRIK_SIGNED_YEAR_MIN = -12942  # one step below the floor (invalid browse)
-PATRO_SIGNED_YEAR_MAX = 17053  # one step above the ceiling (invalid browse)
-
-# ── What the ephemeris actually computes ─────────────────────────────────────
-# Measured on the production host (29 Oct 2026): the at-time panchanga answers
-# from BBS 12942-01-09 (27 Dec 13000 BCE) to BS 17053-03-31 (30 Jan 16997 CE),
-# and month calendars for every month of BBS 12941 … BS 17052. Those are the
-# whole years offered; the old BBS 13201 … BS 17247 target was never reachable.
-_DRIK_EPHEMERIS_SIGNED_MIN = -12941  # BBS 12941 ≈ 12998 BCE
-PATRO_EPHEMERIS_SIGNED_MAX = 17052  # BS 17052 ≈ AD 16995 CE
-
-# JD window for ``era=ad``/``era=bc`` range checks: the measured first and last
-# at-time days, 35 days in.
-_DRIK_EPHEMERIS_JD_MIN = -3026431.5
-EPHEMERIS_JD_MAX = 7929081.5
+# ── The axis, from the request's siddhanta ────────────────────────────────────
+# Which days can be computed is the siddhanta's to say (its ComputableRange: drik's
+# measured Swiss Ephemeris window, 12998 BCE … 16995 CE; the Surya Siddhanta's
+# back to the start of सत्य युग). The calendar only turns that into patro years:
+# Vikram years run 57 ahead of the proleptic year (BBS = BCE − 57, BS = CE + 57),
+# and the browse axis reaches one step past the computable years on each side.
+VIKRAM_OFFSET = 57
 
 
-# ── The Surya Siddhanta reaches back to the start of सत्य युग ─────────────────
-# Its positions are arithmetic, so the floor is the yuga itself, not a data file:
-# the first whole BCE years after this mahayuga's सत्य युग began (~3,891,196 BCE).
-# The ceiling stays the drik one.
-def _surya_siddhanta_floor() -> tuple[int, float, int]:
-    """(BBS-signed first whole year, JD floor, deepest whole BCE year)."""
-    from engine.astronomy.jd_calendar import CivilDay
-    from engine.astronomy.surya_siddhanta import SATYA_YUGA_START_JD
+def _range():
+    from engine.astronomy.siddhanta import current_siddhanta
 
-    jd_floor = float(SATYA_YUGA_START_JD)
-    astronomical_year = CivilDay.from_jd_ut(jd_floor).year
-    bce_floor = 1 - astronomical_year
-    deepest_bce = bce_floor - 2  # whole years strictly inside, as for drik (13000 → 12998)
-    return -(deepest_bce - 57), jd_floor, deepest_bce
-
-
-_SS_EPHEMERIS_SIGNED_MIN, _SS_EPHEMERIS_JD_MIN, _SS_BC_YEAR_MAX = _surya_siddhanta_floor()
-_SS_SIGNED_YEAR_MIN = _SS_EPHEMERIS_SIGNED_MIN - 1
-_DRIK_BC_YEAR_MAX = 12998
-
-
-def _surya_siddhanta_active() -> bool:
-    from engine.astronomy.engine import SYSTEM_SURYA_SIDDHANTA, active_system
-
-    return active_system() == SYSTEM_SURYA_SIDDHANTA
-
-
-def signed_year_min() -> int:
-    """Axis floor (one step below the computable floor) for the request's system."""
-    return _SS_SIGNED_YEAR_MIN if _surya_siddhanta_active() else _DRIK_SIGNED_YEAR_MIN
+    return current_siddhanta().computable_range()
 
 
 def ephemeris_signed_min() -> int:
-    return _SS_EPHEMERIS_SIGNED_MIN if _surya_siddhanta_active() else _DRIK_EPHEMERIS_SIGNED_MIN
+    """First whole patro year (signed: BBS negative) every month of which builds."""
+    return -(_range().deepest_bce_year - VIKRAM_OFFSET)
+
+
+def ephemeris_signed_max() -> int:
+    return _range().last_ce_year + VIKRAM_OFFSET
+
+
+def signed_year_min() -> int:
+    """Axis floor: one step below the computable floor (an invalid browse)."""
+    return ephemeris_signed_min() - 1
+
+
+def signed_year_max() -> int:
+    return ephemeris_signed_max() + 1
 
 
 def ephemeris_jd_min() -> float:
-    return _SS_EPHEMERIS_JD_MIN if _surya_siddhanta_active() else _DRIK_EPHEMERIS_JD_MIN
+    return _range().jd_min
+
+
+def ephemeris_jd_max() -> float:
+    return _range().jd_max
 
 
 def bc_year_max() -> int:
-    return _SS_BC_YEAR_MAX if _surya_siddhanta_active() else _DRIK_BC_YEAR_MAX
+    return _range().deepest_bce_year
 
 
 _DYNAMIC = {
     "PATRO_SIGNED_YEAR_MIN": signed_year_min,
+    "PATRO_SIGNED_YEAR_MAX": signed_year_max,
     "PATRO_EPHEMERIS_SIGNED_MIN": ephemeris_signed_min,
+    "PATRO_EPHEMERIS_SIGNED_MAX": ephemeris_signed_max,
     "EPHEMERIS_JD_MIN": ephemeris_jd_min,
+    "EPHEMERIS_JD_MAX": ephemeris_jd_max,
 }
 
 
 def __getattr__(name: str):
-    """The floors above depend on the request's calculation system, so they are read live."""
+    """The old constant names, read live: each siddhanta has its own range."""
     if name in _DYNAMIC:
         return _DYNAMIC[name]()
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def jd_span_within_ephemeris(jd_start: float, jd_end: float) -> bool:
-    """True when the installed ``.se1`` files (or, for the Surya Siddhanta, the yuga) cover this span."""
-    return ephemeris_jd_min() <= float(jd_start) and float(jd_end) <= EPHEMERIS_JD_MAX
+    """True when the request's siddhanta can compute this whole civil-day span."""
+    return ephemeris_jd_min() <= float(jd_start) and float(jd_end) <= ephemeris_jd_max()
+
 
 # Years with a hand-maintained BS month-length table + festival stack. Outside
 # it the grid is derived from sankranti moments instead; both give a full
@@ -118,9 +101,9 @@ BS_PANCHANGA_SIGNED_MIN = 60
 
 
 def validate_patro_signed_year(year: int) -> None:
-    if year == 0 or year < signed_year_min() or year > PATRO_SIGNED_YEAR_MAX:
+    if year == 0 or year < signed_year_min() or year > signed_year_max():
         raise ValueError(
-            f"patro year must be {signed_year_min()}..-1 or 1..{PATRO_SIGNED_YEAR_MAX} (0 invalid), got {year}"
+            f"patro year must be {signed_year_min()}..-1 or 1..{signed_year_max()} (0 invalid), got {year}"
         )
 
 
@@ -148,7 +131,7 @@ def signed_from_bbs(bbs: int) -> int:
 def patro_year_within_ephemeris(signed: int) -> bool:
     """True when this host's ``.se1`` set covers the whole patro year."""
     validate_patro_signed_year(signed)
-    return ephemeris_signed_min() <= signed <= PATRO_EPHEMERIS_SIGNED_MAX
+    return ephemeris_signed_min() <= signed <= ephemeris_signed_max()
 
 
 def patro_year_supports_sankranti_grid(signed: int) -> bool:
@@ -196,9 +179,9 @@ def browse_limits() -> dict[str, int]:
 
     return {
         "signed_year_min": signed_year_min(),
-        "signed_year_max": PATRO_SIGNED_YEAR_MAX,
+        "signed_year_max": signed_year_max(),
         "ephemeris_signed_min": ephemeris_signed_min(),
-        "ephemeris_signed_max": PATRO_EPHEMERIS_SIGNED_MAX,
+        "ephemeris_signed_max": ephemeris_signed_max(),
         "ad_year_min": AD_YEAR_MIN,
         "ad_year_max": AD_YEAR_MAX,
         "bc_year_min": BC_YEAR_MIN,
@@ -211,10 +194,10 @@ def browse_limits() -> dict[str, int]:
 def ephemeris_range_message(signed: int) -> str:
     """Operator-facing explanation for a year the installed files can't reach."""
     which = "before" if signed < ephemeris_signed_min() else "after"
-    lo, hi = ephemeris_signed_min(), PATRO_EPHEMERIS_SIGNED_MAX
+    lo, hi = ephemeris_signed_min(), ephemeris_signed_max()
     return (
         f"patro year {signed} is {which} the Swiss Ephemeris files installed on this host "
         f"(computable range {lo}..-1 / 1..{hi}). The axis itself allows "
-        f"{signed_year_min()}..{PATRO_SIGNED_YEAR_MAX}; install the remaining "
+        f"{signed_year_min()}..{signed_year_max()}; install the remaining "
         f"seplm*/semom*.se1 (deep BCE) or sepl_*/semo_*.se1 (far CE) files to widen it."
     )

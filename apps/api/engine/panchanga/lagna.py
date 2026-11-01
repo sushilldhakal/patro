@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI, default_engine
+from engine.astronomy.engine import default_engine
 from engine.astronomy.rashi import RashiPlacement, rashi_index
 
 # Bisection window for the next rashi boundary. The ascendant crosses a sign in
@@ -35,19 +35,19 @@ class LagnaService:
         self._engine = engine if engine is not None else default_engine
 
     def longitude(
-        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int | None = None
     ) -> float:
         """Sidereal ascendant longitude (0–360°) at *jd* for the observer."""
         return self._engine.ascendant(jd, lat, lon, ayanamsa=ayanamsa)
 
     def rashi_index(
-        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int | None = None
     ) -> int:
         """0–11 index of the rising sign."""
         return rashi_index(self.longitude(jd, lat=lat, lon=lon, ayanamsa=ayanamsa))
 
     def lagna(
-        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int | None = None
     ) -> dict[str, Any]:
         """The lagna block — number, names, longitude and degree within the sign.
 
@@ -65,13 +65,13 @@ class LagnaService:
         }
 
     def placement(
-        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int | None = None
     ) -> RashiPlacement:
         """The rising sign at *jd* for the observer."""
         return RashiPlacement(self.longitude(jd, lat=lat, lon=lon, ayanamsa=ayanamsa))
 
     def next_boundary(
-        self, jd: float, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+        self, jd: float, *, lat: float, lon: float, ayanamsa: int | None = None
     ) -> float:
         """JD at which the ascendant next enters the following rashi.
 

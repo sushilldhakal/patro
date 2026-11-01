@@ -15,7 +15,7 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI, default_engine
+from engine.astronomy.engine import default_engine
 from engine.panchanga.lagna import lagna_service
 from engine.panchanga.angas import panchanga_service
 from engine.panchanga.spashta import spashta_table
@@ -429,9 +429,12 @@ def compute_shadbala(
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Full sixfold strength of the seven planets at an instant."""
-    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    mode = ayanamsa  # None: the request's siddhanta decides (drik: Lahiri)
     jd = as_julian_day(instant_utc)
     obliquity = default_engine.obliquity(jd)
+    # The ayanamsha in degrees, from the request's siddhanta. ayana-bala used to be
+    # handed the *mode id* here (1 for Lahiri) and so added 1° instead of ~24°.
+    ayanamsa_degrees = default_engine.ayanamsa(jd, mode=mode)
 
     positions = spashta_table(jd, ayanamsa=mode)
     lons = {p: float(positions[p]["longitude"]) for p in PLANETS}
@@ -471,7 +474,7 @@ def compute_shadbala(
         masadhipati = 30.0 if VARA_LORD[masa_lord_wd] == p else 0.0
         varshadhipati = 15.0 if VARA_LORD[varsha_lord_wd] == p else 0.0
         hora = _hora(p, birth_min, sunrise_min, weekday)
-        ayana = _ayana(p, lp, mode, obliquity)
+        ayana = _ayana(p, lp, ayanamsa_degrees, obliquity)
         # Graha yuddha adjustment not modelled — exposed as 0 for table parity.
         yuddha = 0.0
         kala = (

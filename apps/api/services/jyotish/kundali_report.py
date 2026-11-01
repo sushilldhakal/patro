@@ -50,7 +50,7 @@ def kundali_report(
     Raises :class:`ValueError` for an unknown ayanamsha or an instant the
     ephemeris cannot place.
     """
-    _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+    ayanamsha_key, mode_id = resolve_ayanamsha_mode(ayanamsha)
     instant_utc = instant.astimezone(timezone.utc)
     snapshot = build_planetary_snapshot(instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode_id)
     planets, lagna = snapshot["planets"], snapshot["lagna"]
@@ -61,7 +61,7 @@ def kundali_report(
     context = _birth_context(instant, location, mode_id)
 
     report_lang = "en" if str(lang or "ne").startswith("en") else "ne"
-    ayanamsha_id = ayanamsha or "lahiri"
+    ayanamsha_id = ayanamsha_key
     birth_instant = instant.isoformat()
     header = {"ayanamsha": ayanamsha_id, "location": location.as_dict(), "birth_instant": birth_instant}
     cache_key = make_cache_key(birth_instant, location, ayanamsha_id, report_lang)

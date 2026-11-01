@@ -35,7 +35,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Any
 
-from engine.astronomy.engine import EphemerisError, SIDM_LAHIRI, default_engine
+from engine.astronomy.engine import EphemerisError, default_engine
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported
 
 LAT_KATHMANDU = 27.7172
@@ -169,7 +169,7 @@ class SunService:
         """Right ascension (विषुवांश) in degrees."""
         return float(self._engine.planet_astro_extras(jd, "sun").right_ascension)
 
-    def ayanamsa(self, jd: float, *, mode: int = SIDM_LAHIRI) -> float:
+    def ayanamsa(self, jd: float, *, mode: int | None = None) -> float:
         """Ayanamsha — the tropical↔sidereal offset in degrees at *jd*."""
         return self._engine.ayanamsa(jd, mode=mode)
 

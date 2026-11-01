@@ -8,15 +8,17 @@ import time
 import pytest
 import swisseph as swe
 
-from engine.astronomy import surya_siddhanta as ss
-from engine.astronomy.engine import (
-    SYSTEM_DRIK,
-    SYSTEM_SURYA_SIDDHANTA,
-    active_system,
-    default_engine,
-    resolve_system,
-    use_system,
+from engine.astronomy.engine import EngineBase, NotInThisSiddhanta, SwissEphemerisEngine, default_engine
+from engine.astronomy.siddhanta import (
+    DRIK,
+    SURYA_SIDDHANTA,
+    current_siddhanta,
+    resolve_siddhanta,
+    siddhanta,
+    use_siddhanta,
 )
+from engine.astronomy.siddhanta import surya_siddhanta_math as ss
+from engine.astronomy.siddhanta.surya_siddhanta_engine import SuryaSiddhantaEngine
 from engine.astronomy.jd_calendar import CivilDay
 
 KALI = ss.KALI_EPOCH_JD
@@ -75,21 +77,57 @@ def test_sunrise_is_found_far_back_and_near_six():
 # ── the switch ───────────────────────────────────────────────────────────────
 
 
-def test_default_engine_follows_the_active_system_and_resets():
-    assert active_system() == SYSTEM_DRIK
+def test_default_engine_follows_the_current_siddhanta_and_resets():
+    assert current_siddhanta().id == DRIK
     drik = default_engine.sun_longitude(NOV_2026)
-    with use_system(SYSTEM_SURYA_SIDDHANTA):
-        assert active_system() == SYSTEM_SURYA_SIDDHANTA
+    with use_siddhanta(SURYA_SIDDHANTA):
+        assert current_siddhanta().id == SURYA_SIDDHANTA
         assert default_engine.sun_longitude(NOV_2026) == pytest.approx(ss.true_position("sun", NOV_2026)[0])
-    assert active_system() == SYSTEM_DRIK
+    assert current_siddhanta().id == DRIK
     assert default_engine.sun_longitude(NOV_2026) == drik
 
 
-def test_resolve_system_accepts_the_names_and_refuses_others():
-    assert resolve_system(None) == SYSTEM_DRIK
-    assert resolve_system("surya-siddhanta") == SYSTEM_SURYA_SIDDHANTA
+def test_resolve_siddhanta_accepts_the_names_and_refuses_others():
+    assert resolve_siddhanta(None) == DRIK
+    assert resolve_siddhanta("surya-siddhanta") == SURYA_SIDDHANTA
     with pytest.raises(ValueError):
-        resolve_system("bogus")
+        resolve_siddhanta("bogus")
+
+
+# ── each siddhanta stands alone ──────────────────────────────────────────────
+
+
+def test_the_surya_siddhanta_engine_shares_only_the_base_with_drik():
+    engine = siddhanta(SURYA_SIDDHANTA).engine
+    assert isinstance(engine, SuryaSiddhantaEngine) and isinstance(engine, EngineBase)
+    assert not isinstance(engine, SwissEphemerisEngine)
+
+
+def test_each_siddhanta_resolves_its_own_ayanamsha():
+    from engine.astronomy.sidereal import resolve_ayanamsha_mode
+
+    assert resolve_ayanamsha_mode(None) == ("lahiri", swe.SIDM_LAHIRI)
+    with pytest.raises(ValueError):
+        resolve_ayanamsha_mode("bogus")
+    with use_siddhanta(SURYA_SIDDHANTA):
+        # Its own libration ayanamsha, whatever drik mode was asked for.
+        assert resolve_ayanamsha_mode("raman") == ("surya_siddhanta", None)
+        assert resolve_ayanamsha_mode(None) == ("surya_siddhanta", None)
+
+
+def test_what_the_surya_siddhanta_does_not_compute_is_refused_not_borrowed():
+    with pytest.raises(NotInThisSiddhanta):
+        siddhanta(SURYA_SIDDHANTA).engine.next_solar_eclipse_max(NOV_2026)
+    with pytest.raises(NotInThisSiddhanta):
+        siddhanta(SURYA_SIDDHANTA).engine.fixed_star_sidereal("Spica", NOV_2026)
+
+
+def test_each_siddhanta_owns_its_range_and_cache_namespace():
+    drik, surya = siddhanta(DRIK), siddhanta(SURYA_SIDDHANTA)
+    assert drik.computable_range().deepest_bce_year == 12998
+    assert surya.computable_range().deepest_bce_year > 3_890_000
+    assert drik.cache_namespace == ""
+    assert surya.cache_namespace == SURYA_SIDDHANTA
 
 
 def test_calendar_caches_never_hand_one_systems_month_to_the_other():
@@ -97,7 +135,7 @@ def test_calendar_caches_never_hand_one_systems_month_to_the_other():
 
     # Past the official table, so the month start is computed from sankrantis.
     drik = get_bs_month_start_civil(2150, 4)
-    with use_system(SYSTEM_SURYA_SIDDHANTA):
+    with use_siddhanta(SURYA_SIDDHANTA):
         surya = get_bs_month_start_civil(2150, 4)
     assert get_bs_month_start_civil(2150, 4) == drik
     assert surya != drik  # the text's year is longer, so its sankranti falls days later by then
@@ -106,7 +144,7 @@ def test_calendar_caches_never_hand_one_systems_month_to_the_other():
 def test_samvatsara_is_closed_form_under_the_surya_siddhanta():
     from engine.calendar.samvatsara import ANCHOR_BS_YEAR, ANCHOR_INDEX, samvatsara_index_for_bs_year
 
-    with use_system(SYSTEM_SURYA_SIDDHANTA):
+    with use_siddhanta(SURYA_SIDDHANTA):
         assert samvatsara_index_for_bs_year(ANCHOR_BS_YEAR) == ANCHOR_INDEX
         start = time.perf_counter()
         assert 0 <= samvatsara_index_for_bs_year(-3_891_000) < 60
@@ -149,3 +187,25 @@ def test_api_refuses_an_unknown_system(client):
     response = client.get(f"{DAY}&era=ad&year=2026&month=11&day=1&siddhanta=bogus")
     assert response.status_code == 400
     assert "siddhanta" in response.json()["detail"]
+
+
+def test_a_surya_siddhanta_request_never_touches_the_ephemeris(client, monkeypatch):
+    """With every swisseph position, rise/set, house and ayanamsha call broken, the
+    Surya Siddhanta still builds a panchanga and a kundali: it consults no drik
+    position and no Lahiri. (Date arithmetic — julday/revjul — is not astronomy.)"""
+
+    def refuse(*_args, **_kwargs):
+        raise AssertionError("the Surya Siddhanta asked the Swiss Ephemeris")
+
+    for name in (
+        "calc_ut", "calc", "rise_trans", "rise_trans_true_hor", "houses", "houses_ex",
+        "set_sid_mode", "get_ayanamsa_ut", "get_ayanamsa_ex_ut", "pheno_ut", "time_equ",
+        "fixstar_ut", "fixstar2_ut", "cotrans",
+    ):
+        if hasattr(swe, name):
+            monkeypatch.setattr(swe, name, refuse)
+    loc = "lat=27.7&lon=85.32&tz=Asia/Kathmandu"
+    day = client.get(f"/v1/panchanga?{loc}&lean=true&era=bs&year=2183&month=5&day=9&siddhanta=surya_siddhanta")
+    assert day.status_code == 200, day.text
+    chart = client.get(f"/v1/kundali/detail?{loc}&datetime=1990-05-15T10:30:00&siddhanta=surya_siddhanta&ayanamsha=raman")
+    assert chart.status_code == 200, chart.text

@@ -60,7 +60,7 @@ from engine.festivals.sait_rules import (
 )
 from engine.calendar.sankranti import find_sankranti_brent
 from engine.panchanga.tithi import is_kshaya_paksha
-from engine.astronomy.system_cache import system_lru_cache
+from engine.astronomy.siddhanta_cache import siddhanta_lru_cache
 
 # Rikta tithis (Chaturthi/Navami/Chaturdashi) and Aausi are excluded for all
 # saṃskāra muhūrtas.
@@ -616,7 +616,7 @@ def _eclipse_near(greg: date, pad_days: int) -> bool:
     return False
 
 
-@system_lru_cache(maxsize=512)
+@siddhanta_lru_cache(maxsize=512)
 def _sankranti_moment_between(start_iso: str, end_iso: str) -> str | None:
     """Cached exact solar-ingress ISO between two UTC timestamps, or None."""
     start = datetime.fromisoformat(start_iso)

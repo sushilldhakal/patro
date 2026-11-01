@@ -1,37 +1,29 @@
-"""The Surya Siddhanta as an :class:`AstronomyEngine`.
+"""The Surya Siddhanta's engine: the :class:`EngineBase` primitives, from the text.
 
-Every panchanga and kundali builder asks the engine the same handful of questions —
+Every panchanga and kundali builder asks an engine the same handful of questions —
 a graha's longitude and speed, the ayanamsha, the lagna, sunrise and sunset. This
-engine answers them from :mod:`engine.astronomy.surya_siddhanta` instead of the
-Swiss Ephemeris, so the whole pipeline above it computes a सूर्य सिद्धान्त panchanga
-unchanged. It is selected per request (``?siddhanta=surya_siddhanta``), never
-globally; see :func:`engine.astronomy.engine.use_system`.
+one answers each from :mod:`.surya_siddhanta_math` and from nothing else: it
+shares only the date and rise/set day logic of :class:`EngineBase` with drik,
+never drik's ephemeris, ayanamsha modes or Lahiri. Positions are the text's own
+निरयण longitudes; the ``ayanamsa`` argument the shared builders pass is ignored.
 
-Positions are the text's own निरयण longitudes, so the ayanamsha a request names
-does not apply here. Eclipses, planetary phenomena and the yogatara stars still
-come from the ephemeris: the text has its own eclipse chapters, which this does
-not implement.
+Eclipses and the yogatara stars are not implemented (the text has its own eclipse
+chapters); asking for them raises :class:`NotInThisSiddhanta` rather than
+answering from the ephemeris.
 """
 
 from __future__ import annotations
 
 import math
-from collections import OrderedDict
 
-from engine.astronomy import surya_siddhanta as ss
-from engine.astronomy.engine import _BODY_MAP, CALC_RISE, AstronomyEngine, _position
+from engine.astronomy.engine import _BODY_MAP, CALC_RISE, EngineBase, _position
+from engine.astronomy.siddhanta import surya_siddhanta_math as ss
 
 _BODY_NAMES = {body_id: name for name, body_id in _BODY_MAP.items()}
 
 
-class SuryaSiddhantaEngine(AstronomyEngine):
+class SuryaSiddhantaEngine(EngineBase):
     """Answers from the Surya Siddhanta. Valid for any day, no ephemeris files needed."""
-
-    SYSTEM = "surya_siddhanta"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._calc_cache = OrderedDict()
 
     def _body_name(self, body: int) -> str:
         name = _BODY_NAMES.get(body)

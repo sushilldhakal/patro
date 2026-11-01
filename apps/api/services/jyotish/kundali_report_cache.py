@@ -75,10 +75,10 @@ _ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
 
 
 def cache_enabled() -> bool:
-    """Off for a Surya Siddhanta request: these rows are drik reports."""
-    from engine.astronomy.engine import SYSTEM_DRIK, active_system
+    """Only for the siddhanta these rows were computed in (the one with no cache namespace)."""
+    from engine.astronomy.siddhanta import current_siddhanta
 
-    if active_system() != SYSTEM_DRIK:
+    if current_siddhanta().cache_namespace:
         return False
     return os.environ.get("KUNDALI_REPORT_CACHE", "true").lower() not in {"0", "false", "no"}
 

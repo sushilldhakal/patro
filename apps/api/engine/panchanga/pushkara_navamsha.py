@@ -16,7 +16,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.ut_instant import UtInstant, as_julian_day
 from engine.astronomy.timescale import resolve_observer_timezone
@@ -44,7 +43,7 @@ def pushkara_degrees_for_rashi(rashi_number: int) -> tuple[float, float]:
 
 
 def _degree_in_rashi(
-    dt: datetime, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+    dt: datetime, *, lat: float, lon: float, ayanamsa: int | None = None
 ) -> float:
     return (
         lagna_service.longitude(as_julian_day(dt), lat=lat, lon=lon, ayanamsa=ayanamsa)
@@ -60,7 +59,7 @@ def find_lagna_degree_crossing(
     lat: float,
     lon: float,
     tolerance_seconds: float = 2.0,
-    ayanamsa: int = SIDM_LAHIRI,
+    ayanamsa: int | None = None,
 ) -> datetime | None:
     """When ascendant longitude (mod 30°) reaches target_deg during [start, end]."""
     if end_dt <= start_dt:
@@ -115,7 +114,7 @@ def pushkara_times_for_span(
     lat: float,
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
-    ayanamsa: int = SIDM_LAHIRI,
+    ayanamsa: int | None = None,
 ) -> list[dict[str, Any]]:
     """Pushkara Navamsha clock times falling inside one lagna span."""
     start_raw = span.get("start_time")
@@ -153,7 +152,7 @@ def enrich_lagna_spans_with_pushkara(
     lat: float,
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
-    ayanamsa: int = SIDM_LAHIRI,
+    ayanamsa: int | None = None,
 ) -> list[dict[str, Any]]:
     """Attach pushkara_navamsha times to each lagna span (mutates copies)."""
     enriched: list[dict[str, Any]] = []

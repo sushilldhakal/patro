@@ -10,7 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from engine.astronomy.engine import active_system
+from engine.astronomy.siddhanta import current_siddhanta
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.festivals import tradition as tradition_module
 from engine.calendar.bikram_sambat import (
@@ -36,7 +36,7 @@ from services.platform.cache_meta import cache_is_valid, stamp_payload
 # In-process memo of parsed year payloads — one disk JSON read per year per
 # location per process instead of one per request/day-row. Callers must treat
 # the payloads read-only.
-# (kind, year, location, calculation system): drik and Surya Siddhanta years differ.
+# (kind, year, location, siddhanta): each siddhanta has its own year.
 _year_payload_memo: dict[tuple[str, int, str, str], dict[str, Any]] = {}
 _YEAR_PAYLOAD_MEMO_MAX = 512
 
@@ -62,13 +62,13 @@ def is_national_location(location: ObserverLocation) -> bool:
 
 
 def _memo_get(kind: str, year: int, location: ObserverLocation) -> dict[str, Any] | None:
-    return _year_payload_memo.get((kind, year, location.cache_key(), active_system()))
+    return _year_payload_memo.get((kind, year, location.cache_key(), current_siddhanta().id))
 
 
 def _memo_put(kind: str, year: int, location: ObserverLocation, payload: dict[str, Any]) -> None:
     if len(_year_payload_memo) >= _YEAR_PAYLOAD_MEMO_MAX:
         _year_payload_memo.clear()
-    _year_payload_memo[(kind, year, location.cache_key(), active_system())] = payload
+    _year_payload_memo[(kind, year, location.cache_key(), current_siddhanta().id)] = payload
 
 
 def _override_applies(override: dict[str, Any], location: ObserverLocation) -> bool:

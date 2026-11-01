@@ -27,10 +27,9 @@ def build_lagna_spans(
     ``complete`` walks every real boundary instead, so the closing stretch
     carries the sign actually rising — for timing a rite, not for the table.
     """
-    from engine.astronomy.engine import SIDM_LAHIRI
     from engine.astronomy.timescale import resolve_observer_timezone
 
-    mode = SIDM_LAHIRI if ayanamsa is None else ayanamsa
+    mode = ayanamsa  # None: the request's siddhanta decides (drik: Lahiri)
     tz = resolve_observer_timezone(timezone_name)
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt

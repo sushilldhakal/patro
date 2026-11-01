@@ -25,7 +25,7 @@ from fastapi.responses import Response
 
 from engine.astronomy.location import ObserverLocation
 from services.platform import redis_cache
-from engine.astronomy.engine import system_cache_key
+from engine.astronomy.siddhanta import namespaced_cache_key
 from services.platform.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
@@ -90,7 +90,7 @@ def location_cache_key(location: ObserverLocation) -> str:
 
 
 def _path(cache_key: str) -> Path:
-    safe = system_cache_key(cache_key).replace("/", "_").replace(":", "_")
+    safe = namespaced_cache_key(cache_key).replace("/", "_").replace(":", "_")
     return RESPONSE_CACHE_DIR / f"v{CACHE_PAYLOAD_VERSION}_{safe}.json.gz"
 
 

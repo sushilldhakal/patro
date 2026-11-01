@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI
 from engine.astronomy.planets import graha_positions
 from engine.astronomy.position import BodyPosition
 from engine.panchanga.asta import MOON_ASTA_ORB, UDAYAST_GRAHAS, combustion_threshold
@@ -40,7 +39,7 @@ def spashta_table(
     jd: float,
     *,
     sidereal: bool = True,
-    ayanamsa: int = SIDM_LAHIRI,
+    ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """स्पष्ट ग्रह — every graha at *jd* with rashi, DMS, वक्री and अस्त flags.
 

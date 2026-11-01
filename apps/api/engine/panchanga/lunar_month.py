@@ -198,14 +198,14 @@ def build_lunar_year(gregorian_year: int) -> LunarYear:
     )
 
 
-# Keyed by (calculation system, year): drik and the Surya Siddhanta give different months.
+# Keyed by (siddhanta, year): each siddhanta gives its own months.
 _lunar_year_cache: dict[tuple[str, int], LunarYear] = {}
 
 
 def get_lunar_year(gregorian_year: int) -> LunarYear:
-    from engine.astronomy.engine import active_system
+    from engine.astronomy.siddhanta import current_siddhanta
 
-    key = (active_system(), gregorian_year)
+    key = (current_siddhanta().id, gregorian_year)
     if key not in _lunar_year_cache:
         _lunar_year_cache[key] = build_lunar_year(gregorian_year)
     return _lunar_year_cache[key]

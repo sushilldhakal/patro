@@ -1,9 +1,9 @@
-"""Which calculation system a request computes in: drik (default) or the Surya Siddhanta.
+"""Which siddhanta a request computes in: drik (default) or the Surya Siddhanta.
 
 ``?siddhanta=surya_siddhanta`` on any route switches every engine call made for
 that request — the panchanga, the kundali, the calendar grid — to the
-Surya Siddhanta (see engine.astronomy.engine.use_system). The value is in the URL,
-so the CDN caches the two systems as different objects.
+Surya Siddhanta (see engine.astronomy.siddhanta). The value is in the URL,
+so the CDN caches each siddhanta's answers as different objects.
 
 A pure ASGI middleware, not ``BaseHTTPMiddleware``: the ContextVar it sets must
 reach the route's threadpool worker, and must be set before EraMiddleware turns
@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 from urllib.parse import parse_qs
 
-from engine.astronomy.engine import resolve_system, use_system
+from engine.astronomy.siddhanta import resolve_siddhanta, use_siddhanta
 
 QUERY_PARAM = "siddhanta"
 
@@ -30,7 +30,7 @@ class SiddhantaMiddleware:
             return
         raw = parse_qs(scope.get("query_string", b"").decode("latin-1")).get(QUERY_PARAM, [None])[-1]
         try:
-            system = resolve_system(raw)
+            siddhanta_id = resolve_siddhanta(raw)
         except ValueError as exc:
             body = json.dumps({"detail": str(exc)}).encode("utf-8")
             await send({
@@ -40,14 +40,13 @@ class SiddhantaMiddleware:
             })
             await send({"type": "http.response.body", "body": body})
             return
-        header = (b"x-siddhanta", system.encode("ascii"))
+        header = (b"x-siddhanta", siddhanta_id.encode("ascii"))
 
-        async def send_with_system(message) -> None:
-            # Say which system computed the body: payloads still echo the
-            # requested ayanamsha, which the Surya Siddhanta does not use.
+        async def send_with_siddhanta(message) -> None:
+            # Say which siddhanta computed the body.
             if message["type"] == "http.response.start":
                 message = {**message, "headers": [*message.get("headers", []), header]}
             await send(message)
 
-        with use_system(system):
-            await self.app(scope, receive, send_with_system)
+        with use_siddhanta(siddhanta_id):
+            await self.app(scope, receive, send_with_siddhanta)
