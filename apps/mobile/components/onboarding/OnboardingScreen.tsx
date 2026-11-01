@@ -18,6 +18,11 @@ import {
   setCalendarSystem,
   type CalendarSystem,
 } from "@vedic-patro/domain/calendar/calendar-system";
+import {
+  DEFAULT_CALCULATION_SYSTEM,
+  setCalculationSystem,
+  type CalculationSystem,
+} from "@vedic-patro/domain/calendar/calculation-system";
 
 import { neutral } from "@vedic-patro/design-tokens";
 import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
@@ -168,6 +173,8 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const [language, setLanguage] = useState<AppLanguage>("ne");
   // Independent of the language picked above: BS unless the reader chooses AD.
   const [calendar, setCalendar] = useState<CalendarSystem>(DEFAULT_CALENDAR);
+  // Drik unless the reader chooses the Surya Siddhanta; changeable later in Settings.
+  const [calculation, setCalculation] = useState<CalculationSystem>(DEFAULT_CALCULATION_SYSTEM);
   const [dataMode, setDataMode] = useState<OnboardingDataMode>("online");
   const [submitting, setSubmitting] = useState(false);
 
@@ -183,6 +190,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       setLang(language);
       // Updates the in-memory preference at once and persists it (hook set in lib/i18n.tsx).
       setCalendarSystem(calendar);
+      setCalculationSystem(calculation);
       await setStoredDataMode(dataMode);
       await setOnboardingComplete();
       // Which years to keep (and how big that is) is asked on the Offline Data
@@ -263,6 +271,23 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           subtitle={tFor(language, "calendar_system.ad_hint")}
           selected={calendar === "ad"}
           onPress={() => setCalendar("ad")}
+        />
+      </Section>
+
+      <Section label={tFor(language, "calculation_system.onboarding_title")}>
+        <OptionCard
+          icon="planet-outline"
+          title={tFor(language, "calculation_system.drik")}
+          subtitle={tFor(language, "calculation_system.drik_hint")}
+          selected={calculation === "drik"}
+          onPress={() => setCalculation("drik")}
+        />
+        <OptionCard
+          icon="sunny-outline"
+          title={tFor(language, "calculation_system.surya_siddhanta")}
+          subtitle={tFor(language, "calculation_system.surya_siddhanta_hint")}
+          selected={calculation === "surya_siddhanta"}
+          onPress={() => setCalculation("surya_siddhanta")}
         />
       </Section>
 

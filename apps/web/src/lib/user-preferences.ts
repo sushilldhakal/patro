@@ -9,6 +9,13 @@ import {
   setCalendarSystem,
   type CalendarSystem,
 } from "@vedic-patro/domain/calendar/calendar-system";
+import {
+  CALCULATION_SYSTEM_STORAGE_KEY,
+  configureCalculationSystemPersistence,
+  getCalculationSystem,
+  parseStoredCalculationSystem,
+  setCalculationSystem,
+} from "@vedic-patro/domain/calendar/calculation-system";
 
 /** Matches i18next LanguageDetector / our LanguageBootstrap (same key in the app). */
 export const LANG_STORAGE_KEY = LANGUAGE_STORAGE_KEY;
@@ -65,4 +72,20 @@ export function initCalendarPreference(): void {
     setStoredCalendar(initial);
   }
   if (initial !== getCalendarSystem()) setCalendarSystem(initial);
+}
+
+let calculationPreferenceReady = false;
+
+/**
+ * Drik / Surya Siddhanta for the kundali section (the website offers it there only;
+ * lib/api.ts sends it on kundali requests). Browser only; prerender keeps drik.
+ */
+export function initCalculationSystemPreference(): void {
+  if (calculationPreferenceReady || typeof window === "undefined") return;
+  calculationPreferenceReady = true;
+  configureCalculationSystemPersistence({
+    persist: (system) => setLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY, system),
+  });
+  const stored = parseStoredCalculationSystem(getLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY));
+  if (stored && stored !== getCalculationSystem()) setCalculationSystem(stored);
 }

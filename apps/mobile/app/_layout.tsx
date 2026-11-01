@@ -31,7 +31,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LocaleProvider } from "@/lib/i18n";
+import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
@@ -41,6 +41,7 @@ import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
 import { loadCalendarSystemPreference } from "@/lib/calendar-system-storage";
+import { loadCalculationSystemPreference } from "@/lib/calculation-system-storage";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
@@ -155,6 +156,23 @@ function LanguageQueryRefresh() {
   return null;
 }
 
+/**
+ * Drik and the Surya Siddhanta give different days, so on a switch every cached
+ * response is dropped and the screens on show fetch again in the new system. The
+ * query keys do not name the system; requests carry it (lib/api.ts).
+ */
+function CalculationSystemQueryReset() {
+  const { system } = useCalculationSystem();
+  const queryClient = useQueryClient();
+  const previous = useRef(system);
+  useEffect(() => {
+    if (previous.current === system) return;
+    previous.current = system;
+    void queryClient.resetQueries();
+  }, [system, queryClient]);
+  return null;
+}
+
 /** JS start, for the one-line cache-restore timing logged after restore. */
 const JS_START = Date.now();
 
@@ -236,6 +254,7 @@ function RootLayout() {
     Promise.all([
       isOnboardingComplete(),
       loadCalendarSystemPreference(),
+      loadCalculationSystemPreference(),
       loadStoredLocation(),
       restoreLanguage.catch(() => undefined),
     ]).then(([done]) => {
@@ -300,6 +319,7 @@ function RootLayout() {
               onSuccess={logQueryCacheRestore}
             >
               <LanguageQueryRefresh />
+              <CalculationSystemQueryReset />
               <OfflineDataProvider>
                 <AuthProvider>
                   <BiometricLockProvider>

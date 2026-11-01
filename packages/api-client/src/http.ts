@@ -5,6 +5,12 @@
  * every request goes through these helpers.
  */
 
+import {
+  DEFAULT_CALCULATION_SYSTEM,
+  withCalculationSystem,
+  type CalculationSystem,
+} from "@vedic-patro/domain/calendar/calculation-system";
+
 // ─── Errors ───────────────────────────────────────────────────────────────────
 
 /** Error from a failed API call, carrying the backend's own explanation. */
@@ -88,6 +94,24 @@ export interface RequestOptions extends RequestInit {
   timeoutMs?: number | null;
 }
 
+// ─── Calculation system ───────────────────────────────────────────────────────
+
+let calculationSystemFor: (path: string) => CalculationSystem = () => DEFAULT_CALCULATION_SYSTEM;
+
+/**
+ * Which calculation system (drik / Surya Siddhanta) each request asks for, by path.
+ * The app sends its reader's choice on every request; the website only on kundali
+ * ones. Requests default to drik, which the API also assumes without the parameter.
+ */
+export function setCalculationSystemResolver(resolve: (path: string) => CalculationSystem): void {
+  calculationSystemFor = resolve;
+}
+
+/** `url` with the `siddhanta` parameter the resolver asks for on `path` (none for drik). */
+export function withRequestCalculationSystem(url: string, path: string): string {
+  return withCalculationSystem(url, calculationSystemFor(path));
+}
+
 /**
  * `fetch` with a timeout, and with "could not connect" turned into a
  * {@link NetworkError}. A caller's own `signal` still aborts the request with
@@ -110,7 +134,7 @@ export async function fetchWithTimeout(url: string, path: string, options: Reque
           controller.abort();
         }, timeoutMs);
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    return await fetch(withRequestCalculationSystem(url, path), { ...init, signal: controller.signal });
   } catch (error) {
     if (timedOut && timeoutMs != null) throw new TimeoutError(path, timeoutMs);
     if (callerSignal?.aborted) throw error;

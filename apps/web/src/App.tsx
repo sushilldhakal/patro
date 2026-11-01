@@ -1,10 +1,10 @@
 import { RouterProvider, type AnyRouter } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
-import { useEffect, type ReactNode } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { useCalculationSystem, useTranslation } from "@vedic-patro/i18n/react";
 import i18n, { ensureEnglishBundle } from "./i18n/index";
 import { router } from "./router.tsx";
 import { AuthProvider } from "./lib/auth/AuthContext";
@@ -88,6 +88,22 @@ function CapabilitiesBootstrap() {
   return null;
 }
 
+/** Query roots of the kundali requests that carry the calculation system (lib/api.ts). */
+const KUNDALI_QUERY_ROOTS = new Set(["kundali", "shadbala", "planetary"]);
+
+/** A switch between drik and the Surya Siddhanta refetches the kundali the reader is looking at. */
+function KundaliSystemQueryReset() {
+  const { system } = useCalculationSystem();
+  const queryClient = useQueryClient();
+  const previous = useRef(system);
+  useEffect(() => {
+    if (previous.current === system) return;
+    previous.current = system;
+    void queryClient.resetQueries({ predicate: (query) => KUNDALI_QUERY_ROOTS.has(String(query.queryKey[0])) });
+  }, [system, queryClient]);
+  return null;
+}
+
 function AppRoutes({ appRouter }: { appRouter: AnyRouter }) {
   useTranslation();
   return <RouterProvider router={appRouter} />;
@@ -117,6 +133,7 @@ export function AppProviders({
           <AuthProvider ssr={ssr}>
             {!ssr && isBrowser ? <LanguageBootstrap /> : null}
             {!ssr && isBrowser ? <CapabilitiesBootstrap /> : null}
+            {!ssr && isBrowser ? <KundaliSystemQueryReset /> : null}
             {children}
           </AuthProvider>
         </QueryClientProvider>

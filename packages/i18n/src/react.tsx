@@ -21,6 +21,13 @@ import {
 } from "react";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import {
+  DEFAULT_CALCULATION_SYSTEM,
+  getCalculationSystem,
+  setCalculationSystem,
+  subscribeCalculationSystem,
+  type CalculationSystem,
+} from "@vedic-patro/domain/calendar/calculation-system";
+import {
   DEFAULT_CALENDAR,
   getCalendarSystem,
   setCalendarSystem,
@@ -58,6 +65,15 @@ export function useLanguage(): Lang {
 export function useCalendarSystem(): { calendar: CalendarSystem; setCalendar: (c: CalendarSystem) => void } {
   const calendar = useSyncExternalStore(subscribeCalendarSystem, getCalendarSystem, () => DEFAULT_CALENDAR);
   return useMemo(() => ({ calendar, setCalendar: setCalendarSystem }), [calendar]);
+}
+
+/**
+ * The calculation system (drik / Surya Siddhanta) the reader relies on. Re-renders
+ * the caller when it changes; server rendering always sees drik.
+ */
+export function useCalculationSystem(): { system: CalculationSystem; setSystem: (s: CalculationSystem) => void } {
+  const system = useSyncExternalStore(subscribeCalculationSystem, getCalculationSystem, () => DEFAULT_CALCULATION_SYSTEM);
+  return useMemo(() => ({ system, setSystem: setCalculationSystem }), [system]);
 }
 
 /**
