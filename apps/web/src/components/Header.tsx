@@ -210,7 +210,7 @@ function MenuPreferences({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           to="/account/settings"
           onClick={onNavigate}
-          className="flex items-center justify-between gap-3 rounded-lg py-1 text-sm text-foreground hover:text-secondary"
+          className={shellClasses.drawerSettingsLink}
         >
           <span className="inline-flex items-center gap-2">
             <Settings className="size-4 shrink-0" aria-hidden />

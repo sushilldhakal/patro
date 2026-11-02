@@ -17,6 +17,7 @@ export const shellClasses = {
 
   // ── Navigation drawer ─────────────────────────────────────────────────────
   drawerHeader: "border-b border-border",
+  drawerSettingsLink: "flex items-center justify-between gap-3 rounded-lg py-1 text-sm text-foreground hover:text-secondary",
   drawerBrandRow: "items-center gap-2.5",
   drawerTitle: "text-base font-semibold",
   drawerTitleVedic: "text-secondary",
