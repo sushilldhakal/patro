@@ -141,7 +141,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
                 key={tab}
                 icon={TAB_SF[i]}
                 accessibilityLabel={pick(item.ne, item.en)}
-                selected={active}
+                tintColor={active ? TAB_ACTIVE : undefined}
                 onPress={() => navPress(item.href)}
               />
             );
