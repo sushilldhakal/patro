@@ -1,15 +1,16 @@
 import { Platform } from "react-native";
 import * as Device from "expo-device";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
- * iPhone Duo only, folded or unfolded (detection is by hardware, so both states match). On the Duo
- * the system toolbar sits over the top-right of the window, where the
- * header's sign-in button and the page's location button are. Its height is not part of the
- * reported top safe-area inset, so a header padded by `insets.top` alone draws under the toolbar.
+ * iPhone Duo only, folded or unfolded (detection is by hardware, so both states match).
  *
- * Every other iPhone keeps the layout it has always had: `useDuoShellInsets` returns zeros there.
- * The web app does the same in apps/web/index.html + src/index.css (`html[data-iphone-duo]`).
+ * Built with the iOS 27.1 SDK or later, the app extends to the full display on the Duo and the
+ * system reports the toolbar through the safe-area insets (top/left/right). Padding the shell by
+ * an extra toolbar height or by the side insets on top of that double-counted them: a big gap above
+ * the header and an unused strip on the right in landscape. The shell now relies on the safe-area
+ * insets alone, so `useDuoShellInsets` returns zeros everywhere and the app fills the display.
+ *
+ * The web app keeps its own Duo offset (apps/web/index.html + src/index.css, `html[data-iphone-duo]`).
  */
 
 /**
@@ -32,22 +33,20 @@ function detectIPhoneDuo(): boolean {
 /** Read once: the hardware does not change while the app runs. */
 export const IS_IPHONE_DUO = detectIPhoneDuo();
 
-/** Height of the Duo's top toolbar below the reported safe area, in points. */
-export const DUO_TOOLBAR_HEIGHT = 52;
-
 export type DuoShellInsets = {
   /** Extra space above the app header, on top of `insets.top`. */
   top: number;
-  /** Side padding for the header and page so nothing sits under the toolbar's corners. */
+  /** Extra side padding for the header and page, on top of the safe-area insets. */
   left: number;
   right: number;
 };
 
 const NONE: DuoShellInsets = { top: 0, left: 0, right: 0 };
 
-/** Extra shell padding for the iPhone Duo; all zero on every other device. */
+/**
+ * Extra shell padding for the iPhone Duo. Zero on every device: the iOS 27.1 SDK folds the Duo's
+ * toolbar into the safe-area insets, which the header and tab bar already apply.
+ */
 export function useDuoShellInsets(): DuoShellInsets {
-  const insets = useSafeAreaInsets();
-  if (!IS_IPHONE_DUO) return NONE;
-  return { top: DUO_TOOLBAR_HEIGHT, left: insets.left, right: insets.right };
+  return NONE;
 }
