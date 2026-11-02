@@ -3,7 +3,7 @@ import { Share } from "react-native";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
-import { FLOATING_NAV } from "@/lib/mobile-nav";
+import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
 import { requestOpenMenu, requestSignIn } from "@/lib/menu-request";
@@ -110,6 +110,26 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           </Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
+      {/* Unfolded portrait, on a page pushed over the tabs: the destinations in the system's own bottom
+          toolbar, so they look like the tab bar on the home page (native glass, SF Symbols). */}
+      {!tabsInBar && horizontal ? (
+        <Stack.Toolbar placement="bottom">
+          <Stack.Toolbar.Spacer />
+          {ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {
+            const i = ALL_TABS.indexOf(tab);
+            return (
+              <Stack.Toolbar.Button
+                key={tab}
+                icon={TAB_SF[i]}
+                accessibilityLabel={pick(FLOATING_NAV[i].ne, FLOATING_NAV[i].en)}
+                selected={isNavActive(pathname, FLOATING_NAV[i].href)}
+                onPress={() => navPress(FLOATING_NAV[i].href)}
+              />
+            );
+          })}
+          <Stack.Toolbar.Spacer />
+        </Stack.Toolbar>
+      ) : null}
     </>
   );
 }
