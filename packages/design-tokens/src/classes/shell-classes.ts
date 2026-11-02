@@ -26,6 +26,7 @@ export const shellClasses = {
   navOuter: "px-2",
   navBar:
     "max-w-lg items-stretch justify-around gap-0.5 rounded-2xl border border-border bg-background/90 p-1",
+  navRail: "items-center gap-1 rounded-2xl border border-border bg-background py-2",
   navItem: "flex-1 items-center gap-1 rounded-xl px-1 py-1.5",
   navItemActive: "bg-secondary/10",
   navLabel: "text-diagram-xs font-medium leading-normal",
