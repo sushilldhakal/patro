@@ -9,6 +9,8 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
+import { useDuoRail } from "@/lib/duo-rail";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -20,7 +22,18 @@ import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedi
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
-export function FloatingNavBar() {
+/**
+ * On the iPhone Duo the tabs are the system's own, so this bar only appears on pages pushed over
+ * them, and only where the bars are horizontal (the open display in portrait). Elsewhere the
+ * rail carries them.
+ */
+export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
+  const { horizontal } = useDuoRail();
+  if (IS_IPHONE_DUO && !(duoPortrait && horizontal)) return null;
+  return <FloatingNavBarView />;
+}
+
+function FloatingNavBarView() {
   const navPress = useNavPress();
   const pathname = usePathname();
   const { pick } = useLocale();

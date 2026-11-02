@@ -32,6 +32,9 @@ import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
+import { DuoOverlays } from "@/components/navigation/DuoOverlays";
+import { DuoToolbar } from "@/components/navigation/DuoToolbar";
+import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
@@ -395,10 +398,15 @@ function RootShell({
               // The tab scenes keep clear of the rail themselves (DuoNativeTabs), so no second inset here.
               children
             ) : IS_IPHONE_DUO ? (
-              // Duo pages pushed over the tabs: the rail takes one side (whichever iOS picks); the native SafeAreaView keeps the page clear of it.
-              <SafeAreaView edges={["left", "right"]} style={{ flex: 1 }}>
-                {children}
-              </SafeAreaView>
+              // Duo pages pushed over the tabs: the same native toolbar as the tabs, the page kept clear of
+              // the rail by the native SafeAreaView, and the floating bar back in unfolded portrait.
+              <View style={{ flex: 1 }}>
+                <DuoToolbar tabsInBar={false} />
+                <SafeAreaView edges={["top", "left", "right"]} style={{ flex: 1 }}>
+                  {children}
+                </SafeAreaView>
+                <FloatingNavBar duoPortrait />
+              </View>
             ) : PAGE_CHROME_ROUTES.has(route.name) ? (
               <PageChrome routeName={route.name}>{children}</PageChrome>
             ) : (
@@ -412,6 +420,7 @@ function RootShell({
           {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
       )}
+      {IS_IPHONE_DUO && ready && onboarded ? <DuoOverlays /> : null}
       {ready && onboarded ? <NotificationsRuntime /> : null}
       {ready ? <ThemedStatusBar /> : null}
       {!ready ? (

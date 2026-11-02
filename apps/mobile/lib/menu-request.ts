@@ -17,3 +17,19 @@ export function useOpenMenuRequest(onOpen: () => void) {
     };
   }, [onOpen]);
 }
+
+const signInListeners = new Set<Listener>();
+
+/** Asks the iPhone Duo shell to open the sign-in dialog (its native toolbar has no JS dialog of its own). */
+export function requestSignIn() {
+  signInListeners.forEach((open) => open());
+}
+
+export function useSignInRequest(onOpen: () => void) {
+  useEffect(() => {
+    signInListeners.add(onOpen);
+    return () => {
+      signInListeners.delete(onOpen);
+    };
+  }, [onOpen]);
+}

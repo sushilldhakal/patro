@@ -101,7 +101,12 @@ export function NavDrawerHost() {
   );
 }
 
+/** The iPhone Duo draws its header natively (components/navigation/DuoToolbar.tsx). */
 export function AppHeader() {
+  return IS_IPHONE_DUO ? null : <AppHeaderView />;
+}
+
+function AppHeaderView() {
   const { t } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();

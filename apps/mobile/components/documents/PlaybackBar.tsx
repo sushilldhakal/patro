@@ -16,6 +16,8 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
     <Shared
       mode={audio.mode}
       hasFullRecording={audio.full.available}
+      hasSuktaAudio={audio.hasSuktaAudio}
+      suktaNumber={audio.suktaNumber}
       documentTitle={documentTitle}
       onStartFull={audio.startFull}
       onPlayThrough={audio.startPlayThrough}

@@ -10,6 +10,7 @@ import {
 } from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
 import { isAudioAvailable } from "@vedic-patro/api-client";
+import { suktaTracksFrom } from "@vedic-patro/features/documents";
 
 export type AudioMode = "full" | "verse" | null;
 
@@ -37,6 +38,11 @@ export function useDocumentAudio(
   const sources = useMemo(() => playable.map((s) => ({ uri: s.audio_url! })), [playable]);
   const playlist = useAudioPlaylist({ sources, updateInterval: 100 });
   const verseStatus = useAudioPlaylistStatus(playlist);
+
+  const suktaTracks = useMemo(() => (fullAudioUrl ? [] : suktaTracksFrom(shlokas)), [fullAudioUrl, shlokas]);
+  const suktaSources = useMemo(() => suktaTracks.map((track) => ({ uri: track.url })), [suktaTracks]);
+  const suktaPlaylist = useAudioPlaylist({ sources: suktaSources, updateInterval: 250 });
+  const suktaStatus = useAudioPlaylistStatus(suktaPlaylist);
 
   /* Verse id at each playlist index. Kept in step by hand as missing recordings are
      taken out, and started afresh whenever the playlist itself is rebuilt. */
@@ -88,7 +94,8 @@ export function useDocumentAudio(
   /* A recording that was never uploaded would stop the queue dead (or play
      nothing), so each verse is checked as it comes up — the one sounding and the
      one after it — and a missing one is taken out of the playlist before the
-     queue reaches it. */
+     queue reaches it. A missing Rigveda verse plays that sukta's file instead. */
+  const startSuktaRef = useRef<(index: number) => void>(() => {});
   const verify = useCallback(
     (index: number) => {
       const id = trackIds()[index];
@@ -101,8 +108,14 @@ export function useDocumentAudio(
         const at = t.ids.indexOf(id);
         if (at < 0) return;
         const wasCurrent = playlist.currentIndex === at;
-        t.ids.splice(at, 1);
+        const sukta = byId.get(id)?.sukta_number;
+        const suktaAt = sukta == null ? -1 : suktaTracks.findIndex((track) => track.sukta === sukta);
         setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+        if (wasCurrent && suktaAt >= 0) {
+          startSuktaRef.current(suktaAt);
+          return;
+        }
+        t.ids.splice(at, 1);
         try {
           playlist.remove(at);
           if (wasCurrent && at < t.ids.length) {
@@ -116,7 +129,7 @@ export function useDocumentAudio(
         }
       });
     },
-    [byId, playlist],
+    [byId, playlist, suktaTracks],
   );
 
   const claimLockScreen = useCallback(
@@ -145,6 +158,7 @@ export function useDocumentAudio(
       const index = trackIds().indexOf(id);
       if (index < 0) return;
       fullPlayer.pause();
+      suktaPlaylist.pause();
       setMode("verse");
       userSkipAt.current = Date.now();
       if (playlist.currentIndex !== index) playlist.skipTo(index);
@@ -153,7 +167,7 @@ export function useDocumentAudio(
       verify(index);
       verify(index + 1);
     },
-    [fullPlayer, playlist, claimLockScreen, verify],
+    [fullPlayer, suktaPlaylist, playlist, claimLockScreen, verify],
   );
 
   const currentIndex = verseStatus.currentIndex;
@@ -210,29 +224,71 @@ export function useDocumentAudio(
 
   const startFull = useCallback(() => {
     playlist.pause();
+    suktaPlaylist.pause();
     setMode("full");
     fullPlayer.play();
     claimLockScreen("full");
-  }, [playlist, fullPlayer, claimLockScreen]);
+  }, [playlist, suktaPlaylist, fullPlayer, claimLockScreen]);
+
+  const startSukta = useCallback(
+    (index = 0) => {
+      if (!suktaTracks.length) return;
+      playlist.pause();
+      fullPlayer.pause();
+      setMode("full");
+      const at = index >= 0 && index < suktaTracks.length ? index : 0;
+      if (suktaPlaylist.currentIndex !== at) suktaPlaylist.skipTo(at);
+      suktaPlaylist.play();
+      const sukta = suktaTracks[at]?.sukta;
+      try {
+        suktaPlaylist.setActiveForLockScreen(
+          true,
+          {
+            title: sukta != null ? `Sukta ${sukta}` : documentTitle,
+            artist: documentTitle,
+            albumTitle: documentTitle,
+          },
+          { showNextTrack: true, showPreviousTrack: true },
+        );
+      } catch {
+        /* lock-screen controls are a nicety */
+      }
+    },
+    [suktaTracks, playlist, fullPlayer, suktaPlaylist, documentTitle],
+  );
+  startSuktaRef.current = startSukta;
 
   const startPlayThrough = useCallback(() => {
+    if (!fullAudioUrl && suktaTracks.length) {
+      startSukta(0);
+      return;
+    }
     const first = trackIds()[0];
     if (first != null) playVerse(first);
-  }, [playVerse]);
+  }, [fullAudioUrl, suktaTracks.length, startSukta, playVerse]);
 
   const toggleFull = useCallback(() => {
+    if (!fullAudioUrl && suktaTracks.length) {
+      if (suktaStatus.playing) suktaPlaylist.pause();
+      else startSukta(suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0);
+      return;
+    }
     if (fullStatus.playing) fullPlayer.pause();
     else {
       fullPlayer.play();
       claimLockScreen("full");
     }
-  }, [fullStatus.playing, fullPlayer, claimLockScreen]);
+  }, [fullAudioUrl, suktaTracks.length, suktaStatus.playing, suktaStatus.currentIndex, suktaPlaylist, startSukta, fullStatus.playing, fullPlayer, claimLockScreen]);
 
   const seekFull = useCallback(
     (seconds: number) => {
+      if (!fullAudioUrl && suktaTracks.length) {
+        void suktaPlaylist.seekTo(seconds);
+        return;
+      }
       void fullPlayer.seekTo(seconds);
     },
-    [fullPlayer],
+    [fullAudioUrl, suktaTracks.length, suktaPlaylist, fullPlayer],
   );
 
   /** Play the full recording from a verse's measured timestamp. */
@@ -245,24 +301,32 @@ export function useDocumentAudio(
         return;
       }
       playlist.pause();
+      suktaPlaylist.pause();
       setMode("full");
       void fullPlayer.seekTo(shloka.full_audio_start);
       fullPlayer.play();
       claimLockScreen("full");
     },
-    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, playlist, fullPlayer, claimLockScreen],
+    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, playlist, suktaPlaylist, fullPlayer, claimLockScreen],
   );
 
   const switchToFull = useCallback(() => {
+    if (!fullAudioUrl && suktaTracks.length) {
+      const sukta = activeVerseId == null ? null : byId.get(activeVerseId)?.sukta_number;
+      const at = sukta == null ? -1 : suktaTracks.findIndex((track) => track.sukta === sukta);
+      if (at >= 0) startSukta(at);
+      return;
+    }
     if (activeVerseId == null) return;
     const shloka = byId.get(activeVerseId);
     if (shloka?.full_audio_start == null) return;
     playlist.pause();
+    suktaPlaylist.pause();
     setMode("full");
     void fullPlayer.seekTo(shloka.full_audio_start);
     fullPlayer.play();
     claimLockScreen("full");
-  }, [activeVerseId, byId, playlist, fullPlayer, claimLockScreen]);
+  }, [activeVerseId, byId, playlist, suktaPlaylist, fullPlayer, claimLockScreen, fullAudioUrl, suktaTracks, startSukta]);
 
   const toggleMeaning = useCallback((id: number) => {
     setOpenMeaningIds((prev) => {
@@ -300,7 +364,7 @@ export function useDocumentAudio(
   // keeps playing.
   useEffect(
     () => () => {
-      for (const p of [playlist, fullPlayer]) {
+      for (const p of [playlist, fullPlayer, suktaPlaylist]) {
         try {
           p.pause();
           p.clearLockScreenControls();
@@ -309,7 +373,7 @@ export function useDocumentAudio(
         }
       }
     },
-    [playlist, fullPlayer],
+    [playlist, fullPlayer, suktaPlaylist],
   );
 
   const verseIndex = activeVerseId == null ? -1 : trackIds().indexOf(activeVerseId);
@@ -335,11 +399,16 @@ export function useDocumentAudio(
       duration: verseStatus.duration,
     },
     full: {
-      playing: fullStatus.playing,
-      currentTime: fullStatus.currentTime,
-      duration: fullStatus.duration,
+      playing: !fullAudioUrl && suktaTracks.length > 0 ? suktaStatus.playing : fullStatus.playing,
+      currentTime: !fullAudioUrl && suktaTracks.length > 0 ? suktaStatus.currentTime : fullStatus.currentTime,
+      duration: !fullAudioUrl && suktaTracks.length > 0 ? suktaStatus.duration : fullStatus.duration,
       available: Boolean(fullAudioUrl),
     },
+    hasSuktaAudio: !fullAudioUrl && suktaTracks.length > 0,
+    suktaNumber:
+      !fullAudioUrl && mode === "full"
+        ? (suktaTracks[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]?.sukta ?? null)
+        : null,
     startFull,
     startPlayThrough,
     toggleFull,
