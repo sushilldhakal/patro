@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
-import { getStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -27,8 +27,6 @@ import { space } from "@vedic-patro/design-tokens";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
-
-const ayanamshaStorage = { load: getStoredAyanamshaMode };
 
 export default function KundaliMilanScreen() {
   const colors = useThemeColors();

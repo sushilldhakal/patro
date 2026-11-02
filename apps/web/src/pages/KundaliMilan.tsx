@@ -20,16 +20,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-import {
-  AYANAMSHA_STORAGE_KEY,
-  parseAyanamshaMode,
-  useKundaliMilanPage,
-  type MilanDetails,
-} from "@vedic-patro/features/kundali";
-
-const ayanamshaStorage = {
-  load: () => parseAyanamshaMode(typeof localStorage !== "undefined" ? localStorage.getItem(AYANAMSHA_STORAGE_KEY) : null),
-};
+import { useKundaliMilanPage, type MilanDetails } from "@vedic-patro/features/kundali";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 
 function BirthDetailsTable({ details }: { details: MilanDetails }) {
   return (

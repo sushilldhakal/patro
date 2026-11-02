@@ -3,11 +3,13 @@ import { Pressable, Switch, View } from "react-native";
 import { useRouter } from "expo-router";
 import { AppShell } from "@/components/AppShell";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { Chip } from "@/components/reminders/AddReminderForm";
 import { DailyBriefingCard, RashifalNotificationCard, SectionTitle } from "@/components/reminders/NotificationCards";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useCalculationSystem, useCalendarSystem, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
@@ -15,6 +17,7 @@ import { syncNotifications } from "@/lib/notifications/sync";
 import { DEFAULT_BRIEFING, type BriefingSettings } from "@/lib/notifications/types";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { useTheme, useThemeColors, type ThemePreference } from "@/lib/theme-context";
+import { useAyanamshaMode } from "@vedic-patro/features/kundali";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
@@ -28,6 +31,7 @@ export default function SettingsScreen() {
   const l = lang === "en" ? "en" : "ne";
   const { calendar, setCalendar } = useCalendarSystem();
   const { system, setSystem } = useCalculationSystem();
+  const [ayanamsha, setAyanamsha] = useAyanamshaMode(ayanamshaStorage);
   const router = useRouter();
   const colors = useThemeColors();
   const { preference, setPreference } = useTheme();
@@ -125,6 +129,8 @@ export default function SettingsScreen() {
             </Text>
           </Card>
         </View>
+
+        {system === "drik" ? <AyanamshaSelector mode={ayanamsha} onModeChange={setAyanamsha} /> : null}
 
         <View>
           <SectionTitle>{t("ui.settings.theme")}</SectionTitle>

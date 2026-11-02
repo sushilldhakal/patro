@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useKundaliDetailPage, AYANAMSHA_STORAGE_KEY, parseAyanamshaMode, type KundaliMetaItem } from "@vedic-patro/features/kundali";
+import { useKundaliDetailPage, type KundaliMetaItem } from "@vedic-patro/features/kundali";
 import {
   ArrowLeft,
   Calendar,
@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { hasStoredSession } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
-import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { CalculationSystemSelector } from "@/components/kundali/CalculationSystemSelector";
 import { KundaliView } from "@/components/kundali/KundaliView";
@@ -39,11 +39,6 @@ import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
-
-const ayanamshaStorage = {
-  load: () => parseAyanamshaMode(localStorage.getItem(AYANAMSHA_STORAGE_KEY)),
-  save: (mode: AyanamshaMode) => localStorage.setItem(AYANAMSHA_STORAGE_KEY, mode),
-};
 
 const META_ICONS: Record<KundaliMetaItem["key"], React.ComponentType<{ className?: string }>> = {
   birthDate: Calendar,

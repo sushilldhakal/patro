@@ -1,9 +1,12 @@
 import { useEffect, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useTheme } from "next-themes";
+import { useAyanamshaMode } from "@vedic-patro/features/kundali";
 import { useCalculationSystem, useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useAuth } from "@/lib/auth/AuthContext";
 
@@ -20,6 +23,7 @@ export function Settings() {
   const { t, lang, setLang } = useLocale();
   const { calendar, setCalendar } = useCalendarSystem();
   const { system, setSystem } = useCalculationSystem();
+  const [ayanamsha, setAyanamsha] = useAyanamshaMode(ayanamshaStorage);
   const { theme, setTheme } = useTheme();
 
   useRouteLoading(auth.loading);
@@ -71,6 +75,8 @@ export function Settings() {
             onPress={() => setSystem("surya_siddhanta")}
           />
         </ChoiceGroup>
+
+        {system === "drik" ? <AyanamshaSelector mode={ayanamsha} onModeChange={setAyanamsha} /> : null}
 
         <ChoiceGroup label={t("ui.settings.theme")}>
           {themes.map((item) => (

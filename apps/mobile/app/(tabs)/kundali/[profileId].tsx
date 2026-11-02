@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { getStoredAyanamshaMode, setStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
+import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -31,8 +31,6 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { haptics } from "@vedic-patro/ui/motion";
-
-const ayanamshaStorage = { load: getStoredAyanamshaMode, save: setStoredAyanamshaMode };
 
 export default function KundaliDetailScreen() {
   const { profileId, created } = useLocalSearchParams<{ profileId: string; created?: string }>();

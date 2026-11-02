@@ -29,6 +29,9 @@ export type AyanamshaStorage = {
   save?: (mode: AyanamshaMode) => void | Promise<void>;
 };
 
+/** Every open picker hears a change, so Settings and the kundali pages stay on the same mode. */
+const ayanamshaListeners = new Set<(mode: AyanamshaMode) => void>();
+
 /** The ayanamsha mode, read once from storage and written back on change. */
 export function useAyanamshaMode(storage: AyanamshaStorage, fallback: AyanamshaMode = DEFAULT_AYANAMSHA_MODE) {
   const [mode, setModeState] = useState<AyanamshaMode>(() => {
@@ -48,9 +51,16 @@ export function useAyanamshaMode(storage: AyanamshaStorage, fallback: AyanamshaM
     // Read once on mount; later changes are written by `setMode`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    ayanamshaListeners.add(setModeState);
+    return () => {
+      ayanamshaListeners.delete(setModeState);
+    };
+  }, []);
   const setMode = (next: AyanamshaMode) => {
     setModeState(next);
     void storage.save?.(next);
+    for (const hear of ayanamshaListeners) hear(next);
   };
   return [mode, setMode] as const;
 }

@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
-import { AYANAMSHA_STORAGE_KEY, parseAyanamshaMode as parseMode } from "@vedic-patro/features/kundali";
+import { AYANAMSHA_STORAGE_KEY, parseAyanamshaMode as parseMode, type AyanamshaStorage } from "@vedic-patro/features/kundali";
 
 export { AYANAMSHA_STORAGE_KEY };
 
@@ -16,6 +16,12 @@ export async function getStoredAyanamshaMode(): Promise<AyanamshaMode | null> {
     return null;
   }
 }
+
+/** The ayanamsha the kundali pages and Settings both read and write. */
+export const ayanamshaStorage: AyanamshaStorage = {
+  load: getStoredAyanamshaMode,
+  save: setStoredAyanamshaMode,
+};
 
 export async function setStoredAyanamshaMode(mode: AyanamshaMode): Promise<void> {
   try {
