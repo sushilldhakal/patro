@@ -89,7 +89,15 @@ export const accountClasses = {
   menuItem: "items-center gap-2 rounded-md px-2.5 py-2 text-sm",
   menuItemText: "text-sm text-foreground",
 
-  // ── Settings page (app) ───────────────────────────────────────────────────
+  // ── Settings page ─────────────────────────────────────────────────────────
+  settingsStack: "flex flex-col gap-6",
+  settingsGroup: "flex flex-col gap-2",
+  settingsGroupTitle: "text-sm font-semibold text-foreground",
+  settingsChoices: "flex flex-row flex-wrap gap-2 rounded-xl border border-border bg-card p-3",
+  settingsChoice: "inline-flex h-8 cursor-pointer items-center rounded-lg border px-3 text-sm transition-colors",
+  settingsChoiceOn: "border-secondary bg-secondary text-secondary-foreground",
+  settingsChoiceOff: "border-border bg-background/40 text-foreground hover:bg-muted dark:bg-background/20",
+  settingsHint: "text-sm leading-snug text-muted-foreground",
   settingsLink: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80",
   settingsLinkBody: "flex-1 flex-row items-center gap-3 pr-3",
   settingsLinkTitle: "text-sm font-medium text-foreground",

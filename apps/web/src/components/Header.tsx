@@ -8,6 +8,8 @@ import {
   Moon,
   Menu,
   ChevronDown,
+  ChevronRight,
+  Settings,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -23,6 +25,7 @@ import {
 } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AccountMenu } from "@/components/auth/AccountMenu";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
@@ -197,11 +200,25 @@ function ThemeToggle({ className, showLabel }: { className?: string; showLabel?:
   );
 }
 
-function MenuPreferences() {
+function MenuPreferences({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="flex flex-col gap-2">
+      {isAuthenticated ? (
+        <Link
+          to="/account/settings"
+          onClick={onNavigate}
+          className="flex items-center justify-between gap-3 rounded-lg py-1 text-sm text-foreground hover:text-secondary"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Settings className="size-4 shrink-0" aria-hidden />
+            {t("account_page.settings")}
+          </span>
+          <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        </Link>
+      ) : null}
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-foreground">{t("language")}</span>
         <LanguageSwitcher />
@@ -291,7 +308,7 @@ export function Header() {
                   <MobileNavMenu onNavigate={() => setMobileOpen(false)} />
                 </div>
                 <DrawerFooter className="border-t border-border gap-3">
-                  <MenuPreferences />
+                  <MenuPreferences onNavigate={() => setMobileOpen(false)} />
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <Link to="/privacy" onClick={() => setMobileOpen(false)}>
                       {t("footer.privacy")}

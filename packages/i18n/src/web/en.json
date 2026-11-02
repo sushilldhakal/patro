@@ -163,6 +163,11 @@
         "description": "User account settings.",
         "keywords": ""
       },
+      "settings": {
+        "title": "Settings | Vedic Patro",
+        "description": "Language, calendar, calculation and theme.",
+        "keywords": ""
+      },
       "verify_email": {
         "title": "Verify Email | Vedic Patro",
         "description": "Verify your email address.",
@@ -4731,6 +4736,12 @@
       "the_graha_details_below_come_from": "The graha details below come from the server for the date and place chosen above, and the sky is pinned to those same numbers — change either and both follow. Pressing play moves the sky alone, though: the details stay with the chosen date.",
       "the_rashi_belt_tips_with_your": "The rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
       "the_red_marker_on_the_globe": "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works."
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Default language",
+      "theme": "Theme",
+      "theme_system": "System"
     },
     "auth": {
       "apple_sign_in_failed": "Apple sign-in failed",

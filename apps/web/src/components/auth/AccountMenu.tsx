@@ -28,6 +28,10 @@ export function AccountMenu() {
         menu.closeMenu();
         navigate({ to: "/account" });
       }}
+      onSettings={() => {
+        menu.closeMenu();
+        navigate({ to: "/account/settings" });
+      }}
       onSignOut={menu.signOut}
       copy={menu.copy}
       auth={

@@ -163,6 +163,11 @@
         "description": "User account settings.",
         "keywords": ""
       },
+      "settings": {
+        "title": "Settings | Vedic Patro",
+        "description": "Language, calendar, calculation and theme.",
+        "keywords": ""
+      },
       "verify_email": {
         "title": "Verify Email | Vedic Patro",
         "description": "Verify your email address.",

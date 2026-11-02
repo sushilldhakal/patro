@@ -75,6 +75,7 @@ export const ROUTES: RouteMeta[] = [
   { id: "element", path: "/panchanga/element/$name" },
   { id: "sait", path: "/sait/$category" },
   { id: "account", path: "/account", seoKey: "seo.routes.account", noindex: true, prerender: true },
+  { id: "settings", path: "/account/settings", seoKey: "seo.routes.settings", noindex: true, prerender: true },
   { id: "verify-email", path: "/verify-email", seoKey: "seo.routes.verify_email", noindex: true, prerender: true },
   { id: "reset-password", path: "/reset-password", seoKey: "seo.routes.reset_password", noindex: true, prerender: true },
   { id: "privacy", path: "/privacy", seoKey: "seo.routes.privacy", sitemap: { changefreq: "monthly", priority: "0.3" }, prerender: true },
