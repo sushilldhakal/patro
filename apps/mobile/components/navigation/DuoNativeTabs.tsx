@@ -19,8 +19,8 @@ const TAB_ROUTE = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "le
  */
 export function DuoNativeTabs() {
   const { pick } = useLocale();
-  const { slots } = useDuoRail();
-  const plan = planRail(slots, true);
+  const { slots, folded } = useDuoRail();
+  const plan = planRail(slots, folded);
   return (
     <>
       <DuoToolbar tabsInBar />

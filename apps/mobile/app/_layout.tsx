@@ -33,8 +33,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { DuoOverlays } from "@/components/navigation/DuoOverlays";
-import { DuoToolbar } from "@/components/navigation/DuoToolbar";
-import { FloatingNavBar } from "@/components/FloatingNavBar";
+import { DuoPageFrame } from "@/components/navigation/DuoPageFrame";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
@@ -400,13 +399,7 @@ function RootShell({
             ) : IS_IPHONE_DUO ? (
               // Duo pages pushed over the tabs: the same native toolbar as the tabs, the page kept clear of
               // the rail by the native SafeAreaView, and the floating bar back in unfolded portrait.
-              <View style={{ flex: 1 }}>
-                <DuoToolbar tabsInBar={false} />
-                <SafeAreaView edges={["top", "left", "right"]} style={{ flex: 1 }}>
-                  {children}
-                </SafeAreaView>
-                <FloatingNavBar duoPortrait />
-              </View>
+              <DuoPageFrame>{children}</DuoPageFrame>
             ) : PAGE_CHROME_ROUTES.has(route.name) ? (
               <PageChrome routeName={route.name}>{children}</PageChrome>
             ) : (

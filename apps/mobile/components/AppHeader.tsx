@@ -305,7 +305,14 @@ function NavDrawer({
   if (!mounted) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={onClose}>
+    <Modal
+      visible
+      transparent
+      animationType="none"
+      onRequestClose={onClose}
+      // RN's default is portrait only, which turned the drawer sideways in landscape (folded Duo).
+      supportedOrientations={["portrait", "portrait-upside-down", "landscape", "landscape-left", "landscape-right"]}
+    >
       {/* A Modal is its own window on Android: gestures need their own root inside it. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
       <Animated.View style={scrimMotion}>

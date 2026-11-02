@@ -2,10 +2,15 @@ import { useCallback } from "react";
 import { Share } from "react-native";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { planRail, useDuoRail } from "@/lib/duo-rail";
+import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
+import { FLOATING_NAV } from "@/lib/mobile-nav";
+import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
 import { requestOpenMenu, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
+
+/** SF Symbol per tab, in `ALL_TABS` order. */
+const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
 
 const SITE = "https://www.vedicpatro.com";
 
@@ -30,8 +35,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
-  const { slots } = useDuoRail();
-  const plan = planRail(slots, tabsInBar);
+  const navPress = useNavPress();
+  const { slots, folded, horizontal } = useDuoRail();
+  const plan = planRail(slots, folded);
+  const { pick } = useLocale();
 
   const onProfile = useCallback(() => {
     if (isAuthenticated) router.push("/account" as never);
@@ -55,6 +62,21 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           accessibilityLabel={t("account_page.title")}
           onPress={onProfile}
         />
+        {/* A page pushed over the tabs has no tab bar, so the rail carries the destinations itself
+            (unfolded portrait uses the floating bar instead). */}
+        {!tabsInBar && !horizontal
+          ? ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {
+              const i = ALL_TABS.indexOf(tab);
+              return (
+                <Stack.Toolbar.Button
+                  key={tab}
+                  icon={TAB_SF[i]}
+                  accessibilityLabel={pick(FLOATING_NAV[i].ne, FLOATING_NAV[i].en)}
+                  onPress={() => navPress(FLOATING_NAV[i].href)}
+                />
+              );
+            })
+          : null}
         {plan.settings ? (
           <Stack.Toolbar.Button icon="gearshape" accessibilityLabel={t("account_page.settings")} onPress={toSettings} />
         ) : null}
@@ -72,6 +94,14 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
               {t("ui.more.share_the_app")}
             </Stack.Toolbar.MenuAction>
           )}
+          {plan.overflowTabs.map((tab) => {
+            const i = ALL_TABS.indexOf(tab);
+            return (
+              <Stack.Toolbar.MenuAction key={tab} icon={TAB_SF[i]} onPress={() => navPress(FLOATING_NAV[i].href)}>
+                {pick(FLOATING_NAV[i].ne, FLOATING_NAV[i].en)}
+              </Stack.Toolbar.MenuAction>
+            );
+          })}
           <Stack.Toolbar.MenuAction icon="bell" onPress={() => router.push("/reminders" as never)}>
             {t("ui.reminders.reminders")}
           </Stack.Toolbar.MenuAction>

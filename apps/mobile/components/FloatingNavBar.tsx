@@ -20,6 +20,9 @@ import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 
+/** Tabs the open Duo leaves out of its nav (the side menu still reaches them). */
+const DUO_HIDDEN: ReadonlySet<string> = new Set(["/kundali", "/vastu"]);
+
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /**
@@ -62,7 +65,7 @@ function FloatingNavBarView() {
         style={nativeShadow("lg")}
         className={cn("w-full flex-row self-center bg-background", shellClasses.navBar)}
       >
-        {FLOATING_NAV.map((item) => {
+        {FLOATING_NAV.filter((item) => !(IS_IPHONE_DUO && DUO_HIDDEN.has(item.href))).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
             <NavItem
