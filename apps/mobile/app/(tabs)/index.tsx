@@ -47,6 +47,7 @@ import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { scrollViewIntoView, usePageScrollerRef } from "@/lib/page-scroll";
 import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { withDuoRailInset } from "@/components/navigation/DuoSceneInset";
 
 const ASIDE_SIDEBAR_SPLIT = 1280;
 const ASIDE_WIDTH = 360;
@@ -154,7 +155,7 @@ function MonthGridSwipe({
   );
 }
 
-export default function HomeScreen() {
+function HomeScreen() {
   const belowFoldReady = useDeferredMount();
   const refreshControl = usePageRefreshControl();
   const { t, digits, lang } = useLocale();
@@ -512,3 +513,5 @@ export default function HomeScreen() {
     </>
   );
 }
+
+export default withDuoRailInset(HomeScreen);

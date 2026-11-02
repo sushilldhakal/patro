@@ -2,8 +2,9 @@ import { Stack } from "expo-router";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
 import { crossTabBackListeners } from "@/lib/cross-tab-back";
+import { withDuoRailInset } from "@/components/navigation/DuoSceneInset";
 
-export default function LearnLayout() {
+function LearnLayout() {
   const colors = useThemeColors();
   const fade = useRailPageAnimation();
   return (
@@ -17,3 +18,5 @@ export default function LearnLayout() {
     />
   );
 }
+
+export default withDuoRailInset(LearnLayout);

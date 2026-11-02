@@ -39,6 +39,7 @@ import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-k
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { illustration } from "@vedic-patro/design-tokens";
 import { useBrowsedBsMonth } from "@vedic-patro/features/patro-date";
+import { withDuoRailInset } from "@/components/navigation/DuoSceneInset";
 
 type PageCopy = ReturnType<typeof useDainikKrantiPage>["copy"];
 
@@ -69,7 +70,7 @@ const DAINIK_TABLE_WIDTH =
   DAINIK_COL_TRANSIT +
   DAINIK_FESTIVAL_COL_W;
 
-export default function DainikKrantiScreen() {
+function DainikKrantiScreen() {
   const { t } = useLocale();
   const { isCompact, width: screenWidth } = useBreakpoint();
   const colors = useThemeColors();
@@ -615,3 +616,5 @@ function DesktopPatroTable({ rows: allRows, copy, isError }: { rows: DainikDayRo
     </TableScrollShell>
   );
 }
+
+export default withDuoRailInset(DainikKrantiScreen);

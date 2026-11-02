@@ -391,8 +391,11 @@ function RootShell({
             contentStyle: { backgroundColor: colors.background },
           }}
           screenLayout={({ route, children }) =>
-            IS_IPHONE_DUO ? (
-              // Duo: the rail takes one side (whichever iOS picks); the native SafeAreaView keeps the page clear of it.
+            IS_IPHONE_DUO && route.name === "(tabs)" ? (
+              // The tab scenes keep clear of the rail themselves (DuoNativeTabs), so no second inset here.
+              children
+            ) : IS_IPHONE_DUO ? (
+              // Duo pages pushed over the tabs: the rail takes one side (whichever iOS picks); the native SafeAreaView keeps the page clear of it.
               <SafeAreaView edges={["left", "right"]} style={{ flex: 1 }}>
                 {children}
               </SafeAreaView>

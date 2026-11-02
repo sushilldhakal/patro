@@ -1,13 +1,14 @@
 import { Stack } from "expo-router";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
+import { withDuoRailInset } from "@/components/navigation/DuoSceneInset";
 
 /**
  * Shell sidebar is provided by `PanchangaTabsShell` in `(tabs)/_layout.tsx`. The tab holds only the
  * daily page: every other panchanga page is in the root stack (app/panchanga), so it opens over
  * whatever it was opened from and a swipe back shows that page.
  */
-export default function PanchangaLayout() {
+function PanchangaLayout() {
   const colors = useThemeColors();
   const fade = useRailPageAnimation();
   return (
@@ -22,3 +23,5 @@ export default function PanchangaLayout() {
     />
   );
 }
+
+export default withDuoRailInset(PanchangaLayout);

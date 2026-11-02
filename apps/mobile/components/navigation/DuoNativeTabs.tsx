@@ -66,9 +66,17 @@ export function DuoNativeTabs() {
           onPress={onProfile}
         />
         <Stack.Toolbar.Button icon="gearshape" accessibilityLabel={t("account_page.settings")} onPress={() => router.push("/account/settings" as never)} />
-        <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
-        <Stack.Toolbar.Button icon="bell" accessibilityLabel={t("ui.reminders.reminders")} onPress={() => router.push("/reminders" as never)} />
-        <Stack.Toolbar.Button icon="sun.max" accessibilityLabel={t("nav.jyotish_rashifal")} onPress={() => router.push("/rashifal" as never)} />
+        <Stack.Toolbar.Menu icon="ellipsis" title={t("menu_open")}>
+          <Stack.Toolbar.MenuAction icon="square.and.arrow.up" onPress={() => void onShare()}>
+            {t("ui.more.share_the_app")}
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction icon="bell" onPress={() => router.push("/reminders" as never)}>
+            {t("ui.reminders.reminders")}
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction icon="sun.max" onPress={() => router.push("/rashifal" as never)}>
+            {t("nav.jyotish_rashifal")}
+          </Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
       </Stack.Toolbar>
       <NativeTabs>
         {FLOATING_NAV.map((item, i) => (

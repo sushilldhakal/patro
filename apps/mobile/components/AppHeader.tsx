@@ -12,6 +12,7 @@ import { AccountMenu } from "@/components/auth/AccountMenu";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -277,7 +278,8 @@ function NavDrawer({
     backgroundColor: SCRIM_COLOR,
     opacity: reduced ? fade.get() : interpolate(x.get(), [-widthSv.get(), 0], [0, 1], Extrapolation.CLAMP),
   }));
-  const drawerPaddingTop = insets.top;
+  // Duo: the status pill sits top-right, outside this drawer, so it does not need the status-bar gap.
+  const drawerPaddingTop = IS_IPHONE_DUO ? 12 : insets.top;
   const drawerPaddingBottom = insets.bottom;
   const drawerBackground = colors.card;
   const drawerBorder = colors.border;

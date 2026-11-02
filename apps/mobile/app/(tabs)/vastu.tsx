@@ -26,6 +26,7 @@ import { VASTU_INK, type VastuSelectionId } from "@vedic-patro/domain/vastu/vast
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { spaceUnit } from "@vedic-patro/design-tokens";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
+import { withDuoRailInset } from "@/components/navigation/DuoSceneInset";
 
 /** Page padding the wheel sits inside. */
 const WHEEL_CHROME = 40;
@@ -184,7 +185,7 @@ function SectionCard({
   );
 }
 
-export default function VastuScreen() {
+function VastuScreen() {
   const colors = useThemeColors();
   const { width, isTablet } = useBreakpoint();
   const page = useVastuPage({ useCompass: useCompassHeading });
@@ -387,3 +388,5 @@ export default function VastuScreen() {
     </AppShell>
   );
 }
+
+export default withDuoRailInset(VastuScreen);
