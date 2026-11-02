@@ -9,7 +9,7 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
-import { DUO_TOOLBAR_WIDTH, IS_IPHONE_DUO } from "@/lib/iphone-duo";
+import { IS_IPHONE_DUO, useDuoShellInsets } from "@/lib/iphone-duo";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -30,6 +30,7 @@ export function FloatingNavBar() {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
+  const duo = useDuoShellInsets();
   const { isTablet } = useBreakpoint();
 
   /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
@@ -43,10 +44,10 @@ export function FloatingNavBar() {
         pointerEvents="box-none"
         style={{
           position: "absolute",
-          right: Math.max(insets.right, 4),
+          right: 4,
           top: insets.top + DUO_RAIL_TOP,
           bottom: Math.max(insets.bottom, 12),
-          width: DUO_TOOLBAR_WIDTH - 8,
+          width: duo.right - 8,
           justifyContent: "center",
         }}
       >
