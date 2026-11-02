@@ -7,13 +7,12 @@ import { Text } from "@/components/ui/Text";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { IS_IPHONE_DUO, useDuoShellInsets } from "@/lib/iphone-duo";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
-import { useOpenMenuRequest } from "@/lib/menu-request";
+import { requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -65,11 +64,11 @@ function BrandMark({ onPress, centered }: { onPress: () => void; centered?: bool
   );
 }
 
-export function AppHeader() {
-  const { t, pick } = useLocale();
-  const colors = useThemeColors();
-  const insets = useSafeAreaInsets();
-  const duo = useDuoShellInsets();
+/**
+ * The side menu and its open/close/navigate flow. It opens on `requestOpenMenu()`, so the header's
+ * menu button, the home edge swipe and the iPhone Duo's native toolbar all reach the same drawer.
+ */
+export function NavDrawerHost() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navPress = useNavPress();
   useOpenMenuRequest(useCallback(() => setMenuOpen(true), []));
@@ -92,19 +91,30 @@ export function AppHeader() {
   }, [navPress]);
 
   return (
+    <NavDrawer
+      open={menuOpen}
+      onClose={() => setMenuOpen(false)}
+      onClosed={onDrawerClosed}
+      onNavigate={go}
+    />
+  );
+}
+
+export function AppHeader() {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
+  const navPress = useNavPress();
+
+  return (
     <View
-      style={
-        IS_IPHONE_DUO
-          ? // iPhone Duo: clear the system toolbar over the top-right corner (lib/iphone-duo.ts).
-            { paddingTop: insets.top + duo.top, paddingLeft: duo.left, paddingRight: duo.right }
-          : { paddingTop: insets.top }
-      }
+      style={{ paddingTop: insets.top }}
       className={shellClasses.header}
     >
       <View className={cn("min-h-16 w-full flex-row py-2", shellClasses.headerInner)}>
         <View className="flex-1 flex-row justify-start">
           <Pressable
-            onPress={() => setMenuOpen(true)}
+            onPress={requestOpenMenu}
             className="h-9 w-9 items-center justify-center rounded-lg active:bg-muted"
             accessibilityLabel={t("menu_open")}
           >
@@ -113,7 +123,7 @@ export function AppHeader() {
         </View>
 
         <View className="shrink-0">
-          <BrandMark onPress={() => go("/")} centered />
+          <BrandMark onPress={() => navPress("/")} centered />
         </View>
 
         <View className="flex-1 flex-row items-center justify-end gap-2">
@@ -121,12 +131,7 @@ export function AppHeader() {
         </View>
       </View>
 
-      <NavDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        onClosed={onDrawerClosed}
-        onNavigate={go}
-      />
+      <NavDrawerHost />
     </View>
   );
 }

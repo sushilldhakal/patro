@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { AppHeader } from "@/components/AppHeader";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
-import { IS_IPHONE_DUO, useDuoShellInsets } from "@/lib/iphone-duo";
 
 /**
  * Pages in the root stack (holidays, ritu, sait, documents, …) that are not
@@ -77,13 +76,10 @@ function useMountAfterFirstFrame(): boolean {
 
 export function PageChrome({ routeName, children }: { routeName: string; children: ReactNode }) {
   const ready = useMountAfterFirstFrame();
-  const duo = useDuoShellInsets();
-  /** iPhone Duo only: keep the page (date/location row) clear of the toolbar's sides. */
-  const duoSides = IS_IPHONE_DUO ? { paddingLeft: duo.left, paddingRight: duo.right } : undefined;
   return (
     <View className="flex-1 bg-background" style={{ flex: 1 }}>
       <AppHeader />
-      <View className="min-h-0 flex-1" style={duoSides}>
+      <View className="min-h-0 flex-1">
         {ready ? (
           // Panchanga pages scroll themselves, as they did in the panchanga tab: the shell stays plain views.
           <PanchangaTabsShell routeName={routeName} stableTree={routeName.startsWith("panchanga/")}>

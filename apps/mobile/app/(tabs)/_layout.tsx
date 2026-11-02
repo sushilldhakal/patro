@@ -9,7 +9,8 @@ import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight, normalizeMobilePathname } from "@/lib/mobile-nav";
 import { requestOpenMenu } from "@/lib/menu-request";
 import { useBreakpoint } from "@/lib/responsive";
-import { IS_IPHONE_DUO, useDuoShellInsets } from "@/lib/iphone-duo";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
+import { DuoNativeTabs } from "@/components/navigation/DuoNativeTabs";
 import { useThemeColors } from "@/lib/theme-context";
 
 /** Width of the left-edge strip that starts the menu swipe on home, in points. */
@@ -62,14 +63,11 @@ function EdgeSwipeStrip({ bottom }: { bottom: number }) {
   );
 }
 
-export default function TabsLayout() {
+function JsTabsLayout() {
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const tabBarHeight = floatingNavTabBarHeight(isTablet, insets.bottom);
-  const duo = useDuoShellInsets();
-  /** iPhone Duo only: keep the page (date/location row) clear of the toolbar's sides. */
-  const duoSides = IS_IPHONE_DUO ? { paddingLeft: duo.left, paddingRight: duo.right } : undefined;
 
   return (
     <Tabs
@@ -77,7 +75,7 @@ export default function TabsLayout() {
       layout={({ children }) => (
         <View className="flex-1 bg-background" style={{ flex: 1 }}>
           <AppHeader />
-          <View className="min-h-0 flex-1" style={duoSides}>
+          <View className="min-h-0 flex-1">
             {children}
             <EdgeSwipeStrip bottom={tabBarHeight} />
           </View>
@@ -118,4 +116,9 @@ export default function TabsLayout() {
       ))}
     </Tabs>
   );
+}
+
+/** The Duo gets the system tab bar so iOS can lay it out in the vertical rail; everything else the floating bar. */
+export default function TabsLayout() {
+  return IS_IPHONE_DUO ? <DuoNativeTabs /> : <JsTabsLayout />;
 }

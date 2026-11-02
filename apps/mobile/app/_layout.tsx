@@ -30,7 +30,8 @@ import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, 
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
@@ -373,7 +374,12 @@ function RootShell({
       ) : (
         <Stack
           screenOptions={{
-            headerShown: false,
+            // iPhone Duo: native headers, so iOS puts back and the toolbar items in its vertical
+            // rail (components/navigation/DuoNativeTabs.tsx). Everywhere else the pages draw their own.
+            headerShown: IS_IPHONE_DUO,
+            ...(IS_IPHONE_DUO
+              ? { title: "", headerBackButtonDisplayMode: "minimal" as const, headerShadowVisible: false }
+              : {}),
             // Pages push in with the platform's own slide and swipe back from anywhere on the
             // screen, finger-tracked. A wide layout (the sidebar rail stays put) and Reduce
             // Motion fade instead.
@@ -385,7 +391,16 @@ function RootShell({
             contentStyle: { backgroundColor: colors.background },
           }}
           screenLayout={({ route, children }) =>
-            PAGE_CHROME_ROUTES.has(route.name) ? <PageChrome routeName={route.name}>{children}</PageChrome> : children
+            IS_IPHONE_DUO ? (
+              // Duo: the rail takes one side (whichever iOS picks); the native SafeAreaView keeps the page clear of it.
+              <SafeAreaView edges={["left", "right"]} style={{ flex: 1 }}>
+                {children}
+              </SafeAreaView>
+            ) : PAGE_CHROME_ROUTES.has(route.name) ? (
+              <PageChrome routeName={route.name}>{children}</PageChrome>
+            ) : (
+              children
+            )
           }
         >
           {/* The tabs are the base of the stack and there is only ever one of them: a link to a
