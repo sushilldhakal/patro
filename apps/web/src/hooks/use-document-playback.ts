@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { suktaTracksFrom } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { useFullRecordingAudio } from "@/hooks/use-full-recording-audio";
 import { useShlokaPlayer } from "@/hooks/use-shloka-player";
@@ -11,17 +12,25 @@ import { useShlokaPlayer } from "@/hooks/use-shloka-player";
  * same `PlaybackBar` from the same logic instead of duplicating it.
  */
 export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | null | undefined) {
-  const player = useShlokaPlayer(shlokas);
-  const fullAudio = useFullRecordingAudio(fullAudioUrl);
+  const suktaTracks = useMemo(() => (fullAudioUrl ? [] : suktaTracksFrom(shlokas)), [fullAudioUrl, shlokas]);
+  const hasSuktaAudio = suktaTracks.length > 0;
+  const queue = useMemo(
+    () => (fullAudioUrl ? [fullAudioUrl] : suktaTracks.map((track) => track.url)),
+    [fullAudioUrl, suktaTracks],
+  );
+  const onClipMissingRef = useRef<(id: number) => boolean>(() => false);
+  const player = useShlokaPlayer(shlokas, (id) => onClipMissingRef.current(id));
+  const fullAudio = useFullRecordingAudio(queue);
 
   // Which player currently owns the floating bar / actual sound — null until
   // the listener has engaged either one this visit.
   const [mode, setMode] = useState<"full" | "verse" | null>(null);
 
   const startFull = useCallback(() => {
+    player.stop();
     setMode("full");
     fullAudio.play();
-  }, [fullAudio]);
+  }, [player, fullAudio]);
 
   // A click on any individual verse always hands control to the per-verse
   // engine and stops the full recording outright — `player.playing` alone
@@ -33,12 +42,12 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
       ...player,
       play: (id: number) => {
         setMode("verse");
-        fullAudio.pause();
+        fullAudio.handover();
         player.play(id);
       },
       toggle: (id: number) => {
         setMode("verse");
-        fullAudio.pause();
+        fullAudio.handover();
         player.toggle(id);
       },
     }),
@@ -47,12 +56,39 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
 
   const activeShloka = shlokas.find((s) => s.id === player.activeId) ?? null;
 
+  const handledMiss = useRef<number | null>(null);
+  useEffect(() => {
+    onClipMissingRef.current = (id) => {
+      if (!hasSuktaAudio) return false;
+      if (handledMiss.current === id) return true;
+      const sukta = shlokas.find((s) => s.id === id)?.sukta_number;
+      if (sukta == null) return false;
+      const at = suktaTracks.findIndex((track) => track.sukta === sukta);
+      if (at < 0) return false;
+      handledMiss.current = id;
+      player.stop();
+      setMode("full");
+      fullAudio.playAt(at);
+      return true;
+    };
+  });
+
   const switchToFull = useCallback(() => {
+    if (!fullAudioUrl && hasSuktaAudio) {
+      const sukta = activeShloka?.sukta_number;
+      if (sukta == null) return;
+      const at = suktaTracks.findIndex((track) => track.sukta === sukta);
+      if (at < 0) return;
+      player.stop();
+      setMode("full");
+      fullAudio.playAt(at);
+      return;
+    }
     if (activeShloka?.full_audio_start == null) return;
     player.pause();
     setMode("full");
     fullAudio.playFrom(activeShloka.full_audio_start);
-  }, [activeShloka, player, fullAudio]);
+  }, [fullAudioUrl, hasSuktaAudio, activeShloka, suktaTracks, player, fullAudio]);
 
   // Per-verse play button for documents that have only the full recording
   // (no per-verse clips) but carry each verse's timestamp within it — e.g.
@@ -123,5 +159,7 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
     switchToFull,
     activeShloka,
     fullRecordingControls,
+    hasSuktaAudio,
+    suktaNumber: hasSuktaAudio ? (suktaTracks[fullAudio.index]?.sukta ?? null) : null,
   };
 }

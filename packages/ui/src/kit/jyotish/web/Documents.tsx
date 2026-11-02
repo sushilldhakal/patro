@@ -80,6 +80,8 @@ export function PlaybackBar(props: PlaybackBarProps) {
   const bar = usePlaybackBar({
     mode: props.mode,
     hasFullRecording: props.hasFullRecording,
+    hasSuktaAudio: props.hasSuktaAudio,
+    suktaNumber: props.suktaNumber,
     canPlayThrough: Boolean(props.onPlayThrough),
     full: { playing: props.fullPlaying, currentTime: props.fullCurrentTime, duration: props.fullDuration },
     verse: { playing: props.versePlaying, currentTime: props.verseCurrentTime, duration: props.verseDuration },
@@ -115,7 +117,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled className={bar.full.playing ? undefined : "ml-0.5"} />
           </button>
           <Box className={documentsClasses.fill}>
-            <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{copy.playFull}</Text>
+            <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{bar.full.title}</Text>
             <Box className={documentsClasses.barScrubRow}>
               <Text as="span" className={documentsClasses.barTime}>{bar.full.current}</Text>
               <input

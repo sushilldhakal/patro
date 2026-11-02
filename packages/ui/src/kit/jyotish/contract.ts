@@ -220,6 +220,10 @@ export type PlaybackSeekArgs = {
 export type PlaybackBarProps = {
   mode: "full" | "verse" | null;
   hasFullRecording: boolean;
+  /** Rigveda: the bar's play button starts the continuous sukta file. */
+  hasSuktaAudio?: boolean;
+  /** Sukta currently sounding, for the bar's label. */
+  suktaNumber?: number | null;
   documentTitle: string;
   onStartFull: () => void;
   onPlayThrough?: () => void;

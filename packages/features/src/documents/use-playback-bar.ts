@@ -25,6 +25,8 @@ function percent(clock: PlaybackClock): number {
 export function usePlaybackBar({
   mode,
   hasFullRecording,
+  hasSuktaAudio,
+  suktaNumber,
   canPlayThrough,
   full,
   verse,
@@ -33,21 +35,26 @@ export function usePlaybackBar({
   /** `null` until something is engaged, then which recording is playing. */
   mode: "full" | "verse" | null;
   hasFullRecording: boolean;
+  /** Continuous per-sukta files (Rigveda). The bar plays those; a verse button still plays that verse. */
+  hasSuktaAudio?: boolean;
+  /** Sukta sounding now, when the bar is on a sukta file. */
+  suktaNumber?: number | null;
   /** Verses have their own clips to play one after another. */
   canPlayThrough: boolean;
   full: PlaybackClock;
   verse: PlaybackClock;
   activeShloka: Shloka | null;
 }) {
-  const { t, lang } = useLocale();
+  const { t, lang, digits } = useLocale();
 
   const copy = {
     playFull: t("documents.play_full_recording"),
     playThrough: t("documents.play_through"),
+    playSukta: t("documents.play_sukta"),
     seek: t("documents.seek"),
     prevVerse: t("documents.prev_verse"),
     nextVerse: t("documents.next_verse"),
-    switchToFull: t("documents.switch_to_full"),
+    switchToFull: hasSuktaAudio ? t("documents.play_sukta") : t("documents.switch_to_full"),
   };
 
   const face: "hidden" | "idle" | "full" | "verse" =
@@ -69,11 +76,12 @@ export function usePlaybackBar({
     idle: {
       /** Starting plays the full recording when there is one, else the verses one by one. */
       startsFull: hasFullRecording,
-      title: hasFullRecording ? copy.playFull : copy.playThrough,
+      title: hasSuktaAudio ? copy.playSukta : hasFullRecording ? copy.playFull : copy.playThrough,
     },
     full: {
       playing: full.playing,
-      toggleLabel: full.playing ? t("documents.pause_verse") : copy.playFull,
+      title: hasSuktaAudio && suktaNumber != null ? t("documents.sukta_label", { number: digits(suktaNumber) }) : copy.playFull,
+      toggleLabel: full.playing ? t("documents.pause_verse") : hasSuktaAudio ? copy.playSukta : copy.playFull,
       current: formatPlaybackTime(full.currentTime),
       total: formatPlaybackTime(full.duration),
       fillPct: percent(full),
@@ -88,8 +96,10 @@ export function usePlaybackBar({
       title: activeShloka
         ? `${t("documents.now_playing", { label: activeShloka.verse_label })}${meaning ? ` — ${meaning}` : ""}`
         : "",
-      /** Hand off to the full recording at this verse's own timestamp. */
-      canSwitchToFull: hasFullRecording && activeShloka?.full_audio_start != null,
+      /** Hand off to the full recording at this verse's timestamp, or to this verse's sukta file. */
+      canSwitchToFull:
+        (hasFullRecording && activeShloka?.full_audio_start != null) ||
+        Boolean(hasSuktaAudio && activeShloka?.sukta_number != null),
     },
   };
 }

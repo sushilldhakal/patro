@@ -31,7 +31,7 @@ export function DocumentChapterDetail() {
 
   useRouteLoading(page.loading);
 
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka } = useDocumentPlayback(
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber } = useDocumentPlayback(
     page.shlokas,
     page.fullAudioUrl,
   );
@@ -152,9 +152,11 @@ export function DocumentChapterDetail() {
       <PlaybackBar
         mode={mode}
         hasFullRecording={Boolean(page.fullAudioUrl)}
+        hasSuktaAudio={hasSuktaAudio}
+        suktaNumber={mode === "full" ? suktaNumber : null}
         documentTitle={page.docTitle}
         onStartFull={startFull}
-        onPlayThrough={playThrough ? () => versePlayer.play(playThrough.id) : undefined}
+        onPlayThrough={hasSuktaAudio ? startFull : playThrough ? () => versePlayer.play(playThrough.id) : undefined}
         fullPlaying={fullAudio.playing}
         fullCurrentTime={fullAudio.currentTime}
         fullDuration={fullAudio.duration}

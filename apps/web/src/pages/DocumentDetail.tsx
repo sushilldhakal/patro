@@ -41,7 +41,7 @@ export function DocumentDetail() {
 
   useRouteLoading(page.status === "loading");
 
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls } =
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls, hasSuktaAudio, suktaNumber } =
     useDocumentPlayback(page.shlokas, page.fullAudioUrl);
 
   useEffect(() => {
@@ -249,9 +249,11 @@ export function DocumentDetail() {
       <PlaybackBar
         mode={mode}
         hasFullRecording={hasFullRecording}
+        hasSuktaAudio={hasSuktaAudio}
+        suktaNumber={mode === "full" ? suktaNumber : null}
         documentTitle={page.title}
         onStartFull={startFull}
-        onPlayThrough={playThrough ? () => versePlayer.play(playThrough.id) : undefined}
+        onPlayThrough={hasSuktaAudio ? startFull : playThrough ? () => versePlayer.play(playThrough.id) : undefined}
         fullPlaying={fullAudio.playing}
         fullCurrentTime={fullAudio.currentTime}
         fullDuration={fullAudio.duration}

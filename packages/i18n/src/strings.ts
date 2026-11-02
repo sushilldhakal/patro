@@ -7188,6 +7188,7 @@ export const strings = {
   "documents.seek": { ne: "स्थिति सार्नुहोस्", en: "Seek" },
   "documents.play_full_recording": { ne: "पूरा रेकर्डिङ सुन्नुहोस्", en: "Play full recording" },
   "documents.play_through": { ne: "सुरुदेखि सुन्नुहोस्", en: "Play from the start" },
+  "documents.play_sukta": { ne: "सूक्त सुन्नुहोस्", en: "Play sukta" },
   "documents.switch_to_full": { ne: "पूरा रेकर्डिङमा जानुहोस्", en: "Switch to full recording" },
   "documents.source": { ne: "स्रोत", en: "Source" },
   "documents.category_tabs_label": { ne: "ग्रन्थका प्रकार", en: "Document categories" },

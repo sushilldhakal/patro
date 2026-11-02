@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Shloka } from "@/lib/documents-api";
-import { ShlokaAudioEngine } from "@/lib/shloka-audio-engine";
 import { ShlokaElementEngine } from "@/lib/shloka-element-engine";
 
 /**
- * Phones lock the Web Audio engine the moment the screen turns off or the user
- * leaves the page, so touch devices use the `<audio>`-element engine, which
- * keeps playing in the background with lock-screen controls. Desktop keeps the
- * gapless Web Audio engine.
+ * Verse clips play through an `<audio>` element. The gapless Web Audio engine
+ * has to `fetch` the file, and the Rigveda bucket does not send CORS headers,
+ * so that fetch fails and a verse tap would never sound. A sukta file is a
+ * separate `<audio>` and is what the floating bar plays.
  */
-function prefersBackgroundAudio(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia?.("(pointer: coarse)").matches || navigator.maxTouchPoints > 1;
+function verseEngine(callbacks: ConstructorParameters<typeof ShlokaElementEngine>[0]) {
+  return new ShlokaElementEngine(callbacks);
 }
 
 export interface ShlokaPlayerState {
@@ -28,6 +26,8 @@ export interface ShlokaPlayerState {
   registerItemRef: (id: number, el: HTMLElement | null) => void;
   play: (id: number) => void;
   pause: () => void;
+  /** Pause and drop the highlighted verse, so a sukta recording can take the bar. */
+  stop: () => void;
   toggle: (id: number) => void;
   next: () => void;
   prev: () => void;
@@ -62,7 +62,11 @@ export interface ShlokaPlayerState {
  * starts audio — {@link toggleMeaning} is independent of play state, and
  * several verses' meanings may be open at once.
  */
-export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
+export function useShlokaPlayer(
+  shlokas: Shloka[],
+  /** Return true when a missing verse clip was handled another way (Rigveda plays that sukta). */
+  onClipMissing?: (id: number) => boolean,
+): ShlokaPlayerState {
   const itemRefs = useRef(new Map<number, HTMLElement>());
   // "engine*" is what this hook's own ShlokaAudioEngine is actually doing;
   // the publicly returned activeId/playing/progress below fold in
@@ -90,7 +94,12 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
   // get their real (always-current) closures wired up by the effect below —
   // `play()`/`pause()` etc. are only ever called from post-mount user
   // interactions, never synchronously during this initializer.
-  const [engine] = useState(() => new (prefersBackgroundAudio() ? ShlokaElementEngine : ShlokaAudioEngine)({
+  const onClipMissingRef = useRef(onClipMissing);
+  useEffect(() => {
+    onClipMissingRef.current = onClipMissing;
+  });
+
+  const [engine] = useState(() => verseEngine({
     onActiveChange: () => {},
     onPlayingChange: () => {},
     onTime: () => {},
@@ -109,8 +118,10 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
       shouldHoldAtEnd: (id) => openMeaningIds.has(id),
       onError: (id) => {
         /* A recording that was never uploaded: mark it, drop its button, and go on to the
-           next verse that has one rather than stopping dead on a silent play button. */
+           next verse that has one rather than stopping dead on a silent play button.
+           Rigveda hands the miss to the sukta file instead of skipping ahead. */
         setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+        if (onClipMissingRef.current?.(id)) return;
         const i = shlokas.findIndex((s) => s.id === id);
         const next = shlokas.slice(i + 1).find((s) => s.audio_url && !missingIds.has(s.id));
         if (next) engine.play(next.id);
@@ -147,6 +158,16 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
 
   const pause = useCallback(() => {
     engine.pause();
+  }, [engine]);
+
+  const stop = useCallback(() => {
+    engine.pause();
+    setEngineActiveId(null);
+    setEnginePlaying(false);
+    setDisplayOverride(null);
+    setCurrentTime(0);
+    setDuration(0);
+    setEngineProgress(0);
   }, [engine]);
 
   const toggle = useCallback(
@@ -217,6 +238,7 @@ export function useShlokaPlayer(shlokas: Shloka[]): ShlokaPlayerState {
     registerItemRef,
     play,
     pause,
+    stop,
     toggle,
     next,
     prev,
