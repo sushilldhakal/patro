@@ -81,6 +81,9 @@ export default function TabsLayout() {
             {children}
             <EdgeSwipeStrip bottom={tabBarHeight} />
           </View>
+          {/* Duo: the rail lives out here, not in `tabBar`, which sits inside the padded page above
+              and would be offset from the window's right edge by that padding. */}
+          {IS_IPHONE_DUO ? <FloatingNavBar /> : null}
         </View>
       )}
       screenLayout={({ route, navigation, children }) => (
@@ -88,7 +91,7 @@ export default function TabsLayout() {
           <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>
         </UnloadWhenAway>
       )}
-      tabBar={() => <FloatingNavBar />}
+      tabBar={() => (IS_IPHONE_DUO ? null : <FloatingNavBar />)}
       screenOptions={{
         headerShown: false,
         // Not frozen: a tab left for a while unloads instead (UnloadWhenAway), and a frozen tab
@@ -102,7 +105,7 @@ export default function TabsLayout() {
           left: 0,
           right: 0,
           bottom: 0,
-          height: tabBarHeight,
+          height: IS_IPHONE_DUO ? 0 : tabBarHeight,
           backgroundColor: "transparent",
           borderTopWidth: 0,
           elevation: 0, // design-ok: hide the stock tab bar; the floating bar draws its own shadow
