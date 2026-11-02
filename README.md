@@ -66,4 +66,4 @@ TypeScript source; there is no build step.
   shared packages on every push and pull request.
 
 ## Releasing the mobile app
-See [docs/RELEASING.md](docs/RELEASING.md): `npm run release:check`, then `npm run release` builds and submits iOS (TestFlight) and Android (internal, draft) — nothing goes public until you promote it.
+See [docs/RELEASING.md](docs/RELEASING.md): `npm run release:check`, then `npm run release` builds iOS (TestFlight) and Android (internal, draft) on GitHub Actions runners — no EAS build credits used — and submits them; nothing goes public until you promote it.

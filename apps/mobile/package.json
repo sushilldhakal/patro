@@ -24,6 +24,9 @@
     "release:ios": "node scripts/release.mjs --platform ios",
     "release:android": "node scripts/release.mjs --platform android",
     "release:android:production-track": "node scripts/release.mjs --platform android --submit-profile production-track",
+    "release:cloud": "node scripts/release.mjs --cloud",
+    "build:android:local": "eas build --platform android --profile production --local --output build/vedic-patro.aab",
+    "build:ios:local": "eas build --platform ios --profile production --local --output build/vedic-patro.ipa",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

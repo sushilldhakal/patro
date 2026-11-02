@@ -55,7 +55,8 @@
       "ios": {
         "language": "en-US",
         "sku": "vedicpatro",
-        "companyName": "Vedic Patro"
+        "companyName": "Vedic Patro",
+        "ascAppId": "6820382502"
       },
       "android": {
         "track": "internal",

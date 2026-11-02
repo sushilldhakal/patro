@@ -7,11 +7,17 @@ name: TestFlight build (preview channel)
 # build is only needed when something native changes: config, dependencies,
 # icons and splash, or a manual run from the Actions tab.
 #
-# Never release a `testflight` build to the App Store: it follows `preview`,
-# not `production`. Store releases still use the `production` profile.
+# The build runs HERE, on a GitHub macOS runner (`eas build --local`), not on
+# EAS's build servers, so it does not use the plan's monthly EAS build quota.
+# This repository is public, so GitHub-hosted runner minutes are free.
+# Only the upload (`eas submit`) goes through EAS.
 #
-# Needs the EXPO_TOKEN repository secret. Submission uses the App Store
-# Connect API key already stored in the project's EAS credentials.
+# Never release a `testflight` build to the App Store: it follows `preview`,
+# not `production`. Store releases use mobile-release.yml.
+#
+# Needs the EXPO_TOKEN repository secret. Signing uses the distribution
+# certificate and provisioning profile already stored in the project's EAS
+# credentials; submission uses the App Store Connect API key stored there too.
 on:
   push:
     branches: [main]
@@ -35,9 +41,17 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - uses: actions/setup-node@v4
         with:
@@ -51,14 +65,30 @@ jobs:
 
       - run: npm ci --no-audit --no-fund
 
-      # Queues the cloud build and its TestFlight submission, then returns;
-      # follow both on expo.dev (Builds / Submissions).
-      - name: Build and submit to TestFlight
+      - name: Build on this runner
         working-directory: apps/mobile
         run: >
           eas build
           --platform ios
           --profile testflight
-          --auto-submit-with-profile testflight
+          --local
           --non-interactive
-          --no-wait
+          --output "$RUNNER_TEMP/vedic-patro-testflight.ipa"
+
+      - name: Submit to TestFlight
+        working-directory: apps/mobile
+        run: >
+          eas submit
+          --platform ios
+          --profile testflight
+          --path "$RUNNER_TEMP/vedic-patro-testflight.ipa"
+          --non-interactive
+          --wait
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-testflight-${{ github.run_number }}
+          path: ${{ runner.temp }}/vedic-patro-testflight.ipa
+          if-no-files-found: ignore
+          retention-days: 7
