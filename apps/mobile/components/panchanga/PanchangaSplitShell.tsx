@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import { DURATION, useReducedMotionPref } from "@vedic-patro/ui/motion";
-import { floatingNavBottomPadding, PANCHANGA_SIDEBAR_MIN_WIDTH, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PANCHANGA_SIDEBAR_MIN_WIDTH, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { useThemeColors } from "@/lib/theme-context";
@@ -58,6 +58,7 @@ export function PanchangaSplitShell({
 }: Props) {
   const colors = useThemeColors();
   const { isTablet } = useBreakpoint();
+  const navBottom = useNavBottomPadding(isTablet);
   const showSidebar = useShowPanchangaSidebar();
   const pageScrollRef = useScrollToTopOnRouteChange();
   const refreshControl = usePageRefreshControl();
@@ -67,7 +68,7 @@ export function PanchangaSplitShell({
   );
 
   const mainPadding = {
-    paddingBottom: floatingNavBottomPadding(isTablet),
+    paddingBottom: navBottom,
     paddingHorizontal: PAGE_HORIZONTAL_PADDING,
   };
 
@@ -127,7 +128,7 @@ export function PanchangaSplitShell({
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet) }}
+          contentContainerStyle={{ paddingBottom: navBottom }}
         >
           <PanchangaSidebarNav
             className="w-full border-0"

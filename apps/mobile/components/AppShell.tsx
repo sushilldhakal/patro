@@ -11,7 +11,7 @@ import { SiteFooter } from "@/components/branding/SiteFooter";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
 import {
-  floatingNavBottomPadding,
+  useNavBottomPadding,
   PAGE_HORIZONTAL_PADDING,
   PAGE_HORIZONTAL_PADDING_WIDE,
   pageTopPadding,
@@ -46,6 +46,7 @@ export function AppShell({
   panchangaSidebar?: boolean;
 }) {
   const { isTablet, isNarrow, isCompact } = useBreakpoint();
+  const navBottom = useNavBottomPadding(isTablet);
   const pageScrollRef = useScrollToTopOnRouteChange();
   const refreshControl = usePageRefreshControl();
   const zoomLocked = useZoomScrollLocked();
@@ -92,7 +93,7 @@ export function AppShell({
       <View
         className="mx-auto w-full max-w-page flex-1 bg-background"
         style={{
-          paddingBottom: floatingNavBottomPadding(isTablet),
+          paddingBottom: navBottom,
           paddingHorizontal: pagePadH,
           paddingTop: pagePadTop,
         }}
@@ -113,7 +114,7 @@ export function AppShell({
       className="flex-1 bg-background"
       contentContainerClassName="mx-auto w-full max-w-page"
       contentContainerStyle={{
-        paddingBottom: floatingNavBottomPadding(isTablet),
+        paddingBottom: navBottom,
         paddingHorizontal: pagePadH,
         paddingTop: pagePadTop,
       }}

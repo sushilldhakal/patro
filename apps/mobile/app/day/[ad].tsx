@@ -6,13 +6,14 @@ import { PanchangaDetailCard } from "@/components/PanchangaDetailCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { apiKeys, fetchPanchanga } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { FLOATING_NAV_BOTTOM_PADDING_TABLET, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
+import { PAGE_HORIZONTAL_PADDING, useNavBottomPadding } from "@/lib/mobile-nav";
 import { StandaloneChrome } from "@/components/StandaloneChrome";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 export default function DayDetailScreen() {
   const { ad } = useLocalSearchParams<{ ad: string }>();
   const { t, digits } = useLocale();
+  const navBottom = useNavBottomPadding(true);
 
   const query = useQuery({
     queryKey: apiKeys.panchanga(ad ?? "", "ad"),
@@ -27,7 +28,7 @@ export default function DayDetailScreen() {
         <Text className={msc.dayTitle}>{t("ui.day.day_detail")}</Text>
         <Text className={msc.daySubtitle}>{digits(ad)}</Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING, paddingBottom: FLOATING_NAV_BOTTOM_PADDING_TABLET }}>
+      <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING, paddingBottom: navBottom }}>
         {query.isLoading ? (
           <LoadingState />
         ) : query.isError ? (

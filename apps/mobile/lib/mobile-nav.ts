@@ -1,5 +1,8 @@
 import { FEATURE_ICON } from "@vedic-patro/icons";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDuoPushedPage } from "@/lib/duo-page-context";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 
 /**
  * Primary floating bottom nav — matches web header sections, सिकाइ last.
@@ -37,6 +40,20 @@ export function floatingNavTabBarHeight(isTablet: boolean, safeBottom: number): 
 /** Bottom inset for scroll content — scales slightly on tablet. */
 export function floatingNavBottomPadding(isTablet: boolean): number {
   return isTablet ? FLOATING_NAV_BOTTOM_PADDING_TABLET : FLOATING_NAV_BOTTOM_PADDING;
+}
+
+/**
+ * Bottom padding that keeps scroll content clear of the nav. Everywhere but the iPhone Duo the floating
+ * bar is ours, so a fixed height. On the Duo the bars are the system's: a tab scene gets the tab bar's
+ * inset from iOS itself, so only a gutter is left to add; a page pushed over the tabs gets none, so it
+ * clears the bottom safe area. Nothing here is a fixed bar height, which would double up in the rail
+ * poses (landscape, folded) where the bar is not at the bottom (Expo's iPhone Duo guide).
+ */
+export function useNavBottomPadding(isTablet: boolean): number {
+  const { bottom } = useSafeAreaInsets();
+  const pushed = useDuoPushedPage();
+  if (!IS_IPHONE_DUO) return floatingNavBottomPadding(isTablet);
+  return pushed ? bottom + PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING;
 }
 
 /** Page inset. Matches the website: `px-4` (16) and `sm:px-6` (24). */

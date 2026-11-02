@@ -25,7 +25,7 @@ import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { useThemeColors } from "@/lib/theme-context";
-import { floatingNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
+import { useNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -46,6 +46,7 @@ export default function PanchangaScreen() {
   const colors = useThemeColors();
   const router = useRouter();
   const { width, isTablet, isCompact } = useBreakpoint();
+  const navBottom = useNavBottomPadding(isTablet);
   const inShell = useInPanchangaTabsShell();
   const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
   const splitSidebar = width >= PANCHANGA_SIDEBAR_SPLIT;
@@ -66,7 +67,7 @@ export default function PanchangaScreen() {
       <ScrollView
         refreshControl={refreshControl}
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
+        contentContainerStyle={{ paddingBottom: navBottom, paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
         <ErrorState message={page.copy.error} onRetry={page.retry} />
       </ScrollView>
@@ -80,7 +81,7 @@ export default function PanchangaScreen() {
       <ScrollView
         refreshControl={refreshControl}
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: floatingNavBottomPadding(isTablet), paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
+        contentContainerStyle={{ paddingBottom: navBottom, paddingHorizontal: pagePadH, paddingTop: pageTopPadding(isCompact) }}
       >
         <LoadingState />
       </ScrollView>
@@ -92,7 +93,7 @@ export default function PanchangaScreen() {
       refreshControl={refreshControl}
       className="mx-auto w-full max-w-page flex-1 bg-background"
       contentContainerStyle={{
-        paddingBottom: floatingNavBottomPadding(isTablet),
+        paddingBottom: navBottom,
         paddingTop: pageTopPadding(isCompact),
         paddingHorizontal: pagePadH,
       }}

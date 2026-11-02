@@ -33,7 +33,7 @@ import { resolveLocationTimezone } from "@vedic-patro/read-models/geography/panc
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZONTAL_PADDING_WIDE, pageTopPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, HOME_CARD_INSET, homeContentInset, PAGE_HORIZONTAL_PADDING_WIDE, pageTopPadding } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { eraForCalendar, getCalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
@@ -160,6 +160,7 @@ function HomeScreen() {
   const refreshControl = usePageRefreshControl();
   const { t, digits, lang } = useLocale();
   const { width, isTablet, isPhone, isCompact } = useBreakpoint();
+  const navBottom = useNavBottomPadding(isTablet);
   const { location, setLocation } = usePanchangaLocation();
   const {
     era: browseEra,
@@ -458,7 +459,7 @@ function HomeScreen() {
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-page"
         contentContainerStyle={{
-          paddingBottom: floatingNavBottomPadding(isTablet),
+          paddingBottom: navBottom,
           paddingHorizontal: pageInset,
           paddingTop: pageTopPadding(isCompact),
         }}
