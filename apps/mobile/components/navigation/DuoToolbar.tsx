@@ -36,7 +36,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
   const navPress = useNavPress();
-  const { slots, folded, horizontal } = useDuoRail();
+  const { slots, folded } = useDuoRail();
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
 
@@ -62,21 +62,6 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           accessibilityLabel={t("account_page.title")}
           onPress={onProfile}
         />
-        {/* A page pushed over the tabs has no tab bar, so the rail carries the destinations itself
-            (unfolded portrait uses the floating bar instead). */}
-        {!tabsInBar && !horizontal
-          ? ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {
-              const i = ALL_TABS.indexOf(tab);
-              return (
-                <Stack.Toolbar.Button
-                  key={tab}
-                  icon={TAB_SF[i]}
-                  accessibilityLabel={pick(FLOATING_NAV[i].ne, FLOATING_NAV[i].en)}
-                  onPress={() => navPress(FLOATING_NAV[i].href)}
-                />
-              );
-            })
-          : null}
         {plan.settings ? (
           <Stack.Toolbar.Button icon="gearshape" accessibilityLabel={t("account_page.settings")} onPress={toSettings} />
         ) : null}
@@ -110,9 +95,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           </Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
-      {/* Unfolded portrait, on a page pushed over the tabs: the destinations in the system's own bottom
-          toolbar, so they look like the tab bar on the home page (native glass, SF Symbols). */}
-      {!tabsInBar && horizontal ? (
+      {/* On a page pushed over the tabs: the destinations in the system's own bottom toolbar, which iOS
+          lays out like the tab bar on the home page (below the page in portrait, as its own group at the
+          foot of the rail in landscape and folded). */}
+      {!tabsInBar ? (
         <Stack.Toolbar placement="bottom">
           <Stack.Toolbar.Spacer />
           {ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {
