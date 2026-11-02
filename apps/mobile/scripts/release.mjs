@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * One-command release: bump the version, build iOS + Android on EAS, submit them.
+ * One-command release: bump the version, build iOS + Android, submit them.
  *
  *   npm run release                 asks which bump (patch / minor / major / none)
  *   npm run release -- minor        1.1.0 -> 1.2.0   (also: patch, major, none, or an exact 1.4.0)
@@ -11,13 +11,18 @@
  *   1. runs the read-only preflight (scripts/release-check.mjs) — stops on failure
  *   2. shows the plan: version  X -> Y  and the next iOS / Android build numbers, asks to confirm
  *   3. writes the new `version` into app.json and commits it ("release: vY") + tags mobile-vY
- *   4. `eas build --auto-submit` (iOS -> TestFlight, Android -> internal track, draft)
- *   5. pushes the commit and tag so git matches what shipped
+ *   4. pushes the commit and tag, then starts the "Mobile release" GitHub Actions workflow
+ *      (.github/workflows/mobile-release.yml) on that tag through the `gh` CLI. The apps are
+ *      built on GitHub's runners (`eas build --local`), so no EAS build credits are used, and
+ *      then submitted (iOS -> TestFlight, Android -> internal track, draft).
+ *
+ *   --cloud  the old way: `eas build --auto-submit` on EAS's servers (uses the monthly EAS
+ *            build quota), then pushes the commit and tag.
  *
  * The build number is separate: EAS raises it by itself for every build (remote versioning,
  * `autoIncrement`), so it is never edited by hand and never goes backwards.
  *
- * Flags: --platform ios|android|all  --submit-profile <name>  --yes  --no-push  --dry-run
+ * Flags: --platform ios|android|all  --submit-profile <name>  --cloud  --yes  --no-push  --dry-run
  */
 import { execSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -34,6 +39,8 @@ const positional = args.find((a, i) => !a.startsWith("--") && !(args[i - 1] ?? "
 const platform = opt("platform", "all");
 const submitProfile = opt("submit-profile", null);
 const dry = flag("dry-run");
+const cloud = flag("cloud");
+const WORKFLOW = "mobile-release.yml";
 const sh = (cmd, cwd = root) => execSync(cmd, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 const die = (m) => { console.error(`\n✗ ${m}\n`); process.exit(1); };
 
@@ -111,6 +118,7 @@ async function main() {
   console.log(`  platforms    ${platform}`);
   const where = [platform !== "android" && "iOS → TestFlight", platform !== "ios" && "Android → internal track (draft)"].filter(Boolean).join(" · ");
   console.log(`  submit to    ${submitProfile ? `profile "${submitProfile}"` : where}`);
+  console.log(`  built on     ${cloud ? "EAS servers (uses EAS build credits)" : `GitHub Actions runners (${WORKFLOW}, no EAS build credits)`}`);
   if (bumped && !existsSync(join(root, "store", `release-notes-${next}.md`))) {
     console.log(`  note         store/release-notes-${next}.md does not exist yet`);
   }
@@ -135,7 +143,12 @@ async function main() {
     console.log(`\n✓ app.json → ${next}, committed and tagged mobile-v${next}`);
   }
 
-  // 4. build + submit
+  if (cloud) await buildOnEas({ next, bumped });
+  else await buildOnGitHub({ next, bumped });
+}
+
+/** The old path: build + submit on EAS's servers, then push. Uses the plan's EAS build credits. */
+async function buildOnEas({ next, bumped }) {
   const eas = ["eas", "build", "--platform", platform, "--profile", "production",
     submitProfile ? `--auto-submit-with-profile=${submitProfile}` : "--auto-submit"];
   console.log(`\n→ npx ${eas.join(" ")}\n`);
@@ -147,12 +160,44 @@ async function main() {
     process.exit(build.status ?? 1);
   }
 
-  // 5. keep git in step with what shipped
+  // keep git in step with what shipped
   if (!flag("no-push") && bumped) {
     try { sh(`git push origin HEAD --follow-tags`, repo); console.log(`\n✓ pushed v${next} and its tag`); }
     catch (e) { console.log(`\n! Could not push (${String(e.message).split("\n")[0]}). Run: git push origin HEAD --follow-tags`); }
   }
   console.log(`\n✓ Release ${next} submitted. iOS: finish in TestFlight → App Store Connect. Android: promote the draft in Play Console.\n`);
+}
+
+/**
+ * The default path: push, then run .github/workflows/mobile-release.yml on GitHub's runners.
+ * The workflow checks out the pushed ref, so the commit has to be on GitHub first.
+ */
+async function buildOnGitHub({ next, bumped }) {
+  const branch = sh("git rev-parse --abbrev-ref HEAD", repo);
+  const ref = bumped ? `mobile-v${next}` : branch;
+  const fields = ["-f", `platform=${platform}`, "-f", "profile=production"];
+  if (submitProfile) fields.push("-f", `android_submit_profile=${submitProfile}`);
+  const cmd = ["gh", "workflow", "run", WORKFLOW, "--ref", ref, ...fields];
+
+  if (flag("no-push")) {
+    console.log(`\n! --no-push: nothing pushed, so GitHub cannot build it yet. When you push, run:\n  git push origin HEAD --follow-tags && ${cmd.join(" ")}\n`);
+    return;
+  }
+  try { sh(`git push origin HEAD --follow-tags`, repo); console.log(`\n✓ pushed ${bumped ? `v${next} and its tag` : branch}`); }
+  catch (e) {
+    die(`Could not push (${String(e.message).split("\n")[0]}). Push, then run:\n  git push origin HEAD --follow-tags && ${cmd.join(" ")}`);
+  }
+
+  console.log(`\n→ ${cmd.join(" ")}\n`);
+  const run = spawnSync(cmd[0], cmd.slice(1), { cwd: repo, stdio: "inherit" });
+  if (run.error || run.status !== 0) {
+    console.log("\n! Could not start the workflow with the GitHub CLI (install it and run `gh auth login`).");
+    console.log(`  Start it by hand: GitHub → Actions → "Mobile release (built on GitHub)" → Run workflow,`);
+    console.log(`  ref ${ref}, platform ${platform}${submitProfile ? `, android submit profile ${submitProfile}` : ""}.\n`);
+    return;
+  }
+  console.log(`\n✓ Release ${next} is building on GitHub Actions (follow it with: gh run watch).`);
+  console.log("  When it finishes — iOS: finish in TestFlight → App Store Connect. Android: promote the draft in Play Console.\n");
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) await main();

@@ -1,0 +1,168 @@
+name: Mobile release (built on GitHub)
+
+# Builds the store apps on GitHub's own runners (`eas build --local`) instead
+# of EAS's build servers, so releases do not use the monthly EAS build quota.
+# This repository is public, so GitHub-hosted runner minutes are free.
+# Only the upload to the stores (`eas submit`) goes through EAS.
+#
+#   iOS     -> macOS runner -> .ipa -> TestFlight
+#   Android -> Ubuntu runner -> .aab -> Play internal track, draft (or the profile you pick)
+#
+# Started by `npm run release` (apps/mobile/scripts/release.mjs, through the
+# `gh` CLI) or by hand: Actions -> "Mobile release (built on GitHub)" -> Run
+# workflow, picking the release tag (mobile-vX.Y.Z) or a branch as the ref.
+#
+# The `preview` profile builds an installable APK / ad-hoc IPA and does not
+# submit; download it from the run's artifacts.
+#
+# Needs the EXPO_TOKEN repository secret. Signing keys and the store
+# credentials (App Store Connect API key, Google service account key) are the
+# ones already stored in the project's EAS credentials.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Which apps to build
+        type: choice
+        options: [all, ios, android]
+        default: all
+      profile:
+        description: Build profile (production submits to the stores; preview only uploads artifacts)
+        type: choice
+        options: [production, preview]
+        default: production
+      android_submit_profile:
+        description: Android submit profile (production = internal track draft; production-track = production track)
+        type: choice
+        options: [production, production-track]
+        default: production
+      submit:
+        description: Submit production builds to TestFlight / Google Play
+        type: boolean
+        default: true
+
+concurrency:
+  group: mobile-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+jobs:
+  ios:
+    if: inputs.platform == 'all' || inputs.platform == 'ios'
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Build on this runner
+        working-directory: apps/mobile
+        run: >
+          eas build
+          --platform ios
+          --profile "${{ inputs.profile }}"
+          --local
+          --non-interactive
+          --output "$RUNNER_TEMP/vedic-patro-ios.ipa"
+
+      - name: Submit to TestFlight
+        if: inputs.profile == 'production' && inputs.submit
+        working-directory: apps/mobile
+        run: >
+          eas submit
+          --platform ios
+          --profile production
+          --path "$RUNNER_TEMP/vedic-patro-ios.ipa"
+          --non-interactive
+          --wait
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-${{ inputs.profile }}-${{ github.run_number }}
+          path: ${{ runner.temp }}/vedic-patro-ios.ipa
+          if-no-files-found: ignore
+          retention-days: 14
+
+  android:
+    if: inputs.platform == 'all' || inputs.platform == 'android'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      # The runner image ships ~30 GB of toolchains an Android build never
+      # uses; Gradle and the native builds need the room.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/emulator /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: "17"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Build on this runner
+        working-directory: apps/mobile
+        env:
+          OUT: ${{ inputs.profile == 'production' && 'vedic-patro-android.aab' || 'vedic-patro-android.apk' }}
+        run: >
+          eas build
+          --platform android
+          --profile "${{ inputs.profile }}"
+          --local
+          --non-interactive
+          --output "$RUNNER_TEMP/$OUT"
+
+      - name: Submit to Google Play
+        if: inputs.profile == 'production' && inputs.submit
+        working-directory: apps/mobile
+        run: >
+          eas submit
+          --platform android
+          --profile "${{ inputs.android_submit_profile }}"
+          --path "$RUNNER_TEMP/vedic-patro-android.aab"
+          --non-interactive
+          --wait
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-${{ inputs.profile }}-${{ github.run_number }}
+          path: |
+            ${{ runner.temp }}/vedic-patro-android.aab
+            ${{ runner.temp }}/vedic-patro-android.apk
+          if-no-files-found: ignore
+          retention-days: 14
