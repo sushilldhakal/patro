@@ -1,16 +1,24 @@
 import { useCallback } from "react";
-import { Share } from "react-native";
+import { Pressable, Share, View } from "react-native";
 import { Stack, usePathname, useRouter } from "expo-router";
+import { mobileTypeScale } from "@vedic-patro/design-tokens";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
+import { useThemeColors } from "@/lib/theme-context";
 import { requestOpenMenu, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
 const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
+
+/** The system tint the tab bar on home uses for the selected tab. */
+const TAB_ACTIVE = "#007AFF"; // design-ok: the system tint of the native tab bar this imitates
 
 const SITE = "https://www.vedicpatro.com";
 
@@ -36,7 +44,8 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
   const navPress = useNavPress();
-  const { slots, folded } = useDuoRail();
+  const { slots, folded, horizontal } = useDuoRail();
+  const colors = useThemeColors();
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
 
@@ -103,13 +112,37 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           <Stack.Toolbar.Spacer />
           {ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {
             const i = ALL_TABS.indexOf(tab);
-            return (
+            const item = FLOATING_NAV[i];
+            const active = isNavActive(pathname, item.href);
+            // Portrait: icon over label like the system tab bar on home (a toolbar button cannot show both).
+            // The rail has no labels on home, so there it stays a plain symbol button.
+            return horizontal ? (
+              <Stack.Toolbar.View key={tab}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={pick(item.ne, item.en)}
+                  accessibilityState={{ selected: active }}
+                  onPress={() => navPress(item.href)}
+                  style={{ width: 94, height: 52, alignItems: "center", justifyContent: "center", gap: 3 }}
+                >
+                  <AppNavIcon name={item.icon} size={24} color={active ? TAB_ACTIVE : colors.foreground} />
+                  <View>
+                    <Text
+                      numberOfLines={1}
+                      style={[{ fontSize: mobileTypeScale.xs.size, fontWeight: "500", color: active ? TAB_ACTIVE : colors.foreground }, nepaliTextStyle()]}
+                    >
+                      {pick(item.ne, item.en)}
+                    </Text>
+                  </View>
+                </Pressable>
+              </Stack.Toolbar.View>
+            ) : (
               <Stack.Toolbar.Button
                 key={tab}
                 icon={TAB_SF[i]}
-                accessibilityLabel={pick(FLOATING_NAV[i].ne, FLOATING_NAV[i].en)}
-                selected={isNavActive(pathname, FLOATING_NAV[i].href)}
-                onPress={() => navPress(FLOATING_NAV[i].href)}
+                accessibilityLabel={pick(item.ne, item.en)}
+                selected={active}
+                onPress={() => navPress(item.href)}
               />
             );
           })}
