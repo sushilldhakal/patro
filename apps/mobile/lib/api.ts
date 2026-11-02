@@ -18,7 +18,9 @@ import {
   fetchPersonalRashifalForDay,
   fetchRashifalForDay,
   get,
+  setCalculationSystemResolver,
 } from "@vedic-patro/api-client";
+import { getCalculationSystem, withCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
@@ -436,8 +438,17 @@ function withUiLanguage(path: string): string {
   return /[?&]language=/.test(path) ? path : `${path}${path.includes("?") ? "&" : "?"}language=${lang}`;
 }
 
+/**
+ * The reader's calculation system rides in the path itself, not only on the wire:
+ * the offline store keys saved responses by this path, so a Surya Siddhanta copy
+ * never answers a drik screen (or the reverse), online or off.
+ */
+function withReaderCalculationSystem(path: string): string {
+  return withCalculationSystem(path, getCalculationSystem());
+}
+
 async function offlineAwareJson<T>(rawPath: string): Promise<T> {
-  const path = withUiLanguage(rawPath);
+  const path = withReaderCalculationSystem(withUiLanguage(rawPath));
   return offlineAwareGet<T>(
     path,
     () =>
@@ -452,6 +463,9 @@ function locationKey(loc?: LocationParams): string {
   const l = loc ?? DEFAULT_LOCATION;
   return [l.city_id, l.lat, l.lon, l.timezone].join(":");
 }
+
+// Every other request (streamed kundali reports, posts) gets it at the fetch itself.
+setCalculationSystemResolver(() => getCalculationSystem());
 
 configureApiClient({
   baseUrl: API_BASE,

@@ -16,7 +16,8 @@ from api.deps import (
     _validate_bs_month,
     _validate_bs_year,
 )
-from engine.calendar.constants import AD_YEAR_MAX, AD_YEAR_MIN, BC_YEAR_MAX, BC_YEAR_MIN
+from engine.calendar import constants as calendar_constants
+from engine.calendar.constants import AD_YEAR_MAX, AD_YEAR_MIN, BC_YEAR_MIN
 from engine.calendar.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
@@ -407,10 +408,11 @@ def panchanga_bc_month(
     from services.panchanga.panchanga_api import build_gregorian_browse_month_calendar
     from app.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if not BC_YEAR_MIN <= bc_year <= BC_YEAR_MAX:
+    bc_year_max = calendar_constants.BC_YEAR_MAX  # deeper under the Surya Siddhanta
+    if not BC_YEAR_MIN <= bc_year <= bc_year_max:
         raise HTTPException(
             status_code=400,
-            detail=f"bc year out of supported range ({BC_YEAR_MIN}..{BC_YEAR_MAX})",
+            detail=f"bc year out of supported range ({BC_YEAR_MIN}..{bc_year_max})",
         )
     if not 1 <= bc_month <= 12:
         raise HTTPException(status_code=400, detail="bc_month must be 1..12")

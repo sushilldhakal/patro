@@ -1,4 +1,4 @@
-"""Ayanamsha mode mapping for API query parameters."""
+"""Drik's ayanamsha catalogue, and the per-request resolution every route uses."""
 
 from __future__ import annotations
 
@@ -17,11 +17,14 @@ AYANAMSHA_MODES: dict[str, int] = {
 DEFAULT_AYANAMSHA = "lahiri"
 
 
-def resolve_ayanamsha_mode(mode: str | None) -> tuple[str, int]:
-    key = (mode or DEFAULT_AYANAMSHA).strip().lower()
-    if key not in AYANAMSHA_MODES:
-        raise ValueError(
-            f"Unknown ayanamsha '{mode}'. "
-            f"Use one of: {', '.join(sorted(AYANAMSHA_MODES))}"
-        )
-    return key, AYANAMSHA_MODES[key]
+def resolve_ayanamsha_mode(mode: str | None) -> tuple[str, int | None]:
+    """(reported key, engine mode id) for a request's ``ayanamsha``, as its siddhanta decides.
+
+    Drik looks the name up in AYANAMSHA_MODES (default Lahiri). The Surya Siddhanta
+    has one ayanamsha of its own and answers ("surya_siddhanta", None) whatever was
+    asked, without consulting this catalogue.
+    """
+    from engine.astronomy.siddhanta import current_siddhanta
+
+    choice = current_siddhanta().resolve_ayanamsha(mode)
+    return choice.key, choice.mode

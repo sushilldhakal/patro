@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
 from engine.panchanga.spashta import spashta_table
@@ -250,7 +249,7 @@ def build_planetary_snapshot(
     lon: float,
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
-    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    mode = ayanamsa  # None: the request's siddhanta decides (drik: Lahiri)
     instant_jd = as_julian_day(instant_utc)
     planets = spashta_table(instant_jd, ayanamsa=mode)
     lagna = lagna_service.lagna(instant_jd, lat=lat, lon=lon, ayanamsa=mode)

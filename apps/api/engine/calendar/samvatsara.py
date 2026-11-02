@@ -12,6 +12,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from engine.astronomy.engine import EphemerisError
+from engine.astronomy.siddhanta_cache import siddhanta_lru_cache
 
 SAMVATSARA_ENTRIES: tuple[dict[str, str | int], ...] = (
     {"key": "prabhava", "name_en": "Prabhava", "name_ne": "प्रभव", "cycle": 1, "deity": "brahma"},
@@ -80,7 +81,7 @@ ANCHOR_BS_YEAR = 2080
 ANCHOR_INDEX = 50  # Pingala
 
 
-@lru_cache(maxsize=None)
+@siddhanta_lru_cache(maxsize=None)
 def _jupiter_longitude_at_bs_new_year(bs_year: int) -> float:
     """True sidereal Jupiter longitude at this patro year's Mesh Sankranti.
 
@@ -170,8 +171,13 @@ def _samvatsara_table() -> dict[int, int]:
     return {int(year): int(idx) for year, idx in (data.get("indices") or {}).items()}
 
 
-@lru_cache(maxsize=1024)
+@siddhanta_lru_cache(maxsize=1024)
 def samvatsara_index_for_bs_year(bs_year: int) -> int:
+    from engine.astronomy.siddhanta import current_siddhanta
+
+    closed_form = _samvatsara_index_from_mean_jupiter(bs_year, current_siddhanta())
+    if closed_form is not None:
+        return closed_form
     table = _samvatsara_table()
     cached = table.get(bs_year)
     if cached is not None:
@@ -179,7 +185,27 @@ def samvatsara_index_for_bs_year(bs_year: int) -> int:
     return _samvatsara_index_by_walk(bs_year)
 
 
-@lru_cache(maxsize=1024)
+def _samvatsara_index_from_mean_jupiter(bs_year: int, siddhanta) -> int | None:
+    """The बार्हस्पत्य year from a siddhanta that gives Jupiter's mean motion in closed form,
+    or None when it does not (drik: the true-Jupiter walk and its published table apply).
+
+    Each sign the mean Jupiter enters advances the cycle by one; counted from the
+    anchor year so every siddhanta names today's year alike, and closed-form, so a
+    year three million years back costs the same as this one (the true-Jupiter walk
+    goes year by year from the anchor).
+    """
+    from engine.calendar.bikram_sambat import get_bs_month_start_civil
+
+    def signs(year: int) -> int | None:
+        return siddhanta.jovian_years_elapsed(get_bs_month_start_civil(year, 1).to_jd_ut())
+
+    anchor = signs(ANCHOR_BS_YEAR)
+    if anchor is None:
+        return None
+    return (ANCHOR_INDEX + signs(bs_year) - anchor) % 60
+
+
+@siddhanta_lru_cache(maxsize=1024)
 def _samvatsara_index_by_walk(bs_year: int) -> int:
     """Samvatsara index (0–59) for a BS year.
 

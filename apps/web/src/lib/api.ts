@@ -23,7 +23,9 @@ import {
   requestJson,
   apiBases,
   DEFAULT_API_VERSION,
+  setCalculationSystemResolver,
 } from "@vedic-patro/api-client";
+import { getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
@@ -411,6 +413,21 @@ function webLocationQuery(path: string, location?: LocationParams): string {
   if (!qs) return path;
   return `${path}${path.includes("?") ? "&" : "?"}${qs}`;
 }
+
+/**
+ * The website offers the Surya Siddhanta in the kundali section only, so only
+ * kundali requests carry the reader's choice: the kundali routes, shadbala, planet
+ * snapshots and the birth panchanga (an at-time request that names the kundali's
+ * ayanamsha). Every other page stays drik.
+ */
+const KUNDALI_REQUEST = /^\/(?:kundali|shadbala|planetary)(?:\/|\?|$)/;
+const KUNDALI_AT_TIME = /^\/panchanga\/at-time\?(?:.*&)?ayanamsha=/;
+
+export function isKundaliRequest(path: string): boolean {
+  return KUNDALI_REQUEST.test(path) || KUNDALI_AT_TIME.test(path);
+}
+
+setCalculationSystemResolver((path) => (isKundaliRequest(path) ? getCalculationSystem() : "drik"));
 
 configureApiClient({
   baseUrl: BASE,

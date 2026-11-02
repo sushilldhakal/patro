@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from engine.astronomy.location import ObserverLocation
+from engine.astronomy.siddhanta import namespaced_cache_key
 from services.platform.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
@@ -27,7 +28,7 @@ YEAR_CACHE_DIR = Path(__file__).resolve().parents[2] / "cache" / "year"
 def year_cache_path(bs_year: int, location: ObserverLocation, *, variant: str) -> Path:
     """``variant`` names the payload shape: "full", "lite", "sun", ..."""
     location_key, _ = resolve_cache_keys(location)
-    safe_key = location_key.replace("/", "_").replace(":", "_")
+    safe_key = namespaced_cache_key(location_key).replace("/", "_").replace(":", "_")
     return YEAR_CACHE_DIR / (
         f"year_v{CACHE_PAYLOAD_VERSION}_{bs_year}_{variant}_{safe_key}.json.gz"
     )

@@ -12,7 +12,6 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
 from engine.panchanga.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
 from engine.panchanga.angas import panchanga_service
@@ -38,7 +37,7 @@ def build_panchanga_at_time(
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Ephemeris-mode panchanga: full udaya day layout + instant angas/planets."""
-    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    mode = ayanamsa  # None: the request's siddhanta decides (drik: Lahiri)
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
     from engine.calendar.bikram_sambat import gregorian_to_bs
     from services.panchanga.panchanga_api import build_daily_state, build_daily_state_civil
@@ -201,7 +200,7 @@ def build_panchanga_civil_day(
     from engine.panchanga.daily import paksha_block
     from services.panchanga.panchanga_api import element_state, build_daily_state
 
-    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    mode = ayanamsa  # None: the request's siddhanta decides (drik: Lahiri)
     tz = resolve_observer_timezone(
         location.timezone, lat=location.lat, lon=location.lon
     )

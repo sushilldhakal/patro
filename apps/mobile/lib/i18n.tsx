@@ -7,6 +7,8 @@ import ne from "@vedic-patro/i18n/ne.json";
 import { configureCalendarPersistence } from "@vedic-patro/domain/calendar/calendar-system";
 import { getStoredLanguage, setStoredLanguage, type AppLanguage } from "@/lib/language-storage";
 import { setStoredCalendar } from "@/lib/calendar-system-storage";
+import { configureCalculationSystemPersistence } from "@vedic-patro/domain/calendar/calculation-system";
+import { setStoredCalculationSystem } from "@/lib/calculation-system-storage";
 
 export type { AppLanguage };
 
@@ -20,7 +22,10 @@ setupI18n({ bundles: { ne, en }, persist: (lang) => void setStoredLanguage(lang)
 /** The calendar system (BS/AD) is stored apart from the language and never follows it. */
 configureCalendarPersistence({ persist: (c) => void setStoredCalendar(c) });
 
-export { useLocale, useTranslation, useCalendarSystem } from "@vedic-patro/i18n/react";
+/** Drik or the Surya Siddhanta: what every panchanga and kundali request is computed with. */
+configureCalculationSystemPersistence({ persist: (s) => void setStoredCalculationSystem(s) });
+
+export { useLocale, useTranslation, useCalendarSystem, useCalculationSystem } from "@vedic-patro/i18n/react";
 
 /** Read a key that holds a list (the SEO FAQ blocks) rather than a string. */
 export function translateList<T>(lang: AppLanguage, key: string): T[] {

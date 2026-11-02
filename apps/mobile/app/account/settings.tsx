@@ -8,7 +8,7 @@ import { DailyBriefingCard, RashifalNotificationCard, SectionTitle } from "@/com
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useCalendarSystem, useLocale } from "@/lib/i18n";
+import { useCalculationSystem, useCalendarSystem, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { syncNotifications } from "@/lib/notifications/sync";
@@ -27,6 +27,7 @@ export default function SettingsScreen() {
   const { t, lang, setLang, digits } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const { calendar, setCalendar } = useCalendarSystem();
+  const { system, setSystem } = useCalculationSystem();
   const router = useRouter();
   const colors = useThemeColors();
   const { preference, setPreference } = useTheme();
@@ -103,6 +104,25 @@ export default function SettingsScreen() {
           <Card className="flex-row flex-wrap gap-2">
             <Chip label={t("calendar_system.bs")} active={calendar === "bs"} onPress={() => setCalendar("bs")} />
             <Chip label={t("calendar_system.ad")} active={calendar === "ad"} onPress={() => setCalendar("ad")} />
+          </Card>
+        </View>
+
+        <View>
+          <SectionTitle>{t("calculation_system.label")}</SectionTitle>
+          <Card className="gap-3">
+            <View className="flex-row flex-wrap gap-2">
+              <Chip label={t("calculation_system.drik")} active={system === "drik"} onPress={() => setSystem("drik")} />
+              <Chip
+                label={t("calculation_system.surya_siddhanta")}
+                active={system === "surya_siddhanta"}
+                onPress={() => setSystem("surya_siddhanta")}
+              />
+            </View>
+            <Text className={accountClasses.settingsRowText} style={nepaliTextStyle(13)}>
+              {t(system === "drik" ? "calculation_system.drik_hint" : "calculation_system.surya_siddhanta_hint")}
+              {" — "}
+              {t("calculation_system.note")}
+            </Text>
           </Card>
         </View>
 

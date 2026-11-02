@@ -18,6 +18,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
+import { CalculationSystemSelector } from "@/components/kundali/CalculationSystemSelector";
 import { KundaliView } from "@/components/kundali/KundaliView";
 import {
   DEFAULT_KUNDALI_SECTION,
@@ -208,6 +209,7 @@ export function KundaliDetail() {
       {status === "ready" && page.moment && page.location ? (
         <>
           <AyanamshaSelector mode={page.ayanamshaMode} onModeChange={page.setAyanamshaMode} />
+          <CalculationSystemSelector />
           <KundaliSectionNav
             className="calendar:hidden"
             activeId={section}

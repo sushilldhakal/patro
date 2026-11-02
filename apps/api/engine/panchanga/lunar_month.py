@@ -198,13 +198,17 @@ def build_lunar_year(gregorian_year: int) -> LunarYear:
     )
 
 
-_lunar_year_cache: dict[int, LunarYear] = {}
+# Keyed by (siddhanta, year): each siddhanta gives its own months.
+_lunar_year_cache: dict[tuple[str, int], LunarYear] = {}
 
 
 def get_lunar_year(gregorian_year: int) -> LunarYear:
-    if gregorian_year not in _lunar_year_cache:
-        _lunar_year_cache[gregorian_year] = build_lunar_year(gregorian_year)
-    return _lunar_year_cache[gregorian_year]
+    from engine.astronomy.siddhanta import current_siddhanta
+
+    key = (current_siddhanta().id, gregorian_year)
+    if key not in _lunar_year_cache:
+        _lunar_year_cache[key] = build_lunar_year(gregorian_year)
+    return _lunar_year_cache[key]
 
 
 def clear_lunar_year_cache() -> None:

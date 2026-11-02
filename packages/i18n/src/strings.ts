@@ -33,6 +33,20 @@ export const strings = {
   "calendar_system.ad_hint": { ne: "ग्रेगोरियन मितिहरू", en: "Gregorian dates (January, February...)" },
   "calendar_system.switch_aria": { ne: "पात्रो प्रणाली छान्नुहोस्", en: "Choose calendar system" },
   "calendar_system.onboarding_title": { ne: "तपाईंले कुन मिति प्रयोग गर्नुहुन्छ?", en: "Which dates do you use?" },
+  "calculation_system.label": { ne: "गणना पद्धति", en: "Calculation" },
+  "calculation_system.drik": { ne: "दृक् (आधुनिक)", en: "Drik (modern)" },
+  "calculation_system.drik_hint": { ne: "आधुनिक खगोल गणना, धेरैजसो पात्रोले प्रयोग गर्ने", en: "Modern ephemeris, as most panchangas use" },
+  "calculation_system.surya_siddhanta": { ne: "सूर्य सिद्धान्त", en: "Surya Siddhanta" },
+  "calculation_system.surya_siddhanta_hint": { ne: "परम्परागत सूत्र, सत्य युगसम्मको गणना", en: "Traditional formulas, back to Satya Yuga" },
+  "calculation_system.onboarding_title": { ne: "पात्रो र कुण्डली कुन गणनामा आधारित होस्?", en: "Which calculation should the panchanga follow?" },
+  "calculation_system.note": {
+    ne: "पञ्चाङ्ग, पात्रो र कुण्डली सबै यही पद्धतिमा गणना हुन्छन्। सूर्य सिद्धान्तका तिथि र संक्रान्ति दृक्‌भन्दा केही घण्टा फरक पर्न सक्छन्।",
+    en: "The panchanga, calendar and kundali are all computed this way. Surya Siddhanta tithis and sankrantis can differ from drik by a few hours.",
+  },
+  "calculation_system.kundali_note": {
+    ne: "सूर्य सिद्धान्तले आफ्नै अयनांश प्रयोग गर्छ, त्यसैले माथि छानिएको अयनांश लागू हुँदैन।",
+    en: "The Surya Siddhanta uses its own ayanamsha, so the ayanamsha chosen above does not apply.",
+  },
 
   /* ── offline (the app's offline data page) ──────────────────────────────── */
   "offline.group.calendar.name": { ne: "पात्रो, चाडपर्व र साइत", en: "Calendar, festivals & sait" },

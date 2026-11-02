@@ -9,6 +9,16 @@
     "switch_aria": "Choose calendar system",
     "onboarding_title": "Which dates do you use?"
   },
+  "calculation_system": {
+    "label": "Calculation",
+    "drik": "Drik (modern)",
+    "drik_hint": "Modern ephemeris, as most panchangas use",
+    "surya_siddhanta": "Surya Siddhanta",
+    "surya_siddhanta_hint": "Traditional formulas, back to Satya Yuga",
+    "onboarding_title": "Which calculation should the panchanga follow?",
+    "note": "The panchanga, calendar and kundali are all computed this way. Surya Siddhanta tithis and sankrantis can differ from drik by a few hours.",
+    "kundali_note": "The Surya Siddhanta uses its own ayanamsha, so the ayanamsha chosen above does not apply."
+  },
   "offline": {
     "group": {
       "calendar": {

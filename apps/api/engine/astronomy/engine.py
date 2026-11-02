@@ -7,6 +7,7 @@ To swap backends (e.g. DE431, VSOP87) replace this class; callers stay unchanged
 from __future__ import annotations
 
 import math
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from datetime import date, datetime, time, timezone
 from typing import TYPE_CHECKING, Any
@@ -269,16 +270,433 @@ class EphemerisError(Exception):
     pass
 
 
-class AstronomyEngine:
-    """Thin, swappable wrapper around an ephemeris backend.
+class NotInThisSiddhanta(EphemerisError):
+    """The selected siddhanta does not compute this (e.g. eclipses under the Surya Siddhanta)."""
+
+    def __init__(self, what: str) -> None:
+        super().__init__(f"{what} are not computed in the selected siddhanta")
+
+
+class EngineBase(ABC):
+    """What every siddhanta's engine shares: dates, the rise/set day logic, the memos.
+
+    A siddhanta (engine.astronomy.siddhanta) supplies the astronomy itself by
+    implementing the abstract primitives below — longitudes and speeds, one
+    rise/set search, the lagna, its ayanamsha, obliquity and equation of time.
+    Everything the panchanga and kundali builders call is built on those, so a
+    builder never knows which siddhanta answered.
+    """
+
+    # Bound on the in-process astronomy memo. ~16k entries ≈ a full year of
+    # sub-second instants across the bodies a panchanga build touches.
+    _CACHE_MAX = 16384
+
+    def __init__(self) -> None:
+        # Global (location-independent) astronomy cache: (body, jd, sidereal) → (lon, speed).
+        # Sun/Moon/planet longitudes depend only on time, so this is shared across every
+        # observer. Location-dependent results (lagna, sunrise) are cached one layer up.
+        self._calc_cache: "OrderedDict[tuple, tuple[float, float]]" = OrderedDict()
+        self._cache_hits = 0
+        self._cache_misses = 0
+        # Rise/set memo: a given (body, date, lat, lon, flag, alt, tz) is
+        # deterministic, yet a single daily build asks for the same sunrise
+        # ~11× (tithi, muhurta, hora, spans, nepal-sambat, …). Each miss is a
+        # search (~1 ms), so memoizing collapses a whole-year build's rise/set
+        # cost several-fold. The key includes every geometry input.
+        self._rise_cache: "OrderedDict[tuple, datetime | None]" = OrderedDict()
+        # Phase / illumination memo — same (body, jd) reuse pattern as _calc.
+        self._pheno_cache: "OrderedDict[tuple[int, float], dict[str, float]]" = OrderedDict()
+
+    # ── what each siddhanta answers its own way ─────────────────────────────
+
+    @abstractmethod
+    def _calc(self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None) -> tuple[float, float]:
+        """(longitude in [0, 360), speed °/day) of one body — sidereal in the siddhanta's own frame."""
+
+    @abstractmethod
+    def _rise_trans_jd(
+        self, jd_start: float, body_id: int, calc_flag: int, lat: float, lon: float, alt: float
+    ) -> float | None:
+        """JD (UT) of the next rise/set after *jd_start*, or None when the body never crosses."""
+
+    @abstractmethod
+    def ascendant(self, jd: float, lat: float, lon: float, *, ayanamsa: int | None = None) -> float:
+        """Sidereal ascendant longitude in degrees [0, 360)."""
+
+    @abstractmethod
+    def ascendant_astro_extras(self, jd: float, lat: float, lon: float) -> "tuple[CelestialCoordinates, float]":
+        """Lagna coordinates (shara 0, RA, kranti) and its speed in °/day."""
+
+    @abstractmethod
+    def ayanamsa(self, jd: float, *, mode: int | None = None) -> float:
+        """Ayanamsha in degrees at *jd* — whatever this siddhanta means by it."""
+
+    @abstractmethod
+    def obliquity(self, jd: float) -> float:
+        """Obliquity of the ecliptic in degrees."""
+
+    @abstractmethod
+    def equation_of_time(self, jd: float) -> float:
+        """Apparent − mean solar time, in days."""
+
+    @abstractmethod
+    def equatorial_from_ecliptic(self, jd: float, tropical_lon: float, ecl_lat: float = 0.0) -> tuple[float, float]:
+        """(right ascension, declination) in degrees from sayana ecliptic coordinates."""
+
+    @abstractmethod
+    def planet_astro_extras(self, jd: float, planet: str) -> "CelestialCoordinates":
+        """Ecliptic latitude (shara), right ascension and declination (kranti)."""
+
+    @abstractmethod
+    def phenomena(self, jd: float, planet: str) -> dict[str, float]:
+        """Phase angle, illuminated fraction, elongation, diameter, magnitude."""
+
+    # ── what a siddhanta may not offer ──────────────────────────────────────
+    # Raised, never answered from another siddhanta: a Surya Siddhanta request
+    # must not quietly get a drik eclipse.
+
+    def next_solar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        raise NotInThisSiddhanta("solar eclipses")
+
+    def next_lunar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        raise NotInThisSiddhanta("lunar eclipses")
+
+    def next_solar_eclipse(self, *args: Any, **kwargs: Any) -> dict[str, Any] | None:
+        raise NotInThisSiddhanta("solar eclipses")
+
+    def next_lunar_eclipse(self, *args: Any, **kwargs: Any) -> dict[str, Any] | None:
+        raise NotInThisSiddhanta("lunar eclipses")
+
+    def fixed_star_sidereal(self, star: str, jd: float) -> tuple[float, float, float]:
+        raise NotInThisSiddhanta("fixed-star positions")
+
+    def cache_info(self) -> dict[str, int]:
+        """Hits / misses / size for the in-process astronomy memo."""
+        return {
+            "hits": self._cache_hits,
+            "misses": self._cache_misses,
+            "size": len(self._calc_cache),
+            "max_size": self._CACHE_MAX,
+        }
+
+    def cache_clear(self) -> None:
+        self._calc_cache.clear()
+        self._cache_hits = 0
+        self._cache_misses = 0
+
+    def julian_day(self, dt: datetime) -> float:
+        """UTC datetime → Julian Day Number."""
+        from engine.astronomy.ut_instant import UtInstant
+
+        if isinstance(dt, UtInstant):
+            return dt.jd_ut
+        if dt.tzinfo is None:
+            raise EphemerisError(f"Datetime must have timezone info: {dt}")
+        utc = dt.astimezone(timezone.utc)
+        # Microseconds included: dropping them moved every instant up to a second
+        # early, enough to land a just-found boundary back in the span before it.
+        hour = (
+            utc.hour
+            + utc.minute / 60.0
+            + (utc.second + utc.microsecond / 1_000_000) / 3600.0
+        )
+        # GREG_CAL unconditionally, unlike ``civil_day_jd_ut``: a ``datetime`` is
+        # proleptic Gregorian *by definition*, at every epoch. Julian labels never
+        # reach this method — ``date_if_supported`` refuses to build a ``datetime``
+        # for a pre-cutover day, so those travel as ``CivilDay`` / ``UtInstant``.
+        return swe.julday(utc.year, utc.month, utc.day, hour, swe.GREG_CAL)
+
+    def datetime_from_jd(self, jd: float) -> datetime:
+        """Julian Day Number → UTC datetime (``UtInstant`` when ``datetime`` cannot hold the year)."""
+        from engine.astronomy.jd_calendar import swe_cal_for_jd
+
+        year, month, day, hour = swe.revjul(jd, swe_cal_for_jd(jd))
+        y, m, d = int(year), int(month), int(day)
+        if date_if_supported(y, m, d) is not None:
+            h = int(hour)
+            mi = int((hour - h) * 60)
+            s = int(((hour - h) * 60 - mi) * 60)
+            return datetime(y, m, d, h, mi, s, tzinfo=timezone.utc)
+        from engine.astronomy.ut_instant import UtInstant
+
+        return UtInstant(float(jd))  # type: ignore[return-value]
+
+    def sun_longitude(
+        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> float:
+        """Sun ecliptic longitude in degrees [0, 360)."""
+        return self._longitude(_SUN, jd, sidereal=sidereal, ayanamsa=ayanamsa)
+
+    def moon_longitude(
+        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> float:
+        """Moon ecliptic longitude in degrees [0, 360)."""
+        return self._longitude(_MOON, jd, sidereal=sidereal, ayanamsa=ayanamsa)
+
+    def sun_moon_longitudes(
+        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> tuple[float, float]:
+        """(sun_lon, moon_lon) in a single round-trip."""
+        return (
+            self._calc(_SUN, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0],
+            self._calc(_MOON, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0],
+        )
+
+    def planet_longitude(
+        self, jd: float, planet: str, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> float:
+        """Named planet ecliptic longitude. planet ∈ PLANET_KEYS."""
+        body = _BODY_MAP.get(planet)
+        if body is None:
+            raise EphemerisError(f"Unknown planet: {planet!r}")
+        return self._longitude(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
+
+    def planet_position(
+        self, jd: float, planet: str, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> BodyPosition:
+        """Longitude and speed (°/day) for one named planet, rounded to 6 places."""
+        body = _BODY_MAP.get(planet)
+        if body is None:
+            raise EphemerisError(f"Unknown planet: {planet!r}")
+        lon, speed = self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
+        position = _position()
+        return position.BodyPosition(
+            body=planet, longitude=position.stable_round(lon), speed=position.stable_round(speed)
+        )
+
+    def all_planet_positions(
+        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
+    ) -> dict[str, BodyPosition]:
+        """Sun through Rahu. Ketu is Rahu's :meth:`~BodyPosition.opposite`."""
+        return {
+            name: self.planet_position(jd, name, sidereal=sidereal, ayanamsa=ayanamsa)
+            for name in PLANET_KEYS
+        }
+
+    def rise(
+        self,
+        date_val: date,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+        *,
+        timezone_name: str | None = None,
+    ) -> datetime | None:
+        """Next rise of body on date_val. Returns UTC datetime or None (circumpolar)."""
+        return self._rise_set(date_val, body, CALC_RISE, lat, lon, alt, timezone_name=timezone_name)
+
+    def set(
+        self,
+        date_val: date,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+        *,
+        timezone_name: str | None = None,
+    ) -> datetime | None:
+        """Next set of body on date_val. Returns UTC datetime or None (circumpolar)."""
+        return self._rise_set(date_val, body, CALC_SET, lat, lon, alt, timezone_name=timezone_name)
+
+    def rise_after(
+        self,
+        after_dt: datetime,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+    ) -> datetime | None:
+        """Rise of body at or after after_dt (panchanga day = sunrise to sunrise)."""
+        return self._rise_set_after(after_dt, body, CALC_RISE, lat, lon, alt)
+
+    def set_after(
+        self,
+        after_dt: datetime,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+    ) -> datetime | None:
+        """Set of body at or after after_dt."""
+        return self._rise_set_after(after_dt, body, CALC_SET, lat, lon, alt)
+
+    def rise_civil(
+        self,
+        civil: CivilDay,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+        *,
+        timezone_name: str | None = None,
+    ) -> datetime | None:
+        """Rise on a proleptic civil day (BCE-safe — no ``datetime.date``)."""
+        return self._rise_set_civil(
+            civil, body, CALC_RISE, lat, lon, alt, timezone_name=timezone_name
+        )
+
+    def set_civil(
+        self,
+        civil: CivilDay,
+        body: str,
+        lat: float,
+        lon: float,
+        alt: float = 0.0,
+        *,
+        timezone_name: str | None = None,
+    ) -> datetime | None:
+        """Set on a proleptic civil day (BCE-safe)."""
+        return self._rise_set_civil(
+            civil, body, CALC_SET, lat, lon, alt, timezone_name=timezone_name
+        )
+
+    def _longitude(
+        self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
+    ) -> float:
+        return self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0]
+
+    def _rise_set(
+        self,
+        date_val: date,
+        body: str,
+        calc_flag: int,
+        lat: float,
+        lon: float,
+        alt: float,
+        *,
+        timezone_name: str | None,
+    ) -> datetime | None:
+        # A pre-1 CE day arrives as a ``CivilDay``, which ``datetime.combine``
+        # below cannot take. The JD-native twin computes the same instant (both
+        # agree to 0.0s on CE days), so route those straight to it.
+        if not isinstance(date_val, date):
+            return self._rise_set_civil(
+                date_val, body, calc_flag, lat, lon, alt, timezone_name=timezone_name
+            )
+        body_id = _BODY_MAP.get(body)
+        if body_id is None:
+            raise EphemerisError(f"Unknown body: {body!r}")
+        observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
+        cache_key = (
+            body_id, calc_flag, date_val,
+            round(lat, 6), round(lon, 6), round(alt, 3),
+            str(observer_tz),
+        )
+        cached = self._rise_cache.get(cache_key)
+        if cached is not None or cache_key in self._rise_cache:
+            self._rise_cache.move_to_end(cache_key)
+            return cached
+        local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
+        jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
+        try:
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            value = None if event_jd is None else self.datetime_from_jd(event_jd)
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"Rise/set failed for {body!r} on {date_val}: {exc}") from exc
+        self._rise_cache[cache_key] = value
+        if len(self._rise_cache) > self._CACHE_MAX:
+            self._rise_cache.popitem(last=False)
+        return value
+
+    @staticmethod
+    def _utc_offset_days(civil: CivilDay, observer_tz: Any) -> float:
+        """Observer's UTC offset on *civil*, in days — the local-midnight anchor.
+
+        A CE day gets the real zone offset for that date (so DST and historical
+        zone changes are honoured and the result matches ``datetime.combine``
+        exactly). A BCE day has no tz-database coverage, so it takes the zone's
+        modern standard offset — the same approximation ``local_wall_instant``
+        makes for pre-1 CE wall-clock times.
+        """
+        real_date = date_if_supported(civil.year, civil.month, civil.day)
+        ref = (
+            datetime.combine(real_date, time(0, 0), tzinfo=observer_tz)
+            if real_date is not None
+            else datetime(2000, 6, 15, 12, 0, tzinfo=observer_tz)
+        )
+        offset = ref.utcoffset()
+        return 0.0 if offset is None else offset.total_seconds() / 86400.0
+
+    def _rise_set_civil(
+        self,
+        civil: CivilDay,
+        body: str,
+        calc_flag: int,
+        lat: float,
+        lon: float,
+        alt: float,
+        *,
+        timezone_name: str | None,
+    ) -> datetime | None:
+        body_id = _BODY_MAP.get(body)
+        if body_id is None:
+            raise EphemerisError(f"Unknown body: {body!r}")
+        observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
+        cache_key = (
+            body_id,
+            calc_flag,
+            civil.year,
+            civil.month,
+            civil.day,
+            round(lat, 6),
+            round(lon, 6),
+            round(alt, 3),
+            str(observer_tz),
+            "civil",
+        )
+        cached = self._rise_cache.get(cache_key)
+        if cached is not None or cache_key in self._rise_cache:
+            self._rise_cache.move_to_end(cache_key)
+            return cached
+        # Search from LOCAL midnight on the civil day — the same anchor the
+        # ``date`` path uses, so the two agree to 0.0s wherever both can express
+        # the day. Anchoring at UT instead (``to_jd_ut() - 0.5``) silently
+        # shifted the window by the observer's offset: east of Greenwich it
+        # opened early enough to catch the *previous* day's event and return it
+        # as this day's, which is a whole-day error, not a rounding one.
+        jd_start = civil.to_jd_ut() - self._utc_offset_days(civil, observer_tz)
+        try:
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            value = None if event_jd is None else self.datetime_from_jd(event_jd)
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(
+                f"Rise/set failed for {body!r} on civil {civil}: {exc}"
+            ) from exc
+        self._rise_cache[cache_key] = value
+        if len(self._rise_cache) > self._CACHE_MAX:
+            self._rise_cache.popitem(last=False)
+        return value
+
+    def _rise_set_after(
+        self,
+        after_dt: datetime,
+        body: str,
+        calc_flag: int,
+        lat: float,
+        lon: float,
+        alt: float,
+    ) -> datetime | None:
+        body_id = _BODY_MAP.get(body)
+        if body_id is None:
+            raise EphemerisError(f"Unknown body: {body!r}")
+        jd_start = self.julian_day(after_dt.astimezone(timezone.utc))
+        try:
+            event_jd = self._rise_trans_jd(jd_start, body_id, calc_flag, lat, lon, alt)
+            if event_jd is None:
+                return None
+            return self.datetime_from_jd(event_jd)
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"Rise/set after {after_dt} failed for {body!r}: {exc}") from exc
+
+
+class SwissEphemerisEngine(EngineBase):
+    """Drik: the Swiss Ephemeris (JPL DE431) with a selectable ayanamsha.
 
     Usage::
 
-        engine = AstronomyEngine()          # Lahiri sidereal by default
-        engine = AstronomyEngine(ayanamsa=AstronomyEngine.RAMAN)
-
-        jd  = engine.julian_day(utc_dt)
-        lon = engine.sun_longitude(jd)
+        engine = SwissEphemerisEngine()          # Lahiri sidereal by default
+        engine = SwissEphemerisEngine(ayanamsa=SwissEphemerisEngine.RAMAN)
     """
 
     LAHIRI = SIDM_LAHIRI
@@ -287,28 +705,10 @@ class AstronomyEngine:
     TRUE_CITRA = SIDM_TRUE_CITRA
     TRUE_PUSHYA = SIDM_TRUE_PUSHYA
 
-    # Bound on the in-process astronomy memo. ~16k entries ≈ a full year of
-    # sub-second instants across the bodies a panchanga build touches.
-    _CACHE_MAX = 16384
-
     def __init__(self, ayanamsa: int = SIDM_LAHIRI) -> None:
+        super().__init__()
         self._ayanamsa = ayanamsa
         swe.set_sid_mode(ayanamsa)
-        # Global (location-independent) astronomy cache: (body, jd, sidereal) → (lon, speed).
-        # Sun/Moon/planet longitudes depend only on time, so this is shared across every
-        # observer. Location-dependent results (lagna, sunrise) are cached one layer up.
-        self._calc_cache: "OrderedDict[tuple[int, float, bool], tuple[float, float]]" = OrderedDict()
-        self._cache_hits = 0
-        self._cache_misses = 0
-        # Rise/set memo: a given (body, date, lat, lon, flag, alt, tz) is
-        # deterministic, yet a single daily build asks for the same sunrise
-        # ~11× (tithi, muhurta, hora, spans, nepal-sambat, …). Each miss is a
-        # swe.rise_trans_true_hor search (~1 ms), so memoizing collapses a
-        # whole-year build's rise/set cost several-fold. Location-independent
-        # correctness is preserved — the key includes every geometry input.
-        self._rise_cache: "OrderedDict[tuple, datetime | None]" = OrderedDict()
-        # Phase / illumination memo — same (body, jd) reuse pattern as _calc.
-        self._pheno_cache: "OrderedDict[tuple[int, float], dict[str, float]]" = OrderedDict()
 
     def _calc(
         self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
@@ -365,115 +765,6 @@ class AstronomyEngine:
         if len(self._calc_cache) > self._CACHE_MAX:
             self._calc_cache.popitem(last=False)
         return result
-
-    def cache_info(self) -> dict[str, int]:
-        """Hits / misses / size for the in-process astronomy memo."""
-        return {
-            "hits": self._cache_hits,
-            "misses": self._cache_misses,
-            "size": len(self._calc_cache),
-            "max_size": self._CACHE_MAX,
-        }
-
-    def cache_clear(self) -> None:
-        self._calc_cache.clear()
-        self._cache_hits = 0
-        self._cache_misses = 0
-
-    # ── time ────────────────────────────────────────────────────────────────
-
-    def julian_day(self, dt: datetime) -> float:
-        """UTC datetime → Julian Day Number."""
-        from engine.astronomy.ut_instant import UtInstant
-
-        if isinstance(dt, UtInstant):
-            return dt.jd_ut
-        if dt.tzinfo is None:
-            raise EphemerisError(f"Datetime must have timezone info: {dt}")
-        utc = dt.astimezone(timezone.utc)
-        # Microseconds included: dropping them moved every instant up to a second
-        # early, enough to land a just-found boundary back in the span before it.
-        hour = (
-            utc.hour
-            + utc.minute / 60.0
-            + (utc.second + utc.microsecond / 1_000_000) / 3600.0
-        )
-        # GREG_CAL unconditionally, unlike ``civil_day_jd_ut``: a ``datetime`` is
-        # proleptic Gregorian *by definition*, at every epoch. Julian labels never
-        # reach this method — ``date_if_supported`` refuses to build a ``datetime``
-        # for a pre-cutover day, so those travel as ``CivilDay`` / ``UtInstant``.
-        return swe.julday(utc.year, utc.month, utc.day, hour, swe.GREG_CAL)
-
-    def datetime_from_jd(self, jd: float) -> datetime:
-        """Julian Day Number → UTC datetime (``UtInstant`` when ``datetime`` cannot hold the year)."""
-        from engine.astronomy.jd_calendar import swe_cal_for_jd
-
-        year, month, day, hour = swe.revjul(jd, swe_cal_for_jd(jd))
-        y, m, d = int(year), int(month), int(day)
-        if date_if_supported(y, m, d) is not None:
-            h = int(hour)
-            mi = int((hour - h) * 60)
-            s = int(((hour - h) * 60 - mi) * 60)
-            return datetime(y, m, d, h, mi, s, tzinfo=timezone.utc)
-        from engine.astronomy.ut_instant import UtInstant
-
-        return UtInstant(float(jd))  # type: ignore[return-value]
-
-    # ── longitudes ──────────────────────────────────────────────────────────
-
-    def sun_longitude(
-        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> float:
-        """Sun ecliptic longitude in degrees [0, 360)."""
-        return self._longitude(_SUN, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-
-    def moon_longitude(
-        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> float:
-        """Moon ecliptic longitude in degrees [0, 360)."""
-        return self._longitude(_MOON, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-
-    def sun_moon_longitudes(
-        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> tuple[float, float]:
-        """(sun_lon, moon_lon) in a single round-trip."""
-        return (
-            self._calc(_SUN, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0],
-            self._calc(_MOON, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0],
-        )
-
-    def planet_longitude(
-        self, jd: float, planet: str, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> float:
-        """Named planet ecliptic longitude. planet ∈ PLANET_KEYS."""
-        body = _BODY_MAP.get(planet)
-        if body is None:
-            raise EphemerisError(f"Unknown planet: {planet!r}")
-        return self._longitude(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-
-    def planet_position(
-        self, jd: float, planet: str, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> BodyPosition:
-        """Longitude and speed (°/day) for one named planet, rounded to 6 places."""
-        body = _BODY_MAP.get(planet)
-        if body is None:
-            raise EphemerisError(f"Unknown planet: {planet!r}")
-        lon, speed = self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)
-        position = _position()
-        return position.BodyPosition(
-            body=planet, longitude=position.stable_round(lon), speed=position.stable_round(speed)
-        )
-
-    def all_planet_positions(
-        self, jd: float, *, sidereal: bool = True, ayanamsa: int | None = None
-    ) -> dict[str, BodyPosition]:
-        """Sun through Rahu. Ketu is Rahu's :meth:`~BodyPosition.opposite`."""
-        return {
-            name: self.planet_position(jd, name, sidereal=sidereal, ayanamsa=ayanamsa)
-            for name in PLANET_KEYS
-        }
-
-    # ── equatorial / astro extras ────────────────────────────────────────────
 
     def _obliquity(self, jd: float) -> float:
         """True obliquity of the ecliptic (degrees)."""
@@ -593,8 +884,6 @@ class AstronomyEngine:
         )
         return coordinates, round(speed, 4)
 
-    # ── ascendant ────────────────────────────────────────────────────────────
-
     def ascendant(
         self, jd: float, lat: float, lon: float, *, ayanamsa: int | None = None
     ) -> float:
@@ -609,15 +898,11 @@ class AstronomyEngine:
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Ascendant calculation failed: {exc}") from exc
 
-    # ── ayanamsa ─────────────────────────────────────────────────────────────
-
     def ayanamsa(self, jd: float, *, mode: int | None = None) -> float:
         """Ayanamsa in degrees at the given JD."""
         _ensure_ephemeris_for_thread()
         swe.set_sid_mode(self._ayanamsa if mode is None else mode)
         return _ayanamsa_degrees(jd)
-
-    # ── obliquity ────────────────────────────────────────────────────────────
 
     def obliquity(self, jd: float) -> float:
         """True obliquity of the ecliptic in degrees."""
@@ -627,8 +912,6 @@ class AstronomyEngine:
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Obliquity calculation failed: {exc}") from exc
 
-    # ── equation of time ─────────────────────────────────────────────────────
-
     def equation_of_time(self, jd: float) -> float:
         """Equation of time in days (apparent − mean solar time)."""
         _ensure_ephemeris_for_thread()
@@ -636,8 +919,6 @@ class AstronomyEngine:
             return float(swe.time_equ(jd))
         except (swe.Error, TypeError, ValueError) as exc:
             raise EphemerisError(f"Equation of time failed: {exc}") from exc
-
-    # ── eclipses ─────────────────────────────────────────────────────────────
 
     def next_solar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
         """JD of the next (or previous) global solar-eclipse maximum."""
@@ -784,217 +1065,6 @@ class AstronomyEngine:
             "local_max_jd": local_max,
         }
 
-    # ── rise / set ───────────────────────────────────────────────────────────
-
-    def rise(
-        self,
-        date_val: date,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-        *,
-        timezone_name: str | None = None,
-    ) -> datetime | None:
-        """Next rise of body on date_val. Returns UTC datetime or None (circumpolar)."""
-        return self._rise_set(date_val, body, CALC_RISE, lat, lon, alt, timezone_name=timezone_name)
-
-    def set(
-        self,
-        date_val: date,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-        *,
-        timezone_name: str | None = None,
-    ) -> datetime | None:
-        """Next set of body on date_val. Returns UTC datetime or None (circumpolar)."""
-        return self._rise_set(date_val, body, CALC_SET, lat, lon, alt, timezone_name=timezone_name)
-
-    def rise_after(
-        self,
-        after_dt: datetime,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-    ) -> datetime | None:
-        """Rise of body at or after after_dt (panchanga day = sunrise to sunrise)."""
-        return self._rise_set_after(after_dt, body, CALC_RISE, lat, lon, alt)
-
-    def set_after(
-        self,
-        after_dt: datetime,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-    ) -> datetime | None:
-        """Set of body at or after after_dt."""
-        return self._rise_set_after(after_dt, body, CALC_SET, lat, lon, alt)
-
-    def rise_civil(
-        self,
-        civil: CivilDay,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-        *,
-        timezone_name: str | None = None,
-    ) -> datetime | None:
-        """Rise on a proleptic civil day (BCE-safe — no ``datetime.date``)."""
-        return self._rise_set_civil(
-            civil, body, CALC_RISE, lat, lon, alt, timezone_name=timezone_name
-        )
-
-    def set_civil(
-        self,
-        civil: CivilDay,
-        body: str,
-        lat: float,
-        lon: float,
-        alt: float = 0.0,
-        *,
-        timezone_name: str | None = None,
-    ) -> datetime | None:
-        """Set on a proleptic civil day (BCE-safe)."""
-        return self._rise_set_civil(
-            civil, body, CALC_SET, lat, lon, alt, timezone_name=timezone_name
-        )
-
-    # ── private helpers ──────────────────────────────────────────────────────
-
-    def _longitude(
-        self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
-    ) -> float:
-        return self._calc(body, jd, sidereal=sidereal, ayanamsa=ayanamsa)[0]
-
-    def _rise_set(
-        self,
-        date_val: date,
-        body: str,
-        calc_flag: int,
-        lat: float,
-        lon: float,
-        alt: float,
-        *,
-        timezone_name: str | None,
-    ) -> datetime | None:
-        _ensure_ephemeris_for_thread()
-        # A pre-1 CE day arrives as a ``CivilDay``, which ``datetime.combine``
-        # below cannot take. The JD-native twin computes the same instant (both
-        # agree to 0.0s on CE days), so route those straight to it.
-        if not isinstance(date_val, date):
-            return self._rise_set_civil(
-                date_val, body, calc_flag, lat, lon, alt, timezone_name=timezone_name
-            )
-        body_id = _BODY_MAP.get(body)
-        if body_id is None:
-            raise EphemerisError(f"Unknown body: {body!r}")
-        observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
-        cache_key = (
-            body_id, calc_flag, date_val,
-            round(lat, 6), round(lon, 6), round(alt, 3),
-            str(observer_tz),
-        )
-        cached = self._rise_cache.get(cache_key)
-        if cached is not None or cache_key in self._rise_cache:
-            self._rise_cache.move_to_end(cache_key)
-            return cached
-        local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
-        jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
-        try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
-        except (swe.Error, IndexError, TypeError, ValueError) as exc:
-            raise EphemerisError(f"Rise/set failed for {body!r} on {date_val}: {exc}") from exc
-        self._rise_cache[cache_key] = value
-        if len(self._rise_cache) > self._CACHE_MAX:
-            self._rise_cache.popitem(last=False)
-        return value
-
-    @staticmethod
-    def _utc_offset_days(civil: CivilDay, observer_tz: Any) -> float:
-        """Observer's UTC offset on *civil*, in days — the local-midnight anchor.
-
-        A CE day gets the real zone offset for that date (so DST and historical
-        zone changes are honoured and the result matches ``datetime.combine``
-        exactly). A BCE day has no tz-database coverage, so it takes the zone's
-        modern standard offset — the same approximation ``local_wall_instant``
-        makes for pre-1 CE wall-clock times.
-        """
-        real_date = date_if_supported(civil.year, civil.month, civil.day)
-        ref = (
-            datetime.combine(real_date, time(0, 0), tzinfo=observer_tz)
-            if real_date is not None
-            else datetime(2000, 6, 15, 12, 0, tzinfo=observer_tz)
-        )
-        offset = ref.utcoffset()
-        return 0.0 if offset is None else offset.total_seconds() / 86400.0
-
-    def _rise_set_civil(
-        self,
-        civil: CivilDay,
-        body: str,
-        calc_flag: int,
-        lat: float,
-        lon: float,
-        alt: float,
-        *,
-        timezone_name: str | None,
-    ) -> datetime | None:
-        _ensure_ephemeris_for_thread()
-        body_id = _BODY_MAP.get(body)
-        if body_id is None:
-            raise EphemerisError(f"Unknown body: {body!r}")
-        observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
-        cache_key = (
-            body_id,
-            calc_flag,
-            civil.year,
-            civil.month,
-            civil.day,
-            round(lat, 6),
-            round(lon, 6),
-            round(alt, 3),
-            str(observer_tz),
-            "civil",
-        )
-        cached = self._rise_cache.get(cache_key)
-        if cached is not None or cache_key in self._rise_cache:
-            self._rise_cache.move_to_end(cache_key)
-            return cached
-        # Search from LOCAL midnight on the civil day — the same anchor the
-        # ``date`` path uses, so the two agree to 0.0s wherever both can express
-        # the day. Anchoring at UT instead (``to_jd_ut() - 0.5``) silently
-        # shifted the window by the observer's offset: east of Greenwich it
-        # opened early enough to catch the *previous* day's event and return it
-        # as this day's, which is a whole-day error, not a rounding one.
-        jd_start = civil.to_jd_ut() - self._utc_offset_days(civil, observer_tz)
-        try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
-        except (swe.Error, IndexError, TypeError, ValueError) as exc:
-            raise EphemerisError(
-                f"Rise/set failed for {body!r} on civil {civil}: {exc}"
-            ) from exc
-        self._rise_cache[cache_key] = value
-        if len(self._rise_cache) > self._CACHE_MAX:
-            self._rise_cache.popitem(last=False)
-        return value
-
     def fixed_star_sidereal(self, star: str, jd: float) -> tuple[float, float, float]:
         """A catalogued fixed star's (sidereal longitude, latitude, magnitude) at *jd*.
 
@@ -1015,34 +1085,48 @@ class AstronomyEngine:
             raise EphemerisError(f"fixstar2_ut failed for {star!r}: {exc}") from exc
         return xx[0] % 360.0, xx[1], mag
 
-    def _rise_set_after(
-        self,
-        after_dt: datetime,
-        body: str,
-        calc_flag: int,
-        lat: float,
-        lon: float,
-        alt: float,
-    ) -> datetime | None:
+    def _rise_trans_jd(
+        self, jd_start: float, body_id: int, calc_flag: int, lat: float, lon: float, alt: float
+    ) -> float | None:
+        """JD (UT) of the next rise/set after *jd_start*, or None when the body never crosses.
+
+        The one place the three rise/set paths ask the ephemeris, so another engine
+        (the Surya Siddhanta one) can answer the same question its own way.
+        """
         _ensure_ephemeris_for_thread()
-        body_id = _BODY_MAP.get(body)
-        if body_id is None:
-            raise EphemerisError(f"Unknown body: {body!r}")
-        jd_start = self.julian_day(after_dt.astimezone(timezone.utc))
-        try:
-            result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt),
-                REFRACTION_PRESSURE,
-                REFRACTION_TEMPERATURE,
-                _horizon_dip_degrees(alt),
-            )
-            if result[0] < 0:
-                return None
-            return self.datetime_from_jd(result[1][0])
-        except (swe.Error, IndexError, TypeError, ValueError) as exc:
-            raise EphemerisError(f"Rise/set after {after_dt} failed for {body!r}: {exc}") from exc
+        result = swe.rise_trans_true_hor(
+            jd_start, body_id, calc_flag, (lon, lat, alt),
+            REFRACTION_PRESSURE,
+            REFRACTION_TEMPERATURE,
+            _horizon_dip_degrees(alt),
+        )
+        return None if result[0] < 0 else float(result[1][0])
+
+
+#: The drik engine's historical name; existing imports and tests keep using it.
+AstronomyEngine = SwissEphemerisEngine
+
+
+# ── the engine of the request's siddhanta ───────────────────────────────────
+#
+# Which siddhanta a request computes in is chosen in engine.astronomy.siddhanta;
+# ``default_engine`` forwards every call to that siddhanta's engine, so each module
+# that imported it computes in the requested siddhanta without knowing there are two.
+
+class _ActiveEngine:
+    """``default_engine``: forwards every attribute to the current siddhanta's engine."""
+
+    def __getattr__(self, name: str) -> Any:
+        from engine.astronomy.siddhanta import current_siddhanta
+
+        return getattr(current_siddhanta().engine, name)
+
+    def __repr__(self) -> str:
+        from engine.astronomy.siddhanta import current_siddhanta
+
+        return f"<default_engine → {current_siddhanta().id}>"
 
 
 # Module-level singleton — existing code can import this directly
 # while the migration to passing the engine instance is in progress.
-default_engine = AstronomyEngine()
+default_engine: EngineBase = _ActiveEngine()  # type: ignore[assignment]

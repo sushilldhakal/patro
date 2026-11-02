@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.astronomy.engine import PLANET_KEYS, SIDM_LAHIRI, default_engine
+from engine.astronomy.engine import PLANET_KEYS, default_engine
 from engine.astronomy.motion import is_retrograde, motion_label, motion_label_ne
 from engine.astronomy.position import BodyPosition, stable_round
 
@@ -149,7 +149,7 @@ def graha_positions(
     jd: float,
     *,
     sidereal: bool = True,
-    ayanamsa: int = SIDM_LAHIRI,
+    ayanamsa: int | None = None,
 ) -> dict[str, BodyPosition]:
     """Every graha at *jd*; :meth:`BodyPosition.to_payload` is its spashta row
     (rashi, DMS, वक्री — no अस्त flag).

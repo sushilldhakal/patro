@@ -87,11 +87,11 @@ def planetary_positions(
             lon=location.lon,
             request=request,
         )
-        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        ayanamsha_key, mode_id = resolve_ayanamsha_mode(ayanamsha)
         return {
             **build_planetary_snapshot(instant.astimezone(timezone.utc),
                                        lat=location.lat, lon=location.lon, ayanamsa=mode_id),
-            "ayanamsha": ayanamsha or "lahiri",
+            "ayanamsha": ayanamsha_key,
             "location": location.as_dict(),
             "query_instant": instant.isoformat(),
         }
@@ -141,12 +141,12 @@ def kundali_vimshottari(
             lon=location.lon,
             request=request,
         )
-        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        ayanamsha_key, mode_id = resolve_ayanamsha_mode(ayanamsha)
         planets = spashta_table(as_julian_day(instant), ayanamsa=mode_id)
         moon_lon = planets["moon"]["longitude"]
         dasha = vimshottari_dasha(moon_lon, instant.astimezone(timezone.utc), cycles=cycles)
         payload = {
-            "ayanamsha": ayanamsha or "lahiri",
+            "ayanamsha": ayanamsha_key,
             "moon_longitude": moon_lon,
             "location": location.as_dict(),
             "query_instant": instant.isoformat(),
@@ -378,7 +378,12 @@ def kundali_detail(
     # what broad cache rule is set for the rest of the site: a stale edge
     # copy here would silently show an old chart after a saved birth-date
     # edit. private, no-store on both headers overrides any such rule.
-    ayanamsha_id = ayanamsha or "lahiri"
+    from engine.astronomy.sidereal import resolve_ayanamsha_mode
+
+    try:
+        ayanamsha_id, _ = resolve_ayanamsha_mode(ayanamsha)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     cache_key = (
         f"kundalidetail_{KUNDALI_DETAIL_VERSION}_{instant.isoformat()}_"
         f"{ayanamsha_id}_{location_cache_key(location)}"

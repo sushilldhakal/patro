@@ -199,7 +199,17 @@ BS_SUPPORTED_MAX_YEAR = 3000
 AD_YEAR_MIN = 1
 AD_YEAR_MAX = 16995  # last whole CE year whose months all build (see patro_year_axis)
 BC_YEAR_MIN = 1
-BC_YEAR_MAX = 12998  # deepest whole BCE year whose months all build (see patro_year_axis)
+# BC_YEAR_MAX (deepest whole BCE year whose months all build) depends on the
+# request's calculation system — 12998 for drik, back to सत्य युग for the Surya
+# Siddhanta — so it is read live from patro_year_axis.
+
+
+def __getattr__(name: str):
+    if name == "BC_YEAR_MAX":
+        from engine.calendar.patro_year_axis import bc_year_max
+
+        return bc_year_max()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD
 BS_REFERENCE_START = date(2025, 4, 14)

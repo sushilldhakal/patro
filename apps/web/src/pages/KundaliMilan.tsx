@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Heart, LogIn, Plus, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
+import { CalculationSystemSelector } from "@/components/kundali/CalculationSystemSelector";
 import {
   MilanProfilePicker,
   type MilanProfilePickerHandle,
@@ -117,6 +118,7 @@ export function KundaliMilan() {
           {boyProfile && girlProfile ? (
             <>
               <AyanamshaSelector mode={page.ayanamsha} onModeChange={page.setAyanamsha} />
+              <CalculationSystemSelector />
 
               {matchStatus === "missing-birth" ? (
                 <div className={cn(kundaliClasses.warnBox, kundaliClasses.warnText)}>
