@@ -3,7 +3,8 @@ import { Pressable, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
-import { usePathname } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useNavPress } from "@/lib/use-nav-press";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { FEATURE_ICON } from "@vedic-patro/icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
@@ -31,6 +33,7 @@ export function FloatingNavBar() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const duo = useDuoShellInsets();
+  const router = useRouter();
   const { isTablet } = useBreakpoint();
 
   /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
@@ -44,7 +47,7 @@ export function FloatingNavBar() {
         pointerEvents="box-none"
         style={{
           position: "absolute",
-          right: 4,
+          right: 8,
           top: insets.top + DUO_RAIL_TOP,
           bottom: Math.max(insets.bottom, 12),
           width: duo.right - 8,
@@ -71,6 +74,19 @@ export function FloatingNavBar() {
               </NavItem>
             );
           })}
+          {/* Useful actions beside the tabs, so the side column is not just navigation. */}
+          <View className="my-1 h-px self-stretch bg-border" />
+          {!FLOATING_NAV.some((item) => isNavActive(pathname, item.href)) ? (
+            <NavItem rail active={false} onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}>
+              <Ionicons name="arrow-back" size={iconSize} color={colors.mutedForeground} />
+            </NavItem>
+          ) : null}
+          <NavItem rail active={isNavActive(pathname, "/reminders")} onPress={() => navPress("/reminders")}>
+            <AppNavIcon name={FEATURE_ICON.reminders} size={iconSize} color={colors.mutedForeground} />
+          </NavItem>
+          <NavItem rail active={false} onPress={() => navPress("/account/settings")}>
+            <Ionicons name="settings-outline" size={iconSize} color={colors.mutedForeground} />
+          </NavItem>
         </View>
       </View>
     );
