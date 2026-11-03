@@ -114,7 +114,7 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
               }}
               className={navMenuClasses.nativeTab}
             >
-              <SelectionFill active={active} className="rounded-full bg-card" />
+              <SelectionFill active={active} className={navMenuClasses.nativeTabOn} />
               <Text
                 numberOfLines={1}
                 className={active ? "text-body font-bold text-secondary" : "text-body font-semibold text-muted-foreground"}

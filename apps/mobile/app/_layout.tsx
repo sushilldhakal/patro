@@ -1,7 +1,7 @@
 import { useTrackPathname } from "@/lib/cross-tab-back";
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
-import { Stack, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
 import * as Sentry from "@sentry/react-native";
 import { deviceStore } from "@/lib/device-store";
 import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
@@ -29,7 +29,7 @@ import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-c
 import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { SplashIntro } from "@/components/branding/SplashIntro";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
@@ -347,8 +347,24 @@ function RootShell({
   onboarded: boolean | null;
   onOnboarded: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const railFade = useRailPageAnimation();
+  // The native headers (iPhone Duo toolbar) take their light/dark style and tint from the navigation
+  // theme — expo-router's own copy, not @react-navigation/native's. Without one they stay on the light
+  // default, so in dark mode the toolbar buttons were light glass with dark icons.
+  const navigationTheme = useMemo(() => {
+    const base = isDark ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        background: colors.background,
+        card: colors.background,
+        text: colors.foreground,
+        border: colors.border,
+      },
+    };
+  }, [isDark, colors]);
   usePatroCapabilities();
   const router = useRouter();
   const navState = useRootNavigationState();
@@ -370,7 +386,7 @@ function RootShell({
   }, [ready, onboarded, navState?.key, router]);
 
   return (
-    <>
+    <NavigationThemeProvider value={navigationTheme}>
       {ready && onboarded === false ? (
         <OnboardingScreen onComplete={onOnboarded} />
       ) : (
@@ -431,7 +447,7 @@ function RootShell({
           <VedicPatroLoader />
         </View>
       ) : null}
-    </>
+    </NavigationThemeProvider>
   );
 }
 

@@ -10,7 +10,7 @@ export const navMenuClasses = {
   tile: "h-[6.25rem] w-[calc((100%-1.25rem)/3)] compact:w-[calc((100%-1.875rem)/4)] flex flex-col items-center justify-center gap-1.5 bg-transparent px-0.5 py-1",
   tileWeb: "text-center shadow-none transition-colors duration-200 hover:text-secondary active:scale-[0.98]",
   iconWrap: "flex size-12 shrink-0 items-center justify-center rounded-full bg-muted/80",
-  iconWrapActive: "bg-secondary/15",
+  iconWrapActive: "bg-secondary/15 dark:bg-secondary/15",
   label: "w-full min-w-0 px-0.5 text-center text-diagram-sm font-bold leading-tight text-foreground",
   labelActive: "text-secondary",
   /** The three category tabs at the top of the side menu (website; the app draws its own pills). */
@@ -21,10 +21,12 @@ export const navMenuClasses = {
   categoryTitle: "mx-3 mt-3 text-base font-bold text-foreground",
   /** The app's side menu: four smaller tiles a row. */
   nativeTile: "w-full items-center gap-1.5 px-0.5 py-2",
-  nativeIconWrap: "size-12 items-center justify-center rounded-2xl bg-muted/80",
+  nativeIconWrap: "size-12 items-center justify-center rounded-2xl bg-muted/80 dark:bg-foreground/10",
   nativeLabel: "w-full min-w-0 text-center text-xs font-semibold leading-tight text-foreground",
-  /** The app's side menu header: the tabs and the close button on one row. */
-  nativeTabs: "min-w-0 flex-1 flex-row rounded-full bg-muted p-1",
+  /** The app's side menu header: the tabs and the close button on one row. In dark the sheet is the card
+      colour, so the track and the selected pill are lifted with the foreground instead. */
+  nativeTabs: "min-w-0 flex-1 flex-row rounded-full bg-muted p-1 dark:bg-foreground/5",
+  nativeTabOn: "rounded-full bg-card dark:bg-foreground/15",
   nativeTab: "h-11 flex-1 items-center justify-center rounded-full px-2",
   nativeCategoryTitle: "mx-4 mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
 };

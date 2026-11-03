@@ -77,7 +77,7 @@ function CloseButton({ onPress }: { onPress: () => void }) {
       accessibilityRole="button"
       accessibilityLabel={t("ui.search.cancel")}
       hitSlop={8}
-      className="h-10 w-10 items-center justify-center rounded-full bg-muted active:opacity-60"
+      className="h-10 w-10 items-center justify-center rounded-full bg-muted active:opacity-60 dark:bg-foreground/10"
     >
       <Ionicons name="close" size={22} color={colors.foreground} />
     </Pressable>
