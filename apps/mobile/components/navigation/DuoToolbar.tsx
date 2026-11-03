@@ -59,7 +59,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
     <>
       <Stack.Screen options={{ title: "" }} />
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button icon="sidebar.left" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
+        <Stack.Toolbar.Button icon="square.grid.2x2" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
         {/* Monthly BS, monthly panchanga or daily panchanga — Apple Calendar's view menu, the current one ticked. */}
