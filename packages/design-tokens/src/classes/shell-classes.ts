@@ -30,9 +30,12 @@ export const shellClasses = {
   navBar:
     "max-w-lg items-stretch justify-around gap-0.5 rounded-2xl border border-border bg-background/90 p-1",
   navItem: "flex-1 items-center gap-1 rounded-xl px-1 py-1.5",
-  /** The app's bottom row: the tabs, then search, place and "+" in a group of their own. */
-  navRow: "w-full max-w-xl flex-row items-stretch gap-2 self-center",
-  navActionButton: "h-11 w-10 items-center justify-center rounded-xl active:bg-muted",
+  /** The app's bottom row: [search, +] [tabs] [place]. Three capsules of one height, on the app's card colour. */
+  navRow: "w-full max-w-xl flex-row items-center gap-2 self-center",
+  navGroup: "h-16 flex-row items-center rounded-full border border-border/60 bg-card px-1.5",
+  navTab: "h-13 min-w-0 flex-1 items-center justify-center gap-0.5 rounded-full px-1",
+  navTabActive: "bg-secondary/12",
+  navActionButton: "h-13 w-13 items-center justify-center rounded-full active:bg-muted",
   /** iPhone Duo tab pages: the two action groups at the foot, either side of the system tab bar. */
   navDuoActions: "absolute left-0 right-0 flex-row justify-between px-4",
   navItemActive: "bg-secondary/10",

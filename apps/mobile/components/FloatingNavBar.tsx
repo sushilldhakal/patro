@@ -67,10 +67,7 @@ function FloatingNavBarView() {
       />
       <View className={shellClasses.navRow}>
       <LeftActions />
-      <View
-        style={nativeShadow("lg")}
-        className={cn("min-w-0 flex-1 flex-row bg-background", shellClasses.navBar)}
-      >
+      <View style={nativeShadow("md")} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
         {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -110,7 +107,7 @@ function FloatingNavBarView() {
 function LeftActions() {
   const { t } = useLocale();
   return (
-    <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
+    <View style={nativeShadow("md")} className={shellClasses.navGroup}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
     </View>
@@ -133,7 +130,7 @@ function RightActions() {
     });
   };
   return (
-    <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
+    <View style={nativeShadow("md")} className={shellClasses.navGroup}>
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
@@ -187,7 +184,7 @@ function ActionButton({
       hitSlop={4}
       className={shellClasses.navActionButton}
     >
-      <Ionicons name={icon} size={22} color={colors.foreground} />
+      <Ionicons name={icon} size={24} color={colors.foreground} />
     </Pressable>
   );
 }
@@ -201,11 +198,7 @@ function NavItem({ active, onPress, children }: { active: boolean; onPress: () =
       onPress={onPress}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      className={cn(
-        "min-w-0 justify-center",
-        shellClasses.navItem,
-        active && shellClasses.navItemActive,
-      )}
+      className={cn(shellClasses.navTab, active && shellClasses.navTabActive)}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       pressRetentionOffset={16}
