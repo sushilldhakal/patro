@@ -11,8 +11,10 @@ export function useDuoRail(): { horizontal: boolean; slots: number; folded: bool
   /* The open display is 669x951pt; the outer (folded) one is narrower than 560 on its short side. */
   const folded = Math.min(width, height) < 560;
   const horizontal = !folded && width >= 600 && height > width;
-  /* About 50pt per icon, after the status area at the top of the rail. */
-  const slots = horizontal ? Number.POSITIVE_INFINITY : Math.max(2, Math.floor((height - 150) / 50));
+  /* About 52pt per icon, after the status area at the top of the rail (~150pt) and the gaps between
+     its three groups (side menu, actions, tabs: ~50pt). Erring short only sends an icon behind "…";
+     erring long makes the groups overlap. */
+  const slots = horizontal ? Number.POSITIVE_INFINITY : Math.max(2, Math.floor((height - 200) / 52));
   return { horizontal, slots, folded };
 }
 
@@ -25,10 +27,16 @@ const UNFOLDED_HIDDEN: ReadonlySet<TabRoute> = new Set<TabRoute>(["kundali", "va
 /** The only tabs on the folded display's short rail. */
 const FOLDED_TABS: ReadonlySet<TabRoute> = new Set<TabRoute>(["index", "panchanga"]);
 
+/** Toolbar icons that may move into the "…" menu, most needed first. */
+export const RAIL_EXTRAS = ["search", "location", "profile", "settings", "share"] as const;
+export type RailExtra = (typeof RAIL_EXTRAS)[number];
+
+/** Icons always in the rail: the side menu, "+" and "…". */
+const FIXED_ICONS = 3;
+
 export type RailPlan = {
   /** Toolbar actions shown as their own icons; the rest sit in the "…" menu. */
-  settings: boolean;
-  share: boolean;
+  extras: ReadonlySet<RailExtra>;
   /** Tabs in the tab bar. */
   tabs: ReadonlySet<TabRoute>;
   /** Tabs moved behind the "…" menu (folded only). */
@@ -36,16 +44,22 @@ export type RailPlan = {
 };
 
 /**
- * Which items get a slot. Folded: home and panchanga only, the other tabs go behind "…". Open:
- * kundali and vastu are left out, the rest fit by height (least used dropped first).
+ * Which items get a slot, so the rail's icons and the tab group never run into each other (iOS stacks
+ * the toolbar group and the tab group in one column; when they do not fit, they overlap). The tabs are
+ * placed first (folded: home and panchanga; open: up to four, kundali and vastu left out), then the
+ * side menu, "+" and "…", then as many of search, place, profile, settings and share as still fit —
+ * the rest go behind "…". The view menu is a text button, which iOS keeps in the top bar, not the rail.
  */
 export function planRail(slots: number, folded = false): RailPlan {
-  const settings = folded ? false : slots >= 6;
-  const share = folded ? false : slots >= 7;
-  if (folded) {
-    return { settings, share, tabs: FOLDED_TABS, overflowTabs: ALL_TABS.filter((t) => !FOLDED_TABS.has(t)) };
-  }
-  const budget = Math.max(2, slots - 7 - (settings ? 1 : 0) - (share ? 1 : 0));
-  const tabs = ALL_TABS.filter((t) => !UNFOLDED_HIDDEN.has(t)).slice(0, budget);
-  return { settings, share, tabs: new Set(tabs), overflowTabs: [] };
+  const pool = ALL_TABS.filter((t) => (folded ? FOLDED_TABS.has(t) : !UNFOLDED_HIDDEN.has(t)));
+  const tabCount = folded
+    ? Math.max(1, Math.min(pool.length, slots - FIXED_ICONS))
+    : Math.max(2, Math.min(pool.length, slots - FIXED_ICONS - 1));
+  const tabs = new Set(pool.slice(0, tabCount));
+  const room = Math.max(0, slots - FIXED_ICONS - tabs.size);
+  return {
+    extras: new Set(RAIL_EXTRAS.slice(0, room)),
+    tabs,
+    overflowTabs: ALL_TABS.filter((t) => !tabs.has(t)).filter((t) => folded || !UNFOLDED_HIDDEN.has(t)),
+  };
 }

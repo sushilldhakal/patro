@@ -44,6 +44,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
   const viewSections = usePageViewSections();
+  const { extras } = plan;
+  /** What the text button reads: the choice now in force (the first group's ticked one). */
+  const viewLabel =
+    viewSections?.flatMap((section) => section.options).find((option) => option.active)?.label ?? t("ui.view_menu.label");
 
   const onProfile = useCallback(() => {
     if (isAuthenticated) router.push("/account" as never);
@@ -63,9 +67,12 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
         {/* The page's own view choices (वि.सं. | पञ्चाङ्ग, अहोरात्र | दिन-रात, profiles…), the current one
-            ticked; no menu title, and no button on a page without choices. A titled group is an inline section. */}
+            ticked; no button on a page without choices. Drawn as text (the current choice, like Apple
+            Calendar's "Month"), so iOS keeps it in the top bar instead of the rail. A titled group is an
+            inline section. */}
         {viewSections ? (
-          <Stack.Toolbar.Menu icon="list.bullet" accessibilityLabel={t("ui.view_menu.label")}>
+          <Stack.Toolbar.Menu accessibilityLabel={t("ui.view_menu.label")}>
+            <Stack.Toolbar.Label>{viewLabel}</Stack.Toolbar.Label>
             {viewSections.map((section) =>
               section.title ? (
                 <Stack.Toolbar.Menu key={section.key} inline title={section.title}>
@@ -85,27 +92,48 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
             )}
           </Stack.Toolbar.Menu>
         ) : null}
-        <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
-        <Stack.Toolbar.Button icon="magnifyingglass" accessibilityLabel={t("ui.search.search")} onPress={requestSearch} />
+        {extras.has("search") ? (
+          <Stack.Toolbar.Button icon="magnifyingglass" accessibilityLabel={t("ui.search.search")} onPress={requestSearch} />
+        ) : null}
+        {extras.has("location") ? (
+          <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
+        ) : null}
         <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
-        <Stack.Toolbar.Button
-          icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
-          accessibilityLabel={t("account_page.title")}
-          onPress={onProfile}
-        />
-        {plan.settings ? (
+        {extras.has("profile") ? (
+          <Stack.Toolbar.Button
+            icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
+            accessibilityLabel={t("account_page.title")}
+            onPress={onProfile}
+          />
+        ) : null}
+        {extras.has("settings") ? (
           <Stack.Toolbar.Button icon="gearshape" accessibilityLabel={t("account_page.settings")} onPress={toSettings} />
         ) : null}
-        {plan.share ? (
+        {extras.has("share") ? (
           <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
         ) : null}
         <Stack.Toolbar.Menu icon="ellipsis" title={t("menu_open")}>
-          {plan.settings ? null : (
+          {extras.has("search") ? null : (
+            <Stack.Toolbar.MenuAction icon="magnifyingglass" onPress={requestSearch}>
+              {t("ui.search.search")}
+            </Stack.Toolbar.MenuAction>
+          )}
+          {extras.has("location") ? null : (
+            <Stack.Toolbar.MenuAction icon="location" onPress={requestLocationPicker}>
+              {t("ui.search.location")}
+            </Stack.Toolbar.MenuAction>
+          )}
+          {extras.has("profile") ? null : (
+            <Stack.Toolbar.MenuAction icon="person.crop.circle" onPress={onProfile}>
+              {t("account_page.title")}
+            </Stack.Toolbar.MenuAction>
+          )}
+          {extras.has("settings") ? null : (
             <Stack.Toolbar.MenuAction icon="gearshape" onPress={toSettings}>
               {t("account_page.settings")}
             </Stack.Toolbar.MenuAction>
           )}
-          {plan.share ? null : (
+          {extras.has("share") ? null : (
             <Stack.Toolbar.MenuAction icon="square.and.arrow.up" onPress={() => void onShare()}>
               {t("ui.more.share_the_app")}
             </Stack.Toolbar.MenuAction>
