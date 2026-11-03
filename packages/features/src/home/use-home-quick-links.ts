@@ -1,7 +1,8 @@
 /**
  * The home page's shortcut tiles under the calendar, shared by the
- * website's and the app's `components/home/HomeQuickLinks.tsx`: two groups
- * (patro, jyotish), their order, routes and labels. `feature` is the
+ * website's and the app's `components/home/HomeQuickLinks.tsx`: three groups in the
+ * navigation's category order (calendar & time, jyotish & muhurta, daily auspicious times),
+ * their order, routes and labels. `feature` is the
  * shared icon identity (`FEATURE_ICON` in @vedic-patro/icons) each app
  * draws; `search` says which URL state the website carries into the link.
  */
@@ -20,7 +21,14 @@ export type HomeQuickLinkFeature =
   | "abhijit"
   | "kundali"
   | "kundali-milan"
-  | "documents";
+  | "documents"
+  | "choghadiya"
+  | "hora"
+  | "lagna"
+  | "chandrabala"
+  | "tarabala"
+  | "panchaka-rahita"
+  | "pushkara";
 
 /** Which location / era search the website adds: the route's own, the current month's or year's, or none. */
 export type HomeQuickLinkSearch = "route" | "month" | "year" | "none";
@@ -55,14 +63,20 @@ const JYOTISH: LinkDef[] = [
   { to: "/documents", feature: "documents", label: "nav.documents", search: "none" },
 ];
 
+/** The day tables, as panchanga element pages (the app maps the path to its own route). */
+const DAILY: LinkDef[] = (["choghadiya", "hora", "lagna", "chandrabala", "tarabala", "panchaka-rahita", "pushkara"] as const).map(
+  (id) => ({ to: `/panchanga/element/${id}`, feature: id, label: `panchanga_elements.${id}.title`, search: "route" }),
+);
+
 export function useHomeQuickLinks() {
   const { t } = useLocale();
   const links = (defs: LinkDef[]): HomeQuickLink[] => defs.map((d) => ({ ...d, label: t(d.label) }));
 
   return {
     groups: [
-      { id: "patro" as const, title: t("sidebar_nav.sections.patro.title"), links: links(PATRO) },
-      { id: "jyotish" as const, title: t("sidebar_nav.sections.jyotish.title"), links: links(JYOTISH) },
+      { id: "patro" as const, title: t("sidebar_nav.categories.calendar"), links: links(PATRO) },
+      { id: "jyotish" as const, title: t("sidebar_nav.categories.jyotish"), links: links(JYOTISH) },
+      { id: "daily" as const, title: t("sidebar_nav.categories.daily"), links: links(DAILY) },
     ],
   };
 }

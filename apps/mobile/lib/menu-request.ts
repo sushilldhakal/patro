@@ -81,3 +81,19 @@ export function useRemindersChanged(onChange: () => void) {
     };
   }, [onChange]);
 }
+
+const locationListeners = new Set<Listener>();
+
+/** Asks the root to open the place picker (the location button in the header and the Duo toolbar). */
+export function requestLocationPicker() {
+  locationListeners.forEach((open) => open());
+}
+
+export function useLocationPickerRequest(onOpen: () => void) {
+  useEffect(() => {
+    locationListeners.add(onOpen);
+    return () => {
+      locationListeners.delete(onOpen);
+    };
+  }, [onOpen]);
+}

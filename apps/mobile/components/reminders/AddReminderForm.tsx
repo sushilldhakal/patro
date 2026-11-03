@@ -8,7 +8,7 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { createReminder, listReminders } from "@/lib/notifications/api";
-import { notifStore, type CachedProfile } from "@/lib/notifications/store";
+import { notifStore } from "@/lib/notifications/store";
 import {
   LEAD_MINUTE_OPTIONS,
   REMINDER_NAME_MAX,
@@ -65,7 +65,6 @@ export function Chip({ label, active, onPress }: { label: string; active: boolea
 type Props = {
   /** Resets the form to `initialKey` each time this turns true. */
   active: boolean;
-  profiles: CachedProfile[];
   online: boolean;
   initialKey?: string;
   /** A line under the title, e.g. the window's time today. */
@@ -73,8 +72,8 @@ type Props = {
   onCreated: () => Promise<void>;
 };
 
-/** New शुभ / अशुभ window reminder: which window, how early, which days, which profile. */
-export function AddReminderForm({ active, profiles, online, initialKey, subtitle, onCreated }: Props) {
+/** New शुभ / अशुभ window reminder: its name and note, which window, how early, which days. */
+export function AddReminderForm({ active, online, initialKey, subtitle, onCreated }: Props) {
   const { t, pick, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const colors = useThemeColors();
@@ -84,7 +83,6 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
   const [windowKey, setWindowKey] = useState("rahu_kalam");
   const [lead, setLead] = useState<number>(10);
   const [weekdays, setWeekdays] = useState<number[]>([]);
-  const [profileId, setProfileId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -119,7 +117,7 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
     setSaving(true);
     try {
       await createReminder({
-        profile_id: profileId,
+        profile_id: null,
         window_kind: kind,
         window_key: windowKey,
         lead_minutes: lead,
@@ -214,18 +212,6 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
           ))}
         </View>
       </View>
-
-      {profiles.length > 0 ? (
-        <View>
-          <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.profile_optional")}</Text>
-          <View className="flex-row flex-wrap gap-2">
-            <Chip label={t("ui.reminders.none")} active={profileId === null} onPress={() => setProfileId(null)} />
-            {profiles.map((p) => (
-              <Chip key={p.id} label={p.full_name} active={profileId === p.id} onPress={() => setProfileId(p.id)} />
-            ))}
-          </View>
-        </View>
-      ) : null}
 
       <Button
         label={saving ? t("ui.common.saving") : t("ui.reminders.create_reminder")}

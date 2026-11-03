@@ -3532,7 +3532,15 @@
         "blurb": "Auspicious dates & explanation"
       }
     },
-    "sait_label": "{{category}} moment"
+    "sait_label": "{{category}} moment",
+    "categories": {
+      "calendar": "Calendar & time",
+      "jyotish": "Jyotish & muhurta",
+      "daily": "Daily auspicious times",
+      "daily_short": "Daily",
+      "calendar_short": "Calendar",
+      "jyotish_short": "Jyotish"
+    }
   },
   "brahma_mana": {
     "title": "Brahma Māna",
@@ -5638,6 +5646,10 @@
     },
     "search": {
       "search": "Search",
+      "location": "Location",
+      "cancel": "Close",
+      "all_day": "all-day",
+      "public_holiday": "Public holiday",
       "festivals_title": "Search festivals",
       "festivals_placeholder": "Festival or holiday name",
       "done": "Done"

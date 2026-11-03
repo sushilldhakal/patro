@@ -3532,7 +3532,15 @@
         "blurb": "Auspicious dates & explanation"
       }
     },
-    "sait_label": "{{category}} moment"
+    "sait_label": "{{category}} moment",
+    "categories": {
+      "calendar": "Calendar & time",
+      "jyotish": "Jyotish & muhurta",
+      "daily": "Daily auspicious times",
+      "daily_short": "Daily",
+      "calendar_short": "Calendar",
+      "jyotish_short": "Jyotish"
+    }
   },
   "brahma_mana": {
     "title": "Brahma Māna",

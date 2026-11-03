@@ -3,7 +3,6 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { AddReminderForm } from "@/components/reminders/AddReminderForm";
 import { useLocale } from "@/lib/i18n";
-import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { notifyRemindersChanged, requestSignIn } from "@/lib/menu-request";
@@ -17,7 +16,6 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
   const { lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const { isAuthenticated } = useAuth();
-  const [profiles, setProfiles] = useState<CachedProfile[]>([]);
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -28,10 +26,8 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
       return;
     }
     let active = true;
-    void Promise.all([notifStore.getProfiles(), isCurrentlyOnline()]).then(([p, net]) => {
-      if (!active) return;
-      setProfiles(p);
-      setOnline(net);
+    void isCurrentlyOnline().then((net) => {
+      if (active) setOnline(net);
     });
     return () => {
       active = false;
@@ -46,7 +42,7 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <BottomSheetModal variant="page" visible={open && isAuthenticated} onClose={onClose} maxHeight="88%">
-      <AddReminderForm active={open} profiles={profiles} online={online} onCreated={onCreated} />
+      <AddReminderForm active={open} online={online} onCreated={onCreated} />
     </BottomSheetModal>
   );
 }

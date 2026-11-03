@@ -118,9 +118,13 @@ export function loadStoredLocation(): Promise<PanchangaLocation> {
   return sharedLocationLoad;
 }
 
+/** Every mounted `usePanchangaLocation`: a place picked anywhere (the toolbar's location button) moves them all. */
+const locationListeners = new Set<(next: PanchangaLocation) => void>();
+
 function saveLocation(next: PanchangaLocation) {
   sharedLocation = next;
   SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+  locationListeners.forEach((fn) => fn(next));
 }
 
 const BACKFILL_TIMEOUT_MS = 4000;
@@ -152,6 +156,14 @@ export function usePanchangaLocation(initial?: PanchangaLocation) {
     });
     return () => {
       active = false;
+    };
+  }, [initial]);
+
+  useEffect(() => {
+    if (initial) return;
+    locationListeners.add(setLocationState);
+    return () => {
+      locationListeners.delete(setLocationState);
     };
   }, [initial]);
 

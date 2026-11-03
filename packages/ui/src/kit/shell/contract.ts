@@ -78,6 +78,8 @@ export type PatroHeaderLocationProps = {
   /** Controlled panel, so a header can keep only one panel open. */
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Only the sheet: the app opens it from its toolbar's location button (native only). */
+  buttonless?: boolean;
 };
 
 export type PatroCalendarHeaderProps = {
@@ -96,6 +98,8 @@ export type PatroCalendarHeaderProps = {
   crossEraSubtitle?: string | null;
   displayLanguage?: Language;
   className?: string;
+  /** Leave out the date badge, title and location row: the app's toolbar carries the location (native only). */
+  hideTitleRow?: boolean;
 };
 
 export type PatroMonthYearNavProps = Omit<PatroCalendarHeaderProps, "onChange"> & {

@@ -21,6 +21,8 @@ export type PanchangaSidebarItemView = {
 export type PanchangaSidebarSectionView = {
   id: string;
   title: string;
+  /** The category heading (calendar, jyotish, daily) above the first section of its group. */
+  categoryTitle?: string;
   expanded: boolean;
   hasActive: boolean;
   onToggle: () => void;

@@ -3,6 +3,7 @@ import { FEATURE_ICON } from "@vedic-patro/icons";
 import { useHomeQuickLinks } from "@vedic-patro/features/home";
 import { HomeQuickLinks as HomeQuickLinksView, type HomeQuickLinkGroup } from "@vedic-patro/ui/kit/shell";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { elementHref } from "@/lib/element-routes";
 import { Text } from "@/components/ui/Text";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
@@ -15,6 +16,12 @@ function RituIcon({ location, color }: { location: PanchangaLocation; color: str
   const { current, loading } = useCurrentRitu(location);
   if (!loading && current?.emoji) return <Text className="text-base">{current.emoji}</Text>;
   return <AppNavIcon name={FEATURE_ICON.ritu} size={ICON_SIZE} color={color} />;
+}
+
+/** The website's `/panchanga/element/<id>` is a page of its own here for the day tables. */
+function appHref(to: string): string {
+  const element = /^\/panchanga\/element\/(.+)$/.exec(to);
+  return element ? elementHref(element[1]!) : to;
 }
 
 /** Shortcut tiles. The drawing is `@vedic-patro/ui/kit/shell`; this file opens the route. */
@@ -34,7 +41,7 @@ export function HomeQuickLinks({ location }: { location: PanchangaLocation }) {
         ) : (
           <AppNavIcon name={FEATURE_ICON[link.feature]} size={ICON_SIZE} color={colors.danger} />
         ),
-      onPress: () => router.push(link.to as never),
+      onPress: () => router.push(appHref(link.to) as never),
     })),
   }));
   return <HomeQuickLinksView groups={viewGroups} />;

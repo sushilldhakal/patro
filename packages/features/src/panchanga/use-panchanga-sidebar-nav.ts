@@ -80,6 +80,7 @@ export function getPanchangaSidebarSections(): PanchangaSidebarSection[] {
         { id: "abhijit", to: "/abhijit-muhurta", labelKey: "sidebar_nav.items.abhijit.label" },
         { id: "kundali", to: "/kundali", labelKey: "sidebar_nav.items.kundali.label" },
         { id: "kundali-milan", to: "/jyotish/kundali-milan", labelKey: "sidebar_nav.items.kundali-milan.label" },
+        { id: "documents", to: "/documents", labelKey: "nav.documents" },
         { id: "rashifal", to: "/jyotish/rashifal", labelKey: "rashifal.title" },
       ],
     },
@@ -104,6 +105,32 @@ export function getPanchangaSidebarSections(): PanchangaSidebarSection[] {
       items: ceremonyItems(),
     },
   ];
+}
+
+export type NavCategoryId = "calendar" | "jyotish" | "daily";
+
+export interface NavCategory {
+  id: NavCategoryId;
+  titleKey: string;
+  /** A tab-sized label for the app's sidebar. */
+  shortKey: string;
+  /** Sidebar sections in this category, in order. */
+  sectionIds: readonly string[];
+}
+
+/**
+ * The three top-level groups of the navigation, on the website's sidebar and in the app's side menu:
+ * calendar & time, jyotish & muhurta, daily auspicious times. Each holds whole sidebar sections.
+ */
+export const NAV_CATEGORIES: readonly NavCategory[] = [
+  { id: "calendar", titleKey: "sidebar_nav.categories.calendar", shortKey: "sidebar_nav.categories.calendar_short", sectionIds: ["patro"] },
+  { id: "jyotish", titleKey: "sidebar_nav.categories.jyotish", shortKey: "sidebar_nav.categories.jyotish_short", sectionIds: ["jyotish", "spans", "graha"] },
+  { id: "daily", titleKey: "sidebar_nav.categories.daily", shortKey: "sidebar_nav.categories.daily_short", sectionIds: ["tables", "sait"] },
+];
+
+/** The category a sidebar section belongs to. */
+export function navCategoryOfSection(sectionId: string): NavCategory | undefined {
+  return NAV_CATEGORIES.find((c) => c.sectionIds.includes(sectionId));
 }
 
 export function isPanchangaSidebarItemActive(pathname: string, item: PanchangaSidebarItem): boolean {
@@ -159,6 +186,7 @@ export function usePanchangaSidebarNav({
     navAria: t("sidebar_nav.nav_aria"),
     sections: sections.map((section) => {
       const expanded = expandedId === section.id;
+      const category = navCategoryOfSection(section.id);
       const entries: PanchangaSidebarEntry[] = section.items.map((item) => ({
         item,
         label: labelFor(item),
@@ -169,6 +197,8 @@ export function usePanchangaSidebarNav({
       return {
         id: section.id,
         title: t(section.titleKey),
+        /** Set on the first section of each category: the heading drawn above it. */
+        categoryTitle: category && category.sectionIds[0] === section.id ? t(category.titleKey) : undefined,
         expanded,
         hasActive,
         toggle: () => setExpandedId((current) => (current === section.id ? null : section.id)),

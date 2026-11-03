@@ -110,6 +110,7 @@ export function PanchangaSidebarNav({ className }: { className?: string }) {
       sections={nav.sections.map((section) => ({
         id: section.id,
         title: section.title,
+        categoryTitle: section.categoryTitle,
         expanded: section.expanded,
         hasActive: section.hasActive,
         onToggle: section.toggle,

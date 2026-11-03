@@ -3532,7 +3532,15 @@
         "blurb": "शुभ मिति र व्याख्या"
       }
     },
-    "sait_label": "{{category}} साइत"
+    "sait_label": "{{category}} साइत",
+    "categories": {
+      "calendar": "पात्रो तथा काल गणना",
+      "jyotish": "ज्योतिष तथा मुहूर्त",
+      "daily": "दैनिक शुभाशुभ तथा शुभ मुहूर्त",
+      "daily_short": "दैनिक शुभाशुभ",
+      "calendar_short": "पात्रो",
+      "jyotish_short": "ज्योतिष"
+    }
   },
   "brahma_mana": {
     "title": "ब्रह्म मान",
@@ -5638,6 +5646,10 @@
     },
     "search": {
       "search": "खोज्नुहोस्",
+      "location": "स्थान",
+      "cancel": "बन्द गर्नुहोस्",
+      "all_day": "दिनभरि",
+      "public_holiday": "सार्वजनिक बिदा",
       "festivals_title": "पर्व खोज्नुहोस्",
       "festivals_placeholder": "पर्व वा बिदाको नाम",
       "done": "भयो"

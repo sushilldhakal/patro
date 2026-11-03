@@ -4,7 +4,6 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
-import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { AddReminderForm } from "./AddReminderForm";
@@ -18,14 +17,13 @@ export type ReminderTarget = {
 
 /**
  * What every "set a reminder" entry point needs before the form: a signed-in user (reminders
- * live on the server), the cached profiles and whether we are online.
+ * live on the server) and whether we are online.
  */
 export function useReminderPrep() {
   const { isAuthenticated } = useAuth();
   const { lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const [authOpen, setAuthOpen] = useState(false);
-  const [profiles, setProfiles] = useState<CachedProfile[]>([]);
   const [online, setOnline] = useState(true);
 
   /** Loads what the form needs; false (and the sign-in dialog) when signed out. */
@@ -34,9 +32,7 @@ export function useReminderPrep() {
       setAuthOpen(true);
       return false;
     }
-    const [cached, net] = await Promise.all([notifStore.getProfiles(), isCurrentlyOnline()]);
-    setProfiles(cached);
-    setOnline(net);
+    setOnline(await isCurrentlyOnline());
     return true;
   }, [isAuthenticated]);
 
@@ -44,7 +40,7 @@ export function useReminderPrep() {
 
   const authDialog = <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />;
 
-  return { prepare, profiles, online, created, authDialog };
+  return { prepare, online, created, authDialog };
 }
 
 /** A "new reminder" sheet that any page can open on a given window. */
@@ -69,7 +65,6 @@ export function useWindowReminder() {
       <BottomSheetModal variant="page" visible={target != null} onClose={() => setTarget(null)} maxHeight="88%">
         <AddReminderForm
           active={target != null}
-          profiles={prep.profiles}
           online={prep.online}
           initialKey={target?.windowKey}
           subtitle={target?.subtitle}

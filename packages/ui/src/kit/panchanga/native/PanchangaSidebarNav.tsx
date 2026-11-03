@@ -163,6 +163,7 @@ export function PanchangaSidebarNav({
           ) : null}
           {sections.map((section) => (
             <MotionView key={section.id} layout={RAIL_MOVE} className={cn("pb-1", s.section)}>
+              {section.categoryTitle ? <Text className={s.categoryTitle}>{section.categoryTitle}</Text> : null}
               <Pressable
                 onPress={section.onToggle}
                 className={cn("flex-row", s.sectionHead, section.hasActive && !section.expanded && "bg-secondary/5")}

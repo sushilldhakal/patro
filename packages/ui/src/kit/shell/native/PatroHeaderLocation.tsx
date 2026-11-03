@@ -11,7 +11,7 @@ import type { PatroHeaderLocationProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
 /** The location button and its search sheet. The app opens the picker as a sheet (the website drops a panel under the button). */
-export function PatroHeaderLocation({ location, onLocationChange, locate, className, open: openProp, onOpenChange }: PatroHeaderLocationProps) {
+export function PatroHeaderLocation({ location, onLocationChange, locate, className, open: openProp, onOpenChange, buttonless }: PatroHeaderLocationProps) {
   const { width } = useWindowDimensions();
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
@@ -32,6 +32,7 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
 
   return (
     <View className={className}>
+      {buttonless ? null : (
       <Pressable
         label={picker.copy.change}
         onPress={() => setOpen(!open)}
@@ -45,6 +46,7 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
         </Text>
         {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
       </Pressable>
+      )}
 
       <Sheet open={open} onClose={() => setOpen(false)} title={picker.copy.choose} closeLabel={picker.copy.cancel}>
         <View className={cls.searchBox}>

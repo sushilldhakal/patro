@@ -183,6 +183,7 @@ export const panchangaPageClasses = {
     section: "border-b border-border/60 last:border-b-0",
     sectionHead: "w-full items-center gap-2 rounded-xl px-3 py-2.5",
     sectionTitle: "min-w-0 flex-1 text-sm font-bold uppercase leading-snug tracking-wide",
+    categoryTitle: "px-3 pb-1 pt-4 text-xs font-bold uppercase tracking-wider text-secondary",
     sectionTitleActive: "text-secondary",
     sectionTitleIdle: "text-muted-foreground",
     list: "gap-0.5 px-1 pb-2",

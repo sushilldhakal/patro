@@ -27,6 +27,8 @@ type Props = {
    *  form or list — on iOS the native page sheet (UIKit: drag to dismiss, the page behind
    *  scales back); on Android the bottom sheet. */
   variant?: "bottom" | "center" | "page";
+  /** The sheet has finished going away (safe to push a page now). */
+  onDismissed?: () => void;
 };
 
 /** `maxHeight` as pixels. A percentage has nothing to resolve against inside a content-sized sheet. */
@@ -53,11 +55,11 @@ export function BottomSheetModal(props: Props) {
  * curve, follows a drag on any part of it, dismisses on a flick, and the screen behind it scales
  * back. A swipe-down dismissal reports through `onRequestClose`, so `onClose` runs either way.
  */
-function NativePageSheet({ visible, onClose, children, sheetStyle }: Props) {
+function NativePageSheet({ visible, onClose, onDismissed, children, sheetStyle }: Props) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose} onDismiss={onDismissed}>
       <GestureHandlerRootView style={[styles.fill, { backgroundColor: colors.card }]}>
         <View style={styles.grabber}>
           <View style={[styles.pill, { backgroundColor: colors.border }]} />
@@ -84,6 +86,7 @@ function DrawnSheet({
   keyboardAvoiding = false,
   keyboardInset = 0,
   variant = "bottom",
+  onDismissed,
 }: Props & { variant?: "bottom" | "center" }) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -134,6 +137,7 @@ function DrawnSheet({
       setMeasured(false);
       setClosedY(windowHeight);
       y.set(windowHeight);
+      onDismissed?.();
     };
     if (isCenter) {
       open.set(

@@ -39,6 +39,7 @@ export function PatroCalendarHeader({
   crossEraSubtitle,
   displayLanguage,
   className,
+  hideTitleRow,
 }: PatroCalendarHeaderProps) {
   const { width: windowWidth } = useWindowDimensions();
   /* The row layout follows the width this header actually gets (the home page puts a side
@@ -166,14 +167,18 @@ export function PatroCalendarHeader({
       />
     ) : null;
 
+  const titleRow = hideTitleRow ? null : (
+    <View className="flex-row items-center justify-between gap-3">
+      {title}
+      {locationButton}
+    </View>
+  );
+
   let rows;
   if (isCompact) {
     rows = (
       <>
-        <View className="flex-row items-center justify-between gap-3">
-          {title}
-          {locationButton}
-        </View>
+        {titleRow}
         {swap ? (
           <View className="flex-row items-center justify-between gap-2">
             <View className="min-w-0 shrink">{stepper}</View>
@@ -187,10 +192,7 @@ export function PatroCalendarHeader({
   } else if (!isCalendarWide) {
     rows = (
       <>
-        <View className="flex-row items-center justify-between gap-3">
-          {title}
-          {locationButton}
-        </View>
+        {titleRow}
         <View className="flex-row items-center justify-between gap-3">
           <View className="min-w-0 shrink">{stepper}</View>
           {segment}
@@ -200,10 +202,10 @@ export function PatroCalendarHeader({
   } else {
     rows = (
       <View className="flex-row items-center gap-3.5">
-        {title}
+        {hideTitleRow ? null : title}
         <View className="min-w-0 shrink">{stepper}</View>
         {segment}
-        {locationButton}
+        {hideTitleRow ? null : locationButton}
       </View>
     );
   }

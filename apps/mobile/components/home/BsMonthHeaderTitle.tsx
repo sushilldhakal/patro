@@ -68,6 +68,8 @@ export function BsMonthHeaderTitle({
           { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => onPatroViewChange("panchanga") },
         ]}
         segmentsLabel={t("calendar.patro_mode_aria")}
+        // The month title and the place live in the toolbar now (its location button), not above the grid.
+        hideTitleRow
       />
     </View>
   );

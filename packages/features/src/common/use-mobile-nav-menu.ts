@@ -8,6 +8,8 @@
 import { useLocale } from "@vedic-patro/i18n/react";
 import {
   getPanchangaSidebarSections,
+  NAV_CATEGORIES,
+  type NavCategoryId,
   type PanchangaSidebarItem,
 } from "../panchanga/use-panchanga-sidebar-nav";
 
@@ -18,6 +20,7 @@ const DRAWER_MAIN_PROMOTED_IDS = new Set([
   "kundali-milan",
   "rashifal",
   "panchanga-year",
+  "documents",
 ]);
 
 export type NavMenuMainId =
@@ -37,6 +40,9 @@ export type NavMenuMainLink = { id: NavMenuMainId; label: string };
 export type NavMenuItem = { item: PanchangaSidebarItem; label: string };
 
 export type NavMenuSection = { id: string; title: string; items: NavMenuItem[] };
+
+/** One of the three tabs of the app's side menu, holding whole sidebar sections (nothing promoted out). */
+export type NavMenuCategory = { id: NavCategoryId; title: string; shortTitle: string; sections: NavMenuSection[] };
 
 export function useMobileNavMenu() {
   const { t } = useLocale();
@@ -67,8 +73,23 @@ export function useMobileNavMenu() {
     }))
     .filter((section) => section.items.length > 0);
 
+  const allSections: NavMenuSection[] = getPanchangaSidebarSections().map((section) => ({
+    id: section.id,
+    title: t(section.titleKey),
+    items: section.items.map((item) => ({ item, label: labelForItem(item) })),
+  }));
+  const categories: NavMenuCategory[] = NAV_CATEGORIES.map((category) => ({
+    id: category.id,
+    title: t(category.titleKey),
+    shortTitle: t(category.shortKey),
+    sections: category.sectionIds
+      .map((id) => allSections.find((section) => section.id === id))
+      .filter((section): section is NavMenuSection => section != null),
+  }));
+
   return {
     navAria: t("sidebar_nav.nav_aria"),
+    categories,
     mainTitle: t("ui.navigation.main"),
     main,
     sections,

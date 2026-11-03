@@ -31,6 +31,11 @@ export function PanchangaSidebarNav({
       <Box className={cn("flex max-h-[calc(100vh-6.5rem)] flex-col overflow-y-auto", s.navBody)}>
         {sections.map((section) => (
           <Box as="section" key={section.id} className={s.section}>
+            {section.categoryTitle ? (
+              <Text as="h2" className={s.categoryTitle}>
+                {section.categoryTitle}
+              </Text>
+            ) : null}
             <button
               type="button"
               onClick={section.onToggle}
