@@ -2,6 +2,7 @@ import { INLINE_LOADER_SIZE } from "@/components/ui/States";
 import { Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
+import { requestSignIn } from "@/lib/menu-request";
 import { inkOn } from "@/lib/theme";
 import { useAccountPage } from "@vedic-patro/features/account";
 import { AppShell } from "@/components/AppShell";
@@ -50,25 +51,39 @@ export default function AccountScreen() {
           <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
             {t("ui.account.log_in_to_view_your_account")}
           </Text>
-          <Button
-            label={t("ui.account.go_home")}
-            variant="outline"
-            size="sm"
-            onPress={() => router.replace("/" as never)}
-          />
+          <Button label={t("ui.nav.log_in")} size="sm" onPress={requestSignIn} />
         </View>
+
+        {/* Settings live here now (no settings icon in the bars), signed in or not. */}
+        <Pressable
+          onPress={() => router.push("/account/settings" as never)}
+          className={cn("mt-6", accountClasses.linkRow)}
+        >
+          <View className={accountClasses.linkRowBody}>
+            <Ionicons name="settings-outline" size={18} color={colors.secondary} />
+            <View className="flex-1">
+              <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
+                {t("account_page.settings")}
+              </Text>
+              <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
+                {t("ui.account.settings_hint")}
+              </Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+        </Pressable>
 
         <Pressable
           onPress={() => router.push("/account/offline-data" as never)}
-          className="mt-6 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
+          className={cn("mt-3", accountClasses.linkRow)}
         >
-          <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className={accountClasses.linkRowBody}>
             <Ionicons name="download-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
                 {t("ui.account.offline_data")}
               </Text>
-              <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
                 {t("ui.account.offline_calendar_data_can_be_managed")}
               </Text>
             </View>
@@ -202,13 +217,13 @@ export default function AccountScreen() {
 
       {biometric.available ? (
         <View className="mt-8 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5">
-          <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className={accountClasses.linkRowBody}>
             <Ionicons name="finger-print-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
                 {t("ui.account.unlock_with_label", { label: biometric.label })}
               </Text>
-              <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
                 {t("ui.account.you_stay_signed_in_the_app")}
               </Text>
             </View>
@@ -222,17 +237,36 @@ export default function AccountScreen() {
         </View>
       ) : null}
 
+      {/* Settings live here now (no settings icon in the bars). */}
+      <Pressable
+        onPress={() => router.push("/account/settings" as never)}
+        className={cn("mt-3", accountClasses.linkRow)}
+      >
+        <View className={accountClasses.linkRowBody}>
+          <Ionicons name="settings-outline" size={18} color={colors.secondary} />
+          <View className="flex-1">
+            <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
+              {t("account_page.settings")}
+            </Text>
+            <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
+              {t("ui.account.settings_hint")}
+            </Text>
+          </View>
+        </View>
+        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+      </Pressable>
+
       <Pressable
         onPress={() => router.push("/account/offline-data" as never)}
-        className="mt-3 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
+        className={cn("mt-3", accountClasses.linkRow)}
       >
-        <View className="flex-1 flex-row items-center gap-3 pr-3">
+        <View className={accountClasses.linkRowBody}>
           <Ionicons name="download-outline" size={18} color={colors.secondary} />
           <View className="flex-1">
-            <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+            <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
               {t("ui.account.offline_data")}
             </Text>
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
               {t("ui.account.manage_the_calendar_years_downloaded_for")}
             </Text>
           </View>

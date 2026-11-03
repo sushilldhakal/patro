@@ -6,7 +6,7 @@ import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
-import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
+import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
@@ -49,15 +49,12 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const { width } = useWindowDimensions();
   const { extras } = plan;
 
-  const onProfile = useCallback(() => {
-    if (isAuthenticated) router.push("/account" as never);
-    else requestSignIn();
-  }, [isAuthenticated, router]);
+  // The profile page holds the sign-in and the settings, so it opens signed in or not.
+  const onProfile = useCallback(() => router.push("/account" as never), [router]);
   const onShare = useCallback(async () => {
     const url = await pageLink(pathname, lang);
     void Share.share({ message: url, url }).catch(() => {});
   }, [pathname, lang]);
-  const toSettings = () => router.push("/account/settings" as never);
 
   return (
     <>
@@ -108,7 +105,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {extras.has("location") ? (
           <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
         ) : null}
-        {/* Portrait: "+" sits at the foot with search, place and settings (DuoBottomActions / FloatingNavBar). */}
+        {/* Portrait: "+" sits at the foot with search and place (FloatingNavBar). */}
         {horizontal ? null : (
           <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
         )}
@@ -119,13 +116,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
             onPress={onProfile}
           />
         ) : null}
-        {extras.has("settings") ? (
-          <Stack.Toolbar.Button icon="gearshape" accessibilityLabel={t("account_page.settings")} onPress={toSettings} />
-        ) : null}
         {extras.has("share") ? (
           <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
         ) : null}
-        {/* Portrait: "…" sits at the foot with place and settings (DuoBottomActions / FloatingNavBar). */}
+        {/* Portrait: "…" sits at the foot with place (FloatingNavBar). */}
         {horizontal ? null : (
         <Stack.Toolbar.Menu icon="ellipsis" title={t("menu_open")}>
           {extras.has("search") || horizontal ? null : (
@@ -141,11 +135,6 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           {extras.has("profile") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="person.crop.circle" onPress={onProfile}>
               {t("account_page.title")}
-            </Stack.Toolbar.MenuAction>
-          )}
-          {extras.has("settings") || horizontal ? null : (
-            <Stack.Toolbar.MenuAction icon="gearshape" onPress={toSettings}>
-              {t("account_page.settings")}
             </Stack.Toolbar.MenuAction>
           )}
           {extras.has("share") ? null : (

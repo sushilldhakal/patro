@@ -5,6 +5,11 @@
  * element in each app.
  */
 export const accountClasses = {
+  /** A row linking to a sub-page (settings, offline data): icon, title and hint, then a chevron. */
+  linkRow: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80",
+  linkRowBody: "flex-1 flex-row items-center gap-3 pr-3",
+  linkRowTitle: "text-sm font-medium text-foreground",
+  linkRowHint: "mt-0.5 text-xs text-muted-foreground",
   // ── Account page ──────────────────────────────────────────────────────────
   column: "mx-auto max-w-2xl",
   header: "mb-6",

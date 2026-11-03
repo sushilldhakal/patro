@@ -4781,7 +4781,8 @@
       "what_to_include": "What to include",
       "which_years_do_you_need": "Which years do you need?",
       "you_re_offline_downloading_needs_an": "You're offline. Downloading needs an internet connection.",
-      "you_stay_signed_in_the_app": "You stay signed in; the app asks for biometrics when opened."
+      "you_stay_signed_in_the_app": "You stay signed in; the app asks for biometrics when opened.",
+      "settings_hint": "Language, theme, calendar and calculation system"
     },
     "settings": {
       "title": "Settings",

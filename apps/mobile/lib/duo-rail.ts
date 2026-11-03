@@ -28,7 +28,8 @@ const UNFOLDED_HIDDEN: ReadonlySet<TabRoute> = new Set<TabRoute>(["kundali", "va
 const FOLDED_TABS: ReadonlySet<TabRoute> = new Set<TabRoute>(["index", "panchanga"]);
 
 /** Toolbar icons that may move into the "…" menu, most needed first. */
-export const RAIL_EXTRAS = ["search", "location", "profile", "settings", "share"] as const;
+/** Settings are inside the profile page, so they are not one of them. */
+export const RAIL_EXTRAS = ["search", "location", "profile", "share"] as const;
 export type RailExtra = (typeof RAIL_EXTRAS)[number];
 
 /** Icons always in the rail: the side menu, the view menu, "+" and "…". */
@@ -47,7 +48,7 @@ export type RailPlan = {
  * Which items get a slot, so the rail's icons and the tab group never run into each other (iOS stacks
  * the toolbar group and the tab group in one column; when they do not fit, they overlap). The tabs are
  * placed first (folded: home and panchanga; open: up to four, kundali and vastu left out), then the
- * side menu, "+" and "…", then as many of search, place, profile, settings and share as still fit —
+ * side menu, "+" and "…", then as many of search, place, profile and share as still fit —
  * the rest go behind "…". The view menu is a text button, which iOS keeps in the top bar, not the rail.
  */
 export function planRail(slots: number, folded = false): RailPlan {

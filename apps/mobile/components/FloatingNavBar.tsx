@@ -20,7 +20,7 @@ import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { requestAddReminder, requestLocationPicker, requestSearch, requestSignIn } from "@/lib/menu-request";
+import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 
@@ -31,8 +31,8 @@ const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), {
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
- * search and "+" on the left; home, panchanga, daily transit and the profile; place and settings on
- * the right ("…" too on the Duo). On the Duo in landscape and folded the side rail carries all of it.
+ * search and "+" on the left; home, panchanga, daily transit and the profile; place on
+ * the right ("…" too on the Duo). Settings are inside the profile page. On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
   const { horizontal } = useDuoRail();
@@ -117,8 +117,8 @@ function LeftActions() {
   );
 }
 
-/** Place and settings, right of the tabs; on the iPhone Duo also "…" (share, reminders, rashifal), which
- *  its portrait top bar has no room for beside the status bar. */
+/** Place, right of the tabs; on the iPhone Duo also "…" (share, reminders, rashifal), which its portrait
+ *  top bar has no room for beside the status bar. Settings are in the profile page. */
 function RightActions() {
   const { t, lang } = useLocale();
   const router = useRouter();
@@ -135,13 +135,12 @@ function RightActions() {
   return (
     <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
-      <ActionButton icon="settings-outline" label={t("account_page.settings")} onPress={() => router.push("/account/settings" as never)} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
   );
 }
 
-/** The fourth item: the account when signed in, the sign-in dialog when not. */
+/** The fourth item: the profile page (account, sign-in, settings). */
 function ProfileNavItem({ iconSize }: { iconSize: number }) {
   const { t } = useLocale();
   const colors = useThemeColors();
@@ -152,7 +151,8 @@ function ProfileNavItem({ iconSize }: { iconSize: number }) {
   return (
     <NavItem
       active={active}
-      onPress={() => (isAuthenticated ? router.push("/account" as never) : requestSignIn())}
+      // The profile page holds the sign-in and the settings, so it opens signed in or not.
+      onPress={() => router.push("/account" as never)}
     >
       <Ionicons
         name={isAuthenticated ? "person-circle" : "person-circle-outline"}
