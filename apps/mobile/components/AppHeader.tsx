@@ -98,7 +98,7 @@ function HeaderButton({
   label,
   onPress,
 }: {
-  icon: "apps-outline" | "search-outline" | "add" | "location-outline" | "list";
+  icon: "grid-outline" | "search-outline" | "add" | "location-outline" | "list";
   label: string;
   onPress: () => void;
 }) {
@@ -192,8 +192,8 @@ function AppHeaderView() {
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background">
       <View className="min-h-14 w-full flex-row items-center justify-between px-4 py-2">
-        {/* A dashboard grid, so it is not mistaken for the view menu's list icon. */}
-        <HeaderButton icon="apps-outline" label={t("menu_open")} onPress={requestOpenMenu} />
+        {/* Four rounded squares (the Duo toolbar's square.grid.2x2), so it is not mistaken for the view menu's list icon. */}
+        <HeaderButton icon="grid-outline" label={t("menu_open")} onPress={requestOpenMenu} />
         <View className="flex-row items-center gap-2">
           <ViewMenuButton />
           <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />

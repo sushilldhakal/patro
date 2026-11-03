@@ -36,7 +36,7 @@ export type PatroViewOption = {
   /** SF Symbol for the iPhone Duo's native menu. */
   sf: "calendar" | "square.grid.3x3" | "sun.max";
   /** Ionicon for the header's menu on every other phone. */
-  ion: "calendar-outline" | "grid-outline" | "sunny-outline";
+  ion: "calendar-outline" | "moon-outline" | "sunny-outline";
   active: boolean;
   onPress: () => void;
 };
@@ -75,7 +75,8 @@ export function usePatroViewOptions(): PatroViewOption[] {
       key: "panchanga",
       label: t("ui.view_menu.monthly_panchanga"),
       sf: "square.grid.3x3",
-      ion: "grid-outline",
+      // Not a grid: that is the side menu's button.
+      ion: "moon-outline",
       active: !daily && view === "panchanga",
       onPress: () => openHome("panchanga"),
     },
