@@ -7302,6 +7302,13 @@ export const strings = {
   },
   "ui.account.offline_data": { ne: "अफलाइन डाटा", en: "Offline Data" },
   "ui.settings.title": { ne: "सेटिङ", en: "Settings" },
+  "ui.settings.notifications_reminders": { ne: "सूचना र रिमाइन्डर", en: "Notifications & reminders" },
+  "ui.settings.language_calendar": { ne: "भाषा र पात्रो", en: "Language & calendar" },
+  "ui.settings.appearance": { ne: "रूप", en: "Appearance" },
+  "ui.settings.language_ne": { ne: "नेपाली", en: "Nepali" },
+  "ui.settings.language_en": { ne: "अंग्रेजी", en: "English" },
+  "ui.account.group_account": { ne: "खाता", en: "Account" },
+  "ui.account.back": { ne: "पछाडि", en: "Back" },
   "ui.settings.notifications": { ne: "दैनिक सूचना", en: "Daily notifications" },
   "ui.settings.daily_briefing_sign_in": {
     ne: "प्रोफाइल अनुसार दैनिक गर्ने/नगर्ने सूचना पाउन लग-इन गर्नुहोस्।",

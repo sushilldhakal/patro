@@ -5,6 +5,19 @@
  * element in each app.
  */
 export const accountClasses = {
+  /** The profile page as a grouped list (iOS Settings): identity card, group titles, row cards. */
+  identityCard: "flex-row items-center gap-4 rounded-2xl border border-border bg-card px-4 py-4",
+  groupTitle: "px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
+  groupCard: "overflow-hidden rounded-2xl border border-border bg-card",
+  groupDivider: "ml-14 h-px bg-border",
+  row: "min-h-14 flex-row items-center gap-3 px-4 py-3",
+  rowIcon: "h-8 w-8 items-center justify-center rounded-lg",
+  rowTitle: "text-body text-foreground",
+  rowSubtitle: "mt-0.5 text-xs text-muted-foreground",
+  rowValue: "max-w-40 text-sm text-muted-foreground",
+  innerBackLink: "flex-row items-center gap-1 self-start active:opacity-60",
+  signedOutBox: "items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12",
+  profileIconButton: "h-8 w-8 items-center justify-center rounded-lg active:bg-muted",
   /** A row linking to a sub-page (settings, offline data): icon, title and hint, then a chevron. */
   linkRow: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80",
   linkRowBody: "flex-1 flex-row items-center gap-3 pr-3",

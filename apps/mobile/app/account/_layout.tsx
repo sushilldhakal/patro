@@ -8,8 +8,8 @@ import { useThemeColors } from "@/lib/theme-context";
 /**
  * Account routes sit outside the (tabs) group, so they do not inherit the
  * chrome that layout supplies. Same header and floating nav as every other page.
- * Phones keep an instant swap between these pages. A wide layout, and Reduce
- * Motion, fade — these pages are siblings of the rail, not a deeper stack.
+ * The profile page's inner pages push over it with the platform's slide. A wide layout, and Reduce
+ * Motion, fade.
  */
 export default function AccountLayout() {
   const colors = useThemeColors();
@@ -22,7 +22,10 @@ export default function AccountLayout() {
           screenOptions={{
             headerShown: false,
             contentStyle: { flex: 1, backgroundColor: colors.background },
-            animation: "none",
+            // The profile page's inner pages (profiles, notifications, language, appearance, offline data)
+            // slide in and swipe back like any sub-page; a wide layout and Reduce Motion fade instead.
+            animation: "default",
+            gestureEnabled: true,
             ...(fade ?? {}),
           }}
         />
