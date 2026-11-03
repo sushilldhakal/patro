@@ -17,6 +17,8 @@ export const shellClasses = {
 
   // ── Navigation drawer ─────────────────────────────────────────────────────
   drawerHeader: "border-b border-border",
+  /** The website drawer's preferences block, scrolling under the menu (not pinned to the foot). */
+  drawerPrefs: "flex flex-col gap-3 border-t border-border p-4",
   drawerSettingsLink: "flex items-center justify-between gap-3 rounded-lg py-1 text-sm text-foreground hover:text-secondary",
   drawerBrandRow: "items-center gap-2.5",
   drawerTitle: "text-base font-semibold",

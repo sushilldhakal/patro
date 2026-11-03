@@ -5086,6 +5086,9 @@
       "zoom_in": "Zoom in",
       "zoom_out": "Zoom out"
     },
+    "search": {
+      "cancel": "Close"
+    },
     "reminders": {
       "reminders": "Reminders"
     },

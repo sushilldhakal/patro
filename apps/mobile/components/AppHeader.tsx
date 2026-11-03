@@ -39,6 +39,10 @@ export function NavDrawerHost() {
 
   const content = (
     <View className="gap-2 pb-4 pt-1">
+      {/* A close button as well as the drag down, which not everyone finds. */}
+      <View className="flex-row justify-end px-4">
+        <CloseButton onPress={() => setMenuOpen(false)} />
+      </View>
       <MobileNavMenu onNavigate={go} />
       <View className="border-t border-border p-4">
         <MenuPreferences onNavigate={go} />
@@ -57,6 +61,25 @@ export function NavDrawerHost() {
       {/* The iOS page sheet scrolls its content itself; the Android sheet is sized to content, so it scrolls here. */}
       {Platform.OS === "ios" ? content : <ScrollView style={{ flexShrink: 1 }}>{content}</ScrollView>}
     </BottomSheetModal>
+  );
+}
+
+function CloseButton({ onPress }: { onPress: () => void }) {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      onPress={() => {
+        haptics.tick();
+        onPress();
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={t("ui.search.cancel")}
+      hitSlop={8}
+      className="h-10 w-10 items-center justify-center rounded-full bg-muted active:opacity-60"
+    >
+      <Ionicons name="close" size={22} color={colors.foreground} />
+    </Pressable>
   );
 }
 

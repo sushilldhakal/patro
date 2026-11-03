@@ -10,15 +10,16 @@ import {
   ChevronDown,
   ChevronRight,
   Settings,
+  X,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -239,8 +240,13 @@ function DrawerBrandHeader() {
   const { t } = useTranslation();
 
   return (
-    <DrawerHeader className={cn("text-left", shellClasses.drawerHeader)}>
-      <div className={cn("flex", shellClasses.drawerBrandRow)}>
+    <DrawerHeader className={cn("relative text-left", shellClasses.drawerHeader)}>
+      <DrawerClose asChild>
+        <Button variant="ghost" size="icon" className="absolute right-2 top-2 rounded-full" aria-label={t("ui.search.cancel")}>
+          <X className="size-5" aria-hidden />
+        </Button>
+      </DrawerClose>
+      <div className={cn("flex pr-10", shellClasses.drawerBrandRow)}>
         <BrandLogo size={36} className="rounded-[22%] shadow" />
         <div>
           <DrawerTitle className={shellClasses.drawerTitle}>
@@ -304,20 +310,21 @@ export function Header() {
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
                 <DrawerBrandHeader />
+                {/* One scroll: the preferences sit after the menu, not pinned to the drawer's foot. */}
                 <div className="flex-1 overflow-y-auto">
                   <MobileNavMenu onNavigate={() => setMobileOpen(false)} />
-                </div>
-                <DrawerFooter className="border-t border-border gap-3">
-                  <MenuPreferences onNavigate={() => setMobileOpen(false)} />
-                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <Link to="/privacy" onClick={() => setMobileOpen(false)}>
-                      {t("footer.privacy")}
-                    </Link>
-                    <Link to="/terms" onClick={() => setMobileOpen(false)}>
-                      {t("footer.terms")}
-                    </Link>
+                  <div className={shellClasses.drawerPrefs}>
+                    <MenuPreferences onNavigate={() => setMobileOpen(false)} />
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <Link to="/privacy" onClick={() => setMobileOpen(false)}>
+                        {t("footer.privacy")}
+                      </Link>
+                      <Link to="/terms" onClick={() => setMobileOpen(false)}>
+                        {t("footer.terms")}
+                      </Link>
+                    </div>
                   </div>
-                </DrawerFooter>
+                </div>
               </DrawerContent>
             </Drawer>
           </div>
