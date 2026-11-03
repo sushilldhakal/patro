@@ -33,6 +33,9 @@ export const shellClasses = {
   /** The app's bottom row: the tabs, then search, place and "+" in a group of their own. */
   navRow: "w-full max-w-xl flex-row items-stretch gap-2 self-center",
   navActionButton: "h-11 w-10 items-center justify-center rounded-xl active:bg-muted",
+  /** The profile button's menu (account or log in, settings), opening above the bottom bar. */
+  profileMenu: "overflow-hidden rounded-3xl border border-border bg-card py-2 shadow-lg",
+  profileMenuItem: "min-h-12 flex-row items-center gap-3 px-4 py-3 active:bg-muted",
   /** iPhone Duo tab pages: the two action groups at the foot, either side of the system tab bar. */
   navDuoActions: "absolute left-0 right-0 flex-row justify-between px-4",
   navItemActive: "bg-secondary/10",

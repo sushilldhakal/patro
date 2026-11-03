@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
-import { ActionSheetIOS, Pressable, Share, View } from "react-native";
-import Animated from "react-native-reanimated";
+import { useRef, useState, type ComponentRef, type ReactNode } from "react";
+import { ActionSheetIOS, Modal, Pressable, Share, View, useWindowDimensions } from "react-native";
+import Animated, { ZoomIn } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { usePathname, useRouter } from "expo-router";
@@ -20,7 +20,7 @@ import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
+import { requestAddReminder, requestLocationPicker, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 
@@ -140,33 +140,78 @@ function RightActions() {
   );
 }
 
-/** The fourth item: the profile page (account, sign-in, settings). */
+/**
+ * The fourth item. It opens a small menu above it: your account (or log in when signed out) and
+ * Settings — the settings icon lives here now, not in the bars.
+ */
 function ProfileNavItem({ iconSize }: { iconSize: number }) {
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
+  const { width, height } = useWindowDimensions();
+  const ref = useRef<ComponentRef<typeof View>>(null);
+  const [anchor, setAnchor] = useState<{ bottom: number; right: number } | null>(null);
   const active = pathname.startsWith("/account");
+  const close = () => setAnchor(null);
+  const open = () =>
+    ref.current?.measureInWindow((x, y, w) => setAnchor({ bottom: height - y + 8, right: Math.max(8, width - (x + w)) }));
+
+  const items = [
+    isAuthenticated
+      ? { key: "account", icon: "person-circle-outline" as const, label: t("account_page.title"), onPress: () => router.push("/account" as never) }
+      : { key: "log-in", icon: "log-in-outline" as const, label: t("ui.nav.log_in"), onPress: requestSignIn },
+    { key: "settings", icon: "settings-outline" as const, label: t("account_page.settings"), onPress: () => router.push("/account/settings" as never) },
+  ];
+
   return (
-    <NavItem
-      active={active}
-      // The profile page holds the sign-in and the settings, so it opens signed in or not.
-      onPress={() => router.push("/account" as never)}
-    >
-      <Ionicons
-        name={isAuthenticated ? "person-circle" : "person-circle-outline"}
-        size={iconSize + 2}
-        color={active ? colors.secondary : colors.mutedForeground}
-      />
-      <Text
-        numberOfLines={1}
-        className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
-        style={nepaliTextStyle()}
-      >
-        {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
-      </Text>
-    </NavItem>
+    <View ref={ref} collapsable={false} className="min-w-0 flex-1">
+      <NavItem active={active} onPress={open}>
+        <Ionicons
+          name={isAuthenticated ? "person-circle" : "person-circle-outline"}
+          size={iconSize + 2}
+          color={active ? colors.secondary : colors.mutedForeground}
+        />
+        <Text
+          numberOfLines={1}
+          className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
+          style={nepaliTextStyle()}
+        >
+          {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
+        </Text>
+      </NavItem>
+      <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
+        <Pressable style={{ flex: 1 }} onPress={close} accessibilityLabel={t("ui.search.cancel")}>
+          {anchor ? (
+            <Animated.View
+              entering={ZoomIn.duration(180)}
+              style={{ position: "absolute", bottom: anchor.bottom, right: anchor.right, minWidth: 220 }}
+            >
+              <View className={shellClasses.profileMenu}>
+                {items.map((item) => (
+                  <Pressable
+                    key={item.key}
+                    accessibilityRole="menuitem"
+                    onPress={() => {
+                      haptics.tick();
+                      close();
+                      item.onPress();
+                    }}
+                    className={shellClasses.profileMenuItem}
+                  >
+                    <Ionicons name={item.icon} size={20} color={colors.foreground} />
+                    <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
+                      {item.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </Animated.View>
+          ) : null}
+        </Pressable>
+      </Modal>
+    </View>
   );
 }
 
@@ -175,7 +220,7 @@ function ActionButton({
   label,
   onPress,
 }: {
-  icon: "search-outline" | "location-outline" | "add" | "settings-outline" | "ellipsis-horizontal";
+  icon: "search-outline" | "location-outline" | "add" | "ellipsis-horizontal";
   label: string;
   onPress: () => void;
 }) {

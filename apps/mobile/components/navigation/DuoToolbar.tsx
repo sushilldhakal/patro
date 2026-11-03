@@ -6,7 +6,7 @@ import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
-import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch } from "@/lib/menu-request";
+import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
@@ -49,8 +49,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const { width } = useWindowDimensions();
   const { extras } = plan;
 
-  // The profile page holds the sign-in and the settings, so it opens signed in or not.
-  const onProfile = useCallback(() => router.push("/account" as never), [router]);
+  const onProfile = useCallback(() => {
+    if (isAuthenticated) router.push("/account" as never);
+    else requestSignIn();
+  }, [isAuthenticated, router]);
   const onShare = useCallback(async () => {
     const url = await pageLink(pathname, lang);
     void Share.share({ message: url, url }).catch(() => {});
@@ -110,11 +112,18 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
         )}
         {extras.has("profile") && !horizontal ? (
-          <Stack.Toolbar.Button
+          // Account (or log in) and Settings, inside the profile button.
+          <Stack.Toolbar.Menu
             icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
             accessibilityLabel={t("account_page.title")}
-            onPress={onProfile}
-          />
+          >
+            <Stack.Toolbar.MenuAction icon="person.crop.circle" onPress={onProfile}>
+              {isAuthenticated ? t("account_page.title") : t("ui.nav.log_in")}
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction icon="gearshape" onPress={() => router.push("/account/settings" as never)}>
+              {t("account_page.settings")}
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
         ) : null}
         {extras.has("share") ? (
           <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
