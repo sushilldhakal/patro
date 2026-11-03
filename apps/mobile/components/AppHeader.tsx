@@ -13,7 +13,7 @@ import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
-import { usePatroViewOptions } from "@/lib/patro-view";
+import { usePageViewSections } from "@/lib/page-view-menu";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
@@ -123,21 +123,24 @@ function HeaderButton({
 type Anchor = { top: number; right: number };
 
 /**
- * The view menu: monthly BS, monthly panchanga or daily panchanga, the current one ticked, opening
- * from its button like Apple Calendar's Single Day / Multi Day / List menu. (The iPhone Duo uses the
- * native toolbar menu instead.)
+ * The view menu: the focused page's own choices (वि.सं. | पञ्चाङ्ग on home, अहोरात्र | दिन-रात on the
+ * panchanga, the profiles on rashifal and साइत…), the current one ticked, opening from its button like
+ * Apple Calendar's view menu. Pages without choices get no button. (The iPhone Duo uses the native
+ * toolbar menu instead.)
  */
 function ViewMenuButton() {
   const { t } = useLocale();
   const colors = useThemeColors();
   const { width } = useWindowDimensions();
-  const options = usePatroViewOptions();
+  const sections = usePageViewSections();
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
   const open = () =>
     ref.current?.measureInWindow((x, y, w, h) => setAnchor({ top: y + h + 8, right: Math.max(8, width - (x + w)) }));
   const close = () => setAnchor(null);
+
+  if (!sections) return null;
 
   return (
     <View ref={ref} collapsable={false}>
@@ -150,26 +153,34 @@ function ViewMenuButton() {
               style={{ position: "absolute", top: anchor.top, right: anchor.right, minWidth: 240 }}
             >
               <Animated.View entering={FadeIn.duration(120)} className="overflow-hidden rounded-3xl border border-border bg-card py-2 shadow-lg">
-                {options.map((option) => (
-                  <Pressable
-                    key={option.key}
-                    accessibilityRole="menuitem"
-                    accessibilityState={{ selected: option.active }}
-                    onPress={() => {
-                      haptics.tick();
-                      close();
-                      option.onPress();
-                    }}
-                    className="min-h-12 flex-row items-center gap-3 px-4 py-3 active:bg-muted"
-                  >
-                    <View className="w-5 items-center">
-                      {option.active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}
-                    </View>
-                    <Ionicons name={option.ion} size={20} color={colors.foreground} />
-                    <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
+                {sections.map((section, index) => (
+                  <View key={section.key} className={index > 0 ? "border-t border-border pt-1" : undefined}>
+                    {section.title ? (
+                      <Text className="px-4 pb-1 pt-2 text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
+                        {section.title}
+                      </Text>
+                    ) : null}
+                    {section.options.map((option) => (
+                      <Pressable
+                        key={option.key}
+                        accessibilityRole="menuitem"
+                        accessibilityState={{ selected: option.active }}
+                        onPress={() => {
+                          haptics.tick();
+                          close();
+                          option.onPress();
+                        }}
+                        className="min-h-12 flex-row items-center gap-3 px-4 py-3 active:bg-muted"
+                      >
+                        <View className="w-5 items-center">
+                          {option.active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}
+                        </View>
+                        <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
                 ))}
               </Animated.View>
             </Animated.View>

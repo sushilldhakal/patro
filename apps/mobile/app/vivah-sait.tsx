@@ -1,7 +1,7 @@
 import { useVivahSaitPage } from "@vedic-patro/features/sait";
 import { SaitSources, SuitabilityLegend } from "@vedic-patro/ui/kit/jyotish";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
-import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
+import { SaitProfileViewMenu } from "@/components/navigation/ProfileViewMenu";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 
@@ -28,7 +28,7 @@ export default function VivahSaitScreen() {
       days={page.days}
       profileControl={
         <>
-          <SaitProfilePicker selectedId={personalize.selectedProfile?.id ?? null} onSelect={personalize.setSelectedProfile} />
+          <SaitProfileViewMenu selectedId={personalize.selectedProfile?.id ?? null} onSelect={personalize.setSelectedProfile} />
           {personalize.selectedProfile ? <SuitabilityLegend counts={personalize.counts} /> : null}
         </>
       }

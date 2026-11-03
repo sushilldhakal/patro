@@ -1,9 +1,9 @@
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
-import { PatroHeaderTabs } from "./PatroHeaderTabs";
 import type { PatroDateNavProps } from "./types";
 
 /** Today's date in the browsing era, to outline in the day grid (BS and AD; other eras have no outline). */
@@ -28,7 +28,9 @@ function weekdayInEra(era: Era, year: number, month: number, day: number, given?
  * date picker and the toggle.
  */
 export function PatroDateNav(props: PatroDateNavProps) {
-  const { era, onEraChange, year, location, onLocationChange, crossEraSubtitle, tabs, tabsLabel, className } = props;
+  const { era, onEraChange, year, location, onLocationChange, crossEraSubtitle, tabs, className } = props;
+  // The page's view tabs live in the header's view menu, not in the date row.
+  usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
 
   if (props.mode === "year-month") {
     return (
@@ -51,13 +53,10 @@ export function PatroDateNav(props: PatroDateNavProps) {
         crossEraSubtitle={crossEraSubtitle}
         prevDisabled={props.prevDisabled}
         nextDisabled={props.nextDisabled}
-        segments={tabs}
-        segmentsLabel={tabsLabel}
       />
     );
   }
 
-  const tabsView = tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} /> : null;
 
   if (props.mode === "year") {
     return (
@@ -70,7 +69,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
         onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
         todayYear={patroBrowseTodayYear(era)}
         subtitle={crossEraSubtitle}
-        navAside={tabsView}
       />
     );
   }
@@ -101,7 +99,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
       prevDisabled={props.prevDisabled}
       nextDisabled={props.nextDisabled}
       crossEraText={crossEraSubtitle}
-      navAside={tabsView}
     />
   );
 }

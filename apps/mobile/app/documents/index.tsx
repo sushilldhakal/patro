@@ -11,6 +11,7 @@ import { AppShell } from "@/components/AppShell";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 
 /** Documents library — the app's drawing of `useDocumentsPage` (@vedic-patro/features). */
 export default function DocumentsScreen() {
@@ -25,6 +26,23 @@ export default function DocumentsScreen() {
       category: id === "all" ? undefined : id,
       view: nextView === "list" ? "list" : undefined,
     } as never);
+
+  // कार्ड | सूची in the header's view menu, once there is a library to show.
+  usePageViewMenu(
+    page.status !== "loading" && page.documents.length > 0
+      ? [
+          {
+            key: "view",
+            options: (["grid", "list"] as const).map((mode) => ({
+              key: mode,
+              label: mode === "grid" ? page.copy.viewGrid : page.copy.viewList,
+              active: view === mode,
+              onPress: () => select(active, mode),
+            })),
+          },
+        ]
+      : null,
+  );
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
@@ -43,22 +61,6 @@ export default function DocumentsScreen() {
         ) : (
           <>
             <View className="gap-3">
-              <View className={cn(documentsClasses.viewToggle, "self-end")}>
-                {(["grid", "list"] as const).map((mode) => (
-                  <Pressable
-                    key={mode}
-                    onPress={() => select(active, mode)}
-                    className={cn(
-                      documentsClasses.viewBtn,
-                      view === mode ? documentsClasses.viewBtnActive : documentsClasses.viewBtnIdle,
-                    )}
-                  >
-                    <Text className={cn(documentsClasses.viewBtn, view === mode ? documentsClasses.viewBtnActive : documentsClasses.viewBtnIdle)}>
-                      {mode === "grid" ? page.copy.viewGrid : page.copy.viewList}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
               <View className={documentsClasses.tabsBar} accessibilityRole="tablist" accessibilityLabel={page.copy.tabsLabel}>
                 {page.tabs.map((tab) => (
                   <Pressable

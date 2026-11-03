@@ -1,4 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 import { PatroCalendarHeader } from "@vedic-patro/ui/kit/shell";
 import type { PatroDateNavProps } from "./types";
 
@@ -20,12 +21,13 @@ export function PatroMonthYearNav({
   location,
   onLocationChange,
   tabs,
-  tabsLabel,
   prevDisabled,
   nextDisabled,
   crossEraSubtitle,
   className,
 }: MonthYearNavProps) {
+  // The page's view tabs live in the header's view menu, not in the date row.
+  usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   return (
     <PatroCalendarHeader
       era={era}
@@ -43,8 +45,6 @@ export function PatroMonthYearNav({
       location={location}
       onLocationChange={onLocationChange}
       locate={locateDevice}
-      segments={tabs}
-      segmentsLabel={tabsLabel}
       prevDisabled={prevDisabled}
       nextDisabled={nextDisabled}
       crossEraSubtitle={crossEraSubtitle}

@@ -1,4 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { PatroYearNavBlock as View } from "@vedic-patro/ui/kit/shell";
 import type { PatroYearBrowseNavProps } from "./PatroYearBrowseNav";
@@ -13,13 +14,14 @@ export function PatroYearNavBlock({
   crossEraSubtitle,
   gregorianRange,
   tabs,
-  tabsLabel,
   era,
   year,
   onYearChange,
   onEraChange,
   onToday,
 }: Props) {
+  // The page's view tabs live in the header's view menu, not in the date row.
+  usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const fallback = usePanchangaLocation();
   return (
     <View
@@ -34,8 +36,6 @@ export function PatroYearNavBlock({
       location={location ?? fallback.location}
       onLocationChange={onLocationChange ?? fallback.setLocation}
       locate={locateDevice}
-      tabs={tabs}
-      tabsLabel={tabsLabel}
     />
   );
 }

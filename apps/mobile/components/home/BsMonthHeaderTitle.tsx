@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
@@ -45,6 +46,16 @@ export function BsMonthHeaderTitle({
   const { t, lang } = useLocale();
 
   const calendarTabLabel = isGregorianEra(browseEra) ? t("calendar.mode_ad") : patroEraShortLabel(browseEra, lang);
+  // वि.सं. | पञ्चाङ्ग live in the header's view menu, not above the grid.
+  usePageViewMenu([
+    {
+      key: "view",
+      options: [
+        { key: "calendar", label: calendarTabLabel, active: patroView === "calendar", onPress: () => onPatroViewChange("calendar") },
+        { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => onPatroViewChange("panchanga") },
+      ],
+    },
+  ]);
 
   return (
     <View className="mb-3">
@@ -63,11 +74,6 @@ export function BsMonthHeaderTitle({
         crossEraSubtitle={crossEraSubtitle}
         prevDisabled={prevDisabled}
         nextDisabled={nextDisabled}
-        segments={[
-          { key: "calendar", label: calendarTabLabel, active: patroView === "calendar", onPress: () => onPatroViewChange("calendar") },
-          { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => onPatroViewChange("panchanga") },
-        ]}
-        segmentsLabel={t("calendar.patro_mode_aria")}
       />
     </View>
   );

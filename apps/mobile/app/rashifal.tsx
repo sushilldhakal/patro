@@ -15,7 +15,8 @@ import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
-import { RashifalProfilePicker } from "@/components/rashifal/RashifalProfilePicker";
+import { RashifalProfileViewMenu } from "@/components/navigation/ProfileViewMenu";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useLocale } from "@/lib/i18n";
 import { RASHIFAL_PERIOD_ICON } from "@/lib/rashifal-ui";
@@ -53,6 +54,14 @@ export default function RashifalScreen() {
   const loading = page.profile ? page.personal.status === "loading" : page.general.status === "loading";
   const error = page.profile ? page.personal.status === "error" : page.general.status === "error";
 
+  // Daily | weekly | monthly | yearly, in the header's view menu (the profiles follow there too).
+  usePageViewMenu([
+    {
+      key: "period",
+      options: page.periods.map(({ id, label, active }) => ({ key: id, label, active, onPress: () => page.setPeriod(id) })),
+    },
+  ]);
+
   return (
     <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
       <View className="gap-8">
@@ -79,36 +88,10 @@ export default function RashifalScreen() {
           />
         </View>
 
-        <View className={cn("flex-row", rashifalClasses.tabBar)} accessibilityRole="tablist" accessibilityLabel={page.copy.tabsLabel}>
-          {page.periods.map(({ id, label, active }) => (
-            <Pressable
-              key={id}
-              onPress={() => page.setPeriod(id)}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              accessibilityLabel={label}
-              /* Every tab names itself: three bare calendar icons could not be told apart. */
-              className={cn(
-                "relative min-w-0 items-center justify-center gap-0.5",
-                rashifalClasses.tab,
-                active && rashifalClasses.tabActiveSurface,
-              )}
-            >
-              <Ionicons name={RASHIFAL_PERIOD_ICON[id]} size={18} color={active ? colors.foreground : colors.mutedForeground} />
-              <Text
-                className={cn(rashifalClasses.tabLabel, !active && "font-medium text-muted-foreground")}
-                style={nepaliTextStyle()}
-                numberOfLines={1}
-              >
-                {label}
-              </Text>
-              {active ? <View className={rashifalClasses.tabIndicator} /> : null}
-            </Pressable>
-          ))}
-        </View>
 
         <View className={rashifalClasses.profileWrap}>
-          <RashifalProfilePicker selectedId={page.profile?.id ?? null} onSelect={page.selectProfile} />
+          {/* The profile list is in the header's view menu. */}
+          <RashifalProfileViewMenu selectedId={page.profile?.id ?? null} onSelect={page.selectProfile} />
           {page.profileError ? (
             <Text className={cn("text-center", rashifalClasses.profileError)} style={nepaliTextStyle()}>
               {page.copy.missingBirthData}

@@ -17,6 +17,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { LoadingState } from "@/components/ui/States";
+import { usePageViewMenu } from "@/lib/page-view-menu";
 
 /**
  * Holidays — the app's drawing of `useHolidaysPage` (@vedic-patro/features).
@@ -28,6 +29,18 @@ export default function HolidaysScreen() {
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const { location } = usePanchangaLocation();
   const page = useHolidaysPage({ year, era, location: location.params });
+  // सरकारी बिदा | सबै पर्व in the header's view menu.
+  usePageViewMenu([
+    {
+      key: "tab",
+      options: page.tabs.map((tab) => ({
+        key: tab.id,
+        label: tab.count > 0 ? `${tab.label} · ${tab.countLabel}` : tab.label,
+        active: tab.active,
+        onPress: () => page.setTab(tab.id),
+      })),
+    },
+  ]);
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
@@ -48,27 +61,6 @@ export default function HolidaysScreen() {
       />
       {page.hero ? <NowHero hero={page.hero} /> : null}
 
-      <Box className={cn("mb-8", holidaysClasses.tabBar)} label={page.copy.title}>
-        {page.tabs.map((tab) => (
-          <Pressable
-            key={tab.id}
-            role="tab"
-            selected={tab.active}
-            onPress={() => page.setTab(tab.id)}
-            className={cn(holidaysClasses.tab, tab.active ? holidaysClasses.tabActive : holidaysClasses.tabIdle)}
-          >
-            <Icon node={tab.id === "holidays" ? flag : partyPopper} size="md" tone={tab.active ? "secondary" : "foreground"} />
-            <Text className={cn(holidaysClasses.tabLabel, tab.active ? holidaysClasses.tabLabelActive : holidaysClasses.tabLabelIdle)}>
-              {tab.label}
-            </Text>
-            {tab.count > 0 ? (
-              <Box className={holidaysClasses.tabCount}>
-                <Text className={holidaysClasses.tabCountText}>{tab.countLabel}</Text>
-              </Box>
-            ) : null}
-          </Pressable>
-        ))}
-      </Box>
 
       <Box className={cn("mb-8 flex-row items-center gap-2 px-3", holidaysClasses.searchBox, "max-w-full")}>
         <Icon node={searchIcon} size="md" />

@@ -6,7 +6,7 @@ import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
-import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
+import { SaitProfileViewMenu } from "@/components/navigation/ProfileViewMenu";
 import { SaitSources, SuitabilityLegend } from "@vedic-patro/ui/kit/jyotish";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
@@ -72,7 +72,7 @@ export default function SaitCategoryScreen() {
       }
       profileControl={
         <>
-          <SaitProfilePicker selectedId={personalize.selectedProfile?.id ?? null} onSelect={personalize.setSelectedProfile} />
+          <SaitProfileViewMenu selectedId={personalize.selectedProfile?.id ?? null} onSelect={personalize.setSelectedProfile} />
           {personalize.selectedProfile ? <SuitabilityLegend counts={personalize.counts} /> : null}
         </>
       }
