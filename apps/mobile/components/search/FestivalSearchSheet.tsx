@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, SectionList, TextInput, View } from "react-native";
+import { Modal, Platform, Pressable, SectionList, TextInput, View } from "react-native";
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHolidaysPage, type HolidayRow } from "@vedic-patro/features/holidays";
@@ -61,6 +62,28 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
     return groupByDay(rows, lang === "en" ? WEEKDAYS_SHORT : WEEKDAYS_SHORT_NE);
   }, [page.rows, query, lang]);
 
+  /* The field sits on the keyboard as it rises, frame by frame, like Voice Memos' and Calendar's.
+     (KeyboardAvoidingView measured the page sheet wrong and left the field under the keyboard.) */
+  const keyboard = useAnimatedKeyboard();
+  const restOffset = Math.max(insets.bottom, space.md);
+  // Android resizes the window for the keyboard itself, so the field is already above it there.
+  const followKeyboard = Platform.OS === "ios";
+  /* Everything the bar needs is in this one animated style: a plain style or class beside an
+     animated one gets dropped. */
+  const barStyle = useAnimatedStyle(() => ({
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: space.md,
+    paddingHorizontal: space.lg,
+    transform: [
+      { translateY: -Math.max((followKeyboard ? keyboard.height.get() : 0) + space.sm, restOffset) },
+    ],
+  }));
+
   const close = () => {
     haptics.tick();
     onClose();
@@ -73,15 +96,14 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
       presentationStyle={Platform.OS === "ios" ? "pageSheet" : "fullScreen"}
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: colors.background }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <SectionList
           sections={sections}
           keyExtractor={(row) => row.key}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
+          // The rows scroll clear of the keyboard (iOS); the floating field rides on top of it.
+          automaticallyAdjustKeyboardInsets
           stickySectionHeadersEnabled={false}
           contentContainerStyle={{
             paddingTop: Platform.OS === "ios" ? space.lg : insets.top + space.sm,
@@ -130,10 +152,7 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
         />
 
         {/* The floating search field and the round close button, at the foot like Apple Calendar's. */}
-        <View
-          className="absolute left-0 right-0 flex-row items-center gap-3 px-4"
-          style={{ bottom: Math.max(insets.bottom, space.md) }}
-        >
+        <Animated.View style={barStyle}>
           <View className="h-14 min-w-0 flex-1 flex-row items-center gap-2 rounded-full border border-border bg-card px-4 shadow-md">
             <Ionicons name="search-outline" size={22} color={colors.foreground} />
             <TextInput
@@ -162,8 +181,8 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
           >
             <Ionicons name="close" size={26} color={colors.foreground} />
           </Pressable>
-        </View>
-      </KeyboardAvoidingView>
+        </Animated.View>
+      </View>
     </Modal>
   );
 }
