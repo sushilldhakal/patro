@@ -22,7 +22,6 @@ import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
 import { HomeRashifalTeaser } from "@/components/home/HomeRashifalTeaser";
-import { PanchangaDirectory } from "@/components/panchanga/PanchangaDirectory";
 import { Button } from "@/components/ui/button";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { currentPatroDayLinkSearch, locationToSearch } from "@/lib/url-state";
@@ -246,7 +245,6 @@ export function Home() {
             <div className="mt-8">
               <HomeQuickLinks location={location} />
             </div>
-            <PanchangaDirectory className="mt-8" />
           </section>
         }
       />

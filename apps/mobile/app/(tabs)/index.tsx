@@ -19,7 +19,6 @@ import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
 import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
-import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
 import { apiKeys, fetchPanchanga, type CalendarDay } from "@/lib/api";
@@ -489,12 +488,6 @@ function HomeScreen() {
             <Reveal>
               <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
                 <HomeQuickLinks location={location} />
-              </View>
-            </Reveal>
-
-            <Reveal>
-              <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
-                <PanchangaDirectoryMobile />
               </View>
             </Reveal>
 
