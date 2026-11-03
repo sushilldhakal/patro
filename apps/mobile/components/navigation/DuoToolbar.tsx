@@ -8,6 +8,7 @@ import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
+import { usePatroViewOptions } from "@/lib/patro-view";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
 const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
@@ -42,6 +43,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const { slots, folded } = useDuoRail();
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
+  const viewOptions = usePatroViewOptions();
 
   const onProfile = useCallback(() => {
     if (isAuthenticated) router.push("/account" as never);
@@ -60,6 +62,14 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         <Stack.Toolbar.Button icon="sidebar.left" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
+        {/* Monthly BS, monthly panchanga or daily panchanga — Apple Calendar's view menu, the current one ticked. */}
+        <Stack.Toolbar.Menu icon="list.bullet" title={t("ui.view_menu.label")} accessibilityLabel={t("ui.view_menu.label")}>
+          {viewOptions.map((option) => (
+            <Stack.Toolbar.MenuAction key={option.key} icon={option.sf} isOn={option.active} onPress={option.onPress}>
+              {option.label}
+            </Stack.Toolbar.MenuAction>
+          ))}
+        </Stack.Toolbar.Menu>
         <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
         <Stack.Toolbar.Button icon="magnifyingglass" accessibilityLabel={t("ui.search.search")} onPress={requestSearch} />
         <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />

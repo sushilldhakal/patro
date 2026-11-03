@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from "react";
-import { Platform, Pressable, ScrollView, View } from "react-native";
+import { useCallback, useRef, useState, type ComponentRef } from "react";
+import { Modal, Platform, Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { haptics } from "@vedic-patro/ui/motion";
 import { useNavPress } from "@/lib/use-nav-press";
@@ -12,6 +13,9 @@ import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
+import { usePatroViewOptions } from "@/lib/patro-view";
+import { Text } from "@/components/ui/Text";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 
 /**
  * The side menu and its open/close/navigate flow. It opens on `requestOpenMenu()`, so the header's
@@ -94,7 +98,7 @@ function HeaderButton({
   label,
   onPress,
 }: {
-  icon: "menu-outline" | "search-outline" | "add" | "location-outline";
+  icon: "menu-outline" | "search-outline" | "add" | "location-outline" | "list";
   label: string;
   onPress: () => void;
 }) {
@@ -115,9 +119,70 @@ function HeaderButton({
   );
 }
 
+/** Where the view menu's button sits on screen, so the menu opens from under it. */
+type Anchor = { top: number; right: number };
+
 /**
- * No title bar: the side-menu button at the top left; place, search, new reminder and the account at
- * the top right. The menu, place, search and reminder sheets live at the root (AppOverlays), so these
+ * The view menu: monthly BS, monthly panchanga or daily panchanga, the current one ticked, opening
+ * from its button like Apple Calendar's Single Day / Multi Day / List menu. (The iPhone Duo uses the
+ * native toolbar menu instead.)
+ */
+function ViewMenuButton() {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const { width } = useWindowDimensions();
+  const options = usePatroViewOptions();
+  const ref = useRef<ComponentRef<typeof View>>(null);
+  const [anchor, setAnchor] = useState<Anchor | null>(null);
+
+  const open = () =>
+    ref.current?.measureInWindow((x, y, w, h) => setAnchor({ top: y + h + 8, right: Math.max(8, width - (x + w)) }));
+  const close = () => setAnchor(null);
+
+  return (
+    <View ref={ref} collapsable={false}>
+      <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
+      <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
+        <Pressable style={{ flex: 1 }} onPress={close} accessibilityLabel={t("ui.search.cancel")}>
+          {anchor ? (
+            <Animated.View
+              entering={ZoomIn.duration(180)}
+              style={{ position: "absolute", top: anchor.top, right: anchor.right, minWidth: 240 }}
+            >
+              <Animated.View entering={FadeIn.duration(120)} className="overflow-hidden rounded-3xl border border-border bg-card py-2 shadow-lg">
+                {options.map((option) => (
+                  <Pressable
+                    key={option.key}
+                    accessibilityRole="menuitem"
+                    accessibilityState={{ selected: option.active }}
+                    onPress={() => {
+                      haptics.tick();
+                      close();
+                      option.onPress();
+                    }}
+                    className="min-h-12 flex-row items-center gap-3 px-4 py-3 active:bg-muted"
+                  >
+                    <View className="w-5 items-center">
+                      {option.active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}
+                    </View>
+                    <Ionicons name={option.ion} size={20} color={colors.foreground} />
+                    <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </Animated.View>
+            </Animated.View>
+          ) : null}
+        </Pressable>
+      </Modal>
+    </View>
+  );
+}
+
+/**
+ * No title bar: the side-menu button at the top left; view, place, search, new reminder and the
+ * account at the top right. The menu, place, search and reminder sheets live at the root (AppOverlays), so these
  * only send requests.
  */
 function AppHeaderView() {
@@ -129,6 +194,7 @@ function AppHeaderView() {
       <View className="min-h-14 w-full flex-row items-center justify-between px-4 py-2">
         <HeaderButton icon="menu-outline" label={t("menu_open")} onPress={requestOpenMenu} />
         <View className="flex-row items-center gap-2">
+          <ViewMenuButton />
           <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
           <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
           <HeaderButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />

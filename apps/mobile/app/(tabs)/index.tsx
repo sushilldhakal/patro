@@ -19,6 +19,7 @@ import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
 import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
+import { useHomePatroView } from "@/lib/patro-view";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
 import { apiKeys, fetchPanchanga, type CalendarDay } from "@/lib/api";
@@ -172,7 +173,8 @@ function HomeScreen() {
   const pageScrollerRef = usePageScrollerRef();
   const asideRef = useRef<ComponentRef<typeof View>>(null);
   const scrollToAsideRef = useRef(false);
-  const [patroView, setPatroView] = useState<HomePatroView>("calendar");
+  // Shared with the header's view menu (lib/patro-view), which can switch it from any page.
+  const [patroView, setPatroView] = useHomePatroView();
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);
   const splitAside = width >= ASIDE_SIDEBAR_SPLIT;
 

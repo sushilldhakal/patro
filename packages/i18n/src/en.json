@@ -5654,6 +5654,12 @@
       "festivals_placeholder": "Festival or holiday name",
       "done": "Done"
     },
+    "view_menu": {
+      "label": "View",
+      "monthly_bs": "Monthly BS",
+      "monthly_panchanga": "Monthly panchanga",
+      "daily_panchanga": "Daily panchanga"
+    },
     "sait": {
       "choose_a_profile": "Choose a profile",
       "month_ordinal_month": "month {{ordinal_month}}",
