@@ -14,11 +14,14 @@ import { APP_VERSION } from "@/lib/store-links";
  */
 function runningBuildLine(): string {
   const build = `${APP_VERSION} (${Application.nativeBuildVersion ?? "?"})`;
-  const channel = Updates.channel ?? "—";
+  // Dev and simulator builds report an empty channel; show a dash rather than "· ·".
+  const channel = Updates.channel || "—";
   const update =
     Updates.isEmbeddedLaunch || !Updates.updateId
       ? "embedded"
-      : `${Updates.updateId.slice(0, 8)} · ${Updates.createdAt?.toISOString().slice(0, 16).replace("T", " ") ?? ""}`;
+      : [Updates.updateId.slice(0, 8), Updates.createdAt?.toISOString().slice(0, 16).replace("T", " ")]
+          .filter(Boolean)
+          .join(" · ");
   return `${build} · ${channel} · ${update}`;
 }
 
