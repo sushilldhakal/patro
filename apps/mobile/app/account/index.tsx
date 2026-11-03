@@ -3,6 +3,8 @@ import { Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { requestSignIn } from "@/lib/menu-request";
+import { SettingsPanel } from "@/components/account/SettingsPanel";
+import { SectionTitle } from "@/components/reminders/NotificationCards";
 import { inkOn } from "@/lib/theme";
 import { useAccountPage } from "@vedic-patro/features/account";
 import { AppShell } from "@/components/AppShell";
@@ -54,42 +56,11 @@ export default function AccountScreen() {
           <Button label={t("ui.nav.log_in")} size="sm" onPress={requestSignIn} />
         </View>
 
-        {/* Settings live here now (no settings icon in the bars), signed in or not. */}
-        <Pressable
-          onPress={() => router.push("/account/settings" as never)}
-          className={cn("mt-6", accountClasses.linkRow)}
-        >
-          <View className={accountClasses.linkRowBody}>
-            <Ionicons name="settings-outline" size={18} color={colors.secondary} />
-            <View className="flex-1">
-              <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
-                {t("account_page.settings")}
-              </Text>
-              <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
-                {t("ui.account.settings_hint")}
-              </Text>
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-        </Pressable>
-
-        <Pressable
-          onPress={() => router.push("/account/offline-data" as never)}
-          className={cn("mt-3", accountClasses.linkRow)}
-        >
-          <View className={accountClasses.linkRowBody}>
-            <Ionicons name="download-outline" size={18} color={colors.secondary} />
-            <View className="flex-1">
-              <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
-                {t("ui.account.offline_data")}
-              </Text>
-              <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
-                {t("ui.account.offline_calendar_data_can_be_managed")}
-              </Text>
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-        </Pressable>
+        {/* The settings, on the profile page itself. */}
+        <View className="mt-8 gap-3">
+          <SectionTitle>{t("ui.settings.title")}</SectionTitle>
+          <SettingsPanel />
+        </View>
       </AppShell>
     );
   }
@@ -237,42 +208,11 @@ export default function AccountScreen() {
         </View>
       ) : null}
 
-      {/* Settings live here now (no settings icon in the bars). */}
-      <Pressable
-        onPress={() => router.push("/account/settings" as never)}
-        className={cn("mt-3", accountClasses.linkRow)}
-      >
-        <View className={accountClasses.linkRowBody}>
-          <Ionicons name="settings-outline" size={18} color={colors.secondary} />
-          <View className="flex-1">
-            <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
-              {t("account_page.settings")}
-            </Text>
-            <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
-              {t("ui.account.settings_hint")}
-            </Text>
-          </View>
-        </View>
-        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-      </Pressable>
-
-      <Pressable
-        onPress={() => router.push("/account/offline-data" as never)}
-        className={cn("mt-3", accountClasses.linkRow)}
-      >
-        <View className={accountClasses.linkRowBody}>
-          <Ionicons name="download-outline" size={18} color={colors.secondary} />
-          <View className="flex-1">
-            <Text className={accountClasses.linkRowTitle} style={nepaliTextStyle(14)}>
-              {t("ui.account.offline_data")}
-            </Text>
-            <Text className={accountClasses.linkRowHint} style={nepaliTextStyle(12)}>
-              {t("ui.account.manage_the_calendar_years_downloaded_for")}
-            </Text>
-          </View>
-        </View>
-        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-      </Pressable>
+      {/* The settings, on the profile page itself. */}
+      <View className="mt-8 gap-3">
+        <SectionTitle>{t("ui.settings.title")}</SectionTitle>
+        <SettingsPanel />
+      </View>
 
       <View className={accountClasses.dangerZone}>
         <Text className={accountClasses.dangerTitle} style={nepaliTextStyle()}>
