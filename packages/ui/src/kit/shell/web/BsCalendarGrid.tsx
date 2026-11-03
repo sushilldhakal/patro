@@ -82,8 +82,9 @@ export function BsCalendarGrid({
       >
         {grid.festivalDialog ? (
           <>
-            <Text className="mb-2 text-xs text-muted-foreground">{grid.festivalDialog.description}</Text>
-            <Text className="text-lg font-bold text-foreground">{grid.festivalDialog.festivalLine}</Text>
+            {/* Paragraphs, not the default inline span: as spans the date ran straight into the festival name. */}
+            <Text as="p" className="mb-2 text-xs text-muted-foreground">{grid.festivalDialog.description}</Text>
+            <Text as="p" className="text-lg font-bold text-foreground">{grid.festivalDialog.festivalLine}</Text>
             {grid.festivalDialog.saits.length ? (
               <Box className={home.highlightSait}>
                 <Text className={home.highlightSaitHeading}>{grid.festivalDialog.saitHeading}</Text>

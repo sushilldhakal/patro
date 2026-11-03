@@ -209,6 +209,9 @@ def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[st
 
         filtered.append(festival)
 
+    # A government holiday block (दशैं बिदा) spans the week; the day's own festival
+    # (महाअष्टमी, महानवमी …) is what the day is named for, so the block goes last.
+    filtered.sort(key=lambda festival: load_rules().get(festival["id"], {}).get("type") == "announced")
     return filtered
 
 

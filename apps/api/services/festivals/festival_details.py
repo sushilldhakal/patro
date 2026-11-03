@@ -73,6 +73,9 @@ def festival_when(rule: dict[str, Any]) -> dict[str, str] | None:
     if kind == "ad_fixed" and rule.get("ad_month") and rule.get("ad_day"):
         month, day = int(rule["ad_month"]), int(rule["ad_day"])
         return {"ne": f"{AD_MONTHS_NE[month - 1]} {_ne_digits(day)}", "en": f"{AD_MONTHS_EN[month - 1]} {day}"}
+    if kind == "announced":
+        # No rule of its own: the dates come from each year's government notice.
+        return {"ne": "नेपाल सरकारले तोकेका दिन", "en": "On the days the Government of Nepal announces"}
     return None
 
 

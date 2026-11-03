@@ -5847,6 +5847,15 @@
       "importance": "regional",
       "category": "newari"
     },
+    "dashain-vidaa": {
+      "name_en": "Dashain Holiday",
+      "name_ne": "दशैं बिदा",
+      "type": "announced",
+      "duration_days": 7,
+      "notes": "The government's Dashain holiday block. Its span changes every year with the tithis, so it has no rule of its own: each year's MoHA dates are in holiday_overrides_v1.json.",
+      "importance": "national",
+      "category": "national"
+    },
     "dashain-vidaa-kartik-2": {
       "name_en": "Dashain Holiday",
       "name_ne": "दशै विदा",
@@ -5854,6 +5863,7 @@
       "bs_month": 7,
       "bs_day": 2,
       "duration_days": 1,
+      "subsumed_by": "dashain-vidaa",
       "importance": "national",
       "category": "national"
     },
@@ -5864,6 +5874,7 @@
       "bs_month": 7,
       "bs_day": 6,
       "duration_days": 1,
+      "subsumed_by": "dashain-vidaa",
       "importance": "national",
       "category": "national"
     },

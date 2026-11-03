@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.5.0",
-    "description": "Authority overrides for public holidays (and festival calendar placement). Updated BS 2083: fixed Dashain end date (13 days), Chhath reduced to 1 day; added Prithvi Jayanti, Shahid Diwas, Loktantra Diwas, Yomari Punhi, Udhauli Parwa, Maghi Parwa, Women's Day, Pahadma Holi, Terai Holi, Ram Navami, Vishwakarma Puja, Ganatantra Diwas, Sambidhan Diwas.",
+    "version": "1.6.0",
+    "description": "Authority overrides for public holidays (and festival calendar placement). Updated BS 2083: fixed Dashain end date (13 days); v1.6: Dashain holiday block (Ashoj 31 – Kartik 6) and Maha Ashtami / Navami on Kartik 2 / 3, Chhath reduced to 1 day; added Prithvi Jayanti, Shahid Diwas, Loktantra Diwas, Yomari Punhi, Udhauli Parwa, Maghi Parwa, Women's Day, Pahadma Holi, Terai Holi, Ram Navami, Vishwakarma Puja, Ganatantra Diwas, Sambidhan Diwas.",
     "source": "MoHA Public Holidays BS 2081 / 2082 / 2083 PDF + festival_rules_v3; Lhosar dates from official announcements",
     "notes": "start/end dates are authoritative; duration_days is informational only. New festivals added: Lhosar series, Mata Tirtha Aunshi, Haribodhi Ekadashi."
   },
@@ -575,6 +575,54 @@
       }
     },
     "2083": {
+      "dashain-vidaa": {
+        "id": "dashain-vidaa",
+        "name_en": "Dashain Holiday",
+        "name_ne": "दशैं बिदा",
+        "start_date": "2026-10-17",
+        "end_date": "2026-10-23",
+        "duration_days": 7,
+        "type": "announced",
+        "category": "national",
+        "importance": "national",
+        "notes": "MoHA BS 2083-06-31 – 2083-07-06 (असोज ३१ – कात्तिक ६) दशैं बिदा, 7 days"
+      },
+      "maha-ashtami": {
+        "id": "maha-ashtami",
+        "name_en": "Maha Ashtami",
+        "name_ne": "महाअष्टमी",
+        "start_date": "2026-10-19",
+        "end_date": "2026-10-19",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-07-02 (कात्तिक २). Ashtami holds sunrise on Oct 19; the aparahna rule alone gives Oct 18."
+      },
+      "kalratri": {
+        "id": "kalratri",
+        "name_en": "Kalratri",
+        "name_ne": "कालरात्रि",
+        "start_date": "2026-10-19",
+        "end_date": "2026-10-19",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "regional",
+        "notes": "BS 2083-07-02 (कात्तिक २), with Maha Ashtami"
+      },
+      "maha-navami": {
+        "id": "maha-navami",
+        "name_en": "Maha Navami",
+        "name_ne": "महानवमी",
+        "start_date": "2026-10-20",
+        "end_date": "2026-10-20",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-07-03 (कात्तिक ३). Navami holds sunrise on Oct 20; the aparahna rule alone gives Oct 19."
+      },
       "bs-new-year": {
         "id": "bs-new-year",
         "name_en": "Nepali New Year",
