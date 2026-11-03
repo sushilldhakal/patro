@@ -1,5 +1,6 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { DuoToolbar } from "@/components/navigation/DuoToolbar";
+import { DuoBottomActions } from "@/components/FloatingNavBar";
 import { planRail, useDuoRail } from "@/lib/duo-rail";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV } from "@/lib/mobile-nav";
@@ -32,6 +33,8 @@ export function DuoNativeTabs() {
           </NativeTabs.Trigger>
         ))}
       </NativeTabs>
+      {/* Portrait: search and "+" left of the system tab bar, place and settings right of it. */}
+      <DuoBottomActions />
     </>
   );
 }

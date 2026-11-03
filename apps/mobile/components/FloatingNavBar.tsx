@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
-import { usePathname } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { useNavPress } from "@/lib/use-nav-press";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,15 +22,16 @@ import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } fr
 import { Ionicons } from "@/components/icons/Ionicons";
 import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
 
-/** Tabs the open Duo leaves out of its nav (the side menu still reaches them). */
-const DUO_HIDDEN: ReadonlySet<string> = new Set(["/kundali", "/vastu"]);
+/** The three tabs the bar keeps (home, panchanga, daily transit); the side menu reaches the rest. */
+const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /**
+ * The bottom bar: search and "+" on the left, the three main tabs, place and settings on the right.
  * On the iPhone Duo the tabs are the system's own, so this bar only appears on pages pushed over
- * them, and only where the bars are horizontal (the open display in portrait). Elsewhere the
- * rail carries them.
+ * them, and only where the bars are horizontal (the open display in portrait); its tab pages get
+ * the two action groups alone (DuoBottomActions). Elsewhere the rail carries them.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
   const { horizontal } = useDuoRail();
@@ -41,7 +42,7 @@ export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) 
 function FloatingNavBarView() {
   const navPress = useNavPress();
   const pathname = usePathname();
-  const { pick, t } = useLocale();
+  const { pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
@@ -64,11 +65,12 @@ function FloatingNavBarView() {
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
       />
       <View className={shellClasses.navRow}>
+      <LeftActions />
       <View
         style={nativeShadow("lg")}
         className={cn("min-w-0 flex-1 flex-row bg-background", shellClasses.navBar)}
       >
-        {FLOATING_NAV.filter((item) => !(IS_IPHONE_DUO && DUO_HIDDEN.has(item.href))).map((item) => {
+        {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
             <NavItem
@@ -96,16 +98,51 @@ function FloatingNavBarView() {
           );
         })}
       </View>
-      {/* Search, place and "+" beside the tabs, in a group of their own (the top bar holds the date). The
-          iPhone Duo has them in its native toolbar instead. */}
-      {IS_IPHONE_DUO ? null : (
-        <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
-          <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
-          <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
-          <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
-        </View>
-      )}
+      <RightActions />
       </View>
+    </View>
+  );
+}
+
+/** Search and "+", left of the tabs. */
+function LeftActions() {
+  const { t } = useLocale();
+  return (
+    <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
+      <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
+      <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+    </View>
+  );
+}
+
+/** Place and settings, right of the tabs. */
+function RightActions() {
+  const { t } = useLocale();
+  const router = useRouter();
+  return (
+    <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
+      <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
+      <ActionButton icon="settings-outline" label={t("account_page.settings")} onPress={() => router.push("/account/settings" as never)} />
+    </View>
+  );
+}
+
+/**
+ * iPhone Duo tab pages in portrait: the tab bar there is the system's own, so the two action groups float
+ * beside it, at the foot of the screen — the same layout as the bar on every other phone.
+ */
+export function DuoBottomActions() {
+  const { horizontal } = useDuoRail();
+  const insets = useSafeAreaInsets();
+  if (!IS_IPHONE_DUO || !horizontal) return null;
+  return (
+    <View
+      pointerEvents="box-none"
+      className={shellClasses.navDuoActions}
+      style={{ bottom: Math.max(insets.bottom, 12) }}
+    >
+      <LeftActions />
+      <RightActions />
     </View>
   );
 }
@@ -115,7 +152,7 @@ function ActionButton({
   label,
   onPress,
 }: {
-  icon: "search-outline" | "location-outline" | "add";
+  icon: "search-outline" | "location-outline" | "add" | "settings-outline";
   label: string;
   onPress: () => void;
 }) {

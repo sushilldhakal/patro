@@ -111,7 +111,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {extras.has("location") ? (
           <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
         ) : null}
-        <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+        {/* Portrait: "+" sits at the foot with search, place and settings (DuoBottomActions / FloatingNavBar). */}
+        {horizontal ? null : (
+          <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+        )}
         {extras.has("profile") ? (
           <Stack.Toolbar.Button
             icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
@@ -126,12 +129,12 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
           <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
         ) : null}
         <Stack.Toolbar.Menu icon="ellipsis" title={t("menu_open")}>
-          {extras.has("search") ? null : (
+          {extras.has("search") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="magnifyingglass" onPress={requestSearch}>
               {t("ui.search.search")}
             </Stack.Toolbar.MenuAction>
           )}
-          {extras.has("location") ? null : (
+          {extras.has("location") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="location" onPress={requestLocationPicker}>
               {t("ui.search.location")}
             </Stack.Toolbar.MenuAction>
@@ -141,7 +144,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
               {t("account_page.title")}
             </Stack.Toolbar.MenuAction>
           )}
-          {extras.has("settings") ? null : (
+          {extras.has("settings") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="gearshape" onPress={toSettings}>
               {t("account_page.settings")}
             </Stack.Toolbar.MenuAction>

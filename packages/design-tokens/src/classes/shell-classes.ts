@@ -33,6 +33,8 @@ export const shellClasses = {
   /** The app's bottom row: the tabs, then search, place and "+" in a group of their own. */
   navRow: "w-full max-w-xl flex-row items-stretch gap-2 self-center",
   navActionButton: "h-11 w-10 items-center justify-center rounded-xl active:bg-muted",
+  /** iPhone Duo tab pages: the two action groups at the foot, either side of the system tab bar. */
+  navDuoActions: "absolute left-0 right-0 flex-row justify-between px-4",
   navItemActive: "bg-secondary/10",
   navLabel: "text-diagram-xs font-medium leading-normal",
   navLabelActive: "text-secondary",

@@ -22,8 +22,8 @@ export function useDuoRail(): { horizontal: boolean; slots: number; folded: bool
 export const ALL_TABS = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
 export type TabRoute = (typeof ALL_TABS)[number];
 
-/** Tabs the open display never shows (the side menu still reaches them). */
-const UNFOLDED_HIDDEN: ReadonlySet<TabRoute> = new Set<TabRoute>(["kundali", "vastu"]);
+/** Tabs the open display never shows (the side menu still reaches them): three tabs, like every phone. */
+const UNFOLDED_HIDDEN: ReadonlySet<TabRoute> = new Set<TabRoute>(["kundali", "vastu", "learn"]);
 /** The only tabs on the folded display's short rail. */
 const FOLDED_TABS: ReadonlySet<TabRoute> = new Set<TabRoute>(["index", "panchanga"]);
 
@@ -56,11 +56,13 @@ export function planRail(slots: number, folded = false): RailPlan {
     ? Math.max(1, Math.min(pool.length, slots - FIXED_ICONS))
     : Math.max(2, Math.min(pool.length, slots - FIXED_ICONS - 1));
   const tabs = new Set(pool.slice(0, tabCount));
-  // Portrait (horizontal bars, unlimited slots): the date controls share the top bar, so only search,
-  // place and profile stay as icons there; settings and share sit behind "…".
-  const room = Number.isFinite(slots) ? Math.max(0, slots - FIXED_ICONS - tabs.size) : 3;
+  // Portrait (horizontal bars, unlimited slots): search, "+", place and settings sit at the foot beside
+  // the tabs (DuoBottomActions), so the top bar keeps only the profile; share stays behind "…".
+  const extras: ReadonlySet<RailExtra> = Number.isFinite(slots)
+    ? new Set(RAIL_EXTRAS.slice(0, Math.max(0, slots - FIXED_ICONS - tabs.size)))
+    : new Set<RailExtra>(["profile"]);
   return {
-    extras: new Set(RAIL_EXTRAS.slice(0, room)),
+    extras,
     tabs,
     overflowTabs: ALL_TABS.filter((t) => !tabs.has(t)).filter((t) => folded || !UNFOLDED_HIDDEN.has(t)),
   };
