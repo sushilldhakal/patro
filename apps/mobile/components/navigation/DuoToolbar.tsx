@@ -23,7 +23,7 @@ const SITE = "https://www.vedicpatro.com";
  * The link to what the user is looking at, with their language and place so it opens the same way.
  * The page itself is the current route; the presets ride along as query parameters.
  */
-async function pageLink(pathname: string, lang: string): Promise<string> {
+export async function pageLink(pathname: string, lang: string): Promise<string> {
   const path = pathname === "/index" ? "/" : pathname;
   const { params } = await loadStoredLocation();
   const query = new URLSearchParams({ lang, lat: String(params.lat), lon: String(params.lon) });
@@ -69,10 +69,11 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         <Stack.Toolbar.Button icon="square.grid.2x2" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
         {/* The page's date controls (TopBarSlot): a custom view, which iOS keeps in the top bar while the
             icons go to the rail — the month or date beside the view button, like Apple Calendar's title.
-            In portrait the icons share that bar, so the controls get a fixed share of it. */}
+            In portrait the bar also carries the status bar's clock on its right, so the controls get a
+            narrower share of it and only the view menu and the profile sit beside them. */}
         {topBar ? (
           <Stack.Toolbar.View hidesSharedBackground>
-            <View style={{ width: horizontal ? Math.min(320, width * 0.45) : Math.min(440, width * 0.55), height: 40 }}>
+            <View style={{ width: horizontal ? Math.min(260, width * 0.4) : Math.min(440, width * 0.55), height: 40 }}>
               {topBar}
             </View>
           </Stack.Toolbar.View>
@@ -128,6 +129,8 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {extras.has("share") ? (
           <Stack.Toolbar.Button icon="square.and.arrow.up" accessibilityLabel={t("ui.more.share_the_app")} onPress={() => void onShare()} />
         ) : null}
+        {/* Portrait: "…" sits at the foot with place and settings (DuoBottomActions / FloatingNavBar). */}
+        {horizontal ? null : (
         <Stack.Toolbar.Menu icon="ellipsis" title={t("menu_open")}>
           {extras.has("search") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="magnifyingglass" onPress={requestSearch}>
@@ -169,6 +172,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
             {t("nav.jyotish_rashifal")}
           </Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
+        )}
       </Stack.Toolbar>
       {/* On a page pushed over the tabs: the destinations in the system's own bottom toolbar, which iOS
           lays out like the tab bar on the home page (below the page in portrait, as its own group at the

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Pressable, View } from "react-native";
+import { ActionSheetIOS, Pressable, Share, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
@@ -21,6 +21,7 @@ import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
+import { pageLink } from "@/components/navigation/DuoToolbar";
 
 /** The three tabs the bar keeps (home, panchanga, daily transit); the side menu reaches the rest. */
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
@@ -115,14 +116,26 @@ function LeftActions() {
   );
 }
 
-/** Place and settings, right of the tabs. */
+/** Place and settings, right of the tabs; on the iPhone Duo also "…" (share, reminders, rashifal), which
+ *  its portrait top bar has no room for beside the status bar. */
 function RightActions() {
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
+  const more = () => {
+    const options = [t("ui.more.share_the_app"), t("ui.reminders.reminders"), t("nav.jyotish_rashifal"), t("common.cancel")];
+    ActionSheetIOS.showActionSheetWithOptions({ options, cancelButtonIndex: options.length - 1 }, (index) => {
+      if (index === 0) {
+        void pageLink(pathname, lang).then((url) => Share.share({ message: url, url }).catch(() => {}));
+      } else if (index === 1) router.push("/reminders" as never);
+      else if (index === 2) router.push("/rashifal" as never);
+    });
+  };
   return (
     <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       <ActionButton icon="settings-outline" label={t("account_page.settings")} onPress={() => router.push("/account/settings" as never)} />
+      {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
   );
 }
@@ -152,7 +165,7 @@ function ActionButton({
   label,
   onPress,
 }: {
-  icon: "search-outline" | "location-outline" | "add" | "settings-outline";
+  icon: "search-outline" | "location-outline" | "add" | "settings-outline" | "ellipsis-horizontal";
   label: string;
   onPress: () => void;
 }) {
