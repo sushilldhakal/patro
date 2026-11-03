@@ -1,82 +1,76 @@
 /**
  * The home page's shortcut tiles under the calendar, shared by the
- * website's and the app's `components/home/HomeQuickLinks.tsx`: three groups in the
- * navigation's category order (calendar & time, jyotish & muhurta, daily auspicious times),
- * their order, routes and labels. `feature` is the
- * shared icon identity (`FEATURE_ICON` in @vedic-patro/icons) each app
- * draws; `search` says which URL state the website carries into the link.
+ * website's and the app's `components/home/HomeQuickLinks.tsx`. They are the
+ * navigation itself: the three categories (calendar & time, jyotish & muhurta,
+ * daily auspicious times) with every sidebar entry in sidebar order, so home
+ * and the side menu can never list different things. `feature` is the entry's
+ * id and `section` its sidebar section: each app draws the icon with
+ * `resolveNavIcon(section, feature)` from @vedic-patro/icons. `search` says
+ * which URL state the website carries into the link.
  */
 import { useLocale } from "@vedic-patro/i18n/react";
-
-export type HomeQuickLinkFeature =
-  | "holidays"
-  | "converter"
-  | "suryakranti"
-  | "panchanga-year"
-  | "dainikkranti"
-  | "panchak-patro"
-  | "adhik-maas"
-  | "ritu"
-  | "avakahada"
-  | "abhijit"
-  | "kundali"
-  | "kundali-milan"
-  | "documents"
-  | "choghadiya"
-  | "hora"
-  | "lagna"
-  | "chandrabala"
-  | "tarabala"
-  | "panchaka-rahita"
-  | "pushkara";
+import {
+  getPanchangaSidebarSections,
+  NAV_CATEGORIES,
+  type NavCategoryId,
+  type PanchangaSidebarItem,
+} from "../panchanga/use-panchanga-sidebar-nav";
 
 /** Which location / era search the website adds: the route's own, the current month's or year's, or none. */
 export type HomeQuickLinkSearch = "route" | "month" | "year" | "none";
 
 export type HomeQuickLink = {
   to: string;
-  feature: HomeQuickLinkFeature;
+  /** The sidebar entry id (also the icon identity). */
+  feature: string;
+  /** The sidebar section the entry sits in, for the icon fallback. */
+  section: string;
   label: string;
   search: HomeQuickLinkSearch;
 };
 
-type LinkDef = { to: string; feature: HomeQuickLinkFeature; label: string; search: HomeQuickLinkSearch };
-
-const PATRO: LinkDef[] = [
-  { to: "/holidays", feature: "holidays", label: "nav.holidays", search: "route" },
-  { to: "/converter", feature: "converter", label: "nav.converter", search: "route" },
-  { to: "/suryakranti", feature: "suryakranti", label: "nav.suryakranti", search: "route" },
-  { to: "/panchanga/year", feature: "panchanga-year", label: "panchanga_year.title", search: "route" },
-  { to: "/dainikkranti", feature: "dainikkranti", label: "nav.dainikkranti", search: "month" },
+/** Entries whose website link carries something other than the route's own search. */
+const SEARCH: Record<string, HomeQuickLinkSearch> = {
+  dainikkranti: "month",
   // No year in the label: the page opens on the year being browsed, which the label could not know.
-  { to: "/panchak-patro", feature: "panchak-patro", label: "sidebar_nav.items.panchak-patro.label", search: "year" },
-  { to: "/adhik-maas", feature: "adhik-maas", label: "sidebar_nav.items.adhik-maas.label", search: "year" },
-  { to: "/ritu", feature: "ritu", label: "ritu.title", search: "route" },
-];
+  "panchak-patro": "year",
+  "adhik-maas": "year",
+  // Not patro/era routes: no location or year search to carry.
+  kundali: "none",
+  "kundali-milan": "none",
+  documents: "none",
+};
 
-const JYOTISH: LinkDef[] = [
-  { to: "/panchanga/avakahada-chakra", feature: "avakahada", label: "nav.avakahada_chakra", search: "route" },
-  { to: "/abhijit-muhurta", feature: "abhijit", label: "nav.abhijit_muhurta", search: "route" },
-  { to: "/kundali", feature: "kundali", label: "home_quick.kundali_build_title", search: "route" },
-  { to: "/jyotish/kundali-milan", feature: "kundali-milan", label: "home_quick.kundali_milan_title", search: "route" },
-  // Not a patro/era route: no location or year search to carry.
-  { to: "/documents", feature: "documents", label: "nav.documents", search: "none" },
-];
+/** Home's wording where it reads better as a tile than the sidebar's ("जन्मकुण्डली निर्माण"). */
+const LABEL: Record<string, string> = {
+  kundali: "home_quick.kundali_build_title",
+  "kundali-milan": "home_quick.kundali_milan_title",
+};
 
-/** The day tables, as panchanga element pages (the app maps the path to its own route). */
-const DAILY: LinkDef[] = (["choghadiya", "hora", "lagna", "chandrabala", "tarabala", "panchaka-rahita", "pushkara"] as const).map(
-  (id) => ({ to: `/panchanga/element/${id}`, feature: id, label: `panchanga_elements.${id}.title`, search: "route" }),
-);
+/** `/panchanga/element/$name` → `/panchanga/element/tithi`. */
+function resolvePath(item: PanchangaSidebarItem): string {
+  return item.to.replace(/\$(\w+)/g, (_, key: string) => item.params?.[key] ?? key);
+}
 
 export function useHomeQuickLinks() {
   const { t } = useLocale();
-  const links = (defs: LinkDef[]): HomeQuickLink[] => defs.map((d) => ({ ...d, label: t(d.label) }));
+  const sections = getPanchangaSidebarSections();
 
   return {
-    groups: [
-      { id: "patro" as const, title: t("sidebar_nav.categories.calendar"), links: links(PATRO) },
-      { id: "jyotish" as const, title: t("sidebar_nav.categories.jyotish"), links: links(JYOTISH) },
-      { id: "daily" as const, title: t("sidebar_nav.categories.daily"), links: links(DAILY) },
-    ],
+    groups: NAV_CATEGORIES.map((category) => ({
+      id: category.id as NavCategoryId,
+      title: t(category.titleKey),
+      links: category.sectionIds.flatMap((sectionId): HomeQuickLink[] => {
+        const section = sections.find((s) => s.id === sectionId);
+        if (!section) return [];
+        return section.items.map((item) => ({
+          to: resolvePath(item),
+          feature: item.id,
+          section: section.id,
+          label: t(LABEL[item.id] ?? item.labelKey),
+          search: SEARCH[item.id] ?? "route",
+        }));
+      }),
+    })),
   };
 }

@@ -8,7 +8,7 @@ import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLink
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { featureIcon } from "@/lib/nav-icons";
+import { navEntryIcon } from "@/lib/nav-icons";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const QUICK_LINK_ICON_SIZE = 28;
@@ -71,8 +71,8 @@ function RituIcon({ location }: { location: PanchangaLocation }) {
   return <Leaf size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />;
 }
 
-function FeatureIcon({ feature }: { feature: HomeQuickLink["feature"] }) {
-  return createElement(featureIcon(feature), {
+function FeatureIcon({ link }: { link: HomeQuickLink }) {
+  return createElement(navEntryIcon(link.section, link.feature), {
     size: QUICK_LINK_ICON_SIZE,
     strokeWidth: QUICK_LINK_ICON_STROKE,
     className: quickLinkIconClass,
@@ -101,7 +101,7 @@ export function HomeQuickLinks({ location, className }: { location: PanchangaLoc
     items: group.links.map((link) => ({
       key: link.to,
       label: link.label,
-      icon: link.feature === "ritu" ? <RituIcon location={location} /> : <FeatureIcon feature={link.feature} />,
+      icon: link.feature === "ritu" ? <RituIcon location={location} /> : <FeatureIcon link={link} />,
       onPress: () => navigate({ to: link.to as LinkProps["to"], search: searchFor(link) as LinkProps["search"] }),
     })),
   }));
