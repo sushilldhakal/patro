@@ -25,6 +25,6 @@ export const navMenuClasses = {
   nativeLabel: "w-full min-w-0 text-center text-xs font-semibold leading-tight text-foreground",
   /** The app's side menu header: the tabs and the close button on one row. */
   nativeTabs: "min-w-0 flex-1 flex-row rounded-full bg-muted p-1",
-  nativeTab: "h-9 flex-1 items-center justify-center rounded-full px-1",
+  nativeTab: "h-11 flex-1 items-center justify-center rounded-full px-2",
   nativeCategoryTitle: "mx-4 mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
 };

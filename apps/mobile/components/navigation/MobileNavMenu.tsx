@@ -117,8 +117,8 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
               <SelectionFill active={active} className="rounded-full bg-card" />
               <Text
                 numberOfLines={1}
-                className={active ? "text-caption font-bold text-secondary" : "text-caption font-semibold text-muted-foreground"}
-                style={nepaliTextStyle(13)}
+                className={active ? "text-body font-bold text-secondary" : "text-body font-semibold text-muted-foreground"}
+                style={nepaliTextStyle(15)}
               >
                 {category.shortTitle}
               </Text>
