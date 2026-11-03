@@ -15,16 +15,16 @@ import { brand, illustration, midnight, neutral } from "@vedic-patro/design-toke
 import { useBrandMotionEnabled, useOpacityPulse, useRotate, useScalePulse } from "./svg-motion";
 
 /** Sun pivot in the inner 100×100 artboard — web `transform-origin: 63.4px 50px`. */
-const PIVOT = { x: 63.4, y: 50 };
+export const PIVOT = { x: 63.4, y: 50 };
 
 /**
  * That pivot after `translate(6, 6) scale(5)` inside the 512 viewBox:
  * 6 + 63.4 * 5 = 323, i.e. 67 units right of the view center (256), on the
  * vertical center. As a fraction of the view width:
  */
-const PIVOT_DX = (323 - 256) / 512;
+export const PIVOT_DX = (323 - 256) / 512;
 
-const RAYS = [
+export const RAYS = [
   "M62.13 30.54 L63.40 18.30 L64.67 30.54 Z",
   "M69.67 31.54 L75.53 20.71 L72.02 32.51 Z",
   "M76.26 35.34 L85.82 27.58 L78.06 37.14 Z",
@@ -53,7 +53,7 @@ const ART = "translate(6, 6) scale(5)";
  * loop, so each moving part is its own SVG and the view around it spins,
  * scales, or fades. The sun and rays pivot on the same point as the web file.
  */
-function Layer({
+export function Layer({
   size,
   id,
   style,

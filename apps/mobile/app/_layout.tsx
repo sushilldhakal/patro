@@ -28,6 +28,7 @@ import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
 import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
+import { SplashIntro } from "@/components/branding/SplashIntro";
 import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -298,9 +299,7 @@ function RootLayout() {
     if (Platform.OS === "web") {
       window.__hideVedicPatroBootSplash?.();
     }
-    void SplashScreen.hideAsync().catch(() => {
-      /* Already hidden or unavailable (common in Expo Go). */
-    });
+    /* The native splash is hidden by SplashIntro once its first frame is up, not here. */
     /* App-level TTI: fonts, the onboarding check and the saved place are in, and the
        splash is going — the first screen (home or onboarding) is usable from here. */
     Observe.markInteractive({ params: { onboarded: onboarded === true } });
@@ -334,6 +333,7 @@ function RootLayout() {
           </LocaleProvider>
         </ThemeProvider>
       </SafeAreaProvider>
+      <SplashIntro ready={ready} />
     </GestureHandlerRootView>
   );
 }
