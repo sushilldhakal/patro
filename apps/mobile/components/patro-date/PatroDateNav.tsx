@@ -1,5 +1,5 @@
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
-import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
+import { TopBarSlot } from "@/components/navigation/TopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
@@ -35,7 +35,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
   if (props.mode === "year-month") {
     return (
-      <DuoTopBarSlot>
+      <TopBarSlot>
         <PatroCalendarHeader
           className={className}
           era={era}
@@ -56,14 +56,14 @@ export function PatroDateNav(props: PatroDateNavProps) {
           prevDisabled={props.prevDisabled}
           nextDisabled={props.nextDisabled}
         />
-      </DuoTopBarSlot>
+      </TopBarSlot>
     );
   }
 
 
   if (props.mode === "year") {
     return (
-      <DuoTopBarSlot>
+      <TopBarSlot>
         <PatroYearHeader
           className={className}
           era={era}
@@ -74,12 +74,12 @@ export function PatroDateNav(props: PatroDateNavProps) {
           todayYear={patroBrowseTodayYear(era)}
           subtitle={crossEraSubtitle}
         />
-      </DuoTopBarSlot>
+      </TopBarSlot>
     );
   }
 
   return (
-    <DuoTopBarSlot>
+    <TopBarSlot>
       <PatroDayTimeHeader
         className={className}
         era={era}
@@ -106,6 +106,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
         nextDisabled={props.nextDisabled}
         crossEraText={crossEraSubtitle}
       />
-    </DuoTopBarSlot>
+    </TopBarSlot>
   );
 }

@@ -18,7 +18,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { LinearGradient } from "expo-linear-gradient";
 import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
-import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
+import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
 
 /** Tabs the open Duo leaves out of its nav (the side menu still reaches them). */
 const DUO_HIDDEN: ReadonlySet<string> = new Set(["/kundali", "/vastu"]);
@@ -39,7 +41,7 @@ export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) 
 function FloatingNavBarView() {
   const navPress = useNavPress();
   const pathname = usePathname();
-  const { pick } = useLocale();
+  const { pick, t } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
@@ -61,9 +63,10 @@ function FloatingNavBarView() {
         locations={[0, 0.45]}
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
       />
+      <View className={shellClasses.navRow}>
       <View
         style={nativeShadow("lg")}
-        className={cn("w-full flex-row self-center bg-background", shellClasses.navBar)}
+        className={cn("min-w-0 flex-1 flex-row bg-background", shellClasses.navBar)}
       >
         {FLOATING_NAV.filter((item) => !(IS_IPHONE_DUO && DUO_HIDDEN.has(item.href))).map((item) => {
           const active = isNavActive(pathname, item.href);
@@ -93,7 +96,43 @@ function FloatingNavBarView() {
           );
         })}
       </View>
+      {/* Search, place and "+" beside the tabs, in a group of their own (the top bar holds the date). The
+          iPhone Duo has them in its native toolbar instead. */}
+      {IS_IPHONE_DUO ? null : (
+        <View style={nativeShadow("lg")} className={cn("flex-row items-center bg-background px-1", shellClasses.navBar)}>
+          <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
+          <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
+          <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+        </View>
+      )}
+      </View>
     </View>
+  );
+}
+
+function ActionButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: "search-outline" | "location-outline" | "add";
+  label: string;
+  onPress: () => void;
+}) {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      onPress={() => {
+        haptics.tick();
+        onPress();
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={4}
+      className={shellClasses.navActionButton}
+    >
+      <Ionicons name={icon} size={22} color={colors.foreground} />
+    </Pressable>
   );
 }
 

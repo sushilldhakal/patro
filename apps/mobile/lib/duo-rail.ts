@@ -56,7 +56,9 @@ export function planRail(slots: number, folded = false): RailPlan {
     ? Math.max(1, Math.min(pool.length, slots - FIXED_ICONS))
     : Math.max(2, Math.min(pool.length, slots - FIXED_ICONS - 1));
   const tabs = new Set(pool.slice(0, tabCount));
-  const room = Math.max(0, slots - FIXED_ICONS - tabs.size);
+  // Portrait (horizontal bars, unlimited slots): the date controls share the top bar, so only search,
+  // place and profile stay as icons there; settings and share sit behind "…".
+  const room = Number.isFinite(slots) ? Math.max(0, slots - FIXED_ICONS - tabs.size) : 3;
   return {
     extras: new Set(RAIL_EXTRAS.slice(0, room)),
     tabs,

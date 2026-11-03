@@ -1,5 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
-import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
+import { TopBarSlot } from "@/components/navigation/TopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
@@ -42,7 +42,7 @@ export function PatroYearBrowseNav({
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const fallback = usePanchangaLocation();
   return (
-    <DuoTopBarSlot>
+    <TopBarSlot>
       <PatroYearNav
         className={className}
         era={era}
@@ -56,6 +56,6 @@ export function PatroYearBrowseNav({
         onLocationChange={onLocationChangeProp ?? fallback.setLocation}
         locate={locateDevice}
       />
-    </DuoTopBarSlot>
+    </TopBarSlot>
   );
 }

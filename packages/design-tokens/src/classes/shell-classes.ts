@@ -30,6 +30,9 @@ export const shellClasses = {
   navBar:
     "max-w-lg items-stretch justify-around gap-0.5 rounded-2xl border border-border bg-background/90 p-1",
   navItem: "flex-1 items-center gap-1 rounded-xl px-1 py-1.5",
+  /** The app's bottom row: the tabs, then search, place and "+" in a group of their own. */
+  navRow: "w-full max-w-xl flex-row items-stretch gap-2 self-center",
+  navActionButton: "h-11 w-10 items-center justify-center rounded-xl active:bg-muted",
   navItemActive: "bg-secondary/10",
   navLabel: "text-diagram-xs font-medium leading-normal",
   navLabelActive: "text-secondary",

@@ -1,5 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
-import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
+import { TopBarSlot } from "@/components/navigation/TopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { PatroCalendarHeader } from "@vedic-patro/ui/kit/shell";
 import type { PatroDateNavProps } from "./types";
@@ -30,7 +30,7 @@ export function PatroMonthYearNav({
   // The page's view tabs live in the header's view menu, not in the date row.
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   return (
-    <DuoTopBarSlot>
+    <TopBarSlot>
       <PatroCalendarHeader
         era={era}
         year={year}
@@ -52,6 +52,6 @@ export function PatroMonthYearNav({
         crossEraSubtitle={crossEraSubtitle}
         className={className}
       />
-    </DuoTopBarSlot>
+    </TopBarSlot>
   );
 }

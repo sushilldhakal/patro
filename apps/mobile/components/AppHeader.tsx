@@ -11,7 +11,8 @@ import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
+import { requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
+import { useTopBarElement } from "@/components/navigation/TopBarSlot";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePageViewSections } from "@/lib/page-view-menu";
 import { Text } from "@/components/ui/Text";
@@ -98,7 +99,7 @@ function HeaderButton({
   label,
   onPress,
 }: {
-  icon: "grid-outline" | "search-outline" | "add" | "location-outline" | "list";
+  icon: "grid-outline" | "list";
   label: string;
   onPress: () => void;
 }) {
@@ -192,26 +193,24 @@ function ViewMenuButton() {
 }
 
 /**
- * No title bar: the side-menu button at the top left; view, place, search, new reminder and the
- * account at the top right. The menu, place, search and reminder sheets live at the root (AppOverlays), so these
- * only send requests.
+ * The top bar: the side-menu button, the page's date controls, then its view menu and the account.
+ * Search, place and "+" sit at the bottom beside the tabs (FloatingNavBar). The sheets they open live
+ * at the root (AppOverlays), so the buttons only send requests.
  */
 function AppHeaderView() {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
+  const dateControls = useTopBarElement();
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="min-h-14 w-full flex-row items-center justify-between px-4 py-2">
-        {/* Four rounded squares (the Duo toolbar's square.grid.2x2), so it is not mistaken for the view menu's list icon. */}
+      <View className="min-h-14 w-full flex-row items-center gap-2 px-3 py-2">
         <HeaderButton icon="grid-outline" label={t("menu_open")} onPress={requestOpenMenu} />
-        <View className="flex-row items-center gap-2">
-          <ViewMenuButton />
-          <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
-          <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
-          <HeaderButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
-          <AccountMenu />
-        </View>
+        {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
+            otherwise make the bar grow. */}
+        <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
+        <ViewMenuButton />
+        <AccountMenu />
       </View>
     </View>
   );

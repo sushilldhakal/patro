@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
+import { TopBarSlot } from "@/components/navigation/TopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
@@ -59,7 +59,7 @@ export function BsMonthHeaderTitle({
   ]);
 
   return (
-    <DuoTopBarSlot>
+    <TopBarSlot>
       <View className="mb-3">
         {/* The BS | AD preference lives in the sidebar menu and in Settings, not in the page header. */}
         <PatroCalendarHeader
@@ -78,6 +78,6 @@ export function BsMonthHeaderTitle({
           nextDisabled={nextDisabled}
         />
       </View>
-    </DuoTopBarSlot>
+    </TopBarSlot>
   );
 }

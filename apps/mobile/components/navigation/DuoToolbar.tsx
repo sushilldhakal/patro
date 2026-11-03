@@ -9,7 +9,7 @@ import { useLocale } from "@/lib/i18n";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
-import { useDuoTopBarElement } from "@/components/navigation/DuoTopBarSlot";
+import { useTopBarElement } from "@/components/navigation/TopBarSlot";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
 const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
@@ -41,11 +41,11 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
   const navPress = useNavPress();
-  const { slots, folded } = useDuoRail();
+  const { slots, folded, horizontal } = useDuoRail();
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
   const viewSections = usePageViewSections();
-  const topBar = useDuoTopBarElement();
+  const topBar = useTopBarElement();
   const { width } = useWindowDimensions();
   const { extras } = plan;
   /** What the text button reads: the choice now in force (the first group's ticked one). */
@@ -67,11 +67,14 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
       <Stack.Screen options={{ title: "" }} />
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon="square.grid.2x2" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
-        {/* The page's date controls (DuoTopBarSlot): a custom view, which iOS keeps in the top bar while the
-            icons go to the rail — the month or date beside the view button, like Apple Calendar's title. */}
+        {/* The page's date controls (TopBarSlot): a custom view, which iOS keeps in the top bar while the
+            icons go to the rail — the month or date beside the view button, like Apple Calendar's title.
+            In portrait the icons share that bar, so the controls get a fixed share of it. */}
         {topBar ? (
           <Stack.Toolbar.View hidesSharedBackground>
-            <View style={{ width: Math.min(440, width * 0.55) }}>{topBar}</View>
+            <View style={{ width: horizontal ? Math.min(320, width * 0.45) : Math.min(440, width * 0.55), height: 40 }}>
+              {topBar}
+            </View>
           </Stack.Toolbar.View>
         ) : null}
       </Stack.Toolbar>
