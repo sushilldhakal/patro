@@ -4803,6 +4803,11 @@
       "offline": "अफलाइन प्रयोग",
       "offline_years": "{{count}} वर्षको पात्रो यो उपकरणमा छ"
     },
+    "navigation": {
+      "profile_and_settings": "प्रोफाइल र सेटिङ",
+      "main": "मुख्य",
+      "offline_download": "अफलाइन डाउनलोड"
+    },
     "app_header": {
       "nepali_calendar_and_panchanga": "नेपाली पात्रो र पञ्चाङ्ग"
     },
@@ -5518,10 +5523,6 @@
       "vedic_patro_nepali_calendar_panchanga_os": "वैदिक पात्रो — नेपाली पात्रो र पञ्चाङ्ग: {{OS}}",
       "version": "संस्करण",
       "tools": "उपकरण"
-    },
-    "navigation": {
-      "main": "मुख्य",
-      "offline_download": "अफलाइन डाउनलोड"
     },
     "offline": {
       "download": "डाउनलोड",

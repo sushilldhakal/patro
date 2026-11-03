@@ -4803,6 +4803,11 @@
       "offline": "Offline use",
       "offline_years": "{{count}} calendar years saved on this device"
     },
+    "navigation": {
+      "profile_and_settings": "Profile & settings",
+      "main": "Main",
+      "offline_download": "Offline download"
+    },
     "app_header": {
       "nepali_calendar_and_panchanga": "Nepali calendar and Panchanga"
     },
@@ -5518,10 +5523,6 @@
       "vedic_patro_nepali_calendar_panchanga_os": "Vedic Patro — Nepali calendar & panchanga: {{OS}}",
       "version": "Version",
       "tools": "Tools"
-    },
-    "navigation": {
-      "main": "Main",
-      "offline_download": "Offline download"
     },
     "offline": {
       "download": "Download",

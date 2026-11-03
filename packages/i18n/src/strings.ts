@@ -7305,6 +7305,7 @@ export const strings = {
   "ui.settings.notifications_reminders": { ne: "सूचना र रिमाइन्डर", en: "Notifications & reminders" },
   "ui.settings.language_calendar": { ne: "भाषा र पात्रो", en: "Language & calendar" },
   "ui.settings.appearance": { ne: "रूप", en: "Appearance" },
+  "ui.navigation.profile_and_settings": { ne: "प्रोफाइल र सेटिङ", en: "Profile & settings" },
   "ui.settings.language_ne": { ne: "नेपाली", en: "Nepali" },
   "ui.settings.language_en": { ne: "अंग्रेजी", en: "English" },
   "ui.account.group_account": { ne: "खाता", en: "Account" },

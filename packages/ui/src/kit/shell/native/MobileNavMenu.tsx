@@ -17,17 +17,17 @@ export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps
               <Box className={nav.accent} />
             </Box>
           ) : null}
-          <Grid cols={{ base: 3, compact: 4 }} gap={10}>
+          <Grid cols={{ base: 4 }} gap={6}>
             {section.items.map((item) => (
               <Pressable
                 key={item.key}
                 label={item.label}
                 onPress={item.onPress}
-                className={cn(nav.tile, "w-full", item.active && "text-secondary")}
+                className={cn(nav.nativeTile, item.active && "text-secondary")}
                 webClassName={nav.tileWeb}
               >
-                <Box className={cn(nav.iconWrap, item.active && nav.iconWrapActive)}>{item.icon}</Box>
-                <Text numberOfLines={2} className={cn(nav.label, item.active && nav.labelActive)}>
+                <Box className={cn(nav.nativeIconWrap, item.active && nav.iconWrapActive)}>{item.icon}</Box>
+                <Text numberOfLines={2} className={cn(nav.nativeLabel, item.active && nav.labelActive)}>
                   {item.label}
                 </Text>
               </Pressable>

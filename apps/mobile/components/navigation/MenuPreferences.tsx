@@ -3,9 +3,6 @@ import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { APP_VERSION } from "@/lib/store-links";
@@ -25,35 +22,26 @@ function runningBuildLine(): string {
   return `${build} · ${channel} · ${update}`;
 }
 
-/** Offline download, language, calendar system, and theme — last block of the sidebar scroll. */
+/**
+ * The foot of the side menu: one row to the profile page, which holds the settings (language, calendar,
+ * theme, offline data), and the running build for testers.
+ */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
   const { t } = useLocale();
   const colors = useThemeColors();
   return (
     <View className="gap-3">
       <Pressable
-        onPress={() => onNavigate("/offline")}
+        onPress={() => onNavigate("/account")}
         className="flex-row items-center justify-between gap-3 active:opacity-70"
         accessibilityRole="button"
       >
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <Ionicons name="cloud-download-outline" size={18} color={colors.foreground} />
-          <Text className="text-sm text-foreground">{t("ui.navigation.offline_download")}</Text>
+          <Ionicons name="person-circle-outline" size={20} color={colors.foreground} />
+          <Text className="text-sm text-foreground">{t("ui.navigation.profile_and_settings")}</Text>
         </View>
         <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </Pressable>
-      <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{t("language")}</Text>
-        <LanguageSwitcher />
-      </View>
-      <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{t("calendar_system.label")}</Text>
-        <CalendarSystemToggle />
-      </View>
-      <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{t("ui.common.theme")}</Text>
-        <ThemeSwitcher showLabel />
-      </View>
       <Text className="text-xs text-muted-foreground" selectable>
         {runningBuildLine()}
       </Text>

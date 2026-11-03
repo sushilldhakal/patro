@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { usePathname } from "expo-router";
 import { useMobileNavMenu, type NavMenuCategory } from "@vedic-patro/features/common";
 import type { NavCategoryId, PanchangaSidebarItem } from "@vedic-patro/features/panchanga";
 import { MobileNavMenu as MobileNavMenuView, type MobileNavItem, type MobileNavSection } from "@vedic-patro/ui/kit/shell";
 import { SelectionFill } from "@vedic-patro/ui";
+import { navMenuClasses } from "@vedic-patro/design-tokens/classes/shell/nav-menu-classes";
 import { haptics } from "@vedic-patro/ui/motion";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Text } from "@/components/ui/Text";
@@ -48,7 +49,7 @@ function itemActive(pathname: string, href: string): boolean {
  * tile grid. The tile drawing is `@vedic-patro/ui/kit/shell`; this file supplies the routes, icons and
  * the app's own extra entries (home, daily panchanga, reminders, 3D sky, vastu, learn…).
  */
-export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => void }) {
+export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: string) => void; trailing?: ReactNode }) {
   const menu = useMobileNavMenu();
   const pathname = usePathname();
   const colors = useThemeColors();
@@ -59,7 +60,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
       key: id,
       label,
       active,
-      icon: <AppNavIcon name={icon} size={28} color={active ? colors.secondary : colors.danger} />,
+      icon: <AppNavIcon name={icon} size={24} color={active ? colors.secondary : colors.danger} />,
       onPress: () => onNavigate(href),
     };
   };
@@ -95,7 +96,9 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
 
   return (
     <View className="gap-1">
-      <View accessibilityRole="tablist" className="mx-4 flex-row rounded-2xl bg-muted p-1">
+      {/* The tabs and the close button share the top row. */}
+      <View className="mx-4 flex-row items-center gap-3">
+      <View accessibilityRole="tablist" className={navMenuClasses.nativeTabs}>
         {all.map(({ category }) => {
           const active = category.id === tab;
           return (
@@ -109,13 +112,13 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
                 haptics.tick();
                 setTab(category.id);
               }}
-              className="min-h-11 flex-1 items-center justify-center rounded-xl px-1 py-2"
+              className={navMenuClasses.nativeTab}
             >
-              <SelectionFill active={active} className="rounded-xl bg-card" />
+              <SelectionFill active={active} className="rounded-full bg-card" />
               <Text
                 numberOfLines={1}
                 className={active ? "text-caption font-bold text-secondary" : "text-caption font-semibold text-muted-foreground"}
-                style={nepaliTextStyle(14)}
+                style={nepaliTextStyle(13)}
               >
                 {category.shortTitle}
               </Text>
@@ -123,7 +126,9 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
           );
         })}
       </View>
-      <Text className="mx-4 mt-3 text-body font-bold text-foreground" style={nepaliTextStyle(17)}>
+      {trailing}
+      </View>
+      <Text className={navMenuClasses.nativeCategoryTitle} style={nepaliTextStyle(13)}>
         {current.category.title}
       </Text>
       <MobileNavMenuView label={menu.navAria} sections={current.sections} />

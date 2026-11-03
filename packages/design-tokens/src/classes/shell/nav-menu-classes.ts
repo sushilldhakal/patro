@@ -19,4 +19,12 @@ export const navMenuClasses = {
   tabOn: "bg-card text-secondary shadow-sm",
   tabOff: "text-muted-foreground hover:text-foreground",
   categoryTitle: "mx-3 mt-3 text-base font-bold text-foreground",
+  /** The app's side menu: four smaller tiles a row. */
+  nativeTile: "w-full items-center gap-1.5 px-0.5 py-2",
+  nativeIconWrap: "size-12 items-center justify-center rounded-2xl bg-muted/80",
+  nativeLabel: "w-full min-w-0 text-center text-xs font-semibold leading-tight text-foreground",
+  /** The app's side menu header: the tabs and the close button on one row. */
+  nativeTabs: "min-w-0 flex-1 flex-row rounded-full bg-muted p-1",
+  nativeTab: "h-9 flex-1 items-center justify-center rounded-full px-1",
+  nativeCategoryTitle: "mx-4 mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
 };

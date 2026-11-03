@@ -43,12 +43,9 @@ export function NavDrawerHost() {
 
   const content = (
     <View className="gap-2 pb-4 pt-1">
-      {/* A close button as well as the drag down, which not everyone finds. */}
-      <View className="flex-row justify-end px-4">
-        <CloseButton onPress={() => setMenuOpen(false)} />
-      </View>
-      <MobileNavMenu onNavigate={go} />
-      <View className="border-t border-border p-4">
+      {/* A close button as well as the drag down, which not everyone finds — on the tabs' row. */}
+      <MobileNavMenu onNavigate={go} trailing={<CloseButton onPress={() => setMenuOpen(false)} />} />
+      <View className="mx-4 mt-2 border-t border-border pt-4">
         <MenuPreferences onNavigate={go} />
       </View>
     </View>
