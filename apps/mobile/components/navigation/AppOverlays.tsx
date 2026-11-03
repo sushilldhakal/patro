@@ -3,10 +3,8 @@ import { NavDrawerHost } from "@/components/AppHeader";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { QuickReminderSheet } from "@/components/reminders/QuickReminderSheet";
 import { FestivalSearchSheet } from "@/components/search/FestivalSearchSheet";
-import { PatroHeaderLocation } from "@vedic-patro/ui/kit/shell";
-import { locateDevice } from "@/components/panchanga/locate-device";
+import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
 import { useAddReminderRequest, useLocationPickerRequest, useSearchRequest, useSignInRequest } from "@/lib/menu-request";
-import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 /**
  * The side menu, festival search, new-reminder sheet, place picker and sign-in dialog, once, at the root, above every
@@ -19,27 +17,20 @@ export function AppOverlays() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [placeOpen, setPlaceOpen] = useState(false);
-  const { location, setLocation } = usePanchangaLocation();
   useLocationPickerRequest(useCallback(() => setPlaceOpen(true), []));
   useSignInRequest(useCallback(() => setAuthOpen(true), []));
   useSearchRequest(useCallback(() => setSearchOpen(true), []));
   useAddReminderRequest(useCallback(() => setReminderOpen(true), []));
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const closeReminder = useCallback(() => setReminderOpen(false), []);
+  const closePlace = useCallback(() => setPlaceOpen(false), []);
   return (
     <>
       <NavDrawerHost />
       <FestivalSearchSheet open={searchOpen} onClose={closeSearch} />
       <QuickReminderSheet open={reminderOpen} onClose={closeReminder} />
-      {/* The place picker's sheet alone; every screen's usePanchangaLocation follows what is picked here. */}
-      <PatroHeaderLocation
-        buttonless
-        location={location}
-        onLocationChange={setLocation}
-        locate={locateDevice}
-        open={placeOpen}
-        onOpenChange={setPlaceOpen}
-      />
+      {/* The place picker, drawn like search; every screen's usePanchangaLocation follows what is picked here. */}
+      <LocationSearchSheet open={placeOpen} onClose={closePlace} />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
     </>
   );

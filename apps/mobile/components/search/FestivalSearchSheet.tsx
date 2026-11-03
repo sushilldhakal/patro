@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Platform, Pressable, SectionList, TextInput, View } from "react-native";
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
+import { Pressable, SectionList, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHolidaysPage, type HolidayRow } from "@vedic-patro/features/holidays";
 import { getCurrentBs, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
-import { space } from "@vedic-patro/design-tokens";
-import { haptics } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { SearchSheetFrame } from "@/components/search/SearchSheetFrame";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -34,15 +31,13 @@ function groupByDay(rows: readonly HolidayRow[], weekdays: readonly string[]): S
 }
 
 /**
- * Festival search, drawn like Apple Calendar's: the days as headings with each festival under its
- * day, and the search field floating at the foot of the screen beside a round close button. With
- * nothing typed it lists what is coming from today; typing searches the whole Bikram Sambat year.
- * iOS raises it as the system page sheet (the same motion as "+"), Android slides it up.
+ * Festival search, drawn like Apple Calendar's (SearchSheetFrame): the days as headings with each
+ * festival under its day. With nothing typed it lists what is coming from today; typing searches the
+ * whole Bikram Sambat year.
  */
 export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t, lang } = useLocale();
   const colors = useThemeColors();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { location } = usePanchangaLocation();
   const page = useHolidaysPage({ year: getCurrentBs().year, era: "bs", location: location.params });
@@ -62,41 +57,16 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
     return groupByDay(rows, lang === "en" ? WEEKDAYS_SHORT : WEEKDAYS_SHORT_NE);
   }, [page.rows, query, lang]);
 
-  /* The field sits on the keyboard as it rises, frame by frame, like Voice Memos' and Calendar's.
-     (KeyboardAvoidingView measured the page sheet wrong and left the field under the keyboard.) */
-  const keyboard = useAnimatedKeyboard();
-  const restOffset = Math.max(insets.bottom, space.md);
-  // Android resizes the window for the keyboard itself, so the field is already above it there.
-  const followKeyboard = Platform.OS === "ios";
-  /* Everything the bar needs is in this one animated style: a plain style or class beside an
-     animated one gets dropped. */
-  const barStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: space.md,
-    paddingHorizontal: space.lg,
-    transform: [
-      { translateY: -Math.max((followKeyboard ? keyboard.height.get() : 0) + space.sm, restOffset) },
-    ],
-  }));
-
-  const close = () => {
-    haptics.tick();
-    onClose();
-  };
-
   return (
-    <Modal
-      visible={open}
-      animationType="slide"
-      presentationStyle={Platform.OS === "ios" ? "pageSheet" : "fullScreen"}
-      onRequestClose={onClose}
+    <SearchSheetFrame
+      open={open}
+      onClose={onClose}
+      query={query}
+      onQueryChange={setQuery}
+      placeholder={t("ui.search.festivals_placeholder")}
+      label={t("ui.search.festivals_title")}
     >
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {(contentContainerStyle) => (
         <SectionList
           sections={sections}
           keyExtractor={(row) => row.key}
@@ -105,12 +75,7 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
           // The rows scroll clear of the keyboard (iOS); the floating field rides on top of it.
           automaticallyAdjustKeyboardInsets
           stickySectionHeadersEnabled={false}
-          contentContainerStyle={{
-            paddingTop: Platform.OS === "ios" ? space.lg : insets.top + space.sm,
-            paddingHorizontal: space.xl,
-            // Clear of the floating search field.
-            paddingBottom: space["5xl"] * 2.5,
-          }}
+          contentContainerStyle={contentContainerStyle}
           ListEmptyComponent={
             <Text className="pt-10 text-center text-body text-muted-foreground">
               {page.status === "loading" ? page.copy.loading : page.copy.empty}
@@ -150,39 +115,7 @@ export function FestivalSearchSheet({ open, onClose }: { open: boolean; onClose:
             </Pressable>
           )}
         />
-
-        {/* The floating search field and the round close button, at the foot like Apple Calendar's. */}
-        <Animated.View style={barStyle}>
-          <View className="h-14 min-w-0 flex-1 flex-row items-center gap-2 rounded-full border border-border bg-card px-4 shadow-md">
-            <Ionicons name="search-outline" size={22} color={colors.foreground} />
-            <TextInput
-              autoFocus
-              value={query}
-              onChangeText={setQuery}
-              placeholder={t("ui.search.festivals_placeholder")}
-              placeholderTextColor={colors.mutedForeground}
-              accessibilityLabel={t("ui.search.festivals_title")}
-              returnKeyType="search"
-              autoCorrect={false}
-              className="min-w-0 flex-1 text-body text-foreground"
-              style={nepaliTextStyle(18)}
-            />
-            {query ? (
-              <Pressable onPress={() => setQuery("")} hitSlop={8} accessibilityLabel={t("ui.search.search")}>
-                <Ionicons name="close-circle" size={20} color={colors.mutedForeground} />
-              </Pressable>
-            ) : null}
-          </View>
-          <Pressable
-            onPress={close}
-            accessibilityRole="button"
-            accessibilityLabel={t("ui.search.cancel")}
-            className="h-14 w-14 items-center justify-center rounded-full border border-border bg-card shadow-md active:opacity-60"
-          >
-            <Ionicons name="close" size={26} color={colors.foreground} />
-          </Pressable>
-        </Animated.View>
-      </View>
-    </Modal>
+      )}
+    </SearchSheetFrame>
   );
 }
