@@ -128,7 +128,7 @@ type Anchor = { top: number; right: number };
  * Apple Calendar's view menu. Pages without choices get no button. (The iPhone Duo uses the native
  * toolbar menu instead.)
  */
-function ViewMenuButton() {
+export function ViewMenuButton() {
   const { t } = useLocale();
   const colors = useThemeColors();
   const { width } = useWindowDimensions();

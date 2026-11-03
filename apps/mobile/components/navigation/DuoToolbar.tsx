@@ -10,6 +10,7 @@ import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSear
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
+import { ViewMenuButton } from "@/components/AppHeader";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
 const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
@@ -78,7 +79,14 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
             ticked; no button on a page without choices. Drawn as text (the current choice, like Apple
             Calendar's "Month"), so iOS keeps it in the top bar instead of the rail. A titled group is an
             inline section. */}
-        {viewSections ? (
+        {/* Landscape and folded: the view icon as a custom view, which iOS keeps in the top bar (at its right,
+            like Apple Calendar's "Month") instead of sending it to the rail with the other icons. */}
+        {viewSections && !horizontal ? (
+          <Stack.Toolbar.View hidesSharedBackground>
+            <ViewMenuButton />
+          </Stack.Toolbar.View>
+        ) : null}
+        {viewSections && horizontal ? (
           <Stack.Toolbar.Menu icon="list.bullet" accessibilityLabel={t("ui.view_menu.label")}>
             {viewSections.map((section) =>
               section.title ? (
