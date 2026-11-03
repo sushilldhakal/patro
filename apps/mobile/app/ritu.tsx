@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { AppShell } from "@/components/AppShell";
-import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { RituSeasons } from "@/components/RituSeasons";
@@ -11,7 +10,7 @@ import { useRituScreen } from "@vedic-patro/features/ritu";
 
 export default function RituScreen() {
   const { colors, isDark } = useTheme();
-  const { location, setLocation } = usePanchangaLocation();
+  const { location } = usePanchangaLocation();
   const ritu = useRituScreen(location);
 
   return (
@@ -23,9 +22,9 @@ export default function RituScreen() {
         subtitle={ritu.subtitle}
       />
 
-      {/* The place picker shares the why-link's row: each on a row of its own left a tall gap above the cards. */}
+      {/* The place is picked from the toolbar's location button. */}
       <View className="mb-8">
-        <RituSeasons location={location} toolbarStart={<PatroHeaderLocation location={location} onLocationChange={setLocation} />} />
+        <RituSeasons location={location} />
       </View>
 
       <LearnMoreCard slugs={ritu.learnSlugs} />

@@ -2,26 +2,21 @@ import { useState } from "react";
 import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
-import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
+import { usePatroCalendarHeader } from "@vedic-patro/features/patro-date";
 import { Box, Grid, Icon, Pressable, SelectionFill, Sheet, Text } from "@vedic-patro/ui";
 import { haptics } from "@vedic-patro/ui/motion";
 import type { PatroCalendarHeaderProps, PatroMonthYearNavProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
-import { PatroHeaderLocation } from "./PatroHeaderLocation";
 
 /**
- * Date badge, month and year, prev/next, calendar toggle and location. React Native has no
+ * Month and year, prev/next and the calendar toggle. No date badge, title or place row: the app's
+ * toolbar carries the place (its location button). React Native has no
  * CSS grid or `order`, so the rows are written out: three on a phone, two on a tablet,
- * one on a wide screen. The month and location panels open as sheets.
+ * one on a wide screen. The month panel opens as a sheet.
  */
 /** Header control heights: the website's `h-9.5` / `size-9.5`, and `8.5` on narrow phones. */
 const CONTROL = 38;
 const CONTROL_DENSE = 34;
-
-/** The badge is one small box: Gregorian months in English letters show as Jan, Feb, Mar… */
-function badgeMonthName(era: string, name: string): string {
-  return (era === "ad" || era === "bc") && /^[A-Za-z]{4,}$/.test(name) ? name.slice(0, 3) : name;
-}
 
 export function PatroCalendarHeader({
   era,
@@ -29,17 +24,11 @@ export function PatroCalendarHeader({
   month,
   onChange,
   onEraChange,
-  location,
-  onLocationChange,
-  locate,
   segments,
   segmentsLabel,
   prevDisabled,
   nextDisabled,
-  crossEraSubtitle,
-  displayLanguage,
   className,
-  hideTitleRow,
 }: PatroCalendarHeaderProps) {
   const { width: windowWidth } = useWindowDimensions();
   /* The row layout follows the width this header actually gets (the home page puts a side
@@ -50,34 +39,8 @@ export function PatroCalendarHeader({
   const isCalendarWide = width >= 900;
   const dense = windowWidth < 420;
   const header = usePatroCalendarHeader({ era, year, month, onChange });
-  const nav = usePatroMonthYearNav({ era, year, month, location, crossEraSubtitle, displayLanguage });
   const { panel, labels, yearInput } = header;
-  const badgeMonth = badgeMonthName(era, header.title.month);
   const monthOpen = panel === "month";
-  const locationOpen = panel === "location";
-
-  const title = (
-    <View className={cls.nativeTitle}>
-      <Pressable label={labels.today} onPress={header.goToday} className={cls.badge}>
-        <Text numberOfLines={1} className={cn(cls.badgeMonth, [...badgeMonth].length > 6 && "text-xs")}>
-          {badgeMonth}
-        </Text>
-        <Box className={cls.badgeDays}>
-          <Text className={cls.badgeDaysText}>{header.dayRange}</Text>
-        </Box>
-      </Pressable>
-      <View className="min-w-0 flex-1">
-        <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
-          {[header.title.year, header.eraLabel, header.samvatsara].filter(Boolean).join(" ")}
-        </Text>
-        {nav.crossEraSubtitle ? (
-          <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
-            {nav.crossEraSubtitle}
-          </Text>
-        ) : null}
-      </View>
-    </View>
-  );
 
   /* The header's buttons get their size from a wrapping View with an explicit style, not from
      their own height classes: on Android a Pressable sitting straight in a flex row lost
@@ -156,29 +119,10 @@ export function PatroCalendarHeader({
           ))
       : null;
 
-  const locationButton =
-    location && onLocationChange && locate ? (
-      <PatroHeaderLocation
-        location={location}
-        onLocationChange={onLocationChange}
-        locate={locate}
-        open={locationOpen}
-        onOpenChange={(next) => header.openPanel(next ? "location" : null)}
-      />
-    ) : null;
-
-  const titleRow = hideTitleRow ? null : (
-    <View className="flex-row items-center justify-between gap-3">
-      {title}
-      {locationButton}
-    </View>
-  );
-
   let rows;
   if (isCompact) {
     rows = (
       <>
-        {titleRow}
         {swap ? (
           <View className="flex-row items-center justify-between gap-2">
             <View className="min-w-0 shrink">{stepper}</View>
@@ -192,7 +136,6 @@ export function PatroCalendarHeader({
   } else if (!isCalendarWide) {
     rows = (
       <>
-        {titleRow}
         <View className="flex-row items-center justify-between gap-3">
           <View className="min-w-0 shrink">{stepper}</View>
           {segment}
@@ -202,10 +145,8 @@ export function PatroCalendarHeader({
   } else {
     rows = (
       <View className="flex-row items-center gap-3.5">
-        {hideTitleRow ? null : title}
         <View className="min-w-0 shrink">{stepper}</View>
         {segment}
-        {hideTitleRow ? null : locationButton}
       </View>
     );
   }

@@ -28,7 +28,6 @@ export function PatroDayTimeHeader({
   nextDisabled,
   subtitle,
   crossEraText,
-  titleAside,
   navAside,
   className,
 }: PatroDayTimeHeaderProps) {
@@ -41,26 +40,7 @@ export function PatroDayTimeHeader({
 
   return (
     <View className={cn("w-full gap-3", className)}>
-      <View className="flex-row items-center gap-3">
-        <View className={pick.nativeTitle}>
-          <Pressable label={labels.today} onPress={h.goToday} className={cls.badge}>
-            <Text className={cls.badgeMonth}>{h.badge.top}</Text>
-            <Box className={cls.badgeDays}>
-              <Text className={cls.badgeDaysText}>{h.badge.bottom}</Text>
-            </Box>
-          </Pressable>
-          <View className="min-w-0 flex-1">
-            <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
-              {h.title.main}
-            </Text>
-            <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
-              {h.title.sub}
-            </Text>
-          </View>
-        </View>
-        {titleAside ? <View className="shrink-0">{titleAside}</View> : null}
-      </View>
-
+      {/* No date badge, title or place row: the app's toolbar carries the place. */}
       <View className="flex-row items-center justify-between gap-2">
         <View className="min-w-0 shrink flex-row items-center gap-2">
           <Pressable label={labels.prevDay} onPress={() => { haptics.tick(); h.stepDay(-1); }} disabled={prevDisabled} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>

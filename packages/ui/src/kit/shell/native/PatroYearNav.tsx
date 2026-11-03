@@ -6,7 +6,6 @@ import { usePatroYearHeadlineSubtitle } from "@vedic-patro/features/common";
 import { Box, Text } from "@vedic-patro/ui";
 import type { PatroYearNavBlockProps, PatroYearNavProps } from "../contract";
 import { PatroHeaderTabs } from "./PatroHeaderTabs";
-import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroYearHeader } from "./PatroYearHeader";
 
 /** Year navigation for holidays, suryakranti and the graha year pages. */
@@ -37,8 +36,6 @@ export function PatroYearNav({
     });
   const subtitle = usePatroYearHeadlineSubtitle(era, year, gregorianRange, rangeLabel, displayLanguage);
 
-  const locationButton =
-    location && onLocationChange && locate ? <PatroHeaderLocation location={location} onLocationChange={onLocationChange} locate={locate} /> : null;
   const tabsView = tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} /> : null;
 
   return (
@@ -51,7 +48,6 @@ export function PatroYearNav({
         onToday={jumpToToday}
         todayYear={patroBrowseTodayYear(era, todayAd)}
         subtitle={subtitle}
-        titleAside={locationButton}
         navAside={tabsView}
       />
       {yearError ? (

@@ -98,8 +98,6 @@ export type PatroCalendarHeaderProps = {
   crossEraSubtitle?: string | null;
   displayLanguage?: Language;
   className?: string;
-  /** Leave out the date badge, title and location row: the app's toolbar carries the location (native only). */
-  hideTitleRow?: boolean;
 };
 
 export type PatroMonthYearNavProps = Omit<PatroCalendarHeaderProps, "onChange"> & {

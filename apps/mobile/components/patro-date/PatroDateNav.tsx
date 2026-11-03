@@ -3,7 +3,6 @@ import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
 import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
-import { PatroHeaderLocation } from "./PatroHeaderLocation";
 import { PatroHeaderTabs } from "./PatroHeaderTabs";
 import type { PatroDateNavProps } from "./types";
 
@@ -58,7 +57,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
     );
   }
 
-  const locationButton = <PatroHeaderLocation location={location} onLocationChange={onLocationChange} />;
   const tabsView = tabs ? <PatroHeaderTabs tabs={tabs} label={tabsLabel} /> : null;
 
   if (props.mode === "year") {
@@ -72,7 +70,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
         onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
         todayYear={patroBrowseTodayYear(era)}
         subtitle={crossEraSubtitle}
-        titleAside={locationButton}
         navAside={tabsView}
       />
     );
@@ -104,7 +101,6 @@ export function PatroDateNav(props: PatroDateNavProps) {
       prevDisabled={props.prevDisabled}
       nextDisabled={props.nextDisabled}
       crossEraText={crossEraSubtitle}
-      titleAside={locationButton}
       navAside={tabsView}
     />
   );

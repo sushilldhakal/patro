@@ -9,35 +9,14 @@ import type { PatroYearHeaderProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
 /** Year-only picker: badge, title, prev/next year and a sheet with the jump box and a paged year grid. */
-export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEraChange, subtitle, titleAside, navAside, className }: PatroYearHeaderProps) {
+export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEraChange, subtitle, navAside, className }: PatroYearHeaderProps) {
   const h = usePatroYearHeader({ era, year, onChange, onToday, todayYear, subtitleOverride: subtitle });
   const { input, page, labels } = h;
   const dense = useWindowDimensions().width < 420;
 
   return (
     <View className={cn("w-full gap-3", className)}>
-      <View className="flex-row items-center gap-3">
-        <View className={pick.nativeTitle}>
-          <Pressable label={labels.today} onPress={h.goToday} className={cls.badge}>
-            <Text className={cls.badgeMonth}>{h.badge.top}</Text>
-            <Box className={cls.badgeDays}>
-              <Text className={cls.badgeDaysText}>{h.badge.bottom}</Text>
-            </Box>
-          </Pressable>
-          <View className="min-w-0 flex-1">
-            <Text as="h2" numberOfLines={dense ? 2 : 1} className={cn(cls.titleMain, dense && "text-lg leading-tight")}>
-              {h.title.main}
-            </Text>
-            {h.title.sub ? (
-              <Text numberOfLines={dense ? 2 : 1} className={cls.titleSub}>
-                {h.title.sub}
-              </Text>
-            ) : null}
-          </View>
-        </View>
-        {titleAside ? <View className="shrink-0">{titleAside}</View> : null}
-      </View>
-
+      {/* No date badge, title or place row: the app's toolbar carries the place. */}
       <View className="flex-row items-center justify-between gap-2">
         <View className="min-w-0 shrink flex-row items-center gap-2">
           <Pressable label={labels.prev} onPress={() => { haptics.tick(); h.prev(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
