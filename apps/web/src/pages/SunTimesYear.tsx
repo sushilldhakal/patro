@@ -1,7 +1,7 @@
 import { NowHero } from "@vedic-patro/ui/kit/panchanga";
-import { Link, getRouteApi } from "@tanstack/react-router";
+import { getRouteApi } from "@tanstack/react-router";
 import { Trans } from "@vedic-patro/i18n/react";
-import { ArrowLeft, CalendarRange } from "lucide-react";
+import { CalendarRange } from "lucide-react";
 import { useSunTimesPage } from "@vedic-patro/features/sun-times";
 import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
@@ -29,15 +29,7 @@ export function SunTimesYear() {
 
   return (
     <PageShell className="space-y-4 overflow-x-hidden pb-16">
-      <div>
-        <Link to="/" className={cn("inline-flex hover:text-foreground", sunTimesClasses.backLink, sunTimesClasses.backLinkText)}>
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {copy.backHome}
-        </Link>
-        <h1 className={cn("m-0", sunTimesClasses.title)}>{copy.title}</h1>
-        <p className={cn("m-0", sunTimesClasses.subtitle)}>{copy.subtitle}</p>
-      </div>
-
+      {/* The page starts at the date header, like every dated page. */}
       <PatroYearNavBlock
         era={era}
         year={year}

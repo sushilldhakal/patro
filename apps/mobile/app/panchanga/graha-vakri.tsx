@@ -32,7 +32,6 @@ export default function GrahaVakriScreen() {
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
-      <GrahaBanner icon="refresh-outline" title={page.copy.title} blurb={page.copy.blurb} />
 
       <PatroYearNavBlock
         era={era}

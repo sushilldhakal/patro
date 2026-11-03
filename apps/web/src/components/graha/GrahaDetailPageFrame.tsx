@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { PageShell } from "@/components/PageShell";
-import { GrahaBanner, GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
+import { GrahaDescription } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 
 type GrahaDetailPageFrameProps = {
@@ -19,7 +19,6 @@ type GrahaDetailPageFrameProps = {
 };
 
 export function GrahaDetailPageFrame({
-  banner,
   nav,
   descriptionPageId,
   beforeDescription,
@@ -28,11 +27,7 @@ export function GrahaDetailPageFrame({
 }: GrahaDetailPageFrameProps) {
   return (
     <PageShell>
-      <GrahaBanner
-        icon={banner.icon}
-        titleKey={banner.titleKey}
-        blurbKey={banner.blurbKey}
-      />
+      {/* The page starts at the year header, like every dated page: no banner above it. */}
 
       {nav ? <div className={cn(grahaClasses.navStack, "flex flex-col")}>{nav}</div> : null}
 

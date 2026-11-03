@@ -44,11 +44,6 @@ export default function ShantiVidhiScreen() {
 
   return (
     <AppShell title={t("nav.shanti_vidhi")} showHeader={false}>
-      <PatroPageHeader
-        icon={<Ionicons name="flame-outline" size={28} color={colors.secondary} />}
-        title={page.copy.title}
-        subtitle={page.copy.subtitle}
-      />
 
       <View className={cn(sc.card, "overflow-hidden")}>
         <View className={sc.header}>

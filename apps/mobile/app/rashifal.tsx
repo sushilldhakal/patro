@@ -64,16 +64,9 @@ export default function RashifalScreen() {
 
   return (
     <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
-      <View className="gap-8">
-        {/* Breadcrumb above the title, as on the कुण्डली pages; under it, it read as part of the subtitle. */}
-        <View className="gap-1.5">
-          <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
-            {page.copy.eyebrow}
-          </Text>
-          <PageHeader icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />} title={page.copy.title} subtitle={page.copy.subtitle} />
-        </View>
-
-        <View className={rashifalClasses.navWrap}>
+      {/* The page starts at the date picker, like every dated page; the view menu holds the periods and profiles. */}
+      <View className="gap-5">
+        <View>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}
@@ -89,22 +82,20 @@ export default function RashifalScreen() {
         </View>
 
 
-        <View className={rashifalClasses.profileWrap}>
-          {/* The profile list is in the header's view menu. */}
-          <RashifalProfileViewMenu selectedId={page.profile?.id ?? null} onSelect={page.selectProfile} />
-          {page.profileError ? (
-            <Text className={cn("text-center", rashifalClasses.profileError)} style={nepaliTextStyle()}>
-              {page.copy.missingBirthData}
-            </Text>
-          ) : null}
-        </View>
+        {/* The profile list is in the header's view menu. */}
+        <RashifalProfileViewMenu selectedId={page.profile?.id ?? null} onSelect={page.selectProfile} />
+        {page.profileError ? (
+          <Text className={rashifalClasses.profileError} style={nepaliTextStyle()}>
+            {page.copy.missingBirthData}
+          </Text>
+        ) : null}
 
         {loading ? (
           <LoadingState />
         ) : error ? (
           <ErrorState message={page.copy.error} onRetry={page.profile ? page.personal.retry : page.general.retry} />
         ) : page.profile && page.personal.data ? (
-          <View className={cn("mt-6 sm:self-center", rashifalClasses.personalWrap)}>
+          <View className={rashifalClasses.personalWrap}>
             <Text className={rashifalClasses.methodNote} style={nepaliTextStyle()}>
               {page.copy.personalMethodNote}
             </Text>
@@ -134,7 +125,7 @@ export default function RashifalScreen() {
             </View>
           </View>
         ) : (
-          <Text className={cn("mt-6 py-8", rashifalClasses.intro)} style={nepaliTextStyle()}>
+          <Text className={cn("py-8", rashifalClasses.intro)} style={nepaliTextStyle()}>
             {page.copy.noData}
           </Text>
         )}

@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Link, getRouteApi } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
 import { usePanchangaYearPage } from "@vedic-patro/features/panchanga-year";
 import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import { buildPatroBrowseYearOptions, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import {
-  currentPatroDayLinkSearch,
   patroDayBrowseNavigateSearch,
   sameSearch,
   searchToLocation,
@@ -34,7 +31,6 @@ function isLegacyYearRangeSearch(search: PanchangaSearch & { to?: number; toMont
 
 /** Annual panchanga wheel — the website's drawing of `usePanchangaYearPage` (@vedic-patro/features). */
 export function PanchangaYear() {
-  const langEra = useCalendarEra();
   const search = routeApi.useSearch();
   const navigate = routeApi.useNavigate();
   const { location, setLocation } = usePanchangaLocation(searchToLocation(search));
@@ -75,18 +71,7 @@ export function PanchangaYear() {
 
   return (
     <div className={cn(panchangaYearClasses.shell, "max-md:px-0 max-md:pb-16 max-md:pt-0")}>
-      <div className={panchangaYearClasses.header}>
-        <Link
-          to="/panchanga"
-          search={currentPatroDayLinkSearch(location, { era: langEra })}
-          className={cn(panchangaYearClasses.backLink, "inline-flex hover:text-foreground")}
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          {page.copy.back}
-        </Link>
-        <h1 className={panchangaYearClasses.title}>{page.copy.title}</h1>
-      </div>
-
+      {/* The page starts at the date header, like every dated page. */}
       <PatroDayTimeNav
         era={browseEra}
         date={date}

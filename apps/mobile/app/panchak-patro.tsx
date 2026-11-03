@@ -28,13 +28,6 @@ export default function PanchakPatroScreen() {
 
   return (
     <AppShell title="" showHeader={false}>
-      <View className="mb-4">
-        <PageHeader
-          icon={<Ionicons name="calendar-outline" size={28} color={colors.secondary} />}
-          title={page.copy.title}
-          subtitle={page.copy.subtitle}
-        />
-      </View>
 
       <PatroYearNavBlock
         className="mb-0"

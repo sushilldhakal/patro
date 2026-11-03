@@ -1,10 +1,10 @@
 import { NowHero } from "@vedic-patro/ui/kit/panchanga";
-import { Link, getRouteApi } from "@tanstack/react-router";
-import { AlertTriangle, ArrowLeft, CalendarClock } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
+import { AlertTriangle } from "lucide-react";
 import { usePanchakPage, type PanchakCardView } from "@vedic-patro/features/panchak";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { PageShell, PageHeader } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
@@ -23,18 +23,7 @@ export function PanchakPatro() {
 
   return (
     <PageShell className={cn(pc.pageStack, "space-y-4")}>
-      <div>
-        <Link to="/" className="inline-flex items-center gap-1 text-xs hover:text-foreground mb-2">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {page.copy.backHome}
-        </Link>
-        <PageHeader
-          icon={<CalendarClock className="h-7 w-7 text-secondary shrink-0" />}
-          title={page.copy.title}
-          subtitle={page.copy.subtitle}
-        />
-      </div>
-
+      {/* The page starts at the date header, like every dated page. */}
       <PatroYearNavBlock
         era={yearBrowse.era}
         year={yearBrowse.year}

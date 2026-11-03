@@ -1,7 +1,6 @@
-import { Orbit } from "lucide-react";
 import { getRouteApi } from "@tanstack/react-router";
 import { useGocharPage } from "@vedic-patro/features/gochar";
-import { PageShell, PageHeader } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { GocharIngressSection, GocharPlanetDeepDive, GocharSkySection } from "@vedic-patro/ui/kit/panchanga";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
@@ -61,7 +60,6 @@ export function Gochar() {
 
   return (
     <PageShell>
-      <PageHeader icon={<Orbit className="size-7 text-secondary" strokeWidth={1.75} />} title={page.copy.title} subtitle={page.copy.subtitle} />
 
       <PatroDayTimeNav
         era={patroEra}

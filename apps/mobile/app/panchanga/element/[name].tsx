@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
 import { useElementPage, type ElementPage, type MuhurtaSlot, type ToneRowView } from "@vedic-patro/features/panchanga-element";
 import { AppShell } from "@/components/AppShell";
-import { AllElementsLink, ElementDescription, GrahaBanner } from "@vedic-patro/ui/kit/panchanga";
+import { AllElementsLink, ElementDescription } from "@vedic-patro/ui/kit/panchanga";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
 import {
   ElementDayRowIcon,
@@ -219,7 +219,6 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
 
   return (
     <AppShell title={copy.title} showHeader={false}>
-      <GrahaBanner icon="sparkles-outline" title={copy.title} blurb={copy.blurb} />
 
       {page.kind === "span" ? (
         <PatroMonthYearNavBlock

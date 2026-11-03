@@ -1,11 +1,10 @@
 import { NowHero } from "@vedic-patro/ui/kit/panchanga";
 import { Link, getRouteApi } from "@tanstack/react-router";
-import { ArrowLeft, CalendarPlus } from "lucide-react";
 import { useAdhikMaasPage, type AdhikMaasView } from "@vedic-patro/features/adhik-maas";
 import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { adhikMaasClasses as a } from "@vedic-patro/design-tokens/classes/adhik-maas-classes";
-import { PageShell, PageHeader } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { patroNoteBox } from "@/lib/patro-classes";
@@ -23,18 +22,7 @@ export function AdhikMaas() {
 
   return (
     <PageShell className={cn(pc.pageStack, "space-y-4")}>
-      <div>
-        <Link to="/" className={a.backLink}>
-          <ArrowLeft className="h-3.5 w-3.5" />
-          {page.copy.backHome}
-        </Link>
-        <PageHeader
-          icon={<CalendarPlus className="h-7 w-7 shrink-0 text-secondary" />}
-          title={page.copy.title}
-          subtitle={page.copy.subtitle}
-        />
-      </div>
-
+      {/* The page starts at the date header, like every dated page. */}
       <PatroYearNavBlock
         era={yearBrowse.era}
         year={yearBrowse.year}

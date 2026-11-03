@@ -31,7 +31,6 @@ export default function GrahaAstaScreen() {
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
-      <GrahaBanner icon="sunny-outline" title={page.copy.title} blurb={page.copy.blurb} />
 
       <PatroYearNavBlock
         era={era}

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { getRouteApi } from "@tanstack/react-router";
-import { Sparkles, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useRashifalPage } from "@vedic-patro/features/rashifal";
 import { Button } from "@/components/ui/button";
-import { PageShell, PageHeader } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { DataUnavailablePanel } from "@/components/common/DataUnavailablePanel";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
@@ -44,7 +44,6 @@ export function Rashifal() {
 
   return (
     <PageShell className="pb-16">
-      <PageHeader icon={<Sparkles className="size-7 text-secondary" />} title={page.copy.title} subtitle={page.copy.subtitle} />
 
       <p className={rashifalClasses.eyebrow}>{page.copy.eyebrow}</p>
 

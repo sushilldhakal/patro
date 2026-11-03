@@ -80,7 +80,8 @@ export function SaitCeremonyLayout({
           <Box className="gap-8">{body}</Box>
         </AppShell>
       )}
-      renderHeader={() => <PageHeader icon={<AppNavIcon name="heart-handshake" size={24} color={colors.secondary} />} title={title} subtitle={subtitle} />}
+      // The page starts at the year picker, like every dated page.
+      renderHeader={() => null}
       renderYearNav={() => (
         <PatroYearNavBlock era={era} onEraChange={onEraChange} year={year} onYearChange={onYearChange} location={location} onLocationChange={onLocationChange} className="" />
       )}

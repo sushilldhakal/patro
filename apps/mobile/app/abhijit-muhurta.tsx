@@ -47,12 +47,6 @@ export default function AbhijitMuhurtaScreen() {
 
   return (
     <AppShell title={t("nav.abhijit_muhurta")} showHeader={false}>
-      <PatroPageHeader
-        className="mb-8"
-        icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
-        title={page.copy.title}
-        subtitle={page.copy.subtitle}
-      />
 
       <PatroMonthYearNavBlock
         era={era}

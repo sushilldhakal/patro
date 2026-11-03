@@ -37,13 +37,6 @@ export default function AdhikMaasScreen() {
 
   return (
     <AppShell title="" showHeader={false}>
-      <View className="mb-4">
-        <PageHeader
-          icon={<AppNavIcon name="calendar-plus" size={28} color={colors.secondary} />}
-          title={page.copy.title}
-          subtitle={page.copy.subtitle}
-        />
-      </View>
 
       <PatroYearNavBlock
         className="mb-0"

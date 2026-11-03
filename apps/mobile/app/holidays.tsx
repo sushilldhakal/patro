@@ -44,12 +44,6 @@ export default function HolidaysScreen() {
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
-      <PatroPageHeader
-        className="mb-8"
-        icon={<Icon node={partyPopper} size="2xl" tone="secondary" />}
-        title={page.copy.title}
-        subtitle={page.copy.subtitle}
-      />
 
       <PatroYearNavBlock
         className="mb-8"

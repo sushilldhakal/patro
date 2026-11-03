@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import { HeartHandshake } from "lucide-react";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { SaitRule } from "@vedic-patro/ui/kit/jyotish";
 import { SaitCeremonyLayout as Shared } from "@vedic-patro/ui/kit/jyotish";
-import { PageHeader, PageShell } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import type { BratabandhaNakshatraMode, SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
 
 interface Props {
@@ -66,7 +65,8 @@ export function SaitCeremonyLayout(props: Props) {
       countLabel={props.countLabel}
       footer={props.footer}
       renderShell={(children) => <PageShell>{children}</PageShell>}
-      renderHeader={() => <PageHeader icon={<HeartHandshake className="h-6 w-6 text-secondary" />} title={props.title} subtitle={props.subtitle} />}
+      // The page starts at the year header, like every dated page.
+      renderHeader={() => null}
       renderYearNav={() => (
         <PatroYearNavBlock
           era={props.era}

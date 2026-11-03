@@ -61,11 +61,6 @@ export default function AakashGocharScreen() {
       <AppHeader />
       <AppShell title={page.copy.title} showHeader={false}>
         <View className="gap-8">
-          <PageHeader
-            icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
-            title={page.copy.title}
-            subtitle={page.copy.subtitle}
-          />
           <PanchangaDateNav
             date={page.date}
             onDateChange={page.setDate}

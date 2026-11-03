@@ -6,9 +6,9 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { Orbit, TriangleAlert } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 import { useAakashGocharPage } from "@vedic-patro/features/aakash-gochar";
-import { PageShell, PageHeader } from "@/components/PageShell";
+import { PageShell } from "@/components/PageShell";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import { AakashGocharSky } from "@/components/sky3d/AakashGocharSky";
@@ -90,11 +90,6 @@ export function AakashGochar() {
 
   return (
     <PageShell>
-      <PageHeader
-        icon={<Orbit className="size-7 text-secondary" strokeWidth={1.75} aria-hidden />}
-        title={page.copy.title}
-        subtitle={page.copy.subtitle}
-      />
 
       <PatroDayTimeNav
         date={page.date}

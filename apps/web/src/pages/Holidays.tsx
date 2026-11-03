@@ -7,7 +7,7 @@ import { useHolidaysPage, type HolidayColumnKey, type HolidayRow } from "@vedic-
 import { Box, Icon, Pressable, Table, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
-import { PageShell, PageHeader } from "../components/PageShell";
+import { PageShell } from "../components/PageShell";
 import { SeoContentSection } from "../components/seo/SeoContentSection";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
@@ -30,7 +30,6 @@ export function Holidays() {
 
   return (
     <PageShell>
-      <PageHeader icon={<Icon node={partyPopper} size="2xl" tone="secondary" />} title={page.copy.title} subtitle={page.copy.subtitle} />
 
       <PatroYearNavBlock
         era={yearBrowse.era}

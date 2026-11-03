@@ -25,7 +25,6 @@ export function EclipseYearView({ kind }: { kind: EclipseKind }) {
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
-      <GrahaBanner icon={kind === "solar" ? "sunny-outline" : "moon-outline"} title={page.copy.title} blurb={page.copy.blurb} />
 
       <PatroYearNavBlock
         era={era}

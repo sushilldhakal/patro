@@ -20,14 +20,14 @@ export const rashifalClasses = {
   tabLabel: "whitespace-nowrap text-xs font-bold text-foreground",
   profileWrap: "mt-3 flex flex-col items-center gap-1.5",
   profileError: "m-0 text-xs text-destructive",
-  panel: "mt-6 flex flex-col gap-4",
+  panel: "flex flex-col gap-4",
   selectedBar: "flex items-center justify-center gap-1.5 text-sm text-secondary",
   selectedLink: "font-semibold underline underline-offset-2",
-  methodNote: "m-0 text-center text-sm text-muted-foreground",
-  intro: "m-0 text-center text-sm text-muted-foreground",
+  methodNote: "m-0 text-sm text-muted-foreground",
+  intro: "m-0 text-sm text-muted-foreground",
   statusBox:
     "rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm",
-  personalWrap: "mx-auto w-full sm:max-w-md",
+  personalWrap: "flex w-full flex-col gap-3",
   signGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-3",
 
   // ── Card ──────────────────────────────────────────────────────────────────

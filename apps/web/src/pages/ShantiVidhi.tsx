@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useShantiPage } from "@vedic-patro/features/shanti";
-import { Flame, UserSearch } from "lucide-react";
-import { PageShell, PageHeader } from "../components/PageShell";
+import { UserSearch } from "lucide-react";
+import { PageShell } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 import { KundaliControls } from "@/components/kundali/KundaliControls";
@@ -43,11 +43,6 @@ export function ShantiVidhi() {
 
   return (
     <PageShell>
-      <PageHeader
-        icon={<Flame className="h-7 w-7 text-secondary" />}
-        title={page.copy.title}
-        subtitle={page.copy.subtitle}
-      />
 
       <section className={sc.card}>
         <header className={sc.header}>

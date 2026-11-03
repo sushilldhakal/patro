@@ -1,6 +1,6 @@
 import { NowHero } from "@vedic-patro/ui/kit/panchanga";
-import { Link, getRouteApi } from "@tanstack/react-router";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
+import { Sparkles } from "lucide-react";
 import { useAbhijitPage, type AbhijitDayView } from "@vedic-patro/features/abhijit";
 import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -29,18 +29,7 @@ export function AbhijitMuhurta() {
 
   return (
     <PageShell className="pb-16 space-y-6">
-      <div>
-        <Link to="/" className="inline-flex items-center gap-1 text-xs hover:text-foreground mb-2">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {page.copy.backHome}
-        </Link>
-        <h1 className={cn(ac.titleRow, ac.title, "text-[clamp(1.75rem,4vw,2.125rem)] m-0")}>
-          <Sparkles className="w-7 h-7 text-secondary shrink-0 dark:text-primary" />
-          {page.copy.title}
-        </h1>
-        <p className={ac.subtitle}>{page.copy.subtitle}</p>
-      </div>
-
+      {/* The page starts at the date header, like every dated page. */}
       <PatroMonthYearNav
         onBrowse={(next) => monthBrowse.setYearMonth(next.year, next.month)}
         onEraChange={(e) => monthBrowse.commitEraYear(e, monthBrowse.year)}

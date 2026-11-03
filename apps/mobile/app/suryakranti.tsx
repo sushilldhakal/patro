@@ -30,12 +30,6 @@ export default function SuryakrantiScreen() {
   return (
     <AppShell title={copy.title} showHeader={false}>
       {/* The standard page header: no other page carried a "back to home" link. */}
-      <PatroPageHeader
-        className="mb-8"
-        icon={<Ionicons name="sunny-outline" size={28} color={isDark ? colors.primary : colors.secondary} />}
-        title={copy.title}
-        subtitle={copy.subtitle}
-      />
 
       <PatroYearNavBlock
         className="mb-0"

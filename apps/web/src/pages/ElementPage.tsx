@@ -2,7 +2,7 @@ import { getRouteApi, Navigate, useParams } from "@tanstack/react-router";
 import { Moon, Sparkles, Sun } from "lucide-react";
 import { useElementPage, type ElementPage as ElementPageView, type MuhurtaSlot, type ToneRowView } from "@vedic-patro/features/panchanga-element";
 import { PageShell, PageHeader } from "@/components/PageShell";
-import { GrahaBanner, ElementDescription } from "@vedic-patro/ui/kit/panchanga";
+import { ElementDescription } from "@vedic-patro/ui/kit/panchanga";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { useLocale } from "@/i18n/locale";
@@ -159,11 +159,6 @@ export function ElementPage() {
 
   return (
     <PageShell>
-      <GrahaBanner
-        icon={<Sparkles className="size-6" />}
-        titleKey={`panchanga_elements.${meta.id}.title`}
-        blurbKey={`panchanga_elements.${meta.id}.blurb`}
-      />
 
       {page.kind === "span" ? (
         <PatroMonthYearNav
