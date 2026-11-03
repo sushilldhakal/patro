@@ -5606,6 +5606,12 @@
       "m_min": "{{m}} min",
       "my_reminders": "My reminders",
       "new_reminder": "New reminder",
+      "name": "Name",
+      "name_placeholder": "Reminder name",
+      "description": "Description",
+      "description_placeholder": "Add a note",
+      "list": "List",
+      "sign_in_to_add": "Sign in to add a reminder.",
       "no_reminders_yet_add_one_for": "No reminders yet. Add one for a window like Rahu Kaal or Abhijit Muhurta.",
       "none": "None",
       "notifications_are_off_turn_them_on": "Notifications are off. Turn them on in Settings.",
@@ -5629,6 +5635,12 @@
       "careful": "Careful",
       "do": "Do",
       "don_t": "Don't"
+    },
+    "search": {
+      "search": "Search",
+      "festivals_title": "Search festivals",
+      "festivals_placeholder": "Festival or holiday name",
+      "done": "Done"
     },
     "sait": {
       "choose_a_profile": "Choose a profile",

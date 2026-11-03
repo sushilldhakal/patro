@@ -5606,6 +5606,12 @@
       "m_min": "{{m}} मि.",
       "my_reminders": "मेरा रिमाइन्डर",
       "new_reminder": "नयाँ रिमाइन्डर",
+      "name": "नाम",
+      "name_placeholder": "रिमाइन्डरको नाम",
+      "description": "विवरण",
+      "description_placeholder": "टिप्पणी थप्नुहोस्",
+      "list": "सूची",
+      "sign_in_to_add": "रिमाइन्डर थप्न साइन इन गर्नुहोस्।",
       "no_reminders_yet_add_one_for": "कुनै रिमाइन्डर छैन। राहु काल वा अभिजित् मुहूर्तजस्ता समयका लागि थप्नुहोस्।",
       "none": "कुनै होइन",
       "notifications_are_off_turn_them_on": "सूचना बन्द छ। सेटिङमा गएर खोल्नुहोस्।",
@@ -5629,6 +5635,12 @@
       "careful": "सावधानी",
       "do": "गर्नुहोस्",
       "don_t": "नगर्नुहोस्"
+    },
+    "search": {
+      "search": "खोज्नुहोस्",
+      "festivals_title": "पर्व खोज्नुहोस्",
+      "festivals_placeholder": "पर्व वा बिदाको नाम",
+      "done": "भयो"
     },
     "sait": {
       "choose_a_profile": "प्रोफाइल छान्नुहोस्",

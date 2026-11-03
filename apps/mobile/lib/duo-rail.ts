@@ -45,7 +45,7 @@ export function planRail(slots: number, folded = false): RailPlan {
   if (folded) {
     return { settings, share, tabs: FOLDED_TABS, overflowTabs: ALL_TABS.filter((t) => !FOLDED_TABS.has(t)) };
   }
-  const budget = Math.max(2, slots - 3 - (settings ? 1 : 0) - (share ? 1 : 0));
+  const budget = Math.max(2, slots - 5 - (settings ? 1 : 0) - (share ? 1 : 0));
   const tabs = ALL_TABS.filter((t) => !UNFOLDED_HIDDEN.has(t)).slice(0, budget);
   return { settings, share, tabs: new Set(tabs), overflowTabs: [] };
 }

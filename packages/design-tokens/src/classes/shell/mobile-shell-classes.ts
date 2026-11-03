@@ -18,6 +18,9 @@ export const mobileShellClasses = {
 
   reminderChip: "rounded-full border px-3 py-1.5 active:opacity-80",
   reminderChipLabel: "text-body font-semibold",
+  reminderFieldCard: "overflow-hidden rounded-2xl border border-border bg-card",
+  reminderNameInput: "px-4 py-3.5 text-body font-semibold text-foreground",
+  reminderNoteInput: "min-h-[72px] px-4 py-3.5 text-body text-foreground",
   reminderSection: "text-body mb-2 font-bold text-foreground",
 
   dayScreen: "flex-1 bg-background",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, View } from "react-native";
+import { Alert, Pressable, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Button } from "@/components/ui/Button";
@@ -9,7 +9,15 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { createReminder, listReminders } from "@/lib/notifications/api";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
-import { LEAD_MINUTE_OPTIONS, WINDOW_OPTIONS, type WindowKind } from "@/lib/notifications/types";
+import {
+  LEAD_MINUTE_OPTIONS,
+  REMINDER_NAME_MAX,
+  REMINDER_NOTE_MAX,
+  WINDOW_OPTIONS,
+  encodeReminderLabel,
+  type WindowKind,
+} from "@/lib/notifications/types";
+import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
@@ -69,6 +77,9 @@ type Props = {
 export function AddReminderForm({ active, profiles, online, initialKey, subtitle, onCreated }: Props) {
   const { t, pick, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
+  const colors = useThemeColors();
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
   const [kind, setKind] = useState<WindowKind>("ashubh");
   const [windowKey, setWindowKey] = useState("rahu_kalam");
   const [lead, setLead] = useState<number>(10);
@@ -77,6 +88,10 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (active) {
+      setName("");
+      setNote("");
+    }
     const opt = WINDOW_OPTIONS.find((o) => o.key === initialKey);
     if (active && opt) {
       setKind(opt.kind);
@@ -109,7 +124,7 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
         window_key: windowKey,
         lead_minutes: lead,
         weekdays,
-        label: null,
+        label: encodeReminderLabel(name, note),
         enabled: true,
       });
       const refreshed = await listReminders();
@@ -138,8 +153,36 @@ export function AddReminderForm({ active, profiles, online, initialKey, subtitle
         ) : null}
       </View>
 
+      {/* Name and description share one rounded card, like the new-event sheet in Apple Calendar. */}
+      <View className={msc.reminderFieldCard}>
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          maxLength={REMINDER_NAME_MAX}
+          placeholder={t("ui.reminders.name_placeholder")}
+          placeholderTextColor={colors.mutedForeground}
+          accessibilityLabel={t("ui.reminders.name")}
+          returnKeyType="next"
+          className={msc.reminderNameInput}
+          style={nepaliTextStyle(17)}
+        />
+        <View className="h-px bg-border" />
+        <TextInput
+          value={note}
+          onChangeText={setNote}
+          maxLength={REMINDER_NOTE_MAX}
+          placeholder={t("ui.reminders.description_placeholder")}
+          placeholderTextColor={colors.mutedForeground}
+          accessibilityLabel={t("ui.reminders.description")}
+          multiline
+          textAlignVertical="top"
+          className={msc.reminderNoteInput}
+          style={nepaliTextStyle(15)}
+        />
+      </View>
+
       <View>
-        <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.shubh_ashubh_window")}</Text>
+        <Text className="text-caption mb-1.5 text-muted-foreground">{t("ui.reminders.list")}</Text>
         <NativeStringSelect
           value={windowKey}
           options={selectOptions}

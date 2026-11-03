@@ -33,7 +33,7 @@ import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { DuoOverlays } from "@/components/navigation/DuoOverlays";
+import { AppOverlays } from "@/components/navigation/AppOverlays";
 import { DuoPageFrame } from "@/components/navigation/DuoPageFrame";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
@@ -413,7 +413,7 @@ function RootShell({
           {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
       )}
-      {IS_IPHONE_DUO && ready && onboarded ? <DuoOverlays /> : null}
+      {ready && onboarded ? <AppOverlays /> : null}
       {ready && onboarded ? <NotificationsRuntime /> : null}
       {ready ? <ThemedStatusBar /> : null}
       {!ready ? (

@@ -7,7 +7,7 @@ import type {
   RashifalCache,
   RashifalSettings,
 } from "./types";
-import { WINDOW_OPTIONS } from "./types";
+import { WINDOW_OPTIONS, decodeReminderLabel } from "./types";
 import { weekdayOf, zonedInstant } from "./zoned";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
@@ -143,6 +143,7 @@ export function planNotifications(input: PlanInput): PlannedNotification[] {
     const range = (rule.profile_id ? guidance[rule.profile_id] : null) ?? fallback;
     if (!range) continue;
     const tz = range.location.timezone;
+    const { name, note } = decodeReminderLabel(rule.label);
     for (const day of range.days) {
       if (rule.weekdays.length > 0 && !rule.weekdays.includes(weekdayOf(day.date))) continue;
       day.windows
@@ -155,8 +156,8 @@ export function planNotifications(input: PlanInput): PlannedNotification[] {
           out.push({
             id: `rem:${rule.id}:${day.date}:${index}`,
             fireAt,
-            title: rule.label ? `${rule.label} · ${copy.title}` : copy.title,
-            body: copy.body,
+            title: name ? `${name} · ${copy.title}` : copy.title,
+            body: note ? `${note}\n${copy.body}` : copy.body,
             channel: "reminders",
             data: { type: "reminder", ruleId: rule.id, date: day.date, windowKey: w.key },
           });

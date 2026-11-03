@@ -132,3 +132,20 @@ export const WINDOW_OPTIONS: { kind: WindowKind; key: string; ne: string; en: st
 ];
 
 export const LEAD_MINUTE_OPTIONS = [0, 5, 10, 15, 30, 60] as const;
+
+/** The server keeps one `label` string (120 chars); a reminder's name and description share it, one per line. */
+export const REMINDER_NAME_MAX = 40;
+export const REMINDER_NOTE_MAX = 79;
+
+export function encodeReminderLabel(name: string, note: string): string | null {
+  const n = name.trim().slice(0, REMINDER_NAME_MAX);
+  const d = note.trim().replace(/\s*\n\s*/g, " ").slice(0, REMINDER_NOTE_MAX);
+  if (!n && !d) return null;
+  return d ? `${n}\n${d}` : n;
+}
+
+export function decodeReminderLabel(label: string | null): { name: string; note: string } {
+  if (!label) return { name: "", note: "" };
+  const [name = "", ...rest] = label.split("\n");
+  return { name, note: rest.join(" ") };
+}

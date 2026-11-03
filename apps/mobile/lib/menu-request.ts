@@ -33,3 +33,51 @@ export function useSignInRequest(onOpen: () => void) {
     };
   }, [onOpen]);
 }
+
+const searchListeners = new Set<Listener>();
+
+/** Asks the root to open festival search: the header's and the iPhone Duo toolbar's search icon both land there. */
+export function requestSearch() {
+  searchListeners.forEach((open) => open());
+}
+
+export function useSearchRequest(onOpen: () => void) {
+  useEffect(() => {
+    searchListeners.add(onOpen);
+    return () => {
+      searchListeners.delete(onOpen);
+    };
+  }, [onOpen]);
+}
+
+const addReminderListeners = new Set<Listener>();
+
+/** Asks the root to open the new-reminder sheet (the "+" in the header and in the Duo toolbar). */
+export function requestAddReminder() {
+  addReminderListeners.forEach((open) => open());
+}
+
+export function useAddReminderRequest(onOpen: () => void) {
+  useEffect(() => {
+    addReminderListeners.add(onOpen);
+    return () => {
+      addReminderListeners.delete(onOpen);
+    };
+  }, [onOpen]);
+}
+
+const remindersChangedListeners = new Set<Listener>();
+
+/** A reminder was created from the global sheet: the reminders page, if open, reloads its list. */
+export function notifyRemindersChanged() {
+  remindersChangedListeners.forEach((fn) => fn());
+}
+
+export function useRemindersChanged(onChange: () => void) {
+  useEffect(() => {
+    remindersChangedListeners.add(onChange);
+    return () => {
+      remindersChangedListeners.delete(onChange);
+    };
+  }, [onChange]);
+}

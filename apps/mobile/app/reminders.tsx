@@ -26,6 +26,7 @@ import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import {
   DEFAULT_BRIEFING,
   WINDOW_OPTIONS,
+  decodeReminderLabel,
   type BriefingSettings,
   type GuidanceDay,
   type GuidanceRange,
@@ -33,6 +34,7 @@ import {
 } from "@/lib/notifications/types";
 import { todayIn } from "@/lib/notifications/zoned";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
+import { useRemindersChanged } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
 
 import { illustration } from "@vedic-patro/design-tokens";
@@ -123,6 +125,8 @@ export default function RemindersScreen() {
     [l, reload],
   );
 
+  useRemindersChanged(useCallback(() => void reload(), [reload]));
+
   useEffect(() => {
     if (!isAuthenticated) return;
     void reload().then(() => refresh());
@@ -192,18 +196,23 @@ export default function RemindersScreen() {
 
   const ruleTitle = (rule: ReminderRule) => {
     const opt = WINDOW_OPTIONS.find((o) => o.key === rule.window_key);
-    const name = opt ? pick(opt.ne, opt.en) : rule.window_key;
+    const named = decodeReminderLabel(rule.label).name;
+    const name = named || (opt ? pick(opt.ne, opt.en) : rule.window_key);
     const lead = rule.lead_minutes === 0 ? t("ui.reminders.at_start") : t("ui.reminders.lead_minutes_min_before", { lead_minutes: rule.lead_minutes });
     return `${name} · ${lead}`;
   };
 
   const ruleSub = (rule: ReminderRule) => {
+    const opt = WINDOW_OPTIONS.find((o) => o.key === rule.window_key);
     const days =
       rule.weekdays.length === 0
         ? t("ui.reminders.every_day")
         : rule.weekdays.map((d) => (l === "ne" ? WEEKDAYS_NE[d] : WEEKDAYS_EN[d])).join(", ");
     const who = profiles.find((p) => p.id === rule.profile_id)?.full_name;
-    return who ? `${days} · ${who}` : days;
+    const { name, note } = decodeReminderLabel(rule.label);
+    const window = name && opt ? `${pick(opt.ne, opt.en)} · ` : "";
+    const line = who ? `${window}${days} · ${who}` : `${window}${days}`;
+    return note ? `${note}\n${line}` : line;
   };
 
   return (

@@ -6,7 +6,7 @@ import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
-import { requestOpenMenu, requestSignIn } from "@/lib/menu-request";
+import { requestAddReminder, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
@@ -60,6 +60,8 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         <Stack.Toolbar.Button icon="sidebar.left" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button icon="magnifyingglass" accessibilityLabel={t("ui.search.search")} onPress={requestSearch} />
+        <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
         <Stack.Toolbar.Button
           icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
           accessibilityLabel={t("account_page.title")}

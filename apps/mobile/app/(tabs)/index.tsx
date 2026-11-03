@@ -9,7 +9,6 @@ import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
-import { HomeReminderCard } from "@/components/home/HomeReminderCard";
 import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
@@ -27,7 +26,6 @@ import { apiKeys, fetchPanchanga, type CalendarDay } from "@/lib/api";
 import { useHomeAside, useHomeMonth } from "@vedic-patro/features/home";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
-import { OfflineDownloadPrompt } from "@/components/offline/OfflineDownloadPrompt";
 import { applyPatroApiLimits } from "@/lib/patro-browse-years";
 import { resolveLocationTimezone } from "@vedic-patro/read-models/geography/panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
@@ -444,8 +442,6 @@ function HomeScreen() {
           />
           <AakashGocharEntryCard />
           <HomeVedaMantra dateAd={todayAd} />
-          <HomeReminderCard p={aside.p} />
-          <OfflineDownloadPrompt year={year} era={browseEra} />
         </View>
       </Reveal>
     </View>

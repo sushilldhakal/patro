@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Modal, Platform, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
@@ -13,19 +13,18 @@ import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
+import { requestAddReminder, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { nepaliTextStyle } from "@/lib/nepali-text";
 
-import { neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { neutral, radius, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { EASE_OUT, SPRING_SHEET, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 
 /** The dim behind the drawer. */
 const SCRIM_COLOR = withAlpha(neutral.black, 0.4);
 
-/** The drawer's own slide, as it has always been: 220 ms in, 180 ms out. */
+/** Reduce Motion fades the drawer instead of sliding it. The slide itself is the sheet spring (DRAWER_SPRING). */
 const OPEN_MS = 220;
 const CLOSE_MS = 180;
 /** Let go past this fraction of the drawer's width, or flick faster than this (px/s), and it closes. */
@@ -41,30 +40,6 @@ function rubberband(overshoot: number, dimension: number) {
   const constant = 0.55;
   return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
 }
-function BrandMark({ onPress, centered }: { onPress: () => void; centered?: boolean }) {
-  const { t, pick } = useLocale();
-  return (
-    <Pressable
-      onPress={onPress}
-      className={cn(shellClasses.brand, "flex-row active:opacity-80", centered && "justify-center")}
-    >
-      <VedicPatroMark size={42} />
-      {/* Two texts side by side, not spans inside one line: Android measured the nested line in
-          the outer font, so the bold words overflowed it and "वैदिक पात्रो" was cut to "वैदिक पा…". */}
-      <View className="flex-row items-baseline">
-        <Text className={cn("py-0.5", shellClasses.brandName, shellClasses.brandVedic)} style={nepaliTextStyle()}>
-          {t("brand_vedic")}
-        </Text>
-        <Text className={cn("py-0.5", shellClasses.brandName, shellClasses.brandPatro)} style={nepaliTextStyle()}>
-          {/* On Android the first word already ends on a no-break space (components/ui/Text). */}
-          {Platform.OS === "android" ? "" : " "}
-          {t("brand_patro")}
-        </Text>
-      </View>
-    </Pressable>
-  );
-}
-
 /**
  * The side menu and its open/close/navigate flow. It opens on `requestOpenMenu()`, so the header's
  * menu button, the home edge swipe and the iPhone Duo's native toolbar all reach the same drawer.
@@ -106,38 +81,52 @@ export function AppHeader() {
   return IS_IPHONE_DUO ? null : <AppHeaderView />;
 }
 
+/** A round icon button on the page background, the shape of the toolbar buttons iOS draws. */
+function HeaderButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: "menu-outline" | "search-outline" | "add";
+  label: string;
+  onPress: () => void;
+}) {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      onPress={() => {
+        haptics.tick();
+        onPress();
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={4}
+      className="h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-60"
+    >
+      <Ionicons name={icon} size={22} color={colors.foreground} />
+    </Pressable>
+  );
+}
+
+/**
+ * No title bar: the side-menu button at the top left; search, new reminder and the account at the
+ * top right. The menu, search and reminder sheets live at the root (AppOverlays), so these only
+ * send requests.
+ */
 function AppHeaderView() {
   const { t } = useLocale();
-  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const navPress = useNavPress();
 
   return (
-    <View
-      style={{ paddingTop: insets.top }}
-      className={shellClasses.header}
-    >
-      <View className={cn("min-h-16 w-full flex-row py-2", shellClasses.headerInner)}>
-        <View className="flex-1 flex-row justify-start">
-          <Pressable
-            onPress={requestOpenMenu}
-            className="h-9 w-9 items-center justify-center rounded-lg active:bg-muted"
-            accessibilityLabel={t("menu_open")}
-          >
-            <Ionicons name="menu-outline" size={20} color={colors.foreground} />
-          </Pressable>
-        </View>
-
-        <View className="shrink-0">
-          <BrandMark onPress={() => navPress("/")} centered />
-        </View>
-
-        <View className="flex-1 flex-row items-center justify-end gap-2">
+    <View style={{ paddingTop: insets.top }} className="bg-background">
+      <View className="min-h-14 w-full flex-row items-center justify-between px-4 py-2">
+        <HeaderButton icon="menu-outline" label={t("menu_open")} onPress={requestOpenMenu} />
+        <View className="flex-row items-center gap-2">
+          <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
+          <HeaderButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
           <AccountMenu />
         </View>
       </View>
-
-      <NavDrawerHost />
     </View>
   );
 }
@@ -200,7 +189,7 @@ function NavDrawer({
     dismissing.set(false);
     committed.current = false;
     if (reduced) fade.set(withTiming(1, { duration: OPEN_MS, easing: EASE_OUT }));
-    else x.set(withTiming(0, { duration: OPEN_MS, easing: EASE_OUT }));
+    else x.set(withSpring(0, DRAWER_SPRING));
   }, [dismissing, fade, reduced, x]);
 
   const animateClose = useCallback(() => {
@@ -212,7 +201,7 @@ function NavDrawer({
       );
     } else {
       x.set(
-        withTiming(-widthSv.get(), { duration: CLOSE_MS, easing: EASE_OUT }, (finished) => {
+        withSpring(-widthSv.get(), DRAWER_SPRING, (finished) => {
           if (finished) scheduleOnRN(finishClose);
         }),
       );
@@ -299,6 +288,10 @@ function NavDrawer({
     backgroundColor: drawerBackground,
     borderRightWidth: 1,
     borderRightColor: drawerBorder,
+    // The drawer's free edge is rounded like the sidebar sheets iOS draws.
+    borderTopRightRadius: radius["2xl"],
+    borderBottomRightRadius: radius["2xl"],
+    overflow: "hidden",
     ...(reduced ? { opacity: fade.get() } : { transform: [{ translateX: x.get() }] }),
   }));
 
