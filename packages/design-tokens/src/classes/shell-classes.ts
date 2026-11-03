@@ -35,7 +35,9 @@ export const shellClasses = {
   navGroup: "h-16 flex-row items-center rounded-full border border-border/60 bg-card px-1.5",
   navTab: "h-13 min-w-0 flex-1 items-center justify-center gap-0.5 rounded-full px-1",
   navTabActive: "bg-secondary/12",
-  navActionButton: "h-13 w-13 items-center justify-center rounded-full active:bg-muted",
+  /** Search, "+" and place: smaller capsules than the tabs, centred beside them. */
+  navActionGroup: "h-12 flex-row items-center rounded-full border border-border/60 bg-card px-1",
+  navActionButton: "h-10 w-10 items-center justify-center rounded-full active:bg-muted",
   /** iPhone Duo tab pages: the two action groups at the foot, either side of the system tab bar. */
   navDuoActions: "absolute left-0 right-0 flex-row justify-between px-4",
   navItemActive: "bg-secondary/10",

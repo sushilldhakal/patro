@@ -107,7 +107,7 @@ function FloatingNavBarView() {
 function LeftActions() {
   const { t } = useLocale();
   return (
-    <View style={nativeShadow("md")} className={shellClasses.navGroup}>
+    <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
     </View>
@@ -130,7 +130,7 @@ function RightActions() {
     });
   };
   return (
-    <View style={nativeShadow("md")} className={shellClasses.navGroup}>
+    <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
@@ -184,7 +184,7 @@ function ActionButton({
       hitSlop={4}
       className={shellClasses.navActionButton}
     >
-      <Ionicons name={icon} size={24} color={colors.foreground} />
+      <Ionicons name={icon} size={20} color={colors.foreground} />
     </Pressable>
   );
 }
