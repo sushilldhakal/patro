@@ -44,9 +44,9 @@ function itemActive(pathname: string, href: string): boolean {
 }
 
 /**
- * The side menu: three tabs (calendar & time, jyotish & muhurta, daily auspicious times), each with its
- * sidebar sections as tile grids. The tile drawing is `@vedic-patro/ui/kit/shell`; this file supplies the
- * routes, icons and the app's own extra entries (home, daily panchanga, reminders, 3D sky, vastu, learn…).
+ * The side menu: three tabs (calendar & time, jyotish & muhurta, daily auspicious times), each a single
+ * tile grid. The tile drawing is `@vedic-patro/ui/kit/shell`; this file supplies the routes, icons and
+ * the app's own extra entries (home, daily panchanga, reminders, 3D sky, vastu, learn…).
  */
 export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => void }) {
   const menu = useMobileNavMenu();
@@ -68,24 +68,22 @@ export function MobileNavMenu({ onNavigate }: { onNavigate: (href: string) => vo
   const mainTile = (id: string) => tile(id, mainLabel(id), MAIN_HREF[id]!, resolveDrawerIcon("main", id));
 
   const sectionsOf = (category: NavMenuCategory): MobileNavSection[] => {
-    const sections: MobileNavSection[] = category.sections.map((section) => {
-      const items = section.items.map(({ item, label }) =>
+    const items: MobileNavItem[] = category.sections.flatMap((section) => {
+      const sectionItems = section.items.map(({ item, label }) =>
         tile(item.id, label, itemHref(item), resolveDrawerIcon(section.id, item.id)),
       );
       if (section.id === "patro") {
-        items.unshift(mainTile("home"));
-        items.push(tile("reminders", menu.appOnly.reminders, "/reminders", resolveDrawerIcon("patro", "reminders")));
+        sectionItems.unshift(mainTile("home"));
+        sectionItems.push(tile("reminders", menu.appOnly.reminders, "/reminders", resolveDrawerIcon("patro", "reminders")));
       }
       if (section.id === "graha") {
-        items.unshift(tile("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar")));
+        sectionItems.unshift(tile("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar")));
       }
-      if (section.id === "tables") items.unshift(mainTile("panchanga"));
-      return { id: section.id, title: section.title, items };
+      if (section.id === "tables") sectionItems.unshift(mainTile("panchanga"));
+      return sectionItems;
     });
-    if (category.id === "jyotish") {
-      sections.push({ id: "more", title: mainLabel("more"), items: ["vastu", "learn", "shanti", "more"].map(mainTile) });
-    }
-    return sections;
+    if (category.id === "jyotish") items.push(...["vastu", "learn", "shanti", "more"].map(mainTile));
+    return [{ id: category.id, title: "", items }];
   };
 
   const all = menu.categories.map((category) => ({ category, sections: sectionsOf(category) }));

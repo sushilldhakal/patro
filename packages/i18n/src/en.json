@@ -5654,6 +5654,10 @@
       "festivals_placeholder": "Festival or holiday name",
       "done": "Done"
     },
+    "nav": {
+      "profile": "Profile",
+      "log_in": "Log in"
+    },
     "view_menu": {
       "label": "View",
       "monthly_bs": "Monthly BS",

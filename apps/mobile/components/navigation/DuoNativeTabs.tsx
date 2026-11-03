@@ -1,6 +1,6 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { DuoToolbar } from "@/components/navigation/DuoToolbar";
-import { DuoBottomActions } from "@/components/FloatingNavBar";
+import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { planRail, useDuoRail } from "@/lib/duo-rail";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV } from "@/lib/mobile-nav";
@@ -20,12 +20,12 @@ const TAB_ROUTE = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "le
  */
 export function DuoNativeTabs() {
   const { pick } = useLocale();
-  const { slots, folded } = useDuoRail();
+  const { slots, folded, horizontal } = useDuoRail();
   const plan = planRail(slots, folded);
   return (
     <>
       <DuoToolbar tabsInBar />
-      <NativeTabs>
+      <NativeTabs hidden={horizontal}>
         {FLOATING_NAV.map((item, i) => (
           <NativeTabs.Trigger key={TAB_ROUTE[i]} name={TAB_ROUTE[i]} hidden={!plan.tabs.has(TAB_ROUTE[i])}>
             <NativeTabs.Trigger.Icon sf={TAB_SF[i]} />
@@ -33,8 +33,9 @@ export function DuoNativeTabs() {
           </NativeTabs.Trigger>
         ))}
       </NativeTabs>
-      {/* Portrait: search and "+" left of the system tab bar, place and settings right of it. */}
-      <DuoBottomActions />
+      {/* Portrait: the system tab bar is hidden and the app's own bottom bar (the same as every phone's)
+          takes its place. Landscape and folded keep the system tabs in the rail. */}
+      <FloatingNavBar duoPortrait />
     </>
   );
 }

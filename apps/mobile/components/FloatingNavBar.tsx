@@ -20,19 +20,19 @@ import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
+import { requestAddReminder, requestLocationPicker, requestSearch, requestSignIn } from "@/lib/menu-request";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 
-/** The three tabs the bar keeps (home, panchanga, daily transit); the side menu reaches the rest. */
+/** The tabs the bar keeps (home, panchanga, daily transit; the profile follows); the side menu reaches the rest. */
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /**
- * The bottom bar: search and "+" on the left, the three main tabs, place and settings on the right.
- * On the iPhone Duo the tabs are the system's own, so this bar only appears on pages pushed over
- * them, and only where the bars are horizontal (the open display in portrait); its tab pages get
- * the two action groups alone (DuoBottomActions). Elsewhere the rail carries them.
+ * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
+ * search and "+" on the left; home, panchanga, daily transit and the profile; place and settings on
+ * the right ("…" too on the Duo). On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
   const { horizontal } = useDuoRail();
@@ -98,6 +98,7 @@ function FloatingNavBarView() {
             </NavItem>
           );
         })}
+        <ProfileNavItem iconSize={iconSize} />
       </View>
       <RightActions />
       </View>
@@ -140,23 +141,32 @@ function RightActions() {
   );
 }
 
-/**
- * iPhone Duo tab pages in portrait: the tab bar there is the system's own, so the two action groups float
- * beside it, at the foot of the screen — the same layout as the bar on every other phone.
- */
-export function DuoBottomActions() {
-  const { horizontal } = useDuoRail();
-  const insets = useSafeAreaInsets();
-  if (!IS_IPHONE_DUO || !horizontal) return null;
+/** The fourth item: the account when signed in, the sign-in dialog when not. */
+function ProfileNavItem({ iconSize }: { iconSize: number }) {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
+  const active = pathname.startsWith("/account");
   return (
-    <View
-      pointerEvents="box-none"
-      className={shellClasses.navDuoActions}
-      style={{ bottom: Math.max(insets.bottom, 12) }}
+    <NavItem
+      active={active}
+      onPress={() => (isAuthenticated ? router.push("/account" as never) : requestSignIn())}
     >
-      <LeftActions />
-      <RightActions />
-    </View>
+      <Ionicons
+        name={isAuthenticated ? "person-circle" : "person-circle-outline"}
+        size={iconSize + 2}
+        color={active ? colors.secondary : colors.mutedForeground}
+      />
+      <Text
+        numberOfLines={1}
+        className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
+        style={nepaliTextStyle()}
+      >
+        {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
+      </Text>
+    </NavItem>
   );
 }
 

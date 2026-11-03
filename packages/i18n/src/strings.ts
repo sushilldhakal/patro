@@ -8289,6 +8289,8 @@ export const strings = {
   "ui.reminders.list": { ne: "सूची", en: "List" },
   "ui.reminders.sign_in_to_add": { ne: "रिमाइन्डर थप्न साइन इन गर्नुहोस्।", en: "Sign in to add a reminder." },
   "ui.search.search": { ne: "खोज्नुहोस्", en: "Search" },
+  "ui.nav.profile": { ne: "प्रोफाइल", en: "Profile" },
+  "ui.nav.log_in": { ne: "लगइन", en: "Log in" },
   "ui.view_menu.label": { ne: "दृश्य", en: "View" },
   "ui.view_menu.monthly_bs": { ne: "मासिक वि.सं.", en: "Monthly BS" },
   "ui.view_menu.monthly_panchanga": { ne: "मासिक पञ्चाङ्ग", en: "Monthly panchanga" },

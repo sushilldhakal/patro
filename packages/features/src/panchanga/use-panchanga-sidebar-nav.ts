@@ -1,10 +1,10 @@
 /**
  * The panchanga sidebar, shared by the website's and the app's
  * `components/panchanga/PanchangaSidebarNav.tsx` (and the website's mobile
- * nav menu): the sections and items as catalogue keys, which item is active,
- * the expanded section (the active one opens by itself), each section's
- * visible items (all when open, only the active one when closed), labels,
- * blurbs, and copy. Each app turns an item into its own link.
+ * nav menu). The drawer still reads the catalogue sections; the sidebar
+ * itself shows three categories and the links under each, with no group
+ * between them. The active category opens by itself. A closed category shows
+ * only its active link. Each app turns an item into its own link.
  */
 import { useState } from "react";
 import { isKundaliRoute } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
@@ -119,8 +119,9 @@ export interface NavCategory {
 }
 
 /**
- * The three top-level groups of the navigation, on the website's sidebar and in the app's side menu:
- * calendar & time, jyotish & muhurta, daily auspicious times. Each holds whole sidebar sections.
+ * The three categories of the navigation, on the website's sidebar and in the app's side menu:
+ * calendar & time, jyotish & muhurta, daily auspicious times. `sectionIds` is the catalogue
+ * order of the links inside the category. Those catalogue groups are not shown as headings.
  */
 export const NAV_CATEGORIES: readonly NavCategory[] = [
   { id: "calendar", titleKey: "sidebar_nav.categories.calendar", shortKey: "sidebar_nav.categories.calendar_short", sectionIds: ["patro"] },
@@ -173,21 +174,25 @@ export function usePanchangaSidebarNav({
         ? t("ui.reminders.reminders")
         : t(item.labelKey);
 
-  const activeSectionId = sections.find((s) => s.items.some(isActive))?.id ?? null;
-  const [expandedId, setExpandedId] = useState<string | null>(activeSectionId);
-  const [trackedActiveSectionId, setTrackedActiveSectionId] = useState(activeSectionId);
-  if (activeSectionId && activeSectionId !== trackedActiveSectionId) {
-    setTrackedActiveSectionId(activeSectionId);
-    setExpandedId(activeSectionId);
+  const categories = NAV_CATEGORIES.map((category) => ({
+    id: category.id,
+    titleKey: category.titleKey,
+    items: category.sectionIds.flatMap((sectionId) => sections.find((section) => section.id === sectionId)?.items ?? []),
+  }));
+  const activeCategoryId = categories.find((category) => category.items.some(isActive))?.id ?? null;
+  const [expandedId, setExpandedId] = useState<string | null>(activeCategoryId);
+  const [trackedActiveCategoryId, setTrackedActiveCategoryId] = useState(activeCategoryId);
+  if (activeCategoryId && activeCategoryId !== trackedActiveCategoryId) {
+    setTrackedActiveCategoryId(activeCategoryId);
+    setExpandedId(activeCategoryId);
   }
 
   return {
     navTitle: t("sidebar_nav.nav_title"),
     navAria: t("sidebar_nav.nav_aria"),
-    sections: sections.map((section) => {
-      const expanded = expandedId === section.id;
-      const category = navCategoryOfSection(section.id);
-      const entries: PanchangaSidebarEntry[] = section.items.map((item) => ({
+    sections: categories.map((category) => {
+      const expanded = expandedId === category.id;
+      const entries: PanchangaSidebarEntry[] = category.items.map((item) => ({
         item,
         label: labelFor(item),
         blurb: item.blurbKey ? t(item.blurbKey) : undefined,
@@ -195,13 +200,11 @@ export function usePanchangaSidebarNav({
       }));
       const hasActive = entries.some((e) => e.active);
       return {
-        id: section.id,
-        title: t(section.titleKey),
-        /** Set on the first section of each category: the heading drawn above it. */
-        categoryTitle: category && category.sectionIds[0] === section.id ? t(category.titleKey) : undefined,
+        id: category.id,
+        title: t(category.titleKey),
         expanded,
         hasActive,
-        toggle: () => setExpandedId((current) => (current === section.id ? null : section.id)),
+        toggle: () => setExpandedId((current) => (current === category.id ? null : category.id)),
         /** All items while open; only the active one while closed. */
         items: expanded ? entries : entries.filter((e) => e.active),
       };

@@ -9,12 +9,14 @@ export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps
     <Box as="nav" label={label} className={cn(nav.root, className)}>
       {sections.map((section, index) => (
         <Box key={section.id} as="section" className={index === 0 ? nav.sectionFirst : nav.section}>
-          <Box className={nav.heading}>
-            <Text as="h2" className={nav.title}>
-              {section.title}
-            </Text>
-            <Box className={nav.accent} />
-          </Box>
+          {section.title ? (
+            <Box className={nav.heading}>
+              <Text as="h2" className={nav.title}>
+                {section.title}
+              </Text>
+              <Box className={nav.accent} />
+            </Box>
+          ) : null}
           <Grid cols={{ base: 3, compact: 4 }} gap={10}>
             {section.items.map((item) => (
               <Pressable

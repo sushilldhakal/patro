@@ -31,8 +31,8 @@ const FOLDED_TABS: ReadonlySet<TabRoute> = new Set<TabRoute>(["index", "panchang
 export const RAIL_EXTRAS = ["search", "location", "profile", "settings", "share"] as const;
 export type RailExtra = (typeof RAIL_EXTRAS)[number];
 
-/** Icons always in the rail: the side menu, "+" and "…". */
-const FIXED_ICONS = 3;
+/** Icons always in the rail: the side menu, the view menu, "+" and "…". */
+const FIXED_ICONS = 4;
 
 export type RailPlan = {
   /** Toolbar actions shown as their own icons; the rest sit in the "…" menu. */
@@ -56,11 +56,11 @@ export function planRail(slots: number, folded = false): RailPlan {
     ? Math.max(1, Math.min(pool.length, slots - FIXED_ICONS))
     : Math.max(2, Math.min(pool.length, slots - FIXED_ICONS - 1));
   const tabs = new Set(pool.slice(0, tabCount));
-  // Portrait (horizontal bars, unlimited slots): search, "+", place and settings sit at the foot beside
-  // the tabs (DuoBottomActions), so the top bar keeps only the profile; share stays behind "…".
+  // Portrait (horizontal bars, unlimited slots): every action sits in the app's bottom bar
+  // (FloatingNavBar), so the top bar keeps only the side menu, the date and the view menu.
   const extras: ReadonlySet<RailExtra> = Number.isFinite(slots)
     ? new Set(RAIL_EXTRAS.slice(0, Math.max(0, slots - FIXED_ICONS - tabs.size)))
-    : new Set<RailExtra>(["profile"]);
+    : new Set<RailExtra>();
   return {
     extras,
     tabs,

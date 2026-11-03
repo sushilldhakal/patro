@@ -5654,6 +5654,10 @@
       "festivals_placeholder": "पर्व वा बिदाको नाम",
       "done": "भयो"
     },
+    "nav": {
+      "profile": "प्रोफाइल",
+      "log_in": "लगइन"
+    },
     "view_menu": {
       "label": "दृश्य",
       "monthly_bs": "मासिक वि.सं.",

@@ -48,9 +48,6 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const topBar = useTopBarElement();
   const { width } = useWindowDimensions();
   const { extras } = plan;
-  /** What the text button reads: the choice now in force (the first group's ticked one). */
-  const viewLabel =
-    viewSections?.flatMap((section) => section.options).find((option) => option.active)?.label ?? t("ui.view_menu.label");
 
   const onProfile = useCallback(() => {
     if (isAuthenticated) router.push("/account" as never);
@@ -85,8 +82,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
             Calendar's "Month"), so iOS keeps it in the top bar instead of the rail. A titled group is an
             inline section. */}
         {viewSections ? (
-          <Stack.Toolbar.Menu accessibilityLabel={t("ui.view_menu.label")}>
-            <Stack.Toolbar.Label>{viewLabel}</Stack.Toolbar.Label>
+          <Stack.Toolbar.Menu icon="list.bullet" accessibilityLabel={t("ui.view_menu.label")}>
             {viewSections.map((section) =>
               section.title ? (
                 <Stack.Toolbar.Menu key={section.key} inline title={section.title}>
@@ -116,7 +112,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {horizontal ? null : (
           <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
         )}
-        {extras.has("profile") ? (
+        {extras.has("profile") && !horizontal ? (
           <Stack.Toolbar.Button
             icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}
             accessibilityLabel={t("account_page.title")}
@@ -142,7 +138,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
               {t("ui.search.location")}
             </Stack.Toolbar.MenuAction>
           )}
-          {extras.has("profile") ? null : (
+          {extras.has("profile") || horizontal ? null : (
             <Stack.Toolbar.MenuAction icon="person.crop.circle" onPress={onProfile}>
               {t("account_page.title")}
             </Stack.Toolbar.MenuAction>
@@ -177,7 +173,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
       {/* On a page pushed over the tabs: the destinations in the system's own bottom toolbar, which iOS
           lays out like the tab bar on the home page (below the page in portrait, as its own group at the
           foot of the rail in landscape and folded). */}
-      {!tabsInBar ? (
+      {!tabsInBar && !horizontal ? (
         <Stack.Toolbar placement="bottom">
           <Stack.Toolbar.Spacer />
           {ALL_TABS.filter((tab) => plan.tabs.has(tab)).map((tab) => {

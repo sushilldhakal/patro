@@ -86,12 +86,12 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
     };
   };
 
-  /* The same three tabs as the app's side menu: each category's sidebar sections, with home at the
-     head of the calendar tab, the daily panchanga at the head of the day tables, and vastu and
-     learn closing the jyotish tab. */
+  /* The same three tabs as the app's side menu. Links sit directly under the
+     category: home leads the calendar tab, the daily panchanga leads the day
+     tables, and vastu and learn close the jyotish tab. */
   const categories = menu.categories.map((category) => {
-    const sections: MobileNavSection[] = category.sections.map((section) => {
-      const items = section.items.map(({ item, label }): MobileNavItem => {
+    const items: MobileNavItem[] = category.sections.flatMap((section) => {
+      const sectionItems = section.items.map(({ item, label }): MobileNavItem => {
         const search = itemSearch(item, location, era, browse);
         const to = item.params ? resolveSidebarLinkPath(item.to, item.params) : item.to;
         const icon = item.id === "ritu"
@@ -107,13 +107,12 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
           onPress: go(item.to, search, item.params),
         };
       });
-      if (section.id === "patro") items.unshift(mainTile("home"));
-      if (section.id === "tables") items.unshift(mainTile("panchanga"));
-      return { id: section.id, title: section.title, items };
+      if (section.id === "patro") sectionItems.unshift(mainTile("home"));
+      if (section.id === "tables") sectionItems.unshift(mainTile("panchanga"));
+      return sectionItems;
     });
-    if (category.id === "jyotish") {
-      sections.push({ id: "more", title: menu.appOnly.mainExtra.find((m) => m.id === "more")?.label ?? "", items: [mainTile("vastu"), mainTile("learn")] });
-    }
+    if (category.id === "jyotish") items.push(mainTile("vastu"), mainTile("learn"));
+    const sections: MobileNavSection[] = [{ id: category.id, title: "", items }];
     return { category, sections };
   });
 

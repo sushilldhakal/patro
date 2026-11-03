@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { haptics } from "@vedic-patro/ui/motion";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { AccountMenu } from "@/components/auth/AccountMenu";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
@@ -193,8 +192,8 @@ function ViewMenuButton() {
 }
 
 /**
- * The top bar: the side-menu button, the page's date controls, then its view menu and the account.
- * Search, place and "+" sit at the bottom beside the tabs (FloatingNavBar). The sheets they open live
+ * The top bar: the side-menu button, the page's date controls, then its view menu. Search and "+",
+ * the tabs with the profile, place and settings sit at the bottom (FloatingNavBar). The sheets they open live
  * at the root (AppOverlays), so the buttons only send requests.
  */
 function AppHeaderView() {
@@ -210,7 +209,6 @@ function AppHeaderView() {
             otherwise make the bar grow. */}
         <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
         <ViewMenuButton />
-        <AccountMenu />
       </View>
     </View>
   );

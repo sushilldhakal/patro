@@ -1,4 +1,5 @@
 import { FEATURE_ICON } from "@vedic-patro/icons";
+import { useDuoRail } from "@/lib/duo-rail";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDuoPushedPage } from "@/lib/duo-page-context";
@@ -52,7 +53,9 @@ export function floatingNavBottomPadding(isTablet: boolean): number {
 export function useNavBottomPadding(isTablet: boolean): number {
   const { bottom } = useSafeAreaInsets();
   const pushed = useDuoPushedPage();
-  if (!IS_IPHONE_DUO) return floatingNavBottomPadding(isTablet);
+  const { horizontal } = useDuoRail();
+  // The app's bottom bar: every phone, and the iPhone Duo in portrait.
+  if (!IS_IPHONE_DUO || horizontal) return floatingNavBottomPadding(isTablet);
   return pushed ? bottom + PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING;
 }
 
