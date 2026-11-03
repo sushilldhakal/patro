@@ -16,6 +16,7 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import re
 import threading
 from pathlib import Path
 from typing import Any, Callable
@@ -68,6 +69,42 @@ _IMMUTABLE_CACHE_CONTROL = (
 SAIT_CUSTOM_CACHE_CONTROL = (
     "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
 )
+
+
+# A request that carries the current panchanga version (`cv=`) names one fixed
+# payload: an engine change bumps CACHE_PAYLOAD_VERSION and the clients' cv with
+# it, so the next payload lives at a new URL. Such a response can sit at the edge
+# for a month. The short route TTLs above only matter for URLs without it, and
+# for an old cv (an app build not yet updated) — those keep their own headers.
+VERSIONED_CDN_CACHE_CONTROL = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000"
+VERSIONED_BROWSER_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
+
+
+# Paths that name the day (or month, or year) they describe. Without one, a route like
+# /panchanga/today, /panchanga/rashifal or /panchanga/at-time?clock=… answers for "now".
+_FIXED_DAY_PATH = re.compile(
+    r"/\d{4}-\d{2}-\d{2}(?:/|$)|/jd/-?[\d.]+|/year/-?\d+|/patro/-?\d+/\d+|/special-months/-?\d+|/gochar/\d{4}-\d{2}-\d{2}"
+)
+_FIXED_DAY_QUERY = ("date", "jd", "year", "from", "bs_year")
+
+
+def versioned_cache_headers(query: dict[str, str], path: str, cache_control: str | None) -> dict[str, str] | None:
+    """Longer lifetimes for a public response pinned to the current ``cv``, else None.
+
+    Only when the URL itself names the day it is about — a date, Julian day, year or
+    month in the path, or ``date``/``jd``/``year``/``from`` in the query. Routes that
+    default to today (``/panchanga/today``, the current rashifal period, ``at-time``
+    with only a clock, upcoming festivals with no ``from``) read the clock and keep
+    their own short headers. Also left alone: responses that are not public, and ones
+    the route keeps out of the browser (``max-age=0`` — the custom sait subsets).
+    """
+    if query.get("cv") != str(CACHE_PAYLOAD_VERSION):
+        return None
+    if not cache_control or not cache_control.startswith("public") or "max-age=0" in cache_control:
+        return None
+    if not (_FIXED_DAY_PATH.search(path) or any(query.get(key) for key in _FIXED_DAY_QUERY)):
+        return None
+    return {"Cache-Control": VERSIONED_BROWSER_CACHE_CONTROL, "CDN-Cache-Control": VERSIONED_CDN_CACHE_CONTROL}
 
 
 def bs_year_cache_control(bs_year: int) -> str:

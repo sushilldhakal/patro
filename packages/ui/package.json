@@ -1,5 +1,6 @@
 {
   "name": "@vedic-patro/ui",
+  "sideEffects": false,
   "version": "0.0.0",
   "private": true,
   "description": "UI kit shared by the website and the mobile app: Box, Text, Pressable, Card, Button, Icon, Table, Sheet — one props contract, drawn with HTML + Tailwind on the website and React Native + NativeWind in the app.",

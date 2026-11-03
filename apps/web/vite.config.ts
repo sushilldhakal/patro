@@ -150,6 +150,9 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+      // npm installs @sentry/core twice (here and under the hoisted browser-utils),
+      // the same version both times; without this the bundle carried both (~60 KB).
+      dedupe: ["@sentry/core"],
     },
     ssr: {
       noExternal: [

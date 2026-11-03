@@ -84,13 +84,23 @@ export const SAMVATSARA_ENTRIES: readonly SamvatsaraInfo[] = [
  * that window the client returned `undefined`, so BS 60–1699 depended entirely on
  * the API payload and BBS years showed no samvatsara at all.
  */
-const SAMVATSARA_INDEX_BY_YEAR: Record<string, number> = SAMVATSARA_TABLE.indices;
-
 export const SAMVATSARA_TABLE_MIN_YEAR = SAMVATSARA_TABLE._meta.min_year;
 export const SAMVATSARA_TABLE_MAX_YEAR = SAMVATSARA_TABLE._meta.max_year;
 
+/**
+ * The table ships packed — one character per year (index + 48), years in order with
+ * no year 0 — because the keyed form was 241 KB of the website's first download.
+ */
+function samvatsaraIndex(year: number): number | undefined {
+  if (!Number.isInteger(year) || year === 0) return undefined;
+  if (year < SAMVATSARA_TABLE_MIN_YEAR || year > SAMVATSARA_TABLE_MAX_YEAR) return undefined;
+  const position = year - SAMVATSARA_TABLE_MIN_YEAR - (year > 0 && SAMVATSARA_TABLE_MIN_YEAR < 0 ? 1 : 0);
+  const code = SAMVATSARA_TABLE.packed.charCodeAt(position);
+  return Number.isNaN(code) ? undefined : code - 48;
+}
+
 export function samvatsaraForBsYear(bsYear: number): SamvatsaraInfo | undefined {
-  const idx = SAMVATSARA_INDEX_BY_YEAR[String(bsYear)];
+  const idx = samvatsaraIndex(bsYear);
   if (idx == null) return undefined;
   return SAMVATSARA_ENTRIES[idx];
 }

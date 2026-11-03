@@ -68,13 +68,58 @@ function asMonthLengths(lengths: number[]): BsMonthLengths {
   return lengths as unknown as BsMonthLengths
 }
 
-const BS_YEAR_MONTH_LENGTHS: Record<number, BsMonthLengths> = Object.fromEntries(
-  Object.entries(calendarData.month_lengths).map(([year, lengths]) => [Number(year), asMonthLengths(lengths)]),
-)
+/** Days since 1970-01-01 of a proleptic Gregorian date (astronomical years: 0 = 1 BCE). */
+function daysFromCivil(y: number, m: number, d: number): number {
+  const yy = m <= 2 ? y - 1 : y
+  const era = Math.floor(yy / 400)
+  const yoe = yy - era * 400
+  const doy = Math.floor((153 * (m + (m > 2 ? -3 : 9)) + 2) / 5) + d - 1
+  return era * 146097 + yoe * 365 + Math.floor(yoe / 4) - Math.floor(yoe / 100) + doy - 719468
+}
 
-const BAISAKH_1_AD: Record<number, string> = Object.fromEntries(
-  Object.entries(calendarData.baisakh_1_ad).map(([year, iso]) => [Number(year), iso]),
-)
+/** The inverse of {@link daysFromCivil}, as the table's ISO form ("-0056-03-16", "2083-04-14"). */
+function isoFromDays(days: number): string {
+  const z = days + 719468
+  const era = Math.floor(z / 146097)
+  const doe = z - era * 146097
+  const yoe = Math.floor((doe - Math.floor(doe / 1460) + Math.floor(doe / 36524) - Math.floor(doe / 146096)) / 365)
+  const doy = doe - (365 * yoe + Math.floor(yoe / 4) - Math.floor(yoe / 100))
+  const mp = Math.floor((5 * doy + 2) / 153)
+  const d = doy - Math.floor((153 * mp + 2) / 5) + 1
+  const m = mp < 10 ? mp + 3 : mp - 9
+  const y = yoe + era * 400 + (m <= 2 ? 1 : 0)
+  const year = `${y < 0 ? "-" : ""}${String(Math.abs(y)).padStart(4, "0")}`
+  return `${year}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`
+}
+
+/**
+ * The table ships packed (see `notes_packed` in the JSON): 12 digits per year, each a
+ * month's length minus 29, and Baisakh 1 only where it does not follow from the year
+ * before. Unpacked once here into the same two maps the keyed form gave.
+ */
+function unpackCalendar(): { lengths: Record<number, BsMonthLengths>; baisakh1: Record<number, string> } {
+  const lengths: Record<number, BsMonthLengths> = {}
+  const baisakh1: Record<number, string> = {}
+  const anchors: Record<string, string> = calendarData.baisakh_1_ad_anchors
+  const packed = calendarData.month_lengths_packed
+  let day = Number.NaN
+  for (let year = calendarData.first_year; year <= calendarData.last_year + 1; year++) {
+    const anchor = anchors[String(year)]
+    if (anchor) {
+      const [, sign, y, m, d] = /^(-?)(\d+)-(\d\d)-(\d\d)$/.exec(anchor) ?? []
+      day = daysFromCivil(Number(`${sign}${y}`), Number(m), Number(d))
+    }
+    baisakh1[year] = isoFromDays(day)
+    if (year > calendarData.last_year) break
+    const offset = (year - calendarData.first_year) * 12
+    const row = Array.from({ length: 12 }, (_, i) => 29 + Number(packed[offset + i]))
+    lengths[year] = asMonthLengths(row)
+    day += row.reduce((sum, n) => sum + n, 0)
+  }
+  return { lengths, baisakh1 }
+}
+
+const { lengths: BS_YEAR_MONTH_LENGTHS, baisakh1: BAISAKH_1_AD } = unpackCalendar()
 
 /** First BS year with full server panchanga cache on typical deploy (browse floor may still be 60). */
 export const BS_PANCHANGA_START_YEAR =

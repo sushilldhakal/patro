@@ -1,50 +1,12 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { tithiIndexFromElementSpan } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
-import { NAKSHATRA_GLYPHS, RASHI_GLYPHS, type GlyphArt } from "../glyph-art";
-import { grahaKeyFromLabel, nakshatraIconIndex, rashiIconIndex } from "../glyph-lookup";
+import { NAKSHATRA_GLYPHS } from "../nakshatra-glyph-art";
+import { GlyphSvg, RashiGlyphIcon, type GlyphIconProps } from "./RashiGlyphIcon";
+import { grahaKeyFromLabel, nakshatraIconIndex } from "../glyph-lookup";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
 import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 
-export type GlyphIconProps = {
-  name?: string | null;
-  number?: number | null;
-  size?: number;
-  className?: string;
-};
-
-function GlyphSvg({ art, size, className }: { art: GlyphArt; size: number; className?: string }) {
-  const [x, y, w, h] = art.vb;
-  return (
-    <svg
-      viewBox={`${x} ${y} ${w} ${h}`}
-      width={size}
-      height={size}
-      aria-hidden
-      className={cn("shrink-0", className)}
-      style={{ color: "var(--glyph-color)" }}
-    >
-      <g
-        transform={art.transform}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth={art.strokeWidth}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      >
-        {art.paths.map((path, index) => (
-          <path key={index} d={path.d} strokeWidth={path.strokeWidth} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-export function RashiGlyphIcon({ name, number, size = 28, className }: GlyphIconProps) {
-  const idx = rashiIconIndex(name, number);
-  const art = idx == null ? undefined : RASHI_GLYPHS[idx];
-  if (!art) return null;
-  return <GlyphSvg art={art} size={size} className={className} />;
-}
+export { RashiGlyphIcon, type GlyphIconProps };
 
 export function NakshatraGlyphIcon({ name, number, size = 28, className }: GlyphIconProps) {
   const idx = nakshatraIconIndex(name, number);

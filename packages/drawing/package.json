@@ -1,5 +1,6 @@
 {
   "name": "@vedic-patro/drawing",
+  "sideEffects": false,
   "version": "0.0.0",
   "private": true,
   "description": "Drawing geometry shared by the UI kit, the page hooks in @vedic-patro/features and both apps: wheel radii and sector paths, chart positions, timeline lanes, the learn scenes' three.js geometry. Plain TypeScript over @vedic-patro/domain; presentation, so it sits beside the domain rather than in it.",

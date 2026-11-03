@@ -1,5 +1,6 @@
 {
   "name": "@vedic-patro/read-models",
+  "sideEffects": false,
   "version": "0.0.0",
   "private": true,
   "description": "Read models over the API contract, shared by the website and the mobile app: helpers that turn @vedic-patro/api-client responses into the rows, labels and figures a page shows. Domain logic itself stays in @vedic-patro/domain.",

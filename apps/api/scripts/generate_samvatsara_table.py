@@ -117,10 +117,18 @@ def main() -> None:
         "indices": {str(year): idx for year, idx in sorted(indices.items())},
     }
 
-    for out in (BACKEND_OUT, FRONTEND_OUT):
+    # The frontend ships this in the website's first download, where the keyed form
+    # ("-7144":9, …) cost 241 KB. Packed, one character per year (index + 48, years
+    # in order with no year 0), it is 24 KB and reads the same indices.
+    frontend_payload = {
+        "_meta": {**payload["_meta"], "packed": "chr(48 + index) per year from min_year to max_year, year 0 skipped"},
+        "packed": "".join(chr(48 + idx) for _, idx in sorted(indices.items())),
+    }
+
+    for out, data in ((BACKEND_OUT, payload), (FRONTEND_OUT, frontend_payload)):
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w", encoding="utf-8") as fh:
-            json.dump(payload, fh, separators=(",", ":"), ensure_ascii=False)
+            json.dump(data, fh, separators=(",", ":"), ensure_ascii=False)
         print(f"  wrote {out.relative_to(out.parent.parent.parent)} ({out.stat().st_size:,} bytes)")
 
     print(f"{len(indices):,} years in {elapsed:.1f}s")

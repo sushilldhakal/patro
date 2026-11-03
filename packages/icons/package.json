@@ -1,5 +1,6 @@
 {
   "name": "@vedic-patro/icons",
+  "sideEffects": false,
   "version": "0.0.0",
   "private": true,
   "description": "Icon identity shared by the website and the mobile app: which Lucide icon means what, plus size and stroke conventions. Each app keeps its own renderer.",

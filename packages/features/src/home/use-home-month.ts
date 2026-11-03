@@ -6,7 +6,7 @@
  * grid, and the context the day panel reads.
  */
 import { useEffect, useMemo } from "react";
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import {
   fetchFestivals,
   holidayKeys,
@@ -100,6 +100,28 @@ export function useHomeMonth({
     })),
   });
   const monthsTick = monthQueries.map((q) => `${q.dataUpdatedAt ?? 0}:${q.status}`).join("|");
+
+  // Once the shown month is in, fetch the next ones out each way in the background, so
+  // stepping a month (which needs its neighbours for the week alignment) never waits.
+  const queryClient = useQueryClient();
+  const shownReady = monthQueries[0]?.status === "success";
+  useEffect(() => {
+    if (!shownReady || panchangaView || isGregorian) return;
+    // Only where the neighbour itself was fetchable, so this never steps off the year axis.
+    const ahead = [
+      ...(canFetchPrev ? [shiftPatroBrowseMonth(era, prevBs.year, prevBs.month, -1)] : []),
+      ...(canFetchNext ? [shiftPatroBrowseMonth(era, nextBs.year, nextBs.month, 1)] : []),
+    ];
+    for (const { year: y, month: m } of ahead) {
+      if (y === 0) continue;
+      void queryClient.prefetchQuery({
+        queryKey: ["panchanga", "month", era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
+        queryFn: () => fetchMonth(y, m, location, { full: false, era }),
+        staleTime: HOUR,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shownReady, era, lang, prevBs.year, prevBs.month, nextBs.year, nextBs.month, panchangaView, isGregorian, canFetchPrev, canFetchNext, locationCacheKey(location)]);
   const at = (y: number, m: number) => monthQueries[requiredMonths.findIndex((r) => r.year === y && r.month === m)];
   const currentQ = at(year, month);
   const prevQ = isGregorian ? undefined : at(prevBs.year, prevBs.month);

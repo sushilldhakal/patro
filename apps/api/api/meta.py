@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 router = APIRouter(tags=["meta"])
 
@@ -61,11 +62,17 @@ def capabilities():
     from engine.calendar.patro_year_axis import browse_limits
     from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
 
-    return {
-        **browse_limits(),
-        "cache_payload_version": CACHE_PAYLOAD_VERSION,
-        "offline_max_span_years": OFFLINE_MAX_SPAN_YEARS,
-    }
+    # Changes only with a deploy, and every client asks for it on start: a few minutes
+    # at the edge spares each launch the round trip to the origin (Dubai).
+    cache_control = "public, max-age=300, s-maxage=300, stale-while-revalidate=86400"
+    return JSONResponse(
+        {
+            **browse_limits(),
+            "cache_payload_version": CACHE_PAYLOAD_VERSION,
+            "offline_max_span_years": OFFLINE_MAX_SPAN_YEARS,
+        },
+        headers={"Cache-Control": cache_control, "CDN-Cache-Control": cache_control},
+    )
 
 
 @router.get("/about")

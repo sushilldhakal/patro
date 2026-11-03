@@ -210,6 +210,12 @@ function shouldPersistQuery(query: { queryKey: readonly unknown[]; state: { stat
   const [scope, sub] = query.queryKey;
   if (scope === "month") return false;
   if (scope === "panchanga" && sub === "year-wheel") return false;
+  // The kundali bhava reference is 1.6 MB of fixed text and each at-time panchanga
+  // ~120 KB for one instant: together they were 80% of a 2 MB cache that is read
+  // back before the first screen shows and rewritten every few seconds while browsing.
+  // Both come back from the edge cache quickly.
+  if (scope === "bhava-reference") return false;
+  if (scope === "panchanga" && sub === "at-time") return false;
   return true;
 }
 

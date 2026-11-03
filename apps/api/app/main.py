@@ -226,6 +226,24 @@ async def _guard_private_cache(request, call_next):
         response.headers["CDN-Cache-Control"] = "private, no-store"
     return response
 
+@app.middleware("http")
+async def _versioned_edge_lifetime(request, call_next):
+    """Hold responses pinned to the current ``cv`` at the edge for a month.
+
+    The server sits in Dubai; every Cloudflare miss from Melbourne or Kathmandu
+    pays that round trip (0.4–1.1 s) though the app itself answers in milliseconds.
+    """
+    from app.response_cache import versioned_cache_headers
+
+    response = await call_next(request)
+    if request.method == "GET" and response.status_code == 200:
+        headers = versioned_cache_headers(
+            dict(request.query_params), request.url.path, response.headers.get("Cache-Control"),
+        )
+        if headers:
+            response.headers.update(headers)
+    return response
+
 # ── routers ───────────────────────────────────────────────────────────────────
 
 from api import cities, documents, elements, kundali, meta, og, panchanga, patro, vastu  # noqa: E402

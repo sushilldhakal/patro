@@ -22,6 +22,7 @@ import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { useHomePatroView } from "@/lib/patro-view";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
+import { useQueryClient } from "@tanstack/react-query";
 import { apiKeys, fetchPanchanga, type CalendarDay } from "@/lib/api";
 import { useHomeAside, useHomeMonth } from "@vedic-patro/features/home";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
@@ -237,6 +238,23 @@ function HomeScreen() {
     onLimits: applyPatroApiLimits,
   });
   const { gridDays, publicHolidayDates } = homeMonth;
+
+  // The दैनिक tab opens on this month; fetch its fuller month in the background once home is
+  // drawn, so switching tabs shows the table at once instead of waiting on the network.
+  const queryClient = useQueryClient();
+  const homeShown = gridDays.length > 0;
+  useEffect(() => {
+    if (!homeShown || browseEra !== "bs") return;
+    const timer = setTimeout(() => {
+      void queryClient.prefetchQuery({
+        queryKey: [...apiKeys.month(year, month, location.params), "full-slim"] as const,
+        queryFn: () => fetchMonthCalendarOffline(year, month, location.params, { slim: true }),
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+    // Keyed on the place's contents: the params object can be new on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeShown, browseEra, year, month, JSON.stringify(location.params), queryClient]);
   const aside = useHomeAside({
     context: homeMonth.context,
     todayAd,

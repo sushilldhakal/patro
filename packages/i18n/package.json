@@ -1,5 +1,6 @@
 {
   "name": "@vedic-patro/i18n",
+  "sideEffects": false,
   "version": "0.0.0",
   "private": true,
   "description": "Nepali and English copy for the website and the mobile app — one catalogue (src/strings.ts) expanded into ne.json / en.json — and the one translator both apps use (runtime, React hooks, <Trans>).",
