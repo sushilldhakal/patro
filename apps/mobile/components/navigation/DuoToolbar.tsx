@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Share } from "react-native";
+import { Share, View, useWindowDimensions } from "react-native";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
@@ -9,6 +9,7 @@ import { useLocale } from "@/lib/i18n";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
+import { useDuoTopBarElement } from "@/components/navigation/DuoTopBarSlot";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
 const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
@@ -44,6 +45,8 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
   const plan = planRail(slots, folded);
   const { pick } = useLocale();
   const viewSections = usePageViewSections();
+  const topBar = useDuoTopBarElement();
+  const { width } = useWindowDimensions();
   const { extras } = plan;
   /** What the text button reads: the choice now in force (the first group's ticked one). */
   const viewLabel =
@@ -64,6 +67,13 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
       <Stack.Screen options={{ title: "" }} />
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon="square.grid.2x2" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
+        {/* The page's date controls (DuoTopBarSlot): a custom view, which iOS keeps in the top bar while the
+            icons go to the rail — the month or date beside the view button, like Apple Calendar's title. */}
+        {topBar ? (
+          <Stack.Toolbar.View hidesSharedBackground>
+            <View style={{ width: Math.min(440, width * 0.55) }}>{topBar}</View>
+          </Stack.Toolbar.View>
+        ) : null}
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
         {/* The page's own view choices (वि.सं. | पञ्चाङ्ग, अहोरात्र | दिन-रात, profiles…), the current one

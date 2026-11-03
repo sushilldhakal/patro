@@ -1,4 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
+import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { PatroCalendarHeader } from "@vedic-patro/ui/kit/shell";
 import type { PatroDateNavProps } from "./types";
@@ -29,26 +30,28 @@ export function PatroMonthYearNav({
   // The page's view tabs live in the header's view menu, not in the date row.
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   return (
-    <PatroCalendarHeader
-      era={era}
-      year={year}
-      month={month}
-      onChange={(next) => {
-        if (onBrowse) {
-          onBrowse(next);
-          return;
-        }
-        if (next.year !== year) onYearChange(next.year);
-        if (next.month !== month) onMonthChange(next.month);
-      }}
-      onEraChange={onEraChange}
-      location={location}
-      onLocationChange={onLocationChange}
-      locate={locateDevice}
-      prevDisabled={prevDisabled}
-      nextDisabled={nextDisabled}
-      crossEraSubtitle={crossEraSubtitle}
-      className={className}
-    />
+    <DuoTopBarSlot>
+      <PatroCalendarHeader
+        era={era}
+        year={year}
+        month={month}
+        onChange={(next) => {
+          if (onBrowse) {
+            onBrowse(next);
+            return;
+          }
+          if (next.year !== year) onYearChange(next.year);
+          if (next.month !== month) onMonthChange(next.month);
+        }}
+        onEraChange={onEraChange}
+        location={location}
+        onLocationChange={onLocationChange}
+        locate={locateDevice}
+        prevDisabled={prevDisabled}
+        nextDisabled={nextDisabled}
+        crossEraSubtitle={crossEraSubtitle}
+        className={className}
+      />
+    </DuoTopBarSlot>
   );
 }

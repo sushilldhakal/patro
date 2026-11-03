@@ -33,7 +33,6 @@ import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { useDuoRail } from "@/lib/duo-rail";
 import { AppOverlays } from "@/components/navigation/AppOverlays";
 import { DuoPageFrame } from "@/components/navigation/DuoPageFrame";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
@@ -350,8 +349,6 @@ function RootShell({
 }) {
   const { colors } = useTheme();
   const railFade = useRailPageAnimation();
-  // iPhone Duo: whether iOS puts the bars in the side rail (folded, landscape, Split View).
-  const duoRail = !useDuoRail().horizontal;
   usePatroCapabilities();
   const router = useRouter();
   const navState = useRootNavigationState();
@@ -387,11 +384,6 @@ function RootShell({
                   title: "",
                   headerBackButtonDisplayMode: "minimal" as const,
                   headerShadowVisible: false,
-                  // With the icons in the rail, the top bar holds only the text view button (Apple Calendar's
-                  // "Month"). Opaque, it pushed the page down by its whole height; transparent, the page's
-                  // first row (the date picker) shares that band with the button. In unfolded portrait the
-                  // bar is full of icons, so it stays opaque there.
-                  headerTransparent: duoRail,
                 }
               : {}),
             // Pages push in with the platform's own slide and swipe back from anywhere on the

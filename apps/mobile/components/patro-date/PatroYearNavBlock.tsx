@@ -1,4 +1,5 @@
 import { locateDevice } from "@/components/panchanga/locate-device";
+import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { PatroYearNavBlock as View } from "@vedic-patro/ui/kit/shell";
@@ -24,18 +25,20 @@ export function PatroYearNavBlock({
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const fallback = usePanchangaLocation();
   return (
-    <View
-      className={className ?? "mb-4"}
-      era={era}
-      year={year}
-      onYearChange={onYearChange}
-      onEraChange={onEraChange}
-      onToday={onToday}
-      gregorianRange={gregorianRange}
-      rangeLabel={crossEraSubtitle}
-      location={location ?? fallback.location}
-      onLocationChange={onLocationChange ?? fallback.setLocation}
-      locate={locateDevice}
-    />
+    <DuoTopBarSlot>
+      <View
+        className={className ?? "mb-4"}
+        era={era}
+        year={year}
+        onYearChange={onYearChange}
+        onEraChange={onEraChange}
+        onToday={onToday}
+        gregorianRange={gregorianRange}
+        rangeLabel={crossEraSubtitle}
+        location={location ?? fallback.location}
+        onLocationChange={onLocationChange ?? fallback.setLocation}
+        locate={locateDevice}
+      />
+    </DuoTopBarSlot>
   );
 }

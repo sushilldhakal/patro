@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
@@ -58,23 +59,25 @@ export function BsMonthHeaderTitle({
   ]);
 
   return (
-    <View className="mb-3">
-      {/* The BS | AD preference lives in the sidebar menu and in Settings, not in the page header. */}
-      <PatroCalendarHeader
-        era={browseEra}
-        onEraChange={(e) => onBrowseEraChange?.(e as MonthBrowseEra)}
-        year={year}
-        month={month}
-        onChange={(next) => {
-          if (next.year !== year) onYearChange(next.year);
-          if (next.month !== month) onMonthChange(next.month);
-        }}
-        location={location}
-        onLocationChange={onLocationChange}
-        crossEraSubtitle={crossEraSubtitle}
-        prevDisabled={prevDisabled}
-        nextDisabled={nextDisabled}
-      />
-    </View>
+    <DuoTopBarSlot>
+      <View className="mb-3">
+        {/* The BS | AD preference lives in the sidebar menu and in Settings, not in the page header. */}
+        <PatroCalendarHeader
+          era={browseEra}
+          onEraChange={(e) => onBrowseEraChange?.(e as MonthBrowseEra)}
+          year={year}
+          month={month}
+          onChange={(next) => {
+            if (next.year !== year) onYearChange(next.year);
+            if (next.month !== month) onMonthChange(next.month);
+          }}
+          location={location}
+          onLocationChange={onLocationChange}
+          crossEraSubtitle={crossEraSubtitle}
+          prevDisabled={prevDisabled}
+          nextDisabled={nextDisabled}
+        />
+      </View>
+    </DuoTopBarSlot>
   );
 }

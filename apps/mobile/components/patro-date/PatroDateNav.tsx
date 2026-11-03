@@ -1,4 +1,5 @@
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { DuoTopBarSlot } from "@/components/navigation/DuoTopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
@@ -34,71 +35,77 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
   if (props.mode === "year-month") {
     return (
-      <PatroCalendarHeader
-        className={className}
-        era={era}
-        onEraChange={onEraChange}
-        year={year}
-        month={props.month}
-        onChange={(next) => {
-          if (props.onBrowse) {
-            props.onBrowse(next);
-            return;
-          }
-          if (next.year !== year) props.onYearChange(next.year);
-          if (next.month !== props.month) props.onMonthChange(next.month);
-        }}
-        location={location}
-        onLocationChange={onLocationChange}
-        crossEraSubtitle={crossEraSubtitle}
-        prevDisabled={props.prevDisabled}
-        nextDisabled={props.nextDisabled}
-      />
+      <DuoTopBarSlot>
+        <PatroCalendarHeader
+          className={className}
+          era={era}
+          onEraChange={onEraChange}
+          year={year}
+          month={props.month}
+          onChange={(next) => {
+            if (props.onBrowse) {
+              props.onBrowse(next);
+              return;
+            }
+            if (next.year !== year) props.onYearChange(next.year);
+            if (next.month !== props.month) props.onMonthChange(next.month);
+          }}
+          location={location}
+          onLocationChange={onLocationChange}
+          crossEraSubtitle={crossEraSubtitle}
+          prevDisabled={props.prevDisabled}
+          nextDisabled={props.nextDisabled}
+        />
+      </DuoTopBarSlot>
     );
   }
 
 
   if (props.mode === "year") {
     return (
-      <PatroYearHeader
-        className={className}
-        era={era}
-        year={year}
-        onChange={props.onYearChange}
-        onEraChange={onEraChange}
-        onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
-        todayYear={patroBrowseTodayYear(era)}
-        subtitle={crossEraSubtitle}
-      />
+      <DuoTopBarSlot>
+        <PatroYearHeader
+          className={className}
+          era={era}
+          year={year}
+          onChange={props.onYearChange}
+          onEraChange={onEraChange}
+          onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
+          todayYear={patroBrowseTodayYear(era)}
+          subtitle={crossEraSubtitle}
+        />
+      </DuoTopBarSlot>
     );
   }
 
   return (
-    <PatroDayTimeHeader
-      className={className}
-      era={era}
-      year={year}
-      month={props.month}
-      day={props.day}
-      weekday={weekdayInEra(era, year, props.month, props.day, props.weekday)}
-      today={todayInEra(era, props.todayAd)}
-      clock={props.clock}
-      onClockChange={props.onClockChange}
-      onEraChange={onEraChange}
-      onSelect={(y, m, d) => {
-        if (props.onSelectDate) {
-          props.onSelectDate(y, m, d);
-          return;
-        }
-        if (y !== year) props.onYearChange(y);
-        if (m !== props.month) props.onMonthChange(m);
-        if (d !== props.day) props.onDayChange(d);
-      }}
-      onStepDay={(delta) => (delta < 0 ? props.onPrev?.() : props.onNext?.())}
-      onToday={() => props.onToday?.()}
-      prevDisabled={props.prevDisabled}
-      nextDisabled={props.nextDisabled}
-      crossEraText={crossEraSubtitle}
-    />
+    <DuoTopBarSlot>
+      <PatroDayTimeHeader
+        className={className}
+        era={era}
+        year={year}
+        month={props.month}
+        day={props.day}
+        weekday={weekdayInEra(era, year, props.month, props.day, props.weekday)}
+        today={todayInEra(era, props.todayAd)}
+        clock={props.clock}
+        onClockChange={props.onClockChange}
+        onEraChange={onEraChange}
+        onSelect={(y, m, d) => {
+          if (props.onSelectDate) {
+            props.onSelectDate(y, m, d);
+            return;
+          }
+          if (y !== year) props.onYearChange(y);
+          if (m !== props.month) props.onMonthChange(m);
+          if (d !== props.day) props.onDayChange(d);
+        }}
+        onStepDay={(delta) => (delta < 0 ? props.onPrev?.() : props.onNext?.())}
+        onToday={() => props.onToday?.()}
+        prevDisabled={props.prevDisabled}
+        nextDisabled={props.nextDisabled}
+        crossEraText={crossEraSubtitle}
+      />
+    </DuoTopBarSlot>
   );
 }
