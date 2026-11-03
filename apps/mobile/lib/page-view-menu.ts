@@ -1,5 +1,6 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { useIsFocused } from "@react-navigation/native";
+// expo-router's own: @react-navigation/native's copy cannot see the router's navigator and throws.
+import { useIsFocused } from "expo-router";
 
 /** One choice in the header's view menu: the same shape as a page's header tab. */
 export type PageViewOption = { key: string; label: string; active: boolean; onPress: () => void };
