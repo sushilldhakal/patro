@@ -153,6 +153,45 @@ function fitHoraName(name: string, bandWidth: number): string {
   return horaShortName(name);
 }
 
+interface BandLabel {
+  key: string;
+  /** Centre x and the band's top and height, in viewBox units. */
+  x: number;
+  y: number;
+  h: number;
+  text: string;
+  size: number;
+}
+
+/** Half the width each label may take either side of its centre, in viewBox units. */
+const BAND_LABEL_HALF = 200;
+
+/** The band names as native text laid over the Svg, so iOS and Android shape the Devanagari. */
+function BandLabels({ labels, scale, color }: { labels: BandLabel[]; scale: number; color: string }) {
+  return (
+    <View pointerEvents="none" style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0 }}>
+      {labels.map((l) => (
+        <View
+          key={l.key}
+          style={{
+            position: "absolute",
+            left: (l.x - BAND_LABEL_HALF) * scale,
+            top: l.y * scale,
+            width: BAND_LABEL_HALF * 2 * scale,
+            height: l.h * scale,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text numberOfLines={1} style={{ color, fontFamily: FONT, fontSize: l.size * scale }}>
+            {l.text}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 const C_BASE = {
   sun: illustration.orange53b,
   danger: illustration.red60,
@@ -184,6 +223,9 @@ function useTimelineColors() {
     hair: withAlpha(illustration.orange53b, 0.55),
     grid: isDark ? withAlpha(neutral.white, 0.12) : withAlpha(brand.ink, 0.08),
     now: colors.danger,
+    // Bad-time and good-time labels: the fixed illustration red and green read at ~3:1 on the dark card.
+    danger: isDark ? colors.danger : illustration.red60,
+    good: isDark ? colors.success : illustration.green40,
     segStroke: isDark ? withAlpha(neutral.white, 0.1) : withAlpha(brand.ink, 0.08),
     lagna: [isDark ? withAlpha(neutral.white, 0.07) : withAlpha(brand.ink, 0.06), isDark ? withAlpha(neutral.white, 0.03) : withAlpha(brand.ink, 0.03)],
   };
@@ -569,6 +611,9 @@ export function DayTimeline({
   const sunsetG = isCivil ? (data.sunsetG ?? data.dayG) : data.dayG;
   const hairlineGs = isCivil ? [sunriseG, sunsetG] : [0, data.dayG, 60];
 
+  // The tithi / nakshatra / yoga / karana names, drawn as native text over the chart (BandLabels):
+  // react-native-svg lays Devanagari out glyph by glyph and smeared clusters such as "कार्तिक".
+  const bandLabels: BandLabel[] = [];
   const chartContent = (
     <>
       {nightBands.map(([a, b], i) => (
@@ -692,7 +737,7 @@ export function DayTimeline({
                       <SvgText
                         x={clampX((x + x2) / 2, 8)}
                         y={labelY}
-                        fill={tr.cls === "shubha" ? illustration.green40 : C.danger}
+                        fill={tr.cls === "shubha" ? C.good : C.danger}
                         fontSize={15}
                         fontFamily={FONT}
                         textAnchor="middle"
@@ -702,23 +747,7 @@ export function DayTimeline({
                       </SvgText>
                     ) : null
                   ) : bandLabel ? (
-                    <SvgText
-                      x={midX}
-                      y={labelY}
-                      fill={C.fg}
-                      fontSize={narrow ? 9 : 10}
-                      fontFamily={FONT}
-                      textAnchor="middle"
-                      {...nepaliSvgTextCenter}
-                    >
-                      {/* One string, not two children. `SvgText` anchors every
-                          child run at the same x, so a name and its पक्ष
-                          handed over separately were both centred on `midX`
-                          and drawn on top of each other — "पूर्णिमा" and
-                          "· शुक्ल पक्ष" overlapping into an unreadable
-                          smear. Joining them first makes it one run. */}
-                      {bandLabel}
-                    </SvgText>
+                    (bandLabels.push({ key: `${ti}-${si}`, x: midX, y: bandY, h: bandH, text: bandLabel, size: narrow ? 9 : 10 }), null)
                   ) : null}
                 </G>
               );
@@ -834,14 +863,17 @@ export function DayTimeline({
             contentContainerStyle={{ width: MIN_CHART_WIDTH, minWidth: MIN_CHART_WIDTH }}
             className="py-3 pl-1 pr-2"
           >
-            <Svg
-              width={MIN_CHART_WIDTH}
-              height={H}
-              viewBox={`0 0 ${W} ${H}`}
-              preserveAspectRatio="xMinYMid meet"
-            >
-              {chartContent}
-            </Svg>
+            <View style={{ width: MIN_CHART_WIDTH, height: H }}>
+              <Svg
+                width={MIN_CHART_WIDTH}
+                height={H}
+                viewBox={`0 0 ${W} ${H}`}
+                preserveAspectRatio="xMinYMid meet"
+              >
+                {chartContent}
+              </Svg>
+              <BandLabels labels={bandLabels} scale={MIN_CHART_WIDTH / W} color={C.fg} />
+            </View>
           </ScrollView>
         ) : null}
         {scrollChart ? (
@@ -868,14 +900,17 @@ export function DayTimeline({
         ) : (
           <View className="w-full py-3 pl-1 pr-2">
             {/* Grown uniformly, not stretched: `none` widened every glyph with the card. */}
-            <Svg
-              width={chartWidth}
-              height={(H * chartWidth) / W}
-              viewBox={`0 0 ${W} ${H}`}
-              preserveAspectRatio="xMinYMid meet"
-            >
-              {chartContent}
-            </Svg>
+            <View style={{ width: chartWidth, height: (H * chartWidth) / W }}>
+              <Svg
+                width={chartWidth}
+                height={(H * chartWidth) / W}
+                viewBox={`0 0 ${W} ${H}`}
+                preserveAspectRatio="xMinYMid meet"
+              >
+                {chartContent}
+              </Svg>
+              <BandLabels labels={bandLabels} scale={chartWidth / W} color={C.fg} />
+            </View>
           </View>
         )}
       </View>

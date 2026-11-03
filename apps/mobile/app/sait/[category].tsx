@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useSaitPage } from "@vedic-patro/features/sait";
-import { brand, withAlpha } from "@vedic-patro/design-tokens";
+import { withAlpha } from "@vedic-patro/design-tokens";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AppShell } from "@/components/AppShell";
@@ -11,7 +11,7 @@ import { SaitSources, SuitabilityLegend } from "@vedic-patro/ui/kit/jyotish";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
+import { suitabilityStyle } from "@/lib/sait-suitability-style";
 import { useThemeColors } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -23,6 +23,7 @@ export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
   const { t, digits } = useLocale();
   const colors = useThemeColors();
+  const verdictStyle = suitabilityStyle(colors);
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const page = useSaitPage(category, year, location.params);
@@ -99,14 +100,14 @@ export default function SaitCategoryScreen() {
                 </Text>
                 <View className={saitClasses.dateRowDays}>
                   {m.days.map((d) => {
-                    const style = d.verdict ? SUITABILITY_STYLE[d.verdict] : null;
+                    const style = d.verdict ? verdictStyle[d.verdict] : null;
                     return (
                       <View
                         key={d.day}
-                        style={style ? { backgroundColor: style.bg, borderColor: style.ring, borderWidth: 2 } : { backgroundColor: withAlpha(brand.green, 0.12) }}
+                        style={style ? { backgroundColor: style.bg, borderColor: style.ring, borderWidth: 2 } : { backgroundColor: withAlpha(colors.success, 0.12) }}
                         className={saitClasses.dateChip}
                       >
-                        <Text className={saitClasses.dateChipText} style={{ color: style ? style.fg : brand.green, ...nepaliTextStyle() }}>
+                        <Text className={saitClasses.dateChipText} style={{ color: style ? style.fg : colors.success, ...nepaliTextStyle() }}>
                           {digits(d.label)}
                         </Text>
                       </View>

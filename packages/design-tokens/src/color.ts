@@ -37,6 +37,9 @@ export const midnight = {
   saffron: "#f59e42",
   gold: "#e8c36a",
   vermilion: "#ff8f85",
+  /** Status green and teal, lifted to read on the midnight card (≥ 8:1). */
+  green: "#7bc67e",
+  teal: "#5fc4c0",
 } as const;
 
 /** Neutrals the palette mixes against. */
@@ -175,10 +178,11 @@ export const dark: ThemeRoles = {
   surfaceMuted: mix(midnight.foam, 2.5, midnight.card),
   tabActive: midnight.saffron,
   glyph: midnight.foam,
-  success: brand.green,
-  warning: brand.saffronBright,
-  danger: brand.vermilion,
-  info: brand.blue,
+  // The light theme's status colours read at 2–3:1 on the midnight card, so dark has its own.
+  success: midnight.green,
+  warning: midnight.saffron,
+  danger: midnight.vermilion,
+  info: midnight.teal,
 };
 
 export const themes = { light, dark } as const;

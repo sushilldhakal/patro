@@ -70,10 +70,10 @@
     --tw-surface-muted: 29 33 54;
     --tw-tab-active: 245 158 66;
     --tw-glyph: 243 239 232;
-    --tw-success: 46 125 50;
-    --tw-warning: 230 126 34;
-    --tw-danger: 198 40 40;
-    --tw-info: 11 86 90;
+    --tw-success: 123 198 126;
+    --tw-warning: 245 158 66;
+    --tw-danger: 255 143 133;
+    --tw-info: 95 196 192;
     /* tokens:dark:end */
 
     /* tokens:css-dark:start — generated from packages/design-tokens, run `npm run tokens` */
@@ -82,7 +82,7 @@
     --card: #171c31;
     --muted-foreground: #a6abc0;
     --secondary: #e8c36a;
-    --color-success: #2e7d32;
+    --color-success: #7bc67e;
     --color-warning: #f59e42;
     --color-danger: #ff8f85;
     --brand-teal: #2e7d32;

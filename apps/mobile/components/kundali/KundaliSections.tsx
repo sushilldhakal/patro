@@ -34,7 +34,6 @@ import { formatRashiByNumber } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import {
-  brand,
   panchangaSection,
   panchangaSectionHeader,
   panchangaSectionTitle,
@@ -281,15 +280,17 @@ export function UpagrahaTable({ rows }: { rows: UpagrahaDetailRow[] }) {
 
 /* ── yogas ─────────────────────────────────────────────────────────────── */
 
-const YOGA_NATURE: Record<KundaliYoga["nature"], { ne: string; en: string; tone: string }> = {
-  auspicious: { get ne() { return tFor("ne", "kundali.auspicious"); }, get en() { return tFor("en", "kundali.auspicious"); }, tone: brand.green },
-  inauspicious: { get ne() { return tFor("ne", "kundali.inauspicious"); }, get en() { return tFor("en", "kundali.inauspicious"); }, tone: brand.vermilion },
-  mixed: { get ne() { return tFor("ne", "ui.kundali.mixed"); }, get en() { return tFor("en", "ui.kundali.mixed"); }, tone: brand.saffron },
-  caution: { get ne() { return tFor("ne", "kundali.caution"); }, get en() { return tFor("en", "kundali.caution"); }, tone: brand.saffron },
+/** Which theme colour each yoga nature is drawn in — the theme's, so dark mode gets its readable shades. */
+const YOGA_NATURE: Record<KundaliYoga["nature"], { ne: string; en: string; tone: "success" | "danger" | "primary" }> = {
+  auspicious: { get ne() { return tFor("ne", "kundali.auspicious"); }, get en() { return tFor("en", "kundali.auspicious"); }, tone: "success" },
+  inauspicious: { get ne() { return tFor("ne", "kundali.inauspicious"); }, get en() { return tFor("en", "kundali.inauspicious"); }, tone: "danger" },
+  mixed: { get ne() { return tFor("ne", "ui.kundali.mixed"); }, get en() { return tFor("en", "ui.kundali.mixed"); }, tone: "primary" },
+  caution: { get ne() { return tFor("ne", "kundali.caution"); }, get en() { return tFor("en", "kundali.caution"); }, tone: "primary" },
 };
 
 export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
   const { t, lang, pick } = useLocale();
+  const colors = useThemeColors();
   const present = yogas.filter((y) => y.present);
 
   if (!present.length) {
@@ -304,10 +305,11 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
     <View className="gap-2">
       {present.map((y) => {
         const nature = YOGA_NATURE[y.nature];
+        const tone = colors[nature.tone];
         return (
           <View
             key={y.key}
-            style={{ borderLeftColor: nature.tone, borderLeftWidth: 3 }}
+            style={{ borderLeftColor: tone, borderLeftWidth: 3 }}
             className="rounded-lg border border-border bg-background p-3"
           >
             <View className="flex-row flex-wrap items-center gap-2">
@@ -315,11 +317,11 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
                 {lang === "en" ? y.nameEn : y.nameNe}
               </Text>
               <View
-                style={{ backgroundColor: colorWithAlpha(nature.tone, 0.12) }}
+                style={{ backgroundColor: colorWithAlpha(tone, 0.12) }}
                 className="rounded-full px-2 py-0.5"
               >
                 <Text
-                  style={{ color: nature.tone, ...nepaliTextStyle(10) }}
+                  style={{ color: tone, ...nepaliTextStyle(10) }}
                   className="text-sm font-semibold"
                 >
                   {pick(nature.ne, nature.en)}
