@@ -167,11 +167,11 @@ export interface VedaDaily {
 }
 
 export const vedaDailyKeys = {
-  day: (dateAd: string) => ["veda", "daily", dateAd] as const,
+  day: (dateAd: string) => ["veda", "daily", dateAd, DOCUMENTS_LIST_CACHE_VERSION] as const,
 };
 
 export const fetchVedaDaily = (dateAd: string) =>
-  get<VedaDaily>(`/veda/daily?date=${encodeURIComponent(dateAd)}`);
+  get<VedaDaily>(`/veda/daily?date=${encodeURIComponent(dateAd)}&v=${DOCUMENTS_LIST_CACHE_VERSION}`);
 
 /** True when a documents request failed because the text does not exist. */
 export function isNotFound(error: unknown): boolean {

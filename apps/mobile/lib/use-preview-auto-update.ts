@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import * as Updates from "expo-updates";
 
@@ -6,20 +6,37 @@ import * as Updates from "expo-updates";
 const PREVIEW_CHANNEL = "preview";
 /** Least time between two checks when the app keeps coming back to the foreground. */
 const MIN_CHECK_GAP_MS = 30_000;
+/** How long the launch splash waits for a newer update before the app shows anyway. */
+const LAUNCH_BUDGET_MS = 4_000;
+
+const isPreview = () => !__DEV__ && Updates.isEnabled && Updates.channel === PREVIEW_CHANNEL;
 
 /**
- * Preview builds only: check for a newer update when the app opens and each
- * time it returns to the foreground, and switch to it as soon as it has
- * downloaded, so a push to main shows on the phone without two cold launches.
- * Development builds (the dev launcher picks updates) and store builds (the
- * normal download-then-apply-on-next-launch) are left alone.
+ * Preview builds only: pick up a push to main without two cold launches, and without showing the
+ * splash twice.
+ *
+ * At launch the check runs while the splash is still up (returns `false` until it settles, at
+ * most LAUNCH_BUDGET_MS): a newer update found and downloaded in time is switched to right there,
+ * so the reload reads as one longer splash instead of splash → home → splash → home. One that
+ * takes longer, and any found when the app returns to the foreground, is only downloaded; the
+ * next launch opens it. Development builds (the dev launcher picks updates) and store builds
+ * (the normal download-then-apply-on-next-launch) are left alone and settle at once.
  */
-export function usePreviewAutoUpdate() {
+export function usePreviewAutoUpdate(): boolean {
+  const [settled, setSettled] = useState(() => !isPreview());
+
   useEffect(() => {
-    if (__DEV__ || !Updates.isEnabled || Updates.channel !== PREVIEW_CHANNEL) return;
+    if (!isPreview()) return;
 
     let lastCheck = 0;
     let busy = false;
+    let launching = true;
+    const settle = () => {
+      launching = false;
+      setSettled(true);
+    };
+    const budget = setTimeout(settle, LAUNCH_BUDGET_MS);
+
     const check = async () => {
       const now = Date.now();
       if (busy || now - lastCheck < MIN_CHECK_GAP_MS) return;
@@ -29,11 +46,16 @@ export function usePreviewAutoUpdate() {
         const result = await Updates.checkForUpdateAsync();
         if (!result.isAvailable) return;
         const fetched = await Updates.fetchUpdateAsync();
-        if (fetched.isNew) await Updates.reloadAsync();
+        // Only while the splash is still up; after that the next launch opens it.
+        if (fetched.isNew && launching) await Updates.reloadAsync();
       } catch {
         // Offline or the server is unreachable: keep running what is installed.
       } finally {
         busy = false;
+        if (launching) {
+          clearTimeout(budget);
+          settle();
+        }
       }
     };
 
@@ -41,6 +63,11 @@ export function usePreviewAutoUpdate() {
     const sub = AppState.addEventListener("change", (state) => {
       if (state === "active") void check();
     });
-    return () => sub.remove();
+    return () => {
+      clearTimeout(budget);
+      sub.remove();
+    };
   }, []);
+
+  return settled;
 }

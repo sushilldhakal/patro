@@ -233,7 +233,8 @@ const WEB_NOTO_FONTS = {
 
 function RootLayout() {
   useTrackPathname();
-  usePreviewAutoUpdate();
+  // Preview builds: the splash stays up while a newer update is checked for (lib/use-preview-auto-update.ts).
+  const updateSettled = usePreviewAutoUpdate();
   const navigationRef = useNavigationContainerRef();
   useEffect(() => {
     if (navigationRef) sentryNavigation.registerNavigationContainer(navigationRef);
@@ -298,7 +299,7 @@ function RootLayout() {
     };
   }, []);
 
-  const ready = loaded && onboarded !== null && webFontReady;
+  const ready = loaded && onboarded !== null && webFontReady && updateSettled;
 
   useEffect(() => {
     if (!ready) return;
