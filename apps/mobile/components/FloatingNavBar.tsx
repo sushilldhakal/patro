@@ -29,13 +29,11 @@ import { navCompact, resetNavCompact } from "@/lib/nav-compact";
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
-/** Reanimated's View with `className` mapped to style: without this NativeWind drops the classes
- *  (the group lost its row, pill and width, and the tabs stacked in a column). */
-const GroupView = cssInterop(Animated.View, { className: "style" });
 
 /** Full bar → icons only (lib/nav-compact.ts). */
-const GROUP_HEIGHT = 64;
-const GROUP_HEIGHT_COMPACT = 50;
+/** Height of the row of tabs inside the pill (the pill adds 6pt above and below: 64pt full, 50pt folded). */
+const TABS_HEIGHT = 52;
+const TABS_HEIGHT_COMPACT = 38;
 /** How far in from each side the tab pill draws when folded, so it reads as a slimmer capsule. */
 const GROUP_INSET_COMPACT = 18;
 const LABEL_MAX_HEIGHT = 24;
@@ -67,9 +65,13 @@ function FloatingNavBarView() {
   const progress = useDerivedValue(() =>
     withTiming(navCompact.value, { duration: reduced ? 0 : DURATION.standard }),
   );
-  const groupStyle = useAnimatedStyle(() => ({
-    height: interpolate(progress.value, [0, 1], [GROUP_HEIGHT, GROUP_HEIGHT_COMPACT]),
+  // Animated views carry plain styles only: NativeWind does not apply `className` to Reanimated's
+  // views on iOS, which once dropped the pill's row and width and stacked the tabs in a column.
+  const insetStyle = useAnimatedStyle(() => ({
     marginHorizontal: interpolate(progress.value, [0, 1], [0, GROUP_INSET_COMPACT]),
+  }));
+  const tabsStyle = useAnimatedStyle(() => ({
+    height: interpolate(progress.value, [0, 1], [TABS_HEIGHT, TABS_HEIGHT_COMPACT]),
   }));
 
   /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
@@ -91,7 +93,9 @@ function FloatingNavBarView() {
       />
       <View className={shellClasses.navRow}>
       <LeftActions />
-      <GroupView style={[nativeShadow("md"), groupStyle]} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
+      <Animated.View style={[{ flex: 1, minWidth: 0 }, insetStyle]}>
+      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1.5")}>
+      <Animated.View style={[{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center" }, tabsStyle]}>
         {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -112,7 +116,9 @@ function FloatingNavBarView() {
           );
         })}
         <ProfileNavItem iconSize={iconSize} progress={progress} />
-      </GroupView>
+      </Animated.View>
+      </View>
+      </Animated.View>
       <RightActions />
       </View>
     </View>
@@ -230,8 +236,8 @@ function NavItem({ active, onPress, children }: { active: boolean; onPress: () =
       onPress={onPress}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      // Fills the group's height (less its margin), so the tab pill shrinks with the bar when it folds.
-      className={cn(shellClasses.navTab, "h-auto self-stretch my-1.5", active && shellClasses.navTabActive)}
+      // Fills the row of tabs' height, so the active pill shrinks with the bar when it folds.
+      className={cn(shellClasses.navTab, "h-full", active && shellClasses.navTabActive)}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       pressRetentionOffset={16}
