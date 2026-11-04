@@ -15,7 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { LinearGradient } from "expo-linear-gradient";
+import { GlassView, isGlassEffectAPIAvailable } from "expo-glass-effect";
 import { nativeShadow, radius, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
@@ -36,12 +36,15 @@ const WIDE_BAR_MIN_WIDTH = 420;
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /** Full bar → icons only (lib/nav-compact.ts). */
-/** Height of the row of tabs inside the pill (the pill adds 2pt above and below: 38pt full, 31pt folded). */
-const TABS_HEIGHT = 34;
-const TABS_HEIGHT_COMPACT = 27;
-/** How far in from each side the tab pill draws when folded, so it reads as a slimmer capsule. */
-const GROUP_INSET_COMPACT = 18;
-const LABEL_MAX_HEIGHT = 14;
+/** Height of the row of tabs inside the pill (the pill adds 4pt above and below: 60pt full, 46pt folded, like the
+ *  reference bar). */
+const TABS_HEIGHT = 52;
+const TABS_HEIGHT_COMPACT = 38;
+/** How far in from each side the tab pill draws when folded, so it reads as a shorter capsule (about 80% wide). */
+const GROUP_INSET_COMPACT = 40;
+const LABEL_MAX_HEIGHT = 16;
+/** iOS 26+ draws the bar as Liquid Glass (the page shows through, blurred); elsewhere it is the solid card. */
+const GLASS = isGlassEffectAPIAvailable();
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
@@ -111,30 +114,32 @@ function FloatingNavBarView() {
     return () => anim.stop();
   }, [activeIndex, slot, reduced, slide]);
 
-  /* Smaller than the web's size-5 icons, so icon and label fit the slim 34pt row. */
-  const iconSize = 18;
+  /* The reference bar's icon size. */
+  const iconSize = 22;
 
   return (
     <View
       pointerEvents="box-none"
       style={{ paddingBottom: Math.max(insets.bottom, isTablet ? 10 : 6) }}
-      className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter)}
+      className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter, "px-4")}
     >
       {/* Search and place: round buttons stacked on the right, floating above the bar. */}
       <FloatingActions />
       <View pointerEvents="box-none">
-      {/* No blur on native: fade the page out under the bar instead, so text
-          never shows through the gap below it or around its corners. Only behind the bar, not the buttons. */}
-      <LinearGradient
-        pointerEvents="none"
-        colors={[withAlpha(colors.background, 0), colors.background]}
-        locations={[0, 0.45]}
-        style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
-      />
       <View className={shellClasses.navRow}>
       <View style={{ flex: 1, minWidth: 0 }}>
       <RNAnimated.View style={{ marginHorizontal: inset }}>
-      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-0.5")}>
+      <View
+        style={nativeShadow("md")}
+        className={cn(shellClasses.navGroup, "h-auto overflow-hidden px-1 py-1", GLASS && "bg-transparent")}
+      >
+      {GLASS ? (
+        <GlassView
+          pointerEvents="none"
+          glassEffectStyle="regular"
+          style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, borderRadius: radius.pill }}
+        />
+      ) : null}
       <View style={{ flex: 1, minWidth: 0 }} onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}>
       <RNAnimated.View style={{ height: tabsHeight }}>
         {activeIndex >= 0 && slot > 0 ? (
@@ -147,7 +152,7 @@ function FloatingNavBarView() {
               bottom: 0,
               width: slot,
               borderRadius: radius.pill,
-              backgroundColor: withAlpha(colors.secondary, 0.12),
+              backgroundColor: withAlpha(colors.foreground, 0.08),
               transform: [{ translateX: slide }],
             }}
           />
@@ -164,7 +169,7 @@ function FloatingNavBarView() {
               <AppNavIcon
                 name={item.icon}
                 size={iconSize}
-                color={active ? colors.secondary : colors.mutedForeground}
+                color={active ? colors.foreground : colors.mutedForeground}
               />
               <NavLabel fold={fold} active={active}>
                 {pick(item.ne, item.en)}
@@ -197,7 +202,12 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
     >
       <Text
         numberOfLines={1}
-        className={cn("text-center", shellClasses.navLabel, "leading-snug", active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
+        className={cn(
+          "text-center",
+          shellClasses.navLabel,
+          "text-caption font-semibold",
+          active ? "text-foreground" : shellClasses.navLabelIdle,
+        )}
         style={nepaliTextStyle()}
       >
         {children}
@@ -244,7 +254,7 @@ function ProfileNavItem({ iconSize, fold }: { iconSize: number; fold: RNAnimated
       <Ionicons
         name={isAuthenticated ? "person-circle" : "person-circle-outline"}
         size={iconSize + 2}
-        color={active ? colors.secondary : colors.mutedForeground}
+        color={active ? colors.foreground : colors.mutedForeground}
       />
       <NavLabel fold={fold} active={active}>
         {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
