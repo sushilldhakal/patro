@@ -16,7 +16,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { LinearGradient } from "expo-linear-gradient";
-import { nativeShadow, withAlpha } from "@vedic-patro/design-tokens";
+import { nativeShadow, radius, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -118,7 +118,7 @@ function FloatingNavBarView() {
         <Animated.View
           pointerEvents="none"
           style={[
-            { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: withAlpha(colors.secondary, 0.12) },
+            { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: radius.pill, backgroundColor: withAlpha(colors.secondary, 0.12) },
             indicatorStyle,
           ]}
         />
