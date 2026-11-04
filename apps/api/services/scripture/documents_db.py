@@ -46,6 +46,13 @@ _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     # Which Veda verse this shloka quotes, e.g. "rigveda:1.1.3". Null when it
     # isn't a quotation from the four samhitas.
     ("veda_cite", "TEXT"),
+    # Each mantra's own details, as the Ved Portal (वेद.com) gives them, in Devanagari.
+    ("devata", "TEXT"),
+    ("rishi", "TEXT"),
+    ("chhanda", "TEXT"),
+    ("svara", "TEXT"),
+    ("padapatha", "TEXT"),
+    ("meaning_hi", "TEXT"),
 ]
 
 _SCHEMA = """
@@ -86,6 +93,12 @@ CREATE TABLE IF NOT EXISTS shlokas (
     sukta_devata            TEXT,
     sukta_chhanda           TEXT,
     veda_cite               TEXT,
+    devata                  TEXT,
+    rishi                   TEXT,
+    chhanda                 TEXT,
+    svara                   TEXT,
+    padapatha               TEXT,
+    meaning_hi              TEXT,
     sanskrit                TEXT NOT NULL,
     transliteration         TEXT,
     meaning_ne              TEXT,
@@ -121,6 +134,9 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
+VERSE_DETAIL_KINDS = ("devata", "rishi", "chhanda", "svara")
+
+
 def _migrate_added_columns(conn: sqlite3.Connection) -> None:
     """Add missing columns to an existing table. Additive, nullable, idempotent."""
     existing = {row[1] for row in conn.execute("PRAGMA table_info(documents)")}
@@ -136,6 +152,8 @@ def _migrate_added_columns(conn: sqlite3.Connection) -> None:
             if name in existing_shloka_cols:
                 continue
             conn.execute(f"ALTER TABLE shlokas ADD COLUMN {name} {coltype}")
+    for kind in VERSE_DETAIL_KINDS:
+        conn.execute(f"CREATE INDEX IF NOT EXISTS idx_shlokas_{kind} ON shlokas({kind}, global_order)")
 
 
 def _manifest_paths() -> list[Path]:
@@ -350,6 +368,12 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("sukta_devata"),
                     shloka.get("sukta_chhanda"),
                     shloka.get("veda_cite"),
+                    shloka.get("devata"),
+                    shloka.get("rishi"),
+                    shloka.get("chhanda"),
+                    shloka.get("svara"),
+                    shloka.get("padapatha"),
+                    shloka.get("meaning_hi"),
                     shloka["sanskrit"],
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
@@ -400,9 +424,10 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
              verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
-             veda_cite, sanskrit, transliteration, meaning_ne, meaning_en,
+             veda_cite, devata, rishi, chhanda, svara, padapatha, meaning_hi,
+             sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -548,6 +573,12 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "sukta_devata": r["sukta_devata"],
         "sukta_chhanda": r["sukta_chhanda"],
         "veda_cite": r["veda_cite"] if "veda_cite" in r.keys() else None,
+        "devata": r["devata"],
+        "rishi": r["rishi"],
+        "chhanda": r["chhanda"],
+        "svara": r["svara"],
+        "padapatha": r["padapatha"],
+        "meaning_hi": r["meaning_hi"],
         "sanskrit": r["sanskrit"],
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],
@@ -766,3 +797,43 @@ def daily_veda_shloka(day: "date") -> dict[str, Any] | None:
     shloka["chapter_title_ne"] = row["chapter_title_ne"]
     shloka["chapter_title_en"] = row["chapter_title_en"]
     return shloka
+
+
+def verses_with_detail(
+    kind: str, value: str, slug: str | None = None, offset: int = 0, limit: int = 50
+) -> dict[str, Any]:
+    """Every mantra whose देवता / ऋषि / छन्द / स्वर is ``value``, in reading order.
+
+    ``slug`` keeps it to one Veda; without it every Veda that has the detail is searched.
+    """
+    if kind not in VERSE_DETAIL_KINDS:
+        raise ValueError(f"Unknown detail: {kind}")
+    ensure_seeded()
+    where = f"s.{kind} = ?"
+    params: list[Any] = [value.strip()]
+    if slug:
+        where += " AND s.document_slug = ?"
+        params.append(slug)
+    with _connect() as conn:
+        total = conn.execute(f"SELECT COUNT(*) FROM shlokas s WHERE {where}", params).fetchone()[0]
+        rows = conn.execute(
+            f"""
+            SELECT s.*, d.title_ne AS document_title_ne, d.title_en AS document_title_en
+            FROM shlokas s JOIN documents d ON d.slug = s.document_slug
+            WHERE {where}
+            ORDER BY d.order_index, s.global_order
+            LIMIT ? OFFSET ?
+            """,
+            [*params, limit, offset],
+        ).fetchall()
+    verses = [
+        {
+            **_shloka_row_to_dict(r),
+            "document_slug": r["document_slug"],
+            "document_title_ne": r["document_title_ne"],
+            "document_title_en": r["document_title_en"],
+            "chapter_number": r["chapter_number"],
+        }
+        for r in rows
+    ]
+    return {"kind": kind, "value": value.strip(), "total": total, "offset": offset, "verses": verses}

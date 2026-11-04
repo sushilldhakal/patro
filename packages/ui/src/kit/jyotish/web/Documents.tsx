@@ -7,7 +7,7 @@ import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPaus
 
 const DOCK = "fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4";
 
-export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, registerRef }: ShlokaCardProps) {
+export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail, registerRef }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });
   const { canPlay, isClosing, isNote, vedaCite, meaning } = card;
   return (
@@ -22,6 +22,22 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
         isNote && !isActive && documentsClasses.verseNote,
       )}
     >
+      {card.details.length > 0 ? (
+        <Box className={documentsClasses.verseDetails}>
+          {card.details.map((d) => (
+            <span key={d.kind} className={documentsClasses.verseDetailItem}>
+              <Text as="span" className={documentsClasses.verseDetailLabel}>{d.label}:</Text>
+              {onDetail ? (
+                <button type="button" onClick={() => onDetail(d.kind, d.value)} className={cn(documentsClasses.verseDetailValue, "hover:underline")}>
+                  {d.value}
+                </button>
+              ) : (
+                <Text as="span" className={documentsClasses.verseDetailValue}>{d.value}</Text>
+              )}
+            </span>
+          ))}
+        </Box>
+      ) : null}
       <Box className={documentsClasses.verseRow}>
         {canPlay ? (
           <button

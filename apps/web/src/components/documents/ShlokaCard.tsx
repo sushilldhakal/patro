@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { playsFromFullRecording } from "@vedic-patro/features/documents";
 import { ShlokaCard as Shared } from "@vedic-patro/ui/kit/jyotish";
 import type { Shloka } from "@/lib/documents-api";
@@ -11,6 +12,7 @@ type Props = {
 
 /** Binds the shared verse to the website player (scroll registration and clip time). */
 export function ShlokaCard({ shloka, player, fullRecording }: Props) {
+  const navigate = useNavigate();
   const isActive = player.activeId === shloka.id;
   const playsFromFull = fullRecording != null && playsFromFullRecording(shloka, true);
   const isPlaying = isActive && (playsFromFull ? fullRecording.playing : player.playing);
@@ -26,6 +28,7 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
       clip={{ currentTime: player.currentTime, duration: player.duration }}
       onPlay={() => (playsFromFull ? fullRecording.toggleAt(shloka.id) : player.toggle(shloka.id))}
       onToggleMeaning={() => player.toggleMeaning(shloka.id)}
+      onDetail={(kind, value) => void navigate({ to: "/veda/$kind", params: { kind }, search: { value } })}
       registerRef={(node) => player.registerItemRef(shloka.id, node as HTMLElement | null)}
     />
   );

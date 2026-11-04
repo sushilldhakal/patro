@@ -65,6 +65,15 @@ export interface Shloka {
    * not from the four Vedas. The card shows it as a small source caption.
    */
   veda_cite?: string | null;
+  /** The mantra's own details from the Ved Portal (वेद.com), in Devanagari: "अग्निः",
+   *  "मधुच्छन्दाः वैश्वामित्रः", "गायत्री", "षड्जः". null where not collected. */
+  devata?: string | null;
+  rishi?: string | null;
+  chhanda?: string | null;
+  svara?: string | null;
+  padapatha?: string | null;
+  /** Swami Dayananda Saraswati's Hindi भावार्थ (the source of meaning_ne for the Vedas). */
+  meaning_hi?: string | null;
   sanskrit: string;
   transliteration?: string | null;
   meaning_ne?: string | null;
@@ -168,6 +177,39 @@ export interface VedaDaily {
   read_verse: string;
   shloka: Shloka;
 }
+
+/** A mantra detail every verse of the Vedas carries, each a link to all mantras sharing it. */
+export const VERSE_DETAIL_KINDS = ["devata", "rishi", "chhanda", "svara"] as const;
+export type VerseDetailKind = (typeof VERSE_DETAIL_KINDS)[number];
+
+export interface VerseWithDocument extends Shloka {
+  document_slug: string;
+  document_title_ne: string | null;
+  document_title_en: string | null;
+  chapter_number: number | null;
+}
+
+export interface VerseDetailPage {
+  kind: VerseDetailKind;
+  value: string;
+  total: number;
+  offset: number;
+  verses: VerseWithDocument[];
+}
+
+export const verseDetailKeys = {
+  list: (kind: VerseDetailKind, value: string, slug: string | undefined) =>
+    ["veda", "details", kind, value, slug ?? "all", DOCUMENTS_LIST_CACHE_VERSION] as const,
+};
+
+export const fetchVerseDetailPage = (
+  kind: VerseDetailKind,
+  value: string,
+  { slug, offset = 0, limit = 50 }: { slug?: string; offset?: number; limit?: number } = {},
+) =>
+  get<VerseDetailPage>(
+    `/veda/details/${kind}?value=${encodeURIComponent(value)}${slug ? `&slug=${encodeURIComponent(slug)}` : ""}&offset=${offset}&limit=${limit}&v=${DOCUMENTS_LIST_CACHE_VERSION}`,
+  );
 
 export const vedaDailyKeys = {
   day: (dateAd: string) => ["veda", "daily", dateAd, DOCUMENTS_LIST_CACHE_VERSION] as const,

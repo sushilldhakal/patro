@@ -6,3 +6,4 @@ export * from "./audio-coverage";
 export * from "./use-playback-bar";
 export * from "./use-shloka-card";
 export * from "./use-document-card";
+export * from "./use-verse-detail-list";

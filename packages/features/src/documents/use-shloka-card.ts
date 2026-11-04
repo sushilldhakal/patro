@@ -6,7 +6,7 @@
  * app draws the card and wires its own player.
  */
 import { useMemo } from "react";
-import type { Shloka } from "@vedic-patro/api-client";
+import { VERSE_DETAIL_KINDS, type Shloka, type VerseDetailKind } from "@vedic-patro/api-client";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/learn/word-tracking";
@@ -73,6 +73,11 @@ export function useShlokaCard({
     /** Transliteration is shown only in the English interface. */
     transliteration: lang !== "ne" && shloka.transliteration ? shloka.transliteration : null,
     progressPct: isActive ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : 0,
+    /** देवता, ऋषि, छन्द, स्वर — each a link to every mantra that shares it. Empty when not collected. */
+    details: VERSE_DETAIL_KINDS.flatMap((kind): { kind: VerseDetailKind; label: string; value: string }[] => {
+      const value = shloka[kind]?.trim();
+      return value ? [{ kind, label: t(`documents.detail_${kind}`), value }] : [];
+    }),
     meaning: bilingualText(lang, shloka.meaning_ne, shloka.meaning_en, ""),
     meaningIsNepali: lang === "ne",
     copy: {

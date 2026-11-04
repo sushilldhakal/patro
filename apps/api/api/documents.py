@@ -109,6 +109,21 @@ def document_chapter_detail(slug: str, chapter_number: int, request: Request):
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
+@router.get("/veda/details/{kind}")
+def veda_verses_by_detail(
+    kind: str,
+    request: Request,
+    value: str = Query(..., min_length=1, max_length=200, description="e.g. अग्निः"),
+    slug: str | None = Query(None, description="Keep to one Veda, e.g. rigveda"),
+    offset: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+):
+    """Every mantra with this देवता (devata), ऋषि (rishi), छन्द (chhanda) or स्वर (svara)."""
+    build = _or_404(document_views.verse_detail_view, kind, value, slug, offset, limit)
+    cache_key = f"veda_details_v{_cache_version()}_{kind}_{slug or 'all'}_{offset}_{limit}_{value.strip()}"
+    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+
+
 @router.get("/veda/daily")
 def veda_daily(
     request: Request,

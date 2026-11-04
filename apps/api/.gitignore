@@ -115,3 +115,7 @@ data/vastu.db-*
 # Generated Documents reference DB (rebuilt from data/documents_source/*.json)
 data/documents.db
 data/documents.db-*
+
+# Raw Ved Portal (वेद.com) pages as parsed by scripts/scrape_vedcom.py: every commentary on
+# every mantra, ~120 MB. Rebuilt by the scraper; only the merged fields go into git.
+data/vedcom_source/

@@ -106,3 +106,13 @@ export type {
   VedaDaily,
 } from "@vedic-patro/api-client";
 export { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";
+
+/** /veda/$kind?value=अग्निः&slug=rigveda — every mantra with one देवता / ऋषि / छन्द / स्वर. */
+export type VedaVerseDetailSearch = { value?: string; slug?: string };
+
+export function validateVedaVerseDetailSearch(search: Record<string, unknown>): VedaVerseDetailSearch {
+  const out: VedaVerseDetailSearch = {};
+  if (typeof search.value === "string" && search.value.trim()) out.value = search.value.trim();
+  if (typeof search.slug === "string" && /^[a-z0-9-]+$/.test(search.slug)) out.slug = search.slug;
+  return out;
+}

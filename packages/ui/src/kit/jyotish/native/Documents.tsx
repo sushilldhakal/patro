@@ -7,7 +7,7 @@ import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { PlaybackBarProps, ShlokaCardProps } from "../contract";
 import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
 
-export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning }: ShlokaCardProps) {
+export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });
   const { canPlay, isClosing, isNote, vedaCite, meaning } = card;
   return (
@@ -20,6 +20,22 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
         isNote && !isActive && documentsClasses.verseNote,
       )}
     >
+      {card.details.length > 0 ? (
+        <Box className={documentsClasses.verseDetails} nativeClassName="flex-row flex-wrap">
+          {card.details.map((d) => (
+            <Box key={d.kind} className={documentsClasses.verseDetailItem} nativeClassName="flex-row">
+              <Text className={documentsClasses.verseDetailLabel}>{d.label}:</Text>
+              {onDetail ? (
+                <Pressable onPress={() => onDetail(d.kind, d.value)} label={`${d.label}: ${d.value}`} suppressPressScale>
+                  <Text className={documentsClasses.verseDetailValue}>{d.value}</Text>
+                </Pressable>
+              ) : (
+                <Text className={documentsClasses.verseDetailValue}>{d.value}</Text>
+              )}
+            </Box>
+          ))}
+        </Box>
+      ) : null}
       <Box className={documentsClasses.verseRow} nativeClassName="flex-row">
         {canPlay ? (
           <Pressable onPress={onPlay} label={card.copy.play} className={cn(documentsClasses.versePlay, isActive ? documentsClasses.versePlayActive : documentsClasses.versePlayIdle)}>

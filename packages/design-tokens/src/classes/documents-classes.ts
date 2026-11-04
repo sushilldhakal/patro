@@ -214,6 +214,11 @@ export const documentsClasses = {
   verseClosing: "border-secondary/35 bg-secondary/5",
   verseNote: "border-dashed bg-muted/30",
   verseRow: "flex flex-row items-start gap-3",
+  /* The mantra's details (देवता, ऋषि, छन्द, स्वर) in small type above it; each value a link. */
+  verseDetails: "mb-2 flex flex-row flex-wrap items-baseline gap-x-3 gap-y-1",
+  verseDetailItem: "flex flex-row items-baseline gap-1",
+  verseDetailLabel: "text-xs text-muted-foreground",
+  verseDetailValue: "text-xs font-medium text-secondary",
   versePlay: "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border",
   /* Same solid teal button as the home page's mantra card, playing or not; the playing
      verse is told apart by its highlighted card. */

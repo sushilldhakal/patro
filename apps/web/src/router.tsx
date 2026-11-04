@@ -30,7 +30,7 @@ import {
   validatePatroYearBrowseSearch,
   validateHolidaysSearch,
 } from "./lib/url-state";
-import { validateDocumentDetailSearch, validateDocumentsListSearch } from "./lib/documents-api";
+import { validateDocumentDetailSearch, validateDocumentsListSearch, validateVedaVerseDetailSearch } from "./lib/documents-api";
 import { tFor } from "@vedic-patro/i18n/runtime";
 
 const Panchanga = lazyRoute(() => import("./pages/Panchanga"), "Panchanga");
@@ -50,6 +50,7 @@ const Rashifal = lazyRoute(() => import("./pages/Rashifal"), "Rashifal");
 const Vastu = lazyRoute(() => import("./pages/Vastu"), "Vastu");
 const Documents = lazyRoute(() => import("./pages/Documents"), "Documents");
 const DocumentDetail = lazyRoute(() => import("./pages/DocumentDetail"), "DocumentDetail");
+const VedaVerseDetail = lazyRoute(() => import("./pages/VedaVerseDetail"), "VedaVerseDetail");
 const DocumentChapterDetail = lazyRoute(
   () => import("./pages/DocumentChapterDetail"),
   "DocumentChapterDetail",
@@ -217,6 +218,13 @@ const documentChapterDetailRoute = createRoute({
   validateSearch: validateDocumentDetailSearch,
   component: DocumentChapterDetail,
 });
+/** Every mantra with one देवता / ऋषि / छन्द / स्वर: /veda/devata?value=अग्निः */
+const vedaVerseDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/veda/$kind",
+  validateSearch: validateVedaVerseDetailSearch,
+  component: VedaVerseDetail,
+});
 const learnRoute = createRoute({ getParentRoute: () => rootRoute, path: "/learn", component: Learn });
 const learnArticleRoute = createRoute({ getParentRoute: () => rootRoute, path: "/learn/$slug", component: LearnArticle });
 const suryakrantiRoute = createRoute({
@@ -375,6 +383,7 @@ const routeTree = rootRoute.addChildren([
   documentsRoute,
   documentDetailRoute,
   documentChapterDetailRoute,
+  vedaVerseDetailRoute,
   learnRoute,
   historyRoute,
   learnArticleRoute,

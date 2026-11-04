@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Merge the Ved Portal (वेद.com) collection into a Veda's manifest.
+
+Reads ``data/vedcom_source/<veda>.jsonl`` (scripts/scrape_vedcom.py) and, for each mantra
+matched by Mandala.Sukta.Mantra, writes into ``data/documents_source/<veda>.json``:
+
+* ``devata``, ``rishi``, ``chhanda``, ``svara`` — the details line, as the site writes it;
+* ``sanskrit`` — the site's accented samhita text (ours came from another digitisation and
+  has dropped or misplaced letters in places);
+* ``padapatha``;
+* ``meaning_hi`` — Swami Dayananda Saraswati's Hindi भावार्थ.
+
+Before replacing the text it compares the two (accents, punctuation and spacing folded
+away) and prints every mantra where they agree less than 80%, so a numbering mismatch
+shows up instead of slipping through. ``--report`` prints that without writing.
+
+    python3 scripts/merge_vedcom.py rigveda --report
+    python3 scripts/merge_vedcom.py rigveda
+"""
+
+from __future__ import annotations
+
+import argparse
+import difflib
+import json
+import unicodedata
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+DAYANANDA = "स्वामी दयानन्द सरस्वती"
+HINDI_BLOCK = 1  # language-id-1 on the site: the Hindi commentaries
+
+
+def fold(text: str) -> str:
+    """Letters only: drop Vedic accents, other marks' variants, danda, digits and spaces."""
+    text = unicodedata.normalize("NFC", text or "")
+    out = []
+    for ch in text:
+        code = ord(ch)
+        if 0x0951 <= code <= 0x0954 or 0x1CD0 <= code <= 0x1CFF or 0xA8E0 <= code <= 0xA8FF:
+            continue
+        if ch in "।॥|.,;:-–—'\"()[]ऽ" or ch.isspace() or ch.isdigit() or "०" <= ch <= "९":
+            continue
+        out.append(ch)
+    return "".join(out).replace("ँ", "ं")
+
+
+def dayananda_hindi(commentaries: list[dict]) -> str | None:
+    for c in commentaries:
+        if c.get("language_id") == HINDI_BLOCK and (c.get("author") or "").strip() == DAYANANDA:
+            return c.get("bhavartha") or None
+    return None
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("veda", choices=["rigveda", "atharvaveda"])
+    ap.add_argument("--report", action="store_true", help="compare only; write nothing")
+    args = ap.parse_args()
+
+    src = ROOT / f"data/vedcom_source/{args.veda}.jsonl"
+    site: dict[str, dict] = {}
+    for line in src.read_text(encoding="utf-8").splitlines():
+        row = json.loads(line)
+        site[f"{row['mandala']}.{row['sukta']}.{row['mantra']}"] = row
+
+    path = ROOT / f"data/documents_source/{args.veda}.json"
+    raw = path.read_text(encoding="utf-8")
+    doc = json.loads(raw)
+
+    ours = {s["verse_label"]: s for c in doc["chapters"] for s in c["shlokas"]}
+    matched = low = 0
+    lows: list[tuple[float, str]] = []
+    for label, shloka in ours.items():
+        row = site.get(label)
+        if row is None:
+            continue
+        matched += 1
+        ratio = difflib.SequenceMatcher(None, fold(shloka["sanskrit"]), fold(row["sanskrit"]), autojunk=False).ratio()
+        if ratio < 0.8:
+            low += 1
+            lows.append((ratio, label))
+        if args.report:
+            continue
+        for key in ("devata", "rishi", "chhanda", "svara"):
+            shloka[key] = row.get(key) or None
+        shloka["sanskrit"] = row["sanskrit"]
+        shloka["padapatha"] = row.get("padapatha") or None
+        shloka["meaning_hi"] = dayananda_hindi(row.get("commentaries") or [])
+
+    missing = sorted(set(ours) - set(site), key=lambda l: [int(p) for p in l.split(".")])
+    extra = sorted(set(site) - set(ours), key=lambda l: [int(p) for p in l.split(".")])
+    print(f"ours {len(ours)}, site {len(site)}, matched {matched}")
+    print(f"not on the site ({len(missing)}): {', '.join(missing[:40])}{' …' if len(missing) > 40 else ''}")
+    print(f"on the site only ({len(extra)}): {', '.join(extra[:40])}{' …' if len(extra) > 40 else ''}")
+    print(f"text agrees less than 80% ({low}):")
+    for ratio, label in sorted(lows)[:60]:
+        print(f"  {label}  {ratio:.2f}")
+
+    if not args.report:
+        path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + ("\n" if raw.endswith("\n") else ""), encoding="utf-8")
+        print(f"wrote {path}")
+
+
+if __name__ == "__main__":
+    main()

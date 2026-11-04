@@ -31,6 +31,7 @@ import type {
   SaitPersonalizeDay,
   SaitSuitability,
   Shloka,
+  VerseDetailKind,
 } from "@vedic-patro/api-client";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
@@ -207,6 +208,8 @@ export type ShlokaCardProps = {
   clip?: { currentTime: number; duration: number };
   onPlay: () => void;
   onToggleMeaning: () => void;
+  /** Open the list of every mantra with this देवता / ऋषि / छन्द / स्वर. */
+  onDetail?: (kind: VerseDetailKind, value: string) => void;
   /** Website scroll-into-view registration. The app list does not use it. */
   registerRef?: (node: unknown) => void;
 };

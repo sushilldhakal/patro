@@ -49,6 +49,10 @@ def _resolve_document_summary(doc: dict[str, Any]) -> dict[str, Any]:
 
 def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
     audio_key = s.pop("audio_key", None)
+    # Kept in the database, not sent: nothing shows them yet (the Hindi meaning is the
+    # source of a Nepali one still to come), and every verse would carry them.
+    s.pop("meaning_hi", None)
+    s.pop("padapatha", None)
     return {**s, "audio_url": _resolve_asset_url(audio_key)}
 
 
@@ -164,3 +168,12 @@ def daily_veda_view(when: date) -> dict[str, Any]:
         "read_verse": shloka["verse_label"],
         "shloka": _resolve_shloka(dict(shloka)),
     }
+
+
+def verse_detail_view(kind: str, value: str, slug: str | None, offset: int, limit: int) -> dict[str, Any]:
+    """Mantras sharing one देवता / ऋषि / छन्द / स्वर — the list behind each link on a verse."""
+    if kind not in documents_db.VERSE_DETAIL_KINDS:
+        raise LookupError(f"No such detail: {kind}")
+    result = documents_db.verses_with_detail(kind, value, slug, offset, limit)
+    result["verses"] = [_resolve_shloka(dict(v)) for v in result["verses"]]
+    return result

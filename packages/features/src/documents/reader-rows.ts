@@ -59,7 +59,9 @@ export function versesToRows(shlokas: readonly Shloka[], text: RowText, keyPrefi
   shlokas.forEach((shloka, at) => {
     const sukta = shloka.sukta_number ?? null;
     if (sukta != null && sukta !== current) {
-      const meta = [
+      // A verse with its own details line (वेद.com) needs no sukta-wide attribution above it.
+      const ownDetails = Boolean(shloka.devata || shloka.rishi || shloka.chhanda || shloka.svara);
+      const meta = ownDetails ? [] : [
         shloka.sukta_rishi ? `${t("documents.sukta_rishi")}: ${suktaAttribution(lang, shloka.sukta_rishi)}` : null,
         shloka.sukta_devata ? `${t("documents.sukta_devata")}: ${suktaAttribution(lang, shloka.sukta_devata)}` : null,
         shloka.sukta_chhanda ? `${t("documents.sukta_chhanda")}: ${suktaAttribution(lang, shloka.sukta_chhanda)}` : null,

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useRouter } from "expo-router";
 import type { Shloka } from "@/lib/documents/api";
 import { ShlokaCard as Shared } from "@vedic-patro/ui/kit/jyotish";
 
@@ -14,6 +15,7 @@ type Props = {
 };
 
 function ShlokaCardImpl(props: Props) {
+  const router = useRouter();
   return (
     <Shared
       shloka={props.shloka}
@@ -24,6 +26,7 @@ function ShlokaCardImpl(props: Props) {
       playsFromFull={props.playsFromFull}
       onPlay={() => props.onPlay(props.shloka)}
       onToggleMeaning={() => props.onToggleMeaning(props.shloka.id)}
+      onDetail={(kind, value) => router.push(`/documents/details/${kind}?value=${encodeURIComponent(value)}` as never)}
     />
   );
 }
