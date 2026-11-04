@@ -125,6 +125,7 @@ export default function DocumentDetailScreen() {
               <DocHeader page={page} />
               <DocumentJumpForm
                 chapterNumbers={page.chapterNumbers}
+                chapterPrefixes={page.chapterPrefixes}
                 documents={library}
                 currentSlug={doc.slug}
                 onSelectDocument={(next) => router.push(`/documents/${next}` as never)}
@@ -164,6 +165,7 @@ export default function DocumentDetailScreen() {
             <DocHeader page={page} onJumpChapter={(anchor) => setJumpKey({ key: anchor, nonce: Date.now() })} />
             <DocumentJumpForm
               chapterNumbers={page.chapterNumbers}
+              chapterPrefixes={page.chapterPrefixes}
               documents={library}
               currentSlug={doc.slug}
               onSelectDocument={(next) => router.push(`/documents/${next}` as never)}

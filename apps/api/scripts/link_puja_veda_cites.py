@@ -166,7 +166,7 @@ def _load_index() -> list[tuple[str, str, str | None, str]]:
             index_no += 1
             add(
                 shloka["sanskrit"],
-                f"samaveda:{index_no}",
+                f"samaveda:{shloka['verse_label']}",  # Part.Adhyaya.Mantra
                 f"documents/samaveda/samaveda_{index_no:04d}.mp3",
                 "samaveda",
             )
@@ -284,6 +284,13 @@ def main() -> None:
         for offset in range(0, len(folded) - window + 1):
             buckets[folded[offset : offset + window]].append(idx)
 
+    # Samaveda clips are numbered straight through the samhita; cites use Part.Adhyaya.Mantra.
+    samaveda_doc = json.loads((ROOT / "samaveda.json").read_text(encoding="utf-8"))
+    samaveda_labels = {
+        i: f"samaveda:{label}"
+        for i, label in enumerate((s["verse_label"] for c in samaveda_doc["chapters"] for s in c["shlokas"]), start=1)
+    }
+
     for name in PUJA:
         path = ROOT / name
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -297,6 +304,21 @@ def main() -> None:
                     continue
                 path_cite = cite_from_audio(shloka.get("audio_file"))
                 match = _best_match(shloka.get("sanskrit") or "", index, buckets)
+                # A Veda clip linked from older labels (a mandala's running number in place of the
+                # verse in its sukta) may name the wrong file: a strong text match puts it right.
+                # Only within the same Veda: a mantra two Vedas share stays with the recording chosen.
+                if (
+                    path_cite
+                    and match is not None
+                    and match[0] >= 0.8
+                    and match[2][2]
+                    and match[2][3] == path_cite.split(":", 1)[0]
+                    and match[2][3] in ("rigveda", "atharvaveda")
+                ):
+                    shloka["audio_file"] = match[2][2]
+                    path_cite = match[2][1]
+                elif path_cite and path_cite.startswith("samaveda:"):
+                    path_cite = samaveda_labels.get(int(path_cite.split(":", 1)[1]), path_cite)
                 cite = path_cite
                 if cite is None and match is not None and match[0] >= 0.55:
                     cite = match[2][1]

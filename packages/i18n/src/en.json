@@ -4719,6 +4719,8 @@
     "empty_category": "No documents in this category yet.",
     "chapter_nav": "Chapters",
     "sukta_label": "Sukta {{number}}",
+    "mantra_label": "Mantra {{number}}",
+    "mantra_range": "Mantras {{from}}–{{to}}",
     "sukta_rishi": "Rishi",
     "sukta_devata": "Devata",
     "sukta_chhanda": "Chhanda",

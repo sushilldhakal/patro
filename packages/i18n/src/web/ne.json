@@ -4719,6 +4719,8 @@
     "empty_category": "यस वर्गमा हाल कुनै ग्रन्थ छैन।",
     "chapter_nav": "अध्यायहरू",
     "sukta_label": "सूक्त {{number}}",
+    "mantra_label": "मन्त्र {{number}}",
+    "mantra_range": "मन्त्र {{from}}–{{to}}",
     "sukta_rishi": "ऋषि",
     "sukta_devata": "देवता",
     "sukta_chhanda": "छन्द",

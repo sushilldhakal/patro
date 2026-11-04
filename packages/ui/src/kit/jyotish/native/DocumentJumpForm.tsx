@@ -10,6 +10,7 @@ import type { DocumentJumpFormProps } from "../contract";
 
 export function DocumentJumpForm({
   chapterNumbers,
+  chapterPrefixes,
   currentChapter,
   documents,
   currentSlug,
@@ -21,6 +22,7 @@ export function DocumentJumpForm({
   const placeholder = roles.mutedForeground;
   const form = useDocumentJumpForm({
     chapterNumbers,
+    chapterPrefixes,
     currentChapter,
     documents,
     currentSlug,

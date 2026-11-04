@@ -30,12 +30,33 @@ export const chapterAnchor = (n: number) => `chapter-${n}`;
 export const bilingual = (lang: string, ne?: string | null, en?: string | null) =>
   (lang === "en" ? en || ne : ne || en) ?? "";
 
+/** The last part of a verse label: its mantra number ("1.1.3" or "3.12" → 3 / 12). */
+const mantraOf = (label: string) => Number(label.trim().split(".").pop());
+
+/**
+ * A group's heading. Labels with three parts (Rigveda Mandala.Sukta.Mantra, Atharvaveda
+ * Kanda.Sukta.Mantra) group by sukta: "सूक्त 7". The Shukla Yajurveda has no suktas — its labels
+ * are Adhyaya.Mantra, and a group is a run of mantras sharing a Rishi / Devata — so it is
+ * headed by the mantras it spans: "मन्त्र 1–3".
+ */
+function groupHeading(shlokas: readonly Shloka[], at: number, sukta: number, { t, digits }: RowText): string {
+  if (shlokas[at]!.verse_label.split(".").length >= 3) return t("documents.sukta_label", { number: digits(sukta) });
+  let end = at;
+  while (end + 1 < shlokas.length && shlokas[end + 1]!.sukta_number === sukta) end += 1;
+  const from = mantraOf(shlokas[at]!.verse_label);
+  const to = mantraOf(shlokas[end]!.verse_label);
+  if (!Number.isFinite(from) || !Number.isFinite(to)) return t("documents.sukta_label", { number: digits(sukta) });
+  return from === to
+    ? t("documents.mantra_label", { number: digits(from) })
+    : t("documents.mantra_range", { from: digits(from), to: digits(to) });
+}
+
 /** Verses with a sukta heading inserted wherever the sukta changes. */
 export function versesToRows(shlokas: readonly Shloka[], text: RowText, keyPrefix = ""): ReaderRow[] {
-  const { t, lang, digits } = text;
+  const { t, lang } = text;
   const rows: ReaderRow[] = [];
   let current: number | null | undefined;
-  for (const shloka of shlokas) {
+  shlokas.forEach((shloka, at) => {
     const sukta = shloka.sukta_number ?? null;
     if (sukta != null && sukta !== current) {
       const meta = [
@@ -46,13 +67,13 @@ export function versesToRows(shlokas: readonly Shloka[], text: RowText, keyPrefi
       rows.push({
         kind: "sukta",
         key: `${keyPrefix}sukta-${sukta}-${shloka.id}`,
-        heading: t("documents.sukta_label", { number: digits(sukta) }),
+        heading: groupHeading(shlokas, at, sukta, text),
         meta: meta.length ? meta.join(" · ") : undefined,
       });
     }
     current = sukta;
     rows.push({ kind: "verse", key: `${keyPrefix}v-${shloka.id}`, shloka });
-  }
+  });
   return rows;
 }
 

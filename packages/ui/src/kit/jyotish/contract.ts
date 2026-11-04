@@ -76,6 +76,8 @@ export type SaitRulesSectionProps = {
 
 export type DocumentJumpFormProps = {
   chapterNumbers: number[];
+  /** Label prefix → chapter, for documents whose labels do not start with the chapter number. */
+  chapterPrefixes?: Record<string, number>;
   /** On a chapter page, verse jumps stay inside this chapter. */
   currentChapter?: number;
   /** Full library list for the document picker. */

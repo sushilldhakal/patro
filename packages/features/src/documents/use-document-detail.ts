@@ -46,6 +46,13 @@ function chapterNumbersOf(doc: DocumentDetail | undefined): number[] {
     .sort((a, b) => a - b);
 }
 
+/** Chapters whose verse labels start with more than the chapter number (Samaveda's "2.5"). */
+function chapterPrefixesOf(doc: DocumentDetail | undefined): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const c of doc?.chapters ?? []) if (c.number != null && c.verse_prefix) out[c.verse_prefix] = c.number;
+  return out;
+}
+
 function statusFrom(q: { isLoading: boolean; isError: boolean; error: unknown; data?: unknown }, valid = true): DocStatus {
   if (!valid) return "not-found";
   if (q.data !== undefined) return "ready";
@@ -101,6 +108,7 @@ export function useDocumentDetail(slug: string | undefined) {
       ? [t("documents.chapters_count", { count: digits(doc.chapter_count) }), t("documents.shlokas_count", { count: digits(doc.shloka_count) })]
       : undefined,
     chapterNumbers: chapterNumbersOf(doc),
+    chapterPrefixes: chapterPrefixesOf(doc),
     chapters: (doc?.chapters ?? []).flatMap((c): DocumentChapterCard[] =>
       c.number == null
         ? []
@@ -189,6 +197,7 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
     displayTitle: chapterTitle || t("documents.chapter_label", { number: digits(chapterNumber) }),
     progress: numbers.length > 0 ? t("documents.chapter_progress", { current: digits(chapterNumber), total: digits(numbers.length) }) : undefined,
     chapterNumbers: numbers,
+    chapterPrefixes: chapterPrefixesOf(docQ.data),
     sections,
     prev: idx > 0 ? numbers[idx - 1]! : null,
     next: idx >= 0 && idx < numbers.length - 1 ? numbers[idx + 1]! : null,

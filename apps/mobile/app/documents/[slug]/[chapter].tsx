@@ -57,6 +57,7 @@ export default function DocumentChapterScreen() {
       </View>
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
+        chapterPrefixes={page.chapterPrefixes}
         currentChapter={chapterNumber}
         documents={library}
         currentSlug={slug}

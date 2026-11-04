@@ -104,6 +104,7 @@ export function DocumentChapterDetail() {
 
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
+        chapterPrefixes={page.chapterPrefixes}
         currentChapter={chapterNumber}
         documents={library}
         currentSlug={slug}

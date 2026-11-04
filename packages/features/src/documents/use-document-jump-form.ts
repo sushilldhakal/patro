@@ -25,6 +25,7 @@ function parseAsciiInt(raw: string): number {
 
 export function useDocumentJumpForm({
   chapterNumbers,
+  chapterPrefixes,
   currentChapter,
   documents,
   currentSlug,
@@ -33,6 +34,9 @@ export function useDocumentJumpForm({
 }: {
   /** Every valid chapter number in the open document (empty when the doc has none). */
   chapterNumbers: number[];
+  /** Label prefix → chapter, where a chapter's labels start with more than its number
+   *  (Samaveda: "2.5" → page 13, Uttararchika adhyaya 5). */
+  chapterPrefixes?: Record<string, number>;
   /** On a chapter page, verse jumps stay inside this chapter unless the label names another. */
   currentChapter?: number;
   /** Full library list for the document picker. */
@@ -65,9 +69,23 @@ export function useDocumentJumpForm({
     onSelectDocument?.(slug);
   };
 
+  /** The chapter a dotted label names: by its prefix ("2.5.10" → "2.5"), else its first number
+   *  ("9.7.1" → mandala 9). Null for a bare verse number, which stays in the open chapter. */
+  const chapterNamedBy = (verse: string): number | null => {
+    const parts = verse.trim().split(".");
+    if (parts.length < 2) return null;
+    const numbers = parts.map((part) => parseAsciiInt(part.trim()));
+    if (numbers.some((n) => !Number.isFinite(n))) return null;
+    const byPrefix = chapterPrefixes?.[numbers.slice(0, -1).join(".")];
+    if (byPrefix != null) return byPrefix;
+    return chapterNumbers.includes(numbers[0]!) ? numbers[0]! : null;
+  };
+
   const resolveChapter = (verse: string): number | null => {
     // Flat document (no chapters): verse-only jump — host uses chapter 0.
     if (!hasChapters) return 0;
+    const named = verse ? chapterNamedBy(verse) : null;
+    if (named != null) return named;
     if (currentChapter != null) return currentChapter;
     if (chapterInput.trim()) {
       const n = parseAsciiInt(chapterInput.trim());

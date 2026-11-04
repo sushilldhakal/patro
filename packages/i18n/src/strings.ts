@@ -7233,6 +7233,8 @@ export const strings = {
   },
   "documents.chapter_nav": { ne: "अध्यायहरू", en: "Chapters" },
   "documents.sukta_label": { ne: "सूक्त {{number}}", en: "Sukta {{number}}" },
+  "documents.mantra_label": { ne: "मन्त्र {{number}}", en: "Mantra {{number}}" },
+  "documents.mantra_range": { ne: "मन्त्र {{from}}–{{to}}", en: "Mantras {{from}}–{{to}}" },
   "documents.sukta_rishi": { ne: "ऋषि", en: "Rishi" },
   "documents.sukta_devata": { ne: "देवता", en: "Devata" },
   "documents.sukta_chhanda": { ne: "छन्द", en: "Chhanda" },

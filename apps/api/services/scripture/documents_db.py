@@ -163,6 +163,22 @@ def _default_audio_file(chapter_number: int | None, verse_number: int) -> str:
     return f"{verse_number}.mp3"
 
 
+def _verse_prefix(label: str | None, chapter_number: int | None) -> str | None:
+    """What a chapter's verse labels start with, when it is not just the chapter number.
+
+    Samaveda pages are its adhyayas but labels are Part.Adhyaya.Mantra, so Uttararchika
+    adhyaya 5 (page 13) labels its mantras ``2.5.N``: its prefix ``2.5`` lets a typed
+    ``2.5.10`` find the page. Every label in a chapter shares it (all but the last part).
+    """
+    if not label or label.count(".") < 2:
+        return None
+    prefix = label.rsplit(".", 1)[0]
+    # Rigveda "9.1.1" on mandala 9: the first number already names the chapter.
+    if chapter_number is not None and prefix.split(".", 1)[0] == str(chapter_number):
+        return None
+    return prefix
+
+
 def _verse_in_sukta(shloka: dict[str, Any]) -> int:
     """The shloka's place inside its sukta.
 
@@ -626,7 +642,9 @@ def get_document_summary(slug: str) -> dict[str, Any] | None:
             chapter_rows = conn.execute(
                 """
                 SELECT chapter_number, chapter_title_ne, chapter_title_en,
-                       COUNT(*) AS shloka_count
+                       COUNT(*) AS shloka_count,
+                       -- With MIN() in the list, SQLite reads verse_label off that same row.
+                       MIN(global_order) AS first_order, verse_label AS first_label
                 FROM shlokas
                 WHERE document_slug = ?
                 GROUP BY chapter_number
@@ -640,6 +658,7 @@ def get_document_summary(slug: str) -> dict[str, Any] | None:
                     "title_ne": r["chapter_title_ne"],
                     "title_en": r["chapter_title_en"],
                     "shloka_count": r["shloka_count"],
+                    "verse_prefix": _verse_prefix(r["first_label"], r["chapter_number"]),
                 }
                 for r in chapter_rows
             ]

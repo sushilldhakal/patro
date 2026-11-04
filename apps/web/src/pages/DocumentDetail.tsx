@@ -141,6 +141,7 @@ export function DocumentDetail() {
     <div className={documentsClasses.jumpPanel}>
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
+        chapterPrefixes={page.chapterPrefixes}
         documents={library}
         currentSlug={doc.slug}
         onSelectDocument={(next) => {

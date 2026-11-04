@@ -95,6 +95,9 @@ export interface DocumentChapter {
   shlokas?: Shloka[];
   /** Present only for a chaptered document's chapter entries (see above). */
   shloka_count?: number;
+  /** What this chapter's verse labels start with when it is more than the chapter number
+   *  (Samaveda adhyaya pages: "2.5" for Uttararchika adhyaya 5, page 13). */
+  verse_prefix?: string | null;
   /** Ritual diagrams / mandalas shown above this chapter's verses. */
   image_urls?: string[];
 }
@@ -120,7 +123,7 @@ export interface DocumentChapterDetail extends DocumentSummary {
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "12";
+const DOCUMENTS_LIST_CACHE_VERSION = "13";
 
 export const documentsKeys = {
   list: () => ["documents", "list", DOCUMENTS_LIST_CACHE_VERSION] as const,

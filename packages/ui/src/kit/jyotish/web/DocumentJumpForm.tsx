@@ -11,6 +11,7 @@ const inputWeb =
 
 export function DocumentJumpForm({
   chapterNumbers,
+  chapterPrefixes,
   currentChapter,
   documents,
   currentSlug,
@@ -19,6 +20,7 @@ export function DocumentJumpForm({
 }: DocumentJumpFormProps) {
   const form = useDocumentJumpForm({
     chapterNumbers,
+    chapterPrefixes,
     currentChapter,
     documents,
     currentSlug,
