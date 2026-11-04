@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { breakpoints } from "@vedic-patro/design-tokens";
 import { kitIcons, sheetClass } from "../classes";
 import type { SheetProps } from "../contract";
 import { Icon } from "./Icon";
@@ -21,6 +22,8 @@ const CLOSE_TIMING = { duration: 200, easing: Easing.bezier(0.32, 0.72, 0, 1) } 
 /** A release past a quarter of the panel, or a flick, dismisses it. */
 const DISMISS_FRACTION = 0.25;
 const DISMISS_VELOCITY = 900;
+/** On a tablet every sheet is a card this wide in the middle, like an iPad popover. */
+const TABLET_PANEL_WIDTH = 420;
 /** How dark the page behind gets, the same in both themes. */
 const SCRIM_OPACITY = 0.45;
 
@@ -31,8 +34,10 @@ const SCRIM_OPACITY = 0.45;
  * backdrop close it too. With Reduce Motion it only fades.
  */
 export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, placement, children, className, nativeClassName, testID }: SheetProps) {
-  const top = placement === "top";
-  const center = placement === "center";
+  /* Tablet (iPad, Android tablet): a narrow card in the middle, not a full-width sheet. */
+  const tablet = useWindowDimensions().width >= breakpoints.md;
+  const top = placement === "top" && !tablet;
+  const center = placement === "center" || tablet;
   const reduced = useReducedMotionPref();
 
   /* Stays mounted after `open` turns false, until the exit animation has finished. */
@@ -105,7 +110,11 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
           <Animated.View
             accessibilityViewIsModal
             onLayout={onPanelLayout}
-            style={[{ maxHeight: `${maxHeightPercent ?? 85}%` }, panelStyle]}
+            style={[
+              { maxHeight: `${maxHeightPercent ?? 85}%` },
+              tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center" } : null,
+              panelStyle,
+            ]}
           >
             <View
               className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}

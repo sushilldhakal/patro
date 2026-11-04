@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGestureProgress, useSpringPan } from "@vedic-patro/ui/gestures";
 import { SPRING_SHEET } from "@vedic-patro/ui/motion";
 import { useThemeColors } from "@/lib/theme-context";
+import { TABLET_DIALOG_WIDTH, useTabletUi } from "@/lib/tablet-ui";
 
 import { neutral, radius, space, withAlpha } from "@vedic-patro/design-tokens";
 
@@ -46,6 +47,22 @@ function toPixels(value: ViewStyle["maxHeight"], windowHeight: number): number {
  * Centred variant (tablets): fades and scales in on the same spring.
  */
 export function BottomSheetModal(props: Props) {
+  const tablet = useTabletUi();
+  /* Tablet: every sheet is a narrow card in the middle, like an iPad popover — a full-width
+     bottom sheet or the system page sheet (~700pt on an iPad) is far too big there. */
+  if (tablet) {
+    return (
+      <DrawnSheet {...props} variant="center">
+        {props.variant === "page" ? (
+          <ScrollView keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets style={{ flexShrink: 1 }}>
+            {props.children}
+          </ScrollView>
+        ) : (
+          props.children
+        )}
+      </DrawnSheet>
+    );
+  }
   if (props.variant === "page" && Platform.OS === "ios") return <NativePageSheet {...props} />;
   return <DrawnSheet {...props} variant={props.variant === "page" ? "bottom" : props.variant} />;
 }
@@ -169,7 +186,7 @@ function DrawnSheet({
     if (isCenter) {
       return {
         width: "100%",
-        maxWidth: 420,
+        maxWidth: TABLET_DIALOG_WIDTH,
         alignSelf: "center",
         opacity: open.get(),
         transform: [{ scale: interpolate(open.get(), [0, 1], [0.96, 1], Extrapolation.CLAMP) }],

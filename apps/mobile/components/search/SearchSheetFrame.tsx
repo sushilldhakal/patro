@@ -2,12 +2,14 @@ import type { ReactNode } from "react";
 import { Modal, Platform, Pressable, TextInput, View, type ViewStyle } from "react-native";
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { space } from "@vedic-patro/design-tokens";
+import { neutral, space } from "@vedic-patro/design-tokens";
 import { haptics } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
+import { useTabletUi } from "@/lib/tablet-ui";
 
 type Props = {
   open: boolean;
@@ -27,7 +29,70 @@ type Props = {
  * page sheet (the same motion as "+"), Android slides it up full screen. Festival search and the place
  * picker both use it.
  */
-export function SearchSheetFrame({ open, onClose, query, onQueryChange, placeholder, label, children }: Props) {
+export function SearchSheetFrame(props: Props) {
+  return useTabletUi() ? <TabletSearchCard {...props} /> : <PhoneSearchSheet {...props} />;
+}
+
+/** Tablets dialogs are this wide, centred, like iPad Calendar's search list. */
+const TABLET_SEARCH_WIDTH = 520;
+
+/**
+ * Tablet: a card in the middle of the screen with the search field at its top and the results
+ * under it, like iPad Calendar's search — not a sheet as wide as the screen.
+ */
+function TabletSearchCard({ open, onClose, query, onQueryChange, placeholder, label, children }: Props) {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const close = () => {
+    haptics.tick();
+    onClose();
+  };
+  return (
+    <Modal visible={open} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-start", paddingTop: space["5xl"] * 2 }}>
+        <Pressable
+          style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: neutral.black, opacity: 0.35 }}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t("ui.search.cancel")}
+        />
+        <View
+          className="overflow-hidden rounded-3xl border border-border bg-background shadow-lg"
+          style={{ width: "90%", maxWidth: TABLET_SEARCH_WIDTH, height: "70%" }}
+        >
+          <View className="flex-row items-center gap-2 border-b border-border px-4 py-3">
+            <View className="h-11 min-w-0 flex-1 flex-row items-center gap-2 rounded-full bg-muted px-4">
+              <Ionicons name="search-outline" size={20} color={colors.mutedForeground} />
+              <TextInput
+                autoFocus
+                value={query}
+                onChangeText={onQueryChange}
+                placeholder={placeholder}
+                placeholderTextColor={colors.mutedForeground}
+                accessibilityLabel={label}
+                returnKeyType="search"
+                autoCorrect={false}
+                className="min-w-0 flex-1 text-body text-foreground"
+                style={nepaliTextStyle(17)}
+              />
+              {query ? (
+                <Pressable onPress={() => onQueryChange("")} hitSlop={8} accessibilityLabel={t("ui.search.search")}>
+                  <Ionicons name="close-circle" size={18} color={colors.mutedForeground} />
+                </Pressable>
+              ) : null}
+            </View>
+            <Pressable onPress={close} accessibilityRole="button" hitSlop={8} className="px-1 active:opacity-60">
+              <Text className="text-body font-medium text-secondary">{t("ui.search.cancel")}</Text>
+            </Pressable>
+          </View>
+          {children({ paddingTop: space.md, paddingHorizontal: space.lg, paddingBottom: space.xl })}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+function PhoneSearchSheet({ open, onClose, query, onQueryChange, placeholder, label, children }: Props) {
   const { t } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();

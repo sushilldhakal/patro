@@ -25,6 +25,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
 import { useBarAccessoryHeight } from "@/lib/bar-accessory";
+import { useTabletUi } from "@/lib/tablet-ui";
 
 /** The tabs the bar keeps on a narrow phone (home, panchanga, daily transit; the profile follows); the side menu
  *  reaches the rest. */
@@ -66,6 +67,7 @@ function FloatingNavBarView() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
+  const tablet = useTabletUi();
   const reduced = useReducedMotionPref();
 
   // Scrolling a page down folds the bar to its icons, Revolut-style; back up (or a new page) unfolds it.
@@ -124,8 +126,9 @@ function FloatingNavBarView() {
       style={{ paddingBottom: Math.max(insets.bottom, isTablet ? 10 : 6) }}
       className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter, "px-4")}
     >
-      {/* Search and place: round buttons stacked on the right, floating above the bar. */}
-      <FloatingActions />
+      {/* Search and place: round buttons stacked on the right, floating above the bar. On a tablet
+          they sit in the top bar instead (AppHeader), like iPad Calendar's toolbar. */}
+      {tablet ? null : <FloatingActions />}
       <View pointerEvents="box-none">
       <View className={shellClasses.navRow}>
       <View style={{ flex: 1, minWidth: 0 }}>
