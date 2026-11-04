@@ -1,3 +1,5 @@
+import { listEvents } from "@/lib/events/api";
+import { planEventAlerts } from "@/lib/events/alerts";
 import { Platform } from "react-native";
 import { listProfiles, tokenStore, type Profile } from "@/lib/auth/client";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
@@ -54,6 +56,7 @@ export async function syncNotifications(options: {
 
   let profiles: CachedProfile[] = signedIn ? await notifStore.getProfiles() : [];
   let reminders = signedIn ? await notifStore.getReminders() : [];
+  let events = signedIn ? await notifStore.getEvents() : [];
   let fullProfiles: Profile[] | null = null;
 
   if (online && signedIn) {
@@ -69,6 +72,12 @@ export async function syncNotifications(options: {
       await notifStore.setReminders(reminders);
     } catch {
       /* keep the cached rules */
+    }
+    try {
+      events = await listEvents(new Date(Date.now() - 86_400_000).toISOString());
+      await notifStore.setEvents(events);
+    } catch {
+      /* keep the cached events */
     }
   }
 
@@ -120,6 +129,8 @@ export async function syncNotifications(options: {
     rashifal: { settings: rashifalSettings, cache: rashifalCache },
     budget: NOTIFICATION_BUDGET,
   });
-  const scheduled = await applySchedule(planned);
+  // The user's own events come first: they asked for these alerts by name.
+  const eventAlerts = planEventAlerts(events, new Date(), lang);
+  const scheduled = await applySchedule([...eventAlerts, ...planned].slice(0, NOTIFICATION_BUDGET));
   return { scheduled, online, permission };
 }

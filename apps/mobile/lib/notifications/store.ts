@@ -1,3 +1,4 @@
+import type { CalendarEvent } from "@/lib/events/api";
 import { deviceStore } from "@/lib/device-store";
 import type { Profile } from "@/lib/auth/client";
 import {
@@ -15,6 +16,7 @@ import {
 const KEYS = {
   profiles: "notif:profiles",
   reminders: "notif:reminders",
+  events: "notif:events",
   briefing: "notif:briefing",
   rashifalSettings: "notif:rashifal_settings",
   rashifalCache: "notif:rashifal_cache",
@@ -35,6 +37,11 @@ export const notifStore = {
     return (await deviceStore.get<ReminderRule[]>(KEYS.reminders)) ?? [];
   },
   setReminders: (rules: ReminderRule[]) => deviceStore.set(KEYS.reminders, rules),
+
+  async getEvents(): Promise<CalendarEvent[]> {
+    return (await deviceStore.get<CalendarEvent[]>(KEYS.events)) ?? [];
+  },
+  setEvents: (events: CalendarEvent[]) => deviceStore.set(KEYS.events, events),
 
   async getBriefing(): Promise<BriefingSettings> {
     return { ...DEFAULT_BRIEFING, ...((await deviceStore.get<BriefingSettings>(KEYS.briefing)) ?? {}) };

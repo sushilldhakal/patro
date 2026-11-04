@@ -5,7 +5,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useThemeColors } from "@/lib/theme-context";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
-import { AddReminderForm } from "@/components/reminders/AddReminderForm";
+import { EventForm } from "@/components/events/EventForm";
 import { useLocale } from "@/lib/i18n";
 import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
@@ -46,23 +46,9 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
   }, [l, onClose]);
 
   return (
-    <BottomSheetModal variant="page" visible={open && isAuthenticated} onClose={onClose} maxHeight="88%">
-      <View>
-        <AddReminderForm active={open} online={online} onCreated={onCreated} />
-        {/* A round X at the top right, like the search sheet's, besides the drag down. */}
-        <Pressable
-          onPress={() => {
-            haptics.tick();
-            onClose();
-          }}
-          accessibilityRole="button"
-          accessibilityLabel={t("ui.search.cancel")}
-          hitSlop={8}
-          className="absolute right-3 top-3 h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-60"
-        >
-          <Ionicons name="close" size={22} color={colors.foreground} />
-        </Pressable>
-      </View>
+    <BottomSheetModal variant="page" visible={open && isAuthenticated} onClose={onClose} maxHeight="92%">
+      {/* One form for an event or a reminder, like Apple Calendar's "+". */}
+      {open ? <EventForm onClose={onClose} onSaved={() => void onCreated()} /> : null}
     </BottomSheetModal>
   );
 }
