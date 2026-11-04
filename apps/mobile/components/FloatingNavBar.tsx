@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ActionSheetIOS, Animated as RNAnimated, Easing, Pressable, Share, View } from "react-native";
+import { ActionSheetIOS, Animated as RNAnimated, Easing, Pressable, Share, View, useWindowDimensions } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
@@ -25,15 +25,20 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
 
-/** The tabs the bar keeps (home, panchanga, daily transit; the profile follows); the side menu reaches the rest. */
+/** The tabs the bar keeps on a narrow phone (home, panchanga, daily transit; the profile follows); the side menu
+ *  reaches the rest. */
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
+/** With room for six (Plus / Pro Max phones, tablets): kundali and vastu join them. */
+const BAR_TABS_WIDE: ReadonlySet<string> = new Set(["/", "/panchanga", "/kundali", "/dainikkranti", "/vastu"]);
+/** Window width (pt) from which the bar shows six tabs: the Plus and Pro Max iPhones are 428–440. */
+const WIDE_BAR_MIN_WIDTH = 420;
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /** Full bar → icons only (lib/nav-compact.ts). */
-/** Height of the row of tabs inside the pill (the pill adds 6pt above and below: 64pt full, 50pt folded). */
-const TABS_HEIGHT = 52;
-const TABS_HEIGHT_COMPACT = 38;
+/** Height of the row of tabs inside the pill (the pill adds 4pt above and below: 54pt full, like the reference bars, 44pt folded). */
+const TABS_HEIGHT = 46;
+const TABS_HEIGHT_COMPACT = 36;
 /** How far in from each side the tab pill draws when folded, so it reads as a slimmer capsule. */
 const GROUP_INSET_COMPACT = 18;
 const LABEL_MAX_HEIGHT = 24;
@@ -81,7 +86,9 @@ function FloatingNavBarView() {
   const tabsHeight = fold.interpolate({ inputRange: [0, 1], outputRange: [TABS_HEIGHT, TABS_HEIGHT_COMPACT] });
 
   // The highlight behind the current tab slides (springs) from tab to tab, like the system tab bar's.
-  const tabs = FLOATING_NAV.filter((item) => BAR_TABS.has(item.href));
+  const { width: windowWidth } = useWindowDimensions();
+  const barTabs = windowWidth >= WIDE_BAR_MIN_WIDTH ? BAR_TABS_WIDE : BAR_TABS;
+  const tabs = FLOATING_NAV.filter((item) => barTabs.has(item.href));
   const tabCount = tabs.length + 1; // + profile
   const activeIndex = pathname.startsWith("/account")
     ? tabs.length
@@ -127,7 +134,7 @@ function FloatingNavBarView() {
       <View className={shellClasses.navRow}>
       <View style={{ flex: 1, minWidth: 0 }}>
       <RNAnimated.View style={{ marginHorizontal: inset }}>
-      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1.5")}>
+      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1")}>
       <View style={{ flex: 1, minWidth: 0 }} onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}>
       <RNAnimated.View style={{ height: tabsHeight }}>
         {activeIndex >= 0 && slot > 0 ? (
