@@ -58,7 +58,7 @@ function TabletSearchCard({ open, onClose, query, onQueryChange, placeholder, la
         />
         <View
           className="overflow-hidden rounded-3xl border border-border bg-background shadow-lg"
-          style={{ width: "90%", maxWidth: TABLET_SEARCH_WIDTH, height: "70%" }}
+          style={{ width: "90%", maxWidth: TABLET_SEARCH_WIDTH, height: "55%" }}
         >
           <View className="flex-row items-center gap-2 border-b border-border px-4 py-3">
             <View className="h-11 min-w-0 flex-1 flex-row items-center gap-2 rounded-full bg-muted px-4">

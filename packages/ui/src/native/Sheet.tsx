@@ -107,46 +107,46 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
               <View className="flex-1 bg-black" />
             </Animated.View>
           </Pressable>
-          <Animated.View
-            accessibilityViewIsModal
-            onLayout={onPanelLayout}
-            style={[
-              { maxHeight: `${maxHeightPercent ?? 85}%` },
-              tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center" } : null,
-              panelStyle,
-            ]}
-          >
-            <View
-              className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
-              style={[{ flexShrink: 1 }, top ? { paddingTop: TOP_SHEET_INSET } : null]}
+          {/* Tablet width on a plain view: beside an animated style in one style array, a plain
+              width is dropped and the panel went full width. */}
+          <View style={tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center", maxHeight: "85%" } : { width: "100%" }}>
+            <Animated.View
+              accessibilityViewIsModal
+              onLayout={onPanelLayout}
+              style={[{ maxHeight: `${maxHeightPercent ?? 85}%` }, panelStyle]}
             >
-              {/* The handle and title are the drag area; the list below keeps its own scrolling. */}
-              <GestureDetector gesture={pan}>
-                <View>
-                  {top || center ? null : <View className={sheetClass.handle} />}
-                  {title || closeLabel ? (
-                    <View className={sheetClass.header}>
-                      {title ? (
-                        <Text as="h2" className={sheetClass.title}>
-                          {title}
-                        </Text>
-                      ) : (
-                        <View />
-                      )}
-                      {closeLabel ? (
-                        <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} hitSlop={8} className="p-1 active:opacity-70">
-                          <Icon node={kitIcons.x} size="md" tone="muted" />
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  ) : null}
-                </View>
-              </GestureDetector>
-              <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-                {children}
-              </ScrollView>
-            </View>
-          </Animated.View>
+              <View
+                className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
+                style={[{ flexShrink: 1 }, top ? { paddingTop: TOP_SHEET_INSET } : null]}
+              >
+                {/* The handle and title are the drag area; the list below keeps its own scrolling. */}
+                <GestureDetector gesture={pan}>
+                  <View>
+                    {top || center ? null : <View className={sheetClass.handle} />}
+                    {title || closeLabel ? (
+                      <View className={sheetClass.header}>
+                        {title ? (
+                          <Text as="h2" className={sheetClass.title}>
+                            {title}
+                          </Text>
+                        ) : (
+                          <View />
+                        )}
+                        {closeLabel ? (
+                          <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel={closeLabel} hitSlop={8} className="p-1 active:opacity-70">
+                            <Icon node={kitIcons.x} size="md" tone="muted" />
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    ) : null}
+                  </View>
+                </GestureDetector>
+                <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+                  {children}
+                </ScrollView>
+              </View>
+            </Animated.View>
+          </View>
         </KeyboardAvoidingView>
       </GestureHandlerRootView>
     </Modal>
