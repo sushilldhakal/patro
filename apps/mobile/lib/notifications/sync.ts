@@ -1,3 +1,4 @@
+import { importPhoneCalendars } from "@/lib/events/device-calendars";
 import { listEvents } from "@/lib/events/api";
 import { planEventAlerts } from "@/lib/events/alerts";
 import { Platform } from "react-native";
@@ -74,6 +75,8 @@ export async function syncNotifications(options: {
       /* keep the cached rules */
     }
     try {
+      // The phone's calendars the user chose to keep in step (Google, iCloud, …).
+      await importPhoneCalendars().catch(() => 0);
       events = await listEvents(new Date(Date.now() - 86_400_000).toISOString());
       await notifStore.setEvents(events);
     } catch {

@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { PhoneCalendarsCard } from "@/components/events/PhoneCalendarsCard";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { AddReminderForm, WEEKDAYS_EN, WEEKDAYS_NE } from "@/components/reminders/AddReminderForm";
@@ -238,6 +239,7 @@ export default function RemindersScreen() {
         </>
       ) : (
         <View className="gap-6">
+          <PhoneCalendarsCard />
           {permission !== "granted" ? (
             <Card className="gap-3">
               <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>

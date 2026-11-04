@@ -337,7 +337,14 @@
           "color": "#073f43"
         }
       ],
-      "expo-background-task"
+      "expo-background-task",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Vedic Patro reads your calendars so you can bring your events (Google, iCloud and others on this phone) into the app.",
+          "remindersPermission": "Vedic Patro reads your reminders so you can bring them into the app."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

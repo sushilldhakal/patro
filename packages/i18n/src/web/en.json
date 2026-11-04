@@ -4747,6 +4747,13 @@
     "jump_not_found": "That section or verse couldn't be found."
   },
   "events": {
+    "phone_calendars": "Phone calendars",
+    "phone_calendars_body": "Bring events from Google, iCloud and the other calendars on this phone. The ones you choose stay in sync.",
+    "phone_allow": "Allow calendar access",
+    "phone_denied": "No access. Allow calendars for Vedic Patro in Settings.",
+    "phone_import": "Import now",
+    "phone_imported": "{{count}} events added or updated",
+    "phone_none": "No calendars on this phone.",
     "new": "New",
     "edit": "Edit",
     "save": "Save",
@@ -5150,11 +5157,12 @@
       "zoom_in": "Zoom in",
       "zoom_out": "Zoom out"
     },
+    "reminders": {
+      "new_reminder": "New reminder",
+      "reminders": "Reminders"
+    },
     "search": {
       "cancel": "Close"
-    },
-    "reminders": {
-      "reminders": "Reminders"
     },
     "sait": {
       "choose_a_profile": "Choose a profile",
