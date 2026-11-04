@@ -40,8 +40,8 @@ const LABEL_MAX_HEIGHT = 24;
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
- * the tabs (a highlight slides to the current one), then search and place in one capsule on the right ("+" and
- * "…" too on the Duo; elsewhere "+" is at the header's top right); home, panchanga, daily transit and the profile; place on
+ * the tabs across the bottom (a highlight slides to the current one), with search and place as round buttons
+ * stacked on the right just above it ("+" and "…" too on the Duo; elsewhere "+" is at the header's top right); home, panchanga, daily transit and the profile; place on
  * the right ("…" too on the Duo). Settings are inside the profile page. On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
@@ -113,8 +113,11 @@ function FloatingNavBarView() {
       style={{ paddingBottom: Math.max(insets.bottom, isTablet ? 10 : 6) }}
       className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter)}
     >
+      {/* Search and place: round buttons stacked on the right, floating above the bar. */}
+      <FloatingActions />
+      <View pointerEvents="box-none">
       {/* No blur on native: fade the page out under the bar instead, so text
-          never shows through the gap below it or around its corners. */}
+          never shows through the gap below it or around its corners. Only behind the bar, not the buttons. */}
       <LinearGradient
         pointerEvents="none"
         colors={[withAlpha(colors.background, 0), colors.background]}
@@ -169,7 +172,7 @@ function FloatingNavBarView() {
       </View>
       </RNAnimated.View>
       </View>
-      <RightActions />
+      </View>
       </View>
     </View>
   );
@@ -196,9 +199,10 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
   );
 }
 
-/** Search and place in one capsule right of the tabs; on the iPhone Duo also "+" and "…" (share, reminders,
- *  rashifal), which its portrait top bar has no room for beside the status bar. Settings are in the profile page. */
-function RightActions() {
+/** Search and place as round buttons stacked on the right, just above the bar (like a mail app's compose
+ *  button); on the iPhone Duo also "+" and "…" (share, reminders, rashifal), which its portrait top bar has no
+ *  room for beside the status bar. Settings are in the profile page. */
+function FloatingActions() {
   const { t, lang } = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -212,7 +216,7 @@ function RightActions() {
     });
   };
   return (
-    <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
+    <View pointerEvents="box-none" className={shellClasses.navFabStack}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} /> : null}
@@ -254,18 +258,20 @@ function ActionButton({
 }) {
   const colors = useThemeColors();
   return (
-    <Pressable
-      onPress={() => {
-        haptics.tick();
-        onPress();
-      }}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      hitSlop={4}
-      className={shellClasses.navActionButton}
-    >
-      <Ionicons name={icon} size={20} color={colors.foreground} />
-    </Pressable>
+    <View style={nativeShadow("md")} className="rounded-full">
+      <Pressable
+        onPress={() => {
+          haptics.tick();
+          onPress();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        hitSlop={4}
+        className={shellClasses.navFab}
+      >
+        <Ionicons name={icon} size={22} color={colors.foreground} />
+      </Pressable>
+    </View>
   );
 }
 

@@ -46,6 +46,9 @@ export const shellClasses = {
   /** Search, "+" and place: smaller capsules than the tabs, centred beside them. */
   navActionGroup: "h-12 flex-row items-center rounded-full border border-border/60 bg-card px-1",
   navActionButton: "h-10 w-10 items-center justify-center rounded-full active:bg-muted",
+  /** The app: search and place as round buttons stacked on the right, floating just above the bar. */
+  navFabStack: "mb-3 mr-1 flex-col items-center gap-2.5 self-end",
+  navFab: "h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-card active:opacity-70",
   /** iPhone Duo tab pages: the two action groups at the foot, either side of the system tab bar. */
   navDuoActions: "absolute left-0 right-0 flex-row justify-between px-4",
   navItemActive: "bg-secondary/10",
