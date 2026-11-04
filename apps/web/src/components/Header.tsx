@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AccountMenu } from "@/components/auth/AccountMenu";
+import { NewEventButton } from "@/components/events/NewEventButton";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
@@ -296,6 +297,7 @@ export function Header() {
           <CalendarSystemToggle />
           <LanguageSwitcher />
           <ThemeToggle />
+          <NewEventButton />
           <AccountMenu />
         </div>
 
@@ -332,7 +334,8 @@ export function Header() {
           <BrandMark className="justify-center" />
 
           <div className="flex justify-end items-center shrink-0">
-            <AccountMenu />
+            <NewEventButton />
+          <AccountMenu />
           </div>
         </div>
 
@@ -360,7 +363,8 @@ export function Header() {
             <CalendarSystemToggle />
             <LanguageSwitcher />
             <ThemeToggle />
-            <AccountMenu />
+            <NewEventButton />
+          <AccountMenu />
           </div>
         </div>
       </div>
