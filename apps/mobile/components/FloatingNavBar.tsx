@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ActionSheetIOS, Pressable, Share, View } from "react-native";
-import Animated, { interpolate, useAnimatedStyle, useDerivedValue, withTiming, type SharedValue } from "react-native-reanimated";
+import Animated, { interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming, type SharedValue } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { usePathname, useRouter } from "expo-router";
@@ -40,7 +40,8 @@ const LABEL_MAX_HEIGHT = 24;
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
- * search on the left ("+" too on the Duo; elsewhere it is at the header's top right); home, panchanga, daily transit and the profile; place on
+ * the tabs (a highlight slides to the current one), then search and place in one capsule on the right ("+" and
+ * "…" too on the Duo; elsewhere "+" is at the header's top right); home, panchanga, daily transit and the profile; place on
  * the right ("…" too on the Duo). Settings are inside the profile page. On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
@@ -70,6 +71,22 @@ function FloatingNavBarView() {
   const insetStyle = useAnimatedStyle(() => ({
     marginHorizontal: interpolate(progress.value, [0, 1], [0, GROUP_INSET_COMPACT]),
   }));
+  // The highlight behind the current tab slides (springs) from tab to tab, like the system tab bar's.
+  const tabs = FLOATING_NAV.filter((item) => BAR_TABS.has(item.href));
+  const tabCount = tabs.length + 1; // + profile
+  const activeIndex = pathname.startsWith("/account")
+    ? tabs.length
+    : tabs.findIndex((item) => isNavActive(pathname, item.href));
+  const [rowWidth, setRowWidth] = useState(0);
+  const slot = rowWidth / tabCount;
+  const indicatorX = useDerivedValue(() =>
+    reduced ? activeIndex * slot : withSpring(activeIndex * slot, { damping: 18, stiffness: 220, mass: 0.8 }),
+  );
+  const indicatorStyle = useAnimatedStyle(() => ({
+    width: slot,
+    opacity: activeIndex < 0 || slot === 0 ? 0 : 1,
+    transform: [{ translateX: indicatorX.value }],
+  }));
   const tabsStyle = useAnimatedStyle(() => ({
     height: interpolate(progress.value, [0, 1], [TABS_HEIGHT, TABS_HEIGHT_COMPACT]),
   }));
@@ -92,11 +109,20 @@ function FloatingNavBarView() {
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
       />
       <View className={shellClasses.navRow}>
-      <LeftActions />
       <Animated.View style={[{ flex: 1, minWidth: 0 }, insetStyle]}>
       <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1.5")}>
-      <Animated.View style={[{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center" }, tabsStyle]}>
-        {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
+      <Animated.View
+        onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}
+        style={[{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center" }, tabsStyle]}
+      >
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: 999, backgroundColor: withAlpha(colors.secondary, 0.12) },
+            indicatorStyle,
+          ]}
+        />
+        {tabs.map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
             <NavItem
@@ -144,20 +170,8 @@ function NavLabel({ progress, active, children }: { progress: SharedValue<number
   );
 }
 
-/** Search, left of the tabs. "+" is at the header's top right, except on the iPhone Duo, whose portrait
- *  top bar has no room for it. */
-function LeftActions() {
-  const { t } = useLocale();
-  return (
-    <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
-      <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
-      {IS_IPHONE_DUO ? <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} /> : null}
-    </View>
-  );
-}
-
-/** Place, right of the tabs; on the iPhone Duo also "…" (share, reminders, rashifal), which its portrait
- *  top bar has no room for beside the status bar. Settings are in the profile page. */
+/** Search and place in one capsule right of the tabs; on the iPhone Duo also "+" and "…" (share, reminders,
+ *  rashifal), which its portrait top bar has no room for beside the status bar. Settings are in the profile page. */
 function RightActions() {
   const { t, lang } = useLocale();
   const router = useRouter();
@@ -173,7 +187,9 @@ function RightActions() {
   };
   return (
     <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
+      <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
+      {IS_IPHONE_DUO ? <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} /> : null}
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
   );
@@ -227,7 +243,7 @@ function ActionButton({
   );
 }
 
-/** Press scale only. Tabs are peers, so the active item never slides. */
+/** Press scale; the highlight behind the current tab is drawn (and slid) by the bar. */
 function NavItem({ active, onPress, children }: { active: boolean; onPress: () => void; children: ReactNode }) {
   const reduced = useReducedMotionPref();
   const [pressed, setPressed] = useState(false);
@@ -237,7 +253,7 @@ function NavItem({ active, onPress, children }: { active: boolean; onPress: () =
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       // Fills the row of tabs' height, so the active pill shrinks with the bar when it folds.
-      className={cn(shellClasses.navTab, "h-full", active && shellClasses.navTabActive)}
+      className={cn(shellClasses.navTab, "h-full")}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       pressRetentionOffset={16}
