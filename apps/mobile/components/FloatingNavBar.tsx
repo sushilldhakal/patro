@@ -36,12 +36,12 @@ const WIDE_BAR_MIN_WIDTH = 420;
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
 /** Full bar → icons only (lib/nav-compact.ts). */
-/** Height of the row of tabs inside the pill (the pill adds 4pt above and below: 54pt full, like the reference bars, 44pt folded). */
-const TABS_HEIGHT = 46;
-const TABS_HEIGHT_COMPACT = 36;
+/** Height of the row of tabs inside the pill (the pill adds 2pt above and below: 38pt full, 31pt folded). */
+const TABS_HEIGHT = 34;
+const TABS_HEIGHT_COMPACT = 27;
 /** How far in from each side the tab pill draws when folded, so it reads as a slimmer capsule. */
 const GROUP_INSET_COMPACT = 18;
-const LABEL_MAX_HEIGHT = 24;
+const LABEL_MAX_HEIGHT = 14;
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
@@ -111,8 +111,8 @@ function FloatingNavBarView() {
     return () => anim.stop();
   }, [activeIndex, slot, reduced, slide]);
 
-  /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
-  const iconSize = 20;
+  /* Smaller than the web's size-5 icons, so icon and label fit the slim 34pt row. */
+  const iconSize = 18;
 
   return (
     <View
@@ -134,7 +134,7 @@ function FloatingNavBarView() {
       <View className={shellClasses.navRow}>
       <View style={{ flex: 1, minWidth: 0 }}>
       <RNAnimated.View style={{ marginHorizontal: inset }}>
-      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1")}>
+      <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-0.5")}>
       <View style={{ flex: 1, minWidth: 0 }} onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}>
       <RNAnimated.View style={{ height: tabsHeight }}>
         {activeIndex >= 0 && slot > 0 ? (
@@ -197,7 +197,7 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
     >
       <Text
         numberOfLines={1}
-        className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
+        className={cn("text-center", shellClasses.navLabel, "leading-snug", active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
         style={nepaliTextStyle()}
       >
         {children}
