@@ -6,6 +6,9 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 
+/** Screen-edge gutter + the floating buttons' width + a gap (FloatingNavBar's search / place stack). */
+const FLOATING_ACTIONS_CLEARANCE = 12 + 48 + 8;
+
 /** Binds the shared transport to the app audio engine and the native slider. */
 export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; documentTitle: string }) {
   const colors = useThemeColors();
@@ -20,7 +23,8 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
       suktaNumber={audio.suktaNumber}
       documentTitle={documentTitle}
       onStartFull={audio.startFull}
-      onPlayThrough={audio.startPlayThrough}
+      // No start button when only some verses are recorded: it would jump far ahead to the first one.
+      onPlayThrough={audio.canPlayThrough ? audio.startPlayThrough : undefined}
       fullPlaying={audio.full.playing}
       fullCurrentTime={audio.full.currentTime}
       fullDuration={audio.full.duration}
@@ -37,6 +41,8 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
       onPrev={audio.prevVerse}
       onSwitchToFull={audio.switchToFull}
       dockBottom={floatingNavTabBarHeight(isTablet, insets.bottom) + 8}
+      // Left of the floating search / place buttons (48pt, 12pt from the edge), not under them.
+      dockRight={FLOATING_ACTIONS_CLEARANCE}
       renderSeek={({ value, max, label, onChange }) => (
         <Slider
           style={{ flex: 1, height: 28 }}

@@ -244,6 +244,8 @@ export type PlaybackBarProps = {
   onSwitchToFull: () => void;
   /** App: distance from the bottom of the screen, above the tab bar. */
   dockBottom?: number;
+  /** App: room kept on the right for the floating search / place buttons beside the bar. */
+  dockRight?: number;
   /** App slider. The website draws a range input. */
   renderSeek?: (args: PlaybackSeekArgs) => ReactNode;
 };

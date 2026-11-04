@@ -156,7 +156,8 @@ export function DocumentChapterDetail() {
         suktaNumber={mode === "full" ? suktaNumber : null}
         documentTitle={page.docTitle}
         onStartFull={startFull}
-        onPlayThrough={hasSuktaAudio ? startFull : playThrough ? () => versePlayer.play(playThrough.id) : undefined}
+        // Only when every verse is recorded: with a few recordings it would jump far ahead to the first one.
+        onPlayThrough={!versePlayer.coversAll ? undefined : hasSuktaAudio ? startFull : playThrough ? () => versePlayer.play(playThrough.id) : undefined}
         fullPlaying={fullAudio.playing}
         fullCurrentTime={fullAudio.currentTime}
         fullDuration={fullAudio.duration}

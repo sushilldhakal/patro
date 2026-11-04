@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { suktaTracksFrom } from "@vedic-patro/features/documents";
+import { isNextSukta, suktaTracksFrom } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { useFullRecordingAudio } from "@/hooks/use-full-recording-audio";
 import { useShlokaPlayer } from "@/hooks/use-shloka-player";
@@ -20,7 +20,11 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
   );
   const onClipMissingRef = useRef<(id: number) => boolean>(() => false);
   const player = useShlokaPlayer(shlokas, (id) => onClipMissingRef.current(id));
-  const fullAudio = useFullRecordingAudio(queue);
+  // With gaps in the recordings a sukta file ending stops, rather than jumping to the next recorded sukta.
+  const fullAudio = useFullRecordingAudio(
+    queue,
+    (from, to) => player.coversAll || isNextSukta(suktaTracks[from]?.sukta, suktaTracks[to]?.sukta),
+  );
 
   // Which player currently owns the floating bar / actual sound — null until
   // the listener has engaged either one this visit.

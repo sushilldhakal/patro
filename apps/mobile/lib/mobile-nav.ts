@@ -33,7 +33,7 @@ export const FLOATING_NAV_BOTTOM_PADDING_TABLET = 96;
  * Keep in sync with `FloatingNavBar` padding and pill size.
  */
 export function floatingNavTabBarHeight(isTablet: boolean, safeBottom: number): number {
-  const pill = isTablet ? 56 : 50;
+  const pill = isTablet ? 56 : 54; // FloatingNavBar: 54pt full
   const minBottom = isTablet ? 10 : 6;
   return pill + Math.max(safeBottom, minBottom);
 }

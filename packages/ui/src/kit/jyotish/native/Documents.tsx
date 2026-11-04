@@ -70,9 +70,9 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
   );
 }
 
-function Dock({ children, bottom }: { children: React.ReactNode; bottom: number }) {
+function Dock({ children, bottom, right = 12 }: { children: React.ReactNode; bottom: number; right?: number }) {
   return (
-    <View pointerEvents="box-none" style={{ position: "absolute", left: 12, right: 12, bottom, alignItems: "center" }}>
+    <View pointerEvents="box-none" style={{ position: "absolute", left: 12, right, bottom, alignItems: "center" }}>
       {children}
     </View>
   );
@@ -94,7 +94,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   if (bar.face === "hidden") return null;
   if (bar.face === "idle") {
     return (
-      <Dock bottom={bottom}>
+      <Dock bottom={bottom} right={props.dockRight}>
         <Pressable onPress={bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.()} className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow)}>
           <Box className={documentsClasses.barPlay}>
             <Icon node={iconPlay} size={20} tone="onSecondary" filled />
@@ -110,7 +110,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   }
   if (bar.face === "full") {
     return (
-      <Dock bottom={bottom}>
+      <Dock bottom={bottom} right={props.dockRight}>
         <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
           <Pressable onPress={props.onToggleFull} label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
             <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
@@ -135,7 +135,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   }
   if (!props.activeShloka) return null;
   return (
-    <Dock bottom={bottom}>
+    <Dock bottom={bottom} right={props.dockRight}>
       <Box className={cn(documentsClasses.barShell, documentsClasses.barPad)}>
         {bar.verse.hasClip ? (
           <Box className={cn(documentsClasses.barScrubRow, "mb-1.5")} nativeClassName="flex-row items-center">

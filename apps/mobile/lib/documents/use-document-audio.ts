@@ -10,7 +10,7 @@ import {
 } from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
 import { isAudioAvailable } from "@vedic-patro/api-client";
-import { suktaTracksFrom } from "@vedic-patro/features/documents";
+import { audioCoversAll, isNextSukta, isNextVerse, suktaTracksFrom } from "@vedic-patro/features/documents";
 
 export type AudioMode = "full" | "verse" | null;
 
@@ -58,6 +58,14 @@ export function useDocumentAudio(
   const fullStatus = useAudioPlayerStatus(fullPlayer);
 
   const [mode, setMode] = useState<AudioMode>(null);
+
+  /* Every verse recorded (or one full recording): the bar offers "play through" and playback runs
+     on by itself. With recordings for a few verses only, it stops where the recordings stop instead
+     of jumping — and scrolling — far ahead to the next one. */
+  const coversAll = useMemo(() => Boolean(fullAudioUrl) || audioCoversAll(shlokas), [fullAudioUrl, shlokas]);
+  const gapRef = useRef({ coversAll, shlokas, suktaTracks });
+  gapRef.current = { coversAll, shlokas, suktaTracks };
+  const suktaSkipAt = useRef(0);
   const [openMeaningIds, setOpenMeaningIds] = useState<ReadonlySet<number>>(() => new Set());
   const openMeaningRef = useRef(openMeaningIds);
   openMeaningRef.current = openMeaningIds;
@@ -188,6 +196,13 @@ export function useDocumentAudio(
       if (!userSkip && index === previousIndex + 1 && prevId != null && openMeaningRef.current.has(prevId)) {
         playlist.pause();
       }
+      // The next recording is not the next verse (a gap in the recordings): stop here.
+      const gap = gapRef.current;
+      if (!userSkip && !gap.coversAll && prevId != null && !isNextVerse(gap.shlokas, prevId, id)) {
+        playlist.pause();
+        setMode(null);
+        return;
+      }
       try {
         playlist.updateLockScreenMetadata(metadataFor(id));
       } catch {
@@ -237,7 +252,10 @@ export function useDocumentAudio(
       fullPlayer.pause();
       setMode("full");
       const at = index >= 0 && index < suktaTracks.length ? index : 0;
-      if (suktaPlaylist.currentIndex !== at) suktaPlaylist.skipTo(at);
+      if (suktaPlaylist.currentIndex !== at) {
+        suktaSkipAt.current = Date.now();
+        suktaPlaylist.skipTo(at);
+      }
       suktaPlaylist.play();
       const sukta = suktaTracks[at]?.sukta;
       try {
@@ -257,6 +275,20 @@ export function useDocumentAudio(
     [suktaTracks, playlist, fullPlayer, suktaPlaylist, documentTitle],
   );
   startSuktaRef.current = startSukta;
+
+  // A sukta file ending moves on to the next one only when it is the very next sukta.
+  useEffect(() => {
+    const sub = suktaPlaylist.addListener("trackChanged", ({ previousIndex, currentIndex: index }) => {
+      if (Date.now() - suktaSkipAt.current < USER_SKIP_WINDOW_MS) return;
+      const gap = gapRef.current;
+      if (gap.coversAll) return;
+      if (!isNextSukta(gap.suktaTracks[previousIndex]?.sukta, gap.suktaTracks[index]?.sukta)) {
+        suktaPlaylist.pause();
+        setMode(null);
+      }
+    });
+    return () => sub.remove();
+  }, [suktaPlaylist]);
 
   const startPlayThrough = useCallback(() => {
     if (!fullAudioUrl && suktaTracks.length) {
@@ -391,8 +423,12 @@ export function useDocumentAudio(
     playVerse,
     nextVerse: () => stepVerse(1),
     prevVerse: () => stepVerse(-1),
-    hasNext: verseIndex >= 0 && verseIndex < trackIds().length - 1,
-    hasPrev: verseIndex > 0,
+    // Next / previous only to a neighbouring verse when the recordings have gaps.
+    hasNext:
+      verseIndex >= 0 &&
+      verseIndex < trackIds().length - 1 &&
+      (coversAll || isNextVerse(shlokas, trackIds()[verseIndex]!, trackIds()[verseIndex + 1]!)),
+    hasPrev: verseIndex > 0 && (coversAll || isNextVerse(shlokas, trackIds()[verseIndex - 1]!, trackIds()[verseIndex]!)),
     verse: {
       playing: verseStatus.playing,
       currentTime: verseStatus.currentTime,
@@ -411,6 +447,8 @@ export function useDocumentAudio(
         : null,
     startFull,
     startPlayThrough,
+    /** The bar's start button: only when every verse is recorded (or there is a full recording). */
+    canPlayThrough: coversAll,
     toggleFull,
     seekFull,
     playFullAt,

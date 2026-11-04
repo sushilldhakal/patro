@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { audioCoversAll, isNoteLabel } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { ShlokaElementEngine } from "@/lib/shloka-element-engine";
 
@@ -36,6 +37,8 @@ export interface ShlokaPlayerState {
   toggleMeaning: (id: number) => void;
   hasNext: boolean;
   hasPrev: boolean;
+  /** Every verse has a recording, so a start button can play straight through. */
+  coversAll: boolean;
   /**
    * Override which verse reads as active/playing — for a different playback
    * source (the whole-document recording) to drive this engine's highlight
@@ -86,6 +89,21 @@ export function useShlokaPlayer(
   const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
 
   const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
+  /* Every verse recorded: playback runs straight through. With recordings for a few verses only it
+     stops where the recordings stop, instead of jumping (and scrolling) far ahead to the next one. */
+  const coversAll = useMemo(() => audioCoversAll(shlokas), [shlokas]);
+  /** The verse right after `id` in reading order (note cards skipped), or -1. */
+  const neighbourIndex = useCallback(
+    (id: number | null, delta: 1 | -1) => {
+      const at = id == null ? -1 : order.indexOf(id);
+      if (at < 0) return -1;
+      for (let i = at + delta; i >= 0 && i < shlokas.length; i += delta) {
+        if (!isNoteLabel(shlokas[i]!.verse_label)) return i;
+      }
+      return -1;
+    },
+    [order, shlokas],
+  );
   const indexOf = useCallback((id: number | null) => (id == null ? -1 : order.indexOf(id)), [order]);
 
   // Constructed exactly once (useState's lazy initializer form), not per
@@ -115,7 +133,14 @@ export function useShlokaPlayer(
         setDuration(d);
         setEngineProgress(d > 0 ? t / d : 0);
       },
-      shouldHoldAtEnd: (id) => openMeaningIds.has(id),
+      shouldHoldAtEnd: (id) => {
+        if (openMeaningIds.has(id)) return true;
+        if (coversAll) return false;
+        // Stop at a gap: the very next verse has no recording.
+        const n = neighbourIndex(id, 1);
+        const next = n >= 0 ? shlokas[n] : undefined;
+        return !next?.audio_url || missingIds.has(next.id);
+      },
       onError: (id) => {
         /* A recording that was never uploaded: mark it, drop its button, and go on to the
            next verse that has one rather than stopping dead on a silent play button.
@@ -127,7 +152,7 @@ export function useShlokaPlayer(
         if (next) engine.play(next.id);
       },
     });
-  }, [engine, openMeaningIds, shlokas, missingIds]);
+  }, [engine, openMeaningIds, shlokas, missingIds, coversAll, neighbourIndex]);
 
   useEffect(() => {
     engine.setTracks(
@@ -184,6 +209,13 @@ export function useShlokaPlayer(
 
   const advance = useCallback(
     (delta: 1 | -1) => {
+      // With gaps in the recordings, only to the neighbouring verse.
+      if (!coversAll) {
+        const n = neighbourIndex(engineActiveId, delta);
+        const s = n >= 0 ? shlokas[n] : undefined;
+        if (s?.audio_url && !missingIds.has(s.id)) play(s.id);
+        return;
+      }
       // Skip verses with no recording, as the engines do when a clip ends.
       for (let i = indexOf(engineActiveId) + delta; i >= 0 && i < shlokas.length; i += delta) {
         const s = shlokas[i]!;
@@ -193,7 +225,7 @@ export function useShlokaPlayer(
         }
       }
     },
-    [engineActiveId, indexOf, shlokas, missingIds, play],
+    [engineActiveId, indexOf, shlokas, missingIds, play, coversAll, neighbourIndex],
   );
 
   const next = useCallback(() => advance(1), [advance]);
@@ -228,6 +260,12 @@ export function useShlokaPlayer(
 
   const activeIndex = indexOf(engineActiveId);
 
+  const hasRecordedNeighbour = (delta: 1 | -1) => {
+    const n = neighbourIndex(engineActiveId, delta);
+    const s = n >= 0 ? shlokas[n] : undefined;
+    return Boolean(s?.audio_url) && !missingIds.has(s!.id);
+  };
+
   return {
     activeId,
     playing,
@@ -244,8 +282,9 @@ export function useShlokaPlayer(
     prev,
     seek,
     toggleMeaning,
-    hasNext: activeIndex >= 0 && activeIndex < order.length - 1,
-    hasPrev: activeIndex > 0,
+    hasNext: coversAll ? activeIndex >= 0 && activeIndex < order.length - 1 : hasRecordedNeighbour(1),
+    hasPrev: coversAll ? activeIndex > 0 : hasRecordedNeighbour(-1),
+    coversAll,
     setDisplayOverride,
     missingIds,
   };

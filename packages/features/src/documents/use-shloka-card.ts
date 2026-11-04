@@ -21,6 +21,11 @@ const NOTE_LABEL = /^(\u091f\u0940\u0915\u093e|\u0938\u093e\u092e\u0917\u094d\u0
 const NOTE_NUMBER_SUFFIX = /\s*[\d\u0966-\u096F]+(?:[.\-][\d\u0966-\u096F]+)*\s*$/;
 
 /** A verse with no clip of its own plays from its timestamp in the document's full recording. */
+/** A "what to do" note card (टीका / सामग्री), not a verse: it has no recording of its own. */
+export function isNoteLabel(label: string): boolean {
+  return NOTE_LABEL.test(label);
+}
+
 export function playsFromFullRecording(shloka: Shloka, hasFullRecording: boolean): boolean {
   return !shloka.audio_url && hasFullRecording && shloka.full_audio_start != null;
 }

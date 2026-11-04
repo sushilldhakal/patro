@@ -25,7 +25,15 @@ export interface FullRecordingAudioState {
  * sukta files played one after another with no gap inside each file.
  * A single URL stops at the end. Several URLs advance to the next file.
  */
-export function useFullRecordingAudio(source: string | readonly string[] | null | undefined): FullRecordingAudioState {
+export function useFullRecordingAudio(
+  source: string | readonly string[] | null | undefined,
+  /** Whether a file ending moves on to the next one by itself (sukta files with a gap between them don't). */
+  canContinue?: (fromIndex: number, toIndex: number) => boolean,
+): FullRecordingAudioState {
+  const canContinueRef = useRef(canContinue);
+  useEffect(() => {
+    canContinueRef.current = canContinue;
+  });
   const audioRef = useRef<HTMLAudioElement>(null);
   const urls = useMemo(() => {
     if (!source) return [] as string[];
@@ -121,7 +129,8 @@ export function useFullRecordingAudio(source: string | readonly string[] | null 
     const onLoadedMetadata = () => setDuration(audio.duration || 0);
     const onEnded = () => {
       const next = indexRef.current + 1;
-      if (next < urlsRef.current.length) load(next, true);
+      const go = canContinueRef.current?.(indexRef.current, next) ?? true;
+      if (next < urlsRef.current.length && go) load(next, true);
       else {
         setPlaying(false);
         setCurrentTime(0);
