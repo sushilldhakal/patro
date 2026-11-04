@@ -1,6 +1,6 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { ActionSheetIOS, Pressable, Share, View } from "react-native";
-import Animated, { interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming, type SharedValue } from "react-native-reanimated";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ActionSheetIOS, Animated as RNAnimated, Easing, Pressable, Share, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { usePathname, useRouter } from "expo-router";
@@ -23,7 +23,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
-import { navCompact, resetNavCompact } from "@/lib/nav-compact";
+import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
 
 /** The tabs the bar keeps (home, panchanga, daily transit; the profile follows); the side menu reaches the rest. */
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
@@ -60,17 +60,26 @@ function FloatingNavBarView() {
   const reduced = useReducedMotionPref();
 
   // Scrolling a page down folds the bar to its icons, Revolut-style; back up (or a new page) unfolds it.
+  // Every bit of layout is on plain Views; only the moving values ride on React Native's Animated
+  // (Reanimated's views dropped their layout styles on iOS: the pill went narrow, tabs stacked).
   useEffect(() => {
     resetNavCompact();
   }, [pathname]);
-  const progress = useDerivedValue(() =>
-    withTiming(navCompact.value, { duration: reduced ? 0 : DURATION.standard }),
-  );
-  // Animated views carry plain styles only: NativeWind does not apply `className` to Reanimated's
-  // views on iOS, which once dropped the pill's row and width and stacked the tabs in a column.
-  const insetStyle = useAnimatedStyle(() => ({
-    marginHorizontal: interpolate(progress.value, [0, 1], [0, GROUP_INSET_COMPACT]),
-  }));
+  const compact = useNavCompact();
+  const fold = useRef(new RNAnimated.Value(0)).current;
+  useEffect(() => {
+    const anim = RNAnimated.timing(fold, {
+      toValue: compact ? 1 : 0,
+      duration: reduced ? 0 : DURATION.standard,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false, // height and margins are layout
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [compact, fold, reduced]);
+  const inset = fold.interpolate({ inputRange: [0, 1], outputRange: [0, GROUP_INSET_COMPACT] });
+  const tabsHeight = fold.interpolate({ inputRange: [0, 1], outputRange: [TABS_HEIGHT, TABS_HEIGHT_COMPACT] });
+
   // The highlight behind the current tab slides (springs) from tab to tab, like the system tab bar's.
   const tabs = FLOATING_NAV.filter((item) => BAR_TABS.has(item.href));
   const tabCount = tabs.length + 1; // + profile
@@ -79,17 +88,21 @@ function FloatingNavBarView() {
     : tabs.findIndex((item) => isNavActive(pathname, item.href));
   const [rowWidth, setRowWidth] = useState(0);
   const slot = rowWidth / tabCount;
-  const indicatorX = useDerivedValue(() =>
-    reduced ? activeIndex * slot : withSpring(activeIndex * slot, { damping: 18, stiffness: 220, mass: 0.8 }),
-  );
-  const indicatorStyle = useAnimatedStyle(() => ({
-    width: slot,
-    opacity: activeIndex < 0 || slot === 0 ? 0 : 1,
-    transform: [{ translateX: indicatorX.value }],
-  }));
-  const tabsStyle = useAnimatedStyle(() => ({
-    height: interpolate(progress.value, [0, 1], [TABS_HEIGHT, TABS_HEIGHT_COMPACT]),
-  }));
+  const slide = useRef(new RNAnimated.Value(0)).current;
+  const placed = useRef(false);
+  useEffect(() => {
+    if (activeIndex < 0 || slot === 0) return;
+    const to = activeIndex * slot;
+    // First placement (and Reduce Motion) jumps; later tab changes spring across.
+    if (!placed.current || reduced) {
+      placed.current = true;
+      slide.setValue(to);
+      return;
+    }
+    const anim = RNAnimated.spring(slide, { toValue: to, damping: 18, stiffness: 220, mass: 0.8, useNativeDriver: true });
+    anim.start();
+    return () => anim.stop();
+  }, [activeIndex, slot, reduced, slide]);
 
   /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
   const iconSize = 20;
@@ -109,19 +122,27 @@ function FloatingNavBarView() {
         style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: -16 }}
       />
       <View className={shellClasses.navRow}>
-      <Animated.View style={[{ flex: 1, minWidth: 0 }, insetStyle]}>
+      <View style={{ flex: 1, minWidth: 0 }}>
+      <RNAnimated.View style={{ marginHorizontal: inset }}>
       <View style={nativeShadow("md")} className={cn(shellClasses.navGroup, "h-auto py-1.5")}>
-      <Animated.View
-        onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}
-        style={[{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center" }, tabsStyle]}
-      >
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            { position: "absolute", left: 0, top: 0, bottom: 0, borderRadius: radius.pill, backgroundColor: withAlpha(colors.secondary, 0.12) },
-            indicatorStyle,
-          ]}
-        />
+      <View style={{ flex: 1, minWidth: 0 }} onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)}>
+      <RNAnimated.View style={{ height: tabsHeight }}>
+        {activeIndex >= 0 && slot > 0 ? (
+          <RNAnimated.View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: slot,
+              borderRadius: radius.pill,
+              backgroundColor: withAlpha(colors.secondary, 0.12),
+              transform: [{ translateX: slide }],
+            }}
+          />
+        ) : null}
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "stretch" }}>
         {tabs.map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -135,16 +156,19 @@ function FloatingNavBarView() {
                 size={iconSize}
                 color={active ? colors.secondary : colors.mutedForeground}
               />
-              <NavLabel progress={progress} active={active}>
+              <NavLabel fold={fold} active={active}>
                 {pick(item.ne, item.en)}
               </NavLabel>
             </NavItem>
           );
         })}
-        <ProfileNavItem iconSize={iconSize} progress={progress} />
-      </Animated.View>
+        <ProfileNavItem iconSize={iconSize} fold={fold} />
+        </View>
+      </RNAnimated.View>
       </View>
-      </Animated.View>
+      </View>
+      </RNAnimated.View>
+      </View>
       <RightActions />
       </View>
     </View>
@@ -152,13 +176,15 @@ function FloatingNavBarView() {
 }
 
 /** A tab's label: folds away (height and opacity) while the bar is compact. */
-function NavLabel({ progress, active, children }: { progress: SharedValue<number>; active: boolean; children: ReactNode }) {
-  const style = useAnimatedStyle(() => ({
-    maxHeight: interpolate(progress.value, [0, 1], [LABEL_MAX_HEIGHT, 0]),
-    opacity: interpolate(progress.value, [0, 0.6], [1, 0], "clamp"),
-  }));
+function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: boolean; children: ReactNode }) {
   return (
-    <Animated.View style={[{ overflow: "hidden" }, style]}>
+    <RNAnimated.View
+      style={{
+        overflow: "hidden",
+        maxHeight: fold.interpolate({ inputRange: [0, 1], outputRange: [LABEL_MAX_HEIGHT, 0] }),
+        opacity: fold.interpolate({ inputRange: [0, 0.6, 1], outputRange: [1, 0, 0] }),
+      }}
+    >
       <Text
         numberOfLines={1}
         className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
@@ -166,7 +192,7 @@ function NavLabel({ progress, active, children }: { progress: SharedValue<number
       >
         {children}
       </Text>
-    </Animated.View>
+    </RNAnimated.View>
   );
 }
 
@@ -196,7 +222,7 @@ function RightActions() {
 }
 
 /** The fourth item: the profile page, which holds the account (or sign-in) and the settings. */
-function ProfileNavItem({ iconSize, progress }: { iconSize: number; progress: SharedValue<number> }) {
+function ProfileNavItem({ iconSize, fold }: { iconSize: number; fold: RNAnimated.Value }) {
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
@@ -210,7 +236,7 @@ function ProfileNavItem({ iconSize, progress }: { iconSize: number; progress: Sh
         size={iconSize + 2}
         color={active ? colors.secondary : colors.mutedForeground}
       />
-      <NavLabel progress={progress} active={active}>
+      <NavLabel fold={fold} active={active}>
         {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
       </NavLabel>
     </NavItem>

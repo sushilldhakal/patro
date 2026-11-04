@@ -11,7 +11,7 @@ import { Text } from "@/components/ui/Text";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { reportNavScroll } from "@/lib/nav-compact";
+import { reportNavScrollJS } from "@/lib/nav-compact";
 
 function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpChapter?: (anchor: string) => void }) {
   const { header, copy } = page;
@@ -118,7 +118,7 @@ export default function DocumentDetailScreen() {
           keyExtractor={(c) => String(c.number)}
           renderItem={({ item }) => <ChapterRow slug={doc.slug} card={item} />}
           // Folds the floating bar to its icons while reading down (lib/nav-compact.ts).
-          onScroll={(e) => reportNavScroll(e.nativeEvent.contentOffset.y)}
+          onScroll={(e) => reportNavScrollJS(e.nativeEvent.contentOffset.y)}
           scrollEventThrottle={32}
           ListHeaderComponent={
             <View className="gap-8 pb-8">
