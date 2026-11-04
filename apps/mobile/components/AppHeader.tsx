@@ -10,7 +10,7 @@ import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
+import { requestAddReminder, requestOpenMenu, useOpenMenuRequest } from "@/lib/menu-request";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePageViewSections } from "@/lib/page-view-menu";
@@ -95,7 +95,7 @@ function HeaderButton({
   label,
   onPress,
 }: {
-  icon: "grid-outline" | "list";
+  icon: "grid-outline" | "list" | "add";
   label: string;
   onPress: () => void;
 }) {
@@ -189,8 +189,8 @@ export function ViewMenuButton() {
 }
 
 /**
- * The top bar: the side-menu button, the page's date controls, then its view menu. Search and "+",
- * the tabs with the profile, place and settings sit at the bottom (FloatingNavBar). The sheets they open live
+ * The top bar: the side-menu button, the page's date controls, its view menu and, top right, "+" (a new
+ * reminder; its sheet closes with an X, like search). Search, the tabs with the profile, place and settings sit at the bottom (FloatingNavBar). The sheets they open live
  * at the root (AppOverlays), so the buttons only send requests.
  */
 function AppHeaderView() {
@@ -206,6 +206,7 @@ function AppHeaderView() {
             otherwise make the bar grow. */}
         <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
         <ViewMenuButton />
+        <HeaderButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
       </View>
     </View>
   );

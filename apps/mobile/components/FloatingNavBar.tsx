@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ActionSheetIOS, Pressable, Share, View } from "react-native";
-import Animated from "react-native-reanimated";
+import Animated, { interpolate, useAnimatedStyle, useDerivedValue, withTiming, type SharedValue } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
 import { usePathname, useRouter } from "expo-router";
@@ -23,15 +23,23 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
+import { navCompact, resetNavCompact } from "@/lib/nav-compact";
 
 /** The tabs the bar keeps (home, panchanga, daily transit; the profile follows); the side menu reaches the rest. */
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
 
+/** Full bar → icons only (lib/nav-compact.ts). */
+const GROUP_HEIGHT = 64;
+const GROUP_HEIGHT_COMPACT = 50;
+/** How far in from each side the tab pill draws when folded, so it reads as a slimmer capsule. */
+const GROUP_INSET_COMPACT = 18;
+const LABEL_MAX_HEIGHT = 24;
+
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
- * search and "+" on the left; home, panchanga, daily transit and the profile; place on
+ * search on the left ("+" too on the Duo; elsewhere it is at the header's top right); home, panchanga, daily transit and the profile; place on
  * the right ("…" too on the Duo). Settings are inside the profile page. On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
@@ -47,6 +55,19 @@ function FloatingNavBarView() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
+  const reduced = useReducedMotionPref();
+
+  // Scrolling a page down folds the bar to its icons, Revolut-style; back up (or a new page) unfolds it.
+  useEffect(() => {
+    resetNavCompact();
+  }, [pathname]);
+  const progress = useDerivedValue(() =>
+    withTiming(navCompact.value, { duration: reduced ? 0 : DURATION.standard }),
+  );
+  const groupStyle = useAnimatedStyle(() => ({
+    height: interpolate(progress.value, [0, 1], [GROUP_HEIGHT, GROUP_HEIGHT_COMPACT]),
+    marginHorizontal: interpolate(progress.value, [0, 1], [0, GROUP_INSET_COMPACT]),
+  }));
 
   /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
   const iconSize = 20;
@@ -67,7 +88,7 @@ function FloatingNavBarView() {
       />
       <View className={shellClasses.navRow}>
       <LeftActions />
-      <View style={nativeShadow("md")} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
+      <Animated.View style={[nativeShadow("md"), groupStyle]} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
         {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -81,35 +102,47 @@ function FloatingNavBarView() {
                 size={iconSize}
                 color={active ? colors.secondary : colors.mutedForeground}
               />
-              <Text
-                numberOfLines={1}
-                className={cn(
-                  "text-center",
-                  shellClasses.navLabel,
-                  active ? shellClasses.navLabelActive : shellClasses.navLabelIdle,
-                )}
-                style={nepaliTextStyle()}
-              >
+              <NavLabel progress={progress} active={active}>
                 {pick(item.ne, item.en)}
-              </Text>
+              </NavLabel>
             </NavItem>
           );
         })}
-        <ProfileNavItem iconSize={iconSize} />
-      </View>
+        <ProfileNavItem iconSize={iconSize} progress={progress} />
+      </Animated.View>
       <RightActions />
       </View>
     </View>
   );
 }
 
-/** Search and "+", left of the tabs. */
+/** A tab's label: folds away (height and opacity) while the bar is compact. */
+function NavLabel({ progress, active, children }: { progress: SharedValue<number>; active: boolean; children: ReactNode }) {
+  const style = useAnimatedStyle(() => ({
+    maxHeight: interpolate(progress.value, [0, 1], [LABEL_MAX_HEIGHT, 0]),
+    opacity: interpolate(progress.value, [0, 0.6], [1, 0], "clamp"),
+  }));
+  return (
+    <Animated.View style={[{ overflow: "hidden" }, style]}>
+      <Text
+        numberOfLines={1}
+        className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
+        style={nepaliTextStyle()}
+      >
+        {children}
+      </Text>
+    </Animated.View>
+  );
+}
+
+/** Search, left of the tabs. "+" is at the header's top right, except on the iPhone Duo, whose portrait
+ *  top bar has no room for it. */
 function LeftActions() {
   const { t } = useLocale();
   return (
     <View style={nativeShadow("md")} className={shellClasses.navActionGroup}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
-      <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+      {IS_IPHONE_DUO ? <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} /> : null}
     </View>
   );
 }
@@ -138,7 +171,7 @@ function RightActions() {
 }
 
 /** The fourth item: the profile page, which holds the account (or sign-in) and the settings. */
-function ProfileNavItem({ iconSize }: { iconSize: number }) {
+function ProfileNavItem({ iconSize, progress }: { iconSize: number; progress: SharedValue<number> }) {
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
@@ -152,13 +185,9 @@ function ProfileNavItem({ iconSize }: { iconSize: number }) {
         size={iconSize + 2}
         color={active ? colors.secondary : colors.mutedForeground}
       />
-      <Text
-        numberOfLines={1}
-        className={cn("text-center", shellClasses.navLabel, active ? shellClasses.navLabelActive : shellClasses.navLabelIdle)}
-        style={nepaliTextStyle()}
-      >
+      <NavLabel progress={progress} active={active}>
         {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
-      </Text>
+      </NavLabel>
     </NavItem>
   );
 }
@@ -198,7 +227,8 @@ function NavItem({ active, onPress, children }: { active: boolean; onPress: () =
       onPress={onPress}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
-      className={cn(shellClasses.navTab, active && shellClasses.navTabActive)}
+      // Fills the group's height (less its margin), so the tab pill shrinks with the bar when it folds.
+      className={cn(shellClasses.navTab, "h-auto self-stretch my-1.5", active && shellClasses.navTabActive)}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       pressRetentionOffset={16}

@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+import { haptics } from "@vedic-patro/ui/motion";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { useThemeColors } from "@/lib/theme-context";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { AddReminderForm } from "@/components/reminders/AddReminderForm";
@@ -13,7 +17,8 @@ import { notifyRemindersChanged, requestSignIn } from "@/lib/menu-request";
  * it opens the sign-in dialog instead — reminders are stored on the account.
  */
 export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { lang } = useLocale();
+  const { lang, t } = useLocale();
+  const colors = useThemeColors();
   const l = lang === "en" ? "en" : "ne";
   const { isAuthenticated } = useAuth();
   const [online, setOnline] = useState(true);
@@ -42,7 +47,22 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <BottomSheetModal variant="page" visible={open && isAuthenticated} onClose={onClose} maxHeight="88%">
-      <AddReminderForm active={open} online={online} onCreated={onCreated} />
+      <View>
+        <AddReminderForm active={open} online={online} onCreated={onCreated} />
+        {/* A round X at the top right, like the search sheet's, besides the drag down. */}
+        <Pressable
+          onPress={() => {
+            haptics.tick();
+            onClose();
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={t("ui.search.cancel")}
+          hitSlop={8}
+          className="absolute right-3 top-3 h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-60"
+        >
+          <Ionicons name="close" size={22} color={colors.foreground} />
+        </Pressable>
+      </View>
     </BottomSheetModal>
   );
 }

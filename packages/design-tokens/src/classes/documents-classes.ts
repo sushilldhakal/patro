@@ -54,6 +54,9 @@ export const documentsClasses = {
   hubCard: "group flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left",
   hubCardTop: "flex flex-row items-center gap-3.5",
   hubEmoji: "flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/10 text-2xl",
+  /** The app: the emoji's tile is a View and the glyph a Text inside it (on a Text, RN leaves it top-left). */
+  hubEmojiBox: "size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/10",
+  hubEmojiGlyph: "text-center text-2xl leading-8",
   hubTitle: "text-lg font-bold leading-snug",
   hubBlurb: "text-sm leading-relaxed text-muted-foreground",
   hubCount: "text-xs font-semibold tabular-nums text-muted-foreground",
@@ -106,6 +109,10 @@ export const documentsClasses = {
   listChapterRow: "flex min-w-0 flex-row items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground",
   listChapterNum: "w-6 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground/70",
   listOpenRow: "ml-7 inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-secondary",
+  /** The app's list rows: full-width rows in one card, divided by hairlines. */
+  listDocRowApp: "rounded-none px-4 py-3 active:bg-muted/30",
+  listDocRowDivider: "border-b border-border/60",
+  listDocMetaApp: "mt-0.5 text-xs font-semibold tabular-nums text-muted-foreground/80",
   listCategoryTag: "shrink-0 rounded-full bg-secondary/10 px-2 py-0.5 text-xs font-semibold text-secondary",
 
   // ── Category section ──────────────────────────────────────────────────────

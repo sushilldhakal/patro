@@ -11,6 +11,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { featureIcon } from "@/lib/nav-icons";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { useNavCompact } from "@/hooks/use-nav-compact";
 
 import { tFor } from "@vedic-patro/i18n/runtime";
 type Tab = {
@@ -66,18 +67,28 @@ const TABS: Tab[] = [
 /**
  * Floating bottom navigation for small screens (< lg / 1024px), shown whenever
  * the desktop nav collapses into the hamburger menu so users can reach the main
- * sections without opening the drawer. Hidden at lg and up.
+ * sections without opening the drawer. Hidden at lg and up. Scrolling down folds it to its icons in a
+ * narrower pill (useNavCompact); scrolling back up unfolds it.
  */
 export function MobileBottomNav() {
   const { lang } = useLocale();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const compact = useNavCompact();
 
   return (
     <nav
       aria-label={tFor(lang, "ui.mobile_bottom_nav.primary_navigation")}
       className={cn(shellClasses.navOuter, "fixed inset-x-0 bottom-0 z-50 pb-[max(0.5rem,env(safe-area-inset-bottom))] pointer-events-none lg:hidden")}
     >
-      <div className={cn("pointer-events-auto mx-auto flex shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md", shellClasses.navBar)}>
+      <div
+        data-compact={compact || undefined}
+        className={cn(
+          "pointer-events-auto mx-auto flex shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md",
+          shellClasses.navBar,
+          shellClasses.navBarMotion,
+          compact && shellClasses.navBarCompact,
+        )}
+      >
         {TABS.map(({ to, icon: Icon, ne, en, match }) => {
           const active = match(pathname);
           return (
@@ -85,8 +96,11 @@ export function MobileBottomNav() {
               key={to}
               to={to}
               aria-current={active ? "page" : undefined}
+              aria-label={compact ? bilingualText(lang, ne, en) : undefined}
               className={cn(
-                "flex flex-col transition-colors",
+                "flex flex-col",
+                shellClasses.navItemMotion,
+                compact && shellClasses.navItemCompact,
                 shellClasses.navItem,
                 shellClasses.navLabel,
                 active
@@ -97,7 +111,13 @@ export function MobileBottomNav() {
               <Icon className="size-5 shrink-0" />
               {/* leading-normal + no overflow clip so Devanagari vowel marks
                   (above/below the baseline) aren't cut off top and bottom. */}
-              <span className="max-w-full whitespace-nowrap leading-normal">{bilingualText(lang, ne, en)}</span>
+              {/* Folds to nothing while compact (grid row 1fr → 0fr animates the height). */}
+              <span
+                aria-hidden={compact || undefined}
+                className={cn(shellClasses.navLabelFold, compact ? shellClasses.navLabelFolded : shellClasses.navLabelOpen)}
+              >
+                <span className="min-h-0 overflow-hidden whitespace-nowrap leading-normal">{bilingualText(lang, ne, en)}</span>
+              </span>
             </Link>
           );
         })}

@@ -32,7 +32,7 @@ function DocumentListRow({ doc, last, onPress }: { doc: DocumentSummary; last: b
       onPress={onPress}
       accessibilityRole="link"
       accessibilityLabel={card.title}
-      className={cn(documentsClasses.listDocRow, "rounded-none px-4 py-3 active:bg-muted/30", !last && "border-b border-border/60")}
+      className={cn(documentsClasses.listDocRow, documentsClasses.listDocRowApp, !last && documentsClasses.listDocRowDivider)}
     >
       <View className={cn(documentsClasses.listDocIcon, "bg-secondary/10")}>
         <AppNavIcon name="book-open" size={16} color={colors.secondary} />
@@ -46,7 +46,7 @@ function DocumentListRow({ doc, last, onPress }: { doc: DocumentSummary; last: b
             {card.subtitle}
           </Text>
         ) : null}
-        <Text className="mt-0.5 text-xs font-semibold tabular-nums text-muted-foreground/80" numberOfLines={1}>
+        <Text className={documentsClasses.listDocMetaApp} numberOfLines={1}>
           {card.meta.join(" · ")}
         </Text>
       </View>

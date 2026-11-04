@@ -123,8 +123,8 @@ export default function DocumentsScreen() {
                   >
                     <View className={documentsClasses.hubCardTop}>
                       {/* The box is a View: on a Text, RN sizes the box but leaves the glyph top-left. */}
-                      <View className="size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/10">
-                        <Text className="text-center text-2xl leading-8" accessible={false}>
+                      <View className={documentsClasses.hubEmojiBox}>
+                        <Text className={documentsClasses.hubEmojiGlyph} accessible={false}>
                           {section.group.emoji}
                         </Text>
                       </View>

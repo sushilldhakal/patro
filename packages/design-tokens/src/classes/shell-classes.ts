@@ -30,6 +30,14 @@ export const shellClasses = {
   navBar:
     "max-w-lg items-stretch justify-around gap-0.5 rounded-2xl border border-border bg-background/90 p-1",
   navItem: "flex-1 items-center gap-1 rounded-xl px-1 py-1.5",
+  /** Website: scrolling down folds the bar to its icons in a narrower pill (the app animates the same). */
+  navBarMotion: "transition-[max-width,padding] duration-200 ease-out motion-reduce:transition-none",
+  navBarCompact: "max-w-xs",
+  navItemMotion: "transition-[color,background-color,gap,padding] duration-200 ease-out motion-reduce:transition-none",
+  navItemCompact: "gap-0 py-2",
+  navLabelFold: "grid max-w-full transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
+  navLabelFolded: "grid-rows-[0fr] opacity-0",
+  navLabelOpen: "grid-rows-[1fr] opacity-100",
   /** The app's bottom row: [search, +] [tabs] [place]. Three capsules of one height, on the app's card colour. */
   navRow: "w-full max-w-xl flex-row items-center gap-2 self-center",
   navGroup: "h-16 flex-row items-center rounded-full border border-border/60 bg-card px-1.5",

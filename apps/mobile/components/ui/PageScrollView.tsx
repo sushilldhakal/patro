@@ -3,6 +3,7 @@ import type { ScrollView, ScrollViewProps } from "react-native";
 import Animated, { useAnimatedScrollHandler, useSharedValue } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { PageScrollContext } from "@/lib/scroll-motion";
+import { reportNavScroll } from "@/lib/nav-compact";
 
 const InteropScrollView = cssInterop(Animated.ScrollView, {
   className: "style",
@@ -25,6 +26,8 @@ export const PageScrollView = forwardRef<ComponentRef<typeof ScrollView>, Props>
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
     scrollY.set(e.contentOffset.y);
+    // Folds the floating bar to its icons while scrolling down (lib/nav-compact.ts).
+    reportNavScroll(e.contentOffset.y);
   });
   return (
     <InteropScrollView

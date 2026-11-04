@@ -11,6 +11,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { reportNavScroll } from "@/lib/nav-compact";
 
 const LIST_BOTTOM_INSET = 48 * spaceUnit;
 
@@ -159,6 +160,9 @@ export function DocumentReader({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         initialNumToRender={12}
+        // Folds the floating bar to its icons while reading down (lib/nav-compact.ts).
+        onScroll={(e) => reportNavScroll(e.nativeEvent.contentOffset.y)}
+        scrollEventThrottle={32}
         windowSize={9}
         onScrollToIndexFailed={(info) => {
           // Row not measured yet: jump near it, then retry once it has rendered.
