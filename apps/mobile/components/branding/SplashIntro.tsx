@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Platform, StyleSheet, View } from "react-native";
+import { AccessibilityInfo, Animated, AppState, Easing, Platform, StyleSheet, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { Circle, Path } from "react-native-svg";
 import { brand } from "@vedic-patro/design-tokens";
 import { Layer, PIVOT, PIVOT_DX, RAYS } from "./VedicPatroMark";
-import { useBrandMotionEnabled } from "./svg-motion";
 
 /** Same as the native splash's `backgroundColor` in app.json (#084548), so the hand-off is invisible. */
 const SPLASH_BG = brand.bluePressed;
@@ -14,6 +13,38 @@ const MEET_MS = 1_300;
 const MIN_SHOW_MS = 2_300;
 const FADE_MS = 400;
 const SPIN_MS = 9_000;
+/** Don't wait longer than this for the reduce-motion setting / an active app before starting. */
+const START_WAIT_MS = 600;
+
+/**
+ * Whether (and when) the entrance can start. `null` until the reduce-motion setting is known and
+ * the app is in the foreground — iOS often mounts the root while the scene is still `inactive`,
+ * and an animation started then either finishes instantly or never paints, so the mark would
+ * appear already centred and only start moving afterwards.
+ */
+function useEntranceMode(): "motion" | "still" | null {
+  const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
+  const [active, setActive] = useState(AppState.currentState === "active");
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    void AccessibilityInfo.isReduceMotionEnabled()
+      .then((enabled) => mounted && setReduceMotion(enabled))
+      .catch(() => mounted && setReduceMotion(false));
+    const sub = AppState.addEventListener("change", (next) => next === "active" && setActive(true));
+    const timer = setTimeout(() => mounted && setTimedOut(true), START_WAIT_MS);
+    return () => {
+      mounted = false;
+      sub.remove();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  if (reduceMotion === true) return "still";
+  if ((reduceMotion === false && active) || timedOut) return "motion";
+  return null;
+}
 
 /**
  * Launch animation. The native splash is a blank brand-coloured screen (assets/splash-blank.png),
@@ -23,7 +54,7 @@ const SPIN_MS = 9_000;
  * animated view (see VedicPatroMark) — animating SVG props directly freezes Android.
  */
 export function SplashIntro({ ready }: { ready: boolean }) {
-  const motion = useBrandMotionEnabled();
+  const mode = useEntranceMode();
   const [done, setDone] = useState(Platform.OS === "web");
   const [minElapsed, setMinElapsed] = useState(false);
 
@@ -55,15 +86,23 @@ export function SplashIntro({ ready }: { ready: boolean }) {
     return () => clearTimeout(safety);
   }, []);
 
+  // The entrance runs once, from off-screen, as soon as the mode is known — never re-run from a
+  // half-finished or already-centred state (that is what showed the logo first, then the motion).
+  const entered = useRef(false);
   useEffect(() => {
-    if (done) return;
-    const minTimer = setTimeout(() => setMinElapsed(true), motion ? MIN_SHOW_MS : 700);
-    if (!motion) {
+    if (done || mode === null || entered.current) return;
+    entered.current = true;
+    const minTimer = setTimeout(() => setMinElapsed(true), mode === "motion" ? MIN_SHOW_MS : 700);
+    if (mode === "still") {
       moonY.setValue(0);
       sunY.setValue(0);
       glow.setValue(0.85);
       return () => clearTimeout(minTimer);
     }
+    moonY.setValue(-MARK_SIZE * 1.6);
+    sunY.setValue(MARK_SIZE * 1.6);
+    glow.setValue(0);
+    pop.setValue(1);
     const rise = Easing.out(Easing.cubic);
     const entrance = Animated.parallel([
       Animated.timing(moonY, { toValue: 0, duration: MEET_MS, easing: rise, useNativeDriver: true }),
@@ -78,17 +117,20 @@ export function SplashIntro({ ready }: { ready: boolean }) {
         Animated.timing(pop, { toValue: 1, duration: 380, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ]),
     ]);
+    entrance.start();
+    // Only the timer is cleaned up here: the entrance must not be cut short and replayed by a re-render.
+    return () => clearTimeout(minTimer);
+  }, [done, glow, mode, moonY, pop, sunY]);
+
+  // The rays keep turning while the splash is up (not under Reduce Motion).
+  useEffect(() => {
+    if (done || mode !== "motion") return;
     const turning = Animated.loop(
       Animated.timing(spin, { toValue: 1, duration: SPIN_MS, easing: Easing.linear, useNativeDriver: true }),
     );
-    entrance.start();
     turning.start();
-    return () => {
-      clearTimeout(minTimer);
-      entrance.stop();
-      turning.stop();
-    };
-  }, [done, glow, moonY, motion, pop, spin, sunY]);
+    return () => turning.stop();
+  }, [done, mode, spin]);
 
   useEffect(() => {
     if (done || !ready || !minElapsed) return;

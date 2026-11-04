@@ -12,6 +12,7 @@ import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { usePageViewMenu } from "@/lib/page-view-menu";
+import { DocumentListRows } from "@/components/documents/DocumentListRow";
 
 /** Documents library — the app's drawing of `useDocumentsPage` (@vedic-patro/features). */
 export default function DocumentsScreen() {
@@ -26,6 +27,8 @@ export default function DocumentsScreen() {
       category: id === "all" ? undefined : id,
       view: nextView === "list" ? "list" : undefined,
     } as never);
+
+  const openDoc = (slug: string) => router.push(`/documents/${slug}` as never);
 
   // कार्ड | सूची in the header's view menu, once there is a library to show.
   usePageViewMenu(
@@ -94,11 +97,15 @@ export default function DocumentsScreen() {
                       </Text>
                       <Text className={documentsClasses.sectionCount}>{section.countLabel}</Text>
                     </View>
-                    <View className="gap-4">
-                      {section.documents.map((doc) => (
-                        <DocumentCard key={doc.slug} doc={doc} onPress={() => router.push(`/documents/${doc.slug}` as never)} />
-                      ))}
-                    </View>
+                    {view === "list" ? (
+                      <DocumentListRows documents={section.documents} onOpen={(doc) => openDoc(doc.slug)} />
+                    ) : (
+                      <View className="gap-4">
+                        {section.documents.map((doc) => (
+                          <DocumentCard key={doc.slug} doc={doc} onPress={() => openDoc(doc.slug)} />
+                        ))}
+                      </View>
+                    )}
                   </View>
                 ))}
               </View>
@@ -115,7 +122,12 @@ export default function DocumentsScreen() {
                     className={cn(documentsClasses.hubCard, "border border-border")}
                   >
                     <View className={documentsClasses.hubCardTop}>
-                      <Text className={documentsClasses.hubEmoji}>{section.group.emoji}</Text>
+                      {/* The box is a View: on a Text, RN sizes the box but leaves the glyph top-left. */}
+                      <View className="size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/10">
+                        <Text className="text-center text-2xl leading-8" accessible={false}>
+                          {section.group.emoji}
+                        </Text>
+                      </View>
                     </View>
                     <Text className={documentsClasses.hubTitle}>{section.name}</Text>
                     {section.blurb ? <Text className={documentsClasses.hubBlurb}>{section.blurb}</Text> : null}
