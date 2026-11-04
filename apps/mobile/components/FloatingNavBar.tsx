@@ -20,7 +20,7 @@ import { nativeShadow, radius, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { requestAddReminder, requestLocationPicker, requestSearch } from "@/lib/menu-request";
+import { requestLocationPicker, requestSearch } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
@@ -46,7 +46,7 @@ const LABEL_MAX_HEIGHT = 24;
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:
  * the tabs across the bottom (a highlight slides to the current one), with search and place as round buttons
- * stacked on the right just above it ("+" and "…" too on the Duo; elsewhere "+" is at the header's top right); home, panchanga, daily transit and the profile; place on
+ * stacked on the right just above it ("…" too on the Duo; "+" is at the header's top right everywhere); home, panchanga, daily transit and the profile; place on
  * the right ("…" too on the Duo). Settings are inside the profile page. On the Duo in landscape and folded the side rail carries all of it.
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
@@ -207,8 +207,8 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
 }
 
 /** Search and place as round buttons stacked on the right, just above the bar (like a mail app's compose
- *  button); on the iPhone Duo also "+" and "…" (share, reminders, rashifal), which its portrait top bar has no
- *  room for beside the status bar. Settings are in the profile page. */
+ *  button); on the iPhone Duo also "…" (share, reminders, rashifal), which its portrait top bar has no
+ *  room for beside the status bar ("+" is in the top bar, as on every phone). Settings are in the profile page. */
 function FloatingActions() {
   const { t, lang } = useLocale();
   const router = useRouter();
@@ -226,7 +226,6 @@ function FloatingActions() {
     <View pointerEvents="box-none" className={shellClasses.navFabStack}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
-      {IS_IPHONE_DUO ? <ActionButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} /> : null}
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
   );
