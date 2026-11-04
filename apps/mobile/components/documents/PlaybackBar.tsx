@@ -2,12 +2,13 @@ import Slider from "@react-native-community/slider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
+import { setBarAccessoryHeight } from "@/lib/bar-accessory";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 
-/** Screen-edge gutter + the floating buttons' width + a gap (FloatingNavBar's search / place stack). */
-const FLOATING_ACTIONS_CLEARANCE = 12 + 48 + 8;
+/** The floating bar's own side gutter (FloatingNavBar), so the player lines up with it. */
+const BAR_GUTTER = 16;
 
 /** Binds the shared transport to the app audio engine and the native slider. */
 export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; documentTitle: string }) {
@@ -41,8 +42,10 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
       onPrev={audio.prevVerse}
       onSwitchToFull={audio.switchToFull}
       dockBottom={floatingNavTabBarHeight(isTablet, insets.bottom) + 8}
-      // Left of the floating search / place buttons (48pt, 12pt from the edge), not under them.
-      dockRight={FLOATING_ACTIONS_CLEARANCE}
+      // As wide as the bar, just above it, like a music app's mini player; the floating search /
+      // place buttons lift above it (setBarAccessoryHeight) instead of squeezing it to one side.
+      dockInset={BAR_GUTTER}
+      onDockHeight={setBarAccessoryHeight}
       renderSeek={({ value, max, label, onChange }) => (
         <Slider
           style={{ flex: 1, height: 28 }}

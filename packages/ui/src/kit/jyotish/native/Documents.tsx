@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { View } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -70,9 +71,24 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
   );
 }
 
-function Dock({ children, bottom, right = 12 }: { children: React.ReactNode; bottom: number; right?: number }) {
+function Dock({
+  children,
+  bottom,
+  inset = 12,
+  onHeight,
+}: {
+  children: React.ReactNode;
+  bottom: number;
+  inset?: number;
+  onHeight?: (height: number) => void;
+}) {
+  useEffect(() => () => onHeight?.(0), [onHeight]);
   return (
-    <View pointerEvents="box-none" style={{ position: "absolute", left: 12, right, bottom, alignItems: "center" }}>
+    <View
+      pointerEvents="box-none"
+      onLayout={(e) => onHeight?.(e.nativeEvent.layout.height)}
+      style={{ position: "absolute", left: inset, right: inset, bottom, alignItems: "center" }}
+    >
       {children}
     </View>
   );
@@ -94,7 +110,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   if (bar.face === "hidden") return null;
   if (bar.face === "idle") {
     return (
-      <Dock bottom={bottom} right={props.dockRight}>
+      <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
         <Pressable onPress={bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.()} className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow)}>
           <Box className={documentsClasses.barPlay}>
             <Icon node={iconPlay} size={20} tone="onSecondary" filled />
@@ -110,7 +126,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   }
   if (bar.face === "full") {
     return (
-      <Dock bottom={bottom} right={props.dockRight}>
+      <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
         <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
           <Pressable onPress={props.onToggleFull} label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
             <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
@@ -135,7 +151,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
   }
   if (!props.activeShloka) return null;
   return (
-    <Dock bottom={bottom} right={props.dockRight}>
+    <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
       <Box className={cn(documentsClasses.barShell, documentsClasses.barPad)}>
         {bar.verse.hasClip ? (
           <Box className={cn(documentsClasses.barScrubRow, "mb-1.5")} nativeClassName="flex-row items-center">

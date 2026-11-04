@@ -132,7 +132,8 @@ export function DocumentReader({
       const isActive = audio.activeId === shloka.id;
       return (
         <ShlokaCard
-          shloka={audio.missingIds.has(shloka.id) ? { ...shloka, audio_url: null } : shloka}
+          // A play button only once the verse's recording is confirmed in storage.
+          shloka={audio.verifiedIds.has(shloka.id) ? shloka : { ...shloka, audio_url: null }}
           isActive={isActive}
           isPlaying={isActive && audio.activePlaying}
           progress={isActive ? audio.activeProgress : 0}

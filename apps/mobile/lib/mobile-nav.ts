@@ -23,17 +23,17 @@ export const FLOATING_NAV = [
   { href: "/learn", get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); }, icon: FEATURE_ICON.learn },
 ] as const;
 
-export const FLOATING_NAV_BOTTOM_PADDING = 84;
+export const FLOATING_NAV_BOTTOM_PADDING = 100;
 
 /** Scroll bottom inset on tablet — keep in sync with `floatingNavTabBarHeight`. */
-export const FLOATING_NAV_BOTTOM_PADDING_TABLET = 96;
+export const FLOATING_NAV_BOTTOM_PADDING_TABLET = 104;
 
 /**
  * Total height of the tab bar slot (pill + bottom inset).
  * Keep in sync with `FloatingNavBar` padding and pill size.
  */
 export function floatingNavTabBarHeight(isTablet: boolean, safeBottom: number): number {
-  const pill = isTablet ? 56 : 54; // FloatingNavBar: 54pt full
+  const pill = 60; // FloatingNavBar: 60pt full
   const minBottom = isTablet ? 10 : 6;
   return pill + Math.max(safeBottom, minBottom);
 }

@@ -16,7 +16,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { GlassView, isGlassEffectAPIAvailable } from "expo-glass-effect";
-import { nativeShadow, radius, withAlpha } from "@vedic-patro/design-tokens";
+import { nativeShadow, radius, space, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -24,6 +24,7 @@ import { requestLocationPicker, requestSearch } from "@/lib/menu-request";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
+import { useBarAccessoryHeight } from "@/lib/bar-accessory";
 
 /** The tabs the bar keeps on a narrow phone (home, panchanga, daily transit; the profile follows); the side menu
  *  reaches the rest. */
@@ -221,6 +222,7 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
  *  room for beside the status bar ("+" is in the top bar, as on every phone). Settings are in the profile page. */
 function FloatingActions() {
   const { t, lang } = useLocale();
+  const accessory = useBarAccessoryHeight();
   const router = useRouter();
   const pathname = usePathname();
   const more = () => {
@@ -233,7 +235,8 @@ function FloatingActions() {
     });
   };
   return (
-    <View pointerEvents="box-none" className={shellClasses.navFabStack}>
+    // Above the audio player when one is docked over the bar, so neither crowds the other.
+    <View pointerEvents="box-none" className={shellClasses.navFabStack} style={accessory > 0 ? { marginBottom: space.sm + accessory + space.md } : undefined}>
       <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}

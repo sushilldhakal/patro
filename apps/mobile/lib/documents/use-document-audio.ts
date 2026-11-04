@@ -62,7 +62,14 @@ export function useDocumentAudio(
   /* Every verse recorded (or one full recording): the bar offers "play through" and playback runs
      on by itself. With recordings for a few verses only, it stops where the recordings stop instead
      of jumping — and scrolling — far ahead to the next one. */
-  const coversAll = useMemo(() => Boolean(fullAudioUrl) || audioCoversAll(shlokas), [fullAudioUrl, shlokas]);
+  /** Verses whose recording turned out not to be in storage; skipped from then on. */
+  const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
+  const coversAll = useMemo(
+    () =>
+      Boolean(fullAudioUrl) ||
+      audioCoversAll(missingIds.size ? shlokas.map((s) => (missingIds.has(s.id) ? { ...s, audio_url: null } : s)) : shlokas),
+    [fullAudioUrl, shlokas, missingIds],
+  );
   const gapRef = useRef({ coversAll, shlokas, suktaTracks });
   gapRef.current = { coversAll, shlokas, suktaTracks };
   const suktaSkipAt = useRef(0);
@@ -84,8 +91,38 @@ export function useDocumentAudio(
     }).catch(() => {});
   }, []);
 
-  /** Verses whose recording turned out not to be in storage; skipped from then on. */
-  const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
+  /** Verses whose recording is confirmed in storage: only these get a play button. The database
+   *  names a file for many verses (the Rigveda's above all) that was never uploaded, so every one
+   *  is checked up front, a few at a time, instead of finding out when the listener taps play. */
+  const [verifiedIds, setVerifiedIds] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    let cancelled = false;
+    const queue = playable.slice();
+    const found: number[] = [];
+    const missing: number[] = [];
+    let flushTimer: ReturnType<typeof setTimeout> | null = null;
+    const flush = () => {
+      flushTimer = null;
+      if (cancelled) return;
+      const ok = found.splice(0);
+      const gone = missing.splice(0);
+      if (ok.length) setVerifiedIds((prev) => new Set([...prev, ...ok]));
+      if (gone.length) setMissingIds((prev) => new Set([...prev, ...gone]));
+    };
+    const worker = async () => {
+      for (let s = queue.shift(); s && !cancelled; s = queue.shift()) {
+        const ok = await isAudioAvailable(s.audio_url!);
+        (ok ? found : missing).push(s.id);
+        // One state update per batch, not per verse.
+        flushTimer ??= setTimeout(flush, 120);
+      }
+    };
+    void Promise.all(Array.from({ length: 6 }, worker)).then(flush);
+    return () => {
+      cancelled = true;
+      if (flushTimer) clearTimeout(flushTimer);
+    };
+  }, [playable]);
 
   const byId = useMemo(() => new Map(shlokas.map((s) => [s.id, s])), [shlokas]);
 
@@ -412,6 +449,7 @@ export function useDocumentAudio(
 
   return {
     missingIds,
+    verifiedIds,
     mode,
     activeId,
     activeProgress,
