@@ -29,6 +29,9 @@ import { navCompact, resetNavCompact } from "@/lib/nav-compact";
 const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
 
 const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), { className: "style" });
+/** Reanimated's View with `className` mapped to style: without this NativeWind drops the classes
+ *  (the group lost its row, pill and width, and the tabs stacked in a column). */
+const GroupView = cssInterop(Animated.View, { className: "style" });
 
 /** Full bar → icons only (lib/nav-compact.ts). */
 const GROUP_HEIGHT = 64;
@@ -88,7 +91,7 @@ function FloatingNavBarView() {
       />
       <View className={shellClasses.navRow}>
       <LeftActions />
-      <Animated.View style={[nativeShadow("md"), groupStyle]} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
+      <GroupView style={[nativeShadow("md"), groupStyle]} className={cn("min-w-0 flex-1", shellClasses.navGroup)}>
         {FLOATING_NAV.filter((item) => BAR_TABS.has(item.href)).map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -109,7 +112,7 @@ function FloatingNavBarView() {
           );
         })}
         <ProfileNavItem iconSize={iconSize} progress={progress} />
-      </Animated.View>
+      </GroupView>
       <RightActions />
       </View>
     </View>
