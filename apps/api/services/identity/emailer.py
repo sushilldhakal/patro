@@ -6,6 +6,7 @@ WARNING level so flows can be tested in development without an email provider.
 
 from __future__ import annotations
 
+import html as _html
 import logging
 import smtplib
 from email.message import EmailMessage
@@ -15,7 +16,7 @@ import config
 logger = logging.getLogger(__name__)
 
 
-def _send(to_addr: str, subject: str, text_body: str, html_body: str) -> None:
+def _send(to_addr: str, subject: str, text_body: str, html_body: str, ics: tuple[str, str] | None = None) -> None:
     smtp = config.smtp_config()
     if smtp is None:
         logger.warning(
@@ -31,6 +32,12 @@ def _send(to_addr: str, subject: str, text_body: str, html_body: str) -> None:
         msg["Reply-To"] = str(smtp["reply_to"])
     msg.set_content(text_body)
     msg.add_alternative(html_body, subtype="html")
+    if ics is not None:
+        # A calendar invitation: the text/calendar part (with its METHOD) is what Gmail, Apple Mail
+        # and Outlook read to show Accept / Add buttons; the .ics attachment covers the rest.
+        body, method = ics
+        msg.add_alternative(body.encode("utf-8"), maintype="text", subtype="calendar", params={"method": method, "charset": "UTF-8"})
+        msg.add_attachment(body.encode("utf-8"), maintype="text", subtype="calendar", filename="invite.ics")
 
     try:
         with smtplib.SMTP(str(smtp["host"]), int(smtp["port"]), timeout=20) as server:
@@ -89,3 +96,22 @@ def _wrap(heading: str, intro: str, cta: str, link: str, footer: str) -> str:
   <p style="margin:24px 0 0;font-size:13px;color:#888">{footer}</p>
   <p style="margin:8px 0 0;font-size:12px;color:#aaa;word-break:break-all">Or paste this link: {link}</p>
 </div>"""
+
+
+def send_event_invite(to_addr: str, title: str, ics: str, *, organizer_name: str, cancelled: bool = False) -> None:
+    """A calendar invitation to an event saved in Vedic Patro (or its cancellation)."""
+    method = "CANCEL" if cancelled else "REQUEST"
+    subject = f"{'Cancelled' if cancelled else 'Invitation'}: {title}"
+    intro = (
+        f"{organizer_name} cancelled \"{title}\"."
+        if cancelled
+        else f"{organizer_name} invited you to \"{title}\". Add it to your calendar from this email."
+    )
+    text = f"{intro}\n\nSent from Vedic Patro."
+    html = f"""\
+<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a">
+  <h2 style="margin:0 0 12px">{_html.escape(title)}</h2>
+  <p style="margin:0 0 20px;line-height:1.5;color:#444">{_html.escape(intro)}</p>
+  <p style="margin:24px 0 0;font-size:13px;color:#888">Sent from Vedic Patro.</p>
+</div>"""
+    _send(to_addr, subject, text, html, ics=(ics, method))

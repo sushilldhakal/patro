@@ -266,3 +266,44 @@ class BlobCache(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
     )
+
+
+class CalendarEvent(Base):
+    """An event or reminder the user saves — one record for both, shaped like Apple Calendar's.
+
+    Times are absolute (UTC) with the zone they were written in, so a repeat follows the
+    user's wall clock. ``source_kind`` / ``source_key`` remember the साइत or मुहूर्त it was
+    picked from (``sait`` + ``vivaha``, ``muhurta`` + ``abhijit``); the title came from there.
+    Alerts are minutes before the start (iOS: "At time of event" is 0), at most two.
+    """
+
+    __tablename__ = "calendar_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    profile_id: Mapped[str | None] = mapped_column(
+        ForeignKey("profiles.id", ondelete="SET NULL"), nullable=True
+    )
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    location: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    all_day: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    timezone: Mapped[str] = mapped_column(String(64), default="Asia/Kathmandu", nullable=False)
+    # never | daily | weekly | fortnightly | monthly | yearly
+    repeat: Mapped[str] = mapped_column(String(16), default="never", nullable=False)
+    # Comma-separated minutes before the start, e.g. "0,1440"; empty = no alert.
+    alerts: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    source_kind: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    source_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Comma-separated invitee emails; each was sent a calendar invitation.
+    invitees: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
+    )
