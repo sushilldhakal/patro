@@ -4806,6 +4806,10 @@
     "tips_sait_day": "{{tithi}} · {{nakshatra}} · {{lagna}} lagna",
     "tips_need_profile": "Add your profile to see how this day is for you."
   },
+  "widgets": {
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
   "ui": {
     "aakash_gochar": {
       "earth_sits_at_the_centre_and": "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",

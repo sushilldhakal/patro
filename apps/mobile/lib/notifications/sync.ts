@@ -1,3 +1,4 @@
+import { refreshTodayWidget } from "@/lib/widgets/today-widget";
 import { importPhoneCalendars } from "@/lib/events/device-calendars";
 import { listEvents } from "@/lib/events/api";
 import { planEventAlerts } from "@/lib/events/alerts";
@@ -119,6 +120,9 @@ export async function syncNotifications(options: {
     }
     guidance[profile.id] = range;
   }
+
+  // The home-screen widget follows the same data: today, the next festival, the next event.
+  void refreshTodayWidget({ lang, timezone: tz, events }).catch(() => {});
 
   if (permission !== "granted") return { scheduled: 0, online, permission };
 

@@ -7245,6 +7245,8 @@ export const strings = {
   "events.phone_import": { ne: "अहिले ल्याउनुहोस्", en: "Import now" },
   "events.phone_imported": { ne: "{{count}} कार्यक्रम ल्याइयो वा मिलाइयो", en: "{{count}} events added or updated" },
   "events.phone_none": { ne: "यो फोनमा क्यालेन्डर भेटिएन।", en: "No calendars on this phone." },
+  "widgets.today": { ne: "आज", en: "Today" },
+  "widgets.tomorrow": { ne: "भोलि", en: "Tomorrow" },
   "events.new": { ne: "नयाँ", en: "New" },
   "events.edit": { ne: "सम्पादन", en: "Edit" },
   "events.save": { ne: "सुरक्षित गर्नुहोस्", en: "Save" },

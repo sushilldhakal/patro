@@ -344,6 +344,32 @@
           "calendarPermission": "Vedic Patro reads your calendars so you can bring your events (Google, iCloud and others on this phone) into the app.",
           "remindersPermission": "Vedic Patro reads your reminders so you can bring them into the app."
         }
+      ],
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true,
+          "widgets": [
+            {
+              "name": "TodayWidget",
+              "displayName": "Vedic Patro",
+              "description": "Today's BS date, tithi, the next festival and your next event.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ]
+              },
+              "android": {
+                "minWidth": 180,
+                "minHeight": 110,
+                "targetCellWidth": 2,
+                "targetCellHeight": 2,
+                "resizeMode": "both"
+              }
+            }
+          ]
+        }
       ]
     ],
     "experiments": {
