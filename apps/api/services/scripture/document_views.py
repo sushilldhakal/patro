@@ -73,7 +73,7 @@ def _veda_source_parts(slug: str, shloka: dict[str, Any]) -> list[dict[str, Any]
     """The citation trail — "मण्डल 3 » सूक्त 27 » मन्त्र 1" — as structured parts.
 
     The mantra number is the verse's place *within its sukta* (the last part of
-    its ``verse_label``, ``27.1`` → 1), not its running number in the chapter.
+    its ``verse_label``, ``3.27.1`` → 1), not its running number in the chapter.
     Only the Rigveda and Atharvaveda are cited by sukta.
     """
     parts: list[dict[str, Any]] = [

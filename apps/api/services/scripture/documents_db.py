@@ -167,7 +167,7 @@ def _verse_in_sukta(shloka: dict[str, Any]) -> int:
     """The shloka's place inside its sukta.
 
     ``verse_number`` runs through the whole chapter (a Rigveda mandala numbers
-    its riks straight through). The human label is ``{sukta}.{verse}`` — ``120.2`` is the
+    its riks straight through). The label is ``{mandala}.{sukta}.{verse}`` — ``1.120.2`` is the
     second rik of sukta 120 — which is what the audio filenames count.
     """
     label = shloka.get("verse_label")

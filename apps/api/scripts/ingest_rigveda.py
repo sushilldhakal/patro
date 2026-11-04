@@ -115,13 +115,13 @@ def build_manifest() -> dict[str, Any]:
         for sukta_key in sukta_keys:
             sukta_number = int(SUKTA_RE.match(sukta_key).group(1))
             sukta_attribution = authorship.get(f"{mandala_number}.{sukta_number}")
-            for rik in suktas[sukta_key]:
+            # Counted inside the sukta: the source's rik_number runs on through the mandala.
+            for rik_in_sukta, rik in enumerate(suktas[sukta_key], start=1):
                 verse_number += 1
-                rik_number = rik["rik_number"]
                 shlokas.append(
                     {
                         "verse_number": verse_number,
-                        "verse_label": f"{sukta_number}.{rik_number}",
+                        "verse_label": f"{mandala_number}.{sukta_number}.{rik_in_sukta}",  # Mandala.Sukta.Rik
                         "sukta_number": sukta_number,
                         # Traditional Anukramani attribution for this Sukta —
                         # null when scripts/build_rigveda_authorship.py has no

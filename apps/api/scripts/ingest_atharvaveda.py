@@ -130,7 +130,7 @@ def build_manifest() -> dict[str, Any]:
                 shlokas.append(
                     {
                         "verse_number": verse_number,
-                        "verse_label": f"{sukta_number}.{rik_number}",
+                        "verse_label": f"{kaanda_number}.{sukta_number}.{rik_number}",  # Kaanda.Sukta.Mantra
                         "sukta_number": sukta_number,
                         "sanskrit": sanskrit,
                         "transliteration": None,
