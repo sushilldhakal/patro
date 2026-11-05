@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { VERSE_DETAIL_KINDS, type Shloka, type VerseDetailKind } from "@vedic-patro/api-client";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";
+import { svaraPieces } from "@vedic-patro/domain/learn/svara-marks";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/learn/word-tracking";
 import { useLocale } from "@vedic-patro/i18n/react";
 
@@ -69,6 +70,8 @@ export function useShlokaCard({
     isNote,
     vedaCite: formatVedaCite(shloka.veda_cite, lang),
     tokens: wordTrack.tokens,
+    /** Pitch digits above the Samaveda mantra. Empty for every other text. */
+    svaraLine: svaraPieces(shloka.sanskrit_swara ?? ""),
     activeTokenIndex: isPlaying ? activeTokenAt(wordTrack, fraction) : -1,
     /** Transliteration is shown only in the English interface. */
     transliteration: lang !== "ne" && shloka.transliteration ? shloka.transliteration : null,
@@ -83,6 +86,7 @@ export function useShlokaCard({
     copy: {
       play: isPlaying ? t("documents.pause_verse") : t("documents.play_verse"),
       meaning: t("documents.meaning"),
+      swaraLess: t("documents.swara_less"),
     },
   };
 }

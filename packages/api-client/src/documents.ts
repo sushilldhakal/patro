@@ -74,6 +74,11 @@ export interface Shloka {
   padapatha?: string | null;
   /** Swami Dayananda Saraswati's Hindi भावार्थ (the source of meaning_ne for the Vedas). */
   meaning_hi?: string | null;
+  /**
+   * The same mantra with Samaveda pitch digits (1, 2, 3) written above the
+   * syllables. Null for every text that is not chanted that way.
+   */
+  sanskrit_swara?: string | null;
   sanskrit: string;
   transliteration?: string | null;
   meaning_ne?: string | null;

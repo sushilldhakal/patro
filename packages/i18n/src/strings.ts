@@ -7198,6 +7198,7 @@ export const strings = {
   "documents.pause_verse": { ne: "रोक्नुहोस्", en: "Pause" },
   "documents.no_audio": { ne: "श्रव्य उपलब्ध छैन", en: "No audio yet" },
   "documents.meaning": { ne: "अर्थ", en: "Meaning" },
+  "documents.swara_less": { ne: "स्वर-रहित-मन्त्र", en: "Mantra without svara" },
   "documents.transliteration": { ne: "उच्चारण (IAST)", en: "Transliteration" },
   "documents.now_playing": { ne: "बज्दैछ · श्लोक {{label}}", en: "Now playing · verse {{label}}" },
   "documents.prev_verse": { ne: "अघिल्लो श्लोक", en: "Previous verse" },

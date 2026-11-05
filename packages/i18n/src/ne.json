@@ -4696,6 +4696,7 @@
     "pause_verse": "रोक्नुहोस्",
     "no_audio": "श्रव्य उपलब्ध छैन",
     "meaning": "अर्थ",
+    "swara_less": "स्वर-रहित-मन्त्र",
     "transliteration": "उच्चारण (IAST)",
     "now_playing": "बज्दैछ · श्लोक {{label}}",
     "prev_verse": "अघिल्लो श्लोक",

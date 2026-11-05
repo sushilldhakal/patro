@@ -59,6 +59,23 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
               {vedaCite ? <Text className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
             </Box>
           ) : null}
+          {card.svaraLine.length > 0 ? (
+            <Box>
+              <Box className={documentsClasses.verseText} nativeClassName="flex-row flex-wrap items-end">
+                {card.svaraLine.map((piece, i) =>
+                  piece.marks ? (
+                    <Box key={i} nativeClassName="items-center">
+                      <Text className="text-[10px] leading-none text-muted-foreground">{piece.marks}</Text>
+                      <Text className={documentsClasses.verseText}>{piece.text}</Text>
+                    </Box>
+                  ) : (
+                    <Text key={i} className={documentsClasses.verseText}>{piece.text}</Text>
+                  ),
+                )}
+              </Box>
+              <Text className={documentsClasses.verseDetailLabel}>{card.copy.swaraLess}</Text>
+            </Box>
+          ) : null}
           <Text className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText)}>
             {card.tokens.map((tok, i) =>
               i === card.activeTokenIndex ? (

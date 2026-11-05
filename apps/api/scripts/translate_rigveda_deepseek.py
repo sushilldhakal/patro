@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VEDAS = ("rigveda", "yajurveda")
+VEDAS = ("rigveda", "yajurveda", "samaveda", "atharvaveda")
 MANIFEST = ROOT / "data/documents_source/rigveda.json"
 PROGRESS = ROOT / "data/vedcom_source/rigveda_ne_deepseek.jsonl"
 MODEL = "deepseek/deepseek-v4.1-flash-1017"
@@ -127,10 +127,14 @@ def batches(pending: list[tuple[str, str]], max_items: int, max_chars: int):
 
 def _devanagari_ok(text: str) -> bool:
     letters = [ch for ch in text if ch.isalpha()]
-    if len(letters) < 8:
+    if not letters:
         return False
     dev = sum(1 for ch in letters if "\u0900" <= ch <= "\u097f")
-    return dev / len(letters) >= 0.75
+    if dev / len(letters) < 0.75:
+        return False
+    # A full commentary needs a real sentence. A short note such as
+    # "स्पष्ट है ॥४॥" is complete in a few words, so a short Nepali line is fine.
+    return len(letters) >= 8 or len(text) <= 80
 
 
 def _loopy(text: str) -> bool:

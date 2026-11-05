@@ -53,6 +53,8 @@ _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     ("svara", "TEXT"),
     ("padapatha", "TEXT"),
     ("meaning_hi", "TEXT"),
+    # Samaveda mantra with the pitch digits (1, 2, 3) above the syllables.
+    ("sanskrit_swara", "TEXT"),
 ]
 
 _SCHEMA = """
@@ -99,6 +101,7 @@ CREATE TABLE IF NOT EXISTS shlokas (
     svara                   TEXT,
     padapatha               TEXT,
     meaning_hi              TEXT,
+    sanskrit_swara          TEXT,
     sanskrit                TEXT NOT NULL,
     transliteration         TEXT,
     meaning_ne              TEXT,
@@ -374,6 +377,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("svara"),
                     shloka.get("padapatha"),
                     shloka.get("meaning_hi"),
+                    shloka.get("sanskrit_swara"),
                     shloka["sanskrit"],
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
@@ -425,9 +429,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
              verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
              veda_cite, devata, rishi, chhanda, svara, padapatha, meaning_hi,
-             sanskrit, transliteration, meaning_ne, meaning_en,
+             sanskrit_swara, sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -579,6 +583,7 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "svara": r["svara"],
         "padapatha": r["padapatha"],
         "meaning_hi": r["meaning_hi"],
+        "sanskrit_swara": r["sanskrit_swara"] if "sanskrit_swara" in r.keys() else None,
         "sanskrit": r["sanskrit"],
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],
