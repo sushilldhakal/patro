@@ -118,4 +118,6 @@ data/documents.db-*
 
 # Raw Ved Portal (वेद.com) pages as parsed by scripts/scrape_vedcom.py: every commentary on
 # every mantra, ~120 MB. Rebuilt by the scraper; only the merged fields go into git.
-data/vedcom_source/
+# No trailing slash: a symlink of this name (a worktree pointing at the main checkout's crawl)
+# must not be committed either — checking such a commit out deleted the real folder once.
+data/vedcom_source

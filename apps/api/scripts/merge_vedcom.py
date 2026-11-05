@@ -71,39 +71,6 @@ def similarity(a: str, b: str) -> float:
     return difflib.SequenceMatcher(None, fold(a), fold(b), autojunk=False).ratio()
 
 
-def align_by_order(ours: list[dict], rows: list[dict], window: int = 4) -> dict[str, dict]:
-    """Samaveda: pair the site's mantras (in its order, ``seq``) with ours (reading order). Where
-    the text disagrees, look a few mantras ahead on either side for the pairing that agrees, so one
-    mantra more or less on one side does not shift everything after it."""
-    out: dict[str, dict] = {}
-    i = j = 0
-    while i < len(ours) and j < len(rows):
-        if similarity(ours[i]["sanskrit"], rows[j]["sanskrit"]) >= 0.8:
-            out[ours[i]["verse_label"]] = rows[j]
-            i += 1
-            j += 1
-            continue
-        best = None
-        for di in range(window + 1):
-            for dj in range(window + 1):
-                if (di or dj) and i + di < len(ours) and j + dj < len(rows):
-                    if similarity(ours[i + di]["sanskrit"], rows[j + dj]["sanskrit"]) >= 0.8:
-                        if best is None or di + dj < sum(best):
-                            best = (di, dj)
-        if best is None:
-            out[ours[i]["verse_label"]] = rows[j]  # paired anyway; the report lists it as low
-            i += 1
-            j += 1
-        else:
-            for dj in range(best[1]):
-                out[f"site#{rows[j + dj]['seq']}"] = rows[j + dj]  # on the site only
-            i += best[0]  # ours skipped: reported as not on the site
-            j += best[1]
-    for row in rows[j:]:
-        out[f"site#{row['seq']}"] = row
-    return out
-
-
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda", "samaveda"])
@@ -121,12 +88,8 @@ def main() -> None:
     doc = json.loads(raw)
 
     ours = {s["verse_label"]: s for c in doc["chapters"] for s in c["shlokas"]}
-    if args.veda == "samaveda":
-        # The site's Samaveda pages are not numbered like our labels: line up by order.
-        site = align_by_order(list(ours.values()), sorted(rows, key=lambda r: r["seq"]))
-    else:
-        # Newer rows carry their label; the first Rigveda rows only mandala / sukta / mantra.
-        site = {row.get("label") or f"{row['mandala']}.{row['sukta']}.{row['mantra']}": row for row in rows}
+    # Newer rows carry their label; the first Rigveda rows only mandala / sukta / mantra.
+    site = {row.get("label") or f"{row['mandala']}.{row['sukta']}.{row['mantra']}": row for row in rows}
     matched = low = 0
     lows: list[tuple[float, str]] = []
     for label, shloka in ours.items():
