@@ -1496,7 +1496,8 @@
     "paksha_aria": "पक्ष",
     "paksha_all": "पूरै",
     "paksha_krishna": "कृष्ण",
-    "paksha_shukla": "शुक्ल"
+    "paksha_shukla": "शुक्ल",
+    "events_count": "{{count}} कार्यक्रम"
   },
   "aside": {
     "sunrise_sunset": "सूर्योदय / सूर्यास्त",
@@ -4893,9 +4894,21 @@
     },
     "settings": {
       "title": "सेटिङ",
+      "language_calendar": "भाषा र पात्रो",
+      "appearance": "रूप",
+      "language_ne": "नेपाली",
+      "language_en": "अंग्रेजी",
       "language": "पूर्वनिर्धारित भाषा",
       "theme": "थिम",
       "theme_system": "सिस्टम"
+    },
+    "account": {
+      "group_calendar": "क्यालेन्डर",
+      "events_and_sync": "कार्यक्रम र क्यालेन्डर सिङ्क",
+      "account_data": "खाताको डेटा",
+      "account_data_body": "तपाईंको खाता र त्यससँग जोडिएको सबै डेटा स्थायी रूपमा हटाउन सकिन्छ।",
+      "group_account": "खाता",
+      "back": "पछाडि"
     },
     "auth": {
       "apple_sign_in_failed": "एपल लग-इन असफल",
@@ -5230,6 +5243,9 @@
       "reset": "जुम रिसेट",
       "zoom_in": "जुम इन",
       "zoom_out": "जुम आउट"
+    },
+    "nav": {
+      "profile": "प्रोफाइल"
     },
     "search": {
       "cancel": "बन्द गर्नुहोस्"

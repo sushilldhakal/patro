@@ -1496,7 +1496,8 @@
     "paksha_aria": "Paksha",
     "paksha_all": "All",
     "paksha_krishna": "Krishna",
-    "paksha_shukla": "Shukla"
+    "paksha_shukla": "Shukla",
+    "events_count": "{{count}} events"
   },
   "aside": {
     "sunrise_sunset": "Sunrise / Sunset",
@@ -4912,6 +4913,10 @@
       "nothing_downloaded_yet": "Nothing downloaded yet.",
       "offline_calendar_data_can_be_managed": "Offline calendar data can be managed without logging in.",
       "offline_data": "Offline Data",
+      "group_calendar": "Calendar",
+      "events_and_sync": "Events and calendar sync",
+      "account_data": "Account data",
+      "account_data_body": "Permanently remove your account and everything saved with it.",
       "group_account": "Account",
       "back": "Back",
       "offline_downloads_aren_t_available_on": "Offline downloads aren't available on this platform. Use the Android or iOS app.",

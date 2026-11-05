@@ -42,6 +42,7 @@ export function BsCalendarGrid({
   todayPulse,
   primaryDate: primaryDateProp = "bs",
   saitSource,
+  events,
   moon,
   className,
 }: BsCalendarGridProps) {
@@ -49,7 +50,7 @@ export function BsCalendarGrid({
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const { width } = useWindowDimensions();
-  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp, saitSource });
+  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp, saitSource, events });
   const { primaryDate } = grid;
   const { onLayout, col } = useGridWidth();
   const isCompact = width < 768;
@@ -69,6 +70,7 @@ export function BsCalendarGrid({
     selectedAdDate,
     todayAd,
     primaryDate: primaryDateProp,
+    events,
   });
   const ghost = useBsCalendarGrid({
     days: travel.from ?? days,
@@ -76,6 +78,7 @@ export function BsCalendarGrid({
     selectedAdDate,
     todayAd,
     primaryDate: primaryDateProp,
+    events,
   });
 
   return (
@@ -177,6 +180,23 @@ export function BsCalendarGrid({
                       ) : null}
                     </View>
                   </View>
+
+                  {cell.eventTitles.length > 0 && !isOutside ? (
+                    isCompact ? (
+                      <RNPressable onPress={() => onSelectDay?.(cell.day)} accessibilityLabel={cell.eventCountAria} className={cn("mt-1 self-start", cal.eventBadge)}>
+                        <Text className={cal.eventBadgeText}>{cell.eventCountLabel}</Text>
+                      </RNPressable>
+                    ) : (
+                      <View className="mt-1 w-full gap-px">
+                        {cell.eventTitles.slice(0, 2).map((title, ei) => (
+                          <View key={`${title}-${ei}`} className={cal.eventChip}>
+                            <Text numberOfLines={1} className={cal.eventChipText}>{title}</Text>
+                          </View>
+                        ))}
+                        {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
+                      </View>
+                    )
+                  ) : null}
 
                   {compactBsFest ? (
                     <RNPressable onPress={openFestivals} className={cn("mt-auto self-start", cal.countBadgeCompact)}>

@@ -3,7 +3,7 @@
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
 import type { ComponentType, ReactNode } from "react";
-import type { CalendarDay, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
+import type { CalendarDay, CalendarEvent, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import type { LocateDevice, SeoContentRoute } from "@vedic-patro/features/common";
@@ -357,6 +357,8 @@ export type BsCalendarGridProps = {
   primaryDate?: "bs" | "ad";
   /** The festival dialog lists the day's saits when given. */
   saitSource?: BsCalendarSaitSource;
+  /** The signed-in user's events, tasks and appointments: each cell lists its day's. */
+  events?: CalendarEvent[];
   /** Moon artwork stays in each app (it is a panchanga drawing). */
   moon?: (info: BsCalendarMoon) => ReactNode;
   className?: string;

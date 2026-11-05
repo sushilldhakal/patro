@@ -1,3 +1,6 @@
+import { useDayEvents } from "@vedic-patro/features/events";
+import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, getRouteApi, useNavigate } from "@tanstack/react-router";
@@ -61,6 +64,8 @@ const PanchangaAside = forwardRef(function PanchangaAside(
   ref: React.ForwardedRef<HTMLElement>,
 ) {
   const { copy, p, contextDay } = aside;
+  const { isAuthenticated } = useAuth();
+  const dayEvents = useDayEvents(aside.dayAd, isAuthenticated);
   return (
     <aside ref={ref} id="home-panchanga-aside" className={cn("scroll-mt-[4.5rem] flex flex-col", homeClasses.asideShell)}>
       <div className={homeClasses.asideHeader}>
@@ -75,6 +80,9 @@ const PanchangaAside = forwardRef(function PanchangaAside(
       </div>
 
       <TodayHighlightCard selectedDay={contextDay} selectedAdDate={aside.dayAd} todayAd={todayAd} monthContext={monthContext} p={p} />
+      <div className="px-4 pt-3 empty:hidden">
+        <DayEvents events={dayEvents.events} />
+      </div>
 
       <div className={cn("flex min-w-0 flex-1 flex-col", homeClasses.asideBody)}>
         <div className={cn("grid shrink-0 grid-cols-3", homeClasses.asideTabBar)} role="tablist" aria-label={copy.tabsLabel}>

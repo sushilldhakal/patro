@@ -1496,7 +1496,8 @@
     "paksha_aria": "Paksha",
     "paksha_all": "All",
     "paksha_krishna": "Krishna",
-    "paksha_shukla": "Shukla"
+    "paksha_shukla": "Shukla",
+    "events_count": "{{count}} events"
   },
   "aside": {
     "sunrise_sunset": "Sunrise / Sunset",
@@ -4893,9 +4894,21 @@
     },
     "settings": {
       "title": "Settings",
+      "language_calendar": "Language & calendar",
+      "appearance": "Appearance",
+      "language_ne": "Nepali",
+      "language_en": "English",
       "language": "Default language",
       "theme": "Theme",
       "theme_system": "System"
+    },
+    "account": {
+      "group_calendar": "Calendar",
+      "events_and_sync": "Events and calendar sync",
+      "account_data": "Account data",
+      "account_data_body": "Permanently remove your account and everything saved with it.",
+      "group_account": "Account",
+      "back": "Back"
     },
     "auth": {
       "apple_sign_in_failed": "Apple sign-in failed",
@@ -5230,6 +5243,9 @@
       "reset": "Reset zoom",
       "zoom_in": "Zoom in",
       "zoom_out": "Zoom out"
+    },
+    "nav": {
+      "profile": "Profile"
     },
     "search": {
       "cancel": "Close"

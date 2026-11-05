@@ -1,29 +1,34 @@
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { DayEventsProps } from "../contract";
+import { eventKindOf, eventTimeText } from "../event-text";
 
-/** The signed-in user's events, tasks and appointments on one day, for the day's detail. */
+const DOT = { event: "bg-primary", task: "bg-success", appointment: "bg-warning" } as const;
+
+/** The signed-in user's events, tasks and appointments on one day, with their time, place and notes. */
 export function DayEvents({ events }: DayEventsProps) {
   const { t, lang } = useLocale();
   if (events.length === 0) return null;
   return (
-    <>
-      <h4 className="mb-2 text-sm font-bold">{t("events.on_this_day")}</h4>
-      <ul className="m-0 mb-4 list-none p-0">
+    <section className="mb-4 flex flex-col gap-2">
+      <h4 className="text-sm font-bold">{t("events.on_this_day")}</h4>
+      <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {events.map((e) => {
-          const kind = e.kind === "task" || e.kind === "reminder" ? "task" : e.kind === "appointment" ? "appointment" : "event";
-          const time = e.all_day
-            ? t("events.all_day_short")
-            : new Date(e.starts_at).toLocaleTimeString(lang === "en" ? "en-US" : "ne-NP", { hour: "numeric", minute: "2-digit", timeZone: e.timezone });
+          const kind = eventKindOf(e);
           return (
-            <li key={e.id} className="flex items-center justify-between gap-3 border-b border-border py-2 text-sm last:border-b-0">
-              <span className="min-w-0 truncate font-medium">{e.title}</span>
-              <span className="shrink-0 text-xs text-muted-foreground">
-                {t(`events.kind_${kind}`)} · {time}
-              </span>
+            <li key={e.id} className="flex gap-3 rounded-2xl bg-muted p-3 dark:bg-foreground/5">
+              <span className={`mt-1.5 size-2.5 shrink-0 rounded-full ${DOT[kind]}`} aria-hidden />
+              <div className="min-w-0 flex-1">
+                <p className="m-0 truncate text-sm font-semibold">{e.title}</p>
+                <p className="m-0 text-xs text-muted-foreground">
+                  {t(`events.kind_${kind}`)} · {eventTimeText(e, lang, t("events.all_day_short"))}
+                </p>
+                {e.location ? <p className="m-0 truncate text-xs text-muted-foreground">{e.location}</p> : null}
+                {e.notes ? <p className="m-0 line-clamp-2 text-xs">{e.notes}</p> : null}
+              </div>
             </li>
           );
         })}
       </ul>
-    </>
+    </section>
   );
 }

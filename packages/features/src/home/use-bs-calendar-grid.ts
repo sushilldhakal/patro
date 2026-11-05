@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
-import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
+import type { CalendarDay, CalendarEvent, PanchangaDay } from "@vedic-patro/api-client";
 import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/calendar/bs-calendar";
 import { getSecondaryCellDate } from "@vedic-patro/read-models/calendar/local-calendar";
 import { bilingualText } from "@vedic-patro/domain/locale";
@@ -15,6 +15,7 @@ import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/read-models/panchan
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { eventsOnDate } from "../events/use-day-events";
 import { buildSaitRows, saitNote, type SaitRow } from "../_shared/sait-rows";
 
 export type BsCalendarWeekday = {
@@ -50,6 +51,10 @@ export type BsCalendarCell = {
   festCountLabel: string;
   festCountAria: string;
   festivalsTitle: string;
+  /** The signed-in user's events, tasks and appointments on this day (titles, earliest first). */
+  eventTitles: string[];
+  eventCountLabel: string;
+  eventCountAria: string;
   tithi: string;
   tithiIndex: number | null;
   moonTitle?: string;
@@ -83,6 +88,7 @@ export function useBsCalendarGrid({
   todayAd,
   primaryDate: primaryDateProp = "bs",
   saitSource,
+  events,
 }: {
   days: CalendarDay[];
   publicHolidayDates?: Set<string>;
@@ -92,6 +98,8 @@ export function useBsCalendarGrid({
   primaryDate?: "bs" | "ad";
   /** Only the dialog's day is requested, and only while it is open. */
   saitSource?: BsCalendarSaitSource;
+  /** The user's events: each cell lists its day's, like festivals (chips on wide cells, a +N badge on narrow ones). */
+  events?: CalendarEvent[];
 }) {
   const { t, lang, monoDigits, digits } = useLocale();
   const isEn = lang === "en";
@@ -124,6 +132,7 @@ export function useBsCalendarGrid({
     const isPublicHoliday = !isOutside && (publicHolidayDates?.has(day.date_ad) ?? false);
     const festivals = !isOutside ? day.festivals.filter(Boolean) : [];
     const festCount = festivals.length;
+    const eventTitles = !isOutside && events?.length ? eventsOnDate(events, day.date_ad).map((e) => e.title) : [];
     const extraFestCount = festCount > 2 ? festCount - 2 : 0;
     const primaryDayNum = primaryDate === "ad" ? civilIsoDayOfMonth(day.date_ad) : day.day;
     const secondary = getSecondaryCellDate(day, primaryDate, lang, i === 0);
@@ -153,6 +162,9 @@ export function useBsCalendarGrid({
       festCountLabel: `+${monoDigits(festCount)}`,
       festCountAria: t("calendar.festivals_more", { count: festCount }),
       festivalsTitle: festivals.join(" · "),
+      eventTitles,
+      eventCountLabel: `+${monoDigits(eventTitles.length)}`,
+      eventCountAria: t("calendar.events_count", { count: eventTitles.length }),
       tithi: bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne),
       tithiIndex: tithiIndexFromCalendarDay(day) ?? null,
       moonTitle: moonPhaseTitle(getPakshaPhase(day), isEn),

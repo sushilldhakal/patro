@@ -9,7 +9,7 @@ const LazyAuthDialog = lazy(() =>
   importWithRetry(() => import("./AuthDialog")).then((m) => ({ default: m.AuthDialog })),
 );
 
-/** Header account control. The menu is shared; this file opens the account page and the sign-in dialog. */
+/** Header account control: the avatar goes to the profile page; signed out it opens the sign-in dialog. */
 export function AccountMenu() {
   const menu = useAccountMenu(useAuth());
   const navigate = useNavigate();
@@ -20,18 +20,13 @@ export function AccountMenu() {
       email={menu.email}
       verified={menu.verified}
       statusLabel={menu.statusLabel}
-      menuOpen={menu.menuOpen}
-      onOpenMenu={menu.openMenu}
+      // No dropdown: the avatar opens the profile page, where profile, events, settings and sign out live.
+      menuOpen={false}
+      onOpenMenu={() => void navigate({ to: "/account" })}
       onCloseMenu={menu.closeMenu}
       onSignIn={menu.openAuth}
-      onProfiles={() => {
-        menu.closeMenu();
-        navigate({ to: "/account" });
-      }}
-      onSettings={() => {
-        menu.closeMenu();
-        navigate({ to: "/account/settings" });
-      }}
+      onProfiles={() => void navigate({ to: "/account" })}
+      onSettings={() => void navigate({ to: "/account/settings" })}
       onSignOut={menu.signOut}
       copy={menu.copy}
       auth={

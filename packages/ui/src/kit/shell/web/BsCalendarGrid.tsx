@@ -33,11 +33,12 @@ export function BsCalendarGrid({
   todayAd = TODAY_AD,
   primaryDate = "bs",
   saitSource,
+  events,
   moon,
   className,
 }: BsCalendarGridProps) {
   const { t } = useLocale();
-  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate, saitSource });
+  const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate, saitSource, events });
 
   return (
     <Box className={cn(cal.grid, cal.gridWide, cal.gridWeb, className)}>
@@ -225,6 +226,27 @@ function DayCell({
             ) : null}
           </Text>
         </Box>
+
+        {cell.eventTitles.length > 0 ? (
+          <>
+            {/* Narrow cells: a count badge, like festivals; wide cells list the first titles. */}
+            <Pressable
+              label={cell.eventCountAria}
+              onPress={onSelect}
+              className={cn("pointer-events-auto mx-auto mt-1 shrink-0 border-none md:hidden", cal.eventBadge, cal.eventBadgeText)}
+            >
+              <Text className={cal.eventBadgeText}>{cell.eventCountLabel}</Text>
+            </Pressable>
+            <Box className="pointer-events-none mt-1 hidden w-full flex-col gap-px md:flex">
+              {cell.eventTitles.slice(0, 2).map((title, ei) => (
+                <Box key={`${title}-${ei}`} className={cal.eventChip}>
+                  <Text numberOfLines={1} className={cal.eventChipText}>{title}</Text>
+                </Box>
+              ))}
+              {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
+            </Box>
+          </>
+        ) : null}
 
         {cell.bsFestCompact ? (
           <Pressable

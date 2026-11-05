@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useNavigate } from "@tanstack/react-router";
+import { useUserEvents } from "@vedic-patro/features/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { useHomeMonth, type CalendarMonthContext } from "@vedic-patro/features/home";
 import { fetchMonthCalendar, fetchPanchangaDay, panchangaKeys, type CalendarDay } from "@/lib/api";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
@@ -95,6 +97,8 @@ export function CalendarView({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { lang } = useLocale();
+  const { isAuthenticated } = useAuth();
+  const userEvents = useUserEvents(isAuthenticated);
   const era = monthBrowse.era;
   const year = monthBrowse.year;
   const month = monthBrowse.month;
@@ -210,6 +214,7 @@ export function CalendarView({
           isEnriching={isEnriching}
           todayAd={todayAd}
           primaryDate={isGregorian ? "ad" : "bs"}
+          events={userEvents.events}
           saitSource={(day) => {
             const state = patroDayFetchFromApiDateAd(day.date_ad, { era, language: lang });
             return { queryKey: panchangaKeys.daySelection(state, location?.params), queryFn: () => fetchPanchangaDay(state, location?.params) };

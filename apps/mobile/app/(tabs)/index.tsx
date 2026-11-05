@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
+import { useUserEvents } from "@vedic-patro/features/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { ScrollView, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
@@ -158,6 +160,8 @@ function HomeScreen() {
   const belowFoldReady = useDeferredMount();
   const refreshControl = usePageRefreshControl();
   const { t, digits, lang } = useLocale();
+  const { isAuthenticated } = useAuth();
+  const userEvents = useUserEvents(isAuthenticated);
   const { width, isTablet, isPhone, isCompact } = useBreakpoint();
   const navBottom = useNavBottomPadding(isTablet);
   const { location, setLocation } = usePanchangaLocation();
@@ -404,6 +408,7 @@ function HomeScreen() {
                 queryFn: () => fetchPanchanga(day.date_ad, "ad", location.params),
               })}
               primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
+              events={userEvents.events}
               moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
             />
           )}

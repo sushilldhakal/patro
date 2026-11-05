@@ -15,6 +15,11 @@ export const accountClasses = {
   rowTitle: "text-body text-foreground",
   rowSubtitle: "mt-0.5 text-xs text-muted-foreground",
   rowValue: "max-w-40 text-sm text-muted-foreground",
+  /** The website's profile page: the list, an opened section, the avatar and the back link. */
+  pageList: "flex flex-col gap-6 px-4 py-8",
+  pageInner: "flex flex-col gap-5 px-4 py-8",
+  pageAvatar: "inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-secondary text-2xl font-semibold text-secondary-foreground",
+  pageBackLink: "inline-flex items-center gap-1 self-start border-none bg-transparent p-0 text-sm text-secondary hover:underline",
   innerBackLink: "flex-row items-center gap-1 self-start active:opacity-60",
   signedOutBox: "items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12",
   profileIconButton: "h-8 w-8 items-center justify-center rounded-lg active:bg-muted",

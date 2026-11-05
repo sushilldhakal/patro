@@ -50,14 +50,24 @@ export function eventOccursOn(event: CalendarEvent, date: string): boolean {
   }
 }
 
-/** The signed-in user's events, tasks and appointments on one day ("YYYY-MM-DD"), earliest first. */
-export function useDayEvents(date: string | null | undefined, enabled: boolean) {
+/** All of the signed-in user's events, tasks and appointments (one cached query shared by every view). */
+export function useUserEvents(enabled: boolean) {
   const query = useQuery({
     queryKey: ["events", "all"],
     queryFn: () => listEvents(),
     enabled,
     staleTime: 60_000,
   });
-  const events = date ? (query.data ?? []).filter((e) => eventOccursOn(e, date)).sort((a, b) => a.starts_at.localeCompare(b.starts_at)) : [];
-  return { events, loading: enabled && query.isLoading };
+  return { events: query.data ?? [], loading: enabled && query.isLoading };
+}
+
+/** The user's events on one day ("YYYY-MM-DD"), earliest first. */
+export function eventsOnDate(all: CalendarEvent[], date: string): CalendarEvent[] {
+  return all.filter((e) => eventOccursOn(e, date)).sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+}
+
+/** The signed-in user's events, tasks and appointments on one day ("YYYY-MM-DD"), earliest first. */
+export function useDayEvents(date: string | null | undefined, enabled: boolean) {
+  const all = useUserEvents(enabled);
+  return { events: date ? eventsOnDate(all.events, date) : [], loading: all.loading };
 }

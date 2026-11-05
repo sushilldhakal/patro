@@ -97,6 +97,13 @@ export default function AccountScreen() {
         ) : null}
 
         {signedIn ? (
+          <ListGroup title={t("ui.account.group_calendar")}>
+            <ListRow icon="calendar" title={t("ui.account.events_and_sync")} onPress={go("/account/events")} />
+            <ListRow icon="reminders" title={t("ui.settings.reminders")} onPress={go("/reminders")} />
+          </ListGroup>
+        ) : null}
+
+        {signedIn ? (
           <ListGroup title={t("ui.account.group_account")}>
             <ListRow
               icon="people"
@@ -106,7 +113,7 @@ export default function AccountScreen() {
             />
             {biometric.available ? (
               <ListRow
-                icon="finger-print"
+                icon="fingerprint"
                 title={t("ui.account.unlock_with_label", { label: biometric.label })}
                 subtitle={t("ui.account.you_stay_signed_in_the_app")}
                 trailing={
@@ -119,12 +126,7 @@ export default function AccountScreen() {
                 }
               />
             ) : null}
-            <ListRow
-              icon="log-out-outline"
-              title={t("account_page.sign_out")}
-              tone={colors.mutedForeground}
-              onPress={() => void auth.logout()}
-            />
+            <ListRow icon="shield" title={t("ui.account.account_data")} onPress={go("/account/data")} />
           </ListGroup>
         ) : null}
 
@@ -137,7 +139,7 @@ export default function AccountScreen() {
             value={languageValue}
             onPress={go("/account/language")}
           />
-          <ListRow icon="color-palette" title={t("ui.settings.appearance")} value={themeLabel} onPress={go("/account/appearance")} />
+          <ListRow icon="palette" title={t("ui.settings.appearance")} value={themeLabel} onPress={go("/account/appearance")} />
           <ListRow
             icon="download"
             title={t("ui.account.offline_data")}
@@ -147,34 +149,9 @@ export default function AccountScreen() {
         </ListGroup>
 
         {signedIn ? (
-          <View className={accountClasses.dangerZone}>
-            <Text className={accountClasses.dangerTitle} style={nepaliTextStyle()}>
-              {copy.deleteAccount}
-            </Text>
-            <Text className={accountClasses.dangerBody} style={nepaliTextStyle()}>
-              {copy.deleteAccountConfirm}
-            </Text>
-            <Pressable
-              onPress={() => {
-                Alert.alert(copy.deleteAccount, copy.deleteAccountConfirm, [
-                  { text: copy.cancel, style: "cancel" },
-                  {
-                    text: copy.delete,
-                    style: "destructive",
-                    onPress: async () => {
-                      if (await page.deleteAccount()) router.replace("/" as never);
-                      else Alert.alert(copy.deleteAccountError);
-                    },
-                  },
-                ]);
-              }}
-              className={cn(accountClasses.dangerButton, "h-8 items-center justify-center self-start rounded-lg px-2.5 active:bg-destructive/10")}
-            >
-              <Text className={cn("text-sm", accountClasses.dangerButtonText)} style={nepaliTextStyle()}>
-                {copy.deleteAccount}
-              </Text>
-            </Pressable>
-          </View>
+          <ListGroup>
+            <ListRow icon="logout" title={t("account_page.sign_out")} tone="danger" onPress={() => void auth.logout()} />
+          </ListGroup>
         ) : null}
       </View>
     </AppShell>

@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
+import { useDayEvents } from "@vedic-patro/features/events";
+import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
@@ -48,6 +51,8 @@ export function PanchangaAsidePanel({
 }: Props) {
   const { t } = useLocale();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const dayEvents = useDayEvents(selectedAd, isAuthenticated);
   const [tab, setTab] = useState<TabId>("panchanga");
 
   const contextDay =
@@ -84,6 +89,9 @@ export function PanchangaAsidePanel({
         month={month}
         p={activeP}
       />
+      <View className="px-4 pt-3">
+        <DayEvents events={dayEvents.events} />
+      </View>
 
       <View className={homeClasses.asideBody}>
         <View className={cn("flex-row", homeClasses.asideTabBar)}>
