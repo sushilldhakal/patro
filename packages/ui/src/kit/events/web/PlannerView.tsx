@@ -45,7 +45,7 @@ export function PlannerView(props: PlannerViewProps) {
   const timeGrid = view === "day" || view === "multi" || view === "week";
 
   return (
-    <section className="flex flex-col">
+    <section className="flex flex-col max-md:px-3">
       {/* Toolbar: the month (or year) on the left, ‹ Today › in one capsule on the right. */}
       <div className="flex items-center justify-between gap-3 pb-3">
         <h2 className="m-0 min-w-0 truncate text-2xl font-bold tracking-tight">{tx.title(view, anchor)}</h2>
