@@ -16,6 +16,39 @@ function addMonths(date: string, months: number): string {
   return `${ny}-${String(nm).padStart(2, "0")}-${String(Math.min(d!, last)).padStart(2, "0")}`;
 }
 
+/** 0 Sunday … 6 Saturday of a "YYYY-MM-DD" date. */
+const weekdayOf = (date: string) => {
+  const [y, m, d] = date.split("-").map(Number);
+  return new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay();
+};
+
+/** The `i`-th candidate day of a repeat; weekdays / weekends step a day at a time and skip the rest. */
+function candidateDay(repeat: CalendarEvent["repeat"], date: string, i: number): string | null {
+  switch (repeat) {
+    case "daily":
+      return shiftDate(date, i);
+    case "weekdays":
+    case "weekends": {
+      const day = shiftDate(date, i);
+      const wd = weekdayOf(day);
+      const weekend = wd === 0 || wd === 6;
+      return (repeat === "weekends") === weekend ? day : null;
+    }
+    case "weekly":
+      return shiftDate(date, 7 * i);
+    case "fortnightly":
+      return shiftDate(date, 14 * i);
+    case "monthly":
+      return addMonths(date, i);
+    case "quarterly":
+      return addMonths(date, 3 * i);
+    case "half_yearly":
+      return addMonths(date, 6 * i);
+    default:
+      return addMonths(date, 12 * i);
+  }
+}
+
 /** Start instants of `event` from `fromMs` up to the horizon (a repeat keeps its wall-clock time). */
 export function occurrences(event: CalendarEvent, fromMs: number, untilMs: number): number[] {
   const first = Date.parse(event.starts_at);
@@ -23,16 +56,8 @@ export function occurrences(event: CalendarEvent, fromMs: number, untilMs: numbe
   const { date, time } = isoToZoned(event.starts_at, event.timezone);
   const out: number[] = [];
   for (let i = 0; i < 800 && out.length < 40; i += 1) {
-    const day =
-      event.repeat === "daily"
-        ? shiftDate(date, i)
-        : event.repeat === "weekly"
-          ? shiftDate(date, 7 * i)
-          : event.repeat === "fortnightly"
-            ? shiftDate(date, 14 * i)
-            : event.repeat === "monthly"
-              ? addMonths(date, i)
-              : addMonths(date, 12 * i);
+    const day = candidateDay(event.repeat, date, i);
+    if (day == null) continue;
     const at = Date.parse(zonedToIso(day, time, event.timezone));
     if (at > untilMs) break;
     if (at >= fromMs) out.push(at);

@@ -15,6 +15,7 @@ configureGuestEvents({
 
 export {
   EVENT_ALERTS,
+  EVENT_PRIORITIES,
   EVENT_REPEATS,
   createEvent,
   deleteEvent,
@@ -24,5 +25,7 @@ export {
   uploadGuestEvents,
   type CalendarEvent,
   type CalendarEventInput,
+  type EventKind,
+  type EventPriority,
   type EventRepeat,
 } from "@vedic-patro/api-client";

@@ -371,6 +371,295 @@
     "title": "EntranceOut",
     "type": "object"
    },
+   "EventIn": {
+    "properties": {
+     "alerts": {
+      "items": {
+       "type": "integer"
+      },
+      "maxItems": 2,
+      "title": "Alerts",
+      "type": "array"
+     },
+     "all_day": {
+      "default": false,
+      "title": "All Day",
+      "type": "boolean"
+     },
+     "ends_at": {
+      "anyOf": [
+       {
+        "format": "date-time",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends At"
+     },
+     "invitees": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Invitees",
+      "type": "array"
+     },
+     "kind": {
+      "default": "event",
+      "title": "Kind",
+      "type": "string"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "maxLength": 4000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     },
+     "priority": {
+      "default": 0,
+      "maximum": 3.0,
+      "minimum": 0.0,
+      "title": "Priority",
+      "type": "integer"
+     },
+     "profile_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Profile Id"
+     },
+     "repeat": {
+      "default": "never",
+      "title": "Repeat",
+      "type": "string"
+     },
+     "source_key": {
+      "anyOf": [
+       {
+        "maxLength": 64,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Key"
+     },
+     "source_kind": {
+      "anyOf": [
+       {
+        "maxLength": 16,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Kind"
+     },
+     "starts_at": {
+      "format": "date-time",
+      "title": "Starts At",
+      "type": "string"
+     },
+     "timezone": {
+      "default": "Asia/Kathmandu",
+      "maxLength": 64,
+      "title": "Timezone",
+      "type": "string"
+     },
+     "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "starts_at"
+    ],
+    "title": "EventIn",
+    "type": "object"
+   },
+   "EventOut": {
+    "properties": {
+     "alerts": {
+      "items": {
+       "type": "integer"
+      },
+      "maxItems": 2,
+      "title": "Alerts",
+      "type": "array"
+     },
+     "all_day": {
+      "default": false,
+      "title": "All Day",
+      "type": "boolean"
+     },
+     "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+     },
+     "ends_at": {
+      "anyOf": [
+       {
+        "format": "date-time",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends At"
+     },
+     "id": {
+      "title": "Id",
+      "type": "string"
+     },
+     "invitees": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Invitees",
+      "type": "array"
+     },
+     "kind": {
+      "default": "event",
+      "title": "Kind",
+      "type": "string"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "notes": {
+      "anyOf": [
+       {
+        "maxLength": 4000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notes"
+     },
+     "priority": {
+      "default": 0,
+      "maximum": 3.0,
+      "minimum": 0.0,
+      "title": "Priority",
+      "type": "integer"
+     },
+     "profile_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Profile Id"
+     },
+     "repeat": {
+      "default": "never",
+      "title": "Repeat",
+      "type": "string"
+     },
+     "source_key": {
+      "anyOf": [
+       {
+        "maxLength": 64,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Key"
+     },
+     "source_kind": {
+      "anyOf": [
+       {
+        "maxLength": 16,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Kind"
+     },
+     "starts_at": {
+      "format": "date-time",
+      "title": "Starts At",
+      "type": "string"
+     },
+     "timezone": {
+      "default": "Asia/Kathmandu",
+      "maxLength": 64,
+      "title": "Timezone",
+      "type": "string"
+     },
+     "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+     },
+     "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "starts_at",
+     "id",
+     "created_at",
+     "updated_at"
+    ],
+    "title": "EventOut",
+    "type": "object"
+   },
    "FacebookAuthRequest": {
     "properties": {
      "access_token": {
@@ -2936,6 +3225,204 @@
     "summary": "Unregister Device",
     "tags": [
      "guidance"
+    ]
+   }
+  },
+  "/events": {
+   "get": {
+    "operationId": "list_events_events_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "since",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date-time",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/EventOut"
+         },
+         "title": "Response List Events Events Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "List Events",
+    "tags": [
+     "events"
+    ]
+   },
+   "post": {
+    "operationId": "create_event_events_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EventIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EventOut"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Create Event",
+    "tags": [
+     "events"
+    ]
+   }
+  },
+  "/events/{event_id}": {
+   "delete": {
+    "operationId": "delete_event_events__event_id__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "event_id",
+      "required": true,
+      "schema": {
+       "title": "Event Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Delete Event",
+    "tags": [
+     "events"
+    ]
+   },
+   "put": {
+    "operationId": "update_event_events__event_id__put",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "event_id",
+      "required": true,
+      "schema": {
+       "title": "Event Id",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EventIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EventOut"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Update Event",
+    "tags": [
+     "events"
     ]
    }
   },
@@ -14766,6 +15253,101 @@
      }
     },
     "summary": "Veda Daily",
+    "tags": [
+     "documents"
+    ]
+   }
+  },
+  "/v1/veda/details/{kind}": {
+   "get": {
+    "description": "Every mantra with this देवता (devata), ऋषि (rishi), छन्द (chhanda) or स्वर (svara).",
+    "operationId": "veda_verses_by_detail_v1_veda_details__kind__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "kind",
+      "required": true,
+      "schema": {
+       "title": "Kind",
+       "type": "string"
+      }
+     },
+     {
+      "description": "e.g. अग्निः",
+      "in": "query",
+      "name": "value",
+      "required": true,
+      "schema": {
+       "description": "e.g. अग्निः",
+       "maxLength": 200,
+       "minLength": 1,
+       "title": "Value",
+       "type": "string"
+      }
+     },
+     {
+      "description": "Keep to one Veda, e.g. rigveda",
+      "in": "query",
+      "name": "slug",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Keep to one Veda, e.g. rigveda",
+       "title": "Slug"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "minimum": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "maximum": 200,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Veda Verses By Detail",
     "tags": [
      "documents"
     ]

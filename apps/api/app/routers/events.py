@@ -16,6 +16,8 @@ router = APIRouter(tags=["events"])
 
 
 class EventIn(BaseModel):
+    kind: str = "event"
+    priority: int = Field(0, ge=0, le=3)
     title: str = Field(..., min_length=1, max_length=200)
     location: str | None = Field(None, max_length=200)
     notes: str | None = Field(None, max_length=4000)
@@ -40,6 +42,8 @@ class EventOut(EventIn):
 def _to_out(row: CalendarEvent) -> EventOut:
     return EventOut(
         id=row.id,
+        kind=row.kind,
+        priority=row.priority,
         title=row.title,
         location=row.location,
         notes=row.notes,

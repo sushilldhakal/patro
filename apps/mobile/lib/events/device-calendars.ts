@@ -78,7 +78,7 @@ function repeatOf(rule: DeviceCalendarModule.RecurrenceRule | null | undefined):
     case "weekly":
       return every === 1 ? "weekly" : every === 2 ? "fortnightly" : "never";
     case "monthly":
-      return every === 1 ? "monthly" : "never";
+      return every === 1 ? "monthly" : every === 3 ? "quarterly" : every === 6 ? "half_yearly" : "never";
     case "yearly":
       return every === 1 ? "yearly" : "never";
     default:

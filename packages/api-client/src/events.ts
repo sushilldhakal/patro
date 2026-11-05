@@ -4,15 +4,39 @@
  */
 import { authFetch, hasStoredSession } from "./auth";
 
-/** How often an event comes back, as Apple Calendar offers it. */
-export const EVENT_REPEATS = ["never", "daily", "weekly", "fortnightly", "monthly", "yearly"] as const;
+/**
+ * How often an event comes back, in Apple Calendar's order. Weekdays are Monday–Friday and
+ * weekends Saturday–Sunday (iCalendar's BYDAY, so an invitation repeats the same way).
+ */
+export const EVENT_REPEATS = [
+  "never",
+  "daily",
+  "weekdays",
+  "weekends",
+  "weekly",
+  "fortnightly",
+  "monthly",
+  "quarterly",
+  "half_yearly",
+  "yearly",
+] as const;
 export type EventRepeat = (typeof EVENT_REPEATS)[number];
+
+/** The form's two tabs: an event has a start and an end; a reminder is one moment (or a whole day). */
+export type EventKind = "event" | "reminder";
+
+/** A reminder's priority, as Apple Reminders: 0 none, 1 low, 2 medium, 3 high. */
+export const EVENT_PRIORITIES = [0, 1, 2, 3] as const;
+export type EventPriority = (typeof EVENT_PRIORITIES)[number];
 
 /** Alert choices, minutes before the start (Apple Calendar's list); null = none. */
 export const EVENT_ALERTS = [null, 0, 5, 10, 15, 30, 60, 120, 1440, 2880, 10080] as const;
 
 export interface CalendarEvent {
   id: string;
+  /** Missing on records saved before reminders had their own tab: an event. */
+  kind?: EventKind;
+  priority?: EventPriority;
   title: string;
   location: string | null;
   notes: string | null;
@@ -22,7 +46,10 @@ export interface CalendarEvent {
   timezone: string;
   repeat: EventRepeat;
   alerts: number[];
-  /** Where it came from: `sait` + ceremony id, or `device` + the phone calendar's event id. */
+  /**
+   * Where it came from: `sait` + ceremony id; `shubh` / `ashubh` + the day's window key
+   * (`abhijit`, `rahu_kalam` …); `pushkara` + the lagna; or `device` + the phone calendar's event id.
+   */
   source_kind: string | null;
   source_key: string | null;
   invitees: string[];

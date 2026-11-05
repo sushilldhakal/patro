@@ -52,6 +52,7 @@ def init_db() -> None:
     Base.metadata.create_all(bind=get_engine())
     _ensure_apple_user_id_column()
     _ensure_refresh_replaced_by_column()
+    _ensure_event_kind_columns()
 
 
 def _ensure_apple_user_id_column() -> None:
@@ -84,6 +85,22 @@ def _ensure_refresh_replaced_by_column() -> None:
         return
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE refresh_tokens ADD COLUMN replaced_by_id VARCHAR(36)"))
+
+
+def _ensure_event_kind_columns() -> None:
+    """create_all will not ALTER existing tables — add the event / reminder kind and priority."""
+    from sqlalchemy import inspect, text
+
+    engine = get_engine()
+    inspector = inspect(engine)
+    if "calendar_events" not in inspector.get_table_names():
+        return
+    columns = {col["name"] for col in inspector.get_columns("calendar_events")}
+    with engine.begin() as conn:
+        if "kind" not in columns:
+            conn.execute(text("ALTER TABLE calendar_events ADD COLUMN kind VARCHAR(10) NOT NULL DEFAULT 'event'"))
+        if "priority" not in columns:
+            conn.execute(text("ALTER TABLE calendar_events ADD COLUMN priority INTEGER NOT NULL DEFAULT 0"))
 
 
 def get_db() -> Iterator[Session]:

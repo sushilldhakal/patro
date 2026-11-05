@@ -1,22 +1,27 @@
-import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, Lightbulb, Plus, X } from "lucide-react";
+import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronsUpDown, Clock, Globe, Lightbulb, Navigation, Plus, Repeat, X } from "lucide-react";
 import {
   EVENT_ALERTS,
+  EVENT_PRIORITIES,
   EVENT_REPEATS,
   createEvent,
   fetchDayGuidance,
   fetchSaitDetail,
   type CalendarEventInput,
   type DayWindow,
+  type EventKind,
+  type EventPriority,
   type EventRepeat,
   type SaitDetailDay,
 } from "@vedic-patro/api-client";
 import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
-import { bsFromCivilIso } from "@vedic-patro/domain/calendar/bs-calendar";
-import { addMinutes, todayIn, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
+import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { addMinutes, shiftDate, todayIn, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
+import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { IosMonthGrid, TimeWheel } from "@vedic-patro/ui/kit/events";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { listProfiles } from "@/lib/auth/client";
@@ -29,6 +34,20 @@ const LazyAuthDialog = lazy(() =>
 );
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+type Panel = "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "priority" | null;
+/** Where the time comes from: typed in, or one of the day's / a ceremony's times. */
+type PickSource = "none" | "sait" | "shubh" | "ashubh" | "pushkara";
+const PICK_SOURCES: PickSource[] = ["none", "sait", "shubh", "ashubh", "pushkara"];
+/** An all-day reminder's alert rings at 9:00, as Apple Reminders does. */
+const ALL_DAY_REMINDER_AT = "09:00";
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** ISO date of a BS day (the pickers speak BS; the event is stored by its Gregorian date). */
+function bsIso(y: number, m: number, d: number): string {
+  const ad = bsToAD(y, m, d);
+  return `${ad.getFullYear()}-${pad(ad.getMonth() + 1)}-${pad(ad.getDate())}`;
+}
+
 const toMinutes = (time: string) => {
   const [h, m] = time.split(":").map(Number);
   return (h ?? 0) * 60 + (m ?? 0);
@@ -36,7 +55,9 @@ const toMinutes = (time: string) => {
 
 /**
  * The header's "+": a new event or reminder, in a popover under the button like Apple Calendar's
- * (the app shows the same form as a sheet). Signed out, the same form saves to this browser
+ * (the app shows the same form as a sheet, components/events/EventForm.tsx): Event | Reminder tabs,
+ * "Pick a time" from a साइत or the day's शुभ / अशुभ / पुष्कर times, date rows that open the month
+ * inline and time rows that open the wheel. Signed out, the same form saves to this browser
  * (lib/guest-events.ts); on sign-in those events move to the account.
  */
 export function NewEventButton() {
@@ -89,19 +110,32 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
   const { location } = usePanchangaLocation();
   const zone = location.params.timezone ?? "Asia/Kathmandu";
   const today = todayIn(zone);
+  const labels = useEventLabels(today);
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
+  const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
 
+  const [kind, setKind] = useState<EventKind>("event");
+  const [panel, setPanel] = useState<Panel>(null);
+  const [pickSource, setPickSource] = useState<PickSource>("none");
+  const [pickedId, setPickedId] = useState<string | null>(null);
   const [sait, setSait] = useState<SaitCategoryId | null>(null);
   const [saitDay, setSaitDay] = useState<SaitDetailDay | null>(null);
   const [title, setTitle] = useState("");
+  /** The title a pick wrote; another pick may replace it, a typed one stays. */
+  const [autoTitle, setAutoTitle] = useState<string | null>(null);
   const [place, setPlace] = useState("");
+  const [placeOn, setPlaceOn] = useState(false);
   const [notes, setNotes] = useState("");
   const [allDay, setAllDay] = useState(false);
-  const [startDate, setStartDate] = useState(today);
+  const [timeOn, setTimeOn] = useState(true);
+  const [startDate, setStartDate] = useState(firstDate);
   const [startTime, setStartTime] = useState(nextHour.time);
-  const [endDate, setEndDate] = useState(today);
+  const [endDate, setEndDate] = useState(firstDate);
   const [endTime, setEndTime] = useState(addMinutes(nextHour.time, 60).time);
+  /** Whose शुभ / अशुभ / पुष्कर list is shown; follows the start date the user picks. */
+  const [pickDate, setPickDate] = useState(firstDate);
   const [repeat, setRepeat] = useState<EventRepeat>("never");
+  const [priority, setPriority] = useState<EventPriority>(0);
   const [alert1, setAlert1] = useState<number | null>(null);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
@@ -109,7 +143,12 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const isReminder = kind === "reminder";
+  const timed = isReminder ? timeOn : !allDay;
+  const toggle = (p: Panel) => setPanel((cur) => (cur === p ? null : p));
+
   const bsYear = bsFromCivilIso(today).year;
+  const years = Array.from({ length: 8 }, (_, i) => bsYear - 1 + i);
   const saitDays = useQuery({
     queryKey: ["events", "sait-days", sait, bsYear, location.params.lat, location.params.lon],
     enabled: sait != null,
@@ -118,6 +157,11 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
       return years.flatMap((r) => r?.days ?? []).filter((d) => d.gregorian >= today).slice(0, 12);
     },
   });
+
+  // The day's शुभ / अशुभ / पुष्कर times, from its panchanga.
+  const dayPicks = useDayTimePicks(pickDate, location.params, pickSource === "shubh" || pickSource === "ashubh" || pickSource === "pushkara");
+  const pickList: DayTimePick[] =
+    pickSource === "shubh" ? dayPicks.picks.shubh : pickSource === "ashubh" ? dayPicks.picks.ashubh : pickSource === "pushkara" ? dayPicks.picks.pushkara : [];
 
   // Invitations and profile tips need an account; a guest's event is kept in this browser.
   const profiles = useQuery({ queryKey: ["events", "profiles"], queryFn: listProfiles, enabled: !guest, staleTime: 5 * 60_000 });
@@ -129,37 +173,65 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
     queryFn: () => fetchDayGuidance(profile!.id, startDate, location.params),
   });
   const day = guidance.data?.days[0] ?? null;
+  // Only warn about an अशुभ window the user did not choose on purpose.
   const clash: DayWindow | null = useMemo(() => {
-    if (!day || allDay) return null;
+    if (!day || !timed || pickSource === "ashubh") return null;
     const at = toMinutes(startTime);
     return day.windows.find((w) => w.kind === "ashubh" && w.end && toMinutes(w.start) <= at && at < toMinutes(w.end)) ?? null;
-  }, [day, allDay, startTime]);
+  }, [day, timed, startTime, pickSource]);
   const better = clash && day ? (day.windows.find((w) => w.kind === "shubh" && w.end) ?? null) : null;
 
   const saitLabel = (id: SaitCategoryId) => (lang === "en" ? SAIT_CATEGORY_LABELS[id].en : SAIT_CATEGORY_LABELS[id].ne);
-  const alertLabel = (minutes: number | null) => {
-    if (minutes == null) return t("events.alert_none");
-    if (minutes === 0) return t("events.alert_at_time");
-    if (minutes < 60) return t("events.alert_minutes", { count: digits(minutes) });
-    if (minutes === 60) return t("events.alert_hour");
-    if (minutes < 1440) return t("events.alert_hours", { count: digits(minutes / 60) });
-    if (minutes === 1440) return t("events.alert_day");
-    if (minutes === 10080) return t("events.alert_week");
-    return t("events.alert_days", { count: digits(minutes / 1440) });
+
+  const setStart = (date: string) => {
+    setStartDate(date);
+    setPickDate(date);
+    if (endDate < date) setEndDate(date);
   };
-  const bsLabel = (iso: string) => {
-    const bs = bsFromCivilIso(iso);
-    return `${bs.monthName} ${digits(bs.day)}, ${digits(bs.year)}`;
+
+  /** A pick fills the title (unless one was typed) and the times. */
+  const apply = (name: string, sd: string, st: string, ed: string, et: string) => {
+    if (!title.trim() || title === autoTitle) {
+      setTitle(name);
+      setAutoTitle(name);
+    }
+    setAllDay(false);
+    setTimeOn(true);
+    setStartDate(sd);
+    setStartTime(st);
+    setEndDate(ed);
+    setEndTime(et);
+    setPanel(null);
   };
 
   const pickSaitDay = (d: SaitDetailDay) => {
     setSaitDay(d);
-    setTitle(saitLabel(sait!));
-    setAllDay(false);
-    setStartDate(d.gregorian);
-    setEndDate(d.gregorian);
-    setStartTime(d.window_start);
-    setEndTime(d.window_end);
+    setPickedId(`sait:${d.gregorian}`);
+    setPickDate(d.gregorian);
+    apply(saitLabel(sait!), d.gregorian, d.window_start, d.gregorian, d.window_end);
+  };
+
+  const pickName = (p: DayTimePick) => {
+    const name = lang === "en" ? p.nameEn : p.nameNe;
+    if (p.source === "pushkara") return t("events.pick_pushkara_name", { lagna: name });
+    if (p.source === "ashubh") return t("events.pick_ashubh_title", { name });
+    return name;
+  };
+
+  const pickDayTime = (p: DayTimePick) => {
+    setPickedId(p.id);
+    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime);
+    // A bad time is worth knowing when it begins.
+    if (p.source === "ashubh" && alert1 == null) setAlert1(0);
+  };
+
+  const choosePickSource = (s: PickSource) => {
+    setPickSource(s);
+    setPickedId(null);
+    if (s !== "sait") {
+      setSait(null);
+      setSaitDay(null);
+    }
   };
 
   const addInvitee = () => {
@@ -171,26 +243,33 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
     setDraft("");
   };
 
-  const startIso = zonedToIso(startDate, allDay ? "00:00" : startTime, zone);
-  const endIso = zonedToIso(endDate, allDay ? "23:59" : endTime, zone);
+  // A reminder is one moment (or a whole day, its alert at 9:00); an event runs start to end.
+  const startIso = isReminder
+    ? zonedToIso(startDate, timeOn ? startTime : ALL_DAY_REMINDER_AT, zone)
+    : zonedToIso(startDate, allDay ? "00:00" : startTime, zone);
+  const endIso = isReminder ? (timeOn ? startIso : zonedToIso(startDate, "23:59", zone)) : zonedToIso(endDate, allDay ? "23:59" : endTime, zone);
 
   const save = async () => {
     if (!title.trim()) return setError(t("events.need_title"));
     if (Date.parse(endIso) < Date.parse(startIso)) return setError(t("events.end_before_start"));
     const pending = draft.trim().toLowerCase();
+    const dayPick = pickSource === "none" || pickSource === "sait" ? null : pickList.find((p) => p.id === pickedId) ?? null;
     const input: CalendarEventInput = {
+      kind,
+      priority: isReminder ? priority : 0,
       title: title.trim(),
-      location: place.trim() || null,
+      location: isReminder && !placeOn ? null : place.trim() || null,
       notes: notes.trim() || null,
-      all_day: allDay,
+      all_day: !timed,
       starts_at: startIso,
       ends_at: endIso,
       timezone: zone,
       repeat,
-      alerts: [alert1, alert2].filter((a): a is number => a != null),
-      source_kind: sait ? "sait" : null,
-      source_key: sait,
-      invitees: guest ? [] : pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees,
+      // A reminder rings when it is due.
+      alerts: isReminder ? [0] : [alert1, alert2].filter((a): a is number => a != null),
+      source_kind: pickSource === "sait" && sait ? "sait" : dayPick ? dayPick.source : null,
+      source_key: pickSource === "sait" && sait ? sait : dayPick ? dayPick.key.slice(0, 64) : null,
+      invitees: guest || isReminder ? [] : pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees,
       profile_id: profile?.id ?? null,
     };
     setSaving(true);
@@ -207,7 +286,54 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
   };
 
   const input = "w-full bg-transparent py-3 text-base outline-none placeholder:text-muted-foreground";
-  const pill = "rounded-full bg-background px-3 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-secondary/50";
+  const bsStart = bsFromCivilIso(startDate);
+  const bsEnd = bsFromCivilIso(endDate);
+
+  const startGrid = <IosMonthGrid year={bsStart.year} month={bsStart.month} day={bsStart.day} yearOptions={years} onSelect={(y, m, d) => setStart(bsIso(y, m, d))} />;
+  const startWheel = (
+    <>
+      <TimeWheel
+        value={startTime}
+        onChange={(v) => {
+          const length = toMinutes(endTime) - toMinutes(startTime);
+          setStartTime(v);
+          if (endDate === startDate) setEndTime(addMinutes(v, Math.max(length, 0)).time);
+        }}
+      />
+      <Divider />
+      <div className="flex min-h-12 items-center justify-between gap-3 text-sm">
+        <span className="inline-flex items-center gap-3">
+          {isReminder ? <Globe className="size-5 text-muted-foreground" /> : null}
+          {t("events.time_zone")}
+        </span>
+        <span className="text-muted-foreground">{labels.zone(zone)}</span>
+      </div>
+    </>
+  );
+  const repeatRow = (
+    <>
+      <button type="button" onClick={() => toggle("repeat")} aria-expanded={panel === "repeat"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+        <span className="inline-flex items-center gap-3">
+          {isReminder ? <Repeat className="size-5 text-muted-foreground" /> : null}
+          {t("events.repeat")}
+        </span>
+        <span className="inline-flex items-center gap-1 text-muted-foreground">
+          {t(`events.repeat_${repeat}`)}
+          <ChevronsUpDown className="size-4" />
+        </span>
+      </button>
+      {panel === "repeat" ? (
+        <div className="pb-2">
+          {EVENT_REPEATS.map((r, i) => (
+            <div key={r}>
+              {i === 1 ? <Divider /> : null}
+              <Option label={t(`events.repeat_${r}`)} active={repeat === r} onClick={() => { setRepeat(r); setPanel(null); }} />
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </>
+  );
 
   return (
     <div className="flex flex-col gap-3 p-4">
@@ -226,135 +352,282 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
           <Check className="size-5" />
         </button>
       </div>
+
+      {/* Apple's segmented control: Event | Reminder. */}
+      <div role="tablist" className="flex rounded-full bg-muted p-0.5 dark:bg-foreground/10">
+        {(["event", "reminder"] as const).map((k) => (
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={kind === k}
+            onClick={() => {
+              setKind(k);
+              setPanel(null);
+            }}
+            className={cn("min-h-8 flex-1 rounded-full text-sm", kind === k ? "bg-background font-semibold shadow-sm" : "hover:opacity-80")}
+          >
+            {t(`events.kind_${k}`)}
+          </button>
+        ))}
+      </div>
       {error ? <p className="text-center text-xs text-destructive">{error}</p> : null}
 
+      {/* Optional: the time from a साइत, or the day's शुभ / अशुभ / पुष्कर times. */}
       <Group>
-        <label className="flex min-h-12 items-center justify-between gap-3">
-          <span className="text-sm">{t("events.sait")}</span>
-          <select
-            value={sait ?? ""}
-            onChange={(e) => {
-              setSait((e.target.value || null) as SaitCategoryId | null);
-              setSaitDay(null);
-            }}
-            className="max-w-[55%] bg-transparent text-right text-sm text-muted-foreground outline-none"
-          >
-            <option value="">{t("events.sait_none")}</option>
-            {SAIT_CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id}>{saitLabel(c.id)}</option>
-            ))}
-          </select>
-        </label>
-        {sait ? (
+        <p className="pt-3 text-sm">{t("events.pick")}</p>
+        <div className="flex flex-wrap gap-2 py-3">
+          {PICK_SOURCES.map((s) => (
+            <Chip key={s} label={t(`events.pick_${s}`)} active={pickSource === s} bad={s === "ashubh"} onClick={() => choosePickSource(s)} />
+          ))}
+        </div>
+        {pickSource === "sait" ? (
           <div className="flex flex-col pb-2">
-            {saitDays.isLoading ? (
-              <p className="py-2 text-xs text-muted-foreground">{t("events.sait_loading")}</p>
-            ) : (saitDays.data ?? []).length === 0 ? (
-              <p className="py-2 text-xs text-muted-foreground">{t("events.sait_no_days")}</p>
+            <select
+              value={sait ?? ""}
+              onChange={(e) => {
+                setSait((e.target.value || null) as SaitCategoryId | null);
+                setSaitDay(null);
+              }}
+              aria-label={t("events.pick_sait")}
+              className="mb-2 rounded-full bg-background px-3 py-1.5 text-sm outline-none"
+            >
+              <option value="">{t("events.sait_none")}</option>
+              {SAIT_CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>{saitLabel(c.id)}</option>
+              ))}
+            </select>
+            {sait ? (
+              saitDays.isLoading ? (
+                <p className="py-2 text-xs text-muted-foreground">{t("events.sait_loading")}</p>
+              ) : (saitDays.data ?? []).length === 0 ? (
+                <p className="py-2 text-xs text-muted-foreground">{t("events.sait_no_days")}</p>
+              ) : (
+                (saitDays.data ?? []).map((d) => (
+                  <Option
+                    key={d.gregorian}
+                    label={`${lang === "en" ? labels.bsDate(d.gregorian) : `${d.bs_month_name_ne} ${digits(d.bs_day)}`} · ${lang === "en" ? d.weekday_en : d.weekday_ne}`}
+                    detail={`${labels.clock(d.window_start)}–${labels.clock(d.window_end)}`}
+                    active={saitDay?.gregorian === d.gregorian}
+                    onClick={() => pickSaitDay(d)}
+                  />
+                ))
+              )
+            ) : null}
+          </div>
+        ) : pickSource !== "none" ? (
+          <div className="flex flex-col pb-2">
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={() => setPickDate(shiftDate(pickDate, -1))} aria-label={t("events.prev_day")} className="inline-flex size-8 items-center justify-center rounded-full hover:bg-background">
+                <ChevronLeft className="size-4" />
+              </button>
+              <span className="text-xs font-semibold">{t("events.pick_for_day", { date: labels.day(pickDate) })}</span>
+              <button type="button" onClick={() => setPickDate(shiftDate(pickDate, 1))} aria-label={t("events.next_day")} className="inline-flex size-8 items-center justify-center rounded-full hover:bg-background">
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
+            <p className="pb-1 text-xs text-muted-foreground">{t(`events.pick_${pickSource}_hint`)}</p>
+            {dayPicks.loading ? (
+              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_loading")}</p>
+            ) : dayPicks.failed ? (
+              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_failed")}</p>
+            ) : pickList.length === 0 ? (
+              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_empty")}</p>
             ) : (
-              (saitDays.data ?? []).map((d) => (
-                <button key={d.gregorian} type="button" onClick={() => pickSaitDay(d)} className="flex min-h-10 items-center gap-2 text-left text-sm hover:opacity-80">
-                  <span className="w-4">{saitDay?.gregorian === d.gregorian ? <Check className="size-4 text-secondary" /> : null}</span>
-                  <span className="flex-1">{`${d.bs_month_name_ne} ${digits(d.bs_day)} · ${lang === "en" ? d.weekday_en : d.weekday_ne}`}</span>
-                  <span className="text-xs text-muted-foreground">{`${digits(d.window_start)}–${digits(d.window_end)}`}</span>
-                </button>
+              pickList.map((p) => (
+                <Option
+                  key={p.id}
+                  label={lang === "en" ? p.nameEn : p.nameNe}
+                  detail={`${labels.clock(p.startTime)}${p.source === "pushkara" ? "" : `–${labels.clock(p.endTime)}`}${p.startDate !== pickDate ? ` · ${labels.day(p.startDate)}` : ""}`}
+                  active={pickedId === p.id}
+                  tone={p.source === "ashubh" ? "bad" : "good"}
+                  onClick={() => pickDayTime(p)}
+                />
               ))
             )}
           </div>
         ) : null}
       </Group>
 
-      <Group>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("events.title")} className={input} />
-        <div className="h-px bg-border" />
-        <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} className={input} />
-      </Group>
+      {isReminder ? (
+        <>
+          <Group>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("events.title")} className={input} />
+            <Divider />
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} rows={2} className={cn(input, "resize-none")} />
+          </Group>
 
-      <Group>
-        <label className="flex min-h-12 items-center justify-between">
-          <span className="text-sm">{t("events.all_day")}</span>
-          <input type="checkbox" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} className="size-5 accent-secondary" />
-        </label>
-        <div className="h-px bg-border" />
-        <DateTimeRow label={t("events.starts")} bs={bsLabel(startDate)}>
-          <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); if (endDate < e.target.value) setEndDate(e.target.value); }} className={pill} />
-          {allDay ? null : <input type="time" step={300} value={startTime} onChange={(e) => setStartTime(e.target.value)} className={pill} />}
-        </DateTimeRow>
-        <div className="h-px bg-border" />
-        <DateTimeRow label={t("events.ends")} bs={bsLabel(endDate)}>
-          <input type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} className={pill} />
-          {allDay ? null : <input type="time" step={300} value={endTime} onChange={(e) => setEndTime(e.target.value)} className={pill} />}
-        </DateTimeRow>
-        <div className="h-px bg-border" />
-        <SelectRow label={t("events.repeat")} value={repeat} onChange={(v) => setRepeat(v as EventRepeat)} options={EVENT_REPEATS.map((r) => ({ value: r, label: t(`events.repeat_${r}`) }))} />
-      </Group>
-
-      <Group>
-        <SelectRow
-          label={t("events.alert")}
-          value={alert1 == null ? "" : String(alert1)}
-          onChange={(v) => setAlert1(v === "" ? null : Number(v))}
-          options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: alertLabel(a) }))}
-        />
-        {alert1 != null ? (
-          <>
-            <div className="h-px bg-border" />
-            <SelectRow
-              label={t("events.second_alert")}
-              value={alert2 == null ? "" : String(alert2)}
-              onChange={(v) => setAlert2(v === "" ? null : Number(v))}
-              options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: alertLabel(a) }))}
+          {/* Apple Reminders: the date row opens the month; the time row has its switch and opens the wheel. */}
+          <Group>
+            <IconRow icon={CalendarDays} label={t("events.date")} value={labels.day(startDate)} open={panel === "startDate"} onClick={() => toggle("startDate")} />
+            {panel === "startDate" ? <><Divider />{startGrid}</> : null}
+            <Divider />
+            <IconRow
+              icon={Clock}
+              label={t("events.time")}
+              value={timeOn ? labels.clock(startTime) : null}
+              open={panel === "startTime"}
+              onClick={timeOn ? () => toggle("startTime") : undefined}
+              right={
+                <Toggle
+                  label={t("events.time")}
+                  on={timeOn}
+                  onChange={(on) => {
+                    setTimeOn(on);
+                    setPanel(on ? "startTime" : null);
+                  }}
+                />
+              }
             />
-          </>
-        ) : null}
-      </Group>
+            {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
+          </Group>
 
-      {guest ? (
-        <Group>
-          <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left hover:opacity-80">
-            <span className="text-sm">{t("events.invitees")}</span>
-            <span className="text-sm text-secondary">{t("events.invitee_guest")}</span>
-          </button>
-          <p className="pb-3 text-xs text-muted-foreground">{t("events.guest_note_web")}</p>
-        </Group>
-      ) : (
-        <Group>
-          <p className="pt-3 text-sm">{t("events.invitees")}</p>
-          {invitees.length > 0 ? (
-            <div className="flex flex-wrap gap-2 pt-2">
-              {invitees.map((email) => (
-                <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
-                  {email}
-                  <X className="size-3 text-muted-foreground" />
-                </button>
-              ))}
-            </div>
-          ) : null}
-          <div className="flex items-center gap-2">
-            <input
-              type="email"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addInvitee();
-                }
-              }}
-              placeholder={t("events.invitee_add")}
-              className={input}
-            />
-            <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
-              <Plus className="size-5" />
+          <Group>{repeatRow}</Group>
+
+          <p className="-mb-1 px-4 text-sm font-semibold text-muted-foreground">{t("events.more_options")}</p>
+          <Group>
+            <button type="button" onClick={() => toggle("priority")} aria-expanded={panel === "priority"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+              <span className="inline-flex items-center gap-3">
+                <span className="w-5 text-center font-bold text-muted-foreground">!!!</span>
+                {t("events.priority")}
+              </span>
+              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                {t(`events.priority_${priority}`)}
+                <ChevronsUpDown className="size-4" />
+              </span>
             </button>
-          </div>
-          <p className="pb-3 text-xs text-muted-foreground">{t("events.invitee_hint")}</p>
-        </Group>
-      )}
+            {panel === "priority"
+              ? EVENT_PRIORITIES.map((p) => (
+                  <Option key={p} label={t(`events.priority_${p}`)} active={priority === p} onClick={() => { setPriority(p); setPanel(null); }} />
+                ))
+              : null}
+            <Divider />
+            <div className="flex min-h-12 items-center justify-between gap-3 text-sm">
+              <span className="inline-flex items-center gap-3">
+                <Navigation className="size-5 text-muted-foreground" />
+                {t("events.location")}
+              </span>
+              <Toggle label={t("events.location")} on={placeOn} onChange={setPlaceOn} />
+            </div>
+            {placeOn ? (
+              <>
+                <Divider />
+                <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} className={input} />
+              </>
+            ) : null}
+          </Group>
+        </>
+      ) : (
+        <>
+          <Group>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("events.title")} className={input} />
+            <Divider />
+            <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} className={input} />
+          </Group>
 
-      <Group>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} rows={3} className={cn(input, "resize-none")} />
-      </Group>
+          <Group>
+            <div className="flex min-h-12 items-center justify-between text-sm">
+              <span>{t("events.all_day")}</span>
+              <Toggle label={t("events.all_day")} on={allDay} onChange={setAllDay} />
+            </div>
+            <Divider />
+            <DateTimeRow
+              label={t("events.starts")}
+              date={labels.bsDate(startDate)}
+              time={allDay ? null : labels.clock(startTime)}
+              dateOpen={panel === "startDate"}
+              timeOpen={panel === "startTime"}
+              onDate={() => toggle("startDate")}
+              onTime={() => toggle("startTime")}
+            />
+            {panel === "startDate" ? startGrid : null}
+            {panel === "startTime" ? startWheel : null}
+            <Divider />
+            <DateTimeRow
+              label={t("events.ends")}
+              date={labels.bsDate(endDate)}
+              time={allDay ? null : labels.clock(endTime)}
+              dateOpen={panel === "endDate"}
+              timeOpen={panel === "endTime"}
+              onDate={() => toggle("endDate")}
+              onTime={() => toggle("endTime")}
+            />
+            {panel === "endDate" ? (
+              <IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} />
+            ) : null}
+            {panel === "endTime" ? <TimeWheel value={endTime} onChange={setEndTime} /> : null}
+            <Divider />
+            {repeatRow}
+          </Group>
+
+          <Group>
+            <SelectRow
+              label={t("events.alert")}
+              value={alert1 == null ? "" : String(alert1)}
+              onChange={(v) => setAlert1(v === "" ? null : Number(v))}
+              options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
+            />
+            {alert1 != null ? (
+              <>
+                <Divider />
+                <SelectRow
+                  label={t("events.second_alert")}
+                  value={alert2 == null ? "" : String(alert2)}
+                  onChange={(v) => setAlert2(v === "" ? null : Number(v))}
+                  options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
+                />
+              </>
+            ) : null}
+          </Group>
+
+          {guest ? (
+            <Group>
+              <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left hover:opacity-80">
+                <span className="text-sm">{t("events.invitees")}</span>
+                <span className="text-sm text-secondary">{t("events.invitee_guest")}</span>
+              </button>
+              <p className="pb-3 text-xs text-muted-foreground">{t("events.guest_note_web")}</p>
+            </Group>
+          ) : (
+            <Group>
+              <p className="pt-3 text-sm">{t("events.invitees")}</p>
+              {invitees.length > 0 ? (
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {invitees.map((email) => (
+                    <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
+                      {email}
+                      <X className="size-3 text-muted-foreground" />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <div className="flex items-center gap-2">
+                <input
+                  type="email"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addInvitee();
+                    }
+                  }}
+                  placeholder={t("events.invitee_add")}
+                  className={input}
+                />
+                <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
+                  <Plus className="size-5" />
+                </button>
+              </div>
+              <p className="pb-3 text-xs text-muted-foreground">{t("events.invitee_hint")}</p>
+            </Group>
+          )}
+
+          <Group>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} rows={3} className={cn(input, "resize-none")} />
+          </Group>
+        </>
+      )}
 
       <div className="flex flex-col gap-2 rounded-3xl border border-secondary/30 bg-secondary/5 p-4">
         <p className="inline-flex items-center gap-2 text-sm font-semibold text-secondary">
@@ -373,7 +646,7 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
         {clash ? (
           <div className="flex flex-col gap-2 rounded-2xl bg-destructive/10 p-3">
             <p className="text-xs text-destructive">
-              {t("events.tips_bad_window", { name: (lang === "en" ? clash.name_en : clash.name_ne) ?? clash.key, start: digits(clash.start), end: digits(clash.end ?? "") })}
+              {t("events.tips_bad_window", { name: (lang === "en" ? clash.name_en : clash.name_ne) ?? clash.key, start: labels.clock(clash.start), end: clash.end ? labels.clock(clash.end) : "" })}
             </p>
             {better ? (
               <button
@@ -384,7 +657,7 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
                 }}
                 className="self-start rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground hover:opacity-90"
               >
-                {t("events.tips_better", { name: (lang === "en" ? better.name_en : better.name_ne) ?? better.key, start: digits(better.start), end: digits(better.end ?? "") })}
+                {t("events.tips_better", { name: (lang === "en" ? better.name_en : better.name_ne) ?? better.key, start: labels.clock(better.start), end: better.end ? labels.clock(better.end) : "" })}
               </button>
             ) : null}
           </div>
@@ -408,15 +681,110 @@ function Group({ children }: { children: ReactNode }) {
   return <div className="rounded-3xl bg-muted px-4 dark:bg-foreground/5">{children}</div>;
 }
 
-function DateTimeRow({ label, bs, children }: { label: string; bs: string; children: ReactNode }) {
+function Divider() {
+  return <div className="h-px bg-border" />;
+}
+
+/** Apple's switch: green when on. */
+function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={() => onChange(!on)}
+      className={cn("relative h-[31px] w-[51px] shrink-0 rounded-full transition-colors", on ? "bg-success" : "bg-foreground/15")}
+    >
+      <span className={cn("absolute top-0.5 size-[27px] rounded-full bg-white shadow transition-all", on ? "left-[22px]" : "left-0.5")} />
+    </button>
+  );
+}
+
+/** Apple Reminders' row: an icon, the label with its value under it in red ("Today", "1:00 pm"), and a switch. */
+function IconRow({
+  icon: Icon,
+  label,
+  value,
+  open,
+  onClick,
+  right,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: string | null;
+  open: boolean;
+  onClick?: () => void;
+  right?: ReactNode;
+}) {
+  return (
+    <div className="flex min-h-14 items-center gap-3">
+      <button type="button" onClick={onClick} disabled={!onClick} aria-expanded={open} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 text-left enabled:hover:opacity-80">
+        <Icon className="size-5 shrink-0 text-muted-foreground" />
+        <span className="flex min-w-0 flex-col">
+          <span className="text-sm">{label}</span>
+          {value ? <span className="truncate text-xs text-destructive">{value}</span> : null}
+        </span>
+      </button>
+      {right}
+    </div>
+  );
+}
+
+/** "Starts  [कात्तिक २०, २०८३] [१०:१५]" — the date and the time as pills; the open one in red, as Calendar's. */
+function DateTimeRow({
+  label,
+  date,
+  time,
+  dateOpen,
+  timeOpen,
+  onDate,
+  onTime,
+}: {
+  label: string;
+  date: string;
+  time: string | null;
+  dateOpen: boolean;
+  timeOpen: boolean;
+  onDate: () => void;
+  onTime: () => void;
+}) {
+  const pill = (open: boolean) => cn("rounded-full bg-background px-3 py-1.5 text-sm hover:opacity-80", open && "text-destructive");
   return (
     <div className="flex min-h-12 items-center justify-between gap-2 py-1.5">
-      <div className="flex flex-col">
-        <span className="text-sm">{label}</span>
-        <span className="text-xs text-muted-foreground">{bs}</span>
-      </div>
-      <div className="flex gap-2">{children}</div>
+      <span className="text-sm">{label}</span>
+      <span className="flex gap-2">
+        <button type="button" onClick={onDate} aria-expanded={dateOpen} className={pill(dateOpen)}>{date}</button>
+        {time ? <button type="button" onClick={onTime} aria-expanded={timeOpen} className={pill(timeOpen)}>{time}</button> : null}
+      </span>
     </div>
+  );
+}
+
+function Option({ label, detail, active, tone, onClick }: { label: string; detail?: string; active: boolean; tone?: "good" | "bad"; onClick: () => void }) {
+  return (
+    <button type="button" role="menuitemradio" aria-checked={active} onClick={onClick} className="flex min-h-10 w-full items-center gap-2 text-left text-sm hover:opacity-80">
+      <span className="w-4">{active ? <Check className="size-4" /> : null}</span>
+      {tone ? <span className={cn("size-2 rounded-full", tone === "bad" ? "bg-destructive" : "bg-secondary")} /> : null}
+      <span className="flex-1">{label}</span>
+      {detail ? <span className="text-xs text-muted-foreground">{detail}</span> : null}
+    </button>
+  );
+}
+
+function Chip({ label, active, bad, onClick }: { label: string; active: boolean; bad?: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        "rounded-full border px-3 py-1.5 text-xs font-medium hover:opacity-80",
+        active ? (bad ? "border-destructive bg-destructive text-white" : "border-secondary bg-secondary text-secondary-foreground") : "border-border bg-background",
+      )}
+    >
+      {label}
+    </button>
   );
 }
 

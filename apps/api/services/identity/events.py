@@ -9,8 +9,9 @@ with a higher ``SEQUENCE``; a delete sends ``CANCEL``. Alerts are delivered on t
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -20,15 +21,33 @@ from services.identity import emailer
 from services.identity.profile_store import SqlProfileRepository
 from services.identity.profiles import get_profile
 
-REPEATS = ("never", "daily", "weekly", "fortnightly", "monthly", "yearly")
+# Apple Calendar's list: weekdays are Monday–Friday and weekends Saturday–Sunday, as in iCalendar.
+REPEATS = (
+    "never",
+    "daily",
+    "weekdays",
+    "weekends",
+    "weekly",
+    "fortnightly",
+    "monthly",
+    "quarterly",
+    "half_yearly",
+    "yearly",
+)
+KINDS = ("event", "reminder")
+PRIORITIES = (0, 1, 2, 3)  # none, low, medium, high
 MAX_ALERTS = 2
 MAX_INVITEES = 20
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _RRULE = {
     "daily": "FREQ=DAILY",
+    "weekdays": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
+    "weekends": "FREQ=WEEKLY;BYDAY=SA,SU",
     "weekly": "FREQ=WEEKLY",
     "fortnightly": "FREQ=WEEKLY;INTERVAL=2",
     "monthly": "FREQ=MONTHLY",
+    "quarterly": "FREQ=MONTHLY;INTERVAL=3",
+    "half_yearly": "FREQ=MONTHLY;INTERVAL=6",
     "yearly": "FREQ=YEARLY",
 }
 
@@ -63,10 +82,18 @@ def _clean(fields: dict[str, Any]) -> dict[str, Any]:
             invitees.append(email)
     if len(invitees) > MAX_INVITEES:
         raise BadEvent("Too many invitees")
+    kind = fields.get("kind") or "event"
+    if kind not in KINDS:
+        raise BadEvent(f"Unknown kind: {kind}")
+    priority = int(fields.get("priority") or 0)
+    if priority not in PRIORITIES:
+        raise BadEvent(f"Unknown priority: {priority}")
     title = (fields.get("title") or "").strip()
     if not title:
         raise BadEvent("A title is needed")
     return {
+        "kind": kind,
+        "priority": priority,
         "title": title[:200],
         "location": (fields.get("location") or "").strip()[:200] or None,
         "notes": (fields.get("notes") or "").strip() or None,
@@ -182,8 +209,16 @@ def _fold(line: str) -> str:
 def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequence: int) -> str:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     if row.all_day:
-        start = f"DTSTART;VALUE=DATE:{as_utc(row.starts_at).strftime('%Y%m%d')}"
-        end = f"DTEND;VALUE=DATE:{as_utc(row.ends_at).strftime('%Y%m%d')}"
+        # The day in the event's own zone (local midnight is the day before in UTC east of
+        # Greenwich), and DTEND is exclusive: the day after the last one.
+        try:
+            zone = ZoneInfo(row.timezone)
+        except (ZoneInfoNotFoundError, ValueError):
+            zone = timezone.utc
+        first = as_utc(row.starts_at).astimezone(zone).date()
+        last = max(first, as_utc(row.ends_at).astimezone(zone).date())
+        start = f"DTSTART;VALUE=DATE:{first.strftime('%Y%m%d')}"
+        end = f"DTEND;VALUE=DATE:{(last + timedelta(days=1)).strftime('%Y%m%d')}"
     else:
         start = f"DTSTART:{as_utc(row.starts_at).strftime('%Y%m%dT%H%M%SZ')}"
         end = f"DTEND:{as_utc(row.ends_at).strftime('%Y%m%dT%H%M%SZ')}"

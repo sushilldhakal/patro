@@ -273,7 +273,8 @@ class CalendarEvent(Base):
 
     Times are absolute (UTC) with the zone they were written in, so a repeat follows the
     user's wall clock. ``source_kind`` / ``source_key`` remember the साइत or मुहूर्त it was
-    picked from (``sait`` + ``vivaha``, ``muhurta`` + ``abhijit``); the title came from there.
+    picked from (``sait`` + ``vivaha``, ``shubh`` + ``abhijit``, ``ashubh`` + ``rahu_kalam``,
+    ``pushkara`` + the lagna); the title came from there.
     Alerts are minutes before the start (iOS: "At time of event" is 0), at most two.
     """
 
@@ -293,7 +294,11 @@ class CalendarEvent(Base):
     starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
     ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     timezone: Mapped[str] = mapped_column(String(64), default="Asia/Kathmandu", nullable=False)
-    # never | daily | weekly | fortnightly | monthly | yearly
+    # "event" (start and end) | "reminder" (one moment, or a whole day) — the form's two tabs.
+    kind: Mapped[str] = mapped_column(String(10), default="event", server_default="event", nullable=False)
+    # Reminders' priority, as Apple Reminders: 0 none, 1 low, 2 medium, 3 high.
+    priority: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    # never | daily | weekdays | weekends | weekly | fortnightly | monthly | quarterly | half_yearly | yearly
     repeat: Mapped[str] = mapped_column(String(16), default="never", nullable=False)
     # Comma-separated minutes before the start, e.g. "0,1440"; empty = no alert.
     alerts: Mapped[str] = mapped_column(String(40), default="", nullable=False)
