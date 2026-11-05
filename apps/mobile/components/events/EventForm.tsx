@@ -21,7 +21,6 @@ import {
   EVENT_PRIORITIES,
   EVENT_REPEATS,
   type CalendarEventInput,
-  type EventKind,
   type EventPriority,
   type EventRepeat,
 } from "@/lib/events/api";
@@ -56,14 +55,14 @@ const toMinutes = (time: string) => {
 };
 
 /**
- * A new event or reminder, laid out like Apple Calendar's "New" sheet with its Event | Reminder
- * tabs. An event has a title and place, all-day / starts / ends (a date row opens the month inline,
- * a time row the wheel), repeat, alerts, invitees and notes. A reminder is Apple's: title and notes,
- * date and time rows with their switches, repeat, and under More Options its priority and place.
+ * A new event or reminder — one form, in Apple Calendar's look. Title and place; a date row that
+ * opens the BS month inline; a time row with its switch (off = the whole day) that opens the wheel;
+ * an End row with its switch: off, it is a reminder at one moment; on, an event that runs to the end
+ * date and time. Then repeat, alerts, priority, invitees and notes.
  *
- * Either can take its time from "Pick a time": a साइत (its coming days), or the chosen day's शुभ
- * समय, अशुभ समय (a reminder when one begins) and पुष्कर नवांश moments — the same lists as the
- * panchanga page. Under it, tips for the day from the default profile's guidance.
+ * The time can come from "Pick a time": a साइत (its coming days), or the chosen day's शुभ समय,
+ * अशुभ समय (a reminder when one begins) and पुष्कर नवांश moments — the same lists as the panchanga
+ * page. Under it, tips for the day from the default profile's guidance.
  */
 export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const { t, lang, digits } = useLocale();
@@ -75,7 +74,6 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const today = todayIn(zone);
   const labels = useEventLabels(today);
 
-  const [kind, setKind] = useState<EventKind>("event");
   const [panel, setPanel] = useState<Panel>(null);
   const [pickSource, setPickSource] = useState<PickSource>("none");
   const [pickedId, setPickedId] = useState<string | null>(null);
@@ -85,10 +83,10 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
   const [place, setPlace] = useState("");
-  const [placeOn, setPlaceOn] = useState(false);
   const [notes, setNotes] = useState("");
-  const [allDay, setAllDay] = useState(false);
   const [timeOn, setTimeOn] = useState(true);
+  /** Off: a reminder at one moment. On: an event with an end. */
+  const [endOn, setEndOn] = useState(false);
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
   const [startDate, setStartDate] = useState(firstDate);
@@ -99,15 +97,14 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const [pickDate, setPickDate] = useState(firstDate);
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
-  const [alert1, setAlert1] = useState<number | null>(null);
+  // Rings when due unless changed; a reminder that never rings is no reminder.
+  const [alert1, setAlert1] = useState<number | null>(0);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const isReminder = kind === "reminder";
-  const timed = isReminder ? timeOn : !allDay;
 
   const toggle = (p: Panel) => {
     haptics.tick();
@@ -136,14 +133,14 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
     if (endDate < date) setEndDate(date);
   };
 
-  /** A pick fills the title (unless one was typed) and the times. */
-  const apply = (name: string, sd: string, st: string, ed: string, et: string) => {
+  /** A pick fills the title (unless one was typed) and the times; a window gets its end, a moment none. */
+  const apply = (name: string, sd: string, st: string, ed: string, et: string, withEnd: boolean) => {
     if (!title.trim() || title === autoTitle) {
       setTitle(name);
       setAutoTitle(name);
     }
-    setAllDay(false);
     setTimeOn(true);
+    setEndOn(withEnd);
     setStartDate(sd);
     setStartTime(st);
     setEndDate(ed);
@@ -157,7 +154,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
     setSaitDay(day);
     setPickedId(`sait:${day.gregorian}`);
     setPickDate(day.gregorian);
-    apply(lang === "en" ? label.en : label.ne, day.gregorian, day.window_start, day.gregorian, day.window_end);
+    apply(lang === "en" ? label.en : label.ne, day.gregorian, day.window_start, day.gregorian, day.window_end, true);
   };
 
   const pickName = (p: DayTimePick) => {
@@ -170,7 +167,8 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const pickDayTime = (p: DayTimePick) => {
     haptics.tick();
     setPickedId(p.id);
-    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime);
+    // A पुष्कर नवांश is a moment to begin at; the शुभ / अशुभ windows run to their end.
+    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime, p.source !== "pushkara");
     // A bad time is worth knowing when it begins.
     if (p.source === "ashubh" && alert1 == null) setAlert1(0);
   };
@@ -203,10 +201,10 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
 
   // Only warn about an अशुभ window the user did not choose on purpose.
   const clash: GuidanceWindow | null = useMemo(() => {
-    if (!day || !timed || pickSource === "ashubh") return null;
+    if (!day || !timeOn || pickSource === "ashubh") return null;
     const at = toMinutes(startTime);
     return day.windows.find((w) => w.kind === "ashubh" && w.end && toMinutes(w.start) <= at && at < toMinutes(w.end)) ?? null;
-  }, [day, timed, startTime, pickSource]);
+  }, [day, timeOn, startTime, pickSource]);
   const better: GuidanceWindow | null = useMemo(
     () => (clash && day ? (day.windows.find((w) => w.kind === "shubh" && w.end) ?? null) : null),
     [clash, day],
@@ -224,15 +222,14 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
     setDraft("");
   };
 
-  // A reminder is one moment (or a whole day, its alert at 9:00); an event runs start to end.
-  const startIso = isReminder
-    ? zonedToIso(startDate, timeOn ? startTime : ALL_DAY_REMINDER_AT, zone)
-    : zonedToIso(startDate, allDay ? "00:00" : startTime, zone);
-  const endIso = isReminder
-    ? timeOn
+  // No end: one moment (a whole day rings at 9:00, as Apple Reminders). With an end: start to end,
+  // a whole day from midnight to 23:59.
+  const startIso = zonedToIso(startDate, timeOn ? startTime : endOn ? "00:00" : ALL_DAY_REMINDER_AT, zone);
+  const endIso = endOn
+    ? zonedToIso(endDate, timeOn ? endTime : "23:59", zone)
+    : timeOn
       ? startIso
-      : zonedToIso(startDate, "23:59", zone)
-    : zonedToIso(endDate, allDay ? "23:59" : endTime, zone);
+      : zonedToIso(startDate, "23:59", zone);
   const canSave = title.trim().length > 0 && !saving;
 
   const save = async () => {
@@ -248,21 +245,20 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
     const allInvitees = pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees;
     const picked = pickSource === "sait" ? (sait ? { kind: "sait", key: sait } : null) : pickSource === "none" ? null : pickList.find((p) => p.id === pickedId);
     const input: CalendarEventInput = {
-      kind,
-      priority: isReminder ? priority : 0,
+      kind: endOn ? "event" : "reminder",
+      priority,
       title: title.trim(),
-      location: (isReminder && !placeOn) ? null : place.trim() || null,
+      location: place.trim() || null,
       notes: notes.trim() || null,
-      all_day: !timed,
+      all_day: !timeOn,
       starts_at: startIso,
       ends_at: endIso,
       timezone: zone,
       repeat,
-      // A reminder rings when it is due.
-      alerts: isReminder ? [0] : [alert1, alert2].filter((a): a is number => a != null),
+      alerts: [alert1, alert2].filter((a): a is number => a != null),
       source_kind: picked ? ("source" in picked ? picked.source : picked.kind) : null,
       source_key: picked ? picked.key.slice(0, 64) : null,
-      invitees: isAuthenticated && !isReminder ? allInvitees : [],
+      invitees: isAuthenticated ? allInvitees : [],
       profile_id: profile?.id ?? null,
     };
     setSaving(true);
@@ -296,7 +292,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
         }}
       />
       <Divider />
-      <Row icon={isReminder ? "globe-outline" : undefined} label={t("events.time_zone")} value={labels.zone(zone)} />
+      <Row icon="globe-outline" label={t("events.time_zone")} value={labels.zone(zone)} />
     </>
   );
   const repeatMenu =
@@ -321,18 +317,6 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
         </Text>
         <RoundButton icon="checkmark" label={t("events.save")} onPress={() => void save()} filled={canSave} busy={saving} />
       </View>
-
-      <Segmented
-        options={[
-          { id: "event", label: t("events.kind_event") },
-          { id: "reminder", label: t("events.kind_reminder") },
-        ]}
-        value={kind}
-        onChange={(k) => {
-          setKind(k as EventKind);
-          setPanel(null);
-        }}
-      />
 
       {error ? (
         <Text className="text-center text-caption text-destructive" style={nepaliTextStyle(13)}>
@@ -420,190 +404,154 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
         ) : null}
       </Group>
 
-      {isReminder ? (
-        <>
-          <Group>
-            <Field value={title} onChange={setTitle} placeholder={t("events.title")} />
-            <Divider />
-            <TextInput
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t("events.notes")}
-              placeholderTextColor={colors.mutedForeground}
-              multiline
-              className="min-h-12 py-3 text-body text-foreground"
-              style={nepaliTextStyle(16)}
+      <Group>
+        <Field value={title} onChange={setTitle} placeholder={t("events.title")} />
+        <Divider />
+        <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
+      </Group>
+
+      {/* Apple's rows: the date opens the month; time and end have their switches. No end = a reminder. */}
+      <Group>
+        <IconRow icon="calendar-outline" label={t("events.date")} value={labels.day(startDate)} onPress={() => toggle("startDate")} />
+        {panel === "startDate" ? <><Divider />{startGrid}</> : null}
+        <Divider />
+        <IconRow
+          icon="time-outline"
+          label={t("events.time")}
+          value={timeOn ? labels.clock(startTime) : t("events.all_day")}
+          onPress={timeOn ? () => toggle("startTime") : undefined}
+          right={
+            <Switch
+              value={timeOn}
+              onValueChange={(on) => {
+                setTimeOn(on);
+                setPanel(on ? "startTime" : null);
+              }}
             />
-          </Group>
-
-          {/* Apple Reminders: the date row opens the month; the time row has its switch and opens the wheel. */}
-          <Group>
-            <IconRow icon="calendar-outline" label={t("events.date")} value={labels.day(startDate)} onPress={() => toggle("startDate")} />
-            {panel === "startDate" ? <><Divider />{startGrid}</> : null}
-            <Divider />
-            <IconRow
-              icon="time-outline"
-              label={t("events.time")}
-              value={timeOn ? labels.clock(startTime) : null}
-              onPress={timeOn ? () => toggle("startTime") : undefined}
-              right={
-                <Switch
-                  value={timeOn}
-                  onValueChange={(on) => {
-                    setTimeOn(on);
-                    setPanel(on ? "startTime" : null);
-                  }}
-                />
-              }
+          }
+        />
+        {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
+        <Divider />
+        <IconRow
+          icon="flag-outline"
+          label={t("events.ends")}
+          value={endOn ? `${labels.day(endDate)}${timeOn ? ` · ${labels.clock(endTime)}` : ""}` : null}
+          onPress={endOn ? () => toggle("endDate") : undefined}
+          right={
+            <Switch
+              value={endOn}
+              onValueChange={(on) => {
+                setEndOn(on);
+                if (on) {
+                  // An end an hour on, as Calendar starts one.
+                  if (endDate < startDate || (endDate === startDate && toMinutes(endTime) <= toMinutes(startTime))) {
+                    const next = addMinutes(startTime, 60);
+                    setEndDate(next.dayShift ? shiftDate(startDate, next.dayShift) : startDate);
+                    setEndTime(next.time);
+                  }
+                  setPanel("endDate");
+                } else setPanel(null);
+              }}
             />
-            {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
-          </Group>
+          }
+        />
+        {endOn && panel === "endDate" ? (
+          <>
+            <Divider />
+            <IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} />
+            {timeOn ? <><Divider /><TimeWheel value={endTime} onChange={setEndTime} /></> : null}
+          </>
+        ) : null}
+      </Group>
 
-          <Group>
-            <IconRow icon="repeat" label={t("events.repeat")} value={t(`events.repeat_${repeat}`)} muted onPress={() => toggle("repeat")} updown />
-            {repeatMenu}
-          </Group>
+      <Group>
+        <IconRow icon="repeat" label={t("events.repeat")} value={t(`events.repeat_${repeat}`)} muted onPress={() => toggle("repeat")} updown />
+        {repeatMenu}
+      </Group>
 
-          <Text className="-mb-2 px-4 text-body font-semibold text-muted-foreground" style={nepaliTextStyle(15)}>{t("events.more_options")}</Text>
-          <Group>
-            <IconRow glyph="!!!" label={t("events.priority")} value={t(`events.priority_${priority}`)} muted onPress={() => toggle("priority")} updown />
-            {panel === "priority"
-              ? EVENT_PRIORITIES.map((p) => (
-                  <Option key={p} label={t(`events.priority_${p}`)} active={priority === p} onPress={() => { setPriority(p); setPanel(null); }} />
-                ))
-              : null}
+      <Group>
+        <Row label={t("events.alert")} value={labels.alert(alert1)} onPress={() => toggle("alert1")} updown />
+        {panel === "alert1"
+          ? EVENT_ALERTS.map((a) => (
+              <Option key={String(a)} label={labels.alert(a)} active={alert1 === a} onPress={() => { setAlert1(a); setPanel(null); }} />
+            ))
+          : null}
+        {alert1 != null ? (
+          <>
             <Divider />
-            <IconRow icon="navigate-outline" label={t("events.location")} right={<Switch value={placeOn} onValueChange={setPlaceOn} />} />
-            {placeOn ? (
-              <>
-                <Divider />
-                <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
-              </>
-            ) : null}
-          </Group>
-        </>
-      ) : (
-        <>
-          <Group>
-            <Field value={title} onChange={setTitle} placeholder={t("events.title")} />
-            <Divider />
-            <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
-          </Group>
-
-          <Group>
-            <View className="min-h-12 flex-row items-center justify-between">
-              <Text className="text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.all_day")}</Text>
-              <Switch value={allDay} onValueChange={setAllDay} />
-            </View>
-            <Divider />
-            <DateTimeRow
-              label={t("events.starts")}
-              date={labels.bsDate(startDate)}
-              time={allDay ? null : labels.clock(startTime)}
-              dateOpen={panel === "startDate"}
-              timeOpen={panel === "startTime"}
-              onDate={() => toggle("startDate")}
-              onTime={() => toggle("startTime")}
-            />
-            {panel === "startDate" ? startGrid : null}
-            {panel === "startTime" ? startWheel : null}
-            <Divider />
-            <DateTimeRow
-              label={t("events.ends")}
-              date={labels.bsDate(endDate)}
-              time={allDay ? null : labels.clock(endTime)}
-              dateOpen={panel === "endDate"}
-              timeOpen={panel === "endTime"}
-              onDate={() => toggle("endDate")}
-              onTime={() => toggle("endTime")}
-            />
-            {panel === "endDate" ? (
-              <IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} />
-            ) : null}
-            {panel === "endTime" ? <TimeWheel value={endTime} onChange={setEndTime} /> : null}
-            <Divider />
-            <Row label={t("events.repeat")} value={t(`events.repeat_${repeat}`)} onPress={() => toggle("repeat")} updown />
-            {repeatMenu}
-          </Group>
-
-          <Group>
-            <Row label={t("events.alert")} value={labels.alert(alert1)} onPress={() => toggle("alert1")} updown />
-            {panel === "alert1"
+            <Row label={t("events.second_alert")} value={labels.alert(alert2)} onPress={() => toggle("alert2")} updown />
+            {panel === "alert2"
               ? EVENT_ALERTS.map((a) => (
-                  <Option key={String(a)} label={labels.alert(a)} active={alert1 === a} onPress={() => { setAlert1(a); setPanel(null); }} />
+                  <Option key={String(a)} label={labels.alert(a)} active={alert2 === a} onPress={() => { setAlert2(a); setPanel(null); }} />
                 ))
               : null}
-            {alert1 != null ? (
-              <>
-                <Divider />
-                <Row label={t("events.second_alert")} value={labels.alert(alert2)} onPress={() => toggle("alert2")} updown />
-                {panel === "alert2"
-                  ? EVENT_ALERTS.map((a) => (
-                      <Option key={String(a)} label={labels.alert(a)} active={alert2 === a} onPress={() => { setAlert2(a); setPanel(null); }} />
-                    ))
-                  : null}
-              </>
-            ) : null}
-          </Group>
+          </>
+        ) : null}
+        <Divider />
+        <IconRow glyph="!!!" label={t("events.priority")} value={t(`events.priority_${priority}`)} muted onPress={() => toggle("priority")} updown />
+        {panel === "priority"
+          ? EVENT_PRIORITIES.map((p) => (
+              <Option key={p} label={t(`events.priority_${p}`)} active={priority === p} onPress={() => { setPriority(p); setPanel(null); }} />
+            ))
+          : null}
+      </Group>
 
-          {isAuthenticated ? (
-            <Group>
-              <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.invitees")}</Text>
-              {invitees.length > 0 ? (
-                <View className="flex-row flex-wrap gap-2 pt-2">
-                  {invitees.map((email) => (
-                    <Pressable
-                      key={email}
-                      onPress={() => setInvitees(invitees.filter((e) => e !== email))}
-                      accessibilityRole="button"
-                      accessibilityLabel={email}
-                      className="flex-row items-center gap-1 rounded-full bg-background px-3 py-1.5 active:opacity-60"
-                    >
-                      <Text className="text-caption text-foreground">{email}</Text>
-                      <Ionicons name="close" size={14} color={colors.mutedForeground} />
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-              <View className="min-h-12 flex-row items-center gap-2">
-                <TextInput
-                  value={draft}
-                  onChangeText={setDraft}
-                  onSubmitEditing={addInvitee}
-                  placeholder={t("events.invitee_add")}
-                  placeholderTextColor={colors.mutedForeground}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  returnKeyType="done"
-                  className="min-w-0 flex-1 py-3 text-body text-foreground"
-                />
-                <Pressable onPress={addInvitee} accessibilityRole="button" accessibilityLabel={t("events.invitee_add")} hitSlop={8}>
-                  <Ionicons name="add-circle" size={24} color={colors.secondary} />
+      {isAuthenticated ? (
+        <Group>
+          <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.invitees")}</Text>
+          {invitees.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2 pt-2">
+              {invitees.map((email) => (
+                <Pressable
+                  key={email}
+                  onPress={() => setInvitees(invitees.filter((e) => e !== email))}
+                  accessibilityRole="button"
+                  accessibilityLabel={email}
+                  className="flex-row items-center gap-1 rounded-full bg-background px-3 py-1.5 active:opacity-60"
+                >
+                  <Text className="text-caption text-foreground">{email}</Text>
+                  <Ionicons name="close" size={14} color={colors.mutedForeground} />
                 </Pressable>
-              </View>
-              <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.invitee_hint")}</Text>
-            </Group>
-          ) : (
-            <Group>
-              <Row label={t("events.invitees")} value={t("events.invitee_guest")} onPress={() => { onClose(); requestSignIn(); }} chevron />
-              <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.guest_note")}</Text>
-            </Group>
-          )}
-
-          <Group>
+              ))}
+            </View>
+          ) : null}
+          <View className="min-h-12 flex-row items-center gap-2">
             <TextInput
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t("events.notes")}
+              value={draft}
+              onChangeText={setDraft}
+              onSubmitEditing={addInvitee}
+              placeholder={t("events.invitee_add")}
               placeholderTextColor={colors.mutedForeground}
-              multiline
-              className="min-h-24 py-3 text-body text-foreground"
-              style={nepaliTextStyle(16)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+              className="min-w-0 flex-1 py-3 text-body text-foreground"
             />
-          </Group>
-        </>
+            <Pressable onPress={addInvitee} accessibilityRole="button" accessibilityLabel={t("events.invitee_add")} hitSlop={8}>
+              <Ionicons name="add-circle" size={24} color={colors.secondary} />
+            </Pressable>
+          </View>
+          <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.invitee_hint")}</Text>
+        </Group>
+      ) : (
+        <Group>
+          <Row label={t("events.invitees")} value={t("events.invitee_guest")} onPress={() => { onClose(); requestSignIn(); }} chevron />
+          <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.guest_note")}</Text>
+        </Group>
       )}
+
+      <Group>
+        <TextInput
+          value={notes}
+          onChangeText={setNotes}
+          placeholder={t("events.notes")}
+          placeholderTextColor={colors.mutedForeground}
+          multiline
+          className="min-h-24 py-3 text-body text-foreground"
+          style={nepaliTextStyle(16)}
+        />
+      </Group>
 
       {/* Tips for the chosen day: the saait's own reading, the profile's guidance, and a clash with a bad window. */}
       <View className="gap-2 rounded-3xl border border-secondary/30 bg-secondary/5 p-4">
@@ -686,34 +634,6 @@ function RoundButton({ icon, label, onPress, filled, busy }: { icon: "close" | "
         <Ionicons name={icon} size={22} color={filled ? neutral.white : colors.mutedForeground} />
       )}
     </Pressable>
-  );
-}
-
-/** Apple's segmented control: a grey track, the chosen tab a raised white pill. */
-function Segmented({ options, value, onChange }: { options: { id: string; label: string }[]; value: string; onChange: (id: string) => void }) {
-  return (
-    <View accessibilityRole="tablist" className="flex-row rounded-full bg-muted p-0.5 dark:bg-foreground/10">
-      {options.map((o) => {
-        const active = o.id === value;
-        return (
-          <Pressable
-            key={o.id}
-            onPress={() => {
-              if (active) return;
-              haptics.tick();
-              onChange(o.id);
-            }}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: active }}
-            className={cn("min-h-8 flex-1 items-center justify-center rounded-full", active && "bg-background shadow-sm")}
-          >
-            <Text className={cn("text-caption text-foreground", active && "font-semibold")} style={nepaliTextStyle(14)}>
-              {o.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
   );
 }
 
@@ -807,43 +727,6 @@ function IconRow({
       </Pressable>
       {right}
     </View>
-  );
-}
-
-/** "Starts  [कात्तिक २०, २०८३] [१०:१५]" — the date and the time as separate pills; the open one in red, as Calendar's. */
-function DateTimeRow({
-  label,
-  date,
-  time,
-  dateOpen,
-  timeOpen,
-  onDate,
-  onTime,
-}: {
-  label: string;
-  date: string;
-  time: string | null;
-  dateOpen: boolean;
-  timeOpen: boolean;
-  onDate: () => void;
-  onTime: () => void;
-}) {
-  return (
-    <View className="min-h-12 flex-row items-center justify-between gap-2 py-1.5">
-      <Text className="text-body text-foreground" style={nepaliTextStyle(16)}>{label}</Text>
-      <View className="flex-row gap-2">
-        <Pill label={date} open={dateOpen} onPress={onDate} />
-        {time ? <Pill label={time} open={timeOpen} onPress={onTime} /> : null}
-      </View>
-    </View>
-  );
-}
-
-function Pill({ label, open, onPress }: { label: string; open: boolean; onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ expanded: open }} className="rounded-full bg-background px-3 py-1.5 active:opacity-60">
-      <Text className={cn("text-body", open ? "text-destructive" : "text-foreground")} style={nepaliTextStyle(16)}>{label}</Text>
-    </Pressable>
   );
 }
 
