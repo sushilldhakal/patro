@@ -7285,6 +7285,15 @@ export const strings = {
   "events.invitee_add": { ne: "इमेल थप्नुहोस्", en: "Add email" },
   "events.invitee_hint": { ne: "सुरक्षित गर्दा उहाँहरूलाई इमेलमा निमन्त्रणा जान्छ।", en: "They get an email invitation when you save." },
   "events.invitee_bad": { ne: "इमेल ठेगाना मिलेन", en: "That is not an email address" },
+  "events.invitee_guest": { ne: "निमन्त्रणा पठाउन साइन इन गर्नुहोस्", en: "Sign in to send invitations" },
+  "events.guest_note": {
+    ne: "साइन इन नगरी सुरक्षित गरेका कार्यक्रम यही फोनमा रहन्छन्; साइन इन गरेपछि खातामा सर्छन्।",
+    en: "Saved without signing in, events stay on this phone and move to your account when you sign in.",
+  },
+  "events.guest_note_web": {
+    ne: "साइन इन नगरी सुरक्षित गरेका कार्यक्रम यही ब्राउजरमा रहन्छन्; साइन इन गरेपछि खातामा सर्छन्।",
+    en: "Saved without signing in, events stay in this browser and move to your account when you sign in.",
+  },
   "events.saved": { ne: "सुरक्षित भयो", en: "Saved" },
   "events.save_failed": { ne: "सुरक्षित भएन। फेरि प्रयास गर्नुहोस्।", en: "Could not save. Try again." },
   "events.need_title": { ne: "शीर्षक लेख्नुहोस् वा साइत छान्नुहोस्", en: "Write a title or pick a saait" },

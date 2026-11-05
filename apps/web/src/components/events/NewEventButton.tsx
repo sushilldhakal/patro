@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, ChevronsUpDown, Lightbulb, Plus, X } from "lucide-react";
 import {
@@ -22,6 +22,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { listProfiles } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { importWithRetry } from "@/lib/lazy-route";
+import { uploadGuestEvents } from "@/lib/guest-events";
 
 const LazyAuthDialog = lazy(() =>
   importWithRetry(() => import("@/components/auth/AuthDialog")).then((m) => ({ default: m.AuthDialog })),
@@ -35,7 +36,8 @@ const toMinutes = (time: string) => {
 
 /**
  * The header's "+": a new event or reminder, in a popover under the button like Apple Calendar's
- * (the app shows the same form as a sheet). Signed out, it opens sign-in — events live on the account.
+ * (the app shows the same form as a sheet). Signed out, the same form saves to this browser
+ * (lib/guest-events.ts); on sign-in those events move to the account.
  */
 export function NewEventButton() {
   const { t } = useLocale();
@@ -44,25 +46,10 @@ export function NewEventButton() {
   const [authOpen, setAuthOpen] = useState(false);
   const label = t("ui.reminders.new_reminder");
 
-  if (!isAuthenticated) {
-    return (
-      <>
-        <button
-          type="button"
-          onClick={() => setAuthOpen(true)}
-          aria-label={label}
-          className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
-        >
-          <Plus className="size-5" />
-        </button>
-        {authOpen ? (
-          <Suspense fallback={null}>
-            <LazyAuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
-          </Suspense>
-        ) : null}
-      </>
-    );
-  }
+  // Just signed in: events saved as a guest in this browser move to the account.
+  useEffect(() => {
+    if (isAuthenticated) void uploadGuestEvents().catch(() => 0);
+  }, [isAuthenticated]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -76,13 +63,27 @@ export function NewEventButton() {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="max-h-[80vh] w-[380px] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-3xl p-0">
-        {open ? <EventFormWeb onClose={() => setOpen(false)} /> : null}
+        {open ? (
+          <EventFormWeb
+            guest={!isAuthenticated}
+            onClose={() => setOpen(false)}
+            onSignIn={() => {
+              setOpen(false);
+              setAuthOpen(true);
+            }}
+          />
+        ) : null}
       </PopoverContent>
+      {authOpen ? (
+        <Suspense fallback={null}>
+          <LazyAuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
+        </Suspense>
+      ) : null}
     </Popover>
   );
 }
 
-function EventFormWeb({ onClose }: { onClose: () => void }) {
+function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: () => void; onSignIn: () => void }) {
   const { t, lang, digits } = useLocale();
   const queryClient = useQueryClient();
   const { location } = usePanchangaLocation();
@@ -118,8 +119,9 @@ function EventFormWeb({ onClose }: { onClose: () => void }) {
     },
   });
 
-  const profiles = useQuery({ queryKey: ["events", "profiles"], queryFn: listProfiles, staleTime: 5 * 60_000 });
-  const profile = profiles.data?.find((p) => p.is_default) ?? profiles.data?.[0] ?? null;
+  // Invitations and profile tips need an account; a guest's event is kept in this browser.
+  const profiles = useQuery({ queryKey: ["events", "profiles"], queryFn: listProfiles, enabled: !guest, staleTime: 5 * 60_000 });
+  const profile = guest ? null : profiles.data?.find((p) => p.is_default) ?? profiles.data?.[0] ?? null;
   const guidance = useQuery({
     queryKey: ["events", "guidance", profile?.id, startDate, zone],
     enabled: profile != null,
@@ -188,7 +190,7 @@ function EventFormWeb({ onClose }: { onClose: () => void }) {
       alerts: [alert1, alert2].filter((a): a is number => a != null),
       source_kind: sait ? "sait" : null,
       source_key: sait,
-      invitees: pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees,
+      invitees: guest ? [] : pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees,
       profile_id: profile?.id ?? null,
     };
     setSaving(true);
@@ -307,38 +309,48 @@ function EventFormWeb({ onClose }: { onClose: () => void }) {
         ) : null}
       </Group>
 
-      <Group>
-        <p className="pt-3 text-sm">{t("events.invitees")}</p>
-        {invitees.length > 0 ? (
-          <div className="flex flex-wrap gap-2 pt-2">
-            {invitees.map((email) => (
-              <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
-                {email}
-                <X className="size-3 text-muted-foreground" />
-              </button>
-            ))}
-          </div>
-        ) : null}
-        <div className="flex items-center gap-2">
-          <input
-            type="email"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addInvitee();
-              }
-            }}
-            placeholder={t("events.invitee_add")}
-            className={input}
-          />
-          <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
-            <Plus className="size-5" />
+      {guest ? (
+        <Group>
+          <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left hover:opacity-80">
+            <span className="text-sm">{t("events.invitees")}</span>
+            <span className="text-sm text-secondary">{t("events.invitee_guest")}</span>
           </button>
-        </div>
-        <p className="pb-3 text-xs text-muted-foreground">{t("events.invitee_hint")}</p>
-      </Group>
+          <p className="pb-3 text-xs text-muted-foreground">{t("events.guest_note_web")}</p>
+        </Group>
+      ) : (
+        <Group>
+          <p className="pt-3 text-sm">{t("events.invitees")}</p>
+          {invitees.length > 0 ? (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {invitees.map((email) => (
+                <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
+                  {email}
+                  <X className="size-3 text-muted-foreground" />
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2">
+            <input
+              type="email"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addInvitee();
+                }
+              }}
+              placeholder={t("events.invitee_add")}
+              className={input}
+            />
+            <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
+              <Plus className="size-5" />
+            </button>
+          </div>
+          <p className="pb-3 text-xs text-muted-foreground">{t("events.invitee_hint")}</p>
+        </Group>
+      )}
 
       <Group>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} rows={3} className={cn(input, "resize-none")} />

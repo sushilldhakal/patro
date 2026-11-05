@@ -1,6 +1,6 @@
 import { refreshTodayWidget } from "@/lib/widgets/today-widget";
 import { importPhoneCalendars } from "@/lib/events/device-calendars";
-import { listEvents } from "@/lib/events/api";
+import { listEvents, uploadGuestEvents } from "@/lib/events/api";
 import { planEventAlerts } from "@/lib/events/alerts";
 import { Platform } from "react-native";
 import { listProfiles, tokenStore, type Profile } from "@/lib/auth/client";
@@ -48,8 +48,12 @@ export async function syncNotifications(options: {
 
   const signedIn = Boolean(tokenStore.access || tokenStore.refresh);
   const permission = await getNotificationPermission();
-  // Guests with notifications off have nothing to schedule — skip the network.
-  if (!signedIn && permission !== "granted") return { scheduled: 0, online: false, permission };
+  // Guests with notifications off have nothing to schedule — skip the network; only the widget
+  // follows their on-phone events.
+  if (!signedIn && permission !== "granted") {
+    void refreshGuestWidget(lang).catch(() => {});
+    return { scheduled: 0, online: false, permission };
+  }
 
   const online = await isCurrentlyOnline();
   const location = await readStoredLocation().catch(() => DEFAULT_PANCHANGA_LOCATION);
@@ -58,7 +62,8 @@ export async function syncNotifications(options: {
 
   let profiles: CachedProfile[] = signedIn ? await notifStore.getProfiles() : [];
   let reminders = signedIn ? await notifStore.getReminders() : [];
-  let events = signedIn ? await notifStore.getEvents() : [];
+  // A guest's events live on the phone (see lib/events/api.ts), so they are read even offline.
+  let events = signedIn ? await notifStore.getEvents() : await guestEvents();
   let fullProfiles: Profile[] | null = null;
 
   if (online && signedIn) {
@@ -77,6 +82,7 @@ export async function syncNotifications(options: {
     }
     try {
       // The phone's calendars the user chose to keep in step (Google, iCloud, …).
+      await uploadGuestEvents().catch(() => 0); // saved before signing in
       await importPhoneCalendars().catch(() => 0);
       events = await listEvents(new Date(Date.now() - 86_400_000).toISOString());
       await notifStore.setEvents(events);
@@ -140,4 +146,23 @@ export async function syncNotifications(options: {
   const eventAlerts = planEventAlerts(events, new Date(), lang);
   const scheduled = await applySchedule([...eventAlerts, ...planned].slice(0, NOTIFICATION_BUDGET));
   return { scheduled, online, permission };
+}
+
+/** A guest's events: the phone's calendars brought in first, then what is saved on the phone. */
+async function guestEvents() {
+  try {
+    await importPhoneCalendars();
+  } catch {
+    /* keep what was imported before */
+  }
+  try {
+    return await listEvents(new Date(Date.now() - 86_400_000).toISOString());
+  } catch {
+    return [];
+  }
+}
+
+async function refreshGuestWidget(lang: "ne" | "en") {
+  const location = await readStoredLocation().catch(() => DEFAULT_PANCHANGA_LOCATION);
+  await refreshTodayWidget({ lang, timezone: location.params.timezone ?? "Asia/Kathmandu", events: await guestEvents() });
 }

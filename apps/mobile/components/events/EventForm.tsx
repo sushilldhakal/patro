@@ -11,6 +11,8 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { listProfiles } from "@/lib/auth/client";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { requestSignIn } from "@/lib/menu-request";
 import { createEvent, EVENT_ALERTS, EVENT_REPEATS, type CalendarEventInput, type EventRepeat } from "@/lib/events/api";
 import { addMinutes, todayIn, zonedToIso } from "@/lib/events/time";
 import { fetchDailyGuidance } from "@/lib/notifications/api";
@@ -45,6 +47,8 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const { location } = usePanchangaLocation();
+  // Guests save to the phone (lib/events/api.ts); invitations and profile tips need an account.
+  const { isAuthenticated } = useAuth();
   const zone = location.params.timezone ?? "Asia/Kathmandu";
   const today = todayIn(zone);
 
@@ -98,8 +102,13 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   };
 
   // Tips: the default profile's guidance for the start day.
-  const profiles = useQuery({ queryKey: ["events", "profiles"], queryFn: listProfiles, staleTime: 5 * 60_000 });
-  const profile = profiles.data?.find((p) => p.is_default) ?? profiles.data?.[0] ?? null;
+  const profiles = useQuery({
+    queryKey: ["events", "profiles"],
+    queryFn: listProfiles,
+    enabled: isAuthenticated,
+    staleTime: 5 * 60_000,
+  });
+  const profile = !isAuthenticated ? null : profiles.data?.find((p) => p.is_default) ?? profiles.data?.[0] ?? null;
   const guidance = useQuery({
     queryKey: ["events", "guidance", profile?.id, startDate, zone],
     enabled: profile != null,
@@ -172,7 +181,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
       alerts: [alert1, alert2].filter((a): a is number => a != null),
       source_kind: sait ? "sait" : null,
       source_key: sait,
-      invitees: allInvitees,
+      invitees: isAuthenticated ? allInvitees : [],
       profile_id: profile?.id ?? null,
     };
     setSaving(true);
@@ -353,43 +362,50 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
         ) : null}
       </Group>
 
-      <Group>
-        <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.invitees")}</Text>
-        {invitees.length > 0 ? (
-          <View className="flex-row flex-wrap gap-2 pt-2">
-            {invitees.map((email) => (
-              <Pressable
-                key={email}
-                onPress={() => setInvitees(invitees.filter((e) => e !== email))}
-                accessibilityRole="button"
-                accessibilityLabel={email}
-                className="flex-row items-center gap-1 rounded-full bg-background px-3 py-1.5 active:opacity-60"
-              >
-                <Text className="text-caption text-foreground">{email}</Text>
-                <Ionicons name="close" size={14} color={colors.mutedForeground} />
-              </Pressable>
-            ))}
+      {isAuthenticated ? (
+        <Group>
+          <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.invitees")}</Text>
+          {invitees.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2 pt-2">
+              {invitees.map((email) => (
+                <Pressable
+                  key={email}
+                  onPress={() => setInvitees(invitees.filter((e) => e !== email))}
+                  accessibilityRole="button"
+                  accessibilityLabel={email}
+                  className="flex-row items-center gap-1 rounded-full bg-background px-3 py-1.5 active:opacity-60"
+                >
+                  <Text className="text-caption text-foreground">{email}</Text>
+                  <Ionicons name="close" size={14} color={colors.mutedForeground} />
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+          <View className="min-h-12 flex-row items-center gap-2">
+            <TextInput
+              value={draft}
+              onChangeText={setDraft}
+              onSubmitEditing={addInvitee}
+              placeholder={t("events.invitee_add")}
+              placeholderTextColor={colors.mutedForeground}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+              className="min-w-0 flex-1 py-3 text-body text-foreground"
+            />
+            <Pressable onPress={addInvitee} accessibilityRole="button" accessibilityLabel={t("events.invitee_add")} hitSlop={8}>
+              <Ionicons name="add-circle" size={24} color={colors.secondary} />
+            </Pressable>
           </View>
-        ) : null}
-        <View className="min-h-12 flex-row items-center gap-2">
-          <TextInput
-            value={draft}
-            onChangeText={setDraft}
-            onSubmitEditing={addInvitee}
-            placeholder={t("events.invitee_add")}
-            placeholderTextColor={colors.mutedForeground}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="done"
-            className="min-w-0 flex-1 py-3 text-body text-foreground"
-          />
-          <Pressable onPress={addInvitee} accessibilityRole="button" accessibilityLabel={t("events.invitee_add")} hitSlop={8}>
-            <Ionicons name="add-circle" size={24} color={colors.secondary} />
-          </Pressable>
-        </View>
-        <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.invitee_hint")}</Text>
-      </Group>
+          <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.invitee_hint")}</Text>
+        </Group>
+      ) : (
+        <Group>
+          <Row label={t("events.invitees")} value={t("events.invitee_guest")} onPress={() => { onClose(); requestSignIn(); }} chevron />
+          <Text className="pb-3 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t("events.guest_note")}</Text>
+        </Group>
+      )}
 
       <Group>
         <TextInput

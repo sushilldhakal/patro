@@ -233,6 +233,10 @@ export default function RemindersScreen() {
             onSignup={() => setAuthOpen(true)}
           />
           <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
+          {/* Guests can bring in their phone's calendars too; the events stay on the phone. */}
+          <View className="mt-6">
+            <PhoneCalendarsCard />
+          </View>
           <View className="mt-6">
             <RashifalNotificationCard signedIn={false} onChanged={() => {}} />
           </View>
