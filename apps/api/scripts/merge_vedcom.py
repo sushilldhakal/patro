@@ -76,6 +76,7 @@ def main() -> None:
     ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda", "samaveda"])
     ap.add_argument("--report", action="store_true", help="compare only; write nothing")
     ap.add_argument("--force-low", action="store_true", help="also merge mantras whose text agrees under 80%%")
+    ap.add_argument("--keep-text", action="store_true", help="leave our Sanskrit text as it is; take only the details, padapatha and Hindi meaning")
     ap.add_argument("--accept", default="", help="comma-separated labels under 80%% checked by hand and to merge, e.g. 6.19.7,10.88.4")
     args = ap.parse_args()
     accepted = {a.strip() for a in args.accept.split(",") if a.strip()}
@@ -109,7 +110,8 @@ def main() -> None:
             continue
         for key in ("devata", "rishi", "chhanda", "svara"):
             shloka[key] = row.get(key) or None
-        shloka["sanskrit"] = row["sanskrit"]
+        if not args.keep_text:
+            shloka["sanskrit"] = row["sanskrit"]
         shloka["padapatha"] = row.get("padapatha") or None
         shloka["meaning_hi"] = hindi_meaning(row.get("commentaries") or [])
 
