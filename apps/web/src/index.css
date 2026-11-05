@@ -323,10 +323,10 @@
   --color-wheel-control: rgba(11, 20, 22, 0.96);
   --color-wheel-control-border: rgba(143, 191, 193, 0.32);
   /* tokens:tailwind-theme:end */
-  --font-devanagari: "Noto Sans Devanagari", sans-serif;
+  --font-devanagari: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
   --font-sans: var(--font-devanagari);
   --font-heading: var(--font-devanagari);
-  --font-en: "Noto Sans Devanagari", sans-serif;
+  --font-en: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
   --font-mono: "Fira Code", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -400,10 +400,10 @@
   --color-warning: #e67e22;
   --color-danger: #c62828;
   --color-info: #0b565a;
-  --font-devanagari: "Noto Sans Devanagari", sans-serif;
+  --font-devanagari: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
   --font-sans: var(--font-devanagari);
   --font-heading: var(--font-devanagari);
-  --font-en: "Noto Sans Devanagari", sans-serif;
+  --font-en: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
   --font-mono: "Fira Code", monospace;
   --tracking-tight: -0.01em;
   --tracking-eyebrow: 0.12em;
@@ -497,6 +497,26 @@
   --shadow-lg: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
     0px 4px 6px -1px hsl(0 0% 10.196% / 0.18);
   /* tokens:theme-dark:end */
+}
+
+/*
+ * Google serves Noto Sans Devanagari without U+A8E0–A8FF, so the Vedic ꣳ (U+A8F3, in Yajur and Sama
+ * mantras) fell back to a system font and drew as a "?" box on phones with none. These two files are
+ * the same Noto (the app's own copy) cut down to that block; they are only fetched when a page has one.
+ */
+@font-face {
+  font-family: "Noto Devanagari Vedic";
+  src: url("/fonts/noto-devanagari-vedic-Regular.woff") format("woff");
+  font-weight: 100 500;
+  unicode-range: U+A8E0-A8FF;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Devanagari Vedic";
+  src: url("/fonts/noto-devanagari-vedic-Bold.woff") format("woff");
+  font-weight: 501 900;
+  unicode-range: U+A8E0-A8FF;
+  font-display: swap;
 }
 
 @layer base {
