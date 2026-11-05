@@ -19,7 +19,8 @@ shows up instead of slipping through. ``--report`` prints that without writing.
     python3 scripts/merge_vedcom.py yajurveda --report
 
 A mantra whose text agrees under 80% with ours is left untouched (listed in the report);
-after checking it, ``--force-low`` merges those too.
+after checking them, ``--accept 6.19.7,10.88.4`` merges the ones confirmed to be the same
+mantra, and ``--force-low`` merges all of them.
 """
 
 from __future__ import annotations
@@ -61,7 +62,9 @@ def main() -> None:
     ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda"])
     ap.add_argument("--report", action="store_true", help="compare only; write nothing")
     ap.add_argument("--force-low", action="store_true", help="also merge mantras whose text agrees under 80%%")
+    ap.add_argument("--accept", default="", help="comma-separated labels under 80%% checked by hand and to merge, e.g. 6.19.7,10.88.4")
     args = ap.parse_args()
+    accepted = {a.strip() for a in args.accept.split(",") if a.strip()}
 
     src = ROOT / f"data/vedcom_source/{args.veda}.jsonl"
     site: dict[str, dict] = {}
@@ -88,7 +91,7 @@ def main() -> None:
             # copied (text or details) until someone has looked; --force-low takes it anyway.
             low += 1
             lows.append((ratio, label))
-            if not args.force_low:
+            if not (args.force_low or label in accepted):
                 continue
         if args.report:
             continue
