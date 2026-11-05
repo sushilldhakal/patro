@@ -5,12 +5,14 @@ import {
   EVENT_ALERTS,
   EVENT_PRIORITIES,
   EVENT_REPEATS,
+  NEW_EVENT_KINDS,
   createEvent,
   fetchDayGuidance,
   fetchSaitDetail,
   type CalendarEventInput,
   type DayWindow,
   type EventPriority,
+  type NewEventKind,
   type EventRepeat,
   type SaitDetailDay,
 } from "@vedic-patro/api-client";
@@ -63,8 +65,10 @@ export function NewEventButton() {
   const { t } = useLocale();
   const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
+  /** The "+" first lists what can be made; the form follows the pick. */
+  const [kind, setKind] = useState<NewEventKind | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
-  const label = t("ui.reminders.new_reminder");
+  const label = t("events.create");
 
   // Just signed in: events saved as a guest in this browser move to the account.
   useEffect(() => {
@@ -72,7 +76,13 @@ export function NewEventButton() {
   }, [isAuthenticated]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setKind(null);
+      }}
+    >
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -83,12 +93,33 @@ export function NewEventButton() {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="max-h-[80vh] w-[380px] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-3xl p-0">
-        {open ? (
+        {open && kind == null ? (
+          <div role="menu" className="flex flex-col gap-1 p-2">
+            {NEW_EVENT_KINDS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="menuitem"
+                onClick={() => setKind(k)}
+                className="flex flex-col items-start rounded-2xl px-4 py-3 text-left transition-colors hover:bg-muted"
+              >
+                <span className="text-base font-medium">{t(`events.kind_${k}`)}</span>
+                <span className="text-sm text-muted-foreground">{t(`events.kind_${k}_hint`)}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {open && kind != null ? (
           <EventFormWeb
+            kind={kind}
             guest={!isAuthenticated}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+              setOpen(false);
+              setKind(null);
+            }}
             onSignIn={() => {
               setOpen(false);
+              setKind(null);
               setAuthOpen(true);
             }}
           />
@@ -103,7 +134,7 @@ export function NewEventButton() {
   );
 }
 
-function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: () => void; onSignIn: () => void }) {
+function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void }) {
   const { t, lang, digits } = useLocale();
   const queryClient = useQueryClient();
   const { location } = usePanchangaLocation();
@@ -123,9 +154,10 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
-  const [timeOn, setTimeOn] = useState(true);
+  // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
+  const [timeOn, setTimeOn] = useState(kind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(false);
+  const [endOn, setEndOn] = useState(kind !== "task");
   const [startDate, setStartDate] = useState(firstDate);
   const [startTime, setStartTime] = useState(nextHour.time);
   const [endDate, setEndDate] = useState(firstDate);
@@ -135,7 +167,7 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(0);
+  const [alert1, setAlert1] = useState<number | null>(kind === "event" ? 1440 : kind === "appointment" ? 30 : 0);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
@@ -252,7 +284,7 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
     const pending = draft.trim().toLowerCase();
     const dayPick = pickSource === "none" || pickSource === "sait" ? null : pickList.find((p) => p.id === pickedId) ?? null;
     const input: CalendarEventInput = {
-      kind: endOn ? "event" : "reminder",
+      kind,
       priority,
       title: title.trim(),
       location: place.trim() || null,
@@ -337,7 +369,7 @@ function EventFormWeb({ guest, onClose, onSignIn }: { guest: boolean; onClose: (
         <button type="button" onClick={onClose} aria-label={t("events.cancel")} className="inline-flex size-10 items-center justify-center rounded-full bg-muted hover:opacity-80">
           <X className="size-5 text-muted-foreground" />
         </button>
-        <span className="text-base font-semibold">{t("events.new")}</span>
+        <span className="text-base font-semibold">{t(`events.new_${kind}`)}</span>
         <button
           type="button"
           onClick={() => void save()}

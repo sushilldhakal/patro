@@ -117,7 +117,10 @@ def test_reminder_kind_priority_and_new_repeats(setup):
     # Old clients send neither field: an event with no priority.
     plain = client.post("/events", json=EVENT).json()
     assert (plain["kind"], plain["priority"]) == ("event", 0)
-    assert client.post("/events", json={**EVENT, "kind": "task"}).status_code == 422
+    for kind in ("task", "appointment"):
+        res = client.post("/events", json={**EVENT, "kind": kind})
+        assert res.status_code == 201 and res.json()["kind"] == kind
+    assert client.post("/events", json={**EVENT, "kind": "meeting"}).status_code == 422
     assert client.post("/events", json={**EVENT, "priority": 7}).status_code == 422
 
 

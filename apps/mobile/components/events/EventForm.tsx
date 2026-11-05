@@ -1,7 +1,7 @@
 import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Switch, TextInput, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSaitDetail, type SaitDetailDay } from "@vedic-patro/api-client";
+import { fetchSaitDetail, type NewEventKind, type SaitDetailDay } from "@vedic-patro/api-client";
 import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -64,7 +64,7 @@ const toMinutes = (time: string) => {
  * अशुभ समय (a reminder when one begins) and पुष्कर नवांश moments — the same lists as the panchanga
  * page. Under it, tips for the day from the default profile's guidance.
  */
-export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onClose: () => void; onSaved: () => void }) {
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const { location } = usePanchangaLocation();
@@ -84,9 +84,10 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
-  const [timeOn, setTimeOn] = useState(true);
+  // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
+  const [timeOn, setTimeOn] = useState(kind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(false);
+  const [endOn, setEndOn] = useState(kind !== "task");
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
   const [startDate, setStartDate] = useState(firstDate);
@@ -98,7 +99,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(0);
+  const [alert1, setAlert1] = useState<number | null>(kind === "event" ? 1440 : kind === "appointment" ? 30 : 0);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
@@ -245,7 +246,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
     const allInvitees = pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees;
     const picked = pickSource === "sait" ? (sait ? { kind: "sait", key: sait } : null) : pickSource === "none" ? null : pickList.find((p) => p.id === pickedId);
     const input: CalendarEventInput = {
-      kind: endOn ? "event" : "reminder",
+      kind,
       priority,
       title: title.trim(),
       location: place.trim() || null,
@@ -313,7 +314,7 @@ export function EventForm({ onClose, onSaved }: { onClose: () => void; onSaved: 
       <View className="flex-row items-center justify-between">
         <RoundButton icon="close" label={t("events.cancel")} onPress={onClose} />
         <Text className="text-title font-semibold text-foreground" style={nepaliTextStyle(17)}>
-          {t("events.new")}
+          {t(`events.new_${kind}`)}
         </Text>
         <RoundButton icon="checkmark" label={t("events.save")} onPress={() => void save()} filled={canSave} busy={saving} />
       </View>

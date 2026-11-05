@@ -35,7 +35,7 @@ REPEATS = (
     "half_yearly",
     "yearly",
 )
-KINDS = ("event", "reminder")
+KINDS = ("event", "task", "appointment", "reminder")
 PRIORITIES = (0, 1, 2, 3)  # none, low, medium, high
 MAX_ALERTS = 2
 MAX_INVITEES = 20

@@ -311,8 +311,9 @@ class CalendarEvent(Base):
     starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
     ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     timezone: Mapped[str] = mapped_column(String(64), default="Asia/Kathmandu", nullable=False)
-    # "event" (start and end) | "reminder" (one moment, or a whole day) — the form's two tabs.
-    kind: Mapped[str] = mapped_column(String(10), default="event", server_default="event", nullable=False)
+    # "event" (a date or a span) | "task" (something to complete) | "appointment" (a commitment at a time).
+    # "reminder" is the older name of a task and is still read.
+    kind: Mapped[str] = mapped_column(String(16), default="event", server_default="event", nullable=False)
     # Reminders' priority, as Apple Reminders: 0 none, 1 low, 2 medium, 3 high.
     priority: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     # never | daily | weekdays | weekends | weekly | fortnightly | monthly | quarterly | half_yearly | yearly

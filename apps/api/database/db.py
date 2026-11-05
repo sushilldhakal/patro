@@ -101,6 +101,9 @@ def _ensure_event_kind_columns() -> None:
             conn.execute(text("ALTER TABLE calendar_events ADD COLUMN kind VARCHAR(10) NOT NULL DEFAULT 'event'"))
         if "priority" not in columns:
             conn.execute(text("ALTER TABLE calendar_events ADD COLUMN priority INTEGER NOT NULL DEFAULT 0"))
+        # "appointment" is longer than the first 10-character column; SQLite does not enforce lengths.
+        if engine.dialect.name == "postgresql":
+            conn.execute(text("ALTER TABLE calendar_events ALTER COLUMN kind TYPE VARCHAR(16)"))
 
 
 def get_db() -> Iterator[Session]:

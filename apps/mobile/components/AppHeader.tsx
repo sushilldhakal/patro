@@ -323,7 +323,7 @@ function AppHeaderView() {
         {tablet ? <ViewSegmentedSwitch /> : <ViewMenuButton />}
         {tablet ? <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} /> : null}
         {tablet ? <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} /> : null}
-        <HeaderButton icon="add" label={t("ui.reminders.new_reminder")} onPress={requestAddReminder} />
+        <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} />
       </View>
     </View>
   );

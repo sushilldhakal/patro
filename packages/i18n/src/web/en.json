@@ -4755,6 +4755,16 @@
     "phone_imported": "{{count}} events added, updated or removed",
     "phone_none": "No calendars on this phone.",
     "new": "New",
+    "create": "Create",
+    "kind_event": "Event",
+    "kind_task": "Task",
+    "kind_appointment": "Appointment",
+    "kind_event_hint": "A festival, a birthday: on a date or over a period",
+    "kind_task_hint": "Something to complete",
+    "kind_appointment_hint": "A commitment at a set time",
+    "new_event": "New event",
+    "new_task": "New task",
+    "new_appointment": "New appointment",
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
@@ -5208,12 +5218,11 @@
       "zoom_in": "Zoom in",
       "zoom_out": "Zoom out"
     },
-    "reminders": {
-      "new_reminder": "New reminder",
-      "reminders": "Reminders"
-    },
     "search": {
       "cancel": "Close"
+    },
+    "reminders": {
+      "reminders": "Reminders"
     },
     "sait": {
       "choose_a_profile": "Choose a profile",

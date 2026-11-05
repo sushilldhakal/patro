@@ -23,8 +23,14 @@ export const EVENT_REPEATS = [
 ] as const;
 export type EventRepeat = (typeof EVENT_REPEATS)[number];
 
-/** The form's two tabs: an event has a start and an end; a reminder is one moment (or a whole day). */
-export type EventKind = "event" | "reminder";
+/**
+ * What "+" creates: an event (a date or a span), a task (something to complete) or an appointment (a
+ * commitment at a time). "reminder" is the older name of a task and is still read.
+ */
+export type EventKind = "event" | "task" | "appointment" | "reminder";
+/** The three the "+" menu offers, in order. */
+export const NEW_EVENT_KINDS = ["event", "task", "appointment"] as const;
+export type NewEventKind = (typeof NEW_EVENT_KINDS)[number];
 
 /** A reminder's priority, as Apple Reminders: 0 none, 1 low, 2 medium, 3 high. */
 export const EVENT_PRIORITIES = [0, 1, 2, 3] as const;
