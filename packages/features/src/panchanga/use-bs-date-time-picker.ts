@@ -119,6 +119,8 @@ export type BsDateTimePickerInput = {
   onDraftDate?: (year: number, month: number, day: number) => void;
   /** Push each draft time change up at once. */
   onDraftClock?: (clock: string) => void;
+  /** Mark public-holiday days in the grid (one extra month fetch, cached). */
+  holidays?: boolean;
 };
 
 export function useBsDateTimePicker({
@@ -140,6 +142,7 @@ export function useBsDateTimePicker({
   onCommitDateTime,
   onDraftDate,
   onDraftClock,
+  holidays = false,
 }: BsDateTimePickerInput) {
   const { t, lang, digits } = useLocale();
   const isAd = gridEra === "ad";
@@ -170,6 +173,19 @@ export function useBsDateTimePicker({
     staleTime: 1000 * 60 * 30,
   });
   const apiCalendar = monthQ.data?.calendar;
+
+  // The shown month's public holidays (BS day → true), for the grids that colour them.
+  const holidayQ = useQuery({
+    queryKey: ["picker-holidays", signedGridYear, dMonth, draftBrowseEra, resolvedLocation],
+    queryFn: () => fetchMonthCalendarRaw(dYear, dMonth, resolvedLocation, { full: false, era: isAd ? "ad" : draftBrowseEra }),
+    enabled: holidays && !isAd,
+    staleTime: 1000 * 60 * 60,
+  });
+  const holidayDays = useMemo(() => {
+    const set = new Set<number>();
+    for (const d of holidayQ.data?.calendar ?? []) if (!d.outsideMonth && d.is_public_holiday) set.add(d.day_bs ?? d.day);
+    return set;
+  }, [holidayQ.data]);
 
   const bsGrid = useMemo(() => {
     if (isAd) return null;
@@ -280,6 +296,7 @@ export function useBsDateTimePicker({
             day: d,
             label: digits(d),
             weekend: i % 7 === 0 || i % 7 === 6,
+            holiday: holidayDays.has(d),
             selected: d === dDay,
             today: today.year === dYear && today.month === dMonth && today.day === d,
             pick: () => setDraftDate(dYear, dMonth, d),

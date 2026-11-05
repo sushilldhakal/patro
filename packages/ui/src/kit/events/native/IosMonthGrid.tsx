@@ -10,11 +10,11 @@ import { iconChevronLeft, iconChevronRight } from "../icons";
 /**
  * A BS month as Apple Calendar's inline date picker draws it under a date row: "कात्तिक २०८३ ›"
  * with ‹ › on the right, the weekday letters, then borderless days — the chosen one in a filled
- * circle, today in the accent colour.
+ * circle, public holidays tinted red, today ringed in the accent colour.
  */
 export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMonthGridProps) {
-  const { digits } = useLocale();
-  const picker = useBsDateTimePicker({ year, month, day, yearOptions, onSelectDate: onSelect, showTime: false, onDraftDate: onSelect });
+  const { t, digits } = useLocale();
+  const picker = useBsDateTimePicker({ year, month, day, yearOptions, onSelectDate: onSelect, showTime: false, onDraftDate: onSelect, holidays: true });
   const monthName = picker.monthOptions.find((o) => o.value === picker.draft.month)?.label ?? "";
   const rows = Math.ceil(picker.cells.length / 7);
 
@@ -80,11 +80,24 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
                   accessibilityState={{ selected: c.selected }}
                   className="h-11 flex-1 items-center justify-center"
                 >
-                  <View className={cn("h-10 w-10 items-center justify-center rounded-full", c.selected && "bg-destructive")}>
+                  <View
+                    className={cn(
+                      "h-10 w-10 items-center justify-center rounded-full",
+                      c.selected ? "bg-secondary" : c.holiday ? "bg-destructive/15" : c.today && "border border-secondary",
+                    )}
+                  >
                     <Text
                       className={cn(
                         "font-num text-title",
-                        c.selected ? "font-semibold text-white" : c.today ? "font-semibold text-destructive" : "text-foreground",
+                        c.selected
+                          ? "font-semibold text-secondary-foreground"
+                          : c.holiday
+                            ? "font-semibold text-destructive"
+                            : c.today
+                              ? "font-semibold text-secondary"
+                              : c.weekend
+                                ? "text-destructive/80"
+                                : "text-foreground",
                       )}
                     >
                       {c.label}
@@ -96,6 +109,10 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
           </View>
         ))
       )}
+      <View className="flex-row items-center gap-2 px-1 pt-1">
+        <View className="h-2.5 w-2.5 rounded-full bg-destructive/30" />
+        <Text className="text-caption text-muted-foreground">{t("sections.public_holiday")}</Text>
+      </View>
     </View>
   );
 }

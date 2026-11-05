@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronsUpDown, Clock, Flag, Globe, Lightbulb, Plus, Repeat, Sparkles, TriangleAlert, X } from "lucide-react";
 import {
@@ -84,7 +84,7 @@ export function CreateEventCards() {
       <Dialog open={kind != null} onOpenChange={(next) => !next && setKind(null)}>
         <DialogContent
           aria-describedby={undefined}
-          className="max-h-[90vh] max-w-[420px] gap-0 overflow-y-auto rounded-3xl p-0 [&>button.absolute]:hidden"
+          className="w-[calc(100%-2rem)] max-w-[780px] gap-0 overflow-hidden rounded-3xl p-0 [&>button.absolute]:hidden"
         >
           <DialogTitle className="sr-only">{t("events.create")}</DialogTitle>
           {kind != null ? <EventFormWeb initialKind={kind} guest={false} onClose={() => setKind(null)} onSignIn={() => setKind(null)} /> : null}
@@ -105,6 +105,7 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
 
   const [panel, setPanel] = useState<Panel>(null);
+  const [tipsOpen, setTipsOpen] = useState(false);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
@@ -305,290 +306,301 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
     </>
   );
 
+  const toggleEnd = (on: boolean) => {
+    setEndOn(on);
+    if (!on) return setPanel(null);
+    // An end an hour on, as Calendar starts one.
+    if (endDate < startDate || (endDate === startDate && toMinutes(endTime) <= toMinutes(startTime))) {
+      const next = addMinutes(startTime, 60);
+      setEndDate(next.dayShift ? shiftDate(startDate, next.dayShift) : startDate);
+      setEndTime(next.time);
+    }
+    setPanel("endDate");
+  };
+  const pill = (active: boolean) =>
+    cn("rounded-full px-3 py-1.5 text-sm font-medium tabular-nums transition-colors", active ? "bg-secondary/15 text-secondary ring-1 ring-secondary" : "bg-background hover:bg-background/60");
+  const pickLabel = picked ? (lang === "en" ? picked.nameEn : picked.nameNe) : t("events.pick_none");
+
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <div className="flex items-center justify-between">
-        <button type="button" onClick={onClose} aria-label={t("events.cancel")} className="inline-flex size-10 items-center justify-center rounded-full bg-muted hover:opacity-80">
-          <X className="size-5 text-muted-foreground" />
-        </button>
-        <span className="text-base font-semibold">{t(`events.new_${kind}`)}</span>
-        <button
-          type="button"
-          onClick={() => void save()}
-          disabled={saving}
-          aria-label={t("events.save")}
-          className={cn("inline-flex size-10 items-center justify-center rounded-full hover:opacity-90", title.trim() ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground")}
-        >
-          <Check className="size-5" />
-        </button>
-      </div>
-
-      {/* The three types, always in view with the current one lit; each switch re-seeds the defaults. */}
-      <div role="tablist" aria-label={t("events.create")} className="relative grid grid-cols-3 rounded-full bg-muted p-1 dark:bg-foreground/10">
-        <span
-          aria-hidden
-          className="absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/3)] rounded-full bg-card shadow-sm transition-transform duration-200 ease-out"
-          style={{ transform: `translateX(${NEW_EVENT_KINDS.indexOf(kind) * 100}%)` }}
-        />
-        {NEW_EVENT_KINDS.map((k) => (
-          <button
-            key={k}
-            type="button"
-            role="tab"
-            aria-selected={kind === k}
-            onClick={() => changeKind(k)}
-            className={cn("relative z-10 rounded-full py-2 text-sm font-medium transition-colors", kind === k ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            {t(`events.kind_${k}`)}
-          </button>
-        ))}
-      </div>
-
-      {error ? <p className="text-center text-xs text-destructive">{error}</p> : null}
-
-      {/* Optional: one dropdown of the day's times, शुभ in green and अशुभ in red; picking fills the title and times. */}
-      <Group>
-        <button type="button" onClick={() => toggle("pick")} aria-expanded={panel === "pick"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
-          <span className="inline-flex items-center gap-3">
-            <Sparkles className="size-5 text-muted-foreground" />
-            {t("events.pick_shubh_ashubh")}
-          </span>
-          <span className="inline-flex min-w-0 items-center gap-2 text-muted-foreground">
-            {picked ? (
-              <>
-                <span className={cn("size-2 shrink-0 rounded-full", picked.source === "ashubh" ? "bg-destructive" : "bg-success")} />
-                <span className={cn("truncate", picked.source === "ashubh" ? "text-destructive" : "text-success")}>{lang === "en" ? picked.nameEn : picked.nameNe}</span>
-              </>
-            ) : (
-              t("events.pick_none")
-            )}
-            <ChevronsUpDown className="size-4 shrink-0" />
-          </span>
-        </button>
-        {panel === "pick" ? (
-          <div className="flex flex-col pb-2">
-            <p className="pb-1 text-xs text-muted-foreground">{t("events.pick_for_day", { date: labels.day(startDate) })}</p>
-            <Option label={t("events.pick_none")} active={picked == null} onClick={() => { setPickedId(null); setPanel(null); }} />
-            {dayPicks.loading ? (
-              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_loading")}</p>
-            ) : dayPicks.failed ? (
-              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_failed")}</p>
-            ) : pickList.length === 0 ? (
-              <p className="py-2 text-xs text-muted-foreground">{t("events.pick_empty")}</p>
-            ) : (
-              pickList.map((p) => (
-                <Option
-                  key={p.id}
-                  label={lang === "en" ? p.nameEn : p.nameNe}
-                  detail={`${labels.clock(p.startTime)}–${labels.clock(p.endTime)}${p.startDate !== startDate ? ` · ${labels.day(p.startDate)}` : ""}`}
-                  active={pickedId === p.id}
-                  tone={p.source === "ashubh" ? "bad" : "good"}
-                  onClick={() => pickDayTime(p)}
-                />
-              ))
-            )}
-          </div>
-        ) : null}
-      </Group>
-
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder={t("events.title")}
-        aria-label={t("events.title")}
-        className="w-full border-b-2 border-secondary bg-transparent px-1 pb-2 pt-1 text-2xl font-semibold outline-none placeholder:text-muted-foreground/70"
-      />
-      {kind !== "task" ? (
-        <Group>
-          <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} aria-label={t("events.location")} className={input} />
-        </Group>
-      ) : null}
-
-      {/* Apple's rows: the date opens the month; time and end have their switches. No end = a reminder. */}
-      <Group>
-        <IconRow icon={CalendarDays} label={t("events.date")} value={labels.day(startDate)} open={panel === "startDate"} onClick={() => toggle("startDate")} />
-        {panel === "startDate" ? <><Divider />{startGrid}</> : null}
-        <Divider />
-        <IconRow
-          icon={Clock}
-          label={t("events.time")}
-          value={timeOn ? labels.clock(startTime) : t("events.all_day")}
-          open={panel === "startTime"}
-          onClick={timeOn ? () => toggle("startTime") : undefined}
-          right={
-            <Toggle
-              label={t("events.time")}
-              on={timeOn}
-              onChange={(on) => {
-                setTimeOn(on);
-                setPanel(on ? "startTime" : null);
-              }}
-            />
-          }
-        />
-        {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
-        <Divider />
-        <IconRow
-          icon={Flag}
-          label={t("events.ends")}
-          value={endOn ? `${labels.day(endDate)}${timeOn ? ` · ${labels.clock(endTime)}` : ""}` : null}
-          open={panel === "endDate"}
-          onClick={endOn ? () => toggle("endDate") : undefined}
-          right={
-            <Toggle
-              label={t("events.ends")}
-              on={endOn}
-              onChange={(on) => {
-                setEndOn(on);
-                if (on) {
-                  // An end an hour on, as Calendar starts one.
-                  if (endDate < startDate || (endDate === startDate && toMinutes(endTime) <= toMinutes(startTime))) {
-                    const next = addMinutes(startTime, 60);
-                    setEndDate(next.dayShift ? shiftDate(startDate, next.dayShift) : startDate);
-                    setEndTime(next.time);
-                  }
-                  setPanel("endDate");
-                } else setPanel(null);
-              }}
-            />
-          }
-        />
-        {endOn && panel === "endDate" ? (
-          <>
-            <Divider />
-            <IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} />
-            {timeOn ? <><Divider /><TimeWheel value={endTime} onChange={setEndTime} /></> : null}
-          </>
-        ) : null}
-      </Group>
-
-      {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
-      {clash ? (
-        <div role="alert" className="flex flex-col gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold text-destructive">
-            <TriangleAlert className="size-4" />
-            {t("events.bad_time_alert")}
-          </p>
-          <p className="text-xs text-destructive">
-            {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
-          </p>
-          {better ? (
+    <div className="flex max-h-[min(88vh,760px)] flex-col">
+      {/* Header: the three types as one segmented control, and the close button. */}
+      <div className="flex items-center gap-3 px-5 pb-3 pt-4">
+        <div role="tablist" aria-label={t("events.create")} className="relative grid flex-1 grid-cols-3 rounded-full bg-muted p-1 dark:bg-foreground/10 sm:max-w-sm">
+          <span
+            aria-hidden
+            className="absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/3)] rounded-full bg-card shadow-sm transition-transform duration-200 ease-out"
+            style={{ transform: `translateX(${NEW_EVENT_KINDS.indexOf(kind) * 100}%)` }}
+          />
+          {NEW_EVENT_KINDS.map((k) => (
             <button
+              key={k}
               type="button"
-              onClick={() => {
-                setStartDate(better.startDate);
-                setStartTime(better.startTime);
-                setEndDate(better.endDate);
-                setEndTime(better.endTime);
-              }}
-              className="self-start rounded-full bg-success px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+              role="tab"
+              aria-selected={kind === k}
+              onClick={() => changeKind(k)}
+              className={cn("relative z-10 rounded-full py-1.5 text-sm font-medium transition-colors", kind === k ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
             >
-              {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
+              {t(`events.kind_${k}`)}
             </button>
-          ) : null}
+          ))}
         </div>
-      ) : null}
-
-      <Group>{repeatRow}</Group>
-
-      <Group>
-        <SelectRow
-          label={t("events.alert")}
-          value={alert1 == null ? "" : String(alert1)}
-          onChange={(v) => setAlert1(v === "" ? null : Number(v))}
-          options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
-        />
-        {alert1 != null ? (
-          <>
-            <Divider />
-            <SelectRow
-              label={t("events.second_alert")}
-              value={alert2 == null ? "" : String(alert2)}
-              onChange={(v) => setAlert2(v === "" ? null : Number(v))}
-              options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
-            />
-          </>
-        ) : null}
-        <Divider />
-        <button type="button" onClick={() => toggle("priority")} aria-expanded={panel === "priority"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
-          <span className="inline-flex items-center gap-3">
-            <span className="w-5 text-center font-bold text-muted-foreground">!!!</span>
-            {t("events.priority")}
-          </span>
-          <span className="inline-flex items-center gap-1 text-muted-foreground">
-            {t(`events.priority_${priority}`)}
-            <ChevronsUpDown className="size-4" />
-          </span>
+        <button type="button" onClick={onClose} aria-label={t("events.cancel")} className="ml-auto inline-flex size-9 items-center justify-center rounded-full bg-muted hover:opacity-80">
+          <X className="size-4 text-muted-foreground" />
         </button>
-        {panel === "priority"
-          ? EVENT_PRIORITIES.map((p) => (
-              <Option key={p} label={t(`events.priority_${p}`)} active={priority === p} onClick={() => { setPriority(p); setPanel(null); }} />
-            ))
-          : null}
-      </Group>
+      </div>
 
-      {kind === "task" ? null : guest ? (
-        <Group>
-          <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left hover:opacity-80">
-            <span className="text-sm">{t("events.invitees")}</span>
-            <span className="text-sm text-secondary">{t("events.invitee_guest")}</span>
-          </button>
-          <p className="pb-3 text-xs text-muted-foreground">{t("events.guest_note_web")}</p>
-        </Group>
-      ) : (
-        <Group>
-          <p className="pt-3 text-sm">{t("events.invitees")}</p>
-          {invitees.length > 0 ? (
-            <div className="flex flex-wrap gap-2 pt-2">
-              {invitees.map((email) => (
-                <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
-                  {email}
-                  <X className="size-3 text-muted-foreground" />
+      {/* Body: two columns from tablet width up (when, then the details), one scroll. */}
+      <div className="grid flex-1 content-start gap-4 overflow-y-auto px-5 pb-4 md:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-3">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder={t("events.title")}
+            aria-label={t("events.title")}
+            className="w-full border-b-2 border-secondary bg-transparent px-1 pb-2 pt-1 text-2xl font-semibold outline-none placeholder:text-muted-foreground/70"
+          />
+
+          <Group>
+            <div className="flex min-h-12 items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-3 text-sm">
+                <CalendarDays className="size-5 text-muted-foreground" />
+                {t("events.starts")}
+              </span>
+              <span className="flex items-center gap-2">
+                <button type="button" onClick={() => toggle("startDate")} aria-expanded={panel === "startDate"} className={pill(panel === "startDate")}>{labels.day(startDate)}</button>
+                {timeOn ? (
+                  <button type="button" onClick={() => toggle("startTime")} aria-expanded={panel === "startTime"} className={pill(panel === "startTime")}>{labels.clock(startTime)}</button>
+                ) : null}
+              </span>
+            </div>
+            {panel === "startDate" ? <><Divider />{startGrid}</> : null}
+            {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
+            {endOn ? (
+              <>
+                <Divider />
+                <div className="flex min-h-12 items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-3 text-sm">
+                    <Flag className="size-5 text-muted-foreground" />
+                    {t("events.ends")}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <button type="button" onClick={() => toggle("endDate")} aria-expanded={panel === "endDate"} className={pill(panel === "endDate")}>{labels.day(endDate)}</button>
+                    {timeOn ? (
+                      <button type="button" onClick={() => toggle("endTime")} aria-expanded={panel === "endTime"} className={pill(panel === "endTime")}>{labels.clock(endTime)}</button>
+                    ) : null}
+                  </span>
+                </div>
+                {panel === "endDate" ? <><Divider /><IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} /></> : null}
+                {timeOn && panel === "endTime" ? <><Divider /><TimeWheel value={endTime} onChange={setEndTime} /></> : null}
+              </>
+            ) : null}
+            <Divider />
+            <div className="flex flex-wrap items-center gap-2 py-3">
+              <Toggle label={t("events.all_day")} on={!timeOn} onChange={(on) => { setTimeOn(!on); setPanel(null); }} />
+              <span className="mr-3 text-sm">{t("events.all_day")}</span>
+              <Toggle label={t("events.ends")} on={endOn} onChange={toggleEnd} />
+              <span className="text-sm">{t("events.ends")}</span>
+            </div>
+          </Group>
+
+          {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
+          {clash ? (
+            <div role="alert" className="flex flex-col gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-destructive">
+                <TriangleAlert className="size-4" />
+                {t("events.bad_time_alert")}
+              </p>
+              <p className="text-xs text-destructive">
+                {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
+              </p>
+              {better ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStartDate(better.startDate);
+                    setStartTime(better.startTime);
+                    setEndDate(better.endDate);
+                    setEndTime(better.endTime);
+                  }}
+                  className="self-start rounded-full bg-success px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+                >
+                  {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
                 </button>
-              ))}
+              ) : null}
             </div>
           ) : null}
-          <div className="flex items-center gap-2">
-            <input
-              type="email"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addInvitee();
-                }
-              }}
-              placeholder={t("events.invitee_add")}
-              className={input}
-            />
-            <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
-              <Plus className="size-5" />
+
+          {/* One dropdown of the day's times: शुभ green, अशुभ red; picking fills the title and times. */}
+          <Group>
+            <button type="button" onClick={() => toggle("pick")} aria-expanded={panel === "pick"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+              <span className="inline-flex items-center gap-3">
+                <Sparkles className="size-5 text-muted-foreground" />
+                {t("events.pick_shubh_ashubh")}
+              </span>
+              <span className="inline-flex min-w-0 items-center gap-2 text-muted-foreground">
+                {picked ? <span className={cn("size-2 shrink-0 rounded-full", picked.source === "ashubh" ? "bg-destructive" : "bg-success")} /> : null}
+                <span className={cn("truncate", picked ? (picked.source === "ashubh" ? "text-destructive" : "text-success") : "")}>{pickLabel}</span>
+                <ChevronsUpDown className="size-4 shrink-0" />
+              </span>
             </button>
+            {panel === "pick" ? (
+              <div className="flex max-h-56 flex-col overflow-y-auto pb-2">
+                <p className="pb-1 text-xs text-muted-foreground">{t("events.pick_for_day", { date: labels.day(startDate) })}</p>
+                <Option label={t("events.pick_none")} active={picked == null} onClick={() => { setPickedId(null); setPanel(null); }} />
+                {dayPicks.loading ? (
+                  <p className="py-2 text-xs text-muted-foreground">{t("events.pick_loading")}</p>
+                ) : dayPicks.failed ? (
+                  <p className="py-2 text-xs text-muted-foreground">{t("events.pick_failed")}</p>
+                ) : pickList.length === 0 ? (
+                  <p className="py-2 text-xs text-muted-foreground">{t("events.pick_empty")}</p>
+                ) : (
+                  pickList.map((p) => (
+                    <Option
+                      key={p.id}
+                      label={lang === "en" ? p.nameEn : p.nameNe}
+                      detail={`${labels.clock(p.startTime)}–${labels.clock(p.endTime)}${p.startDate !== startDate ? ` · ${labels.day(p.startDate)}` : ""}`}
+                      active={pickedId === p.id}
+                      tone={p.source === "ashubh" ? "bad" : "good"}
+                      onClick={() => pickDayTime(p)}
+                    />
+                  ))
+                )}
+              </div>
+            ) : null}
+          </Group>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-3">
+          <Group>
+            <SelectRow
+              label={t("events.alert")}
+              value={alert1 == null ? "" : String(alert1)}
+              onChange={(v) => setAlert1(v === "" ? null : Number(v))}
+              options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
+            />
+            {alert1 != null ? (
+              <>
+                <Divider />
+                <SelectRow
+                  label={t("events.second_alert")}
+                  value={alert2 == null ? "" : String(alert2)}
+                  onChange={(v) => setAlert2(v === "" ? null : Number(v))}
+                  options={EVENT_ALERTS.map((a) => ({ value: a == null ? "" : String(a), label: labels.alert(a) }))}
+                />
+              </>
+            ) : null}
+            <Divider />
+            {repeatRow}
+            <Divider />
+            <button type="button" onClick={() => toggle("priority")} aria-expanded={panel === "priority"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+              <span className="inline-flex items-center gap-3">
+                <span className="w-5 text-center font-bold text-muted-foreground">!!!</span>
+                {t("events.priority")}
+              </span>
+              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                {t(`events.priority_${priority}`)}
+                <ChevronsUpDown className="size-4" />
+              </span>
+            </button>
+            {panel === "priority"
+              ? EVENT_PRIORITIES.map((p) => (
+                  <Option key={p} label={t(`events.priority_${p}`)} active={priority === p} onClick={() => { setPriority(p); setPanel(null); }} />
+                ))
+              : null}
+          </Group>
+
+          {kind !== "task" ? (
+            <Group>
+              <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} aria-label={t("events.location")} className={input} />
+              <Divider />
+              {guest ? (
+                <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+                  {t("events.invitees")}
+                  <span className="text-secondary">{t("events.invitee_guest")}</span>
+                </button>
+              ) : (
+                <>
+                  {invitees.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 pt-3">
+                      {invitees.map((email) => (
+                        <button key={email} type="button" onClick={() => setInvitees(invitees.filter((e) => e !== email))} className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 text-xs hover:opacity-80">
+                          {email}
+                          <X className="size-3 text-muted-foreground" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addInvitee();
+                        }
+                      }}
+                      placeholder={t("events.invitee_add")}
+                      aria-label={t("events.invitees")}
+                      className={input}
+                    />
+                    <button type="button" onClick={addInvitee} aria-label={t("events.invitee_add")} className="text-secondary hover:opacity-80">
+                      <Plus className="size-5" />
+                    </button>
+                  </div>
+                </>
+              )}
+            </Group>
+          ) : null}
+
+          <Group>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} aria-label={t("events.notes")} rows={2} className={cn(input, "resize-none")} />
+          </Group>
+
+          {/* The day's guidance, folded away until asked for. */}
+          <div className="rounded-3xl border border-secondary/30 bg-secondary/5 px-4">
+            <button type="button" onClick={() => setTipsOpen((o) => !o)} aria-expanded={tipsOpen} className="flex min-h-12 w-full items-center justify-between gap-2 text-sm font-semibold text-secondary">
+              <span className="inline-flex items-center gap-2">
+                <Lightbulb className="size-4" />
+                {t("events.tips")}
+              </span>
+              <ChevronsUpDown className="size-4" />
+            </button>
+            {tipsOpen ? (
+              <div className="flex flex-col gap-2 pb-4">
+                {day ? (
+                  <>
+                    <p className="text-xs">{lang === "en" ? day.summary_en : day.summary_ne}</p>
+                    <TipList title={t("events.tips_do")} items={(lang === "en" ? day.do_en : day.do_ne).slice(0, 3)} className="text-secondary" />
+                    <TipList title={t("events.tips_careful")} items={(lang === "en" ? day.careful_en : day.careful_ne).slice(0, 3)} className="text-warning" />
+                    <TipList title={t("events.tips_avoid")} items={(lang === "en" ? day.dont_en : day.dont_ne).slice(0, 2)} className="text-destructive" />
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground">{profiles.isSuccess && !profile ? t("events.tips_need_profile") : t("events.pick_loading")}</p>
+                )}
+              </div>
+            ) : null}
           </div>
-          <p className="pb-3 text-xs text-muted-foreground">{t("events.invitee_hint")}</p>
-        </Group>
-      )}
+        </div>
+      </div>
 
-      <Group>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("events.notes")} rows={3} className={cn(input, "resize-none")} />
-      </Group>
-
-      <div className="flex flex-col gap-2 rounded-3xl border border-secondary/30 bg-secondary/5 p-4">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold text-secondary">
-          <Lightbulb className="size-4" />
-          {t("events.tips")}
-        </p>
-        {day ? (
-          <>
-            <p className="text-xs">{lang === "en" ? day.summary_en : day.summary_ne}</p>
-            <TipList title={t("events.tips_do")} items={(lang === "en" ? day.do_en : day.do_ne).slice(0, 3)} className="text-secondary" />
-            <TipList title={t("events.tips_careful")} items={(lang === "en" ? day.careful_en : day.careful_ne).slice(0, 3)} className="text-warning" />
-            <TipList title={t("events.tips_avoid")} items={(lang === "en" ? day.dont_en : day.dont_ne).slice(0, 2)} className="text-destructive" />
-          </>
-        ) : profiles.isSuccess && !profile ? (
-          <p className="text-xs text-muted-foreground">{t("events.tips_need_profile")}</p>
-        ) : null}
+      {/* Footer: always in reach, however far the body scrolls. */}
+      <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-3">
+        <p role="status" className="min-w-0 truncate text-xs text-destructive">{error}</p>
+        <div className="flex shrink-0 items-center gap-2">
+          <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted">
+            {t("events.cancel")}
+          </button>
+          <button
+            type="button"
+            onClick={() => void save()}
+            disabled={saving}
+            className={cn("rounded-full px-6 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60", title.trim() ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground")}
+          >
+            {t("events.save")}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -615,36 +627,6 @@ function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange:
     >
       <span className={cn("absolute top-0.5 size-[27px] rounded-full bg-white shadow transition-all", on ? "left-[22px]" : "left-0.5")} />
     </button>
-  );
-}
-
-/** Apple Reminders' row: an icon, the label with its value under it in red ("Today", "1:00 pm"), and a switch. */
-function IconRow({
-  icon: Icon,
-  label,
-  value,
-  open,
-  onClick,
-  right,
-}: {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  value: string | null;
-  open: boolean;
-  onClick?: () => void;
-  right?: ReactNode;
-}) {
-  return (
-    <div className="flex min-h-14 items-center gap-3">
-      <button type="button" onClick={onClick} disabled={!onClick} aria-expanded={open} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 text-left enabled:hover:opacity-80">
-        <Icon className="size-5 shrink-0 text-muted-foreground" />
-        <span className="flex min-w-0 flex-col">
-          <span className="text-sm">{label}</span>
-          {value ? <span className="truncate text-xs text-destructive">{value}</span> : null}
-        </span>
-      </button>
-      {right}
-    </div>
   );
 }
 

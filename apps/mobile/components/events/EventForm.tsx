@@ -74,6 +74,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   const labels = useEventLabels(today);
 
   const [panel, setPanel] = useState<Panel>(null);
+  const [tipsOpen, setTipsOpen] = useState(false);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
@@ -324,6 +325,91 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
         </Text>
       ) : null}
 
+      <TitleField value={title} onChange={setTitle} placeholder={t("events.title")} />
+
+      {/* When: a date pill and a time pill for the start (and the end), the month or wheel opening under them. */}
+      <Group>
+        <View className="min-h-14 flex-row items-center justify-between gap-2">
+          <View className="flex-row items-center gap-3">
+            <Ionicons name="calendar-outline" size={20} color={colors.mutedForeground} />
+            <Text className="text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.starts")}</Text>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <Pill label={labels.day(startDate)} active={panel === "startDate"} onPress={() => toggle("startDate")} />
+            {timeOn ? <Pill label={labels.clock(startTime)} active={panel === "startTime"} onPress={() => toggle("startTime")} /> : null}
+          </View>
+        </View>
+        {panel === "startDate" ? <><Divider />{startGrid}</> : null}
+        {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
+        {endOn ? (
+          <>
+            <Divider />
+            <View className="min-h-14 flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="flag-outline" size={20} color={colors.mutedForeground} />
+                <Text className="text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.ends")}</Text>
+              </View>
+              <View className="flex-row items-center gap-2">
+                <Pill label={labels.day(endDate)} active={panel === "endDate"} onPress={() => toggle("endDate")} />
+                {timeOn ? <Pill label={labels.clock(endTime)} active={panel === "endTime"} onPress={() => toggle("endTime")} /> : null}
+              </View>
+            </View>
+            {panel === "endDate" ? <><Divider /><IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} /></> : null}
+            {timeOn && panel === "endTime" ? <><Divider /><TimeWheel value={endTime} onChange={setEndTime} /></> : null}
+          </>
+        ) : null}
+        <Divider />
+        <View className="flex-row items-center gap-3 py-3">
+          <Switch value={!timeOn} onValueChange={(on) => { setTimeOn(!on); setPanel(null); }} />
+          <Text className="mr-3 text-body text-foreground" style={nepaliTextStyle(15)}>{t("events.all_day")}</Text>
+          <Switch
+            value={endOn}
+            onValueChange={(on) => {
+              setEndOn(on);
+              if (!on) return setPanel(null);
+              // An end an hour on, as Calendar starts one.
+              if (endDate < startDate || (endDate === startDate && toMinutes(endTime) <= toMinutes(startTime))) {
+                const next = addMinutes(startTime, 60);
+                setEndDate(next.dayShift ? shiftDate(startDate, next.dayShift) : startDate);
+                setEndTime(next.time);
+              }
+              setPanel("endDate");
+            }}
+          />
+          <Text className="text-body text-foreground" style={nepaliTextStyle(15)}>{t("events.ends")}</Text>
+        </View>
+      </Group>
+
+      {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
+      {clash ? (
+        <View accessibilityRole="alert" className="gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="warning-outline" size={18} color={colors.destructive} />
+            <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(15)}>{t("events.bad_time_alert")}</Text>
+          </View>
+          <Text className="text-caption text-destructive" style={nepaliTextStyle(13)}>
+            {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
+          </Text>
+          {better ? (
+            <Pressable
+              onPress={() => {
+                haptics.tick();
+                setStartDate(better.startDate);
+                setStartTime(better.startTime);
+                setEndDate(better.endDate);
+                setEndTime(better.endTime);
+              }}
+              accessibilityRole="button"
+              className="self-start rounded-full bg-success px-3 py-1.5 active:opacity-70"
+            >
+              <Text className="text-caption font-semibold text-white" style={nepaliTextStyle(13)}>
+                {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
+
       {/* Optional: one dropdown of the day's times, शुभ in green and अशुभ in red; picking fills the title and times. */}
       <Group>
         <Pressable
@@ -378,95 +464,10 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
         ) : null}
       </Group>
 
-      <TitleField value={title} onChange={setTitle} placeholder={t("events.title")} />
       {kind !== "task" ? (
         <Group>
           <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
         </Group>
-      ) : null}
-
-      {/* Apple's rows: the date opens the month; time and end have their switches. No end = a reminder. */}
-      <Group>
-        <IconRow icon="calendar-outline" label={t("events.date")} value={labels.day(startDate)} onPress={() => toggle("startDate")} />
-        {panel === "startDate" ? <><Divider />{startGrid}</> : null}
-        <Divider />
-        <IconRow
-          icon="time-outline"
-          label={t("events.time")}
-          value={timeOn ? labels.clock(startTime) : t("events.all_day")}
-          onPress={timeOn ? () => toggle("startTime") : undefined}
-          right={
-            <Switch
-              value={timeOn}
-              onValueChange={(on) => {
-                setTimeOn(on);
-                setPanel(on ? "startTime" : null);
-              }}
-            />
-          }
-        />
-        {timeOn && panel === "startTime" ? <><Divider />{startWheel}</> : null}
-        <Divider />
-        <IconRow
-          icon="flag-outline"
-          label={t("events.ends")}
-          value={endOn ? `${labels.day(endDate)}${timeOn ? ` · ${labels.clock(endTime)}` : ""}` : null}
-          onPress={endOn ? () => toggle("endDate") : undefined}
-          right={
-            <Switch
-              value={endOn}
-              onValueChange={(on) => {
-                setEndOn(on);
-                if (on) {
-                  // An end an hour on, as Calendar starts one.
-                  if (endDate < startDate || (endDate === startDate && toMinutes(endTime) <= toMinutes(startTime))) {
-                    const next = addMinutes(startTime, 60);
-                    setEndDate(next.dayShift ? shiftDate(startDate, next.dayShift) : startDate);
-                    setEndTime(next.time);
-                  }
-                  setPanel("endDate");
-                } else setPanel(null);
-              }}
-            />
-          }
-        />
-        {endOn && panel === "endDate" ? (
-          <>
-            <Divider />
-            <IosMonthGrid year={bsEnd.year} month={bsEnd.month} day={bsEnd.day} yearOptions={years} onSelect={(y, m, d) => setEndDate(bsIso(y, m, d))} />
-            {timeOn ? <><Divider /><TimeWheel value={endTime} onChange={setEndTime} /></> : null}
-          </>
-        ) : null}
-      </Group>
-
-      {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
-      {clash ? (
-        <View accessibilityRole="alert" className="gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
-          <View className="flex-row items-center gap-2">
-            <Ionicons name="warning-outline" size={18} color={colors.destructive} />
-            <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(15)}>{t("events.bad_time_alert")}</Text>
-          </View>
-          <Text className="text-caption text-destructive" style={nepaliTextStyle(13)}>
-            {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
-          </Text>
-          {better ? (
-            <Pressable
-              onPress={() => {
-                haptics.tick();
-                setStartDate(better.startDate);
-                setStartTime(better.startTime);
-                setEndDate(better.endDate);
-                setEndTime(better.endTime);
-              }}
-              accessibilityRole="button"
-              className="self-start rounded-full bg-success px-3 py-1.5 active:opacity-70"
-            >
-              <Text className="text-caption font-semibold text-white" style={nepaliTextStyle(13)}>
-                {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
-              </Text>
-            </Pressable>
-          ) : null}
-        </View>
       ) : null}
 
       <Group>
@@ -559,11 +560,24 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
       </Group>
 
       {/* Tips for the chosen day: the profile's guidance for the day. */}
-      <View className="gap-2 rounded-3xl border border-secondary/30 bg-secondary/5 p-4">
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="bulb-outline" size={18} color={colors.secondary} />
-          <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(15)}>{t("events.tips")}</Text>
-        </View>
+      <View className="rounded-3xl border border-secondary/30 bg-secondary/5 px-4">
+        <Pressable
+          onPress={() => {
+            haptics.tick();
+            setTipsOpen((o) => !o);
+          }}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: tipsOpen }}
+          className="min-h-12 flex-row items-center justify-between active:opacity-70"
+        >
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="bulb-outline" size={18} color={colors.secondary} />
+            <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(15)}>{t("events.tips")}</Text>
+          </View>
+          <Ionicons name={tipsOpen ? "chevron-up" : "chevron-down"} size={16} color={colors.secondary} />
+        </Pressable>
+        {tipsOpen ? (
+        <View className="gap-2 pb-4">
         {day ? (
           <>
             <Text className="text-caption text-foreground" style={nepaliTextStyle(13)}>{lang === "en" ? day.summary_en : day.summary_ne}</Text>
@@ -575,6 +589,8 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
           <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>{t("events.tips_need_profile")}</Text>
         ) : guidance.isLoading ? (
           <ActivityIndicator color={colors.secondary} />
+        ) : null}
+        </View>
         ) : null}
       </View>
     </View>
@@ -625,6 +641,23 @@ function TitleField({ value, onChange, placeholder }: { value: string; onChange:
       className="border-b-2 border-secondary px-1 pb-2 pt-1 text-foreground"
       style={nepaliTextStyle(26)}
     />
+  );
+}
+
+/** A date or time shown as a tappable pill; lit while its picker is open. */
+function Pill({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={() => {
+        haptics.tick();
+        onPress();
+      }}
+      accessibilityRole="button"
+      accessibilityState={{ expanded: active }}
+      className={cn("rounded-full px-3 py-2 active:opacity-70", active ? "border border-secondary bg-secondary/15" : "border border-transparent bg-background")}
+    >
+      <Text className={cn("font-num text-body font-medium", active ? "text-secondary" : "text-foreground")} style={nepaliTextStyle(15)}>{label}</Text>
+    </Pressable>
   );
 }
 

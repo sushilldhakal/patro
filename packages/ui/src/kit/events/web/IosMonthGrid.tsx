@@ -11,8 +11,8 @@ import { iconChevronLeft, iconChevronRight } from "../icons";
  * circle, today in the accent colour. A click picks at once (no Done).
  */
 export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMonthGridProps) {
-  const { digits } = useLocale();
-  const picker = useBsDateTimePicker({ year, month, day, yearOptions, onSelectDate: onSelect, showTime: false, onDraftDate: onSelect });
+  const { t, digits } = useLocale();
+  const picker = useBsDateTimePicker({ year, month, day, yearOptions, onSelectDate: onSelect, showTime: false, onDraftDate: onSelect, holidays: true });
   const monthName = picker.monthOptions.find((o) => o.value === picker.draft.month)?.label ?? "";
   const arrow = "inline-flex size-8 items-center justify-center rounded-full hover:bg-background disabled:opacity-30";
 
@@ -51,7 +51,15 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
                 <span
                   className={cn(
                     "flex size-9 items-center justify-center rounded-full text-base tabular-nums",
-                    c.selected ? "bg-destructive font-semibold text-white" : c.today ? "font-semibold text-destructive hover:bg-background" : "hover:bg-background",
+                    c.selected
+                      ? "bg-secondary font-semibold text-secondary-foreground"
+                      : c.holiday
+                        ? "bg-destructive/15 font-semibold text-destructive hover:bg-destructive/25"
+                        : c.today
+                          ? "font-semibold text-secondary ring-1 ring-secondary hover:bg-background"
+                          : c.weekend
+                            ? "text-destructive/80 hover:bg-background"
+                            : "hover:bg-background",
                   )}
                 >
                   {c.label}
@@ -61,6 +69,10 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
           )}
         </div>
       )}
+      <p className="flex items-center gap-2 px-1 pt-1 text-xs text-muted-foreground">
+        <span className="size-2.5 rounded-full bg-destructive/30" />
+        {t("sections.public_holiday")}
+      </p>
     </div>
   );
 }
