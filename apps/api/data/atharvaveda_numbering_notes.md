@@ -1,17 +1,33 @@
 # Atharvaveda numbering notes
 
-Compared `documents_source/atharvaveda.json` with the Ved Portal crawl
-`vedcom_source/atharvaveda.jsonl` (5 November 2026). Verse labels were not
-renumbered, and no verse was added or deleted.
+The Ved Portal crawl (`vedcom_source/atharvaveda.jsonl`) is the verse list.
+`scripts/align_atharvaveda_to_vedcom.py` rewrote `documents_source/atharvaveda.json`
+so every mantra is the crawl's, in the crawl's order, with the crawl's label.
 
-The safe merge is already in the JSON: **5,609** verses whose folded text agrees
-at 80% or above took the site's accented samhita, devata, rishi, chhanda, svara,
-padapatha, and the first Hindi commentary (Pandit Kshemakarandas Trivedi).
-**5,581** of those have a Hindi bhavartha. The other 28 have no Hindi block on
-the page, so `meaning_hi` stays null: 4.40.2–7, 5.9.1–6, 5.10.2–6, 5.25.12–13,
-5.29.8, 6.17.2–4, 6.38.2–4, 6.58.3, 15.5.4.
+The book is now **5,928** verses, the same count as the crawl. **5,609** were
+already the same mantra and were left in place, including the Nepali on
+`1.1.1`–`1.23.2`. **169** same-label lines whose text did not agree were replaced
+with the crawl's mantra. **150** crawl mantras were added (10 ordinary labels,
+plus 67 and 73 paryaya mantras in 8.10 and 9.6). **301** of our old lines are
+gone, and suktas 13.5–13.9 are gone with them: the crawl's kanda 13 ends at 13.4.
 
-Left untouched, on purpose:
+Paryaya suktas keep the crawl's four-part label (`8.10.1.1`). A clip stays only
+where that place in the sukta is still the recorded mantra. Where the numbering
+shifted, the sukta's audio cap stops at the last mantra that is still the one
+that was recorded. `3.24.3` and `15.5.6`–`9` and `15.5.11`–`16` have no clip:
+the recording there was a different or shorter line, and a later mantra in the
+same sukta still has its own.
+
+The sections below are the comparison that decided this (5 November 2026).
+They describe the old book. The recommendations in them are superseded by the
+paragraphs above.
+
+**5,581** of the verses that already matched have a Hindi bhavartha. The other
+28 of those have no Hindi block on the page, so `meaning_hi` stays null:
+4.40.2–7, 5.9.1–6, 5.10.2–6, 5.25.12–13, 5.29.8, 6.17.2–4, 6.38.2–4, 6.58.3,
+15.5.4. Replaced and added mantras take the crawl's Hindi where the page has one.
+
+What the old book had, before it was aligned:
 
 | Group | Count | What it is |
 | --- | ---: | --- |
@@ -382,15 +398,17 @@ eight are already present under a neighbouring label.
 Recommendation: do not add 2.6.5 or 6.3.3 until you say so. Adding either one
 inserts a verse and shifts the audio names after it.
 
-## 5. What I would not do until you decide
+## 5. Settled by following the crawl
 
-1. Split a joined verse (2.17.1, 2.36.7, 6.56.1, 8.7.4, 11.5.25, 11.7.2, 19.9.8, 8.10.2, and the other joined paryaya lines).
-2. Swap 19.36.1 with 19.36.2.
-3. Replace 7.11.1 with the site's stana-yitnu mantra, or replace 20.98.1–2 with the site's 20.98.
-4. Add 2.6.5 or 6.3.3.
-5. Delete the repeated copies (4.12.8–14, 11.3.57–164, 16.8.34–105, 20.93.9–29, 20.98.3) or the English credit on 20.93.9.
-6. Renumber 8.10 or 9.6 onto paryaya labels, or add 9.6 paryayas 2–6.
-7. Accept the heading-prefixed verses in 10.5 and 12.5, or the refrain-extended 13.4.3–7, before you have looked at them.
+These are done. Each sukta is the crawl's mantra list.
+
+1. Joined verses (2.17.1, 2.36.7, 6.56.1, 8.7.4, 11.5.25, 11.7.2, 19.9.8, 8.10.2, and the other joined paryaya lines) are separate mantras, numbered as the crawl numbers them.
+2. 19.36.1 and 19.36.2 are in the crawl's order.
+3. 7.11.1 is the crawl's `यस्ते पृथु स्तनयित्नुः`. 20.98.1–2 are the crawl's 20.98, and 20.98.3 is gone.
+4. 2.6.5 and 6.3.3 are in the book.
+5. The repeated copies are gone (4.12.8–14, 11.3.57–164, 16.8.34–105, 20.93.9–29), including the English credit on the old 20.93.9.
+6. 8.10 and 9.6 use the crawl's paryaya labels. 9.6 paryayas 2–6 are in the book.
+7. 10.5 and 12.5 no longer carry the section heading inside the mantra. 13.4.3–7 are the crawl's lines, without our extra refrain. 13.4.14 is the crawl's last mantra of that sukta, and 13.5–13.9 are removed.
 
 Details were copied as the site labels them. On some later suktas the site's own
 fields look exchanged: 14.1.1 has devata `अनुष्टुप्`, rishi `सोम`, chhanda

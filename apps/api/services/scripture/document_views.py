@@ -88,9 +88,13 @@ def _veda_source_parts(slug: str, shloka: dict[str, Any]) -> list[dict[str, Any]
         }
     ]
     label = str(shloka.get("verse_label") or "")
+    bits = label.split(".") if label else []
     if slug in ("rigveda", "atharvaveda") and shloka.get("sukta_number") is not None:
         parts.append({"label_ne": "सूक्त", "label_en": "Sukta", "value": shloka["sukta_number"]})
-    mantra = label.rsplit(".", 1)[-1] if label else str(shloka["verse_number"])
+    # Atharvaveda 8.10 and 9.6 are numbered kanda.sukta.paryaya.mantra on the Ved Portal.
+    if slug == "atharvaveda" and len(bits) == 4:
+        parts.append({"label_ne": "पर्याय", "label_en": "Paryaya", "value": bits[2]})
+    mantra = bits[-1] if bits else str(shloka["verse_number"])
     parts.append({"label_ne": "मन्त्र", "label_en": "Mantra", "value": mantra})
     return parts
 
