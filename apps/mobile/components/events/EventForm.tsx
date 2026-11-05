@@ -1,6 +1,6 @@
 import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, Switch, TextInput, View } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { NEW_EVENT_KINDS, type NewEventKind } from "@vedic-patro/api-client";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -75,6 +75,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
 
   const [panel, setPanel] = useState<Panel>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
+  const queryClient = useQueryClient();
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
@@ -246,6 +247,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
     setError(null);
     try {
       await createEvent(input);
+      void queryClient.invalidateQueries({ queryKey: ["events"] });
       haptics.success?.();
       onSaved();
     } catch {

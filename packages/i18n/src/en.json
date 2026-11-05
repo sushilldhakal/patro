@@ -4756,6 +4756,8 @@
     "phone_none": "No calendars on this phone.",
     "new": "New",
     "create": "Create",
+    "on_this_day": "Your events",
+    "all_day_short": "All day",
     "upcoming": "Upcoming",
     "upcoming_none": "Nothing yet. Create one above.",
     "delete": "Delete",

@@ -2,6 +2,9 @@ import { useLocalSearchParams } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useQuery } from "@tanstack/react-query";
+import { useDayEvents } from "@vedic-patro/features/events";
+import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { PanchangaDetailCard } from "@/components/PanchangaDetailCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { apiKeys, fetchPanchanga } from "@/lib/api";
@@ -14,6 +17,8 @@ export default function DayDetailScreen() {
   const { ad } = useLocalSearchParams<{ ad: string }>();
   const { t, digits } = useLocale();
   const navBottom = useNavBottomPadding(true);
+  const { isAuthenticated } = useAuth();
+  const dayEvents = useDayEvents(ad, isAuthenticated);
 
   const query = useQuery({
     queryKey: apiKeys.panchanga(ad ?? "", "ad"),
@@ -34,7 +39,10 @@ export default function DayDetailScreen() {
         ) : query.isError ? (
           <ErrorState />
         ) : query.data ? (
-          <PanchangaDetailCard data={query.data} />
+          <>
+            <DayEvents events={dayEvents.events} />
+            <PanchangaDetailCard data={query.data} />
+          </>
         ) : null}
       </ScrollView>
     </View>

@@ -4,6 +4,9 @@ import { X, ChevronLeft, Sunrise, Sunset, Moon } from "lucide-react";
 import { useState } from "react";
 import { fetchPanchangaDay, panchangaKeys, type CalendarDay, type PanchangaDay } from "@/lib/api";
 import { adDisplayContext, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
+import { useDayEvents } from "@vedic-patro/features/events";
+import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import {
@@ -214,6 +217,8 @@ function DaySummary({
   onFullPanchanga: () => void;
 }) {
   const { lang } = useLocale();
+  const { isAuthenticated } = useAuth();
+  const dayEvents = useDayEvents(day.date_ad, isAuthenticated);
   const detail = getPanchangaDetail(p);
   const tithi = (detail?.tithi ?? p.tithi) as Parameters<typeof formatAngaTransition>[0];
   const nakshatra = (detail?.nakshatra ?? p.nakshatra) as Parameters<typeof formatAngaTransition>[0];
@@ -249,6 +254,7 @@ function DaySummary({
         ]}
       />
 
+      <DayEvents events={dayEvents.events} />
       <MuhurtaSection p={p} />
       <DinVisheshSection p={p} day={day} />
 

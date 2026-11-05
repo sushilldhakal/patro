@@ -7249,6 +7249,8 @@ export const strings = {
   "widgets.tomorrow": { ne: "भोलि", en: "Tomorrow" },
   "events.new": { ne: "नयाँ", en: "New" },
   "events.create": { ne: "बनाउनुहोस्", en: "Create" },
+  "events.on_this_day": { ne: "तपाईंका कार्यक्रम", en: "Your events" },
+  "events.all_day_short": { ne: "दिनभरि", en: "All day" },
   "events.upcoming": { ne: "आउँदा", en: "Upcoming" },
   "events.upcoming_none": { ne: "अहिले केही छैन। माथिबाट बनाउनुहोस्।", en: "Nothing yet. Create one above." },
   "events.delete": { ne: "हटाउनुहोस्", en: "Delete" },

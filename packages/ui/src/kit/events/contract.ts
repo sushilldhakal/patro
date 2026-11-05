@@ -1,3 +1,4 @@
+import type { CalendarEvent } from "@vedic-patro/api-client";
 import type { CalendarFeedState } from "@vedic-patro/features/events";
 
 /**
@@ -14,6 +15,11 @@ export type IosMonthGridProps = {
   yearOptions: number[];
   /** A tap picks at once (no Done). */
   onSelect: (year: number, month: number, day: number) => void;
+};
+
+export type DayEventsProps = {
+  /** One day's events, earliest first (from `useDayEvents`); nothing is drawn when empty. */
+  events: CalendarEvent[];
 };
 
 export type TimeWheelProps = {
