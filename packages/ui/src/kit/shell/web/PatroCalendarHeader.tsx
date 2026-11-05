@@ -188,17 +188,17 @@ function ViewDropdown({ segments, label }: { segments: CalendarHeaderSegment[]; 
   const [open, setOpen] = useState(false);
   const current = segments.find((s) => s.active) ?? segments[0]!;
   return (
-    <div className="relative">
+    <div className={cls.webViewMenu}>
       <button
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={label}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold hover:bg-muted"
+        className={cls.webViewMenuButton}
       >
         {current.icon ? <Icon node={current.icon} size={18} tone="secondary" /> : null}
-        {current.label}
+        <span className={cls.webViewMenuLabel}>{current.label}</span>
         <Icon node={shellIcons.chevronRight} size={14} tone="muted" className="rotate-90" />
       </button>
       {open ? (

@@ -88,6 +88,10 @@ export const calendarHeaderClasses = {
   nativeDenseSwap: "gap-1 px-2",
   nativeDenseSwapLabel: "text-xs",
   webSwap: "justify-self-end max-md:order-4 md:hidden",
+  /** The view dropdown (more than two views): beside the month arrows on a phone, in the row on wider screens. */
+  webViewMenu: "relative justify-self-end max-md:order-4",
+  webViewMenuButton: "inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold hover:bg-muted max-xs:h-8.5 max-xs:gap-1 max-xs:px-2.5",
+  webViewMenuLabel: "max-w-24 truncate max-xs:hidden",
   webLocation: "min-w-0 justify-self-end max-md:order-2 xs:relative",
   webMonthAnchor: "min-w-0 max-xs:flex-1 xs:relative",
   webChevronHide: "max-xs:hidden",
