@@ -68,7 +68,7 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
                 {card.svaraLine.map((piece, i) =>
                   piece.marks ? (
                     <span key={i} className="inline-flex flex-col items-center">
-                      <span className="text-[0.65rem] leading-none text-muted-foreground">{piece.marks}</span>
+                      <span className="text-diagram-xs leading-none text-muted-foreground">{piece.marks}</span>
                       <span>{piece.text}</span>
                     </span>
                   ) : (
