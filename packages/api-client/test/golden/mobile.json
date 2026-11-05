@@ -480,7 +480,7 @@
   "https://www.vedicpatro.com/api/meta/capabilities"
  ],
  "fetchDocuments": [
-  "https://www.vedicpatro.com/api/v1/documents?v=17"
+  "https://www.vedicpatro.com/api/v1/documents?v=18"
  ],
  "fetchDocumentDetail": [
   "https://www.vedicpatro.com/api/v1/documents/hanuman%20chalisa"
@@ -489,7 +489,7 @@
   "https://www.vedicpatro.com/api/v1/documents/bhagavad-gita/chapters/3"
  ],
  "fetchVedaDaily": [
-  "https://www.vedicpatro.com/api/v1/veda/daily?date=2026-10-10&v=17"
+  "https://www.vedicpatro.com/api/v1/veda/daily?date=2026-10-10&v=18"
  ],
  "apiSignup": [
   "POST https://www.vedicpatro.com/api/auth/signup {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"
