@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import difflib
 import json
+import re
 import unicodedata
 from pathlib import Path
 
@@ -50,16 +51,62 @@ def fold(text: str) -> str:
     return "".join(out).replace("ँ", "ं")
 
 
-def dayananda_hindi(commentaries: list[dict]) -> str | None:
-    for c in commentaries:
-        if c.get("language_id") == HINDI_BLOCK and (c.get("author") or "").strip() == DAYANANDA:
-            return c.get("bhavartha") or None
-    return None
+def author_name(raw: str | None) -> str:
+    """The site writes "हिन्दी - स्वामी दयानन्द सरस्वती" on some Vedas and the bare name on others."""
+    return re.sub(r"^\S+\s+[-:]\s+", "", (raw or "").strip())
+
+
+def hindi_meaning(commentaries: list[dict]) -> str | None:
+    """Swami Dayananda's Hindi bhavartha where he wrote one; else the first other Hindi one on the
+    page (he did not comment on every mantra — on much of the Rigveda it is Harisharan
+    Siddhantalankar's, on the Atharvaveda Kshemakarandas Trivedi's)."""
+    hindi = [c for c in commentaries if c.get("language_id") == HINDI_BLOCK and c.get("bhavartha")]
+    for c in hindi:
+        if author_name(c.get("author")) == DAYANANDA:
+            return c["bhavartha"]
+    return hindi[0]["bhavartha"] if hindi else None
+
+
+def similarity(a: str, b: str) -> float:
+    return difflib.SequenceMatcher(None, fold(a), fold(b), autojunk=False).ratio()
+
+
+def align_by_order(ours: list[dict], rows: list[dict], window: int = 4) -> dict[str, dict]:
+    """Samaveda: pair the site's mantras (in its order, ``seq``) with ours (reading order). Where
+    the text disagrees, look a few mantras ahead on either side for the pairing that agrees, so one
+    mantra more or less on one side does not shift everything after it."""
+    out: dict[str, dict] = {}
+    i = j = 0
+    while i < len(ours) and j < len(rows):
+        if similarity(ours[i]["sanskrit"], rows[j]["sanskrit"]) >= 0.8:
+            out[ours[i]["verse_label"]] = rows[j]
+            i += 1
+            j += 1
+            continue
+        best = None
+        for di in range(window + 1):
+            for dj in range(window + 1):
+                if (di or dj) and i + di < len(ours) and j + dj < len(rows):
+                    if similarity(ours[i + di]["sanskrit"], rows[j + dj]["sanskrit"]) >= 0.8:
+                        if best is None or di + dj < sum(best):
+                            best = (di, dj)
+        if best is None:
+            out[ours[i]["verse_label"]] = rows[j]  # paired anyway; the report lists it as low
+            i += 1
+            j += 1
+        else:
+            for dj in range(best[1]):
+                out[f"site#{rows[j + dj]['seq']}"] = rows[j + dj]  # on the site only
+            i += best[0]  # ours skipped: reported as not on the site
+            j += best[1]
+    for row in rows[j:]:
+        out[f"site#{row['seq']}"] = row
+    return out
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda"])
+    ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda", "samaveda"])
     ap.add_argument("--report", action="store_true", help="compare only; write nothing")
     ap.add_argument("--force-low", action="store_true", help="also merge mantras whose text agrees under 80%%")
     ap.add_argument("--accept", default="", help="comma-separated labels under 80%% checked by hand and to merge, e.g. 6.19.7,10.88.4")
@@ -67,17 +114,19 @@ def main() -> None:
     accepted = {a.strip() for a in args.accept.split(",") if a.strip()}
 
     src = ROOT / f"data/vedcom_source/{args.veda}.jsonl"
-    site: dict[str, dict] = {}
-    for line in src.read_text(encoding="utf-8").splitlines():
-        row = json.loads(line)
-        # Newer rows carry their label; the first Rigveda rows only mandala / sukta / mantra.
-        site[row.get("label") or f"{row['mandala']}.{row['sukta']}.{row['mantra']}"] = row
+    rows = [json.loads(line) for line in src.read_text(encoding="utf-8").splitlines()]
 
     path = ROOT / f"data/documents_source/{args.veda}.json"
     raw = path.read_text(encoding="utf-8")
     doc = json.loads(raw)
 
     ours = {s["verse_label"]: s for c in doc["chapters"] for s in c["shlokas"]}
+    if args.veda == "samaveda":
+        # The site's Samaveda pages are not numbered like our labels: line up by order.
+        site = align_by_order(list(ours.values()), sorted(rows, key=lambda r: r["seq"]))
+    else:
+        # Newer rows carry their label; the first Rigveda rows only mandala / sukta / mantra.
+        site = {row.get("label") or f"{row['mandala']}.{row['sukta']}.{row['mantra']}": row for row in rows}
     matched = low = 0
     lows: list[tuple[float, str]] = []
     for label, shloka in ours.items():
@@ -85,7 +134,7 @@ def main() -> None:
         if row is None:
             continue
         matched += 1
-        ratio = difflib.SequenceMatcher(None, fold(shloka["sanskrit"]), fold(row["sanskrit"]), autojunk=False).ratio()
+        ratio = similarity(shloka["sanskrit"], row["sanskrit"])
         if ratio < 0.8:
             # So different it is most likely another mantra under this number: nothing is
             # copied (text or details) until someone has looked; --force-low takes it anyway.
@@ -99,10 +148,13 @@ def main() -> None:
             shloka[key] = row.get(key) or None
         shloka["sanskrit"] = row["sanskrit"]
         shloka["padapatha"] = row.get("padapatha") or None
-        shloka["meaning_hi"] = dayananda_hindi(row.get("commentaries") or [])
+        shloka["meaning_hi"] = hindi_meaning(row.get("commentaries") or [])
 
-    missing = sorted(set(ours) - set(site), key=lambda l: [int(p) for p in l.split(".")])
-    extra = sorted(set(site) - set(ours), key=lambda l: [int(p) for p in l.split(".")])
+    def order(label: str) -> list[int]:
+        return [int(p) for p in re.findall(r"\d+", label)]
+
+    missing = sorted(set(ours) - set(site), key=order)
+    extra = sorted(set(site) - set(ours), key=order)
     print(f"ours {len(ours)}, site {len(site)}, matched {matched}")
     print(f"not on the site ({len(missing)}): {', '.join(missing[:40])}{' …' if len(missing) > 40 else ''}")
     print(f"on the site only ({len(extra)}): {', '.join(extra[:40])}{' …' if len(extra) > 40 else ''}")

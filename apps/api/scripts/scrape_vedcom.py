@@ -16,6 +16,8 @@ requests at a time, a pause between them) and says who it is in the User-Agent.
     python3 scripts/scrape_vedcom.py rigveda            # every mantra in our manifest
     python3 scripts/scrape_vedcom.py rigveda --only 1.1  # one sukta, for a test
     python3 scripts/scrape_vedcom.py yajurveda          # adhyaya.mantra → yajurveda/<a>/<m>
+    python3 scripts/scrape_vedcom.py atharvaveda        # kanda.sukta.mantra → atharvaveda/<k>/<s>/0/<m>
+    python3 scripts/scrape_vedcom.py samaveda           # walked in the site's own order (walk_samaveda)
 
 The mantra list comes from our own manifest (data/documents_source/<veda>.json): its labels
 are the site's path (Rigveda / Atharvaveda mandala-or-kanda.sukta.mantra, Yajurveda
@@ -47,8 +49,10 @@ WORKERS = 2
 PAUSE_S = 0.4
 
 DETAIL_RE = re.compile(
-    r'<span><strong>\s*(देवता|ऋषि|छन्द|स्वर)\s*:\s*</strong>(.*?)</span>', re.S
+    r'<span><strong>\s*(देवता|ऋषि|छन्द|स्वर|Devata|Rishi|Chhanda|Swara|Kaand)\s*:\s*</strong>(.*?)</span>', re.S
 )
+# The Samaveda pages write the labels in English.
+DETAIL_KEY = {"Devata": "देवता", "Rishi": "ऋषि", "Chhanda": "छन्द", "Swara": "स्वर", "Kaand": "काण्ड"}
 LINK_TEXT_RE = re.compile(r"<a [^>]*>(.*?)</a>", re.S)
 BLOCK_RE = re.compile(r'<div class="block-mantra">\s*<p>(.*?)</p>', re.S)
 PAD_RE = re.compile(r'<span class="eng-tran-head">\s*(अंग्रेज़ी लिप्यंतरण|पद पाठ)\s*</span>\s*<p>(.*?)</p>', re.S)
@@ -79,7 +83,7 @@ def parse(page: str) -> dict[str, Any] | None:
     details: dict[str, str] = {}
     for key, body in DETAIL_RE.findall(page):
         link = LINK_TEXT_RE.search(body)
-        details[key] = clean(link.group(1) if link else body)
+        details[DETAIL_KEY.get(key, key)] = clean(link.group(1) if link else body)
     extra = {label: clean(text) for label, text in PAD_RE.findall(page)}
     commentaries = []
     for lang_id, idx, body in LANG_BLOCK_RE.findall(page):
@@ -100,6 +104,7 @@ def parse(page: str) -> dict[str, Any] | None:
         "rishi": details.get("ऋषि"),
         "chhanda": details.get("छन्द"),
         "svara": details.get("स्वर"),
+        "kanda": details.get("काण्ड"),  # Samaveda only (आग्नेयं काण्डम् …)
         "sanskrit": clean(mantra.group(1)),
         "transliteration": extra.get("अंग्रेज़ी लिप्यंतरण"),
         "padapatha": extra.get("पद पाठ"),
@@ -108,7 +113,7 @@ def parse(page: str) -> dict[str, Any] | None:
 
 
 def fetch(path: str) -> str | None:
-    url = f"{BASE}/{urllib.parse.quote(path)}"
+    url = f"{BASE}/{urllib.parse.quote(path, safe='/?&=')}"
     for attempt in range(4):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -124,8 +129,17 @@ def fetch(path: str) -> str | None:
 
 
 Target = tuple[int, ...]
-# How many label parts each Veda's site path has.
+# How many label parts each Veda's site path has. Samaveda is walked in the site's own order instead.
 PARTS = {"rigveda": 3, "atharvaveda": 3, "yajurveda": 2}
+VEDAS = sorted([*PARTS, "samaveda"])
+
+
+def site_path(veda: str, target: tuple[int, ...]) -> str:
+    """Our label → the page. Atharvaveda pages carry a paryaya slot, 0 for every sukta."""
+    if veda == "atharvaveda":
+        kanda, sukta, mantra = target
+        return f"atharvaveda/{kanda}/{sukta}/0/{mantra}"
+    return f"{veda}/" + "/".join(str(p) for p in target)
 
 
 def targets(veda: str, only: str | None) -> list[Target]:
@@ -151,12 +165,15 @@ def row_key(row: dict[str, Any]) -> Target:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("veda", choices=sorted(PARTS))
+    ap.add_argument("veda", choices=VEDAS)
     ap.add_argument("--only", help="limit to a mandala / adhyaya or a sukta, e.g. 1 or 1.1")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{args.veda}.jsonl"
+    if args.veda == "samaveda":
+        walk_samaveda(out_path)
+        return
     done: set[Target] = set()
     if out_path.exists():
         for line in out_path.read_text(encoding="utf-8").splitlines():
@@ -174,7 +191,7 @@ def main() -> None:
 
     def work(target: Target, probe: bool = False) -> None:
         label = ".".join(str(p) for p in target)
-        page = fetch(f"{args.veda}/" + "/".join(str(p) for p in target))
+        page = fetch(site_path(args.veda, target))
         time.sleep(PAUSE_S)
         row = parse(page) if page else None
         with lock:
@@ -197,6 +214,47 @@ def main() -> None:
         list(pool.map(work, todo))
         list(pool.map(lambda t: work(t, probe=True), probes))
     print(f"done: {count['ok']} collected, {count['missing']} missing, file {out_path}", flush=True)
+
+
+def walk_samaveda(out_path: Path) -> None:
+    """The Samaveda pages are numbered archik / adhyay / khand / mantra-in-khand, which our
+    labels (part.adhyaya.mantra-in-adhyaya, with no khandas) cannot give. So the site is walked
+    in its own order — next mantra; none, the next khand; none, the next adhyay; none, the next
+    archik — one page at a time, and each row gets its running number ``seq`` (1 … 1875), the
+    order our verses and the samaveda_NNNN recordings follow. merge_vedcom.py lines the two up
+    by that order, checking the text. Resumable: it continues after the last row in the file.
+    """
+    rows = [json.loads(line) for line in out_path.read_text(encoding="utf-8").splitlines()] if out_path.exists() else []
+
+    def get(a: int, d: int, k: int, m: int) -> dict[str, Any] | None:
+        page = fetch(f"samveda-archik/?archik_no={a}&adhyay_no={d}&khand_no={k}&mantra_no={m}")
+        time.sleep(PAUSE_S)
+        return parse(page) if page else None
+
+    if rows:
+        last = rows[-1]
+        a, d, k, m, seq = last["archik"], last["adhyay"], last["khand"], last["mantra"] + 1, last["seq"]
+    else:
+        a, d, k, m, seq = 1, 1, 1, 1, 0
+    while True:
+        row = get(a, d, k, m)
+        if row is None:
+            # Ran off the end of this khand: try the next khand, adhyay, archik in turn.
+            for na, nd, nk in ((a, d, k + 1), (a, d + 1, 1), (a + 1, 1, 1)):
+                row = get(na, nd, nk, 1)
+                if row is not None:
+                    a, d, k, m = na, nd, nk, 1
+                    break
+            if row is None:
+                break
+        seq += 1
+        out = {"seq": seq, "archik": a, "adhyay": d, "khand": k, "mantra": m, "extra": False, **row}
+        with out_path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(out, ensure_ascii=False) + "\n")
+        if seq % 100 == 0:
+            print(f"{seq} collected (archik {a}, adhyay {d}, khand {k})", flush=True)
+        m += 1
+    print(f"done: {seq} mantras walked, file {out_path}", flush=True)
 
 
 if __name__ == "__main__":
