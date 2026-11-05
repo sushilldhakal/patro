@@ -23,22 +23,30 @@ export function usePlannerText() {
     bsYear: (iso: string) => digits(bs(iso).year),
     adDay: (iso: string) => digits(Number(iso.slice(8, 10))),
     hour: (h: number) => digits(`${pad(h)}:00`),
+    /**
+     * An hour as Apple Calendar labels it: "7" + "am", "Midday" at noon. Nepali says the part of the
+     * day instead: बिहान ७, दिउँसो २, बेलुका ६, राति ९.
+     */
+    hourParts: (h: number): { num: string; suffix: string } => {
+      if (h === 12) return { num: "", suffix: t("calendar.midday") };
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      if (en) return { num: String(h12), suffix: h < 12 ? "am" : "pm" };
+      const part = h >= 4 && h < 12 ? "calendar.part_morning" : h >= 12 && h < 17 ? "calendar.part_afternoon" : h >= 17 && h < 20 ? "calendar.part_evening" : "calendar.part_night";
+      return { num: digits(h12), suffix: t(part) };
+    },
+    /** "18 Nov" in the reader's language, the Gregorian date beside the BS one. */
+    adShort: (iso: string) => parse(iso).toLocaleDateString(en ? "en-GB" : "ne-NP", { day: "numeric", month: "short" }),
+    /** "बुधवार – मंसिर २, २०८३": the line under the day strip. */
+    dayHeading: (iso: string) => `${text.weekdayFull(iso)} – ${text.bsMonth(iso)} ${text.bsDay(iso)}, ${text.bsYear(iso)}`,
+    /** "बुध – २": a column heading in Multi Day. */
+    columnHeading: (iso: string) => `${text.weekdayShort(iso)} – ${text.bsDay(iso)}`,
     clock: (minutes: number) => digits(`${pad(Math.floor(minutes / 60) % 24)}:${pad(minutes % 60)}`),
-    /** "कात्तिक १९ – २५, २०८३": the heading over a week, day, year or list. */
+    /** The toolbar title, as Apple Calendar's: the month for a day, days or week; the year; or "Upcoming". */
     title: (view: PlannerViewKind, anchor: string) => {
       if (view === "year") return digits(bs(anchor).year);
       if (view === "list") return t("events.upcoming");
-      if (view === "multi") {
-        const next = shiftDate(anchor, 1);
-        const sameMonth = bs(anchor).month === bs(next).month;
-        return `${text.bsMonth(anchor)} ${text.bsDay(anchor)} – ${sameMonth ? "" : `${text.bsMonth(next)} `}${text.bsDay(next)}, ${text.bsYear(next)}`;
-      }
-      if (view === "day") return `${text.weekdayFull(anchor)} · ${text.bsMonth(anchor)} ${text.bsDay(anchor)}, ${text.bsYear(anchor)}`;
-      const days = weekDates(anchor);
-      const first = days[0]!;
-      const last = days[6]!;
-      const sameMonth = bs(first).month === bs(last).month;
-      return `${text.bsMonth(first)} ${text.bsDay(first)} – ${sameMonth ? "" : `${text.bsMonth(last)} `}${text.bsDay(last)}, ${text.bsYear(last)}`;
+      const shown = view === "week" ? weekDates(anchor)[3]! : anchor;
+      return `${text.bsMonth(shown)} ${text.bsYear(shown)}`;
     },
     /** One step back or forward: a day, a week, a year; the list moves by a month. */
     step: (view: PlannerViewKind, anchor: string, dir: 1 | -1) =>
