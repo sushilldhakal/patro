@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { isPlannerView, shiftDateIso, useDayMarks, useUserEvents, weekDates, type PlannerViewKind } from "@vedic-patro/features/events";
+import { isPlannerView, shiftDateIso, useDayMarks, useUserEvents, useWindowBands, weekDates, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { updateEvent, type CalendarEvent } from "@/lib/events/api";
@@ -192,6 +192,8 @@ function HomeScreen() {
   const plannerRange =
     plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : { from: anchor, to: anchor };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location.params, plannerKind != null);
+  const windowDays = plannerKind === "week" ? weekDates(anchor) : plannerKind === "day" ? [anchor] : [];
+  const dayWindows = useWindowBands(windowDays, location.params, windowDays.length > 0);
   // The planner and the header's month follow each other: stepping a week into another BS month moves the
   // month, and picking a month in the header moves the planner to its first day.
   useEffect(() => {
@@ -396,6 +398,7 @@ function HomeScreen() {
             onViewChange={(v) => setPatroView(v)}
             events={userEvents.events}
             marks={dayMarks.marks}
+            windows={dayWindows.bands}
             todayAd={todayAd}
             onOpenEvent={(event) => setEditor({ event })}
             onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}

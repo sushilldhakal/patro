@@ -6,3 +6,4 @@ export * from "./use-day-events";
 export * from "./calendar-views";
 export * from "./use-day-marks";
 export * from "./use-planner-text";
+export * from "./use-window-bands";

@@ -55,6 +55,18 @@ export function PlannerView(props: PlannerViewProps) {
           </Pressable>
         </View>
       </View>
+      {view === "day" || view === "week" ? (
+        <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-1.5">
+            <View className="h-2.5 w-2.5 rounded-sm bg-success/40" />
+            <Text className="text-diagram-xs text-muted-foreground">{t("calendar.window_shubh")}</Text>
+          </View>
+          <View className="flex-row items-center gap-1.5">
+            <View className="h-2.5 w-2.5 rounded-sm bg-danger/40" />
+            <Text className="text-diagram-xs text-muted-foreground">{t("calendar.window_ashubh")}</Text>
+          </View>
+        </View>
+      ) : null}
       {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={view === "day" ? [anchor] : weekDates(anchor)} />}
     </View>
   );
@@ -62,7 +74,7 @@ export function PlannerView(props: PlannerViewProps) {
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number };
 
-function TimeGrid({ days, events, marks, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
   const scroller = useRef<ComponentRef<typeof ScrollView>>(null);
   const [width, setWidth] = useState(0);
@@ -187,6 +199,18 @@ function TimeGrid({ days, events, marks, todayAd, onOpenEvent, onMoveEvent, onCr
             >
               {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
                 <View key={h} pointerEvents="none" className="absolute left-0 right-0 h-px bg-border" style={{ top: h * HOUR_H }} />
+              ))}
+              {(windows.get(c.date) ?? []).map((w) => (
+                <View
+                  key={`${w.source}-${w.id}`}
+                  pointerEvents="none"
+                  className={cn("absolute left-0 right-0 overflow-hidden border-l-2 px-0.5", w.source === "ashubh" ? "border-danger bg-danger/10" : "border-success bg-success/10")}
+                  style={{ top: (w.startMin / 60) * HOUR_H, height: ((w.endMin - w.startMin) / 60) * HOUR_H }}
+                >
+                  {days.length === 1 || w.endMin - w.startMin >= 90 ? (
+                    <Text numberOfLines={1} className={cn("text-diagram-xs font-medium", w.source === "ashubh" ? "text-danger" : "text-success")}>{tx.lang === "en" ? w.nameEn : w.nameNe}</Text>
+                  ) : null}
+                </View>
               ))}
               {c.date === todayAd ? <NowLine /> : null}
               {c.timed.map((b) => (

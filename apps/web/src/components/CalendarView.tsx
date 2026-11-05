@@ -7,6 +7,7 @@ import {
   parseHomeView,
   useDayMarks,
   useUserEvents,
+  useWindowBands,
   weekDates,
   type HomeView,
   type PlannerViewKind,
@@ -15,6 +16,7 @@ import { HOME_VIEW_ICONS, PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditorDialog } from "@/components/events/NewEventButton";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
+import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/geography/panchanga-location";
 import { updateEvent, type CalendarEvent } from "@vedic-patro/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -136,6 +138,8 @@ export function CalendarView({
   const plannerRange =
     plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : { from: anchor, to: anchor };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location?.params, plannerKind != null);
+  const windowDays = plannerKind === "week" ? weekDates(anchor) : plannerKind === "day" ? [anchor] : [];
+  const dayWindows = useWindowBands(windowDays, location?.params ?? DEFAULT_PANCHANGA_LOCATION.params, windowDays.length > 0);
   const asideInSidebar = useMediaQuery(ASIDE_SIDEBAR_MQ);
 
   const switchPatroView = (next: HomePatroView) => {
@@ -279,6 +283,7 @@ export function CalendarView({
       onViewChange={switchPatroView}
       events={userEvents.events}
       marks={dayMarks.marks}
+      windows={dayWindows.bands}
       todayAd={todayAd ?? new Date().toISOString().slice(0, 10)}
       onOpenEvent={(event) => setEditor({ event })}
       onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}

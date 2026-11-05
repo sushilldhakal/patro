@@ -2379,6 +2379,8 @@ export const strings = {
   "calendar.brand_eyebrow": { ne: "नेपाली पात्रो", en: "Nepali Patro" },
   "calendar.patro_mode_aria": { ne: "पात्रो प्रकार", en: "Patro type" },
   "calendar.patro_mode_switch": { ne: "पात्रो प्रकार बदल्नुहोस्", en: "Switch patro type" },
+  "calendar.window_shubh": { ne: "शुभ मुहूर्त", en: "Auspicious" },
+  "calendar.window_ashubh": { ne: "अशुभ मुहूर्त", en: "Inauspicious" },
   "calendar.view_menu": { ne: "हेराइ", en: "View" },
   "calendar.view_week": { ne: "हप्ता", en: "Week" },
   "calendar.view_day": { ne: "दिन", en: "Day" },

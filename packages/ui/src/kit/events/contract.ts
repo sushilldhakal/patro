@@ -1,5 +1,5 @@
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import type { CalendarFeedState, DayMark, HomeView, PlannerViewKind } from "@vedic-patro/features/events";
+import type { CalendarFeedState, DayMark, HomeView, PlannerViewKind, WindowBand } from "@vedic-patro/features/events";
 
 /**
  * The new-event form's date and time pickers, drawn like Apple Calendar's inline ones; the same
@@ -53,6 +53,8 @@ export type PlannerViewProps = {
   events: CalendarEvent[];
   /** Festivals and public holidays by AD date. */
   marks: Map<string, DayMark>;
+  /** The day grid's शुभ (green) and अशुभ (red) muhurta bands by AD date. */
+  windows: Map<string, WindowBand[]>;
   todayAd: string;
   /** Opens an event (the edit form). */
   onOpenEvent: (event: CalendarEvent) => void;

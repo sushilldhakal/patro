@@ -52,6 +52,12 @@ export function PlannerView(props: PlannerViewProps) {
           </button>
         </div>
       </div>
+      {view === "day" || view === "week" ? (
+        <p className="m-0 flex items-center gap-4 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-success/40" />{t("calendar.window_shubh")}</span>
+          <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-danger/40" />{t("calendar.window_ashubh")}</span>
+        </p>
+      ) : null}
       {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={view === "day" ? [anchor] : weekDates(anchor)} />}
     </section>
   );
@@ -59,8 +65,9 @@ export function PlannerView(props: PlannerViewProps) {
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number; moved: boolean };
 
-function TimeGrid({ days, events, marks, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
+  const lang = tx.lang;
   const scroller = useRef<HTMLDivElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
@@ -173,6 +180,17 @@ function TimeGrid({ days, events, marks, todayAd, onOpenEvent, onMoveEvent, onCr
           >
             {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
               <span key={h} aria-hidden className="pointer-events-none absolute inset-x-0 h-px bg-border" style={{ top: h * HOUR_H }} />
+            ))}
+            {(windows.get(c.date) ?? []).map((w) => (
+              <span
+                key={`${w.source}-${w.id}`}
+                aria-hidden
+                title={lang === "en" ? w.nameEn : w.nameNe}
+                className={cn("pointer-events-none absolute inset-x-0 z-0 overflow-hidden border-l-2 px-0.5 text-diagram-xs font-medium leading-tight", w.source === "ashubh" ? "border-danger bg-danger/10 text-danger" : "border-success bg-success/10 text-success")}
+                style={{ top: (w.startMin / 60) * HOUR_H, height: ((w.endMin - w.startMin) / 60) * HOUR_H }}
+              >
+                {days.length === 1 || w.endMin - w.startMin >= 90 ? (lang === "en" ? w.nameEn : w.nameNe) : null}
+              </span>
             ))}
             {c.date === todayAd ? <NowLine /> : null}
             {c.timed.map((b) => (
