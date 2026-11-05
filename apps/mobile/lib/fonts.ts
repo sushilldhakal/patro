@@ -9,6 +9,9 @@ export const NOTO_DEVANAGARI_MEDIUM = "NotoSansDevanagariSemiCondensed-Medium";
 export const NOTO_DEVANAGARI_SEMIBOLD = "NotoSansDevanagariSemiCondensed-SemiBold";
 export const NOTO_DEVANAGARI_BOLD = "NotoSansDevanagariSemiCondensed-Bold";
 
+/** Mantra text (shlokas) only: Adishila Vedic, loaded at runtime in `app/_layout.tsx`. */
+export const ADISHILA_VEDIC = "AdishilaVedic";
+
 /** Default SVG / chart labels (semi-bold). */
 export const NOTO_DEVANAGARI_CHART = NOTO_DEVANAGARI_SEMIBOLD;
 export const NOTO_DEVANAGARI_CHART_SM = NOTO_DEVANAGARI_MEDIUM;

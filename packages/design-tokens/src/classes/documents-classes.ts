@@ -232,7 +232,7 @@ export const documentsClasses = {
   verseBadgeText: "text-xs font-semibold tabular-nums text-muted-foreground",
   verseCite: "ml-auto shrink-0 pt-0.5 text-right text-xs font-medium text-muted-foreground",
   /* Keep Devanagari intact — avoid mid-akshara wraps from overflow-wrap:anywhere. */
-  verseText: "mt-1 break-normal [overflow-wrap:normal] [word-break:normal] leading-relaxed text-lg sm:text-xl",
+  verseText: "font-vedic mt-1 break-normal [overflow-wrap:normal] [word-break:normal] leading-relaxed text-lg sm:text-xl",
   verseTextNote: "mt-1 whitespace-pre-line break-normal [overflow-wrap:normal] leading-relaxed text-base text-foreground/85 sm:text-lg",
   chapterImages: "grid gap-3 sm:grid-cols-2",
   chapterImage: "w-full rounded-xl border border-border bg-card object-contain",

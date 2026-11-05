@@ -7,13 +7,6 @@ import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { PlaybackBarProps, ShlokaCardProps } from "../contract";
 import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
 
-/**
- * Sign U+A8F3 (Devanagari Extended: candrabindu + virama, as in Yajur and Sama texts) has no glyph in the font
- * iOS ends up using for it, so it drew as a "?" box (the website falls back to another font and is
- * fine). Shown as the plain candrabindu on the phone; the stored text is untouched.
- */
-const drawable = (text: string) => text.replace(/\uA8F3/g, String.fromCharCode(0x0901));
-
 export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });
   const { canPlay, isClosing, isNote, vedaCite, meaning } = card;
@@ -73,10 +66,10 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
                   piece.marks ? (
                     <Box key={i} nativeClassName="items-center">
                       <Text className="text-diagram-xs leading-none text-muted-foreground">{piece.marks}</Text>
-                      <Text className={documentsClasses.verseText}>{drawable(piece.text)}</Text>
+                      <Text className={documentsClasses.verseText}>{piece.text}</Text>
                     </Box>
                   ) : (
-                    <Text key={i} className={documentsClasses.verseText}>{drawable(piece.text)}</Text>
+                    <Text key={i} className={documentsClasses.verseText}>{piece.text}</Text>
                   ),
                 )}
               </Box>
@@ -86,9 +79,9 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
           <Text className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText)}>
             {card.tokens.map((tok, i) =>
               i === card.activeTokenIndex ? (
-                <Text key={i} className={cn(documentsClasses.verseWord, isNote ? documentsClasses.verseTextNote : documentsClasses.verseText)}>{drawable(tok)}</Text>
+                <Text key={i} className={cn(documentsClasses.verseWord, isNote ? documentsClasses.verseTextNote : documentsClasses.verseText)}>{tok}</Text>
               ) : (
-                drawable(tok)
+                tok
               ),
             )}
           </Text>

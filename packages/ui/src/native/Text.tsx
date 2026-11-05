@@ -20,6 +20,7 @@ const TYPE_SCALE = /\btext-(?:caption|body|title|display|xs|sm|base|lg|xl|2xl|3x
  */
 function familyFor(className: string): string {
   if (/\bfont-mono\b/.test(className)) return fontFamily.native.mono;
+  if (/\bfont-vedic\b/.test(className)) return fontFamily.native.vedic;
   if (/\bfont-(?:bold|extrabold|black|num-bold)\b/.test(className)) return fontFamily.native.bold;
   if (/\bfont-semibold\b/.test(className)) return fontFamily.native.semibold;
   if (/\bfont-medium\b/.test(className)) return fontFamily.native.medium;
@@ -51,21 +52,6 @@ const ENDS_DEVANAGARI = /[\u0900-\u097F]$/;
 
 /** Set inside a Text: a nested span is part of its parent's run, not the end of one. */
 const InsideText = createContext(false);
-
-/*
- * Vedic text carries U+A8F3 (candrabindu + virama, Yajur and Sama). iOS settles on a font without
- * that sign for it, so it drew as a "?" box on every screen that shows a mantra, though the Noto
- * font bundled with the app has it (the website falls back fine). Drawn here as the plain
- * candrabindu; the stored text is untouched.
- */
-const VIRAMA_CANDRABINDU = new RegExp(String.fromCharCode(0xa8f3), "g");
-const CANDRABINDU = String.fromCharCode(0x0901);
-
-function drawable(children: ReactNode): ReactNode {
-  if (typeof children === "string") return children.replace(VIRAMA_CANDRABINDU, CANDRABINDU);
-  if (Array.isArray(children)) return children.map((child) => (typeof child === "string" ? child.replace(VIRAMA_CANDRABINDU, CANDRABINDU) : child));
-  return children;
-}
 
 function padAndroidDevanagari(children: ReactNode): ReactNode {
   if (Platform.OS !== "android") return children;
@@ -103,7 +89,7 @@ export function Text({ variant, numberOfLines, as, className, nativeClassName, c
       accessibilityRole={as && /^h\d$/.test(as) ? "header" : undefined}
       testID={testID}
     >
-      {nested ? drawable(children) : padAndroidDevanagari(drawable(children))}
+      {nested ? children : padAndroidDevanagari(children)}
     </RNText>
     </InsideText.Provider>
   );

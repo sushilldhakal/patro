@@ -400,10 +400,10 @@
   --color-warning: #e67e22;
   --color-danger: #c62828;
   --color-info: #0b565a;
-  --font-devanagari: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
+  --font-devanagari: "Noto Sans Devanagari", sans-serif;
   --font-sans: var(--font-devanagari);
   --font-heading: var(--font-devanagari);
-  --font-en: "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
+  --font-en: "Noto Sans Devanagari", sans-serif;
   --font-mono: "Fira Code", monospace;
   --tracking-tight: -0.01em;
   --tracking-eyebrow: 0.12em;
@@ -517,6 +517,20 @@
   font-weight: 501 900;
   unicode-range: U+A8E0-A8FF;
   font-display: swap;
+}
+
+/*
+ * Mantra text (shlokas) is set in Adishila Vedic, as the Ved Portal's own pages are: it carries every
+ * Vedic accent and sign, which Noto does not. Cut down to Devanagari, the Vedic blocks and Latin.
+ */
+@font-face {
+  font-family: "Adishila Vedic";
+  src: url("/fonts/adishila-vedic-Regular.woff") format("woff");
+  font-weight: 100 900;
+  font-display: swap;
+}
+.font-vedic {
+  font-family: "Adishila Vedic", "Noto Sans Devanagari", "Noto Devanagari Vedic", sans-serif;
 }
 
 @layer base {

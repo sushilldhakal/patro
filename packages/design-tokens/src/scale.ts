@@ -28,6 +28,8 @@ export const fontFamily = {
     semibold: "NotoSansDevanagariSemiCondensed-SemiBold",
     bold: "NotoSansDevanagariSemiCondensed-Bold",
     mono: "FiraCode_400Regular",
+    /** Mantra text only (Adishila Vedic): has every Vedic accent and sign, which Noto lacks. */
+    vedic: "AdishilaVedic",
   },
 } as const;
 

@@ -26,7 +26,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
-import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
+import { ADISHILA_VEDIC, NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { SplashIntro } from "@/components/branding/SplashIntro";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -244,6 +244,7 @@ function RootLayout() {
        expo-font plugin and registered by the OS at launch. Registered here at runtime instead, the
        weights could drop back to regular after the app reloaded into an update. Web still loads them. */
     ...(Platform.OS === "web" ? WEB_NOTO_FONTS : {}),
+    [ADISHILA_VEDIC]: require("../assets/fonts/AdishilaVedic-Regular.ttf"),
     FiraCode_400Regular,
     FiraCode_700Bold,
     ...Ionicons.font,
