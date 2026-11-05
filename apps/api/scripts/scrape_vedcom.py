@@ -17,6 +17,7 @@ requests at a time, a pause between them) and says who it is in the User-Agent.
     python3 scripts/scrape_vedcom.py rigveda --only 1.1  # one sukta, for a test
     python3 scripts/scrape_vedcom.py yajurveda          # adhyaya.mantra → yajurveda/<a>/<m>
     python3 scripts/scrape_vedcom.py atharvaveda        # kanda.sukta.mantra → atharvaveda/<k>/<s>/0/<m>
+                                                        # (paryaya suktas: k.s.<paryaya>.<mantra>, the site's numbering)
     python3 scripts/scrape_vedcom.py samaveda           # running number n → samveda/<n> (our n-th verse)
 
 The mantra list comes from our own manifest (data/documents_source/<veda>.json): its labels
@@ -209,6 +210,7 @@ def main() -> None:
     labels = samaveda_labels() if args.veda == "samaveda" else None
     lock = threading.Lock()
     count = {"ok": 0, "missing": 0}
+    missed: set[Target] = set()
 
     def work(target: Target, probe: bool = False) -> None:
         if labels is not None:
@@ -222,6 +224,7 @@ def main() -> None:
             if row is None:
                 if not probe:
                     count["missing"] += 1
+                    missed.add(target)
                     print(f"missing {label}", flush=True)
                 return
             names = ("seq",) if labels is not None else ("mandala", "sukta", "mantra") if len(target) == 3 else ("adhyaya", "mantra")
@@ -237,7 +240,50 @@ def main() -> None:
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         list(pool.map(work, todo))
         list(pool.map(lambda t: work(t, probe=True), probes))
+
+    if args.veda == "atharvaveda":
+        # Paryaya suktas (8.10, …) have nothing at paryaya 0: the site numbers them paryaya by
+        # paryaya, each from mantra 1, and our text groups those short mantras differently (our
+        # 8.10.2 is the site's 1.2–1.5), so they cannot take our numbers. They are kept under the
+        # site's own, kanda.sukta.paryaya.mantra — the merge report lists them for a decision.
+        firsts = {(t[0], t[1]) for t in targets(args.veda, args.only) if t[2] == 1}
+        done_labels = {json.loads(line).get("label") for line in out_path.read_text(encoding="utf-8").splitlines()} if out_path.exists() else set()
+        for k, su in sorted({(t[0], t[1]) for t in missed if (t[0], t[1]) in firsts and t[2] == 1}):
+            if any(lb and lb.count(".") == 3 and lb.startswith(f"{k}.{su}.") for lb in done_labels):
+                continue  # walked on an earlier run
+            found = walk_paryayas(k, su)
+            if not found:
+                continue
+            ours_n = sum(1 for t in targets(args.veda, f"{k}.{su}"))
+            print(f"paryaya sukta {k}.{su}: {len(found)} mantras in {found[-1][0]} paryayas on the site, {ours_n} in ours", flush=True)
+            for paryaya, pm, row in found:
+                label = f"{k}.{su}.{paryaya}.{pm}"
+                if label in done_labels:
+                    continue
+                out = {"label": label, "mandala": k, "sukta": su, "paryaya": paryaya, "mantra": pm, "extra": False, **row}
+                with out_path.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(out, ensure_ascii=False) + "\n")
+                count["ok"] += 1
     print(f"done: {count['ok']} collected, {count['missing']} missing, file {out_path}", flush=True)
+
+
+def walk_paryayas(kanda: int, sukta: int) -> list[tuple[int, int, dict[str, Any]]]:
+    """Every mantra of an Atharvaveda paryaya sukta, in order: paryaya 1, 2, … each from mantra 1."""
+    found: list[tuple[int, int, dict[str, Any]]] = []
+    paryaya = 1
+    while True:
+        mantra = 1
+        while True:
+            page = fetch(f"atharvaveda/{kanda}/{sukta}/{paryaya}/{mantra}")
+            time.sleep(PAUSE_S)
+            row = parse(page) if page else None
+            if row is None:
+                break
+            found.append((paryaya, mantra, row))
+            mantra += 1
+        if mantra == 1:  # this paryaya has no mantra 1: past the last one
+            return found
+        paryaya += 1
 
 
 if __name__ == "__main__":
