@@ -80,7 +80,7 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
         </Pressable>
       </Modal>
       <BottomSheetModal variant="page" visible={open && kind != null} onClose={onClose} maxHeight="92%">
-        {open && kind != null ? <EventForm kind={kind} onClose={onClose} onSaved={() => void onCreated()} /> : null}
+        {open && kind != null ? <EventForm initialKind={kind} onClose={onClose} onSaved={() => void onCreated()} /> : null}
       </BottomSheetModal>
     </>
   );

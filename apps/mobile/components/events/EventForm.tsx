@@ -1,7 +1,7 @@
 import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Switch, TextInput, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSaitDetail, type NewEventKind, type SaitDetailDay } from "@vedic-patro/api-client";
+import { NEW_EVENT_KINDS, fetchSaitDetail, type NewEventKind, type SaitDetailDay } from "@vedic-patro/api-client";
 import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -64,7 +64,10 @@ const toMinutes = (time: string) => {
  * अशुभ समय (a reminder when one begins) and पुष्कर नवांश moments — the same lists as the panchanga
  * page. Under it, tips for the day from the default profile's guidance.
  */
-export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onClose: () => void; onSaved: () => void }) {
+/** The alert each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
+const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
+
+export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewEventKind; onClose: () => void; onSaved: () => void }) {
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const { location } = usePanchangaLocation();
@@ -85,9 +88,10 @@ export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onCl
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
-  const [timeOn, setTimeOn] = useState(kind !== "event");
+  const [kind, setKind] = useState<NewEventKind>(initialKind);
+  const [timeOn, setTimeOn] = useState(initialKind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(kind !== "task");
+  const [endOn, setEndOn] = useState(initialKind !== "task");
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
   const [startDate, setStartDate] = useState(firstDate);
@@ -99,13 +103,23 @@ export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onCl
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(kind === "event" ? 1440 : kind === "appointment" ? 30 : 0);
+  const [alert1, setAlert1] = useState<number | null>(KIND_ALERT[initialKind]);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+
+  /** Switching the tab re-seeds what differs per type: all-day or timed, with or without an end, and the alert. */
+  const changeKind = (next: NewEventKind) => {
+    if (next === kind) return;
+    haptics.tick();
+    setKind(next);
+    setTimeOn(next !== "event");
+    setEndOn(next !== "task");
+    setAlert1(KIND_ALERT[next]);
+  };
 
   const toggle = (p: Panel) => {
     haptics.tick();
@@ -319,6 +333,26 @@ export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onCl
         <RoundButton icon="checkmark" label={t("events.save")} onPress={() => void save()} filled={canSave} busy={saving} />
       </View>
 
+      {/* The three types, always in view with the current one lit. */}
+      <View accessibilityRole="tablist" className="flex-row rounded-full bg-muted p-1">
+        {NEW_EVENT_KINDS.map((k) => (
+          <Pressable
+            key={k}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: kind === k }}
+            onPress={() => changeKind(k)}
+            className={`min-h-10 flex-1 items-center justify-center rounded-full ${kind === k ? "bg-card shadow-sm" : ""}`}
+          >
+            <Text
+              className={`text-body font-medium ${kind === k ? "text-foreground" : "text-muted-foreground"}`}
+              style={nepaliTextStyle(15)}
+            >
+              {t(`events.kind_${k}`)}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
       {error ? (
         <Text className="text-center text-caption text-destructive" style={nepaliTextStyle(13)}>
           {error}
@@ -405,11 +439,12 @@ export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onCl
         ) : null}
       </Group>
 
-      <Group>
-        <Field value={title} onChange={setTitle} placeholder={t("events.title")} />
-        <Divider />
-        <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
-      </Group>
+      <TitleField value={title} onChange={setTitle} placeholder={t("events.title")} />
+      {kind !== "task" ? (
+        <Group>
+          <Field value={place} onChange={setPlace} placeholder={t("events.location")} />
+        </Group>
+      ) : null}
 
       {/* Apple's rows: the date opens the month; time and end have their switches. No end = a reminder. */}
       <Group>
@@ -497,7 +532,7 @@ export function EventForm({ kind, onClose, onSaved }: { kind: NewEventKind; onCl
           : null}
       </Group>
 
-      {isAuthenticated ? (
+      {kind === "task" ? null : isAuthenticated ? (
         <Group>
           <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.invitees")}</Text>
           {invitees.length > 0 ? (
@@ -645,6 +680,22 @@ function Group({ children }: { children: ReactNode }) {
 
 function Divider() {
   return <View className="h-px bg-border" />;
+}
+
+/** The big title with the accent underline, as Google Calendar's "Add title". */
+function TitleField({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  const colors = useThemeColors();
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChange}
+      placeholder={placeholder}
+      placeholderTextColor={colors.mutedForeground}
+      accessibilityLabel={placeholder}
+      className="border-b-2 border-secondary px-1 pb-2 pt-1 text-foreground"
+      style={nepaliTextStyle(26)}
+    />
+  );
 }
 
 function Field({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {

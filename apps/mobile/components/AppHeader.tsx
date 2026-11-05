@@ -7,6 +7,7 @@ import { neutral } from "@vedic-patro/design-tokens";
 import { TABLET_SIDEBAR_WIDTH, useTabletUi } from "@/lib/tablet-ui";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
@@ -310,6 +311,8 @@ function AppHeaderView() {
   const insets = useSafeAreaInsets();
   const dateControls = useTopBarElement();
   const tablet = useTabletUi();
+  // Creating events, tasks and appointments is for signed-in users.
+  const { isAuthenticated } = useAuth();
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background">
@@ -323,7 +326,7 @@ function AppHeaderView() {
         {tablet ? <ViewSegmentedSwitch /> : <ViewMenuButton />}
         {tablet ? <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} /> : null}
         {tablet ? <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} /> : null}
-        <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} />
+        {isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
       </View>
     </View>
   );

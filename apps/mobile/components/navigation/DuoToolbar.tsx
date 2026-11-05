@@ -113,8 +113,8 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {extras.has("location") ? (
           <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
         ) : null}
-        {/* "+" (a new reminder) in the header in every pose, like the phone's top-right "+". */}
-        <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("events.create")} onPress={requestAddReminder} />
+        {/* "+" (create) for signed-in users in every pose, like the phone's top-right "+". */}
+        {isAuthenticated ? <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("events.create")} onPress={requestAddReminder} /> : null}
         {extras.has("profile") && !horizontal ? (
           <Stack.Toolbar.Button
             icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronsUpDown, Clock, Flag, Globe, Lightbulb, Plus, Repeat, X } from "lucide-react";
 import {
@@ -23,17 +23,13 @@ import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { IosMonthGrid, TimeWheel } from "@vedic-patro/ui/kit/events";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { listProfiles } from "@/lib/auth/client";
-import { useAuth } from "@/lib/auth/AuthContext";
-import { importWithRetry } from "@/lib/lazy-route";
 import { uploadGuestEvents } from "@/lib/guest-events";
 
-const LazyAuthDialog = lazy(() =>
-  importWithRetry(() => import("@/components/auth/AuthDialog")).then((m) => ({ default: m.AuthDialog })),
-);
-
+/** The reminder each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
+const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 type Panel = "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "priority" | null;
 /** Where the time comes from: typed in, or one of the day's / a ceremony's times. */
@@ -55,86 +51,57 @@ const toMinutes = (time: string) => {
 };
 
 /**
- * The header's "+": a new event or reminder, in a popover under the button like Apple Calendar's
- * (the app shows the same form as a sheet, components/events/EventForm.tsx): one form for both —
- * without an end it is a reminder at one moment, with the End switch on an event. "Pick a time" from
- * a साइत or the day's शुभ / अशुभ / पुष्कर times; date rows open the month inline, time rows the wheel. Signed out, the same form saves to this browser
- * (lib/guest-events.ts); on sign-in those events move to the account.
+ * "Create" on the settings page (signed-in only; the header no longer has a "+"): one card per type —
+ * event, task, appointment — and the form in a dialog, the same form the app raises as a sheet
+ * (components/events/EventForm.tsx). The tabs at the top of the form switch type after the pick. "Pick a
+ * time" from a साइत or the day's शुभ / अशुभ / पुष्कर times; date rows open the month inline, time rows
+ * the wheel.
  */
-export function NewEventButton() {
+export function CreateEventCards() {
   const { t } = useLocale();
-  const { isAuthenticated } = useAuth();
-  const [open, setOpen] = useState(false);
-  /** The "+" first lists what can be made; the form follows the pick. */
   const [kind, setKind] = useState<NewEventKind | null>(null);
-  const [authOpen, setAuthOpen] = useState(false);
-  const label = t("events.create");
-
-  // Just signed in: events saved as a guest in this browser move to the account.
+  // Events saved as a guest in this browser (before "+" was for signed-in users) move to the account.
   useEffect(() => {
-    if (isAuthenticated) void uploadGuestEvents().catch(() => 0);
-  }, [isAuthenticated]);
+    void uploadGuestEvents().catch(() => 0);
+  }, []);
+  const icons = { event: CalendarDays, task: Check, appointment: Clock } as const;
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) setKind(null);
-      }}
-    >
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={label}
-          className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
+    <section className="flex flex-col gap-2">
+      <h2 className="text-sm font-semibold">{t("events.create")}</h2>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {NEW_EVENT_KINDS.map((k) => {
+          const Icon = icons[k];
+          return (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setKind(k)}
+              className="flex flex-col items-start gap-2 rounded-3xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted"
+            >
+              <span className="inline-flex size-9 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                <Icon className="size-5" />
+              </span>
+              <span className="text-base font-medium">{t(`events.kind_${k}`)}</span>
+              <span className="text-xs text-muted-foreground">{t(`events.kind_${k}_hint`)}</span>
+            </button>
+          );
+        })}
+      </div>
+      <Dialog open={kind != null} onOpenChange={(next) => !next && setKind(null)}>
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-h-[90vh] max-w-[420px] gap-0 overflow-y-auto rounded-3xl p-0 [&>button.absolute]:hidden"
         >
-          <Plus className="size-5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={8} className="max-h-[80vh] w-[380px] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-3xl p-0">
-        {open && kind == null ? (
-          <div role="menu" className="flex flex-col gap-1 p-2">
-            {NEW_EVENT_KINDS.map((k) => (
-              <button
-                key={k}
-                type="button"
-                role="menuitem"
-                onClick={() => setKind(k)}
-                className="flex flex-col items-start rounded-2xl px-4 py-3 text-left transition-colors hover:bg-muted"
-              >
-                <span className="text-base font-medium">{t(`events.kind_${k}`)}</span>
-                <span className="text-sm text-muted-foreground">{t(`events.kind_${k}_hint`)}</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-        {open && kind != null ? (
-          <EventFormWeb
-            kind={kind}
-            guest={!isAuthenticated}
-            onClose={() => {
-              setOpen(false);
-              setKind(null);
-            }}
-            onSignIn={() => {
-              setOpen(false);
-              setKind(null);
-              setAuthOpen(true);
-            }}
-          />
-        ) : null}
-      </PopoverContent>
-      {authOpen ? (
-        <Suspense fallback={null}>
-          <LazyAuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
-        </Suspense>
-      ) : null}
-    </Popover>
+          <DialogTitle className="sr-only">{t("events.create")}</DialogTitle>
+          {kind != null ? <EventFormWeb initialKind={kind} guest={false} onClose={() => setKind(null)} onSignIn={() => setKind(null)} /> : null}
+        </DialogContent>
+      </Dialog>
+    </section>
   );
 }
 
-function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void }) {
+function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void }) {
   const { t, lang, digits } = useLocale();
   const queryClient = useQueryClient();
   const { location } = usePanchangaLocation();
@@ -155,9 +122,10 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
-  const [timeOn, setTimeOn] = useState(kind !== "event");
+  const [kind, setKind] = useState<NewEventKind>(initialKind);
+  const [timeOn, setTimeOn] = useState(initialKind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(kind !== "task");
+  const [endOn, setEndOn] = useState(initialKind !== "task");
   const [startDate, setStartDate] = useState(firstDate);
   const [startTime, setStartTime] = useState(nextHour.time);
   const [endDate, setEndDate] = useState(firstDate);
@@ -167,7 +135,7 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(kind === "event" ? 1440 : kind === "appointment" ? 30 : 0);
+  const [alert1, setAlert1] = useState<number | null>(KIND_ALERT[initialKind]);
   const [alert2, setAlert2] = useState<number | null>(null);
   const [invitees, setInvitees] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
@@ -314,6 +282,13 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
   };
 
   const input = "w-full bg-transparent py-3 text-base outline-none placeholder:text-muted-foreground";
+  // Switching the tab re-seeds what differs per type: an event is all-day with an end, a task one moment, an appointment a timed span; their default alerts are 1 day, at the time and 30 minutes before.
+  const changeKind = (next: NewEventKind) => {
+    setKind(next);
+    setTimeOn(next !== "event");
+    setEndOn(next !== "task");
+    setAlert1(KIND_ALERT[next]);
+  };
   const bsStart = bsFromCivilIso(startDate);
   const bsEnd = bsFromCivilIso(endDate);
 
@@ -379,6 +354,27 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
         >
           <Check className="size-5" />
         </button>
+      </div>
+
+      {/* The three types, always in view with the current one lit; each switch re-seeds the defaults. */}
+      <div role="tablist" aria-label={t("events.create")} className="relative grid grid-cols-3 rounded-full bg-muted p-1 dark:bg-foreground/10">
+        <span
+          aria-hidden
+          className="absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/3)] rounded-full bg-card shadow-sm transition-transform duration-200 ease-out"
+          style={{ transform: `translateX(${NEW_EVENT_KINDS.indexOf(kind) * 100}%)` }}
+        />
+        {NEW_EVENT_KINDS.map((k) => (
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={kind === k}
+            onClick={() => changeKind(k)}
+            className={cn("relative z-10 rounded-full py-2 text-sm font-medium transition-colors", kind === k ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            {t(`events.kind_${k}`)}
+          </button>
+        ))}
       </div>
 
       {error ? <p className="text-center text-xs text-destructive">{error}</p> : null}
@@ -459,11 +455,18 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
         ) : null}
       </Group>
 
-      <Group>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("events.title")} className={input} />
-        <Divider />
-        <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} className={input} />
-      </Group>
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder={t("events.title")}
+        aria-label={t("events.title")}
+        className="w-full border-b-2 border-secondary bg-transparent px-1 pb-2 pt-1 text-2xl font-semibold outline-none placeholder:text-muted-foreground/70"
+      />
+      {kind !== "task" ? (
+        <Group>
+          <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder={t("events.location")} aria-label={t("events.location")} className={input} />
+        </Group>
+      ) : null}
 
       {/* Apple's rows: the date opens the month; time and end have their switches. No end = a reminder. */}
       <Group>
@@ -561,7 +564,7 @@ function EventFormWeb({ kind, guest, onClose, onSignIn }: { kind: NewEventKind; 
           : null}
       </Group>
 
-      {guest ? (
+      {kind === "task" ? null : guest ? (
         <Group>
           <button type="button" onClick={onSignIn} className="flex min-h-12 w-full items-center justify-between gap-3 text-left hover:opacity-80">
             <span className="text-sm">{t("events.invitees")}</span>

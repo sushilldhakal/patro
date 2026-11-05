@@ -5,6 +5,8 @@ import { useAyanamshaMode } from "@vedic-patro/features/kundali";
 import { useCalculationSystem, useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { CreateEventCards } from "@/components/events/NewEventButton";
+import { UpcomingEvents } from "@/components/events/UpcomingEvents";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useRouteLoading } from "@/lib/route-loading";
@@ -52,6 +54,9 @@ export function Settings() {
       </header>
 
       <div className={accountClasses.settingsStack}>
+        <CreateEventCards />
+        <UpcomingEvents />
+
         <ChoiceGroup label={t("ui.settings.language")}>
           <Choice label={t("switch_to_nepali")} active={language === "ne"} onPress={() => void setLang("ne")} />
           <Choice label={t("switch_to_english")} active={language === "en"} onPress={() => void setLang("en")} />
