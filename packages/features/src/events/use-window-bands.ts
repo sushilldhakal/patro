@@ -50,7 +50,8 @@ export function useWindowBands(dates: string[], location: LocationParams, enable
     const p = results[i]?.data;
     if (p) {
       const built = buildDayTimePicks(p, date);
-      picksByDay.set(date, [...built.shubh, ...built.ashubh]);
+      // The day's own index makes ids unique only within it; the panchanga date keeps two days' apart.
+      picksByDay.set(date, [...built.shubh, ...built.ashubh].map((pick) => ({ ...pick, id: `${date}:${pick.id}` })));
     }
   });
   const bands = new Map<string, WindowBand[]>();

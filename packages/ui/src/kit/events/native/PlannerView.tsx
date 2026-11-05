@@ -372,7 +372,8 @@ function Block({ block, hourH, drag, onOpen, onGrab }: { block: DayBlock; hourH:
         height,
         left: `${(lane / lanes) * 100}%`,
         width: `${100 / lanes}%`,
-        transform: moving && drag ? [{ translateX: drag.dx }] : undefined,
+        // Always an array: switching between an array and undefined crashes the native style diff.
+        transform: [{ translateX: moving && drag ? drag.dx : 0 }],
       }}
     >
       <View className={cn("absolute bottom-0 left-0 top-0 w-1", k.bar)} />
