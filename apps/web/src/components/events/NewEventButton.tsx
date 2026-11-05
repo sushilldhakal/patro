@@ -704,51 +704,26 @@ export function EventEditorDialog({ editing, slot, onClose }: { editing?: Calend
 }
 
 /**
- * The "+" in a day's panchanga card on the home page: a link that lists event, task and appointment,
- * then opens the form on that day.
+ * The "+" in a day's panchanga card on the home page: opens the form at once on that day; its tabs switch
+ * between event, task and appointment.
  */
 export function AddToDay({ date }: { date: string }) {
   const { t } = useLocale();
-  const [menu, setMenu] = useState(false);
-  const [kind, setKind] = useState<NewEventKind | null>(null);
+  const [open, setOpen] = useState(false);
   return (
-    <div className="relative mb-3">
+    <div className="mb-3">
       <button
         type="button"
-        aria-haspopup="menu"
-        aria-expanded={menu}
-        onClick={() => setMenu((m) => !m)}
+        onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-sm font-medium text-secondary hover:opacity-80"
       >
         <Plus className="size-4" />
         {t("events.add_to_day")}
       </button>
-      {menu ? (
-        <>
-          <button type="button" aria-label={t("events.cancel")} onClick={() => setMenu(false)} className="fixed inset-0 z-40 cursor-default border-none bg-transparent" />
-          <div role="menu" className="absolute left-0 z-50 mt-2 flex w-64 flex-col overflow-hidden rounded-2xl border border-border bg-card p-1 shadow-lg">
-            {NEW_EVENT_KINDS.map((k) => (
-              <button
-                key={k}
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  setMenu(false);
-                  setKind(k);
-                }}
-                className="flex flex-col items-start rounded-xl border-none bg-transparent px-3 py-2.5 text-left hover:bg-muted"
-              >
-                <span className="text-sm font-medium">{t(`events.kind_${k}`)}</span>
-                <span className="text-xs text-muted-foreground">{t(`events.kind_${k}_hint`)}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
-      <Dialog open={kind != null} onOpenChange={(next) => !next && setKind(null)}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-[780px] gap-0 overflow-hidden rounded-3xl p-0 [&>button.absolute]:hidden">
           <DialogTitle className="sr-only">{t("events.create")}</DialogTitle>
-          {kind != null ? <EventFormWeb initialKind={kind} initialDate={date} guest={false} onClose={() => setKind(null)} onSignIn={() => setKind(null)} /> : null}
+          {open ? <EventFormWeb initialKind="event" initialDate={date} guest={false} onClose={() => setOpen(false)} onSignIn={() => setOpen(false)} /> : null}
         </DialogContent>
       </Dialog>
     </div>

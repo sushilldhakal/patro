@@ -27,7 +27,9 @@ export function QuickReminderSheet({ open, date, onClose }: { open: boolean; /**
   const colors = useThemeColors();
   const l = lang === "en" ? "en" : "ne";
   const [online, setOnline] = useState(true);
-  const [kind, setKind] = useState<NewEventKind | null>(null);
+  const [picked, setKind] = useState<NewEventKind | null>(null);
+  // From a day's card (a date given) the form opens at once; its tabs switch between event, task and appointment.
+  const kind: NewEventKind | null = picked ?? (date ? "event" : null);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
