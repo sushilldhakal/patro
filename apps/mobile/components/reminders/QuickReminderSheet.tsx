@@ -22,7 +22,7 @@ import { notifyRemindersChanged } from "@/lib/menu-request";
  * has an alert ("Remind me"). Guests get the same form; their events stay on the phone until they sign in
  * (lib/events/api.ts).
  */
-export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function QuickReminderSheet({ open, date, onClose }: { open: boolean; /** The day the form starts on (a day's card), else today. */ date?: string; onClose: () => void }) {
   const { lang, t } = useLocale();
   const colors = useThemeColors();
   const l = lang === "en" ? "en" : "ne";
@@ -80,7 +80,7 @@ export function QuickReminderSheet({ open, onClose }: { open: boolean; onClose: 
         </Pressable>
       </Modal>
       <BottomSheetModal variant="page" visible={open && kind != null} onClose={onClose} maxHeight="92%">
-        {open && kind != null ? <EventForm initialKind={kind} onClose={onClose} onSaved={() => void onCreated()} /> : null}
+        {open && kind != null ? <EventForm initialKind={kind} initialDate={date} onClose={onClose} onSaved={() => void onCreated()} /> : null}
       </BottomSheetModal>
     </>
   );

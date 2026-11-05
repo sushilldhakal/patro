@@ -20,7 +20,13 @@ export function AppOverlays() {
   useLocationPickerRequest(useCallback(() => setPlaceOpen(true), []));
   useSignInRequest(useCallback(() => setAuthOpen(true), []));
   useSearchRequest(useCallback(() => setSearchOpen(true), []));
-  useAddReminderRequest(useCallback(() => setReminderOpen(true), []));
+  const [reminderDate, setReminderDate] = useState<string | undefined>(undefined);
+  useAddReminderRequest(
+    useCallback((date?: string) => {
+      setReminderDate(date);
+      setReminderOpen(true);
+    }, []),
+  );
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const closeReminder = useCallback(() => setReminderOpen(false), []);
   const closePlace = useCallback(() => setPlaceOpen(false), []);
@@ -28,7 +34,7 @@ export function AppOverlays() {
     <>
       <NavDrawerHost />
       <FestivalSearchSheet open={searchOpen} onClose={closeSearch} />
-      <QuickReminderSheet open={reminderOpen} onClose={closeReminder} />
+      <QuickReminderSheet open={reminderOpen} date={reminderDate} onClose={closeReminder} />
       {/* The place picker, drawn like search; every screen's usePanchangaLocation follows what is picked here. */}
       <LocationSearchSheet open={placeOpen} onClose={closePlace} />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />

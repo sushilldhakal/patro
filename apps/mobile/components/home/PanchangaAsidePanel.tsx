@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useDayEvents } from "@vedic-patro/features/events";
 import { DayEvents } from "@vedic-patro/ui/kit/events";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { requestAddReminder } from "@/lib/menu-request";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
@@ -91,6 +92,17 @@ export function PanchangaAsidePanel({
       />
       <View className="px-4 pt-3">
         <DayEvents events={dayEvents.events} />
+        {/* The "+" from here: an event, task or appointment that starts on this day. */}
+        {isAuthenticated ? (
+          <Pressable
+            onPress={() => requestAddReminder(selectedAd)}
+            accessibilityRole="button"
+            className={homeClasses.asideAddToDay}
+          >
+            <Text className="text-body font-semibold text-secondary">+</Text>
+            <Text className="text-caption font-medium text-secondary">{t("events.add_to_day")}</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <View className={homeClasses.asideBody}>

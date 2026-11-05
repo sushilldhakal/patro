@@ -97,7 +97,7 @@ export function CreateEventCards() {
   );
 }
 
-export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, slot }: { initialKind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; guest: boolean; onClose: () => void; onSignIn: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
   const init = editing ? eventToDraft(editing) : null;
   const { t, lang } = useLocale();
   const queryClient = useQueryClient();
@@ -121,9 +121,9 @@ export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, s
   const [timeOn, setTimeOn] = useState(init ? init.timeOn : slot ? true : initialKind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
   const [endOn, setEndOn] = useState(init ? init.endOn : initialKind !== "task");
-  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? firstDate);
+  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? initialDate ?? firstDate);
   const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
-  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? firstDate);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? initialDate ?? firstDate);
   const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
   const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
   const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);
@@ -700,5 +700,57 @@ export function EventEditorDialog({ editing, slot, onClose }: { editing?: Calend
         <EventFormWeb initialKind={slot ? "appointment" : "event"} editing={editing} slot={slot} guest={false} onClose={onClose} onSignIn={onClose} />
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * The "+" in a day's panchanga card on the home page: a link that lists event, task and appointment,
+ * then opens the form on that day.
+ */
+export function AddToDay({ date }: { date: string }) {
+  const { t } = useLocale();
+  const [menu, setMenu] = useState(false);
+  const [kind, setKind] = useState<NewEventKind | null>(null);
+  return (
+    <div className="relative mb-3">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={menu}
+        onClick={() => setMenu((m) => !m)}
+        className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-sm font-medium text-secondary hover:opacity-80"
+      >
+        <Plus className="size-4" />
+        {t("events.add_to_day")}
+      </button>
+      {menu ? (
+        <>
+          <button type="button" aria-label={t("events.cancel")} onClick={() => setMenu(false)} className="fixed inset-0 z-40 cursor-default border-none bg-transparent" />
+          <div role="menu" className="absolute left-0 z-50 mt-2 flex w-64 flex-col overflow-hidden rounded-2xl border border-border bg-card p-1 shadow-lg">
+            {NEW_EVENT_KINDS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenu(false);
+                  setKind(k);
+                }}
+                className="flex flex-col items-start rounded-xl border-none bg-transparent px-3 py-2.5 text-left hover:bg-muted"
+              >
+                <span className="text-sm font-medium">{t(`events.kind_${k}`)}</span>
+                <span className="text-xs text-muted-foreground">{t(`events.kind_${k}_hint`)}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+      <Dialog open={kind != null} onOpenChange={(next) => !next && setKind(null)}>
+        <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-[780px] gap-0 overflow-hidden rounded-3xl p-0 [&>button.absolute]:hidden">
+          <DialogTitle className="sr-only">{t("events.create")}</DialogTitle>
+          {kind != null ? <EventFormWeb initialKind={kind} initialDate={date} guest={false} onClose={() => setKind(null)} onSignIn={() => setKind(null)} /> : null}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

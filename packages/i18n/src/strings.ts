@@ -7267,6 +7267,7 @@ export const strings = {
   "events.new": { ne: "नयाँ", en: "New" },
   "events.create": { ne: "बनाउनुहोस्", en: "Create" },
   "calendar.events_count": { ne: "{{count}} कार्यक्रम", en: "{{count}} events" },
+  "events.add_to_day": { ne: "यो दिनमा कार्यक्रम, कार्य वा भेटघाट थप्नुहोस्", en: "Add an event, task or appointment on this day" },
   "events.on_this_day": { ne: "तपाईंका कार्यक्रम", en: "Your events" },
   "events.all_day_short": { ne: "दिनभरि", en: "All day" },
   "events.upcoming": { ne: "आउँदा", en: "Upcoming" },

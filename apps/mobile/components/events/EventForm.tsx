@@ -66,7 +66,7 @@ const toMinutes = (time: string) => {
 /** The alert each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
 const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
 
-export function EventForm({ initialKind, onClose, onSaved, editing, slot }: { initialKind: NewEventKind; onClose: () => void; onSaved: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+export function EventForm({ initialKind, onClose, onSaved, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; onClose: () => void; onSaved: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
   const init = editing ? eventToDraft(editing) : null;
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
@@ -93,9 +93,9 @@ export function EventForm({ initialKind, onClose, onSaved, editing, slot }: { in
   const [endOn, setEndOn] = useState(init ? init.endOn : initialKind !== "task");
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
-  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? firstDate);
+  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? initialDate ?? firstDate);
   const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
-  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? firstDate);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? initialDate ?? firstDate);
   const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
   const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
   const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);

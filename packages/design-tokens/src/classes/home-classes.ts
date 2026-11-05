@@ -11,6 +11,8 @@ export const homeClasses = {
   asideShell: "w-full min-w-0 overflow-hidden rounded-2xl border border-border bg-card",
   asideHeader: "flex flex-row items-baseline gap-2.5 border-b border-border px-4 py-3.5",
   asideTitle: "flex-1 text-lg font-bold text-foreground",
+  /** The app's "+ add on this day" link under a day's card. */
+  asideAddToDay: "mb-3 flex-row items-center gap-2 self-start rounded-full bg-muted px-3 py-2 active:opacity-70",
   asideLink: "shrink-0 text-sm text-secondary",
   asideBody: "overflow-hidden bg-card",
   asideTabBar: "border-b border-border bg-surface-muted",

@@ -1,5 +1,6 @@
 import { useDayEvents } from "@vedic-patro/features/events";
 import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { AddToDay } from "@/components/events/NewEventButton";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -82,6 +83,7 @@ const PanchangaAside = forwardRef(function PanchangaAside(
       <TodayHighlightCard selectedDay={contextDay} selectedAdDate={aside.dayAd} todayAd={todayAd} monthContext={monthContext} p={p} />
       <div className="px-4 pt-3 empty:hidden">
         <DayEvents events={dayEvents.events} />
+        {isAuthenticated ? <AddToDay date={aside.dayAd} /> : null}
       </div>
 
       <div className={cn("flex min-w-0 flex-1 flex-col", homeClasses.asideBody)}>

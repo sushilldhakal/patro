@@ -50,14 +50,19 @@ export function useSearchRequest(onOpen: () => void) {
   }, [onOpen]);
 }
 
-const addReminderListeners = new Set<Listener>();
+const addReminderListeners = new Set<(date?: string) => void>();
 
-/** Asks the root to open the new-reminder sheet (the "+" in the header and in the Duo toolbar). */
-export function requestAddReminder() {
-  addReminderListeners.forEach((open) => open());
+/**
+ * Asks the root to open the "+" menu (the header, the Duo toolbar, or a day's card). With a date
+ * ("YYYY-MM-DD") the form starts on that day. A button's press event may come in as the argument: only a
+ * string counts.
+ */
+export function requestAddReminder(date?: unknown) {
+  const day = typeof date === "string" ? date : undefined;
+  addReminderListeners.forEach((open) => open(day));
 }
 
-export function useAddReminderRequest(onOpen: () => void) {
+export function useAddReminderRequest(onOpen: (date?: string) => void) {
   useEffect(() => {
     addReminderListeners.add(onOpen);
     return () => {
