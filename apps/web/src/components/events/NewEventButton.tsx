@@ -7,7 +7,10 @@ import {
   EVENT_REPEATS,
   NEW_EVENT_KINDS,
   createEvent,
+  deleteEvent,
+  updateEvent,
   fetchDayGuidance,
+  type CalendarEvent,
   type CalendarEventInput,
   type EventPriority,
   type NewEventKind,
@@ -15,7 +18,7 @@ import {
 } from "@vedic-patro/api-client";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { addMinutes, shiftDate, todayIn, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
-import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
+import { eventToDraft, useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { IosMonthGrid, TimeWheel } from "@vedic-patro/ui/kit/events";
@@ -94,7 +97,8 @@ export function CreateEventCards() {
   );
 }
 
-function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void }) {
+export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, slot }: { initialKind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+  const init = editing ? eventToDraft(editing) : null;
   const { t, lang } = useLocale();
   const queryClient = useQueryClient();
   const { location } = usePanchangaLocation();
@@ -107,26 +111,26 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
   const [panel, setPanel] = useState<Panel>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(init?.title ?? "");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
-  const [place, setPlace] = useState("");
-  const [notes, setNotes] = useState("");
+  const [place, setPlace] = useState(init?.place ?? "");
+  const [notes, setNotes] = useState(init?.notes ?? "");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
-  const [kind, setKind] = useState<NewEventKind>(initialKind);
-  const [timeOn, setTimeOn] = useState(initialKind !== "event");
+  const [kind, setKind] = useState<NewEventKind>(init?.kind ?? initialKind);
+  const [timeOn, setTimeOn] = useState(init ? init.timeOn : slot ? true : initialKind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(initialKind !== "task");
-  const [startDate, setStartDate] = useState(firstDate);
-  const [startTime, setStartTime] = useState(nextHour.time);
-  const [endDate, setEndDate] = useState(firstDate);
-  const [endTime, setEndTime] = useState(addMinutes(nextHour.time, 60).time);
-  const [repeat, setRepeat] = useState<EventRepeat>("never");
-  const [priority, setPriority] = useState<EventPriority>(0);
+  const [endOn, setEndOn] = useState(init ? init.endOn : initialKind !== "task");
+  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? firstDate);
+  const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? firstDate);
+  const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
+  const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
+  const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(KIND_ALERT[initialKind]);
-  const [alert2, setAlert2] = useState<number | null>(null);
-  const [invitees, setInvitees] = useState<string[]>([]);
+  const [alert1, setAlert1] = useState<number | null>(init ? init.alert1 : KIND_ALERT[initialKind]);
+  const [alert2, setAlert2] = useState<number | null>(init?.alert2 ?? null);
+  const [invitees, setInvitees] = useState<string[]>(init?.invitees ?? []);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -239,7 +243,8 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
     setSaving(true);
     setError(null);
     try {
-      await createEvent(input);
+      if (editing) await updateEvent(editing.id, input);
+      else await createEvent(input);
       void queryClient.invalidateQueries({ queryKey: ["events"] });
       onClose();
     } catch {
@@ -587,7 +592,23 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
 
       {/* Footer: always in reach, however far the body scrolls. */}
       <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-3">
-        <p role="status" className="min-w-0 truncate text-xs text-destructive">{error}</p>
+        <div className="flex min-w-0 items-center gap-3">
+          {editing ? (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!confirm(t("events.delete"))) return;
+                await deleteEvent(editing.id);
+                void queryClient.invalidateQueries({ queryKey: ["events"] });
+                onClose();
+              }}
+              className="rounded-full px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
+            >
+              {t("events.delete")}
+            </button>
+          ) : null}
+          <p role="status" className="min-w-0 truncate text-xs text-destructive">{error}</p>
+        </div>
         <div className="flex shrink-0 items-center gap-2">
           <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm font-medium hover:bg-muted">
             {t("events.cancel")}
@@ -666,5 +687,18 @@ function TipList({ title, items, className }: { title: string; items: string[]; 
         <p key={item} className="text-xs">· {item}</p>
       ))}
     </div>
+  );
+}
+
+/** The form in a dialog to change an event, or to start one at a tapped slot of the day or week grid. */
+export function EventEditorDialog({ editing, slot, onClose }: { editing?: CalendarEvent; slot?: { date: string; time: string }; onClose: () => void }) {
+  const { t } = useLocale();
+  return (
+    <Dialog open onOpenChange={(next) => !next && onClose()}>
+      <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-[780px] gap-0 overflow-hidden rounded-3xl p-0 [&>button.absolute]:hidden">
+        <DialogTitle className="sr-only">{t("events.create")}</DialogTitle>
+        <EventFormWeb initialKind={slot ? "appointment" : "event"} editing={editing} slot={slot} guest={false} onClose={onClose} onSignIn={onClose} />
+      </DialogContent>
+    </Dialog>
   );
 }

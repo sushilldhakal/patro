@@ -1,7 +1,22 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useUserEvents } from "@vedic-patro/features/events";
+import {
+  HOME_VIEWS,
+  isPlannerView,
+  parseHomeView,
+  useDayMarks,
+  useUserEvents,
+  weekDates,
+  type HomeView,
+  type PlannerViewKind,
+} from "@vedic-patro/features/events";
+import { HOME_VIEW_ICONS, PlannerView } from "@vedic-patro/ui/kit/events";
+import { EventEditorDialog } from "@/components/events/NewEventButton";
+import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
+import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
+import { updateEvent, type CalendarEvent } from "@vedic-patro/api-client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useHomeMonth, type CalendarMonthContext } from "@vedic-patro/features/home";
 import { fetchMonthCalendar, fetchPanchangaDay, panchangaKeys, type CalendarDay } from "@/lib/api";
@@ -49,13 +64,13 @@ function anchorDateForBrowseMonth(
   return todayAd ? parseCivilIsoToDate(todayAd) : new Date();
 }
 
-type HomePatroView = "calendar" | "panchanga";
+type HomePatroView = HomeView;
 export type { HomePatroView };
 export const HOME_PATRO_VIEW_KEY = "dhakalPatroHomePatroView";
 
 export function loadHomePatroView(): HomePatroView {
   const saved = getLocalStorageItem(HOME_PATRO_VIEW_KEY);
-  return saved === "panchanga" ? "panchanga" : "calendar";
+  return parseHomeView(saved);
 }
 
 export type { CalendarMonthContext };
@@ -113,6 +128,14 @@ export function CalendarView({
   const lastMonthDays = useRef<CalendarDay[] | null>(null);
   const patroView = patroViewProp ?? internalPatroView;
   const isPanchangaPatro = enablePatroToggle && patroView === "panchanga";
+  const plannerKind: PlannerViewKind | null = enablePatroToggle && isPlannerView(patroView) ? patroView : null;
+  const queryClient = useQueryClient();
+  // The planner views (week, day, year, list) centre on this AD date; an event is open for editing, or a slot for a new one.
+  const [anchor, setAnchor] = useState(() => todayAd ?? new Date().toISOString().slice(0, 10));
+  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
+  const plannerRange =
+    plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : { from: anchor, to: anchor };
+  const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location?.params, plannerKind != null);
   const asideInSidebar = useMediaQuery(ASIDE_SIDEBAR_MQ);
 
   const switchPatroView = (next: HomePatroView) => {
@@ -144,6 +167,14 @@ export function CalendarView({
     lastMonthDays.current = monthDays;
     onMonthContextChange(monthContext);
   }, [monthContext, monthDays, onMonthContextChange]);
+
+  // Stepping the planner into another BS month moves the header's month with it.
+  useEffect(() => {
+    if (!plannerKind || isGregorian) return;
+    const bs = adToBS(new Date(`${anchor}T12:00:00`));
+    if (bs.year !== year || bs.month !== month) monthBrowse.setYearMonth(bs.year, bs.month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anchor, plannerKind]);
 
   const panchangaGridDate = useMemo(
     () => anchorDateForBrowseMonth(year, month, monthDays, todayAd, isGregorian),
@@ -240,6 +271,31 @@ export function CalendarView({
     </>
   );
 
+  const plannerBlock = plannerKind ? (
+    <PlannerView
+      view={plannerKind}
+      anchor={anchor}
+      onAnchorChange={setAnchor}
+      onViewChange={switchPatroView}
+      events={userEvents.events}
+      marks={dayMarks.marks}
+      todayAd={todayAd ?? new Date().toISOString().slice(0, 10)}
+      onOpenEvent={(event) => setEditor({ event })}
+      onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}
+      onMoveEvent={async (event, times) => {
+        const { id: _id, ...input } = event;
+        await updateEvent(event.id, { ...input, ...times });
+        void queryClient.invalidateQueries({ queryKey: ["events"] });
+      }}
+    />
+  ) : null;
+  const shownBlock = (
+    <>
+      {plannerBlock ?? calendarBlock}
+      {editor ? <EventEditorDialog editing={editor.event} slot={editor.slot} onClose={() => setEditor(null)} /> : null}
+    </>
+  );
+
   const calendarTabLabel = isGregorian
     ? t("calendar.mode_ad")
     : patroEraShortLabel(era);
@@ -257,15 +313,22 @@ export function CalendarView({
           onChange={(next) => {
             setSelected(null);
             onDaySelect?.(null);
+            if (plannerKind && !isGregorian) {
+              const first = bsToAD(next.year, next.month, 1);
+              setAnchor(`${first.getFullYear()}-${String(first.getMonth() + 1).padStart(2, "0")}-${String(first.getDate()).padStart(2, "0")}`);
+            }
             monthBrowse.setYearMonth(next.year, next.month);
           }}
           onEraChange={(nextEra) => monthBrowse.commitEraYear(nextEra, year)}
           segments={
             enablePatroToggle
-              ? [
-                  { key: "calendar", label: calendarTabLabel, active: patroView === "calendar", onPress: () => switchPatroView("calendar") },
-                  { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => switchPatroView("panchanga") },
-                ]
+              ? HOME_VIEWS.map((view) => ({
+                  key: view,
+                  label: view === "calendar" ? calendarTabLabel : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
+                  active: patroView === view,
+                  icon: HOME_VIEW_ICONS[view],
+                  onPress: () => switchPatroView(view),
+                }))
               : undefined
           }
           segmentsLabel={t("calendar.patro_mode_aria")}
@@ -278,7 +341,7 @@ export function CalendarView({
   ) : null;
 
   if (!showMonthHeader && !aside && !holidays) {
-    return <div>{calendarBlock}</div>;
+    return <div>{shownBlock}</div>;
   }
 
   if (aside || holidays) {
@@ -286,7 +349,7 @@ export function CalendarView({
       <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] xl:items-stretch xl:gap-3.75 max-sm:gap-4">
         <div className="min-w-0">
           {monthHeader}
-          {calendarBlock}
+          {shownBlock}
           {belowPatro}
         </div>
         {aside ? (

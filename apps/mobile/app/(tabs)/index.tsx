@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { useUserEvents } from "@vedic-patro/features/events";
+import { isPlannerView, shiftDateIso, useDayMarks, useUserEvents, weekDates, type PlannerViewKind } from "@vedic-patro/features/events";
+import { PlannerView } from "@vedic-patro/ui/kit/events";
+import { EventEditSheet } from "@/components/events/EventEditSheet";
+import { updateEvent, type CalendarEvent } from "@/lib/events/api";
+import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { ScrollView, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -181,6 +185,30 @@ function HomeScreen() {
   // Shared with the header's view menu (lib/patro-view), which can switch it from any page.
   const [patroView, setPatroView] = useHomePatroView();
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);
+  const plannerKind: PlannerViewKind | null = isPlannerView(patroView) ? patroView : null;
+  // The planner views (week, day, year, list) centre on this AD date; an event open for editing, or a slot for a new one.
+  const [anchor, setAnchor] = useState(todayAd);
+  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
+  const plannerRange =
+    plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : { from: anchor, to: anchor };
+  const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location.params, plannerKind != null);
+  // The planner and the header's month follow each other: stepping a week into another BS month moves the
+  // month, and picking a month in the header moves the planner to its first day.
+  useEffect(() => {
+    if (!plannerKind || browseEra !== "bs") return;
+    const bs = adToBS(new Date(`${anchor}T12:00:00`));
+    if (bs.year !== year) setYear(bs.year);
+    if (bs.month !== month) setMonth(bs.month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anchor, plannerKind]);
+  useEffect(() => {
+    if (!plannerKind || browseEra !== "bs") return;
+    const bs = adToBS(new Date(`${anchor}T12:00:00`));
+    if (bs.year === year && bs.month === month) return;
+    const first = bsToAD(year, month, 1);
+    setAnchor(`${first.getFullYear()}-${String(first.getMonth() + 1).padStart(2, "0")}-${String(first.getDate()).padStart(2, "0")}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, month]);
   const splitAside = width >= ASIDE_SIDEBAR_SPLIT;
 
   // The browsed era/year/month lives in the address (?era=&year=&month=), like the
@@ -359,7 +387,27 @@ function HomeScreen() {
         <ScrollHero>{monthHeaderBlock}</ScrollHero>
       </Reveal>
 
-      {monthLoading ? (
+      {plannerKind ? (
+        <View style={{ paddingHorizontal: contentInset }}>
+          <PlannerView
+            view={plannerKind}
+            anchor={anchor}
+            onAnchorChange={setAnchor}
+            onViewChange={(v) => setPatroView(v)}
+            events={userEvents.events}
+            marks={dayMarks.marks}
+            todayAd={todayAd}
+            onOpenEvent={(event) => setEditor({ event })}
+            onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}
+            onMoveEvent={async (event, times) => {
+              const { id: _id, ...input } = event;
+              await updateEvent(event.id, { ...input, ...times });
+              void queryClient.invalidateQueries({ queryKey: ["events"] });
+            }}
+          />
+          <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
+        </View>
+      ) : monthLoading ? (
         <View className="py-16" style={{ paddingHorizontal: contentInset }}>
           <VedicPatroLoader />
         </View>

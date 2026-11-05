@@ -13,3 +13,23 @@ export const iconCalendarSync: IconNode = [
   ["path", { d: "M3 10h4" }],
   ["path", { d: "M8 2v4" }],
 ];
+
+export const iconViewMonth: IconNode = [ ["path", { d: "M8 2v4" }], ["path", { d: "M16 2v4" }], ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2" }], ["path", { d: "M3 10h18" }], ["path", { d: "M8 14h.01" }], ["path", { d: "M12 14h.01" }], ["path", { d: "M16 14h.01" }], ["path", { d: "M8 18h.01" }], ["path", { d: "M12 18h.01" }], ["path", { d: "M16 18h.01" }] ];
+export const iconViewPanchanga: IconNode = [ ["circle", { cx: "12", cy: "12", r: "4" }], ["path", { d: "M12 2v2" }], ["path", { d: "M12 20v2" }], ["path", { d: "m4.93 4.93 1.41 1.41" }], ["path", { d: "m17.66 17.66 1.41 1.41" }], ["path", { d: "M2 12h2" }], ["path", { d: "M20 12h2" }], ["path", { d: "m6.34 17.66-1.41 1.41" }], ["path", { d: "m19.07 4.93-1.41 1.41" }] ];
+export const iconViewWeek: IconNode = [ ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2" }], ["path", { d: "M9 3v18" }], ["path", { d: "M15 3v18" }] ];
+export const iconViewDay: IconNode = [ ["path", { d: "M11 14h1v4" }], ["path", { d: "M16 2v4" }], ["path", { d: "M3 10h18" }], ["path", { d: "M8 2v4" }], ["rect", { x: "3", y: "4", width: "18", height: "18", rx: "2" }] ];
+export const iconViewYear: IconNode = [ ["rect", { width: "7", height: "7", x: "3", y: "3", rx: "1" }], ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1" }], ["rect", { width: "7", height: "7", x: "14", y: "14", rx: "1" }], ["rect", { width: "7", height: "7", x: "3", y: "14", rx: "1" }] ];
+export const iconViewList: IconNode = [ ["path", { d: "M3 5h.01" }], ["path", { d: "M3 12h.01" }], ["path", { d: "M3 19h.01" }], ["path", { d: "M8 5h13" }], ["path", { d: "M8 12h13" }], ["path", { d: "M8 19h13" }] ];
+export const iconCheck: IconNode = [["path", { d: "M20 6 9 17l-5-5" }]];
+export const iconPlus: IconNode = [ ["path", { d: "M5 12h14" }], ["path", { d: "M12 5v14" }] ];
+export const iconTrash2: IconNode = [ ["path", { d: "M10 11v6" }], ["path", { d: "M14 11v6" }], ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" }], ["path", { d: "M3 6h18" }], ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" }] ];
+
+/** One icon per home view, for the view dropdown. */
+export const HOME_VIEW_ICONS = {
+  calendar: iconViewMonth,
+  panchanga: iconViewPanchanga,
+  week: iconViewWeek,
+  day: iconViewDay,
+  year: iconViewYear,
+  list: iconViewList,
+} as const;

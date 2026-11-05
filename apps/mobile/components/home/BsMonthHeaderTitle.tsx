@@ -7,6 +7,7 @@ import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
 import { isGregorianEra } from "@vedic-patro/domain/calendar/era";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
+import { HOME_VIEWS } from "@vedic-patro/features/events";
 import type { HomePatroView } from "./PatroViewToggle";
 
 type Props = {
@@ -51,10 +52,13 @@ export function BsMonthHeaderTitle({
   usePageViewMenu([
     {
       key: "view",
-      options: [
-        { key: "calendar", label: calendarTabLabel, active: patroView === "calendar", onPress: () => onPatroViewChange("calendar") },
-        { key: "panchanga", label: t("calendar.mode_panchanga"), active: patroView === "panchanga", onPress: () => onPatroViewChange("panchanga") },
-      ],
+      // The BS grid, the panchanga grid, and the planner views of the user's own events.
+      options: HOME_VIEWS.map((view) => ({
+        key: view,
+        label: view === "calendar" ? calendarTabLabel : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
+        active: patroView === view,
+        onPress: () => onPatroViewChange(view),
+      })),
     },
   ]);
 

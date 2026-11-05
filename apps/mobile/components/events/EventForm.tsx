@@ -1,10 +1,10 @@
 import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
-import { ActivityIndicator, Pressable, Switch, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, Switch, TextInput, View } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { NEW_EVENT_KINDS, type NewEventKind } from "@vedic-patro/api-client";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
-import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
+import { eventToDraft, useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { neutral } from "@vedic-patro/design-tokens";
 import { haptics } from "@vedic-patro/ui/motion";
@@ -16,9 +16,12 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { requestSignIn } from "@/lib/menu-request";
 import {
   createEvent,
+  deleteEvent,
+  updateEvent,
   EVENT_ALERTS,
   EVENT_PRIORITIES,
   EVENT_REPEATS,
+  type CalendarEvent,
   type CalendarEventInput,
   type EventPriority,
   type EventRepeat,
@@ -63,7 +66,8 @@ const toMinutes = (time: string) => {
 /** The alert each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
 const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
 
-export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewEventKind; onClose: () => void; onSaved: () => void }) {
+export function EventForm({ initialKind, onClose, onSaved, editing, slot }: { initialKind: NewEventKind; onClose: () => void; onSaved: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+  const init = editing ? eventToDraft(editing) : null;
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const { location } = usePanchangaLocation();
@@ -77,28 +81,28 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   const [tipsOpen, setTipsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(init?.title ?? "");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
-  const [place, setPlace] = useState("");
-  const [notes, setNotes] = useState("");
+  const [place, setPlace] = useState(init?.place ?? "");
+  const [notes, setNotes] = useState(init?.notes ?? "");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
-  const [kind, setKind] = useState<NewEventKind>(initialKind);
-  const [timeOn, setTimeOn] = useState(initialKind !== "event");
+  const [kind, setKind] = useState<NewEventKind>(init?.kind ?? initialKind);
+  const [timeOn, setTimeOn] = useState(init ? init.timeOn : slot ? true : initialKind !== "event");
   /** Off: a reminder at one moment. On: an event with an end. */
-  const [endOn, setEndOn] = useState(initialKind !== "task");
+  const [endOn, setEndOn] = useState(init ? init.endOn : initialKind !== "task");
   const nextHour = addMinutes(`${new Date().getHours()}:00`, 60);
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
-  const [startDate, setStartDate] = useState(firstDate);
-  const [startTime, setStartTime] = useState(nextHour.time);
-  const [endDate, setEndDate] = useState(firstDate);
-  const [endTime, setEndTime] = useState(addMinutes(nextHour.time, 60).time);
-  const [repeat, setRepeat] = useState<EventRepeat>("never");
-  const [priority, setPriority] = useState<EventPriority>(0);
+  const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? firstDate);
+  const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? firstDate);
+  const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
+  const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
+  const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
-  const [alert1, setAlert1] = useState<number | null>(KIND_ALERT[initialKind]);
-  const [alert2, setAlert2] = useState<number | null>(null);
-  const [invitees, setInvitees] = useState<string[]>([]);
+  const [alert1, setAlert1] = useState<number | null>(init ? init.alert1 : KIND_ALERT[initialKind]);
+  const [alert2, setAlert2] = useState<number | null>(init?.alert2 ?? null);
+  const [invitees, setInvitees] = useState<string[]>(init?.invitees ?? []);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -246,7 +250,8 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
     setSaving(true);
     setError(null);
     try {
-      await createEvent(input);
+      if (editing) await updateEvent(editing.id, input);
+      else await createEvent(input);
       void queryClient.invalidateQueries({ queryKey: ["events"] });
       haptics.success?.();
       onSaved();
@@ -296,7 +301,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
       <View className="flex-row items-center justify-between">
         <RoundButton icon="close" label={t("events.cancel")} onPress={onClose} />
         <Text className="text-title font-semibold text-foreground" style={nepaliTextStyle(17)}>
-          {t(`events.new_${kind}`)}
+          {editing ? t("events.edit") : t(`events.new_${kind}`)}
         </Text>
         <RoundButton icon="checkmark" label={t("events.save")} onPress={() => void save()} filled={canSave} busy={saving} />
       </View>
@@ -595,6 +600,29 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
         </View>
         ) : null}
       </View>
+
+      {editing ? (
+        <Pressable
+          onPress={() =>
+            Alert.alert(editing.title, undefined, [
+              { text: t("events.cancel"), style: "cancel" },
+              {
+                text: t("events.delete"),
+                style: "destructive",
+                onPress: async () => {
+                  await deleteEvent(editing.id);
+                  void queryClient.invalidateQueries({ queryKey: ["events"] });
+                  onSaved();
+                },
+              },
+            ])
+          }
+          accessibilityRole="button"
+          className="min-h-12 items-center justify-center rounded-3xl bg-destructive/10 active:opacity-70"
+        >
+          <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(16)}>{t("events.delete")}</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

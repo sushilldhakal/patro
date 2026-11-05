@@ -1,5 +1,5 @@
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import type { CalendarFeedState } from "@vedic-patro/features/events";
+import type { CalendarFeedState, DayMark, HomeView, PlannerViewKind } from "@vedic-patro/features/events";
 
 /**
  * The new-event form's date and time pickers, drawn like Apple Calendar's inline ones; the same
@@ -39,4 +39,25 @@ export type CalendarFeedCardProps = {
   copyMode: "copy" | "share";
   /** Apple Calendar's button: on Apple devices and the website. */
   showApple: boolean;
+};
+
+export type EventTimes = { starts_at: string; ends_at: string };
+
+/** The planner views of the home calendar: week, day and year grids and a list, one contract for both apps. */
+export type PlannerViewProps = {
+  view: PlannerViewKind;
+  /** The date the view is centred on, AD "YYYY-MM-DD". */
+  anchor: string;
+  onAnchorChange: (date: string) => void;
+  onViewChange: (view: HomeView) => void;
+  events: CalendarEvent[];
+  /** Festivals and public holidays by AD date. */
+  marks: Map<string, DayMark>;
+  todayAd: string;
+  /** Opens an event (the edit form). */
+  onOpenEvent: (event: CalendarEvent) => void;
+  /** A drag or resize ended: save these times. */
+  onMoveEvent: (event: CalendarEvent, times: EventTimes) => void;
+  /** An empty slot was tapped: start a new event there ("HH:MM"). */
+  onCreateAt: (date: string, time: string) => void;
 };

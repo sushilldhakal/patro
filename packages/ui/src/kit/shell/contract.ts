@@ -3,6 +3,7 @@
  * Drawing lives in `web/` and `native/`; both indexes must export every name.
  */
 import type { ComponentType, ReactNode } from "react";
+import type { IconNode } from "@vedic-patro/ui/contract";
 import type { CalendarDay, CalendarEvent, LocationParams, PanchangaDay } from "@vedic-patro/api-client";
 import type { Era, Language } from "@vedic-patro/domain/calendar/era";
 import type { PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
@@ -67,7 +68,7 @@ export type TodayHighlightCardProps = {
   moon?: (info: TodayHighlightMoon) => ReactNode;
 };
 
-export type CalendarHeaderSegment = { key: string; label: string; active: boolean; onPress: () => void };
+export type CalendarHeaderSegment = { key: string; label: string; active: boolean; onPress: () => void; /** Drawn beside the label in the web view dropdown. */ icon?: IconNode };
 
 export type PatroHeaderLocationProps = {
   location: PanchangaLocation;

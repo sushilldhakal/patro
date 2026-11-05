@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
 import { usePatroCalendarHeader, usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 import { Grid, Box, Icon, Input, Pressable, Text } from "@vedic-patro/ui";
-import type { PatroCalendarHeaderProps, PatroMonthYearNavProps } from "../contract";
+import type { CalendarHeaderSegment, PatroCalendarHeaderProps, PatroMonthYearNavProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 import { PatroHeaderLocation } from "./PatroHeaderLocation";
 
@@ -141,6 +142,7 @@ export function PatroCalendarHeader({
         </Pressable>
       </Box>
 
+      {segments && segments.length > 2 ? <ViewDropdown segments={segments} label={segmentsLabel} /> : null}
       {segments && segments.length === 2 ? (
         <Box className={cls.webSwap}>
           {segments
@@ -153,7 +155,7 @@ export function PatroCalendarHeader({
             ))}
         </Box>
       ) : null}
-      {segments && segments.length > 0 ? (
+      {segments && (segments.length === 1 || segments.length === 2) ? (
         <Box className={cn(cls.segment, cls.webSegment)} label={segmentsLabel}>
           {segments.map((seg) => (
             <Pressable key={seg.key} label={seg.label} selected={seg.active} onPress={seg.onPress} className={cn(cls.segmentItem, seg.active && cls.segmentItemActive)}>
@@ -179,4 +181,50 @@ export function PatroCalendarHeader({
 /** Month + year navigation. The caller stores the browsed month. */
 export function PatroMonthYearNav({ onBrowse, ...rest }: PatroMonthYearNavProps) {
   return <PatroCalendarHeader {...rest} onChange={onBrowse} />;
+}
+
+/** More than two views: one button showing the current view, and a menu of all of them with their icons. */
+function ViewDropdown({ segments, label }: { segments: CalendarHeaderSegment[]; label?: string }) {
+  const [open, setOpen] = useState(false);
+  const current = segments.find((s) => s.active) ?? segments[0]!;
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={label}
+        onClick={() => setOpen((o) => !o)}
+        className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold hover:bg-muted"
+      >
+        {current.icon ? <Icon node={current.icon} size={18} tone="secondary" /> : null}
+        {current.label}
+        <Icon node={shellIcons.chevronRight} size={14} tone="muted" className="rotate-90" />
+      </button>
+      {open ? (
+        <>
+          <button type="button" aria-label={label} onClick={() => setOpen(false)} className="fixed inset-0 z-40 cursor-default border-none bg-transparent" />
+          <div role="menu" className="absolute right-0 z-50 mt-2 flex min-w-48 flex-col overflow-hidden rounded-2xl border border-border bg-card p-1 shadow-lg">
+            {segments.map((seg) => (
+              <button
+                key={seg.key}
+                type="button"
+                role="menuitemradio"
+                aria-checked={seg.active}
+                onClick={() => {
+                  setOpen(false);
+                  seg.onPress();
+                }}
+                className={cn("flex items-center gap-3 rounded-xl border-none bg-transparent px-3 py-2.5 text-left text-sm hover:bg-muted", seg.active && "font-semibold text-secondary")}
+              >
+                {seg.icon ? <Icon node={seg.icon} size={18} tone={seg.active ? "secondary" : "muted"} /> : <span className="w-[18px]" />}
+                <span className="flex-1">{seg.label}</span>
+                {seg.active ? <span aria-hidden>✓</span> : null}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
 }
