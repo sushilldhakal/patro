@@ -10,6 +10,7 @@ import {
   layoutDay,
   movedTimes,
   plannerDays,
+  railOf,
   resizedTimes,
   snap,
   usePlannerText,
@@ -57,6 +58,7 @@ export function PlannerView(props: PlannerViewProps) {
         </View>
       </View>
       {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
+      {view === "day" ? <MuhurtaList date={anchor} windows={props.windows} /> : null}
       {view === "day" || view === "multi" || view === "week" ? (
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-1.5">
@@ -202,19 +204,19 @@ function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEv
               {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
                 <View key={h} pointerEvents="none" className="absolute left-0 right-0 h-px bg-border" style={{ top: h * HOUR_H }} />
               ))}
-              {(windows.get(c.date) ?? []).map((w) => (
-                <View
-                  key={`${w.source}-${w.id}`}
-                  pointerEvents="none"
-                  className={cn("absolute left-0 right-0 overflow-hidden border-l-2 px-0.5", w.source === "ashubh" ? "border-danger bg-vermilion/10" : "border-success bg-success/10")}
-                  style={{ top: (w.startMin / 60) * HOUR_H, height: ((w.endMin - w.startMin) / 60) * HOUR_H }}
-                >
-                  {days.length === 1 || w.endMin - w.startMin >= 90 ? (
-                    <Text numberOfLines={1} className={cn("text-diagram-xs font-medium", w.source === "ashubh" ? "text-danger" : "text-success")}>{tx.lang === "en" ? w.nameEn : w.nameNe}</Text>
-                  ) : null}
-                </View>
-              ))}
+              {/* Two thin rails on the left edge: runs of शुभ (green) and of अशुभ (red) time. */}
+              {(["shubh", "ashubh"] as const).map((source, lane) =>
+                railOf(windows.get(c.date) ?? [], source).map((run) => (
+                  <View
+                    key={`${source}-${run.startMin}`}
+                    pointerEvents="none"
+                    className={cn("absolute w-1 rounded-full", source === "ashubh" ? "bg-vermilion/70" : "bg-success/70")}
+                    style={{ left: 2 + lane * 6, top: (run.startMin / 60) * HOUR_H, height: ((run.endMin - run.startMin) / 60) * HOUR_H }}
+                  />
+                )),
+              )}
               {c.date === todayAd ? <NowLine /> : null}
+              <View pointerEvents="box-none" className="absolute inset-y-0 right-0" style={{ left: 14 }}>
               {c.timed.map((b) => (
                 <Block
                   key={b.event.id}
@@ -227,6 +229,7 @@ function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEv
                   }}
                 />
               ))}
+              </View>
             </Pressable>
           ))}
         </View>
@@ -412,6 +415,36 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
               <Text className={cn("font-num text-body font-semibold", index === 0 ? "text-secondary-foreground" : index < 0 && holiday ? "text-danger" : "text-foreground")}>{tx.bsDay(date)}</Text>
             </View>
           </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/** The day's शुभ and अशुभ muhurtas by name and time: what the rails on the grid stand for. */
+function MuhurtaList({ date, windows }: { date: string; windows: PlannerViewProps["windows"] }) {
+  const tx = usePlannerText();
+  const list = [...(windows.get(date) ?? [])].sort((a, b) => a.startMin - b.startMin);
+  if (list.length === 0) return null;
+  return (
+    <View className="gap-2 rounded-2xl border border-border bg-card p-3">
+      {(["shubh", "ashubh"] as const).map((source) => {
+        const rows = list.filter((w) => w.source === source);
+        if (rows.length === 0) return null;
+        return (
+          <View key={source} className="gap-1.5">
+            <Text className={cn("text-caption font-semibold", source === "ashubh" ? "text-danger" : "text-success")}>
+              {tx.t(source === "ashubh" ? "calendar.window_ashubh" : "calendar.window_shubh")}
+            </Text>
+            <View className="flex-row flex-wrap gap-1.5">
+              {rows.map((w) => (
+                <View key={w.id} className={cn("flex-row items-center gap-1.5 rounded-full px-2.5 py-1", source === "ashubh" ? "bg-vermilion/10" : "bg-success/10")}>
+                  <Text className={cn("text-caption font-medium", source === "ashubh" ? "text-danger" : "text-success")}>{tx.lang === "en" ? w.nameEn : w.nameNe}</Text>
+                  <Text className="font-num text-caption text-muted-foreground">{tx.clock(w.startMin)}–{tx.clock(w.endMin)}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         );
       })}
     </View>

@@ -8,6 +8,7 @@ import {
   layoutDay,
   movedTimes,
   plannerDays,
+  railOf,
   resizedTimes,
   snap,
   usePlannerText,
@@ -54,6 +55,7 @@ export function PlannerView(props: PlannerViewProps) {
         </div>
       </div>
       {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
+      {view === "day" ? <MuhurtaList date={anchor} windows={props.windows} /> : null}
       {view === "day" || view === "multi" || view === "week" ? (
         <p className="m-0 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-success/40" />{t("calendar.window_shubh")}</span>
@@ -69,7 +71,6 @@ type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number; moved
 
 function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
-  const lang = tx.lang;
   const scroller = useRef<HTMLDivElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
@@ -183,17 +184,17 @@ function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEv
             {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
               <span key={h} aria-hidden className="pointer-events-none absolute inset-x-0 h-px bg-border" style={{ top: h * HOUR_H }} />
             ))}
-            {(windows.get(c.date) ?? []).map((w) => (
-              <span
-                key={`${w.source}-${w.id}`}
-                aria-hidden
-                title={lang === "en" ? w.nameEn : w.nameNe}
-                className={cn("pointer-events-none absolute inset-x-0 z-0 overflow-hidden border-l-2 px-0.5 text-diagram-xs font-medium leading-tight", w.source === "ashubh" ? "border-danger bg-danger/10 text-danger" : "border-success bg-success/10 text-success")}
-                style={{ top: (w.startMin / 60) * HOUR_H, height: ((w.endMin - w.startMin) / 60) * HOUR_H }}
-              >
-                {days.length === 1 || w.endMin - w.startMin >= 90 ? (lang === "en" ? w.nameEn : w.nameNe) : null}
-              </span>
-            ))}
+            {/* Two thin rails on the left edge: runs of शुभ (green) and of अशुभ (red) time. */}
+            {(["shubh", "ashubh"] as const).map((source, lane) =>
+              railOf(windows.get(c.date) ?? [], source).map((run) => (
+                <span
+                  key={`${source}-${run.startMin}`}
+                  aria-hidden
+                  className={cn("pointer-events-none absolute z-[1] w-1 rounded-full", source === "ashubh" ? "bg-danger/70" : "bg-success/70")}
+                  style={{ left: 2 + lane * 6, top: (run.startMin / 60) * HOUR_H, height: ((run.endMin - run.startMin) / 60) * HOUR_H }}
+                />
+              )),
+            )}
             {c.date === todayAd ? <NowLine /> : null}
             {c.timed.map((b) => (
               <Block
@@ -242,8 +243,8 @@ function Block({ block, drag, onDown, onMove, onUp }: { block: DayBlock; drag: D
       style={{
         top,
         height,
-        left: `calc(${(lane / lanes) * 100}% + 2px)`,
-        width: `calc(${100 / lanes}% - 4px)`,
+        left: `calc(${(lane / lanes) * 100}% + 14px)`,
+        width: `calc(${100 / lanes}% - 18px)`,
         transform: moving && drag?.moved ? `translateX(${drag.dx}px)` : undefined,
       }}
     >
@@ -385,6 +386,36 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
               {tx.bsDay(date)}
             </span>
           </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** The day's शुभ and अशुभ muhurtas by name and time: what the rails on the grid stand for. */
+function MuhurtaList({ date, windows }: { date: string; windows: PlannerViewProps["windows"] }) {
+  const tx = usePlannerText();
+  const list = [...(windows.get(date) ?? [])].sort((a, b) => a.startMin - b.startMin);
+  if (list.length === 0) return null;
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
+      {(["shubh", "ashubh"] as const).map((source) => {
+        const rows = list.filter((w) => w.source === source);
+        if (rows.length === 0) return null;
+        return (
+          <div key={source} className="flex flex-col gap-1.5">
+            <span className={cn("text-xs font-semibold", source === "ashubh" ? "text-danger" : "text-success")}>
+              {tx.t(source === "ashubh" ? "calendar.window_ashubh" : "calendar.window_shubh")}
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {rows.map((w) => (
+                <span key={w.id} className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs", source === "ashubh" ? "bg-danger/10 text-danger" : "bg-success/10 text-success")}>
+                  <span className="font-medium">{tx.lang === "en" ? w.nameEn : w.nameNe}</span>
+                  <span className="tabular-nums opacity-80">{tx.clock(w.startMin)}–{tx.clock(w.endMin)}</span>
+                </span>
+              ))}
+            </div>
+          </div>
         );
       })}
     </div>

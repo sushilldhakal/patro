@@ -11,6 +11,18 @@ const minutesOf = (time: string) => {
   return (h ?? 0) * 60 + (m ?? 0);
 };
 
+/** Overlapping bands of one kind joined into runs, for a thin rail that stays readable when many overlap. */
+export function railOf(bands: WindowBand[], source: WindowBand["source"]): { startMin: number; endMin: number }[] {
+  const sorted = bands.filter((b) => b.source === source).sort((a, b) => a.startMin - b.startMin);
+  const runs: { startMin: number; endMin: number }[] = [];
+  for (const b of sorted) {
+    const last = runs[runs.length - 1];
+    if (last && b.startMin <= last.endMin) last.endMin = Math.max(last.endMin, b.endMin);
+    else runs.push({ startMin: b.startMin, endMin: b.endMin });
+  }
+  return runs;
+}
+
 /** The part of a pick that falls on `date`, or null. A pick may begin the evening before or run past midnight. */
 function clip(pick: DayTimePick, date: string): WindowBand | null {
   if (pick.source === "pushkara" || pick.startDate > date || pick.endDate < date) return null;
