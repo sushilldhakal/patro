@@ -756,7 +756,7 @@
   "/api/meta/capabilities"
  ],
  "fetchDocuments": [
-  "/api/v1/documents?v=18&language=ne"
+  "/api/v1/documents?v=19&language=ne"
  ],
  "fetchDocumentDetail": [
   "/api/v1/documents/hanuman%20chalisa?language=ne"
@@ -765,7 +765,7 @@
   "/api/v1/documents/bhagavad-gita/chapters/3?language=ne"
  ],
  "fetchVedaDaily": [
-  "/api/v1/veda/daily?date=2026-10-10&v=18&language=ne"
+  "/api/v1/veda/daily?date=2026-10-10&v=19&language=ne"
  ],
  "apiSignup": [
   "POST /api/auth/signup {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"

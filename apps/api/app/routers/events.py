@@ -6,7 +6,6 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
 
 from app.security import CurrentUser, DbSession
 from database.models import CalendarEvent
@@ -104,7 +103,7 @@ class FeedOut(BaseModel):
     synced_app: str | None = None
 
 
-def _feed_out(db: Session, user_id: str, token: str) -> FeedOut:
+def _feed_out(db: DbSession, user_id: str, token: str) -> FeedOut:
     synced_at, synced_app = events.feed_sync(db, user_id)
     return FeedOut(token=token, path=f"/calendar/{token}.ics", synced_at=synced_at, synced_app=synced_app)
 

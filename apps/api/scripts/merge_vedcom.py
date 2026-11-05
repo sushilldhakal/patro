@@ -32,6 +32,8 @@ import re
 import unicodedata
 from pathlib import Path
 
+from vedcom_glyphs import clean_sanskrit
+
 ROOT = Path(__file__).resolve().parents[1]
 DAYANANDA = "स्वामी दयानन्द सरस्वती"
 HINDI_BLOCK = 1  # language-id-1 on the site: the Hindi commentaries
@@ -111,7 +113,7 @@ def main() -> None:
         for key in ("devata", "rishi", "chhanda", "svara"):
             shloka[key] = row.get(key) or None
         if not args.keep_text:
-            shloka["sanskrit"] = row["sanskrit"]
+            shloka["sanskrit"] = clean_sanskrit(args.veda, row["sanskrit"])
         shloka["padapatha"] = row.get("padapatha") or None
         shloka["meaning_hi"] = hindi_meaning(row.get("commentaries") or [])
 
