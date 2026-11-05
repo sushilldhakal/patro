@@ -1,8 +1,7 @@
 import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Switch, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, Switch, TextInput, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { NEW_EVENT_KINDS, fetchSaitDetail, type NewEventKind, type SaitDetailDay } from "@vedic-patro/api-client";
-import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
+import { NEW_EVENT_KINDS, type NewEventKind } from "@vedic-patro/api-client";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
@@ -32,10 +31,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
-type Panel = "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "alert1" | "alert2" | "priority" | null;
-/** Where the time comes from: typed in, or one of the day's / a ceremony's times. */
-type PickSource = "none" | "sait" | "shubh" | "ashubh" | "pushkara";
-const PICK_SOURCES: PickSource[] = ["none", "sait", "shubh", "ashubh", "pushkara"];
+type Panel = "pick" | "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "alert1" | "alert2" | "priority" | null;
 type IconName = ComponentProps<typeof Ionicons>["name"];
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -78,10 +74,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   const labels = useEventLabels(today);
 
   const [panel, setPanel] = useState<Panel>(null);
-  const [pickSource, setPickSource] = useState<PickSource>("none");
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [sait, setSait] = useState<SaitCategoryId | null>(null);
-  const [saitDay, setSaitDay] = useState<SaitDetailDay | null>(null);
   const [title, setTitle] = useState("");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
@@ -98,8 +91,6 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   const [startTime, setStartTime] = useState(nextHour.time);
   const [endDate, setEndDate] = useState(firstDate);
   const [endTime, setEndTime] = useState(addMinutes(nextHour.time, 60).time);
-  /** Whose शुभ / अशुभ / पुष्कर list is shown; follows the start date the user picks. */
-  const [pickDate, setPickDate] = useState(firstDate);
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
@@ -126,25 +117,18 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
     setPanel((cur) => (cur === p ? null : p));
   };
 
-  // The साइत's days from today on, this BS year and the next.
-  const bsYear = bsFromCivilIso(today).year;
-  const saitDays = useQuery({
-    queryKey: ["events", "sait-days", sait, bsYear, location.params.lat, location.params.lon],
-    enabled: sait != null,
-    queryFn: async () => {
-      const years = await Promise.all([bsYear, bsYear + 1].map((y) => fetchSaitDetail(y, sait!, location.params).catch(() => null)));
-      return years.flatMap((r) => r?.days ?? []).filter((d) => d.gregorian >= today).slice(0, 12);
-    },
-  });
+  // The day's शुभ and अशुभ times, from its panchanga, as one list in clock order (green and red).
+  const dayPicks = useDayTimePicks(startDate, location.params, true);
+  const pickList: DayTimePick[] = useMemo(
+    () => [...dayPicks.picks.shubh, ...dayPicks.picks.ashubh].sort((a, b) => `${a.startDate}T${a.startTime}`.localeCompare(`${b.startDate}T${b.startTime}`)),
+    [dayPicks.picks],
+  );
+  const picked = pickList.find((p) => p.id === pickedId) ?? null;
 
-  // The day's शुभ / अशुभ / पुष्कर times, from its panchanga.
-  const dayPicks = useDayTimePicks(pickDate, location.params, pickSource === "shubh" || pickSource === "ashubh" || pickSource === "pushkara");
-  const pickList: DayTimePick[] =
-    pickSource === "shubh" ? dayPicks.picks.shubh : pickSource === "ashubh" ? dayPicks.picks.ashubh : pickSource === "pushkara" ? dayPicks.picks.pushkara : [];
+  const bsYear = bsFromCivilIso(today).year;
 
   const setStart = (date: string) => {
     setStartDate(date);
-    setPickDate(date);
     if (endDate < date) setEndDate(date);
   };
 
@@ -163,18 +147,8 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
     setPanel(null);
   };
 
-  const pickSaitDay = (day: SaitDetailDay) => {
-    haptics.tick();
-    const label = SAIT_CATEGORY_LABELS[sait!];
-    setSaitDay(day);
-    setPickedId(`sait:${day.gregorian}`);
-    setPickDate(day.gregorian);
-    apply(lang === "en" ? label.en : label.ne, day.gregorian, day.window_start, day.gregorian, day.window_end, true);
-  };
-
   const pickName = (p: DayTimePick) => {
     const name = lang === "en" ? p.nameEn : p.nameNe;
-    if (p.source === "pushkara") return t("events.pick_pushkara_name", { lagna: name });
     if (p.source === "ashubh") return t("events.pick_ashubh_title", { name });
     return name;
   };
@@ -182,20 +156,9 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   const pickDayTime = (p: DayTimePick) => {
     haptics.tick();
     setPickedId(p.id);
-    // A पुष्कर नवांश is a moment to begin at; the शुभ / अशुभ windows run to their end.
-    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime, p.source !== "pushkara");
+    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime, true);
     // A bad time is worth knowing when it begins.
     if (p.source === "ashubh" && alert1 == null) setAlert1(0);
-  };
-
-  const choosePickSource = (s: PickSource) => {
-    haptics.tick();
-    setPickSource(s);
-    setPickedId(null);
-    if (s !== "sait") {
-      setSait(null);
-      setSaitDay(null);
-    }
   };
 
   // Tips: the default profile's guidance for the start day.
@@ -214,16 +177,19 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
   });
   const day: GuidanceDay | null = guidance.data?.days[0] ?? null;
 
-  // Only warn about an अशुभ window the user did not choose on purpose.
-  const clash: GuidanceWindow | null = useMemo(() => {
-    if (!day || !timeOn || pickSource === "ashubh") return null;
-    const at = toMinutes(startTime);
-    return day.windows.find((w) => w.kind === "ashubh" && w.end && toMinutes(w.start) <= at && at < toMinutes(w.end)) ?? null;
-  }, [day, timeOn, startTime, pickSource]);
-  const better: GuidanceWindow | null = useMemo(
-    () => (clash && day ? (day.windows.find((w) => w.kind === "shubh" && w.end) ?? null) : null),
-    [clash, day],
-  );
+  // A time typed in by hand that lands in an अशुभ window gets a warning (not when the user picked that window).
+  const clash: DayTimePick | null = useMemo(() => {
+    if (!timeOn || picked?.source === "ashubh") return null;
+    const at = `${startDate}T${startTime}`;
+    return dayPicks.picks.ashubh.find((w) => `${w.startDate}T${w.startTime}` <= at && at < `${w.endDate}T${w.endTime}`) ?? null;
+  }, [dayPicks.picks.ashubh, timeOn, picked, startDate, startTime]);
+  // The next शुभ window after the typed time, else the day's first.
+  const better: DayTimePick | null = useMemo(() => {
+    if (!clash) return null;
+    const at = `${startDate}T${startTime}`;
+    const good = dayPicks.picks.shubh;
+    return good.find((w) => `${w.startDate}T${w.startTime}` > at) ?? good[0] ?? null;
+  }, [clash, dayPicks.picks.shubh, startDate, startTime]);
 
   const addInvitee = () => {
     const email = draft.trim().toLowerCase();
@@ -258,8 +224,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
     }
     const pending = draft.trim().toLowerCase();
     const allInvitees = pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees;
-    const picked = pickSource === "sait" ? (sait ? { kind: "sait", key: sait } : null) : pickSource === "none" ? null : pickList.find((p) => p.id === pickedId);
-    const input: CalendarEventInput = {
+        const input: CalendarEventInput = {
       kind,
       priority,
       title: title.trim(),
@@ -271,7 +236,7 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
       timezone: zone,
       repeat,
       alerts: [alert1, alert2].filter((a): a is number => a != null),
-      source_kind: picked ? ("source" in picked ? picked.source : picked.kind) : null,
+      source_kind: picked ? picked.source : null,
       source_key: picked ? picked.key.slice(0, 64) : null,
       invitees: isAuthenticated ? allInvitees : [],
       profile_id: profile?.id ?? null,
@@ -359,64 +324,38 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
         </Text>
       ) : null}
 
-      {/* Optional: the time from a साइत, or the day's शुभ / अशुभ / पुष्कर times. */}
+      {/* Optional: one dropdown of the day's times, शुभ in green and अशुभ in red; picking fills the title and times. */}
       <Group>
-        <Text className="pt-3 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.pick")}</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2 py-3">
-          {PICK_SOURCES.map((s) => (
-            <Chip key={s} label={t(`events.pick_${s}`)} active={pickSource === s} tone={s === "ashubh" ? "bad" : "normal"} onPress={() => choosePickSource(s)} />
-          ))}
-        </ScrollView>
-        {pickSource === "sait" ? (
-          <View className="gap-3 pb-3">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2 px-1">
-              {SAIT_CATEGORIES.map((c) => (
-                <Chip
-                  key={c.id}
-                  label={lang === "en" ? SAIT_CATEGORY_LABELS[c.id].en : SAIT_CATEGORY_LABELS[c.id].ne}
-                  active={sait === c.id}
-                  onPress={() => {
-                    setSait(c.id);
-                    setSaitDay(null);
-                  }}
-                />
-              ))}
-            </ScrollView>
-            {sait ? (
-              saitDays.isLoading ? (
-                <Text className="px-1 text-caption text-muted-foreground">{t("events.sait_loading")}</Text>
-              ) : (saitDays.data ?? []).length === 0 ? (
-                <Text className="px-1 text-caption text-muted-foreground">{t("events.sait_no_days")}</Text>
-              ) : (
-                <View>
-                  <Text className="px-1 pb-1 text-caption text-muted-foreground">{t("events.sait_pick_day")}</Text>
-                  {(saitDays.data ?? []).map((d) => (
-                    <Option
-                      key={d.gregorian}
-                      label={`${lang === "en" ? labels.bsDate(d.gregorian) : `${d.bs_month_name_ne} ${digits(d.bs_day)}`} · ${lang === "en" ? d.weekday_en : d.weekday_ne}`}
-                      detail={`${labels.clock(d.window_start)}–${labels.clock(d.window_end)}`}
-                      active={saitDay?.gregorian === d.gregorian}
-                      onPress={() => pickSaitDay(d)}
-                    />
-                  ))}
-                </View>
-              )
-            ) : null}
+        <Pressable
+          onPress={() => toggle("pick")}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: panel === "pick" }}
+          className="min-h-14 flex-row items-center gap-3 active:opacity-70"
+        >
+          <View className="w-6 items-center">
+            <Ionicons name="sparkles-outline" size={20} color={colors.mutedForeground} />
           </View>
-        ) : pickSource !== "none" ? (
+          <Text className="min-w-0 flex-1 text-body text-foreground" style={nepaliTextStyle(16)}>{t("events.pick_shubh_ashubh")}</Text>
+          <View className="min-w-0 flex-row items-center gap-2">
+            {picked ? (
+              <>
+                <View className={cn("h-2 w-2 rounded-full", picked.source === "ashubh" ? "bg-destructive" : "bg-success")} />
+                <Text className={cn("shrink text-body", picked.source === "ashubh" ? "text-destructive" : "text-success")} style={nepaliTextStyle(15)} numberOfLines={1}>
+                  {lang === "en" ? picked.nameEn : picked.nameNe}
+                </Text>
+              </>
+            ) : (
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(15)}>{t("events.pick_none")}</Text>
+            )}
+            <Ionicons name="chevron-expand" size={16} color={colors.mutedForeground} />
+          </View>
+        </Pressable>
+        {panel === "pick" ? (
           <View className="pb-3">
-            <View className="flex-row items-center justify-between">
-              <Pressable onPress={() => { haptics.tick(); setPickDate(shiftDate(pickDate, -1)); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("events.prev_day")} className="h-8 w-8 items-center justify-center active:opacity-50">
-                <Ionicons name="chevron-back" size={18} color={colors.foreground} />
-              </Pressable>
-              <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(13)}>
-                {t("events.pick_for_day", { date: labels.day(pickDate) })}
-              </Text>
-              <Pressable onPress={() => { haptics.tick(); setPickDate(shiftDate(pickDate, 1)); }} hitSlop={8} accessibilityRole="button" accessibilityLabel={t("events.next_day")} className="h-8 w-8 items-center justify-center active:opacity-50">
-                <Ionicons name="chevron-forward" size={18} color={colors.foreground} />
-              </Pressable>
-            </View>
-            <Text className="px-1 pb-1 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>{t(`events.pick_${pickSource}_hint`)}</Text>
+            <Text className="px-1 pb-1 text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+              {t("events.pick_for_day", { date: labels.day(startDate) })}
+            </Text>
+            <Option label={t("events.pick_none")} active={picked == null} onPress={() => { setPickedId(null); setPanel(null); }} />
             {dayPicks.loading ? (
               <ActivityIndicator color={colors.mutedForeground} />
             ) : dayPicks.failed ? (
@@ -428,9 +367,9 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
                 <Option
                   key={p.id}
                   label={lang === "en" ? p.nameEn : p.nameNe}
-                  detail={`${labels.clock(p.startTime)}${p.source === "pushkara" ? "" : `–${labels.clock(p.endTime)}`}${p.startDate !== pickDate ? ` · ${labels.day(p.startDate)}` : ""}`}
+                  detail={`${labels.clock(p.startTime)}–${labels.clock(p.endTime)}${p.startDate !== startDate ? ` · ${labels.day(p.startDate)}` : ""}`}
                   active={pickedId === p.id}
-                  tone={p.source === "ashubh" ? "bad" : p.source === "shubh" || p.source === "pushkara" ? "good" : undefined}
+                  tone={p.source === "ashubh" ? "bad" : "good"}
                   onPress={() => pickDayTime(p)}
                 />
               ))
@@ -499,6 +438,36 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
           </>
         ) : null}
       </Group>
+
+      {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
+      {clash ? (
+        <View accessibilityRole="alert" className="gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="warning-outline" size={18} color={colors.destructive} />
+            <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(15)}>{t("events.bad_time_alert")}</Text>
+          </View>
+          <Text className="text-caption text-destructive" style={nepaliTextStyle(13)}>
+            {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
+          </Text>
+          {better ? (
+            <Pressable
+              onPress={() => {
+                haptics.tick();
+                setStartDate(better.startDate);
+                setStartTime(better.startTime);
+                setEndDate(better.endDate);
+                setEndTime(better.endTime);
+              }}
+              accessibilityRole="button"
+              className="self-start rounded-full bg-success px-3 py-1.5 active:opacity-70"
+            >
+              <Text className="text-caption font-semibold text-white" style={nepaliTextStyle(13)}>
+                {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
 
       <Group>
         <IconRow icon="repeat" label={t("events.repeat")} value={t(`events.repeat_${repeat}`)} muted onPress={() => toggle("repeat")} updown />
@@ -589,51 +558,12 @@ export function EventForm({ initialKind, onClose, onSaved }: { initialKind: NewE
         />
       </Group>
 
-      {/* Tips for the chosen day: the saait's own reading, the profile's guidance, and a clash with a bad window. */}
+      {/* Tips for the chosen day: the profile's guidance for the day. */}
       <View className="gap-2 rounded-3xl border border-secondary/30 bg-secondary/5 p-4">
         <View className="flex-row items-center gap-2">
           <Ionicons name="bulb-outline" size={18} color={colors.secondary} />
           <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(15)}>{t("events.tips")}</Text>
         </View>
-        {saitDay ? (
-          <Text className="text-caption text-foreground" style={nepaliTextStyle(13)}>
-            {t("events.tips_sait_day", {
-              tithi: lang === "en" ? saitDay.tithi_en : saitDay.tithi_ne,
-              nakshatra: lang === "en" ? saitDay.nakshatra_en : saitDay.nakshatra_ne,
-              lagna: lang === "en" ? saitDay.lagna_en : (saitDay.lagna_ne ?? saitDay.lagna_en),
-            })}
-          </Text>
-        ) : null}
-        {clash ? (
-          <View className="gap-2 rounded-2xl bg-destructive/10 p-3">
-            <Text className="text-caption text-destructive" style={nepaliTextStyle(13)}>
-              {t("events.tips_bad_window", {
-                name: (lang === "en" ? clash.name_en : clash.name_ne) ?? clash.key,
-                start: labels.clock(clash.start),
-                end: clash.end ? labels.clock(clash.end) : "",
-              })}
-            </Text>
-            {better ? (
-              <Pressable
-                onPress={() => {
-                  haptics.tick();
-                  setStartTime(better.start);
-                  setEndTime(better.end ?? addMinutes(better.start, 60).time);
-                }}
-                accessibilityRole="button"
-                className="self-start rounded-full bg-secondary px-3 py-1.5 active:opacity-70"
-              >
-                <Text className="text-caption font-semibold text-secondary-foreground" style={nepaliTextStyle(13)}>
-                  {t("events.tips_better", {
-                    name: (lang === "en" ? better.name_en : better.name_ne) ?? better.key,
-                    start: labels.clock(better.start),
-                    end: better.end ? labels.clock(better.end) : "",
-                  })}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
-        ) : null}
         {day ? (
           <>
             <Text className="text-caption text-foreground" style={nepaliTextStyle(13)}>{lang === "en" ? day.summary_en : day.summary_ne}</Text>
@@ -787,30 +717,9 @@ function Option({ label, detail, active, tone, onPress }: { label: string; detai
   return (
     <Pressable onPress={onPress} accessibilityRole="menuitem" accessibilityState={{ selected: active }} className="min-h-11 flex-row items-center gap-3 active:opacity-60">
       <View className="w-5 items-center">{active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}</View>
-      {tone ? <View className={cn("h-2 w-2 rounded-full", tone === "bad" ? "bg-destructive" : "bg-secondary")} /> : null}
+      {tone ? <View className={cn("h-2 w-2 rounded-full", tone === "bad" ? "bg-destructive" : "bg-success")} /> : null}
       <Text className="min-w-0 flex-1 text-body text-foreground" style={nepaliTextStyle(15)}>{label}</Text>
       {detail ? <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>{detail}</Text> : null}
-    </Pressable>
-  );
-}
-
-function Chip({ label, active, tone = "normal", onPress }: { label: string; active: boolean; tone?: "normal" | "bad"; onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={() => {
-        haptics.tick();
-        onPress();
-      }}
-      accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-      className={cn(
-        "rounded-full border px-3 py-1.5 active:opacity-70",
-        active ? (tone === "bad" ? "border-destructive bg-destructive" : "border-secondary bg-secondary") : "border-border bg-background",
-      )}
-    >
-      <Text className={cn("text-caption font-medium", active ? (tone === "bad" ? "text-white" : "text-secondary-foreground") : "text-foreground")} style={nepaliTextStyle(14)}>
-        {label}
-      </Text>
     </Pressable>
   );
 }

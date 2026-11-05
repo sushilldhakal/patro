@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Check, ChevronLeft, ChevronRight, ChevronsUpDown, Clock, Flag, Globe, Lightbulb, Plus, Repeat, X } from "lucide-react";
+import { CalendarDays, Check, ChevronsUpDown, Clock, Flag, Globe, Lightbulb, Plus, Repeat, Sparkles, TriangleAlert, X } from "lucide-react";
 import {
   EVENT_ALERTS,
   EVENT_PRIORITIES,
@@ -8,15 +8,11 @@ import {
   NEW_EVENT_KINDS,
   createEvent,
   fetchDayGuidance,
-  fetchSaitDetail,
   type CalendarEventInput,
-  type DayWindow,
   type EventPriority,
   type NewEventKind,
   type EventRepeat,
-  type SaitDetailDay,
 } from "@vedic-patro/api-client";
-import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { addMinutes, shiftDate, todayIn, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
 import { useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
@@ -31,10 +27,7 @@ import { uploadGuestEvents } from "@/lib/guest-events";
 /** The reminder each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
 const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-type Panel = "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "priority" | null;
-/** Where the time comes from: typed in, or one of the day's / a ceremony's times. */
-type PickSource = "none" | "sait" | "shubh" | "ashubh" | "pushkara";
-const PICK_SOURCES: PickSource[] = ["none", "sait", "shubh", "ashubh", "pushkara"];
+type Panel = "pick" | "startDate" | "startTime" | "endDate" | "endTime" | "repeat" | "priority" | null;
 /** An all-day reminder's alert rings at 9:00, as Apple Reminders does. */
 const ALL_DAY_REMINDER_AT = "09:00";
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -102,7 +95,7 @@ export function CreateEventCards() {
 }
 
 function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: NewEventKind; guest: boolean; onClose: () => void; onSignIn: () => void }) {
-  const { t, lang, digits } = useLocale();
+  const { t, lang } = useLocale();
   const queryClient = useQueryClient();
   const { location } = usePanchangaLocation();
   const zone = location.params.timezone ?? "Asia/Kathmandu";
@@ -112,10 +105,7 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
 
   const [panel, setPanel] = useState<Panel>(null);
-  const [pickSource, setPickSource] = useState<PickSource>("none");
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [sait, setSait] = useState<SaitCategoryId | null>(null);
-  const [saitDay, setSaitDay] = useState<SaitDetailDay | null>(null);
   const [title, setTitle] = useState("");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
   const [autoTitle, setAutoTitle] = useState<string | null>(null);
@@ -130,8 +120,6 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
   const [startTime, setStartTime] = useState(nextHour.time);
   const [endDate, setEndDate] = useState(firstDate);
   const [endTime, setEndTime] = useState(addMinutes(nextHour.time, 60).time);
-  /** Whose शुभ / अशुभ / पुष्कर list is shown; follows the start date the user picks. */
-  const [pickDate, setPickDate] = useState(firstDate);
   const [repeat, setRepeat] = useState<EventRepeat>("never");
   const [priority, setPriority] = useState<EventPriority>(0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
@@ -146,19 +134,13 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
 
   const bsYear = bsFromCivilIso(today).year;
   const years = Array.from({ length: 8 }, (_, i) => bsYear - 1 + i);
-  const saitDays = useQuery({
-    queryKey: ["events", "sait-days", sait, bsYear, location.params.lat, location.params.lon],
-    enabled: sait != null,
-    queryFn: async () => {
-      const years = await Promise.all([bsYear, bsYear + 1].map((y) => fetchSaitDetail(y, sait!, location.params).catch(() => null)));
-      return years.flatMap((r) => r?.days ?? []).filter((d) => d.gregorian >= today).slice(0, 12);
-    },
-  });
-
-  // The day's शुभ / अशुभ / पुष्कर times, from its panchanga.
-  const dayPicks = useDayTimePicks(pickDate, location.params, pickSource === "shubh" || pickSource === "ashubh" || pickSource === "pushkara");
-  const pickList: DayTimePick[] =
-    pickSource === "shubh" ? dayPicks.picks.shubh : pickSource === "ashubh" ? dayPicks.picks.ashubh : pickSource === "pushkara" ? dayPicks.picks.pushkara : [];
+  // The day's शुभ and अशुभ times, from its panchanga, as one list in clock order (green and red).
+  const dayPicks = useDayTimePicks(startDate, location.params, true);
+  const pickList: DayTimePick[] = useMemo(
+    () => [...dayPicks.picks.shubh, ...dayPicks.picks.ashubh].sort((a, b) => `${a.startDate}T${a.startTime}`.localeCompare(`${b.startDate}T${b.startTime}`)),
+    [dayPicks.picks],
+  );
+  const picked = pickList.find((p) => p.id === pickedId) ?? null;
 
   // Invitations and profile tips need an account; a guest's event is kept in this browser.
   const profiles = useQuery({ queryKey: ["events", "profiles"], queryFn: listProfiles, enabled: !guest, staleTime: 5 * 60_000 });
@@ -170,19 +152,22 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
     queryFn: () => fetchDayGuidance(profile!.id, startDate, location.params),
   });
   const day = guidance.data?.days[0] ?? null;
-  // Only warn about an अशुभ window the user did not choose on purpose.
-  const clash: DayWindow | null = useMemo(() => {
-    if (!day || !timeOn || pickSource === "ashubh") return null;
-    const at = toMinutes(startTime);
-    return day.windows.find((w) => w.kind === "ashubh" && w.end && toMinutes(w.start) <= at && at < toMinutes(w.end)) ?? null;
-  }, [day, timeOn, startTime, pickSource]);
-  const better = clash && day ? (day.windows.find((w) => w.kind === "shubh" && w.end) ?? null) : null;
-
-  const saitLabel = (id: SaitCategoryId) => (lang === "en" ? SAIT_CATEGORY_LABELS[id].en : SAIT_CATEGORY_LABELS[id].ne);
+  // A time typed in by hand that lands in an अशुभ window gets a warning (not when the user picked that window).
+  const clash: DayTimePick | null = useMemo(() => {
+    if (!timeOn || picked?.source === "ashubh") return null;
+    const at = `${startDate}T${startTime}`;
+    return dayPicks.picks.ashubh.find((w) => `${w.startDate}T${w.startTime}` <= at && at < `${w.endDate}T${w.endTime}`) ?? null;
+  }, [dayPicks.picks.ashubh, timeOn, picked, startDate, startTime]);
+  // The next शुभ window after the typed time, else the day's first.
+  const better: DayTimePick | null = useMemo(() => {
+    if (!clash) return null;
+    const at = `${startDate}T${startTime}`;
+    const good = dayPicks.picks.shubh;
+    return good.find((w) => `${w.startDate}T${w.startTime}` > at) ?? good[0] ?? null;
+  }, [clash, dayPicks.picks.shubh, startDate, startTime]);
 
   const setStart = (date: string) => {
     setStartDate(date);
-    setPickDate(date);
     if (endDate < date) setEndDate(date);
   };
 
@@ -201,35 +186,17 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
     setPanel(null);
   };
 
-  const pickSaitDay = (d: SaitDetailDay) => {
-    setSaitDay(d);
-    setPickedId(`sait:${d.gregorian}`);
-    setPickDate(d.gregorian);
-    apply(saitLabel(sait!), d.gregorian, d.window_start, d.gregorian, d.window_end, true);
-  };
-
   const pickName = (p: DayTimePick) => {
     const name = lang === "en" ? p.nameEn : p.nameNe;
-    if (p.source === "pushkara") return t("events.pick_pushkara_name", { lagna: name });
     if (p.source === "ashubh") return t("events.pick_ashubh_title", { name });
     return name;
   };
 
   const pickDayTime = (p: DayTimePick) => {
     setPickedId(p.id);
-    // A पुष्कर नवांश is a moment to begin at; the शुभ / अशुभ windows run to their end.
-    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime, p.source !== "pushkara");
+    apply(pickName(p), p.startDate, p.startTime, p.endDate, p.endTime, true);
     // A bad time is worth knowing when it begins.
     if (p.source === "ashubh" && alert1 == null) setAlert1(0);
-  };
-
-  const choosePickSource = (s: PickSource) => {
-    setPickSource(s);
-    setPickedId(null);
-    if (s !== "sait") {
-      setSait(null);
-      setSaitDay(null);
-    }
   };
 
   const addInvitee = () => {
@@ -250,7 +217,7 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
     if (!title.trim()) return setError(t("events.need_title"));
     if (Date.parse(endIso) < Date.parse(startIso)) return setError(t("events.end_before_start"));
     const pending = draft.trim().toLowerCase();
-    const dayPick = pickSource === "none" || pickSource === "sait" ? null : pickList.find((p) => p.id === pickedId) ?? null;
+    const dayPick = picked;
     const input: CalendarEventInput = {
       kind,
       priority,
@@ -263,8 +230,8 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
       timezone: zone,
       repeat,
       alerts: [alert1, alert2].filter((a): a is number => a != null),
-      source_kind: pickSource === "sait" && sait ? "sait" : dayPick ? dayPick.source : null,
-      source_key: pickSource === "sait" && sait ? sait : dayPick ? dayPick.key.slice(0, 64) : null,
+      source_kind: dayPick ? dayPick.source : null,
+      source_key: dayPick ? dayPick.key.slice(0, 64) : null,
       invitees: guest ? [] : pending && EMAIL.test(pending) && !invitees.includes(pending) ? [...invitees, pending] : invitees,
       profile_id: profile?.id ?? null,
     };
@@ -379,60 +346,29 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
 
       {error ? <p className="text-center text-xs text-destructive">{error}</p> : null}
 
-      {/* Optional: the time from a साइत, or the day's शुभ / अशुभ / पुष्कर times. */}
+      {/* Optional: one dropdown of the day's times, शुभ in green and अशुभ in red; picking fills the title and times. */}
       <Group>
-        <p className="pt-3 text-sm">{t("events.pick")}</p>
-        <div className="flex flex-wrap gap-2 py-3">
-          {PICK_SOURCES.map((s) => (
-            <Chip key={s} label={t(`events.pick_${s}`)} active={pickSource === s} bad={s === "ashubh"} onClick={() => choosePickSource(s)} />
-          ))}
-        </div>
-        {pickSource === "sait" ? (
+        <button type="button" onClick={() => toggle("pick")} aria-expanded={panel === "pick"} className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm hover:opacity-80">
+          <span className="inline-flex items-center gap-3">
+            <Sparkles className="size-5 text-muted-foreground" />
+            {t("events.pick_shubh_ashubh")}
+          </span>
+          <span className="inline-flex min-w-0 items-center gap-2 text-muted-foreground">
+            {picked ? (
+              <>
+                <span className={cn("size-2 shrink-0 rounded-full", picked.source === "ashubh" ? "bg-destructive" : "bg-success")} />
+                <span className={cn("truncate", picked.source === "ashubh" ? "text-destructive" : "text-success")}>{lang === "en" ? picked.nameEn : picked.nameNe}</span>
+              </>
+            ) : (
+              t("events.pick_none")
+            )}
+            <ChevronsUpDown className="size-4 shrink-0" />
+          </span>
+        </button>
+        {panel === "pick" ? (
           <div className="flex flex-col pb-2">
-            <select
-              value={sait ?? ""}
-              onChange={(e) => {
-                setSait((e.target.value || null) as SaitCategoryId | null);
-                setSaitDay(null);
-              }}
-              aria-label={t("events.pick_sait")}
-              className="mb-2 rounded-full bg-background px-3 py-1.5 text-sm outline-none"
-            >
-              <option value="">{t("events.sait_none")}</option>
-              {SAIT_CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>{saitLabel(c.id)}</option>
-              ))}
-            </select>
-            {sait ? (
-              saitDays.isLoading ? (
-                <p className="py-2 text-xs text-muted-foreground">{t("events.sait_loading")}</p>
-              ) : (saitDays.data ?? []).length === 0 ? (
-                <p className="py-2 text-xs text-muted-foreground">{t("events.sait_no_days")}</p>
-              ) : (
-                (saitDays.data ?? []).map((d) => (
-                  <Option
-                    key={d.gregorian}
-                    label={`${lang === "en" ? labels.bsDate(d.gregorian) : `${d.bs_month_name_ne} ${digits(d.bs_day)}`} · ${lang === "en" ? d.weekday_en : d.weekday_ne}`}
-                    detail={`${labels.clock(d.window_start)}–${labels.clock(d.window_end)}`}
-                    active={saitDay?.gregorian === d.gregorian}
-                    onClick={() => pickSaitDay(d)}
-                  />
-                ))
-              )
-            ) : null}
-          </div>
-        ) : pickSource !== "none" ? (
-          <div className="flex flex-col pb-2">
-            <div className="flex items-center justify-between">
-              <button type="button" onClick={() => setPickDate(shiftDate(pickDate, -1))} aria-label={t("events.prev_day")} className="inline-flex size-8 items-center justify-center rounded-full hover:bg-background">
-                <ChevronLeft className="size-4" />
-              </button>
-              <span className="text-xs font-semibold">{t("events.pick_for_day", { date: labels.day(pickDate) })}</span>
-              <button type="button" onClick={() => setPickDate(shiftDate(pickDate, 1))} aria-label={t("events.next_day")} className="inline-flex size-8 items-center justify-center rounded-full hover:bg-background">
-                <ChevronRight className="size-4" />
-              </button>
-            </div>
-            <p className="pb-1 text-xs text-muted-foreground">{t(`events.pick_${pickSource}_hint`)}</p>
+            <p className="pb-1 text-xs text-muted-foreground">{t("events.pick_for_day", { date: labels.day(startDate) })}</p>
+            <Option label={t("events.pick_none")} active={picked == null} onClick={() => { setPickedId(null); setPanel(null); }} />
             {dayPicks.loading ? (
               <p className="py-2 text-xs text-muted-foreground">{t("events.pick_loading")}</p>
             ) : dayPicks.failed ? (
@@ -444,7 +380,7 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
                 <Option
                   key={p.id}
                   label={lang === "en" ? p.nameEn : p.nameNe}
-                  detail={`${labels.clock(p.startTime)}${p.source === "pushkara" ? "" : `–${labels.clock(p.endTime)}`}${p.startDate !== pickDate ? ` · ${labels.day(p.startDate)}` : ""}`}
+                  detail={`${labels.clock(p.startTime)}–${labels.clock(p.endTime)}${p.startDate !== startDate ? ` · ${labels.day(p.startDate)}` : ""}`}
                   active={pickedId === p.id}
                   tone={p.source === "ashubh" ? "bad" : "good"}
                   onClick={() => pickDayTime(p)}
@@ -525,6 +461,33 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
           </>
         ) : null}
       </Group>
+
+      {/* A typed time that falls in an अशुभ window: say so, and offer the next शुभ one. */}
+      {clash ? (
+        <div role="alert" className="flex flex-col gap-2 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold text-destructive">
+            <TriangleAlert className="size-4" />
+            {t("events.bad_time_alert")}
+          </p>
+          <p className="text-xs text-destructive">
+            {t("events.tips_bad_window", { name: lang === "en" ? clash.nameEn : clash.nameNe, start: labels.clock(clash.startTime), end: labels.clock(clash.endTime) })}
+          </p>
+          {better ? (
+            <button
+              type="button"
+              onClick={() => {
+                setStartDate(better.startDate);
+                setStartTime(better.startTime);
+                setEndDate(better.endDate);
+                setEndTime(better.endTime);
+              }}
+              className="self-start rounded-full bg-success px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+            >
+              {t("events.tips_better", { name: lang === "en" ? better.nameEn : better.nameNe, start: labels.clock(better.startTime), end: labels.clock(better.endTime) })}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <Group>{repeatRow}</Group>
 
@@ -616,34 +579,6 @@ function EventFormWeb({ initialKind, guest, onClose, onSignIn }: { initialKind: 
           <Lightbulb className="size-4" />
           {t("events.tips")}
         </p>
-        {saitDay ? (
-          <p className="text-xs">
-            {t("events.tips_sait_day", {
-              tithi: lang === "en" ? saitDay.tithi_en : saitDay.tithi_ne,
-              nakshatra: lang === "en" ? saitDay.nakshatra_en : saitDay.nakshatra_ne,
-              lagna: lang === "en" ? saitDay.lagna_en : (saitDay.lagna_ne ?? saitDay.lagna_en),
-            })}
-          </p>
-        ) : null}
-        {clash ? (
-          <div className="flex flex-col gap-2 rounded-2xl bg-destructive/10 p-3">
-            <p className="text-xs text-destructive">
-              {t("events.tips_bad_window", { name: (lang === "en" ? clash.name_en : clash.name_ne) ?? clash.key, start: labels.clock(clash.start), end: clash.end ? labels.clock(clash.end) : "" })}
-            </p>
-            {better ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setStartTime(better.start);
-                  setEndTime(better.end ?? addMinutes(better.start, 60).time);
-                }}
-                className="self-start rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground hover:opacity-90"
-              >
-                {t("events.tips_better", { name: (lang === "en" ? better.name_en : better.name_ne) ?? better.key, start: labels.clock(better.start), end: better.end ? labels.clock(better.end) : "" })}
-              </button>
-            ) : null}
-          </div>
-        ) : null}
         {day ? (
           <>
             <p className="text-xs">{lang === "en" ? day.summary_en : day.summary_ne}</p>
@@ -717,25 +652,9 @@ function Option({ label, detail, active, tone, onClick }: { label: string; detai
   return (
     <button type="button" role="menuitemradio" aria-checked={active} onClick={onClick} className="flex min-h-10 w-full items-center gap-2 text-left text-sm hover:opacity-80">
       <span className="w-4">{active ? <Check className="size-4" /> : null}</span>
-      {tone ? <span className={cn("size-2 rounded-full", tone === "bad" ? "bg-destructive" : "bg-secondary")} /> : null}
+      {tone ? <span className={cn("size-2 rounded-full", tone === "bad" ? "bg-destructive" : "bg-success")} /> : null}
       <span className="flex-1">{label}</span>
       {detail ? <span className="text-xs text-muted-foreground">{detail}</span> : null}
-    </button>
-  );
-}
-
-function Chip({ label, active, bad, onClick }: { label: string; active: boolean; bad?: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={cn(
-        "rounded-full border px-3 py-1.5 text-xs font-medium hover:opacity-80",
-        active ? (bad ? "border-destructive bg-destructive text-white" : "border-secondary bg-secondary text-secondary-foreground") : "border-border bg-background",
-      )}
-    >
-      {label}
     </button>
   );
 }

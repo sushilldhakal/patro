@@ -4829,6 +4829,8 @@
     "priority_3": "High",
     "pick": "Pick a time",
     "pick_none": "My own",
+    "pick_shubh_ashubh": "Good / bad times",
+    "bad_time_alert": "Inauspicious time",
     "pick_sait": "Saait",
     "pick_shubh": "Good times",
     "pick_ashubh": "Bad times",

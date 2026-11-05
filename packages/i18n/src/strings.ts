@@ -7328,6 +7328,8 @@ export const strings = {
   "events.priority_3": { ne: "उच्च", en: "High" },
   "events.pick": { ne: "समय छान्नुहोस्", en: "Pick a time" },
   "events.pick_none": { ne: "आफैं राख्ने", en: "My own" },
+  "events.pick_shubh_ashubh": { ne: "शुभ / अशुभ समय", en: "Good / bad times" },
+  "events.bad_time_alert": { ne: "अशुभ समय", en: "Inauspicious time" },
   "events.pick_sait": { ne: "साइत", en: "Saait" },
   "events.pick_shubh": { ne: "शुभ समय", en: "Good times" },
   "events.pick_ashubh": { ne: "अशुभ समय", en: "Bad times" },
