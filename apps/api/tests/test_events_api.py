@@ -170,3 +170,18 @@ def test_feed_drops_a_deleted_event(setup):
     assert f"UID:{event_id}@vedicpatro.com" in client.get(path).text
     client.delete(f"/events/{event_id}")
     assert "BEGIN:VEVENT" not in client.get(path).text
+
+
+def test_feed_reports_when_google_or_apple_fetched_it(setup):
+    client, _current, _sent = setup
+    feed = client.get("/events/feed").json()
+    assert feed["synced_at"] is None and feed["synced_app"] is None
+    client.get(feed["path"], headers={"user-agent": "Mozilla/5.0 (iPhone; like Mac OS X) Safari"})  # a browser: not a sync
+    assert client.get("/events/feed").json()["synced_app"] is None
+    client.get(feed["path"], headers={"user-agent": "Google-Calendar-Importer"})
+    got = client.get("/events/feed").json()
+    assert got["synced_app"] == "google" and got["synced_at"]
+    client.get(feed["path"], headers={"user-agent": "iOS/17.5 (21F79) dataaccessd/1.0"})
+    assert client.get("/events/feed").json()["synced_app"] == "apple"
+    client.post("/events/feed/reset")
+    assert client.get("/events/feed").json()["synced_app"] is None

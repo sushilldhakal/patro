@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 from app.security import CurrentUser, DbSession
 from database.models import CalendarEvent
@@ -98,30 +99,35 @@ class FeedOut(BaseModel):
 
     token: str
     path: str
+    #: When Google or Apple Calendar last fetched the link, and which one: the subscription worked.
+    synced_at: datetime | None = None
+    synced_app: str | None = None
 
 
-def _feed_out(token: str) -> FeedOut:
-    return FeedOut(token=token, path=f"/calendar/{token}.ics")
+def _feed_out(db: Session, user_id: str, token: str) -> FeedOut:
+    synced_at, synced_app = events.feed_sync(db, user_id)
+    return FeedOut(token=token, path=f"/calendar/{token}.ics", synced_at=synced_at, synced_app=synced_app)
 
 
 @router.get("/events/feed", response_model=FeedOut)
 def get_feed(user: CurrentUser, db: DbSession) -> FeedOut:
     """The owner's private link for Google / Apple Calendar (made on first ask)."""
-    return _feed_out(events.feed_token(db, user.id))
+    return _feed_out(db, user.id, events.feed_token(db, user.id))
 
 
 @router.post("/events/feed/reset", response_model=FeedOut)
 def reset_feed(user: CurrentUser, db: DbSession) -> FeedOut:
     """A new link; calendars subscribed to the old one stop getting updates."""
-    return _feed_out(events.feed_token(db, user.id, reset=True))
+    return _feed_out(db, user.id, events.feed_token(db, user.id, reset=True))
 
 
 @router.get("/calendar/{token}.ics", include_in_schema=False)
-def calendar_feed(token: str, db: DbSession) -> Response:
+def calendar_feed(token: str, request: Request, db: DbSession) -> Response:
     """The subscribed calendar itself. No sign-in: the token in the link is the key."""
     owner = events.feed_owner(db, token)
     if owner is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Calendar not found")
+    events.mark_feed_fetched(db, owner, request.headers.get("user-agent", ""))
     return Response(
         events.build_feed(db, owner),
         media_type="text/calendar; charset=utf-8",

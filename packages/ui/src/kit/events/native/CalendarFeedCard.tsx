@@ -31,8 +31,20 @@ export function CalendarFeedCard({ feed, onOpen, onCopy, copyMode, showApple }: 
         <Icon node={iconCalendarSync} size={20} tone="secondary" />
         <Text className="text-body font-semibold text-foreground">{copy.title}</Text>
       </View>
-      <Text className="text-caption text-muted-foreground">{copy.body}</Text>
-      {feed.loading ? (
+      {feed.connected ? (
+        <View className="gap-1 rounded-2xl bg-success/10 p-3">
+          <Text className="text-body font-semibold text-success">✓ {copy.connectedTitle} · {copy.connectedTo}</Text>
+          <Text className="text-caption text-muted-foreground">{copy.lastSynced}</Text>
+        </View>
+      ) : (
+        <Text className="text-caption text-muted-foreground">{copy.body}</Text>
+      )}
+      {feed.connected ? (
+        <Pressable onPress={feed.toggleLinks} accessibilityRole="button" accessibilityState={{ expanded: feed.showLinks }} className="self-start active:opacity-70">
+          <Text className="text-caption font-semibold text-secondary">{feed.showLinks ? copy.hideLinks : copy.showLinks}</Text>
+        </Pressable>
+      ) : null}
+      {!feed.showLinks ? null : feed.loading ? (
         <View className="flex-row items-center gap-2">
           <ActivityIndicator />
           <Text className="text-caption text-muted-foreground">{copy.loading}</Text>

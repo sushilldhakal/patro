@@ -12,13 +12,24 @@ const KEY = ["events", "feed"] as const;
 export function useCalendarFeed({ enabled, origin }: { enabled: boolean; origin?: string }) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
-  const feed = useQuery({ queryKey: KEY, queryFn: fetchCalendarFeed, enabled, staleTime: Infinity });
+  // Until a calendar app has fetched the link, ask again every few seconds so "Connected" appears by itself.
+  const feed = useQuery({
+    queryKey: KEY,
+    queryFn: fetchCalendarFeed,
+    enabled,
+    staleTime: Infinity,
+    refetchInterval: (q) => (q.state.data && !q.state.data.synced_at ? 15_000 : false),
+    refetchOnWindowFocus: true,
+  });
   const reset = useMutation({
     mutationFn: resetCalendarFeed,
     onSuccess: (next: CalendarFeed) => queryClient.setQueryData(KEY, next),
   });
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
+  const syncedApp = feed.data?.synced_app ?? null;
+  const syncedAt = feed.data?.synced_at ?? null;
 
   return {
     copy: {
@@ -33,7 +44,16 @@ export function useCalendarFeed({ enabled, origin }: { enabled: boolean; origin?
       privacy: t("events.feed_private"),
       loading: t("events.feed_loading"),
       failed: t("events.feed_failed"),
+      connectedTitle: t("events.feed_connected_title"),
+      connectedTo: syncedApp ? t(`events.feed_connected_${syncedApp}`) : "",
+      lastSynced: syncedAt ? t("events.feed_last_synced", { time: new Date(syncedAt).toLocaleString() }) : "",
+      showLinks: t("events.feed_show_links"),
+      hideLinks: t("events.feed_hide_links"),
     },
+    /** A calendar app has fetched the link: the subscription worked, so the card shows it as connected. */
+    connected: syncedAt != null,
+    showLinks: showLinks || syncedAt == null,
+    toggleLinks: () => setShowLinks((v) => !v),
     links: feed.data ? calendarFeedLinks(feed.data.path, origin) : null,
     loading: feed.isLoading || reset.isPending,
     failed: feed.isError || reset.isError,

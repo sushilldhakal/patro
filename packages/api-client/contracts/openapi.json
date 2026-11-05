@@ -680,6 +680,29 @@
       "title": "Path",
       "type": "string"
      },
+     "synced_app": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Synced App"
+     },
+     "synced_at": {
+      "anyOf": [
+       {
+        "format": "date-time",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Synced At"
+     },
      "token": {
       "title": "Token",
       "type": "string"

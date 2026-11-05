@@ -29,8 +29,20 @@ export function CalendarFeedCard({ feed, onOpen, onCopy, copyMode, showApple }: 
         <Icon node={iconCalendarSync} size={20} tone="secondary" />
         {copy.title}
       </h2>
-      <p className="text-sm text-muted-foreground">{copy.body}</p>
-      {feed.loading ? (
+      {feed.connected ? (
+        <div className="flex flex-col gap-1 rounded-2xl bg-success/10 p-3">
+          <p className="text-sm font-semibold text-success">✓ {copy.connectedTitle} · {copy.connectedTo}</p>
+          <p className="text-xs text-muted-foreground">{copy.lastSynced}</p>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">{copy.body}</p>
+      )}
+      {feed.connected ? (
+        <button type="button" onClick={feed.toggleLinks} aria-expanded={feed.showLinks} className="self-start text-xs font-semibold text-secondary hover:underline">
+          {feed.showLinks ? copy.hideLinks : copy.showLinks}
+        </button>
+      ) : null}
+      {!feed.showLinks ? null : feed.loading ? (
         <p className="text-sm text-muted-foreground">{copy.loading}</p>
       ) : feed.failed || !links ? (
         <button type="button" onClick={feed.retry} className="self-start text-sm text-destructive hover:underline">

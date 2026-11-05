@@ -294,8 +294,37 @@ def feed_token(db: Session, owner_id: str, *, reset: bool = False) -> str:
             db.add(row)
         else:
             row.token = token
+            row.synced_at = None
+            row.synced_app = None
         db.commit()
     return row.token
+
+
+def feed_sync(db: Session, owner_id: str) -> tuple[datetime | None, str | None]:
+    """When Google or Apple Calendar last fetched the owner's link, and which one."""
+    row = db.get(CalendarFeed, owner_id)
+    return (row.synced_at, row.synced_app) if row else (None, None)
+
+
+def calendar_app(user_agent: str) -> str | None:
+    """"google" / "apple" for those calendars' fetchers; None for a browser or anything else."""
+    ua = user_agent.lower()
+    if "google-calendar" in ua:
+        return "google"
+    # Apple's fetchers ("macOS/14 … CalendarAgent", "iOS/17 … dataaccessd"); a browser opening the link is not one.
+    if "calendaragent" in ua or "dataaccessd" in ua:
+        return "apple"
+    return None
+
+
+def mark_feed_fetched(db: Session, owner_id: str, user_agent: str) -> None:
+    app = calendar_app(user_agent)
+    row = db.get(CalendarFeed, owner_id)
+    if app is None or row is None:
+        return
+    row.synced_at = datetime.now(timezone.utc)
+    row.synced_app = app
+    db.commit()
 
 
 def feed_owner(db: Session, token: str) -> str | None:

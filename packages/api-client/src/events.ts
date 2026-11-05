@@ -208,6 +208,9 @@ export interface CalendarFeed {
   token: string;
   /** On the API base: `/calendar/<token>.ics`. */
   path: string;
+  /** When Google or Apple Calendar last fetched the link (the subscription worked), else null. */
+  synced_at?: string | null;
+  synced_app?: "google" | "apple" | null;
 }
 
 export const fetchCalendarFeed = () => authFetch<CalendarFeed>("/events/feed");

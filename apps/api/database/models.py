@@ -283,6 +283,10 @@ class CalendarFeed(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    # The last time Google or Apple Calendar fetched the link, and which one: that is how the app
+    # knows the subscription worked. Cleared when the link is replaced.
+    synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    synced_app: Mapped[str | None] = mapped_column(String(8), nullable=True)
 
 
 class CalendarEvent(Base):
