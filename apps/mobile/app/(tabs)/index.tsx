@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { isPlannerView, shiftDateIso, useDayMarks, useUserEvents, useWindowBands, weekDates, type PlannerViewKind } from "@vedic-patro/features/events";
+import { adaptHomeView, isPlannerView, plannerDays, shiftDateIso, useDayMarks, useUserEvents, useWindowBands, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { updateEvent, type CalendarEvent } from "@/lib/events/api";
@@ -190,9 +190,14 @@ function HomeScreen() {
   const [anchor, setAnchor] = useState(todayAd);
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
   const plannerRange =
-    plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : { from: anchor, to: anchor };
+    plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location.params, plannerKind != null);
-  const windowDays = plannerKind === "week" ? weekDates(anchor) : plannerKind === "day" ? [anchor] : [];
+  const windowDays = plannerKind === "week" || plannerKind === "day" || plannerKind === "multi" ? plannerDays(plannerKind, anchor) : [];
+  // A saved Week on a phone becomes Multi Day, and the other way round on a wide screen.
+  useEffect(() => {
+    const fit = adaptHomeView(patroView, width >= 768);
+    if (fit !== patroView) setPatroView(fit);
+  }, [patroView, width, setPatroView]);
   const dayWindows = useWindowBands(windowDays, location.params, windowDays.length > 0);
   // The planner and the header's month follow each other: stepping a week into another BS month moves the
   // month, and picking a month in the header moves the planner to its first day.

@@ -24,12 +24,15 @@ export const iconCheck: IconNode = [["path", { d: "M20 6 9 17l-5-5" }]];
 export const iconPlus: IconNode = [ ["path", { d: "M5 12h14" }], ["path", { d: "M12 5v14" }] ];
 export const iconTrash2: IconNode = [ ["path", { d: "M10 11v6" }], ["path", { d: "M14 11v6" }], ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" }], ["path", { d: "M3 6h18" }], ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" }] ];
 
+export const iconViewMulti: IconNode = [ ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2" }], ["path", { d: "M12 3v18" }] ];
+
 /** One icon per home view, for the view dropdown. */
 export const HOME_VIEW_ICONS = {
   calendar: iconViewMonth,
   panchanga: iconViewPanchanga,
   week: iconViewWeek,
   day: iconViewDay,
+  multi: iconViewMulti,
   year: iconViewYear,
   list: iconViewList,
 } as const;

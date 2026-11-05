@@ -1,9 +1,10 @@
+import type { IconNode } from "@vedic-patro/ui/contract";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 // expo-router's own: @react-navigation/native's copy cannot see the router's navigator and throws.
 import { useIsFocused } from "expo-router";
 
 /** One choice in the header's view menu: the same shape as a page's header tab. */
-export type PageViewOption = { key: string; label: string; active: boolean; onPress: () => void };
+export type PageViewOption = { key: string; label: string; active: boolean; onPress: () => void; /** Drawn before the label in the view menu (the home calendar's views). */ icon?: IconNode };
 
 /** A group of choices; a titled group (e.g. the profiles) gets its own heading in the menu. */
 export type PageViewSection = { key: string; title?: string; options: PageViewOption[] };

@@ -8,14 +8,21 @@ import { isoToZoned, shiftDate, zonedToIso } from "@vedic-patro/domain/calendar/
 import { eventOccursOn } from "./use-day-events";
 
 /** Month and Panchanga are the home grids; the rest are the planner views. */
-export const HOME_VIEWS = ["calendar", "panchanga", "day", "week", "year", "list"] as const;
+export const HOME_VIEWS = ["calendar", "panchanga", "day", "multi", "week", "year", "list"] as const;
 export type HomeView = (typeof HOME_VIEWS)[number];
-export const PLANNER_VIEWS = ["day", "week", "year", "list"] as const;
+export const PLANNER_VIEWS = ["day", "multi", "week", "year", "list"] as const;
 export type PlannerViewKind = (typeof PLANNER_VIEWS)[number];
 
 export const isPlannerView = (v: HomeView): v is PlannerViewKind => (PLANNER_VIEWS as readonly string[]).includes(v);
 export const parseHomeView = (raw: string | null | undefined): HomeView =>
   (HOME_VIEWS as readonly string[]).includes(raw ?? "") ? (raw as HomeView) : "calendar";
+
+/**
+ * What a screen offers: seven columns of days only fit a wide screen, so a phone gets Multi Day (two
+ * days, like Apple Calendar's) in place of Week. A saved choice that does not fit is swapped for its twin.
+ */
+export const homeViewsFor = (wide: boolean): HomeView[] => HOME_VIEWS.filter((v) => (wide ? v !== "multi" : v !== "week"));
+export const adaptHomeView = (view: HomeView, wide: boolean): HomeView => (view === "week" && !wide ? "multi" : view === "multi" && wide ? "week" : view);
 
 /** A day's grid is minutes 0–1440; this is how far an event may be nudged and what a drag snaps to. */
 export const SNAP_MINUTES = 15;
@@ -32,6 +39,9 @@ export const weekdayOf = (iso: string) => new Date(dayNumber(iso) * 86_400_000).
 /** The Sunday that starts `iso`'s week (the grids start on Sunday). */
 export const weekStart = (iso: string) => shiftDate(iso, -weekdayOf(iso));
 export const weekDates = (iso: string) => Array.from({ length: 7 }, (_, i) => shiftDate(weekStart(iso), i));
+/** The columns of a time-grid view: one day, two (Multi Day) or the week. */
+export const plannerDays = (view: PlannerViewKind, anchor: string): string[] =>
+  view === "week" ? weekDates(anchor) : view === "multi" ? [anchor, shiftDate(anchor, 1)] : [anchor];
 
 const minutesOf = (time: string) => {
   const [h, m] = time.split(":").map(Number);

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
+import { Icon } from "@vedic-patro/ui";
 import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -285,6 +286,7 @@ export function ViewMenuButton() {
                         <View className="w-5 items-center">
                           {option.active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}
                         </View>
+                        {option.icon ? <Icon node={option.icon} size={20} tone={option.active ? "secondary" : "muted"} /> : null}
                         <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
                           {option.label}
                         </Text>

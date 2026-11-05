@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  HOME_VIEWS,
+  adaptHomeView,
+  homeViewsFor,
+  plannerDays,
   isPlannerView,
   parseHomeView,
   useDayMarks,
   useUserEvents,
   useWindowBands,
-  weekDates,
   type HomeView,
   type PlannerViewKind,
 } from "@vedic-patro/features/events";
@@ -128,7 +129,9 @@ export function CalendarView({
   );
   const lastMonthContextKey = useRef("");
   const lastMonthDays = useRef<CalendarDay[] | null>(null);
-  const patroView = patroViewProp ?? internalPatroView;
+  // Seven day columns need room: a narrow screen gets Multi Day (two days) instead of Week.
+  const wideEnough = useMediaQuery(minWidthQuery("md"));
+  const patroView = enablePatroToggle ? adaptHomeView(patroViewProp ?? internalPatroView, wideEnough) : (patroViewProp ?? internalPatroView);
   const isPanchangaPatro = enablePatroToggle && patroView === "panchanga";
   const plannerKind: PlannerViewKind | null = enablePatroToggle && isPlannerView(patroView) ? patroView : null;
   const queryClient = useQueryClient();
@@ -136,9 +139,9 @@ export function CalendarView({
   const [anchor, setAnchor] = useState(() => todayAd ?? new Date().toISOString().slice(0, 10));
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
   const plannerRange =
-    plannerKind === "week" ? { from: weekDates(anchor)[0]!, to: weekDates(anchor)[6]! } : plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : { from: anchor, to: anchor };
+    plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location?.params, plannerKind != null);
-  const windowDays = plannerKind === "week" ? weekDates(anchor) : plannerKind === "day" ? [anchor] : [];
+  const windowDays = plannerKind === "week" || plannerKind === "day" || plannerKind === "multi" ? plannerDays(plannerKind, anchor) : [];
   const dayWindows = useWindowBands(windowDays, location?.params ?? DEFAULT_PANCHANGA_LOCATION.params, windowDays.length > 0);
   const asideInSidebar = useMediaQuery(ASIDE_SIDEBAR_MQ);
 
@@ -327,7 +330,7 @@ export function CalendarView({
           onEraChange={(nextEra) => monthBrowse.commitEraYear(nextEra, year)}
           segments={
             enablePatroToggle
-              ? HOME_VIEWS.map((view) => ({
+              ? homeViewsFor(wideEnough).map((view) => ({
                   key: view,
                   label: view === "calendar" ? calendarTabLabel : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
                   active: patroView === view,

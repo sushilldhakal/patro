@@ -28,6 +28,11 @@ export function usePlannerText() {
     title: (view: PlannerViewKind, anchor: string) => {
       if (view === "year") return digits(bs(anchor).year);
       if (view === "list") return t("events.upcoming");
+      if (view === "multi") {
+        const next = shiftDate(anchor, 1);
+        const sameMonth = bs(anchor).month === bs(next).month;
+        return `${text.bsMonth(anchor)} ${text.bsDay(anchor)} – ${sameMonth ? "" : `${text.bsMonth(next)} `}${text.bsDay(next)}, ${text.bsYear(next)}`;
+      }
       if (view === "day") return `${text.weekdayFull(anchor)} · ${text.bsMonth(anchor)} ${text.bsDay(anchor)}, ${text.bsYear(anchor)}`;
       const days = weekDates(anchor);
       const first = days[0]!;
@@ -37,7 +42,7 @@ export function usePlannerText() {
     },
     /** One step back or forward: a day, a week, a year; the list moves by a month. */
     step: (view: PlannerViewKind, anchor: string, dir: 1 | -1) =>
-      view === "day" ? shiftDate(anchor, dir) : view === "week" ? shiftDate(anchor, 7 * dir) : view === "year" ? shiftDate(anchor, 365 * dir) : shiftDate(anchor, 30 * dir),
+      view === "day" ? shiftDate(anchor, dir) : view === "multi" ? shiftDate(anchor, 2 * dir) : view === "week" ? shiftDate(anchor, 7 * dir) : view === "year" ? shiftDate(anchor, 365 * dir) : shiftDate(anchor, 30 * dir),
   };
   return text;
 }

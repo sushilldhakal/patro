@@ -7,6 +7,7 @@ import {
   agendaFrom,
   layoutDay,
   movedTimes,
+  plannerDays,
   resizedTimes,
   snap,
   usePlannerText,
@@ -52,13 +53,14 @@ export function PlannerView(props: PlannerViewProps) {
           </button>
         </div>
       </div>
-      {view === "day" || view === "week" ? (
+      {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
+      {view === "day" || view === "multi" || view === "week" ? (
         <p className="m-0 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-success/40" />{t("calendar.window_shubh")}</span>
           <span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-danger/40" />{t("calendar.window_ashubh")}</span>
         </p>
       ) : null}
-      {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={view === "day" ? [anchor] : weekDates(anchor)} />}
+      {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={plannerDays(view, anchor)} />}
     </section>
   );
 }
@@ -350,5 +352,41 @@ function AgendaList({ anchor, events, marks, onOpenEvent, onAnchorChange, onView
         );
       })}
     </ul>
+  );
+}
+
+/** The week as one row of day buttons, like Apple Calendar's: the shown day(s) lit, the rest a tap away. */
+function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewProps) {
+  const tx = usePlannerText();
+  const shown = plannerDays(view, anchor);
+  return (
+    <div className="grid grid-cols-7 rounded-2xl bg-muted/60 p-1">
+      {weekDates(anchor).map((date) => {
+        const index = shown.indexOf(date);
+        const holiday = marks.get(date)?.holiday;
+        return (
+          <button
+            key={date}
+            type="button"
+            onClick={() => onAnchorChange(date)}
+            aria-pressed={index >= 0}
+            className="flex flex-col items-center gap-0.5 rounded-xl border-none bg-transparent py-1 hover:bg-muted"
+          >
+            <span className="text-diagram-xs text-muted-foreground">{tx.weekdayShort(date).slice(0, 2)}</span>
+            <span
+              className={cn(
+                "inline-flex size-9 items-center justify-center rounded-full text-base font-semibold tabular-nums",
+                index === 0 && "bg-secondary text-secondary-foreground",
+                index > 0 && "bg-secondary/20",
+                index < 0 && holiday && "text-danger",
+                index < 0 && date === todayAd && "ring-1 ring-secondary",
+              )}
+            >
+              {tx.bsDay(date)}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

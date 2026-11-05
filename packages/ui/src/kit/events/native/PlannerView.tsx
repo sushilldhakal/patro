@@ -9,6 +9,7 @@ import {
   eventsOnDate,
   layoutDay,
   movedTimes,
+  plannerDays,
   resizedTimes,
   snap,
   usePlannerText,
@@ -55,7 +56,8 @@ export function PlannerView(props: PlannerViewProps) {
           </Pressable>
         </View>
       </View>
-      {view === "day" || view === "week" ? (
+      {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
+      {view === "day" || view === "multi" || view === "week" ? (
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-1.5">
             <View className="h-2.5 w-2.5 rounded-sm bg-success/40" />
@@ -67,7 +69,7 @@ export function PlannerView(props: PlannerViewProps) {
           </View>
         </View>
       ) : null}
-      {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={view === "day" ? [anchor] : weekDates(anchor)} />}
+      {view === "year" ? <YearGrid {...props} /> : view === "list" ? <AgendaList {...props} /> : <TimeGrid {...props} days={plannerDays(view, anchor)} />}
     </View>
   );
 }
@@ -379,6 +381,37 @@ function AgendaList({ anchor, events, marks, onOpenEvent, onAnchorChange, onView
               })}
             </View>
           </View>
+        );
+      })}
+    </View>
+  );
+}
+
+/** The week as one row of day buttons, like Apple Calendar's: the shown day(s) lit, the rest a tap away. */
+function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewProps) {
+  const tx = usePlannerText();
+  const shown = plannerDays(view, anchor);
+  return (
+    <View className="flex-row rounded-2xl bg-muted p-1">
+      {weekDates(anchor).map((date) => {
+        const index = shown.indexOf(date);
+        const holiday = marks.get(date)?.holiday;
+        return (
+          <Pressable
+            key={date}
+            accessibilityRole="button"
+            accessibilityState={{ selected: index >= 0 }}
+            onPress={() => {
+              haptics.tick();
+              onAnchorChange(date);
+            }}
+            className="flex-1 items-center gap-0.5 py-1 active:opacity-70"
+          >
+            <Text className="text-diagram-xs text-muted-foreground">{tx.weekdayShort(date).slice(0, 2)}</Text>
+            <View className={cn("h-9 w-9 items-center justify-center rounded-full", index === 0 && "bg-secondary", index > 0 && "bg-secondary/20", index < 0 && date === todayAd && "border border-secondary")}>
+              <Text className={cn("font-num text-body font-semibold", index === 0 ? "text-secondary-foreground" : index < 0 && holiday ? "text-danger" : "text-foreground")}>{tx.bsDay(date)}</Text>
+            </View>
+          </Pressable>
         );
       })}
     </View>
