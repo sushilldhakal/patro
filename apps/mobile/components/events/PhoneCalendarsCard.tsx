@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Linking, Platform, Pressable, Switch, View } from "react-native";
+import { ActivityIndicator, Linking, Pressable, Switch, View } from "react-native";
 import { haptics } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
@@ -8,6 +8,7 @@ import {
   importPhoneCalendars,
   listPhoneCalendars,
   phoneCalendarPermission,
+  phoneCalendarsAvailable,
   setChosenCalendars,
   type PhoneCalendar,
 } from "@/lib/events/device-calendars";
@@ -35,14 +36,15 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === "web") return;
+    if (!phoneCalendarsAvailable()) return;
     void phoneCalendarPermission(false).then((ok) => {
       setAllowed(ok);
       if (ok) void load();
     });
   }, [load]);
 
-  if (Platform.OS === "web") return null;
+  // Web, or a build made before the calendar module was added.
+  if (!phoneCalendarsAvailable()) return null;
 
   const allow = async () => {
     haptics.tick();

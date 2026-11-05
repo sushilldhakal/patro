@@ -2,8 +2,28 @@ import { Platform } from "react-native";
 import { fetchPatroMonth, type PatroDay } from "@vedic-patro/api-client";
 import { bsFromCivilIso, formatDigits } from "@vedic-patro/domain/calendar/bs-calendar";
 import { tFor } from "@vedic-patro/i18n/runtime";
-import TodayWidget from "@/widgets/TodayWidget";
+import { requireOptionalNativeModule } from "expo";
 import type { TodayWidgetProps } from "@/widgets/today-widget-props";
+
+type Widget = { updateSnapshot(props: TodayWidgetProps): void };
+let widget: Widget | null | undefined;
+
+/**
+ * The widget, loaded only when this build has expo-widgets' native module. A top-level import
+ * would throw in builds made before the widget was added (app updates reach those too).
+ */
+function todayWidget(): Widget | null {
+  if (widget !== undefined) return widget;
+  widget = null;
+  if (Platform.OS === "web" || !requireOptionalNativeModule("ExpoWidgets")) return widget;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    widget = (require("../../widgets/TodayWidget") as { default: Widget }).default;
+  } catch {
+    widget = null;
+  }
+  return widget;
+}
 import { occurrences } from "@/lib/events/alerts";
 import type { CalendarEvent } from "@/lib/events/api";
 import { isoToZoned, shiftDate, todayIn } from "@/lib/events/time";
@@ -19,7 +39,8 @@ export async function refreshTodayWidget(options: {
   timezone: string;
   events: CalendarEvent[];
 }): Promise<void> {
-  if (Platform.OS === "web") return;
+  const TodayWidget = todayWidget();
+  if (!TodayWidget) return;
   const { lang, timezone, events } = options;
   const digits = (s: string | number) => formatDigits(s, lang);
   const today = todayIn(timezone);

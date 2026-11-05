@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ActionSheetIOS, Animated as RNAnimated, Easing, Pressable, Share, View, useWindowDimensions } from "react-native";
+import { ActionSheetIOS, Animated as RNAnimated, Easing, Platform, Pressable, Share, View, useWindowDimensions } from "react-native";
 import Animated from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { Text } from "@/components/ui/Text";
@@ -15,6 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { requireOptionalNativeModule } from "expo";
 import { GlassView, isGlassEffectAPIAvailable } from "expo-glass-effect";
 import { nativeShadow, radius, space, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
@@ -46,7 +47,8 @@ const TABS_HEIGHT_COMPACT = 38;
 const GROUP_INSET_COMPACT = 40;
 const LABEL_MAX_HEIGHT = 16;
 /** iOS 26+ draws the bar as Liquid Glass (the page shows through, blurred); elsewhere it is the solid card. */
-const GLASS = isGlassEffectAPIAvailable();
+// Checked only when the build has the glass module: the check throws in a build made before it was added.
+const GLASS = Platform.OS === "ios" && requireOptionalNativeModule("ExpoGlassEffect") != null && isGlassEffectAPIAvailable();
 
 /**
  * The bottom bar, the same on every phone, tablet and Android, and on the iPhone Duo in portrait:

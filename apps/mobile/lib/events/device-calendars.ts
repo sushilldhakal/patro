@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
-import * as DeviceCalendar from "expo-calendar/legacy";
+import { requireOptionalNativeModule } from "expo";
+import type * as DeviceCalendarModule from "expo-calendar/legacy";
 import { deviceStore } from "@/lib/device-store";
 import { createEvent, listEvents, updateEvent, type CalendarEvent, type CalendarEventInput, type EventRepeat } from "./api";
 
@@ -10,6 +11,30 @@ import { createEvent, listEvents, updateEvent, type CalendarEvent, type Calendar
  * them instead of adding copies.
  */
 
+type Calendar = typeof DeviceCalendarModule;
+let loaded: Calendar | null | undefined;
+
+/**
+ * expo-calendar, loaded only when this build has its native module. Importing it at the top would
+ * throw in a build made before it was added (an app update reaches those too), taking down every
+ * screen that imports the sync.
+ */
+function deviceCalendar(): Calendar | null {
+  if (loaded !== undefined) return loaded;
+  loaded = null;
+  if (Platform.OS === "web" || !requireOptionalNativeModule("ExpoCalendar")) return loaded;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    loaded = require("expo-calendar/legacy") as Calendar;
+  } catch {
+    loaded = null;
+  }
+  return loaded;
+}
+
+/** False on web and in builds without the calendar module: the card hides. */
+export const phoneCalendarsAvailable = () => deviceCalendar() != null;
+
 const KEY_CHOSEN = "events:device-calendars";
 /** Weeks of the phone calendar brought in, from a day ago. */
 const WINDOW_DAYS = 90;
@@ -17,12 +42,15 @@ const WINDOW_DAYS = 90;
 export type PhoneCalendar = { id: string; title: string; account: string; color: string | null };
 
 export async function phoneCalendarPermission(ask: boolean): Promise<boolean> {
-  if (Platform.OS === "web") return false;
+  const DeviceCalendar = deviceCalendar();
+  if (!DeviceCalendar) return false;
   const res = ask ? await DeviceCalendar.requestCalendarPermissionsAsync() : await DeviceCalendar.getCalendarPermissionsAsync();
   return res.granted;
 }
 
 export async function listPhoneCalendars(): Promise<PhoneCalendar[]> {
+  const DeviceCalendar = deviceCalendar();
+  if (!DeviceCalendar) return [];
   const calendars = await DeviceCalendar.getCalendarsAsync(DeviceCalendar.EntityTypes.EVENT);
   return calendars
     .map((c) => ({ id: c.id, title: c.title, account: c.source?.name ?? "", color: c.color ?? null }))
@@ -41,24 +69,24 @@ function toIso(value: string | Date): string {
   return (value instanceof Date ? value : new Date(value)).toISOString();
 }
 
-function repeatOf(rule: DeviceCalendar.RecurrenceRule | null | undefined): EventRepeat {
+function repeatOf(rule: DeviceCalendarModule.RecurrenceRule | null | undefined): EventRepeat {
   if (!rule) return "never";
   const every = rule.interval ?? 1;
-  switch (rule.frequency) {
-    case DeviceCalendar.Frequency.DAILY:
+  switch (rule.frequency as string) {
+    case "daily":
       return every === 1 ? "daily" : "never";
-    case DeviceCalendar.Frequency.WEEKLY:
+    case "weekly":
       return every === 1 ? "weekly" : every === 2 ? "fortnightly" : "never";
-    case DeviceCalendar.Frequency.MONTHLY:
+    case "monthly":
       return every === 1 ? "monthly" : "never";
-    case DeviceCalendar.Frequency.YEARLY:
+    case "yearly":
       return every === 1 ? "yearly" : "never";
     default:
       return "never";
   }
 }
 
-function toInput(ev: DeviceCalendar.Event, profileId: string | null): CalendarEventInput {
+function toInput(ev: DeviceCalendarModule.Event, profileId: string | null): CalendarEventInput {
   const alerts = (ev.alarms ?? [])
     .map((a) => (a.relativeOffset != null ? Math.max(0, -a.relativeOffset) : null))
     .filter((m): m is number => m != null)
@@ -86,8 +114,8 @@ function toInput(ev: DeviceCalendar.Event, profileId: string | null): CalendarEv
  * Returns how many were added or changed.
  */
 export async function importPhoneCalendars(calendarIds?: string[]): Promise<number> {
-  if (Platform.OS === "web") return 0;
-  if (!(await phoneCalendarPermission(false))) return 0;
+  const DeviceCalendar = deviceCalendar();
+  if (!DeviceCalendar || !(await phoneCalendarPermission(false))) return 0;
   const ids = calendarIds ?? (await getChosenCalendars());
   if (ids.length === 0) return 0;
   const from = new Date(Date.now() - 86_400_000);
