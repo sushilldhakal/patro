@@ -65,6 +65,8 @@ export const calendarClasses = {
   eventBadge: "rounded-full bg-primary px-1.5 py-0.5",
   eventBadgeText: "font-num text-diagram-xs font-bold leading-none text-primary-foreground",
   eventChip: "w-full min-w-0 rounded bg-primary/15 px-1 py-px",
+  /** The app takes alpha only on some colours; `saffron` is the primary with it. */
+  eventChipNative: "w-full min-w-0 rounded bg-saffron/15 px-1 py-px",
   eventChipText: "text-diagram-xs font-semibold leading-tight text-primary",
 
   festival: "text-center text-xs font-semibold leading-tight",

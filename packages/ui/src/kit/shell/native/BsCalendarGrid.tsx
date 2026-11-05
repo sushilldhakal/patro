@@ -189,7 +189,7 @@ export function BsCalendarGrid({
                     ) : (
                       <View className="mt-1 w-full gap-px">
                         {cell.eventTitles.slice(0, 2).map((title, ei) => (
-                          <View key={`${title}-${ei}`} className={cal.eventChip}>
+                          <View key={`${title}-${ei}`} className={cal.eventChipNative}>
                             <Text numberOfLines={1} className={cal.eventChipText}>{title}</Text>
                           </View>
                         ))}

@@ -24,7 +24,7 @@ import { iconChevronLeft, iconChevronRight } from "../icons";
 const HOUR_H = 52;
 const GUTTER = 36;
 const KIND_STYLE = {
-  event: "border-primary bg-primary/15",
+  event: "border-primary bg-saffron/15",
   task: "border-success bg-success/15",
   appointment: "border-warning bg-warning/15",
 } as const;
@@ -62,7 +62,7 @@ export function PlannerView(props: PlannerViewProps) {
             <Text className="text-diagram-xs text-muted-foreground">{t("calendar.window_shubh")}</Text>
           </View>
           <View className="flex-row items-center gap-1.5">
-            <View className="h-2.5 w-2.5 rounded-sm bg-danger/40" />
+            <View className="h-2.5 w-2.5 rounded-sm bg-vermilion/40" />
             <Text className="text-diagram-xs text-muted-foreground">{t("calendar.window_ashubh")}</Text>
           </View>
         </View>
@@ -163,7 +163,7 @@ function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEv
               return (
                 <View key={c.date} style={{ width: colWidth || undefined, flex: colWidth ? undefined : 1 }} className="gap-0.5 border-l border-border p-0.5">
                   {mark?.names.slice(0, 2).map((name) => (
-                    <View key={name} className={cn("rounded px-1", mark.holiday ? "bg-danger/15" : "bg-muted")}>
+                    <View key={name} className={cn("rounded px-1", mark.holiday ? "bg-vermilion/15" : "bg-muted")}>
                       <Text numberOfLines={1} className={cn("text-diagram-xs font-medium", mark.holiday ? "text-danger" : "text-foreground")}>{name}</Text>
                     </View>
                   ))}
@@ -204,7 +204,7 @@ function TimeGrid({ days, events, marks, windows, todayAd, onOpenEvent, onMoveEv
                 <View
                   key={`${w.source}-${w.id}`}
                   pointerEvents="none"
-                  className={cn("absolute left-0 right-0 overflow-hidden border-l-2 px-0.5", w.source === "ashubh" ? "border-danger bg-danger/10" : "border-success bg-success/10")}
+                  className={cn("absolute left-0 right-0 overflow-hidden border-l-2 px-0.5", w.source === "ashubh" ? "border-danger bg-vermilion/10" : "border-success bg-success/10")}
                   style={{ top: (w.startMin / 60) * HOUR_H, height: ((w.endMin - w.startMin) / 60) * HOUR_H }}
                 >
                   {days.length === 1 || w.endMin - w.startMin >= 90 ? (
@@ -310,7 +310,7 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
                       }}
                       className="h-9 flex-1 items-center justify-center"
                     >
-                      <View className={cn("h-8 w-8 items-center justify-center rounded-full", mark?.holiday && "bg-danger/15", iso === todayAd && "border border-secondary")}>
+                      <View className={cn("h-8 w-8 items-center justify-center rounded-full", mark?.holiday && "bg-vermilion/15", iso === todayAd && "border border-secondary")}>
                         <Text className={cn("font-num text-caption", mark?.holiday ? "font-semibold text-danger" : "text-foreground")}>{tx.digits(day)}</Text>
                       </View>
                       {has ? <View className="absolute bottom-0 h-1 w-1 rounded-full bg-primary" /> : null}
@@ -364,7 +364,7 @@ function AgendaList({ anchor, events, marks, onOpenEvent, onAnchorChange, onView
             </Pressable>
             <View className="min-w-0 flex-1 gap-1.5">
               {mark?.names.map((name) => (
-                <View key={name} className={cn("self-start rounded px-1.5", mark.holiday ? "bg-danger/15" : "bg-muted")}>
+                <View key={name} className={cn("self-start rounded px-1.5", mark.holiday ? "bg-vermilion/15" : "bg-muted")}>
                   <Text numberOfLines={1} className={cn("text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>{name}</Text>
                 </View>
               ))}

@@ -83,7 +83,7 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
                   <View
                     className={cn(
                       "h-10 w-10 items-center justify-center rounded-full",
-                      c.selected ? "bg-secondary" : c.holiday ? "bg-destructive/15" : c.today && "border border-secondary",
+                      c.selected ? "bg-secondary" : c.holiday ? "bg-vermilion/15" : c.today && "border border-secondary",
                     )}
                   >
                     <Text
@@ -96,7 +96,7 @@ export function IosMonthGrid({ year, month, day, yearOptions, onSelect }: IosMon
                             : c.today
                               ? "font-semibold text-secondary"
                               : c.weekend
-                                ? "text-destructive/80"
+                                ? "text-vermilion/80"
                                 : "text-foreground",
                       )}
                     >
