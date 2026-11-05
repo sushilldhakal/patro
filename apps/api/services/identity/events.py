@@ -9,6 +9,7 @@ with a higher ``SEQUENCE``; a delete sends ``CANCEL``. Alerts are delivered on t
 from __future__ import annotations
 
 import re
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -16,7 +17,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from database.models import CalendarEvent, User
+from database.models import CalendarEvent, CalendarFeed, User
 from services.identity import emailer
 from services.identity.profile_store import SqlProfileRepository
 from services.identity.profiles import get_profile
@@ -50,6 +51,9 @@ _RRULE = {
     "half_yearly": "FREQ=MONTHLY;INTERVAL=6",
     "yearly": "FREQ=YEARLY",
 }
+
+# iCalendar's PRIORITY is 1 (high) … 9 (low); Apple reads 1 / 5 / 9 as its three levels.
+_ICS_PRIORITY = {3: 1, 2: 5, 1: 9}
 
 
 class EventNotFound(LookupError):
@@ -206,8 +210,8 @@ def _fold(line: str) -> str:
     return "\r\n".join(out)
 
 
-def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequence: int) -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+def _dates(row: CalendarEvent) -> tuple[str, str]:
+    """DTSTART / DTEND lines: dates in the event's own zone for a whole day, else UTC instants."""
     if row.all_day:
         # The day in the event's own zone (local midnight is the day before in UTC east of
         # Greenwich), and DTEND is exclusive: the day after the last one.
@@ -222,13 +226,11 @@ def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequen
     else:
         start = f"DTSTART:{as_utc(row.starts_at).strftime('%Y%m%dT%H%M%SZ')}"
         end = f"DTEND:{as_utc(row.ends_at).strftime('%Y%m%dT%H%M%SZ')}"
-    org_email = organizer.email if organizer and organizer.email else "noreply@vedicpatro.com"
+    return start, end
+
+
+def _vevent(row: CalendarEvent, start: str, end: str, stamp: str, *, sequence: int, cancelled: bool = False) -> list[str]:
     lines = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Vedic Patro//Events//EN",
-        "CALSCALE:GREGORIAN",
-        f"METHOD:{method}",
         "BEGIN:VEVENT",
         f"UID:{row.id}@vedicpatro.com",
         f"DTSTAMP:{stamp}",
@@ -236,7 +238,6 @@ def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequen
         start,
         end,
         f"SUMMARY:{_ics_text(row.title)}",
-        f"ORGANIZER;CN={_ics_text(_name(organizer))}:mailto:{org_email}",
     ]
     if row.location:
         lines.append(f"LOCATION:{_ics_text(row.location)}")
@@ -244,10 +245,85 @@ def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequen
         lines.append(f"DESCRIPTION:{_ics_text(row.notes)}")
     if row.repeat in _RRULE:
         lines.append(f"RRULE:{_RRULE[row.repeat]}")
-    for email in [e for e in row.invitees.split(",") if e]:
-        lines.append(f"ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{email}")
-    lines.append(f"STATUS:{'CANCELLED' if method == 'CANCEL' else 'CONFIRMED'}")
+    if row.priority:
+        lines.append(f"PRIORITY:{_ICS_PRIORITY[row.priority]}")
+    lines.append(f"STATUS:{'CANCELLED' if cancelled else 'CONFIRMED'}")
     for minutes in [int(a) for a in row.alerts.split(",") if a]:
         lines += ["BEGIN:VALARM", "ACTION:DISPLAY", f"DESCRIPTION:{_ics_text(row.title)}", f"TRIGGER:-PT{minutes}M", "END:VALARM"]
-    lines += ["END:VEVENT", "END:VCALENDAR"]
+    lines.append("END:VEVENT")
+    return lines
+
+
+def build_ics(row: CalendarEvent, organizer: User | None, *, method: str, sequence: int) -> str:
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    start, end = _dates(row)
+    org_email = organizer.email if organizer and organizer.email else "noreply@vedicpatro.com"
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Vedic Patro//Events//EN",
+        "CALSCALE:GREGORIAN",
+        f"METHOD:{method}",
+        *_vevent(row, start, end, stamp, sequence=sequence, cancelled=method == "CANCEL"),
+        "END:VCALENDAR",
+    ]
+    # The organizer and the invitees belong to an invitation only.
+    at = lines.index(f"SUMMARY:{_ics_text(row.title)}") + 1
+    lines[at:at] = [f"ORGANIZER;CN={_ics_text(_name(organizer))}:mailto:{org_email}"] + [
+        f"ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{email}"
+        for email in [e for e in row.invitees.split(",") if e]
+    ]
+    return "\r\n".join(_fold(line) for line in lines) + "\r\n"
+
+
+# ─── Subscription feed ────────────────────────────────────────────────────────
+# Google Calendar and Apple Calendar subscribe to a private URL (``/calendar/<token>.ics``) and
+# fetch it again on their own schedule (Apple: about hourly; Google: every few hours, up to a day).
+# Everything the user saves is in it, so an edit or a delete shows up at the next fetch.
+
+FEED_PAST_DAYS = 365
+
+
+def feed_token(db: Session, owner_id: str, *, reset: bool = False) -> str:
+    """The owner's feed secret, made on first use; ``reset`` replaces it (the old link stops)."""
+    row = db.get(CalendarFeed, owner_id)
+    if row is None or reset:
+        token = secrets.token_urlsafe(32)
+        if row is None:
+            row = CalendarFeed(user_id=owner_id, token=token)
+            db.add(row)
+        else:
+            row.token = token
+        db.commit()
+    return row.token
+
+
+def feed_owner(db: Session, token: str) -> str | None:
+    if not token or len(token) > 64:
+        return None
+    row = db.scalar(select(CalendarFeed).where(CalendarFeed.token == token))
+    return row.user_id if row else None
+
+
+def build_feed(db: Session, owner_id: str, name: str = "Vedic Patro") -> str:
+    since = datetime.now(timezone.utc) - timedelta(days=FEED_PAST_DAYS)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Vedic Patro//Events//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        f"X-WR-CALNAME:{_ics_text(name)}",
+        "REFRESH-INTERVAL;VALUE=DURATION:PT1H",
+        "X-PUBLISHED-TTL:PT1H",
+    ]
+    for row in list_events(db, owner_id, since):
+        # Imported from the phone's own calendars: those are already in Google / Apple Calendar.
+        if row.source_kind == "device":
+            continue
+        start, end = _dates(row)
+        sequence = int(as_utc(row.updated_at).timestamp()) if row.updated_at else 0
+        lines += _vevent(row, start, end, stamp, sequence=sequence)
+    lines.append("END:VCALENDAR")
     return "\r\n".join(_fold(line) for line in lines) + "\r\n"

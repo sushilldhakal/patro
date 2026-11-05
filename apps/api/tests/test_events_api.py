@@ -131,3 +131,39 @@ def test_all_day_invitation_uses_the_events_own_day(setup):
     assert res.status_code == 201, res.text
     ics = sent[-1][2]
     assert "DTSTART;VALUE=DATE:20261121" in ics and "DTEND;VALUE=DATE:20261122" in ics
+
+
+def test_subscription_feed_lists_events_and_reset_revokes(setup):
+    client, current, _ = setup
+    client.post("/events", json={**EVENT, "invitees": [], "kind": "reminder", "priority": 3})
+    client.post("/events", json={**EVENT, "title": "Phone meeting", "invitees": [], "source_kind": "device", "source_key": "x1"})
+    feed = client.get("/events/feed").json()
+    assert feed["path"] == f"/calendar/{feed['token']}.ics" and len(feed["token"]) >= 40
+    assert client.get("/events/feed").json()["token"] == feed["token"]  # the same link each time
+
+    res = client.get(feed["path"])
+    assert res.status_code == 200 and res.headers["content-type"].startswith("text/calendar")
+    body = res.text
+    assert "METHOD:PUBLISH" in body and "X-WR-CALNAME:Vedic Patro" in body
+    assert body.count("BEGIN:VEVENT") == 1  # the phone's own events are not sent back
+    assert "RRULE:FREQ=YEARLY" in body and "PRIORITY:1" in body
+    assert "ATTENDEE" not in body and "ORGANIZER" not in body
+
+    # Another user's token does not show alice's events; a reset kills the old link.
+    current["user"] = "bob"
+    bob = client.get("/events/feed").json()
+    assert bob["token"] != feed["token"] and client.get(bob["path"]).text.count("BEGIN:VEVENT") == 0
+    current["user"] = "alice"
+    new = client.post("/events/feed/reset").json()
+    assert new["token"] != feed["token"]
+    assert client.get(feed["path"]).status_code == 404
+    assert client.get(new["path"]).status_code == 200
+
+
+def test_feed_drops_a_deleted_event(setup):
+    client, _, _ = setup
+    event_id = client.post("/events", json={**EVENT, "invitees": []}).json()["id"]
+    path = client.get("/events/feed").json()["path"]
+    assert f"UID:{event_id}@vedicpatro.com" in client.get(path).text
+    client.delete(f"/events/{event_id}")
+    assert "BEGIN:VEVENT" not in client.get(path).text

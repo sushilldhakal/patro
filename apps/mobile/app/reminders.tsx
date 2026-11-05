@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Alert, Linking, Pressable, Switch, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, Share, Switch, View } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion } from "react-native-reanimated";
 import { SwipeableRow } from "@/components/ui/SwipeableRow";
 import { AppShell } from "@/components/AppShell";
@@ -8,6 +8,8 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { PhoneCalendarsCard } from "@/components/events/PhoneCalendarsCard";
+import { useCalendarFeed } from "@vedic-patro/features/events";
+import { CalendarFeedCard } from "@vedic-patro/ui/kit/events";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { AddReminderForm, WEEKDAYS_EN, WEEKDAYS_NE } from "@/components/reminders/AddReminderForm";
@@ -78,6 +80,7 @@ export default function RemindersScreen() {
   const l = lang === "en" ? "en" : "ne";
   const colors = useThemeColors();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const feed = useCalendarFeed({ enabled: isAuthenticated });
   const [authOpen, setAuthOpen] = useState(false);
 
   const [permission, setPermission] = useState<NotifPermission>("undetermined");
@@ -244,6 +247,14 @@ export default function RemindersScreen() {
       ) : (
         <View className="gap-6">
           <PhoneCalendarsCard />
+          {/* The other way: this account's events in Google / Apple Calendar, by a private link. */}
+          <CalendarFeedCard
+            feed={feed}
+            showApple={Platform.OS === "ios"}
+            copyMode="share"
+            onOpen={(url) => void Linking.openURL(url).catch(() => {})}
+            onCopy={(url) => void Share.share({ message: url, url }).catch(() => {})}
+          />
           {permission !== "granted" ? (
             <Card className="gap-3">
               <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>

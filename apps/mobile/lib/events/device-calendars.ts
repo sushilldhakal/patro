@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { requireOptionalNativeModule } from "expo";
 import type * as DeviceCalendarModule from "expo-calendar/legacy";
 import { deviceStore } from "@/lib/device-store";
-import { createEvent, listEvents, updateEvent, type CalendarEvent, type CalendarEventInput, type EventRepeat } from "./api";
+import { createEvent, deleteEvent, listEvents, updateEvent, type CalendarEvent, type CalendarEventInput, type EventRepeat } from "./api";
 
 /**
  * The phone's own calendars — every account synced to it (iCloud, Google, Exchange, …) — read with
@@ -110,17 +110,18 @@ function toInput(ev: DeviceCalendarModule.Event, profileId: string | null): Cale
 
 /**
  * Bring the chosen phone calendars' events (from yesterday to 90 days on) into the app: new ones
- * are added, changed ones updated. A repeating event counts once (its first instance in range).
- * Returns how many were added or changed.
+ * are added, changed ones updated, and ones gone from the phone (deleted there, or their calendar
+ * no longer chosen) removed. A repeating event counts once (its first instance in range).
+ * Returns how many were added, changed or removed.
  */
 export async function importPhoneCalendars(calendarIds?: string[]): Promise<number> {
   const DeviceCalendar = deviceCalendar();
   if (!DeviceCalendar || !(await phoneCalendarPermission(false))) return 0;
   const ids = calendarIds ?? (await getChosenCalendars());
-  if (ids.length === 0) return 0;
   const from = new Date(Date.now() - 86_400_000);
   const to = new Date(Date.now() + WINDOW_DAYS * 86_400_000);
-  const events = await DeviceCalendar.getEventsAsync(ids, from, to);
+  // No calendar chosen any more: nothing comes in, and what came before goes.
+  const events = ids.length ? await DeviceCalendar.getEventsAsync(ids, from, to) : [];
   const existing = new Map<string, CalendarEvent>();
   for (const e of await listEvents()) if (e.source_kind === "device" && e.source_key) existing.set(e.source_key, e);
 
@@ -147,6 +148,18 @@ export async function importPhoneCalendars(calendarIds?: string[]): Promise<numb
       }
     } catch {
       /* one event the server rejects must not stop the rest */
+    }
+  }
+  // Imported before, inside the window the phone was just asked about, and not there now.
+  for (const [key, have] of existing) {
+    if (seen.has(key)) continue;
+    const at = Date.parse(have.starts_at);
+    if (at < from.getTime() || at > to.getTime()) continue;
+    try {
+      await deleteEvent(have.id);
+      changed += 1;
+    } catch {
+      /* try again next sync */
     }
   }
   return changed;

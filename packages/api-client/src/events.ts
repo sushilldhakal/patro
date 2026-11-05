@@ -3,6 +3,7 @@
  * app — and the day guidance the new-event form shows as tips.
  */
 import { authFetch, hasStoredSession } from "./auth";
+import { apiBaseUrl } from "./client";
 
 /**
  * How often an event comes back, in Apple Calendar's order. Weekdays are Monday–Friday and
@@ -192,3 +193,37 @@ export const fetchDayGuidance = (
   if (location.timezone) params.set("timezone", location.timezone);
   return authFetch<{ days: DayGuidance[] }>(`/profiles/${profileId}/daily-guidance?${params.toString()}`);
 };
+
+// ─── Subscription link ────────────────────────────────────────────────────────
+// A private calendar URL the user adds once in Google Calendar or Apple Calendar; those apps fetch
+// it again on their own schedule, so new, changed and deleted events follow.
+
+export interface CalendarFeed {
+  token: string;
+  /** On the API base: `/calendar/<token>.ics`. */
+  path: string;
+}
+
+export const fetchCalendarFeed = () => authFetch<CalendarFeed>("/events/feed");
+
+/** A new link; calendars subscribed to the old one stop getting updates. */
+export const resetCalendarFeed = () => authFetch<CalendarFeed>("/events/feed/reset", { method: "POST" });
+
+export interface CalendarFeedLinks {
+  /** https://…/calendar/<token>.ics — for "From URL" in Google Calendar, or any app. */
+  https: string;
+  /** webcal://… — opens Apple Calendar's Subscribe on iPhone, iPad and Mac. */
+  webcal: string;
+  /** Google Calendar's "add this calendar" page for the link. */
+  google: string;
+}
+
+/**
+ * The feed's links. `origin` resolves a relative API base (the website's `/api`); the app's base is
+ * already absolute.
+ */
+export function calendarFeedLinks(path: string, origin?: string): CalendarFeedLinks {
+  const https = new URL(`${apiBaseUrl().replace(/\/+$/, "")}${path}`, origin).toString();
+  const webcal = https.replace(/^https?:/, "webcal:");
+  return { https, webcal, google: `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}` };
+}

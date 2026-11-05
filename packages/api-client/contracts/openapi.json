@@ -673,6 +673,25 @@
     "title": "FacebookAuthRequest",
     "type": "object"
    },
+   "FeedOut": {
+    "description": "The private subscription link's secret; the client puts it on its API base: ``/calendar/<token>.ics``.",
+    "properties": {
+     "path": {
+      "title": "Path",
+      "type": "string"
+     },
+     "token": {
+      "title": "Token",
+      "type": "string"
+     }
+    },
+    "required": [
+     "token",
+     "path"
+    ],
+    "title": "FeedOut",
+    "type": "object"
+   },
    "FloorConceptOut": {
     "properties": {
      "layer": {
@@ -3326,6 +3345,60 @@
      }
     ],
     "summary": "Create Event",
+    "tags": [
+     "events"
+    ]
+   }
+  },
+  "/events/feed": {
+   "get": {
+    "description": "The owner's private link for Google / Apple Calendar (made on first ask).",
+    "operationId": "get_feed_events_feed_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FeedOut"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Get Feed",
+    "tags": [
+     "events"
+    ]
+   }
+  },
+  "/events/feed/reset": {
+   "post": {
+    "description": "A new link; calendars subscribed to the old one stop getting updates.",
+    "operationId": "reset_feed_events_feed_reset_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FeedOut"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Reset Feed",
     "tags": [
      "events"
     ]

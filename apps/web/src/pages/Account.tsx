@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Plus, Star, Trash2, Pencil, MailWarning, Loader2 } from "lucide-react";
 import { useAccountPage } from "@vedic-patro/features/account";
+import { useCalendarFeed } from "@vedic-patro/features/events";
+import { CalendarFeedCard } from "@vedic-patro/ui/kit/events";
 import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -18,6 +20,8 @@ export function Account() {
   const navigate = useNavigate();
   const page = useAccountPage({ auth });
   const { status, user, copy, editing, verification } = page;
+  // The private link that puts the user's events in Google / Apple Calendar.
+  const feed = useCalendarFeed({ enabled: status === "ready", origin: window.location.origin });
 
   useEffect(() => {
     if (status === "signed-out") {
@@ -140,6 +144,17 @@ export function Account() {
         >
           {copy.deleteAccount}
         </Button>
+      </div>
+      <div className="mt-8">
+        <CalendarFeedCard
+          feed={feed}
+          showApple
+          copyMode="copy"
+          onOpen={(url) => window.open(url, "_blank", "noopener")}
+          onCopy={(url) => {
+            void navigator.clipboard?.writeText(url).then(feed.markCopied, () => {});
+          }}
+        />
       </div>
     </div>
   );

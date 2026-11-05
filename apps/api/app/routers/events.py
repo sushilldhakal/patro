@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
 
 from app.security import CurrentUser, DbSession
@@ -91,3 +91,43 @@ def update_event(event_id: str, body: EventIn, user: CurrentUser, db: DbSession)
 @router.delete("/events/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_event(event_id: str, user: CurrentUser, db: DbSession) -> None:
     _run(events.delete_event, db, user.id, event_id)
+
+
+class FeedOut(BaseModel):
+    """The private subscription link's secret; the client puts it on its API base: ``/calendar/<token>.ics``."""
+
+    token: str
+    path: str
+
+
+def _feed_out(token: str) -> FeedOut:
+    return FeedOut(token=token, path=f"/calendar/{token}.ics")
+
+
+@router.get("/events/feed", response_model=FeedOut)
+def get_feed(user: CurrentUser, db: DbSession) -> FeedOut:
+    """The owner's private link for Google / Apple Calendar (made on first ask)."""
+    return _feed_out(events.feed_token(db, user.id))
+
+
+@router.post("/events/feed/reset", response_model=FeedOut)
+def reset_feed(user: CurrentUser, db: DbSession) -> FeedOut:
+    """A new link; calendars subscribed to the old one stop getting updates."""
+    return _feed_out(events.feed_token(db, user.id, reset=True))
+
+
+@router.get("/calendar/{token}.ics", include_in_schema=False)
+def calendar_feed(token: str, db: DbSession) -> Response:
+    """The subscribed calendar itself. No sign-in: the token in the link is the key."""
+    owner = events.feed_owner(db, token)
+    if owner is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Calendar not found")
+    return Response(
+        events.build_feed(db, owner),
+        media_type="text/calendar; charset=utf-8",
+        headers={
+            "Content-Disposition": 'inline; filename="vedic-patro.ics"',
+            # Personal: never in a shared cache.
+            "Cache-Control": "private, max-age=900",
+        },
+    )
