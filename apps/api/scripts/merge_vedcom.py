@@ -16,6 +16,10 @@ shows up instead of slipping through. ``--report`` prints that without writing.
 
     python3 scripts/merge_vedcom.py rigveda --report
     python3 scripts/merge_vedcom.py rigveda
+    python3 scripts/merge_vedcom.py yajurveda --report
+
+A mantra whose text agrees under 80% with ours is left untouched (listed in the report);
+after checking it, ``--force-low`` merges those too.
 """
 
 from __future__ import annotations
@@ -54,15 +58,17 @@ def dayananda_hindi(commentaries: list[dict]) -> str | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("veda", choices=["rigveda", "atharvaveda"])
+    ap.add_argument("veda", choices=["rigveda", "atharvaveda", "yajurveda"])
     ap.add_argument("--report", action="store_true", help="compare only; write nothing")
+    ap.add_argument("--force-low", action="store_true", help="also merge mantras whose text agrees under 80%%")
     args = ap.parse_args()
 
     src = ROOT / f"data/vedcom_source/{args.veda}.jsonl"
     site: dict[str, dict] = {}
     for line in src.read_text(encoding="utf-8").splitlines():
         row = json.loads(line)
-        site[f"{row['mandala']}.{row['sukta']}.{row['mantra']}"] = row
+        # Newer rows carry their label; the first Rigveda rows only mandala / sukta / mantra.
+        site[row.get("label") or f"{row['mandala']}.{row['sukta']}.{row['mantra']}"] = row
 
     path = ROOT / f"data/documents_source/{args.veda}.json"
     raw = path.read_text(encoding="utf-8")
@@ -78,8 +84,12 @@ def main() -> None:
         matched += 1
         ratio = difflib.SequenceMatcher(None, fold(shloka["sanskrit"]), fold(row["sanskrit"]), autojunk=False).ratio()
         if ratio < 0.8:
+            # So different it is most likely another mantra under this number: nothing is
+            # copied (text or details) until someone has looked; --force-low takes it anyway.
             low += 1
             lows.append((ratio, label))
+            if not args.force_low:
+                continue
         if args.report:
             continue
         for key in ("devata", "rishi", "chhanda", "svara"):
@@ -93,7 +103,7 @@ def main() -> None:
     print(f"ours {len(ours)}, site {len(site)}, matched {matched}")
     print(f"not on the site ({len(missing)}): {', '.join(missing[:40])}{' …' if len(missing) > 40 else ''}")
     print(f"on the site only ({len(extra)}): {', '.join(extra[:40])}{' …' if len(extra) > 40 else ''}")
-    print(f"text agrees less than 80% ({low}):")
+    print(f"text agrees less than 80% ({low}){'' if args.force_low else ' — left as they are'}:")
     for ratio, label in sorted(lows)[:60]:
         print(f"  {label}  {ratio:.2f}")
 

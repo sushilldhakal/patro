@@ -15,10 +15,12 @@ requests at a time, a pause between them) and says who it is in the User-Agent.
 
     python3 scripts/scrape_vedcom.py rigveda            # every mantra in our manifest
     python3 scripts/scrape_vedcom.py rigveda --only 1.1  # one sukta, for a test
+    python3 scripts/scrape_vedcom.py yajurveda          # adhyaya.mantra → yajurveda/<a>/<m>
 
-The mantra list comes from our own manifest (data/documents_source/rigveda.json), and
-after the last mantra of each sukta the next number is tried too, so a mantra the site
-has and we lack is still collected (and reported by the matcher).
+The mantra list comes from our own manifest (data/documents_source/<veda>.json): its labels
+are the site's path (Rigveda / Atharvaveda mandala-or-kanda.sukta.mantra, Yajurveda
+adhyaya.mantra). After the last mantra of each sukta / adhyaya the next number is tried
+too, so a mantra the site has and we lack is still collected (and reported by the matcher).
 """
 
 from __future__ import annotations
@@ -121,61 +123,73 @@ def fetch(path: str) -> str | None:
     raise RuntimeError(f"giving up on {url}")
 
 
-def targets(veda: str, only: str | None) -> list[tuple[int, int, int]]:
+Target = tuple[int, ...]
+# How many label parts each Veda's site path has.
+PARTS = {"rigveda": 3, "atharvaveda": 3, "yajurveda": 2}
+
+
+def targets(veda: str, only: str | None) -> list[Target]:
     manifest = json.loads((ROOT / f"data/documents_source/{veda}.json").read_text(encoding="utf-8"))
-    out: list[tuple[int, int, int]] = []
+    out: list[Target] = []
     for chapter in manifest["chapters"]:
         for shloka in chapter["shlokas"]:
-            parts = [int(p) for p in shloka["verse_label"].split(".")]
-            if len(parts) == 3:
-                out.append((parts[0], parts[1], parts[2]))
+            parts = tuple(int(p) for p in shloka["verse_label"].split("."))
+            if len(parts) == PARTS[veda]:
+                out.append(parts)
     if only:
         want = tuple(int(p) for p in only.split("."))
         out = [t for t in out if t[: len(want)] == want]
     return out
 
 
+def row_key(row: dict[str, Any]) -> Target:
+    """A collected row's label; the first Rigveda rows predate the ``label`` field."""
+    if row.get("label"):
+        return tuple(int(p) for p in row["label"].split("."))
+    return (row["mandala"], row["sukta"], row["mantra"])
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("veda", choices=["rigveda", "atharvaveda"])
-    ap.add_argument("--only", help="limit to a mandala or mandala.sukta, e.g. 1 or 1.1")
+    ap.add_argument("veda", choices=sorted(PARTS))
+    ap.add_argument("--only", help="limit to a mandala / adhyaya or a sukta, e.g. 1 or 1.1")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"{args.veda}.jsonl"
-    done: set[tuple[int, int, int]] = set()
+    done: set[Target] = set()
     if out_path.exists():
         for line in out_path.read_text(encoding="utf-8").splitlines():
-            row = json.loads(line)
-            done.add((row["mandala"], row["sukta"], row["mantra"]))
+            done.add(row_key(json.loads(line)))
 
     todo = [t for t in targets(args.veda, args.only) if t not in done]
-    # One past the end of each sukta, in case the site has a mantra we lack.
-    last: dict[tuple[int, int], int] = {}
-    for m, s, v in targets(args.veda, args.only):
-        last[(m, s)] = max(last.get((m, s), 0), v)
-    probes = [(m, s, v + 1) for (m, s), v in last.items() if (m, s, v + 1) not in done]
+    # One past the end of each sukta / adhyaya, in case the site has a mantra we lack.
+    last: dict[Target, int] = {}
+    for t in targets(args.veda, args.only):
+        last[t[:-1]] = max(last.get(t[:-1], 0), t[-1])
+    probes = [(*head, v + 1) for head, v in last.items() if (*head, v + 1) not in done]
 
     lock = threading.Lock()
     count = {"ok": 0, "missing": 0}
 
-    def work(target: tuple[int, int, int], probe: bool = False) -> None:
-        m, s, v = target
-        page = fetch(f"{args.veda}/{m}/{s}/{v}")
+    def work(target: Target, probe: bool = False) -> None:
+        label = ".".join(str(p) for p in target)
+        page = fetch(f"{args.veda}/" + "/".join(str(p) for p in target))
         time.sleep(PAUSE_S)
         row = parse(page) if page else None
         with lock:
             if row is None:
                 if not probe:
                     count["missing"] += 1
-                    print(f"missing {m}.{s}.{v}", flush=True)
+                    print(f"missing {label}", flush=True)
                 return
-            row = {"mandala": m, "sukta": s, "mantra": v, "extra": probe, **row}
+            names = ("mandala", "sukta", "mantra") if len(target) == 3 else ("adhyaya", "mantra")
+            row = {"label": label, **dict(zip(names, target)), "extra": probe, **row}
             with out_path.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
             count["ok"] += 1
             if probe:
-                print(f"extra mantra on the site: {m}.{s}.{v}", flush=True)
+                print(f"extra mantra on the site: {label}", flush=True)
             if count["ok"] % 200 == 0:
                 print(f"{count['ok']} collected", flush=True)
 
