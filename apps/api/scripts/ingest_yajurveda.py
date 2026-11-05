@@ -56,7 +56,8 @@ _DEVANAGARI_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789
 # A mantra-closing marker: "।। <number> ।।", with inconsistent internal
 # spacing in the source (sometimes "।। १।।", sometimes "।। १० ।।", sometimes
 # a stray space splitting the digits themselves, e.g. "१ ०" for "१०").
-_MARKER_RE = re.compile(r"।।\s*([^।]{1,15}?)\s*।।")
+# Once the closing pair is a single danda ("।। ५०।" after 15.50), which had joined 15.50 and 15.51.
+_MARKER_RE = re.compile(r"।।\s*([^।]{1,15}?)\s*।।?")
 
 
 def _marker_number(raw: str) -> str | None:
