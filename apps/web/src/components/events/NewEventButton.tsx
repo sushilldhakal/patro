@@ -18,7 +18,7 @@ import {
 } from "@vedic-patro/api-client";
 import { bsFromCivilIso, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { addMinutes, shiftDate, todayIn, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
-import { eventToDraft, useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
+import { betterSlot, eventToDraft, useDayTimePicks, useEventLabels, type DayTimePick } from "@vedic-patro/features/events";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { IosMonthGrid, TimeWheel } from "@vedic-patro/ui/kit/events";
@@ -163,13 +163,11 @@ export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, s
     const at = `${startDate}T${startTime}`;
     return dayPicks.picks.ashubh.find((w) => `${w.startDate}T${w.startTime}` <= at && at < `${w.endDate}T${w.endTime}`) ?? null;
   }, [dayPicks.picks.ashubh, timeOn, picked, startDate, startTime]);
-  // The next शुभ window after the typed time, else the day's first.
+  // The first clean शुभ time from the typed one on: past every अशुभ window, never into another.
   const better: DayTimePick | null = useMemo(() => {
     if (!clash) return null;
-    const at = `${startDate}T${startTime}`;
-    const good = dayPicks.picks.shubh;
-    return good.find((w) => `${w.startDate}T${w.startTime}` > at) ?? good[0] ?? null;
-  }, [clash, dayPicks.picks.shubh, startDate, startTime]);
+    return betterSlot(dayPicks.picks.shubh, dayPicks.picks.ashubh, `${startDate}T${startTime}`);
+  }, [clash, dayPicks.picks, startDate, startTime]);
 
   const setStart = (date: string) => {
     setStartDate(date);

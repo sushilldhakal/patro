@@ -137,3 +137,42 @@ export function buildDayTimePicks(p: PanchangaDay, date: string): DayTimePicks {
     pushkara: pushkaraPicks(p, date, sunrise),
   };
 }
+
+const absMinutes = (date: string, time: string) => Date.parse(`${date}T${time}:00Z`) / 60000;
+const fromAbs = (minutes: number) => {
+  const iso = new Date(minutes * 60000).toISOString();
+  return { date: iso.slice(0, 10), time: iso.slice(11, 16) };
+};
+
+/**
+ * A better time than `at` ("YYYY-MM-DDTHH:MM"), which falls in an अशुभ window: the first शुभ window
+ * from then on, started past every अशुभ window that covers it, with at least 15 clean minutes left;
+ * earlier ones of the day only when no later one is clean. Null when the day has no such time (a long
+ * अशुभ window such as बाण can cover them all).
+ */
+export function betterSlot(shubh: DayTimePick[], ashubh: DayTimePick[], at: string): DayTimePick | null {
+  const now = absMinutes(at.slice(0, 10), at.slice(11, 16));
+  const bad = ashubh.map((w) => [absMinutes(w.startDate, w.startTime), absMinutes(w.endDate, w.endTime)] as const);
+  const windows = shubh
+    .map((w) => ({ w, start: absMinutes(w.startDate, w.startTime), end: absMinutes(w.endDate, w.endTime) }))
+    .sort((a, b) => a.start - b.start);
+  const later = windows.filter((x) => x.end > now);
+  const earlier = windows.filter((x) => x.end <= now);
+  for (const { w, start, end } of [...later, ...earlier]) {
+    let s = later.some((x) => x.w === w) ? Math.max(start, now) : start;
+    for (let moved = true; moved; ) {
+      moved = false;
+      for (const [bs, be] of bad) {
+        if (bs <= s && s < be) {
+          s = be;
+          moved = true;
+        }
+      }
+    }
+    if (s + 15 <= end) {
+      const a = fromAbs(s);
+      return { ...w, startDate: a.date, startTime: a.time };
+    }
+  }
+  return null;
+}

@@ -40,5 +40,10 @@ module.exports = () => {
     expo.extra = { ...extra, googleIosReversedClientId: reversed };
   }
 
+  // Local testing: point the app at another API (a laptop server) without touching app.json, e.g.
+  // EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8090 npx expo start. Release builds never set it.
+  const apiOverride = (process.env.EXPO_PUBLIC_API_BASE_URL || "").trim();
+  if (apiOverride) expo.extra = { ...(expo.extra ?? {}), apiBaseUrl: apiOverride };
+
   return { expo };
 };
