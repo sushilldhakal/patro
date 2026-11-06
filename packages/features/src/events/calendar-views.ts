@@ -24,6 +24,16 @@ export const parseHomeView = (raw: string | null | undefined): HomeView =>
 export const homeViewsFor = (wide: boolean): HomeView[] => HOME_VIEWS.filter((v) => (wide ? v !== "multi" : v !== "week"));
 export const adaptHomeView = (view: HomeView, wide: boolean): HomeView => (view === "week" && !wide ? "multi" : view === "multi" && wide ? "week" : view);
 
+/**
+ * The app on an iPad or a wide Android tablet: iPad Calendar's segmented Day | Week | Month, with the
+ * panchanga in place of Year (a year of tiny months says nothing a month grid does not). Four choices,
+ * so the top bar draws them as a segmented switch instead of a menu.
+ */
+export const TABLET_HOME_VIEWS: readonly HomeView[] = ["day", "week", "calendar", "panchanga"];
+/** A saved view the tablet does not offer (Year, List, Multi Day) opens as the nearest one it does. */
+export const adaptTabletHomeView = (view: HomeView): HomeView =>
+  view === "multi" ? "week" : TABLET_HOME_VIEWS.includes(view) ? view : "calendar";
+
 /** A day's grid is minutes 0–1440; this is how far an event may be nudged and what a drag snaps to. */
 export const SNAP_MINUTES = 15;
 export const MIN_EVENT_MINUTES = 15;

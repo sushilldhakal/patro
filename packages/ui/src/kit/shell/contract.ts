@@ -351,6 +351,10 @@ export type BsCalendarGridProps = {
   publicHolidayDates?: Set<string>;
   selectedAdDate?: string;
   onSelectDay?: (day: CalendarDay) => void;
+  /** App only: a day was held down — start a new event on it (a tap only selects the day). */
+  onLongPressDay?: (day: CalendarDay) => void;
+  /** App only: one of the user's events listed in a day cell was tapped (tablet cells list them). */
+  onOpenEvent?: (event: CalendarEvent) => void;
   isEnriching?: boolean;
   todayAd?: string;
   /** App only: today's cell rings once a day when given. The website ignores it. */

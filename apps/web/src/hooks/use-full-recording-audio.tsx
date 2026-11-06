@@ -52,6 +52,8 @@ export function useFullRecordingAudio(
   const [duration, setDuration] = useState(0);
 
   const brokenRef = useRef<string | null>(null);
+  /** A seek asked for before the file's metadata arrived; applied on loadedmetadata. */
+  const pendingSeekRef = useRef<number | null>(null);
 
   const load = useCallback(function loadAt(i: number, autoplay: boolean) {
     const audio = audioRef.current;
@@ -59,6 +61,7 @@ export function useFullRecordingAudio(
     const url = list[i];
     if (!audio || !url) return;
     const token = ++tokenRef.current;
+    pendingSeekRef.current = null;
     indexRef.current = i;
     setIndex(i);
     setCurrentTime(0);
@@ -126,7 +129,16 @@ export function useFullRecordingAudio(
       setMediaPlaybackState("paused");
     };
     const onTime = () => setCurrentTime(audio.currentTime);
-    const onLoadedMetadata = () => setDuration(audio.duration || 0);
+    const onLoadedMetadata = () => {
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+      const at = pendingSeekRef.current;
+      pendingSeekRef.current = null;
+      if (at != null) audio.currentTime = at;
+    };
+    // A browser refines an MP3's length as it reads more of it.
+    const onDurationChange = () => {
+      if (Number.isFinite(audio.duration)) setDuration(audio.duration);
+    };
     const onEnded = () => {
       const next = indexRef.current + 1;
       const go = canContinueRef.current?.(indexRef.current, next) ?? true;
@@ -148,6 +160,7 @@ export function useFullRecordingAudio(
     audio.addEventListener("pause", onPause);
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("durationchange", onDurationChange);
     audio.addEventListener("ended", onEnded);
     audio.addEventListener("error", onError);
     return () => {
@@ -155,6 +168,7 @@ export function useFullRecordingAudio(
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("durationchange", onDurationChange);
       audio.removeEventListener("ended", onEnded);
       audio.removeEventListener("error", onError);
     };
@@ -199,8 +213,21 @@ export function useFullRecordingAudio(
   const seek = useCallback((time: number) => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = time;
     setCurrentTime(time);
+    if (!audio.getAttribute("src")) {
+      const list = urlsRef.current;
+      const url = list[indexRef.current] ?? list[0];
+      if (!url) return;
+      // preload="none" would leave the new source unread, so the held seek would never land.
+      audio.preload = "metadata";
+      audio.src = url;
+    }
+    // Setting currentTime before the metadata is in is dropped by the browser: hold it until then.
+    if (audio.readyState < HTMLMediaElement.HAVE_METADATA) {
+      pendingSeekRef.current = time;
+      return;
+    }
+    audio.currentTime = time;
   }, []);
 
   const playFrom = useCallback(

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import { AccessibilityInfo, PanResponder, Pressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
@@ -12,8 +12,8 @@ import {
   personalizeSlots,
   placeBestSlots,
   plannerDays,
-  dashaNotes,
-  strongestReason,
+  personalDayCopy,
+  personalReasonPhrase,
   resizedTimes,
   slotCovered,
   snap,
@@ -24,7 +24,6 @@ import {
   type DayBlock,
   type PersonalColumn,
   type SlotMark,
-  type SlotReason,
 } from "@vedic-patro/features/events";
 import { Icon, Text } from "@vedic-patro/ui";
 import { haptics } from "@vedic-patro/ui/motion";
@@ -49,6 +48,13 @@ const KIND = {
 
 const isoOfDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const hhmm = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+
+/** A held day starts its new event at the next whole hour today, 9:00 on any other day. */
+function heldDayTime(date: string, todayAd: string): string {
+  if (date !== todayAd) return "09:00";
+  const now = new Date();
+  return hhmm(Math.min(23, now.getHours() + 1) * 60);
+}
 
 /** iPad and wide Android tablets get taller hours and a four-column year. */
 function useTablet() {
@@ -90,8 +96,8 @@ export function PlannerView(props: PlannerViewProps) {
         </View>
       </View>
 
-      {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
-      {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} /> : null}
+      {/* Day and Multi Day: the week strip is the top of the bordered grid, as Week's date row is. */}
+      {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} strip={view === "day" || view === "multi" ? <DayStrip {...props} /> : null} /> : null}
       {view === "year" ? <YearGrid {...props} /> : null}
       {view === "list" ? <AgendaList {...props} /> : null}
     </View>
@@ -99,14 +105,14 @@ export function PlannerView(props: PlannerViewProps) {
 }
 
 /** Apple's week strip: weekday letters over the dates; the shown day filled, the next one in a capsule (Multi Day). */
-function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewProps) {
+function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: PlannerViewProps) {
   const tx = usePlannerText();
   const week = weekDates(anchor);
   const shown = plannerDays(view, anchor);
   const first = week.indexOf(shown[0]!);
   const span = shown.filter((d) => week.includes(d)).length;
   return (
-    <View className="border-b border-border pb-2">
+    <View className="border-b border-border pb-2 pt-2">
       <View className="flex-row">
         {week.map((date, i) => (
           <Text key={date} className={cn("flex-1 text-center text-caption font-medium", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>
@@ -131,10 +137,16 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
                 haptics.tick();
                 onAnchorChange(date);
               }}
+              onLongPress={() => {
+                haptics.tick();
+                onCreateAt(date, heldDayTime(date, todayAd));
+              }}
+              delayLongPress={400}
               className="flex-1 items-center"
             >
-              <View className={cn("h-10 w-10 items-center justify-center rounded-full", isFirst && "bg-foreground")}>
-                <Text className={cn("font-num text-title", isFirst ? "font-semibold text-background" : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground")}>
+              {/* Apple: the shown day is filled black, or red when it is today. */}
+              <View className={cn("h-10 w-10 items-center justify-center rounded-full", isFirst && (isToday ? "bg-danger" : "bg-foreground"))}>
+                <Text className={cn("font-num text-title", isFirst ? (isToday ? "font-semibold text-white" : "font-semibold text-background") : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground")}>
                   {tx.bsDay(date)}
                 </Text>
               </View>
@@ -148,7 +160,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number };
 
-function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange, onDragChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onOpenPersonal, onMoveEvent, onCreateAt, onAnchorChange, onViewChange, onDragChange }: PlannerViewProps & { days: string[]; strip?: ReactNode }) {
   const tx = usePlannerText();
   const { tablet } = useTablet();
   const HOUR_H = tablet ? 60 : 52;
@@ -203,10 +215,14 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
   }
 
   return (
+    // Bordered like the month grid: a rounded card on a tablet, edge to edge (top and bottom lines) on a phone.
+    // The border sits on this outer box so the measured width below is the columns' own.
+    <View className={cn("overflow-hidden border border-border bg-card", tablet ? "rounded-xl" : "border-x-0")}>
+    {strip}
     <View onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
       {/* Heading: the full date (Day), "Wed – 5" per column (Multi Day), or weekday and date (Week). */}
       {view === "day" ? (
-        <View className="flex-row flex-wrap items-baseline justify-center gap-x-1.5 py-2.5">
+        <View className="flex-row flex-wrap items-baseline justify-center gap-x-1.5 border-b border-border py-2.5">
           <Text className="text-body font-semibold text-foreground">{tx.dayHeading(days[0]!)}</Text>
           <Text className="text-caption text-muted-foreground">· {tx.adShort(days[0]!)}</Text>
         </View>
@@ -217,18 +233,24 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
             const isToday = date === todayAd;
             const holiday = marks.get(date)?.holiday;
             return (
-              <View key={date} style={colStyle} className="relative border-l border-border/60">
+              <View key={date} style={colStyle} className="relative border-l border-border">
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => {
                     onAnchorChange(date);
                     onViewChange("day");
                   }}
-                  className="items-center py-2 active:bg-muted"
+                  onLongPress={() => {
+                    haptics.tick();
+                    onCreateAt(date, heldDayTime(date, todayAd));
+                  }}
+                  delayLongPress={400}
+                  className="flex-row items-center justify-center gap-1.5 py-2 active:bg-muted"
                 >
-                  <Text className="text-xs text-muted-foreground">{tx.weekdayShort(date)}</Text>
-                  <View className={cn("mt-0.5 h-10 w-10 items-center justify-center rounded-full", isToday && "bg-primary")}>
-                    <Text className={cn("font-num text-xl font-semibold", isToday ? "text-primary-foreground" : weekdayOf(date) === 6 || holiday ? "text-danger" : "text-foreground")}>{tx.bsDay(date)}</Text>
+                  {/* Apple's week heading: "Sun 5" on one line, today's date in a red circle. */}
+                  <Text className={cn("text-body", isToday ? "font-semibold text-danger" : "text-muted-foreground")}>{tx.weekdayShort(date)}</Text>
+                  <View className={cn("h-8 min-w-8 items-center justify-center rounded-full px-1", isToday && "bg-danger")}>
+                    <Text className={cn("font-num text-title font-semibold", isToday ? "text-white" : weekdayOf(date) === 6 || holiday ? "text-danger" : "text-foreground")}>{tx.bsDay(date)}</Text>
                   </View>
                 </Pressable>
               </View>
@@ -246,8 +268,8 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
           {columns.map((c) => {
             const mark = marks.get(c.date);
             return (
-              <View key={c.date} style={colStyle} className="gap-1 border-l border-border/60 p-1">
-                <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} tx={tx} />
+              <View key={c.date} style={colStyle} className="gap-1 border-l border-border p-1">
+                <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} onOpen={onOpenPersonal} tx={tx} />
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
                   <View className="flex-row items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1">
                     <View className="h-1.5 w-1.5 rounded-full bg-success" />
@@ -255,16 +277,24 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
                   </View>
                 ) : null}
                 {mark?.names.slice(0, view === "week" ? 2 : 3).map((name) => (
-                  <View key={name} className={cn("flex-row items-center gap-1.5 rounded-lg px-2 py-1", mark.holiday ? "bg-vermilion/10" : "bg-warning/15")}>
+                  <Pressable
+                    key={name}
+                    accessibilityRole="button"
+                    accessibilityLabel={name}
+                    disabled={!onOpenMark}
+                    onPress={() => onOpenMark?.(c.date, name, mark.holiday)}
+                    className={cn("flex-row items-center gap-1.5 rounded-md px-2 py-1 active:opacity-70", mark.holiday ? "bg-vermilion/10" : "bg-warning/15")}
+                  >
                     <View className={cn("h-1.5 w-1.5 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
                     <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>{name}</Text>
-                  </View>
+                  </Pressable>
                 ))}
                 {c.allDay.map((e) => {
                   const k = KIND[eventKindOf(e)];
                   return (
-                    <Pressable key={e.id} onPress={() => onOpenEvent(e)} className={cn("rounded-lg px-2 py-1", k.fill)}>
-                      <Text numberOfLines={1} className={cn("text-caption font-semibold", k.text)}>{e.title}</Text>
+                    <Pressable key={e.id} accessibilityRole="button" onPress={() => onOpenEvent(e)} className={cn("flex-row items-center gap-1.5 overflow-hidden rounded-md px-2 py-1 active:opacity-70", k.fill)}>
+                      <View className={cn("absolute bottom-0 left-0 top-0 w-1", k.bar)} />
+                      <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-semibold", k.text)}>{e.title}</Text>
                     </Pressable>
                   );
                 })}
@@ -299,24 +329,32 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
           {columns.map((c) => (
             <Pressable
               key={c.date}
+              // Apple Calendar: a tap on an empty slot does nothing, holding it starts a new event there.
               accessibilityLabel={tx.t("calendar.planner_new_here")}
-              onPress={(e) => {
+              accessibilityHint={tx.t("events.hold_to_add")}
+              delayLongPress={400}
+              onLongPress={(e) => {
+                haptics.tick();
                 const minutes = Math.min(23 * 60 + 45, Math.max(0, snap((e.nativeEvent.locationY / HOUR_H) * 60 - 7)));
                 onCreateAt(c.date, hhmm(minutes));
               }}
               style={{ ...colStyle, height: HOUR_H * 24 }}
-              className="border-l border-border/60"
+              className="border-l border-border"
             >
-              {Array.from({ length: 47 }, (_, i) => i + 1).map((step) => (
-                <View key={step} pointerEvents="none" className={cn("absolute left-0 right-0 h-px", step % 2 === 0 ? "bg-border/60" : "bg-border/30")} style={{ top: (step / 2) * HOUR_H }} />
+              {/* Hour lines only, as Apple draws them: half-hour lines made the grid look ruled. */}
+              {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
+                <View key={h} pointerEvents="none" className="absolute left-0 right-0 h-px bg-border" style={{ top: h * HOUR_H }} />
               ))}
               <BestPlaceholders date={c.date} slots={slots.get(c.date) ?? []} column={personal.get(c.date) ?? null} events={events} hourH={HOUR_H} week={view === "week"} tx={tx} onCreateAt={onCreateAt} />
               {c.date === todayAd ? (
                 <View pointerEvents="none" className="absolute left-0 right-0 z-20 h-0.5 bg-danger" style={{ top: (nowMin / 60) * HOUR_H }}>
                   <View className="absolute h-2 w-2 rounded-full bg-danger" style={{ left: -4, top: -3 }} />
                 </View>
+              ) : showsToday ? (
+                // The other days of a week that holds today get a faint line at the same time, as in Apple's week.
+                <View pointerEvents="none" className="absolute left-0 right-0 z-20 h-px bg-vermilion/40" style={{ top: (nowMin / 60) * HOUR_H }} />
               ) : null}
-              <View pointerEvents="box-none" className="absolute bottom-0 right-1 top-0" style={{ left: 16 }}>
+              <View pointerEvents="box-none" className="absolute bottom-0 top-0" style={{ left: 2, right: 2 }}>
                 {c.timed.map((b) => (
                   <Block
                     key={b.event.id}
@@ -335,6 +373,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
           ))}
         </View>
       </View>
+    </View>
     </View>
   );
 }
@@ -364,7 +403,7 @@ function Block({ block, hourH, drag, onOpen, onGrab }: { block: DayBlock; hourH:
       delayLongPress={350}
       accessibilityRole="button"
       accessibilityLabel={event.title}
-      className={cn("absolute overflow-hidden rounded-md pl-2.5 pr-1.5 pt-1", k.fill, drag && "z-30 opacity-90")}
+      className={cn("absolute overflow-hidden rounded-md pl-2 pr-1.5 pt-1", k.fill, drag && "z-30 opacity-90")}
       style={{
         top: (from / 60) * hourH + 1,
         height,
@@ -376,7 +415,7 @@ function Block({ block, hourH, drag, onOpen, onGrab }: { block: DayBlock; hourH:
     >
       <View className={cn("absolute bottom-0 left-0 top-0 w-1", k.bar)} />
       <Text numberOfLines={height > 44 ? 2 : 1} className={cn("text-caption font-semibold leading-tight", k.text)}>{event.title}</Text>
-      {height > 34 ? <Text numberOfLines={1} className="font-num text-diagram-xs text-muted-foreground">{tx.clock(from)} – {tx.clock(to)}</Text> : null}
+      {height > 34 ? <Text numberOfLines={1} className={cn("font-num text-diagram-xs opacity-80", k.text)}>{tx.clock(from)} – {tx.clock(to)}</Text> : null}
       {height > 56 && event.location ? <Text numberOfLines={1} className="text-diagram-xs text-muted-foreground">{event.location}</Text> : null}
       <Pressable accessibilityLabel={tx.t("events.ends")} onLongPress={() => onGrab("resize")} delayLongPress={250} className="absolute bottom-0 left-0 right-0 h-3" />
     </Pressable>
@@ -389,14 +428,6 @@ function rangeClock(tx: PlannerText, start: number, end: number): string {
   const endText = end >= 1440 ? tx.digits("24:00") : tx.clock(end);
   return `${tx.clock(start)}–${endText}`;
 }
-
-const TONE_KEY = {
-  best: "calendar.personal_tone_best",
-  good: "calendar.personal_tone_good",
-  neutral: "calendar.personal_tone_neutral",
-  bad: "calendar.personal_tone_bad",
-  worst: "calendar.personal_tone_worst",
-} as const;
 
 function toneChip(tone: PersonalColumn["tone"]): string {
   if (tone === "best" || tone === "good") return "bg-success/10";
@@ -419,25 +450,9 @@ function toneDot(tone: PersonalColumn["tone"]): string {
   return "bg-muted-foreground";
 }
 
-function reasonPhrase(reason: SlotReason, tx: PlannerText): string {
-  const name = tx.lang === "en" ? reason.nameEn : reason.nameNe;
-  const lord = tx.lang === "en" ? reason.lordEn : reason.lordNe;
-  const body =
-    reason.code === "ashtama" ? tx.t("calendar.personal_ashtama")
-    : reason.code === "tara" ? tx.t("calendar.personal_tara", { name: name ?? "" })
-    : reason.code === "asta" ? tx.t("calendar.personal_asta", { lord: lord ?? "" })
-    : reason.code === "vakri" ? tx.t("calendar.personal_vakri", { lord: lord ?? "" })
-    : reason.code === "chandra" ? tx.t("calendar.personal_chandra")
-    : reason.code === "weak" ? tx.t("calendar.personal_chandra_weak")
-    : reason.code === "janma" ? tx.t("calendar.personal_janma")
-    : tx.t("calendar.personal_remedy");
-  if (reason.fromMin == null) return body;
-  return tx.t("calendar.personal_from", { time: tx.digits(hhmm(reason.fromMin)), reason: body });
-}
-
 function reasonText(mark: SlotMark, tx: PlannerText): string {
   if (mark.kind === "plain") return "";
-  return mark.reasons.map((reason) => reasonPhrase(reason, tx)).join(" · ");
+  return mark.reasons.map((reason) => personalReasonPhrase(reason, tx)).join(" · ");
 }
 
 function slotCopy(slot: BestSlot, mark: SlotMark, tx: PlannerText): { intent: string; short: string; names: string; clock: string; title: string; suggested: string; reason: string } {
@@ -517,33 +532,33 @@ function BestPlaceholders({ date, slots, column, events, hourH, week, tx, onCrea
   });
 }
 
-function PersonalChip({ date, column, week, open, onToggle, tx }: { date: string; column: PersonalColumn | undefined; week: boolean; open: boolean; onToggle: () => void; tx: PlannerText }) {
+function PersonalChip({ date, column, week, open, onToggle, onOpen, tx }: { date: string; column: PersonalColumn | undefined; week: boolean; open: boolean; onToggle: () => void; onOpen?: (date: string, column: PersonalColumn) => void; tx: PlannerText }) {
   if (!column) return null;
-  const tone = tx.t(TONE_KEY[column.tone ?? "neutral"]);
-  const reason = strongestReason(column);
-  const detail = reason ? reasonPhrase(reason, tx) : "";
-  const label = week ? tone : [tx.t("calendar.personal_day"), tone, detail].filter(Boolean).join(" · ");
-  const sections = [
-    ["calendar.personal_do", tx.lang === "en" ? column.doEn : column.doNe],
-    ["calendar.personal_dont", tx.lang === "en" ? column.dontEn : column.dontNe],
-    ["calendar.personal_careful", tx.lang === "en" ? column.carefulEn : column.carefulNe],
-  ] as const;
+  const copy = personalDayCopy(column, tx);
+  const label = week ? copy.toneLabel : [copy.heading, copy.toneLabel, copy.reason].filter(Boolean).join(" · ");
   return (
     <View>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${label} ${date}`} accessibilityState={{ expanded: open }} onPress={onToggle} className={cn("flex-row items-center gap-1.5 rounded-lg px-2 py-1", toneChip(column.tone))}>
+      {/* The app opens the day's reading in a dialog (too much text for a column); without one it unfolds here. */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${label} ${date}`}
+        accessibilityState={onOpen ? undefined : { expanded: open }}
+        onPress={onOpen ? () => onOpen(date, column) : onToggle}
+        className={cn("flex-row items-center gap-1.5 rounded-md px-2 py-1 active:opacity-70", toneChip(column.tone))}
+      >
         <View className={cn("h-1.5 w-1.5 rounded-full", toneDot(column.tone))} />
         <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-medium", toneInk(column.tone))}>{label}</Text>
       </Pressable>
-      {open ? (
+      {open && !onOpen ? (
         <View className="mt-1 rounded-lg border border-border bg-card p-2">
-          <Text className="text-caption font-semibold text-foreground">{column.profileName}</Text>
-          {dashaNotes(column).map((note) => (
-            <Text key={`${note.code}:${note.lordEn}`} className="mt-1 text-caption text-muted-foreground">{reasonPhrase(note, tx)}</Text>
+          <Text className="text-caption font-semibold text-foreground">{copy.profileName}</Text>
+          {copy.notes.map((note) => (
+            <Text key={note} className="mt-1 text-caption text-muted-foreground">{note}</Text>
           ))}
-          {sections.map(([key, lines]) => lines.length === 0 ? null : (
-            <View key={key} className="mt-1.5">
-              <Text className="text-caption text-muted-foreground">{tx.t(key)}</Text>
-              {lines.map((line) => <Text key={line} className="text-caption text-foreground">{line}</Text>)}
+          {copy.sections.map((section) => (
+            <View key={section.label} className="mt-1.5">
+              <Text className="text-caption text-muted-foreground">{section.label}</Text>
+              {section.lines.map((line) => <Text key={line} className="text-caption text-foreground">{line}</Text>)}
             </View>
           ))}
         </View>

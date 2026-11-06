@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useDocumentChapter, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { DocumentReader } from "@/components/documents/DocumentReader";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
-import { useDocumentAudio } from "@/lib/documents/use-document-audio";
+import { useDocumentAudioSession } from "@/lib/documents/document-audio-session";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -23,7 +23,16 @@ export default function DocumentChapterScreen() {
   const page = useDocumentChapter(slug, chapterNumber, { verse: initialVerse });
   const library = useDocumentLibraryOptions();
   const { copy } = page;
-  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.docTitle, page.complete, page.displayTitle);
+  // The shared player: it keeps playing after the reader leaves this page.
+  const audio = useDocumentAudioSession({
+    key: `${slug}:${chapterParam}`,
+    route: usePathname(),
+    shlokas: page.shlokas,
+    fullAudioUrl: page.fullAudioUrl,
+    documentTitle: page.docTitle,
+    complete: page.complete,
+    chapterTitle: page.displayTitle,
+  });
   const waitingForPage = useRef(false);
   useEffect(() => {
     const id = audio.activeId;

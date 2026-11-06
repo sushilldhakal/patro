@@ -34,6 +34,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { AppOverlays } from "@/components/navigation/AppOverlays";
+import { GlobalAudioBar } from "@/components/documents/GlobalAudioBar";
+import { DocumentAudioHost } from "@/lib/documents/document-audio-session";
 import { DuoPageFrame } from "@/components/navigation/DuoPageFrame";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
@@ -443,6 +445,9 @@ function RootShell({
         </Stack>
       )}
       {ready && onboarded ? <AppOverlays /> : null}
+      {/* A document's recording plays on across pages; the mini player shows it everywhere else. */}
+      {ready ? <DocumentAudioHost /> : null}
+      {ready && onboarded ? <GlobalAudioBar /> : null}
       {ready && onboarded ? <NotificationsRuntime /> : null}
       {ready ? <PlaybackSession /> : null}
       {ready ? <ThemedStatusBar /> : null}

@@ -513,10 +513,10 @@ export function useDocumentAudio(
   const activeProgress = mode === "full" ? (fullHighlight?.progress ?? 0) : verseProgress;
   const activePlaying = mode === "full" ? fullStatus.playing : mode === "verse" ? verseStatus.playing : false;
 
-  // Stop only when the reader leaves this screen. Minimising or locking the
-  // phone does not unmount it, so the system player keeps going. Player
-  // instances are read from a ref: recreating one (a later page of verses)
-  // must not run this cleanup and pause what is sounding.
+  // Stop when this player goes away: it runs at the app's root (document-audio-session), so that is
+  // when the reader closes the mini player, another document starts playing, or the app quits — not
+  // when they leave the page or minimise. Player instances are read from a ref: recreating one (a
+  // later page of verses) must not run this cleanup and pause what is sounding.
   const playersRef = useRef({ playlist, fullPlayer, suktaPlaylist });
   playersRef.current = { playlist, fullPlayer, suktaPlaylist };
   useEffect(

@@ -196,6 +196,29 @@ export interface PersonalGuidance {
   segments: PersonalSegment[];
 }
 
+type Tone = "best" | "good" | "neutral" | "bad" | "worst";
+
+/**
+ * A profile's own reading of one day: its birth chart read against the day's sky (the personal
+ * rashifal). The paragraph names where the running dasha lords sit in the kundali.
+ */
+export interface DayReading {
+  percent: number | null;
+  prediction_ne: string;
+  prediction_en: string;
+  dasha: { maha: DayReadingLord | null; antar: DayReadingLord | null };
+  /** Career, finance, health, relationships, learning, travel — scored for the day. */
+  domains: { key: string; label_ne: string; label_en: string; tone: Tone; percent: number }[];
+  /** Each graha's transit, by house from the natal Moon. */
+  gochar: { graha: string; graha_ne: string; graha_en: string; sign_ne: string; sign_en: string; house: number; favourable: boolean; retrograde: boolean; bindu: number | null }[];
+}
+export interface DayReadingLord {
+  lord: string;
+  lord_ne: string;
+  lord_en: string;
+  end: string | null;
+}
+
 /** One day of a profile's guidance: what the form's tips are made of. */
 export interface DayGuidance {
   date: string;
@@ -210,6 +233,8 @@ export interface DayGuidance {
   careful_en: string[];
   windows: DayWindow[];
   personal?: PersonalGuidance | null;
+  /** Present for a profile with a birth chart, on an API new enough to send it. */
+  reading?: DayReading | null;
 }
 
 export const fetchDayGuidance = (

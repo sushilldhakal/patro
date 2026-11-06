@@ -1,6 +1,7 @@
-import { Alert, Pressable, Switch, View } from "react-native";
+import { Alert, Linking, Pressable, Switch, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAccountPage } from "@vedic-patro/features/account";
+import { useSiteFooter } from "@vedic-patro/features/common";
 import { brand, illustration } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -41,6 +42,9 @@ export default function AccountScreen() {
   const { status, user, copy, verification } = page;
   const signedIn = status !== "signed-out" && Boolean(user);
   const go = (href: string) => () => router.push(href as never);
+  // Privacy, terms, support and the website: here in Settings rather than at the foot of every page.
+  const about = useSiteFooter();
+  const ABOUT_ICON = { privacy: "lock", terms: "file-text", support: "mail", site: "globe" } as const;
 
   if (status === "loading") {
     return (
@@ -146,6 +150,17 @@ export default function AccountScreen() {
             value={years > 0 ? digits(years) : undefined}
             onPress={go("/account/offline-data")}
           />
+        </ListGroup>
+
+        <ListGroup title={t("ui.settings.about")}>
+          {about.map((link) => (
+            <ListRow
+              key={link.id}
+              icon={ABOUT_ICON[link.id as keyof typeof ABOUT_ICON] ?? "globe"}
+              title={link.label}
+              onPress={link.kind === "page" ? go(link.path) : () => void Linking.openURL(link.url)}
+            />
+          ))}
         </ListGroup>
 
         {signedIn ? (

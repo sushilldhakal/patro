@@ -8,7 +8,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppHeader } from "@/components/AppHeader";
 import { AppShell } from "@/components/AppShell";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
-import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { AakashGocharSky } from "@/components/sky3d/AakashGocharSky";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
@@ -115,7 +114,6 @@ export default function AakashGocharScreen() {
             ))}
           </View>
 
-          <PatroFooterNote locationLabel={page.locationLabel} />
         </View>
       </AppShell>
       <FloatingNavBar />

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { Icon } from "@vedic-patro/ui";
 import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
-import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
+import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DURATION, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { neutral } from "@vedic-patro/design-tokens";
@@ -193,40 +193,70 @@ function HeaderButton({
   );
 }
 
+/** The switch's reflow: strong ease-out, short, and dropped under Reduce Motion. */
+const SEGMENT_EASE = REasing.bezier(0.23, 1, 0.32, 1);
+const SEGMENT_LAYOUT = LinearTransition.duration(220).easing(SEGMENT_EASE).reduceMotion(ReduceMotion.System);
+const SEGMENT_LABEL_IN = FadeIn.duration(160).delay(60).reduceMotion(ReduceMotion.System);
+const SEGMENT_LABEL_OUT = FadeOut.duration(100).reduceMotion(ReduceMotion.System);
+
 /**
  * Tablet: the page's view choices as a segmented switch in the top bar, like iPad Calendar's
- * Day | Week | Month | Year. One set of up to four choices fits; anything more (several sets, or
- * a long list like the rashifal profiles) keeps the menu.
+ * Day | Week | Month. When every choice has an icon (the home calendar) only the chosen one shows its
+ * name, in a pill; the others are icons. A press folds the old pill and opens the new one.
+ * One set of up to four choices fits; anything more (several sets, or a long list like the rashifal
+ * profiles) keeps the menu.
  */
 function ViewSegmentedSwitch() {
   const sections = usePageViewSections();
   if (!sections) return null;
   if (sections.length !== 1 || sections[0]!.options.length > 4) return <ViewMenuButton />;
   const { options } = sections[0]!;
+  const iconic = options.every((option) => option.icon);
   return (
-    <View accessibilityRole="tablist" className="h-10 flex-row items-center rounded-full border border-border bg-card p-1">
-      {options.map((option) => (
-        <Pressable
-          key={option.key}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: option.active }}
-          onPress={() => {
-            if (option.active) return;
-            haptics.tick();
-            option.onPress();
-          }}
-          className={cn("h-full justify-center rounded-full px-4", option.active ? "bg-secondary" : "active:bg-muted")}
-        >
-          <Text
-            className={cn("text-body font-medium", option.active ? "text-secondary-foreground" : "text-foreground")}
-            style={nepaliTextStyle(15)}
-            numberOfLines={1}
-          >
-            {option.label}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
+    <Animated.View
+      layout={SEGMENT_LAYOUT}
+      accessibilityRole="tablist"
+      className="h-12 flex-row items-center gap-1 rounded-2xl bg-muted p-1.5"
+      style={{ borderCurve: "continuous" }}
+    >
+      {options.map((option) => {
+        const showLabel = !iconic || option.active;
+        return (
+          <Animated.View key={option.key} layout={SEGMENT_LAYOUT} className="h-full">
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityLabel={option.label}
+              accessibilityState={{ selected: option.active }}
+              hitSlop={4}
+              onPress={() => {
+                if (option.active) return;
+                haptics.tick();
+                option.onPress();
+              }}
+              className={cn(
+                "h-full flex-row items-center justify-center gap-2 rounded-xl",
+                showLabel ? "px-4" : "w-12",
+                option.active ? "bg-background" : "active:opacity-60",
+              )}
+              style={{ borderCurve: "continuous" }}
+            >
+              {option.icon ? <Icon node={option.icon} size={20} tone={option.active ? "foreground" : "muted"} /> : null}
+              {showLabel ? (
+                <Animated.View entering={iconic ? SEGMENT_LABEL_IN : undefined} exiting={iconic ? SEGMENT_LABEL_OUT : undefined}>
+                  <Text
+                    className={cn("text-body font-medium", option.active ? "text-foreground" : "text-muted-foreground")}
+                    style={nepaliTextStyle(15)}
+                    numberOfLines={1}
+                  >
+                    {option.label}
+                  </Text>
+                </Animated.View>
+              ) : null}
+            </Pressable>
+          </Animated.View>
+        );
+      })}
+    </Animated.View>
   );
 }
 
@@ -319,16 +349,22 @@ function AppHeaderView() {
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background">
       <View className="min-h-14 w-full flex-row items-center gap-2 px-3 py-2">
-        <HeaderButton icon="grid-outline" label={t("menu_open")} onPress={requestOpenMenu} />
-        {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
-            otherwise make the bar grow. */}
-        <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
-        {/* Tablet, like iPad Calendar's toolbar: the view choice as a segmented switch, then search,
-            place and "+" at the top right (the floating buttons above the tab bar are phone-only). */}
-        {tablet ? <ViewSegmentedSwitch /> : <ViewMenuButton />}
-        {tablet ? <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} /> : null}
-        {tablet ? <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} /> : null}
-        {isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
+        {/* Tablet, as iPad Calendar's toolbar: menu and date on the left, the Day | Week | Month switch in
+            the middle of the bar, search, place and "+" on the right. The two sides share the leftover
+            width equally, so the switch stays centred however wide the date controls are. */}
+        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+          <HeaderButton icon="grid-outline" label={t("menu_open")} onPress={requestOpenMenu} />
+          {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
+              otherwise make the bar grow. */}
+          <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
+        </View>
+        {tablet ? <ViewSegmentedSwitch /> : null}
+        <View className={cn("flex-row items-center justify-end gap-2", tablet && "min-w-0 flex-1")}>
+          {tablet ? null : <ViewMenuButton />}
+          {tablet ? <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} /> : null}
+          {tablet ? <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} /> : null}
+          {isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
+        </View>
       </View>
     </View>
   );

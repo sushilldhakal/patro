@@ -7,7 +7,9 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
 import { softBreakTithi } from "@vedic-patro/domain/calendar/tithi-soft-break";
+import { eventsOnDate } from "@vedic-patro/features/events";
 import { useBsCalendarGrid } from "@vedic-patro/features/home";
+import { haptics } from "@vedic-patro/ui/motion";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Box, Sheet, Text } from "@vedic-patro/ui";
 import type { BsCalendarGridProps } from "../contract";
@@ -37,6 +39,8 @@ export function BsCalendarGrid({
   publicHolidayDates,
   selectedAdDate,
   onSelectDay,
+  onLongPressDay,
+  onOpenEvent,
   isEnriching = false,
   todayAd = TODAY_AD,
   todayPulse,
@@ -126,6 +130,16 @@ export function BsCalendarGrid({
                 <RNPressable
                   key={cell.day.date_ad}
                   onPress={() => onSelectDay?.(cell.day)}
+                  // A tap selects the day; holding it starts a new event there, as in Apple Calendar.
+                  onLongPress={
+                    onLongPressDay && !isOutside
+                      ? () => {
+                          haptics.tick();
+                          onLongPressDay(cell.day);
+                        }
+                      : undefined
+                  }
+                  delayLongPress={400}
                   style={colStyle(col, { minHeight: cellMinH })}
                   className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, isOutside && cal.cellOutside, isToday && isCompact && "border-2 border-secondary")}
                 >
@@ -188,10 +202,17 @@ export function BsCalendarGrid({
                       </RNPressable>
                     ) : (
                       <View className="mt-1 w-full gap-px">
-                        {cell.eventTitles.slice(0, 2).map((title, ei) => (
-                          <View key={`${title}-${ei}`} className={cal.eventChipNative}>
-                            <Text numberOfLines={1} className={cal.eventChipText}>{title}</Text>
-                          </View>
+                        {/* Each chip opens its event's details, as an Apple Calendar month cell does. */}
+                        {eventsOnDate(events ?? [], cell.day.date_ad).slice(0, 2).map((event) => (
+                          <RNPressable
+                            key={event.id}
+                            accessibilityRole="button"
+                            accessibilityLabel={event.title}
+                            onPress={onOpenEvent ? () => onOpenEvent(event) : () => onSelectDay?.(cell.day)}
+                            className={cn(cal.eventChipNative, "active:opacity-70")}
+                          >
+                            <Text numberOfLines={1} className={cal.eventChipText}>{event.title}</Text>
+                          </RNPressable>
                         ))}
                         {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
                       </View>
@@ -206,9 +227,13 @@ export function BsCalendarGrid({
 
                   {mainFest && !isOutside && !compactBsFest ? (
                     <View className={cn("w-full min-w-0", cal.festivalExtraStack)}>
-                      <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
-                        {mainFest}
-                      </Text>
+                      {/* Tablet: the festival's name opens its details. A phone cell is too small to
+                          split, so a tap there selects the day. */}
+                      <RNPressable disabled={isCompact} onPress={openFestivals} accessibilityRole={isCompact ? undefined : "button"}>
+                        <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                          {mainFest}
+                        </Text>
+                      </RNPressable>
                       {isCompact && festivals.length > 1 && extraFestCount === 0
                         ? festivals.slice(1, 3).map((name, fi) => (
                             <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-left", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>

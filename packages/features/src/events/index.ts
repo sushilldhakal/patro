@@ -9,4 +9,5 @@ export * from "./use-planner-text";
 export * from "./use-best-slots";
 export * from "./best-time-slots";
 export * from "./personal-slots";
+export * from "./personal-day-copy";
 export * from "./use-personal-days";

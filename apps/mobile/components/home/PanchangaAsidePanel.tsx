@@ -1,3 +1,4 @@
+import type { CalendarEvent } from "@vedic-patro/api-client";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -34,6 +35,8 @@ type Props = {
   onRetry?: () => void;
   location?: LocationParams;
   browseEra?: Era;
+  /** A listed event was tapped: show its details. */
+  onOpenEvent?: (event: CalendarEvent) => void;
 };
 
 export function PanchangaAsidePanel({
@@ -49,6 +52,7 @@ export function PanchangaAsidePanel({
   onRetry,
   location,
   browseEra = "bs",
+  onOpenEvent,
 }: Props) {
   const { t } = useLocale();
   const router = useRouter();
@@ -91,7 +95,7 @@ export function PanchangaAsidePanel({
         p={activeP}
       />
       <View className="px-4 pt-3">
-        <DayEvents events={dayEvents.events} />
+        <DayEvents events={dayEvents.events} onOpen={onOpenEvent} />
         {/* The "+" from here: an event, task or appointment that starts on this day. */}
         {isAuthenticated ? (
           <Pressable

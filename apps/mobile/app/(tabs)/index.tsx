@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { adaptHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
+import { adaptHomeView, adaptTabletHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
+import { EventDetailSheet, type CalendarDetail } from "@/components/events/EventDetailSheet";
+import { requestSignIn } from "@/lib/menu-request";
 import { updateEvent, type CalendarEvent } from "@/lib/events/api";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -18,7 +20,6 @@ import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
 import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
-import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
 import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
@@ -190,13 +191,26 @@ function HomeScreen() {
   // The planner views (week, day, year, list) centre on this AD date; an event open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(todayAd);
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
+  // A tapped event, festival or holiday shows its details first, as in Apple Calendar; Edit opens the form.
+  const [detail, setDetail] = useState<CalendarDetail | null>(null);
+  const editAfterDetail = useRef<CalendarEvent | null>(null);
+  const createAt = useCallback(
+    (date: string, time: string, extra?: { end?: string; endDate?: string; title?: string }) => {
+      if (!isAuthenticated) {
+        requestSignIn();
+        return;
+      }
+      setEditor({ slot: { date, time, ...extra } });
+    },
+    [isAuthenticated],
+  );
   const plannerRange =
     plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location.params, plannerKind != null);
   const windowDays = plannerKind === "week" || plannerKind === "day" || plannerKind === "multi" ? plannerDays(plannerKind, anchor) : [];
-  // A saved Week on a phone becomes Multi Day, and the other way round on a wide screen.
+  // A saved Week on a phone becomes Multi Day; a tablet offers only Day, Week, Month and Panchanga.
   useEffect(() => {
-    const fit = adaptHomeView(patroView, width >= 768);
+    const fit = width >= 768 ? adaptTabletHomeView(patroView) : adaptHomeView(patroView, false);
     if (fit !== patroView) setPatroView(fit);
   }, [patroView, width, setPatroView]);
   const daySlots = useBestSlots(windowDays, location.params, windowDays.length > 0);
@@ -306,6 +320,17 @@ function HomeScreen() {
   });
   const { selectedDay, selectDay } = aside;
 
+  // Day, Multi Day and Week: the sidebar's panchanga follows the planner's date, so stepping to next
+  // Wednesday shows that day (भाइटीका and all). The month follows the planner first (above), so its days
+  // hold the date once they load.
+  useEffect(() => {
+    if (plannerKind !== "day" && plannerKind !== "multi" && plannerKind !== "week") return;
+    if (selectedDay?.date_ad === anchor) return;
+    const day = gridDays.find((d) => d.date_ad === anchor && !d.outsideMonth) ?? gridDays.find((d) => d.date_ad === anchor);
+    if (day) selectDay(day);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anchor, plannerKind, gridDays]);
+
   const crossEraSubtitle = useMemo(
     () => formatPatroMonthCrossEraSubtitle(browseEra, year, month, lang, digits),
     [browseEra, year, month, lang, digits],
@@ -409,8 +434,10 @@ function HomeScreen() {
             yogas={daySlots.yogas}
             personal={personalDays.columns}
             todayAd={todayAd}
-            onOpenEvent={(event) => setEditor({ event })}
-            onCreateAt={(date, time, extra) => (isAuthenticated ? setEditor({ slot: { date, time, ...extra } }) : undefined)}
+            onOpenEvent={(event) => setDetail({ kind: "event", event })}
+            onOpenMark={(date, name, holiday) => setDetail({ kind: "mark", date, name, holiday })}
+            onOpenPersonal={(date, column) => setDetail({ kind: "personal", date, column })}
+            onCreateAt={createAt}
             onMoveEvent={async (event, times) => {
               const { id: _id, ...input } = event;
               await updateEvent(event.id, { ...input, ...times });
@@ -418,7 +445,6 @@ function HomeScreen() {
             }}
             onDragChange={setPlannerDragging}
           />
-          <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
         </View>
       ) : monthLoading ? (
         <View className="py-16" style={{ paddingHorizontal: contentInset }}>
@@ -470,6 +496,8 @@ function HomeScreen() {
               })}
               primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
               events={userEvents.events}
+              onLongPressDay={(day) => createAt(day.date_ad, day.date_ad === todayAd ? `${String(Math.min(23, new Date().getHours() + 1)).padStart(2, "0")}:00` : "09:00")}
+              onOpenEvent={(event) => setDetail({ kind: "event", event })}
               moon={(info) => <CalendarMoonPhaseIcon tithiIndex={info.tithiIndex} title={info.title} size={16} />}
             />
           )}
@@ -511,6 +539,7 @@ function HomeScreen() {
         onRetry={aside.retry}
         location={location.params}
         browseEra={browseEra}
+        onOpenEvent={(event) => setDetail({ kind: "event", event })}
       />
     </View>
   );
@@ -580,14 +609,28 @@ function HomeScreen() {
             </Reveal>
 
             <Reveal>
-              <PatroFooterNote className={homeClasses.footerNote} paddingHorizontal={cardInset} />
-              <SiteFooter />
+              <SiteFooter className={homeClasses.footerNote} paddingHorizontal={cardInset} />
             </Reveal>
             </>
           ) : null}
         </>
         </PageScrollView>
 
+        <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
+        <EventDetailSheet
+          detail={detail}
+          todayAd={todayAd}
+          onClose={() => setDetail(null)}
+          onEdit={(event) => {
+            editAfterDetail.current = event;
+            setDetail(null);
+          }}
+          onDismissed={() => {
+            const event = editAfterDetail.current;
+            editAfterDetail.current = null;
+            if (event) setEditor({ event });
+          }}
+        />
     </>
   );
 }

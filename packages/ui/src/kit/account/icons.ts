@@ -26,6 +26,17 @@ export const iconFingerprint: IconNode = [
 ];
 export const iconChevronRightList: IconNode = [["path", { d: "m9 18 6-6-6-6" }]];
 
+export const iconLock: IconNode = [["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2" }], ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4" }]];
+export const iconFileText: IconNode = [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4" }],
+  ["path", { d: "M10 9H8" }],
+  ["path", { d: "M16 13H8" }],
+  ["path", { d: "M16 17H8" }],
+];
+export const iconMail: IconNode = [["rect", { width: "20", height: "16", x: "2", y: "4", rx: "2" }], ["path", { d: "m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" }]];
+export const iconGlobe: IconNode = [["circle", { cx: "12", cy: "12", r: "10" }], ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" }], ["path", { d: "M2 12h20" }]];
+
 export const ACCOUNT_ICONS = {
   people: iconUsers,
   notifications: iconBell,
@@ -41,4 +52,8 @@ export const ACCOUNT_ICONS = {
   shield: iconShield,
   fingerprint: iconFingerprint,
   user: iconUserRound,
+  lock: iconLock,
+  "file-text": iconFileText,
+  mail: iconMail,
+  globe: iconGlobe,
 } as const;

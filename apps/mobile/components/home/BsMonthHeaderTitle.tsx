@@ -5,7 +5,7 @@ import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
-import { homeViewsFor } from "@vedic-patro/features/events";
+import { TABLET_HOME_VIEWS, homeViewsFor } from "@vedic-patro/features/events";
 import { HOME_VIEW_ICONS } from "@vedic-patro/ui/kit/events";
 import type { HomePatroView } from "./PatroViewToggle";
 
@@ -48,11 +48,13 @@ export function BsMonthHeaderTitle({
   // Seven day columns need room: a phone gets Multi Day (two days) instead of Week.
   const { width } = useWindowDimensions();
 
-  // Month, day, week (बहु-दिन on a phone), year, then panchanga.
+  // Phone: month, day, multi day, year, panchanga, list in the menu. Tablet: Day | Week | Month |
+  // Panchanga, four choices the top bar shows as a segmented switch like iPad Calendar's.
+  const views = width >= 768 ? TABLET_HOME_VIEWS : homeViewsFor(false);
   usePageViewMenu([
     {
       key: "view",
-      options: homeViewsFor(width >= 768).map((view) => ({
+      options: views.map((view) => ({
         icon: HOME_VIEW_ICONS[view],
         key: view,
         label: view === "calendar" ? t("common.month") : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),

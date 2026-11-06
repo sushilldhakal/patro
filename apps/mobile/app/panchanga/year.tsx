@@ -14,7 +14,6 @@ import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
-import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 import { useBrowsedDay } from "@vedic-patro/features/patro-date";
 
@@ -27,7 +26,6 @@ export default function PanchangaYearScreen() {
   const { isCompact, isTablet, height: screenH } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [dateNavHeight, setDateNavHeight] = useState(88);
-  const [bodyHeight, setBodyHeight] = useState(0);
   const { location, setLocation, ready } = usePanchangaLocation();
   const [date, setDate] = useBrowsedDay(() => new Date());
   const { clock, setClock } = usePanchangaClock(resolveTimeZone(undefined, location.params.timezone));
@@ -35,10 +33,11 @@ export default function PanchangaYearScreen() {
   const page = usePanchangaYearPage({ era: "bs", location, date, setDate, setClock, enabled: ready });
 
   const fallbackStageHeight = computeYearWheelStageHeight({ screenH, safeAreaTop: insets.top, dateNavHeight, isTablet });
-  const stageHeight = Math.max(500, bodyHeight > 80 ? bodyHeight - 32 : fallbackStageHeight);
+  // The page scrolls (related pages and the footer sit under the wheel), so the wheel is sized from the screen.
+  const stageHeight = Math.max(500, fallbackStageHeight);
 
   return (
-    <AppShell title="" showHeader={false} scroll={false}>
+    <AppShell title="" showHeader={false}>
       <View onLayout={(e) => setDateNavHeight(e.nativeEvent.layout.height)}>
         <PanchangaDateNav
           date={date}
@@ -53,7 +52,7 @@ export default function PanchangaYearScreen() {
         />
       </View>
 
-      <View className={cn(panchangaYearClasses.body, "min-h-0 flex-1")} onLayout={(e) => setBodyHeight(e.nativeEvent.layout.height)}>
+      <View className={panchangaYearClasses.body}>
         <PanchangaWheel
           p={page.wheelData}
           loading={page.wheelLoading}

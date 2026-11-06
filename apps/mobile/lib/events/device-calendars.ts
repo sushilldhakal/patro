@@ -84,13 +84,32 @@ export async function markPhoneCalendarAsked(): Promise<void> {
   await deviceStore.set(KEY_ASKED_AT, Date.now());
 }
 
+/**
+ * One sync at a time. The notification sync, the phone-calendars card, the permission prompt and every
+ * save all start one; two that overlap both read "not imported yet" and create the same event twice.
+ */
+let queue: Promise<unknown> = Promise.resolve();
+function serial<T>(run: () => Promise<T>): Promise<T> {
+  const next = queue.then(run, run);
+  queue = next.catch(() => undefined);
+  return next;
+}
+
+/**
+ * Calendars that hold this app's own events: the one it writes, and the "Vedic Patro" feed when the
+ * user has subscribed to it on the phone. Importing either brings every event back as a copy.
+ */
+function isOwnCalendar(c: { id: string; title?: string | null; name?: string | null }, own: string | null): boolean {
+  return c.id === own || c.title === EXPORT_TITLE || c.name === EXPORT_NAME;
+}
+
 export async function listPhoneCalendars(): Promise<PhoneCalendar[]> {
   const DeviceCalendar = deviceCalendar();
   if (!DeviceCalendar) return [];
   const calendars = await DeviceCalendar.getCalendarsAsync(DeviceCalendar.EntityTypes.EVENT);
   const own = await deviceStore.get<string>(KEY_EXPORT_CAL);
   return calendars
-    .filter((c) => c.id !== own) // our own calendar is written, never imported
+    .filter((c) => !isOwnCalendar(c, own ?? null)) // our own calendars are written (or are our feed), never imported
     .map((c) => ({ id: c.id, title: c.title, account: c.source?.name ?? "", color: c.color ?? null }))
     .sort((a, b) => a.account.localeCompare(b.account) || a.title.localeCompare(b.title));
 }
@@ -152,19 +171,39 @@ function toInput(ev: DeviceCalendarModule.Event, profileId: string | null): Cale
  * no longer chosen) removed. A repeating event counts once (its first instance in range).
  * Returns how many were added, changed or removed.
  */
-export async function importPhoneCalendars(calendarIds?: string[]): Promise<number> {
+export function importPhoneCalendars(calendarIds?: string[]): Promise<number> {
+  return serial(() => importNow(calendarIds));
+}
+
+async function importNow(calendarIds?: string[]): Promise<number> {
   const DeviceCalendar = deviceCalendar();
   if (!DeviceCalendar || !(await phoneCalendarPermission(false))) return 0;
   const own = await deviceStore.get<string>(KEY_EXPORT_CAL);
-  const ids = (calendarIds ?? (await getChosenCalendars())).filter((id) => id !== own);
+  const ownIds = new Set(
+    (await DeviceCalendar.getCalendarsAsync(DeviceCalendar.EntityTypes.EVENT)).filter((c) => isOwnCalendar(c, own ?? null)).map((c) => c.id),
+  );
+  const ids = (calendarIds ?? (await getChosenCalendars())).filter((id) => !ownIds.has(id));
   const from = new Date(Date.now() - 86_400_000);
   const to = new Date(Date.now() + WINDOW_DAYS * 86_400_000);
   // No calendar chosen any more: nothing comes in, and what came before goes.
   const events = ids.length ? await DeviceCalendar.getEventsAsync(ids, from, to) : [];
   const existing = new Map<string, CalendarEvent>();
-  for (const e of await listEvents()) if (e.source_kind === "device" && e.source_key) existing.set(e.source_key, e);
-
   let changed = 0;
+  for (const e of await listEvents()) {
+    if (e.source_kind !== "device" || !e.source_key) continue;
+    if (!existing.has(e.source_key)) {
+      existing.set(e.source_key, e);
+      continue;
+    }
+    // A copy left by two syncs that overlapped (before they were queued): keep one.
+    try {
+      await deleteEvent(e.id);
+      changed += 1;
+    } catch {
+      /* try again next sync */
+    }
+  }
+
   const seen = new Set<string>();
   for (const ev of events) {
     if (seen.has(ev.id)) continue; // one entry per repeating series
@@ -312,7 +351,11 @@ function deviceDetails(DeviceCalendar: Calendar, e: CalendarEvent) {
  * new ones added, changed ones updated, deleted ones removed. A copy whose event has already ended
  * is left alone, so the past stays in the phone's calendar. Returns how many copies changed.
  */
-export async function exportToPhoneCalendar(events?: CalendarEvent[]): Promise<number> {
+export function exportToPhoneCalendar(events?: CalendarEvent[]): Promise<number> {
+  return serial(() => exportNow(events));
+}
+
+async function exportNow(events?: CalendarEvent[]): Promise<number> {
   const DeviceCalendar = deviceCalendar();
   if (!DeviceCalendar || !(await phoneExportEnabled()) || !(await phoneCalendarPermission(false))) return 0;
   const calendarId = await exportCalendarId(DeviceCalendar);

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
@@ -102,14 +103,66 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
   );
 }
 
+/**
+ * Where the thumb is while the listener drags it. The recording seeks once, on release:
+ * seeking on every input event fired a new range request per pixel on an hours-long file,
+ * and the next timeupdate pulled the thumb back to the old position mid-drag.
+ */
+function useScrubDrag(onSeek: (time: number) => void) {
+  const [drag, setDrag] = useState<number | null>(null);
+  const dragRef = useRef<number | null>(null);
+  const pointerDown = useRef(false);
+  const onSeekRef = useRef(onSeek);
+  useEffect(() => {
+    onSeekRef.current = onSeek;
+  });
+  const release = useRef(() => {
+    pointerDown.current = false;
+    const at = dragRef.current;
+    dragRef.current = null;
+    setDrag(null);
+    if (at != null) onSeekRef.current(at);
+  });
+  // The pointer can come up outside the slider; listen on the window while a drag is on.
+  useEffect(() => {
+    const end = release.current;
+    return () => {
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+  }, []);
+  return {
+    drag,
+    inputProps: {
+      onPointerDown: () => {
+        pointerDown.current = true;
+        window.addEventListener("pointerup", release.current, { once: true });
+        window.addEventListener("pointercancel", release.current, { once: true });
+      },
+      onChange: (event: { currentTarget: HTMLInputElement }) => {
+        const at = Number(event.currentTarget.value);
+        // Keyboard arrows seek right away; a pointer drag waits for release.
+        if (!pointerDown.current) {
+          onSeekRef.current(at);
+          return;
+        }
+        dragRef.current = at;
+        setDrag(at);
+      },
+    },
+  };
+}
+
 export function PlaybackBar(props: PlaybackBarProps) {
+  const scrub = useScrubDrag(props.onSeekFull);
+  const fullTime = scrub.drag ?? props.fullCurrentTime;
   const bar = usePlaybackBar({
     mode: props.mode,
     hasFullRecording: props.hasFullRecording,
     hasSuktaAudio: props.hasSuktaAudio,
     suktaNumber: props.suktaNumber,
     canPlayThrough: Boolean(props.onPlayThrough),
-    full: { playing: props.fullPlaying, currentTime: props.fullCurrentTime, duration: props.fullDuration },
+    full: { playing: props.fullPlaying, currentTime: fullTime, duration: props.fullDuration },
     verse: { playing: props.versePlaying, currentTime: props.verseCurrentTime, duration: props.verseDuration },
     activeShloka: props.activeShloka,
   });
@@ -153,8 +206,8 @@ export function PlaybackBar(props: PlaybackBarProps) {
                 min={0}
                 max={props.fullDuration || 1}
                 step={0.1}
-                value={props.fullCurrentTime}
-                onChange={(event) => props.onSeekFull(Number(event.target.value))}
+                value={Math.min(fullTime, props.fullDuration || 1)}
+                {...scrub.inputProps}
                 aria-label={copy.seek}
               />
               <Text as="span" className={documentsClasses.barTime}>{bar.full.total}</Text>

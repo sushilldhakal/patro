@@ -232,6 +232,52 @@ def _personal_block(natal: Any, greg: date, location: Any) -> dict[str, Any]:
     }
 
 
+def _day_reading(personal: dict[str, Any]) -> dict[str, Any]:
+    """The profile's own reading of the day: the personal rashifal (natal chart read against the day's
+    sky) trimmed to what a day's dialog shows. Nothing new is computed here — ``build_day_guidance``
+    already scores this for the tone.
+
+    The paragraph ties the day to the kundali (where the running dasha lords sit in the birth chart,
+    the transits by house from the natal Moon); the domains are the six life areas scored for the day.
+    """
+    def lord(row: dict[str, Any] | None) -> dict[str, Any] | None:
+        if not row:
+            return None
+        return {"lord": row.get("lord"), "lord_ne": row.get("lord_ne"), "lord_en": row.get("lord_en"), "end": row.get("end")}
+
+    dasha = personal.get("dasha") or {}
+    return {
+        "percent": personal.get("percent"),
+        "prediction_ne": personal.get("prediction_ne") or "",
+        "prediction_en": personal.get("prediction_en") or "",
+        "dasha": {"maha": lord(dasha.get("mahadasha")), "antar": lord(dasha.get("antardasha"))},
+        "domains": [
+            {
+                "key": d.get("key"),
+                "label_ne": d.get("label_ne"),
+                "label_en": d.get("label_en"),
+                "tone": d.get("tone"),
+                "percent": d.get("percent"),
+            }
+            for d in personal.get("domains") or []
+        ],
+        "gochar": [
+            {
+                "graha": g.get("graha"),
+                "graha_ne": g.get("graha_ne"),
+                "graha_en": g.get("graha_en"),
+                "sign_ne": g.get("sign_ne"),
+                "sign_en": g.get("sign_en"),
+                "house": g.get("house"),
+                "favourable": bool(g.get("favourable")),
+                "retrograde": bool(g.get("retrograde")),
+                "bindu": g.get("bindu"),
+            }
+            for g in personal.get("gochar") or []
+        ],
+    }
+
+
 def build_day_guidance(
     greg: date,
     location: ObserverLocation,
@@ -275,11 +321,13 @@ def build_day_guidance(
             add(rules["windows"][key])
 
     personal_tone: str | None = None
+    reading: dict[str, Any] | None = None
     if natal is not None:
         from services.jyotish.rashifal_api import personal_rashifal_for_gregorian
 
         personal = personal_rashifal_for_gregorian(natal, greg, location, period="daily")
         personal_tone = personal.get("tone")
+        reading = _day_reading(personal)
         add(rules["personal"].get(personal_tone or ""))
 
     summary_ne = " ".join((do_ne[:1] + careful_ne[:1] + dont_ne[:1])[:2])
@@ -307,6 +355,7 @@ def build_day_guidance(
     }
     if natal is not None:
         payload["personal"] = _personal_block(natal, greg, location)
+        payload["reading"] = reading
     return payload
 
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useDocumentDetail, useDocumentLibraryOptions, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
@@ -9,7 +9,7 @@ import { DocumentReader } from "@/components/documents/DocumentReader";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
-import { useDocumentAudio } from "@/lib/documents/use-document-audio";
+import { useDocumentAudioSession } from "@/lib/documents/document-audio-session";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -83,7 +83,15 @@ export default function DocumentDetailScreen() {
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
   const { doc, copy } = page;
-  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.title);
+  // The shared player: it keeps playing after the reader leaves this page.
+  const audio = useDocumentAudioSession({
+    key: `${slug}:`,
+    route: usePathname(),
+    shlokas: page.shlokas,
+    fullAudioUrl: page.fullAudioUrl,
+    documentTitle: page.title,
+    complete: true,
+  });
   const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
   const [jumpLabel, setJumpLabel] = useState<{ label: string; nonce: number } | null>(null);
 

@@ -20,6 +20,8 @@ export type IosMonthGridProps = {
 export type DayEventsProps = {
   /** One day's events, earliest first (from `useDayEvents`); nothing is drawn when empty. */
   events: CalendarEvent[];
+  /** App only: a row was tapped — show that event's details. */
+  onOpen?: (event: CalendarEvent) => void;
 };
 
 export type TimeWheelProps = {
@@ -60,11 +62,19 @@ export type PlannerViewProps = {
   /** The signed-in profile's filter for each date. Empty for a guest. */
   personal: Map<string, PersonalColumn>;
   todayAd: string;
-  /** Opens an event (the edit form). */
+  /** Opens an event: its details card in the app, the edit form on the website. */
   onOpenEvent: (event: CalendarEvent) => void;
+  /** App only: a festival or holiday in the all-day row was tapped. */
+  onOpenMark?: (date: string, name: string, holiday: boolean) => void;
+  /** App only: the personal-day chip (शुभ / अष्टम चन्द्र …) was tapped — show its reading in a dialog. */
+  onOpenPersonal?: (date: string, column: PersonalColumn) => void;
   /** A drag or resize ended: save these times. */
   onMoveEvent: (event: CalendarEvent, times: EventTimes) => void;
-  /** An empty cell or a placeholder was tapped. `extra` carries the placeholder's end and a suggested title. */
+  /**
+   * Start a new event. The app calls it on a long press of an empty slot or a day (a tap only looks),
+   * and on a tap of a best-time placeholder; the website on a click. `extra` carries the
+   * placeholder's end and a suggested title.
+   */
   onCreateAt: (date: string, time: string, extra?: PlannerSlotExtra) => void;
   /**
    * App only: an event is being dragged (true) or let go (false). The hour grid is part of the page's

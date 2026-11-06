@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Slider from "@react-native-community/slider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
@@ -11,11 +12,13 @@ import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 const BAR_GUTTER = 16;
 
 /** Binds the shared transport to the app audio engine and the native slider. */
-export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; documentTitle: string }) {
+export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio & { foreign?: boolean }; documentTitle: string }) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
   const { activeShloka } = audio;
+  // Another page's recording is playing: the app-wide mini player shows that one instead.
+  if (audio.foreign) return null;
   return (
     <Shared
       mode={audio.mode}
@@ -46,19 +49,47 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
       // place buttons lift above it (setBarAccessoryHeight) instead of squeezing it to one side.
       dockInset={BAR_GUTTER}
       onDockHeight={setBarAccessoryHeight}
-      renderSeek={({ value, max, label, onChange }) => (
-        <Slider
-          style={{ flex: 1, height: 28 }}
-          minimumValue={0}
-          maximumValue={max}
-          value={value}
-          onSlidingComplete={onChange}
-          minimumTrackTintColor={colors.secondary}
-          maximumTrackTintColor={colors.border}
-          thumbTintColor={colors.secondary}
-          accessibilityLabel={label}
-        />
-      )}
+      renderSeek={(args) => <SeekSlider {...args} colors={colors} />}
+    />
+  );
+}
+
+/**
+ * The thumb stays where the finger is while it drags: the player's position, updated four
+ * times a second, no longer pulls it back. The recording seeks once, on release.
+ */
+function SeekSlider({
+  value,
+  max,
+  label,
+  onChange,
+  colors,
+}: {
+  value: number;
+  max: number;
+  label: string;
+  onChange: (seconds: number) => void;
+  colors: ReturnType<typeof useThemeColors>;
+}) {
+  const [held, setHeld] = useState<number | null>(null);
+  return (
+    <Slider
+      style={{ flex: 1, height: 28 }}
+      minimumValue={0}
+      maximumValue={max}
+      value={held ?? Math.min(value, max)}
+      onSlidingStart={(at) => setHeld(at)}
+      onValueChange={(at) => {
+        if (held != null) setHeld(at);
+      }}
+      onSlidingComplete={(at) => {
+        setHeld(null);
+        onChange(at);
+      }}
+      minimumTrackTintColor={colors.secondary}
+      maximumTrackTintColor={colors.border}
+      thumbTintColor={colors.secondary}
+      accessibilityLabel={label}
     />
   );
 }

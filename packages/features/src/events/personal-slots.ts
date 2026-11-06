@@ -45,6 +45,8 @@ export type PersonalColumn = {
   carefulNe: string[];
   carefulEn: string[];
   segments: LaidSegment[];
+  /** The profile's own reading of the day; null on an API that does not send it yet. */
+  reading: DayGuidance["reading"] | null;
 };
 
 const clockMin = (value: string) => {
@@ -88,6 +90,7 @@ export function personalColumn(
     carefulNe: today.careful_ne,
     carefulEn: today.careful_en,
     segments,
+    reading: today.reading ?? null,
   };
 }
 

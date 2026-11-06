@@ -137,6 +137,25 @@ def test_personal_block_follows_the_moon_and_the_sunrise_dasha():
     assert saw_twelfth
 
 
+def test_profile_day_carries_its_own_reading():
+    """The day's dialog reads the profile's own rashifal: the paragraph, six life areas, the dasha and
+    the transits, the same scoring that sets the tone."""
+    from services.jyotish.daily_guidance import build_day_guidance, natal_chart_for_profile
+    from services.jyotish.rashifal_api import personal_rashifal_for_gregorian
+
+    natal = natal_chart_for_profile(_born())
+    greg = date(2026, 11, 11)
+    day = build_day_guidance(greg, DEFAULT_LOCATION, natal)
+    reading = day["reading"]
+    personal = personal_rashifal_for_gregorian(natal, greg, DEFAULT_LOCATION, period="daily")
+    assert reading["percent"] == personal["percent"]
+    assert reading["prediction_ne"] and reading["prediction_en"]
+    assert [d["key"] for d in reading["domains"]] == [d["key"] for d in personal["domains"]]
+    assert reading["dasha"]["maha"]["lord"] and reading["dasha"]["antar"]["lord"]
+    assert {g["graha"] for g in reading["gochar"]} >= {"sun", "moon", "jupiter", "saturn"}
+    assert "reading" not in build_day_guidance(greg, DEFAULT_LOCATION, None)
+
+
 def test_chandra_houses_are_the_classical_set():
     from services.jyotish.daily_guidance import _chandra_state
 
