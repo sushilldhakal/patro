@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useIsFocused } from "expo-router";
 import type { Shloka } from "@/lib/documents/api";
 import { useDocumentAudio, type DocumentAudio } from "@/lib/documents/use-document-audio";
 
@@ -102,9 +103,13 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
   const live = useAudioEngine();
   const owner = current?.key === inputs.key;
   const sounding = isSounding(live?.audio);
+  // Only the page on screen may claim the player. A chapter opened from its document leaves the
+  // document page mounted underneath; when both claimed it they took it from each other forever.
+  const focused = useIsFocused();
   const { key, shlokas, fullAudioUrl, complete, documentTitle, chapterTitle, route } = inputs;
 
   useEffect(() => {
+    if (!focused) return;
     if (!current || (!owner && !sounding)) {
       // Nothing playing (or the other page's audio is paused): this page is the session now.
       setSession({ key, route, shlokas, fullAudioUrl, documentTitle, complete, chapterTitle });
@@ -118,7 +123,7 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
     if (grew || changed) {
       setSession({ ...current, shlokas: grew ? shlokas : current.shlokas, fullAudioUrl, complete, documentTitle, chapterTitle, route });
     }
-  }, [current, owner, sounding, key, route, shlokas, fullAudioUrl, complete, documentTitle, chapterTitle]);
+  }, [focused, current, owner, sounding, key, route, shlokas, fullAudioUrl, complete, documentTitle, chapterTitle]);
 
   const [openMeaningIds, setOpenMeaningIds] = useState<ReadonlySet<number>>(() => new Set());
   const idle = useMemo<SessionAudio>(() => {
