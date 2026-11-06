@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import { AccessibilityInfo, PanResponder, Pressable, ScrollView, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import { AccessibilityInfo, PanResponder, Pressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -148,11 +148,10 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number };
 
-function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange, onDragChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
-  const { tablet, height: screenH } = useTablet();
+  const { tablet } = useTablet();
   const HOUR_H = tablet ? 60 : 52;
-  const scroller = useRef<ComponentRef<typeof ScrollView>>(null);
   const [width, setWidth] = useState(0);
   const [drag, setDrag] = useState<Drag | null>(null);
   const dragRef = useRef<Drag | null>(null);
@@ -167,14 +166,10 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
   const hasAllDay = columns.some((c) => c.allDay.length > 0 || (marks.get(c.date)?.names.length ?? 0) > 0 || (yogas.get(c.date)?.length ?? 0) > 0 || personal.has(c.date));
   const colStyle = { width: colWidth || undefined, flex: colWidth ? undefined : 1 } as const;
 
-  useEffect(() => {
-    const live = new Date();
-    const at = showsToday ? live.getHours() + live.getMinutes() / 60 : 5;
-    scroller.current?.scrollTo({ y: at * HOUR_H, animated: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [days.join(",")]);
-
+  const dragChange = useRef(onDragChange);
+  dragChange.current = onDragChange;
   const setBoth = (next: Drag | null) => {
+    if ((dragRef.current == null) !== (next == null)) dragChange.current?.(next != null);
     dragRef.current = next;
     setDrag(next);
   };
@@ -280,7 +275,8 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
       ) : null}
 
       {/* The hours. */}
-      <ScrollView ref={scroller} style={{ maxHeight: Math.round(screenH * (tablet ? 0.7 : 0.62)) }} scrollEnabled={drag == null} nestedScrollEnabled showsVerticalScrollIndicator={false}>
+      {/* The whole day, in the page's own scroll: a scroll box inside the page traps the swipe on iOS. */}
+      <View>
         <View className="flex-row" style={{ height: HOUR_H * 24 }} {...pan.panHandlers}>
           <View style={{ width: GUTTER }}>
             {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => {
@@ -338,7 +334,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
             </Pressable>
           ))}
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }

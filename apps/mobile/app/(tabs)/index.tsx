@@ -186,6 +186,7 @@ function HomeScreen() {
   const [patroView, setPatroView] = useHomePatroView();
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);
   const plannerKind: PlannerViewKind | null = isPlannerView(patroView) ? patroView : null;
+  const [plannerDragging, setPlannerDragging] = useState(false);
   // The planner views (week, day, year, list) centre on this AD date; an event open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(todayAd);
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
@@ -415,6 +416,7 @@ function HomeScreen() {
               await updateEvent(event.id, { ...input, ...times });
               void queryClient.invalidateQueries({ queryKey: ["events"] });
             }}
+            onDragChange={setPlannerDragging}
           />
           <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
         </View>
@@ -534,6 +536,8 @@ function HomeScreen() {
     <>
       <PageScrollView
         ref={pageScrollerRef}
+        // The day grid is part of this scroll; a dragged event block holds it still.
+        scrollEnabled={!plannerDragging}
         refreshControl={refreshControl}
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-page"

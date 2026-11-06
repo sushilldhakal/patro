@@ -66,4 +66,10 @@ export type PlannerViewProps = {
   onMoveEvent: (event: CalendarEvent, times: EventTimes) => void;
   /** An empty cell or a placeholder was tapped. `extra` carries the placeholder's end and a suggested title. */
   onCreateAt: (date: string, time: string, extra?: PlannerSlotExtra) => void;
+  /**
+   * App only: an event is being dragged (true) or let go (false). The hour grid is part of the page's
+   * own scroll (no scroll box inside a scroll box, which iOS cannot hand a swipe across), so the page
+   * stops scrolling while a block is dragged.
+   */
+  onDragChange?: (dragging: boolean) => void;
 };
