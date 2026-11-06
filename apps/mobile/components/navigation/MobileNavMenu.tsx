@@ -16,6 +16,13 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { siteLinkHref } from "@/lib/related-page-links";
 import { useThemeColors } from "@/lib/theme-context";
 
+/**
+ * The category pills. `h-11` (44) is what iOS keeps. On Android a Pressable sat
+ * straight in a flex row drops that class and shrinks to its label, so the
+ * three tabs drew at different heights. The height lives on the wrapper.
+ */
+const TAB_HEIGHT = 44;
+
 /** Routes of the Main entries this menu still shows, in this app. */
 const MAIN_HREF: Record<string, string> = {
   home: "/",
@@ -102,27 +109,29 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
         {all.map(({ category }) => {
           const active = category.id === tab;
           return (
-            <Pressable
-              key={category.id}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              accessibilityLabel={category.title}
-              onPress={() => {
-                if (active) return;
-                haptics.tick();
-                setTab(category.id);
-              }}
-              className={navMenuClasses.nativeTab}
-            >
-              <SelectionFill active={active} className={navMenuClasses.nativeTabOn} />
-              <Text
-                numberOfLines={1}
-                className={active ? "text-body font-bold text-secondary" : "text-body font-semibold text-muted-foreground"}
-                style={nepaliTextStyle(15)}
+            <View key={category.id} style={{ flex: 1, height: TAB_HEIGHT }}>
+              <Pressable
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={category.title}
+                onPress={() => {
+                  if (active) return;
+                  haptics.tick();
+                  setTab(category.id);
+                }}
+                className={navMenuClasses.nativeTab}
+                style={{ flex: 1, height: TAB_HEIGHT }}
               >
-                {category.shortTitle}
-              </Text>
-            </Pressable>
+                <SelectionFill active={active} className={navMenuClasses.nativeTabOn} />
+                <Text
+                  numberOfLines={1}
+                  className={active ? "text-body font-bold text-secondary" : "text-body font-semibold text-muted-foreground"}
+                  style={nepaliTextStyle(15)}
+                >
+                  {category.shortTitle}
+                </Text>
+              </Pressable>
+            </View>
           );
         })}
       </View>
