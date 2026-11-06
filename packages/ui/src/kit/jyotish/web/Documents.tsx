@@ -15,96 +15,102 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
       ref={(node) => registerRef?.(node)}
       id={card.domId}
       className={cn(
-        documentsClasses.verse,
+        documentsClasses.verseCard,
         "scroll-mt-24 min-w-0 max-w-full transition-colors",
         isActive ? documentsClasses.verseActive : documentsClasses.verseIdle,
         isClosing && !isActive && documentsClasses.verseClosing,
         isNote && !isActive && documentsClasses.verseNote,
       )}
     >
-      {card.details.length > 0 ? (
-        <Box className={documentsClasses.verseDetails}>
-          {card.details.map((d) => (
-            <span key={d.kind} className={documentsClasses.verseDetailItem}>
-              <Text as="span" className={documentsClasses.verseDetailLabel}>{d.label}:</Text>
-              {onDetail ? (
-                <button type="button" onClick={() => onDetail(d.kind, d.value)} className={cn(documentsClasses.verseDetailValue, "hover:underline")}>
-                  {d.value}
-                </button>
-              ) : (
-                <Text as="span" className={documentsClasses.verseDetailValue}>{d.value}</Text>
-              )}
-            </span>
-          ))}
-        </Box>
-      ) : null}
-      <Box className={documentsClasses.verseRow}>
+      <span aria-hidden className={documentsClasses.verseCardAccent} />
+      <Box className={documentsClasses.verseHead}>
+        <Text as="span" className={documentsClasses.verseNumber}>{card.label}</Text>
+        <span className={documentsClasses.verseHeadSpacer}>
+          {vedaCite ? <Text as="span" className={documentsClasses.verseCiteWeb}>{vedaCite}</Text> : null}
+        </span>
         {canPlay ? (
           <button
             type="button"
             onClick={onPlay}
             aria-label={card.copy.play}
             className={cn(
-              documentsClasses.versePlay,
+              documentsClasses.versePlayWeb,
               "transition-colors",
               isActive ? documentsClasses.versePlayActive : cn(documentsClasses.versePlayIdle, "hover:opacity-90"),
             )}
           >
             <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="onSecondary" filled className={isPlaying ? undefined : "ml-0.5"} />
           </button>
-        ) : (
-          <Text as="span" className={cn(documentsClasses.verseLabelSlot, documentsClasses.verseLabelSlotText)}>{card.label}</Text>
-        )}
-        <Box className={documentsClasses.fill}>
-          {canPlay || vedaCite ? (
-            <Box className={documentsClasses.verseMetaRow}>
-              {canPlay ? <Text as="span" className={cn(documentsClasses.verseBadge, documentsClasses.verseBadgeText)}>{card.label}</Text> : <span />}
-              {vedaCite ? <Text as="span" className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
-            </Box>
-          ) : null}
-          {card.svaraLine.length > 0 ? (
-            <>
-              <p className={cn(documentsClasses.verseText, "flex flex-wrap items-end gap-x-0.5")}>
-                {card.svaraLine.map((piece, i) =>
-                  piece.marks ? (
-                    <span key={i} className="inline-flex flex-col items-center">
-                      <span className="text-diagram-xs leading-none text-muted-foreground">{piece.marks}</span>
-                      <span>{piece.text}</span>
-                    </span>
-                  ) : (
-                    <span key={i}>{piece.text}</span>
-                  ),
-                )}
-              </p>
-              <Text as="p" className={documentsClasses.verseDetailLabel}>{card.copy.swaraLess}</Text>
-            </>
-          ) : null}
-          <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, isNote ? undefined : "whitespace-normal")}>
-            {card.tokens.map((tok, i) =>
-              i === card.activeTokenIndex ? (
-                <Text as="span" key={i} className={cn(documentsClasses.verseWord, "transition-colors duration-150")}>{tok}</Text>
+        ) : null}
+      </Box>
+      {card.svaraLine.length > 0 ? (
+        <>
+          <p className={cn(documentsClasses.verseTextWeb, "flex flex-wrap items-end gap-x-0.5")}>
+            {card.svaraLine.map((piece, i) =>
+              piece.marks ? (
+                <span key={i} className="inline-flex flex-col items-center">
+                  <span className="text-diagram-xs leading-none text-muted-foreground">{piece.marks}</span>
+                  <span>{piece.text}</span>
+                </span>
               ) : (
-                tok
+                <span key={i}>{piece.text}</span>
               ),
             )}
-          </Text>
-          {card.transliteration ? <Text as="p" className={documentsClasses.verseTranslit}>{card.transliteration}</Text> : null}
-          {isActive ? (
-            <Box className={documentsClasses.verseProgress}>
-              <Box className={documentsClasses.verseProgressFill} webClassName="transition-[width]" widthPercent={card.progressPct} />
-            </Box>
-          ) : null}
-          {meaning ? (
-            <Box className={documentsClasses.verseMeaningWrap}>
-              <button type="button" onClick={onToggleMeaning} aria-expanded={meaningOpen} className={cn(documentsClasses.verseMeaningToggle, documentsClasses.verseMeaningToggleText, "inline-flex w-fit items-center hover:no-underline")}>
-                {card.copy.meaning}
-                <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
-              </button>
-              {meaningOpen ? <Text as="p" className={cn(documentsClasses.verseMeaning, "whitespace-pre-line")}>{meaning}</Text> : null}
-            </Box>
-          ) : null}
+          </p>
+          <Text as="p" className={documentsClasses.verseDetailLabel}>{card.copy.swaraLess}</Text>
+        </>
+      ) : null}
+      <Text as="p" className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseTextWeb, isNote ? undefined : "whitespace-normal")}>
+        {card.tokens.map((tok, i) =>
+          i === card.activeTokenIndex ? (
+            <Text as="span" key={i} className={cn(documentsClasses.verseWord, "transition-colors duration-150")}>{tok}</Text>
+          ) : (
+            tok
+          ),
+        )}
+      </Text>
+      {card.transliteration ? <Text as="p" className={documentsClasses.verseTranslit}>{card.transliteration}</Text> : null}
+      {isActive ? (
+        <Box className={documentsClasses.verseProgress}>
+          <Box className={documentsClasses.verseProgressFill} webClassName="transition-[width]" widthPercent={card.progressPct} />
         </Box>
-      </Box>
+      ) : null}
+      {card.details.length > 0 ? (
+        <Box className={documentsClasses.verseChips}>
+          {card.details.map((d) =>
+            onDetail ? (
+              <button
+                key={d.kind}
+                type="button"
+                onClick={() => onDetail(d.kind, d.value)}
+                className={cn(documentsClasses.verseChip, "hover:border-secondary/50 hover:bg-secondary/10")}
+              >
+                <span className={documentsClasses.verseChipLabel}>{d.label}</span>
+                <span className={documentsClasses.verseChipValue}>{d.value}</span>
+              </button>
+            ) : (
+              <span key={d.kind} className={documentsClasses.verseChip}>
+                <span className={documentsClasses.verseChipLabel}>{d.label}</span>
+                <span className={documentsClasses.verseChipValue}>{d.value}</span>
+              </span>
+            ),
+          )}
+        </Box>
+      ) : null}
+      {meaning ? (
+        <Box className={documentsClasses.verseMeaningBox}>
+          <button
+            type="button"
+            onClick={onToggleMeaning}
+            aria-expanded={meaningOpen}
+            className={cn(documentsClasses.verseMeaningToggleText, "inline-flex w-full items-center justify-between gap-1.5 hover:no-underline")}
+          >
+            {card.copy.meaning}
+            <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
+          </button>
+          {meaningOpen ? <Text as="p" className={cn(documentsClasses.verseMeaningText, "mt-2 whitespace-pre-line")}>{meaning}</Text> : null}
+        </Box>
+      ) : null}
     </section>
   );
 }
