@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  setAudioModeAsync,
   useAudioPlayer,
   useAudioPlayerStatus,
   useAudioPlaylist,
@@ -9,6 +8,7 @@ import {
   type AudioPlaylist,
 } from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
+import { armBackgroundPlayback, ensurePlaybackSession, playbackArtworkUrl } from "@/lib/audio-session";
 import { isAudioAvailable } from "@vedic-patro/api-client";
 import { audioCoversAll, isNextSukta, isNextVerse, suktaTracksFrom } from "@vedic-patro/features/documents";
 
@@ -16,6 +16,17 @@ export type AudioMode = "full" | "verse" | null;
 
 /** A track change this soon after the listener picked a verse is theirs, not a clip ending. */
 const USER_SKIP_WINDOW_MS = 1500;
+
+/** `next` keeps `prev` as one contiguous run of ids (pages appended or prepended). */
+function extendsIds(prev: string, next: string): boolean {
+  if (!prev || !next) return false;
+  if (prev === next) return true;
+  const old = prev.split(",");
+  const ids = next.split(",");
+  const at = ids.indexOf(old[0]!);
+  if (at < 0) return false;
+  return old.every((id, i) => ids[at + i] === id);
+}
 
 /**
  * Two audio sources a reading view can have — per-verse clips and the single
@@ -26,22 +37,40 @@ const USER_SKIP_WINDOW_MS = 1500;
  * to the next by itself, so a play-through keeps going with the screen locked or
  * the app in the background (no JavaScript has to run between clips), and the
  * lock screen / notification gets next and previous buttons. Needs the
- * `enableBackgroundPlayback` flag on the expo-audio plugin in app.json.
+ * `enableBackgroundPlayback` flag on the expo-audio plugin in app.json, which
+ * only takes effect in a dev or store build, not from a Metro reload alone.
  */
 export function useDocumentAudio(
   shlokas: Shloka[],
   fullAudioUrl: string | null | undefined,
   documentTitle?: string,
+  /** False while later pages are not loaded, so a partial list is not treated as the whole chapter. */
+  complete = true,
+  chapterTitle?: string,
 ) {
   /** Verses that have a clip of their own, in reading order — the playlist's tracks. */
   const playable = useMemo(() => shlokas.filter((s) => s.audio_url), [shlokas]);
-  const sources = useMemo(() => playable.map((s) => ({ uri: s.audio_url! })), [playable]);
-  const playlist = useAudioPlaylist({ sources, updateInterval: 100 });
+  // The playlist is created from the first page and then extended with add/insert.
+  // Passing a longer `sources` array would destroy it and stop the verse that is sounding.
+  const frozenVerse = useRef<{ key: string; sources: { uri: string }[] }>({ key: "", sources: [] });
+  const playableKey = playable.map((s) => s.id).join(",");
+  if (!playableKey) {
+    if (frozenVerse.current.key) frozenVerse.current = { key: "", sources: [] };
+  } else if (!extendsIds(frozenVerse.current.key, playableKey)) {
+    frozenVerse.current = { key: playableKey, sources: playable.map((s) => ({ uri: s.audio_url! })) };
+  }
+  const playlist = useAudioPlaylist({ sources: frozenVerse.current.sources, updateInterval: 100 });
   const verseStatus = useAudioPlaylistStatus(playlist);
 
   const suktaTracks = useMemo(() => (fullAudioUrl ? [] : suktaTracksFrom(shlokas)), [fullAudioUrl, shlokas]);
-  const suktaSources = useMemo(() => suktaTracks.map((track) => ({ uri: track.url })), [suktaTracks]);
-  const suktaPlaylist = useAudioPlaylist({ sources: suktaSources, updateInterval: 250 });
+  const frozenSukta = useRef<{ key: string; sources: { uri: string }[] }>({ key: "", sources: [] });
+  const suktaKey = suktaTracks.map((track) => String(track.sukta)).join(",");
+  if (!suktaKey) {
+    if (frozenSukta.current.key) frozenSukta.current = { key: "", sources: [] };
+  } else if (!extendsIds(frozenSukta.current.key, suktaKey)) {
+    frozenSukta.current = { key: suktaKey, sources: suktaTracks.map((track) => ({ uri: track.url })) };
+  }
+  const suktaPlaylist = useAudioPlaylist({ sources: frozenSukta.current.sources, updateInterval: 250 });
   const suktaStatus = useAudioPlaylistStatus(suktaPlaylist);
 
   /* Verse id at each playlist index. Kept in step by hand as missing recordings are
@@ -52,8 +81,34 @@ export function useDocumentAudio(
   }
   const trackIds = () => tracks.current!.ids;
 
+  // Pages that arrive while a verse is sounding are inserted into the live playlist.
+  useEffect(() => {
+    const t = tracks.current;
+    if (!t || t.playlist !== playlist || playable.length === 0) return;
+    const prev = t.ids;
+    if (prev.length === playable.length && prev.every((id, i) => id === playable[i]!.id)) return;
+    const at = prev.length ? playable.findIndex((s) => s.id === prev[0]) : -1;
+    if (at < 0 || !prev.every((id, i) => playable[at + i]?.id === id)) return;
+    for (let i = at - 1; i >= 0; i--) playlist.insert({ uri: playable[i]!.audio_url! }, 0);
+    for (let i = at + prev.length; i < playable.length; i++) playlist.add({ uri: playable[i]!.audio_url! });
+    t.ids = playable.map((s) => s.id);
+  }, [playable, playlist]);
+
+  useEffect(() => {
+    const key = suktaTracks.map((track) => String(track.sukta)).join(",");
+    if (!key || !extendsIds(frozenSukta.current.key, key) || frozenSukta.current.key === key) return;
+    const old = frozenSukta.current.key.split(",");
+    const next = suktaTracks;
+    const at = next.findIndex((track) => String(track.sukta) === old[0]);
+    if (at < 0) return;
+    for (let i = at - 1; i >= 0; i--) suktaPlaylist.insert({ uri: next[i]!.url }, 0);
+    for (let i = at + old.length; i < next.length; i++) suktaPlaylist.add({ uri: next[i]!.url });
+    frozenSukta.current = { ...frozenSukta.current, key };
+  }, [suktaTracks, suktaPlaylist]);
+
   const fullPlayer = useAudioPlayer(fullAudioUrl ? { uri: fullAudioUrl } : null, {
     updateInterval: 250,
+    keepAudioSessionActive: true,
   });
   const fullStatus = useAudioPlayerStatus(fullPlayer);
 
@@ -66,9 +121,10 @@ export function useDocumentAudio(
   const [missingIds, setMissingIds] = useState<ReadonlySet<number>>(() => new Set());
   const coversAll = useMemo(
     () =>
-      Boolean(fullAudioUrl) ||
-      audioCoversAll(missingIds.size ? shlokas.map((s) => (missingIds.has(s.id) ? { ...s, audio_url: null } : s)) : shlokas),
-    [fullAudioUrl, shlokas, missingIds],
+      complete &&
+      (Boolean(fullAudioUrl) ||
+        audioCoversAll(missingIds.size ? shlokas.map((s) => (missingIds.has(s.id) ? { ...s, audio_url: null } : s)) : shlokas)),
+    [complete, fullAudioUrl, shlokas, missingIds],
   );
   const gapRef = useRef({ coversAll, shlokas, suktaTracks });
   gapRef.current = { coversAll, shlokas, suktaTracks };
@@ -78,17 +134,16 @@ export function useDocumentAudio(
   openMeaningRef.current = openMeaningIds;
   const userSkipAt = useRef(0);
 
+  const artworkUrl = useRef<string | undefined>(undefined);
   useEffect(() => {
-    // Recitation should be audible with the iPhone's silent switch on, and keep going
-    // when the phone locks or the listener switches apps. `doNotMix` is what lets the
-    // OS hand this app the lock-screen controls.
-    void setAudioModeAsync({
-      playsInSilentMode: true,
-      interruptionMode: "doNotMix",
-      allowsRecording: false,
-      shouldPlayInBackground: true,
-      shouldRouteThroughEarpiece: false,
-    }).catch(() => {});
+    armBackgroundPlayback();
+    let cancelled = false;
+    void playbackArtworkUrl().then((url) => {
+      if (!cancelled) artworkUrl.current = url;
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   /** Verses whose recording is confirmed in storage: only these get a play button. The database
@@ -127,14 +182,23 @@ export function useDocumentAudio(
   const byId = useMemo(() => new Map(shlokas.map((s) => [s.id, s])), [shlokas]);
 
   const metadataFor = useCallback(
-    (id: number | undefined): AudioMetadata => {
+    (id: number | undefined, title?: string): AudioMetadata => {
       const label = id != null ? byId.get(id)?.verse_label : undefined;
-      return label
-        ? { title: label, artist: documentTitle, albumTitle: documentTitle }
-        : { title: documentTitle, albumTitle: documentTitle };
+      return {
+        title: label ?? title ?? chapterTitle ?? documentTitle,
+        artist: documentTitle,
+        albumTitle: chapterTitle ?? documentTitle,
+        artworkUrl: artworkUrl.current,
+      };
     },
-    [byId, documentTitle],
+    [byId, documentTitle, chapterTitle],
   );
+
+  /** Session first, then the system player, then sound. The notification has to be claimed while the app is still open. */
+  const arm = useCallback(async () => {
+    await ensurePlaybackSession();
+    armBackgroundPlayback();
+  }, []);
 
   /* A recording that was never uploaded would stop the queue dead (or play
      nothing), so each verse is checked as it comes up — the one sounding and the
@@ -202,17 +266,20 @@ export function useDocumentAudio(
     (id: number) => {
       const index = trackIds().indexOf(id);
       if (index < 0) return;
-      fullPlayer.pause();
-      suktaPlaylist.pause();
-      setMode("verse");
-      userSkipAt.current = Date.now();
-      if (playlist.currentIndex !== index) playlist.skipTo(index);
-      playlist.play();
-      claimLockScreen("verse", id);
-      verify(index);
-      verify(index + 1);
+      void (async () => {
+        await arm();
+        fullPlayer.pause();
+        suktaPlaylist.pause();
+        setMode("verse");
+        userSkipAt.current = Date.now();
+        claimLockScreen("verse", id);
+        if (playlist.currentIndex !== index) playlist.skipTo(index);
+        playlist.play();
+        verify(index);
+        verify(index + 1);
+      })();
     },
-    [fullPlayer, suktaPlaylist, playlist, claimLockScreen, verify],
+    [fullPlayer, suktaPlaylist, playlist, claimLockScreen, verify, arm],
   );
 
   const currentIndex = verseStatus.currentIndex;
@@ -255,14 +322,16 @@ export function useDocumentAudio(
       if (mode === "verse" && activeVerseId === id) {
         if (verseStatus.playing) playlist.pause();
         else {
-          playlist.play();
-          claimLockScreen("verse", id);
+          void arm().then(() => {
+            claimLockScreen("verse", id);
+            playlist.play();
+          });
         }
         return;
       }
       playVerse(id);
     },
-    [mode, activeVerseId, verseStatus.playing, playlist, claimLockScreen, playVerse],
+    [mode, activeVerseId, verseStatus.playing, playlist, claimLockScreen, playVerse, arm],
   );
 
   const stepVerse = useCallback(
@@ -275,41 +344,42 @@ export function useDocumentAudio(
   );
 
   const startFull = useCallback(() => {
-    playlist.pause();
-    suktaPlaylist.pause();
-    setMode("full");
-    fullPlayer.play();
-    claimLockScreen("full");
-  }, [playlist, suktaPlaylist, fullPlayer, claimLockScreen]);
+    void (async () => {
+      await arm();
+      playlist.pause();
+      suktaPlaylist.pause();
+      setMode("full");
+      claimLockScreen("full");
+      fullPlayer.play();
+    })();
+  }, [playlist, suktaPlaylist, fullPlayer, claimLockScreen, arm]);
 
   const startSukta = useCallback(
     (index = 0) => {
       if (!suktaTracks.length) return;
-      playlist.pause();
-      fullPlayer.pause();
-      setMode("full");
-      const at = index >= 0 && index < suktaTracks.length ? index : 0;
-      if (suktaPlaylist.currentIndex !== at) {
-        suktaSkipAt.current = Date.now();
-        suktaPlaylist.skipTo(at);
-      }
-      suktaPlaylist.play();
-      const sukta = suktaTracks[at]?.sukta;
-      try {
-        suktaPlaylist.setActiveForLockScreen(
-          true,
-          {
-            title: sukta != null ? `Sukta ${sukta}` : documentTitle,
-            artist: documentTitle,
-            albumTitle: documentTitle,
-          },
-          { showNextTrack: true, showPreviousTrack: true },
-        );
-      } catch {
-        /* lock-screen controls are a nicety */
-      }
+      void (async () => {
+        await arm();
+        playlist.pause();
+        fullPlayer.pause();
+        setMode("full");
+        const at = index >= 0 && index < suktaTracks.length ? index : 0;
+        const sukta = suktaTracks[at]?.sukta;
+        try {
+          suktaPlaylist.setActiveForLockScreen(true, metadataFor(undefined, sukta != null ? `Sukta ${sukta}` : undefined), {
+            showNextTrack: true,
+            showPreviousTrack: true,
+          });
+        } catch {
+          /* lock-screen controls are a nicety */
+        }
+        if (suktaPlaylist.currentIndex !== at) {
+          suktaSkipAt.current = Date.now();
+          suktaPlaylist.skipTo(at);
+        }
+        suktaPlaylist.play();
+      })();
     },
-    [suktaTracks, playlist, fullPlayer, suktaPlaylist, documentTitle],
+    [suktaTracks, playlist, fullPlayer, suktaPlaylist, metadataFor, arm],
   );
   startSuktaRef.current = startSukta;
 
@@ -322,10 +392,17 @@ export function useDocumentAudio(
       if (!isNextSukta(gap.suktaTracks[previousIndex]?.sukta, gap.suktaTracks[index]?.sukta)) {
         suktaPlaylist.pause();
         setMode(null);
+        return;
+      }
+      const sukta = gap.suktaTracks[index]?.sukta;
+      try {
+        suktaPlaylist.updateLockScreenMetadata(metadataFor(undefined, sukta != null ? `Sukta ${sukta}` : undefined));
+      } catch {
+        /* not the lock-screen player right now */
       }
     });
     return () => sub.remove();
-  }, [suktaPlaylist]);
+  }, [suktaPlaylist, metadataFor]);
 
   const startPlayThrough = useCallback(() => {
     if (!fullAudioUrl && suktaTracks.length) {
@@ -344,10 +421,12 @@ export function useDocumentAudio(
     }
     if (fullStatus.playing) fullPlayer.pause();
     else {
-      fullPlayer.play();
-      claimLockScreen("full");
+      void arm().then(() => {
+        claimLockScreen("full");
+        fullPlayer.play();
+      });
     }
-  }, [fullAudioUrl, suktaTracks.length, suktaStatus.playing, suktaStatus.currentIndex, suktaPlaylist, startSukta, fullStatus.playing, fullPlayer, claimLockScreen]);
+  }, [fullAudioUrl, suktaTracks.length, suktaStatus.playing, suktaStatus.currentIndex, suktaPlaylist, startSukta, fullStatus.playing, fullPlayer, claimLockScreen, arm]);
 
   const seekFull = useCallback(
     (seconds: number) => {
@@ -363,20 +442,23 @@ export function useDocumentAudio(
   /** Play the full recording from a verse's measured timestamp. */
   const playFullAt = useCallback(
     (id: number) => {
-      const shloka = byId.get(id);
-      if (shloka?.full_audio_start == null) return;
+      const start = byId.get(id)?.full_audio_start;
+      if (start == null) return;
       if (mode === "full" && fullStatus.playing && fullActiveId(shlokas, fullStatus.currentTime) === id) {
         fullPlayer.pause();
         return;
       }
-      playlist.pause();
-      suktaPlaylist.pause();
-      setMode("full");
-      void fullPlayer.seekTo(shloka.full_audio_start);
-      fullPlayer.play();
-      claimLockScreen("full");
+      void (async () => {
+        await arm();
+        playlist.pause();
+        suktaPlaylist.pause();
+        setMode("full");
+        claimLockScreen("full");
+        void fullPlayer.seekTo(start);
+        fullPlayer.play();
+      })();
     },
-    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, playlist, suktaPlaylist, fullPlayer, claimLockScreen],
+    [byId, mode, fullStatus.playing, fullStatus.currentTime, shlokas, playlist, suktaPlaylist, fullPlayer, claimLockScreen, arm],
   );
 
   const switchToFull = useCallback(() => {
@@ -387,15 +469,18 @@ export function useDocumentAudio(
       return;
     }
     if (activeVerseId == null) return;
-    const shloka = byId.get(activeVerseId);
-    if (shloka?.full_audio_start == null) return;
-    playlist.pause();
-    suktaPlaylist.pause();
-    setMode("full");
-    void fullPlayer.seekTo(shloka.full_audio_start);
-    fullPlayer.play();
-    claimLockScreen("full");
-  }, [activeVerseId, byId, playlist, suktaPlaylist, fullPlayer, claimLockScreen, fullAudioUrl, suktaTracks, startSukta]);
+    const start = byId.get(activeVerseId)?.full_audio_start;
+    if (start == null) return;
+    void (async () => {
+      await arm();
+      playlist.pause();
+      suktaPlaylist.pause();
+      setMode("full");
+      claimLockScreen("full");
+      void fullPlayer.seekTo(start);
+      fullPlayer.play();
+    })();
+  }, [activeVerseId, byId, playlist, suktaPlaylist, fullPlayer, claimLockScreen, fullAudioUrl, suktaTracks, startSukta, arm]);
 
   const toggleMeaning = useCallback((id: number) => {
     setOpenMeaningIds((prev) => {
@@ -428,12 +513,16 @@ export function useDocumentAudio(
   const activeProgress = mode === "full" ? (fullHighlight?.progress ?? 0) : verseProgress;
   const activePlaying = mode === "full" ? fullStatus.playing : mode === "verse" ? verseStatus.playing : false;
 
-  // Pause everything and give up the lock screen when the reader leaves the screen.
-  // Going to the home screen or locking the phone does not unmount it, so that
-  // keeps playing.
+  // Stop only when the reader leaves this screen. Minimising or locking the
+  // phone does not unmount it, so the system player keeps going. Player
+  // instances are read from a ref: recreating one (a later page of verses)
+  // must not run this cleanup and pause what is sounding.
+  const playersRef = useRef({ playlist, fullPlayer, suktaPlaylist });
+  playersRef.current = { playlist, fullPlayer, suktaPlaylist };
   useEffect(
     () => () => {
-      for (const p of [playlist, fullPlayer, suktaPlaylist]) {
+      const current = playersRef.current;
+      for (const p of [current.playlist, current.fullPlayer, current.suktaPlaylist]) {
         try {
           p.pause();
           p.clearLockScreenControls();
@@ -442,7 +531,7 @@ export function useDocumentAudio(
         }
       }
     },
-    [playlist, fullPlayer, suktaPlaylist],
+    [],
   );
 
   const verseIndex = activeVerseId == null ? -1 : trackIds().indexOf(activeVerseId);

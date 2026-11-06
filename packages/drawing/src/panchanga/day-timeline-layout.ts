@@ -11,8 +11,23 @@ export interface ChartSegment {
   transitionLocal?: string;
   detailNe?: string;
   detailEn?: string;
+  /** Card number. Repeats of the same name share it. */
+  badge?: number;
   lane?: number;
   laneCount?: number;
+}
+
+/** First sight of a label takes the next number; a repeat keeps that number. */
+export function badgeByLabel(labels: string[]): number[] {
+  const seen = new Map<string, number>();
+  let next = 1;
+  return labels.map((label) => {
+    const key = label.trim();
+    const have = seen.get(key);
+    if (have != null) return have;
+    seen.set(key, next);
+    return next++;
+  });
 }
 
 /** Greedy interval partition: assign each segment the first lane free at its start. */

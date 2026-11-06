@@ -10,6 +10,8 @@ export type BalamCardItem = {
   name: string;
   nameEn?: string;
   tara: string;
+  /** Set on चन्द्रबल cards: the transit Moon's house from this rashi. */
+  house?: number;
   quality: string;
   tone: NavataraRow["tone"];
   timeRange?: string;
@@ -34,7 +36,8 @@ function cardFromRow(
     number: num,
     name: row.name,
     nameEn: row.name_en ?? row.name,
-    tara: row.tara,
+    tara: row.tara ?? "",
+    house: row.house,
     quality: row.quality,
     tone: row.tone,
     timeRange: formatBalamTimeRange(span.start, span.end),

@@ -122,6 +122,10 @@ export interface ThemeRoles {
   /** Bad / negative (अशुभ, errors) — the status colour, not the button fill. */
   danger: string;
   info: string;
+  /** Spiritual best-time cards: the bar and the tint. */
+  slotSpiritual: string;
+  /** Text on a spiritual best-time card. */
+  slotSpiritualForeground: string;
 }
 
 export const light: ThemeRoles = {
@@ -152,6 +156,8 @@ export const light: ThemeRoles = {
   warning: brand.saffronBright,
   danger: brand.vermilion,
   info: brand.blue,
+  slotSpiritual: "#5b4d86",
+  slotSpiritualForeground: "#3e345f",
 };
 
 export const dark: ThemeRoles = {
@@ -183,6 +189,8 @@ export const dark: ThemeRoles = {
   warning: midnight.saffron,
   danger: midnight.vermilion,
   info: midnight.teal,
+  slotSpiritual: "#c4b6ef",
+  slotSpiritualForeground: "#ebe4ff",
 };
 
 export const themes = { light, dark } as const;
@@ -371,6 +379,8 @@ export interface MobileRoles {
   warning: string;
   danger: string;
   info: string;
+  slotSpiritual: string;
+  slotSpiritualForeground: string;
 }
 
 export function mobileRoles(theme: ThemeName): MobileRoles {
@@ -396,5 +406,7 @@ export function mobileRoles(theme: ThemeName): MobileRoles {
     warning: r.warning,
     danger: r.danger,
     info: r.info,
+    slotSpiritual: r.slotSpiritual,
+    slotSpiritualForeground: r.slotSpiritualForeground,
   };
 }

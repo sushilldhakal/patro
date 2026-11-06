@@ -9,6 +9,7 @@ import { choghadiyaBoard, horaBoard, lagnaBoard, panchakaBoard, pushkaraBoard, t
 export * from "./muhurta-board";
 import { formatElementStampDisplay } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { formatEventDate } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { formatChandraHouse } from "@vedic-patro/domain/panchanga/navatara-bala";
 import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import type { TFunction } from "@vedic-patro/i18n/react";
 import type { CalendarSystem } from "@vedic-patro/domain/calendar/calendar-system";
@@ -204,7 +205,7 @@ export function elementTable(
       rows: (obj.rows as AnyRow[]).map((r, i) => ({
         key: String(i),
         label: pick(lang, r.name, r.name_en ?? r.name),
-        trailing: `${String(r.tara ?? "")}${r.quality ? ` · ${String(r.quality)}` : ""}`.trim() || undefined,
+        trailing: `${r.house != null ? formatChandraHouse(Number(r.house), lang) : String(r.tara ?? "")}${r.quality ? ` · ${String(r.quality)}` : ""}`.trim() || undefined,
         good: r.tone === "good" || r.quality === SHUBHA,
         bad: r.tone === "bad" || r.quality === ASHUBHA,
         glyph: { kind: elementId === "tarabala" ? "nakshatra" : "rashi", name: String(r.name ?? ""), number: typeof r.number === "number" ? r.number : i + 1 },

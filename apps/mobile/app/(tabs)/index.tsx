@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { adaptHomeView, isPlannerView, plannerDays, shiftDateIso, useDayMarks, useUserEvents, useWindowBands, type PlannerViewKind } from "@vedic-patro/features/events";
+import { adaptHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { updateEvent, type CalendarEvent } from "@/lib/events/api";
@@ -188,7 +188,7 @@ function HomeScreen() {
   const plannerKind: PlannerViewKind | null = isPlannerView(patroView) ? patroView : null;
   // The planner views (week, day, year, list) centre on this AD date; an event open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(todayAd);
-  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
+  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
   const plannerRange =
     plannerKind === "list" ? { from: anchor, to: shiftDateIso(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location.params, plannerKind != null);
@@ -198,7 +198,8 @@ function HomeScreen() {
     const fit = adaptHomeView(patroView, width >= 768);
     if (fit !== patroView) setPatroView(fit);
   }, [patroView, width, setPatroView]);
-  const dayWindows = useWindowBands(windowDays, location.params, windowDays.length > 0);
+  const daySlots = useBestSlots(windowDays, location.params, windowDays.length > 0);
+  const personalDays = usePersonalDays(windowDays, location.params, isAuthenticated && windowDays.length > 0);
   // The planner and the header's month follow each other: stepping a week into another BS month moves the
   // month, and picking a month in the header moves the planner to its first day.
   useEffect(() => {
@@ -403,10 +404,12 @@ function HomeScreen() {
             onViewChange={(v) => setPatroView(v)}
             events={userEvents.events}
             marks={dayMarks.marks}
-            windows={dayWindows.bands}
+            slots={daySlots.slots}
+            yogas={daySlots.yogas}
+            personal={personalDays.columns}
             todayAd={todayAd}
             onOpenEvent={(event) => setEditor({ event })}
-            onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}
+            onCreateAt={(date, time, extra) => (isAuthenticated ? setEditor({ slot: { date, time, ...extra } }) : undefined)}
             onMoveEvent={async (event, times) => {
               const { id: _id, ...input } = event;
               await updateEvent(event.id, { ...input, ...times });

@@ -12,9 +12,9 @@ from engine.panchanga.ghati_time import time_from_sunrise
 from engine.panchanga.names_ne import NAKSHATRA_NAMES_NE
 from engine.panchanga.tithi import tithi_at
 
-# Favorable janma-rashi offsets from moon rashi (Patro convention).
-_CHANDRA_OFFSETS_CURRENT = (1, 2, 5, 6, 9, 11)
-_CHANDRA_OFFSETS_NEXT = (0, 2, 3, 6, 7, 10)
+# Transit Moon counted from janma rashi. These houses are the classical
+# चन्द्रबल (Muhurta Chintamani). janma = moon − (house − 1).
+CHANDRA_GOOD_HOUSES = (1, 3, 6, 7, 10, 11)
 
 # Favorable janma-nakshatra offsets from moon nakshatra (Patro convention).
 _TARA_OFFSETS = (0, 2, 4, 6, 8, 10, 13, 15, 17, 19, 21, 24)
@@ -27,6 +27,11 @@ _PANCHAKA_BAD = {
     8: ("Roga Panchaka", "रोग पञ्चक"),
 }
 _PANCHAKA_GOOD = ("Shubha Muhurta", "शुभ मुहूर्त")
+
+
+def _janma_for_house(moon_idx: int, house: int) -> int:
+    """Janma rashi for which the transit Moon stands in ``house``."""
+    return (moon_idx - (house - 1)) % 12
 
 
 def _rashi_chip(rashi_index: int) -> dict[str, Any]:
@@ -69,7 +74,7 @@ def build_chandrabalam(
 
     current = chandra_rashi_spans[0]
     moon_idx = int(current["number"]) - 1
-    set1 = [_rashi_chip((moon_idx + off) % 12) for off in _CHANDRA_OFFSETS_CURRENT]
+    set1 = [_rashi_chip(_janma_for_house(moon_idx, house)) for house in CHANDRA_GOOD_HOUSES]
 
     till: dict[str, str] | None = None
     if len(chandra_rashi_spans) > 1 and chandra_rashi_spans[0].get("end_time"):
@@ -81,7 +86,7 @@ def build_chandrabalam(
     else:
         next_idx = (moon_idx + 1) % 12
 
-    set2 = [_rashi_chip((next_idx + off) % 12) for off in _CHANDRA_OFFSETS_NEXT]
+    set2 = [_rashi_chip(_janma_for_house(next_idx, house)) for house in CHANDRA_GOOD_HOUSES]
 
     return {
         "till": till,

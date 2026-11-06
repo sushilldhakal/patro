@@ -64,7 +64,8 @@ export function useAbhijitPage(
     staleTime: 1000 * 60 * 60,
   });
   const calendar = query.data?.calendar;
-  const days = useMemo(() => abhijitDays(calendar ?? [], todayAd, lang), [calendar, todayAd, lang]);
+  const omittedLabel = t("abhijit.wednesday");
+  const days = useMemo(() => abhijitDays(calendar ?? [], todayAd, lang, omittedLabel), [calendar, todayAd, lang, omittedLabel]);
   const today = days.find((d) => d.isToday);
   const monthName = bilingualText(
     lang,
@@ -74,7 +75,19 @@ export function useAbhijitPage(
   );
   let hero: NowHeroView | undefined;
   const todayRaw = calendar?.find((d) => d.date_ad === todayAd);
-  if (today && todayRaw) {
+  if (today?.omitted) {
+    hero = {
+      eyebrow: t("now_hero.abhijit_today"),
+      live: false,
+      tone: "plain",
+      title: today.range,
+      subtitle: `${today.weekday} · ${today.day}`,
+      facts: [
+        { label: t("now_hero.sunrise"), value: today.sunrise },
+        { label: t("now_hero.sunset"), value: today.sunset },
+      ],
+    };
+  } else if (today && todayRaw) {
     const w = abhijitClock(todayRaw);
     const win = clockWindow(w?.start, w?.end, clockMinutes(nowMs, timeZone));
     const at = days.indexOf(today);

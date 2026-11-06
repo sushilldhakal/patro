@@ -14,11 +14,11 @@ const TARA_NE_TO_EN: Record<string, string> = {
   विपत्: "Vipat",
   क्षेम: "Kshema",
   प्रत्यरि: "Pratyari",
-  प्रत्यक्: "Pratyari",
+  प्रत्यक्: "Pratyak",
   साधक: "Sadhaka",
   साधना: "Sadhaka",
   वध: "Vadha",
-  निधन: "Nidhana",
+  निधन: "Naidhana",
   मित्र: "Mitra",
   अतिमित्र: "Ati-mitra",
   "परम मित्र": "Parama Mitra",
@@ -34,6 +34,7 @@ const QUALITY_NE_TO_EN: Record<string, string> = {
   घातक: "Fatal",
   सामान्य: "Neutral",
   मध्यम: "Medium",
+  "अष्टम चन्द्र": "Ashtama Chandra",
 };
 
 function translateToken(value: string, map: Record<string, string>): string {
@@ -46,6 +47,18 @@ function translateToken(value: string, map: Record<string, string>): string {
 }
 
 /** Locale-aware tara label (जन्म → Janma). */
+/** House of the transit Moon from a janma rashi: "११औं भाव" / "11th house". */
+export function formatChandraHouse(house: number, lang?: string): string {
+  if (normalizeLang(lang) === "en") {
+    const teen = house % 100;
+    const mod = house % 10;
+    const suffix = teen >= 11 && teen <= 13 ? "th" : mod === 1 ? "st" : mod === 2 ? "nd" : mod === 3 ? "rd" : "th";
+    return `${house}${suffix} house`;
+  }
+  const digits = String(house).replace(/[0-9]/g, (d) => "०१२३४५६७८९"[Number(d)] ?? d);
+  return `${digits}औं भाव`;
+}
+
 export function formatNavataraTara(tara: string, lang?: string): string {
   if (normalizeLang(lang) !== "en") return tara;
   return translateToken(tara, TARA_NE_TO_EN);
@@ -68,7 +81,7 @@ export const NAVATARA_TYPES: Array<{
   { id: 3, tara: "विपत्", quality: "अशुभ", tone: "bad" },
   { id: 4, tara: "क्षेम", quality: "अति शुभ", tone: "best" },
   { id: 5, tara: "प्रत्यक्", quality: "अशुभ", tone: "bad" },
-  { id: 6, tara: "साधना", quality: "अति शुभ", tone: "best" },
+  { id: 6, tara: "साधक", quality: "अति शुभ", tone: "best" },
   { id: 7, tara: "निधन", quality: "घातक", tone: "worst" },
   { id: 8, tara: "मित्र", quality: "शुभ", tone: "good" },
   { id: 9, tara: "परम मित्र", quality: "अति शुभ", tone: "best" },

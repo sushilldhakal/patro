@@ -26,20 +26,22 @@ export function DocumentCard({ doc, category, topic, onPress }: DocumentCardProp
       className={cn(documentsClasses.card, "group transition-colors hover:border-secondary/60")}
     >
       <Box className={documentsClasses.cardTop}>
-        <Box className={documentsClasses.cardIcon}>
-          <Icon node={iconBookOpen} size="xl" tone="secondary" />
+        <Box className={documentsClasses.cardTitleRow}>
+          <Box className={documentsClasses.cardIcon}>
+            <Icon node={iconBookOpen} size="md" tone="secondary" />
+          </Box>
+          <Box className={documentsClasses.cardTitleBlock}>
+            <Text as="h2" className={documentsClasses.cardTitle}>
+              {title}
+            </Text>
+            {subtitle ? (
+              <Text as="p" className={documentsClasses.cardSubtitle}>
+                {subtitle}
+              </Text>
+            ) : null}
+          </Box>
         </Box>
         <Icon node={iconChevronRight} size="md" tone="muted" webClassName="transition-transform group-hover:translate-x-0.5" />
-      </Box>
-      <Box>
-        <Text as="h2" className={documentsClasses.cardTitle}>
-          {title}
-        </Text>
-        {subtitle ? (
-          <Text as="p" className={documentsClasses.cardSubtitle}>
-            {subtitle}
-          </Text>
-        ) : null}
       </Box>
       {description ? (
         <Text as="p" className={documentsClasses.cardDescription} numberOfLines={2}>

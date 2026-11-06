@@ -10,7 +10,7 @@ import { choghadiyaName, choghadiyaTone, choghadiyaToneLabel } from "@vedic-patr
 import { buildDayTimelineData, ghatiToCivilClockLabel } from "@vedic-patro/read-models/panchanga/day-timeline-data";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { bilingualText } from "@vedic-patro/domain/locale";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
+import { formatChandraHouse, formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
 import {
   formatClockNepali,
   formatTimeRangeShort,
@@ -75,7 +75,7 @@ export function useMuhurtaAside(p: PanchangaDay) {
       slots: rows.map((row) => ({
         key: row.name,
         title: bilingualText(lang, row.name, row.name_en ?? row.name),
-        value: formatNavataraTara(row.tara, lang),
+        value: row.house != null ? formatChandraHouse(row.house, lang) : formatNavataraTara(row.tara ?? "", lang),
         quality: formatNavataraQuality(row.quality, lang),
         tone: row.tone,
         isMoon: moonIdx != null && row.index === moonIdx,

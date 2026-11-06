@@ -22,6 +22,22 @@ export const iconViewYear: IconNode = [ ["rect", { width: "7", height: "7", x: "
 export const iconViewList: IconNode = [ ["path", { d: "M3 5h.01" }], ["path", { d: "M3 12h.01" }], ["path", { d: "M3 19h.01" }], ["path", { d: "M8 5h13" }], ["path", { d: "M8 12h13" }], ["path", { d: "M8 19h13" }] ];
 export const iconCheck: IconNode = [["path", { d: "M20 6 9 17l-5-5" }]];
 export const iconPlus: IconNode = [ ["path", { d: "M5 12h14" }], ["path", { d: "M12 5v14" }] ];
+export const iconStar: IconNode = [["polygon", { points: "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" }]];
+export const iconBriefcase: IconNode = [
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2" }],
+];
+export const iconSun: IconNode = [
+  ["circle", { cx: "12", cy: "12", r: "4" }],
+  ["path", { d: "M12 2v2" }],
+  ["path", { d: "M12 20v2" }],
+  ["path", { d: "m4.93 4.93 1.41 1.41" }],
+  ["path", { d: "m17.66 17.66 1.41 1.41" }],
+  ["path", { d: "M2 12h2" }],
+  ["path", { d: "M20 12h2" }],
+  ["path", { d: "m6.34 17.66-1.41 1.41" }],
+  ["path", { d: "m19.07 4.93-1.41 1.41" }],
+];
 export const iconTrash2: IconNode = [ ["path", { d: "M10 11v6" }], ["path", { d: "M14 11v6" }], ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" }], ["path", { d: "M3 6h18" }], ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" }] ];
 
 export const iconViewMulti: IconNode = [ ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2" }], ["path", { d: "M12 3v18" }] ];

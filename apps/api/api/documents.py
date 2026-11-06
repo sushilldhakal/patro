@@ -9,12 +9,11 @@
                                                       ``inline_chapters`` documents (Sri Rudram),
                                                       every chapter's verses are embedded here
                                                       so the whole text renders on one page.
-* ``GET /documents/{slug}/chapters/{chapter}``     → one chapter's shlokas, audio resolved
-
-Splitting by chapter (never by an arbitrary page size) keeps this scaling to
-much larger multi-chapter works later: the unit of pagination is always the
-chapter a verse is already labelled with (see ``verse_label``), not a fixed
-count of verses.
+* ``GET /documents/{slug}/chapters/{chapter}``     → one chapter's shlokas, audio resolved.
+                                                      With no paging query, the whole chapter
+                                                      (offline download). With ``limit`` /
+                                                      ``cursor`` / ``verse``, one keyset page
+                                                      of verses (``global_order``, never OFFSET).
 
 No auth — same public/read-only shape as vastu, panchanga, kundali. Content
 lives in ``data/documents_source/*.json`` (see that folder's README) and is
@@ -101,11 +100,75 @@ def document_detail(slug: str, request: Request):
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
-@router.get("/documents/{slug}/chapters/{chapter_number}")
-def document_chapter_detail(slug: str, chapter_number: int, request: Request):
-    build = _or_404(document_views.chapter_view, slug, chapter_number)
+# Payload-shape token. ``_cache_version()`` follows manifest bytes and the bucket
+# URL, so a code-only change to the page (cursors, slim verses) needs its own bump.
+_CHAPTER_PAGE_CACHE = "p1"
 
-    cache_key = f"documents_chapter_v{_cache_version()}_{slug}_{chapter_number}"
+
+def _chapter_cache_key(
+    slug: str,
+    chapter_number: int,
+    *,
+    paged: bool,
+    cursor: int | None,
+    direction: str,
+    limit: int,
+    verse: str | None,
+) -> str:
+    version = _cache_version()
+    if not paged:
+        return f"documents_chapter_v{version}_{slug}_{chapter_number}"
+    verse_key = documents_db.verse_label_key(verse) if verse and verse.strip() else ""
+    cursor_key = "" if cursor is None else str(cursor)
+    return (
+        f"documents_chapter_{_CHAPTER_PAGE_CACHE}_v{version}_{slug}_{chapter_number}"
+        f"_c{cursor_key}_d{direction}_l{limit}_v{verse_key}"
+    )
+
+
+@router.get("/documents/{slug}/chapters/{chapter_number}")
+def document_chapter_detail(
+    slug: str,
+    chapter_number: int,
+    request: Request,
+    limit: int | None = Query(None, description="Page size. Omit, with cursor and verse, for the whole chapter."),
+    cursor: int | None = Query(None, description="A global_order. With direction, the page after or before it."),
+    direction: str = Query("next", description="next (global_order greater) or prev (global_order less)."),
+    verse: str | None = Query(None, max_length=80, description="verse_label to centre, e.g. 6.12.3. Devanagari digits accepted."),
+):
+    """One chapter.
+
+    No ``limit``, ``cursor`` or ``verse``: the whole chapter, same body as before
+    (offline packs). Any of those: a keyset page (default 25, max 100) with
+    ``verses``, ``next_cursor``, ``prev_cursor`` and ``total``.
+    """
+    if direction not in ("next", "prev"):
+        raise HTTPException(status_code=400, detail="direction must be next or prev")
+    verse_text = verse.strip() if verse else ""
+    paged = limit is not None or cursor is not None or bool(verse_text)
+    if paged:
+        clamped = documents_db.clamp_page_limit(limit)
+        build = _or_404(
+            document_views.chapter_page_view,
+            slug,
+            chapter_number,
+            cursor,
+            direction,
+            clamped,
+            verse_text or None,
+        )
+    else:
+        clamped = documents_db.CHAPTER_PAGE_DEFAULT
+        build = _or_404(document_views.chapter_view, slug, chapter_number)
+    cache_key = _chapter_cache_key(
+        slug,
+        chapter_number,
+        paged=paged,
+        cursor=cursor,
+        direction=direction,
+        limit=clamped,
+        verse=verse_text or None,
+    )
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
@@ -121,6 +184,18 @@ def veda_verses_by_detail(
     """Every mantra with this देवता (devata), ऋषि (rishi), छन्द (chhanda) or स्वर (svara)."""
     build = _or_404(document_views.verse_detail_view, kind, value, slug, offset, limit)
     cache_key = f"veda_details_v{_cache_version()}_{kind}_{slug or 'all'}_{offset}_{limit}_{value.strip()}"
+    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+
+
+@router.get("/veda/details/{kind}/values")
+def veda_detail_values(
+    kind: str,
+    request: Request,
+    slug: str | None = Query(None, description="Keep to one Veda, e.g. rigveda"),
+):
+    """Every distinct देवता / ऋषि / छन्द / स्वर with its mantra count."""
+    build = _or_404(document_views.detail_values_view, kind, slug)
+    cache_key = f"veda_detail_values_v{_cache_version()}_{kind}_{slug or 'all'}"
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 

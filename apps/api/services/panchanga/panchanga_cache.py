@@ -173,7 +173,10 @@ logger = logging.getLogger(__name__)
 #     (the aparahna rule put them a day early) and the 7-day दशैं बिदा block
 #     (Ashoj 31 – Kartik 6) as a public holiday. Day, month and year payloads
 #     carry festivals and the holiday flag per day.
-PANCHANGA_PAYLOAD_VERSION = 57
+# v58: classical चन्द्रबल (houses 1, 3, 6, 7, 10, 11), Wednesday अभिजित् omitted,
+#     and the shared 9-tara names (साधक). The daily rashifal tone follows the
+#     Moon's house, and its lucky number is that house.
+PANCHANGA_PAYLOAD_VERSION = 58
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

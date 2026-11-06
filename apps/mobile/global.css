@@ -32,6 +32,8 @@
     --tw-warning: 230 126 34;
     --tw-danger: 198 40 40;
     --tw-info: 11 86 90;
+    --tw-slot-spiritual: 91 77 134;
+    --tw-slot-spiritual-foreground: 62 52 95;
     /* tokens:light:end */
 
     /* Type sizes live in packages/design-tokens/theme.css.
@@ -74,6 +76,8 @@
     --tw-warning: 245 158 66;
     --tw-danger: 255 143 133;
     --tw-info: 95 196 192;
+    --tw-slot-spiritual: 196 182 239;
+    --tw-slot-spiritual-foreground: 235 228 255;
     /* tokens:dark:end */
 
     /* tokens:css-dark:start — generated from packages/design-tokens, run `npm run tokens` */

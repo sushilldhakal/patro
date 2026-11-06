@@ -55,9 +55,16 @@ function at(date: string, minutes: number): { date: string; time: string } {
   return { date: days ? shiftDate(date, days) : date, time: `${pad(Math.floor(t / 60))}:${pad(t % 60)}` };
 }
 
+/**
+ * Sunrise and the windows that start at it are rounded apart: on 6 Nov 2026 in Kathmandu sunrise reads
+ * "06:18" while बाण, विडाल and योग विष start "06:17". A time this close before sunrise is sunrise itself,
+ * not the next morning; the earliest real pre-dawn window (प्रातः सन्ध्या) is over an hour ahead.
+ */
+const SUNRISE_SLACK_MIN = 3;
+
 /** Minutes on the panchanga day's own clock: before sunrise is the next morning. */
 function onDay(minutes: number, sunrise: number | null): number {
-  return sunrise != null && minutes < sunrise ? minutes + 1440 : minutes;
+  return sunrise != null && minutes < sunrise - SUNRISE_SLACK_MIN ? minutes + 1440 : minutes;
 }
 
 function windowPicks(

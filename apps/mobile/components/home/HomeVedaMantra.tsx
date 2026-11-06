@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { AppState } from "react-native";
 import { useRouter } from "expo-router";
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useAudioAvailable, useHomeVedaMantra } from "@vedic-patro/features/home";
 import { HomeVedaMantra as HomeVedaMantraView } from "@vedic-patro/ui/kit/shell";
 
@@ -14,15 +15,15 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
   /* Some days' recordings were never uploaded; no button beats one that does nothing. */
   const hasRecording = useAudioAvailable(audioUrl);
 
+  // This clip is only for the home card. It must not change the shared audio
+  // session: turning background playback off here also stops a chapter that is
+  // playing after the app is minimised.
   useEffect(() => {
-    void setAudioModeAsync({
-      playsInSilentMode: true,
-      interruptionMode: "duckOthers",
-      allowsRecording: false,
-      shouldPlayInBackground: false,
-      shouldRouteThroughEarpiece: false,
-    }).catch(() => {});
-  }, []);
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") player.pause();
+    });
+    return () => sub.remove();
+  }, [player]);
 
   if (!mantra.ready) return null;
 

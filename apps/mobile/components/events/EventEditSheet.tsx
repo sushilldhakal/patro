@@ -7,7 +7,7 @@ import { notifyRemindersChanged } from "@/lib/menu-request";
 import { useLocale } from "@/lib/i18n";
 
 /** The form in a sheet to change an event, or to start one at a tapped slot of the day or week grid. */
-export function EventEditSheet({ editor, onClose }: { editor: { event?: CalendarEvent; slot?: { date: string; time: string } } | null; onClose: () => void }) {
+export function EventEditSheet({ editor, onClose }: { editor: { event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null; onClose: () => void }) {
   const { lang } = useLocale();
   const queryClient = useQueryClient();
   return (

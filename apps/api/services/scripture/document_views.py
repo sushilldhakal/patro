@@ -56,6 +56,33 @@ def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
     return {**s, "audio_url": _resolve_asset_url(audio_key)}
 
 
+# Present on the row, unused by the verse card, its play button, or the transport bar.
+_PAGE_DROP = ("verse_number", "global_order", "audio_duration_seconds")
+_OWN_DETAIL = ("devata", "rishi", "chhanda", "svara")
+_SUKTA_META = ("sukta_rishi", "sukta_devata", "sukta_chhanda")
+
+
+def _reader_verse(shloka: dict[str, Any]) -> dict[str, Any]:
+    """A verse for a scrolled page: card, audio and playback fields only, nulls omitted.
+
+    Sukta-wide attribution is dropped when the verse carries its own देवता / ऋषि /
+    छन्द / स्वर — the row heading skips it in that case. The unpaged chapter
+    response still uses :func:`_resolve_shloka` unchanged.
+    """
+    resolved = _resolve_shloka(dict(shloka))
+    own = any(resolved.get(key) for key in _OWN_DETAIL)
+    out: dict[str, Any] = {}
+    for key, value in resolved.items():
+        if key in _PAGE_DROP:
+            continue
+        if own and key in _SUKTA_META:
+            continue
+        if value is None or value == "":
+            continue
+        out[key] = value
+    return out
+
+
 def _resolve_chapter(chapter: dict[str, Any]) -> dict[str, Any]:
     """Resolve ritual diagram keys on a chapter to public image URLs."""
     images = chapter.pop("images", None) or []
@@ -149,6 +176,48 @@ def chapter_view(slug: str, chapter_number: int) -> dict[str, Any]:
     }
 
 
+def chapter_page_view(
+    slug: str,
+    chapter_number: int,
+    cursor: int | None,
+    direction: str,
+    limit: int,
+    verse: str | None,
+) -> dict[str, Any]:
+    """One keyset page: the same document and chapter header, plus verses and cursors."""
+    summary = documents_db.document_summary_lite(slug)
+    if summary is None:
+        raise LookupError(f"No such document: {slug}")
+
+    page = documents_db.get_chapter_page(
+        slug,
+        chapter_number,
+        cursor=cursor,
+        direction=direction,
+        limit=limit,
+        verse=verse,
+    )
+    if page is None:
+        raise LookupError(f"No such chapter: {chapter_number}")
+
+    resolved = _resolve_chapter(
+        {
+            "number": page["number"],
+            "title_ne": page["title_ne"],
+            "title_en": page["title_en"],
+            "images": page.get("images"),
+        }
+    )
+    return {
+        **_resolve_document_summary(summary),
+        "chapter": resolved,
+        "verses": [_reader_verse(s) for s in page["shlokas"]],
+        "next_cursor": page["next_cursor"],
+        "prev_cursor": page["prev_cursor"],
+        "total": page["total"],
+    }
+
+
 def daily_veda_view(when: date) -> dict[str, Any]:
     """The day's Veda mantra with its citation trail and reader location."""
     shloka = documents_db.daily_veda_shloka(when)
@@ -181,3 +250,10 @@ def verse_detail_view(kind: str, value: str, slug: str | None, offset: int, limi
     result = documents_db.verses_with_detail(kind, value, slug, offset, limit)
     result["verses"] = [_resolve_shloka(dict(v)) for v in result["verses"]]
     return result
+
+
+def detail_values_view(kind: str, slug: str | None) -> dict[str, Any]:
+    """Every value of one mantra detail, for the dropdown on the verse-detail page."""
+    if kind not in documents_db.VERSE_DETAIL_KINDS:
+        raise LookupError(f"No such detail: {kind}")
+    return {"kind": kind, "values": documents_db.detail_values(kind, slug)}

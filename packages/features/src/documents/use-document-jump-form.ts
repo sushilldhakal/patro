@@ -47,7 +47,7 @@ export function useDocumentJumpForm({
    * document has no chapters — the host then scrolls by verse label alone.
    * Return false when the target couldn't be found.
    */
-  onJump: (chapter: number, verse: string) => boolean;
+  onJump: (chapter: number, verse: string) => boolean | Promise<boolean>;
   /** Open another library document. */
   onSelectDocument?: (slug: string) => void;
 }) {
@@ -102,6 +102,8 @@ export function useDocumentJumpForm({
     setNotFound(false);
     const verse = verseInput.trim();
     const chapter = resolveChapter(verse);
+    // Nothing typed and no chapter to go to — stay put.
+    if (!verse && chapter == null && currentChapter == null && !chapterInput.trim()) return;
     if (chapter == null) {
       setNotFound(true);
       return;
@@ -109,7 +111,9 @@ export function useDocumentJumpForm({
     // Nothing typed — stay put.
     if (!verse && (currentChapter != null ? chapter === currentChapter : chapter === 0)) return;
     if (!verse && chapter === 0) return;
-    setNotFound(!onJump(chapter, verse));
+    const found = onJump(chapter, verse);
+    if (typeof found === "boolean") setNotFound(!found);
+    else void found.then((ok) => setNotFound(!ok));
   };
 
   return {

@@ -69,6 +69,8 @@ export function useShlokaPlayer(
   shlokas: Shloka[],
   /** Return true when a missing verse clip was handled another way (Rigveda plays that sukta). */
   onClipMissing?: (id: number) => boolean,
+  /** False while later pages of the chapter are not loaded yet, so a partial list is not "every verse". */
+  complete = true,
 ): ShlokaPlayerState {
   const itemRefs = useRef(new Map<number, HTMLElement>());
   // "engine*" is what this hook's own ShlokaAudioEngine is actually doing;
@@ -91,7 +93,7 @@ export function useShlokaPlayer(
   const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
   /* Every verse recorded: playback runs straight through. With recordings for a few verses only it
      stops where the recordings stop, instead of jumping (and scrolling) far ahead to the next one. */
-  const coversAll = useMemo(() => audioCoversAll(shlokas), [shlokas]);
+  const coversAll = useMemo(() => complete && audioCoversAll(shlokas), [shlokas, complete]);
   /** The verse right after `id` in reading order (note cards skipped), or -1. */
   const neighbourIndex = useCallback(
     (id: number | null, delta: 1 | -1) => {

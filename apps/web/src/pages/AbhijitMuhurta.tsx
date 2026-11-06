@@ -94,9 +94,11 @@ function DayCard({ day, todayBadge, noonLabel }: { day: AbhijitDayView; todayBad
       </div>
       <div className={ac.dayBody}>
         <p className={cn(ac.dayRange, "mono m-0")}>{day.range}</p>
-        <p className={cn(ac.dayNoon, "m-0")}>
-          {noonLabel} <span className={cn(ac.dayNoonValue, "mono")}>{day.noon}</span>
-        </p>
+        {day.omitted ? null : (
+          <p className={cn(ac.dayNoon, "m-0")}>
+            {noonLabel} <span className={cn(ac.dayNoonValue, "mono")}>{day.noon}</span>
+          </p>
+        )}
         <p className={cn(ac.daySun, "mono m-0 truncate")}>
           ↑{day.sunrise} · ↓{day.sunset}
         </p>

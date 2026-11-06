@@ -22,6 +22,87 @@ from services.jyotish.daily_guidance import MAX_DAYS, build_guidance_range, nata
 router = APIRouter(tags=["guidance"])
 
 
+class _NameOut(BaseModel):
+    number: int
+    name_ne: str
+    name_en: str
+
+
+class _DashaLordOut(BaseModel):
+    lord: str
+    lord_ne: str
+    lord_en: str
+    asta: bool
+    vakri: bool
+
+
+class _ChandraOut(BaseModel):
+    house: int
+    state: Literal["good", "weak", "ashtama"]
+
+
+class _TaraOut(BaseModel):
+    num: int
+    name_ne: str
+    name_en: str
+    state: Literal["good", "caution", "bad"]
+
+
+class _SegmentOut(BaseModel):
+    start: str
+    end: str
+    chandra: _ChandraOut
+    tara: _TaraOut
+
+
+class _DashaOut(BaseModel):
+    maha: _DashaLordOut
+    antar: _DashaLordOut
+
+
+class PersonalOut(BaseModel):
+    janma_rashi: _NameOut
+    janma_nakshatra: _NameOut
+    dasha: _DashaOut
+    segments: list[_SegmentOut]
+
+
+class _WindowOut(BaseModel):
+    kind: Literal["shubh", "ashubh"]
+    key: str
+    name_ne: str | None = None
+    name_en: str | None = None
+    start: str
+    end: str | None = None
+
+
+class DayGuidanceOut(BaseModel):
+    """One day. ``personal`` is present only when the profile has a natal chart."""
+
+    model_config = {"extra": "allow"}
+
+    date: str
+    personal_tone: Literal["best", "good", "neutral", "bad", "worst"] | None = None
+    summary_ne: str = ""
+    summary_en: str = ""
+    do_ne: list[str] = []
+    do_en: list[str] = []
+    dont_ne: list[str] = []
+    dont_en: list[str] = []
+    careful_ne: list[str] = []
+    careful_en: list[str] = []
+    windows: list[_WindowOut] = []
+    personal: PersonalOut | None = None
+
+
+class GuidanceRangeOut(BaseModel):
+    model_config = {"extra": "allow"}
+
+    version: str
+    profile_id: str | None = None
+    days: list[DayGuidanceOut]
+
+
 def _owned_profile(db, user, profile_id: str) -> Profile:
     try:
         return get_profile(SqlProfileRepository(db), user.id, profile_id)
@@ -29,7 +110,7 @@ def _owned_profile(db, user, profile_id: str) -> Profile:
         raise profile_not_found() from None
 
 
-@router.get("/profiles/{profile_id}/daily-guidance")
+@router.get("/profiles/{profile_id}/daily-guidance", response_model=GuidanceRangeOut)
 def daily_guidance(
     profile_id: str,
     location: LocationDep,

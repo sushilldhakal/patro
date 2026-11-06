@@ -70,3 +70,26 @@ test("pushkara: one pick per moment, a ninth of the lagna long, lagnas with none
     ],
   );
 });
+
+test("a window starting a minute before the rounded sunrise stays on the day, not the next morning", () => {
+  // 6 Nov 2026, Kathmandu: sunrise reads 06:18, the day's बाण starts 06:17.
+  const p = {
+    sunrise: "06:18",
+    muhurta: {
+      auspicious_timings: [{ key: "brahma_muhurta", name_ne: "ब्रह्म मुहूर्त", name_en: "Brahma", segments: [seg("04:33", "05:25")] }],
+      inauspicious_timings: [
+        { key: "baana", name_ne: "बाण", name_en: "Baana", segments: [seg("06:17", "21:18")] },
+        { key: "visha_yoga", name_ne: "योग विष", name_en: "Visha Yoga", segments: [seg("06:17", "07:19")] },
+      ],
+    },
+  } as unknown as PanchangaDay;
+  const picks = buildDayTimePicks(p, "2026-11-06");
+  assert.deepEqual(
+    picks.ashubh.map((x) => [x.key, x.startDate, x.startTime, x.endDate, x.endTime]),
+    [
+      ["baana", "2026-11-06", "06:17", "2026-11-06", "21:18"],
+      ["visha_yoga", "2026-11-06", "06:17", "2026-11-06", "07:19"],
+    ],
+  );
+  assert.equal(picks.shubh[0]!.startDate, "2026-11-07");
+});

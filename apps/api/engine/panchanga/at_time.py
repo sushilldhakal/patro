@@ -175,11 +175,14 @@ def compute_muhurta_now(
         "rahu_kalam": compute_rahu_kalam(sunrise_utc, sunset_utc, vaara_num, timezone_name),
         "yamaganda": compute_yamaganda(sunrise_utc, sunset_utc, vaara_num, timezone_name),
         "gulika": compute_gulika(sunrise_utc, sunset_utc, vaara_num, timezone_name),
-        "abhijit": compute_abhijit_muhurta(sunrise_utc, sunset_utc, timezone_name),
+        "abhijit": compute_abhijit_muhurta(sunrise_utc, sunset_utc, timezone_name, vaara_num),
     }
 
     result: dict[str, Any] = {}
     for key, block in windows.items():
+        if not block:
+            result[key] = None
+            continue
         start, end = _parse_window_bounds(block, timezone_name)
         result[key] = {
             **block,

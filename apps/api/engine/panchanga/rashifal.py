@@ -1,9 +1,8 @@
-"""Daily rashifal from sunrise panchanga — चन्द्रबल (navatara) + Moorti Nirnaya.
+"""Daily rashifal from sunrise panchanga — चन्द्रबल by house + Moorti Nirnaya.
 
 Transit Moon at local sunrise is taken from Drik Ganita (Lahiri sidereal). For each
-janma rashi (moon sign), navatara tara/quality comes from the same algorithm as
-``chandrabala_table``; Moorti classifies the transit Moon's house counted from
-that janma sign (Swarna / Rajata / Tamra / Loha).
+janma rashi the tone is the house the transit Moon occupies, the same table as
+``chandrabala_table``. Moorti classifies that house (Swarna / Rajata / Tamra / Loha).
 """
 
 from __future__ import annotations
@@ -183,8 +182,7 @@ def build_daily_rashifal(
     for row in rows:
         idx = int(row["index"])
         tone: NavataraTone = row.get("tone") or "neutral"
-        tara_num = int(row.get("tara_num") or 1)
-        house = _house_from_janma(transit_idx, idx)
+        house = int(row["house"]) if row.get("house") else _house_from_janma(transit_idx, idx)
         moorti = _moorti_for_house(house)
 
         signs.append(
@@ -198,15 +196,14 @@ def build_daily_rashifal(
                 "tara": row.get("tara"),
                 "quality": row.get("quality"),
                 "tone": tone,
-                "tara_num": tara_num,
                 "house_from_moon": house,
                 "moorti": moorti,
                 "moorti_ne": _MOORTI_NE[moorti],
                 "moorti_en": _MOORTI_EN[moorti],
                 "lucky_color_ne": _LUCKY_COLOR_NE[moorti],
                 "lucky_color_en": _LUCKY_COLOR_EN[moorti],
-                "lucky_number_ne": _to_ne_digit(tara_num),
-                "lucky_number_en": str(tara_num),
+                "lucky_number_ne": _to_ne_digit(house),
+                "lucky_number_en": str(house),
                 "prediction_ne": _prediction(tone, moorti, idx, lang="ne"),
                 "prediction_en": _prediction(tone, moorti, idx, lang="en"),
             }
@@ -219,7 +216,7 @@ def build_daily_rashifal(
         "method": {
             "frame": "drik_ganita",
             "ayanamsa": "Lahiri",
-            "chandrabala": "navatara_9_cycle",
+            "chandrabala": "transit_moon_house",
             "moorti": "transit_moon_house_from_janma_rashi",
         },
         "moon_index": transit_idx,
@@ -250,10 +247,10 @@ def aggregate_rashifal_signs(
         parts = by_id[rid]
         if not parts:
             continue
-        # Weakest tone in the window drives caution; tara_num mode for lucky number.
+        # Weakest tone in the window drives caution; the usual house is the lucky number.
         worst = min(parts, key=lambda s: _tone_score(s.get("tone") or "neutral"))
-        tara_nums = [int(s.get("tara_num") or 1) for s in parts]
-        mode_tara = max(set(tara_nums), key=tara_nums.count)
+        houses = [int(s.get("house_from_moon") or 1) for s in parts]
+        mode_house = max(set(houses), key=houses.count)
         moorti_counts: dict[MoortiKind, int] = {}
         for s in parts:
             m = s.get("moorti") or "tamra"
@@ -277,15 +274,14 @@ def aggregate_rashifal_signs(
                 "tara": worst.get("tara"),
                 "quality": worst.get("quality"),
                 "tone": tone,
-                "tara_num": mode_tara,
                 "house_from_moon": worst.get("house_from_moon"),
                 "moorti": dominant_moorti,
                 "moorti_ne": _MOORTI_NE[dominant_moorti],
                 "moorti_en": _MOORTI_EN[dominant_moorti],
                 "lucky_color_ne": _LUCKY_COLOR_NE[dominant_moorti],
                 "lucky_color_en": _LUCKY_COLOR_EN[dominant_moorti],
-                "lucky_number_ne": _to_ne_digit(mode_tara),
-                "lucky_number_en": str(mode_tara),
+                "lucky_number_ne": _to_ne_digit(mode_house),
+                "lucky_number_en": str(mode_house),
                 "prediction_ne": f"{intro_ne} {_prediction(tone, dominant_moorti, rashi_idx, lang='ne')}",
                 "prediction_en": f"{intro_en} {_prediction(tone, dominant_moorti, rashi_idx, lang='en')}",
                 "days_in_period": len(parts),

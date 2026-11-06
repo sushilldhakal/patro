@@ -5,7 +5,7 @@
  * whether it holds the clock; each app draws the glyph and the card.
  */
 import { findCurrentBalamCard, type BalamCardItem } from "@vedic-patro/read-models/panchanga/balam-cards";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
+import { formatChandraHouse, formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
 
 export function useNavataraBalamCards({
   cards,
@@ -25,7 +25,7 @@ export function useNavataraBalamCards({
     glyph: { name: card.name, number: card.number },
     name: formatName(card),
     timeRange: card.timeRange ?? null,
-    subtitle: `${formatNavataraTara(card.tara, lang)}/${formatNavataraQuality(card.quality, lang)}`,
+    subtitle: `${card.house != null ? formatChandraHouse(card.house, lang) : formatNavataraTara(card.tara, lang)}/${formatNavataraQuality(card.quality, lang)}`,
     tone: card.tone,
     isCurrent: current?.key === card.key,
   }));

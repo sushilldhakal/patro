@@ -191,7 +191,7 @@ def build_daily_state(
         "sun": {
             "sunrise": raw["sunrise"]["local_time_short"],
             "sunset": raw["sunset"]["local_time_short"],
-            "noon": (raw.get("muhurta") or {}).get("abhijit", {}).get("solar_noon"),
+            "noon": ((raw.get("muhurta") or {}).get("abhijit") or {}).get("solar_noon"),
         },
         "moon": {
             "rise": (raw["moonrise"] or {}).get("local_time_short"),
@@ -291,7 +291,7 @@ def build_daily_state_civil(
         "sun": {
             "sunrise": raw["sunrise"]["local_time_short"],
             "sunset": raw["sunset"]["local_time_short"],
-            "noon": (raw.get("muhurta") or {}).get("abhijit", {}).get("solar_noon"),
+            "noon": ((raw.get("muhurta") or {}).get("abhijit") or {}).get("solar_noon"),
         },
         "moon": {
             "rise": (raw["moonrise"] or {}).get("local_time_short"),

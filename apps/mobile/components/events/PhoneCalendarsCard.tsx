@@ -1,24 +1,29 @@
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Linking, Pressable, Switch, View } from "react-native";
+import { ActivityIndicator, AppState, Linking, Pressable, Switch, View } from "react-native";
 import { haptics } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import {
+  exportToPhoneCalendar,
   getChosenCalendars,
   importPhoneCalendars,
   listPhoneCalendars,
-  phoneCalendarPermission,
+  phoneCalendarAccess,
   phoneCalendarsAvailable,
+  phoneExportEnabled,
   setChosenCalendars,
+  setPhoneExportEnabled,
   type PhoneCalendar,
 } from "@/lib/events/device-calendars";
+import { allowPhoneCalendar } from "@/lib/events/phone-calendar-ask";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
 /**
  * Phone calendars (Google, iCloud, Exchange — whatever this phone syncs): allow access, choose
- * which to bring in, import now. The chosen ones are kept in step on every background sync.
+ * which to bring in, import now. The chosen ones are kept in step on every background sync, and the
+ * user's own events are written to a "Vedic Patro" calendar on the phone (switch to turn that off).
  */
 export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) {
   const { t, digits } = useLocale();
@@ -29,18 +34,29 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
   const [chosen, setChosen] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<number | null>(null);
+  const [exportOn, setExportOn] = useState(true);
 
   const load = useCallback(async () => {
     setCalendars(await listPhoneCalendars());
     setChosen(await getChosenCalendars());
+    setExportOn(await phoneExportEnabled());
   }, []);
 
   useEffect(() => {
     if (!phoneCalendarsAvailable()) return;
-    void phoneCalendarPermission(false).then((ok) => {
-      setAllowed(ok);
-      if (ok) void load();
+    const check = () =>
+      void phoneCalendarAccess().then((access) => {
+        setAllowed(access === "granted");
+        // iOS asks only once: after a refusal the button would do nothing, so show the Settings link.
+        setDenied(access === "settings");
+        if (access === "granted") void load();
+      });
+    check();
+    // Back from Settings with access turned on: show it without leaving the screen.
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") check();
     });
+    return () => sub.remove();
   }, [load]);
 
   // Web, or a build made before the calendar module was added.
@@ -48,10 +64,20 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
 
   const allow = async () => {
     haptics.tick();
-    const ok = await phoneCalendarPermission(true);
+    if (denied) {
+      void Linking.openSettings();
+      return;
+    }
+    const ok = await allowPhoneCalendar();
     setAllowed(ok);
     setDenied(!ok);
     if (ok) await load();
+  };
+
+  const toggleExport = async (on: boolean) => {
+    setExportOn(on);
+    await setPhoneExportEnabled(on);
+    if (on) void exportToPhoneCalendar().then(() => onImported?.());
   };
 
   const toggle = async (id: string, on: boolean) => {
@@ -84,7 +110,7 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
       ) : !allowed ? (
         <>
           <Pressable onPress={() => void allow()} accessibilityRole="button" className="self-start rounded-full bg-secondary px-4 py-2 active:opacity-70">
-            <Text className="text-body font-semibold text-white" style={nepaliTextStyle(15)}>{t("events.phone_allow")}</Text>
+            <Text className="text-body font-semibold text-white" style={nepaliTextStyle(15)}>{t(denied ? "events.phone_ask_settings" : "events.phone_allow")}</Text>
           </Pressable>
           {denied ? (
             <Pressable onPress={() => void Linking.openSettings()} accessibilityRole="link">
@@ -92,7 +118,16 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
             </Pressable>
           ) : null}
         </>
-      ) : calendars.length === 0 ? (
+      ) : (
+        <View className="min-h-11 flex-row items-center gap-3">
+          <View className="min-w-0 flex-1">
+            <Text className="text-body text-foreground" style={nepaliTextStyle(15)}>{t("events.phone_export")}</Text>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>{t("events.phone_export_body")}</Text>
+          </View>
+          <Switch value={exportOn} onValueChange={(on) => void toggleExport(on)} trackColor={{ true: colors.secondary }} />
+        </View>
+      )}
+      {allowed !== true ? null : calendars.length === 0 ? (
         <Text className="text-caption text-muted-foreground">{t("events.phone_none")}</Text>
       ) : (
         <>

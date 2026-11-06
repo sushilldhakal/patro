@@ -138,9 +138,11 @@ function DayCard({ day, todayBadge, noonLabel }: { day: AbhijitDayView; todayBad
         <Text className={ac.dayRange} style={nepaliTextStyle()}>
           {day.range}
         </Text>
-        <Text className={ac.dayNoon} style={nepaliTextStyle()}>
-          {noonLabel} <Text className={ac.dayNoonValue} style={nepaliTextStyle()}>{day.noon}</Text>
-        </Text>
+        {day.omitted ? null : (
+          <Text className={ac.dayNoon} style={nepaliTextStyle()}>
+            {noonLabel} <Text className={ac.dayNoonValue} style={nepaliTextStyle()}>{day.noon}</Text>
+          </Text>
+        )}
         <Text numberOfLines={1} className={ac.daySun} style={nepaliTextStyle()}>
           ↑{day.sunrise} · ↓{day.sunset}
         </Text>

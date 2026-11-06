@@ -12,7 +12,7 @@ import {
   choghadiyaTone,
   type ChoghadiyaTone,
 } from "@vedic-patro/domain/panchanga/choghadiya-display";
-import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
+import { formatChandraHouse, formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/panchanga/navatara-bala";
 import { rashiNumberFromName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import type { BalamCardItem } from "@vedic-patro/read-models/panchanga/balam-cards";
@@ -406,7 +406,7 @@ export function balamBoard(
       start,
       end,
       name: formatName(c),
-      quality: `${formatNavataraTara(c.tara, lang)} · ${formatNavataraQuality(c.quality, lang)}`,
+      quality: `${c.house != null ? formatChandraHouse(c.house, lang) : formatNavataraTara(c.tara, lang)} · ${formatNavataraQuality(c.quality, lang)}`,
       tone: BALAM_TONE[c.tone] ?? "neutral",
       glyph: { kind: variant === "tarabala" ? "nakshatra" : "rashi", name: c.name, number: c.number },
       raw: c as unknown as AnyRow,

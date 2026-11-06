@@ -824,23 +824,14 @@ def _navatara_number(moon_sign: int, rashi: int) -> int:
     return ((9 - (diff % 9)) % 9) + 1
 
 
-#: tara (ne), quality (ne), tara (en), quality (en), tone — in navatara order.
-_NAVATARA_ROWS: tuple[tuple[str, str, str, str, NavataraTone], ...] = (
-    ("जन्म", "मध्यम", "Janma", "Medium", "neutral"),
-    ("सम्पत्", "अति शुभ", "Sampat", "Very auspicious", "best"),
-    ("विपत्", "अशुभ", "Vipat", "Inauspicious", "bad"),
-    ("क्षेम", "अति शुभ", "Kshema", "Very auspicious", "best"),
-    ("प्रत्यक्", "अशुभ", "Pratyari", "Inauspicious", "bad"),
-    ("साधना", "अति शुभ", "Sadhaka", "Very auspicious", "best"),
-    ("निधन", "घातक", "Nidhana", "Fatal", "worst"),
-    ("मित्र", "शुभ", "Mitra", "Auspicious", "good"),
-    ("परम मित्र", "अति शुभ", "Parama Mitra", "Very auspicious", "best"),
-)
-
-
 def chandrabala_block(frame: DayFrame, rashi: int) -> dict[str, Any]:
+    from engine.panchanga.navatara import tara_labels
+
     tara_num = _navatara_number(frame.moon_sign, rashi)
-    tara, quality, tara_en, quality_en, tone = _NAVATARA_ROWS[tara_num - 1]
+    labels = tara_labels(tara_num)
+    tara, quality, tara_en, quality_en, tone = (
+        labels["tara"], labels["quality"], labels["tara_en"], labels["quality_en"], labels["tone"]
+    )
     return {
         "score": _TONE_SCORE[tone],
         "tara": tara,

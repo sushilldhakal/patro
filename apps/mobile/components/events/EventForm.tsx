@@ -27,6 +27,8 @@ import {
   type EventRepeat,
 } from "@/lib/events/api";
 import { addMinutes, todayIn, zonedToIso } from "@/lib/events/time";
+import { exportToPhoneCalendar } from "@/lib/events/device-calendars";
+import { offerPhoneCalendarAfterSave } from "@/lib/events/phone-calendar-ask";
 import { fetchDailyGuidance } from "@/lib/notifications/api";
 import type { GuidanceDay, GuidanceWindow } from "@/lib/notifications/types";
 import { useLocale } from "@/lib/i18n";
@@ -66,7 +68,7 @@ const toMinutes = (time: string) => {
 /** The alert each type starts with: an event 1 day before, a task at its time, an appointment 30 minutes before. */
 const KIND_ALERT: Record<NewEventKind, number> = { event: 1440, task: 0, appointment: 30 };
 
-export function EventForm({ initialKind, onClose, onSaved, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; onClose: () => void; onSaved: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+export function EventForm({ initialKind, onClose, onSaved, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; onClose: () => void; onSaved: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } }) {
   const init = editing ? eventToDraft(editing) : null;
   const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
@@ -81,9 +83,9 @@ export function EventForm({ initialKind, onClose, onSaved, editing, slot, initia
   const [tipsOpen, setTipsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [title, setTitle] = useState(init?.title ?? "");
+  const [title, setTitle] = useState(init?.title ?? slot?.title ?? "");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
-  const [autoTitle, setAutoTitle] = useState<string | null>(null);
+  const [autoTitle, setAutoTitle] = useState<string | null>(slot?.title ?? null);
   const [place, setPlace] = useState(init?.place ?? "");
   const [notes, setNotes] = useState(init?.notes ?? "");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
@@ -95,8 +97,8 @@ export function EventForm({ initialKind, onClose, onSaved, editing, slot, initia
   const firstDate = nextHour.dayShift ? shiftDate(today, nextHour.dayShift) : today;
   const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? initialDate ?? firstDate);
   const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
-  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? initialDate ?? firstDate);
-  const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.endDate ?? slot?.date ?? initialDate ?? firstDate);
+  const [endTime, setEndTime] = useState(init?.endTime ?? slot?.end ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
   const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
   const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
@@ -253,6 +255,9 @@ export function EventForm({ initialKind, onClose, onSaved, editing, slot, initia
       void queryClient.invalidateQueries({ queryKey: ["events"] });
       haptics.success?.();
       onSaved();
+      // Into the phone's calendar at once when access is on; a new item offers access when it is not.
+      void exportToPhoneCalendar().catch(() => 0);
+      if (!editing) void offerPhoneCalendarAfterSave(t);
     } catch {
       setError(t("events.save_failed"));
     } finally {
@@ -611,6 +616,7 @@ export function EventForm({ initialKind, onClose, onSaved, editing, slot, initia
                   await deleteEvent(editing.id);
                   void queryClient.invalidateQueries({ queryKey: ["events"] });
                   onSaved();
+                  void exportToPhoneCalendar().catch(() => 0);
                 },
               },
             ])

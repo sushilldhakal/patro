@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
-import { playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
+import { canonVerseLabel, playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -27,6 +27,13 @@ interface Props {
   scrollNonce?: number;
   /** Scroll to a row by its key (chapter jump pills). */
   scrollToKey?: { key: string; nonce: number } | null;
+  /** Load the next page of a chapter. Omitted on documents that already hold every verse. */
+  onEndReached?: () => void;
+  /** Load the previous page after a jump into the middle. */
+  onStartReached?: () => void;
+  loadingNext?: boolean;
+  loadingPrev?: boolean;
+  loadingLabel?: string;
 }
 
 /**
@@ -42,10 +49,23 @@ export function DocumentReader({
   scrollToLabel,
   scrollNonce,
   scrollToKey,
+  onEndReached,
+  onStartReached,
+  loadingNext = false,
+  loadingPrev = false,
+  loadingLabel,
 }: Props) {
   const { lang } = useLocale();
   const listRef = useRef<FlatList<ReaderRow>>(null);
   const hasFull = audio.full.available;
+  const edges = useRef(false);
+  useEffect(() => {
+    edges.current = false;
+    const t = setTimeout(() => {
+      edges.current = true;
+    }, 800);
+    return () => clearTimeout(t);
+  }, [scrollToLabel, scrollNonce]);
 
   const indexByVerseId = useMemo(() => {
     const map = new Map<number, number>();
@@ -68,8 +88,8 @@ export function DocumentReader({
 
   useEffect(() => {
     if (!scrollToLabel) return;
-    const wanted = scrollToLabel.trim();
-    const i = rows.findIndex((r) => r.kind === "verse" && r.shloka.verse_label.trim() === wanted);
+    const wanted = canonVerseLabel(scrollToLabel);
+    const i = rows.findIndex((r) => r.kind === "verse" && canonVerseLabel(r.shloka.verse_label) === wanted);
     if (i >= 0) {
       const id = setTimeout(() => scrollToIndex(i), 250);
       return () => clearTimeout(id);
@@ -154,8 +174,27 @@ export function DocumentReader({
         data={rows}
         keyExtractor={(r) => r.key}
         renderItem={renderItem}
-        ListHeaderComponent={<View>{header}</View>}
-        ListFooterComponent={<View>{footer}</View>}
+        ListHeaderComponent={
+          <View>
+            {header}
+            {loadingPrev && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
+          </View>
+        }
+        ListFooterComponent={
+          <View>
+            {loadingNext && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
+            {footer}
+          </View>
+        }
+        onEndReached={() => {
+          if (edges.current) onEndReached?.();
+        }}
+        onEndReachedThreshold={0.6}
+        onStartReached={() => {
+          if (edges.current) onStartReached?.();
+        }}
+        onStartReachedThreshold={0.6}
+        maintainVisibleContentPosition={onStartReached ? { minIndexForVisible: 1 } : undefined}
         contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
         contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
         showsVerticalScrollIndicator={false}

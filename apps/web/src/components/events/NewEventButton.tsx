@@ -97,7 +97,7 @@ export function CreateEventCards() {
   );
 }
 
-export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; guest: boolean; onClose: () => void; onSignIn: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string } }) {
+export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, slot, initialDate }: { initialKind: NewEventKind; /** A new event on this day ("YYYY-MM-DD"). */ initialDate?: string; guest: boolean; onClose: () => void; onSignIn: () => void; /** An event to change (its times are on its own clock). */ editing?: CalendarEvent; /** A new event starting here: a tapped slot of the day or week grid. */ slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } }) {
   const init = editing ? eventToDraft(editing) : null;
   const { t, lang } = useLocale();
   const queryClient = useQueryClient();
@@ -111,9 +111,9 @@ export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, s
   const [panel, setPanel] = useState<Panel>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
   const [pickedId, setPickedId] = useState<string | null>(null);
-  const [title, setTitle] = useState(init?.title ?? "");
+  const [title, setTitle] = useState(init?.title ?? slot?.title ?? "");
   /** The title a pick wrote; another pick may replace it, a typed one stays. */
-  const [autoTitle, setAutoTitle] = useState<string | null>(null);
+  const [autoTitle, setAutoTitle] = useState<string | null>(slot?.title ?? null);
   const [place, setPlace] = useState(init?.place ?? "");
   const [notes, setNotes] = useState(init?.notes ?? "");
   // An event is a date or a span (all-day to start); a task and an appointment sit at a time.
@@ -123,8 +123,8 @@ export function EventFormWeb({ initialKind, guest, onClose, onSignIn, editing, s
   const [endOn, setEndOn] = useState(init ? init.endOn : initialKind !== "task");
   const [startDate, setStartDate] = useState(init?.startDate ?? slot?.date ?? initialDate ?? firstDate);
   const [startTime, setStartTime] = useState(init?.startTime ?? slot?.time ?? nextHour.time);
-  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.date ?? initialDate ?? firstDate);
-  const [endTime, setEndTime] = useState(init?.endTime ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
+  const [endDate, setEndDate] = useState(init?.endDate ?? slot?.endDate ?? slot?.date ?? initialDate ?? firstDate);
+  const [endTime, setEndTime] = useState(init?.endTime ?? slot?.end ?? addMinutes(slot?.time ?? nextHour.time, 60).time);
   const [repeat, setRepeat] = useState<EventRepeat>(init?.repeat ?? "never");
   const [priority, setPriority] = useState<EventPriority>(init?.priority ?? 0);
   // Rings when due unless changed; a reminder that never rings is no reminder.
@@ -689,7 +689,7 @@ function TipList({ title, items, className }: { title: string; items: string[]; 
 }
 
 /** The form in a dialog to change an event, or to start one at a tapped slot of the day or week grid. */
-export function EventEditorDialog({ editing, slot, onClose }: { editing?: CalendarEvent; slot?: { date: string; time: string }; onClose: () => void }) {
+export function EventEditorDialog({ editing, slot, onClose }: { editing?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string }; onClose: () => void }) {
   const { t } = useLocale();
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>

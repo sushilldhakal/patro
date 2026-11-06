@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, TextInput } from "react-native";
+import { useState } from "react";
+import { Modal, Pressable, ScrollView, TextInput } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { Box, Button, Text } from "@vedic-patro/ui";
@@ -7,6 +8,14 @@ import { mobileRoles } from "@vedic-patro/design-tokens";
 import { useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import type { DocumentJumpFormProps } from "../contract";
+
+function Chevron({ color }: { color: string }) {
+  return (
+    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+      <Path d="m6 9 6 6 6-6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
 
 export function DocumentJumpForm({
   chapterNumbers,
@@ -30,35 +39,54 @@ export function DocumentJumpForm({
     onSelectDocument,
   });
   const { copy } = form;
+  const [open, setOpen] = useState(false);
+  const current = form.documents.find((doc) => doc.slug === form.currentSlug);
 
   return (
-    <Box className="gap-2">
-      {form.hasDocuments ? (
-        <Box className={documentsClasses.jumpField}>
-          <Text className={documentsClasses.jumpLabel}>{copy.documentLabel}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="flex-row gap-1.5">
-            {form.documents.map((doc) => {
-              const active = doc.slug === form.currentSlug;
-              return (
-                <Pressable
-                  key={doc.slug}
-                  onPress={() => form.selectDocument(doc.slug)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: active }}
-                  className={cn("rounded-lg border px-3 py-2", active ? "border-secondary bg-secondary/10" : "border-border bg-card")}
-                >
-                  <Text className={cn("text-sm font-semibold", active ? "text-secondary" : "text-foreground")} numberOfLines={1}>
-                    {doc.title}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </Box>
-      ) : null}
-
+    <Box className="gap-1">
       <Box className={documentsClasses.jumpForm}>
-        {form.showChapterField ? (
+        {form.hasDocuments ? (
+          <Box className={cn(documentsClasses.jumpField, documentsClasses.jumpSectionField)}>
+            <Text className={documentsClasses.jumpLabel}>{copy.documentLabel}</Text>
+            <Pressable
+              onPress={() => setOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel={copy.documentLabel}
+              className={documentsClasses.jumpSelectTrigger}
+            >
+              <Text className={documentsClasses.jumpSelectLabel} numberOfLines={1}>
+                {current?.title ?? copy.documentLabel}
+              </Text>
+              <Chevron color={roles.mutedForeground} />
+            </Pressable>
+            <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+              <Box className={documentsClasses.jumpMenuHost}>
+                <Pressable accessibilityRole="button" accessibilityLabel={copy.documentLabel} onPress={() => setOpen(false)} className={documentsClasses.jumpMenuBackdrop} />
+                <Box className={documentsClasses.jumpMenuSheet}>
+                  <ScrollView className={documentsClasses.jumpMenuList} keyboardShouldPersistTaps="handled">
+                    {form.documents.map((doc) => {
+                      const active = doc.slug === form.currentSlug;
+                      return (
+                        <Pressable
+                          key={doc.slug}
+                          onPress={() => {
+                            form.selectDocument(doc.slug);
+                            setOpen(false);
+                          }}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: active }}
+                          className={cn(documentsClasses.jumpMenuRow, active && documentsClasses.jumpMenuRowOn)}
+                        >
+                          <Text className={documentsClasses.jumpSelectLabel}>{doc.title}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </Box>
+              </Box>
+            </Modal>
+          </Box>
+        ) : form.showChapterField ? (
           <Box className={documentsClasses.jumpField}>
             <Text className={documentsClasses.jumpLabel}>{copy.chapterLabel}</Text>
             <TextInput

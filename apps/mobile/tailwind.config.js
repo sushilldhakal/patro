@@ -85,6 +85,8 @@ module.exports = {
         /* After the spread: the status colours take an alpha (`bg-success/12`),
            which the plain \`var()\` values in the generated colours cannot. */
         success: "rgb(var(--tw-success) / <alpha-value>)",
+        "slot-spiritual": "rgb(var(--tw-slot-spiritual) / <alpha-value>)",
+        "slot-spiritual-foreground": "rgb(var(--tw-slot-spiritual-foreground) / <alpha-value>)",
         warning: "rgb(var(--tw-warning) / <alpha-value>)",
         info: "rgb(var(--tw-info) / <alpha-value>)",
         input: "rgb(var(--tw-input) / <alpha-value>)",

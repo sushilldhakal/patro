@@ -11,7 +11,12 @@ import { useShlokaPlayer } from "@/hooks/use-shloka-player";
  * `DocumentChapterDetail` (one chapter of a chaptered document) can drive the
  * same `PlaybackBar` from the same logic instead of duplicating it.
  */
-export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | null | undefined) {
+export function useDocumentPlayback(
+  shlokas: Shloka[],
+  fullAudioUrl: string | null | undefined,
+  /** False while the chapter is still paging, so play-through does not assume this list is the whole chapter. */
+  complete = true,
+) {
   const suktaTracks = useMemo(() => (fullAudioUrl ? [] : suktaTracksFrom(shlokas)), [fullAudioUrl, shlokas]);
   const hasSuktaAudio = suktaTracks.length > 0;
   const queue = useMemo(
@@ -19,7 +24,7 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
     [fullAudioUrl, suktaTracks],
   );
   const onClipMissingRef = useRef<(id: number) => boolean>(() => false);
-  const player = useShlokaPlayer(shlokas, (id) => onClipMissingRef.current(id));
+  const player = useShlokaPlayer(shlokas, (id) => onClipMissingRef.current(id), complete);
   // With gaps in the recordings a sukta file ending stops, rather than jumping to the next recorded sukta.
   const fullAudio = useFullRecordingAudio(
     queue,

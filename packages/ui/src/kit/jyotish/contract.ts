@@ -85,7 +85,7 @@ export type DocumentJumpFormProps = {
   documents?: { slug: string; title: string }[];
   currentSlug?: string;
   /** Open the chapter, or scroll to the verse. Return false when it cannot be found. */
-  onJump: (chapter: number, verse: string) => boolean;
+  onJump: (chapter: number, verse: string) => boolean | Promise<boolean>;
   /** Open another library document. */
   onSelectDocument?: (slug: string) => void;
 };

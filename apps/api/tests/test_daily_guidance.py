@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, time, timedelta
+from types import SimpleNamespace
 
 import pytest
 from fastapi import FastAPI
@@ -38,6 +39,128 @@ def test_guidance_is_deterministic():
     a = build_day_guidance(date(2026, 10, 10), DEFAULT_LOCATION)
     b = build_day_guidance(date(2026, 10, 10), DEFAULT_LOCATION)
     assert a == b
+
+
+def _born():
+    return SimpleNamespace(
+        birth_date="1990-05-12",
+        birth_time="06:30",
+        birth_era="ad",
+        latitude=27.7,
+        longitude=85.3167,
+        timezone="Asia/Kathmandu",
+    )
+
+
+def test_personal_block_follows_the_moon_and_the_sunrise_dasha():
+    from engine.astronomy.moon import moon_service
+    from engine.astronomy.rashi import rashi_service
+    from engine.astronomy.sun import calculate_sunrise
+    from engine.astronomy.timescale import resolve_observer_timezone
+    from engine.astronomy.ut_instant import as_julian_day
+    from engine.jyotish.rashifal_personal import dasha_block
+    from engine.panchanga.angas import NAKSHATRA_SPAN
+    from services.jyotish.daily_guidance import build_day_guidance, natal_chart_for_profile
+
+    location = DEFAULT_LOCATION
+    natal = natal_chart_for_profile(_born())
+    assert natal is not None
+    bare = build_day_guidance(date(2026, 11, 1), location, None)
+    assert "personal" not in bare
+
+    tz = resolve_observer_timezone(location.timezone)
+    janma_rashi = natal.moon_sign
+    janma_nak = natal.chart.moon_nak[0]
+    saw_split = False
+    saw_ashtama = False
+    saw_tenth = False
+    saw_twelfth = False
+    for offset in range(30):
+        greg = date(2026, 11, 1) + timedelta(days=offset)
+        day = build_day_guidance(greg, location, natal)
+        personal = day["personal"]
+        segments = personal["segments"]
+        assert segments, greg
+        sunrise = calculate_sunrise(greg, location.lat, location.lon, timezone_name=location.timezone)
+        dasha = dasha_block(natal, sunrise)
+        assert personal["dasha"]["maha"]["lord"] == dasha["mahadasha"]["lord"]
+        assert personal["dasha"]["antar"]["lord"] == dasha["antardasha"]["lord"]
+        for who in ("maha", "antar"):
+            row = personal["dasha"][who]
+            if row["lord"] in ("rahu", "ketu"):
+                assert row["vakri"] is False
+        assert personal["janma_rashi"]["number"] == janma_rashi + 1
+        assert personal["janma_nakshatra"]["number"] == janma_nak + 1
+
+        def _min(hhmm: str) -> int:
+            hour, minute = (int(part) for part in hhmm.split(":"))
+            return hour * 60 + minute
+
+        assert segments[0]["start"] < "12:00"
+        for left, right in zip(segments, segments[1:]):
+            assert left["end"] == right["start"]
+        if len(segments) > 1:
+            saw_split = True
+            boundary = _min(segments[1]["start"])
+            before = datetime.combine(greg, time.min, tzinfo=tz) + timedelta(minutes=boundary - 2)
+            after = datetime.combine(greg, time.min, tzinfo=tz) + timedelta(minutes=boundary + 2)
+            before_rashi = rashi_service.chandra(as_julian_day(before)).number
+            after_rashi = rashi_service.chandra(as_julian_day(after)).number
+            before_nak = int(moon_service.longitude(as_julian_day(before)) / NAKSHATRA_SPAN) % 27
+            after_nak = int(moon_service.longitude(as_julian_day(after)) / NAKSHATRA_SPAN) % 27
+            assert before_rashi != after_rashi or before_nak != after_nak
+        for seg in segments:
+            start = _min(seg["start"])
+            end = _min(seg["end"])
+            assert end > start
+            probe = datetime.combine(greg, time.min, tzinfo=tz) + timedelta(minutes=start + 1)
+            moon = rashi_service.chandra(as_julian_day(probe))
+            house = (int(moon.number) - 1 - janma_rashi) % 12 + 1
+            assert seg["chandra"]["house"] == house
+            if house == 8:
+                assert seg["chandra"]["state"] == "ashtama"
+                saw_ashtama = True
+            elif house in {1, 3, 6, 7, 10, 11}:
+                assert seg["chandra"]["state"] == "good"
+            else:
+                assert seg["chandra"]["state"] == "weak"
+            if greg == date(2026, 11, 2) and house == 10:
+                saw_tenth = True
+            if greg == date(2026, 11, 7) and house == 12:
+                saw_twelfth = True
+            nak = int(moon_service.longitude(as_julian_day(probe)) / NAKSHATRA_SPAN) % 27
+            assert seg["tara"]["num"] == ((nak - janma_nak) % 27) % 9 + 1
+            assert seg["tara"]["state"] == {1: "caution", 3: "bad", 5: "bad", 7: "bad"}.get(seg["tara"]["num"], "good")
+    assert saw_split
+    assert saw_ashtama
+    assert saw_tenth
+    assert saw_twelfth
+
+
+def test_chandra_houses_are_the_classical_set():
+    from services.jyotish.daily_guidance import _chandra_state
+
+    good = {1, 3, 6, 7, 10, 11}
+    weak = {2, 4, 5, 9, 12}
+    for house in range(1, 13):
+        got_house, state = _chandra_state(house - 1, 0)
+        assert got_house == house
+        if house == 8:
+            assert state == "ashtama"
+        elif house in good:
+            assert state == "good"
+        else:
+            assert house in weak
+            assert state == "weak"
+
+
+def test_profile_without_birth_has_no_personal_block():
+    from services.jyotish.daily_guidance import natal_chart_for_profile
+
+    bare = SimpleNamespace(
+        birth_date=None, birth_time=None, birth_era=None, latitude=None, longitude=None, timezone=None
+    )
+    assert natal_chart_for_profile(bare) is None
 
 
 def test_range_is_capped_and_versioned():

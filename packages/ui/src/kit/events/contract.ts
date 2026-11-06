@@ -1,5 +1,5 @@
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import type { CalendarFeedState, DayMark, HomeView, PlannerViewKind, WindowBand } from "@vedic-patro/features/events";
+import type { BestSlot, CalendarFeedState, DayMark, HomeView, PersonalColumn, PlannerSlotExtra, PlannerViewKind, SlotSource } from "@vedic-patro/features/events";
 
 /**
  * The new-event form's date and time pickers, drawn like Apple Calendar's inline ones; the same
@@ -53,13 +53,17 @@ export type PlannerViewProps = {
   events: CalendarEvent[];
   /** Festivals and public holidays by AD date. */
   marks: Map<string, DayMark>;
-  /** The day grid's शुभ (green) and अशुभ (red) muhurta bands by AD date. */
-  windows: Map<string, WindowBand[]>;
+  /** Best-time placeholders by AD date. */
+  slots: Map<string, BestSlot[]>;
+  /** Day-long yogas (सर्वार्थ सिद्धि) by AD date, drawn in the all-day row. */
+  yogas: Map<string, SlotSource[]>;
+  /** The signed-in profile's filter for each date. Empty for a guest. */
+  personal: Map<string, PersonalColumn>;
   todayAd: string;
   /** Opens an event (the edit form). */
   onOpenEvent: (event: CalendarEvent) => void;
   /** A drag or resize ended: save these times. */
   onMoveEvent: (event: CalendarEvent, times: EventTimes) => void;
-  /** An empty slot was tapped: start a new event there ("HH:MM"). */
-  onCreateAt: (date: string, time: string) => void;
+  /** An empty cell or a placeholder was tapped. `extra` carries the placeholder's end and a suggested title. */
+  onCreateAt: (date: string, time: string, extra?: PlannerSlotExtra) => void;
 };

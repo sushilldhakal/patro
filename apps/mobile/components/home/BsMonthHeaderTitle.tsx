@@ -5,8 +5,6 @@ import type { MonthBrowseEra } from "@/lib/api";
 import { PatroCalendarHeader } from "@/components/patro-date/PatroCalendarHeader";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
-import { isGregorianEra } from "@vedic-patro/domain/calendar/era";
-import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import { homeViewsFor } from "@vedic-patro/features/events";
 import { HOME_VIEW_ICONS } from "@vedic-patro/ui/kit/events";
 import type { HomePatroView } from "./PatroViewToggle";
@@ -46,20 +44,18 @@ export function BsMonthHeaderTitle({
   browseEra,
   onBrowseEraChange,
 }: Props) {
-  const { t, lang } = useLocale();
+  const { t } = useLocale();
   // Seven day columns need room: a phone gets Multi Day (two days) instead of Week.
   const { width } = useWindowDimensions();
 
-  const calendarTabLabel = isGregorianEra(browseEra) ? t("calendar.mode_ad") : patroEraShortLabel(browseEra, lang);
-  // वि.सं. | पञ्चाङ्ग live in the header's view menu, not above the grid.
+  // Month, day, week (बहु-दिन on a phone), year, then panchanga.
   usePageViewMenu([
     {
       key: "view",
-      // The BS grid, the panchanga grid, and the planner views of the user's own events.
       options: homeViewsFor(width >= 768).map((view) => ({
         icon: HOME_VIEW_ICONS[view],
         key: view,
-        label: view === "calendar" ? calendarTabLabel : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
+        label: view === "calendar" ? t("common.month") : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
         active: patroView === view,
         onPress: () => onPatroViewChange(view),
       })),

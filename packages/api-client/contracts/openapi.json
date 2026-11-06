@@ -246,6 +246,115 @@
     "title": "BuildingLayerOut",
     "type": "object"
    },
+   "DayGuidanceOut": {
+    "additionalProperties": true,
+    "description": "One day. ``personal`` is present only when the profile has a natal chart.",
+    "properties": {
+     "careful_en": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Careful En",
+      "type": "array"
+     },
+     "careful_ne": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Careful Ne",
+      "type": "array"
+     },
+     "date": {
+      "title": "Date",
+      "type": "string"
+     },
+     "do_en": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Do En",
+      "type": "array"
+     },
+     "do_ne": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Do Ne",
+      "type": "array"
+     },
+     "dont_en": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Dont En",
+      "type": "array"
+     },
+     "dont_ne": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Dont Ne",
+      "type": "array"
+     },
+     "personal": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PersonalOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "personal_tone": {
+      "anyOf": [
+       {
+        "enum": [
+         "best",
+         "good",
+         "neutral",
+         "bad",
+         "worst"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Personal Tone"
+     },
+     "summary_en": {
+      "default": "",
+      "title": "Summary En",
+      "type": "string"
+     },
+     "summary_ne": {
+      "default": "",
+      "title": "Summary Ne",
+      "type": "string"
+     },
+     "windows": {
+      "default": [],
+      "items": {
+       "$ref": "#/components/schemas/_WindowOut"
+      },
+      "title": "Windows",
+      "type": "array"
+     }
+    },
+    "required": [
+     "date"
+    ],
+    "title": "DayGuidanceOut",
+    "type": "object"
+   },
    "DeviceIn": {
     "properties": {
      "locale": {
@@ -767,6 +876,39 @@
     "title": "GoogleAuthRequest",
     "type": "object"
    },
+   "GuidanceRangeOut": {
+    "additionalProperties": true,
+    "properties": {
+     "days": {
+      "items": {
+       "$ref": "#/components/schemas/DayGuidanceOut"
+      },
+      "title": "Days",
+      "type": "array"
+     },
+     "profile_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Profile Id"
+     },
+     "version": {
+      "title": "Version",
+      "type": "string"
+     }
+    },
+    "required": [
+     "version",
+     "days"
+    ],
+    "title": "GuidanceRangeOut",
+    "type": "object"
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -919,6 +1061,34 @@
      "message"
     ],
     "title": "MessageResponse",
+    "type": "object"
+   },
+   "PersonalOut": {
+    "properties": {
+     "dasha": {
+      "$ref": "#/components/schemas/_DashaOut"
+     },
+     "janma_nakshatra": {
+      "$ref": "#/components/schemas/_NameOut"
+     },
+     "janma_rashi": {
+      "$ref": "#/components/schemas/_NameOut"
+     },
+     "segments": {
+      "items": {
+       "$ref": "#/components/schemas/_SegmentOut"
+      },
+      "title": "Segments",
+      "type": "array"
+     }
+    },
+    "required": [
+     "janma_rashi",
+     "janma_nakshatra",
+     "dasha",
+     "segments"
+    ],
+    "title": "PersonalOut",
     "type": "object"
    },
    "PlanConflictOut": {
@@ -2651,6 +2821,220 @@
     ],
     "title": "VerifyEmailRequest",
     "type": "object"
+   },
+   "_ChandraOut": {
+    "properties": {
+     "house": {
+      "title": "House",
+      "type": "integer"
+     },
+     "state": {
+      "enum": [
+       "good",
+       "weak",
+       "ashtama"
+      ],
+      "title": "State",
+      "type": "string"
+     }
+    },
+    "required": [
+     "house",
+     "state"
+    ],
+    "title": "_ChandraOut",
+    "type": "object"
+   },
+   "_DashaLordOut": {
+    "properties": {
+     "asta": {
+      "title": "Asta",
+      "type": "boolean"
+     },
+     "lord": {
+      "title": "Lord",
+      "type": "string"
+     },
+     "lord_en": {
+      "title": "Lord En",
+      "type": "string"
+     },
+     "lord_ne": {
+      "title": "Lord Ne",
+      "type": "string"
+     },
+     "vakri": {
+      "title": "Vakri",
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "lord",
+     "lord_ne",
+     "lord_en",
+     "asta",
+     "vakri"
+    ],
+    "title": "_DashaLordOut",
+    "type": "object"
+   },
+   "_DashaOut": {
+    "properties": {
+     "antar": {
+      "$ref": "#/components/schemas/_DashaLordOut"
+     },
+     "maha": {
+      "$ref": "#/components/schemas/_DashaLordOut"
+     }
+    },
+    "required": [
+     "maha",
+     "antar"
+    ],
+    "title": "_DashaOut",
+    "type": "object"
+   },
+   "_NameOut": {
+    "properties": {
+     "name_en": {
+      "title": "Name En",
+      "type": "string"
+     },
+     "name_ne": {
+      "title": "Name Ne",
+      "type": "string"
+     },
+     "number": {
+      "title": "Number",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "number",
+     "name_ne",
+     "name_en"
+    ],
+    "title": "_NameOut",
+    "type": "object"
+   },
+   "_SegmentOut": {
+    "properties": {
+     "chandra": {
+      "$ref": "#/components/schemas/_ChandraOut"
+     },
+     "end": {
+      "title": "End",
+      "type": "string"
+     },
+     "start": {
+      "title": "Start",
+      "type": "string"
+     },
+     "tara": {
+      "$ref": "#/components/schemas/_TaraOut"
+     }
+    },
+    "required": [
+     "start",
+     "end",
+     "chandra",
+     "tara"
+    ],
+    "title": "_SegmentOut",
+    "type": "object"
+   },
+   "_TaraOut": {
+    "properties": {
+     "name_en": {
+      "title": "Name En",
+      "type": "string"
+     },
+     "name_ne": {
+      "title": "Name Ne",
+      "type": "string"
+     },
+     "num": {
+      "title": "Num",
+      "type": "integer"
+     },
+     "state": {
+      "enum": [
+       "good",
+       "caution",
+       "bad"
+      ],
+      "title": "State",
+      "type": "string"
+     }
+    },
+    "required": [
+     "num",
+     "name_ne",
+     "name_en",
+     "state"
+    ],
+    "title": "_TaraOut",
+    "type": "object"
+   },
+   "_WindowOut": {
+    "properties": {
+     "end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "key": {
+      "title": "Key",
+      "type": "string"
+     },
+     "kind": {
+      "enum": [
+       "shubh",
+       "ashubh"
+      ],
+      "title": "Kind",
+      "type": "string"
+     },
+     "name_en": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name En"
+     },
+     "name_ne": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name Ne"
+     },
+     "start": {
+      "title": "Start",
+      "type": "string"
+     }
+    },
+    "required": [
+     "kind",
+     "key",
+     "start"
+    ],
+    "title": "_WindowOut",
+    "type": "object"
    }
   },
   "securitySchemes": {
@@ -4104,7 +4488,9 @@
      "200": {
       "content": {
        "application/json": {
-        "schema": {}
+        "schema": {
+         "$ref": "#/components/schemas/GuidanceRangeOut"
+        }
        }
       },
       "description": "Successful Response"
@@ -4749,6 +5135,7 @@
   },
   "/v1/documents/{slug}/chapters/{chapter_number}": {
    "get": {
+    "description": "One chapter.\n\nNo ``limit``, ``cursor`` or ``verse``: the whole chapter, same body as before\n(offline packs). Any of those: a keyset page (default 25, max 100) with\n``verses``, ``next_cursor``, ``prev_cursor`` and ``total``.",
     "operationId": "document_chapter_detail_v1_documents__slug__chapters__chapter_number__get",
     "parameters": [
      {
@@ -4767,6 +5154,73 @@
       "schema": {
        "title": "Chapter Number",
        "type": "integer"
+      }
+     },
+     {
+      "description": "Page size. Omit, with cursor and verse, for the whole chapter.",
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Page size. Omit, with cursor and verse, for the whole chapter.",
+       "title": "Limit"
+      }
+     },
+     {
+      "description": "A global_order. With direction, the page after or before it.",
+      "in": "query",
+      "name": "cursor",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A global_order. With direction, the page after or before it.",
+       "title": "Cursor"
+      }
+     },
+     {
+      "description": "next (global_order greater) or prev (global_order less).",
+      "in": "query",
+      "name": "direction",
+      "required": false,
+      "schema": {
+       "default": "next",
+       "description": "next (global_order greater) or prev (global_order less).",
+       "title": "Direction",
+       "type": "string"
+      }
+     },
+     {
+      "description": "verse_label to centre, e.g. 6.12.3. Devanagari digits accepted.",
+      "in": "query",
+      "name": "verse",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 80,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "verse_label to centre, e.g. 6.12.3. Devanagari digits accepted.",
+       "title": "Verse"
       }
      }
     ],
@@ -15444,6 +15898,65 @@
      }
     },
     "summary": "Veda Verses By Detail",
+    "tags": [
+     "documents"
+    ]
+   }
+  },
+  "/v1/veda/details/{kind}/values": {
+   "get": {
+    "description": "Every distinct देवता / ऋषि / छन्द / स्वर with its mantra count.",
+    "operationId": "veda_detail_values_v1_veda_details__kind__values_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "kind",
+      "required": true,
+      "schema": {
+       "title": "Kind",
+       "type": "string"
+      }
+     },
+     {
+      "description": "Keep to one Veda, e.g. rigveda",
+      "in": "query",
+      "name": "slug",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Keep to one Veda, e.g. rigveda",
+       "title": "Slug"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Veda Detail Values",
     "tags": [
      "documents"
     ]

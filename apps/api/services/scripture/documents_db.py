@@ -157,6 +157,12 @@ def _migrate_added_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE shlokas ADD COLUMN {name} {coltype}")
     for kind in VERSE_DETAIL_KINDS:
         conn.execute(f"CREATE INDEX IF NOT EXISTS idx_shlokas_{kind} ON shlokas({kind}, global_order)")
+    # Keyset chapter pages filter (document, chapter, global_order). CREATE TABLE
+    # on a new file includes it; an existing database only picks it up here.
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_shlokas_document_chapter "
+        "ON shlokas(document_slug, chapter_number, global_order)"
+    )
 
 
 def _manifest_paths() -> list[Path]:
@@ -719,6 +725,37 @@ def document_summary_lite(slug: str) -> dict[str, Any] | None:
     return _document_detail_base(doc_row)
 
 
+_LATIN_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
+_DEVA_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")
+
+CHAPTER_PAGE_DEFAULT = 25
+CHAPTER_PAGE_MAX = 100
+
+
+def clamp_page_limit(limit: int | None) -> int:
+    """Page size for a chapter: 25 unless the caller asked, never outside 1..100."""
+    if limit is None:
+        return CHAPTER_PAGE_DEFAULT
+    return max(1, min(CHAPTER_PAGE_MAX, int(limit)))
+
+
+def verse_label_key(label: str) -> str:
+    """Verse label with Devanagari digits folded to Latin, for lookup and cache keys."""
+    return label.strip().translate(_LATIN_DIGITS)
+
+
+def verse_label_forms(label: str) -> list[str]:
+    """Spellings to match: the typed label, Latin digits, and Devanagari digits."""
+    raw = label.strip()
+    latin = raw.translate(_LATIN_DIGITS)
+    deva = latin.translate(_DEVA_DIGITS)
+    forms: list[str] = []
+    for form in (raw, latin, deva):
+        if form and form not in forms:
+            forms.append(form)
+    return forms
+
+
 def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None:
     """One chapter's shlokas, filtered directly in SQL.
 
@@ -741,6 +778,158 @@ def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None
         "title_ne": first["chapter_title_ne"],
         "title_en": first["chapter_title_en"],
         "shlokas": [_shloka_row_to_dict(r) for r in shloka_rows],
+    }
+    if doc_row is not None:
+        _attach_chapter_images([chapter], doc_row)
+    return chapter
+
+
+def _chapter_meta(conn: sqlite3.Connection, slug: str, chapter_number: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT chapter_number, chapter_title_ne, chapter_title_en, COUNT(*) AS total "
+        "FROM shlokas WHERE document_slug = ? AND chapter_number = ?",
+        (slug, chapter_number),
+    ).fetchone()
+
+
+def _rows_after(
+    conn: sqlite3.Connection, slug: str, chapter_number: int, cursor: int | None, limit: int
+) -> list[sqlite3.Row]:
+    """Verses with global_order strictly after `cursor` (or the first `limit` when cursor is None)."""
+    if cursor is None:
+        return conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
+            "ORDER BY global_order ASC LIMIT ?",
+            (slug, chapter_number, limit),
+        ).fetchall()
+    return conn.execute(
+        "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order > ? "
+        "ORDER BY global_order ASC LIMIT ?",
+        (slug, chapter_number, cursor, limit),
+    ).fetchall()
+
+
+def _rows_before(
+    conn: sqlite3.Connection, slug: str, chapter_number: int, cursor: int | None, limit: int
+) -> list[sqlite3.Row]:
+    """Verses with global_order strictly before `cursor`, returned in reading order.
+
+    With no cursor, this is the last `limit` verses of the chapter.
+    """
+    if cursor is None:
+        rows = conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
+            "ORDER BY global_order DESC LIMIT ?",
+            (slug, chapter_number, limit),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order < ? "
+            "ORDER BY global_order DESC LIMIT ?",
+            (slug, chapter_number, cursor, limit),
+        ).fetchall()
+    rows.reverse()
+    return rows
+
+
+def _page_cursors(
+    conn: sqlite3.Connection, slug: str, chapter_number: int, rows: list[sqlite3.Row]
+) -> tuple[int | None, int | None]:
+    """prev_cursor / next_cursor are global_order values, null when that direction is exhausted."""
+    if not rows:
+        return None, None
+    first = int(rows[0]["global_order"])
+    last = int(rows[-1]["global_order"])
+    has_prev = conn.execute(
+        "SELECT 1 FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order < ? LIMIT 1",
+        (slug, chapter_number, first),
+    ).fetchone()
+    has_next = conn.execute(
+        "SELECT 1 FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order > ? LIMIT 1",
+        (slug, chapter_number, last),
+    ).fetchone()
+    return (first if has_prev else None, last if has_next else None)
+
+
+def _page_around(
+    conn: sqlite3.Connection, slug: str, chapter_number: int, anchor: int, limit: int
+) -> list[sqlite3.Row]:
+    """`limit` verses with `anchor` roughly in the middle, clipped to the chapter ends."""
+    before = (limit - 1) // 2
+    n_before = conn.execute(
+        "SELECT COUNT(*) FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order < ?",
+        (slug, chapter_number, anchor),
+    ).fetchone()[0]
+    n_after = conn.execute(
+        "SELECT COUNT(*) FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order > ?",
+        (slug, chapter_number, anchor),
+    ).fetchone()[0]
+    take_before = min(before, n_before)
+    take_after = limit - 1 - take_before
+    if take_after > n_after:
+        take_before = min(n_before, take_before + (take_after - n_after))
+        take_after = n_after
+    anchor_row = conn.execute(
+        "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? AND global_order = ?",
+        (slug, chapter_number, anchor),
+    ).fetchone()
+    if anchor_row is None:
+        return []
+    prev_rows = _rows_before(conn, slug, chapter_number, anchor, take_before) if take_before else []
+    next_rows = _rows_after(conn, slug, chapter_number, anchor, take_after) if take_after else []
+    return [*prev_rows, anchor_row, *next_rows]
+
+
+def get_chapter_page(
+    slug: str,
+    chapter_number: int,
+    *,
+    cursor: int | None,
+    direction: str,
+    limit: int,
+    verse: str | None,
+) -> dict[str, Any] | None:
+    """One keyset page of a chapter.
+
+    ``verse`` (a verse_label, Devanagari or Latin digits) returns the page that
+    contains it, with that verse roughly centred. Otherwise ``cursor`` is a
+    global_order and ``direction`` is ``next`` (global_order greater) or
+    ``prev`` (global_order less). No OFFSET. Returns None when the chapter
+    does not exist. An unknown verse raises LookupError.
+    """
+    ensure_seeded()
+    limit = clamp_page_limit(limit)
+    if direction not in ("next", "prev"):
+        direction = "next"
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+        meta = _chapter_meta(conn, slug, chapter_number)
+        if meta is None or not meta["total"]:
+            return None
+        if verse and verse.strip():
+            forms = verse_label_forms(verse)
+            placeholders = ",".join("?" * len(forms))
+            found = conn.execute(
+                f"SELECT global_order FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
+                f"AND verse_label IN ({placeholders}) ORDER BY global_order ASC LIMIT 1",
+                (slug, chapter_number, *forms),
+            ).fetchone()
+            if found is None:
+                raise LookupError(f"No such verse: {verse.strip()}")
+            rows = _page_around(conn, slug, chapter_number, int(found["global_order"]), limit)
+        elif direction == "prev":
+            rows = _rows_before(conn, slug, chapter_number, cursor, limit)
+        else:
+            rows = _rows_after(conn, slug, chapter_number, cursor, limit)
+        prev_cursor, next_cursor = _page_cursors(conn, slug, chapter_number, rows)
+    chapter = {
+        "number": meta["chapter_number"],
+        "title_ne": meta["chapter_title_ne"],
+        "title_en": meta["chapter_title_en"],
+        "shlokas": [_shloka_row_to_dict(r) for r in rows],
+        "total": int(meta["total"]),
+        "prev_cursor": prev_cursor,
+        "next_cursor": next_cursor,
     }
     if doc_row is not None:
         _attach_chapter_images([chapter], doc_row)
@@ -802,6 +991,27 @@ def daily_veda_shloka(day: "date") -> dict[str, Any] | None:
     shloka["chapter_title_ne"] = row["chapter_title_ne"]
     shloka["chapter_title_en"] = row["chapter_title_en"]
     return shloka
+
+
+def detail_values(kind: str, slug: str | None = None) -> list[dict[str, Any]]:
+    """Every distinct देवता / ऋषि / छन्द / स्वर and how many mantras carry it, most first.
+
+    ``slug`` keeps it to one Veda. Feeds the value dropdown on the verse-detail pages.
+    """
+    if kind not in VERSE_DETAIL_KINDS:
+        raise ValueError(f"Unknown detail: {kind}")
+    ensure_seeded()
+    where = f"{kind} IS NOT NULL AND {kind} != ''"
+    params: list[Any] = []
+    if slug:
+        where += " AND document_slug = ?"
+        params.append(slug)
+    with _connect() as conn:
+        rows = conn.execute(
+            f"SELECT {kind} AS value, COUNT(*) AS count FROM shlokas WHERE {where} GROUP BY {kind} ORDER BY count DESC, value",
+            params,
+        ).fetchall()
+    return [{"value": r["value"], "count": r["count"]} for r in rows]
 
 
 def verses_with_detail(

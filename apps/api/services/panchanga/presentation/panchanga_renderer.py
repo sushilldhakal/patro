@@ -82,8 +82,9 @@ def render_day_block(
         _muhurta_line(locale, "Rahu Kalam", "राहु काल", muhurta.get("rahu_kalam")),
         _muhurta_line(locale, "Yamaganda", "यमगण्ड", muhurta.get("yamaganda")),
         _muhurta_line(locale, "Gulika", "गुलिक", muhurta.get("gulika")),
-        _muhurta_line(locale, "Abhijit", "अभिजित", muhurta.get("abhijit")),
     ]
+    if muhurta.get("abhijit"):
+        lines.append(_muhurta_line(locale, "Abhijit", "अभिजित", muhurta.get("abhijit")))
 
     if festival_line:
         lines.extend(["", festival_line])

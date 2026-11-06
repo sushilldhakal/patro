@@ -169,7 +169,8 @@ def compute_abhijit_muhurta(
     sunrise_utc: datetime,
     sunset_utc: datetime,
     tz_name: str,
-) -> dict[str, Any]:
+    vaara_index: int,
+) -> dict[str, Any] | None:
     """
     Abhijit Muhurta — the most auspicious window of the day.
 
@@ -180,10 +181,12 @@ def compute_abhijit_muhurta(
         abhijit_start    = sunrise + 7 × muhurta_duration
         abhijit_end      = sunrise + 8 × muhurta_duration
 
-    Note: Abhijit is traditionally considered absent on Wednesday (Budhavara)
-    in some Panchanga traditions because it corresponds to the 28th nakshatra
-    (Abhijit), which is excluded from the 27-nakshatra count on Wednesdays.
+    Abhijit is prohibited on Wednesday (Muhurta Chintamani: बुधवारे अभिजित् त्याज्यम्).
+    ``vaara_index`` is the local weekday at sunrise in the observer's timezone,
+    0 = Sunday … 6 = Saturday. Wednesday returns None.
     """
+    if vaara_index % 7 == 3:
+        return None
     total_s = (sunset_utc - sunrise_utc).total_seconds()
     muhurta_s = total_s / 15.0
     solar_noon = sunrise_utc + timedelta(seconds=total_s / 2.0)
@@ -255,5 +258,5 @@ def build_muhurta_block(
         "rahu_kalam": compute_rahu_kalam(sunrise_utc, sunset_utc, vaara_index, tz_name),
         "yamaganda":  compute_yamaganda(sunrise_utc, sunset_utc, vaara_index, tz_name),
         "gulika":     compute_gulika(sunrise_utc, sunset_utc, vaara_index, tz_name),
-        "abhijit":    compute_abhijit_muhurta(sunrise_utc, sunset_utc, tz_name),
+        "abhijit":    compute_abhijit_muhurta(sunrise_utc, sunset_utc, tz_name, vaara_index),
     }

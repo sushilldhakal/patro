@@ -14,58 +14,41 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
     <Box
       className={cn(
         documentsClasses.verse,
-        "mb-3",
         isActive ? documentsClasses.verseActive : documentsClasses.verseIdle,
         isClosing && !isActive && documentsClasses.verseClosing,
         isNote && !isActive && documentsClasses.verseNote,
       )}
     >
-      {card.details.length > 0 ? (
-        <Box className={documentsClasses.verseDetails} nativeClassName="flex-row flex-wrap">
-          {card.details.map((d) => (
-            <Box key={d.kind} className={documentsClasses.verseDetailItem} nativeClassName="flex-row">
-              <Text className={documentsClasses.verseDetailLabel}>{d.label}:</Text>
-              {onDetail ? (
-                <Pressable onPress={() => onDetail(d.kind, d.value)} label={`${d.label}: ${d.value}`} suppressPressScale>
-                  <Text className={documentsClasses.verseDetailValue}>{d.value}</Text>
-                </Pressable>
-              ) : (
+      <Box className={documentsClasses.verseDetails} nativeClassName="flex-row flex-wrap items-baseline">
+        {isNote ? null : <Text className={documentsClasses.verseNumberPlain}>{card.label}</Text>}
+        {card.details.map((d) => (
+          <Box key={d.kind} className={documentsClasses.verseDetailItem} nativeClassName="flex-row items-baseline">
+            <Text className={documentsClasses.verseDetailLabel}>{d.label}</Text>
+            {onDetail ? (
+              <Pressable onPress={() => onDetail(d.kind, d.value)} label={`${d.label} ${d.value}`} suppressPressScale>
                 <Text className={documentsClasses.verseDetailValue}>{d.value}</Text>
-              )}
-            </Box>
-          ))}
-        </Box>
-      ) : null}
-      <Box className={documentsClasses.verseRow} nativeClassName="flex-row">
+              </Pressable>
+            ) : (
+              <Text className={documentsClasses.verseDetailValue}>{d.value}</Text>
+            )}
+          </Box>
+        ))}
+        {vedaCite ? <Text className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
+      </Box>
+      <Box className={documentsClasses.verseRow} nativeClassName="flex-row items-start">
         {canPlay ? (
           <Pressable onPress={onPlay} label={card.copy.play} className={cn(documentsClasses.versePlay, isActive ? documentsClasses.versePlayActive : documentsClasses.versePlayIdle)}>
-            <Icon node={isPlaying ? iconPause : iconPlay} size={16} tone="onSecondary" filled />
+            <Icon node={isPlaying ? iconPause : iconPlay} size={15} tone="onSecondary" filled />
           </Pressable>
-        ) : (
-          <Box className={documentsClasses.verseLabelSlot}>
-            <Text className={documentsClasses.verseLabelSlotText}>{card.label}</Text>
-          </Box>
-        )}
+        ) : null}
         <Box className={documentsClasses.verseBody}>
-          {canPlay || vedaCite ? (
-            <Box className={documentsClasses.verseMetaRow} nativeClassName="flex-row">
-              {canPlay ? (
-                <Box className={cn(documentsClasses.verseBadge, "self-start")}>
-                  <Text className={documentsClasses.verseBadgeText}>{card.label}</Text>
-                </Box>
-              ) : (
-                <Box />
-              )}
-              {vedaCite ? <Text className={documentsClasses.verseCite}>{vedaCite}</Text> : null}
-            </Box>
-          ) : null}
           {card.svaraLine.length > 0 ? (
             <Box>
-              <Box className={documentsClasses.verseText} nativeClassName="flex-row flex-wrap items-end">
+              <Box nativeClassName="flex-row flex-wrap items-end">
                 {card.svaraLine.map((piece, i) =>
                   piece.marks ? (
                     <Box key={i} nativeClassName="items-center">
-                      <Text className="text-diagram-xs leading-none text-muted-foreground">{piece.marks}</Text>
+                      <Text className={documentsClasses.verseDetailLabel}>{piece.marks}</Text>
                       <Text className={documentsClasses.verseText}>{piece.text}</Text>
                     </Box>
                   ) : (
@@ -86,20 +69,22 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
             )}
           </Text>
           {card.transliteration ? <Text className={documentsClasses.verseTranslit}>{card.transliteration}</Text> : null}
-          <Box className={documentsClasses.verseProgress} nativeClassName={isActive ? undefined : "opacity-0"}>
-            <Box className={documentsClasses.verseProgressFill} widthPercent={card.progressPct} />
-          </Box>
-          {meaning ? (
-            <Box className={documentsClasses.verseMeaningWrap}>
-              <Pressable onPress={onToggleMeaning} className={cn(documentsClasses.verseMeaningToggle, "self-start")} nativeClassName="flex-row items-center">
-                <Text className={documentsClasses.verseMeaningToggleText}>{card.copy.meaning}</Text>
-                <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
-              </Pressable>
-              {meaningOpen ? <Text className={documentsClasses.verseMeaning}>{meaning}</Text> : null}
-            </Box>
-          ) : null}
         </Box>
       </Box>
+      {isActive ? (
+        <Box className={documentsClasses.verseProgress}>
+          <Box className={documentsClasses.verseProgressFill} widthPercent={card.progressPct} />
+        </Box>
+      ) : null}
+      {meaning ? (
+        <Box className={documentsClasses.verseMeaningWrap}>
+          <Pressable onPress={onToggleMeaning} className={documentsClasses.verseMeaningToggle} nativeClassName="flex-row items-center self-start">
+            <Text className={documentsClasses.verseMeaningToggleText}>{card.copy.meaning}</Text>
+            <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
+          </Pressable>
+          {meaningOpen ? <Text className={documentsClasses.verseMeaning}>{meaning}</Text> : null}
+        </Box>
+      ) : null}
     </Box>
   );
 }

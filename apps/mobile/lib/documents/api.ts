@@ -11,6 +11,7 @@ export {
   fetchDocuments,
   fetchDocumentDetail,
   fetchDocumentChapter,
+  fetchDocumentChapterPage,
   flattenShlokas,
   vedaDailyKeys,
   fetchVedaDaily,
@@ -23,6 +24,7 @@ export type {
   DocumentChapter,
   DocumentDetail,
   DocumentChapterDetail,
+  DocumentChapterPage,
   VedaDaily,
 } from "@vedic-patro/api-client";
 export { formatVedaCite } from "@vedic-patro/domain/learn/veda-cite";

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -19,10 +19,30 @@ export default function DocumentChapterScreen() {
   const colors = useThemeColors();
   const { slug, chapter: chapterParam, verse } = useLocalSearchParams<{ slug: string; chapter: string; verse?: string }>();
   const chapterNumber = chapterParam != null ? Number(chapterParam) : NaN;
-  const page = useDocumentChapter(slug, chapterNumber);
+  const initialVerse = typeof verse === "string" ? verse : undefined;
+  const page = useDocumentChapter(slug, chapterNumber, { verse: initialVerse });
   const library = useDocumentLibraryOptions();
   const { copy } = page;
-  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.docTitle);
+  const audio = useDocumentAudio(page.shlokas, page.fullAudioUrl, page.docTitle, page.complete, page.displayTitle);
+  const waitingForPage = useRef(false);
+  useEffect(() => {
+    const id = audio.activeId;
+    if (id == null) return;
+    const at = page.shlokas.findIndex((s) => s.id === id);
+    if (at < 0) return;
+    if (audio.activePlaying) {
+      waitingForPage.current = at === page.shlokas.length - 1 && page.hasNextPage && !audio.hasNext;
+    }
+    if (page.hasNextPage && at >= page.shlokas.length - 8) void page.fetchNextPage();
+    if (page.hasPreviousPage && at <= 2) void page.fetchPreviousPage();
+  }, [audio.activeId, audio.activePlaying, audio.hasNext, page.shlokas, page.hasNextPage, page.hasPreviousPage, page.fetchNextPage, page.fetchPreviousPage]);
+  useEffect(() => {
+    if (!waitingForPage.current || audio.activePlaying || audio.activeProgress > 0.02) return;
+    if (audio.hasNext) {
+      waitingForPage.current = false;
+      audio.nextVerse();
+    }
+  }, [audio.activePlaying, audio.activeProgress, audio.hasNext, audio.nextVerse, page.shlokas]);
   const [jump, setJump] = useState<{ label: string; nonce: number } | null>(null);
 
   if (page.redirectToDocument && slug) {
@@ -44,16 +64,24 @@ export default function DocumentChapterScreen() {
   const go = (n: number) => router.replace(`/documents/${slug}/${n}` as never);
 
   const header = (
-    <View className="gap-8 pb-8">
-      <DocumentBackLink href={backHref} label={copy.backToChapters} />
-      <View className={documentsClasses.header}>
-        <View className={documentsClasses.chapterTitleRow}>
-          <Text className={cn(documentsClasses.headerSanskrit, "min-w-0 flex-1")} numberOfLines={1}>
+    <View className="gap-2 pb-3">
+      <View className={documentsClasses.readerBar}>
+        <View className={documentsClasses.readerBarSlot}>
+          <DocumentBackLink href={backHref} label={copy.backToChapters} />
+        </View>
+        <View className={documentsClasses.readerBarHeading}>
+          <Text className={documentsClasses.readerBarName} numberOfLines={1}>
             {page.docTitle}
           </Text>
-          {page.progress ? <Text className={documentsClasses.chapterProgress}>{page.progress}</Text> : null}
+          {page.displayTitle ? (
+            <Text className={documentsClasses.readerBarChapter} numberOfLines={1}>
+              {page.displayTitle}
+            </Text>
+          ) : null}
         </View>
-        <Text className={documentsClasses.chapterTitle}>{page.displayTitle}</Text>
+        <Text className={cn(documentsClasses.readerBarSlot, documentsClasses.readerBarSide)} numberOfLines={1}>
+          {page.progress}
+        </Text>
       </View>
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
@@ -62,7 +90,7 @@ export default function DocumentChapterScreen() {
         documents={library}
         currentSlug={slug}
         onSelectDocument={(next) => router.push(`/documents/${next}` as never)}
-        onJump={(chapter, label) => {
+        onJump={async (chapter, label) => {
           if (chapter !== chapterNumber) {
             router.push(
               (label
@@ -72,9 +100,9 @@ export default function DocumentChapterScreen() {
             return true;
           }
           if (!label) return true;
-          const exists = page.shlokas.some((s) => s.verse_label.trim() === label);
-          if (exists) setJump({ label, nonce: Date.now() });
-          return exists;
+          const ok = await page.focusVerse(label);
+          if (ok) setJump({ label, nonce: Date.now() });
+          return ok;
         }}
       />
     </View>
@@ -112,6 +140,15 @@ export default function DocumentChapterScreen() {
         footer={footer}
         scrollToLabel={jump?.label ?? (typeof verse === "string" ? verse : null)}
         scrollNonce={jump?.nonce}
+        loadingPrev={page.isFetchingPreviousPage}
+        loadingNext={page.isFetchingNextPage}
+        loadingLabel={copy.loadingMore}
+        onStartReached={() => {
+          if (page.hasPreviousPage && !page.isFetchingPreviousPage) void page.fetchPreviousPage();
+        }}
+        onEndReached={() => {
+          if (page.hasNextPage && !page.isFetchingNextPage) void page.fetchNextPage();
+        }}
       />
     </View>
   );

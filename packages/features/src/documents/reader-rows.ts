@@ -26,6 +26,19 @@ export type RowText = { t: TFunction; lang: string; digits: (n: number) => strin
 
 export const chapterAnchor = (n: number) => `chapter-${n}`;
 
+const DEVANAGARI_ZERO = 0x0966;
+
+/** "६.१२.३" and "6.12.3" compare equal. Every other character is kept. */
+export function canonVerseLabel(label: string): string {
+  let out = "";
+  for (const ch of label.trim()) {
+    const code = ch.codePointAt(0)!;
+    if (code >= DEVANAGARI_ZERO && code < DEVANAGARI_ZERO + 10) out += String(code - DEVANAGARI_ZERO);
+    else out += ch;
+  }
+  return out;
+}
+
 /** Prefer the reader's language, fall back to the other. */
 export const bilingual = (lang: string, ne?: string | null, en?: string | null) =>
   (lang === "en" ? en || ne : ne || en) ?? "";

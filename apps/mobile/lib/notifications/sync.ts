@@ -1,5 +1,5 @@
 import { refreshTodayWidget } from "@/lib/widgets/today-widget";
-import { importPhoneCalendars } from "@/lib/events/device-calendars";
+import { exportToPhoneCalendar, importPhoneCalendars } from "@/lib/events/device-calendars";
 import { listEvents, uploadGuestEvents } from "@/lib/events/api";
 import { planEventAlerts } from "@/lib/events/alerts";
 import { Platform } from "react-native";
@@ -86,6 +86,8 @@ export async function syncNotifications(options: {
       await importPhoneCalendars().catch(() => 0);
       events = await listEvents(new Date(Date.now() - 86_400_000).toISOString());
       await notifStore.setEvents(events);
+      // And the other way: the user's own events into the Vedic Patro calendar on the phone.
+      await exportToPhoneCalendar(events).catch(() => 0);
     } catch {
       /* keep the cached events */
     }
@@ -156,7 +158,9 @@ async function guestEvents() {
     /* keep what was imported before */
   }
   try {
-    return await listEvents(new Date(Date.now() - 86_400_000).toISOString());
+    const events = await listEvents(new Date(Date.now() - 86_400_000).toISOString());
+    await exportToPhoneCalendar(events).catch(() => 0);
+    return events;
   } catch {
     return [];
   }

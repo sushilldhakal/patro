@@ -7,8 +7,8 @@ import type { CalendarEvent } from "@vedic-patro/api-client";
 import { isoToZoned, shiftDate, zonedToIso } from "@vedic-patro/domain/calendar/event-time";
 import { eventOccursOn } from "./use-day-events";
 
-/** Month and Panchanga are the home grids; the rest are the planner views. */
-export const HOME_VIEWS = ["calendar", "panchanga", "day", "multi", "week", "year", "list"] as const;
+/** Month first, then day, week (multi-day on a narrow screen), year, then panchanga. */
+export const HOME_VIEWS = ["calendar", "day", "multi", "week", "year", "panchanga", "list"] as const;
 export type HomeView = (typeof HOME_VIEWS)[number];
 export const PLANNER_VIEWS = ["day", "multi", "week", "year", "list"] as const;
 export type PlannerViewKind = (typeof PLANNER_VIEWS)[number];

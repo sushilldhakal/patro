@@ -121,19 +121,21 @@ export default function DocumentsScreen() {
                     onPress={() => select(section.group.id)}
                     className={cn(documentsClasses.hubCard, "border border-border")}
                   >
-                    <View className={documentsClasses.hubCardTop}>
-                      {/* The box is a View: on a Text, RN sizes the box but leaves the glyph top-left. */}
+                    <View className={documentsClasses.hubCardTop} style={{ flexDirection: "row", alignItems: "center" }}>
                       <View className={documentsClasses.hubEmojiBox}>
                         <Text className={documentsClasses.hubEmojiGlyph} accessible={false}>
                           {section.group.emoji}
                         </Text>
                       </View>
+                      <View style={{ flex: 1, minWidth: 0 }}>
+                        <Text className={documentsClasses.hubTitle}>{section.name}</Text>
+                        <Text className={documentsClasses.hubCount}>{page.copy.docsInCategory(section.count)}</Text>
+                      </View>
                     </View>
-                    <Text className={documentsClasses.hubTitle}>{section.name}</Text>
                     {section.blurb ? <Text className={documentsClasses.hubBlurb}>{section.blurb}</Text> : null}
                     <View className={documentsClasses.hubPreview}>
                       {section.preview.map((title) => (
-                        <View key={title} className={documentsClasses.hubPreviewItem}>
+                        <View key={title} className={documentsClasses.hubPreviewItem} style={{ flexDirection: "row", alignItems: "center" }}>
                           <View className={documentsClasses.hubPreviewDot} />
                           <Text className="min-w-0 flex-1 text-sm text-foreground/85" numberOfLines={1}>
                             {title}
@@ -142,7 +144,6 @@ export default function DocumentsScreen() {
                       ))}
                       {section.moreLabel ? <Text className={documentsClasses.hubMore}>{section.moreLabel}</Text> : null}
                     </View>
-                    <Text className={documentsClasses.hubMeta}>{page.copy.docsInCategory(section.count)}</Text>
                   </Pressable>
                 ))}
               </View>

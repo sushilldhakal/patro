@@ -1214,10 +1214,13 @@ export interface NavataraRow {
   index: number;
   name: string;
   name_en?: string;
-  tara: string;
+  /** Tara name on a ताराबल row. On a चन्द्रबल row this is the house label. */
+  tara?: string;
   quality: string;
   tone: NavataraTone;
-  tara_num: number;
+  tara_num?: number;
+  /** House of the transit Moon counted from this janma rashi. चन्द्रबल rows only. */
+  house?: number;
 }
 
 export interface NavataraTableBlock {

@@ -80,7 +80,7 @@ export function DocumentJumpForm({
           className={cn(documentsClasses.jumpInput, documentsClasses.jumpVerseInputWeb, inputWeb)}
         />
       </label>
-      <Button type="submit" size="sm" variant="secondary" label={copy.button} className="h-10 shrink-0 gap-1.5 sm:h-9" icon={<Icon node={iconSearch} size="sm" tone="foreground" className="text-secondary-foreground" />} />
+      <Button type="submit" size="sm" variant="secondary" label={copy.button} className="h-9 shrink-0 gap-1.5" icon={<Icon node={iconSearch} size="sm" tone="foreground" className="text-secondary-foreground" />} />
       {form.notFound ? (
         <Text as="p" className={documentsClasses.jumpError} webClassName="basis-full">
           {copy.notFound}

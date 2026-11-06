@@ -11,6 +11,7 @@ from engine.astronomy.sidereal import resolve_ayanamsha_mode
 from engine.jyotish.ashtakavarga import compute_ashtakavarga
 from engine.jyotish.bhava_bala import compute_bhava_bala
 from engine.panchanga.at_time import build_planetary_snapshot
+from engine.panchanga.navatara import TARA_NAMES_EN as TARA_EN, TARA_NAMES_NE as TARA_NE
 from engine.panchanga.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.panchanga.ghati_time import seconds_to_ghadi_pala
 from engine.jyotish.interpretation import (
@@ -86,12 +87,6 @@ YUNJA_NE = ["आदि", "मध्य", "अन्त्य"]
 YUNJA_EN = ["Adi", "Madhya", "Antya"]
 NADI_NE = ["आद्य", "मध्य", "अन्त्य"]
 NADI_EN = ["Aadi", "Madhya", "Antya"]
-TARA_NE = [
-    "जन्म", "सम्पत्", "विपत्", "क्षेम", "प्रत्यक्", "साधना", "निधन", "मित्र", "परम मित्र",
-]
-TARA_EN = [
-    "Janma", "Sampat", "Vipat", "Kshema", "Pratyak", "Sadhana", "Naidhana", "Mitra", "Param Mitra",
-]
 PATRIKA_VASHYA_NE = [
     "चतुष्पद", "चतुष्पद", "मानव", "जलचर", "वनचर", "मानव",
     "मानव", "कीट", "मानव", "जलचर", "मानव", "जलचर",

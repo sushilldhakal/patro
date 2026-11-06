@@ -133,6 +133,10 @@ function webTheme(theme: "light" | "dark", indent: string): string[] {
   }
   for (const k of WEB_ROLE_VARS) out.push(`${indent}--${kebab(k)}: ${roles[k]};`);
   out.push(
+    `${indent}--color-slot-spiritual: ${roles.slotSpiritual};`,
+    `${indent}--color-slot-spiritual-foreground: ${roles.slotSpiritualForeground};`,
+  );
+  out.push(
     `${indent}--sidebar-accent: ${extras.sidebarAccent};`,
     `${indent}--parchment-border: ${extras.parchmentBorder};`,
     `${indent}--chart-4: ${extras.chart4};`,

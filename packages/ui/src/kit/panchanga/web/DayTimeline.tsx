@@ -47,7 +47,7 @@ import {
   pgxSunline,
   pgxTimeLagna,
 } from "@vedic-patro/design-tokens/classes/timeline-classes";
-import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/drawing/panchanga/day-timeline-layout";
+import { type ChartSegment, assignLanes, badgeByLabel, segmentsFromRow } from "@vedic-patro/drawing/panchanga/day-timeline-layout";
 
 import { useDayCycleToggle, useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
 const GRAHA_KEYS = new Set<string>([
@@ -272,6 +272,8 @@ export function DayTimeline({
     );
   }
 
+  const ashubhaBadge = badgeByLabel(data.ashubhaAll.map((a) => bilingualText(lang, a.detailNe, a.detailEn)));
+  const shubhaBadge = badgeByLabel(data.shubha.map((s) => bilingualText(lang, s.name, s.nameEn)));
   const tracks = data.rows
     .filter((row) => row.kind !== "graha")
     .map((row) => {
@@ -297,7 +299,7 @@ export function DayTimeline({
               }))
             : row.kind === "ashubha"
               ? assignLanes(
-                  data.ashubha.map((a) => ({
+                  data.ashubhaAll.map((a, i) => ({
                     ne: a.name,
                     en: a.nameEn,
                     fromG: a.startG,
@@ -306,11 +308,12 @@ export function DayTimeline({
                     cut: false,
                     detailNe: a.detailNe,
                     detailEn: a.detailEn,
+                    badge: ashubhaBadge[i],
                   })),
                 )
               : row.kind === "shubha"
                 ? assignLanes(
-                    data.shubha.map((s) => ({
+                    data.shubha.map((s, i) => ({
                       ne: s.name,
                       en: s.nameEn,
                       fromG: s.startG,
@@ -318,6 +321,7 @@ export function DayTimeline({
                       cut: false,
                       detailNe: s.name,
                       detailEn: s.nameEn,
+                      badge: shubhaBadge[i],
                     })),
                   )
                 : segmentsFromRow(row);
@@ -529,7 +533,7 @@ export function DayTimeline({
                             className={tr.cls === "shubha" ? pgxSegnameGood : pgxSegnameBad}
                             textAnchor="middle"
                           >
-                            {digits(si + 1)}
+                            {digits(s.badge ?? si + 1)}
                           </text>
                         )
                       ) : (
@@ -659,11 +663,14 @@ export function DayTimeline({
         <PeriodCards
           tone="danger"
           title={copy.inauspicious}
-          items={data.ashubhaAll.map((a, i) => ({
-            n: digits(i + 1),
-            label: bilingualText(lang, a.detailNe, a.detailEn),
-            time: `${tLabel(a.startG)} – ${tLabel(a.endG)}`,
-          }))}
+          items={groupPeriods(
+            data.ashubhaAll.map((a, i) => ({
+              n: ashubhaBadge[i] ?? i + 1,
+              label: bilingualText(lang, a.detailNe, a.detailEn),
+              time: `${tLabel(a.startG)} – ${tLabel(a.endG)}`,
+            })),
+            digits,
+          )}
         />
       )}
 
@@ -671,11 +678,14 @@ export function DayTimeline({
         <PeriodCards
           tone="success"
           title={copy.auspicious}
-          items={data.shubha.map((s, i) => ({
-            n: digits(i + 1),
-            label: bilingualText(lang, s.name, s.nameEn),
-            time: `${tLabel(s.startG)} – ${tLabel(s.endG)}`,
-          }))}
+          items={groupPeriods(
+            data.shubha.map((s, i) => ({
+              n: shubhaBadge[i] ?? i + 1,
+              label: bilingualText(lang, s.name, s.nameEn),
+              time: `${tLabel(s.startG)} – ${tLabel(s.endG)}`,
+            })),
+            digits,
+          )}
         />
       )}
 
@@ -795,6 +805,24 @@ export function DayTimeline({
  * top, the time range pinned to the bottom so every card lines up regardless of
  * name length. `tone` swaps the danger/success accent.
  */
+function groupPeriods(
+  items: { n: number; label: string; time: string }[],
+  digits: (n: number) => string,
+): { n: string; label: string; times: string[] }[] {
+  const out: { n: number; label: string; times: string[] }[] = [];
+  const at = new Map<number, number>();
+  for (const item of items) {
+    const i = at.get(item.n);
+    if (i == null) {
+      at.set(item.n, out.length);
+      out.push({ n: item.n, label: item.label, times: [item.time] });
+    } else {
+      out[i]!.times.push(item.time);
+    }
+  }
+  return out.map((item) => ({ n: digits(item.n), label: item.label, times: item.times }));
+}
+
 function PeriodCards({
   tone,
   title,
@@ -802,7 +830,7 @@ function PeriodCards({
 }: {
   tone: "danger" | "success";
   title: string;
-  items: { n: string; label: string; time: string }[];
+  items: { n: string; label: string; times: string[] }[];
 }) {
   const accent = tone === "danger" ? "var(--color-danger)" : "var(--color-success)";
   return (
@@ -811,9 +839,9 @@ function PeriodCards({
         {title}
       </span>
       <ol className="grid grid-cols-2 gap-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {items.map((it, i) => (
+        {items.map((it) => (
           <li
-            key={`${it.time}-${i}`}
+            key={`${it.n}-${it.label}`}
             className={cn("flex flex-col", panchangaPageClasses.dayCycle.periodCard)}
             style={{
               borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
@@ -831,8 +859,12 @@ function PeriodCards({
                 {it.label}
               </span>
             </div>
-            <span className={cn("mt-auto", panchangaPageClasses.dayCycle.periodTime, "[font-family:var(--pn-font)]")}>
-              {it.time}
+            <span className="mt-auto flex flex-col gap-0.5">
+              {it.times.map((time, ti) => (
+                <span key={`${time}-${ti}`} className={cn(panchangaPageClasses.dayCycle.periodTime, "[font-family:var(--pn-font)]")}>
+                  {time}
+                </span>
+              ))}
             </span>
           </li>
         ))}

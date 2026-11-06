@@ -41,6 +41,7 @@ import { AuthProvider } from "@/lib/auth/AuthContext";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
 import { NotificationsRuntime } from "@/components/notifications/NotificationsRuntime";
+import { PlaybackSession } from "@/lib/audio-session";
 import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
@@ -443,6 +444,7 @@ function RootShell({
       )}
       {ready && onboarded ? <AppOverlays /> : null}
       {ready && onboarded ? <NotificationsRuntime /> : null}
+      {ready ? <PlaybackSession /> : null}
       {ready ? <ThemedStatusBar /> : null}
       {!ready ? (
         <View

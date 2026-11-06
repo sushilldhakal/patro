@@ -8,6 +8,8 @@ import { useTheme } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import type { AppLanguage } from "@/lib/language-storage";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
+import { markPhoneCalendarAsked, phoneCalendarAccess } from "@/lib/events/device-calendars";
+import { allowPhoneCalendar } from "@/lib/events/phone-calendar-ask";
 import {
   setOnboardingComplete,
   setStoredDataMode,
@@ -158,6 +160,55 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
 }
 
 /**
+ * Asked once, before the tour: the app's own explanation first, so the system popup (which iOS
+ * shows only once per install) appears only when the user has said yes. "Not now" is asked again
+ * later, when they save their first task, event or appointment.
+ */
+function CalendarAccessStep({ language, onDone }: { language: AppLanguage; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [busy, setBusy] = useState(false);
+  const allow = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await allowPhoneCalendar();
+    } finally {
+      setBusy(false);
+      onDone();
+    }
+  };
+  const later = async () => {
+    await markPhoneCalendarAsked();
+    onDone();
+  };
+  return (
+    <View className="flex-1 px-6 pb-10 pt-16" style={{ backgroundColor: colors.background }}>
+      <View className="flex-1 items-center justify-center gap-4">
+        <View className="h-24 w-24 items-center justify-center rounded-full" style={{ backgroundColor: `${colors.secondary}1a` }}>
+          <Ionicons name="calendar-outline" size={44} color={colors.secondary} />
+        </View>
+        <Text className="text-display text-center font-bold text-foreground">{tFor(language, "events.phone_ask_title")}</Text>
+        <Text className="text-body text-center text-muted-foreground">{tFor(language, "events.phone_ask_body")}</Text>
+      </View>
+      <Pressable
+        onPress={() => void allow()}
+        disabled={busy}
+        accessibilityRole="button"
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 active:opacity-80 disabled:opacity-60"
+      >
+        {busy ? <ActivityIndicator size="small" color={neutral.white} /> : null}
+        <Text className="text-body font-semibold" style={{ color: neutral.white }}>
+          {tFor(language, "events.phone_ask_allow")}
+        </Text>
+      </Pressable>
+      <Pressable onPress={() => void later()} accessibilityRole="button" className="mt-3 items-center py-3 active:opacity-70">
+        <Text className="text-body font-semibold text-muted-foreground">{tFor(language, "events.phone_ask_later")}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+/**
  * The very first screen a new install sees, before anything else in the app
  * renders (see app/_layout.tsx). Downloading calendar data offline is the
  * user's call, not something the app decides on its own — this is the one
@@ -169,7 +220,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const { isOnline } = useOfflineData();
 
   const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
-  const [tour, setTour] = useState(false);
+  const [step, setStep] = useState<"setup" | "calendar" | "tour">("setup");
   const [language, setLanguage] = useState<AppLanguage>("ne");
   // Independent of the language picked above: BS unless the reader chooses AD.
   const [calendar, setCalendar] = useState<CalendarSystem>(DEFAULT_CALENDAR);
@@ -196,13 +247,15 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       // Which years to keep (and how big that is) is asked on the Offline Data
       // screen, which opens right after onboarding.
       if (dataMode === "offline") await deviceStore.set(OFFLINE_SETUP_PENDING_KEY, true);
-      setTour(true);
+      // Only when the system popup can still appear; a phone that already allowed (or blocked) skips it.
+      setStep((await phoneCalendarAccess()) === "ask" ? "calendar" : "tour");
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (tour) return <FeatureTour language={language} onDone={onComplete} />;
+  if (step === "calendar") return <CalendarAccessStep language={language} onDone={() => setStep("tour")} />;
+  if (step === "tour") return <FeatureTour language={language} onDone={onComplete} />;
 
   return (
     <ScrollView

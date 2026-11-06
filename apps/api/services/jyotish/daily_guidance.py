@@ -9,12 +9,14 @@ notifications today and server push later. Everything here is deterministic for 
 from __future__ import annotations
 
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from engine.astronomy.location import ObserverLocation
+from engine.panchanga.balam_panchaka import CHANDRA_GOOD_HOUSES
+from engine.panchanga.navatara import TARA_NAMES_EN, TARA_NAMES_NE
 
 GUIDANCE_VERSION = "1"
 MAX_DAYS = 31
@@ -81,6 +83,155 @@ def _tithi_rule_key(name: str | None) -> str | None:
     return None
 
 
+# जन्म is caution. विपत्, प्रत्यक् and निधन are bad. The other five are good.
+_TARA_PERSONAL = {1: "caution", 3: "bad", 5: "bad", 7: "bad"}
+
+
+def _clock_from_midnight(moment: datetime, day: date, timezone_name: str) -> str:
+    """Minutes from ``day``'s local midnight, so a time after midnight is past 24:00."""
+    from engine.astronomy.timescale import resolve_observer_timezone
+
+    tz = resolve_observer_timezone(timezone_name)
+    local = moment.astimezone(tz)
+    midnight = datetime.combine(day, time.min, tzinfo=tz)
+    minutes = int(round((local - midnight).total_seconds() / 60))
+    if minutes < 0:
+        minutes = 0
+    hour, minute = divmod(minutes, 60)
+    return f"{hour:02d}:{minute:02d}"
+
+
+def _chandra_state(moon_idx: int, janma_idx: int) -> tuple[int, str]:
+    house = (moon_idx - janma_idx) % 12 + 1
+    if house == 8:
+        return house, "ashtama"
+    if house in CHANDRA_GOOD_HOUSES:
+        return house, "good"
+    return house, "weak"
+
+
+def _tara_state(transit_idx: int, janma_idx: int) -> dict[str, Any]:
+    num = ((transit_idx - janma_idx) % 27) % 9 + 1
+    return {
+        "num": num,
+        "name_ne": TARA_NAMES_NE[num - 1],
+        "name_en": TARA_NAMES_EN[num - 1],
+        "state": _TARA_PERSONAL.get(num, "good"),
+    }
+
+
+def _lord_motion(lord: str, jd: float) -> tuple[bool, bool]:
+    """(अस्त, वक्री) at ``jd``. राहु and केतु are never counted वक्री here."""
+    from engine.astronomy.motion import is_retrograde
+    from engine.astronomy.planets import planet_service
+    from engine.jyotish.interpretation import combust_orb
+
+    vakri = False if lord in ("rahu", "ketu") else is_retrograde(lord, planet_service.speed(jd, lord))
+    orb = combust_orb(lord, retrograde=vakri)
+    if orb is None:
+        return False, vakri
+    sun = planet_service.longitude(jd, "sun")
+    lon = planet_service.longitude(jd, lord)
+    sep = abs(sun - lon) % 360.0
+    sep = min(sep, 360.0 - sep)
+    return sep <= orb, vakri
+
+
+def _split_points(sunrise: datetime, next_sunrise: datetime) -> list[datetime]:
+    """Sunrise, next sunrise, and each Moon rashi or nakshatra change between them."""
+    from engine.panchanga.element_boundaries import find_moon_rashi_end, find_nakshatra_end
+
+    points = [sunrise, next_sunrise]
+    cursor = sunrise
+    for _ in range(8):
+        if cursor >= next_sunrise - timedelta(seconds=45):
+            break
+        nxt = min(find_moon_rashi_end(cursor), find_nakshatra_end(cursor))
+        if nxt <= cursor + timedelta(seconds=20):
+            cursor = cursor + timedelta(minutes=30)
+            continue
+        if nxt < next_sunrise - timedelta(seconds=45):
+            points.append(nxt)
+            cursor = nxt + timedelta(seconds=90)
+        else:
+            break
+    points.sort()
+    merged: list[datetime] = []
+    for point in points:
+        if merged and (point - merged[-1]).total_seconds() < 60:
+            continue
+        merged.append(point)
+    if merged[-1] < next_sunrise - timedelta(seconds=30):
+        merged.append(next_sunrise)
+    else:
+        merged[-1] = next_sunrise
+    return merged
+
+
+def _personal_block(natal: Any, greg: date, location: Any) -> dict[str, Any]:
+    """Chandrabala, tarabala and dasha for one panchanga day, read at its sunrise."""
+    from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE, rashi_service
+    from engine.astronomy.sun import calculate_sunrise
+    from engine.astronomy.ut_instant import as_julian_day
+    from engine.jyotish.rashifal_personal import dasha_block
+    from engine.panchanga.angas import NAKSHATRA_NAMES, NAKSHATRA_SPAN
+    from engine.panchanga.names_ne import NAKSHATRA_NAMES_NE
+    from engine.astronomy.moon import moon_service
+
+    sunrise = calculate_sunrise(greg, location.lat, location.lon, timezone_name=location.timezone)
+    nxt = calculate_sunrise(greg + timedelta(days=1), location.lat, location.lon, timezone_name=location.timezone)
+    jd = as_julian_day(sunrise)
+    dasha = dasha_block(natal, sunrise)
+
+    def lord_row(period: dict[str, Any]) -> dict[str, Any]:
+        asta, vakri = _lord_motion(period["lord"], jd)
+        return {
+            "lord": period["lord"],
+            "lord_ne": period["lord_ne"],
+            "lord_en": period["lord_en"],
+            "asta": asta,
+            "vakri": vakri,
+        }
+
+    rashi_idx = int(natal.moon_sign)
+    nak_idx = int(natal.chart.moon_nak[0])
+    points = _split_points(sunrise, nxt)
+    segments: list[dict[str, Any]] = []
+    for start, end in zip(points, points[1:]):
+        if end <= start:
+            continue
+        probe = start + timedelta(seconds=30)
+        if probe >= end:
+            probe = start
+        moon = rashi_service.chandra(as_julian_day(probe))
+        moon_long = moon_service.longitude(as_julian_day(probe))
+        transit_nak = int(moon_long / NAKSHATRA_SPAN) % 27
+        house, state = _chandra_state(int(moon.number) - 1, rashi_idx)
+        segments.append(
+            {
+                "start": _clock_from_midnight(start, greg, location.timezone),
+                "end": _clock_from_midnight(end, greg, location.timezone),
+                "chandra": {"house": house, "state": state},
+                "tara": _tara_state(transit_nak, nak_idx),
+            }
+        )
+
+    return {
+        "janma_rashi": {
+            "number": rashi_idx + 1,
+            "name_ne": RASHI_NAMES_NE[rashi_idx],
+            "name_en": RASHI_NAMES[rashi_idx],
+        },
+        "janma_nakshatra": {
+            "number": nak_idx + 1,
+            "name_ne": NAKSHATRA_NAMES_NE[nak_idx],
+            "name_en": NAKSHATRA_NAMES[nak_idx],
+        },
+        "dasha": {"maha": lord_row(dasha["mahadasha"]), "antar": lord_row(dasha["antardasha"])},
+        "segments": segments,
+    }
+
+
 def build_day_guidance(
     greg: date,
     location: ObserverLocation,
@@ -134,7 +285,7 @@ def build_day_guidance(
     summary_ne = " ".join((do_ne[:1] + careful_ne[:1] + dont_ne[:1])[:2])
     summary_en = " ".join((do_en[:1] + careful_en[:1] + dont_en[:1])[:2])
 
-    return {
+    payload = {
         "date": greg.isoformat(),
         "date_bs": state.get("date_bs"),
         "weekday_ne": state.get("weekday"),
@@ -154,6 +305,9 @@ def build_day_guidance(
         "careful_en": careful_en,
         "windows": windows,
     }
+    if natal is not None:
+        payload["personal"] = _personal_block(natal, greg, location)
+    return payload
 
 
 def build_guidance_range(

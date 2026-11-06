@@ -46,8 +46,10 @@ export interface DocumentSummary {
 
 export interface Shloka {
   id: number;
-  global_order: number;
-  verse_number: number;
+  /** Reading order inside the document. Omitted on a scrolled chapter page (the cursors carry it). */
+  global_order?: number;
+  /** Running number inside the chapter. Omitted on a scrolled chapter page. */
+  verse_number?: number;
   /** Human-facing verse reference, e.g. "1.1" or "12" — matches the audio filenames. */
   verse_label: string;
   /**
@@ -137,13 +139,19 @@ export interface DocumentChapterDetail extends DocumentSummary {
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "21";
+const DOCUMENTS_LIST_CACHE_VERSION = "22";
+
+/** Verses requested per scroll. The server clamps anything outside 1..100. */
+export const CHAPTER_PAGE_SIZE = 25;
 
 export const documentsKeys = {
   list: () => ["documents", "list", DOCUMENTS_LIST_CACHE_VERSION] as const,
   detail: (slug: string) => ["documents", "detail", slug, DOCUMENTS_LIST_CACHE_VERSION] as const,
   chapter: (slug: string, chapterNumber: number) =>
     ["documents", "detail", slug, "chapter", chapterNumber, DOCUMENTS_LIST_CACHE_VERSION] as const,
+  /** One infinite query per chapter, keyed by the verse the reader opened on (or "" from the start). */
+  chapterPages: (slug: string, chapterNumber: number, entryVerse: string | null) =>
+    ["documents", "detail", slug, "chapter-pages", chapterNumber, entryVerse ?? "", DOCUMENTS_LIST_CACHE_VERSION] as const,
 };
 
 export const fetchDocuments = () =>
@@ -158,6 +166,55 @@ export const fetchDocumentChapter = (slug: string, chapterNumber: number) =>
   get<DocumentChapterDetail>(
     `/documents/${encodeURIComponent(slug)}/chapters/${chapterNumber}`,
   );
+
+export type ChapterPageDirection = "next" | "prev";
+
+export interface ChapterPageQuery {
+  /** global_order of the edge verse already on screen. */
+  cursor?: number;
+  direction?: ChapterPageDirection;
+  limit?: number;
+  /** verse_label to centre this page on. Devanagari or Latin digits. */
+  verse?: string;
+}
+
+/** A scrolled chapter: the same document/chapter header, one page of verses, and keyset cursors. */
+export interface DocumentChapterPage extends DocumentSummary {
+  source_ne?: string | null;
+  source_en?: string | null;
+  chapter: {
+    number: number | null;
+    title_ne?: string | null;
+    title_en?: string | null;
+    image_urls?: string[];
+    /** Only on an API that predates paging, which answers with the whole chapter here. */
+    shlokas?: Shloka[];
+  };
+  verses: Shloka[];
+  /** global_order to pass back for the following page. Null on the last page. */
+  next_cursor: number | null;
+  /** global_order to pass back for the preceding page. Null on the first page. */
+  prev_cursor: number | null;
+  /** Verse count of the whole chapter, not of this page. */
+  total: number;
+}
+
+/** One page of a chapter. `limit` defaults to {@link CHAPTER_PAGE_SIZE}. */
+export const fetchDocumentChapterPage = (
+  slug: string,
+  chapterNumber: number,
+  { cursor, direction, limit = CHAPTER_PAGE_SIZE, verse }: ChapterPageQuery = {},
+) => {
+  const params = new URLSearchParams();
+  if (cursor != null) params.set("cursor", String(cursor));
+  if (direction) params.set("direction", direction);
+  params.set("limit", String(limit));
+  if (verse) params.set("verse", verse);
+  params.set("v", DOCUMENTS_LIST_CACHE_VERSION);
+  return get<DocumentChapterPage>(
+    `/documents/${encodeURIComponent(slug)}/chapters/${chapterNumber}?${params}`,
+  );
+};
 
 /**
  * Every shloka in a document, in reading order, across chapter boundaries.
@@ -214,6 +271,22 @@ export const fetchVerseDetailPage = (
 ) =>
   get<VerseDetailPage>(
     `/veda/details/${kind}?value=${encodeURIComponent(value)}${slug ? `&slug=${encodeURIComponent(slug)}` : ""}&offset=${offset}&limit=${limit}&v=${DOCUMENTS_LIST_CACHE_VERSION}`,
+  );
+
+export interface VerseDetailValue {
+  value: string;
+  count: number;
+}
+
+export const verseDetailValuesKeys = {
+  list: (kind: VerseDetailKind, slug: string | undefined) =>
+    ["veda", "detail-values", kind, slug ?? "all", DOCUMENTS_LIST_CACHE_VERSION] as const,
+};
+
+/** Every distinct देवता / ऋषि / छन्द / स्वर (with its mantra count), optionally within one Veda. */
+export const fetchVerseDetailValues = (kind: VerseDetailKind, slug?: string) =>
+  get<{ kind: VerseDetailKind; values: VerseDetailValue[] }>(
+    `/veda/details/${kind}/values${slug ? `?slug=${encodeURIComponent(slug)}&` : "?"}v=${DOCUMENTS_LIST_CACHE_VERSION}`,
   );
 
 export const vedaDailyKeys = {

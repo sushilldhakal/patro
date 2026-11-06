@@ -83,6 +83,7 @@ const d: any = docs;
 add("fetchDocuments", () => d.fetchDocuments());
 add("fetchDocumentDetail", () => d.fetchDocumentDetail("hanuman chalisa"));
 add("fetchDocumentChapter", () => d.fetchDocumentChapter("bhagavad-gita", 3));
+add("fetchDocumentChapterPage", () => d.fetchDocumentChapterPage("bhagavad-gita", 3, { cursor: 10, direction: "prev", limit: 25, verse: "3.1" }));
 add("fetchVedaDaily", () => d.fetchVedaDaily("2026-10-10"));
 
 // ─── Auth and profiles (method and body are part of the record) ──────────────

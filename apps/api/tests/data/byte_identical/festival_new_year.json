@@ -55,131 +55,131 @@
     "moon_label_en": "Kumbha",
     "rows": [
       {
+        "house": 11,
         "index": 0,
         "name": "मेष",
         "name_en": "Mesha",
         "quality": "शुभ",
-        "tara": "मित्र",
-        "tara_num": 8,
+        "tara": "११औं भाव",
         "tone": "good"
       },
       {
+        "house": 10,
         "index": 1,
         "name": "वृष",
         "name_en": "Vrishabha",
-        "quality": "घातक",
-        "tara": "निधन",
-        "tara_num": 7,
-        "tone": "worst"
-      },
-      {
-        "index": 2,
-        "name": "मिथुन",
-        "name_en": "Mithuna",
-        "quality": "अति शुभ",
-        "tara": "साधना",
-        "tara_num": 6,
-        "tone": "best"
-      },
-      {
-        "index": 3,
-        "name": "कर्कट",
-        "name_en": "Karka",
-        "quality": "अशुभ",
-        "tara": "प्रत्यक्",
-        "tara_num": 5,
-        "tone": "bad"
-      },
-      {
-        "index": 4,
-        "name": "सिंह",
-        "name_en": "Simha",
-        "quality": "अति शुभ",
-        "tara": "क्षेम",
-        "tara_num": 4,
-        "tone": "best"
-      },
-      {
-        "index": 5,
-        "name": "कन्या",
-        "name_en": "Kanya",
-        "quality": "अशुभ",
-        "tara": "विपत्",
-        "tara_num": 3,
-        "tone": "bad"
-      },
-      {
-        "index": 6,
-        "name": "तुला",
-        "name_en": "Tula",
-        "quality": "अति शुभ",
-        "tara": "सम्पत्",
-        "tara_num": 2,
-        "tone": "best"
-      },
-      {
-        "index": 7,
-        "name": "वृश्चिक",
-        "name_en": "Vrishchika",
-        "quality": "मध्यम",
-        "tara": "जन्म",
-        "tara_num": 1,
-        "tone": "neutral"
-      },
-      {
-        "index": 8,
-        "name": "धनु",
-        "name_en": "Dhanu",
-        "quality": "अति शुभ",
-        "tara": "परम मित्र",
-        "tara_num": 9,
-        "tone": "best"
-      },
-      {
-        "index": 9,
-        "name": "मकर",
-        "name_en": "Makara",
         "quality": "शुभ",
-        "tara": "मित्र",
-        "tara_num": 8,
+        "tara": "१०औं भाव",
         "tone": "good"
       },
       {
-        "index": 10,
-        "name": "कुम्भ",
-        "name_en": "Kumbha",
+        "house": 9,
+        "index": 2,
+        "name": "मिथुन",
+        "name_en": "Mithuna",
         "quality": "मध्यम",
-        "tara": "जन्म",
-        "tara_num": 1,
+        "tara": "९औं भाव",
         "tone": "neutral"
       },
       {
+        "house": 8,
+        "index": 3,
+        "name": "कर्कट",
+        "name_en": "Karka",
+        "quality": "अष्टम चन्द्र",
+        "tara": "८औं भाव",
+        "tone": "worst"
+      },
+      {
+        "house": 7,
+        "index": 4,
+        "name": "सिंह",
+        "name_en": "Simha",
+        "quality": "शुभ",
+        "tara": "७औं भाव",
+        "tone": "good"
+      },
+      {
+        "house": 6,
+        "index": 5,
+        "name": "कन्या",
+        "name_en": "Kanya",
+        "quality": "शुभ",
+        "tara": "६औं भाव",
+        "tone": "good"
+      },
+      {
+        "house": 5,
+        "index": 6,
+        "name": "तुला",
+        "name_en": "Tula",
+        "quality": "मध्यम",
+        "tara": "५औं भाव",
+        "tone": "neutral"
+      },
+      {
+        "house": 4,
+        "index": 7,
+        "name": "वृश्चिक",
+        "name_en": "Vrishchika",
+        "quality": "अशुभ",
+        "tara": "४औं भाव",
+        "tone": "bad"
+      },
+      {
+        "house": 3,
+        "index": 8,
+        "name": "धनु",
+        "name_en": "Dhanu",
+        "quality": "शुभ",
+        "tara": "३औं भाव",
+        "tone": "good"
+      },
+      {
+        "house": 2,
+        "index": 9,
+        "name": "मकर",
+        "name_en": "Makara",
+        "quality": "मध्यम",
+        "tara": "२औं भाव",
+        "tone": "neutral"
+      },
+      {
+        "house": 1,
+        "index": 10,
+        "name": "कुम्भ",
+        "name_en": "Kumbha",
+        "quality": "शुभ",
+        "tara": "१औं भाव",
+        "tone": "good"
+      },
+      {
+        "house": 12,
         "index": 11,
         "name": "मीन",
         "name_en": "Meena",
-        "quality": "अति शुभ",
-        "tara": "परम मित्र",
-        "tara_num": 9,
-        "tone": "best"
+        "quality": "अशुभ",
+        "tara": "१२औं भाव",
+        "tone": "bad"
       }
     ]
   },
   "chandrabalam": {
     "set1": [
       {
-        "name": "Meena",
-        "name_ne": "मीन",
-        "number": 12
+        "name": "Kumbha",
+        "name_ne": "कुम्भ",
+        "number": 11
       },
       {
-        "name": "Mesha",
-        "name_ne": "मेष",
-        "number": 1
+        "name": "Dhanu",
+        "name_ne": "धनु",
+        "number": 9
       },
       {
-        "name": "Karka",
-        "name_ne": "कर्कट",
-        "number": 4
+        "name": "Kanya",
+        "name_ne": "कन्या",
+        "number": 6
       },
       {
         "name": "Simha",
@@ -187,14 +187,14 @@
         "number": 5
       },
       {
-        "name": "Vrishchika",
-        "name_ne": "वृश्चिक",
-        "number": 8
+        "name": "Vrishabha",
+        "name_ne": "वृष",
+        "number": 2
       },
       {
-        "name": "Makara",
-        "name_ne": "मकर",
-        "number": 10
+        "name": "Mesha",
+        "name_ne": "मेष",
+        "number": 1
       }
     ],
     "set2": [
@@ -204,19 +204,9 @@
         "number": 12
       },
       {
-        "name": "Vrishabha",
-        "name_ne": "वृष",
-        "number": 2
-      },
-      {
-        "name": "Mithuna",
-        "name_ne": "मिथुन",
-        "number": 3
-      },
-      {
-        "name": "Kanya",
-        "name_ne": "कन्या",
-        "number": 6
+        "name": "Makara",
+        "name_ne": "मकर",
+        "number": 10
       },
       {
         "name": "Tula",
@@ -224,9 +214,19 @@
         "number": 7
       },
       {
-        "name": "Makara",
-        "name_ne": "मकर",
-        "number": 10
+        "name": "Kanya",
+        "name_ne": "कन्या",
+        "number": 6
+      },
+      {
+        "name": "Mithuna",
+        "name_ne": "मिथुन",
+        "number": 3
+      },
+      {
+        "name": "Vrishabha",
+        "name_ne": "वृष",
+        "number": 2
       }
     ],
     "till": null
@@ -2239,7 +2239,7 @@
     "anchor": "sunrise",
     "method": {
       "ayanamsa": "Lahiri",
-      "chandrabala": "navatara_9_cycle",
+      "chandrabala": "transit_moon_house",
       "frame": "drik_ganita",
       "moorti": "transit_moon_house_from_janma_rashi"
     },
@@ -2254,8 +2254,8 @@
         "index": 0,
         "lucky_color_en": "Yellow",
         "lucky_color_ne": "पहेलो",
-        "lucky_number_en": "8",
-        "lucky_number_ne": "८",
+        "lucky_number_en": "11",
+        "lucky_number_ne": "११",
         "moorti": "swarna",
         "moorti_en": "Swarna (gold)",
         "moorti_ne": "स्वर्ण",
@@ -2265,8 +2265,7 @@
         "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। गोचर चन्द्रको मूर्ति स्वर्ण — फलदायी।",
         "quality": "शुभ",
         "syllables_ne": "चु चे चो ला लि लु ले लो अ",
-        "tara": "मित्र",
-        "tara_num": 8,
+        "tara": "११औं भाव",
         "title_en": "Mesh",
         "tone": "good"
       },
@@ -2276,21 +2275,20 @@
         "index": 1,
         "lucky_color_en": "Green",
         "lucky_color_ne": "हरियो",
-        "lucky_number_en": "7",
-        "lucky_number_ne": "७",
+        "lucky_number_en": "10",
+        "lucky_number_ne": "१०",
         "moorti": "tamra",
         "moorti_en": "Tamra (copper)",
         "moorti_ne": "ताम्र",
         "name": "वृष",
         "name_en": "Vrishabha",
-        "prediction_en": "Very inauspicious chandrabala — avoid risky ventures; rest and spiritual practice help. Tamra Moorti — average; stay patient and careful. Begin the day remembering your ishta or kuladevata.",
-        "prediction_ne": "अति अशुभ चन्द्रबल — जोखिमपूर्ण कार्य नगर्नुहोस्; साधना र विश्राम श्रेय। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्। आफ्नो इष्टदेव वा कुलदेवताको स्मरण गरी दिनको प्रारम्भ गर्नुहोला।",
-        "quality": "घातक",
+        "prediction_en": "Generally favourable — steady progress on plans and relationships. Tamra Moorti — average; stay patient and careful.",
+        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्।",
+        "quality": "शुभ",
         "syllables_ne": "इ उ ए ओ वा वि वु वे वो",
-        "tara": "निधन",
-        "tara_num": 7,
+        "tara": "१०औं भाव",
         "title_en": "Vrish",
-        "tone": "worst"
+        "tone": "good"
       },
       {
         "house_from_moon": 9,
@@ -2298,21 +2296,20 @@
         "index": 2,
         "lucky_color_en": "White",
         "lucky_color_ne": "सेतो",
-        "lucky_number_en": "6",
-        "lucky_number_ne": "६",
+        "lucky_number_en": "9",
+        "lucky_number_ne": "९",
         "moorti": "rajata",
         "moorti_en": "Rajata (silver)",
         "moorti_ne": "रजत",
         "name": "मिथुन",
         "name_en": "Mithuna",
-        "prediction_en": "Strong chandrabala — auspicious for important work, travel and new beginnings. Rajata Moorti — favourable results.",
-        "prediction_ne": "चन्द्रबल अनुकूल — महत्त्वपूर्ण काम, यात्रा र नयाँ सुरुवातका लागि शुभ। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
-        "quality": "अति शुभ",
+        "prediction_en": "Mixed or moderate — proceed with care; routine work is fine. Rajata Moorti — favourable results.",
+        "prediction_ne": "मध्यम वा मिश्र फल — सावधानी अपनाउनुहोस्; दैनिक काम ठीक छ। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
+        "quality": "मध्यम",
         "syllables_ne": "का कि कु घ ङ छ के को हा",
-        "tara": "साधना",
-        "tara_num": 6,
+        "tara": "९औं भाव",
         "title_en": "Mithun",
-        "tone": "best"
+        "tone": "neutral"
       },
       {
         "house_from_moon": 8,
@@ -2320,21 +2317,20 @@
         "index": 3,
         "lucky_color_en": "Red",
         "lucky_color_ne": "रातो",
-        "lucky_number_en": "5",
-        "lucky_number_ne": "५",
+        "lucky_number_en": "8",
+        "lucky_number_ne": "८",
         "moorti": "loha",
         "moorti_en": "Loha (iron)",
         "moorti_ne": "लोह",
         "name": "कर्कट",
         "name_en": "Karka",
-        "prediction_en": "Weak chandrabala — delay major decisions; avoid unnecessary risk. Loha Moorti — results may fall short; remedies and restraint help. Light a lamp at a nearby temple or give charity for calm.",
-        "prediction_ne": "चन्द्रबल कमजोर — ठूला निर्णय स्थगित गर्नुहोस्; जोखिम टाढा राख्नुहोला। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला। नजिकको मन्दिरमा दियो बाल्नु वा दानपुण्य गर्नु शान्तिदायक हुनेछ।",
-        "quality": "अशुभ",
+        "prediction_en": "Very inauspicious chandrabala — avoid risky ventures; rest and spiritual practice help. Loha Moorti — results may fall short; remedies and restraint help. Light a lamp at a nearby temple or give charity for calm.",
+        "prediction_ne": "अति अशुभ चन्द्रबल — जोखिमपूर्ण कार्य नगर्नुहोस्; साधना र विश्राम श्रेय। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला। नजिकको मन्दिरमा दियो बाल्नु वा दानपुण्य गर्नु शान्तिदायक हुनेछ।",
+        "quality": "अष्टम चन्द्र",
         "syllables_ne": "हि हु हे हो डा डि डु डे डो",
-        "tara": "प्रत्यक्",
-        "tara_num": 5,
+        "tara": "८औं भाव",
         "title_en": "Karkat",
-        "tone": "bad"
+        "tone": "worst"
       },
       {
         "house_from_moon": 7,
@@ -2342,21 +2338,20 @@
         "index": 4,
         "lucky_color_en": "Green",
         "lucky_color_ne": "हरियो",
-        "lucky_number_en": "4",
-        "lucky_number_ne": "४",
+        "lucky_number_en": "7",
+        "lucky_number_ne": "७",
         "moorti": "tamra",
         "moorti_en": "Tamra (copper)",
         "moorti_ne": "ताम्र",
         "name": "सिंह",
         "name_en": "Simha",
-        "prediction_en": "Strong chandrabala — auspicious for important work, travel and new beginnings. Tamra Moorti — average; stay patient and careful.",
-        "prediction_ne": "चन्द्रबल अनुकूल — महत्त्वपूर्ण काम, यात्रा र नयाँ सुरुवातका लागि शुभ। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्।",
-        "quality": "अति शुभ",
+        "prediction_en": "Generally favourable — steady progress on plans and relationships. Tamra Moorti — average; stay patient and careful.",
+        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्।",
+        "quality": "शुभ",
         "syllables_ne": "मा मि मु मे मो टा ति टु टे",
-        "tara": "क्षेम",
-        "tara_num": 4,
+        "tara": "७औं भाव",
         "title_en": "Simha",
-        "tone": "best"
+        "tone": "good"
       },
       {
         "house_from_moon": 6,
@@ -2364,21 +2359,20 @@
         "index": 5,
         "lucky_color_en": "Yellow",
         "lucky_color_ne": "पहेलो",
-        "lucky_number_en": "3",
-        "lucky_number_ne": "३",
+        "lucky_number_en": "6",
+        "lucky_number_ne": "६",
         "moorti": "swarna",
         "moorti_en": "Swarna (gold)",
         "moorti_ne": "स्वर्ण",
         "name": "कन्या",
         "name_en": "Kanya",
-        "prediction_en": "Weak chandrabala — delay major decisions; avoid unnecessary risk. Transit Moorti is Swarna — highly fruitful. Visit Ganesh and give a small donation.",
-        "prediction_ne": "चन्द्रबल कमजोर — ठूला निर्णय स्थगित गर्नुहोस्; जोखिम टाढा राख्नुहोला। गोचर चन्द्रको मूर्ति स्वर्ण — फलदायी। भगवान गणेशको दर्शन गरी दान गर्नु शुभ रहनेछ।",
-        "quality": "अशुभ",
+        "prediction_en": "Generally favourable — steady progress on plans and relationships. Transit Moorti is Swarna — highly fruitful.",
+        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। गोचर चन्द्रको मूर्ति स्वर्ण — फलदायी।",
+        "quality": "शुभ",
         "syllables_ne": "टो पा पि पु ष ण ठ पे पो",
-        "tara": "विपत्",
-        "tara_num": 3,
+        "tara": "६औं भाव",
         "title_en": "Kanya",
-        "tone": "bad"
+        "tone": "good"
       },
       {
         "house_from_moon": 5,
@@ -2386,21 +2380,20 @@
         "index": 6,
         "lucky_color_en": "White",
         "lucky_color_ne": "सेतो",
-        "lucky_number_en": "2",
-        "lucky_number_ne": "२",
+        "lucky_number_en": "5",
+        "lucky_number_ne": "५",
         "moorti": "rajata",
         "moorti_en": "Rajata (silver)",
         "moorti_ne": "रजत",
         "name": "तुला",
         "name_en": "Tula",
-        "prediction_en": "Strong chandrabala — auspicious for important work, travel and new beginnings. Rajata Moorti — favourable results.",
-        "prediction_ne": "चन्द्रबल अनुकूल — महत्त्वपूर्ण काम, यात्रा र नयाँ सुरुवातका लागि शुभ। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
-        "quality": "अति शुभ",
+        "prediction_en": "Mixed or moderate — proceed with care; routine work is fine. Rajata Moorti — favourable results.",
+        "prediction_ne": "मध्यम वा मिश्र फल — सावधानी अपनाउनुहोस्; दैनिक काम ठीक छ। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
+        "quality": "मध्यम",
         "syllables_ne": "रा रि रु रे रो ता ति तु ते",
-        "tara": "सम्पत्",
-        "tara_num": 2,
+        "tara": "५औं भाव",
         "title_en": "Tula",
-        "tone": "best"
+        "tone": "neutral"
       },
       {
         "house_from_moon": 4,
@@ -2408,21 +2401,20 @@
         "index": 7,
         "lucky_color_en": "Red",
         "lucky_color_ne": "रातो",
-        "lucky_number_en": "1",
-        "lucky_number_ne": "१",
+        "lucky_number_en": "4",
+        "lucky_number_ne": "४",
         "moorti": "loha",
         "moorti_en": "Loha (iron)",
         "moorti_ne": "लोह",
         "name": "वृश्चिक",
         "name_en": "Vrishchika",
-        "prediction_en": "Mixed or moderate — proceed with care; routine work is fine. Loha Moorti — results may fall short; remedies and restraint help.",
-        "prediction_ne": "मध्यम वा मिश्र फल — सावधानी अपनाउनुहोस्; दैनिक काम ठीक छ। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला।",
-        "quality": "मध्यम",
+        "prediction_en": "Weak chandrabala — delay major decisions; avoid unnecessary risk. Loha Moorti — results may fall short; remedies and restraint help. Chant Mahamrityunjaya or worship Shiva.",
+        "prediction_ne": "चन्द्रबल कमजोर — ठूला निर्णय स्थगित गर्नुहोस्; जोखिम टाढा राख्नुहोला। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला। महामृत्युञ्जय जप वा शिवजीको उपासना गर्नुहोला।",
+        "quality": "अशुभ",
         "syllables_ne": "तो ना नि नु ने नो या यि यु",
-        "tara": "जन्म",
-        "tara_num": 1,
+        "tara": "४औं भाव",
         "title_en": "Vrishchik",
-        "tone": "neutral"
+        "tone": "bad"
       },
       {
         "house_from_moon": 3,
@@ -2430,21 +2422,20 @@
         "index": 8,
         "lucky_color_en": "Green",
         "lucky_color_ne": "हरियो",
-        "lucky_number_en": "9",
-        "lucky_number_ne": "९",
+        "lucky_number_en": "3",
+        "lucky_number_ne": "३",
         "moorti": "tamra",
         "moorti_en": "Tamra (copper)",
         "moorti_ne": "ताम्र",
         "name": "धनु",
         "name_en": "Dhanu",
-        "prediction_en": "Strong chandrabala — auspicious for important work, travel and new beginnings. Tamra Moorti — average; stay patient and careful.",
-        "prediction_ne": "चन्द्रबल अनुकूल — महत्त्वपूर्ण काम, यात्रा र नयाँ सुरुवातका लागि शुभ। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्।",
-        "quality": "अति शुभ",
+        "prediction_en": "Generally favourable — steady progress on plans and relationships. Tamra Moorti — average; stay patient and careful.",
+        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। मूर्ति ताम्र — सामान्य; धैर्य र सावधानी राख्नुहोस्।",
+        "quality": "शुभ",
         "syllables_ne": "ये यो भा भि भु धा फा ढा भे",
-        "tara": "परम मित्र",
-        "tara_num": 9,
+        "tara": "३औं भाव",
         "title_en": "Dhanu",
-        "tone": "best"
+        "tone": "good"
       },
       {
         "house_from_moon": 2,
@@ -2452,21 +2443,20 @@
         "index": 9,
         "lucky_color_en": "White",
         "lucky_color_ne": "सेतो",
-        "lucky_number_en": "8",
-        "lucky_number_ne": "८",
+        "lucky_number_en": "2",
+        "lucky_number_ne": "२",
         "moorti": "rajata",
         "moorti_en": "Rajata (silver)",
         "moorti_ne": "रजत",
         "name": "मकर",
         "name_en": "Makara",
-        "prediction_en": "Generally favourable — steady progress on plans and relationships. Rajata Moorti — favourable results.",
-        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
-        "quality": "शुभ",
+        "prediction_en": "Mixed or moderate — proceed with care; routine work is fine. Rajata Moorti — favourable results.",
+        "prediction_ne": "मध्यम वा मिश्र फल — सावधानी अपनाउनुहोस्; दैनिक काम ठीक छ। मूर्ति रजत — शुभ फल प्राप्त हुनेछ।",
+        "quality": "मध्यम",
         "syllables_ne": "भो जा जि जु जे जो ख खि खु खे खो गा गि",
-        "tara": "मित्र",
-        "tara_num": 8,
+        "tara": "२औं भाव",
         "title_en": "Makar",
-        "tone": "good"
+        "tone": "neutral"
       },
       {
         "house_from_moon": 1,
@@ -2481,14 +2471,13 @@
         "moorti_ne": "स्वर्ण",
         "name": "कुम्भ",
         "name_en": "Kumbha",
-        "prediction_en": "Mixed or moderate — proceed with care; routine work is fine. Transit Moorti is Swarna — highly fruitful.",
-        "prediction_ne": "मध्यम वा मिश्र फल — सावधानी अपनाउनुहोस्; दैनिक काम ठीक छ। गोचर चन्द्रको मूर्ति स्वर्ण — फलदायी।",
-        "quality": "मध्यम",
+        "prediction_en": "Generally favourable — steady progress on plans and relationships. Transit Moorti is Swarna — highly fruitful.",
+        "prediction_ne": "प्रायः अनुकूल दिन — योजना र सम्बन्धमा स्थिर प्रगति। गोचर चन्द्रको मूर्ति स्वर्ण — फलदायी।",
+        "quality": "शुभ",
         "syllables_ne": "गु गे गो सा सि सु से सो दा",
-        "tara": "जन्म",
-        "tara_num": 1,
+        "tara": "१औं भाव",
         "title_en": "Kumbha",
-        "tone": "neutral"
+        "tone": "good"
       },
       {
         "house_from_moon": 12,
@@ -2496,21 +2485,20 @@
         "index": 11,
         "lucky_color_en": "Red",
         "lucky_color_ne": "रातो",
-        "lucky_number_en": "9",
-        "lucky_number_ne": "९",
+        "lucky_number_en": "12",
+        "lucky_number_ne": "१२",
         "moorti": "loha",
         "moorti_en": "Loha (iron)",
         "moorti_ne": "लोह",
         "name": "मीन",
         "name_en": "Meena",
-        "prediction_en": "Strong chandrabala — auspicious for important work, travel and new beginnings. Loha Moorti — results may fall short; remedies and restraint help.",
-        "prediction_ne": "चन्द्रबल अनुकूल — महत्त्वपूर्ण काम, यात्रा र नयाँ सुरुवातका लागि शुभ। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला।",
-        "quality": "अति शुभ",
+        "prediction_en": "Weak chandrabala — delay major decisions; avoid unnecessary risk. Loha Moorti — results may fall short; remedies and restraint help. Be careful in vehicles.",
+        "prediction_ne": "चन्द्रबल कमजोर — ठूला निर्णय स्थगित गर्नुहोस्; जोखिम टाढा राख्नुहोला। मूर्ति लोह — फल कमजोर; उपाय र संयम अपनाउनुहोला। सवारी साधनमा सावधानी अपनाउनुहोला।",
+        "quality": "अशुभ",
         "syllables_ne": "दि दु थ झ ञ दे दो चा चि",
-        "tara": "परम मित्र",
-        "tara_num": 9,
+        "tara": "१२औं भाव",
         "title_en": "Meen",
-        "tone": "best"
+        "tone": "bad"
       }
     ],
     "vaara_num": 2
@@ -2653,7 +2641,7 @@
         "name": "अश्विनी",
         "name_en": "Ashwini",
         "quality": "अति शुभ",
-        "tara": "साधना",
+        "tara": "साधक",
         "tara_num": 6,
         "tone": "best"
       },
@@ -2734,7 +2722,7 @@
         "name": "मघा",
         "name_en": "Magha",
         "quality": "अति शुभ",
-        "tara": "साधना",
+        "tara": "साधक",
         "tara_num": 6,
         "tone": "best"
       },
@@ -2815,7 +2803,7 @@
         "name": "मूल",
         "name_en": "Mula",
         "quality": "अति शुभ",
-        "tara": "साधना",
+        "tara": "साधक",
         "tara_num": 6,
         "tone": "best"
       },

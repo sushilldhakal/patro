@@ -5,20 +5,22 @@
  * takes, its header, chapter list, verse rows, chapter paging and copy.
  * Playback stays with each app's audio engine.
  */
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useInfiniteQuery, useQuery, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import {
+  CHAPTER_PAGE_SIZE,
   DOCUMENTS_STALE_TIME,
   documentsKeys,
-  fetchDocumentChapter,
+  fetchDocumentChapterPage,
   fetchDocumentDetail,
   flattenShlokas,
   isNotFound,
+  type DocumentChapterPage as ChapterSlice,
   type DocumentDetail,
   type Shloka,
 } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { bilingual, chapterAnchor, inlineChapterRows, versesToRows, type ReaderRow } from "./reader-rows";
+import { bilingual, canonVerseLabel, chapterAnchor, inlineChapterRows, versesToRows, type ReaderRow } from "./reader-rows";
 
 export * from "./reader-rows";
 
@@ -33,6 +35,16 @@ export type DocumentChapterCard = {
 };
 
 const retry = (count: number, error: unknown) => !isNotFound(error) && count < 2;
+
+/**
+ * Verses on one infinite-query page. A server that has not been deployed with
+ * keyset paging still returns the whole chapter as `chapter.shlokas`.
+ */
+function versesOf(page: { verses?: Shloka[] | null; chapter?: { shlokas?: Shloka[] | null } | null }): Shloka[] {
+  if (Array.isArray(page.verses)) return page.verses;
+  const legacy = page.chapter?.shlokas;
+  return Array.isArray(legacy) ? legacy : [];
+}
 
 function useDocText() {
   const { t, lang, digits } = useLocale();
@@ -140,32 +152,82 @@ export function useDocumentDetail(slug: string | undefined) {
   };
 }
 
-/** One chapter of a paginated document — its verses only, plus prev/next. */
-export function useDocumentChapter(slug: string | undefined, chapterNumber: number) {
+type ChapterPageParam = {
+  cursor?: number;
+  direction?: "next" | "prev";
+  verse?: string;
+  limit: number;
+};
+
+export type DocumentChapterOptions = {
+  /** Centre the first page on this verse_label (a hash, a jump, or a restored scroll). */
+  verse?: string | null;
+  /**
+   * False until the caller knows which verse to open on. The website reads the
+   * hash after mount so the server render and the first client paint agree.
+   */
+  enabled?: boolean;
+};
+
+/** One chapter of a paginated document — a window of verses, plus prev/next chapter. */
+export function useDocumentChapter(
+  slug: string | undefined,
+  chapterNumber: number,
+  options?: DocumentChapterOptions,
+) {
   const text = useDocText();
   const { t, lang, digits } = text;
+  const queryClient = useQueryClient();
   const valid = Boolean(slug) && Number.isFinite(chapterNumber);
+  const enabled = options?.enabled !== false;
+  const propVerse = options?.verse ? canonVerseLabel(options.verse) : null;
+  // A jump to a verse that is not loaded yet replaces the window. Undefined follows `propVerse`.
+  const [override, setOverride] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    setOverride(undefined);
+  }, [slug, chapterNumber, propVerse]);
+  const entry = override === undefined ? propVerse : override;
+
   const docQ = useQuery({
     queryKey: documentsKeys.detail(slug ?? ""),
     queryFn: () => fetchDocumentDetail(slug!),
     enabled: Boolean(slug),
     staleTime: DOCUMENTS_STALE_TIME,
   });
-  const chapterQ = useQuery({
-    queryKey: documentsKeys.chapter(slug ?? "", chapterNumber),
-    queryFn: () => fetchDocumentChapter(slug!, chapterNumber),
-    enabled: valid && !docQ.data?.inline_chapters,
+  const chapterQ = useInfiniteQuery({
+    queryKey: documentsKeys.chapterPages(slug ?? "", chapterNumber, entry),
+    queryFn: ({ pageParam }) => fetchDocumentChapterPage(slug!, chapterNumber, pageParam),
+    initialPageParam: (entry
+      ? { verse: entry, limit: CHAPTER_PAGE_SIZE }
+      : { direction: "next" as const, limit: CHAPTER_PAGE_SIZE }) as ChapterPageParam,
+    getNextPageParam: (last): ChapterPageParam | undefined =>
+      last.next_cursor == null ? undefined : { cursor: last.next_cursor, direction: "next", limit: CHAPTER_PAGE_SIZE },
+    getPreviousPageParam: (first): ChapterPageParam | undefined =>
+      first.prev_cursor == null ? undefined : { cursor: first.prev_cursor, direction: "prev", limit: CHAPTER_PAGE_SIZE },
+    enabled: valid && enabled && !docQ.data?.inline_chapters,
     staleTime: DOCUMENTS_STALE_TIME,
     retry,
   });
-  const data = chapterQ.data;
-  const shlokas: Shloka[] = useMemo(() => data?.chapter.shlokas ?? [], [data]);
+  const data = chapterQ.data?.pages[0];
+  const shlokas: Shloka[] = useMemo(() => {
+    const seen = new Set<number>();
+    const out: Shloka[] = [];
+    for (const page of chapterQ.data?.pages ?? []) {
+      for (const verse of versesOf(page)) {
+        if (seen.has(verse.id)) continue;
+        seen.add(verse.id);
+        out.push(verse);
+      }
+    }
+    return out;
+  }, [chapterQ.data]);
+  const atStart = chapterQ.data != null && !chapterQ.hasPreviousPage;
+  const imageUrls = data?.chapter.image_urls;
   const rows = useMemo(() => {
     const verseRows = versesToRows(shlokas, text);
-    const urls = data?.chapter.image_urls ?? [];
-    if (urls.length === 0) return verseRows;
-    return [{ kind: "images" as const, key: `images-c${chapterNumber}`, urls }, ...verseRows];
-  }, [shlokas, text, data?.chapter.image_urls, chapterNumber]);
+    if (!atStart || !imageUrls?.length) return verseRows;
+    return [{ kind: "images" as const, key: `images-c${chapterNumber}`, urls: imageUrls }, ...verseRows];
+  }, [shlokas, text, atStart, imageUrls, chapterNumber]);
   // Sibling chapters come from the (cached) document summary; a deep link
   // opened straight to this chapter has none until it loads.
   const numbers = chapterNumbersOf(docQ.data);
@@ -181,6 +243,32 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
     const title = bilingual(lang, c.title_ne, c.title_en) || t("documents.chapter_label", { number: digits(c.number) });
     return [{ number: c.number, title }];
   });
+  const total = data?.total;
+  /** The live API still answers with the whole chapter until the paged route is deployed. */
+  const legacyWhole = data != null && !Array.isArray(data.verses) && Array.isArray(data.chapter?.shlokas);
+  const hasNextPage = Boolean(chapterQ.hasNextPage);
+  const hasPreviousPage = Boolean(chapterQ.hasPreviousPage);
+  const focusVerse = useCallback(
+    async (label: string): Promise<boolean> => {
+      const canon = canonVerseLabel(label);
+      if (!canon || !slug) return false;
+      if (shlokas.some((s) => canonVerseLabel(s.verse_label) === canon)) return true;
+      try {
+        const result = await fetchDocumentChapterPage(slug, chapterNumber, { verse: label, limit: CHAPTER_PAGE_SIZE });
+        const param: ChapterPageParam = { verse: label, limit: CHAPTER_PAGE_SIZE };
+        queryClient.setQueryData<InfiniteData<ChapterSlice, ChapterPageParam>>(
+          documentsKeys.chapterPages(slug, chapterNumber, canon),
+          { pages: [result], pageParams: [param] },
+        );
+        setOverride(canon);
+        return true;
+      } catch (error) {
+        if (isNotFound(error)) return false;
+        throw error;
+      }
+    },
+    [shlokas, slug, chapterNumber, queryClient],
+  );
 
   return {
     status: statusFrom(chapterQ, valid),
@@ -188,7 +276,7 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
     /** The document keeps its chapters on one page: show that page at this chapter's anchor. */
     redirectToDocument: Boolean(docQ.data?.inline_chapters && valid) ? { anchor: chapterAnchor(chapterNumber) } : undefined,
     valid,
-    loading: docQ.isLoading || chapterQ.isLoading,
+    loading: !enabled || docQ.isLoading || (valid && !docQ.data?.inline_chapters && chapterQ.isPending),
     docTitle,
     numberLabel: digits(chapterNumber),
     heading: t("documents.chapter_label", { number: digits(chapterNumber) }),
@@ -203,6 +291,18 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
     next: idx >= 0 && idx < numbers.length - 1 ? numbers[idx + 1]! : null,
     rows,
     shlokas,
+    /** Every verse of the chapter is loaded. Playback may treat the list as the whole chapter. */
+    complete: legacyWhole || (total != null && shlokas.length >= total && !hasNextPage && !hasPreviousPage),
+    total,
+    hasNextPage,
+    hasPreviousPage,
+    fetchNextPage: chapterQ.fetchNextPage,
+    fetchPreviousPage: chapterQ.fetchPreviousPage,
+    isFetching: chapterQ.isFetching,
+    isFetchingNextPage: chapterQ.isFetchingNextPage,
+    isFetchingPreviousPage: chapterQ.isFetchingPreviousPage,
+    /** Load the page that contains `label` when it is not on screen yet. False when no such verse. */
+    focusVerse,
     fullAudioUrl: data?.full_audio_url ?? undefined,
     copy: {
       backToChapters: t("documents.back_to_chapters"),
@@ -211,6 +311,7 @@ export function useDocumentChapter(slug: string | undefined, chapterNumber: numb
       loadError: t("documents.load_error"),
       prevChapter: t("documents.prev_chapter"),
       nextChapter: t("documents.next_chapter"),
+      loadingMore: t("documents.loading_more"),
     },
   };
 }

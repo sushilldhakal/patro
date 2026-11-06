@@ -9,7 +9,8 @@ import {
   parseHomeView,
   useDayMarks,
   useUserEvents,
-  useWindowBands,
+  useBestSlots,
+  usePersonalDays,
   type HomeView,
   type PlannerViewKind,
 } from "@vedic-patro/features/events";
@@ -35,7 +36,6 @@ import {
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { PatroCalendarHeader } from "@/components/patro-date";
-import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
@@ -137,12 +137,13 @@ export function CalendarView({
   const queryClient = useQueryClient();
   // The planner views (week, day, year, list) centre on this AD date; an event is open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(() => todayAd ?? new Date().toISOString().slice(0, 10));
-  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string } } | null>(null);
+  const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
   const plannerRange =
     plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
   const dayMarks = useDayMarks(plannerRange.from, plannerRange.to, location?.params, plannerKind != null);
   const windowDays = plannerKind === "week" || plannerKind === "day" || plannerKind === "multi" ? plannerDays(plannerKind, anchor) : [];
-  const dayWindows = useWindowBands(windowDays, location?.params ?? DEFAULT_PANCHANGA_LOCATION.params, windowDays.length > 0);
+  const daySlots = useBestSlots(windowDays, location?.params ?? DEFAULT_PANCHANGA_LOCATION.params, windowDays.length > 0);
+  const personalDays = usePersonalDays(windowDays, location?.params ?? DEFAULT_PANCHANGA_LOCATION.params, isAuthenticated && windowDays.length > 0);
   const asideInSidebar = useMediaQuery(ASIDE_SIDEBAR_MQ);
 
   const switchPatroView = (next: HomePatroView) => {
@@ -286,10 +287,12 @@ export function CalendarView({
       onViewChange={switchPatroView}
       events={userEvents.events}
       marks={dayMarks.marks}
-      windows={dayWindows.bands}
+      slots={daySlots.slots}
+      yogas={daySlots.yogas}
+      personal={personalDays.columns}
       todayAd={todayAd ?? new Date().toISOString().slice(0, 10)}
       onOpenEvent={(event) => setEditor({ event })}
-      onCreateAt={(date, time) => (isAuthenticated ? setEditor({ slot: { date, time } }) : undefined)}
+      onCreateAt={(date, time, extra) => (isAuthenticated ? setEditor({ slot: { date, time, ...extra } }) : undefined)}
       onMoveEvent={async (event, times) => {
         const { id: _id, ...input } = event;
         await updateEvent(event.id, { ...input, ...times });
@@ -303,10 +306,6 @@ export function CalendarView({
       {editor ? <EventEditorDialog editing={editor.event} slot={editor.slot} onClose={() => setEditor(null)} /> : null}
     </>
   );
-
-  const calendarTabLabel = isGregorian
-    ? t("calendar.mode_ad")
-    : patroEraShortLabel(era);
 
   const headerPrevDisabled = homeMonth.prevDisabled;
   const headerNextDisabled = homeMonth.nextDisabled;
@@ -332,7 +331,7 @@ export function CalendarView({
             enablePatroToggle
               ? homeViewsFor(wideEnough).map((view) => ({
                   key: view,
-                  label: view === "calendar" ? calendarTabLabel : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
+                  label: view === "calendar" ? t("common.month") : t(view === "panchanga" ? "calendar.mode_panchanga" : `calendar.view_${view}`),
                   active: patroView === view,
                   icon: HOME_VIEW_ICONS[view],
                   onPress: () => switchPatroView(view),

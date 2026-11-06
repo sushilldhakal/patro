@@ -354,6 +354,8 @@
   --color-panchang: var(--brand-green);
   --color-overlay: color-mix(in srgb, var(--foreground) 35%, transparent);
   --color-success: var(--color-success);
+  --color-slot-spiritual: var(--color-slot-spiritual);
+  --color-slot-spiritual-foreground: var(--color-slot-spiritual-foreground);
   --shadow-ring-soft: 0 0 0 1px var(--pn-ring-soft);
 }
 
@@ -434,6 +436,8 @@
   --border: #d7c9a4;
   --input: #4a4540;
   --ring: #d97706;
+  --color-slot-spiritual: #5b4d86;
+  --color-slot-spiritual-foreground: #3e345f;
   --sidebar-accent: #d97706;
   --parchment-border: #ecdaac;
   --chart-4: #0b565a;
@@ -485,6 +489,8 @@
   --border: #272e4a;
   --input: #3f4252;
   --ring: #e8c36a;
+  --color-slot-spiritual: #c4b6ef;
+  --color-slot-spiritual-foreground: #ebe4ff;
   --sidebar-accent: #f59e42;
   --parchment-border: #413d3c;
   --chart-4: #e8c36a;

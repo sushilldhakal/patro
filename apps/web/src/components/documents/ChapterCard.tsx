@@ -23,12 +23,9 @@ export function ChapterCard({ slug, card, category, topic }: Props) {
       className={cn(documentsClasses.sectionCard, "group transition-colors hover:border-secondary/60 hover:bg-secondary/5")}
     >
       <span className={documentsClasses.sectionCardTop}>
-        <span className={documentsClasses.sectionCardNumber} aria-hidden="true">
-          {card.numberLabel}
-        </span>
+        <span className={cn(documentsClasses.sectionCardTitle, "min-w-0 flex-1")}>{title}</span>
         <ChevronRight className={documentsClasses.rowChevron} aria-hidden="true" />
       </span>
-      <p className={documentsClasses.sectionCardTitle}>{title}</p>
       {card.count ? <p className={documentsClasses.sectionCardCount}>{card.count}</p> : null}
     </Link>
   );

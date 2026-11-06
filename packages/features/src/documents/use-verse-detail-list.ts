@@ -4,11 +4,13 @@
  * request (50 at a time, "show more" for the next), the heading, and where each mantra
  * opens in the reader.
  */
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   DOCUMENTS_STALE_TIME,
   VERSE_DETAIL_KINDS,
   fetchVerseDetailPage,
+  fetchVerseDetailValues,
+  verseDetailValuesKeys,
   verseDetailKeys,
   type VerseDetailKind,
   type VerseWithDocument,
@@ -65,6 +67,8 @@ export function useVerseDetailList(kind: VerseDetailKind | null, value: string, 
     loadingMore: q.isFetchingNextPage,
     loadMore: () => void q.fetchNextPage(),
     copy: {
+      kindLabel: label,
+      allGranth: t("documents.detail_all_granth"),
       heading: t("documents.detail_heading", { label, value }),
       count: t("documents.detail_count", { count: digits(total) }),
       openVerse: t("documents.detail_open_verse"),
@@ -74,4 +78,20 @@ export function useVerseDetailList(kind: VerseDetailKind | null, value: string, 
       loadError: t("documents.load_error"),
     },
   };
+}
+
+/** The dropdown behind a verse-detail page: every value of this detail within the chosen granth. */
+export function useVerseDetailValues(kind: VerseDetailKind | null, slug: string | undefined, current: string) {
+  const { digits } = useLocale();
+  const q = useQuery({
+    queryKey: verseDetailValuesKeys.list(kind ?? "devata", slug),
+    queryFn: () => fetchVerseDetailValues(kind!, slug),
+    enabled: kind != null,
+    staleTime: DOCUMENTS_STALE_TIME,
+  });
+  const values = q.data?.values ?? [];
+  const options = values.map((v) => ({ value: v.value, label: `${v.value} (${digits(v.count)})` }));
+  // Keep the open value selectable even when the chosen granth has none of it.
+  if (current && !values.some((v) => v.value === current)) options.unshift({ value: current, label: `${current} (${digits(0)})` });
+  return options;
 }

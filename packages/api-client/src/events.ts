@@ -172,6 +172,30 @@ export interface DayWindow {
   end: string | null;
 }
 
+/** Chandra and tara for one stretch of a panchanga day, between Moon changes. */
+export interface PersonalSegment {
+  start: string;
+  end: string;
+  chandra: { house: number; state: "good" | "weak" | "ashtama" };
+  tara: { num: number; name_ne: string; name_en: string; state: "good" | "caution" | "bad" };
+}
+
+export interface PersonalLord {
+  lord: string;
+  lord_ne: string;
+  lord_en: string;
+  asta: boolean;
+  vakri: boolean;
+}
+
+/** A profile's own filter for one panchanga day. Absent when the profile has no birth chart. */
+export interface PersonalGuidance {
+  janma_rashi: { number: number; name_ne: string; name_en: string };
+  janma_nakshatra: { number: number; name_ne: string; name_en: string };
+  dasha: { maha: PersonalLord; antar: PersonalLord };
+  segments: PersonalSegment[];
+}
+
 /** One day of a profile's guidance: what the form's tips are made of. */
 export interface DayGuidance {
   date: string;
@@ -185,14 +209,16 @@ export interface DayGuidance {
   careful_ne: string[];
   careful_en: string[];
   windows: DayWindow[];
+  personal?: PersonalGuidance | null;
 }
 
 export const fetchDayGuidance = (
   profileId: string,
   date: string,
   location: { lat?: number | null; lon?: number | null; timezone?: string | null; city_id?: number | null },
+  days = 1,
 ) => {
-  const params = new URLSearchParams({ from: date, days: "1" });
+  const params = new URLSearchParams({ from: date, days: String(days) });
   if (location.city_id != null) params.set("city_id", String(location.city_id));
   if (location.lat != null) params.set("lat", String(location.lat));
   if (location.lon != null) params.set("lon", String(location.lon));

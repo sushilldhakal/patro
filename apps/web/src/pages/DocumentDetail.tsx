@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { ArrowLeft, BookOpen, ChevronRight } from "lucide-react";
 import {
   bilingual,
   chapterAnchor,
@@ -23,7 +23,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
-const SHELL = "min-w-0 max-w-full [overflow-wrap:anywhere]";
+const SHELL = "min-w-0 max-w-full space-y-3 py-3 [overflow-wrap:anywhere]";
 
 /** A document — the website's drawing of `useDocumentDetail` (@vedic-patro/features). */
 export function DocumentDetail() {
@@ -34,7 +34,7 @@ export function DocumentDetail() {
   const { category, topic, view } = useSearch({ strict: false }) as DocumentDetailSearch;
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
-  const { t, lang, digits } = useLocale();
+  const { t, lang } = useLocale();
   const { doc, copy } = page;
   const siblings = useDocumentSiblings(doc?.slug, doc?.category);
   const libraryLabel = t("documents.library");
@@ -76,34 +76,20 @@ export function DocumentDetail() {
   }
 
   const { header } = page;
-  const headerBlock = (
-    <header className={documentsClasses.readerHero}>
-      <span className={documentsClasses.readerHeroMark} aria-hidden="true">
-        {t("documents.hero_mark")}
-      </span>
-      <div className={documentsClasses.readerHeroBody}>
-        <p className={documentsClasses.headerSanskrit}>{header.sanskrit}</p>
-        <h1 className={documentsClasses.headerTitle}>{header.title}</h1>
-        {header.subtitle ? <p className={documentsClasses.headerSubtitle}>{header.subtitle}</p> : null}
-        {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
-        <div className={documentsClasses.readerFacts}>
-          {group ? (
-            <Link
-              to="/documents"
-              search={documentsListSearch(group.id, undefined, view)}
-              className={cn(documentsClasses.readerFactLink, "transition-colors hover:bg-secondary/20")}
-            >
-              {bilingual(lang, group.ne, group.en)}
-            </Link>
-          ) : null}
-          {(page.stats ?? [t("documents.shlokas_count", { count: digits(doc.shloka_count) })]).map((fact) => (
-            <span key={fact} className={documentsClasses.readerFact}>
-              {fact}
-            </span>
-          ))}
-        </div>
-        {header.source ? <p className={cn(documentsClasses.headerSource, "pt-1")}>{header.source}</p> : null}
+  const readerBar = (
+    <header className={documentsClasses.readerBar}>
+      <div className={documentsClasses.readerBarSlot}>
+        <Link
+          to="/documents"
+          search={documentsListSearch(category ?? "all", topic, view)}
+          className={cn(documentsClasses.readerBarBack, "transition-colors hover:text-foreground")}
+        >
+          <ArrowLeft className="size-4 shrink-0" />
+          <span className="truncate">{copy.backToList}</span>
+        </Link>
       </div>
+      <h1 className={documentsClasses.readerBarTitle}>{header.title}</h1>
+      <p className={cn(documentsClasses.readerBarSlot, documentsClasses.readerBarSide)}>{header.subtitle}</p>
     </header>
   );
 
@@ -138,7 +124,7 @@ export function DocumentDetail() {
   const listSearch = category ? documentsListSearch(category, topic, view) : undefined;
 
   const jumpForm = (
-    <div className={documentsClasses.jumpPanel}>
+    <div>
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
         chapterPrefixes={page.chapterPrefixes}
@@ -183,10 +169,10 @@ export function DocumentDetail() {
   if (page.layout === "chapters") {
     return (
       <PageShell showRelatedLinks={false} className={`${SHELL} ${hasFullRecording ? "pb-28" : ""}`}>
-        {backLink}
-        {headerBlock}
+        {readerBar}
         {jumpForm}
-        <section className="space-y-3" aria-labelledby="documents-chapters">
+        {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
+        <section className="space-y-2" aria-labelledby="documents-chapters">
           <h2 id="documents-chapters" className={documentsClasses.sectionLabel}>
             {copy.chapterNav}
           </h2>
@@ -224,10 +210,10 @@ export function DocumentDetail() {
   }
 
   return (
-    <PageShell showRelatedLinks={false} className={`${SHELL} pb-28`}>
-      {backLink}
-      {headerBlock}
+      <PageShell showRelatedLinks={false} className={`${SHELL} pb-28`}>
+      {readerBar}
       {jumpForm}
+      {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
 
       {page.chapterPills.length > 0 ? (
         <nav aria-label={copy.chapterNav} className={documentsClasses.pillsSticky}>

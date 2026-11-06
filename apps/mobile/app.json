@@ -40,6 +40,9 @@
         "NSLocationWhenInUseUsageDescription": "Vedic Patro uses your location while the app is open to calculate panchanga, sunrise and muhurta for your place, and to align the 3D sky compass with true north. You can search a city instead. We do not use location in the background or for advertising.",
         "NSMotionUsageDescription": "Vedic Patro uses motion and compass in Aakash Gochar so the sky turns as you tilt and turn the phone. This data stays on your device and is not stored or sent to our servers. You can drag the sky by hand instead.",
         "NSFaceIDUsageDescription": "Vedic Patro uses Face ID so you can open the app and your saved account without typing a password. Your face data never leaves the device.",
+        "UIBackgroundModes": [
+          "audio"
+        ],
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
@@ -160,6 +163,9 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
         "android.permission.POST_NOTIFICATIONS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.RECEIVE_BOOT_COMPLETED"
       ],
@@ -341,7 +347,7 @@
       [
         "expo-calendar",
         {
-          "calendarPermission": "Vedic Patro reads your calendars so you can bring your events (Google, iCloud and others on this phone) into the app.",
+          "calendarPermission": "Vedic Patro adds your tasks, events and appointments to a Vedic Patro calendar on this phone, and reads your calendars so you can bring your events (Google, iCloud and others) into the app.",
           "remindersPermission": "Vedic Patro reads your reminders so you can bring them into the app."
         }
       ],

@@ -47,7 +47,8 @@ def test_build_daily_rashifal_matches_chandrabala_tone():
     built = build_daily_rashifal(table)
     for row, sign in zip(table["rows"], built["signs"], strict=True):
         assert row["tone"] == sign["tone"]
-        assert row["tara_num"] == sign["tara_num"]
+        assert row["house"] == sign["house_from_moon"]
+        assert sign["lucky_number_en"] == str(row["house"])
 
 
 # ── weight tables ───────────────────────────────────────────────────────────

@@ -11,6 +11,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/astronomy/sunrise-icon-art";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { formatDegreeInRashi, getPlanetsAnchorLabel } from "@vedic-patro/read-models/panchanga/panchanga-format";
+import { badgeByLabel } from "@vedic-patro/drawing/panchanga/day-timeline-layout";
 import { dualTimeAtGhati, type TimelineRowData } from "@vedic-patro/domain/panchanga/day-timeline-data";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
@@ -239,6 +240,7 @@ interface ChartSegment {
   bad?: boolean;
   cut?: boolean;
   transitionLocal?: string;
+  badge?: number;
   lane?: number;
   laneCount?: number;
 }
@@ -539,6 +541,8 @@ export function DayTimeline({
     );
   }
 
+  const ashubhaBadge = badgeByLabel(data.ashubhaAll.map((a) => pick(a.detailNe, a.detailEn)));
+  const shubhaBadge = badgeByLabel(data.shubha.map((s) => pick(s.name, s.nameEn)));
   const tracks = data.rows
     .filter((row) => row.kind !== "graha")
     .map((row) => {
@@ -562,7 +566,7 @@ export function DayTimeline({
               }))
             : row.kind === "ashubha"
               ? assignLanes(
-                  data.ashubha.map((a) => ({
+                  data.ashubhaAll.map((a, i) => ({
                     ne: a.name,
                     en: a.nameEn,
                     fromG: a.startG,
@@ -570,17 +574,19 @@ export function DayTimeline({
                     bad: true,
                     detailNe: a.detailNe,
                     detailEn: a.detailEn,
+                    badge: ashubhaBadge[i],
                   })),
                 )
               : row.kind === "shubha"
                 ? assignLanes(
-                    data.shubha.map((s) => ({
+                    data.shubha.map((s, i) => ({
                       ne: s.name,
                       en: s.nameEn,
                       fromG: s.startG,
                       toG: s.endG,
                       detailNe: s.name,
                       detailEn: s.nameEn,
+                      badge: shubhaBadge[i],
                     })),
                   )
               : segmentsFromRow(row);
@@ -589,7 +595,25 @@ export function DayTimeline({
     /* A row with nothing in it (योग, when its spans are missing) drew as an unlabeled empty bar. */
     .filter((tr) => tr.segs.length > 0);
 
-  const H = T0 + tracks.length * TRACK + 6;
+  const LANE_MIN = 15;
+  const ROW_GAP = TRACK - BAND;
+  const rowBands = tracks.map((tr) =>
+    tr.cls === "ashubha" || tr.cls === "shubha"
+      ? Math.max(BAND, Math.max(1, tr.segs[0]?.laneCount ?? 1) * LANE_MIN)
+      : BAND,
+  );
+  const rowTops: number[] = [];
+  {
+    let acc = T0;
+    for (let i = 0; i < tracks.length; i += 1) {
+      rowTops.push(acc);
+      acc += rowBands[i]! + ROW_GAP;
+    }
+  }
+  const lastIdx = tracks.length - 1;
+  const H = (rowTops[lastIdx] ?? T0) + (rowBands[lastIdx] ?? BAND) + 6;
+  const trackY = (i: number) => rowTops[i] ?? T0;
+  const rowBandAt = (i: number) => rowBands[i] ?? BAND;
   /** Web: `w-full min-w-[768px]` — at least 767px, grow to fill the card column. */
   const measuredWidth = containerWidth || windowWidth - PAGE_HORIZONTAL_PADDING * 2;
   const chartWidth = Math.max(MIN_CHART_WIDTH, measuredWidth - CHART_H_INSET);
@@ -603,7 +627,6 @@ export function DayTimeline({
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
 
-  const trackY = (i: number) => T0 + i * TRACK;
   /* Midnight→midnight puts the night at both ends and sunrise/sunset inside
      the frame, instead of a single night band running off the right. */
   const nightBands = (data.nightBands ?? [[data.dayG, 60]]) as Array<[number, number]>;
@@ -671,6 +694,7 @@ export function DayTimeline({
 
       {tracks.map((tr, ti) => {
         const y = trackY(ti);
+        const rowBand = rowBandAt(ti);
         return (
           <G key={tr.key}>
             <SvgText
@@ -684,7 +708,7 @@ export function DayTimeline({
             >
               {tr.ne}
             </SvgText>
-            <Line x1={X0} y1={y + BAND} x2={X1} y2={y + BAND} stroke={C.sunLine} strokeWidth={0.8} opacity={0.35} />
+            <Line x1={X0} y1={y + rowBand} x2={X1} y2={y + rowBand} stroke={C.sunLine} strokeWidth={0.8} opacity={0.35} />
 
             {tr.segs.map((s, si) => {
               const x = gx(s.fromG);
@@ -701,9 +725,9 @@ export function DayTimeline({
               const bandLabel = fitBandLabel(mainName, narrow ? "" : paksha, w, narrow ? 9 : 10);
               const laneCount = tr.cls === "ashubha" || tr.cls === "shubha" ? Math.max(1, s.laneCount ?? 1) : 1;
               const laneGap = laneCount > 1 ? 1.5 : 0;
-              const laneH = BAND / laneCount;
+              const laneH = rowBand / laneCount;
               const bandY = tr.cls === "ashubha" || tr.cls === "shubha" ? y + (s.lane ?? 0) * laneH : y;
-              const bandH = tr.cls === "ashubha" || tr.cls === "shubha" ? laneH - laneGap : BAND;
+              const bandH = tr.cls === "ashubha" || tr.cls === "shubha" ? laneH - laneGap : rowBand;
               const labelY = bandY + bandH / 2 + 4;
 
               return (
@@ -743,7 +767,7 @@ export function DayTimeline({
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
                       >
-                        {digits(si + 1)}
+                        {digits(s.badge ?? si + 1)}
                       </SvgText>
                     ) : null
                   ) : bandLabel ? (
@@ -762,6 +786,7 @@ export function DayTimeline({
 
       {tracks.map((tr, ti) => {
         const y = trackY(ti);
+        const rowBand = rowBandAt(ti);
         if (tr.cls === "cho" || tr.cls === "hora") return null;
         return (
           <G key={`${tr.key}-cuts`}>
@@ -775,7 +800,7 @@ export function DayTimeline({
               return (
                 <G key={`cut-${si}`}>
                   <TransitionArrow x2={x2} y={y} C={C} />
-                  <SvgText x={clampX(x2, 22)} y={y + BAND + 16} fill={C.fg} fontSize={15} fontFamily={FONT_SM} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
+                  <SvgText x={clampX(x2, 22)} y={y + rowBand + 16} fill={C.fg} fontSize={15} fontFamily={FONT_SM} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
                     {time}
                   </SvgText>
                 </G>
@@ -814,7 +839,7 @@ export function DayTimeline({
         <SvgText
           key={tr.key}
           x={8}
-          y={trackY(ti) + BAND / 2 + 4}
+          y={trackY(ti) + rowBandAt(ti) / 2 + 4}
           fill={C.fg}
           fontSize={15}
           fontFamily={FONT}
@@ -924,17 +949,20 @@ export function DayTimeline({
           cellStyle={periodCell}
           remindLabel={remindLabel}
           bindBell={bindBell}
-          items={data.ashubhaAll.map((a, i) => {
-            const time = `${tLabel(a.startG)} – ${tLabel(a.endG)}`;
-            const remindId = `ashubh:${i}:${a.key ?? ""}`;
-            return {
-              n: digits(i + 1),
-              label: pick(a.detailNe, a.detailEn),
-              time,
-              remindId,
-              onRemind: onRemind ? () => onRemind({ kind: "ashubh", key: a.key, ne: a.detailNe, en: a.detailEn, time, remindId }) : undefined,
-            };
-          })}
+          items={groupPeriods(
+            data.ashubhaAll.map((a, i) => {
+              const time = `${tLabel(a.startG)} – ${tLabel(a.endG)}`;
+              const remindId = `ashubh:${i}:${a.key ?? ""}`;
+              return {
+                n: ashubhaBadge[i] ?? i + 1,
+                label: pick(a.detailNe, a.detailEn),
+                time,
+                remindId,
+                onRemind: onRemind ? () => onRemind({ kind: "ashubh", key: a.key, ne: a.detailNe, en: a.detailEn, time, remindId }) : undefined,
+              };
+            }),
+            digits,
+          )}
         />
       )}
 
@@ -945,17 +973,20 @@ export function DayTimeline({
           cellStyle={periodCell}
           remindLabel={remindLabel}
           bindBell={bindBell}
-          items={data.shubha.map((s, i) => {
-            const time = `${tLabel(s.startG)} – ${tLabel(s.endG)}`;
-            const remindId = `shubh:${i}:${s.key ?? ""}`;
-            return {
-              n: digits(i + 1),
-              label: pick(s.name, s.nameEn),
-              time,
-              remindId,
-              onRemind: onRemind ? () => onRemind({ kind: "shubh", key: s.key, ne: s.name, en: s.nameEn, time, remindId }) : undefined,
-            };
-          })}
+          items={groupPeriods(
+            data.shubha.map((s, i) => {
+              const time = `${tLabel(s.startG)} – ${tLabel(s.endG)}`;
+              const remindId = `shubh:${i}:${s.key ?? ""}`;
+              return {
+                n: shubhaBadge[i] ?? i + 1,
+                label: pick(s.name, s.nameEn),
+                time,
+                remindId,
+                onRemind: onRemind ? () => onRemind({ kind: "shubh", key: s.key, ne: s.name, en: s.nameEn, time, remindId }) : undefined,
+              };
+            }),
+            digits,
+          )}
         />
       )}
 
@@ -1071,6 +1102,27 @@ export function DayTimeline({
   );
 }
 
+type PeriodSpan = { time: string; onRemind?: () => void; remindId?: string };
+
+function groupPeriods(
+  items: { n: number; label: string; time: string; onRemind?: () => void; remindId?: string }[],
+  digits: (n: number) => string,
+): { n: string; label: string; times: PeriodSpan[] }[] {
+  const out: { n: number; label: string; times: PeriodSpan[] }[] = [];
+  const at = new Map<number, number>();
+  for (const item of items) {
+    const span = { time: item.time, onRemind: item.onRemind, remindId: item.remindId };
+    const i = at.get(item.n);
+    if (i == null) {
+      at.set(item.n, out.length);
+      out.push({ n: item.n, label: item.label, times: [span] });
+    } else {
+      out[i]!.times.push(span);
+    }
+  }
+  return out.map((item) => ({ n: digits(item.n), label: item.label, times: item.times }));
+}
+
 function PeriodCards({
   tone,
   title,
@@ -1081,7 +1133,7 @@ function PeriodCards({
 }: {
   tone: "danger" | "success";
   title: string;
-  items: { n: string; label: string; time: string; onRemind?: () => void; remindId?: string }[];
+  items: { n: string; label: string; times: PeriodSpan[] }[];
   cellStyle: ViewStyle;
   remindLabel?: string;
   bindBell: (id: string, play: () => void) => () => void;
@@ -1096,35 +1148,50 @@ function PeriodCards({
         {title}
       </Text>
       <View className="flex-row flex-wrap" style={{ gap: PERIOD_CARD_GAP }}>
-        {items.map((it, i) => (
-          <View
-            key={`${it.time}-${i}`}
-            className={panchangaPageClasses.dayCycle.periodCard}
-            style={[cellStyle, { borderColor, backgroundColor }]}
-          >
-            <View className={cn("flex-row", panchangaPageClasses.dayCycle.periodHead)}>
-              <View
-                className={panchangaPageClasses.dayCycle.periodBadge}
-                style={{ backgroundColor: accent }}
-              >
-                <Text className={panchangaPageClasses.dayCycle.periodBadgeText}>{it.n}</Text>
+        {items.map((it) => {
+          const only = it.times.length === 1 ? it.times[0] : undefined;
+          return (
+            <View
+              key={`${it.n}-${it.label}`}
+              className={panchangaPageClasses.dayCycle.periodCard}
+              style={[cellStyle, { borderColor, backgroundColor }]}
+            >
+              <View className={cn("flex-row", panchangaPageClasses.dayCycle.periodHead)}>
+                <View className={panchangaPageClasses.dayCycle.periodBadge} style={{ backgroundColor: accent }}>
+                  <Text className={panchangaPageClasses.dayCycle.periodBadgeText}>{it.n}</Text>
+                </View>
+                <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle()}>
+                  {it.label}
+                </Text>
+                {only?.onRemind && only.remindId ? (
+                  <Pressable
+                    label={remindLabel ?? it.label}
+                    onPress={only.onRemind}
+                    className="-my-1 -mr-1 size-8 shrink-0 items-center justify-center rounded-full"
+                  >
+                    <AlarmIcon tone={tone} remindId={only.remindId} bindBell={bindBell} />
+                  </Pressable>
+                ) : null}
               </View>
-              <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle()}>
-                {it.label}
-              </Text>
-              {it.onRemind && it.remindId ? (
-                <Pressable
-                  label={remindLabel ?? it.label}
-                  onPress={it.onRemind}
-                  className="-my-1 -mr-1 size-8 shrink-0 items-center justify-center rounded-full"
-                >
-                  <AlarmIcon tone={tone} remindId={it.remindId} bindBell={bindBell} />
-                </Pressable>
-              ) : null}
+              <View style={{ gap: 2 }}>
+                {it.times.map((span, si) => (
+                  <View key={`${span.remindId ?? span.time}-${si}`} style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodTime)}>{span.time}</Text>
+                    {!only && span.onRemind && span.remindId ? (
+                      <Pressable
+                        label={remindLabel ?? it.label}
+                        onPress={span.onRemind}
+                        className="-my-1 -mr-1 size-8 shrink-0 items-center justify-center rounded-full"
+                      >
+                        <AlarmIcon tone={tone} remindId={span.remindId} bindBell={bindBell} />
+                      </Pressable>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
             </View>
-            <Text className={cn(panchangaPageClasses.dayCycle.periodTime, "text-foreground")}>{it.time}</Text>
-          </View>
-        ))}
+          );
+        })}
       </View>
     </View>
   );

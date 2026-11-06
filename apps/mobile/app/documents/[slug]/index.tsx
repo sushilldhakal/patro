@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDocumentDetail, useDocumentLibraryOptions, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
@@ -9,6 +10,7 @@ import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
+import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { reportNavScrollJS } from "@/lib/nav-compact";
@@ -17,22 +19,18 @@ function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpCh
   const { header, copy } = page;
   if (!header) return null;
   return (
-    <View className="gap-8">
-      <DocumentBackLink href="/documents" label={copy.backToList} />
-      <View className={documentsClasses.header}>
-        <Text className={documentsClasses.headerSanskrit}>{header.sanskrit}</Text>
-        <Text className={documentsClasses.headerTitle}>{header.title}</Text>
-        {header.subtitle ? <Text className={documentsClasses.headerSubtitle}>{header.subtitle}</Text> : null}
-        {header.description ? <Text className={documentsClasses.headerDescription}>{header.description}</Text> : null}
-        {header.source ? <Text className={documentsClasses.headerSource}>{header.source}</Text> : null}
-      </View>
-      {page.stats ? (
-        <View className={documentsClasses.statsRow}>
-          <Text className={documentsClasses.statsText}>{page.stats[0]}</Text>
-          <Text className={documentsClasses.statsText}>·</Text>
-          <Text className={documentsClasses.statsText}>{page.stats[1]}</Text>
+    <View className="gap-2">
+      <View className={documentsClasses.readerBar}>
+        <View className={documentsClasses.readerBarSlot}>
+          <DocumentBackLink href="/documents" label={copy.backToList} />
         </View>
-      ) : null}
+        <Text className={documentsClasses.readerBarTitle} numberOfLines={1}>
+          {header.title}
+        </Text>
+        <Text className={cn(documentsClasses.readerBarSlot, documentsClasses.readerBarSide)} numberOfLines={1}>
+          {header.subtitle}
+        </Text>
+      </View>
       {onJumpChapter && page.chapterPills.length > 0 ? (
         <ScrollView
           horizontal
@@ -59,6 +57,7 @@ function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpCh
 
 function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard }) {
   const router = useRouter();
+  const colors = useThemeColors();
   const title = card.title || card.heading;
   return (
     <Pressable
@@ -66,12 +65,12 @@ function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard })
       accessibilityRole="button"
       className={cn(documentsClasses.sectionCard, "mb-0 flex-1 active:opacity-80")}
     >
-      <View className={cn(documentsClasses.chapterRowNumber, "mb-1 size-8")}>
-        <Text className={documentsClasses.chapterRowNumberText}>{card.numberLabel}</Text>
+      <View className={documentsClasses.sectionCardTop}>
+        <Text className={cn(documentsClasses.sectionCardTitle, "min-w-0 flex-1")} numberOfLines={1}>
+          {title}
+        </Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </View>
-      <Text className={documentsClasses.sectionCardTitle} numberOfLines={2}>
-        {title}
-      </Text>
       {card.count ? <Text className={documentsClasses.sectionCardCount}>{card.count}</Text> : null}
     </Pressable>
   );
@@ -121,7 +120,7 @@ export default function DocumentDetailScreen() {
           onScroll={(e) => reportNavScrollJS(e.nativeEvent.contentOffset.y)}
           scrollEventThrottle={32}
           ListHeaderComponent={
-            <View className="gap-8 pb-8">
+            <View className="gap-2 pb-3">
               <DocHeader page={page} />
               <DocumentJumpForm
                 chapterNumbers={page.chapterNumbers}
@@ -161,7 +160,7 @@ export default function DocumentDetailScreen() {
         scrollToLabel={jumpLabel?.label}
         scrollNonce={jumpLabel?.nonce}
         header={
-          <View className="gap-8 pb-8">
+          <View className="gap-2 pb-3">
             <DocHeader page={page} onJumpChapter={(anchor) => setJumpKey({ key: anchor, nonce: Date.now() })} />
             <DocumentJumpForm
               chapterNumbers={page.chapterNumbers}

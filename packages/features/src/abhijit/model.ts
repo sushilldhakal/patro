@@ -16,28 +16,38 @@ export type AbhijitDayView = {
   noon: string;
   sunrise: string;
   sunset: string;
+  /** Wednesday: अभिजित् is not used, so the card has no time. */
+  omitted: boolean;
 };
 
-export function abhijitDays(days: readonly CalendarDay[], todayAd: string, lang: Lang): AbhijitDayView[] {
+const isWednesday = (day: CalendarDay) => (day.weekday_en ?? day.weekday ?? "").toLowerCase() === "wednesday";
+
+export function abhijitDays(
+  days: readonly CalendarDay[],
+  todayAd: string,
+  lang: Lang,
+  omittedLabel: string,
+): AbhijitDayView[] {
   const digits = (v: string | number) => formatLocaleDigits(v, lang);
-  return days.flatMap((day) => {
+  const out: AbhijitDayView[] = [];
+  for (const day of days) {
     const abhijit = abhijitFromCalendarDay(day);
-    if (!abhijit) return [];
-    return [
-      {
-        key: day.date_ad,
-        dateAd: day.date_ad,
-        isToday: day.date_ad === todayAd,
-        weekday: bilingualText(lang, day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday),
-        day: digits(day.day),
-        adDay: digits(civilIsoDayOfMonth(day.date_ad)),
-        range: digits(abhijit.rangeDisplay),
-        noon: abhijit.noonDisplay ? digits(abhijit.noonDisplay) : "—",
-        sunrise: formatClockNepali(day.sunrise) ?? day.sunrise ?? "—",
-        sunset: formatClockNepali(day.sunset) ?? day.sunset ?? "—",
-      },
-    ];
-  });
+    if (!abhijit && !isWednesday(day)) continue;
+    out.push({
+      key: day.date_ad,
+      dateAd: day.date_ad,
+      isToday: day.date_ad === todayAd,
+      weekday: bilingualText(lang, day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday),
+      day: digits(day.day),
+      adDay: digits(civilIsoDayOfMonth(day.date_ad)),
+      sunrise: formatClockNepali(day.sunrise) ?? day.sunrise ?? "—",
+      sunset: formatClockNepali(day.sunset) ?? day.sunset ?? "—",
+      range: abhijit ? digits(abhijit.rangeDisplay) : omittedLabel,
+      noon: abhijit?.noonDisplay ? digits(abhijit.noonDisplay) : abhijit ? "—" : "",
+      omitted: !abhijit,
+    });
+  }
+  return out;
 }
 
 /** The raw abhijit window of a day (its `HH:MM` start and end). */
