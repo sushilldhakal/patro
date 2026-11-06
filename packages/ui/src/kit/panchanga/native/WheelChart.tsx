@@ -104,7 +104,7 @@ function WheelGlyph({ art, size, cx, cy, color, opacity = 1 }: { art: GlyphArt |
 }
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { wheelPalette } from "../wheel-palette";
-import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, grahaAtSvgPoint, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -199,6 +199,30 @@ function untransformTouch(
   return {
     x: cx + (tx - cx) / zoom,
     y: cy + (ty - cy) / zoom,
+  };
+}
+
+/** Screen point inside the chart box, in the same wheel units as `zoomedViewBox`. */
+function touchToWheelPoint(
+  x: number,
+  y: number,
+  box: LayoutMetrics,
+  zoom: number,
+  pan: { x: number; y: number },
+  bleed: { top: number; bottom: number },
+): { x: number; y: number } | null {
+  const { w, h } = box;
+  if (w <= 0 || h <= 0 || zoom <= 0) return null;
+  const k = Math.min(w, h) / 916;
+  const x0 = 42 - (w - 916 * k) / 2 / k;
+  const y0 = 42 - (h - 916 * k) / 2 / k;
+  const left = (w / 2) * (1 - 1 / zoom) - pan.x / zoom;
+  const top = (h / 2) * (1 - 1 / zoom) - (pan.y + bleed.top) / zoom;
+  const vbW = w / k / zoom;
+  const vbH = (h + bleed.top + bleed.bottom) / k / zoom;
+  return {
+    x: x0 + left / k + (x / w) * vbW,
+    y: y0 + top / k + ((y + bleed.top) / (h + bleed.top + bleed.bottom)) * vbH,
   };
 }
 
@@ -408,6 +432,7 @@ function WheelChartImpl({
   pan,
   onPan,
   lineTarget: lineTargetProp,
+  onLineTargetChange,
   place,
   bleedTop = 0,
   bleedBottom = 0,
@@ -422,6 +447,12 @@ function WheelChartImpl({
   const unitPx = Math.min(layoutBox.w, layoutBox.h) > 0 ? (Math.min(layoutBox.w, layoutBox.h) / 916) * zoom : 0;
   const spinRef = useRef(spin);
   spinRef.current = spin;
+  const lonsRef = useRef(markers.planetLons);
+  lonsRef.current = markers.planetLons;
+  const onLineTargetRef = useRef(onLineTargetChange);
+  onLineTargetRef.current = onLineTargetChange;
+  const bleedRef = useRef({ top: bleedTop, bottom: bleedBottom });
+  bleedRef.current = { top: bleedTop, bottom: bleedBottom };
   const panRef = useRef(pan);
   panRef.current = pan;
   const zoomRef = useRef(zoom);
@@ -575,7 +606,25 @@ function WheelChartImpl({
         commitLive();
       });
 
-    return Gesture.Simultaneous(pinch, drag);
+    // Two taps on one graha. One tap is ignored: the first finger of a pinch
+    // used to land on a disc and change the selection while zooming.
+    const doubleTap = Gesture.Tap()
+      .runOnJS(true)
+      .numberOfTaps(2)
+      .maxDuration(280)
+      .maxDelay(320)
+      .maxDistance(22)
+      .onEnd((e, success) => {
+        if (!success || pinchingRef.current || e.numberOfPointers > 1) return;
+        const select = onLineTargetRef.current;
+        if (!select) return;
+        const point = touchToWheelPoint(e.x, e.y, layoutRef.current, zoomRef.current, panRef.current, bleedRef.current);
+        if (!point) return;
+        const index = grahaAtSvgPoint(point.x, point.y, lonsRef.current, GRAHA_META.map((g) => g.orbit), spinRef.current);
+        if (index != null) select(index);
+      });
+
+    return Gesture.Simultaneous(pinch, drag, doubleTap);
   }, [angleAt, commitLive, dragRot, liveX, liveY, liveZoom, onSpin]);
 
 

@@ -17,6 +17,8 @@
   "inline_chapters": false,
   "audio_prefix": "documents/atharvaveda",
   "audio_template": "{mandala:02d}/atharvaveda_{mandala:02d}_{sukta:03d}_{verse:03d}.mp3",
+  "full_audio_template": "{chapter:02d}/atharvaveda_khanda_{chapter}.mp3",
+  "full_audio_through_chapter": 19,
   "audio_coverage": {
     "through_mandala": 14,
     "sukta_caps": {

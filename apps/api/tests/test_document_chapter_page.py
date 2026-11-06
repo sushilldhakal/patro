@@ -193,3 +193,20 @@ def test_chapter_cache_key_includes_the_page():
     assert by_verse == by_latin
     assert "rigveda" in first and "_6_" in first
     assert documents._CHAPTER_PAGE_CACHE in first
+
+
+def test_atharvaveda_khanda_recording():
+    """Kandas 1–14 keep per-verse clips and a full khanda file; 16–19 are the file only."""
+    client = _client()
+    early = _page(client, "atharvaveda", 1, limit=5)
+    assert early["full_audio_url"].endswith("documents/atharvaveda/01/atharvaveda_khanda_1.mp3")
+    assert early["verses"][0]["audio_url"].endswith("atharvaveda_01_001_001.mp3")
+    assert "chapter_full_audio" not in early
+
+    late = _page(client, "atharvaveda", 19, limit=5)
+    assert late["full_audio_url"].endswith("documents/atharvaveda/19/atharvaveda_khanda_19.mp3")
+    assert all("audio_url" not in verse for verse in late["verses"])
+
+    missing = _page(client, "atharvaveda", 20, limit=5)
+    assert missing["full_audio_url"] is None
+    assert all("audio_url" not in verse for verse in missing["verses"])

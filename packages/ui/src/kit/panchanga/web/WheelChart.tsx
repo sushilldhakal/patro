@@ -47,7 +47,7 @@ import {
   wTwName,
   wYogaLbl,
 } from "@vedic-patro/design-tokens/classes/wheel-svg-classes";
-import { DEG, CX, CY, ORBIT_SCALE, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
+import { DEG, CX, CY, ORBIT_SCALE, grahaAtSvgPoint, nextGrahaDoubleTap, planetIconSize, planetVisualRadius, type GrahaTap } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
 import {
   earthTop,
   retroBorder,
@@ -194,6 +194,7 @@ function WheelChartImpl({
   pan,
   onPan,
   lineTarget: lineTargetProp,
+  onLineTargetChange,
   place,
   skyBase,
   nodeIcon,
@@ -222,6 +223,12 @@ function WheelChartImpl({
   }, [zoom]);
   /** Active pointer positions for pinch-to-zoom. */
   const ptrRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  /** True from the moment a second finger lands until every finger has lifted. */
+  const gesturePinch = useRef(false);
+  /** First tap of a double click or double tap. A single tap never selects. */
+  const lastGrahaTap = useRef<GrahaTap | null>(null);
+  /** Touch is followed by a synthetic mouse click; that click must not count as the second tap. */
+  const lastTouchAt = useRef(0);
   const pinchRef = useRef<{ dist: number; zoom0: number } | null>(null);
   const zoomRef = useRef(zoom);
   useLayoutEffect(() => {
@@ -780,7 +787,7 @@ function WheelChartImpl({
 
   const onDown = (e: React.PointerEvent<SVGSVGElement>) => {
     ptrRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
     if (ptrRef.current.size === 1) {
       setIsDragging(true);
       setDragMoved(false);
@@ -792,6 +799,7 @@ function WheelChartImpl({
     } else {
       // Two fingers: cancel single-finger gesture, start pinch
       dragRef.current = null;
+      gesturePinch.current = true;
       pinchRef.current = { dist: pinchDist(), zoom0: zoom };
     }
   };
@@ -826,11 +834,37 @@ function WheelChartImpl({
     }
   };
   const onUp = (e: React.PointerEvent<SVGSVGElement>) => {
-    e.currentTarget.releasePointerCapture(e.pointerId);
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* not captured */ }
+    const pinched = pinchRef.current != null || gesturePinch.current;
+    const moved = dragRef.current?.moved ?? false;
     ptrRef.current.delete(e.pointerId);
+    const fingersLeft = ptrRef.current.size;
     dragRef.current = null;
     setIsDragging(false);
-    if (ptrRef.current.size < 2) pinchRef.current = null;
+    if (fingersLeft < 2) pinchRef.current = null;
+    if (fingersLeft === 0) gesturePinch.current = false;
+    // A pinch or a drag lifts a finger too. Only two still taps on one graha select it.
+    if (fingersLeft > 0 || pinched || moved) {
+      lastGrahaTap.current = null;
+      return;
+    }
+    if (e.pointerType === "mouse" && performance.now() - lastTouchAt.current < 700) return;
+    if (e.pointerType === "touch" || e.pointerType === "pen") lastTouchAt.current = performance.now();
+    const svg = svgRef.current;
+    if (!svg || !onLineTargetChange) {
+      lastGrahaTap.current = null;
+      return;
+    }
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const p = pt.matrixTransform(ctm.inverse());
+    const index = grahaAtSvgPoint(p.x, p.y, markers.planetLons, GRAHA_META.map((g) => g.orbit), spin);
+    const next = nextGrahaDoubleTap(lastGrahaTap.current, { at: performance.now(), index });
+    lastGrahaTap.current = next.pending;
+    if (next.select != null) onLineTargetChange(next.select);
   };
 
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels } =

@@ -43,3 +43,51 @@ export function planetSvgPosition(lon: number, orbit: number, spinDeg: number): 
   const a = (lon + spinDeg) * DEG;
   return [CX - orbit * ORBIT_SCALE * Math.sin(a), CY - orbit * ORBIT_SCALE * Math.cos(a)];
 }
+
+/**
+ * Graha under a point in wheel units, or null when the point misses every disc.
+ * Overlapping discs (Moon, Rahu and Ketu share an orbit) resolve to the closer centre.
+ */
+export function grahaAtSvgPoint(
+  x: number,
+  y: number,
+  longitudes: readonly number[],
+  orbits: readonly number[],
+  spinDeg: number,
+): number | null {
+  let best: number | null = null;
+  let bestD = Infinity;
+  const n = Math.min(longitudes.length, orbits.length);
+  for (let i = 0; i < n; i++) {
+    const lon = longitudes[i];
+    const orbit = orbits[i];
+    if (lon == null || orbit == null) continue;
+    const [px, py] = planetSvgPosition(lon, orbit, spinDeg);
+    const d = Math.hypot(x - px, y - py);
+    if (d <= planetHitRadius(i) && d < bestD) {
+      best = i;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
+/** A tap that landed on a graha and is waiting for the second tap. */
+export type GrahaTap = { at: number; index: number };
+
+/**
+ * Two taps on the same graha inside `windowMs` select it. One tap never does:
+ * a pinch starts with a single finger, and that used to change the selection.
+ */
+export function nextGrahaDoubleTap(
+  previous: GrahaTap | null,
+  tap: { at: number; index: number | null },
+  windowMs = 400,
+): { select: number | null; pending: GrahaTap | null } {
+  if (tap.index == null) return { select: null, pending: null };
+  const pending: GrahaTap = { at: tap.at, index: tap.index };
+  if (previous && previous.index === tap.index && tap.at >= previous.at && tap.at - previous.at <= windowMs) {
+    return { select: tap.index, pending: null };
+  }
+  return { select: null, pending };
+}

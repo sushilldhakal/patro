@@ -36,6 +36,21 @@ export type DocumentChapterCard = {
 
 const retry = (count: number, error: unknown) => !isNotFound(error) && count < 2;
 
+/** Kandas 1–19. Kanda 20 has no recording yet. The API sends the same key once it is deployed. */
+const ATHARVAVEDA_KHANDA_AUDIO =
+  "https://pub-34db505dd7474db98d79fb75e870ff22.r2.dev/documents/atharvaveda";
+
+function chapterRecordingUrl(
+  slug: string | undefined,
+  chapter: number,
+  fromApi: string | null | undefined,
+): string | undefined {
+  if (fromApi) return fromApi;
+  if (slug !== "atharvaveda" || chapter < 1 || chapter > 19) return undefined;
+  const folder = String(chapter).padStart(2, "0");
+  return `${ATHARVAVEDA_KHANDA_AUDIO}/${folder}/atharvaveda_khanda_${chapter}.mp3`;
+}
+
 /**
  * Verses on one infinite-query page. A server that has not been deployed with
  * keyset paging still returns the whole chapter as `chapter.shlokas`.
@@ -303,7 +318,7 @@ export function useDocumentChapter(
     isFetchingPreviousPage: chapterQ.isFetchingPreviousPage,
     /** Load the page that contains `label` when it is not on screen yet. False when no such verse. */
     focusVerse,
-    fullAudioUrl: data?.full_audio_url ?? undefined,
+    fullAudioUrl: chapterRecordingUrl(slug, chapterNumber, data?.full_audio_url),
     copy: {
       backToChapters: t("documents.back_to_chapters"),
       backToList: t("documents.back_to_list"),

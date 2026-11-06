@@ -34,10 +34,19 @@ def _resolve_asset_url(key: str | None) -> str | None:
     return f"{base}/{key}"
 
 
+def _use_chapter_recording(summary: dict[str, Any], chapter_number: int) -> None:
+    """Point this chapter's player at its own full recording, when one is filed."""
+    recordings = summary.pop("chapter_full_audio", None) or {}
+    key = recordings.get(str(chapter_number)) if isinstance(recordings, dict) else None
+    if key:
+        summary["full_audio_key"] = key
+
+
 def _resolve_document_summary(doc: dict[str, Any]) -> dict[str, Any]:
     # pop() must run before the dict literal spreads `doc` — {**doc, "k": doc.pop(...)}
     # captures doc's keys at spread time, so "cover_image" would survive alongside
     # "cover_image_url" if the pop and the spread were combined in one expression.
+    doc.pop("chapter_full_audio", None)
     cover_image = doc.pop("cover_image", None)
     full_audio_key = doc.pop("full_audio_key", None)
     return {
@@ -159,6 +168,7 @@ def chapter_view(slug: str, chapter_number: int) -> dict[str, Any]:
     if chapter is None:
         raise LookupError(f"No such chapter: {chapter_number}")
 
+    _use_chapter_recording(summary, chapter_number)
     shlokas = [_resolve_shloka(dict(s)) for s in chapter["shlokas"]]
     resolved = _resolve_chapter(
         {
@@ -200,6 +210,7 @@ def chapter_page_view(
     if page is None:
         raise LookupError(f"No such chapter: {chapter_number}")
 
+    _use_chapter_recording(summary, chapter_number)
     resolved = _resolve_chapter(
         {
             "number": page["number"],

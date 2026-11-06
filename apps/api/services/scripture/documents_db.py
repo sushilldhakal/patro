@@ -31,6 +31,9 @@ _ADDED_COLUMNS: list[tuple[str, str]] = [
     ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
     # JSON object: {"1": ["documents/slug/a.png", ...]} — ritual diagrams etc.
     ("chapter_images", "TEXT"),
+    # JSON object: {"1": "documents/slug/01/recording.mp3", ...} — one full
+    # recording per chapter, separate from the per-verse clips.
+    ("chapter_full_audio", "TEXT"),
 ]
 
 # Same additive/nullable/idempotent pattern as _ADDED_COLUMNS, but for the
@@ -78,7 +81,8 @@ CREATE TABLE IF NOT EXISTS documents (
     chapter_count   INTEGER NOT NULL DEFAULT 0,
     shloka_count    INTEGER NOT NULL DEFAULT 0,
     full_audio_key  TEXT,
-    chapter_images  TEXT
+    chapter_images  TEXT,
+    chapter_full_audio TEXT
 );
 
 CREATE TABLE IF NOT EXISTS shlokas (
@@ -316,6 +320,36 @@ def _resolve_audio_key(
     return f"{prefix}/{audio_file}" if prefix else audio_file
 
 
+def _chapter_full_audio_keys(manifest: dict[str, Any], audio_prefix: str | None) -> dict[str, str]:
+    """One continuous recording per chapter.
+
+    ``full_audio_template`` is filled with the chapter number (``{chapter}``
+    and ``{chapter:02d}``) for chapters ``1 .. full_audio_through_chapter``.
+    A chapter's own ``full_audio_file`` replaces the template for that chapter.
+    """
+    out: dict[str, str] = {}
+    template = manifest.get("full_audio_template")
+    through = manifest.get("full_audio_through_chapter")
+    if isinstance(template, str) and template.strip() and through is not None:
+        for number in range(1, int(through) + 1):
+            try:
+                relative = template.format(chapter=number, mandala=number)
+            except (KeyError, ValueError, IndexError):
+                continue
+            key = _resolve_full_audio_key(audio_prefix, relative)
+            if key:
+                out[str(number)] = key
+    for chapter in manifest.get("chapters") or []:
+        number = chapter.get("number")
+        explicit = chapter.get("full_audio_file")
+        if number is None or not explicit:
+            continue
+        key = _resolve_full_audio_key(audio_prefix, explicit)
+        if key:
+            out[str(int(number))] = key
+    return out
+
+
 def _resolve_full_audio_key(audio_prefix: str | None, full_audio_file: Any) -> str | None:
     """Same key-joining rule as a shloka's audio, for the whole-document recording."""
     if not full_audio_file:
@@ -337,6 +371,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     audio_template = manifest.get("audio_template") or None
     audio_coverage = manifest.get("audio_coverage") or None
     full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
+    chapter_full_audio = _chapter_full_audio_keys(manifest, audio_prefix)
     chapters = manifest.get("chapters") or []
     chapter_images: dict[str, list[str]] = {}
     for chapter in chapters:
@@ -403,8 +438,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO documents
             (slug, order_index, category, subcategory, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
-             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key, chapter_images)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key, chapter_images,
+             chapter_full_audio)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
@@ -427,6 +463,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             shloka_count,
             full_audio_key,
             json.dumps(chapter_images, ensure_ascii=False) if chapter_images else None,
+            json.dumps(chapter_full_audio, ensure_ascii=False) if chapter_full_audio else None,
         ),
     )
     conn.executemany(
@@ -538,6 +575,21 @@ def _document_detail_base(doc_row: sqlite3.Row) -> dict[str, Any]:
     detail["source_ne"] = doc_row["source_ne"]
     detail["source_en"] = doc_row["source_en"]
     return detail
+
+
+def _chapter_full_audio_map(doc_row: sqlite3.Row) -> dict[str, str]:
+    if "chapter_full_audio" not in doc_row.keys():
+        return {}
+    raw = doc_row["chapter_full_audio"]
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    return {str(key): str(value) for key, value in data.items() if value}
 
 
 def _chapter_images_map(doc_row: sqlite3.Row) -> dict[str, list[str]]:
@@ -722,7 +774,11 @@ def document_summary_lite(slug: str) -> dict[str, Any] | None:
         doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
     if doc_row is None:
         return None
-    return _document_detail_base(doc_row)
+    detail = _document_detail_base(doc_row)
+    recordings = _chapter_full_audio_map(doc_row)
+    if recordings:
+        detail["chapter_full_audio"] = recordings
+    return detail
 
 
 _LATIN_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
