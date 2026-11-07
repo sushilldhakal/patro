@@ -131,7 +131,8 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
       <div className="relative grid grid-cols-7">
         {/* The capsule behind the shown days. */}
         {span > 1 ? (
-          <span aria-hidden className="absolute bottom-2 h-10 rounded-full bg-muted" style={{ left: `calc(${(first / 7) * 100}% + 4px)`, width: `calc(${(span / 7) * 100}% - 8px)` }} />
+          // Slides to the new days, as Apple Calendar's capsule does.
+          <span aria-hidden className="absolute bottom-2 h-10 rounded-full bg-muted transition-[left,width] duration-300 ease-out motion-reduce:transition-none" style={{ left: `calc(${(first / 7) * 100}% + 4px)`, width: `calc(${(span / 7) * 100}% - 8px)` }} />
         ) : null}
         {week.map((date, i) => {
           const isShown = shown.includes(date);
@@ -143,12 +144,14 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
               <span className={cn("text-xs font-medium", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>{tx.weekdayShort(date).slice(0, 2)}</span>
               <span
                 className={cn(
-                  "inline-flex size-10 items-center justify-center rounded-full text-lg tabular-nums transition-colors",
-                  isFirst ? "bg-foreground font-semibold text-background" : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground",
+                  "relative inline-flex size-10 items-center justify-center rounded-full text-lg tabular-nums transition-colors",
+                  isFirst ? "font-semibold text-background" : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground",
                   !isShown && "hover:bg-muted",
                 )}
               >
-                {tx.bsDay(date)}
+                {/* The filled circle grows in on the new day (Apple Calendar), keyed so each change replays it. */}
+                {isFirst ? <span key={date} aria-hidden className={cn("absolute inset-0 rounded-full animate-in zoom-in-50 fade-in duration-300 motion-reduce:animate-none", isToday ? "bg-danger" : "bg-foreground")} /> : null}
+                <span className="relative">{tx.bsDay(date)}</span>
               </span>
             </button>
           );
@@ -162,7 +165,6 @@ type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number; moved
 
 function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
-  const scroller = useRef<HTMLDivElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
   const start = useRef<{ x: number; y: number; colWidth: number } | null>(null);
@@ -172,13 +174,6 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
   const showsToday = days.includes(todayAd);
   const [openPersonal, setOpenPersonal] = useState<string | null>(null);
   const hasAllDay = columns.some((c) => c.allDay.length > 0 || (marks.get(c.date)?.names.length ?? 0) > 0 || (yogas.get(c.date)?.length ?? 0) > 0 || personal.has(c.date));
-
-  useEffect(() => {
-    const live = new Date();
-    const at = showsToday ? live.getHours() + live.getMinutes() / 60 : 5;
-    scroller.current?.scrollTo({ top: at * HOUR_H });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [days.join(",")]);
 
   const begin = (e: ReactPointerEvent, id: string, mode: Drag["mode"]) => {
     e.stopPropagation();
@@ -281,7 +276,9 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
       ) : null}
 
       {/* The hours. */}
-      <div ref={scroller} className="relative max-h-[70vh] overflow-y-auto">
+      {/* The whole day, in the page's own scroll (as in the app): a scroll box inside the page caught the
+          wheel and the finger, so the page below could not be reached. */}
+      <div className="relative">
         <div className="grid" style={{ gridTemplateColumns: cols }}>
           <div className="relative" style={{ height: HOUR_H * 24 }}>
             {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => {

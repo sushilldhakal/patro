@@ -67,7 +67,7 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
       key: id,
       label,
       active,
-      icon: <AppNavIcon name={icon} size={24} color={active ? colors.secondary : colors.danger} />,
+      icon: <AppNavIcon name={icon} size={20} color={active ? colors.secondary : colors.danger} />,
       onPress: () => onNavigate(href),
     };
   };

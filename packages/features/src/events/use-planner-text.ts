@@ -24,15 +24,12 @@ export function usePlannerText() {
     adDay: (iso: string) => digits(Number(iso.slice(8, 10))),
     hour: (h: number) => digits(`${pad(h)}:00`),
     /**
-     * An hour as Apple Calendar labels it: "7" + "am", "Midday" at noon. Nepali says the part of the
-     * day instead: बिहान ७, दिउँसो २, बेलुका ६, राति ९.
+     * An hour as Apple Calendar labels it: "7" + "am", in the reader's digits.
      */
     hourParts: (h: number): { num: string; suffix: string } => {
-      if (h === 12) return { num: "", suffix: t("calendar.midday") };
+      // "७ am", "१२ pm" in both languages: a clock hour, not बिहान / दिउँसो / राति.
       const h12 = h % 12 === 0 ? 12 : h % 12;
-      if (en) return { num: String(h12), suffix: h < 12 ? "am" : "pm" };
-      const part = h >= 4 && h < 12 ? "calendar.part_morning" : h >= 12 && h < 17 ? "calendar.part_afternoon" : h >= 17 && h < 20 ? "calendar.part_evening" : "calendar.part_night";
-      return { num: digits(h12), suffix: t(part) };
+      return { num: en ? String(h12) : digits(h12), suffix: h < 12 ? "am" : "pm" };
     },
     /** "18 Nov" in the reader's language, the Gregorian date beside the BS one. */
     adShort: (iso: string) => parse(iso).toLocaleDateString(en ? "en-GB" : "ne-NP", { day: "numeric", month: "short" }),

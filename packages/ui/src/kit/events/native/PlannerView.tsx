@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import { AccessibilityInfo, PanResponder, Pressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import Animated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -127,8 +128,16 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
         ))}
       </View>
       <View className="flex-row">
+        {/* The capsule behind the shown days slides to the new ones, as Apple Calendar's does. Animated views
+            take a style only; the colour is on the plain view inside. */}
         {span > 1 ? (
-          <View pointerEvents="none" className="absolute bottom-2 top-1 rounded-full bg-muted" style={{ left: `${(first / 7) * 100}%`, width: `${(span / 7) * 100}%` }} />
+          <Animated.View
+            pointerEvents="none"
+            layout={LinearTransition.springify().damping(18)}
+            style={{ position: "absolute", top: 4, bottom: 8, left: `${(first / 7) * 100}%`, width: `${(span / 7) * 100}%` }}
+          >
+            <View className="flex-1 rounded-full bg-muted" />
+          </Animated.View>
         ) : null}
         {week.map((date, i) => {
           const isFirst = date === shown[0];
@@ -151,7 +160,18 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
               className={cn("flex-1 items-center pb-2 pt-1", i > 0 && "border-l border-border")}
             >
               {/* Apple: the shown day is filled black, or red when it is today. */}
-              <View className={cn("h-10 w-10 items-center justify-center rounded-full", isFirst && (isToday ? "bg-danger" : "bg-foreground"))}>
+              <View className="h-10 w-10 items-center justify-center">
+                {/* The filled circle shrinks away from the old day and grows on the new one. */}
+                {isFirst ? (
+                  <Animated.View
+                    key={date}
+                    entering={ZoomIn.springify().damping(14)}
+                    exiting={ZoomOut.duration(140)}
+                    style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+                  >
+                    <View className={cn("flex-1 rounded-full", isToday ? "bg-danger" : "bg-foreground")} />
+                  </Animated.View>
+                ) : null}
                 <Text className={cn("font-num text-title", isFirst ? (isToday ? "font-semibold text-white" : "font-semibold text-background") : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground")}>
                   {tx.bsDay(date)}
                 </Text>

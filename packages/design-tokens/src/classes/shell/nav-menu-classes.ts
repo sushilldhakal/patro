@@ -21,8 +21,8 @@ export const navMenuClasses = {
   categoryTitle: "mx-3 mt-3 text-base font-bold text-foreground",
   /** The app's side menu: four smaller tiles a row. */
   nativeTile: "w-full items-center gap-1.5 px-0.5 py-2",
-  nativeIconWrap: "size-12 items-center justify-center rounded-2xl bg-muted/80 dark:bg-foreground/10",
-  nativeLabel: "w-full min-w-0 text-center text-xs font-semibold leading-tight text-foreground",
+  nativeIconWrap: "size-10 items-center justify-center rounded-2xl bg-muted/80 dark:bg-foreground/10",
+  nativeLabel: "w-full min-w-0 text-center text-[15px] font-semibold leading-snug text-foreground",
   /** The app's side menu header: the tabs and the close button on one row. In dark the sheet is the card
       colour, so the track and the selected pill are lifted with the foreground instead. */
   nativeTabs: "min-w-0 flex-1 flex-row rounded-full bg-muted p-1 dark:bg-foreground/5",
