@@ -198,7 +198,10 @@ export function useDocumentPlayback(
         ? {
             has: (sukta: number) => {
               const track = suktaTracks.find((t) => t.sukta === sukta);
-              return track != null && probed.get(track.url) === true;
+              // Every Rigveda sukta has its file: show the button at once, and drop it only when the
+              // file is confirmed missing. iPhone Safari often loads no audio before a tap, so waiting
+              // for the check there left the heading bare.
+              return track != null && probed.get(track.url) !== false;
             },
             playing: playingSukta,
             toggle: toggleSukta,

@@ -536,14 +536,14 @@ export function useDocumentAudio(
 
   const verseIndex = activeVerseId == null ? -1 : trackIds().indexOf(activeVerseId);
 
-  /** Sukta files confirmed in storage: only those headings get a play button. */
-  const [verifiedSuktas, setVerifiedSuktas] = useState<ReadonlySet<number>>(() => new Set());
+  /** Sukta files confirmed missing: those headings lose their play button. The rest show it at once. */
+  const [missingSuktas, setMissingSuktas] = useState<ReadonlySet<number>>(() => new Set());
   useEffect(() => {
     let cancelled = false;
     for (const track of suktaTracks) {
       void isAudioAvailable(track.url).then((ok) => {
-        if (cancelled || !ok) return;
-        setVerifiedSuktas((prev) => (prev.has(track.sukta) ? prev : new Set(prev).add(track.sukta)));
+        if (cancelled || ok) return;
+        setMissingSuktas((prev) => (prev.has(track.sukta) ? prev : new Set(prev).add(track.sukta)));
       });
     }
     return () => {
@@ -598,7 +598,7 @@ export function useDocumentAudio(
     hasSuktaAudio: !fullAudioUrl && suktaTracks.length > 0,
     /** What a sukta heading needs: whether its file is there, the sukta sounding now, and play / pause. */
     sukta: {
-      has: (n: number) => verifiedSuktas.has(n),
+      has: (n: number) => suktaTracks.some((track) => track.sukta === n) && !missingSuktas.has(n),
       playing: !fullAudioUrl && mode === "full" && suktaStatus.playing ? suktaNow : null,
       toggle: toggleSukta,
     },

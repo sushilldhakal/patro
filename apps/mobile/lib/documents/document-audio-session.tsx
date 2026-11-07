@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useIsFocused } from "expo-router";
 import type { Shloka } from "@/lib/documents/api";
+import { suktaTracksFrom } from "@vedic-patro/features/documents";
 import { useDocumentAudio, type DocumentAudio } from "@/lib/documents/use-document-audio";
 
 /**
@@ -160,8 +161,12 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
       full: { playing: false, currentTime: 0, duration: 0, available: Boolean(fullAudioUrl) },
       hasSuktaAudio: false,
       suktaNumber: null,
-      // Sukta files are checked once this page is the session.
-      sukta: { has: () => false, playing: null, toggle: (n: number) => takeOver((a) => a.sukta.toggle(n)) },
+      // A Rigveda sukta heading plays its file even before this page owns the player.
+      sukta: {
+        has: (n: number) => !fullAudioUrl && suktaTracksFrom(shlokas).some((track) => track.sukta === n),
+        playing: null,
+        toggle: (n: number) => takeOver((a) => a.sukta.toggle(n)),
+      },
       startFull: () => takeOver((a) => a.startFull()),
       startPlayThrough: () => takeOver((a) => a.startPlayThrough()),
       canPlayThrough: false,
