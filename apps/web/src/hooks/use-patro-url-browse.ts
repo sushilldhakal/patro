@@ -9,6 +9,7 @@ import {
 } from "@vedic-patro/domain/calendar/era";
 import {
   locationSearchFingerprint,
+  urlLocationPending,
   locationToSearch,
   sameLocationParams,
   sameSearch,
@@ -127,6 +128,7 @@ export function usePatroMonthUrlBrowse(
     if (urlYearUnparseable(search, language) || urlMonthUnparseable(search, language)) {
       return;
     }
+    if (urlLocationPending(search, seenUrlLocationRef.current, location)) return;
     const desired = stripPatroDayOnlySearchKeys(
       buildEraBrowseSearch(
         location,
@@ -194,6 +196,7 @@ export function usePatroYearUrlBrowse(
 
   useEffect(() => {
     if (urlYearUnparseable(search, language)) return;
+    if (urlLocationPending(search, seenUrlLocationRef.current, location)) return;
     const desired = buildEraBrowseSearch(
       location,
       {
@@ -233,7 +236,9 @@ export function usePatroLocationUrlBrowse(
   location: PanchangaLocation,
   setLocation: (loc: PanchangaLocation) => void,
 ) {
+  const seenUrlLocationRef = useRef<string | null>(null);
   useEffect(() => {
+    if (urlLocationPending(search, seenUrlLocationRef.current, location)) return;
     const desired = locationToSearch(location);
     if (!sameSearch(desired, search)) {
       navigate({ search: desired, replace: true });
@@ -241,6 +246,11 @@ export function usePatroLocationUrlBrowse(
   }, [location, search, navigate]);
 
   useEffect(() => {
+    // Only a URL that changed (a link, back / forward) moves the page's place; its own echo must not.
+    const fp = locationSearchFingerprint(search);
+    const prev = seenUrlLocationRef.current;
+    seenUrlLocationRef.current = fp;
+    if (prev !== null && fp === prev) return;
     const loc = searchToLocation(search);
     if (loc && !sameLocationParams(loc.params, location.params)) setLocation(loc);
   }, [search, location, setLocation]);
@@ -276,11 +286,13 @@ export function useElementPageUrlBrowse(
     mirrorUrl: !isSpan,
   });
 
+  const seenSpanLocationRef = useRef<string | null>(null);
   useEffect(() => {
     if (!isSpan) return;
     if (urlYearUnparseable(search, language) || urlMonthUnparseable(search, language)) {
       return;
     }
+    if (urlLocationPending(search, seenSpanLocationRef.current, location)) return;
     const desired = stripPatroDayOnlySearchKeys(
       buildEraBrowseSearch(
         location,
@@ -315,6 +327,10 @@ export function useElementPageUrlBrowse(
     // Day-table elements mirror location via usePatroDayUrlBrowse — avoid reverting
     // a fresh picker choice before the URL mirror effect runs.
     if (!isSpan) return;
+    const fp = locationSearchFingerprint(search);
+    const prev = seenSpanLocationRef.current;
+    seenSpanLocationRef.current = fp;
+    if (prev !== null && fp === prev) return;
     const loc = searchToLocation(search);
     if (loc && !sameLocationParams(loc.params, location.params)) setLocation(loc);
     // eslint-disable-next-line react-hooks/exhaustive-deps

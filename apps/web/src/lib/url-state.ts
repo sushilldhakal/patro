@@ -573,6 +573,19 @@ export function searchToLocation(search: LocationSearch): PanchangaLocation | un
   return undefined;
 }
 
+/**
+ * The URL names a place the page has not taken up yet (a shared link, back / forward, or the first
+ * render with a remembered place that differs). The location → URL mirror must wait that pass:
+ * mirror effects run before the URL → location ones in the same commit, so writing the remembered
+ * place first while the other adopts the URL's swapped the two forever (the whole site flickering
+ * between `city=` and `lat=&lon=`). `seenFp` is the URL fingerprint the adopting effect last saw.
+ */
+export function urlLocationPending(search: LocationSearch, seenFp: string | null, location: PanchangaLocation | undefined): boolean {
+  if (!location || locationSearchFingerprint(search) === seenFp) return false;
+  const fromUrl = searchToLocation(search);
+  return Boolean(fromUrl && !sameLocationParams(fromUrl.params, location.params));
+}
+
 /** Whether two location param sets resolve to the same place. */
 export function sameLocationParams(a: LocationParams, b: LocationParams): boolean {
   /* Same city id is the same place, whatever else rides along. A location built

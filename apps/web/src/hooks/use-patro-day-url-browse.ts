@@ -28,6 +28,7 @@ import { bsToAdOrNull } from "@vedic-patro/domain/calendar/bs-calendar";
 import { rememberBrowse } from "@vedic-patro/domain/calendar/remembered-browse";
 import {
   locationSearchFingerprint,
+  urlLocationPending,
   patroDayBrowseNavigateSearch,
   sameLocationParams,
   sameSearch,
@@ -153,6 +154,7 @@ export function usePatroDayUrlBrowse(
 
   useEffect(() => {
     if (!mirrorUrl) return;
+    if (urlLocationPending(search, seenUrlLocationRef.current, location)) return;
     const desired = patroDayBrowseNavigateSearch(
       location,
       patroDayFetchWithUiLanguage(dayState, language),
@@ -313,6 +315,7 @@ export function usePatroPanchangaUrlBrowse(
   useFollowCalendarSwitch(dayState, replaceDayState);
 
   useEffect(() => {
+    if (urlLocationPending(search, seenUrlLocationRef.current, location)) return;
     const desired = {
       ...patroDayBrowseNavigateSearch(
         location,
