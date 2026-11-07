@@ -106,8 +106,12 @@ export function DocumentReader({
     const wanted = canonVerseLabel(scrollToLabel);
     const i = rows.findIndex((r) => r.kind === "verse" && canonVerseLabel(r.shloka.verse_label) === wanted);
     if (i < 0) return;
-    jumped.current = jumpKey;
-    const id = setTimeout(() => scrollToIndex(i), 250);
+    // Marked done when the scroll fires: rows changing inside the delay re-run this with the new
+    // index instead of cancelling the jump for good.
+    const id = setTimeout(() => {
+      jumped.current = jumpKey;
+      scrollToIndex(i);
+    }, 250);
     return () => clearTimeout(id);
   }, [scrollToLabel, scrollNonce, rows, scrollToIndex]);
 

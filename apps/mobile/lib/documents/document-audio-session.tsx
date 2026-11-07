@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useIsFocused } from "expo-router";
 import type { Shloka } from "@/lib/documents/api";
+import { isAudioAvailable } from "@vedic-patro/api-client";
 import { suktaTracksFrom } from "@vedic-patro/features/documents";
 import { useDocumentAudio, type DocumentAudio } from "@/lib/documents/use-document-audio";
 
@@ -127,6 +128,10 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
   }, [focused, current, owner, sounding, key, route, shlokas, fullAudioUrl, complete, documentTitle, chapterTitle]);
 
   const [openMeaningIds, setOpenMeaningIds] = useState<ReadonlySet<number>>(() => new Set());
+  // While another page's audio plays, this page still shows a verse's play button only once its clip is
+  // confirmed in storage: the Rigveda names a clip for every verse, and many (all of 10.85) were never uploaded.
+  // The answers are cached, so the player checks them again for free once this page takes over.
+  const idleVerified = useIdleVerifiedClips(shlokas, owner && live?.key === key);
   const idle = useMemo<SessionAudio>(() => {
     const takeOver = (run: (audio: DocumentAudio) => void) => {
       pending = { key, run };
@@ -136,8 +141,7 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
     return {
       foreign: true,
       missingIds: new Set<number>(),
-      // Until this page is the session its clips are not checked: show every play button it names.
-      verifiedIds: playable,
+      verifiedIds: idleVerified,
       mode: null,
       activeId: null,
       activeProgress: 0,
@@ -176,9 +180,39 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
       switchToFull: () => {},
       hasVerseClips: playable.size > 0,
     };
-  }, [key, route, shlokas, fullAudioUrl, documentTitle, complete, chapterTitle, openMeaningIds]);
+  }, [key, route, shlokas, fullAudioUrl, documentTitle, complete, chapterTitle, openMeaningIds, idleVerified]);
 
   if (owner && live?.key === key) return { ...live.audio, foreign: false };
   // Waiting on another page's audio only while it actually sounds; otherwise this page takes over next frame.
   return sounding && !owner ? idle : { ...idle, foreign: false };
+}
+
+/** Verse ids whose clip is confirmed in storage, checked a few at a time. Skipped while the page owns the player, which checks them itself. */
+function useIdleVerifiedClips(shlokas: Shloka[], skip: boolean): ReadonlySet<number> {
+  const [verified, setVerified] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    if (skip) return;
+    let cancelled = false;
+    const queue = shlokas.filter((s) => s.audio_url);
+    const found: number[] = [];
+    let flushTimer: ReturnType<typeof setTimeout> | null = null;
+    const flush = () => {
+      flushTimer = null;
+      if (cancelled || found.length === 0) return;
+      const ok = found.splice(0);
+      setVerified((prev) => (ok.every((id) => prev.has(id)) ? prev : new Set([...prev, ...ok])));
+    };
+    const worker = async () => {
+      for (let s = queue.shift(); s && !cancelled; s = queue.shift()) {
+        if (await isAudioAvailable(s.audio_url!)) found.push(s.id);
+        flushTimer ??= setTimeout(flush, 120);
+      }
+    };
+    void Promise.all(Array.from({ length: 6 }, worker)).then(flush);
+    return () => {
+      cancelled = true;
+      if (flushTimer) clearTimeout(flushTimer);
+    };
+  }, [shlokas, skip]);
+  return verified;
 }

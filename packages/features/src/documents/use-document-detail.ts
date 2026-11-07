@@ -252,7 +252,10 @@ export function useDocumentChapter(
     : docQ.data
       ? bilingual(lang, docQ.data.title_ne, docQ.data.title_en)
       : "";
-  const chapterTitle = data ? bilingual(lang, data.chapter.title_ne, data.chapter.title_en) || undefined : undefined;
+  // "काण्ड 1" in the data reads "काण्ड १" in Nepali, like the sukta headings under it.
+  const chapterTitle = data
+    ? bilingual(lang, data.chapter.title_ne, data.chapter.title_en).replace(/\d/g, (d) => digits(Number(d))) || undefined
+    : undefined;
   const sections = (docQ.data?.chapters ?? []).flatMap((c) => {
     if (c.number == null) return [];
     const title = bilingual(lang, c.title_ne, c.title_en) || t("documents.chapter_label", { number: digits(c.number) });
