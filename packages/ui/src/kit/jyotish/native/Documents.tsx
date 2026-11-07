@@ -6,7 +6,7 @@ import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { DocumentGroupHeadingProps, PlaybackBarProps, ShlokaCardProps } from "../contract";
-import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
+import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward, iconX } from "../icons";
 
 export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });
@@ -151,7 +151,9 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
           </Pressable>
           <Box className={documentsClasses.fill}>
-            <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.full.title}</Text>
+            <TitleLink open={props.open}>
+              <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.full.title}</Text>
+            </TitleLink>
             <Box className={documentsClasses.barScrubRow} nativeClassName="flex-row items-center">
               <Text className={documentsClasses.barTime}>{bar.full.current}</Text>
               {props.renderSeek ? (
@@ -164,6 +166,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
               <Text className={documentsClasses.barTime}>{bar.full.total}</Text>
             </Box>
           </Box>
+          <CloseButton close={props.close} />
         </Box>
       </Dock>
     );
@@ -192,17 +195,40 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={iconSkipForward} size={16} tone="muted" filled />
           </Pressable>
           <Box className={documentsClasses.fill}>
-            <Text className={documentsClasses.barKicker} numberOfLines={1}>{props.documentTitle}</Text>
-            <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.verse.title}</Text>
+            <TitleLink open={props.open}>
+              <Text className={documentsClasses.barKicker} numberOfLines={1}>{props.documentTitle}</Text>
+              <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.verse.title}</Text>
+            </TitleLink>
           </Box>
           {bar.verse.canSwitchToFull ? (
             <Pressable onPress={props.onSwitchToFull} label={copy.switchToFull} className={documentsClasses.barSkip}>
               <Icon node={iconListMusic} size={16} tone="muted" />
             </Pressable>
           ) : null}
+          <CloseButton close={props.close} />
         </Box>
       </Box>
     </Dock>
+  );
+}
+
+/** The mini player's title: a tap goes back to the text it is reading. Plain text on the page itself. */
+function TitleLink({ open, children }: { open: PlaybackBarProps["open"]; children: React.ReactNode }) {
+  if (!open) return <>{children}</>;
+  return (
+    <Pressable onPress={open.onPress} label={open.hint} suppressPressScale>
+      <Box>{children}</Box>
+    </Pressable>
+  );
+}
+
+/** The mini player's X: stop and close. Only on other pages. */
+function CloseButton({ close }: { close: PlaybackBarProps["close"] }) {
+  if (!close) return null;
+  return (
+    <Pressable onPress={close.onPress} label={close.label} className={documentsClasses.barSkip}>
+      <Icon node={iconX} size={18} tone="muted" />
+    </Pressable>
   );
 }
 

@@ -268,6 +268,10 @@ export type PlaybackBarProps = {
   onDockHeight?: (height: number) => void;
   /** App slider. The website draws a range input. */
   renderSeek?: (args: PlaybackSeekArgs) => ReactNode;
+  /** App mini player on other pages: an X that stops and closes the player. */
+  close?: { label: string; onPress: () => void };
+  /** App mini player on other pages: tapping the title goes back to the text. */
+  open?: { hint: string; onPress: () => void };
 };
 
 export type AyanamshaSelectorProps = {

@@ -12,7 +12,18 @@ import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 const BAR_GUTTER = 16;
 
 /** Binds the shared transport to the app audio engine and the native slider. */
-export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio & { foreign?: boolean }; documentTitle: string }) {
+export function PlaybackBar({
+  audio,
+  documentTitle,
+  close,
+  open,
+}: {
+  audio: DocumentAudio & { foreign?: boolean };
+  documentTitle: string;
+  /** The mini player on other pages: an X to stop, and a title that goes back to the text. */
+  close?: { label: string; onPress: () => void };
+  open?: { hint: string; onPress: () => void };
+}) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
@@ -50,6 +61,8 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio & {
       dockInset={BAR_GUTTER}
       onDockHeight={setBarAccessoryHeight}
       renderSeek={(args) => <SeekSlider {...args} colors={colors} />}
+      close={close}
+      open={open}
     />
   );
 }
