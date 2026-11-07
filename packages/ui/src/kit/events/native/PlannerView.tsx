@@ -63,8 +63,11 @@ function useTablet() {
 }
 
 export function PlannerView(props: PlannerViewProps) {
-  const { view, anchor, onAnchorChange, todayAd } = props;
+  const { view, anchor, onAnchorChange, todayAd, wrapBody } = props;
   const tx = usePlannerText();
+  const { tablet } = useTablet();
+  // A phone runs the grid edge to edge; the toolbar, year and list keep the page's inset.
+  const inset = tablet ? undefined : "px-4";
   const timeGrid = view === "day" || view === "multi" || view === "week";
   const step = (dir: 1 | -1) => {
     haptics.tick();
@@ -74,7 +77,7 @@ export function PlannerView(props: PlannerViewProps) {
   return (
     <View>
       {/* Toolbar: the month (or year) on the left, ‹ Today › in one capsule on the right. */}
-      <View className="flex-row items-center justify-between gap-3 pb-3">
+      <View className={cn("flex-row items-center justify-between gap-3 pb-3", inset)}>
         <Text className="min-w-0 flex-1 text-2xl font-bold text-foreground" numberOfLines={1}>{tx.title(view, anchor)}</Text>
         <View className="flex-row items-center rounded-full border border-border bg-card p-0.5">
           <Pressable accessibilityRole="button" accessibilityLabel={tx.t("calendar.planner_prev")} onPress={() => step(-1)} hitSlop={4} className="h-9 w-9 items-center justify-center rounded-full active:bg-muted">
@@ -97,9 +100,21 @@ export function PlannerView(props: PlannerViewProps) {
       </View>
 
       {/* Day and Multi Day: the week strip is the top of the bordered grid, as Week's date row is. */}
-      {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} strip={view === "day" || view === "multi" ? <DayStrip {...props} /> : null} /> : null}
-      {view === "year" ? <YearGrid {...props} /> : null}
-      {view === "list" ? <AgendaList {...props} /> : null}
+      {(wrapBody ?? ((body: ReactNode) => body))(
+        <View>
+          {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} strip={view === "day" || view === "multi" ? <DayStrip {...props} /> : null} /> : null}
+          {view === "year" ? (
+            <View className={inset}>
+              <YearGrid {...props} />
+            </View>
+          ) : null}
+          {view === "list" ? (
+            <View className={inset}>
+              <AgendaList {...props} />
+            </View>
+          ) : null}
+        </View>,
+      )}
     </View>
   );
 }
@@ -112,19 +127,20 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
   const first = week.indexOf(shown[0]!);
   const span = shown.filter((d) => week.includes(d)).length;
   return (
-    <View className="border-b border-border pb-2 pt-2">
+    // Each date is its own cell, ruled off from the next like the grid's columns below.
+    <View className="border-b border-border">
       <View className="flex-row">
         {week.map((date, i) => (
-          <Text key={date} className={cn("flex-1 text-center text-caption font-medium", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>
+          <Text key={date} className={cn("flex-1 pt-2 text-center text-caption font-medium", i > 0 && "border-l border-border", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>
             {tx.weekdayShort(date).slice(0, 2)}
           </Text>
         ))}
       </View>
-      <View className="mt-1 flex-row">
+      <View className="flex-row">
         {span > 1 ? (
-          <View pointerEvents="none" className="absolute bottom-0 top-0 rounded-full bg-muted" style={{ left: `${(first / 7) * 100}%`, width: `${(span / 7) * 100}%` }} />
+          <View pointerEvents="none" className="absolute bottom-2 top-1 rounded-full bg-muted" style={{ left: `${(first / 7) * 100}%`, width: `${(span / 7) * 100}%` }} />
         ) : null}
-        {week.map((date) => {
+        {week.map((date, i) => {
           const isFirst = date === shown[0];
           const isToday = date === todayAd;
           const holiday = marks.get(date)?.holiday;
@@ -142,7 +158,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
                 onCreateAt(date, heldDayTime(date, todayAd));
               }}
               delayLongPress={400}
-              className="flex-1 items-center"
+              className={cn("flex-1 items-center pb-2 pt-1", i > 0 && "border-l border-border")}
             >
               {/* Apple: the shown day is filled black, or red when it is today. */}
               <View className={cn("h-10 w-10 items-center justify-center rounded-full", isFirst && (isToday ? "bg-danger" : "bg-foreground"))}>

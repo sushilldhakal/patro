@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
-import { adaptHomeView, adaptTabletHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
+import { adaptHomeView, adaptTabletHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, usePlannerText, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { EventDetailSheet, type CalendarDetail } from "@/components/events/EventDetailSheet";
@@ -151,7 +151,8 @@ function MonthGridSwipe({
      so `{}` at rest could strand the grid a fraction of a pixel off after a spring. */
   const style = useAnimatedStyle(() => ({ transform: [{ translateX: tx.get() }] }));
 
-  if (!enabled) return children;
+  // Kept mounted while disabled (`.enabled(false)` above): swapping the wrapper out would remount the
+  // children, which ends a planner drag the moment it begins.
   return (
     <GestureDetector gesture={pan}>
       <Animated.View style={style} onLayout={(event) => widthSv.set(event.nativeEvent.layout.width)}>
@@ -190,6 +191,7 @@ function HomeScreen() {
   const [plannerDragging, setPlannerDragging] = useState(false);
   // The planner views (week, day, year, list) centre on this AD date; an event open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(todayAd);
+  const plannerText = usePlannerText();
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
   // A tapped event, festival or holiday shows its details first, as in Apple Calendar; Edit opens the form.
   const [detail, setDetail] = useState<CalendarDetail | null>(null);
@@ -422,7 +424,8 @@ function HomeScreen() {
       </Reveal>
 
       {plannerKind ? (
-        <View style={{ paddingHorizontal: contentInset }}>
+        // Edge to edge on a phone, like the month grid: the planner pads its own toolbar.
+        <View>
           <PlannerView
             view={plannerKind}
             anchor={anchor}
@@ -444,6 +447,12 @@ function HomeScreen() {
               void queryClient.invalidateQueries({ queryKey: ["events"] });
             }}
             onDragChange={setPlannerDragging}
+            // Swipe left / right steps forward / back a day, two days or a week, as the month grid's swipe does.
+            wrapBody={(body) => (
+              <MonthGridSwipe enabled={!plannerDragging} atStart={false} atEnd={false} onCommit={(dir) => setAnchor(plannerText.step(plannerKind, anchor, dir > 0 ? 1 : -1))}>
+                {body}
+              </MonthGridSwipe>
+            )}
           />
         </View>
       ) : monthLoading ? (

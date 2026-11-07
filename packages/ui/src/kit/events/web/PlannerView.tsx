@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type TouchEvent as ReactTouchEvent } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -52,11 +52,13 @@ export function PlannerView(props: PlannerViewProps) {
   const { view, anchor, onAnchorChange, todayAd } = props;
   const tx = usePlannerText();
   const timeGrid = view === "day" || view === "multi" || view === "week";
+  const swipe = useSwipeStep((dir) => onAnchorChange(tx.step(view, anchor, dir)));
 
   return (
-    <section className="flex flex-col max-md:px-3">
+    // Edge to edge on a phone, like the month grid: the toolbar, year and list keep the page's inset.
+    <section className="flex flex-col">
       {/* Toolbar: the month (or year) on the left, ‹ Today › in one capsule on the right. */}
-      <div className="flex items-center justify-between gap-3 pb-3">
+      <div className="flex items-center justify-between gap-3 pb-3 max-md:px-3">
         <h2 className="m-0 min-w-0 truncate text-2xl font-bold tracking-tight">{tx.title(view, anchor)}</h2>
         <div className="flex shrink-0 items-center rounded-full border border-border bg-card p-0.5 shadow-sm">
           <button type="button" aria-label={tx.t("calendar.planner_prev")} onClick={() => onAnchorChange(tx.step(view, anchor, -1))} className="inline-flex size-9 items-center justify-center rounded-full hover:bg-muted">
@@ -71,12 +73,49 @@ export function PlannerView(props: PlannerViewProps) {
         </div>
       </div>
 
-      {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
-      {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} /> : null}
-      {view === "year" ? <YearGrid {...props} /> : null}
-      {view === "list" ? <AgendaList {...props} /> : null}
+      {/* A left / right swipe steps forward / back a day, two days or a week, as the buttons do. */}
+      <div {...swipe}>
+        {view === "day" || view === "multi" ? <DayStrip {...props} /> : null}
+        {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} /> : null}
+        {view === "year" ? (
+          <div className="max-md:px-3">
+            <YearGrid {...props} />
+          </div>
+        ) : null}
+        {view === "list" ? (
+          <div className="max-md:px-3">
+            <AgendaList {...props} />
+          </div>
+        ) : null}
+      </div>
     </section>
   );
+}
+
+/** A mostly sideways finger swipe of 50px or more: left steps forward, right steps back. A drag on an event block is not one. */
+function useSwipeStep(onStep: (dir: 1 | -1) => void) {
+  const start = useRef<{ x: number; y: number } | null>(null);
+  return {
+    onTouchStart: (e: ReactTouchEvent) => {
+      const t = e.touches[0];
+      const target = e.target as HTMLElement;
+      // Event blocks drag with the pointer (touch-none); a range input scrubs.
+      start.current = e.touches.length === 1 && t && !target.closest(".touch-none, input, textarea") ? { x: t.clientX, y: t.clientY } : null;
+    },
+    onTouchEnd: (e: ReactTouchEvent) => {
+      const from = start.current;
+      start.current = null;
+      const t = e.changedTouches[0];
+      if (!from || !t) return;
+      const dx = t.clientX - from.x;
+      const dy = t.clientY - from.y;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      onStep(dx < 0 ? 1 : -1);
+    },
+    onTouchCancel: () => {
+      start.current = null;
+    },
+  };
 }
 
 /** Apple's week strip: weekday letters over the dates; the shown day filled, the next one in a capsule (Multi Day). */
@@ -87,11 +126,12 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
   const first = week.indexOf(shown[0]!);
   const span = shown.filter((d) => week.includes(d)).length;
   return (
-    <div className="border-b border-border pb-2">
+    // Each date is its own cell, ruled off from the next like the grid's columns below.
+    <div className="border-y border-border">
       <div className="relative grid grid-cols-7">
         {/* The capsule behind the shown days. */}
         {span > 1 ? (
-          <span aria-hidden className="absolute bottom-0 h-10 rounded-full bg-muted" style={{ left: `calc(${(first / 7) * 100}% + 4px)`, width: `calc(${(span / 7) * 100}% - 8px)` }} />
+          <span aria-hidden className="absolute bottom-2 h-10 rounded-full bg-muted" style={{ left: `calc(${(first / 7) * 100}% + 4px)`, width: `calc(${(span / 7) * 100}% - 8px)` }} />
         ) : null}
         {week.map((date, i) => {
           const isShown = shown.includes(date);
@@ -99,7 +139,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
           const isToday = date === todayAd;
           const holiday = marks.get(date)?.holiday;
           return (
-            <button key={date} type="button" onClick={() => onAnchorChange(date)} aria-pressed={isShown} className="relative flex flex-col items-center gap-1 border-none bg-transparent">
+            <button key={date} type="button" onClick={() => onAnchorChange(date)} aria-pressed={isShown} className={cn("relative flex flex-col items-center gap-1 border-0 bg-transparent py-2", i > 0 && "border-l border-solid border-border")}>
               <span className={cn("text-xs font-medium", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>{tx.weekdayShort(date).slice(0, 2)}</span>
               <span
                 className={cn(

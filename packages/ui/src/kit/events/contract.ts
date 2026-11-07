@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import type { BestSlot, CalendarFeedState, DayMark, HomeView, PersonalColumn, PlannerSlotExtra, PlannerViewKind, SlotSource } from "@vedic-patro/features/events";
 
@@ -82,4 +83,6 @@ export type PlannerViewProps = {
    * stops scrolling while a block is dragged.
    */
   onDragChange?: (dragging: boolean) => void;
+  /** App only: wraps the views under the toolbar, so a left / right swipe steps back or forward as the month grid's does. */
+  wrapBody?: (body: ReactNode) => ReactNode;
 };
