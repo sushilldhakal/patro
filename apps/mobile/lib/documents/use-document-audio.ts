@@ -94,17 +94,37 @@ export function useDocumentAudio(
     t.ids = playable.map((s) => s.id);
   }, [playable, playlist]);
 
-  useEffect(() => {
-    const key = suktaTracks.map((track) => String(track.sukta)).join(",");
-    if (!key || !extendsIds(frozenSukta.current.key, key) || frozenSukta.current.key === key) return;
-    const old = frozenSukta.current.key.split(",");
-    const next = suktaTracks;
-    const at = next.findIndex((track) => String(track.sukta) === old[0]);
-    if (at < 0) return;
-    for (let i = at - 1; i >= 0; i--) suktaPlaylist.insert({ uri: next[i]!.url }, 0);
-    for (let i = at + old.length; i < next.length; i++) suktaPlaylist.add({ uri: next[i]!.url });
-    frozenSukta.current = { ...frozenSukta.current, key };
-  }, [suktaTracks, suktaPlaylist]);
+  /** Sukta numbers in the native queue's order: its indices, which can trail `suktaTracks` (see extendSukta). */
+  const suktaQueue = (): number[] => (frozenSukta.current.key ? frozenSukta.current.key.split(",").map(Number) : []);
+
+  /* Pages that arrive add their suktas to the live queue. Appending is free; putting one in front
+     rebuilds the native queue, which restarts the sukta that is loaded (or, while it is still
+     buffering, stops it). So suktas from earlier pages wait while a sukta is in use, and go in when
+     it is done or when one of them is started. */
+  const extendSukta = useCallback(
+    (prepend: boolean) => {
+      const key = suktaTracks.map((track) => String(track.sukta)).join(",");
+      if (!key || !extendsIds(frozenSukta.current.key, key) || frozenSukta.current.key === key) return;
+      const old = frozenSukta.current.key.split(",");
+      const next = suktaTracks;
+      const at = next.findIndex((track) => String(track.sukta) === old[0]);
+      if (at < 0) return;
+      for (let i = at + old.length; i < next.length; i++) suktaPlaylist.add({ uri: next[i]!.url });
+      let first = at;
+      if (prepend) {
+        for (let i = at - 1; i >= 0; i--) suktaPlaylist.insert({ uri: next[i]!.url }, 0);
+        first = 0;
+      }
+      frozenSukta.current = {
+        ...frozenSukta.current,
+        key: next
+          .slice(first)
+          .map((track) => String(track.sukta))
+          .join(","),
+      };
+    },
+    [suktaTracks, suktaPlaylist],
+  );
 
   const fullPlayer = useAudioPlayer(fullAudioUrl ? { uri: fullAudioUrl } : null, {
     updateInterval: 250,
@@ -113,6 +133,16 @@ export function useDocumentAudio(
   const fullStatus = useAudioPlayerStatus(fullPlayer);
 
   const [mode, setMode] = useState<AudioMode>(null);
+  /* Which source the reader is on, read by the native listeners. Set together with the state: a
+     track event can arrive before the render that would update it. */
+  const modeRef = useRef<AudioMode>(null);
+  const setModeNow = useCallback((next: AudioMode) => {
+    modeRef.current = next;
+    setMode(next);
+  }, []);
+  useEffect(() => {
+    extendSukta(mode !== "full");
+  }, [extendSukta, mode]);
 
   /* Every verse recorded (or one full recording): the bar offers "play through" and playback runs
      on by itself. With recordings for a few verses only, it stops where the recordings stop instead
@@ -220,14 +250,17 @@ export function useDocumentAudio(
         const sukta = byId.get(id)?.sukta_number;
         const suktaAt = sukta == null ? -1 : suktaTracks.findIndex((track) => track.sukta === sukta);
         setMissingIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
-        if (wasCurrent && suktaAt >= 0) {
-          startSuktaRef.current(suktaAt);
+        // Only while the verses are what the reader is listening to: the verse queue also moves on
+        // by itself past files that fail to load while a sukta plays, and must not take over then.
+        const listening = modeRef.current === "verse";
+        if (listening && wasCurrent && suktaAt >= 0) {
+          startSuktaRef.current(sukta!);
           return;
         }
         t.ids.splice(at, 1);
         try {
           playlist.remove(at);
-          if (wasCurrent && at < t.ids.length) {
+          if (listening && wasCurrent && at < t.ids.length) {
             // The queue moved on to the verse after the missing one; keep it going.
             playlist.play();
             verify(at);
@@ -270,7 +303,7 @@ export function useDocumentAudio(
         await arm();
         fullPlayer.pause();
         suktaPlaylist.pause();
-        setMode("verse");
+        setModeNow("verse");
         userSkipAt.current = Date.now();
         claimLockScreen("verse", id);
         if (playlist.currentIndex !== index) playlist.skipTo(index);
@@ -292,6 +325,9 @@ export function useDocumentAudio(
   // the start of the next verse.
   useEffect(() => {
     const sub = playlist.addListener("trackChanged", ({ previousIndex, currentIndex: index }) => {
+      // The verse queue moves on by itself past files that fail to load, even paused. Unless the
+      // reader is on the verses, that is not the end of a clip: it must not stop or hide the bar.
+      if (modeRef.current !== "verse") return;
       const ids = trackIds();
       const id = ids[index];
       if (id == null) return;
@@ -304,7 +340,7 @@ export function useDocumentAudio(
       const gap = gapRef.current;
       if (!userSkip && !gap.coversAll && prevId != null && !isNextVerse(gap.shlokas, prevId, id)) {
         playlist.pause();
-        setMode(null);
+        setModeNow(null);
         return;
       }
       try {
@@ -348,22 +384,25 @@ export function useDocumentAudio(
       await arm();
       playlist.pause();
       suktaPlaylist.pause();
-      setMode("full");
+      setModeNow("full");
       claimLockScreen("full");
       fullPlayer.play();
     })();
   }, [playlist, suktaPlaylist, fullPlayer, claimLockScreen, arm]);
 
   const startSukta = useCallback(
-    (index = 0) => {
+    (wanted?: number) => {
       if (!suktaTracks.length) return;
+      const sukta = wanted != null && suktaTracks.some((track) => track.sukta === wanted) ? wanted : suktaTracks[0]!.sukta;
       void (async () => {
         await arm();
         playlist.pause();
         fullPlayer.pause();
-        setMode("full");
-        const at = index >= 0 && index < suktaTracks.length ? index : 0;
-        const sukta = suktaTracks[at]?.sukta;
+        // A sukta from a page that arrived while another one played: put the waiting ones in first.
+        if (!suktaQueue().includes(sukta)) extendSukta(true);
+        const at = suktaQueue().indexOf(sukta);
+        if (at < 0) return;
+        setModeNow("full");
         try {
           suktaPlaylist.setActiveForLockScreen(true, metadataFor(undefined, sukta != null ? `Sukta ${sukta}` : undefined), {
             showNextTrack: true,
@@ -379,22 +418,22 @@ export function useDocumentAudio(
         suktaPlaylist.play();
       })();
     },
-    [suktaTracks, playlist, fullPlayer, suktaPlaylist, metadataFor, arm],
+    [suktaTracks, playlist, fullPlayer, suktaPlaylist, metadataFor, arm, extendSukta, setModeNow],
   );
   startSuktaRef.current = startSukta;
 
   // A sukta file ending moves on to the next one only when it is the very next sukta.
   useEffect(() => {
     const sub = suktaPlaylist.addListener("trackChanged", ({ previousIndex, currentIndex: index }) => {
+      if (modeRef.current !== "full") return;
       if (Date.now() - suktaSkipAt.current < USER_SKIP_WINDOW_MS) return;
-      const gap = gapRef.current;
-      if (gap.coversAll) return;
-      if (!isNextSukta(gap.suktaTracks[previousIndex]?.sukta, gap.suktaTracks[index]?.sukta)) {
+      const queue = suktaQueue();
+      const sukta = queue[index];
+      if (!gapRef.current.coversAll && !isNextSukta(queue[previousIndex], sukta)) {
         suktaPlaylist.pause();
-        setMode(null);
+        setModeNow(null);
         return;
       }
-      const sukta = gap.suktaTracks[index]?.sukta;
       try {
         suktaPlaylist.updateLockScreenMetadata(metadataFor(undefined, sukta != null ? `Sukta ${sukta}` : undefined));
       } catch {
@@ -406,7 +445,7 @@ export function useDocumentAudio(
 
   const startPlayThrough = useCallback(() => {
     if (!fullAudioUrl && suktaTracks.length) {
-      startSukta(0);
+      startSukta();
       return;
     }
     const first = trackIds()[0];
@@ -416,7 +455,7 @@ export function useDocumentAudio(
   const toggleFull = useCallback(() => {
     if (!fullAudioUrl && suktaTracks.length) {
       if (suktaStatus.playing) suktaPlaylist.pause();
-      else startSukta(suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0);
+      else startSukta(suktaQueue()[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]);
       return;
     }
     if (fullStatus.playing) fullPlayer.pause();
@@ -452,7 +491,7 @@ export function useDocumentAudio(
         await arm();
         playlist.pause();
         suktaPlaylist.pause();
-        setMode("full");
+        setModeNow("full");
         claimLockScreen("full");
         void fullPlayer.seekTo(start);
         fullPlayer.play();
@@ -464,8 +503,7 @@ export function useDocumentAudio(
   const switchToFull = useCallback(() => {
     if (!fullAudioUrl && suktaTracks.length) {
       const sukta = activeVerseId == null ? null : byId.get(activeVerseId)?.sukta_number;
-      const at = sukta == null ? -1 : suktaTracks.findIndex((track) => track.sukta === sukta);
-      if (at >= 0) startSukta(at);
+      if (sukta != null && suktaTracks.some((track) => track.sukta === sukta)) startSukta(sukta);
       return;
     }
     if (activeVerseId == null) return;
@@ -475,7 +513,7 @@ export function useDocumentAudio(
       await arm();
       playlist.pause();
       suktaPlaylist.pause();
-      setMode("full");
+      setModeNow("full");
       claimLockScreen("full");
       void fullPlayer.seekTo(start);
       fullPlayer.play();
@@ -550,18 +588,17 @@ export function useDocumentAudio(
       cancelled = true;
     };
   }, [suktaTracks]);
-  const suktaNow = suktaTracks[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]?.sukta ?? null;
+  const suktaNow = suktaQueue()[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0] ?? null;
   const toggleSukta = useCallback(
     (sukta: number) => {
-      const at = suktaTracks.findIndex((track) => track.sukta === sukta);
-      if (at < 0) return;
-      if (mode === "full" && suktaStatus.currentIndex === at && suktaStatus.playing) {
+      if (!suktaTracks.some((track) => track.sukta === sukta)) return;
+      if (mode === "full" && suktaNow === sukta && suktaStatus.playing) {
         suktaPlaylist.pause();
         return;
       }
-      startSukta(at);
+      startSukta(sukta);
     },
-    [suktaTracks, mode, suktaStatus.currentIndex, suktaStatus.playing, suktaPlaylist, startSukta],
+    [suktaTracks, mode, suktaNow, suktaStatus.playing, suktaPlaylist, startSukta],
   );
 
   return {
@@ -602,10 +639,7 @@ export function useDocumentAudio(
       playing: !fullAudioUrl && mode === "full" && suktaStatus.playing ? suktaNow : null,
       toggle: toggleSukta,
     },
-    suktaNumber:
-      !fullAudioUrl && mode === "full"
-        ? (suktaTracks[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]?.sukta ?? null)
-        : null,
+    suktaNumber: !fullAudioUrl && mode === "full" ? suktaNow : null,
     startFull,
     startPlayThrough,
     /** The bar's start button: only when every verse is recorded (or there is a full recording). */
