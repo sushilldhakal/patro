@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate, useParams, useRouterState, useSearch } fro
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { shlokaAnchor, useDocumentChapter, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
-import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
 import { useDocumentPlayback } from "@/hooks/use-document-playback";
@@ -74,7 +74,7 @@ export function DocumentChapterDetail() {
   useRouteLoading(page.loading);
 
   const { shlokas, hasNextPage, hasPreviousPage, fetchNextPage, fetchPreviousPage, isFetchingNextPage, isFetchingPreviousPage } = page;
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber } = useDocumentPlayback(
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber, suktaControls, verseClipConfirmed } = useDocumentPlayback(
     shlokas,
     page.fullAudioUrl,
     page.complete,
@@ -224,8 +224,22 @@ export function DocumentChapterDetail() {
         }}
       />
 
+      {page.fullAudioUrl ? (
+        // A chapter with one recording of its own (an Atharvaveda kanda): play all of it from here.
+        <DocumentGroupHeading
+          kind="chapter"
+          heading={page.displayTitle || page.docTitle}
+          play={{
+            playing: mode === "full" && fullAudio.playing,
+            onPress: () => (mode === "full" ? fullAudio.toggle() : startFull()),
+          }}
+        />
+      ) : null}
+
       <ReaderRows
         virtual
+        suktaAudio={suktaControls}
+        clipConfirmed={verseClipConfirmed}
         rows={page.rows}
         versePlayer={versePlayer}
         loadingPrev={page.isFetchingPreviousPage}

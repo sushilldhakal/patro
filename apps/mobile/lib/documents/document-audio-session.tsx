@@ -160,6 +160,8 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
       full: { playing: false, currentTime: 0, duration: 0, available: Boolean(fullAudioUrl) },
       hasSuktaAudio: false,
       suktaNumber: null,
+      // Sukta files are checked once this page is the session.
+      sukta: { has: () => false, playing: null, toggle: (n: number) => takeOver((a) => a.sukta.toggle(n)) },
       startFull: () => takeOver((a) => a.startFull()),
       startPlayThrough: () => takeOver((a) => a.startPlayThrough()),
       canPlayThrough: false,

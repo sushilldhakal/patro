@@ -92,18 +92,30 @@ export function useFullRecordingAudio(
   }, []);
 
   // A new list of files starts over: reset the displayed state during render, the audio element in the effect.
+  // A list that still holds the file loaded now (more suktas paged in around it) keeps it playing.
   const [seenKey, setSeenKey] = useState(urlsKey);
   if (seenKey !== urlsKey) {
     setSeenKey(urlsKey);
-    setIndex(0);
-    setPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
+    const current = seenKey ? seenKey.split("\n")[index] : undefined;
+    const kept = current ? urls.indexOf(current) : -1;
+    if (kept >= 0) setIndex(kept);
+    else {
+      setIndex(0);
+      setPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
   }
 
   useEffect(() => {
-    indexRef.current = 0;
     const audio = audioRef.current;
+    const src = audio?.getAttribute("src");
+    const kept = src && urlsKey ? urlsKey.split("\n").indexOf(src) : -1;
+    if (kept >= 0) {
+      indexRef.current = kept;
+      return;
+    }
+    indexRef.current = 0;
     if (!audio) return;
     audio.pause();
     audio.removeAttribute("src");

@@ -199,6 +199,10 @@ export const documentsClasses = {
   chapterTitleSub: "mt-0.5 text-base font-semibold text-muted-foreground sm:text-lg",
   suktaLabel: "text-sm font-bold text-secondary",
   suktaMeta: "mt-0.5 text-xs text-muted-foreground",
+  /* A sukta / kanda heading that plays its whole recording: button, heading and a small note on one row. */
+  groupHead: "flex flex-row items-center gap-2",
+  groupHeadChapter: "text-base font-bold text-secondary",
+  groupPlayNote: "text-xs text-muted-foreground",
   pager: "flex flex-row items-center justify-between gap-3 border-t border-border pt-4",
   pagerButton: "flex flex-row items-center gap-1.5 rounded-full border border-border px-3 py-1.5",
   pagerButtonText: "text-sm font-semibold",

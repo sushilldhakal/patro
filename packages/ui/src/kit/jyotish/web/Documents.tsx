@@ -3,7 +3,8 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
 import { Box, Icon, Text } from "@vedic-patro/ui";
-import type { PlaybackBarProps, ShlokaCardProps } from "../contract";
+import { useLocale } from "@vedic-patro/i18n/react";
+import type { DocumentGroupHeadingProps, PlaybackBarProps, ShlokaCardProps } from "../contract";
 import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
 
 const DOCK = "fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4";
@@ -250,6 +251,34 @@ export function PlaybackBar(props: PlaybackBarProps) {
           ) : null}
         </Box>
       </Box>
+    </div>
+  );
+}
+
+/** A sukta or chapter heading; with `play`, a play button and a "play full sukta" note on the same row. */
+export function DocumentGroupHeading({ heading, meta, kind = "sukta", play }: DocumentGroupHeadingProps) {
+  const { t } = useLocale();
+  const note = kind === "chapter" ? t("documents.play_full_chapter") : t("documents.play_full_sukta");
+  const title = <h2 className={kind === "chapter" ? documentsClasses.groupHeadChapter : documentsClasses.suktaLabel}>{heading}</h2>;
+  return (
+    <div className="pt-3">
+      {play ? (
+        <button
+          type="button"
+          onClick={play.onPress}
+          aria-label={play.playing ? t("documents.pause_group") : `${heading} — ${note}`}
+          className={cn(documentsClasses.groupHead, "text-left")}
+        >
+          <span className={cn(documentsClasses.versePlay, documentsClasses.versePlayIdle)}>
+            <Icon node={play.playing ? iconPause : iconPlay} size={15} tone="onSecondary" filled className={play.playing ? undefined : "ml-0.5"} />
+          </span>
+          {title}
+          <span className={documentsClasses.groupPlayNote}>{play.playing ? t("documents.pause_group") : note}</span>
+        </button>
+      ) : (
+        title
+      )}
+      {meta ? <p className={documentsClasses.suktaMeta}>{meta}</p> : null}
     </div>
   );
 }

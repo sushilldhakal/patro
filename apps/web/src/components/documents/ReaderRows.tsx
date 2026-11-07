@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { canonVerseLabel, type ReaderRow } from "@vedic-patro/features/documents";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { DocumentGroupHeading } from "@vedic-patro/ui/kit/jyotish";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { useDocumentPlayback } from "@/hooks/use-document-playback";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -24,10 +25,16 @@ export function ReaderRows({
   focus = null,
   activeVerseId = null,
   onTopVerse,
+  suktaAudio,
+  clipConfirmed,
 }: {
   rows: ReaderRow[];
   versePlayer: Playback["versePlayer"];
   fullRecording?: Playback["fullRecordingControls"];
+  /** Rigveda: each sukta heading plays that sukta's continuous file. */
+  suktaAudio?: Playback["suktaControls"];
+  /** Whether a verse's own clip is confirmed in storage (Rigveda); others always pass. */
+  clipConfirmed?: Playback["verseClipConfirmed"];
   /** Window virtualizer: only the rows on screen, plus a little overscan. Chapter pages turn this on. */
   virtual?: boolean;
   loadingPrev?: boolean;
@@ -54,27 +61,36 @@ export function ReaderRows({
         focus={focus}
         activeVerseId={activeVerseId}
         onTopVerse={onTopVerse}
+        suktaAudio={suktaAudio}
+        clipConfirmed={clipConfirmed}
       />
     );
   }
   return (
     <div className="min-w-0 max-w-full space-y-2">
       {rows.map((row) => (
-        <RowView key={row.key} row={row} versePlayer={versePlayer} fullRecording={fullRecording} />
+        <RowView key={row.key} row={row} versePlayer={versePlayer} fullRecording={fullRecording} suktaAudio={suktaAudio} clipConfirmed={clipConfirmed} />
       ))}
     </div>
   );
 }
 
+type RowExtras = {
+  suktaAudio?: Playback["suktaControls"];
+  clipConfirmed?: Playback["verseClipConfirmed"];
+};
+
 function RowView({
   row,
   versePlayer,
   fullRecording,
+  suktaAudio,
+  clipConfirmed,
 }: {
   row: ReaderRow;
   versePlayer: Playback["versePlayer"];
   fullRecording?: Playback["fullRecordingControls"];
-}) {
+} & RowExtras) {
   if (row.kind === "chapter") {
     return (
       <header id={row.anchor} className={cn(documentsClasses.statsRow, "scroll-mt-24 pt-7")}>
@@ -87,11 +103,17 @@ function RowView({
     );
   }
   if (row.kind === "sukta") {
+    const sukta = row.sukta;
     return (
-      <div className="pt-3">
-        <h2 className={documentsClasses.suktaLabel}>{row.heading}</h2>
-        {row.meta ? <p className={documentsClasses.suktaMeta}>{row.meta}</p> : null}
-      </div>
+      <DocumentGroupHeading
+        heading={row.heading}
+        meta={row.meta}
+        play={
+          suktaAudio?.has(sukta)
+            ? { playing: suktaAudio.playing === sukta, onPress: () => suktaAudio.toggle(sukta) }
+            : undefined
+        }
+      />
     );
   }
   if (row.kind === "images") {
@@ -103,7 +125,13 @@ function RowView({
       </div>
     );
   }
-  return <ShlokaCard shloka={row.shloka} player={versePlayer} fullRecording={fullRecording} />;
+  return (
+    <ShlokaCard
+      shloka={clipConfirmed && !clipConfirmed(row.shloka) ? { ...row.shloka, audio_url: null } : row.shloka}
+      player={versePlayer}
+      fullRecording={fullRecording}
+    />
+  );
 }
 
 type Slot =
@@ -136,6 +164,8 @@ function VirtualRows({
   focus,
   activeVerseId,
   onTopVerse,
+  suktaAudio,
+  clipConfirmed,
 }: {
   rows: ReaderRow[];
   versePlayer: Playback["versePlayer"];
@@ -147,7 +177,7 @@ function VirtualRows({
   focus: Focus | null;
   activeVerseId: number | null;
   onTopVerse?: (label: string) => void;
-}) {
+} & RowExtras) {
   const { t } = useLocale();
   const loadingLabel = t("documents.loading_more");
   const listRef = useRef<HTMLDivElement>(null);
@@ -220,10 +250,17 @@ function VirtualRows({
     return () => window.clearTimeout(t);
   }, [focusNonce]);
 
+  // A jump scrolls to its verse once. It re-aims while rows settle (their measured heights move it)
+  // and until the verse's page arrives, but not after: a page loaded by scrolling up or down later
+  // must not pull the reader back to the verse they searched for.
+  const focusDone = useRef<string | null>(null);
+  const focusKey = focus ? `${focus.label}|${focus.nonce}` : null;
   useEffect(() => {
-    if (!focus) return;
+    if (!focus || !focusKey) return;
+    if (focusDone.current === focusKey) return;
     const index = verseSlotIndex(slots, focus.label);
     if (index < 0) return;
+    if (armed) focusDone.current = focusKey;
     const align = focus.align ?? "center";
     virtualizerRef.current.scrollToIndex(index, { align, behavior: "auto" });
     const frame = window.requestAnimationFrame(() => {
@@ -232,14 +269,22 @@ function VirtualRows({
     return () => window.cancelAnimationFrame(frame);
     // slots identity changes when a page arrives; nonce covers a repeat jump to the same label.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focus?.nonce, focus?.label, focus?.align, slots.length, rows]);
+  }, [focusKey, focus?.align, slots.length, rows, armed]);
 
+  // Follow the sounding verse when it changes — not again on every page load, or a paused verse
+  // would drag the reader back each time scrolling loads more.
+  const followed = useRef<number | null>(null);
   useEffect(() => {
-    if (activeVerseId == null) return;
+    if (activeVerseId == null) {
+      followed.current = null;
+      return;
+    }
+    if (followed.current === activeVerseId) return;
     const index = slots.findIndex(
       (slot) => slot.kind === "row" && slot.row.kind === "verse" && slot.row.shloka.id === activeVerseId,
     );
     if (index < 0) return;
+    followed.current = activeVerseId;
     virtualizerRef.current.scrollToIndex(index, { align: "center", behavior: "smooth" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeVerseId, slots.length, rows]);
@@ -317,7 +362,7 @@ function VirtualRows({
                 <p className={documentsClasses.edgeNote}>{loadingLabel}</p>
               ) : (
                 <div className="pb-2">
-                  <RowView row={slot.row} versePlayer={versePlayer} fullRecording={fullRecording} />
+                  <RowView row={slot.row} versePlayer={versePlayer} fullRecording={fullRecording} suktaAudio={suktaAudio} clipConfirmed={clipConfirmed} />
                 </div>
               )}
             </div>

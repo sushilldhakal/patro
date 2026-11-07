@@ -18,7 +18,14 @@ export type ReaderRow =
       heading: string;
       title?: string;
     }
-  | { kind: "sukta"; key: string; heading: string; meta?: string }
+  | {
+      kind: "sukta";
+      key: string;
+      heading: string;
+      meta?: string;
+      /** The sukta (or group) number — a Rigveda sukta's continuous file plays from this heading. */
+      sukta: number;
+    }
   | { kind: "images"; key: string; urls: string[] }
   | { kind: "verse"; key: string; shloka: Shloka };
 
@@ -83,6 +90,7 @@ export function versesToRows(shlokas: readonly Shloka[], text: RowText, keyPrefi
         kind: "sukta",
         key: `${keyPrefix}sukta-${sukta}-${shloka.id}`,
         heading: groupHeading(shlokas, at, sukta, text),
+        sukta,
         meta: meta.length ? meta.join(" · ") : undefined,
       });
     }

@@ -536,6 +536,34 @@ export function useDocumentAudio(
 
   const verseIndex = activeVerseId == null ? -1 : trackIds().indexOf(activeVerseId);
 
+  /** Sukta files confirmed in storage: only those headings get a play button. */
+  const [verifiedSuktas, setVerifiedSuktas] = useState<ReadonlySet<number>>(() => new Set());
+  useEffect(() => {
+    let cancelled = false;
+    for (const track of suktaTracks) {
+      void isAudioAvailable(track.url).then((ok) => {
+        if (cancelled || !ok) return;
+        setVerifiedSuktas((prev) => (prev.has(track.sukta) ? prev : new Set(prev).add(track.sukta)));
+      });
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [suktaTracks]);
+  const suktaNow = suktaTracks[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]?.sukta ?? null;
+  const toggleSukta = useCallback(
+    (sukta: number) => {
+      const at = suktaTracks.findIndex((track) => track.sukta === sukta);
+      if (at < 0) return;
+      if (mode === "full" && suktaStatus.currentIndex === at && suktaStatus.playing) {
+        suktaPlaylist.pause();
+        return;
+      }
+      startSukta(at);
+    },
+    [suktaTracks, mode, suktaStatus.currentIndex, suktaStatus.playing, suktaPlaylist, startSukta],
+  );
+
   return {
     missingIds,
     verifiedIds,
@@ -568,6 +596,12 @@ export function useDocumentAudio(
       available: Boolean(fullAudioUrl),
     },
     hasSuktaAudio: !fullAudioUrl && suktaTracks.length > 0,
+    /** What a sukta heading needs: whether its file is there, the sukta sounding now, and play / pause. */
+    sukta: {
+      has: (n: number) => verifiedSuktas.has(n),
+      playing: !fullAudioUrl && mode === "full" && suktaStatus.playing ? suktaNow : null,
+      toggle: toggleSukta,
+    },
     suktaNumber:
       !fullAudioUrl && mode === "full"
         ? (suktaTracks[suktaStatus.currentIndex >= 0 ? suktaStatus.currentIndex : 0]?.sukta ?? null)

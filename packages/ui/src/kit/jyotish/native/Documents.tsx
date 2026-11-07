@@ -4,7 +4,8 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
-import type { PlaybackBarProps, ShlokaCardProps } from "../contract";
+import { useLocale } from "@vedic-patro/i18n/react";
+import type { DocumentGroupHeadingProps, PlaybackBarProps, ShlokaCardProps } from "../contract";
 import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
 
 export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail }: ShlokaCardProps) {
@@ -202,5 +203,30 @@ export function PlaybackBar(props: PlaybackBarProps) {
         </Box>
       </Box>
     </Dock>
+  );
+}
+
+/** A sukta or chapter heading; with `play`, a play button and a "play full sukta" note on the same row. */
+export function DocumentGroupHeading({ heading, meta, kind = "sukta", play }: DocumentGroupHeadingProps) {
+  const { t } = useLocale();
+  const note = kind === "chapter" ? t("documents.play_full_chapter") : t("documents.play_full_sukta");
+  const title = <Text className={kind === "chapter" ? documentsClasses.groupHeadChapter : documentsClasses.suktaLabel}>{heading}</Text>;
+  return (
+    <Box className="mb-3 mt-3">
+      {play ? (
+        <Pressable onPress={play.onPress} label={play.playing ? t("documents.pause_group") : `${heading} — ${note}`} suppressPressScale>
+          <Box className={documentsClasses.groupHead} nativeClassName="flex-row items-center">
+            <Box className={cn(documentsClasses.versePlay, documentsClasses.versePlayIdle)}>
+              <Icon node={play.playing ? iconPause : iconPlay} size={15} tone="onSecondary" filled />
+            </Box>
+            {title}
+            <Text className={documentsClasses.groupPlayNote}>{play.playing ? t("documents.pause_group") : note}</Text>
+          </Box>
+        </Pressable>
+      ) : (
+        title
+      )}
+      {meta ? <Text className={documentsClasses.suktaMeta}>{meta}</Text> : null}
+    </Box>
   );
 }

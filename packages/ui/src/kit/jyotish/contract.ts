@@ -214,6 +214,19 @@ export type ShlokaCardProps = {
   registerRef?: (node: unknown) => void;
 };
 
+/**
+ * A sukta (or a whole chapter) heading in the reader. With `play` it carries a play
+ * button and a short "play the full sukta" note on the same row, for a group that has
+ * one continuous recording.
+ */
+export type DocumentGroupHeadingProps = {
+  heading: string;
+  meta?: string;
+  /** "sukta" notes "play full sukta"; "chapter" notes "play all of it" (an Atharvaveda kanda). */
+  kind?: "sukta" | "chapter";
+  play?: { playing: boolean; onPress: () => void };
+};
+
 export type PlaybackSeekArgs = {
   value: number;
   max: number;
@@ -562,6 +575,7 @@ export type JyotishKit = {
   SaitCeremonyLayout: ComponentType<SaitCeremonyLayoutProps>;
   SaitAsidePanel: ComponentType<SaitAsidePanelProps>;
   ShlokaCard: ComponentType<ShlokaCardProps>;
+  DocumentGroupHeading: ComponentType<DocumentGroupHeadingProps>;
   PlaybackBar: ComponentType<PlaybackBarProps>;
   AyanamshaSelector: ComponentType<AyanamshaSelectorProps>;
   ProfileForm: ComponentType<ProfileFormProps>;

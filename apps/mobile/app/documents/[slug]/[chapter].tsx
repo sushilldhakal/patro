@@ -4,7 +4,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Redirect, useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useDocumentChapter, useDocumentLibraryOptions } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
-import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { DocumentReader } from "@/components/documents/DocumentReader";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
@@ -39,9 +39,9 @@ export default function DocumentChapterScreen() {
     if (id == null) return;
     const at = page.shlokas.findIndex((s) => s.id === id);
     if (at < 0) return;
-    if (audio.activePlaying) {
-      waitingForPage.current = at === page.shlokas.length - 1 && page.hasNextPage && !audio.hasNext;
-    }
+    // A paused verse loads nothing around itself; scrolling loads pages then.
+    if (!audio.activePlaying) return;
+    waitingForPage.current = at === page.shlokas.length - 1 && page.hasNextPage && !audio.hasNext;
     if (page.hasNextPage && at >= page.shlokas.length - 8) void page.fetchNextPage();
     if (page.hasPreviousPage && at <= 2) void page.fetchPreviousPage();
   }, [audio.activeId, audio.activePlaying, audio.hasNext, page.shlokas, page.hasNextPage, page.hasPreviousPage, page.fetchNextPage, page.fetchPreviousPage]);
@@ -114,6 +114,17 @@ export default function DocumentChapterScreen() {
           return ok;
         }}
       />
+      {audio.full.available ? (
+        // A chapter with one recording of its own (an Atharvaveda kanda): play all of it from here.
+        <DocumentGroupHeading
+          kind="chapter"
+          heading={page.displayTitle || page.docTitle}
+          play={{
+            playing: audio.mode === "full" && audio.full.playing,
+            onPress: () => (audio.mode === "full" ? audio.toggleFull() : audio.startFull()),
+          }}
+        />
+      ) : null}
     </View>
   );
 

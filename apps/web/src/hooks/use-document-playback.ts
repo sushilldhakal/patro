@@ -3,6 +3,7 @@ import { isNextSukta, suktaTracksFrom } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { useFullRecordingAudio } from "@/hooks/use-full-recording-audio";
 import { useShlokaPlayer } from "@/hooks/use-shloka-player";
+import { useAudioProbe } from "@/lib/audio-probe";
 
 /**
  * Orchestrates the two audio sources a document reading view can have — the
@@ -159,8 +160,57 @@ export function useDocumentPlayback(
     // is a plain useState setter, stable for the component's lifetime.
   }, [mode, fullAudio.playing, fullAudio.currentTime, shlokas, setDisplayOverride]);
 
+  // Rigveda names a clip for every verse, but many were never uploaded (all of 10.85, say),
+  // while the sukta file holds every verse. Each file is checked up front: a verse gets its own
+  // play button only once its clip is confirmed, and a sukta heading once its file is.
+  const probeUrls = useMemo(
+    () =>
+      hasSuktaAudio
+        ? [...suktaTracks.map((track) => track.url), ...shlokas.flatMap((s) => (s.audio_url ? [s.audio_url] : []))]
+        : [],
+    [hasSuktaAudio, suktaTracks, shlokas],
+  );
+  const probed = useAudioProbe(probeUrls);
+  const verseClipConfirmed = useCallback(
+    (shloka: Shloka) => !hasSuktaAudio || (shloka.audio_url != null && probed.get(shloka.audio_url) === true),
+    [hasSuktaAudio, probed],
+  );
+
+  const playingSukta = hasSuktaAudio && mode === "full" && fullAudio.playing ? (suktaTracks[fullAudio.index]?.sukta ?? null) : null;
+  const toggleSukta = useCallback(
+    (sukta: number) => {
+      const at = suktaTracks.findIndex((track) => track.sukta === sukta);
+      if (at < 0) return;
+      if (mode === "full" && fullAudio.index === at) {
+        fullAudio.toggle();
+        return;
+      }
+      player.stop();
+      setMode("full");
+      fullAudio.playAt(at);
+    },
+    [suktaTracks, mode, fullAudio, player],
+  );
+  /** What a sukta heading needs: whether its file is there, whether it sounds now, and play / pause. */
+  const suktaControls = useMemo(
+    () =>
+      hasSuktaAudio
+        ? {
+            has: (sukta: number) => {
+              const track = suktaTracks.find((t) => t.sukta === sukta);
+              return track != null && probed.get(track.url) === true;
+            },
+            playing: playingSukta,
+            toggle: toggleSukta,
+          }
+        : undefined,
+    [hasSuktaAudio, suktaTracks, probed, playingSukta, toggleSukta],
+  );
+
   return {
     player,
+    verseClipConfirmed,
+    suktaControls,
     versePlayer,
     fullAudio,
     mode,

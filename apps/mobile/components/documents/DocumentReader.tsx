@@ -6,6 +6,7 @@ import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
 import { canonVerseLabel, playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
+import { DocumentGroupHeading } from "@vedic-patro/ui/kit/jyotish";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -80,20 +81,34 @@ export function DocumentReader({
     listRef.current?.scrollToIndex({ index, viewPosition: 0.35, animated: true });
   }, []);
 
+  // Follow the sounding verse when it changes — not again when a page loads, or a paused verse
+  // would pull the reader back every time scrolling loads more.
+  const followed = useRef<number | null>(null);
   useEffect(() => {
-    if (audio.activeId == null) return;
+    if (audio.activeId == null) {
+      followed.current = null;
+      return;
+    }
+    if (followed.current === audio.activeId) return;
     const i = indexByVerseId.get(audio.activeId);
-    if (i != null) scrollToIndex(i);
+    if (i == null) return;
+    followed.current = audio.activeId;
+    scrollToIndex(i);
   }, [audio.activeId, indexByVerseId, scrollToIndex]);
 
+  // A jump (search or deep link) scrolls to its verse once, as soon as its row is there. Pages
+  // loaded later by scrolling up or down must not send the reader back to it.
+  const jumped = useRef<string | null>(null);
   useEffect(() => {
     if (!scrollToLabel) return;
+    const jumpKey = `${scrollToLabel}|${scrollNonce ?? 0}`;
+    if (jumped.current === jumpKey) return;
     const wanted = canonVerseLabel(scrollToLabel);
     const i = rows.findIndex((r) => r.kind === "verse" && canonVerseLabel(r.shloka.verse_label) === wanted);
-    if (i >= 0) {
-      const id = setTimeout(() => scrollToIndex(i), 250);
-      return () => clearTimeout(id);
-    }
+    if (i < 0) return;
+    jumped.current = jumpKey;
+    const id = setTimeout(() => scrollToIndex(i), 250);
+    return () => clearTimeout(id);
   }, [scrollToLabel, scrollNonce, rows, scrollToIndex]);
 
   useEffect(() => {
@@ -126,6 +141,17 @@ export function DocumentReader({
         );
       }
       if (item.kind === "sukta") {
+        const sukta = item.sukta;
+        if (audio.sukta.has(sukta)) {
+          // One continuous file for the whole sukta: play it from the heading.
+          return (
+            <DocumentGroupHeading
+              heading={item.heading}
+              meta={item.meta}
+              play={{ playing: audio.sukta.playing === sukta, onPress: () => audio.sukta.toggle(sukta) }}
+            />
+          );
+        }
         return (
           <View className="mb-3 mt-3">
             <Text className={documentsClasses.suktaLabel} style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
