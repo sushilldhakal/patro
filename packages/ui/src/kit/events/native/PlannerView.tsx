@@ -100,21 +100,11 @@ export function PlannerView(props: PlannerViewProps) {
       </View>
 
       {/* Day and Multi Day: the week strip is the top of the bordered grid, as Week's date row is. */}
-      {(wrapBody ?? ((body: ReactNode) => body))(
-        <View>
-          {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} strip={view === "day" || view === "multi" ? <DayStrip {...props} /> : null} /> : null}
-          {view === "year" ? (
-            <View className={inset}>
-              <YearGrid {...props} />
-            </View>
-          ) : null}
-          {view === "list" ? (
-            <View className={inset}>
-              <AgendaList {...props} />
-            </View>
-          ) : null}
-        </View>,
-      )}
+      {/* The time grid swipes only its days (the strip and headings stay put); a year or the list swipes whole. */}
+      {timeGrid ? <TimeGrid {...props} days={plannerDays(view, anchor)} strip={view === "day" || view === "multi" ? <DayStrip {...props} /> : null} /> : null}
+      {view === "year" || view === "list"
+        ? (wrapBody ?? ((body: ReactNode) => body))(<View className={inset}>{view === "year" ? <YearGrid {...props} /> : <AgendaList {...props} />}</View>)
+        : null}
     </View>
   );
 }
@@ -176,8 +166,9 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number };
 
-function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onOpenPersonal, onMoveEvent, onCreateAt, onAnchorChange, onViewChange, onDragChange }: PlannerViewProps & { days: string[]; strip?: ReactNode }) {
+function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onOpenPersonal, onMoveEvent, onCreateAt, onAnchorChange, onViewChange, onDragChange, wrapBody }: PlannerViewProps & { days: string[]; strip?: ReactNode }) {
   const tx = usePlannerText();
+  const wrap = wrapBody ?? ((body: ReactNode) => body);
   const { tablet } = useTablet();
   const HOUR_H = tablet ? 60 : 52;
   const [width, setWidth] = useState(0);
@@ -275,6 +266,8 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
         </View>
       )}
 
+      {/* Only the days below the headings move with a swipe: the strip and headings stay put and show the new days once it lands. */}
+      {wrap(<View>
       {/* All-day row: holidays and festivals, then the user's all-day events. */}
       {hasAllDay ? (
         <View className="flex-row border-b border-border">
@@ -389,6 +382,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
           ))}
         </View>
       </View>
+      </View>)}
     </View>
     </View>
   );
