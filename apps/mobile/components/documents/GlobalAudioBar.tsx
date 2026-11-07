@@ -24,6 +24,7 @@ export function GlobalAudioBar() {
     <PlaybackBar
       audio={audio}
       documentTitle={session.documentTitle ?? session.chapterTitle ?? ""}
+      chapterTitle={session.documentTitle ? session.chapterTitle : undefined}
       open={{ hint: t("documents.open_player"), onPress: () => router.push(session.route as never) }}
       close={{
         label: t("documents.close_player"),

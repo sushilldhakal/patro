@@ -640,6 +640,8 @@ export function useDocumentAudio(
       toggle: toggleSukta,
     },
     suktaNumber: !fullAudioUrl && mode === "full" ? suktaNow : null,
+    /** That sukta as "mandala.sukta" ("1.1"), for "ऋग्वेद १.१" in the bar. */
+    suktaLabel: !fullAudioUrl && mode === "full" ? (suktaTracks.find((track) => track.sukta === suktaNow)?.label ?? null) : null,
     startFull,
     startPlayThrough,
     /** The bar's start button: only when every verse is recorded (or there is a full recording). */

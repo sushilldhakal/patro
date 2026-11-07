@@ -15,11 +15,14 @@ const BAR_GUTTER = 16;
 export function PlaybackBar({
   audio,
   documentTitle,
+  chapterTitle,
   close,
   open,
 }: {
   audio: DocumentAudio & { foreign?: boolean };
   documentTitle: string;
+  /** The chapter a full recording belongs to (an Atharvaveda kanda), named in the bar. */
+  chapterTitle?: string;
   /** The mini player on other pages: an X to stop, and a title that goes back to the text. */
   close?: { label: string; onPress: () => void };
   open?: { hint: string; onPress: () => void };
@@ -36,7 +39,9 @@ export function PlaybackBar({
       hasFullRecording={audio.full.available}
       hasSuktaAudio={audio.hasSuktaAudio}
       suktaNumber={audio.suktaNumber}
+      suktaLabel={audio.suktaLabel}
       documentTitle={documentTitle}
+      chapterTitle={chapterTitle}
       onStartFull={audio.startFull}
       // No start button when only some verses are recorded: it would jump far ahead to the first one.
       onPlayThrough={audio.canPlayThrough ? audio.startPlayThrough : undefined}

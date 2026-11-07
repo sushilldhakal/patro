@@ -165,6 +165,7 @@ export function useDocumentAudioSession(inputs: SessionInputs): SessionAudio {
       full: { playing: false, currentTime: 0, duration: 0, available: Boolean(fullAudioUrl) },
       hasSuktaAudio: false,
       suktaNumber: null,
+      suktaLabel: null,
       // A Rigveda sukta heading plays its file even before this page owns the player.
       sukta: {
         has: (n: number) => !fullAudioUrl && suktaTracksFrom(shlokas).some((track) => track.sukta === n),

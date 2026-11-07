@@ -27,6 +27,9 @@ export function usePlaybackBar({
   hasFullRecording,
   hasSuktaAudio,
   suktaNumber,
+  suktaLabel,
+  documentTitle,
+  chapterTitle,
   canPlayThrough,
   full,
   verse,
@@ -39,6 +42,12 @@ export function usePlaybackBar({
   hasSuktaAudio?: boolean;
   /** Sukta sounding now, when the bar is on a sukta file. */
   suktaNumber?: number | null;
+  /** That sukta as "mandala.sukta" ("1.1"): the bar reads "ऋग्वेद १.१". */
+  suktaLabel?: string | null;
+  /** The document's name, so the bar says what is playing ("ऋग्वेद १.१.१"). */
+  documentTitle?: string;
+  /** The chapter a full recording belongs to (an Atharvaveda kanda). */
+  chapterTitle?: string;
   /** Verses have their own clips to play one after another. */
   canPlayThrough: boolean;
   full: PlaybackClock;
@@ -69,6 +78,10 @@ export function usePlaybackBar({
           : "hidden";
 
   const meaning = activeShloka ? bilingualText(lang, activeShloka.meaning_ne, activeShloka.meaning_en, "") : "";
+  /** Labels are stored with ASCII numerals ("1.1.1"); show them in the reader's digits. */
+  const localLabel = (label: string) => label.replace(/\d/g, (d) => digits(Number(d)));
+  const named = (what: string) => (documentTitle ? `${documentTitle} ${what}` : what);
+  const verseLabel = activeShloka ? localLabel(activeShloka.verse_label ?? String(activeShloka.verse_number)) : "";
 
   return {
     face,
@@ -80,7 +93,17 @@ export function usePlaybackBar({
     },
     full: {
       playing: full.playing,
-      title: hasSuktaAudio && suktaNumber != null ? t("documents.sukta_label", { number: digits(suktaNumber) }) : copy.playFull,
+      /** What is playing: "ऋग्वेद १.१" for a sukta file, "अथर्ववेद · काण्ड १" for a chapter recording. */
+      title:
+        hasSuktaAudio && suktaNumber != null
+          ? suktaLabel
+            ? named(localLabel(suktaLabel))
+            : named(t("documents.sukta_label", { number: digits(suktaNumber) }))
+          : documentTitle
+            ? chapterTitle
+              ? `${documentTitle} · ${chapterTitle}`
+              : documentTitle
+            : copy.playFull,
       toggleLabel: full.playing ? t("documents.pause_verse") : hasSuktaAudio ? copy.playSukta : copy.playFull,
       current: formatPlaybackTime(full.currentTime),
       total: formatPlaybackTime(full.duration),
@@ -93,9 +116,9 @@ export function usePlaybackBar({
       current: formatPlaybackTime(verse.currentTime),
       total: formatPlaybackTime(verse.duration),
       fillPct: percent(verse),
-      title: activeShloka
-        ? `${t("documents.now_playing", { label: activeShloka.verse_label })}${meaning ? ` — ${meaning}` : ""}`
-        : "",
+      /** The verse playing, named in full: "ऋग्वेद १.१.१". */
+      kicker: activeShloka ? named(verseLabel) : (documentTitle ?? ""),
+      title: activeShloka ? meaning || t("documents.now_playing", { label: verseLabel }) : "",
       /** Hand off to the full recording at this verse's timestamp, or to this verse's sukta file. */
       canSwitchToFull:
         (hasFullRecording && activeShloka?.full_audio_start != null) ||

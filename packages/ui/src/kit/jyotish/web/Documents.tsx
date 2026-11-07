@@ -162,6 +162,9 @@ export function PlaybackBar(props: PlaybackBarProps) {
     hasFullRecording: props.hasFullRecording,
     hasSuktaAudio: props.hasSuktaAudio,
     suktaNumber: props.suktaNumber,
+    suktaLabel: props.suktaLabel,
+    documentTitle: props.documentTitle,
+    chapterTitle: props.chapterTitle,
     canPlayThrough: Boolean(props.onPlayThrough),
     full: { playing: props.fullPlaying, currentTime: fullTime, duration: props.fullDuration },
     verse: { playing: props.versePlaying, currentTime: props.verseCurrentTime, duration: props.verseDuration },
@@ -241,7 +244,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
             <Icon node={iconSkipForward} size={16} tone="muted" filled />
           </button>
           <Box className={documentsClasses.fill}>
-            <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{props.documentTitle}</Text>
+            <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{bar.verse.kicker}</Text>
             <Text as="p" className={cn(documentsClasses.barTitle, "truncate")}>{bar.verse.title}</Text>
           </Box>
           {bar.verse.canSwitchToFull ? (

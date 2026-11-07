@@ -41,7 +41,7 @@ export function DocumentDetail() {
 
   useRouteLoading(page.status === "loading");
 
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls, hasSuktaAudio, suktaNumber } =
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls, hasSuktaAudio, suktaNumber, suktaLabel } =
     useDocumentPlayback(page.shlokas, page.fullAudioUrl);
 
   useEffect(() => {
@@ -238,6 +238,7 @@ export function DocumentDetail() {
         hasFullRecording={hasFullRecording}
         hasSuktaAudio={hasSuktaAudio}
         suktaNumber={mode === "full" ? suktaNumber : null}
+        suktaLabel={mode === "full" ? suktaLabel : null}
         documentTitle={page.title}
         onStartFull={startFull}
         // Only when every verse is recorded: with a few recordings it would jump far ahead to the first one.

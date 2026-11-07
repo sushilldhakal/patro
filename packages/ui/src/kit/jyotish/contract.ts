@@ -242,7 +242,11 @@ export type PlaybackBarProps = {
   hasSuktaAudio?: boolean;
   /** Sukta currently sounding, for the bar's label. */
   suktaNumber?: number | null;
+  /** That sukta as "mandala.sukta" ("1.1"), so the bar reads "ऋग्वेद १.१". */
+  suktaLabel?: string | null;
   documentTitle: string;
+  /** The chapter a full recording belongs to (an Atharvaveda kanda), named in the bar. */
+  chapterTitle?: string;
   onStartFull: () => void;
   onPlayThrough?: () => void;
   fullPlaying: boolean;

@@ -119,6 +119,9 @@ export function PlaybackBar(props: PlaybackBarProps) {
     hasFullRecording: props.hasFullRecording,
     hasSuktaAudio: props.hasSuktaAudio,
     suktaNumber: props.suktaNumber,
+    suktaLabel: props.suktaLabel,
+    documentTitle: props.documentTitle,
+    chapterTitle: props.chapterTitle,
     canPlayThrough: Boolean(props.onPlayThrough),
     full: { playing: props.fullPlaying, currentTime: props.fullCurrentTime, duration: props.fullDuration },
     verse: { playing: props.versePlaying, currentTime: props.verseCurrentTime, duration: props.verseDuration },
@@ -196,7 +199,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
           </Pressable>
           <Box className={documentsClasses.fill}>
             <TitleLink open={props.open}>
-              <Text className={documentsClasses.barKicker} numberOfLines={1}>{props.documentTitle}</Text>
+              <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.verse.kicker}</Text>
               <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.verse.title}</Text>
             </TitleLink>
           </Box>

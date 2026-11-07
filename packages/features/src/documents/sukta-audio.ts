@@ -1,7 +1,12 @@
 import type { Shloka } from "@vedic-patro/api-client";
 
 /** One continuous sukta recording, in reading order. */
-export type SuktaTrack = { sukta: number; url: string };
+export type SuktaTrack = {
+  sukta: number;
+  url: string;
+  /** Mandala and sukta as the verse labels write them ("1.1" for verse 1.1.1), for "ऋग्वेद १.१". */
+  label: string;
+};
 
 /**
  * Rigveda verse clips are `…/rigveda_MM_SS_VV.mp3`. The sukta file uploaded
@@ -23,6 +28,7 @@ export function suktaTracksFrom(shlokas: readonly Pick<Shloka, "sukta_number" | 
     tracks.push({
       sukta,
       url: `${match[1]}rigveda_${match[2]}_sukta_${String(sukta).padStart(3, "0")}.mp3`,
+      label: `${Number(match[2])}.${sukta}`,
     });
   }
   return tracks;

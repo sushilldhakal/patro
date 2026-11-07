@@ -223,5 +223,6 @@ export function useDocumentPlayback(
     fullRecordingControls,
     hasSuktaAudio,
     suktaNumber: hasSuktaAudio ? (suktaTracks[fullAudio.index]?.sukta ?? null) : null,
+    suktaLabel: hasSuktaAudio ? (suktaTracks[fullAudio.index]?.label ?? null) : null,
   };
 }

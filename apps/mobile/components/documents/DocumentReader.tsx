@@ -20,6 +20,8 @@ interface Props {
   rows: ReaderRow[];
   audio: DocumentAudio;
   documentTitle: string;
+  /** The chapter a full recording belongs to (an Atharvaveda kanda), named in the bar. */
+  chapterTitle?: string;
   header?: ReactNode;
   footer?: ReactNode;
   /** Verse label to scroll to once the list has laid out (deep link / jump). */
@@ -45,6 +47,7 @@ export function DocumentReader({
   rows,
   audio,
   documentTitle,
+  chapterTitle,
   header,
   footer,
   scrollToLabel,
@@ -243,7 +246,7 @@ export function DocumentReader({
           setTimeout(() => scrollToIndex(info.index), 120);
         }}
       />
-      <PlaybackBar audio={audio} documentTitle={documentTitle} />
+      <PlaybackBar audio={audio} documentTitle={documentTitle} chapterTitle={chapterTitle} />
     </View>
   );
 }

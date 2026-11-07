@@ -74,7 +74,7 @@ export function DocumentChapterDetail() {
   useRouteLoading(page.loading);
 
   const { shlokas, hasNextPage, hasPreviousPage, fetchNextPage, fetchPreviousPage, isFetchingNextPage, isFetchingPreviousPage } = page;
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber, suktaControls, verseClipConfirmed } = useDocumentPlayback(
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber, suktaLabel, suktaControls, verseClipConfirmed } = useDocumentPlayback(
     shlokas,
     page.fullAudioUrl,
     page.complete,
@@ -274,7 +274,9 @@ export function DocumentChapterDetail() {
         hasFullRecording={Boolean(page.fullAudioUrl)}
         hasSuktaAudio={hasSuktaAudio}
         suktaNumber={mode === "full" ? suktaNumber : null}
+        suktaLabel={mode === "full" ? suktaLabel : null}
         documentTitle={page.docTitle}
+        chapterTitle={page.displayTitle || undefined}
         onStartFull={startFull}
         // Only when every verse is recorded: with a few recordings it would jump far ahead to the first one.
         onPlayThrough={!versePlayer.coversAll ? undefined : hasSuktaAudio ? startFull : playThrough ? () => versePlayer.play(playThrough.id) : undefined}

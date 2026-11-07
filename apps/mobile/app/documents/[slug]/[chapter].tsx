@@ -156,6 +156,7 @@ export default function DocumentChapterScreen() {
         rows={page.rows}
         audio={audio}
         documentTitle={page.docTitle}
+        chapterTitle={page.displayTitle || undefined}
         header={header}
         footer={footer}
         scrollToLabel={jump?.label ?? (typeof verse === "string" ? verse : null)}
