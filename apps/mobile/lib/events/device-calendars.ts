@@ -205,10 +205,19 @@ async function importNow(calendarIds?: string[]): Promise<number> {
   }
 
   const seen = new Set<string>();
+  // The same event in two chosen calendars (two holiday feeds) comes in once: by title and time.
+  const sameContent = new Set<string>();
+  const copies = new Set<string>();
   for (const ev of events) {
     if (seen.has(ev.id)) continue; // one entry per repeating series
     seen.add(ev.id);
     const input = toInput(ev, null);
+    const content = `${input.title.trim().toLowerCase()}|${input.starts_at}|${input.ends_at}`;
+    if (sameContent.has(content)) {
+      copies.add(ev.id); // a copy imported before, under this id, is deleted below
+      continue;
+    }
+    sameContent.add(content);
     const have = existing.get(ev.id);
     try {
       if (!have) {
@@ -230,7 +239,7 @@ async function importNow(calendarIds?: string[]): Promise<number> {
   }
   // Imported before, inside the window the phone was just asked about, and not there now.
   for (const [key, have] of existing) {
-    if (seen.has(key)) continue;
+    if (seen.has(key) && !copies.has(key)) continue;
     const at = Date.parse(have.starts_at);
     if (at < from.getTime() || at > to.getTime()) continue;
     try {

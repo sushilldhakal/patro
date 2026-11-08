@@ -50,6 +50,23 @@ export function eventOccursOn(event: CalendarEvent, date: string): boolean {
   }
 }
 
+/** What makes two events the same to the reader: title, time and repeat (not the calendar it came from). */
+const sameEventKey = (e: CalendarEvent) => `${e.title.trim().toLowerCase()}|${e.starts_at}|${e.ends_at}|${e.repeat}`;
+
+/**
+ * One of each event. The same holiday in two phone calendars (say two holiday feeds) is imported once
+ * per calendar, so "Laxmi Puja (Tihar)" showed twice; the first copy is kept.
+ */
+export function uniqueEvents(all: CalendarEvent[]): CalendarEvent[] {
+  const seen = new Set<string>();
+  return all.filter((e) => {
+    const key = sameEventKey(e);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** All of the signed-in user's events, tasks and appointments (one cached query shared by every view). */
 export function useUserEvents(enabled: boolean) {
   const query = useQuery({
@@ -57,6 +74,7 @@ export function useUserEvents(enabled: boolean) {
     queryFn: () => listEvents(),
     enabled,
     staleTime: 60_000,
+    select: uniqueEvents,
   });
   return { events: query.data ?? [], loading: enabled && query.isLoading };
 }

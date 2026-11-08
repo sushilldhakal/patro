@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import { AccessibilityInfo, PanResponder, Pressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import { AccessibilityInfo, PanResponder, Pressable, Text as RNText, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import Animated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -305,32 +305,28 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                     <Text numberOfLines={1} className="min-w-0 flex-1 text-caption font-medium text-success">{tx.t("calendar.best_sarvartha")}</Text>
                   </View>
                 ) : null}
-                {/* Day shows every name (Kukur Tihar is the fourth on Kartik 22); the narrower columns show a
-                    few and a "+N" that opens that day. */}
-                {mark?.names.slice(0, namesShown(view)).map((name) => (
+                {/* The day's festivals on one line, "तिहार, लक्ष्मी पूजा, काग तिहार, …": all of them in Day (each
+                    name opens its details), up to three lines in the narrower columns (a tap opens that day). */}
+                {mark && mark.names.length > 0 ? (
                   <Pressable
-                    key={name}
-                    accessibilityRole="button"
-                    accessibilityLabel={name}
-                    disabled={!onOpenMark}
-                    onPress={() => onOpenMark?.(c.date, name, mark.holiday)}
-                    className={cn("flex-row items-center gap-1.5 rounded-md px-2 py-1 active:opacity-70", mark.holiday ? "bg-vermilion/10" : "bg-warning/15")}
-                  >
-                    <View className={cn("h-1.5 w-1.5 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
-                    <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>{name}</Text>
-                  </Pressable>
-                ))}
-                {mark && mark.names.length > namesShown(view) ? (
-                  <Pressable
-                    accessibilityRole="button"
+                    disabled={view === "day"}
+                    accessibilityRole={view === "day" ? undefined : "button"}
                     onPress={() => {
                       haptics.tick();
                       onAnchorChange(c.date);
                       onViewChange("day");
                     }}
-                    className="self-start rounded-md bg-muted px-2 py-0.5 active:opacity-70"
+                    className={cn("flex-row items-start gap-1.5 rounded-md px-2 py-1 active:opacity-70", mark.holiday ? "bg-vermilion/10" : "bg-warning/15")}
                   >
-                    <Text className="font-num text-caption font-semibold text-muted-foreground">+{tx.digits(mark.names.length - namesShown(view))}</Text>
+                    <View className={cn("mt-1.5 h-1.5 w-1.5 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
+                    <Text numberOfLines={view === "day" ? undefined : 3} className={cn("min-w-0 flex-1 text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>
+                      {mark.names.map((name, i) => (
+                        <Fragment key={name}>
+                          {i > 0 ? ", " : ""}
+                          <RNText onPress={view === "day" && onOpenMark ? () => onOpenMark(c.date, name, mark.holiday) : undefined}>{name}</RNText>
+                        </Fragment>
+                      ))}
+                    </Text>
                   </Pressable>
                 ) : null}
                 {c.allDay.map((e) => {
@@ -421,11 +417,6 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
     </View>
     </View>
   );
-}
-
-/** Festival names an all-day cell lists before "+N": all of them in Day. */
-function namesShown(view: string): number {
-  return view === "day" ? Number.POSITIVE_INFINITY : view === "week" ? 2 : 3;
 }
 
 function useNow() {

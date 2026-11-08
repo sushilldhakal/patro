@@ -255,25 +255,29 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
                     <span className="truncate">{tx.t("calendar.best_sarvartha")}</span>
                   </span>
                 ) : null}
-                {/* Day shows every name (Kukur Tihar is the fourth on Kartik 22); the narrower columns show a
-                    few and a "+N" that opens that day. */}
-                {mark?.names.slice(0, namesShown(view)).map((name) => (
-                  <span key={name} className={cn("flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium", mark.holiday ? "bg-danger/10 text-danger" : "bg-warning/15 text-foreground")}>
-                    <span className={cn("size-1.5 shrink-0 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
-                    <span className="truncate">{name}</span>
-                  </span>
-                ))}
-                {mark && mark.names.length > namesShown(view) ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAnchorChange(c.date);
-                      onViewChange("day");
-                    }}
-                    className="self-start rounded-md border-none bg-muted px-2 py-0.5 text-xs font-semibold tabular-nums text-muted-foreground hover:bg-muted/70"
+                {/* The day's festivals on one line, "तिहार, लक्ष्मी पूजा, काग तिहार, …": all of them in Day, up to
+                    three lines in the narrower columns (a click there opens that day). */}
+                {mark && mark.names.length > 0 ? (
+                  <span
+                    role={view === "day" ? undefined : "button"}
+                    tabIndex={view === "day" ? undefined : 0}
+                    onClick={
+                      view === "day"
+                        ? undefined
+                        : () => {
+                            onAnchorChange(c.date);
+                            onViewChange("day");
+                          }
+                    }
+                    className={cn(
+                      "flex min-w-0 items-start gap-1.5 rounded-lg px-2 py-1 text-xs font-medium",
+                      mark.holiday ? "bg-danger/10 text-danger" : "bg-warning/15 text-foreground",
+                      view !== "day" && "cursor-pointer",
+                    )}
                   >
-                    +{tx.digits(mark.names.length - namesShown(view))}
-                  </button>
+                    <span className={cn("mt-1 size-1.5 shrink-0 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
+                    <span className={cn("min-w-0", view !== "day" && "line-clamp-3")}>{mark.names.join(", ")}</span>
+                  </span>
                 ) : null}
                 {c.allDay.map((e) => {
                   const k = KIND[eventKindOf(e)];
@@ -352,11 +356,6 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
       </div>
     </div>
   );
-}
-
-/** Festival names an all-day cell lists before "+N": all of them in Day. */
-function namesShown(view: string): number {
-  return view === "day" ? Number.POSITIVE_INFINITY : view === "week" ? 2 : 3;
 }
 
 function useNow() {
