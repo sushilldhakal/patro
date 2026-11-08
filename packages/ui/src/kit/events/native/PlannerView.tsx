@@ -292,7 +292,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
       {hasAllDay ? (
         <View className="flex-row border-b border-border">
           <View style={{ width: GUTTER }} className="items-end pr-2 pt-2">
-            <Text className="text-diagram-xs text-muted-foreground">{tx.t("events.all_day_short")}</Text>
+            <Text className="text-caption text-muted-foreground">{tx.t("events.all_day_short")}</Text>
           </View>
           {columns.map((c) => {
             const mark = marks.get(c.date);
@@ -302,7 +302,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
                   <View className="flex-row items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1">
                     <View className="h-1.5 w-1.5 rounded-full bg-success" />
-                    <Text numberOfLines={1} className="min-w-0 flex-1 text-caption font-medium text-success">{tx.t("calendar.best_sarvartha")}</Text>
+                    <Text numberOfLines={1} className="min-w-0 flex-1 text-body leading-snug font-medium text-success">{tx.t("calendar.best_sarvartha")}</Text>
                   </View>
                 ) : null}
                 {/* The day's festivals on one line, "तिहार, लक्ष्मी पूजा, काग तिहार, …": all of them in Day (each
@@ -318,8 +318,8 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                     }}
                     className={cn("flex-row items-start gap-1.5 rounded-md px-2 py-1 active:opacity-70", mark.holiday ? "bg-vermilion/10" : "bg-warning/15")}
                   >
-                    <View className={cn("mt-1.5 h-1.5 w-1.5 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
-                    <Text numberOfLines={view === "day" ? undefined : 3} className={cn("min-w-0 flex-1 text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>
+                    <View className={cn("mt-2 h-1.5 w-1.5 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
+                    <Text numberOfLines={view === "day" ? undefined : 3} className={cn("min-w-0 flex-1 text-body leading-snug font-medium", mark.holiday ? "text-danger" : "text-foreground")}>
                       {mark.names.map((name, i) => (
                         <Fragment key={name}>
                           {i > 0 ? ", " : ""}
@@ -334,7 +334,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                   return (
                     <Pressable key={e.id} accessibilityRole="button" onPress={() => onOpenEvent(e)} className={cn("flex-row items-center gap-1.5 overflow-hidden rounded-md px-2 py-1 active:opacity-70", k.fill)}>
                       <View className={cn("absolute bottom-0 left-0 top-0 w-1", k.bar)} />
-                      <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-semibold", k.text)}>{e.title}</Text>
+                      <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-body leading-snug font-semibold", k.text)}>{e.title}</Text>
                     </Pressable>
                   );
                 })}
@@ -588,7 +588,7 @@ function PersonalChip({ date, column, week, open, onToggle, onOpen, tx }: { date
         className={cn("flex-row items-center gap-1.5 rounded-md px-2 py-1 active:opacity-70", toneChip(column.tone))}
       >
         <View className={cn("h-1.5 w-1.5 rounded-full", toneDot(column.tone))} />
-        <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-medium", toneInk(column.tone))}>{label}</Text>
+        <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-body leading-snug font-medium", toneInk(column.tone))}>{label}</Text>
       </Pressable>
       {open && !onOpen ? (
         <View className="mt-1 rounded-lg border border-border bg-card p-2">

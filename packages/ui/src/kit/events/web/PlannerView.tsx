@@ -243,14 +243,14 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
       {/* All-day row: holidays and festivals, then the user's all-day events. */}
       {hasAllDay ? (
         <div className="grid border-b border-border" style={{ gridTemplateColumns: cols }}>
-          <span className="pr-2 pt-2 text-right text-xs text-muted-foreground">{tx.t("events.all_day_short")}</span>
+          <span className="pr-2 pt-2 text-right text-sm text-muted-foreground">{tx.t("events.all_day_short")}</span>
           {columns.map((c) => {
             const mark = marks.get(c.date);
             return (
               <div key={c.date} className="relative flex min-w-0 flex-col gap-1 border-l border-border/60 p-1">
                 <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} tx={tx} />
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
-                  <span className="flex min-w-0 items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1 text-xs font-medium text-success">
+                  <span className="flex min-w-0 items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1 text-sm font-medium text-success">
                     <span className="size-1.5 shrink-0 rounded-full bg-success" />
                     <span className="truncate">{tx.t("calendar.best_sarvartha")}</span>
                   </span>
@@ -270,19 +270,19 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
                           }
                     }
                     className={cn(
-                      "flex min-w-0 items-start gap-1.5 rounded-lg px-2 py-1 text-xs font-medium",
+                      "flex min-w-0 items-start gap-1.5 rounded-lg px-2 py-1 text-sm font-medium leading-snug",
                       mark.holiday ? "bg-danger/10 text-danger" : "bg-warning/15 text-foreground",
                       view !== "day" && "cursor-pointer",
                     )}
                   >
-                    <span className={cn("mt-1 size-1.5 shrink-0 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
+                    <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
                     <span className={cn("min-w-0", view !== "day" && "line-clamp-3")}>{mark.names.join(", ")}</span>
                   </span>
                 ) : null}
                 {c.allDay.map((e) => {
                   const k = KIND[eventKindOf(e)];
                   return (
-                    <button key={e.id} type="button" onClick={() => onOpenEvent(e)} className={cn("truncate rounded-lg border-none px-2 py-1 text-left text-xs font-semibold", k.fill, k.text)}>
+                    <button key={e.id} type="button" onClick={() => onOpenEvent(e)} className={cn("truncate rounded-lg border-none px-2 py-1 text-left text-sm font-semibold", k.fill, k.text)}>
                       {e.title}
                     </button>
                   );
@@ -546,7 +546,7 @@ function PersonalChip({ date, column, week, open, onToggle, tx }: { date: string
   ] as const;
   return (
     <div className="relative">
-      <button type="button" aria-expanded={open} onClick={(e) => { e.stopPropagation(); onToggle(); }} className={cn("flex w-full min-w-0 items-center gap-1.5 rounded-lg border-0 px-2 py-1 text-left text-xs font-medium", toneChip(column.tone))}>
+      <button type="button" aria-expanded={open} onClick={(e) => { e.stopPropagation(); onToggle(); }} className={cn("flex w-full min-w-0 items-center gap-1.5 rounded-lg border-0 px-2 py-1 text-left text-sm font-medium", toneChip(column.tone))}>
         <span className="size-1.5 shrink-0 rounded-full bg-current" />
         <span className="truncate">{label}</span>
       </button>
