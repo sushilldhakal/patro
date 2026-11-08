@@ -102,8 +102,9 @@ export const calendarHeaderClasses = {
   // The calendar / day swap button: a step smaller below xs so its label ("Calendar Day") leaves room for the date.
   webDenseSwap: "max-xs:gap-1 max-xs:px-2",
   webDenseSwapLabel: "max-xs:text-xs",
-  webPanel: "absolute top-full z-30 mt-2 shadow-lg max-xs:inset-x-0 xs:w-85",
-  webScrim: "fixed inset-0 z-20 cursor-default",
+  /** Drops under its button; on a phone it rises from the bottom as a sheet, as in the app. */
+  webPanel: "absolute top-full z-30 mt-2 shadow-lg md:w-85 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-auto max-md:z-[70] max-md:mt-0 max-md:max-h-[85dvh] max-md:overflow-y-auto max-md:rounded-b-none max-md:rounded-t-3xl max-md:p-5 max-md:pb-8 max-md:shadow-2xl",
+  webScrim: "fixed inset-0 z-20 cursor-default max-md:z-[60] max-md:bg-black/40",
   webBadgeHover: "flex flex-col transition-shadow hover:ring-3 hover:ring-secondary/20 active:scale-95",
-  webLocationList: "flex max-h-72 flex-col gap-0.5 overflow-auto",
+  webLocationList: "flex max-h-72 flex-col gap-0.5 overflow-auto max-md:max-h-[55dvh]",
 } as const;

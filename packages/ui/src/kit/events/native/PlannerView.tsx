@@ -305,7 +305,9 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                     <Text numberOfLines={1} className="min-w-0 flex-1 text-caption font-medium text-success">{tx.t("calendar.best_sarvartha")}</Text>
                   </View>
                 ) : null}
-                {mark?.names.slice(0, view === "week" ? 2 : 3).map((name) => (
+                {/* Day shows every name (Kukur Tihar is the fourth on Kartik 22); the narrower columns show a
+                    few and a "+N" that opens that day. */}
+                {mark?.names.slice(0, namesShown(view)).map((name) => (
                   <Pressable
                     key={name}
                     accessibilityRole="button"
@@ -318,6 +320,19 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                     <Text numberOfLines={1} className={cn("min-w-0 flex-1 text-caption font-medium", mark.holiday ? "text-danger" : "text-foreground")}>{name}</Text>
                   </Pressable>
                 ))}
+                {mark && mark.names.length > namesShown(view) ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      haptics.tick();
+                      onAnchorChange(c.date);
+                      onViewChange("day");
+                    }}
+                    className="self-start rounded-md bg-muted px-2 py-0.5 active:opacity-70"
+                  >
+                    <Text className="font-num text-caption font-semibold text-muted-foreground">+{tx.digits(mark.names.length - namesShown(view))}</Text>
+                  </Pressable>
+                ) : null}
                 {c.allDay.map((e) => {
                   const k = KIND[eventKindOf(e)];
                   return (
@@ -406,6 +421,11 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
     </View>
     </View>
   );
+}
+
+/** Festival names an all-day cell lists before "+N": all of them in Day. */
+function namesShown(view: string): number {
+  return view === "day" ? Number.POSITIVE_INFINITY : view === "week" ? 2 : 3;
 }
 
 function useNow() {

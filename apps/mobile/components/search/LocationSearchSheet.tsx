@@ -19,7 +19,7 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 export function LocationSearchSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
-  const picker = useLocationSelector({ location, onLocationChange: setLocation, locate: locateDevice });
+  const picker = useLocationSelector({ location, onLocationChange: setLocation, locate: locateDevice, open });
 
   const { setQuery } = picker;
   useEffect(() => {

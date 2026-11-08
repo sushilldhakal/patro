@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
+import { setLocalStorageItem } from "@/lib/browser";
 import { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga/panchanga-mode";
 export { defaultClockForTimezone, formatClockParts } from "@vedic-patro/domain/panchanga/panchanga-mode";
 
@@ -20,7 +20,8 @@ export function usePanchangaClock(
   initial?: { clock?: string },
 ) {
   const [clock, setClockState] = useState(() => {
-    const raw = initial?.clock ?? getLocalStorageItem(CLOCK_KEY);
+    // A link's ?time= wins; otherwise the place's time now, not a clock saved on an earlier visit.
+    const raw = initial?.clock;
     if (raw) {
       const { hour, minute } = parseClockParts(raw);
       return formatClockParts(hour, minute);

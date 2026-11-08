@@ -77,6 +77,8 @@ function parseDisplay(search: Record<string, unknown>, fallbackLanguage: Languag
 export function parsePatroDayUrl(
   search: Record<string, unknown>,
   fallbackLanguage: Language = "ne",
+  /** False on the panchanga page: with no date it opens on the place's today, never a remembered month. */
+  remember = true,
 ): PatroDayFetchState {
   const display = parseDisplay(search, fallbackLanguage);
   // Julian day is resolved server-side only — never read `jd` from the router URL.
@@ -112,7 +114,7 @@ export function parsePatroDayUrl(
     return { kind: "input", inputEra, year, month, day: defaultDay, display };
   }
 
-  return rememberedDayState(display) ?? { kind: "today", display };
+  return (remember ? rememberedDayState(display) : null) ?? { kind: "today", display };
 }
 
 /**

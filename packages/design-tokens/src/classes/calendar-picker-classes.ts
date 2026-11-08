@@ -97,9 +97,10 @@ export const calendarPickerClasses = {
   webDtLocation: "col-start-2 row-start-1 justify-self-end md:row-start-2",
   webBar: "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 max-sm:grid-cols-1",
   webNav: "relative flex flex-row items-center gap-2 max-sm:static",
-  webDatePanel: "absolute left-0 top-full z-30 mt-2 shadow-lg max-sm:inset-x-0 sm:w-93",
-  webYearPanel: "absolute right-0 top-full z-30 mt-2 shadow-lg max-sm:inset-x-0 sm:w-85",
-  webScrim: "fixed inset-0 z-20 cursor-default",
+  /** Drops under its button; on a phone it rises from the bottom as a sheet, as in the app. */
+  webDatePanel: "absolute left-0 top-full z-30 mt-2 shadow-lg md:w-93 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-auto max-md:z-[70] max-md:mt-0 max-md:max-h-[85dvh] max-md:overflow-y-auto max-md:rounded-b-none max-md:rounded-t-3xl max-md:p-5 max-md:pb-8 max-md:shadow-2xl",
+  webYearPanel: "absolute right-0 top-full z-30 mt-2 shadow-lg md:w-85 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-auto max-md:z-[70] max-md:mt-0 max-md:max-h-[85dvh] max-md:overflow-y-auto max-md:rounded-b-none max-md:rounded-t-3xl max-md:p-5 max-md:pb-8 max-md:shadow-2xl",
+  webScrim: "fixed inset-0 z-20 cursor-default max-md:z-[60] max-md:bg-black/40",
   webTitle: "flex min-w-0 flex-row items-center gap-3",
   webBadgeHover: "flex flex-col transition-shadow hover:ring-3 hover:ring-secondary/20 active:scale-95",
 } as const;

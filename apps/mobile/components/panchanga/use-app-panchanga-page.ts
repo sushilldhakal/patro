@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { fetchPanchangaAtMidnight, locationCacheKey, PANCHANGA_CACHE_VERSION } from "@vedic-patro/api-client";
@@ -10,7 +10,9 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { parseAdStr } from "@vedic-patro/domain/panchanga/panchanga-year-page";
 import { civilIsoFromDate } from "@vedic-patro/domain/calendar/patro-day";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
-import { rememberBrowse, rememberedDayDate } from "@vedic-patro/domain/calendar/remembered-browse";
+import { rememberBrowse } from "@vedic-patro/domain/calendar/remembered-browse";
+import { todayIn } from "@vedic-patro/domain/calendar/event-time";
+import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga/panchanga-mode";
 
 /**
  * The app's side of `usePanchangaPage` (@vedic-patro/features): the browsed
@@ -21,18 +23,36 @@ export function useAppPanchangaPage() {
   const params = useLocalSearchParams<{ date?: string }>();
   const queryClient = useQueryClient();
   const { location, setLocation, ready } = usePanchangaLocation();
-  // No ?date=: open in the month the reader last browsed to (home on BS 2085 → 2085).
-  const [date, setDate] = useState(() =>
-    typeof params.date === "string" && params.date ? parseAdStr(params.date) : (rememberedDayDate() ?? new Date()),
+  const timezone = location.params.timezone ?? "Asia/Kathmandu";
+  /* No ?date=: the place's own today and time, not the phone's. At night in Kathmandu it is already
+     tomorrow in Melbourne; the page must still open on Kathmandu's day. Until the reader picks a day or
+     a time, both follow the place (a new place, or the saved one loading, moves them). */
+  const [pickedDate, setPickedDate] = useState<Date | null>(() =>
+    typeof params.date === "string" && params.date ? parseAdStr(params.date) : null,
   );
+  // Taken once per place, so a re-render does not move the day or the time under the reader.
+  const placeToday = useMemo(() => todayIn(timezone), [timezone]);
+  const placeNow = useMemo(() => defaultClockForTimezone(timezone), [timezone]);
+  const date = useMemo(() => pickedDate ?? parseAdStr(placeToday), [pickedDate, placeToday]);
+  const setDate = useCallback((next: Date) => setPickedDate(next), []);
   useEffect(() => {
     const bs = adToBS(date);
     rememberBrowse("bs", bs.year, bs.month);
-  }, [date]);
-  const { clock, setClock } = usePanchangaClock(location.params.timezone ?? "Asia/Kathmandu");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [civilIsoFromDate(date)]);
+  const { clock: pickedClock, setClock: setPickedClock } = usePanchangaClock(timezone);
+  const [clockPicked, setClockPicked] = useState(false);
+  const clock = clockPicked ? pickedClock : placeNow;
+  const setClock = useCallback(
+    (next: string) => {
+      setClockPicked(true);
+      setPickedClock(next);
+    },
+    [setPickedClock],
+  );
 
   useEffect(() => {
-    if (typeof params.date === "string" && params.date) setDate(parseAdStr(params.date));
+    if (typeof params.date === "string" && params.date) setPickedDate(parseAdStr(params.date));
   }, [params.date]);
 
   const adDateStr = civilIsoFromDate(date);

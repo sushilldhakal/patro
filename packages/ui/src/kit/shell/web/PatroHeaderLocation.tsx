@@ -87,7 +87,7 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
                   className={cn(cls.locationRow, "w-full", picker.isSelected(city) && cls.locationRowActive)}
                   webClassName="hover:bg-muted"
                 >
-                  <Box className="min-w-0">
+                  <Box className="flex min-w-0 flex-col text-left">
                     <Text className={cls.locationRowName}>{picker.cityName(city)}</Text>
                     <Text className={cls.locationRowSub}>{picker.citySub(city)}</Text>
                   </Box>

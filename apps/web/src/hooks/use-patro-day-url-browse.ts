@@ -272,7 +272,7 @@ export function usePatroPanchangaUrlBrowse(
   const { lang } = useLocale();
   const language = fallbackLanguage(lang);
   const dayState = useMemo(
-    () => parsePatroDayUrl(search as Record<string, unknown>, language),
+    () => parsePatroDayUrl(search as Record<string, unknown>, language, false),
     [search, language],
   );
   useRememberDay(dayState);

@@ -188,13 +188,20 @@ export function useLocationSelector({
   location,
   onLocationChange,
   locate,
+  open: openProp,
 }: {
   location: PanchangaLocation;
   onLocationChange: (location: PanchangaLocation) => void;
   locate: LocateDevice;
+  /**
+   * Whether the picker is showing, when its surface owns that (the app's sheet). The world search
+   * only runs while open: a sheet that never said so searched the Nepal list alone (no Houston).
+   */
+  open?: boolean;
 }) {
   const { t, lang } = useLocale();
-  const [open, setOpenState] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
   const search = useCitySearch({ onLocationChange, locate, enabled: open });
   const label = displayLocationLabel(location, undefined, lang);
   const setOpen = (next: boolean) => {
