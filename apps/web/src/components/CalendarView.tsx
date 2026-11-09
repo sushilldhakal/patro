@@ -11,10 +11,12 @@ import {
   useUserEvents,
   useBestSlots,
   usePersonalDays,
+  usePlannerText,
   type HomeView,
   type PlannerViewKind,
 } from "@vedic-patro/features/events";
 import { HOME_VIEW_ICONS, PlannerView } from "@vedic-patro/ui/kit/events";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { EventEditorDialog } from "@/components/events/NewEventButton";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
@@ -137,6 +139,8 @@ export function CalendarView({
   const queryClient = useQueryClient();
   // The planner views (week, day, year, list) centre on this AD date; an event is open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(() => todayAd ?? new Date().toISOString().slice(0, 10));
+  /** A festival or holiday tapped in the planner: its dialog, as the app's sheet. */
+  const [markDetail, setMarkDetail] = useState<{ date: string; name: string; holiday: boolean } | null>(null);
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
   const plannerRange =
     plannerKind === "list" ? { from: anchor, to: shiftDate(anchor, 60) } : plannerKind === "year" || plannerKind == null ? { from: anchor, to: anchor } : { from: plannerDays(plannerKind, anchor)[0]!, to: plannerDays(plannerKind, anchor).at(-1)! };
@@ -292,6 +296,7 @@ export function CalendarView({
       personal={personalDays.columns}
       todayAd={todayAd ?? new Date().toISOString().slice(0, 10)}
       onOpenEvent={(event) => setEditor({ event })}
+      onOpenMark={(date, name, holiday) => setMarkDetail({ date, name, holiday })}
       onCreateAt={(date, time, extra) => (isAuthenticated ? setEditor({ slot: { date, time, ...extra } }) : undefined)}
       onMoveEvent={async (event, times) => {
         const { id: _id, ...input } = event;
@@ -304,6 +309,15 @@ export function CalendarView({
     <>
       {plannerBlock ?? calendarBlock}
       {editor ? <EventEditorDialog editing={editor.event} slot={editor.slot} onClose={() => setEditor(null)} /> : null}
+      <MarkDialog
+        mark={markDetail}
+        onClose={() => setMarkDetail(null)}
+        onOpenDay={(date) => {
+          setMarkDetail(null);
+          const state = patroDayFetchFromApiDateAd(date, { era, language: lang });
+          void navigate({ to: "/panchanga", search: buildPatroDaySearch(location ?? DEFAULT_PANCHANGA_LOCATION, state) as never });
+        }}
+      />
     </>
   );
 
@@ -372,5 +386,50 @@ export function CalendarView({
       {monthHeader}
       {calendarBlock}
     </>
+  );
+}
+
+/**
+ * A festival or public holiday from the planner, drawn as the app's sheet: the name, what kind of day it
+ * is, its date in BS and AD, all day, and a way to that day's panchanga. A sheet from the bottom on a phone.
+ */
+function MarkDialog({
+  mark,
+  onClose,
+  onOpenDay,
+}: {
+  mark: { date: string; name: string; holiday: boolean } | null;
+  onClose: () => void;
+  onOpenDay: (date: string) => void;
+}) {
+  const tx = usePlannerText();
+  return (
+    <Dialog open={mark != null} onOpenChange={(open) => (open ? undefined : onClose())}>
+      <DialogContent className={calendarClasses.markSheet}>
+        {mark ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1 pr-8">
+              <span className={mark.holiday ? "text-sm font-semibold text-danger" : "text-sm font-semibold text-warning"}>
+                {tx.t(mark.holiday ? "sections.public_holiday" : "holidays.festival")}
+              </span>
+              <DialogTitle className="text-xl font-bold leading-snug">{mark.name}</DialogTitle>
+            </div>
+            <div className={calendarClasses.markDateBox}>
+              <span className="text-base font-semibold">{tx.dayHeading(mark.date)}</span>
+              <span className="text-sm text-muted-foreground">
+                {tx.adShort(mark.date)} · {tx.t("events.all_day")}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenDay(mark.date)}
+              className={calendarClasses.markOpenDay}
+            >
+              {tx.t("events.open_day")}
+            </button>
+          </div>
+        ) : null}
+      </DialogContent>
+    </Dialog>
   );
 }

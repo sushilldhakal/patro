@@ -141,7 +141,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
           const holiday = marks.get(date)?.holiday;
           return (
             <button key={date} type="button" onClick={() => onAnchorChange(date)} aria-pressed={isShown} className={cn("relative flex flex-col items-center gap-1 border-0 bg-transparent py-2", i > 0 && "border-l border-solid border-border")}>
-              <span className={cn("text-xs font-medium", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>{tx.weekdayShort(date).slice(0, 2)}</span>
+              <span className={cn("text-sm font-semibold", i === 0 || i === 6 ? "text-danger" : "text-foreground")}>{tx.weekdayShort(date)}</span>
               <span
                 className={cn(
                   "relative inline-flex size-10 items-center justify-center rounded-full text-lg tabular-nums transition-colors",
@@ -163,7 +163,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number; moved: boolean };
 
-function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
   const colRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
@@ -276,7 +276,19 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
                     )}
                   >
                     <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", mark.holiday ? "bg-danger" : "bg-warning")} />
-                    <span className={cn("min-w-0", view !== "day" && "line-clamp-3")}>{mark.names.join(", ")}</span>
+                    <span className={cn("min-w-0", view !== "day" && "line-clamp-3")}>
+                      {view === "day" && onOpenMark
+                        ? mark.names.map((name, i) => (
+                            <span key={name}>
+                              {i > 0 ? ", " : ""}
+                              {/* Each name opens its dialog, as in the app. */}
+                              <button type="button" onClick={() => onOpenMark(c.date, name, mark.holiday)} className="inline cursor-pointer border-none bg-transparent p-0 text-left font-medium text-inherit hover:underline">
+                                {name}
+                              </button>
+                            </span>
+                          ))
+                        : mark.names.join(", ")}
+                    </span>
                   </span>
                 ) : null}
                 {c.allDay.map((e) => {

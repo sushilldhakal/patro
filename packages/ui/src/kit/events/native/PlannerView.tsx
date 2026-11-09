@@ -122,8 +122,9 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
     <View className="border-b border-border">
       <View className="flex-row">
         {week.map((date, i) => (
-          <Text key={date} className={cn("flex-1 pt-2 text-center text-caption font-medium", i > 0 && "border-l border-border", i === 0 || i === 6 ? "text-muted-foreground" : "text-foreground")}>
-            {tx.weekdayShort(date).slice(0, 2)}
+          // The month grid's weekday names (आइत, सोम, … शनि), the weekend in red as there.
+          <Text key={date} numberOfLines={1} className={cn("flex-1 pt-2 text-center text-caption font-semibold", i > 0 && "border-l border-border", i === 0 || i === 6 ? "text-danger" : "text-foreground")}>
+            {tx.weekdayShort(date)}
           </Text>
         ))}
       </View>
