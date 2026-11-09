@@ -85,6 +85,19 @@ export const calendarClasses = {
   markDateBox: "flex flex-col gap-1 rounded-xl border border-border bg-muted/40 px-4 py-3",
   markOpenDay: "min-h-12 rounded-2xl border-none bg-muted text-base font-semibold text-foreground hover:bg-muted/70",
 
+  // ── Personal day reading (website), the app's EventDetailSheet "personal" card ──
+  readingSheet:
+    "max-h-[85vh] overflow-y-auto max-md:inset-x-0 max-md:bottom-0 max-md:left-0 max-md:top-auto max-md:max-h-[88dvh] max-md:w-full max-md:max-w-none max-md:translate-x-0 max-md:translate-y-0 max-md:rounded-b-none max-md:rounded-t-3xl max-md:pb-8 md:max-w-lg",
+  readingHead: "flex items-start gap-3 pr-8",
+  readingBar: "mt-1 h-12 w-1.5 shrink-0 rounded-full",
+  readingTitle: "m-0 text-xl font-bold leading-snug text-foreground",
+  readingKind: "mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold",
+  readingGroup: "flex flex-col gap-1 rounded-2xl bg-muted/60 px-4 py-3",
+  readingRow: "flex items-start gap-3 py-1.5 text-base text-foreground",
+  readingLabel: "m-0 text-xs font-semibold text-muted-foreground",
+  readingParagraph: "m-0 text-base leading-relaxed text-foreground",
+  readingTrack: "h-1.5 overflow-hidden rounded-full bg-background",
+
   // ── Calendar / panchanga view switch ──────────────────────────────────────
   viewSwap: "h-8 shrink-0 flex-row items-center gap-1 rounded-lg border border-border bg-card px-2",
   viewSwapText: "text-sm font-semibold text-foreground",

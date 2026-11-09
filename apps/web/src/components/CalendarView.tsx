@@ -13,11 +13,13 @@ import {
   usePersonalDays,
   usePlannerText,
   type HomeView,
+  type PersonalColumn,
   type PlannerViewKind,
 } from "@vedic-patro/features/events";
 import { HOME_VIEW_ICONS, PlannerView } from "@vedic-patro/ui/kit/events";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { EventEditorDialog } from "@/components/events/NewEventButton";
+import { PersonalReadingDialog } from "@/components/events/PersonalReadingDialog";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/geography/panchanga-location";
@@ -140,6 +142,8 @@ export function CalendarView({
   // The planner views (week, day, year, list) centre on this AD date; an event is open for editing, or a slot for a new one.
   const [anchor, setAnchor] = useState(() => todayAd ?? new Date().toISOString().slice(0, 10));
   /** A festival or holiday tapped in the planner: its dialog, as the app's sheet. */
+  /** The day's personal reading, opened from the planner's "तपाईंको दिन" chip. */
+  const [personalDetail, setPersonalDetail] = useState<{ date: string; column: PersonalColumn } | null>(null);
   const [markDetail, setMarkDetail] = useState<{ date: string; name: string; holiday: boolean } | null>(null);
   const [editor, setEditor] = useState<{ event?: CalendarEvent; slot?: { date: string; time: string; end?: string; endDate?: string; title?: string } } | null>(null);
   const plannerRange =
@@ -297,6 +301,7 @@ export function CalendarView({
       todayAd={todayAd ?? new Date().toISOString().slice(0, 10)}
       onOpenEvent={(event) => setEditor({ event })}
       onOpenMark={(date, name, holiday) => setMarkDetail({ date, name, holiday })}
+      onOpenPersonal={(date, column) => setPersonalDetail({ date, column })}
       onCreateAt={(date, time, extra) => (isAuthenticated ? setEditor({ slot: { date, time, ...extra } }) : undefined)}
       onMoveEvent={async (event, times) => {
         const { id: _id, ...input } = event;
@@ -309,6 +314,7 @@ export function CalendarView({
     <>
       {plannerBlock ?? calendarBlock}
       {editor ? <EventEditorDialog editing={editor.event} slot={editor.slot} onClose={() => setEditor(null)} /> : null}
+      <PersonalReadingDialog detail={personalDetail} onClose={() => setPersonalDetail(null)} />
       <MarkDialog
         mark={markDetail}
         onClose={() => setMarkDetail(null)}

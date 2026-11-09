@@ -163,7 +163,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
 
 type Drag = { id: string; mode: "move" | "resize"; dx: number; dy: number; moved: boolean };
 
-function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
+function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, onOpenEvent, onOpenMark, onOpenPersonal, onMoveEvent, onCreateAt, onAnchorChange, onViewChange }: PlannerViewProps & { days: string[] }) {
   const tx = usePlannerText();
   const colRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<Drag | null>(null);
@@ -248,7 +248,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
             const mark = marks.get(c.date);
             return (
               <div key={c.date} className="relative flex min-w-0 flex-col gap-1 border-l border-border/60 p-1">
-                <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} tx={tx} />
+                <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} onOpen={onOpenPersonal} tx={tx} />
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
                   <span className="flex min-w-0 items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1 text-sm font-medium text-success">
                     <span className="size-1.5 shrink-0 rounded-full bg-success" />
@@ -546,13 +546,13 @@ function BestPlaceholders({ date, slots, column, events, hourH, week, tx, onCrea
 }
 
 /** "तपाईंको दिन · शुभ · …" on its own (the home day card), the planner's chip at full length; the reading unfolds under it. */
-export function PersonalDayChip({ date, column }: PersonalDayChipProps) {
+export function PersonalDayChip({ date, column, onOpen }: PersonalDayChipProps) {
   const tx = usePlannerText();
   const [open, setOpen] = useState(false);
-  return <PersonalChip date={date} column={column} week={false} open={open} onToggle={() => setOpen((v) => !v)} tx={tx} />;
+  return <PersonalChip date={date} column={column} week={false} open={open} onToggle={() => setOpen((v) => !v)} onOpen={onOpen} tx={tx} />;
 }
 
-function PersonalChip({ date, column, week, open, onToggle, tx }: { date: string; column: PersonalColumn | undefined; week: boolean; open: boolean; onToggle: () => void; tx: PlannerText }) {
+function PersonalChip({ date, column, week, open, onToggle, onOpen, tx }: { date: string; column: PersonalColumn | undefined; week: boolean; open: boolean; onToggle: () => void; onOpen?: (date: string, column: PersonalColumn) => void; tx: PlannerText }) {
   if (!column) return null;
   const tone = tx.t(TONE_KEY[column.tone ?? "neutral"]);
   const reason = strongestReason(column);
@@ -565,11 +565,12 @@ function PersonalChip({ date, column, week, open, onToggle, tx }: { date: string
   ] as const;
   return (
     <div className="relative">
-      <button type="button" aria-expanded={open} onClick={(e) => { e.stopPropagation(); onToggle(); }} className={cn("flex w-full min-w-0 items-center gap-1.5 rounded-lg border-0 px-2 py-1 text-left text-sm font-medium", toneChip(column.tone))}>
+      {/* With a dialog to open (the app's reading sheet) a click opens it; without one the reading unfolds here. */}
+      <button type="button" aria-expanded={onOpen ? undefined : open} onClick={(e) => { e.stopPropagation(); if (onOpen) onOpen(date, column); else onToggle(); }} className={cn("flex w-full min-w-0 items-center gap-1.5 rounded-lg border-0 px-2 py-1 text-left text-sm font-medium", toneChip(column.tone))}>
         <span className="size-1.5 shrink-0 rounded-full bg-current" />
         <span className="truncate">{label}</span>
       </button>
-      {open ? (
+      {open && !onOpen ? (
         <div role="dialog" aria-label={`${label} ${date}`} className="absolute left-0 z-30 mt-1 w-56 rounded-lg border border-border bg-card p-2 text-xs text-foreground shadow-md">
           <p className="m-0 font-semibold">{column.profileName}</p>
           {dashaNotes(column).map((note) => (

@@ -1,4 +1,5 @@
-import { useDayEvents, usePersonalDays } from "@vedic-patro/features/events";
+import { useDayEvents, usePersonalDays, type PersonalColumn } from "@vedic-patro/features/events";
+import { PersonalReadingDialog } from "@/components/events/PersonalReadingDialog";
 import { DayEvents, PersonalDayChip } from "@vedic-patro/ui/kit/events";
 import { AddToDay } from "@/components/events/NewEventButton";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -69,6 +70,7 @@ const PanchangaAside = forwardRef(function PanchangaAside(
   const dayEvents = useDayEvents(aside.dayAd, isAuthenticated);
   // "तपाईंको दिन · शुभ · …" for this day, as the planner's all-day row shows it.
   const personalDays = usePersonalDays([aside.dayAd], location.params, isAuthenticated);
+  const [personalDetail, setPersonalDetail] = useState<{ date: string; column: PersonalColumn } | null>(null);
   return (
     <aside ref={ref} id="home-panchanga-aside" className={cn("scroll-mt-[4.5rem] flex flex-col", homeClasses.asideShell)}>
       <div className={homeClasses.asideHeader}>
@@ -84,7 +86,8 @@ const PanchangaAside = forwardRef(function PanchangaAside(
 
       <TodayHighlightCard selectedDay={contextDay} selectedAdDate={aside.dayAd} todayAd={todayAd} monthContext={monthContext} p={p} />
       <div className={homeClasses.asideDayList}>
-        <PersonalDayChip date={aside.dayAd} column={personalDays.columns.get(aside.dayAd)} />
+        <PersonalDayChip date={aside.dayAd} column={personalDays.columns.get(aside.dayAd)} onOpen={(date, column) => setPersonalDetail({ date, column })} />
+        <PersonalReadingDialog detail={personalDetail} onClose={() => setPersonalDetail(null)} />
         <DayEvents events={dayEvents.events} />
         {isAuthenticated ? <AddToDay date={aside.dayAd} /> : null}
       </div>
