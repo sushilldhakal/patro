@@ -229,14 +229,7 @@ function DayCell({
 
         {cell.eventTitles.length > 0 ? (
           <>
-            {/* Narrow cells: a count badge, like festivals; wide cells list the first titles. */}
-            <Pressable
-              label={cell.eventCountAria}
-              onPress={onSelect}
-              className={cn("pointer-events-auto mx-auto mt-1 shrink-0 border-none md:hidden", cal.eventBadge, cal.eventBadgeText)}
-            >
-              <Text className={cal.eventBadgeText}>{cell.eventCountLabel}</Text>
-            </Pressable>
+            {/* Wide cells list the first titles; narrow ones count them in the one badge below. */}
             <Box className="pointer-events-none mt-1 hidden w-full flex-col gap-px md:flex">
               {cell.eventTitles.slice(0, 2).map((title, ei) => (
                 <Box key={`${title}-${ei}`} className={cal.eventChip}>
@@ -248,14 +241,16 @@ function DayCell({
           </>
         ) : null}
 
-        {cell.bsFestCompact ? (
+        {/* A narrow cell: one "+N" for festivals and the user's events together. A click opens the day,
+            or the festival list when there are only festivals. */}
+        {cell.compactCount > 0 ? (
           <Pressable
-            label={cell.festCountAria}
-            onPress={onOpenFestivals}
+            label={cell.compactCountAria}
+            onPress={cell.eventTitles.length > 0 ? onSelect : onOpenFestivals}
             className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden", cal.countBadgeCompact, cal.countBadgeText)}
             webClassName="transition-opacity hover:opacity-90"
           >
-            <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
+            <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>
           </Pressable>
         ) : null}
 

@@ -59,14 +59,15 @@ export function BsCalendarGrid({
   const { onLayout, col } = useGridWidth();
   const isCompact = width < 768;
   const isTablet = !isCompact;
-  const dayNumClass = isTablet ? "text-3xl" : "text-2xl";
+  // The website sets the date at text-3xl on a phone too; the app's 2xl read small beside it.
+  const dayNumClass = "text-3xl";
   const tithiRowMinH = lang === "en" ? 14 : 18;
   /* English names are long ("Chaturdashi"): on a phone they get a smaller size, may wrap to a second
      line at a syllable, and start below the moon so the two never overlap. */
   const englishPhone = lang === "en" && isCompact;
   const moonSize = width >= 640 ? 16 : 14;
   const moonInset = isCompact ? 0 : 4;
-  const cellMinH = isCompact ? 80 : 104;
+  const cellMinH = isCompact ? 92 : 104;
   const travel = useMonthTravel(days);
   const incoming = useBsCalendarGrid({
     days: travel.to ?? days,
@@ -195,12 +196,7 @@ export function BsCalendarGrid({
                     </View>
                   </View>
 
-                  {cell.eventTitles.length > 0 && !isOutside ? (
-                    isCompact ? (
-                      <RNPressable onPress={() => onSelectDay?.(cell.day)} accessibilityLabel={cell.eventCountAria} className={cn("mt-1 self-start", cal.eventBadge)}>
-                        <Text className={cal.eventBadgeText}>{cell.eventCountLabel}</Text>
-                      </RNPressable>
-                    ) : (
+                  {cell.eventTitles.length > 0 && !isOutside && !isCompact ? (
                       <View className="mt-1 w-full gap-px">
                         {/* Each chip opens its event's details, as an Apple Calendar month cell does. */}
                         {eventsOnDate(events ?? [], cell.day.date_ad).slice(0, 2).map((event) => (
@@ -216,12 +212,13 @@ export function BsCalendarGrid({
                         ))}
                         {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
                       </View>
-                    )
                   ) : null}
 
-                  {compactBsFest ? (
-                    <RNPressable onPress={openFestivals} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
-                      <Text className={cal.countBadgeText}>{cell.festCountLabel}</Text>
+                  {/* A phone cell: one "+N" for festivals and the user's events together. A tap opens the day, or the
+                      festival list when there are only festivals. */}
+                  {isCompact && cell.compactCount > 0 && (!isOutside || compactBsFest) ? (
+                    <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.compactCountAria} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
+                      <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>
                     </RNPressable>
                   ) : null}
 

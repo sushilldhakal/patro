@@ -55,6 +55,10 @@ export type BsCalendarCell = {
   eventTitles: string[];
   eventCountLabel: string;
   eventCountAria: string;
+  /** A narrow cell's one badge: festivals (BS patro) and the user's events, tasks and appointments together. */
+  compactCount: number;
+  compactCountLabel: string;
+  compactCountAria: string;
   tithi: string;
   tithiIndex: number | null;
   moonTitle?: string;
@@ -165,6 +169,11 @@ export function useBsCalendarGrid({
       eventTitles,
       eventCountLabel: `+${monoDigits(eventTitles.length)}`,
       eventCountAria: t("calendar.events_count", { count: eventTitles.length }),
+      compactCount: (primaryDate === "bs" ? festCount : 0) + eventTitles.length,
+      compactCountLabel: `+${monoDigits((primaryDate === "bs" ? festCount : 0) + eventTitles.length)}`,
+      compactCountAria: [primaryDate === "bs" && festCount > 0 ? festivals.join(", ") : "", eventTitles.length ? t("calendar.events_count", { count: eventTitles.length }) : ""]
+        .filter(Boolean)
+        .join(" · "),
       tithi: bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne),
       tithiIndex: tithiIndexFromCalendarDay(day) ?? null,
       moonTitle: moonPhaseTitle(getPakshaPhase(day), isEn),

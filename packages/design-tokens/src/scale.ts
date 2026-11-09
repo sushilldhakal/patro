@@ -65,9 +65,16 @@ export const text5xl = { size: 48, lineHeight: 48 } as const;
  */
 export const mobileTypeScale = {
   ...webTypeScale,
+  /*
+   * The two small steps are larger in the app than on the website. Side by side on one phone the app's
+   * 10.8 px captions and 14 px body read smaller than the site's same sizes in the browser (whose text
+   * also gets the browser's own rendering and wider cells), and the user could not read them.
+   */
+  xs: { size: 12.5, lineHeight: 17 },
+  sm: { size: 15, lineHeight: 21 },
   "5xl": text5xl,
-  caption: webTypeScale.xs,
-  body: webTypeScale.sm,
+  caption: { size: 12.5, lineHeight: 17 },
+  body: { size: 15, lineHeight: 21 },
   title: webTypeScale.lg,
   display: webTypeScale["2xl"],
 } as const;

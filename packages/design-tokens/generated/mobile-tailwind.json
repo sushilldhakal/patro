@@ -1,15 +1,15 @@
 {
   "fontSize": {
     "xs": [
-      "10.8px",
+      "12.5px",
       {
-        "lineHeight": "13.6px"
+        "lineHeight": "17px"
       }
     ],
     "sm": [
-      "14px",
+      "15px",
       {
-        "lineHeight": "20px"
+        "lineHeight": "21px"
       }
     ],
     "base": [
@@ -55,15 +55,15 @@
       }
     ],
     "caption": [
-      "10.8px",
+      "12.5px",
       {
-        "lineHeight": "13.6px"
+        "lineHeight": "17px"
       }
     ],
     "body": [
-      "14px",
+      "15px",
       {
-        "lineHeight": "20px"
+        "lineHeight": "21px"
       }
     ],
     "title": [

@@ -59,11 +59,11 @@ export const calendarClasses = {
   countBadge: "rounded-full bg-secondary px-1 py-px",
   countBadgePhone: "px-0.5",
   countBadgeCompact: "rounded-full bg-secondary px-1.5 py-0.5",
-  countBadgeText: "font-num text-diagram-xs font-bold leading-none text-secondary-foreground",
+  countBadgeText: "font-num text-xs font-bold leading-none text-secondary-foreground",
 
   // The user's own events on a cell: chips on wide cells, a count badge on narrow ones.
   eventBadge: "rounded-full bg-primary px-1.5 py-0.5",
-  eventBadgeText: "font-num text-diagram-xs font-bold leading-none text-primary-foreground",
+  eventBadgeText: "font-num text-xs font-bold leading-none text-primary-foreground",
   eventChip: "w-full min-w-0 rounded bg-primary/15 px-1 py-px",
   /** The app takes alpha only on some colours; `saffron` is the primary with it. */
   eventChipNative: "w-full min-w-0 rounded bg-saffron/15 px-1 py-px",
