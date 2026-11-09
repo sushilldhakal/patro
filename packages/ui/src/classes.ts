@@ -58,6 +58,7 @@ export const iconToneClass: Record<IconTone, string> = {
   info: "text-info",
   onPrimary: "text-primary-foreground",
   onSecondary: "text-secondary-foreground",
+  onBrand: "text-ill-brand-off-white",
 };
 
 /** Theme role per icon tone (the app passes an explicit colour to react-native-svg). */
@@ -72,7 +73,7 @@ export const iconToneRole = {
   info: "info",
   onPrimary: "primaryForeground",
   onSecondary: "secondaryForeground",
-} as const satisfies Record<IconTone, string>;
+} as const satisfies Record<Exclude<IconTone, "onBrand">, string>;
 
 export const tableClass: Required<TableClasses> = {
   root: "rounded-xl border border-border",

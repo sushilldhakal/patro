@@ -172,7 +172,9 @@ export type IconTone =
   | "warning"
   | "info"
   | "onPrimary"
-  | "onSecondary";
+  | "onSecondary"
+  /** Brand off-white in both themes: icons on a fixed brand surface (the audio player's band). */
+  | "onBrand";
 
 export type IconProps = StyleProps & {
   node: IconNode;

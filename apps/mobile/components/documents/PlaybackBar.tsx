@@ -5,7 +5,7 @@ import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { setBarAccessoryHeight } from "@/lib/bar-accessory";
 import { useBreakpoint } from "@/lib/responsive";
-import { useThemeColors } from "@/lib/theme-context";
+import { brand, withAlpha } from "@vedic-patro/design-tokens";
 import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 
 /** The floating bar's own side gutter (FloatingNavBar), so the player lines up with it. */
@@ -27,7 +27,6 @@ export function PlaybackBar({
   close?: { label: string; onPress: () => void };
   open?: { hint: string; onPress: () => void };
 }) {
-  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
   const { activeShloka } = audio;
@@ -65,7 +64,7 @@ export function PlaybackBar({
       // place buttons lift above it (setBarAccessoryHeight) instead of squeezing it to one side.
       dockInset={BAR_GUTTER}
       onDockHeight={setBarAccessoryHeight}
-      renderSeek={(args) => <SeekSlider {...args} colors={colors} />}
+      renderSeek={(args) => <SeekSlider {...args} />}
       close={close}
       open={open}
     />
@@ -81,13 +80,11 @@ function SeekSlider({
   max,
   label,
   onChange,
-  colors,
 }: {
   value: number;
   max: number;
   label: string;
   onChange: (seconds: number) => void;
-  colors: ReturnType<typeof useThemeColors>;
 }) {
   const [held, setHeld] = useState<number | null>(null);
   return (
@@ -104,9 +101,10 @@ function SeekSlider({
         setHeld(null);
         onChange(at);
       }}
-      minimumTrackTintColor={colors.secondary}
-      maximumTrackTintColor={colors.border}
-      thumbTintColor={colors.secondary}
+      // The player is a brand-teal band in both themes: saffron fill and thumb on an off-white track.
+      minimumTrackTintColor={brand.saffron}
+      maximumTrackTintColor={withAlpha(brand.offWhite, 0.25)}
+      thumbTintColor={brand.saffron}
       accessibilityLabel={label}
     />
   );

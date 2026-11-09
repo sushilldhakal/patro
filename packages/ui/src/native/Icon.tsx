@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Polyline, Rect } from "react-native-svg";
 import { useColorScheme } from "nativewind";
-import { iconSize, mobileRoles } from "@vedic-patro/design-tokens";
+import { brand, iconSize, mobileRoles } from "@vedic-patro/design-tokens";
 import { iconStrokeWidth } from "@vedic-patro/icons";
 import { iconToneRole } from "../classes";
 import type { IconProps } from "../contract";
@@ -17,7 +17,8 @@ const ROLES = { light: mobileRoles("light"), dark: mobileRoles("dark") };
 export function Icon({ node, size = "md", tone = "foreground", filled, strokeWidth, label, testID }: IconProps) {
   const { colorScheme } = useColorScheme();
   const px = typeof size === "number" ? size : iconSize[size];
-  const color = ROLES[colorScheme === "dark" ? "dark" : "light"][iconToneRole[tone]];
+  // `onBrand` sits on a fixed brand surface, so it is the same off-white in both themes.
+  const color = tone === "onBrand" ? brand.offWhite : ROLES[colorScheme === "dark" ? "dark" : "light"][iconToneRole[tone]];
   return (
     <Svg
       width={px}

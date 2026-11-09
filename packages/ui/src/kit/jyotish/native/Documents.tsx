@@ -135,13 +135,15 @@ export function PlaybackBar(props: PlaybackBarProps) {
       <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
         <Pressable onPress={bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.()} className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow)}>
           <Box className={documentsClasses.barPlay}>
-            <Icon node={iconPlay} size={20} tone="onSecondary" filled />
+            <Icon node={iconPlay} size={20} tone="onBrand" filled />
           </Box>
           <Box className={documentsClasses.fill}>
+            <Text className={documentsClasses.barKicker} numberOfLines={1}>{props.documentTitle}</Text>
             <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.idle.title}</Text>
-            <Text className={documentsClasses.barSubtitle} numberOfLines={1}>{props.documentTitle}</Text>
           </Box>
-          <Icon node={iconHeadphones} size={16} tone="muted" />
+          <Box className={documentsClasses.barSkip}>
+            <Icon node={iconHeadphones} size={18} tone="onBrand" />
+          </Box>
         </Pressable>
       </Dock>
     );
@@ -151,11 +153,11 @@ export function PlaybackBar(props: PlaybackBarProps) {
       <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
         <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
           <Pressable onPress={props.onToggleFull} label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
-            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
+            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled />
           </Pressable>
           <Box className={documentsClasses.fill}>
             <TitleLink open={props.open}>
-              <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.full.title}</Text>
+              <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.full.title}</Text>
             </TitleLink>
             <Box className={documentsClasses.barScrubRow} nativeClassName="flex-row items-center">
               <Text className={documentsClasses.barTime}>{bar.full.current}</Text>
@@ -166,7 +168,7 @@ export function PlaybackBar(props: PlaybackBarProps) {
                   <Box className={documentsClasses.barTrackFill} widthPercent={bar.full.fillPct} />
                 </Box>
               )}
-              <Text className={documentsClasses.barTime}>{bar.full.total}</Text>
+              <Text className={cn(documentsClasses.barTime, "text-right")}>{bar.full.total}</Text>
             </Box>
           </Box>
           <CloseButton close={props.close} />
@@ -177,39 +179,36 @@ export function PlaybackBar(props: PlaybackBarProps) {
   if (!props.activeShloka) return null;
   return (
     <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
-      <Box className={cn(documentsClasses.barShell, documentsClasses.barPad)}>
-        {bar.verse.hasClip ? (
-          <Box className={cn(documentsClasses.barScrubRow, "mb-1.5")} nativeClassName="flex-row items-center">
-            <Text className={documentsClasses.barTime}>{bar.verse.current}</Text>
-            <Box className={documentsClasses.barTrack}>
-              <Box className={documentsClasses.barTrackFill} widthPercent={bar.verse.fillPct} />
+      <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)} nativeClassName="flex-row items-center">
+        <Pressable onPress={props.onPrev} disabled={!props.hasPrev} label={copy.prevVerse} className={cn(documentsClasses.barSkip, !props.hasPrev && "opacity-30")}>
+          <Icon node={iconSkipBack} size={18} tone="onBrand" filled />
+        </Pressable>
+        <Pressable onPress={props.onToggleVerse} disabled={!bar.verse.hasClip} label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, !bar.verse.hasClip && "opacity-40")}>
+          <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled />
+        </Pressable>
+        <Pressable onPress={props.onNext} disabled={!props.hasNext} label={copy.nextVerse} className={cn(documentsClasses.barSkip, !props.hasNext && "opacity-30")}>
+          <Icon node={iconSkipForward} size={18} tone="onBrand" filled />
+        </Pressable>
+        <Box className={documentsClasses.fill}>
+          <TitleLink open={props.open}>
+            <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.verse.kicker}</Text>
+            <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.verse.title}</Text>
+          </TitleLink>
+          {bar.verse.hasClip ? (
+            <Box className={documentsClasses.barScrubRow} nativeClassName="flex-row items-center">
+              <Box className={documentsClasses.barTrack}>
+                <Box className={documentsClasses.barTrackFill} widthPercent={bar.verse.fillPct} />
+              </Box>
+              <Text className={cn(documentsClasses.barTime, "w-auto")}>{bar.verse.current} / {bar.verse.total}</Text>
             </Box>
-            <Text className={documentsClasses.barTime}>{bar.verse.total}</Text>
-          </Box>
-        ) : null}
-        <Box className={documentsClasses.barRow} nativeClassName="flex-row">
-          <Pressable onPress={props.onPrev} disabled={!props.hasPrev} label={copy.prevVerse} className={cn(documentsClasses.barSkip, !props.hasPrev && "opacity-30")}>
-            <Icon node={iconSkipBack} size={16} tone="muted" filled />
-          </Pressable>
-          <Pressable onPress={props.onToggleVerse} disabled={!bar.verse.hasClip} label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, !bar.verse.hasClip && "opacity-40")}>
-            <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onSecondary" filled />
-          </Pressable>
-          <Pressable onPress={props.onNext} disabled={!props.hasNext} label={copy.nextVerse} className={cn(documentsClasses.barSkip, !props.hasNext && "opacity-30")}>
-            <Icon node={iconSkipForward} size={16} tone="muted" filled />
-          </Pressable>
-          <Box className={documentsClasses.fill}>
-            <TitleLink open={props.open}>
-              <Text className={documentsClasses.barKicker} numberOfLines={1}>{bar.verse.kicker}</Text>
-              <Text className={documentsClasses.barTitle} numberOfLines={1}>{bar.verse.title}</Text>
-            </TitleLink>
-          </Box>
-          {bar.verse.canSwitchToFull ? (
-            <Pressable onPress={props.onSwitchToFull} label={copy.switchToFull} className={documentsClasses.barSkip}>
-              <Icon node={iconListMusic} size={16} tone="muted" />
-            </Pressable>
           ) : null}
-          <CloseButton close={props.close} />
         </Box>
+        {bar.verse.canSwitchToFull ? (
+          <Pressable onPress={props.onSwitchToFull} label={copy.switchToFull} className={documentsClasses.barSkip}>
+            <Icon node={iconListMusic} size={18} tone="onBrand" />
+          </Pressable>
+        ) : null}
+        <CloseButton close={props.close} />
       </Box>
     </Dock>
   );
@@ -230,7 +229,7 @@ function CloseButton({ close }: { close: PlaybackBarProps["close"] }) {
   if (!close) return null;
   return (
     <Pressable onPress={close.onPress} label={close.label} className={documentsClasses.barSkip}>
-      <Icon node={iconX} size={18} tone="muted" />
+      <Icon node={iconX} size={18} tone="onBrand" />
     </Pressable>
   );
 }
