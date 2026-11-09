@@ -195,8 +195,13 @@ def test_chapter_cache_key_includes_the_page():
     assert documents._CHAPTER_PAGE_CACHE in first
 
 
-def test_atharvaveda_khanda_recording():
-    """Kandas 1–14 keep per-verse clips and a full khanda file; 16–19 are the file only."""
+def test_atharvaveda_khanda_recording(monkeypatch):
+    """Kandas 1–14 keep per-verse clips and a full khanda file; 16–19 are the file only.
+
+    CI has no repo-root ``.env``, so set the public bucket base explicitly — without
+    it ``full_audio_url`` stays ``None`` and the path assertions never run.
+    """
+    monkeypatch.setenv("R2_PUBLIC_BASE_URL", "https://pub.example.r2.dev")
     client = _client()
     early = _page(client, "atharvaveda", 1, limit=5)
     assert early["full_audio_url"].endswith("documents/atharvaveda/01/atharvaveda_khanda_1.mp3")
