@@ -16,7 +16,7 @@ import {
   formatPatroYearGregorianRange,
 } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 
 export function usePatroMonthHeadlineSubtitle(
   era: Era,
@@ -27,6 +27,7 @@ export function usePatroMonthHeadlineSubtitle(
   displayLanguage?: Language,
 ): string | undefined {
   const { lang: uiLang } = useLocale();
+  const { system } = useCalculationSystem();
   const lang = displayLanguage ? normalizeLang(displayLanguage) : uiLang;
   const digits = (value: string | number | null | undefined) => (value == null ? "" : formatLocaleDigits(value, lang));
 
@@ -34,14 +35,14 @@ export function usePatroMonthHeadlineSubtitle(
   const needsApi = (override == null || override === "") && !local && !isGregorianEraBrowse(era);
 
   const monthQ = useQuery({
-    queryKey: ["patro-headline-month", era, year, month, locationCacheKey(location?.params)] as const,
+    queryKey: ["patro-headline-month", system, era, year, month, locationCacheKey(location?.params)] as const,
     queryFn: () => fetchMonthCalendarRaw(year, month, location?.params, { era, full: false }),
     enabled: needsApi,
     staleTime: 1000 * 60 * 30,
   });
 
   const yearQ = useQuery({
-    queryKey: ["patro-headline-year", era, year] as const,
+    queryKey: ["patro-headline-year", system, era, year] as const,
     queryFn: () => fetchFestivals(year, { era }),
     enabled: needsApi,
     staleTime: 1000 * 60 * 30,

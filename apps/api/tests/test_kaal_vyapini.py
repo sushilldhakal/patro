@@ -220,7 +220,7 @@ def test_unknown_date_selection_falls_back_to_udaya():
 # half, so a new rule taking the knob cannot ship without coverage.
 COVERED_RULE_IDS = frozenset(
     {fid for fid, _year, _expected in DASHAIN + TIHAR}
-    | {"devi-visarjan", "kalratri"}
+    | {"devi-visarjan", "kalratri", "dashain-vidaa"}
 )
 
 
@@ -228,6 +228,7 @@ def test_every_covered_id_is_actually_exercised():
     checked = {fid for fid, _year, _expected in DASHAIN + TIHAR}
     checked |= {"devi-visarjan"}  # test_devi_visarjan_tracks_vijaya_dashami
     checked |= {"kalratri"}       # test_kalratri_tracks_maha_ashtami
+    checked |= {"dashain-vidaa"}  # test_dashain_vidaa_opens_on_fulpati
     assert COVERED_RULE_IDS == checked
 
 
@@ -238,3 +239,15 @@ def test_kalratri_tracks_maha_ashtami():
         )
         kalratri = compute_festival_dates("kalratri", RULES["kalratri"], year, DEFAULT_LOCATION)
         assert ashtami == kalratri
+
+
+def test_dashain_vidaa_opens_on_fulpati():
+    """The MoHA Dashain block starts on Phulpati (aparahna Saptami)."""
+    assert RULES["dashain-vidaa"]["date_selection"] == "aparahna"
+    for year in (2021, 2024, 2025, 2026):
+        fulpati = compute_festival_dates("fulpati", RULES["fulpati"], year, DEFAULT_LOCATION)
+        vidaa = compute_festival_dates(
+            "dashain-vidaa", RULES["dashain-vidaa"], year, DEFAULT_LOCATION
+        )
+        assert fulpati is not None and vidaa is not None
+        assert vidaa[0] == fulpati[0]

@@ -15,9 +15,8 @@ const HINT: Record<CalculationSystem, string> = {
 };
 
 /**
- * Drik or the Surya Siddhanta for the kundali. On the website the choice applies to
- * the kundali section only (lib/api.ts sends it on kundali requests); the app offers
- * it for everything, from its welcome screen and Settings.
+ * Drik or the Surya Siddhanta for the panchanga, calendar, festivals and kundali.
+ * Matches the mobile app: one choice drives every computed date.
  */
 export function CalculationSystemSelector() {
   const { t } = useTranslation();

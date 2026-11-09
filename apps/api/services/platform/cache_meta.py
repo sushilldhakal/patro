@@ -26,7 +26,9 @@ RULE_VERSION = "v3"
 # 1.0.8: standing holiday spans. Dashain is Phulpati through Dwadashi (`end_tithi`)
 # every year, Tihar keeps the day after Bhai Tika (`end_extra_days`), and Chhath's
 # rest day is the one Shashthi.
-ENGINE_VERSION = stamp("1.0.8")
+# 1.0.9: festival/holiday caches are per siddhanta — a drik Tihar must not paint
+# Adhik Kartik under the Surya Siddhanta.
+ENGINE_VERSION = stamp("1.0.9")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"
@@ -48,29 +50,42 @@ def payload_hash(payload: dict[str, Any]) -> str:
     return digest
 
 
-def current_cache_meta(location_key: str) -> dict[str, str]:
-    return {
+def current_cache_meta(location_key: str, *, siddhanta: str | None = None) -> dict[str, str]:
+    # Siddhanta is named by the festivals caller (platform must not import engine).
+    meta = {
         "rule_version": RULE_VERSION,
         "engine_version": ENGINE_VERSION,
         "rules_hash": rules_file_hash(),
         "location_key": location_key,
     }
+    if siddhanta is not None:
+        meta["siddhanta"] = siddhanta
+    return meta
 
 
-def cache_is_valid(cached: dict[str, Any], location_key: str) -> bool:
-    meta = current_cache_meta(location_key)
-    return (
+def cache_is_valid(cached: dict[str, Any], location_key: str, *, siddhanta: str | None = None) -> bool:
+    meta = current_cache_meta(location_key, siddhanta=siddhanta)
+    if not (
         cached.get("rule_version") == meta["rule_version"]
         and cached.get("engine_version") == meta["engine_version"]
         and cached.get("rules_hash") == meta["rules_hash"]
         and cached.get("location_key") == meta["location_key"]
-    )
+    ):
+        return False
+    if siddhanta is not None and cached.get("siddhanta") != siddhanta:
+        return False
+    return True
 
 
-def stamp_payload(payload: dict[str, Any], location_key: str) -> dict[str, Any]:
+def stamp_payload(
+    payload: dict[str, Any],
+    location_key: str,
+    *,
+    siddhanta: str | None = None,
+) -> dict[str, Any]:
     stamped = {
         **payload,
-        **current_cache_meta(location_key),
+        **current_cache_meta(location_key, siddhanta=siddhanta),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
     stamped["hash"] = payload_hash(stamped)

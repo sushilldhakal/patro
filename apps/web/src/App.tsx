@@ -88,18 +88,18 @@ function CapabilitiesBootstrap() {
   return null;
 }
 
-/** Query roots of the kundali requests that carry the calculation system (lib/api.ts). */
-const KUNDALI_QUERY_ROOTS = new Set(["kundali", "shadbala", "planetary"]);
-
-/** A switch between drik and the Surya Siddhanta refetches the kundali the reader is looking at. */
-function KundaliSystemQueryReset() {
+/**
+ * Drik and the Surya Siddhanta give different days and festival dates, so on a
+ * switch every cached response is dropped and the screens on show fetch again.
+ */
+function CalculationSystemQueryReset() {
   const { system } = useCalculationSystem();
   const queryClient = useQueryClient();
   const previous = useRef(system);
   useEffect(() => {
     if (previous.current === system) return;
     previous.current = system;
-    void queryClient.resetQueries({ predicate: (query) => KUNDALI_QUERY_ROOTS.has(String(query.queryKey[0])) });
+    void queryClient.resetQueries();
   }, [system, queryClient]);
   return null;
 }
@@ -133,7 +133,7 @@ export function AppProviders({
           <AuthProvider ssr={ssr}>
             {!ssr && isBrowser ? <LanguageBootstrap /> : null}
             {!ssr && isBrowser ? <CapabilitiesBootstrap /> : null}
-            {!ssr && isBrowser ? <KundaliSystemQueryReset /> : null}
+            {!ssr && isBrowser ? <CalculationSystemQueryReset /> : null}
             {children}
           </AuthProvider>
         </QueryClientProvider>

@@ -322,7 +322,7 @@ def generate_festivals(
     # absent under the default leaves every existing payload byte-identical.
     if tradition != tradition_module.DEFAULT:
         payload["tradition"] = tradition
-    return stamp_payload(payload, location.cache_key())
+    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
 
 
 def generate_holidays(
@@ -346,22 +346,26 @@ def generate_holidays(
 
 def festivals_cache_path(gregorian_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    return CACHE_DIR / f"festivals_{gregorian_year}_{safe_key}.json"
+    sid = current_siddhanta().id
+    return CACHE_DIR / f"festivals_{gregorian_year}_{safe_key}_{sid}.json"
 
 
 def cache_path(gregorian_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    return CACHE_DIR / f"holidays_{gregorian_year}_{safe_key}.json"
+    sid = current_siddhanta().id
+    return CACHE_DIR / f"holidays_{gregorian_year}_{safe_key}_{sid}.json"
 
 
 def bs_festivals_cache_path(bs_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    return CACHE_DIR / f"festivals_bs_{bs_year}_{safe_key}.json"
+    sid = current_siddhanta().id
+    return CACHE_DIR / f"festivals_bs_{bs_year}_{safe_key}_{sid}.json"
 
 
 def bs_cache_path(bs_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    return CACHE_DIR / f"holidays_bs_{bs_year}_{safe_key}.json"
+    sid = current_siddhanta().id
+    return CACHE_DIR / f"holidays_bs_{bs_year}_{safe_key}_{sid}.json"
 
 
 def load_festivals_cached(gregorian_year: int, location: ObserverLocation) -> dict[str, Any] | None:
@@ -370,7 +374,7 @@ def load_festivals_cached(gregorian_year: int, location: ObserverLocation) -> di
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key()):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
         return None
     return cached
 
@@ -388,7 +392,7 @@ def load_cached(gregorian_year: int, location: ObserverLocation) -> dict[str, An
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key()):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
         return None
     return cached
 
@@ -406,7 +410,7 @@ def load_bs_festivals_cached(bs_year: int, location: ObserverLocation) -> dict[s
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key()):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
         return None
     return cached
 
@@ -424,7 +428,7 @@ def load_bs_cached(bs_year: int, location: ObserverLocation) -> dict[str, Any] |
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key()):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
         return None
     return cached
 
@@ -528,7 +532,7 @@ def generate_bs_festivals(
         "count": len(festivals),
         "festivals": festivals,
     }
-    return stamp_payload(payload, location.cache_key())
+    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
 
 
 def generate_bs_holidays(
@@ -556,7 +560,7 @@ def generate_bs_holidays(
         "count": len(holidays),
         "holidays": holidays,
     }
-    return stamp_payload(payload, location.cache_key())
+    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
 
 
 def precompute_bs_year(
@@ -848,6 +852,7 @@ def festivals_on_date(
             "festivals": active,
         },
         location.cache_key(),
+        siddhanta=current_siddhanta().id,
     )
 
 
@@ -879,6 +884,7 @@ def holidays_on_date(
             "holidays": active,
         },
         location.cache_key(),
+        siddhanta=current_siddhanta().id,
     )
 
 

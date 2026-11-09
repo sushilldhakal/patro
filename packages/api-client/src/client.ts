@@ -74,6 +74,7 @@ import {
   instantCacheKey,
 } from "@vedic-patro/domain/calendar/instant";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
@@ -904,7 +905,7 @@ export const fetchPatroMonth = (year: number, month: number) =>
 
 export const holidayKeys = {
   holidays: (year: number, era: Era = "bs", location?: LocationParams, language: Lang = normalizeLang()) =>
-    ["holidays", era, language, year, locationCacheKey(location)] as const,
+    ["holidays", getCalculationSystem(), era, language, year, locationCacheKey(location)] as const,
   festivals: (
     year: number,
     era: Era = "bs",
@@ -913,10 +914,10 @@ export const holidayKeys = {
     language: Lang = normalizeLang(),
   ) =>
     month != null
-      ? (["festivals", era, language, year, month, locationCacheKey(location)] as const)
-      : (["festivals", era, language, year, locationCacheKey(location)] as const),
+      ? (["festivals", getCalculationSystem(), era, language, year, month, locationCacheKey(location)] as const)
+      : (["festivals", getCalculationSystem(), era, language, year, locationCacheKey(location)] as const),
   upcoming: (days = 90, limit = 15, holidaysOnly = false, location?: LocationParams) =>
-    ["festivals", "upcoming", days, limit, holidaysOnly, locationCacheKey(location)] as const,
+    ["festivals", "upcoming", getCalculationSystem(), days, limit, holidaysOnly, locationCacheKey(location)] as const,
 };
 
 /** Next festivals from today (observer TZ), across the BS-year boundary. */

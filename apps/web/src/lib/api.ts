@@ -415,19 +415,11 @@ function webLocationQuery(path: string, location?: LocationParams): string {
 }
 
 /**
- * The website offers the Surya Siddhanta in the kundali section only, so only
- * kundali requests carry the reader's choice: the kundali routes, shadbala, planet
- * snapshots and the birth panchanga (an at-time request that names the kundali's
- * ayanamsha). Every other page stays drik.
+ * Panchanga, festivals, holidays and kundali all follow the reader's calculation
+ * choice (drik / सूर्य सिद्धान्त). Mixing systems overlays the wrong festival
+ * dates on a month grid — e.g. drik भाई टीका on सूर्य सिद्धान्त अधिक कार्तिक प्रतिपदा.
  */
-const KUNDALI_REQUEST = /^\/(?:kundali|shadbala|planetary)(?:\/|\?|$)/;
-const KUNDALI_AT_TIME = /^\/panchanga\/at-time\?(?:.*&)?ayanamsha=/;
-
-export function isKundaliRequest(path: string): boolean {
-  return KUNDALI_REQUEST.test(path) || KUNDALI_AT_TIME.test(path);
-}
-
-setCalculationSystemResolver((path) => (isKundaliRequest(path) ? getCalculationSystem() : "drik"));
+setCalculationSystemResolver(() => getCalculationSystem());
 
 configureApiClient({
   baseUrl: BASE,

@@ -31,7 +31,7 @@ import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { BBS_URL_YEAR_MAX, BBS_URL_YEAR_MIN, BS_FESTIVAL_STACK_MIN_YEAR, getPatroLimits, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 
 /** What the day panel needs to know about the month on screen. */
 export type CalendarMonthContext = {
@@ -74,6 +74,7 @@ export function useHomeMonth({
   onLimits?: (limits: NonNullable<MonthCalendar["limits"]>) => void;
 }) {
   const { lang } = useLocale();
+  const { system } = useCalculationSystem();
   const isGregorian = isGregorianEraBrowse(era);
 
   const prevBs = useMemo(() => shiftPatroBrowseMonth(era, year, month, -1), [era, year, month]);
@@ -93,7 +94,7 @@ export function useHomeMonth({
 
   const monthQueries = useQueries({
     queries: requiredMonths.map(({ year: y, month: m }) => ({
-      queryKey: ["panchanga", "month", era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
+      queryKey: ["panchanga", "month", system, era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
       queryFn: () => fetchMonth(y, m, location, { full: false, era }),
       staleTime: HOUR,
       enabled: !panchangaView && y !== 0,
@@ -115,13 +116,13 @@ export function useHomeMonth({
     for (const { year: y, month: m } of ahead) {
       if (y === 0) continue;
       void queryClient.prefetchQuery({
-        queryKey: ["panchanga", "month", era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
+        queryKey: ["panchanga", "month", system, era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
         queryFn: () => fetchMonth(y, m, location, { full: false, era }),
         staleTime: HOUR,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shownReady, era, lang, prevBs.year, prevBs.month, nextBs.year, nextBs.month, panchangaView, isGregorian, canFetchPrev, canFetchNext, locationCacheKey(location)]);
+  }, [shownReady, system, era, lang, prevBs.year, prevBs.month, nextBs.year, nextBs.month, panchangaView, isGregorian, canFetchPrev, canFetchNext, locationCacheKey(location)]);
   const at = (y: number, m: number) => monthQueries[requiredMonths.findIndex((r) => r.year === y && r.month === m)];
   const currentQ = at(year, month);
   const prevQ = isGregorian ? undefined : at(prevBs.year, prevBs.month);

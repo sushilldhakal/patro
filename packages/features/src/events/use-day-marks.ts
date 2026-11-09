@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import { fetchFestivals, fetchHolidays, type LocationParams } from "@vedic-patro/api-client";
 import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 
 /** What the national calendar marks on a day: festival names, and whether it is a public holiday. */
 export type DayMark = { names: string[]; holiday: boolean };
@@ -16,11 +16,12 @@ const parse = (iso: string) => new Date(`${iso}T12:00:00`);
  */
 export function useDayMarks(from: string, to: string, location?: LocationParams, enabled = true) {
   const { lang } = useLocale();
+  const { system } = useCalculationSystem();
   const years = [...new Set([adToBS(parse(from)).year, adToBS(parse(to)).year])];
   const results = useQueries({
     queries: years.flatMap((year) => [
-      { queryKey: ["planner", "holidays", year, lang, location], queryFn: () => fetchHolidays(year, "bs", location, lang), staleTime: HOUR, enabled },
-      { queryKey: ["planner", "festivals", year, lang, location], queryFn: () => fetchFestivals(year, { era: "bs", location, language: lang }), staleTime: HOUR, enabled },
+      { queryKey: ["planner", "holidays", system, year, lang, location], queryFn: () => fetchHolidays(year, "bs", location, lang), staleTime: HOUR, enabled },
+      { queryKey: ["planner", "festivals", system, year, lang, location], queryFn: () => fetchFestivals(year, { era: "bs", location, language: lang }), staleTime: HOUR, enabled },
     ]),
   });
 

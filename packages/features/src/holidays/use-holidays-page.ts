@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFestivals, fetchHolidays, holidayKeys, type LocationParams } from "@vedic-patro/api-client";
 import type { Era } from "@vedic-patro/domain/calendar/era";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { spanText, useNowMs, type NowHeroView } from "../common/now-hero";
 import {
@@ -65,6 +65,8 @@ export function useHolidaysPage({
   location?: LocationParams;
 }): HolidaysPage {
   const { t, lang, digits } = useLocale();
+  // Re-render when the siddhanta changes so holidayKeys (which read it) update.
+  useCalculationSystem();
   const [tab, setTab] = useState<HolidaysTab>("holidays");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<HolidaySort>(null);

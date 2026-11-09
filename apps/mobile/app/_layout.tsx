@@ -166,8 +166,8 @@ function LanguageQueryRefresh() {
 
 /**
  * Drik and the Surya Siddhanta give different days, so on a switch every cached
- * response is dropped and the screens on show fetch again in the new system. The
- * query keys do not name the system; requests carry it (lib/api.ts).
+ * response is dropped and the screens on show fetch again in the new system.
+ * Query keys also name the system so a restored offline cache cannot mix them.
  */
 function CalculationSystemQueryReset() {
   const { system } = useCalculationSystem();
