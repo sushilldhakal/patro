@@ -23,15 +23,19 @@ RULE_VERSION = "v3"
 # the engine and needs its own bump.
 # 1.0.7: `end_at` spans — the Tihar holiday runs Laxmi Puja → Bhai Tika instead
 # of five days from Kaag Tihar.
-ENGINE_VERSION = stamp("1.0.7")
+# 1.0.8: standing holiday spans. Dashain is Phulpati through Dwadashi (`end_tithi`)
+# every year, Tihar keeps the day after Bhai Tika (`end_extra_days`), and Chhath's
+# rest day is the one Shashthi.
+ENGINE_VERSION = stamp("1.0.8")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"
+PUBLIC_HOLIDAYS_PATH = Path(__file__).resolve().parents[2] / "rules" / "public_holidays_v1.json"
 
 
 def rules_file_hash() -> str:
     digest = hashlib.sha256()
-    for path in (RULES_PATH, OVERRIDES_PATH):
+    for path in (RULES_PATH, OVERRIDES_PATH, PUBLIC_HOLIDAYS_PATH):
         if path.exists():
             digest.update(path.name.encode())
             digest.update(path.read_bytes())

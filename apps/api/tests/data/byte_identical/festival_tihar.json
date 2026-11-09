@@ -434,14 +434,14 @@
   "festivals": [
     {
       "category": "hindu",
-      "duration_days": 4,
-      "end_date": "2026-11-11",
+      "duration_days": 5,
+      "end_date": "2026-11-12",
       "id": "tihar",
       "importance": "national",
       "is_public_holiday": true,
-      "name_en": "Tihar",
-      "name_ne": "तिहार",
-      "notes": "Tihar public holiday — Laxmi Puja to Bhai Tika. Starts on the Laxmi Puja day (pradosh-vyapini Amavasya) and ends on the Bhai Tika day (`end_at`), so the span is 3–5 days as the tithis fall.",
+      "name_en": "Tihar Holiday",
+      "name_ne": "तिहार बिदा",
+      "notes": "MoHA BS 2083-07-22 – 2083-07-26, 5 days",
       "start_date": "2026-11-08",
       "type": "lunar"
     },

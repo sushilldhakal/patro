@@ -441,9 +441,9 @@
       "is_public_holiday": true,
       "name_en": "Nepali New Year",
       "name_ne": "नयाँ वर्ष",
-      "notes": "Mesh Sankranti, Baishakh 1",
+      "notes": "MoHA BS 2083-01-01",
       "start_date": "2026-04-14",
-      "type": "solar"
+      "type": "bs_fixed"
     },
     {
       "category": "hindu",

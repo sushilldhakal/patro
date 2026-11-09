@@ -2036,6 +2036,18 @@ export const strings = {
   "holidays.type_bs_fixed": { ne: "वि.सं. तोकिएको", en: "Fixed BS date" },
   "holidays.type_ad_fixed": { ne: "ई.सं. तोकिएको", en: "Fixed AD date" },
   "holidays.type_adhik_arambha": { ne: "अधिक मास आरम्भ", en: "Adhik Maas start" },
+  "holidays.audience_kirat": { ne: "किरात धर्मावलम्बी", en: "Kirat faith only" },
+  "holidays.audience_disability": { ne: "अपाङ्गता भएका कर्मचारी", en: "Employees with a disability only" },
+  "holidays.audience_women": { ne: "महिला कर्मचारी", en: "Women employees only" },
+  "holidays.audience_women_jitiya": { ne: "जितिया मनाउने महिला", en: "Women celebrating Jitiya only" },
+  "holidays.audience_education": { ne: "शैक्षिक संस्था मात्र", en: "Educational institutions only" },
+  "holidays.audience_newar": { ne: "नेवार समुदाय / काठमाडौं उपत्यका", en: "Newar community / Kathmandu Valley" },
+  "holidays.audience_kathmandu_valley": { ne: "काठमाडौं उपत्यका मात्र", en: "Kathmandu Valley only" },
+  "holidays.audience_regional": { ne: "सम्बन्धित समुदाय / क्षेत्र", en: "Observing communities / regions only" },
+  "holidays.audience_sikh": { ne: "सिख समुदाय", en: "Sikh community only" },
+  "holidays.audience_muslim": { ne: "मुस्लिम समुदाय", en: "Muslim community only" },
+  "holidays.audience_dura": { ne: "दुरा समुदाय", en: "Dura community only" },
+  "holidays.audience_eastern_districts": { ne: "झापा, मोरङ, सुनसरी, सिराहा, सप्तरी", en: "Jhapa, Morang, Sunsari, Siraha, Saptari only" },
 
   /* ── rel ─────────────────────────────────────────────────────────────── */
   "rel.today": { ne: "आज", en: "Today" },

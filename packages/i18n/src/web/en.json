@@ -1212,7 +1212,19 @@
     "type_solar": "Solar",
     "type_bs_fixed": "Fixed BS date",
     "type_ad_fixed": "Fixed AD date",
-    "type_adhik_arambha": "Adhik Maas start"
+    "type_adhik_arambha": "Adhik Maas start",
+    "audience_kirat": "Kirat faith only",
+    "audience_disability": "Employees with a disability only",
+    "audience_women": "Women employees only",
+    "audience_women_jitiya": "Women celebrating Jitiya only",
+    "audience_education": "Educational institutions only",
+    "audience_newar": "Newar community / Kathmandu Valley",
+    "audience_kathmandu_valley": "Kathmandu Valley only",
+    "audience_regional": "Observing communities / regions only",
+    "audience_sikh": "Sikh community only",
+    "audience_muslim": "Muslim community only",
+    "audience_dura": "Dura community only",
+    "audience_eastern_districts": "Jhapa, Morang, Sunsari, Siraha, Saptari only"
   },
   "rel": {
     "today": "Today",

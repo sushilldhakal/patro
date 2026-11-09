@@ -36,7 +36,9 @@ def test_major_festivals_carry_their_vidhi():
         details = festival_details(fid)
         assert details["about"]["ne"], fid
         assert details["vidhi"]["ne"], fid
-    assert festival_details("vijaya-dashami")["is_public_holiday"] is True
+    assert festival_details("ghatasthapana")["is_public_holiday"] is True
+    assert festival_details("dashain-vidaa")["is_public_holiday"] is True
+    assert festival_details("vijaya-dashami")["is_public_holiday"] is False
 
 
 def test_families_cover_the_rest():

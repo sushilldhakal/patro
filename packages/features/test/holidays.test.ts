@@ -1,5 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { registerBundle } from "@vedic-patro/i18n/runtime";
+
+const require = createRequire(import.meta.url);
 
 import {
   filterHolidayRows,
@@ -8,6 +12,9 @@ import {
   sortHolidayRows,
   toHolidayRow,
 } from "../src/holidays/model";
+
+registerBundle("ne", require("@vedic-patro/i18n/ne.json"));
+registerBundle("en", require("@vedic-patro/i18n/en.json"));
 
 const dashain = {
   id: "dashain",
@@ -36,6 +43,13 @@ test("rows carry localized text and raw sort values", () => {
   const t = toHolidayRow(tihar, "ne", 1);
   assert.equal(t.name, "Tihar");
   assert.equal(t.type, "—");
+  const kirat = toHolidayRow(
+    { id: "falgunanda-jayanti", name_en: "Falgunanda Jayanti", start_date: "2026-11-11", type: "bs_fixed", audience: "kirat" },
+    "en",
+    2,
+  );
+  assert.equal(kirat.type, "Kirat faith only");
+  assert.equal(kirat.isPublic, false);
 });
 
 test("search matches any visible column, case-insensitively", () => {

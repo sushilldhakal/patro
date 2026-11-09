@@ -1212,7 +1212,19 @@
     "type_solar": "सौर",
     "type_bs_fixed": "वि.सं. तोकिएको",
     "type_ad_fixed": "ई.सं. तोकिएको",
-    "type_adhik_arambha": "अधिक मास आरम्भ"
+    "type_adhik_arambha": "अधिक मास आरम्भ",
+    "audience_kirat": "किरात धर्मावलम्बी",
+    "audience_disability": "अपाङ्गता भएका कर्मचारी",
+    "audience_women": "महिला कर्मचारी",
+    "audience_women_jitiya": "जितिया मनाउने महिला",
+    "audience_education": "शैक्षिक संस्था मात्र",
+    "audience_newar": "नेवार समुदाय / काठमाडौं उपत्यका",
+    "audience_kathmandu_valley": "काठमाडौं उपत्यका मात्र",
+    "audience_regional": "सम्बन्धित समुदाय / क्षेत्र",
+    "audience_sikh": "सिख समुदाय",
+    "audience_muslim": "मुस्लिम समुदाय",
+    "audience_dura": "दुरा समुदाय",
+    "audience_eastern_districts": "झापा, मोरङ, सुनसरी, सिराहा, सप्तरी"
   },
   "rel": {
     "today": "आज",

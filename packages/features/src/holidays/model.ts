@@ -61,7 +61,11 @@ export function toHolidayRow(item: Holiday | Festival, lang: Lang, index: number
   const name = bilingualText(lang, item.name_ne ?? item.name_en, item.name_en ?? item.name_ne);
   const bsDate = start ? formatHolidayBsDisplay({ bs_start_date: item.bs_start_date, start_date: start }, lang) || "—" : "—";
   const days = item.duration_days ?? 1;
-  const type = item.type ?? "—";
+  const audienceKey = item.audience ? `holidays.audience_${item.audience}` : "";
+  const audienceLabel = audienceKey ? translate(lang, audienceKey) : "";
+  const typeLabelText = audienceLabel && audienceLabel !== audienceKey
+    ? audienceLabel
+    : typeLabel(item.type ?? "—", lang);
   const isPublic = Boolean(item.is_public_holiday);
   return {
     key: `${item.id ?? name}-${start}-${index}`,
@@ -70,9 +74,9 @@ export function toHolidayRow(item: Holiday | Festival, lang: Lang, index: number
     bsDate: bsDate.replace(/,\s*[^,\s]+\s*[\u0966-\u096F0-9]+$/, ""),
     adDate: start || "—",
     days: formatLocaleDigits(days, lang),
-    type: typeLabel(type, lang),
+    type: typeLabelText,
     isPublic,
-    sortValues: { name, bsDate: start, adDate: start, days, type: typeLabel(type, lang), isPublic: isPublic ? 1 : 0 },
+    sortValues: { name, bsDate: start, adDate: start, days, type: typeLabelText, isPublic: isPublic ? 1 : 0 },
   };
 }
 

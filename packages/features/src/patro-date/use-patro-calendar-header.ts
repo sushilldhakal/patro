@@ -126,8 +126,13 @@ export function usePatroCalendarHeader({
       },
       commit: () => {
         const parsed = parseYearInput(draft, era);
-        if (parsed === null) setInvalid(true);
-        else setYear(parsed);
+        if (parsed === null) {
+          setInvalid(true);
+          return;
+        }
+        // जानुहोस् loads this year in the month already on the home page, then closes the picker.
+        setYear(parsed);
+        setPanel(null);
       },
       maxYear: maxBrowseYearForEra(era),
     },

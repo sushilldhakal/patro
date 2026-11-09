@@ -116,7 +116,7 @@ export function useHolidaysPage({
     return {
       eyebrow: t(on ? `now_hero.${kind}_today` : `now_hero.${kind}_next`),
       live: on,
-      tone: cur.row.isPublic || tab === "holidays" ? "bad" : "good",
+      tone: cur.row.isPublic ? "bad" : "good",
       title: cur.row.name,
       subtitle: cur.row.type !== "—" ? cur.row.type : undefined,
       foot: { left: cur.row.bsDate, right: on ? t("now_hero.today") : t("now_hero.in", { time: spanText(until, t, digits) }) },

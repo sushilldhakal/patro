@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.2.0",
-    "description": "Nepal public / government holidays — corrected per MoHA schedule. Removed: Mata Tirtha Aunshi (not govt holiday), Teej (women's observance only), Haribodhi Ekadashi, Vivah Panchami, Saraswati Puja (education institutes only). Split Holi into Pahadma/Terai. Added Maghi Parwa, Women's Day, Udhauli Parwa, Christmas. v1.2: Added Labour Day (May 1).",
+    "version": "1.4.0",
+    "description": "Nepal government holidays per MoHA gazette. General rest days only. Dashain and Tihar are multi-day blocks; Ghatasthapana is a separate day. Audience-limited days (women, education, valley, ethnic, disability, Kirat) are listed from festival_rules audience flags, not here. v1.4: drop Dashain sub-days, Vishwakarma, and Women's Day from the general list.",
     "source": "aligned with festivals.json is_national_holiday",
     "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
   },
@@ -12,16 +12,12 @@
     "buddha-jayanti",
     "janai-purnima",
     "krishna-janmashtami",
-    "vishwakarma-puja",
     "ganatantra-diwas",
     "sambidhan-diwas",
     "shahid-diwas",
     "prajatantra-diwas",
     "prithvi-jayanti",
-    "fulpati",
-    "maha-ashtami",
-    "maha-navami",
-    "vijaya-dashami",
+    "ghatasthapana",
     "dashain-vidaa",
     "tihar",
     "chhath",
@@ -31,10 +27,11 @@
     "tamu-lhosar",
     "sonam-lhosar",
     "gyalpo-lhosar",
-    "ram-navami",
     "udhauli-parwa",
     "christmas",
-    "womens-day",
-    "labour-day"
+    "labour-day",
+    "eid-ul-fitr",
+    "eid-ul-adha",
+    "ram-navami"
   ]
 }

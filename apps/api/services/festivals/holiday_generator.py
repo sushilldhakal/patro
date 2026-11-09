@@ -132,8 +132,18 @@ def _build_festival_entry(
     ).to_payload()
 
 
+def _is_listed_holiday(entry: dict[str, Any]) -> bool:
+    """A general rest day, or a holiday granted only to one community.
+
+    Audience-limited days (Kirat faith, employees with a disability) are listed
+    with the holidays and are not general rest days: ``is_public_holiday`` stays
+    false, so the calendar does not mark them for everyone.
+    """
+    return is_public_holiday(entry["id"]) or bool(entry.get("audience"))
+
+
 def _filter_public_holidays(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [entry for entry in entries if is_public_holiday(entry["id"])]
+    return [entry for entry in entries if _is_listed_holiday(entry)]
 
 
 _GENERIC_PURNIMA_VRATA = re.compile(r"^purnima-vrata-")
@@ -211,7 +221,7 @@ def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[st
 
     # A government holiday block (दशैं बिदा) spans the week; the day's own festival
     # (महाअष्टमी, महानवमी …) is what the day is named for, so the block goes last.
-    filtered.sort(key=lambda festival: load_rules().get(festival["id"], {}).get("type") == "announced")
+    filtered.sort(key=lambda festival: bool(load_rules().get(festival["id"], {}).get("block")))
     return filtered
 
 
@@ -252,6 +262,9 @@ def _apply_gregorian_year_overrides(
 
     for bs_year_key in (str(gregorian_year + 56), str(gregorian_year + 57)):
         for festival_id, override in overrides_data.get(bs_year_key, {}).items():
+            if override.get("omit"):
+                merged.pop(festival_id, None)
+                continue
             if not _override_applies(override, location):
                 continue
             start = date.fromisoformat(override["start_date"])
@@ -316,7 +329,10 @@ def generate_holidays(
     gregorian_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, Any]:
-    """Public holidays only — strict subset of festivals."""
+    """Rest days, plus holidays granted only to one community.
+
+    Audience-limited rows are in this list and are not general rest days.
+    """
     festival_payload = generate_festivals(gregorian_year, location)
     holidays = _filter_public_holidays(festival_payload["festivals"])
     payload = {
@@ -452,13 +468,23 @@ def _apply_bs_year_overrides(
     if overrides:
         rules = load_rules()
         for festival_id, override in overrides.items():
-            if public_only and not is_public_holiday(festival_id):
+            if override.get("omit"):
+                # MoHA did not grant this as a rest day in this BS year. Drop it
+                # from the holiday list; the festival calendar still keeps it.
+                if public_only:
+                    merged.pop(festival_id, None)
+                continue
+            rule = {**rules.get(festival_id, {}), **override}
+            # Audience-limited MoHA days (Teej, valley jatras, …) are listed with
+            # the holidays even though they are not general rest days.
+            if public_only and not _is_listed_holiday(
+                {"id": festival_id, "audience": rule.get("audience")}
+            ):
                 continue
             if not _override_applies(override, location):
                 continue
             start_date = date.fromisoformat(override["start_date"])
             end_date = date.fromisoformat(override["end_date"])
-            rule = {**rules.get(festival_id, {}), **override}
             merged[festival_id] = _build_festival_entry(
                 festival_id,
                 rule,

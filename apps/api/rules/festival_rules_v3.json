@@ -9,8 +9,8 @@
   },
   "festivals": {
     "tihar": {
-      "name_en": "Tihar",
-      "name_ne": "तिहार",
+      "name_en": "Tihar Holiday",
+      "name_ne": "तिहार बिदा",
       "type": "lunar",
       "lunar_month": "Kartik",
       "tithi": 15,
@@ -18,8 +18,9 @@
       "adhik_policy": "skip",
       "date_selection": "pradosh",
       "end_at": "bhai-tika",
-      "duration_days": 4,
-      "notes": "Tihar public holiday — Laxmi Puja to Bhai Tika. Starts on the Laxmi Puja day (pradosh-vyapini Amavasya) and ends on the Bhai Tika day (`end_at`), so the span is 3–5 days as the tithis fall.",
+      "end_extra_days": 1,
+      "duration_days": 5,
+      "notes": "Tihar public holiday — Laxmi Puja through the day after Bhai Tika. Starts on the Laxmi Puja day (pradosh-vyapini Amavasya), closes on Bhai Tika, then keeps the next civil day, so the span is 4–6 days as the tithis fall.",
       "importance": "national",
       "category": "hindu"
     },
@@ -71,9 +72,10 @@
       "paksha": "shukla",
       "adhik_policy": "skip",
       "duration_days": 3,
-      "notes": "Dar Khane Din to Rishi Panchami",
+      "notes": "Public holiday for women employees on the main Haritalika day.",
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "audience": "women"
     },
     "janai-purnima": {
       "name_en": "Janai Purnima",
@@ -97,10 +99,11 @@
       "tithi": 12,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "duration_days": 8,
-      "notes": "Yenya Punhi, Kumari procession",
+      "duration_days": 1,
+      "notes": "Kathmandu Valley holiday.",
       "importance": "regional",
-      "category": "newari"
+      "category": "newari",
+      "audience": "kathmandu_valley"
     },
     "gai-jatra": {
       "name_en": "Gai Jatra",
@@ -111,9 +114,10 @@
       "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Day after Janai Purnima",
+      "notes": "Holiday for the Newar community nationwide, and for offices in the Kathmandu Valley.",
       "importance": "regional",
-      "category": "newari"
+      "category": "newari",
+      "audience": "newar"
     },
     "mha-puja": {
       "name_en": "Mha Puja",
@@ -150,22 +154,35 @@
       "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Horse parade at Tundikhel",
+      "notes": "Kathmandu Valley holiday.",
       "importance": "regional",
-      "category": "newari"
+      "category": "newari",
+      "audience": "kathmandu_valley"
     },
     "chhath": {
-      "name_en": "Chhath Puja",
-      "name_ne": "छठ पूजा",
+      "name_en": "Chhath",
+      "name_ne": "छठ पर्व",
       "type": "lunar",
       "lunar_month": "Kartik",
       "tithi": 6,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "duration_days": 4,
-      "notes": "Sun worship, Terai region",
+      "duration_days": 1,
+      "notes": "The public rest day is Kartik Shukla Shashthi, the evening arghya. Sun worship, Terai region.",
       "importance": "regional",
       "category": "hindu"
+    },
+    "falgunanda-jayanti": {
+      "name_en": "Falgunanda Jayanti",
+      "name_ne": "फाल्गुनन्द जयन्ती",
+      "type": "bs_fixed",
+      "bs_month": 7,
+      "bs_day": 25,
+      "duration_days": 1,
+      "audience": "kirat",
+      "notes": "A holiday for the Kirat faith only, not a general rest day. Kartik 25.",
+      "importance": "community",
+      "category": "kirat"
     },
     "krishna-janmashtami": {
       "name_en": "Krishna Janmashtami",
@@ -243,9 +260,10 @@
       "paksha": "shukla",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Basant Panchami",
+      "notes": "Basanta Panchami — holiday for educational institutions only.",
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "audience": "education"
     },
     "maghe-sankranti": {
       "name_en": "Maghe Sankranti",
@@ -533,9 +551,10 @@
       "ad_month": 3,
       "ad_day": 8,
       "duration_days": 1,
-      "notes": "March 8",
+      "notes": "Holiday for women employees only, 8 March.",
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "audience": "women"
     },
     "maghi-parwa": {
       "name_en": "Maghi Parwa",
@@ -690,9 +709,10 @@
       "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Far-western Gauri worship — Bhadra Krishna Ashtami (Durvashtami)",
+      "notes": "Holiday for communities and places that observe Gaura Parwa.",
       "importance": "regional",
-      "category": "hindu"
+      "category": "hindu",
+      "audience": "regional"
     },
     "anant-chaturdashi": {
       "name_en": "Anant Chaturdashi",
@@ -716,9 +736,10 @@
       "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Jivitputrika — mothers' fast (Mithila/Tharu)",
+      "notes": "Holiday for women employees who celebrate Jitiya.",
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "audience": "women_jitiya"
     },
     "dhanteras": {
       "name_en": "Dhanteras (Dhantrayodashi)",
@@ -1434,15 +1455,16 @@
     "bhoto-jatra": {
       "name_en": "Bhoto Jatra",
       "name_ne": "भोटो जात्रा",
-      "type": "lunar",
+      "type": "announced",
       "lunar_month": "Jestha",
       "tithi": 6,
       "paksha": "shukla",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Kathmandu Valley public holiday",
+      "notes": "Kathmandu Valley holiday on the day MoHA announces for Bhoto Jatra.",
       "importance": "regional",
-      "category": "newari"
+      "category": "newari",
+      "audience": "kathmandu_valley"
     },
     "vayu-ashtami": {
       "name_en": "Vayu Ashtami",
@@ -3258,7 +3280,9 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "audience": "sikh",
+      "notes": "Holiday for the Sikh community."
     },
     "nimbarkacharya-jayanti": {
       "name_en": "Nimbarkacharya Jayanti",
@@ -3741,12 +3765,14 @@
     },
     "international-day-of-persons-with-disabilities": {
       "name_en": "International Day of Persons with Disabilities",
-      "name_ne": "अन्तर्राष्ट्रिय अपाङ्ग दिवस",
+      "name_ne": "अन्तर्राष्ट्रिय अपाङ्गता दिवस",
       "type": "ad_fixed",
       "ad_month": 12,
       "ad_day": 3,
       "duration_days": 1,
-      "importance": "minor",
+      "audience": "disability",
+      "notes": "A holiday for employees with a disability only, not a general rest day.",
+      "importance": "national",
       "category": "international"
     },
     "world-soil-day": {
@@ -5850,9 +5876,17 @@
     "dashain-vidaa": {
       "name_en": "Dashain Holiday",
       "name_ne": "दशैं बिदा",
-      "type": "announced",
+      "type": "lunar",
+      "lunar_month": "Ashwin",
+      "tithi": 7,
+      "paksha": "shukla",
+      "adhik_policy": "skip",
+      "date_selection": "aparahna",
+      "end_tithi": 12,
+      "end_date_selection": "udaya",
       "duration_days": 7,
-      "notes": "The government's Dashain holiday block. Its span changes every year with the tithis, so it has no rule of its own: each year's MoHA dates are in holiday_overrides_v1.json.",
+      "block": true,
+      "notes": "The government's Dashain rest-day block, every year from Phulpati through Dwadashi. Ghatasthapana is a separate rest day six days earlier. A year's MoHA notice can still replace these dates.",
       "importance": "national",
       "category": "national"
     },
@@ -6627,6 +6661,56 @@
       "duration_days": 1,
       "importance": "regional",
       "category": "hindu"
+    },
+    "eid-ul-fitr": {
+      "name_en": "Eid ul-Fitr",
+      "name_ne": "ईद उल फित्र",
+      "type": "announced",
+      "duration_days": 1,
+      "notes": "National public holiday on the day MoHA announces.",
+      "importance": "national",
+      "category": "islamic"
+    },
+    "eid-ul-adha": {
+      "name_en": "Eid ul-Adha",
+      "name_ne": "ईद उल अजहा",
+      "type": "announced",
+      "duration_days": 1,
+      "notes": "National public holiday on the day MoHA announces.",
+      "importance": "national",
+      "category": "islamic"
+    },
+    "muhammad-jayanti": {
+      "name_en": "Prophet Muhammad's Birthday",
+      "name_ne": "हजरत मुहम्मद जयन्ती",
+      "type": "announced",
+      "duration_days": 1,
+      "audience": "muslim",
+      "notes": "Holiday for the Muslim community on the day MoHA announces.",
+      "importance": "community",
+      "category": "islamic"
+    },
+    "siruwa-pawani": {
+      "name_en": "Siruwa Pawani",
+      "name_ne": "सिरुवा पावनी",
+      "type": "announced",
+      "duration_days": 1,
+      "audience": "eastern_districts",
+      "notes": "Holiday in Jhapa, Morang, Sunsari, Siraha and Saptari on the day MoHA announces.",
+      "importance": "regional",
+      "category": "cultural"
+    },
+    "dura-mhepra-nakuma": {
+      "name_en": "Dura Mhepra Nakuma",
+      "name_ne": "दुरा मेप्रा नकुमा",
+      "type": "bs_fixed",
+      "bs_month": 9,
+      "bs_day": 15,
+      "duration_days": 1,
+      "audience": "dura",
+      "notes": "Holiday for the Dura community nationwide. Poush 15, with Tamu Lhosar.",
+      "importance": "community",
+      "category": "cultural"
     }
   }
 }

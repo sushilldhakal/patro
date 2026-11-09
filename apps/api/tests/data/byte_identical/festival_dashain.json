@@ -438,7 +438,7 @@
       "end_date": "2026-10-20",
       "id": "maha-navami",
       "importance": "national",
-      "is_public_holiday": true,
+      "is_public_holiday": false,
       "name_en": "Maha Navami",
       "name_ne": "महानवमी",
       "notes": "BS 2083-07-03 (कात्तिक ३). Navami holds sunrise on Oct 20; the aparahna rule alone gives Oct 19.",
@@ -480,9 +480,9 @@
       "is_public_holiday": true,
       "name_en": "Dashain Holiday",
       "name_ne": "दशैं बिदा",
-      "notes": "MoHA BS 2083-06-31 – 2083-07-06 (असोज ३१ – कात्तिक ६) दशैं बिदा, 7 days",
+      "notes": "MoHA BS 2083-06-31 – 2083-07-06, 7 days",
       "start_date": "2026-10-17",
-      "type": "announced"
+      "type": "lunar"
     }
   ],
   "hora": [

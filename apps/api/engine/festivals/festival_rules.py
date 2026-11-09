@@ -158,17 +158,31 @@ def compute_festival_dates(
     if start is None:
         return None
 
-    # A span that closes on another festival's day (Tihar: Laxmi Puja → Bhai
-    # Tika) rather than after a fixed count — tithi kshaya/vriddhi make the
-    # count 4, 5 or 6 days.
-    if rule.get("end_at"):
+    # A span that closes on another tithi or another festival's day rather than
+    # after a fixed count. Dashain runs Phulpati (tithi 7) through Dwadashi
+    # (end_tithi 12). Tihar runs Laxmi Puja through Bhai Tika (end_at), then
+    # keeps the next civil day (end_extra_days). Tithi kshaya/vriddhi make the
+    # count vary.
+    end: Optional[date] = None
+    if rule.get("end_tithi") and rule_type == "lunar":
+        end_rule = {
+            key: value
+            for key, value in rule.items()
+            if key not in ("end_tithi", "end_at", "end_extra_days", "end_date_selection")
+        }
+        end_rule["tithi"] = int(rule["end_tithi"])
+        end_rule["date_selection"] = rule.get("end_date_selection", "udaya")
+        end = compute_lunar_festival(end_rule, gregorian_year, location)
+    elif rule.get("end_at"):
         end_rule = load_festival_rules().get(rule["end_at"])
         ends = compute_festival_dates(rule["end_at"], end_rule, gregorian_year, location) if end_rule else None
-        if ends is not None and ends[0] >= start:
-            return start, ends[0]
+        if ends is not None:
+            end = ends[0]
 
-    end = start + timedelta(days=duration - 1)
-    return start, end
+    if end is None or end < start:
+        end = start + timedelta(days=duration - 1)
+    extra = int(rule.get("end_extra_days") or 0)
+    return start, end + timedelta(days=extra)
 
 
 def bs_year_for_gregorian(gregorian_year: int) -> int:

@@ -1449,6 +1449,8 @@ export interface Festival {
   duration_days?: number;
   importance?: string;
   notes?: string;
+  /** Set when the holiday is not a general rest day: "kirat" or "disability". */
+  audience?: string;
   /** Day routes: where the festival falls in the calendar ("Ashwin Shukla Dashami"). */
   when?: { ne: string; en: string } | null;
   /** Day routes: what the festival is. */
@@ -1483,6 +1485,8 @@ export interface Holiday {
   importance?: string;
   is_public_holiday?: boolean;
   notes?: string;
+  /** Set when the holiday is not a general rest day: "kirat" or "disability". */
+  audience?: string;
 }
 
 export interface ConvertAdToBs {

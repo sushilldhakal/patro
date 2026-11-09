@@ -26,6 +26,7 @@ class FestivalOccurrence:
     importance: str | None
     is_public_holiday: bool
     notes: str | None
+    audience: str | None = None
 
     @classmethod
     def from_rule(
@@ -42,6 +43,7 @@ class FestivalOccurrence:
             importance=rule.get("importance"),
             is_public_holiday=is_public_holiday,
             notes=rule.get("notes"),
+            audience=rule.get("audience") or None,
         )
 
     @property
@@ -68,6 +70,7 @@ class FestivalOccurrence:
             "importance": self.importance,
             "is_public_holiday": self.is_public_holiday,
             "notes": self.notes,
+            **({"audience": self.audience} if self.audience else {}),
         }
 
 

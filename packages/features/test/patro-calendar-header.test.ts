@@ -141,6 +141,23 @@ test.afterEach(async () => {
   await setLanguage("ne");
 });
 
+test("जानुहोस् loads that year in the current month and closes the picker", async () => {
+  await setLanguage("ne");
+  const seen: { year: number; month: number }[] = [];
+  const header = renderHook(() =>
+    usePatroCalendarHeader({ era: "bs", year: 2083, month: 7, onChange: (next) => seen.push(next) }),
+  );
+  header.result.openPanel("month");
+  header.rerender();
+  assert.equal(header.result.panel, "month");
+  header.result.yearInput.onChange("२०८५");
+  header.rerender();
+  header.result.yearInput.commit();
+  header.rerender();
+  assert.deepEqual(seen, [{ year: 2085, month: 7 }]);
+  assert.equal(header.result.panel, null);
+});
+
 test("the month title and picker follow the era in the UI language (all four combinations)", async () => {
   const expected: Record<string, { month: string; year: string; eraLabel: string; first: string }> = {
     "ne-bs": { month: "असोज", year: "२०८३", eraLabel: "वि.सं.", first: "वैशाख" },
