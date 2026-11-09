@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
-import { useDayEvents } from "@vedic-patro/features/events";
-import { DayEvents } from "@vedic-patro/ui/kit/events";
+import { useDayEvents, usePersonalDays, type PersonalColumn } from "@vedic-patro/features/events";
+import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/geography/panchanga-location";
+import { DayEvents, PersonalDayChip } from "@vedic-patro/ui/kit/events";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { requestAddReminder } from "@/lib/menu-request";
 import { TodayHighlightCard } from "./TodayHighlightCard";
@@ -37,6 +38,8 @@ type Props = {
   browseEra?: Era;
   /** A listed event was tapped: show its details. */
   onOpenEvent?: (event: CalendarEvent) => void;
+  /** The day's personal reading was tapped: show it in full. */
+  onOpenPersonal?: (date: string, column: PersonalColumn) => void;
 };
 
 export function PanchangaAsidePanel({
@@ -53,11 +56,14 @@ export function PanchangaAsidePanel({
   location,
   browseEra = "bs",
   onOpenEvent,
+  onOpenPersonal,
 }: Props) {
   const { t } = useLocale();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const dayEvents = useDayEvents(selectedAd, isAuthenticated);
+  // "तपाईंको दिन · शुभ · …" for this day, as the planner's all-day row shows it.
+  const personalDays = usePersonalDays([selectedAd], location ?? DEFAULT_PANCHANGA_LOCATION.params, isAuthenticated);
   const [tab, setTab] = useState<TabId>("panchanga");
 
   const contextDay =
@@ -94,7 +100,8 @@ export function PanchangaAsidePanel({
         month={month}
         p={activeP}
       />
-      <View className="px-4 pt-3">
+      <View className="gap-2 px-4 pt-3">
+        <PersonalDayChip date={selectedAd} column={personalDays.columns.get(selectedAd)} onOpen={onOpenPersonal} />
         <DayEvents events={dayEvents.events} onOpen={onOpenEvent} />
         {/* The "+" from here: an event, task or appointment that starts on this day. */}
         {isAuthenticated ? (

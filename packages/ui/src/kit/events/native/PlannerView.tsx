@@ -28,7 +28,7 @@ import {
 } from "@vedic-patro/features/events";
 import { Icon, Text } from "@vedic-patro/ui";
 import { haptics } from "@vedic-patro/ui/motion";
-import type { PlannerViewProps } from "../contract";
+import type { PersonalDayChipProps, PlannerViewProps } from "../contract";
 import { eventKindOf, eventTimeText } from "../event-text";
 import { iconBriefcase, iconChevronLeft, iconChevronRight, iconStar, iconSun } from "../icons";
 
@@ -607,6 +607,13 @@ function PersonalChip({ date, column, week, open, onToggle, onOpen, tx }: { date
       ) : null}
     </View>
   );
+}
+
+/** "तपाईंको दिन · शुभ · …" on its own (the home day card), the planner's chip at full length. */
+export function PersonalDayChip({ date, column, onOpen }: PersonalDayChipProps) {
+  const tx = usePlannerText();
+  const [open, setOpen] = useState(false);
+  return <PersonalChip date={date} column={column} week={false} open={open} onToggle={() => setOpen((v) => !v)} onOpen={onOpen} tx={tx} />;
 }
 
 /** Apple's year: small months, the month name in colour, today filled red, holidays in red, a dot under days with events. */

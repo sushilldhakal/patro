@@ -25,6 +25,15 @@ export type DayEventsProps = {
   onOpen?: (event: CalendarEvent) => void;
 };
 
+export type PersonalDayChipProps = {
+  /** AD "YYYY-MM-DD". */
+  date: string;
+  /** The signed-in profile's reading for that day (`usePersonalDays`); nothing is drawn without one. */
+  column: PersonalColumn | undefined;
+  /** App: open the day's reading in a sheet. Without it the reading unfolds under the chip. */
+  onOpen?: (date: string, column: PersonalColumn) => void;
+};
+
 export type TimeWheelProps = {
   /** "HH:MM", 24-hour. */
   value: string;

@@ -549,6 +549,7 @@ function HomeScreen() {
         location={location.params}
         browseEra={browseEra}
         onOpenEvent={(event) => setDetail({ kind: "event", event })}
+        onOpenPersonal={(date, column) => setDetail({ kind: "personal", date, column })}
       />
     </View>
   );

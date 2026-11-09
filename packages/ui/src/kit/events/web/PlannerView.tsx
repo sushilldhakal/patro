@@ -26,7 +26,7 @@ import {
   type SlotReason,
 } from "@vedic-patro/features/events";
 import { Icon } from "@vedic-patro/ui";
-import type { PlannerViewProps } from "../contract";
+import type { PersonalDayChipProps, PlannerViewProps } from "../contract";
 import { eventKindOf, eventTimeText } from "../event-text";
 import { iconBriefcase, iconChevronLeft, iconChevronRight, iconPlus, iconStar, iconSun } from "../icons";
 
@@ -543,6 +543,13 @@ function BestPlaceholders({ date, slots, column, events, hourH, week, tx, onCrea
       </button>
     );
   });
+}
+
+/** "तपाईंको दिन · शुभ · …" on its own (the home day card), the planner's chip at full length; the reading unfolds under it. */
+export function PersonalDayChip({ date, column }: PersonalDayChipProps) {
+  const tx = usePlannerText();
+  const [open, setOpen] = useState(false);
+  return <PersonalChip date={date} column={column} week={false} open={open} onToggle={() => setOpen((v) => !v)} tx={tx} />;
 }
 
 function PersonalChip({ date, column, week, open, onToggle, tx }: { date: string; column: PersonalColumn | undefined; week: boolean; open: boolean; onToggle: () => void; tx: PlannerText }) {
