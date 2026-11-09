@@ -21,11 +21,15 @@ export const fontFamily = {
     en: '"Noto Sans Devanagari", sans-serif',
     mono: '"Fira Code", monospace',
   },
-  /** Loaded font names (app — expo-google-fonts registers one family per weight). */
+  /**
+   * Loaded font names (app). Each weight draws one face heavier than its name: the app's thin strokes
+   * read lighter on a phone screen than the website's same text in the browser, and plain text was hard
+   * to read. Regular text uses the Medium face, medium the SemiBold, semibold and bold the Bold.
+   */
   native: {
-    regular: "NotoSansDevanagariSemiCondensed-Regular",
-    medium: "NotoSansDevanagariSemiCondensed-Medium",
-    semibold: "NotoSansDevanagariSemiCondensed-SemiBold",
+    regular: "NotoSansDevanagariSemiCondensed-Medium",
+    medium: "NotoSansDevanagariSemiCondensed-SemiBold",
+    semibold: "NotoSansDevanagariSemiCondensed-Bold",
     bold: "NotoSansDevanagariSemiCondensed-Bold",
     mono: "FiraCode_400Regular",
     /** Mantra text only (Adishila Vedic): has every Vedic accent and sign, which Noto lacks. */

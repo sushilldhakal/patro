@@ -26,7 +26,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
-import { ADISHILA_VEDIC, NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_MEDIUM, NOTO_DEVANAGARI_REGULAR, NOTO_DEVANAGARI_SEMIBOLD } from "@/lib/fonts";
+import { ADISHILA_VEDIC } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { SplashIntro } from "@/components/branding/SplashIntro";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -227,11 +227,12 @@ function ThemedStatusBar() {
   return <StatusBar style={isDark ? "light" : "dark"} />;
 }
 
+/* Keyed by face name (each file's PostScript name), not by the weight constants, which now point a step
+   heavier (lib/fonts.ts): a constant must still load the file it names. */
 const WEB_NOTO_FONTS = {
-  [NOTO_DEVANAGARI_REGULAR]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Regular.ttf"),
-  [NOTO_DEVANAGARI_MEDIUM]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Medium.ttf"),
-  [NOTO_DEVANAGARI_SEMIBOLD]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-SemiBold.ttf"),
-  [NOTO_DEVANAGARI_BOLD]: require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
+  "NotoSansDevanagariSemiCondensed-Medium": require("../assets/fonts/NotoSansDevanagariSemiCondensed-Medium.ttf"),
+  "NotoSansDevanagariSemiCondensed-SemiBold": require("../assets/fonts/NotoSansDevanagariSemiCondensed-SemiBold.ttf"),
+  "NotoSansDevanagariSemiCondensed-Bold": require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
 };
 
 function RootLayout() {

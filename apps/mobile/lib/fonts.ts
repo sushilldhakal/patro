@@ -4,9 +4,11 @@
  * PostScript names, which are also the file names: iOS and Android register them at launch from the
  * build (expo-font plugin in app.json), and the web build loads them in `app/_layout.tsx`.
  */
-export const NOTO_DEVANAGARI_REGULAR = "NotoSansDevanagariSemiCondensed-Regular";
-export const NOTO_DEVANAGARI_MEDIUM = "NotoSansDevanagariSemiCondensed-Medium";
-export const NOTO_DEVANAGARI_SEMIBOLD = "NotoSansDevanagariSemiCondensed-SemiBold";
+/* Each weight draws one face heavier than its name, as in the design tokens (`fontFamily.native`):
+   plain text in the Regular face read too thin on a phone. */
+export const NOTO_DEVANAGARI_REGULAR = "NotoSansDevanagariSemiCondensed-Medium";
+export const NOTO_DEVANAGARI_MEDIUM = "NotoSansDevanagariSemiCondensed-SemiBold";
+export const NOTO_DEVANAGARI_SEMIBOLD = "NotoSansDevanagariSemiCondensed-Bold";
 export const NOTO_DEVANAGARI_BOLD = "NotoSansDevanagariSemiCondensed-Bold";
 
 /** Mantra text (shlokas) only: Adishila Vedic, loaded at runtime in `app/_layout.tsx`. */

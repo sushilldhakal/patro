@@ -123,13 +123,13 @@
   },
   "fontFamily": {
     "sans": [
-      "NotoSansDevanagariSemiCondensed-Regular"
-    ],
-    "medium": [
       "NotoSansDevanagariSemiCondensed-Medium"
     ],
-    "semibold": [
+    "medium": [
       "NotoSansDevanagariSemiCondensed-SemiBold"
+    ],
+    "semibold": [
+      "NotoSansDevanagariSemiCondensed-Bold"
     ],
     "bold": [
       "NotoSansDevanagariSemiCondensed-Bold"
@@ -138,7 +138,7 @@
       "FiraCode_400Regular"
     ],
     "num": [
-      "NotoSansDevanagariSemiCondensed-Regular"
+      "NotoSansDevanagariSemiCondensed-Medium"
     ],
     "num-bold": [
       "NotoSansDevanagariSemiCondensed-Bold"
