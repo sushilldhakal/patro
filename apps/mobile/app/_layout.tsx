@@ -25,6 +25,7 @@ import {
 } from "@/lib/query-cache-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
 import { ADISHILA_VEDIC } from "@/lib/fonts";
 import * as SplashScreen from "expo-splash-screen";
@@ -229,7 +230,7 @@ function ThemedStatusBar() {
 
 /* Keyed by face name (each file's PostScript name), not by the weight constants, which now point a step
    heavier (lib/fonts.ts): a constant must still load the file it names. */
-const WEB_NOTO_FONTS = {
+const RUNTIME_NOTO_FONTS = {
   "NotoSansDevanagariSemiCondensed-Medium": require("../assets/fonts/NotoSansDevanagariSemiCondensed-Medium.ttf"),
   "NotoSansDevanagariSemiCondensed-SemiBold": require("../assets/fonts/NotoSansDevanagariSemiCondensed-SemiBold.ttf"),
   "NotoSansDevanagariSemiCondensed-Bold": require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
@@ -246,8 +247,10 @@ function RootLayout() {
   const [loaded] = useFonts({
     /* Noto (semi-condensed, see assets/fonts/README.md) is built into the iOS and Android apps by the
        expo-font plugin and registered by the OS at launch. Registered here at runtime instead, the
-       weights could drop back to regular after the app reloaded into an update. Web still loads them. */
-    ...(Platform.OS === "web" ? WEB_NOTO_FONTS : {}),
+       weights could drop back to regular after the app reloaded into an update. Web loads them, and so
+       does Expo Go, which has none of the build's fonts: there every Noto name was unknown and iOS drew
+       the system font at one weight, so no text looked bold. */
+    ...(Platform.OS === "web" || Constants.executionEnvironment === ExecutionEnvironment.StoreClient ? RUNTIME_NOTO_FONTS : {}),
     [ADISHILA_VEDIC]: require("../assets/fonts/AdishilaVedic-Regular.ttf"),
     FiraCode_400Regular,
     FiraCode_700Bold,
