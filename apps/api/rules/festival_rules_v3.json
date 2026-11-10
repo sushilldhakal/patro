@@ -124,11 +124,11 @@
       "name_ne": "म्ह पूजा",
       "type": "lunar",
       "lunar_month": "Kartik",
-      "tithi": 15,
-      "paksha": "krishna",
+      "tithi": 1,
+      "paksha": "shukla",
       "adhik_policy": "skip",
       "duration_days": 1,
-      "notes": "Nepal Sambat New Year (Aausi)",
+      "notes": "Nepal Sambat New Year — Kartik Shukla Pratipada, the same day as Govardhan Puja (BS 2083: कात्तिक २४, 2026-11-10).",
       "importance": "regional",
       "category": "newari"
     },
@@ -2191,14 +2191,16 @@
       "category": "national"
     },
     "janajati-shahid-diwas": {
-      "name_en": "Indigenous Martyrs Day",
+      "name_en": "Gen-Z Martyrs' Day",
       "name_ne": "जेनजी शहीद दिवस",
       "type": "bs_fixed",
       "bs_month": 5,
       "bs_day": 23,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2083,
+      "notes": "Bhadra 23 — remembers those killed in the Gen-Z protest of BS 2082 Bhadra 23 (2025-09-08). Public holiday from BS 2083."
     },
     "national-dharmasabha-diwas": {
       "name_en": "National Dharmasabha Day",
@@ -2680,12 +2682,13 @@
       "name_ne": "काग तिहार",
       "type": "lunar",
       "lunar_month": "Kartik",
-      "tithi": 14,
+      "tithi": 13,
       "paksha": "krishna",
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "notes": "Yama Panchak's first day, Kartik Krishna Trayodashi — the same day as Dhanteras (BS 2083: कात्तिक २१, 2026-11-07)."
     },
     "kukur-tihar": {
       "name_en": "Kukur Tihar",
@@ -2747,7 +2750,7 @@
       "duration_days": 1,
       "importance": "national",
       "category": "hindu",
-      "notes": "Gai Tihar — morning observance on the same civil day as Laxmi Puja, so it follows the same pradosh-vyapini Amavasya."
+      "notes": "Gai Tihar — a morning puja on the Laxmi Puja day (pradosh-vyapini Amavasya), as the 2081 and 2082 calendars have it. BS 2083 lists it the next morning, when the Amavasya holds sunrise (holiday_overrides 2083)."
     },
     "govardhan-puja": {
       "name_en": "Govardhan Puja",

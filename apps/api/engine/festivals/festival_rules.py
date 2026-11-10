@@ -122,7 +122,11 @@ def compute_bs_fixed_festival(
     bs_day = rule.get("bs_day", 1)
     if not bs_month:
         return None
+    # A day first kept in a given year (जेनजी शहीद दिवस from BS 2083) has no earlier dates.
+    from_bs_year = int(rule.get("from_bs_year") or 0)
     for bs_year in (gregorian_year + 56, gregorian_year + 57):
+        if bs_year < from_bs_year:
+            continue
         try:
             greg = bs_to_gregorian(bs_year, bs_month, bs_day)
             if greg.year == gregorian_year:

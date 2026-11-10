@@ -1,5 +1,6 @@
-"""BS 2083 Dashain as MoHA published it: Maha Ashtami on Kartik 2, Maha Navami on
-Kartik 3, and the 7-day दशैं बिदा (Ashoj 31 – Kartik 6) a public holiday on every day."""
+"""BS 2083 Dashain as the published calendar has it: Maha Ashtami and Kalratri on
+Kartik 1 (Ashtami holds sunrise on Kartik 1 and 2; the first day is kept), Kartik 2 the
+holiday alone, Maha Navami on Kartik 3, and the 7-day दशैं बिदा (Ashoj 31 – Kartik 6) a public holiday on every day."""
 
 from __future__ import annotations
 
@@ -21,11 +22,12 @@ def _ids(day: date) -> list[str]:
     return [f["id"] for f in festivals_on_date(day, DEFAULT_LOCATION)["festivals"]]
 
 
-def test_maha_ashtami_and_navami_fall_on_kartik_2_and_3():
-    assert "maha-ashtami" in _ids(date(2026, 10, 19))
+def test_maha_ashtami_on_kartik_1_and_navami_on_kartik_3():
+    assert "maha-ashtami" in _ids(date(2026, 10, 18))
+    assert "kalratri" in _ids(date(2026, 10, 18))
     assert "maha-navami" in _ids(date(2026, 10, 20))
+    assert "maha-ashtami" not in _ids(date(2026, 10, 19))
     assert "maha-navami" not in _ids(date(2026, 10, 19))
-    assert "maha-ashtami" not in _ids(date(2026, 10, 18))
 
 
 def test_every_day_of_the_dashain_block_is_a_public_holiday():

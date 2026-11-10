@@ -28,7 +28,8 @@ RULE_VERSION = "v3"
 # rest day is the one Shashthi.
 # 1.0.9: festival/holiday caches are per siddhanta — a drik Tihar must not paint
 # Adhik Kartik under the Surya Siddhanta.
-ENGINE_VERSION = stamp("1.0.9")
+# 1.0.10: `from_bs_year` on fixed BS days — जेनजी शहीद दिवस has no date before BS 2083.
+ENGINE_VERSION = stamp("1.0.10")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"

@@ -715,25 +715,25 @@
         "id": "maha-ashtami",
         "name_en": "Maha Ashtami",
         "name_ne": "महाअष्टमी",
-        "start_date": "2026-10-19",
-        "end_date": "2026-10-19",
+        "start_date": "2026-10-18",
+        "end_date": "2026-10-18",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "BS 2083-07-02 (कात्तिक २). Ashtami holds sunrise on Oct 19; the aparahna rule alone gives Oct 18."
+        "notes": "BS 2083-07-01 (कात्तिक १), as the published 2083 calendar. Ashtami holds sunrise on both Oct 18 and Oct 19; the first day is kept."
       },
       "kalratri": {
         "id": "kalratri",
         "name_en": "Kalratri",
         "name_ne": "कालरात्रि",
-        "start_date": "2026-10-19",
-        "end_date": "2026-10-19",
+        "start_date": "2026-10-18",
+        "end_date": "2026-10-18",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "regional",
-        "notes": "BS 2083-07-02 (कात्तिक २), with Maha Ashtami"
+        "notes": "BS 2083-07-01 (कात्तिक १), the night of Maha Ashtami"
       },
       "maha-navami": {
         "id": "maha-navami",
@@ -1177,6 +1177,43 @@
         "importance": "community",
         "notes": "MoHA BS 2083-09-15 — Dura community",
         "audience": "dura"
+      },
+      "eid-ul-adha": {
+        "id": "eid-ul-adha",
+        "name_en": "Bakar Eid (Eid ul-Adha)",
+        "name_ne": "बकर ईद",
+        "start_date": "2026-05-28",
+        "end_date": "2026-05-28",
+        "duration_days": 1,
+        "type": "announced",
+        "category": "islamic",
+        "importance": "national",
+        "notes": "MoHA BS 2083-02-14"
+      },
+      "muhammad-jayanti": {
+        "id": "muhammad-jayanti",
+        "name_en": "Prophet Muhammad's Birthday",
+        "name_ne": "हजरत मुहम्मद जयन्ती",
+        "start_date": "2026-08-26",
+        "end_date": "2026-08-26",
+        "duration_days": 1,
+        "type": "announced",
+        "category": "islamic",
+        "importance": "community",
+        "notes": "MoHA BS 2083-05-10 — Muslim community only",
+        "audience": "muslim"
+      },
+      "gai-puja": {
+        "id": "gai-puja",
+        "name_en": "Gai Puja",
+        "name_ne": "गाई पूजा",
+        "start_date": "2026-11-09",
+        "end_date": "2026-11-09",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-07-23 (कात्तिक २३), as the published 2083 calendar: the morning the Amavasya holds sunrise, the day after Laxmi Puja."
       }
     }
   }
