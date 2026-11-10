@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, type RefObject } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -74,6 +75,8 @@ export function MobileBottomNav() {
   const { lang } = useLocale();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const compact = useNavCompact();
+  const barRef = useRef<HTMLDivElement>(null);
+  useNavTopVariable(barRef);
 
   return (
     <nav
@@ -81,6 +84,7 @@ export function MobileBottomNav() {
       className={cn(shellClasses.navOuter, "fixed inset-x-0 bottom-0 z-50 pb-[max(0.5rem,env(safe-area-inset-bottom))] pointer-events-none lg:hidden")}
     >
       <div
+        ref={barRef}
         data-compact={compact || undefined}
         className={cn(
           "pointer-events-auto mx-auto flex shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md",
@@ -124,4 +128,46 @@ export function MobileBottomNav() {
       </div>
     </nav>
   );
+}
+
+/**
+ * Writes how far the floating bar's top edge is from the bottom of the window to
+ * `--bottom-nav-top` on <html>, so things docked above it (the documents audio player) sit
+ * right on it with no gap: the bar folds shorter on scroll and rides the iPhone safe area,
+ * so a fixed offset left a strip of page between them. Follows the fold as it animates.
+ */
+function useNavTopVariable(barRef: RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const root = document.documentElement;
+    let frame = 0;
+    const write = () => {
+      frame = 0;
+      const top = bar.getBoundingClientRect().top;
+      // Hidden (lg and up): nothing to sit on.
+      if (bar.offsetParent === null || top <= 0) root.style.removeProperty("--bottom-nav-top");
+      else root.style.setProperty("--bottom-nav-top", `${Math.max(0, window.innerHeight - top)}px`);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(write);
+    };
+    write();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(bar);
+    window.addEventListener("resize", schedule);
+    window.visualViewport?.addEventListener("resize", schedule);
+    // The fold animates max-width / padding; follow it to the end.
+    bar.addEventListener("transitionrun", schedule);
+    bar.addEventListener("transitionend", schedule);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
+      bar.removeEventListener("transitionrun", schedule);
+      bar.removeEventListener("transitionend", schedule);
+      root.style.removeProperty("--bottom-nav-top");
+    };
+  }, [barRef]);
 }

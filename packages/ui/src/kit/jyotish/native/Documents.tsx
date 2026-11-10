@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Easing } from "react-native";
+import { DURATION, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
@@ -102,14 +103,27 @@ function Dock({
   onHeight?: (height: number) => void;
 }) {
   useEffect(() => () => onHeight?.(0), [onHeight]);
+  // Slides with the tab bar as it folds shorter on scroll (same timing), so it stays right on it.
+  const reduced = useReducedMotionPref();
+  const offset = useRef(new Animated.Value(bottom)).current;
+  useEffect(() => {
+    const anim = Animated.timing(offset, {
+      toValue: bottom,
+      duration: reduced ? 0 : DURATION.standard,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [bottom, offset, reduced]);
   return (
-    <View
+    <Animated.View
       pointerEvents="box-none"
       onLayout={(e) => onHeight?.(e.nativeEvent.layout.height)}
-      style={{ position: "absolute", left: inset, right: inset, bottom, alignItems: "center" }}
+      style={{ position: "absolute", left: inset, right: inset, bottom: offset, alignItems: "center" }}
     >
       {children}
-    </View>
+    </Animated.View>
   );
 }
 

@@ -2,7 +2,8 @@ import { useState } from "react";
 import Slider from "@react-native-community/slider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
-import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
+import { FLOATING_NAV_FOLD_SHRINK, floatingNavTabBarHeight } from "@/lib/mobile-nav";
+import { useNavCompact } from "@/lib/nav-compact";
 import { setBarAccessoryHeight } from "@/lib/bar-accessory";
 import { useBreakpoint } from "@/lib/responsive";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
@@ -26,6 +27,8 @@ export function PlaybackBar({
 }) {
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
+  // The tab bar folds shorter on scroll; the player follows it down.
+  const compact = useNavCompact();
   const { activeShloka } = audio;
   // Another page's recording is playing: the app-wide mini player shows that one instead.
   if (audio.foreign) return null;
@@ -60,7 +63,8 @@ export function PlaybackBar({
       hasNextFull={audio.hasNextFull}
       onPrevFull={audio.prevFull}
       onNextFull={audio.nextFull}
-      dockBottom={floatingNavTabBarHeight(isTablet, insets.bottom) + 8}
+      // Right on top of the tab bar, with no strip of page between them.
+      dockBottom={floatingNavTabBarHeight(isTablet, insets.bottom) - (compact ? FLOATING_NAV_FOLD_SHRINK : 0)}
       // Edge to edge just above the tab bar, like a radio app's player; the floating search /
       // place buttons lift above it (setBarAccessoryHeight) instead of squeezing it to one side.
       dockInset={0}

@@ -7,8 +7,11 @@ import { useLocale } from "@vedic-patro/i18n/react";
 import type { DocumentGroupHeadingProps, PlaybackBarProps, ShlokaCardProps } from "../contract";
 import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward, iconX } from "../icons";
 
-/** Full width, just above the phone layout's bottom bar; at the foot of the window on a wide screen. */
-const DOCK = "fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 lg:bottom-0";
+/**
+ * Full width, sitting right on the phone layout's floating bottom bar (its top edge, which the
+ * bar writes to --bottom-nav-top as it folds); at the foot of the window on a wide screen.
+ */
+const DOCK = "fixed inset-x-0 bottom-[var(--bottom-nav-top,calc(5rem+env(safe-area-inset-bottom)))] z-30 lg:bottom-0";
 
 export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail, registerRef }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });

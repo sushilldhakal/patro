@@ -32,6 +32,9 @@ export const FLOATING_NAV_BOTTOM_PADDING_TABLET = 104;
  * Total height of the tab bar slot (pill + bottom inset).
  * Keep in sync with `FloatingNavBar` padding and pill size.
  */
+/** How much shorter the floating bar gets when it folds to its icons on scroll (60pt → 46pt). */
+export const FLOATING_NAV_FOLD_SHRINK = 14;
+
 export function floatingNavTabBarHeight(isTablet: boolean, safeBottom: number): number {
   const pill = 60; // FloatingNavBar: 60pt full
   const minBottom = isTablet ? 10 : 6;

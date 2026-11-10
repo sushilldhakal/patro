@@ -8,7 +8,7 @@ import { useNavPress } from "@/lib/use-nav-press";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
-import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
+import { FLOATING_NAV, FLOATING_NAV_FOLD_SHRINK, isNavActive } from "@/lib/mobile-nav";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { useDuoRail } from "@/lib/duo-rail";
 import { useBreakpoint } from "@/lib/responsive";
@@ -42,7 +42,7 @@ const ScalePressable = cssInterop(Animated.createAnimatedComponent(Pressable), {
 /** Height of the row of tabs inside the pill (the pill adds 4pt above and below: 60pt full, 46pt folded, like the
  *  reference bar). */
 const TABS_HEIGHT = 52;
-const TABS_HEIGHT_COMPACT = 38;
+const TABS_HEIGHT_COMPACT = TABS_HEIGHT - FLOATING_NAV_FOLD_SHRINK;
 /** How far in from each side the tab pill draws when folded, so it reads as a shorter capsule (about 80% wide). */
 const GROUP_INSET_COMPACT = 40;
 const LABEL_MAX_HEIGHT = 16;
