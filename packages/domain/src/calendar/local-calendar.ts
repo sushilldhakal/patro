@@ -290,3 +290,40 @@ export function filterRedundantDayFestivals<T extends { id: string; name_en?: st
     return true;
   });
 }
+
+type RankableFestival = {
+  importance?: string | null;
+  category?: string | null;
+  is_public_holiday?: boolean | null;
+  start_date?: string | null;
+  end_date?: string | null;
+};
+
+const IMPORTANCE_RANK: Record<string, number> = { national: 0, regional: 2, community: 3, minor: 4 };
+/** Observances rather than festivals: a jayanti or world day sits below the day's own festival. */
+const SECONDARY_CATEGORIES = new Set(["cultural", "international"]);
+
+/** Lower comes first: how prominently a festival is named in a day cell. */
+function festivalRank(f: RankableFestival): number {
+  let rank = IMPORTANCE_RANK[f.importance ?? ""] ?? 3;
+  if (rank === 0 && SECONDARY_CATEGORIES.has(f.category ?? "")) rank = 1;
+  if (f.is_public_holiday) {
+    // A holiday block ("तिहार बिदा", "दशैं बिदा") spans days: name the day's own festival
+    // (लक्ष्मी पूजा, भाई टीका, महाअष्टमी) first. The cell is still marked a holiday by date.
+    const block = Boolean(f.end_date && f.start_date && f.end_date > f.start_date);
+    rank = block ? Math.max(rank, 1) : rank - 0.5;
+  }
+  return rank;
+}
+
+/**
+ * One day's festivals, the major ones first: a cell names only the first one or three,
+ * so भाई टीका must come before फाल्गुनन्द जयन्ती and लक्ष्मी पूजा before म्ह पूजा.
+ * Equal ranks keep the API's order.
+ */
+export function rankDayFestivals<T extends RankableFestival>(festivals: T[]): T[] {
+  return festivals
+    .map((f, i) => ({ f, i, r: festivalRank(f) }))
+    .sort((a, b) => a.r - b.r || a.i - b.i)
+    .map((x) => x.f);
+}

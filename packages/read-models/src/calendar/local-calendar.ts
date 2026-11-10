@@ -3,7 +3,7 @@ import type { CalendarDay, Festival, Holiday } from "@vedic-patro/api-client";
 import { AD_MONTHS_SHORT, AD_MONTHS_SHORT_NE, BS_MONTH_NAMES, BS_MONTHS_NE, BS_MONTHS_SHORT, adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
 import { addDaysCivilIso, canonicalCivilIso, civilIsoDayOfMonth, civilIsoWeekday, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/calendar/patro-day";
-import { type SecondaryCellDate, WEEKDAYS_EN, WEEKDAYS_NE, bsMonthHasOfflineData, filterRedundantDayFestivals, formatAdIso, shiftAdMonth } from "@vedic-patro/domain/calendar/local-calendar";
+import { type SecondaryCellDate, WEEKDAYS_EN, WEEKDAYS_NE, bsMonthHasOfflineData, filterRedundantDayFestivals, formatAdIso, rankDayFestivals, shiftAdMonth } from "@vedic-patro/domain/calendar/local-calendar";
 
 export * from "@vedic-patro/domain/calendar/local-calendar";
 
@@ -295,7 +295,7 @@ export function applyHolidaysToDays(
   }
 
   for (const [startDate, list] of byDate) {
-    const filtered = filterRedundantDayFestivals(list);
+    const filtered = rankDayFestivals(filterRedundantDayFestivals(list));
     for (const h of filtered) {
       const fallbackName = "name" in h ? h.name : undefined;
       const name = isEn
