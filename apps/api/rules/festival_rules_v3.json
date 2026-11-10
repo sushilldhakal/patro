@@ -349,9 +349,10 @@
       "bs_month": 5,
       "bs_day": 17,
       "duration_days": 1,
-      "notes": "Bhadra 17 — craftsmen and artisans festival",
+      "notes": "Vishwakarma Puja is Ashoj 1 (Kanya Sankranti) every year — rat32 2079–2082; this Bhadra 17 row is only an alias.",
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "alias_of": "vishwakarma-puja-solar"
     },
     "ram-navami": {
       "name_en": "Ram Navami",
@@ -868,15 +869,13 @@
     "kheer-khane-din": {
       "name_en": "Kheer Khane Din",
       "name_ne": "खीर खाने दिन",
-      "type": "lunar",
-      "lunar_month": "Shrawan",
-      "tithi": 2,
-      "paksha": "krishna",
-      "adhik_policy": "skip",
+      "type": "bs_fixed",
+      "bs_month": 4,
+      "bs_day": 15,
       "duration_days": 1,
-      "notes": "Rice-pudding day — Shrawan Krishna Dwitiya",
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Shrawan 15 every year (a solar day, not a tithi) — as rat32 2079–2083."
     },
     "bal-diwas": {
       "name_en": "National Children's Day",
@@ -1155,7 +1154,7 @@
       "name_ne": "किरात समाज सुधार दिवस",
       "type": "bs_fixed",
       "bs_month": 1,
-      "bs_day": 23,
+      "bs_day": 24,
       "duration_days": 1,
       "importance": "regional",
       "category": "cultural"
@@ -1419,14 +1418,13 @@
     "dahi-chiura-khane-din": {
       "name_en": "Dahi Chiura Khane Din",
       "name_ne": "दहीचिउरा खाने दिन",
-      "type": "lunar",
-      "lunar_month": "Jestha",
-      "tithi": 15,
-      "paksha": "shukla",
-      "adhik_policy": "skip",
+      "type": "bs_fixed",
+      "bs_month": 3,
+      "bs_day": 15,
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Asar 15 every year, with National Paddy Day — as rat32."
     },
     "kabir-jayanti": {
       "name_en": "Kabir Jayanti",
@@ -1633,10 +1631,11 @@
       "name_ne": "जातीय भेदभाव तथा छुवाछुत उन्मुलन राष्ट्रिय दिवस",
       "type": "bs_fixed",
       "bs_month": 2,
-      "bs_day": 20,
+      "bs_day": 21,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "notes": "Jestha 21 — the House declared Nepal free of untouchability on Jestha 21, 2063."
     },
     "dakshinayan-arambha": {
       "name_en": "Dakshinayan Arambha",
@@ -1888,12 +1887,13 @@
     "tharu-guriya-parwa": {
       "name_en": "Tharu Guriya Parwa",
       "name_ne": "थारु गुरिया पर्व",
-      "type": "solar",
-      "bs_month": 5,
-      "solar_day": 1,
+      "type": "bs_fixed",
+      "bs_month": 4,
+      "bs_day": 1,
       "duration_days": 1,
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Shrawan 1 (Saune Sankranti) every year — as rat32 2079–2083."
     },
     "kalki-jayanti": {
       "name_en": "Kalki Jayanti",
@@ -2823,7 +2823,9 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "alias_of": "falgunanda-jayanti",
+      "notes": "Same day as falgunanda-jayanti (Kartik 25 every year, rat32 2079–2083); kept only as an alias."
     },
     "national-film-day": {
       "name_en": "National Film Day",
@@ -3469,14 +3471,13 @@
     "arniko-smriti-diwas": {
       "name_en": "Arniko Smriti Diwas",
       "name_ne": "अरनिको स्मृति दिवस",
-      "type": "lunar",
-      "lunar_month": "Poush",
-      "tithi": 15,
-      "paksha": "krishna",
-      "adhik_policy": "skip",
+      "type": "bs_fixed",
+      "bs_month": 9,
+      "bs_day": 23,
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Poush 23 every year — as rat32 2079–2081."
     },
     "tol-lhosar": {
       "name_en": "Tol Lhosar",
@@ -3493,14 +3494,13 @@
     "nepal-jyotish-parishad-diwas": {
       "name_en": "Nepal Jyotish Parishad Establishment Day",
       "name_ne": "नेपाल ज्योतिष परिषद स्थापना दिवस",
-      "type": "lunar",
-      "lunar_month": "Poush",
-      "tithi": 1,
-      "paksha": "shukla",
-      "adhik_policy": "skip",
+      "type": "bs_fixed",
+      "bs_month": 9,
+      "bs_day": 24,
       "duration_days": 1,
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Poush 24 every year — as rat32 2079–2082."
     },
     "national-unity-day": {
       "name_en": "National Unity Day",
@@ -4763,7 +4763,7 @@
       "name_ne": "कानून दिवस",
       "type": "bs_fixed",
       "bs_month": 1,
-      "bs_day": 25,
+      "bs_day": 26,
       "duration_days": 1,
       "importance": "national",
       "category": "national"
@@ -6507,7 +6507,9 @@
       "ad_day": 25,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "alias_of": "tihar",
+      "notes": "The Tihar holiday is the `tihar` block (Laxmi Puja → the day after Bhai Tika); this fixed 25 Nov row is only an alias."
     },
     "shraddha-dwitiya-ashwin": {
       "name_en": "Dwitiya Shraddha",
@@ -6696,12 +6698,14 @@
     "siruwa-pawani": {
       "name_en": "Siruwa Pawani",
       "name_ne": "सिरुवा पावनी",
-      "type": "announced",
+      "type": "bs_fixed",
+      "bs_month": 1,
+      "bs_day": 2,
       "duration_days": 1,
       "audience": "eastern_districts",
-      "notes": "Holiday in Jhapa, Morang, Sunsari, Siraha and Saptari on the day MoHA announces.",
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "notes": "Baisakh 2 — holiday in Jhapa, Morang, Sunsari, Siraha and Saptari, as rat32 2080–2082."
     },
     "dura-mhepra-nakuma": {
       "name_en": "Dura Mhepra Nakuma",

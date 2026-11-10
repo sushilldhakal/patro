@@ -255,6 +255,9 @@ const FESTIVAL_ALIAS_IDS = new Set([
   "amako-mukh-herne-din",
   "sattila-ekadashi",
   "nari-diwas",
+  "mahaguru-falgunand-jayanti",
+  "vishwakarma-puja",
+  "tihar-vidaa",
 ]);
 
 function isGenericPurnimaVrataId(id: string): boolean {
