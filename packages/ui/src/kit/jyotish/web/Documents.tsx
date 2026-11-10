@@ -178,25 +178,35 @@ export function PlaybackBar(props: PlaybackBarProps) {
     return (
       <Band>
         <button type="button" onClick={start} aria-label={bar.idle.title} className={documentsClasses.barPlay}>
-          <Icon node={iconPlay} size={20} tone="onBrand" filled className="ml-0.5" />
+          <Icon node={iconPlay} size={16} tone="onBrand" filled className="ml-0.5" />
         </button>
         <button type="button" onClick={start} className={cn(documentsClasses.fill, "text-left")}>
-          <BarText kicker={props.documentTitle} title={bar.idle.title} />
+          <BarHead kicker={props.documentTitle} title={bar.idle.title} />
         </button>
         <span className={cn(documentsClasses.barSkip, "pointer-events-none")} aria-hidden="true">
-          <Icon node={iconHeadphones} size={18} tone="onBrand" />
+          <Icon node={iconHeadphones} size={16} tone="onBrand" />
         </span>
       </Band>
     );
   }
   if (bar.face === "full") {
     return (
-      <Band
-        edge={
-          <Edge fillPct={bar.full.fillPct}>
+      <Band>
+        <SkipButton icon={iconSkipBack} label={copy.prevTrack} disabled={!props.hasPrevFull} onClick={props.onPrevFull} />
+        <button type="button" onClick={props.onToggleFull} aria-label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
+          <Icon node={bar.full.playing ? iconPause : iconPlay} size={16} tone="onBrand" filled className={bar.full.playing ? undefined : "ml-0.5"} />
+        </button>
+        <SkipButton icon={iconSkipForward} label={copy.nextTrack} disabled={!props.hasNextFull} onClick={props.onNextFull} />
+        <div className={documentsClasses.fill}>
+          <TitleLink open={props.open}>
+            <BarHead kicker={bar.full.kicker} title={bar.full.heading} />
+          </TitleLink>
+          <div className={documentsClasses.barScrubRow}>
+            <span className={documentsClasses.barTime}>{bar.full.current}</span>
             <input
               type="range"
-              className="absolute inset-x-0 -top-2 h-5 w-full cursor-pointer opacity-0"
+              className="shloka-scrub shloka-scrub-band w-full min-w-0 flex-1 cursor-pointer outline-none"
+              style={{ ["--fill" as string]: `${bar.full.fillPct}%` }}
               min={0}
               max={props.fullDuration || 1}
               step={0.1}
@@ -204,73 +214,57 @@ export function PlaybackBar(props: PlaybackBarProps) {
               {...scrub.inputProps}
               aria-label={copy.seek}
             />
-          </Edge>
-        }
-      >
-        <SkipButton icon={iconSkipBack} label={copy.prevTrack} disabled={!props.hasPrevFull} onClick={props.onPrevFull} />
-        <button type="button" onClick={props.onToggleFull} aria-label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
-          <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.full.playing ? undefined : "ml-0.5"} />
-        </button>
-        <SkipButton icon={iconSkipForward} label={copy.nextTrack} disabled={!props.hasNextFull} onClick={props.onNextFull} />
-        <TitleLink open={props.open}>
-          <BarText kicker={bar.full.kicker} title={bar.full.heading} />
-        </TitleLink>
-        <span className={cn(documentsClasses.barTime, "hidden shrink-0 sm:block")}>
-          {bar.full.current} / {bar.full.total}
-        </span>
+            <span className={cn(documentsClasses.barTime, "text-right")}>{bar.full.total}</span>
+          </div>
+        </div>
         <CloseButton close={props.close} />
       </Band>
     );
   }
   return (
-    <Band edge={bar.verse.hasClip ? <Edge fillPct={bar.verse.fillPct} /> : null}>
+    <Band>
       <SkipButton icon={iconSkipBack} label={copy.prevVerse} disabled={!props.hasPrev} onClick={props.onPrev} />
       <button type="button" onClick={props.onToggleVerse} disabled={!bar.verse.hasClip} aria-label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, "disabled:opacity-40")}>
-        <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
+        <Icon node={bar.verse.playing ? iconPause : iconPlay} size={16} tone="onBrand" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
       </button>
       <SkipButton icon={iconSkipForward} label={copy.nextVerse} disabled={!props.hasNext} onClick={props.onNext} />
-      <TitleLink open={props.open}>
-        <BarText kicker={bar.verse.kicker} title={bar.verse.title} />
-      </TitleLink>
-      {bar.verse.hasClip ? (
-        <span className={cn(documentsClasses.barTime, "hidden shrink-0 sm:block")}>
-          {bar.verse.current} / {bar.verse.total}
-        </span>
-      ) : null}
+      <div className={documentsClasses.fill}>
+        <TitleLink open={props.open}>
+          <BarHead kicker={bar.verse.kicker} title={bar.verse.title} />
+        </TitleLink>
+        {bar.verse.hasClip ? (
+          <div className={documentsClasses.barScrubRow}>
+            <span className={documentsClasses.barTime}>{bar.verse.current}</span>
+            <div className={documentsClasses.barTrack}>
+              <div className={cn(documentsClasses.barTrackFill, "transition-[width]")} style={{ width: `${bar.verse.fillPct}%` }} />
+            </div>
+            <span className={cn(documentsClasses.barTime, "text-right")}>{bar.verse.total}</span>
+          </div>
+        ) : null}
+      </div>
       {bar.verse.canSwitchToFull ? <SkipButton icon={iconListMusic} label={copy.switchToFull} onClick={props.onSwitchToFull} /> : null}
       <CloseButton close={props.close} />
     </Band>
   );
 }
 
-/** The docked band; `edge` is the progress line along its top. */
-function Band({ edge, children }: { edge?: ReactNode; children: ReactNode }) {
+function Band({ children }: { children: ReactNode }) {
   return (
     <div className={DOCK}>
       <div className={documentsClasses.barShell}>
-        {edge}
         <div className={cn(documentsClasses.barInner, documentsClasses.barRow)}>{children}</div>
       </div>
     </div>
   );
 }
 
-/** The slim progress line on the band's top edge; a seek control laid over it, when given. */
-function Edge({ fillPct, children }: { fillPct: number; children?: ReactNode }) {
+/** The title line: the gold kicker ("ऋग्वेद") then the title ("सूक्त १.२"). */
+function BarHead({ kicker, title }: { kicker?: string; title: string }) {
   return (
-    <div className={documentsClasses.barEdge}>
-      <div className={cn(documentsClasses.barEdgeFill, "transition-[width]")} style={{ width: `${fillPct}%` }} />
-      {children}
-    </div>
-  );
-}
-
-function BarText({ kicker, title }: { kicker?: string; title: string }) {
-  return (
-    <>
-      {kicker ? <span className={cn(documentsClasses.barKicker, "block truncate")}>{kicker}</span> : null}
-      <span className={cn(documentsClasses.barTitle, "block truncate")}>{title}</span>
-    </>
+    <span className={documentsClasses.barHead}>
+      {kicker ? <span className={documentsClasses.barKicker}>{kicker}</span> : null}
+      <span className={cn(documentsClasses.barTitle, "truncate")}>{title}</span>
+    </span>
   );
 }
 
@@ -284,16 +278,16 @@ function SkipButton({ icon, label, disabled, onClick }: { icon: typeof iconPlay;
       title={label}
       className={cn(documentsClasses.barSkip, documentsClasses.barSkipHover, "disabled:opacity-30 disabled:hover:bg-transparent")}
     >
-      <Icon node={icon} size={18} tone="onBrand" filled={icon !== iconListMusic} />
+      <Icon node={icon} size={16} tone="onBrand" filled={icon !== iconListMusic} />
     </button>
   );
 }
 
 /** The player's title: on another page, a click goes back to the text it is reading. */
 function TitleLink({ open, children }: { open: PlaybackBarProps["open"]; children: ReactNode }) {
-  if (!open) return <div className={documentsClasses.fill}>{children}</div>;
+  if (!open) return <div className="min-w-0">{children}</div>;
   return (
-    <button type="button" onClick={open.onPress} title={open.hint} className={cn(documentsClasses.fill, "text-left")}>
+    <button type="button" onClick={open.onPress} title={open.hint} className="block w-full min-w-0 text-left">
       {children}
     </button>
   );
@@ -304,7 +298,7 @@ function CloseButton({ close }: { close: PlaybackBarProps["close"] }) {
   if (!close) return null;
   return (
     <button type="button" onClick={close.onPress} aria-label={close.label} title={close.label} className={cn(documentsClasses.barSkip, documentsClasses.barSkipHover, "ml-1")}>
-      <Icon node={iconX} size={18} tone="onBrand" />
+      <Icon node={iconX} size={16} tone="onBrand" />
     </button>
   );
 }

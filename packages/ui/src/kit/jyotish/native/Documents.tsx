@@ -130,90 +130,91 @@ export function PlaybackBar(props: PlaybackBarProps) {
   const { copy } = bar;
   const bottom = props.dockBottom ?? 16;
   if (bar.face === "hidden") return null;
-  const dock = (edge: React.ReactNode, children: React.ReactNode) => (
+  const dock = (children: React.ReactNode) => (
     <Dock bottom={bottom} inset={props.dockInset} onHeight={props.onDockHeight}>
       <Box className={documentsClasses.barShell}>
         <Box className={cn(documentsClasses.barInner, documentsClasses.barRow)} nativeClassName="flex-row items-center">
           {children}
         </Box>
-        {edge}
       </Box>
     </Dock>
   );
   if (bar.face === "idle") {
     const start = bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.();
     return dock(
-      null,
       <>
         <Pressable onPress={start} label={bar.idle.title} className={documentsClasses.barPlay}>
-          <Icon node={iconPlay} size={20} tone="onBrand" filled />
+          <Icon node={iconPlay} size={16} tone="onBrand" filled />
         </Pressable>
         <Pressable onPress={start} label={bar.idle.title} suppressPressScale className={documentsClasses.fill}>
-          <BarText kicker={props.documentTitle} title={bar.idle.title} />
+          <BarHead kicker={props.documentTitle} title={bar.idle.title} />
         </Pressable>
         <Box className={documentsClasses.barSkip}>
-          <Icon node={iconHeadphones} size={18} tone="onBrand" />
+          <Icon node={iconHeadphones} size={16} tone="onBrand" />
         </Box>
       </>,
     );
   }
   if (bar.face === "full") {
-    const max = props.fullDuration || 1;
     return dock(
-      <Edge fillPct={bar.full.fillPct}>
-        {props.renderSeek ? props.renderSeek({ value: props.fullCurrentTime, max, fillPct: bar.full.fillPct, label: copy.seek, onChange: props.onSeekFull }) : null}
-      </Edge>,
       <>
         <SkipButton icon={iconSkipBack} label={copy.prevTrack} disabled={!props.hasPrevFull} onPress={props.onPrevFull} />
         <Pressable onPress={props.onToggleFull} label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
-          <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled />
+          <Icon node={bar.full.playing ? iconPause : iconPlay} size={16} tone="onBrand" filled />
         </Pressable>
         <SkipButton icon={iconSkipForward} label={copy.nextTrack} disabled={!props.hasNextFull} onPress={props.onNextFull} />
-        <TitleLink open={props.open}>
-          <BarText kicker={bar.full.kicker} title={bar.full.heading} />
-        </TitleLink>
+        <Box className={documentsClasses.fill}>
+          <TitleLink open={props.open}>
+            <BarHead kicker={bar.full.kicker} title={bar.full.heading} />
+          </TitleLink>
+          <Box className={documentsClasses.barScrubRow} nativeClassName="flex-row items-center">
+            <Text className={documentsClasses.barTime}>{bar.full.current}</Text>
+            {props.renderSeek ? (
+              props.renderSeek({ value: props.fullCurrentTime, max: props.fullDuration || 1, fillPct: bar.full.fillPct, label: copy.seek, onChange: props.onSeekFull })
+            ) : (
+              <Box className={documentsClasses.barTrack}>
+                <Box className={documentsClasses.barTrackFill} widthPercent={bar.full.fillPct} />
+              </Box>
+            )}
+            <Text className={cn(documentsClasses.barTime, "text-right")}>{bar.full.total}</Text>
+          </Box>
+        </Box>
         <CloseButton close={props.close} />
       </>,
     );
   }
   if (!props.activeShloka) return null;
   return dock(
-    bar.verse.hasClip ? <Edge fillPct={bar.verse.fillPct} /> : null,
     <>
       <SkipButton icon={iconSkipBack} label={copy.prevVerse} disabled={!props.hasPrev} onPress={props.onPrev} />
       <Pressable onPress={props.onToggleVerse} disabled={!bar.verse.hasClip} label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, !bar.verse.hasClip && "opacity-40")}>
-        <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled />
+        <Icon node={bar.verse.playing ? iconPause : iconPlay} size={16} tone="onBrand" filled />
       </Pressable>
       <SkipButton icon={iconSkipForward} label={copy.nextVerse} disabled={!props.hasNext} onPress={props.onNext} />
-      <TitleLink open={props.open}>
-        <BarText kicker={bar.verse.kicker} title={bar.verse.title} />
-      </TitleLink>
+      <Box className={documentsClasses.fill}>
+        <TitleLink open={props.open}>
+          <BarHead kicker={bar.verse.kicker} title={bar.verse.title} />
+        </TitleLink>
+        {bar.verse.hasClip ? (
+          <Box className={documentsClasses.barScrubRow} nativeClassName="flex-row items-center">
+            <Text className={documentsClasses.barTime}>{bar.verse.current}</Text>
+            <Box className={documentsClasses.barTrack}>
+              <Box className={documentsClasses.barTrackFill} widthPercent={bar.verse.fillPct} />
+            </Box>
+            <Text className={cn(documentsClasses.barTime, "text-right")}>{bar.verse.total}</Text>
+          </Box>
+        ) : null}
+      </Box>
       {bar.verse.canSwitchToFull ? <SkipButton icon={iconListMusic} label={copy.switchToFull} onPress={props.onSwitchToFull} /> : null}
       <CloseButton close={props.close} />
     </>,
   );
 }
 
-/**
- * The slim progress line along the band's top edge. The app's seek slider (`children`) lies over
- * it, a finger-sized strip centred on the line.
- */
-function Edge({ fillPct, children }: { fillPct: number; children?: React.ReactNode }) {
+/** The title line: the gold kicker ("ऋग्वेद") then the title ("सूक्त १.२"). */
+function BarHead({ kicker, title }: { kicker?: string; title: string }) {
   return (
-    <>
-      <Box className={documentsClasses.barEdge} nativeClassName="absolute">
-        <Box className={documentsClasses.barEdgeFill} widthPercent={fillPct} />
-      </Box>
-      {children ? (
-        <View style={{ position: "absolute", left: 0, right: 0, top: -14, height: 28, flexDirection: "row" }}>{children}</View>
-      ) : null}
-    </>
-  );
-}
-
-function BarText({ kicker, title }: { kicker?: string; title: string }) {
-  return (
-    <>
+    <Box className={documentsClasses.barHead} nativeClassName="flex-row items-baseline">
       {kicker ? (
         <Text className={documentsClasses.barKicker} numberOfLines={1}>
           {kicker}
@@ -222,7 +223,7 @@ function BarText({ kicker, title }: { kicker?: string; title: string }) {
       <Text className={documentsClasses.barTitle} numberOfLines={1}>
         {title}
       </Text>
-    </>
+    </Box>
   );
 }
 
@@ -230,16 +231,16 @@ function SkipButton({ icon, label, disabled, onPress }: { icon: typeof iconPlay;
   const off = disabled || !onPress;
   return (
     <Pressable onPress={onPress ?? (() => {})} disabled={off} label={label} className={cn(documentsClasses.barSkip, off && "opacity-30")}>
-      <Icon node={icon} size={18} tone="onBrand" filled={icon !== iconListMusic} />
+      <Icon node={icon} size={16} tone="onBrand" filled={icon !== iconListMusic} />
     </Pressable>
   );
 }
 
 /** The mini player's title: a tap goes back to the text it is reading. Plain text on the page itself. */
 function TitleLink({ open, children }: { open: PlaybackBarProps["open"]; children: React.ReactNode }) {
-  if (!open) return <Box className={documentsClasses.fill}>{children}</Box>;
+  if (!open) return <>{children}</>;
   return (
-    <Pressable onPress={open.onPress} label={open.hint} suppressPressScale className={documentsClasses.fill}>
+    <Pressable onPress={open.onPress} label={open.hint} suppressPressScale>
       <Box>{children}</Box>
     </Pressable>
   );
@@ -250,7 +251,7 @@ function CloseButton({ close }: { close: PlaybackBarProps["close"] }) {
   if (!close) return null;
   return (
     <Pressable onPress={close.onPress} label={close.label} className={cn(documentsClasses.barSkip, "ml-1")}>
-      <Icon node={iconX} size={18} tone="onBrand" />
+      <Icon node={iconX} size={16} tone="onBrand" />
     </Pressable>
   );
 }

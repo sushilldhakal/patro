@@ -90,7 +90,7 @@ function SeekSlider({
   const [held, setHeld] = useState<number | null>(null);
   return (
     <Slider
-      style={{ flex: 1, height: 28, marginHorizontal: -8 }}
+      style={{ flex: 1, height: 24 }}
       minimumValue={0}
       maximumValue={max}
       value={held ?? Math.min(value, max)}
