@@ -6,7 +6,6 @@
  * transport), with times, progress and copy.
  */
 import type { Shloka } from "@vedic-patro/api-client";
-import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@vedic-patro/i18n/react";
 
 export type PlaybackClock = { playing: boolean; currentTime: number; duration: number };
@@ -54,7 +53,7 @@ export function usePlaybackBar({
   verse: PlaybackClock;
   activeShloka: Shloka | null;
 }) {
-  const { t, lang, digits } = useLocale();
+  const { t, digits } = useLocale();
 
   const copy = {
     playFull: t("documents.play_full_recording"),
@@ -79,7 +78,6 @@ export function usePlaybackBar({
           ? "verse"
           : "hidden";
 
-  const meaning = activeShloka ? bilingualText(lang, activeShloka.meaning_ne, activeShloka.meaning_en, "") : "";
   /** Labels are stored with ASCII numerals ("1.1.1"); show them in the reader's digits. */
   const localLabel = (label: string) => label.replace(/\d/g, (d) => digits(Number(d)));
   const named = (what: string) => (documentTitle ? `${documentTitle} ${what}` : what);
@@ -124,9 +122,9 @@ export function usePlaybackBar({
       current: formatPlaybackTime(verse.currentTime),
       total: formatPlaybackTime(verse.duration),
       fillPct: percent(verse),
-      /** The verse playing, named in full: "ऋग्वेद १.१.१". */
-      kicker: activeShloka ? named(verseLabel) : (documentTitle ?? ""),
-      title: activeShloka ? meaning || t("documents.now_playing", { label: verseLabel }) : "",
+      /** Just what is playing, never the meaning: "ऋग्वेद १.१.१". */
+      kicker: "",
+      title: activeShloka ? named(verseLabel) : (documentTitle ?? ""),
       /** Hand off to the full recording at this verse's timestamp, or to this verse's sukta file. */
       canSwitchToFull:
         (hasFullRecording && activeShloka?.full_audio_start != null) ||
