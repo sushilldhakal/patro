@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type TouchEvent as ReactTouchEvent } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import {
@@ -17,6 +16,7 @@ import {
   slotCovered,
   snap,
   usePlannerText,
+  PlannerPrimaryDateContext,
   weekdayOf,
   weekDates,
   type BestSlot,
@@ -36,6 +36,8 @@ import { iconBriefcase, iconChevronLeft, iconChevronRight, iconPlus, iconStar, i
  * now-line, a year of small months and a list grouped by day. The same layout as the app's.
  */
 
+/** A public holiday's column, tinted as its month-grid cell is. */
+const HOLIDAY_TINT = "bg-surface-tint-danger";
 const HOUR_H = 56;
 const GUTTER = 56;
 /** Event colours: a soft fill, the bar and the title. */
@@ -45,10 +47,17 @@ const KIND = {
   appointment: { fill: "bg-warning/20", bar: "bg-warning", text: "text-warning" },
 } as const;
 
-const isoOfDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const hhmm = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 
 export function PlannerView(props: PlannerViewProps) {
+  return (
+    <PlannerPrimaryDateContext.Provider value={props.primaryDate ?? "bs"}>
+      <PlannerViewBody {...props} />
+    </PlannerPrimaryDateContext.Provider>
+  );
+}
+
+function PlannerViewBody(props: PlannerViewProps) {
   const { view, anchor, onAnchorChange, todayAd } = props;
   const tx = usePlannerText();
   const timeGrid = view === "day" || view === "multi" || view === "week";
@@ -151,7 +160,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange }: PlannerViewP
               >
                 {/* The filled circle grows in on the new day (Apple Calendar), keyed so each change replays it. */}
                 {isFirst ? <span key={date} aria-hidden className={cn("absolute inset-0 rounded-full animate-in zoom-in-50 fade-in duration-300 motion-reduce:animate-none", isToday ? "bg-danger" : "bg-foreground")} /> : null}
-                <span className="relative">{tx.bsDay(date)}</span>
+                <span className="relative">{tx.day(date)}</span>
               </span>
             </button>
           );
@@ -215,7 +224,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
             const isToday = date === todayAd;
             const holiday = marks.get(date)?.holiday;
             return (
-              <div key={date} className="relative flex min-w-0 flex-col border-l border-border/60">
+              <div key={date} className={cn("relative flex min-w-0 flex-col border-l border-border/60", holiday && HOLIDAY_TINT)}>
                 <button
                   type="button"
                   onClick={() => {
@@ -231,7 +240,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
                       isToday ? "bg-primary text-primary-foreground" : weekdayOf(date) === 6 || holiday ? "text-danger" : "text-foreground",
                     )}
                   >
-                    {tx.bsDay(date)}
+                    {tx.day(date)}
                   </span>
                 </button>
               </div>
@@ -247,7 +256,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
           {columns.map((c) => {
             const mark = marks.get(c.date);
             return (
-              <div key={c.date} className="relative flex min-w-0 flex-col gap-1 border-l border-border/60 p-1">
+              <div key={c.date} className={cn("relative flex min-w-0 flex-col gap-1 border-l border-border/60 p-1", mark?.holiday && HOLIDAY_TINT)}>
                 <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} onOpen={onOpenPersonal} tx={tx} />
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
                   <span className="flex min-w-0 items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1 text-sm font-medium text-success">
@@ -333,7 +342,7 @@ function TimeGrid({ view, days, events, marks, slots, yogas, personal, todayAd, 
             <div
               key={c.date}
               ref={ci === 0 ? colRef : undefined}
-              className="relative cursor-cell border-l border-border/60"
+              className={cn("relative cursor-cell border-l border-border/60", marks.get(c.date)?.holiday && HOLIDAY_TINT)}
               style={{ height: HOUR_H * 24 }}
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -591,31 +600,25 @@ function PersonalChip({ date, column, week, open, onToggle, onOpen, tx }: { date
 /** Apple's year: small months, the month name in colour, today filled red, holidays in red, a dot under days with events. */
 function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange }: PlannerViewProps) {
   const tx = usePlannerText();
-  const year = adToBS(new Date(`${anchor}T12:00:00`)).year;
-  const today = adToBS(new Date(`${todayAd}T12:00:00`));
   return (
     <div className="grid grid-cols-2 gap-x-5 gap-y-6 border-t border-border pt-4 sm:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
-        const first = bsToAD(year, month, 1);
-        const length = getBSMonthLength(year, month);
-        const cells: (number | null)[] = [...Array.from({ length: first.getDay() }, () => null), ...Array.from({ length }, (_, i) => i + 1)];
-        const current = today.year === year && today.month === month;
+      {tx.yearMonths(anchor).map((m) => {
+        const current = tx.sameMonth(m.first, todayAd);
         return (
-          <div key={month} className="min-w-0">
+          <div key={m.key} className="min-w-0">
             <button
               type="button"
               onClick={() => {
-                onAnchorChange(isoOfDate(first));
+                onAnchorChange(m.first);
                 onViewChange("calendar");
               }}
               className={cn("mb-1.5 border-none bg-transparent p-0 text-base font-bold", current ? "text-danger" : "text-foreground")}
             >
-              {tx.bsMonth(isoOfDate(first))}
+              {m.label}
             </button>
             <div className="grid grid-cols-7 gap-y-0.5 text-center">
-              {cells.map((day, i) => {
-                if (day == null) return <span key={`e-${i}`} />;
-                const iso = isoOfDate(bsToAD(year, month, day));
+              {Array.from({ length: m.lead }, (_, i) => <span key={`e-${i}`} />)}
+              {m.days.map(({ iso, n }) => {
                 const mark = marks.get(iso);
                 const has = eventsOnDate(events, iso).length > 0;
                 const isToday = iso === todayAd;
@@ -630,7 +633,7 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
                     className="relative flex h-6 items-center justify-center border-none bg-transparent p-0"
                   >
                     <span className={cn("inline-flex size-5 items-center justify-center rounded-full text-diagram-xs tabular-nums", isToday ? "bg-danger font-semibold text-white" : mark?.holiday ? "font-semibold text-danger" : "text-foreground hover:bg-muted")}>
-                      {tx.digits(day)}
+                      {tx.digits(n)}
                     </span>
                     {has && !isToday ? <span className="absolute -bottom-px size-1 rounded-full bg-primary" /> : null}
                   </button>

@@ -62,7 +62,6 @@ export function BsCalendarGrid({
             <DayCell
               key={cell.day.date_ad}
               cell={cell}
-              primaryDate={grid.primaryDate}
               isEnriching={isEnriching}
               todayBadge={grid.todayBadge}
               moon={moon}
@@ -113,7 +112,6 @@ export function BsCalendarGrid({
 
 function DayCell({
   cell,
-  primaryDate,
   isEnriching,
   todayBadge,
   moon,
@@ -121,7 +119,6 @@ function DayCell({
   onOpenFestivals,
 }: {
   cell: BsCalendarCell;
-  primaryDate: "bs" | "ad";
   isEnriching: boolean;
   todayBadge: string;
   moon?: BsCalendarGridProps["moon"];
@@ -172,8 +169,8 @@ function DayCell({
 
       {cell.tithiIndex != null && moon ? <Box className={cal.moonWrap}>{moon({ tithiIndex: cell.tithiIndex, title: cell.moonTitle })}</Box> : null}
 
-      {leftFest ? <EdgeLabel text={leftFest} side="left" className={cn(edgeTone, primaryDate === "bs" && "max-md:hidden")} /> : null}
-      {rightFest ? <EdgeLabel text={rightFest} side="right" className={cn(edgeTone, primaryDate === "bs" && "max-md:hidden")} /> : null}
+      {leftFest ? <EdgeLabel text={leftFest} side="left" className={edgeTone} /> : null}
+      {rightFest ? <EdgeLabel text={rightFest} side="right" className={edgeTone} /> : null}
 
       <Box className="relative z-[1] min-h-0 flex-1 flex-col pointer-events-none">
         <Text className="w-full items-start leading-none">
@@ -214,7 +211,7 @@ function DayCell({
               <Text className="md:hidden">{cell.secondaryLabelShort}</Text>
               <Text className="max-md:hidden">{cell.secondaryLabel}</Text>
             </Text>
-            {extraFestCount > 0 && primaryDate !== "bs" ? (
+            {extraFestCount > 0 ? (
               <Pressable
                 label={cell.extraFestAria}
                 onPress={onOpenFestivals}
@@ -260,7 +257,6 @@ function DayCell({
               "w-full min-w-0 flex-col gap-px",
               cal.festival,
               isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal,
-              primaryDate === "bs" && "max-md:hidden",
             )}
           >
             <Text numberOfLines={2}>{mainFest}</Text>

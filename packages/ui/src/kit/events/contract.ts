@@ -60,6 +60,8 @@ export type PlannerViewProps = {
   view: PlannerViewKind;
   /** The date the view is centred on, AD "YYYY-MM-DD". */
   anchor: string;
+  /** The calendar the dates lead with, as the month grid's वि.सं. / ई.सं. choice. Default BS. */
+  primaryDate?: "bs" | "ad";
   onAnchorChange: (date: string) => void;
   onViewChange: (view: HomeView) => void;
   events: CalendarEvent[];

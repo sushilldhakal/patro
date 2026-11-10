@@ -55,7 +55,6 @@ export function BsCalendarGrid({
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const { width } = useWindowDimensions();
   const grid = useBsCalendarGrid({ days, publicHolidayDates, selectedAdDate, todayAd, primaryDate: primaryDateProp, saitSource, events });
-  const { primaryDate } = grid;
   const { onLayout, col } = useGridWidth();
   const isCompact = width < 768;
   const isTablet = !isCompact;
@@ -119,7 +118,6 @@ export function BsCalendarGrid({
               if (!cell) return <View key={`empty-${cellIndex}`} style={colStyle(col, { minHeight: cellMinH })} className={cal.emptyCell} />;
 
               const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, extraFestCount, tithi } = cell;
-              const compactBsFest = cell.bsFestCompact && isCompact;
               /* The web mixes these tints into the card (`color-mix`); native has only the
                  translucent tint, so it is laid over the card instead of replacing it —
                  otherwise the grid lines' colour shows through. Holiday wins, as on the web. */
@@ -188,7 +186,7 @@ export function BsCalendarGrid({
                       <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
                         {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
                       </Text>
-                      {extraFestCount > 0 && primaryDate !== "bs" ? (
+                      {extraFestCount > 0 ? (
                         <RNPressable onPress={openFestivals} className={cn(cal.countBadge, isCompact && cal.countBadgePhone)}>
                           <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
                         </RNPressable>
@@ -216,13 +214,13 @@ export function BsCalendarGrid({
 
                   {/* A phone cell: one "+N" for festivals and the user's events together. A tap opens the day, or the
                       festival list when there are only festivals. */}
-                  {isCompact && cell.compactCount > 0 && (!isOutside || compactBsFest) ? (
+                  {isCompact && cell.compactCount > 0 && !isOutside ? (
                     <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.compactCountAria} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
                       <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>
                     </RNPressable>
                   ) : null}
 
-                  {mainFest && !isOutside && !compactBsFest ? (
+                  {mainFest && !isOutside ? (
                     <View className={cn("w-full min-w-0", cal.festivalExtraStack)}>
                       {/* Tablet: the festival's name opens its details. A phone cell is too small to
                           split, so a tap there selects the day. */}

@@ -217,20 +217,23 @@ function HomeScreen() {
   }, [patroView, width, setPatroView]);
   const daySlots = useBestSlots(windowDays, location.params, windowDays.length > 0);
   const personalDays = usePersonalDays(windowDays, location.params, isAuthenticated && windowDays.length > 0);
-  // The planner and the header's month follow each other: stepping a week into another BS month moves the
-  // month, and picking a month in the header moves the planner to its first day.
+  // The planner and the header's month follow each other: stepping a week into another month (BS, or AD
+  // when browsing ई.सं.) moves the month, and picking a month in the header moves the planner to its first day.
+  const plannerAd = isGregorianEra(browseEra);
+  const anchorMonth = (iso: string) =>
+    plannerAd ? { year: Number(iso.slice(0, 4)), month: Number(iso.slice(5, 7)) } : adToBS(new Date(`${iso}T12:00:00`));
   useEffect(() => {
-    if (!plannerKind || browseEra !== "bs") return;
-    const bs = adToBS(new Date(`${anchor}T12:00:00`));
-    if (bs.year !== year) setYear(bs.year);
-    if (bs.month !== month) setMonth(bs.month);
+    if (!plannerKind || (browseEra !== "bs" && !plannerAd)) return;
+    const shown = anchorMonth(anchor);
+    if (shown.year !== year) setYear(shown.year);
+    if (shown.month !== month) setMonth(shown.month);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anchor, plannerKind]);
   useEffect(() => {
-    if (!plannerKind || browseEra !== "bs") return;
-    const bs = adToBS(new Date(`${anchor}T12:00:00`));
-    if (bs.year === year && bs.month === month) return;
-    const first = bsToAD(year, month, 1);
+    if (!plannerKind || (browseEra !== "bs" && !plannerAd)) return;
+    const shown = anchorMonth(anchor);
+    if (shown.year === year && shown.month === month) return;
+    const first = plannerAd ? new Date(year, month - 1, 1) : bsToAD(year, month, 1);
     setAnchor(`${first.getFullYear()}-${String(first.getMonth() + 1).padStart(2, "0")}-${String(first.getDate()).padStart(2, "0")}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, month]);
@@ -429,6 +432,7 @@ function HomeScreen() {
           <PlannerView
             view={plannerKind}
             anchor={anchor}
+            primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
             onAnchorChange={setAnchor}
             onViewChange={(v) => setPatroView(v)}
             events={userEvents.events}

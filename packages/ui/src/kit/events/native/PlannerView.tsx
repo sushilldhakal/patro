@@ -2,7 +2,6 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import { AccessibilityInfo, PanResponder, Pressable, Text as RNText, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import Animated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
-import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/calendar/bs-calendar";
 import { shiftDate } from "@vedic-patro/domain/calendar/event-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import {
@@ -19,6 +18,7 @@ import {
   slotCovered,
   snap,
   usePlannerText,
+  PlannerPrimaryDateContext,
   weekdayOf,
   weekDates,
   type BestSlot,
@@ -47,7 +47,8 @@ const KIND = {
   appointment: { fill: "bg-warning/20", bar: "bg-warning", text: "text-warning" },
 } as const;
 
-const isoOfDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+/** A public holiday's column, tinted as its month-grid cell is. */
+const HOLIDAY_TINT = "bg-surface-tint-danger";
 const hhmm = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 
 /** A held day starts its new event at the next whole hour today, 9:00 on any other day. */
@@ -64,6 +65,14 @@ function useTablet() {
 }
 
 export function PlannerView(props: PlannerViewProps) {
+  return (
+    <PlannerPrimaryDateContext.Provider value={props.primaryDate ?? "bs"}>
+      <PlannerViewBody {...props} />
+    </PlannerPrimaryDateContext.Provider>
+  );
+}
+
+function PlannerViewBody(props: PlannerViewProps) {
   const { view, anchor, onAnchorChange, todayAd, wrapBody } = props;
   const tx = usePlannerText();
   const { tablet } = useTablet();
@@ -174,7 +183,7 @@ function DayStrip({ view, anchor, marks, todayAd, onAnchorChange, onCreateAt }: 
                   </Animated.View>
                 ) : null}
                 <Text className={cn("font-num text-title", isFirst ? (isToday ? "font-semibold text-white" : "font-semibold text-background") : isToday ? "font-semibold text-danger" : holiday ? "text-danger" : "text-foreground")}>
-                  {tx.bsDay(date)}
+                  {tx.day(date)}
                 </Text>
               </View>
             </Pressable>
@@ -261,7 +270,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
             const isToday = date === todayAd;
             const holiday = marks.get(date)?.holiday;
             return (
-              <View key={date} style={colStyle} className="relative border-l border-border">
+              <View key={date} style={colStyle} className={cn("relative border-l border-border", holiday && HOLIDAY_TINT)}>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => {
@@ -278,7 +287,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                   {/* Apple's week heading: "Sun 5" on one line, today's date in a red circle. */}
                   <Text className={cn("text-body", isToday ? "font-semibold text-danger" : "text-muted-foreground")}>{tx.weekdayShort(date)}</Text>
                   <View className={cn("h-8 min-w-8 items-center justify-center rounded-full px-1", isToday && "bg-danger")}>
-                    <Text className={cn("font-num text-title font-semibold", isToday ? "text-white" : weekdayOf(date) === 6 || holiday ? "text-danger" : "text-foreground")}>{tx.bsDay(date)}</Text>
+                    <Text className={cn("font-num text-title font-semibold", isToday ? "text-white" : weekdayOf(date) === 6 || holiday ? "text-danger" : "text-foreground")}>{tx.day(date)}</Text>
                   </View>
                 </Pressable>
               </View>
@@ -298,7 +307,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
           {columns.map((c) => {
             const mark = marks.get(c.date);
             return (
-              <View key={c.date} style={colStyle} className="gap-1 border-l border-border p-1">
+              <View key={c.date} style={colStyle} className={cn("gap-1 border-l border-border p-1", mark?.holiday && HOLIDAY_TINT)}>
                 <PersonalChip date={c.date} column={personal.get(c.date)} week={view === "week"} open={openPersonal === c.date} onToggle={() => setOpenPersonal(openPersonal === c.date ? null : c.date)} onOpen={onOpenPersonal} tx={tx} />
                 {(yogas.get(c.date)?.length ?? 0) > 0 ? (
                   <View className="flex-row items-center gap-1.5 rounded-lg bg-success/10 px-2 py-1">
@@ -380,7 +389,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
                 onCreateAt(c.date, hhmm(minutes));
               }}
               style={{ ...colStyle, height: HOUR_H * 24 }}
-              className="border-l border-border"
+              className={cn("border-l border-border", marks.get(c.date)?.holiday && HOLIDAY_TINT)}
             >
               {/* Hour lines only, as Apple draws them: half-hour lines made the grid look ruled. */}
               {Array.from({ length: 23 }, (_, i) => i + 1).map((h) => (
@@ -621,37 +630,33 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
   const tx = usePlannerText();
   const { tablet } = useTablet();
   const perRow = tablet ? 4 : 3;
-  const year = adToBS(new Date(`${anchor}T12:00:00`)).year;
-  const today = adToBS(new Date(`${todayAd}T12:00:00`));
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const months = tx.yearMonths(anchor);
   const rows = Array.from({ length: Math.ceil(12 / perRow) }, (_, r) => months.slice(r * perRow, r * perRow + perRow));
   return (
     <View className="gap-6 border-t border-border pt-4">
       {rows.map((row, r) => (
         <View key={r} className="flex-row gap-3">
-          {row.map((month) => {
-            const first = bsToAD(year, month, 1);
-            const length = getBSMonthLength(year, month);
-            const cells: (number | null)[] = [...Array.from({ length: first.getDay() }, () => null), ...Array.from({ length }, (_, i) => i + 1)];
+          {row.map((m) => {
+            const cells: ({ iso: string; n: number } | null)[] = [...Array.from({ length: m.lead }, () => null), ...m.days];
             while (cells.length % 7 !== 0) cells.push(null);
             const weeks = Array.from({ length: cells.length / 7 }, (_, w) => cells.slice(w * 7, w * 7 + 7));
-            const current = today.year === year && today.month === month;
+            const current = tx.sameMonth(m.first, todayAd);
             return (
-              <View key={month} className="min-w-0 flex-1">
+              <View key={m.key} className="min-w-0 flex-1">
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => {
-                    onAnchorChange(isoOfDate(first));
+                    onAnchorChange(m.first);
                     onViewChange("calendar");
                   }}
                 >
-                  <Text className={cn("mb-1 text-body font-bold", current ? "text-danger" : "text-foreground")}>{tx.bsMonth(isoOfDate(first))}</Text>
+                  <Text className={cn("mb-1 text-body font-bold", current ? "text-danger" : "text-foreground")}>{m.label}</Text>
                 </Pressable>
                 {weeks.map((week, w) => (
                   <View key={w} className="flex-row">
                     {week.map((day, i) => {
                       if (day == null) return <View key={`e-${w}-${i}`} className="h-5 flex-1" />;
-                      const iso = isoOfDate(bsToAD(year, month, day));
+                      const { iso } = day;
                       const holiday = marks.get(iso)?.holiday;
                       const has = eventsOnDate(events, iso).length > 0;
                       const isToday = iso === todayAd;
@@ -667,7 +672,7 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
                           className="h-5 flex-1 items-center justify-center"
                         >
                           <View className={cn("h-4 w-4 items-center justify-center rounded-full", isToday && "bg-danger")}>
-                            <Text className={cn("font-num text-diagram-xs", isToday ? "font-semibold text-white" : holiday ? "font-semibold text-danger" : "text-foreground")}>{tx.digits(day)}</Text>
+                            <Text className={cn("font-num text-diagram-xs", isToday ? "font-semibold text-white" : holiday ? "font-semibold text-danger" : "text-foreground")}>{tx.digits(day.n)}</Text>
                           </View>
                           {has && !isToday ? <View className="absolute bottom-0 h-1 w-1 rounded-full bg-primary" /> : null}
                         </Pressable>

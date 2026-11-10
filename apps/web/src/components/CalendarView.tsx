@@ -6,6 +6,7 @@ import {
   homeViewsFor,
   plannerDays,
   isPlannerView,
+  PlannerPrimaryDateContext,
   parseHomeView,
   useDayMarks,
   useUserEvents,
@@ -184,11 +185,13 @@ export function CalendarView({
     onMonthContextChange(monthContext);
   }, [monthContext, monthDays, onMonthContextChange]);
 
-  // Stepping the planner into another BS month moves the header's month with it.
+  // Stepping the planner into another month (BS or AD, as browsed) moves the header's month with it.
   useEffect(() => {
-    if (!plannerKind || isGregorian) return;
-    const bs = adToBS(new Date(`${anchor}T12:00:00`));
-    if (bs.year !== year || bs.month !== month) monthBrowse.setYearMonth(bs.year, bs.month);
+    if (!plannerKind) return;
+    const shown = isGregorian
+      ? { year: Number(anchor.slice(0, 4)), month: Number(anchor.slice(5, 7)) }
+      : adToBS(new Date(`${anchor}T12:00:00`));
+    if (shown.year !== year || shown.month !== month) monthBrowse.setYearMonth(shown.year, shown.month);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anchor, plannerKind]);
 
@@ -291,6 +294,7 @@ export function CalendarView({
     <PlannerView
       view={plannerKind}
       anchor={anchor}
+      primaryDate={isGregorian ? "ad" : "bs"}
       onAnchorChange={setAnchor}
       onViewChange={switchPatroView}
       events={userEvents.events}
@@ -311,7 +315,8 @@ export function CalendarView({
     />
   ) : null;
   const shownBlock = (
-    <>
+    // The planner and its dialogs print dates in the browsed calendar (वि.सं. or ई.सं.).
+    <PlannerPrimaryDateContext.Provider value={isGregorian ? "ad" : "bs"}>
       {plannerBlock ?? calendarBlock}
       {editor ? <EventEditorDialog editing={editor.event} slot={editor.slot} onClose={() => setEditor(null)} /> : null}
       <PersonalReadingDialog detail={personalDetail} onClose={() => setPersonalDetail(null)} />
@@ -324,7 +329,7 @@ export function CalendarView({
           void navigate({ to: "/panchanga", search: buildPatroDaySearch(location ?? DEFAULT_PANCHANGA_LOCATION, state) as never });
         }}
       />
-    </>
+    </PlannerPrimaryDateContext.Provider>
   );
 
   const headerPrevDisabled = homeMonth.prevDisabled;
@@ -340,8 +345,8 @@ export function CalendarView({
           onChange={(next) => {
             setSelected(null);
             onDaySelect?.(null);
-            if (plannerKind && !isGregorian) {
-              const first = bsToAD(next.year, next.month, 1);
+            if (plannerKind) {
+              const first = isGregorian ? new Date(next.year, next.month - 1, 1) : bsToAD(next.year, next.month, 1);
               setAnchor(`${first.getFullYear()}-${String(first.getMonth() + 1).padStart(2, "0")}-${String(first.getDate()).padStart(2, "0")}`);
             }
             monthBrowse.setYearMonth(next.year, next.month);

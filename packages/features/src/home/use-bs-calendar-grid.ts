@@ -42,12 +42,10 @@ export type BsCalendarCell = {
   mainFest?: string;
   leftFest?: string;
   rightFest?: string;
-  /** Festivals beyond the two edge labels (`+n` badge in AD mode). */
+  /** Festivals beyond the two edge labels (`+n` badge). */
   extraFestCount: number;
   extraFestLabel: string;
   extraFestAria: string;
-  /** BS patro on narrow screens: tint + count badge only, no labels. */
-  bsFestCompact: boolean;
   festCountLabel: string;
   festCountAria: string;
   festivalsTitle: string;
@@ -162,18 +160,16 @@ export function useBsCalendarGrid({
       extraFestCount,
       extraFestLabel: `+${monoDigits(extraFestCount)}`,
       extraFestAria: t("calendar.festivals_more", { count: extraFestCount }),
-      bsFestCompact: primaryDate === "bs" && festCount > 0,
       festCountLabel: `+${monoDigits(festCount)}`,
       festCountAria: t("calendar.festivals_more", { count: festCount }),
       festivalsTitle: festivals.join(" · "),
       eventTitles,
       eventCountLabel: `+${monoDigits(eventTitles.length)}`,
       eventCountAria: t("calendar.events_count", { count: eventTitles.length }),
-      compactCount: (primaryDate === "bs" ? festCount : 0) + eventTitles.length,
-      compactCountLabel: `+${monoDigits((primaryDate === "bs" ? festCount : 0) + eventTitles.length)}`,
-      compactCountAria: [primaryDate === "bs" && festCount > 0 ? festivals.join(", ") : "", eventTitles.length ? t("calendar.events_count", { count: eventTitles.length }) : ""]
-        .filter(Boolean)
-        .join(" · "),
+      // Festivals are written in the cell in both calendars; the badge counts only the user's events.
+      compactCount: eventTitles.length,
+      compactCountLabel: `+${monoDigits(eventTitles.length)}`,
+      compactCountAria: eventTitles.length ? t("calendar.events_count", { count: eventTitles.length }) : "",
       tithi: bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne),
       tithiIndex: tithiIndexFromCalendarDay(day) ?? null,
       moonTitle: moonPhaseTitle(getPakshaPhase(day), isEn),

@@ -28,6 +28,7 @@ import {
   uniqueBsMonths,
 } from "@vedic-patro/read-models/calendar/local-calendar";
 import { parseCivilIso } from "@vedic-patro/domain/calendar/patro-day";
+import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { BBS_URL_YEAR_MAX, BBS_URL_YEAR_MIN, BS_FESTIVAL_STACK_MIN_YEAR, getPatroLimits, maxBrowseYearForEra } from "@vedic-patro/domain/calendar/patro-year-axis";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/calendar/patro-year-browse-step";
@@ -141,10 +142,14 @@ export function useHomeMonth({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monthsTick]);
 
-  const festivalYears = useMemo(
-    () => [...new Set(requiredMonths.map((m) => m.year))].filter((y) => y >= BS_FESTIVAL_STACK_MIN_YEAR).sort((a, b) => a - b),
-    [requiredMonths],
-  );
+  // Festivals are listed by BS year. An AD month's days fall in one or two BS years, so those
+  // are fetched (asking for "BS 2026" returned nothing, and the AD grid lost its holidays).
+  const festivalYears = useMemo(() => {
+    const years = isGregorian
+      ? requiredMonths.flatMap((m) => [adToBS(new Date(m.year, m.month - 1, 1)).year, adToBS(new Date(m.year, m.month, 0)).year])
+      : requiredMonths.map((m) => m.year);
+    return [...new Set(years)].filter((y) => y >= BS_FESTIVAL_STACK_MIN_YEAR).sort((a, b) => a - b);
+  }, [requiredMonths, isGregorian]);
   const festivalQueries = useQueries({
     queries: festivalYears.map((y) => ({
       queryKey: holidayKeys.festivals(y, "bs", undefined, location, lang),
