@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { usePlaybackBar, useShlokaCard } from "@vedic-patro/features/documents";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { DocumentGroupHeadingProps, PlaybackBarProps, ShlokaCardProps } from "../contract";
-import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward } from "../icons";
+import { iconChevronDown, iconChevronUp, iconHeadphones, iconListMusic, iconPause, iconPlay, iconSkipBack, iconSkipForward, iconX } from "../icons";
 
-const DOCK = "fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 mx-auto w-full max-w-2xl px-3 lg:bottom-4";
+/** Full width, just above the phone layout's bottom bar; at the foot of the window on a wide screen. */
+const DOCK = "fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 lg:bottom-0";
 
 export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen, playsFromFull, clip, onPlay, onToggleMeaning, onDetail, registerRef }: ShlokaCardProps) {
   const card = useShlokaCard({ shloka, isActive, isPlaying, playsFromFull, progress, clip });
@@ -172,89 +173,139 @@ export function PlaybackBar(props: PlaybackBarProps) {
   });
   const { copy } = bar;
   if (bar.face === "hidden") return null;
-  const skip = cn(documentsClasses.barSkip, documentsClasses.barSkipHover, "disabled:opacity-30 disabled:hover:bg-transparent");
   if (bar.face === "idle") {
+    const start = bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.();
     return (
-      <div className={DOCK}>
-        <button
-          type="button"
-          onClick={bar.idle.startsFull ? props.onStartFull : () => props.onPlayThrough?.()}
-          className={cn(documentsClasses.barShell, documentsClasses.barPadIdle, documentsClasses.barRow, "text-left transition-colors hover:border-ill-brand-off-white/30")}
-        >
-          <span className={documentsClasses.barPlay}>
-            <Icon node={iconPlay} size={20} tone="onBrand" filled className="ml-0.5" />
-          </span>
-          <span className={documentsClasses.fill}>
-            <span className={cn(documentsClasses.barKicker, "block truncate")}>{props.documentTitle}</span>
-            <span className={cn(documentsClasses.barTitle, "block truncate")}>{bar.idle.title}</span>
-          </span>
-          <span className={documentsClasses.barSkip}>
-            <Icon node={iconHeadphones} size={18} tone="onBrand" />
-          </span>
+      <Band>
+        <button type="button" onClick={start} aria-label={bar.idle.title} className={documentsClasses.barPlay}>
+          <Icon node={iconPlay} size={20} tone="onBrand" filled className="ml-0.5" />
         </button>
-      </div>
+        <button type="button" onClick={start} className={cn(documentsClasses.fill, "text-left")}>
+          <BarText kicker={props.documentTitle} title={bar.idle.title} />
+        </button>
+        <span className={cn(documentsClasses.barSkip, "pointer-events-none")} aria-hidden="true">
+          <Icon node={iconHeadphones} size={18} tone="onBrand" />
+        </span>
+      </Band>
     );
   }
   if (bar.face === "full") {
     return (
-      <div className={DOCK}>
-        <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
-          <button type="button" onClick={props.onToggleFull} aria-label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
-            <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.full.playing ? undefined : "ml-0.5"} />
-          </button>
-          <Box className={documentsClasses.fill}>
-            <Text as="p" className={cn(documentsClasses.barTitle, "truncate")}>{bar.full.title}</Text>
-            <Box className={documentsClasses.barScrubRow}>
-              <Text as="span" className={documentsClasses.barTime}>{bar.full.current}</Text>
-              <input
-                type="range"
-                className="shloka-scrub shloka-scrub-band w-full min-w-0 flex-1 cursor-pointer outline-none"
-                style={{ ["--fill" as string]: `${bar.full.fillPct}%` }}
-                min={0}
-                max={props.fullDuration || 1}
-                step={0.1}
-                value={Math.min(fullTime, props.fullDuration || 1)}
-                {...scrub.inputProps}
-                aria-label={copy.seek}
-              />
-              <Text as="span" className={cn(documentsClasses.barTime, "text-right")}>{bar.full.total}</Text>
-            </Box>
-          </Box>
-        </Box>
-      </div>
+      <Band
+        edge={
+          <Edge fillPct={bar.full.fillPct}>
+            <input
+              type="range"
+              className="absolute inset-x-0 -top-2 h-5 w-full cursor-pointer opacity-0"
+              min={0}
+              max={props.fullDuration || 1}
+              step={0.1}
+              value={Math.min(fullTime, props.fullDuration || 1)}
+              {...scrub.inputProps}
+              aria-label={copy.seek}
+            />
+          </Edge>
+        }
+      >
+        <SkipButton icon={iconSkipBack} label={copy.prevTrack} disabled={!props.hasPrevFull} onClick={props.onPrevFull} />
+        <button type="button" onClick={props.onToggleFull} aria-label={bar.full.toggleLabel} className={documentsClasses.barPlay}>
+          <Icon node={bar.full.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.full.playing ? undefined : "ml-0.5"} />
+        </button>
+        <SkipButton icon={iconSkipForward} label={copy.nextTrack} disabled={!props.hasNextFull} onClick={props.onNextFull} />
+        <TitleLink open={props.open}>
+          <BarText kicker={bar.full.kicker} title={bar.full.heading} />
+        </TitleLink>
+        <span className={cn(documentsClasses.barTime, "hidden shrink-0 sm:block")}>
+          {bar.full.current} / {bar.full.total}
+        </span>
+        <CloseButton close={props.close} />
+      </Band>
     );
   }
   return (
+    <Band edge={bar.verse.hasClip ? <Edge fillPct={bar.verse.fillPct} /> : null}>
+      <SkipButton icon={iconSkipBack} label={copy.prevVerse} disabled={!props.hasPrev} onClick={props.onPrev} />
+      <button type="button" onClick={props.onToggleVerse} disabled={!bar.verse.hasClip} aria-label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, "disabled:opacity-40")}>
+        <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
+      </button>
+      <SkipButton icon={iconSkipForward} label={copy.nextVerse} disabled={!props.hasNext} onClick={props.onNext} />
+      <TitleLink open={props.open}>
+        <BarText kicker={bar.verse.kicker} title={bar.verse.title} />
+      </TitleLink>
+      {bar.verse.hasClip ? (
+        <span className={cn(documentsClasses.barTime, "hidden shrink-0 sm:block")}>
+          {bar.verse.current} / {bar.verse.total}
+        </span>
+      ) : null}
+      {bar.verse.canSwitchToFull ? <SkipButton icon={iconListMusic} label={copy.switchToFull} onClick={props.onSwitchToFull} /> : null}
+      <CloseButton close={props.close} />
+    </Band>
+  );
+}
+
+/** The docked band; `edge` is the progress line along its top. */
+function Band({ edge, children }: { edge?: ReactNode; children: ReactNode }) {
+  return (
     <div className={DOCK}>
-      <Box className={cn(documentsClasses.barShell, documentsClasses.barPad, documentsClasses.barRow)}>
-        <button type="button" onClick={props.onPrev} disabled={!props.hasPrev} aria-label={copy.prevVerse} className={skip}>
-          <Icon node={iconSkipBack} size={18} tone="onBrand" filled />
-        </button>
-        <button type="button" onClick={props.onToggleVerse} disabled={!bar.verse.hasClip} aria-label={bar.verse.toggleLabel} className={cn(documentsClasses.barPlay, "disabled:opacity-40")}>
-          <Icon node={bar.verse.playing ? iconPause : iconPlay} size={20} tone="onBrand" filled className={bar.verse.playing ? undefined : "ml-0.5"} />
-        </button>
-        <button type="button" onClick={props.onNext} disabled={!props.hasNext} aria-label={copy.nextVerse} className={skip}>
-          <Icon node={iconSkipForward} size={18} tone="onBrand" filled />
-        </button>
-        <Box className={documentsClasses.fill}>
-          <Text as="p" className={cn(documentsClasses.barKicker, "truncate")}>{bar.verse.kicker}</Text>
-          <Text as="p" className={cn(documentsClasses.barTitle, "truncate")}>{bar.verse.title}</Text>
-          {bar.verse.hasClip ? (
-            <Box className={documentsClasses.barScrubRow}>
-              <Box className={documentsClasses.barTrack}>
-                <Box className={documentsClasses.barTrackFill} webClassName="transition-[width]" widthPercent={bar.verse.fillPct} />
-              </Box>
-              <Text as="span" className={cn(documentsClasses.barTime, "w-auto")}>{bar.verse.current} / {bar.verse.total}</Text>
-            </Box>
-          ) : null}
-        </Box>
-        {bar.verse.canSwitchToFull ? (
-          <button type="button" onClick={props.onSwitchToFull} aria-label={copy.switchToFull} title={copy.switchToFull} className={skip}>
-            <Icon node={iconListMusic} size={18} tone="onBrand" />
-          </button>
-        ) : null}
-      </Box>
+      <div className={documentsClasses.barShell}>
+        {edge}
+        <div className={cn(documentsClasses.barInner, documentsClasses.barRow)}>{children}</div>
+      </div>
     </div>
+  );
+}
+
+/** The slim progress line on the band's top edge; a seek control laid over it, when given. */
+function Edge({ fillPct, children }: { fillPct: number; children?: ReactNode }) {
+  return (
+    <div className={documentsClasses.barEdge}>
+      <div className={cn(documentsClasses.barEdgeFill, "transition-[width]")} style={{ width: `${fillPct}%` }} />
+      {children}
+    </div>
+  );
+}
+
+function BarText({ kicker, title }: { kicker?: string; title: string }) {
+  return (
+    <>
+      {kicker ? <span className={cn(documentsClasses.barKicker, "block truncate")}>{kicker}</span> : null}
+      <span className={cn(documentsClasses.barTitle, "block truncate")}>{title}</span>
+    </>
+  );
+}
+
+function SkipButton({ icon, label, disabled, onClick }: { icon: typeof iconPlay; label: string; disabled?: boolean; onClick?: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled || !onClick}
+      aria-label={label}
+      title={label}
+      className={cn(documentsClasses.barSkip, documentsClasses.barSkipHover, "disabled:opacity-30 disabled:hover:bg-transparent")}
+    >
+      <Icon node={icon} size={18} tone="onBrand" filled={icon !== iconListMusic} />
+    </button>
+  );
+}
+
+/** The player's title: on another page, a click goes back to the text it is reading. */
+function TitleLink({ open, children }: { open: PlaybackBarProps["open"]; children: ReactNode }) {
+  if (!open) return <div className={documentsClasses.fill}>{children}</div>;
+  return (
+    <button type="button" onClick={open.onPress} title={open.hint} className={cn(documentsClasses.fill, "text-left")}>
+      {children}
+    </button>
+  );
+}
+
+/** Stop and close the player. */
+function CloseButton({ close }: { close: PlaybackBarProps["close"] }) {
+  if (!close) return null;
+  return (
+    <button type="button" onClick={close.onPress} aria-label={close.label} title={close.label} className={cn(documentsClasses.barSkip, documentsClasses.barSkipHover, "ml-1")}>
+      <Icon node={iconX} size={18} tone="onBrand" />
+    </button>
   );
 }
 

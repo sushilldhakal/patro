@@ -8,9 +8,6 @@ import { useBreakpoint } from "@/lib/responsive";
 import { brand, withAlpha } from "@vedic-patro/design-tokens";
 import { PlaybackBar as Shared } from "@vedic-patro/ui/kit/jyotish";
 
-/** The floating bar's own side gutter (FloatingNavBar), so the player lines up with it. */
-const BAR_GUTTER = 16;
-
 /** Binds the shared transport to the app audio engine and the native slider. */
 export function PlaybackBar({
   audio,
@@ -59,10 +56,14 @@ export function PlaybackBar({
       onNext={audio.nextVerse}
       onPrev={audio.prevVerse}
       onSwitchToFull={audio.switchToFull}
+      hasPrevFull={audio.hasPrevFull}
+      hasNextFull={audio.hasNextFull}
+      onPrevFull={audio.prevFull}
+      onNextFull={audio.nextFull}
       dockBottom={floatingNavTabBarHeight(isTablet, insets.bottom) + 8}
-      // As wide as the bar, just above it, like a music app's mini player; the floating search /
+      // Edge to edge just above the tab bar, like a radio app's player; the floating search /
       // place buttons lift above it (setBarAccessoryHeight) instead of squeezing it to one side.
-      dockInset={BAR_GUTTER}
+      dockInset={0}
       onDockHeight={setBarAccessoryHeight}
       renderSeek={(args) => <SeekSlider {...args} />}
       close={close}
@@ -89,7 +90,7 @@ function SeekSlider({
   const [held, setHeld] = useState<number | null>(null);
   return (
     <Slider
-      style={{ flex: 1, height: 28 }}
+      style={{ flex: 1, height: 28, marginHorizontal: -8 }}
       minimumValue={0}
       maximumValue={max}
       value={held ?? Math.min(value, max)}

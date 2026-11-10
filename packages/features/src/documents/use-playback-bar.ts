@@ -63,6 +63,8 @@ export function usePlaybackBar({
     seek: t("documents.seek"),
     prevVerse: t("documents.prev_verse"),
     nextVerse: t("documents.next_verse"),
+    prevTrack: t("documents.prev_track"),
+    nextTrack: t("documents.next_track"),
     switchToFull: hasSuktaAudio ? t("documents.play_sukta") : t("documents.switch_to_full"),
   };
 
@@ -104,6 +106,12 @@ export function usePlaybackBar({
               ? `${documentTitle} · ${chapterTitle}`
               : documentTitle
             : copy.playFull,
+      /** The player's two lines, like a radio's station over its song: "ऋग्वेद" over "सूक्त १.१". */
+      kicker: documentTitle && (chapterTitle || (hasSuktaAudio && suktaNumber != null)) ? documentTitle : "",
+      heading:
+        hasSuktaAudio && suktaNumber != null
+          ? t("documents.sukta_label", { number: suktaLabel ? localLabel(suktaLabel) : digits(suktaNumber) })
+          : (chapterTitle ?? documentTitle ?? copy.playFull),
       toggleLabel: full.playing ? t("documents.pause_verse") : hasSuktaAudio ? copy.playSukta : copy.playFull,
       current: formatPlaybackTime(full.currentTime),
       total: formatPlaybackTime(full.duration),

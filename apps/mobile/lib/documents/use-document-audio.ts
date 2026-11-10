@@ -10,7 +10,7 @@ import {
 import type { Shloka } from "@/lib/documents/api";
 import { armBackgroundPlayback, ensurePlaybackSession, playbackArtworkUrl } from "@/lib/audio-session";
 import { isAudioAvailable } from "@vedic-patro/api-client";
-import { audioCoversAll, isNextSukta, isNextVerse, suktaTracksFrom } from "@vedic-patro/features/documents";
+import { audioCoversAll, fullRecordingSteps, isNextSukta, isNextVerse, suktaTracksFrom, type FullStep } from "@vedic-patro/features/documents";
 
 export type AudioMode = "full" | "verse" | null;
 
@@ -601,6 +601,23 @@ export function useDocumentAudio(
     [suktaTracks, mode, suktaNow, suktaStatus.playing, suktaPlaylist, startSukta],
   );
 
+  // Previous / next while a full recording plays: the neighbouring sukta file, or the neighbouring
+  // verse inside one recording (by its measured start).
+  const suktaList = suktaQueue();
+  const fullSteps = fullRecordingSteps({
+    trackCount: fullAudioUrl ? 1 : suktaList.length,
+    trackIndex: Math.max(0, suktaNow == null ? 0 : suktaList.indexOf(suktaNow)),
+    verseStarts: fullAudioUrl ? shlokas.map((s) => s.full_audio_start) : [],
+    currentTime: !fullAudioUrl && suktaTracks.length > 0 ? suktaStatus.currentTime : fullStatus.currentTime,
+  });
+  const runFullStep = (step: FullStep) => {
+    if (!step) return;
+    if (step.kind === "track") {
+      const sukta = suktaList[step.index];
+      if (sukta != null) startSukta(sukta);
+    } else seekFull(step.time);
+  };
+
   return {
     missingIds,
     verifiedIds,
@@ -648,6 +665,10 @@ export function useDocumentAudio(
     canPlayThrough: coversAll,
     toggleFull,
     seekFull,
+    hasPrevFull: fullSteps.prev != null,
+    hasNextFull: fullSteps.next != null,
+    prevFull: () => runFullStep(fullSteps.prev),
+    nextFull: () => runFullStep(fullSteps.next),
     playFullAt,
     switchToFull,
     /** Whether any verse here has a clip of its own. */

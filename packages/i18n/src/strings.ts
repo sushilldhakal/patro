@@ -7259,6 +7259,8 @@ export const strings = {
   "documents.now_playing": { ne: "बज्दैछ · श्लोक {{label}}", en: "Now playing · verse {{label}}" },
   "documents.prev_verse": { ne: "अघिल्लो श्लोक", en: "Previous verse" },
   "documents.next_verse": { ne: "अर्को श्लोक", en: "Next verse" },
+  "documents.prev_track": { ne: "अघिल्लो", en: "Previous" },
+  "documents.next_track": { ne: "अर्को", en: "Next" },
   "documents.seek": { ne: "स्थिति सार्नुहोस्", en: "Seek" },
   "documents.play_full_recording": { ne: "पूरा रेकर्डिङ सुन्नुहोस्", en: "Play full recording" },
   "documents.play_through": { ne: "सुरुदेखि सुन्नुहोस्", en: "Play from the start" },

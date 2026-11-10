@@ -17,7 +17,7 @@ import { DocumentsBreadcrumb, type Crumb } from "@/components/documents/Document
 import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
-import { useDocumentPlayback } from "@/hooks/use-document-playback";
+import { useDocumentPlaybackSession } from "@/lib/document-audio-session";
 import { documentsListSearch, type DocumentDetailSearch } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -41,8 +41,19 @@ export function DocumentDetail() {
 
   useRouteLoading(page.status === "loading");
 
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls, hasSuktaAudio, suktaNumber, suktaLabel } =
-    useDocumentPlayback(page.shlokas, page.fullAudioUrl);
+  // The recording keeps playing when the reader leaves the page (lib/document-audio-session).
+  const playback = useDocumentPlaybackSession({
+    key: `doc:${slug ?? ""}`,
+    // The page's own path, not the location: while leaving, this page renders once more with the next path.
+    ready: Boolean(slug),
+    route: `/documents/${slug ?? ""}`,
+    shlokas: page.shlokas,
+    fullAudioUrl: page.fullAudioUrl,
+    complete: true,
+    documentTitle: page.title || undefined,
+  });
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls, hasSuktaAudio, suktaNumber, suktaLabel } = playback;
+  const closePlayer = { label: t("documents.close_player"), onPress: playback.close };
 
   useEffect(() => {
     if (!doc) return;
@@ -183,8 +194,7 @@ export function DocumentDetail() {
           </div>
         </section>
         {moreShelf}
-        {fullAudio.audioElement}
-        <PlaybackBar
+        {playback.foreign ? null : <PlaybackBar
           mode={mode === "verse" ? null : mode}
           hasFullRecording={hasFullRecording}
           documentTitle={page.title}
@@ -204,7 +214,12 @@ export function DocumentDetail() {
           onNext={() => {}}
           onPrev={() => {}}
           onSwitchToFull={() => {}}
-        />
+          hasPrevFull={playback.hasPrevFull}
+          hasNextFull={playback.hasNextFull}
+          onPrevFull={playback.prevFull}
+          onNextFull={playback.nextFull}
+          close={closePlayer}
+        />}
       </PageShell>
     );
   }
@@ -232,8 +247,7 @@ export function DocumentDetail() {
       <ReaderRows rows={page.rows} versePlayer={versePlayer} fullRecording={fullRecordingControls} />
       {moreShelf}
 
-      {fullAudio.audioElement}
-      <PlaybackBar
+      {playback.foreign ? null : <PlaybackBar
         mode={mode}
         hasFullRecording={hasFullRecording}
         hasSuktaAudio={hasSuktaAudio}
@@ -258,7 +272,12 @@ export function DocumentDetail() {
         onNext={versePlayer.next}
         onPrev={versePlayer.prev}
         onSwitchToFull={switchToFull}
-      />
+        hasPrevFull={playback.hasPrevFull}
+        hasNextFull={playback.hasNextFull}
+        onPrevFull={playback.prevFull}
+        onNextFull={playback.nextFull}
+        close={closePlayer}
+      />}
     </PageShell>
   );
 }

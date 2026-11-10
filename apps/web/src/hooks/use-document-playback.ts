@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { isNextSukta, suktaTracksFrom } from "@vedic-patro/features/documents";
+import { fullRecordingSteps, isNextSukta, suktaTracksFrom, type FullStep } from "@vedic-patro/features/documents";
 import type { Shloka } from "@/lib/documents-api";
 import { useFullRecordingAudio } from "@/hooks/use-full-recording-audio";
 import { useShlokaPlayer } from "@/hooks/use-shloka-player";
@@ -210,8 +210,33 @@ export function useDocumentPlayback(
     [hasSuktaAudio, suktaTracks, probed, playingSukta, toggleSukta],
   );
 
+  // Previous / next while a full recording plays: the neighbouring sukta file, or the neighbouring
+  // verse inside one recording (by its measured start).
+  const fullSteps = fullRecordingSteps({
+    trackCount: queue.length,
+    trackIndex: fullAudio.index,
+    verseStarts: fullAudioUrl ? shlokas.map((s) => s.full_audio_start) : [],
+    currentTime: fullAudio.currentTime,
+  });
+  const runFullStep = (step: FullStep) => {
+    if (!step) return;
+    if (step.kind === "track") fullAudio.playAt(step.index);
+    else fullAudio.seek(step.time);
+  };
+  /** Stop everything and put the bar back to its start button. */
+  const close = useCallback(() => {
+    player.stop();
+    fullAudio.pause();
+    setMode(null);
+  }, [player, fullAudio]);
+
   return {
     player,
+    close,
+    hasPrevFull: fullSteps.prev != null,
+    hasNextFull: fullSteps.next != null,
+    prevFull: () => runFullStep(fullSteps.prev),
+    nextFull: () => runFullStep(fullSteps.next),
     verseClipConfirmed,
     suktaControls,
     versePlayer,

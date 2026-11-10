@@ -264,6 +264,11 @@ export type PlaybackBarProps = {
   onNext: () => void;
   onPrev: () => void;
   onSwitchToFull: () => void;
+  /** Full recording: previous / next sukta file, or previous / next verse inside one recording. */
+  hasPrevFull?: boolean;
+  hasNextFull?: boolean;
+  onPrevFull?: () => void;
+  onNextFull?: () => void;
   /** App: distance from the bottom of the screen, above the tab bar. */
   dockBottom?: number;
   /** App: gutter kept on each side of the docked bar. */
@@ -272,9 +277,9 @@ export type PlaybackBarProps = {
   onDockHeight?: (height: number) => void;
   /** App slider. The website draws a range input. */
   renderSeek?: (args: PlaybackSeekArgs) => ReactNode;
-  /** App mini player on other pages: an X that stops and closes the player. */
+  /** Mini player on other pages (and the website's reader): an X that stops and closes the player. */
   close?: { label: string; onPress: () => void };
-  /** App mini player on other pages: tapping the title goes back to the text. */
+  /** Mini player on other pages: tapping the title goes back to the text. */
   open?: { hint: string; onPress: () => void };
 };
 

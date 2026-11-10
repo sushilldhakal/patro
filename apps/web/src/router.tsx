@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { Header } from "./components/Header";
 import { MobileBottomNav } from "./components/MobileBottomNav";
+import { DocumentMiniPlayer } from "./components/documents/DocumentMiniPlayer";
+import { DocumentAudioHost } from "./components/documents/DocumentAudioHost";
 import { AnalyticsTracker } from "./components/AnalyticsTracker";
 import { RouteSeo } from "./components/seo/RouteSeo";
 import { SiteFooter } from "./components/SiteFooter";
@@ -107,6 +109,9 @@ const rootRoute = createRootRoute({
               <Outlet />
               <SiteFooter />
             </div>
+            {/* A document's recording keeps playing on every page, with its mini player. */}
+            <DocumentAudioHost />
+            <DocumentMiniPlayer />
             <MobileBottomNav />
           </div>
         </RouteLoadingProvider>

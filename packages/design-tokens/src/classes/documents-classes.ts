@@ -285,21 +285,19 @@ export const documentsClasses = {
   verseMeaning: "text-lg leading-relaxed text-foreground",
 
   // ── Playback bar ──────────────────────────────────────────────────────────
-  // A deep brand-teal band in both themes: square outlined transport buttons, a solid
-  // saffron play button, a gold uppercase kicker over an off-white title.
-  barShell: "w-full max-w-2xl rounded-2xl border border-ill-brand-off-white/10 bg-ill-brand-blue-pressed shadow-lg",
-  barPadIdle: "px-3 py-3",
-  barPad: "px-3 py-3",
+  // A flat, full-width deep brand-teal band in both themes, like a radio's player: outlined
+  // square prev / next / close buttons, a solid saffron play button, a gold uppercase kicker
+  // over an off-white title, and a slim saffron progress line along the top edge.
+  barShell: "relative w-full border-t border-ill-brand-off-white/15 bg-ill-brand-blue-pressed shadow-lg",
+  barInner: "mx-auto w-full max-w-5xl px-4 py-3",
   barRow: "flex flex-row items-center gap-2.5",
-  barPlay: "flex size-11 shrink-0 items-center justify-center rounded-xl bg-ill-brand-saffron",
-  barSkip: "flex size-11 shrink-0 items-center justify-center rounded-xl border border-ill-brand-off-white/25",
+  barPlay: "flex size-11 shrink-0 items-center justify-center rounded-lg bg-ill-brand-saffron",
+  barSkip: "flex size-11 shrink-0 items-center justify-center rounded-lg border border-ill-brand-off-white/30",
   barSkipHover: "transition-colors hover:bg-ill-brand-off-white/10",
-  fill: "min-w-0 flex-1 pl-1",
-  barTitle: "text-base font-semibold text-ill-brand-off-white",
-  barSubtitle: "text-xs text-ill-brand-off-white/70",
+  fill: "min-w-0 flex-1 pl-1.5",
+  barTitle: "text-lg font-semibold leading-snug text-ill-brand-off-white",
   barKicker: "text-xs font-semibold uppercase tracking-wide text-ill-brand-gold",
-  barScrubRow: "mt-1 flex flex-row items-center gap-2",
-  barTime: "w-8 shrink-0 text-diagram-xs tabular-nums text-ill-brand-off-white/70",
-  barTrack: "h-1 w-full min-w-0 flex-1 overflow-hidden rounded-full bg-ill-brand-off-white/20",
-  barTrackFill: "h-full bg-ill-brand-saffron",
+  barTime: "text-diagram-xs tabular-nums text-ill-brand-off-white/70",
+  barEdge: "absolute inset-x-0 top-0 h-0.75 bg-ill-brand-off-white/15",
+  barEdgeFill: "h-full bg-ill-brand-saffron",
 } as const;

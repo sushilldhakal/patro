@@ -895,24 +895,6 @@
   border: 2px solid var(--card);
 }
 
-/* The player's brand-teal band: saffron fill and thumb on an off-white track. */
-.shloka-scrub-band {
-  background: linear-gradient(
-    90deg,
-    var(--color-ill-brand-saffron) 0%,
-    var(--color-ill-brand-saffron) var(--fill, 0%),
-    color-mix(in srgb, var(--color-ill-brand-off-white) 22%, transparent) var(--fill, 0%)
-  );
-}
-.shloka-scrub-band::-webkit-slider-thumb {
-  background: var(--color-ill-brand-saffron);
-  border-color: var(--color-ill-brand-blue-pressed);
-}
-.shloka-scrub-band::-moz-range-thumb {
-  background: var(--color-ill-brand-saffron);
-  border-color: var(--color-ill-brand-blue-pressed);
-}
-
 /* ── Sky time-rate slider — Aakash Gochar transport row + time sheet ── */
 .sky-time-slider {
   -webkit-appearance: none;

@@ -6032,6 +6032,8 @@
     "now_playing": "Now playing · verse {{label}}",
     "prev_verse": "Previous verse",
     "next_verse": "Next verse",
+    "prev_track": "Previous",
+    "next_track": "Next",
     "seek": "Seek",
     "play_full_recording": "Play full recording",
     "play_through": "Play from the start",

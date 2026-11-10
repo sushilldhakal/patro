@@ -6,7 +6,8 @@ import { PageShell } from "@/components/PageShell";
 import { DocumentGroupHeading, DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
-import { useDocumentPlayback } from "@/hooks/use-document-playback";
+import { useDocumentPlaybackSession } from "@/lib/document-audio-session";
+import { useLocale } from "@vedic-patro/i18n/react";
 import { documentsListSearch, type DocumentDetailSearch } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -74,11 +75,20 @@ export function DocumentChapterDetail() {
   useRouteLoading(page.loading);
 
   const { shlokas, hasNextPage, hasPreviousPage, fetchNextPage, fetchPreviousPage, isFetchingNextPage, isFetchingPreviousPage } = page;
-  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber, suktaLabel, suktaControls, verseClipConfirmed } = useDocumentPlayback(
+  const { t } = useLocale();
+  // The recording keeps playing when the reader leaves the page (lib/document-audio-session).
+  const playback = useDocumentPlaybackSession({
+    key: `chapter:${slug ?? ""}:${chapterNumber}`,
+    // The page's own path, not the location: while leaving, this page renders once more with the next path.
+    ready: Boolean(slug) && Number.isFinite(chapterNumber),
+    route: `/documents/${slug ?? ""}/${chapterNumber}`,
     shlokas,
-    page.fullAudioUrl,
-    page.complete,
-  );
+    fullAudioUrl: page.fullAudioUrl,
+    complete: page.complete,
+    documentTitle: page.docTitle || undefined,
+    chapterTitle: page.displayTitle || undefined,
+  });
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, hasSuktaAudio, suktaNumber, suktaLabel, suktaControls, verseClipConfirmed } = playback;
 
   const { hasNext: verseHasNext, hasPrev: verseHasPrev, next: playNext, prev: playPrev } = versePlayer;
   // Keep play-through moving into the next (or previous) page before the loaded window runs out.
@@ -268,8 +278,7 @@ export function DocumentChapterDetail() {
         )}
       </nav>
 
-      {fullAudio.audioElement}
-      <PlaybackBar
+      {playback.foreign ? null : <PlaybackBar
         mode={mode}
         hasFullRecording={Boolean(page.fullAudioUrl)}
         hasSuktaAudio={hasSuktaAudio}
@@ -295,7 +304,12 @@ export function DocumentChapterDetail() {
         onNext={onNext}
         onPrev={onPrev}
         onSwitchToFull={switchToFull}
-      />
+        hasPrevFull={playback.hasPrevFull}
+        hasNextFull={playback.hasNextFull}
+        onPrevFull={playback.prevFull}
+        onNextFull={playback.nextFull}
+        close={{ label: t("documents.close_player"), onPress: playback.close }}
+      />}
     </PageShell>
   );
 }
