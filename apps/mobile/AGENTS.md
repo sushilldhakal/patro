@@ -26,7 +26,7 @@ Three things, and they are not interchangeable:
 | | Where | What it is |
 |---|---|---|
 | Figures & studies | `components/learn/figures/`, `components/learn/studies/` | Ports of the website's own SVG figures and interactive studies (`apps/web/src/components/learn`), drawn with `react-native-svg`. Registry: `lib/learn/learn-diagrams.tsx`. |
-| Diagrams | `components/learn/diagrams/` | The apsides orbit (still a `LearnDiagram3D` scene), the hand-ported राशि-from-stars study, and today's hora (wired to the app's panchang data). |
+| Diagrams | `components/learn/diagrams/` | The hand-ported राशि-from-stars study, today's hora, and the reference tables. |
 | Playground | `components/learn/playground/` | **One** scene for every topic, configured per slug. |
 
 The playground is a port of the web app's `DayPlaygroundStudy` + `DaySimScene`,

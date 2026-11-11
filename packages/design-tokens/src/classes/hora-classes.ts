@@ -99,3 +99,10 @@ export const horaPlayBtn = cn(
 
 export const horaVerticalScrub =
   "hora-vertical-scrub min-h-0 w-2 flex-1 cursor-pointer touch-none select-none [-webkit-tap-highlight-color:transparent] max-sm:w-1.5";
+
+/* The app's hora ring (Learn): the status box above the ring, its round buttons and the week list heading. */
+export const horaStatusBox = "w-full max-w-[300px] flex-row rounded-xl border px-3 py-2.5";
+
+export const horaRoundBtn = "h-10 w-10 items-center justify-center rounded-full border active:opacity-80";
+
+export const horaWeekHead = "mb-2.5 text-center text-sm font-semibold uppercase tracking-wide";

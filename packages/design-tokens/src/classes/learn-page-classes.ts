@@ -32,6 +32,11 @@ export const learnPageClasses = {
   pathNum: "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-secondary/30 bg-card text-sm font-bold text-secondary",
   pathTitle: "block truncate text-sm font-semibold text-foreground",
   pathCount: "block text-xs text-muted-foreground",
+  /* The app draws the path map's rail, number and the module badges as boxes of their own. */
+  pathRail: "absolute bottom-5 top-5 w-px bg-border",
+  pathNumBox: "z-10 h-8 w-8 shrink-0 items-center justify-center rounded-full border border-secondary/30 bg-card",
+  moduleNumBox: "h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary shadow-sm",
+  moduleCountPill: "shrink-0 flex-row items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1",
 
   // ── Filter strip (website) ────────────────────────────────────────────────
   filterBar: "flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-3",

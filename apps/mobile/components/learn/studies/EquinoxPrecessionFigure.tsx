@@ -1,5 +1,6 @@
 import { Circle, Defs, Ellipse, G, Line, Path, RadialGradient, Stop, Text as SvgText } from "react-native-svg";
 import { STUDY_FONT, useTm } from "@/components/learn/study/study-ink";
+import { useSvgRefShim } from "@/components/learn/study/StudyDragLayer";
 import { StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow, StudySliderLabel, StudySliderRow, StudySvg } from "@/components/learn/study/StudyCard";
 import { useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -8,6 +9,8 @@ import { useLocaleDigits } from "@/components/learn/study/study-digits";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { getRashiList } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { RashiGlyph } from "@/components/learn/studies/rashi-icon-figures";
+import { useSvgZoom } from "@/components/learn/studies/use-svg-zoom";
+import { ZoomBar } from "@/components/learn/studies/ZoomBarFigure";
 
 import { illustration } from "@vedic-patro/design-tokens";
 /**
@@ -96,6 +99,8 @@ export function EquinoxPrecession() {
   const [year, setYear] = useState(nowBs);
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
+  const svgRef = useSvgRefShim();
+  const zoom = useSvgZoom(svgRef, VB.W, VB.H);
 
   useEffect(() => {
     if (!playing || !live) return;
@@ -171,7 +176,7 @@ export function EquinoxPrecession() {
 
   return (
     <StudyCard view={studyView}>
-      <StudySvg w={VB.W} h={VB.H} label={t("learn.study.equinox.aria")}>
+      <StudySvg viewBox={zoom.viewBox} label={t("learn.study.equinox.aria")} overlay={zoom.layer}>
         <Defs>
           <RadialGradient id="ep-earth" cx="42%" cy="38%" r="65%">
             <Stop offset="0%" stopColor={illustration.sky86} />
@@ -270,6 +275,7 @@ export function EquinoxPrecession() {
           </SvgText>
         </G>
       </StudySvg>
+      <ZoomBar zoom={zoom} hint={t("learn.zoom_hint")} labels={{ in: t("ui.learn.zoom_in"), out: t("ui.learn.zoom_out"), reset: t("ui.learn.reset_view") }} />
 
       <StudyControls>
         <StudyReadoutGrid>

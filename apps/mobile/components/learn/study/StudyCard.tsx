@@ -326,6 +326,7 @@ export function StudyRange({
   step = 0,
   value,
   onChange,
+  onSlidingComplete,
   disabled,
 }: {
   min: number;
@@ -333,6 +334,7 @@ export function StudyRange({
   step?: number;
   value: number;
   onChange: (v: number) => void;
+  onSlidingComplete?: (v: number) => void;
   disabled?: boolean;
 }) {
   const ink = useStudyInk();
@@ -345,6 +347,7 @@ export function StudyRange({
       step={step}
       disabled={disabled}
       onValueChange={onChange}
+      onSlidingComplete={onSlidingComplete}
       minimumTrackTintColor={ink.teal}
       maximumTrackTintColor={ink.mix(ink.teal, 25)}
       thumbTintColor={ink.isDark ? ink.gold : ink.teal}

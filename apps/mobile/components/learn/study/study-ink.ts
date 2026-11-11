@@ -54,6 +54,11 @@ const TM_KEYS: Record<string, keyof StudyInk> = {
   "--tm-gold": "gold",
   "--tm-card": "card",
   "--tm-border": "border",
+  "--hora-ink": "ink",
+  "--hora-ink-dim": "dim",
+  "--hora-ink-faint": "faint",
+  "--hora-yellow": "gold",
+  "--brand-gold": "gold",
 };
 
 /**

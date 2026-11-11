@@ -10,7 +10,7 @@ import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
  * draws what the website draws: its still figures (`components/learn/figures`)
  * and its interactive studies (`components/learn/studies`) are ports of the
  * website's own SVG, so a figure looks and moves the same in both apps. The
- * 3D exceptions are the apsides orbit and the two-systems playground.
+ * one 3D figure is the two-systems playground, which is 3D on the website too.
  */
 
 import type { ComponentType } from "react";
@@ -35,7 +35,6 @@ const earthGlobe = Asset.fromModule(require("@/assets/sky3d/earth.jpg")).uri;
 function EarthRotationDiagram() {
   return <EarthRotationFigure globeSrc={earthGlobe} />;
 }
-import { ApsidesOrbitDiagram } from "@/components/learn/diagrams/ApsidesOrbitDiagram";
 import { RashiFromStarsDiagram } from "@/components/learn/diagrams/RashiFromStarsDiagram";
 /* Studies: the website's interactive SVG studies, ported line for line. */
 import { HeliocentricOrbitStudy } from "@/components/learn/studies/HeliocentricOrbitStudyFigure";
@@ -47,6 +46,7 @@ import { ElongationStudy } from "@/components/learn/studies/ElongationStudyFigur
 import { MoonOrbitTiltStudy } from "@/components/learn/studies/MoonOrbitTiltFigure";
 import { EclipseStudy } from "@/components/learn/studies/EclipseStudyFigure";
 import { SolarEclipseStudy } from "@/components/learn/studies/SolarEclipseStudyFigure";
+import { ApsidesOrbit } from "@/components/learn/studies/ApsidesOrbitFigure";
 
 /* The website's "precession-sky": the equinox drifting round the fixed ring, then the axis's cone. */
 function PrecessionSkyDiagram() {
@@ -111,7 +111,7 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
 
   "rashi-from-stars": RashiFromStarsDiagram,
   "ayanamsha-wheel": AyanamshaWheel,
-  "apsides-seasons": ApsidesOrbitDiagram,
+  "apsides-seasons": ApsidesOrbit,
 
   "equinox-precession": EquinoxPrecession,
   "precession-cone": PrecessionCone,
