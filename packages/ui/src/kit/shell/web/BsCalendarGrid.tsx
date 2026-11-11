@@ -13,7 +13,7 @@ const TODAY_AD = new Date().toISOString().split("T")[0];
 function EdgeLabel({ text, side, className }: { text: string; side: "left" | "right"; className?: string }) {
   const { label, fontSize } = verticalEdgeLabel(text);
   return (
-    <Box className={cn(cal.edgeStrip, side === "left" ? "left-0.5" : "right-0.5")}>
+    <Box className={cn(cal.edgeStrip, side === "left" ? "left-0.5 inset-y-1" : "right-0.5 top-6 bottom-1")}>
       <Box className={cn("h-full w-full items-center justify-center overflow-hidden px-px py-0.5", side === "left" && "rotate-180")}>
         <span className={cn(cal.edgeText, className)} style={{ fontSize }}>
           {label}
@@ -224,27 +224,13 @@ function DayCell({
           </Text>
         </Box>
 
-        {cell.eventTitles.length > 0 ? (
-          <>
-            {/* Wide cells list the first titles; narrow ones count them in the one badge below. */}
-            <Box className="pointer-events-none mt-1 hidden w-full flex-col gap-px md:flex">
-              {cell.eventTitles.slice(0, 2).map((title, ei) => (
-                <Box key={`${title}-${ei}`} className={cal.eventChip}>
-                  <Text numberOfLines={1} className={cal.eventChipText}>{title}</Text>
-                </Box>
-              ))}
-              {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
-            </Box>
-          </>
-        ) : null}
-
-        {/* A narrow cell: one "+N" for festivals and the user's events together. A click opens the day,
+        {/* The user's events are a "+N" badge at every width, never their titles. A click opens the day,
             or the festival list when there are only festivals. */}
         {cell.compactCount > 0 ? (
           <Pressable
             label={cell.compactCountAria}
             onPress={cell.eventTitles.length > 0 ? onSelect : onOpenFestivals}
-            className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden", cal.countBadgeCompact, cal.countBadgeText)}
+            className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none", cal.countBadgeCompact, cal.countBadgeText)}
             webClassName="transition-opacity hover:opacity-90"
           >
             <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>

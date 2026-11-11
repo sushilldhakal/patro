@@ -23,6 +23,7 @@ import { patroDayFetchFromApiDateAd, patroDayFetchFromBrowseGridParts, type Patr
 import { PanchangaAsideTabPanel } from "@/components/home/PanchangaAsideTabs";
 import { prefetchAsidePanels } from "@/components/home/aside-prefetch";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
+import { GetTheApp } from "@/components/GetTheApp";
 import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
@@ -252,6 +253,7 @@ export function Home() {
             />
             <AakashGocharEntryCard className={cn("mt-3 max-sm:mx-2.5", homeClasses.aakashCardTone)} />
             <HomeVedaMantra dateAd={todayAd} className="mt-3 max-sm:mx-2.5" />
+            <GetTheApp className="mt-3 max-sm:mx-2.5" />
           </>
         }
         aside={<PanchangaAside ref={panchangaAsideRef} aside={aside} todayAd={todayAd} monthContext={monthContext} location={location} />}

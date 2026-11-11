@@ -5062,6 +5062,14 @@
     "graha": {
       "all_panchanga_elements": "All panchanga elements"
     },
+    "app_links": {
+      "title": "Get the Vedic Patro app",
+      "blurb": "The full patro, panchanga and reminders on your phone — free.",
+      "download_on": "Download on the",
+      "get_it_on": "Get it on",
+      "iphone": "iPhone / iPad",
+      "android": "Android"
+    },
     "home": {
       "geocentric": "Geocentric",
       "adhik_maas_label": "Adhik (Mala) Maas in {{year}}: {{month}}",

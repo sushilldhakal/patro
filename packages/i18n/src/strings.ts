@@ -7761,6 +7761,12 @@ export const strings = {
   "ui.graha.all_panchanga_elements": { ne: "सबै पञ्चाङ्ग तत्त्वहरू", en: "All panchanga elements" },
 
   /* ── ui.home ────────────────────────────────────────────────────────────── */
+  "ui.app_links.title": { ne: "वैदिक पात्रो एप डाउनलोड गर्नुहोस्", en: "Get the Vedic Patro app" },
+  "ui.app_links.blurb": { ne: "पूरा पात्रो, पञ्चाङ्ग र रिमाइन्डर तपाईंको फोनमा — निःशुल्क।", en: "The full patro, panchanga and reminders on your phone — free." },
+  "ui.app_links.download_on": { ne: "डाउनलोड गर्नुहोस्", en: "Download on the" },
+  "ui.app_links.get_it_on": { ne: "डाउनलोड गर्नुहोस्", en: "Get it on" },
+  "ui.app_links.iphone": { ne: "आइफोन / आइप्याड", en: "iPhone / iPad" },
+  "ui.app_links.android": { ne: "एन्ड्रोइड", en: "Android" },
   "ui.home.ashubh_times": { ne: "अशुभ समय", en: "Ashubh times" },
   "ui.home.could_not_load_calendar": { ne: "पात्रो लोड गर्न सकिएन।", en: "Could not load calendar." },
   "ui.home.full_detail": { ne: "पूरा विवरण →", en: "Full detail →" },

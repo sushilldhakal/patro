@@ -2,6 +2,7 @@ import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchan
 import { createContext, useContext } from "react";
 import { Outlet } from "@tanstack/react-router";
 import { PanchangaSidebarNav } from "@/components/panchanga/PanchangaSidebarNav";
+import { GetTheApp } from "@/components/GetTheApp";
 import { cn } from "@vedic-patro/design-tokens/cn";
 
 const PanchangaShellContext = createContext(false);
@@ -19,7 +20,10 @@ export function PanchangaShellLayout() {
     <PanchangaShellContext.Provider value={true}>
       <main className={panchangaPageClasses.directory.shellMain}>
         <div className={cn("flex", panchangaPageClasses.directory.shellRow)}>
-          <PanchangaSidebarNav className={SIDEBAR_CLASS} />
+          <div className={SIDEBAR_CLASS}>
+            <PanchangaSidebarNav />
+            <GetTheApp variant="compact" className={panchangaPageClasses.directory.shellAppLinks} />
+          </div>
           <div className={panchangaPageClasses.directory.shellContent}>
             <Outlet />
           </div>

@@ -628,7 +628,7 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
                     type="button"
                     onClick={() => {
                       onAnchorChange(iso);
-                      onViewChange("day");
+                      onViewChange("calendar");
                     }}
                     className="relative flex h-6 items-center justify-center border-none bg-transparent p-0"
                   >

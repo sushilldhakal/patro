@@ -201,6 +201,7 @@ export const panchangaPageClasses = {
     shellMain: "mx-auto max-w-page-wide px-4 py-8",
     shellRow: "items-start gap-6",
     shellContent: "min-w-0 flex-1 overflow-x-hidden",
+    shellAppLinks: "mt-3 rounded-xl border border-border bg-card p-3",
   },
 
   // ── Aside panels ──────────────────────────────────────────────────────────

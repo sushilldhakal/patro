@@ -27,7 +27,7 @@ export const calendarClasses = {
   cellSelected: "shadow-[inset_0_0_0_2px_var(--ring)]",
   cellHit: "absolute inset-0 z-0 border-none bg-transparent p-0",
   moonWrap: "pointer-events-none absolute right-0.5 top-0.5 z-[2] size-3.5 max-md:right-0 max-md:top-0 sm:size-4 md:right-1 md:top-1",
-  edgeStrip: "pointer-events-none absolute z-[2] flex w-[1.375rem] items-center justify-center overflow-visible max-md:hidden inset-y-1",
+  edgeStrip: "pointer-events-none absolute z-[2] flex w-[1.375rem] items-center justify-center overflow-visible max-md:hidden",
   edgeText: "inline-block max-h-full whitespace-nowrap font-num font-semibold leading-[1.4] tracking-wide [writing-mode:vertical-rl] [text-orientation:mixed]",
   cellWide: "p-2",
   cellPhone: "p-1",

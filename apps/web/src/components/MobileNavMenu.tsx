@@ -1,3 +1,4 @@
+import { GetTheApp } from "@/components/GetTheApp";
 import { useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Leaf, type LucideIcon } from "lucide-react";
@@ -144,6 +145,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <h2 className={navMenuClasses.categoryTitle}>{current.category.title}</h2>
       <MobileNavMenuView label={menu.navAria} sections={current.sections} />
+      <GetTheApp variant="compact" className="mt-3 border-t border-border pt-3" />
     </div>
   );
 }

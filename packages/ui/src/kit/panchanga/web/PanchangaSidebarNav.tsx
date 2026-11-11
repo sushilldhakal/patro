@@ -28,7 +28,7 @@ export function PanchangaSidebarNav({
       <Text as="p" className={s.navTitle}>
         {title}
       </Text>
-      <Box className={cn("flex max-h-[calc(100vh-6.5rem)] flex-col overflow-y-auto", s.navBody)}>
+      <Box className={cn("flex max-h-[calc(100vh-14rem)] flex-col overflow-y-auto", s.navBody)}>
         {sections.map((section) => (
           <Box as="section" key={section.id} className={s.section}>
             {section.categoryTitle ? (
