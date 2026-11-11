@@ -2,8 +2,10 @@
 // The widget runtime has no react/compiler-runtime: React Compiler output (`_c(...)` memo caches in the
 // helper components below) throws there and the widget draws blank. Keep this file out of the compiler.
 
-import { AccessoryWidgetBackground, Capsule, Divider, HStack, Image, Spacer, Text, VStack, ZStack } from "@expo/ui/swift-ui";
+import { AccessoryWidgetBackground, Divider, HStack, Image, Spacer, Text, VStack, ZStack } from "@expo/ui/swift-ui";
 import {
+  background,
+  clipShape,
   containerBackground,
   font,
   foregroundStyle,
@@ -13,19 +15,22 @@ import {
   padding,
   widgetURL,
 } from "@expo/ui/swift-ui/modifiers";
+import type { ComponentProps } from "react";
 import { createWidget, type WidgetEnvironment } from "expo-widgets";
 import { EMPTY_WIDGET_PROPS, type TodayWidgetProps, type WidgetDay, type WidgetItem } from "./today-widget-props";
 
+
+/** An SF Symbol name (type only; erased before the widget runtime sees the code). */
+type Sym = NonNullable<ComponentProps<typeof Image>["systemName"]>;
 /**
- * "आजको दिन" — the day widget (iOS), in the spirit of Apple's Calendar "Up Next" and "List":
- *  small     the BS date, tithi and the next thing on the day
- *  medium    the date on the left, today's list on the right (tomorrow's when today runs short)
- *  large     दिनभर: today and tomorrow in full — festivals, your events, tasks and appointments,
- *            शुभ / अशुभ windows, sunrise and sunset
+ * "आजको दिन" — the day widget (iOS), after Apple Calendar's "Up Next":
+ *  small      the BS date, the full tithi (कार्तिक शुक्ल द्वितीया) and the next thing on the day
+ *  medium     the date and tithi on the left, today's rows on the right (tomorrow's when today is short)
+ *  large      दिनभर: today and tomorrow — holiday, your events, tasks and appointments, festivals,
+ *             शुभ / अशुभ windows — under a header with the AD date, the moon and sun / moon times
  *  extraLarge (iPad) today and tomorrow side by side
  *  Lock Screen: inline, circular and rectangular
- * Runs in the widget extension's own JS runtime: nothing from outside this function is used, only
- * the @expo/ui globals. Every string arrives ready in props.
+ * Runs in the widget extension's own JS runtime: nothing from outside this function is used.
  */
 const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) => {
   "widget";
@@ -36,60 +41,77 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
     muted: dark ? "#A39E94" : "#7A7368", // design-ok
     teal: dark ? "#5FB8B3" : "#0E5C5E", // design-ok
     red: dark ? "#FF6B5E" : "#C62828", // design-ok
-    saffron: dark ? "#F2A44B" : "#C46A12", // design-ok
-    task: dark ? "#9C9CFF" : "#5B5BD6", // design-ok
-    appt: dark ? "#6FB1FF" : "#2F6FD0", // design-ok
-    shubh: dark ? "#6CC27A" : "#2E7D32", // design-ok
-    ashubh: dark ? "#E08A6A" : "#A94F2D", // design-ok
     sun: dark ? "#E8C35A" : "#B68A12", // design-ok
   };
-  const kindColor = (k: WidgetItem["kind"]) =>
-    k === "holiday" ? c.red : k === "festival" ? c.saffron : k === "task" ? c.task : k === "appointment" ? c.appt : k === "shubh" ? c.shubh : k === "ashubh" ? c.ashubh : k === "sun" ? c.sun : c.teal;
+  const hue: Record<WidgetItem["kind"], [string, string]> = {
+    holiday: dark ? ["#FF7A6E", "#3A2523"] : ["#B3261E", "#FBE7E5"], // design-ok
+    festival: dark ? ["#F2A44B", "#3A2C1C"] : ["#A85A0E", "#FCEEDD"], // design-ok
+    event: dark ? ["#6FC7C1", "#1F3332"] : ["#0E5C5E", "#E1EFEE"], // design-ok
+    task: dark ? ["#A9A9FF", "#2A2A42"] : ["#4747B8", "#E9E9FB"], // design-ok
+    appointment: dark ? ["#7DB8FF", "#1F2C3F"] : ["#245BB0", "#E2ECFA"], // design-ok
+    shubh: dark ? ["#79CC86", "#20321F"] : ["#2E7D32", "#E4F1E5"], // design-ok
+    ashubh: dark ? ["#E8957A", "#3A2820"] : ["#9C4426", "#F7E7E0"], // design-ok
+    sun: dark ? ["#E8C35A", "#3A321A"] : ["#8A6A0C", "#F8F0D5"], // design-ok
+  };
+  const icon: Record<WidgetItem["kind"], string> = {
+    holiday: "star.fill",
+    festival: "sparkles",
+    event: "calendar",
+    task: "checkmark.circle.fill",
+    appointment: "person.crop.circle.fill",
+    shubh: "checkmark.seal.fill",
+    ashubh: "exclamationmark.triangle.fill",
+    sun: "sun.horizon.fill",
+  };
   const family = environment.widgetFamily ?? "systemMedium";
   const days: WidgetDay[] = props.days ?? [];
   const today = days[0];
   const tomorrow = days[1];
   const hasData = (props.v ?? 0) > 0 && !!today;
+  const allDay = props.labels?.allDay ?? "";
+  const tithiFull = props.tithiFull || props.tithi;
 
   const T = ({ s, size, weight, color, lines }: { s: string; size: number; weight?: "regular" | "medium" | "semibold" | "bold" | "heavy"; color?: string; lines?: number }) => (
-    <Text modifiers={[font({ size, weight: weight ?? "regular" }), foregroundStyle(color ?? c.text), lineLimit(lines ?? 1), minimumScaleFactor(0.8)]}>{s}</Text>
+    <Text modifiers={[font({ size, weight: weight ?? "regular" }), foregroundStyle(color ?? c.text), lineLimit(lines ?? 1), minimumScaleFactor(0.75)]}>{s}</Text>
   );
 
-  /** One list row: a colour bar, the title and the time under it (Apple's list look). */
-  const Row = ({ item, big }: { item: WidgetItem; big?: boolean }) => (
-    <HStack spacing={6} alignment="center">
-      <Capsule modifiers={[frame({ width: 3, height: item.time ? (big ? 30 : 26) : big ? 18 : 16 }), foregroundStyle(kindColor(item.kind))]} />
-      <VStack alignment="leading" spacing={0}>
-        <T s={item.title} size={big ? 14 : 12.5} weight="semibold" color={item.kind === "holiday" ? c.red : c.text} />
-        {item.time ? <T s={item.time} size={big ? 12 : 11} color={c.muted} /> : null}
-      </VStack>
-      <Spacer />
-    </HStack>
-  );
+  /** Apple's row: a tinted rounded bar, the kind's icon, the title, and the time on the right. */
+  const Pill = ({ item, size, showAllDay }: { item: WidgetItem; size?: number; showAllDay?: boolean }) => {
+    const [fg, tint] = hue[item.kind] ?? hue.event;
+    const sz = size ?? 13;
+    return (
+      <HStack spacing={6} alignment="center" modifiers={[padding({ horizontal: 7, vertical: 4 }), frame({ maxWidth: 1000, alignment: "leading" }), background(tint), clipShape("roundedRectangle", 7)]}>
+        <Image systemName={(icon[item.kind] ?? "calendar") as Sym} size={sz - 1} color={fg} />
+        <Text modifiers={[font({ size: sz, weight: "semibold" }), foregroundStyle(fg), lineLimit(1), minimumScaleFactor(0.8)]}>{item.title}</Text>
+        <Spacer />
+        {item.time || showAllDay ? <Text modifiers={[font({ size: sz - 2, weight: "medium" }), foregroundStyle(fg), lineLimit(1)]}>{item.time || allDay}</Text> : null}
+      </HStack>
+    );
+  };
 
-  const DayHeader = ({ day, big }: { day: WidgetDay; big?: boolean }) => (
+  const DayHeader = ({ day, size }: { day: WidgetDay; size?: number }) => (
     <HStack spacing={6} alignment="firstTextBaseline">
-      <T s={day.title} size={big ? 15 : 12} weight="bold" color={c.teal} />
-      <T s={day.sub} size={big ? 12 : 11} color={c.muted} />
+      <T s={day.title} size={size ?? 12} weight="bold" color={day === today ? c.red : c.muted} />
+      <T s={day.sub} size={(size ?? 12) - 1} color={c.muted} />
       <Spacer />
     </HStack>
   );
 
-  const DateBlock = ({ size }: { size: number }) => (
+  const DateBlock = ({ size, tithiLines }: { size: number; tithiLines?: number }) => (
     <VStack alignment="leading" spacing={1}>
-      <T s={props.weekday} size={size * 0.3} weight="semibold" color={c.red} />
+      <T s={props.weekday} size={size * 0.31} weight="semibold" color={c.red} />
       <HStack spacing={5} alignment="firstTextBaseline">
         <T s={props.day} size={size} weight="bold" color={c.teal} />
         <VStack alignment="leading" spacing={0}>
-          <T s={props.month} size={size * 0.33} weight="semibold" />
+          <T s={props.month} size={size * 0.34} weight="semibold" />
           <T s={props.year} size={size * 0.27} color={c.muted} />
         </VStack>
       </HStack>
-      {props.tithi ? <T s={props.tithi} size={size * 0.3} weight="medium" color={c.text} /> : null}
+      {tithiFull ? <T s={tithiFull} size={size * 0.3} weight="semibold" color={c.text} lines={tithiLines ?? 1} /> : null}
     </VStack>
   );
 
-  const SunLine = () =>
+  const SunLine = ({ moon }: { moon?: boolean }) =>
     props.sunrise ? (
       <HStack spacing={8}>
         <HStack spacing={2}>
@@ -100,24 +122,30 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
           <Image systemName="sunset.fill" size={10} color={c.sun} />
           <T s={props.sunset} size={10.5} color={c.muted} />
         </HStack>
+        {moon && props.moonrise ? (
+          <HStack spacing={2}>
+            <Image systemName="moonrise.fill" size={10} color={c.muted} />
+            <T s={props.moonrise} size={10.5} color={c.muted} />
+          </HStack>
+        ) : null}
       </HStack>
     ) : null;
 
   const plain = (d?: WidgetDay) => (d?.items ?? []).filter((i) => i.kind !== "sun");
-  /** Rows for a list of `max` lines: today's, then tomorrow's under its own heading. */
-  const List = ({ max, big }: { max: number; big?: boolean }) => {
+  /** `max` lines in all: today's rows, then tomorrow's heading and rows. */
+  const Rows = ({ max, size }: { max: number; size?: number }) => {
     const first = plain(today).slice(0, max);
-    const room = max - first.length - 1;
+    const room = max - Math.max(first.length, 1) - 1;
     const second = room > 0 ? plain(tomorrow).slice(0, room) : [];
     return (
-      <VStack alignment="leading" spacing={big ? 7 : 5}>
+      <VStack alignment="leading" spacing={4}>
         {first.length === 0 ? <T s={props.empty} size={12} color={c.muted} /> : null}
         {first.map((item, i) => (
-          <Row key={`a${i}`} item={item} big={big} />
+          <Pill key={`a${i}`} item={item} size={size} />
         ))}
-        {second.length > 0 && tomorrow ? <DayHeader day={tomorrow} /> : null}
+        {second.length > 0 && tomorrow ? <DayHeader day={tomorrow} size={11} /> : null}
         {second.map((item, i) => (
-          <Row key={`b${i}`} item={item} big={big} />
+          <Pill key={`b${i}`} item={item} size={size} />
         ))}
       </VStack>
     );
@@ -127,7 +155,7 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
 
   // ── Lock Screen ─────────────────────────────────────────────────────────────
   if (family === "accessoryInline") {
-    return <Text>{`${props.month} ${props.day} · ${props.tithi}`}</Text>;
+    return <Text>{`${props.month} ${props.day} · ${tithiFull}`}</Text>;
   }
   if (family === "accessoryCircular") {
     return (
@@ -145,7 +173,7 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
     return (
       <VStack alignment="leading" spacing={0}>
         <Text modifiers={[font({ size: 14, weight: "bold" }), lineLimit(1)]}>{`${props.month} ${props.day} · ${props.weekday}`}</Text>
-        <Text modifiers={[font({ size: 13 }), lineLimit(1)]}>{props.tithi}</Text>
+        <Text modifiers={[font({ size: 13 }), lineLimit(1), minimumScaleFactor(0.8)]}>{tithiFull}</Text>
         {next ? <Text modifiers={[font({ size: 13, weight: "medium" }), lineLimit(1)]}>{next.time ? `${next.time} ${next.title}` : next.title}</Text> : null}
       </VStack>
     );
@@ -164,61 +192,57 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
 
   // ── Small: Apple's "Up Next" ───────────────────────────────────────────────
   if (family === "systemSmall") {
-    const next = plain(today)[0];
-    const later = !next ? plain(tomorrow)[0] : undefined;
+    const next = plain(today)[0] ?? plain(tomorrow)[0];
     return (
-      <VStack alignment="leading" spacing={4} modifiers={root}>
-        <DateBlock size={38} />
+      <VStack alignment="leading" spacing={3} modifiers={root}>
+        <DateBlock size={36} tithiLines={2} />
         <Spacer />
-        {next ? <Row item={next} /> : null}
-        {later ? (
-          <VStack alignment="leading" spacing={2}>
-            <T s={tomorrow!.title} size={10.5} weight="semibold" color={c.muted} />
-            <Row item={later} />
-          </VStack>
-        ) : null}
-        {!next && !later ? <SunLine /> : null}
+        {next ? <Pill item={next} size={12} /> : <SunLine />}
       </VStack>
     );
   }
 
-  // ── Medium: the date, then the list ────────────────────────────────────────
+  // ── Medium: the date and tithi, then the rows ──────────────────────────────
   if (family === "systemMedium") {
     return (
       <HStack alignment="top" spacing={12} modifiers={root}>
-        <VStack alignment="leading" spacing={4} modifiers={[frame({ width: 104, alignment: "leading" })]}>
-          <DateBlock size={42} />
+        <VStack alignment="leading" spacing={3} modifiers={[frame({ width: 122, alignment: "leading" })]}>
+          <DateBlock size={40} tithiLines={2} />
+          {props.tithiUntil ? <T s={props.tithiUntil} size={10.5} color={c.muted} /> : null}
           <Spacer />
           <SunLine />
         </VStack>
-        <VStack alignment="leading" spacing={4}>
-          <List max={4} />
+        <VStack alignment="leading" spacing={0}>
+          <Rows max={4} size={12.5} />
           <Spacer />
         </VStack>
       </HStack>
     );
   }
 
-  // ── Large and iPad: दिनभर, today and tomorrow ──────────────────────────────
+  // ── Large and iPad: दिनभर ─────────────────────────────────────────────────
   const Header = () => (
     <HStack alignment="top" spacing={8}>
-      <DateBlock size={46} />
+      <VStack alignment="leading" spacing={2}>
+        <DateBlock size={44} />
+        {props.tithiUntil ? <T s={props.tithiUntil} size={11} color={c.muted} /> : null}
+      </VStack>
       <Spacer />
-      <VStack alignment="trailing" spacing={3}>
+      <VStack alignment="trailing" spacing={4}>
         <T s={props.adDate} size={13} weight="semibold" color={c.muted} />
-        {props.paksha ? <T s={props.paksha} size={12} color={c.muted} /> : null}
-        <SunLine />
+        <Image systemName={(props.moonSymbol || "moonphase.waxing.crescent") as Sym} size={30} color={c.muted} />
+        <SunLine moon />
       </VStack>
     </HStack>
   );
   const DaySection = ({ day, max }: { day: WidgetDay; max: number }) => {
-    const items = day.items.slice(0, max);
+    const items = day.items.filter((i) => i.kind !== "sun").slice(0, max);
     return (
-      <VStack alignment="leading" spacing={5}>
-        <DayHeader day={day} big />
+      <VStack alignment="leading" spacing={4}>
+        <DayHeader day={day} size={13} />
         {items.length === 0 ? <T s={props.empty} size={12} color={c.muted} /> : null}
         {items.map((item, i) => (
-          <Row key={i} item={item} big={family === "systemExtraLarge"} />
+          <Pill key={i} item={item} showAllDay />
         ))}
       </VStack>
     );
@@ -231,12 +255,12 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
         <Divider />
         <HStack alignment="top" spacing={18}>
           <VStack alignment="leading">
-            <DaySection day={today!} max={9} />
+            <DaySection day={today!} max={10} />
             <Spacer />
           </VStack>
           {tomorrow ? (
             <VStack alignment="leading">
-              <DaySection day={tomorrow} max={9} />
+              <DaySection day={tomorrow} max={10} />
               <Spacer />
             </VStack>
           ) : null}
@@ -245,14 +269,16 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
     );
   }
 
-  // About seven rows fit under the header: today's first, at least two of tomorrow's.
-  const todayCount = Math.min(today!.items.length, 5);
-  const tomorrowMax = Math.max(2, 7 - Math.max(todayCount, 1));
+  // About six rows fit under the header and two day headings: today's first, then tomorrow's.
+  const tomorrowHas = plain(tomorrow).length > 0;
+  const todayMax = tomorrowHas ? 4 : 6;
+  const todayCount = Math.min(plain(today).length, todayMax);
+  const tomorrowMax = Math.max(1, 6 - Math.max(todayCount, 1));
   return (
     <VStack alignment="leading" spacing={8} modifiers={root}>
       <Header />
       <Divider />
-      <DaySection day={today!} max={5} />
+      <DaySection day={today!} max={todayMax} />
       {tomorrow ? <DaySection day={tomorrow} max={tomorrowMax} /> : null}
       <Spacer />
     </VStack>

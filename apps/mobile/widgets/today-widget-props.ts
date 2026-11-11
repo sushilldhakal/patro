@@ -20,6 +20,21 @@ export type WidgetDay = {
   items: WidgetItem[];
 };
 
+/** One limb of the day's panchanga: "नक्षत्र" · "अनुराधा" · "११:५३ सम्म". */
+export type WidgetAnga = { label: string; value: string; until: string };
+
+/** Labels the layouts print, in the reader's language. */
+export type WidgetLabels = {
+  allDay: string;
+  shubh: string;
+  ashubh: string;
+  sunrise: string;
+  sunset: string;
+  moonrise: string;
+  moonset: string;
+  noEntries: string;
+};
+
 /** One square of the month grid. `k` holds flags: t today, h holiday, s Saturday, o outside the month, f festival, e the user's event. */
 export type WidgetCell = { d: string; a: string; k: string };
 
@@ -31,6 +46,23 @@ export type TodayWidgetProps = {
   weekday: string;
   /** "पञ्चमी" */
   tithi: string;
+  /** "कार्तिक शुक्ल द्वितीया" — the lunar month, the paksha and the tithi */
+  tithiFull: string;
+  /** "१६:०८ सम्म" — when today's tithi ends, or "" */
+  tithiUntil: string;
+  /** SF Symbol for the moon's phase ("moonphase.waxing.crescent") */
+  moonSymbol: string;
+  /** The same phase as an emoji, for Android */
+  moonEmoji: string;
+  /** नक्षत्र, योग, करण, चन्द्र राशि */
+  angas: WidgetAnga[];
+  moonrise: string;
+  moonset: string;
+  /** "हेमन्त ऋतु" */
+  ritu: string;
+  /** The user's events, tasks and appointments (and holidays / a festival) for the coming week, by day. */
+  agenda: WidgetDay[];
+  labels: WidgetLabels;
   /** "शुक्ल पक्ष" */
   paksha: string;
   /** "२५" */
@@ -71,6 +103,16 @@ export const EMPTY_WIDGET_PROPS: TodayWidgetProps = {
   bsDate: "",
   weekday: "",
   tithi: "",
+  tithiFull: "",
+  tithiUntil: "",
+  moonSymbol: "moonphase.waxing.crescent",
+  moonEmoji: "",
+  angas: [],
+  moonrise: "",
+  moonset: "",
+  ritu: "",
+  agenda: [],
+  labels: { allDay: "", shubh: "", ashubh: "", sunrise: "", sunset: "", moonrise: "", moonset: "", noEntries: "" },
   paksha: "",
   day: "",
   month: "",

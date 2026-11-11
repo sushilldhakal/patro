@@ -2,7 +2,7 @@
 // The widget runtime has no react/compiler-runtime: React Compiler output (`_c(...)` memo caches in the
 // helper components below) throws there and the widget draws blank. Keep this file out of the compiler.
 
-import { Capsule, Circle, Divider, HStack, Spacer, Text, VStack, ZStack } from "@expo/ui/swift-ui";
+import { Circle, Divider, HStack, Image, Spacer, Text, VStack, ZStack } from "@expo/ui/swift-ui";
 import {
   background,
   clipShape,
@@ -12,11 +12,16 @@ import {
   frame,
   lineLimit,
   minimumScaleFactor,
+  padding,
   widgetURL,
 } from "@expo/ui/swift-ui/modifiers";
+import type { ComponentProps } from "react";
 import { createWidget, type WidgetEnvironment } from "expo-widgets";
 import { EMPTY_WIDGET_PROPS, type TodayWidgetProps, type WidgetCell, type WidgetItem } from "./today-widget-props";
 
+
+/** An SF Symbol name (type only; erased before the widget runtime sees the code). */
+type Sym = NonNullable<ComponentProps<typeof Image>["systemName"]>;
 /**
  * "पात्रो महिना" — the BS month widget (iOS):
  *  small      Apple's month: the BS month name, the weekday letters and the days, today circled
@@ -47,7 +52,6 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
   const has = (cell: WidgetCell, flag: string) => cell.k.indexOf(flag) >= 0;
   const dayColor = (cell: WidgetCell) => (has(cell, "o") ? c.faint : has(cell, "h") || has(cell, "s") ? c.red : c.text);
-  const kindColor = (k: WidgetItem["kind"]) => (k === "holiday" ? c.red : k === "festival" ? c.saffron : c.teal);
 
   const T = ({ s, size, weight, color, lines }: { s: string; size: number; weight?: "regular" | "medium" | "semibold" | "bold"; color?: string; lines?: number }) => (
     <Text modifiers={[font({ size, weight: weight ?? "regular" }), foregroundStyle(color ?? c.text), lineLimit(lines ?? 1), minimumScaleFactor(0.75)]}>{s}</Text>
@@ -116,16 +120,26 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
     </VStack>
   );
 
-  const Row = ({ item }: { item: WidgetItem }) => (
-    <HStack spacing={6} alignment="center">
-      <Capsule modifiers={[frame({ width: 3, height: item.time ? 26 : 16 }), foregroundStyle(kindColor(item.kind))]} />
-      <VStack alignment="leading" spacing={0}>
-        <T s={item.title} size={12.5} weight="semibold" color={item.kind === "holiday" ? c.red : c.text} />
-        {item.time ? <T s={item.time} size={11} color={c.muted} /> : null}
-      </VStack>
-      <Spacer />
-    </HStack>
-  );
+  const hue: Record<string, [string, string]> = {
+    holiday: dark ? ["#FF7A6E", "#3A2523"] : ["#B3261E", "#FBE7E5"], // design-ok
+    festival: dark ? ["#F2A44B", "#3A2C1C"] : ["#A85A0E", "#FCEEDD"], // design-ok
+    event: dark ? ["#6FC7C1", "#1F3332"] : ["#0E5C5E", "#E1EFEE"], // design-ok
+    task: dark ? ["#A9A9FF", "#2A2A42"] : ["#4747B8", "#E9E9FB"], // design-ok
+    appointment: dark ? ["#7DB8FF", "#1F2C3F"] : ["#245BB0", "#E2ECFA"], // design-ok
+  };
+  const icon: Record<string, string> = { holiday: "star.fill", festival: "sparkles", event: "calendar", task: "checkmark.circle.fill", appointment: "person.crop.circle.fill" };
+  /** Apple's row: a tinted bar, the icon, the title, and the date or time on the right. */
+  const Row = ({ item }: { item: WidgetItem }) => {
+    const [fg, tint] = hue[item.kind] ?? hue.event!;
+    return (
+      <HStack spacing={6} alignment="center" modifiers={[padding({ horizontal: 7, vertical: 4 }), frame({ maxWidth: 1000, alignment: "leading" }), background(tint), clipShape("roundedRectangle", 7)]}>
+        <Image systemName={(icon[item.kind] ?? "calendar") as Sym} size={11} color={fg} />
+        <Text modifiers={[font({ size: 12.5, weight: "semibold" }), foregroundStyle(fg), lineLimit(1), minimumScaleFactor(0.8)]}>{item.title}</Text>
+        <Spacer />
+        {item.time ? <Text modifiers={[font({ size: 10.5, weight: "medium" }), foregroundStyle(fg), lineLimit(1)]}>{item.time}</Text> : null}
+      </HStack>
+    );
+  };
 
   const today = props.days?.[0];
   const todayRows = (today?.items ?? []).filter((i) => i.kind !== "sun" && i.kind !== "shubh" && i.kind !== "ashubh");
@@ -150,7 +164,7 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
   }
 
   if (family === "systemMedium") {
-    const rows = [...todayRows.slice(0, 2), ...(props.upcoming ?? []).filter((u) => u.time !== today?.title).slice(0, todayRows.length > 0 ? 2 : 3)];
+    const rows = [...todayRows.slice(0, 2), ...(props.upcoming ?? []).filter((u) => u.time !== today?.title)].slice(0, 3);
     return (
       <HStack alignment="top" spacing={14} modifiers={root}>
         <VStack alignment="leading" spacing={4} modifiers={[frame({ width: 150 })]}>
@@ -162,7 +176,7 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
             <T s={props.day} size={22} weight="bold" color={c.teal} />
             <VStack alignment="leading" spacing={0}>
               <T s={props.weekday} size={11} weight="semibold" color={c.red} />
-              <T s={props.tithi} size={11} color={c.muted} />
+              <T s={props.tithiFull || props.tithi} size={11} color={c.muted} />
             </VStack>
           </HStack>
           {rows.map((item, i) => (
@@ -179,7 +193,7 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
       <T s={props.monthTitle} size={18} weight="bold" color={c.red} />
       <T s={props.monthSub} size={12} color={c.muted} />
       <Spacer />
-      <T s={`${props.weekday} · ${props.tithi}`} size={12} weight="semibold" color={c.teal} />
+      <T s={props.tithiFull || `${props.weekday} · ${props.tithi}`} size={12} weight="semibold" color={c.teal} />
     </HStack>
   );
   const coming = [...todayRows.slice(0, 1), ...(props.upcoming ?? []).filter((u) => u.time !== today?.title)];
@@ -203,11 +217,11 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
   }
 
   return (
-    <VStack alignment="leading" spacing={6} modifiers={root}>
+    <VStack alignment="leading" spacing={5} modifiers={root}>
       <Header />
-      <BigGrid rowHeight={weeks.length > 5 ? 32 : 38} />
+      <BigGrid rowHeight={weeks.length > 5 ? 31 : 36} />
       <Divider />
-      {coming.slice(0, 2).map((item, i) => (
+      {coming.slice(0, weeks.length > 5 ? 3 : 4).map((item, i) => (
         <Row key={i} item={item} />
       ))}
       <Spacer />

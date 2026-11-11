@@ -6262,6 +6262,18 @@
     "tomorrow": "Tomorrow",
     "sunrise": "Sunrise",
     "sunset": "Sunset",
-    "nothing": "Nothing today"
+    "nothing": "Nothing today",
+    "until": "till {{time}}",
+    "all_day": "all-day",
+    "tithi": "Tithi",
+    "nakshatra": "Nakshatra",
+    "yoga": "Yoga",
+    "karana": "Karana",
+    "rashi": "Moon sign",
+    "moonrise": "Moonrise",
+    "moonset": "Moonset",
+    "shubh": "Auspicious",
+    "ashubh": "Inauspicious",
+    "no_entries": "No upcoming events"
   }
 }

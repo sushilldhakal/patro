@@ -360,7 +360,7 @@
             {
               "name": "TodayWidget",
               "displayName": "Vedic Patro · Today",
-              "description": "Today's BS date and tithi, festivals, your events, tasks and appointments, and the day's muhurta — today and tomorrow.",
+              "description": "Today's BS date and full tithi, festivals, your events, tasks and appointments, and the day's muhurta — today and tomorrow.",
               "ios": {
                 "supportedFamilies": [
                   "systemSmall",
@@ -402,6 +402,50 @@
                 "targetCellHeight": 3,
                 "resizeMode": "both",
                 "initialLayout": "./widgets/MonthWidget.android.tsx"
+              }
+            },
+            {
+              "name": "AgendaWidget",
+              "displayName": "Vedic Patro · Agenda",
+              "description": "Your events, tasks and appointments for the week, with holidays and festivals.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "systemLarge",
+                  "systemExtraLarge"
+                ],
+                "initialLayout": "./widgets/AgendaWidget.ios.tsx"
+              },
+              "android": {
+                "minWidth": 180,
+                "minHeight": 110,
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "resizeMode": "both",
+                "initialLayout": "./widgets/AgendaWidget.android.tsx"
+              }
+            },
+            {
+              "name": "PanchangaWidget",
+              "displayName": "Vedic Patro · Panchanga",
+              "description": "The day's panchanga: tithi, nakshatra, yoga, karana and moon sign with their end times, sun and moon times, and shubh / ashubh windows.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "systemLarge",
+                  "systemExtraLarge"
+                ],
+                "initialLayout": "./widgets/PanchangaWidget.ios.tsx"
+              },
+              "android": {
+                "minWidth": 110,
+                "minHeight": 110,
+                "targetCellWidth": 3,
+                "targetCellHeight": 2,
+                "resizeMode": "both",
+                "initialLayout": "./widgets/PanchangaWidget.android.tsx"
               }
             }
           ]

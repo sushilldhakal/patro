@@ -3,7 +3,7 @@
 // helper components below) throws there and the widget draws blank. Keep this file out of the compiler.
 
 import { Box, Column, Row, Spacer, Text } from "@expo/ui/jetpack-compose";
-import { background, cornerRadius, fillMaxSize, fillMaxWidth, height, paddingAll, width } from "@expo/ui/jetpack-compose/modifiers";
+import { background, cornerRadius, padding, fillMaxSize, fillMaxWidth, height, paddingAll, width } from "@expo/ui/jetpack-compose/modifiers";
 import { createWidget } from "expo-widgets";
 import { EMPTY_WIDGET_PROPS, type TodayWidgetProps, type WidgetDay, type WidgetItem } from "./today-widget-props";
 
@@ -32,8 +32,6 @@ const TodayWidget = (props: TodayWidgetProps, environment: { colorScheme?: strin
     ashubh: dark ? "#E08A6A" : "#A94F2D", // design-ok
     sun: dark ? "#E8C35A" : "#B68A12", // design-ok
   };
-  const kindColor = (k: WidgetItem["kind"]) =>
-    k === "holiday" ? c.red : k === "festival" ? c.saffron : k === "task" ? c.task : k === "appointment" ? c.appt : k === "shubh" ? c.shubh : k === "ashubh" ? c.ashubh : k === "sun" ? c.sun : c.teal;
   const w = environment.widthDp ?? 250;
   const h = environment.heightDp ?? 160;
   const days: WidgetDay[] = props.days ?? [];
@@ -48,16 +46,30 @@ const TodayWidget = (props: TodayWidgetProps, environment: { colorScheme?: strin
     </Text>
   );
 
-  const ItemRow = ({ item }: { item: WidgetItem }) => (
-    <Row verticalAlignment="center" modifiers={[fillMaxWidth()]}>
-      <Box modifiers={[width(3), height(item.time ? 28 : 16), background(kindColor(item.kind)), cornerRadius(2)]} />
-      <Spacer modifiers={[width(7)]} />
-      <Column>
-        <T s={item.title} sz={13} bold color={item.kind === "holiday" ? c.red : c.text} />
-        {item.time ? <T s={item.time} sz={11} color={c.muted} /> : null}
-      </Column>
-    </Row>
-  );
+  const hue: Record<string, [string, string]> = {
+    holiday: dark ? ["#FF7A6E", "#3A2523"] : ["#B3261E", "#FBE7E5"], // design-ok
+    festival: dark ? ["#F2A44B", "#3A2C1C"] : ["#A85A0E", "#FCEEDD"], // design-ok
+    event: dark ? ["#6FC7C1", "#1F3332"] : ["#0E5C5E", "#E1EFEE"], // design-ok
+    task: dark ? ["#A9A9FF", "#2A2A42"] : ["#4747B8", "#E9E9FB"], // design-ok
+    appointment: dark ? ["#7DB8FF", "#1F2C3F"] : ["#245BB0", "#E2ECFA"], // design-ok
+    shubh: dark ? ["#79CC86", "#20321F"] : ["#2E7D32", "#E4F1E5"], // design-ok
+    ashubh: dark ? ["#E8957A", "#3A2820"] : ["#9C4426", "#F7E7E0"], // design-ok
+    sun: dark ? ["#E8C35A", "#3A321A"] : ["#8A6A0C", "#F8F0D5"], // design-ok
+  };
+  /** A tinted row: the kind's colour dot, the title, and the time under it. */
+  const ItemRow = ({ item }: { item: WidgetItem }) => {
+    const [fg, tint] = hue[item.kind] ?? hue.event!;
+    return (
+      <Row verticalAlignment="center" modifiers={[fillMaxWidth(), background(tint), cornerRadius(7), padding(7, 4, 7, 4)]}>
+        <Box modifiers={[width(7), height(7), background(fg), cornerRadius(4)]} />
+        <Spacer modifiers={[width(7)]} />
+        <Column>
+          <T s={item.title} sz={13} bold color={fg} />
+          {item.time ? <T s={item.time} sz={10.5} color={fg} /> : null}
+        </Column>
+      </Row>
+    );
+  };
   const Gap = ({ v }: { v: number }) => <Spacer modifiers={[height(v)]} />;
 
   const DateBlock = ({ big }: { big: number }) => (
@@ -71,7 +83,7 @@ const TodayWidget = (props: TodayWidgetProps, environment: { colorScheme?: strin
           <T s={props.year} sz={big * 0.28} color={c.muted} />
         </Column>
       </Row>
-      {props.tithi ? <T s={props.tithi} sz={big * 0.3} color={c.text} /> : null}
+      {props.tithiFull || props.tithi ? <T s={props.tithiFull || props.tithi} sz={big * 0.3} bold color={c.text} /> : null}
     </Column>
   );
 

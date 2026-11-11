@@ -180,8 +180,10 @@ export async function refreshWidgets(lang: "ne" | "en"): Promise<void> {
   if (Platform.OS === "web") return;
   const location = await readStoredLocation().catch(() => DEFAULT_PANCHANGA_LOCATION);
   const signedIn = Boolean(tokenStore.access || tokenStore.refresh);
+  // Signed in: the account's events (the cache when offline); a guest's are saved on the phone.
+  const since = new Date(Date.now() - 86_400_000).toISOString();
   const events = signedIn
-    ? await notifStore.getEvents().catch(() => [])
-    : await listEvents(new Date(Date.now() - 86_400_000).toISOString()).catch(() => []);
+    ? await listEvents(since).catch(() => notifStore.getEvents().catch(() => []))
+    : await listEvents(since).catch(() => []);
   await refreshTodayWidget({ lang, timezone: location.params.timezone ?? "Asia/Kathmandu", events, location: location.params });
 }

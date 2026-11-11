@@ -33,20 +33,26 @@ const widgets: Record<string, Widget | null | undefined> = {};
 
 /**
  * A widget, loaded only when this build has expo-widgets' native module. A top-level import would
- * throw in builds made before the widget was added (app updates reach those too). MonthWidget is
- * only in builds from 1.2.2 (37) on; in older ones its registration is harmless and never drawn.
+ * throw in builds made before the widget was added (app updates reach those too). A build that does
+ * not list a widget kind simply never draws it; registering its layout there is harmless.
  */
-function load(name: "TodayWidget" | "MonthWidget"): Widget | null {
+type WidgetName = "TodayWidget" | "MonthWidget" | "AgendaWidget" | "PanchangaWidget";
+function load(name: WidgetName): Widget | null {
   if (widgets[name] !== undefined) return widgets[name]!;
   widgets[name] = null;
   if (Platform.OS === "web" || !requireOptionalNativeModule("ExpoWidgets")) return null;
   try {
-    widgets[name] =
+    /* eslint-disable @typescript-eslint/no-require-imports */
+    const mod =
       name === "TodayWidget"
-        ? // eslint-disable-next-line @typescript-eslint/no-require-imports
-          (require("../../widgets/TodayWidget") as { default: Widget }).default
-        : // eslint-disable-next-line @typescript-eslint/no-require-imports
-          (require("../../widgets/MonthWidget") as { default: Widget }).default;
+        ? require("../../widgets/TodayWidget")
+        : name === "MonthWidget"
+          ? require("../../widgets/MonthWidget")
+          : name === "AgendaWidget"
+            ? require("../../widgets/AgendaWidget")
+            : require("../../widgets/PanchangaWidget");
+    /* eslint-enable @typescript-eslint/no-require-imports */
+    widgets[name] = (mod as { default: Widget }).default;
   } catch {
     widgets[name] = null;
   }
@@ -83,7 +89,52 @@ type Built = {
   holidays: Holiday[];
   /** Every शुभ / अशुभ window of the fetched panchanga days, by its own wall-clock date. */
   windows: { kind: "shubh" | "ashubh"; pick: DayTimePick }[];
+  /** The panchanga of each fetched date (yesterday to the day after tomorrow). */
+  panchanga: Record<string, PanchangaRow>;
 };
+
+type Limb = { name?: string; name_ne?: string; end?: string };
+/** The fields of `/panchanga/{date}` the widgets read. */
+type PanchangaRow = {
+  tithi?: Limb;
+  nakshatra?: Limb;
+  yoga?: Limb;
+  karana?: Limb;
+  paksha?: string;
+  paksha_ne?: string;
+  chandra_rashi?: string;
+  chandra_rashi_ne?: string;
+  moon?: { rise?: string | null; set?: string | null };
+  ritu?: string;
+  ritu_ne?: string;
+};
+
+const TITHI_ORDER = ["prati", "dwi", "tri", "chatur", "panch", "shash", "sapt", "asht", "nav", "dash", "ekad", "dwad", "trayo", "chaturd"];
+/** 1–30 from the tithi's English name and the paksha (शुक्ल 1–15, कृष्ण 16–30); null if unknown. */
+function tithiNumber(name: string | undefined, paksha: string | undefined): number | null {
+  const n = (name ?? "").toLowerCase();
+  if (!n) return null;
+  if (n.startsWith("purn")) return 15;
+  if (n.startsWith("aaus") || n.startsWith("amav") || n.startsWith("ausi")) return 30;
+  // "chaturdashi" before "chaturthi": the longer prefix wins.
+  let index = -1;
+  for (let i = 0; i < TITHI_ORDER.length; i += 1) if (n.startsWith(TITHI_ORDER[i]!) && (index < 0 || TITHI_ORDER[i]!.length > TITHI_ORDER[index]!.length)) index = i;
+  if (index < 0) return null;
+  return (paksha ?? "").toLowerCase().includes("krishna") ? 16 + index : 1 + index;
+}
+
+/** The moon's look on tithi `n`, as an SF Symbol and an emoji. */
+function moonPhase(n: number | null): { symbol: string; emoji: string } {
+  if (n == null) return { symbol: "moonphase.waxing.crescent", emoji: "" };
+  if (n === 30) return { symbol: "moonphase.new.moon", emoji: "🌑" };
+  if (n === 15) return { symbol: "moonphase.full.moon", emoji: "🌕" };
+  if (n <= 6) return { symbol: "moonphase.waxing.crescent", emoji: "🌒" };
+  if (n <= 9) return { symbol: "moonphase.first.quarter", emoji: "🌓" };
+  if (n <= 14) return { symbol: "moonphase.waxing.gibbous", emoji: "🌔" };
+  if (n <= 21) return { symbol: "moonphase.waning.gibbous", emoji: "🌖" };
+  if (n <= 24) return { symbol: "moonphase.last.quarter", emoji: "🌗" };
+  return { symbol: "moonphase.waning.crescent", emoji: "🌘" };
+}
 
 async function gather(timezone: string, location: LocationParams | undefined): Promise<Built> {
   const today = todayIn(timezone);
@@ -102,10 +153,12 @@ async function gather(timezone: string, location: LocationParams | undefined): P
     ...dates.map((d) => fetchPanchanga(d, "ad", location).catch(() => null)),
   ]);
   const windows: Built["windows"] = [];
+  const panchanga: Built["panchanga"] = {};
   const seen = new Set<string>();
   dates.forEach((d, i) => {
     const row = day[i];
     if (!row) return;
+    panchanga[d] = row as unknown as PanchangaRow;
     try {
       const all = buildDayTimePicks(row, d);
       for (const [kind, list] of [["shubh", all.shubh], ["ashubh", all.ashubh]] as const) {
@@ -139,6 +192,7 @@ async function gather(timezone: string, location: LocationParams | undefined): P
     months: [...(p?.days ?? []), ...(m?.days ?? []), ...(n?.days ?? [])],
     holidays: [...(hy?.holidays ?? []), ...(hy2?.holidays ?? [])],
     windows: merged,
+    panchanga,
   };
 }
 
@@ -261,6 +315,46 @@ function propsFor(today: string, data: Built, lang: "ne" | "en", timezone: strin
     upcoming.push({ time: when, title, kind: holiday ? "holiday" : "festival" });
   }
 
+  // ── The week ahead (agenda widget): the user's entries, holidays, and a festival on today/tomorrow ──
+  const agenda: WidgetDay[] = [];
+  for (let i = 0; i < 7; i += 1) {
+    const iso = shiftDate(today, i);
+    const items = dayItems(iso).filter((it) => {
+      if (it.kind === "sun" || it.kind === "shubh" || it.kind === "ashubh") return false;
+      return it.kind !== "festival" || i < 2;
+    });
+    if (items.length === 0) continue;
+    const title = i === 0 ? tFor(lang, "widgets.today") : i === 1 ? tFor(lang, "widgets.tomorrow") : weekdayName(iso);
+    agenda.push({ title, sub: bsShort(iso), items });
+  }
+
+  // ── The day's panchanga (panchanga widget) ─────────────────────────────────
+  const pr = data.panchanga[today];
+  const limbName = (l?: Limb) => (en ? l?.name : (l?.name_ne ?? l?.name)) ?? "";
+  const untilOf = (l?: Limb) => {
+    const end = l?.end ?? "";
+    if (!end) return "";
+    const [date, time] = end.split(" ") as [string, string | undefined];
+    if (!time) return "";
+    const when = date === today ? clock(time) : `${tFor(lang, "widgets.tomorrow")} ${clock(time)}`;
+    return tFor(lang, "widgets.until", { time: when });
+  };
+  const pakshaText = (en ? pr?.paksha : pr?.paksha_ne) ?? "";
+  const tithiName = limbName(pr?.tithi) || ((en ? row?.tithi : row?.tithi_ne) ?? "");
+  const pakshaWords = pakshaText.replace(/\s*(पक्ष|paksha)$/i, "").trim();
+  const titleCase = (t: string) => (en ? t.replace(/\b\w/g, (ch) => ch.toUpperCase()) : t);
+  const tithiFull = pakshaWords ? titleCase(`${pakshaWords} ${tithiName}`) : tithiName;
+  const phase = moonPhase(tithiNumber(pr?.tithi?.name ?? row?.tithi, pr?.paksha));
+  const angas = [
+    { label: tFor(lang, "widgets.nakshatra"), limb: pr?.nakshatra },
+    { label: tFor(lang, "widgets.yoga"), limb: pr?.yoga },
+    { label: tFor(lang, "widgets.karana"), limb: pr?.karana },
+  ]
+    .filter((a) => limbName(a.limb))
+    .map((a) => ({ label: a.label, value: limbName(a.limb), until: untilOf(a.limb) }));
+  const rashi = (en ? pr?.chandra_rashi : pr?.chandra_rashi_ne) ?? "";
+  if (rashi) angas.push({ label: tFor(lang, "widgets.rashi"), value: rashi, until: "" });
+
   const nextFestival = upcoming[0];
   const nextEvent = days[0]!.items.concat(days[1]!.items).find((i) => i.kind === "event" || i.kind === "task" || i.kind === "appointment");
   const tithi = (en ? row?.tithi : row?.tithi_ne) ?? "";
@@ -269,6 +363,25 @@ function propsFor(today: string, data: Built, lang: "ne" | "en", timezone: strin
     bsDate: `${monthName(bs.month)} ${digits(bs.day)}, ${digits(bs.year)}`,
     weekday: weekdayName(today),
     tithi,
+    tithiFull,
+    tithiUntil: untilOf(pr?.tithi),
+    moonSymbol: phase.symbol,
+    moonEmoji: phase.emoji,
+    angas,
+    moonrise: pr?.moon?.rise ? clock(pr.moon.rise) : "",
+    moonset: pr?.moon?.set ? clock(pr.moon.set) : "",
+    ritu: (en ? pr?.ritu : pr?.ritu_ne) ?? "",
+    agenda,
+    labels: {
+      allDay: tFor(lang, "widgets.all_day"),
+      shubh: tFor(lang, "widgets.shubh"),
+      ashubh: tFor(lang, "widgets.ashubh"),
+      sunrise: tFor(lang, "widgets.sunrise"),
+      sunset: tFor(lang, "widgets.sunset"),
+      moonrise: tFor(lang, "widgets.moonrise"),
+      moonset: tFor(lang, "widgets.moonset"),
+      noEntries: tFor(lang, "widgets.no_entries"),
+    },
     paksha: "",
     day: digits(bs.day),
     month: monthName(bs.month),
@@ -303,9 +416,8 @@ export async function refreshTodayWidget(options: {
   events: CalendarEvent[];
   location?: LocationParams;
 }): Promise<void> {
-  const today = load("TodayWidget");
-  const month = load("MonthWidget");
-  if (!today && !month) return;
+  const all = (["TodayWidget", "MonthWidget", "AgendaWidget", "PanchangaWidget"] as const).map(load).filter((w): w is Widget => w != null);
+  if (all.length === 0) return;
   const { lang, timezone, events, location } = options;
   const data = await gather(timezone, location);
   const tomorrowIso = shiftDate(data.today, 1);
@@ -314,8 +426,7 @@ export async function refreshTodayWidget(options: {
   const midnight = new Date(Date.parse(`${tomorrowIso}T00:00:00Z`) + offset);
   const now = propsFor(data.today, data, lang, timezone, events, Date.now());
   const tomorrow = propsFor(tomorrowIso, data, lang, timezone, events, midnight.getTime());
-  for (const w of [today, month]) {
-    if (!w) continue;
+  for (const w of all) {
     try {
       w.updateSnapshot(now);
     } catch {
