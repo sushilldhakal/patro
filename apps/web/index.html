@@ -3,6 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <script>
+      // Open-in-app links: the daily Facebook posts link to /panchanga?…&open=app, and the
+      // "मोबाइल एप" line to /app. Before anything else loads:
+      //  - Android: an intent link opens Vedic Patro on the same page if it is installed, and
+      //    Google Play if it is not (Chrome and Facebook's browser both follow it);
+      //  - iPhone / iPad: try the app's vedicpatro:// link; if the page is still showing after a
+      //    moment (no app), go to the App Store;
+      //  - a computer: stay on the web app (the marker is dropped from the address; /app → home).
+      // Link-preview crawlers are served /share/panchanga by nginx and never run this.
+      (function () {
+        try {
+          var path = location.pathname.replace(/\/+$/, "");
+          var q = new URLSearchParams(location.search);
+          var appPage = path === "/app";
+          if (!appPage && q.get("open") !== "app") return;
+          q.delete("open");
+          var rest = q.toString();
+          var inApp = (appPage ? "" : path.replace(/^\//, "")) + (rest ? "?" + rest : "");
+          var PLAY = "https://play.google.com/store/apps/details?id=com.vedicpatro.mobile";
+          var APP_STORE = "https://apps.apple.com/app/id6820382502";
+          var ua = navigator.userAgent || "";
+          var android = /Android/i.test(ua);
+          var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+          if (android) {
+            location.replace(
+              "intent://" + inApp + "#Intent;scheme=vedicpatro;package=com.vedicpatro.mobile;S.browser_fallback_url=" +
+                encodeURIComponent(PLAY) + ";end"
+            );
+            return;
+          }
+          if (ios) {
+            var left = false;
+            var away = function () { left = true; };
+            document.addEventListener("visibilitychange", function () { if (document.hidden) away(); });
+            window.addEventListener("pagehide", away);
+            window.addEventListener("blur", away);
+            setTimeout(function () { if (!left) location.replace(APP_STORE); }, 2500);
+            location.href = "vedicpatro://" + inApp;
+            return;
+          }
+          if (appPage) { location.replace("/"); return; }
+          history.replaceState(null, "", path + (rest ? "?" + rest : "") + location.hash);
+        } catch (_) {}
+      })();
+    </script>
+    <script>
       // Apply stored theme before first paint (next-themes storageKey = "theme").
       // Default: light. If the user chose dark/system, restore it immediately.
       (function () {

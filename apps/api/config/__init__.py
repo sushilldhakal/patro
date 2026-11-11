@@ -212,8 +212,12 @@ def facebook_app_secret() -> str | None:
 
 def app_link() -> str | None:
     """Mobile-app link shown on the extra Facebook posts (caption + the image's
-    reserved slot). Unset until the app is published — the slot stays blank."""
-    return (os.getenv("APP_LINK") or "").strip() or None
+    reserved slot). Defaults to the site's /app page, which sends a phone to the
+    app (or its store) and a computer to the web app; ``APP_LINK=off`` hides it."""
+    raw = (os.getenv("APP_LINK") or "").strip()
+    if raw.lower() in ("off", "none", "0", "false"):
+        return None
+    return raw or f"{frontend_url()}/app"
 
 
 def fb_post_kinds() -> list[str]:

@@ -14,12 +14,19 @@ duplicates the others. The `date` in every link makes each day's URL unique
 
 ```ini
 FB_POST_KINDS=main,periods,d1   # which posts to publish; drop a name to stop that post
-APP_LINK=                       # mobile-app link — empty until the app is published
+APP_LINK=                       # default <FRONTEND_URL>/app; "off" hides the app line and slot
 ```
 
-**Mobile-app link slot:** the two extra cards reserve a blank slot at the bottom right
-of the image, and their captions gain a `मोबाइल एप: <link>` line, as soon as
-`APP_LINK` is set — no code change, nothing shifts. Until then the slot stays empty.
+**Open in the app.** Every posted link carries `open=app`. A tap from a phone runs a
+small script at the top of the web app's HTML (`apps/web/index.html`) before anything
+else loads: Android gets an intent link that opens Vedic Patro on the same page if it is
+installed and Google Play if not; iPhone / iPad try `vedicpatro://…` and go to the App
+Store when the app does not open; a computer stays on the web app. Facebook's crawler is
+sent to `/share/panchanga` by nginx and never runs the script, so the card is unchanged.
+
+**Mobile-app link slot:** the two extra cards fill the slot at the bottom right of the
+image, and their captions end with `मोबाइल एप: https://www.vedicpatro.com/app` — the same
+phone-to-app / computer-to-web page. Set `APP_LINK` to use another link, `off` to hide it.
 
 Preview a card without Facebook: open
 `/panchanga/og-preview?card=periods` (or `card=d1`, optionally `&app=text`) on the site,

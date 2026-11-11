@@ -38,6 +38,12 @@ def image_url(day: date) -> str:
     return f"{config.frontend_url()}/api/og-image?{query}"
 
 
+# ``open=app`` on a posted link: the site sends a phone on to the app (installed) or its
+# store (not installed), and keeps a computer on the web app (apps/web/index.html). The
+# crawler that builds the link card never runs that script, so the card is unchanged.
+OPEN_IN_APP = "app"
+
+
 def page_url() -> str:
     """Bare /panchanga link. No query params on purpose: with no stored
     preference and no URL params, the page already defaults to today in
@@ -51,16 +57,16 @@ def dated_page_url(day: date) -> str:
     preview — image included — by URL, so the same bare /panchanga every
     morning could keep showing an old or failed card; the date makes each
     day's link its own, like the extra cards'."""
-    return f"{config.frontend_url()}/panchanga?{urlencode({'date': day.isoformat()})}"
+    return f"{config.frontend_url()}/panchanga?{urlencode({'date': day.isoformat(), 'open': OPEN_IN_APP})}"
 
 
 def card_page_url(card: str, day: date) -> str:
     """Link for an extra daily post (``periods`` / ``d1``). The ``card`` param picks
     the share image (see services.sharing.og_screenshot / the web og-preview page); ``date``
     makes the URL unique per day so Facebook's link-preview cache can't serve
-    yesterday's card. ``app`` (only when APP_LINK is set) fills the image's
-    reserved mobile-app slot."""
-    query = {"card": card, "date": day.isoformat()}
+    yesterday's card. ``app`` (unless APP_LINK=off) fills the image's reserved
+    mobile-app slot."""
+    query = {"card": card, "date": day.isoformat(), "open": OPEN_IN_APP}
     app = config.app_link()
     if app:
         query["app"] = _strip_scheme(app)
@@ -72,7 +78,7 @@ def _strip_scheme(url: str) -> str:
 
 
 def app_caption_line() -> str:
-    """Caption tail pointing at the mobile app, or "" until APP_LINK is configured."""
+    """Caption tail pointing at the mobile app, or "" with APP_LINK=off."""
     app = config.app_link()
     return f"\n\nमोबाइल एप: {app}" if app else ""
 

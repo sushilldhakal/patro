@@ -49,19 +49,27 @@ def test_card_links_are_unique_per_day_and_carry_the_card():
     assert fpc.card_page_url("d1", date(2026, 10, 13)) != a
 
 
-def test_app_link_slot_is_empty_until_configured(monkeypatch):
+def test_app_link_defaults_to_the_sites_app_page(monkeypatch):
+    monkeypatch.setenv("FRONTEND_URL", "https://www.vedicpatro.com")
+    assert "app=www.vedicpatro.com%2Fapp" in fpc.card_page_url("d1", date(2026, 10, 13))  # scheme stripped for the image
+    assert fpc.app_caption_line().strip() == "मोबाइल एप: https://www.vedicpatro.com/app"
+    monkeypatch.setenv("APP_LINK", "https://vedicpatro.com/get")
+    assert fpc.app_caption_line().strip() == "मोबाइल एप: https://vedicpatro.com/get"
+    monkeypatch.setenv("APP_LINK", "off")
     assert "app=" not in fpc.card_page_url("d1", date(2026, 10, 13))
     assert fpc.app_caption_line() == ""
-    monkeypatch.setenv("APP_LINK", "https://vedicpatro.com/app")
-    assert "app=vedicpatro.com%2Fapp" in fpc.card_page_url("d1", date(2026, 10, 13))  # scheme stripped for the image
-    assert fpc.app_caption_line().strip() == "मोबाइल एप: https://vedicpatro.com/app"
+
+
+def test_posted_links_ask_phones_to_open_the_app():
+    assert "open=app" in fpc.dated_page_url(date(2026, 10, 13))
+    assert "open=app" in fpc.card_page_url("periods", date(2026, 10, 13))
 
 
 def test_periods_caption_lists_headline_windows():
     text = fpc.periods_caption(FIELDS, PAYLOAD, "https://x/y")
     assert "शुभ: अभिजित् मुहूर्त ११:२६–१२:१२" in text
     assert "राहु काल १४:४३–१६:१०" in text and "यमगण्ड ०८:५६–१०:२२" in text
-    assert text.rstrip().endswith("https://x/y")  # no app line without APP_LINK
+    assert "https://x/y" in text
 
 
 def test_periods_caption_survives_missing_muhurta():
