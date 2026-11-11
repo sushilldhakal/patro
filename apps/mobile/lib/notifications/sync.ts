@@ -130,7 +130,7 @@ export async function syncNotifications(options: {
   }
 
   // The home-screen widget follows the same data: today, the next festival, the next event.
-  void refreshTodayWidget({ lang, timezone: tz, events }).catch(() => {});
+  void refreshTodayWidget({ lang, timezone: tz, events, location: location.params }).catch(() => {});
 
   if (permission !== "granted") return { scheduled: 0, online, permission };
 
@@ -168,5 +168,5 @@ async function guestEvents() {
 
 async function refreshGuestWidget(lang: "ne" | "en") {
   const location = await readStoredLocation().catch(() => DEFAULT_PANCHANGA_LOCATION);
-  await refreshTodayWidget({ lang, timezone: location.params.timezone ?? "Asia/Kathmandu", events: await guestEvents() });
+  await refreshTodayWidget({ lang, timezone: location.params.timezone ?? "Asia/Kathmandu", events: await guestEvents(), location: location.params });
 }

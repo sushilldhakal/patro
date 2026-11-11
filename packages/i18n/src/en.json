@@ -6259,6 +6259,9 @@
   },
   "widgets": {
     "today": "Today",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "nothing": "Nothing today"
   }
 }

@@ -4975,7 +4975,10 @@
   },
   "widgets": {
     "today": "आज",
-    "tomorrow": "भोलि"
+    "tomorrow": "भोलि",
+    "sunrise": "सूर्योदय",
+    "sunset": "सूर्यास्त",
+    "nothing": "आज केही छैन"
   },
   "ui": {
     "aakash_gochar": {

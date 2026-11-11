@@ -2565,8 +2565,13 @@ export interface PatroMonth {
 
 export interface PatroDay {
   bs_day: number;
-  date: string;
-  festivals: Festival[];
+  /** Gregorian date, "YYYY-MM-DD" (the server's `/nepal/patro` rows name it `ad_date`). */
+  ad_date: string;
+  /** Older responses; read `ad_date`. */
+  date?: string;
+  /** Festival names in Nepali, the day's main one first. */
+  festivals: (string | Festival)[];
+  festival?: string;
   panchanga?: {
     vaara?: { name_ne?: string; name_english?: string };
     tithi?: { name?: string; name_ne?: string };

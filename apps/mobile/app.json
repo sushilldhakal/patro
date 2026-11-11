@@ -254,6 +254,7 @@
       "./plugins/with-react-native-dir.js",
       "./plugins/with-ios-scene-lifecycle.js",
       "./plugins/with-ios-local-build.js",
+      "./plugins/with-android-widget-size.js",
       [
         "expo-build-properties",
         {
@@ -358,19 +359,44 @@
           "widgets": [
             {
               "name": "TodayWidget",
-              "displayName": "Vedic Patro",
-              "description": "Today's BS date, tithi, the next festival and your next event.",
+              "displayName": "Vedic Patro · Today",
+              "description": "Today's BS date and tithi, festivals, your events, tasks and appointments, and the day's muhurta — today and tomorrow.",
               "ios": {
                 "supportedFamilies": [
                   "systemSmall",
-                  "systemMedium"
+                  "systemMedium",
+                  "systemLarge",
+                  "systemExtraLarge",
+                  "accessoryCircular",
+                  "accessoryRectangular",
+                  "accessoryInline"
+                ]
+              },
+              "android": {
+                "minWidth": 110,
+                "minHeight": 110,
+                "targetCellWidth": 2,
+                "targetCellHeight": 2,
+                "resizeMode": "both"
+              }
+            },
+            {
+              "name": "MonthWidget",
+              "displayName": "Vedic Patro · Month",
+              "description": "The Nepali (BS) month with today, holidays and festivals, and what is coming.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "systemLarge",
+                  "systemExtraLarge"
                 ]
               },
               "android": {
                 "minWidth": 180,
-                "minHeight": 110,
-                "targetCellWidth": 2,
-                "targetCellHeight": 2,
+                "minHeight": 180,
+                "targetCellWidth": 4,
+                "targetCellHeight": 3,
                 "resizeMode": "both"
               }
             }
