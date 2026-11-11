@@ -1,0 +1,290 @@
+/**
+ * Diagrams for the two zero-points and the belt they measure along.
+ *
+ * The remaining monospace figures in the zodiac articles were all drawing the
+ * same handful of relationships — where the सायन zero sits against the निरयन
+ * one, how wide the belt is, where the ecliptic crosses the equator. Drawn
+ * once properly, most of them serve several articles.
+ */
+
+import { Circle, G, Line, Path, Rect, Text as SvgText, TSpan } from "react-native-svg";
+import { FigureFrame } from "@/components/learn/figures/FigureFrame";
+import { STUDY_FONT } from "@/components/learn/study/study-ink";
+import { useTranslation } from "@vedic-patro/i18n/react";
+
+/* TwoZeroPoints still calls bilingualText for the one label built around a
+   formatted number; everything else now comes from the catalogue. */
+import { useLocale } from "@vedic-patro/i18n/react";
+import { type Lang } from "@vedic-patro/domain/locale";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+
+import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
+const INK = "currentColor";
+const TROPICAL = illustration.green51;
+const SIDEREAL = illustration.orange50;
+const ECLIPTIC = illustration.amber43;
+const EQUATOR = illustration.teal48;
+const WARN = illustration.red60;
+
+const digits = (lang: Lang, v: string | number) =>
+  lang === "en" ? String(v) : toNepaliDigits(String(v));
+
+
+/* ── दुई शून्य बिन्दु — the ayanamsha gap, laid on one ruler ─────────── */
+
+/**
+ * The two zodiacs on one ruler, and the `~२४°` between their zeros.
+ *
+ * This one diagram is the whole सायन/निरयन argument, so it serves several
+ * articles at once: why बैशाख १ is not the equinox, what अयनांश *is*, and why
+ * a निरयन longitude is a सायन one minus that gap.
+ *
+ * Both scales run `०°`–`३६०°` along the same ecliptic. The सायन scale is
+ * pinned to the वसन्त विषुव; the निरयन scale is pinned to the stars and sits
+ * `~२४°` behind it. Every quantity the articles quote — the `२४`-day delay of
+ * the new year, the gap between मकर सङ्क्रान्ति and the शीत अयनान्त — is that
+ * one offset read in different units.
+ */
+export function TwoZeroPoints() {
+  const { t } = useTranslation();
+  const { lang } = useLocale();
+  const n = (v: string | number) => digits(lang, v);
+  const W = 540;
+  const H = 200;
+  const L = 40;
+  const Rr = W - 24;
+  const AYAN = 24;
+  const x = (deg: number) => L + (deg / 360) * (Rr - L);
+  const monthNames = lang === "en" ? ([...BS_MONTH_NAMES] as string[]) : BS_MONTHS_NE;
+
+  return (
+    <FigureFrame
+      w={W}
+      h={H}
+      label={t("learn.diagrams.two_zeros_label")}
+      caption={t("learn.diagrams.two_zeros_caption")}
+    >
+      {/* सायन scale */}
+      <Line x1={L} y1={58} x2={Rr} y2={58} stroke={TROPICAL} strokeWidth={1.6} opacity={0.85} />
+      {[0, 90, 180, 270, 360].map((d) => (
+        <G key={`t${d}`}>
+          <Line x1={x(d)} y1={52} x2={x(d)} y2={64} stroke={TROPICAL} strokeWidth={1} opacity={0.8} />
+          <SvgText x={x(d)} y={46} textAnchor="middle" fontSize={8} fill={TROPICAL}>
+            {n(d)}°
+          </SvgText>
+        </G>
+      ))}
+      <SvgText x={L} y={32} fontSize={8} fontFamily={STUDY_FONT.semibold} fill={TROPICAL}>
+        {t("learn.diagrams.tropical_scale_zero")}
+      </SvgText>
+
+      {/* निरयन scale, offset by the ayanamsha */}
+      <Line x1={x(AYAN)} y1={112} x2={Rr} y2={112} stroke={SIDEREAL} strokeWidth={1.6} opacity={0.85} />
+      <Line x1={L} y1={112} x2={x(AYAN)} y2={112} stroke={SIDEREAL} strokeWidth={1.6} opacity={0.28} strokeDasharray="3 3" />
+      {[0, 90, 180, 270].map((d) => (
+        <G key={`s${d}`}>
+          <Line x1={x(d + AYAN)} y1={106} x2={x(d + AYAN)} y2={118} stroke={SIDEREAL} strokeWidth={1} opacity={0.8} />
+          <SvgText x={x(d + AYAN)} y={130} textAnchor="middle" fontSize={8} fill={SIDEREAL}>
+            {n(d)}°
+          </SvgText>
+          <SvgText x={x(d + AYAN)} y={142} textAnchor="middle" fill="currentColor" fontSize={8} opacity={0.55}>
+            {monthNames[(d / 30) % 12]}
+          </SvgText>
+        </G>
+      ))}
+      <SvgText x={L} y={166} fontSize={8} fontFamily={STUDY_FONT.semibold} fill={SIDEREAL}>
+        {t("learn.diagrams.sidereal_scale_zero")}
+      </SvgText>
+
+      {/* the gap itself */}
+      <Rect x={x(0)} y={58} width={x(AYAN) - x(0)} height={54} fill={WARN} opacity={0.16} />
+      <Line x1={x(0)} y1={58} x2={x(0)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
+      <Line x1={x(AYAN)} y1={58} x2={x(AYAN)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
+      <SvgText x={x(AYAN) + 8} y={88} fontSize={8} fontFamily={STUDY_FONT.semibold} fill={WARN}>
+        {tFor(lang, "ui.learn.ayanamsha_ayan_value_days", { AYAN: n(AYAN), value: n(24) })}
+      </SvgText>
+    </FigureFrame>
+  );
+}
+
+/* ── राशि पट्टी — why the belt has width at all ──────────────────────── */
+
+/**
+ * The zodiac is a belt, not a line, because the grahas do not share one plane.
+ *
+ * The Sun defines the ecliptic exactly — it is *by definition* at latitude
+ * zero. Everything else wanders: the Moon by `५.१°`, and the visible grahas by
+ * up to a few degrees more. Take the widest of them and you need a band about
+ * `९°` either side of the ecliptic to contain the lot, which is the राशि
+ * पट्टी.
+ *
+ * Drawn to scale in latitude, so the Sun's dead-flat line and the Moon's
+ * modest `५.१°` are visibly different sizes of claim.
+ */
+export function ZodiacBeltWidth() {
+  const { t } = useTranslation();
+  const { lang } = useLocale();
+  const n = (v: string | number) => digits(lang, v);
+  const W = 540;
+  const H = 190;
+  const L = 132;
+  const Rr = W - 88;
+  const mid = 96;
+  const scale = 7.2;
+  const y = (lat: number) => mid - lat * scale;
+
+  const bodies = [
+    { lat: 0, body: "grahas.sun", c: ECLIPTIC, note: "learn.diagrams.belt_latitude_sun" },
+    { lat: 5.1, body: "grahas.moon", c: illustration.sky84, note: "learn.diagrams.belt_latitude_moon" },
+    { lat: 7.0, body: "grahas.mercury", c: illustration.teal39, note: "learn.diagrams.belt_latitude_mercury" },
+  ];
+
+  return (
+    <FigureFrame
+      w={W}
+      h={H}
+      label={t("learn.diagrams.belt_width_label")}
+      caption={t("learn.diagrams.belt_width_caption")}
+    >
+      <Rect x={L} y={y(9)} width={Rr - L} height={y(-9) - y(9)} fill={SIDEREAL} opacity={0.12} rx={3} />
+      {[9, -9].map((d) => (
+        <G key={d}>
+          <Line x1={L} y1={y(d)} x2={Rr} y2={y(d)} stroke={SIDEREAL} strokeWidth={1.1} opacity={0.7} />
+          <SvgText x={Rr + 6} y={y(d) + 3} fontSize={8} fontFamily={STUDY_FONT.semibold} fill={SIDEREAL}>
+            {d > 0 ? "+" : "−"}
+            {n(9)}°
+          </SvgText>
+        </G>
+      ))}
+
+      {bodies.map((b) => (
+        <G key={b.body}>
+          {[1, -1].map((s) =>
+            b.lat === 0 && s === -1 ? null : (
+              <Line
+                key={s}
+                x1={L}
+                y1={y(s * b.lat)}
+                x2={Rr}
+                y2={y(s * b.lat)}
+                stroke={b.c}
+                strokeWidth={b.lat === 0 ? 2 : 1.2}
+                opacity={b.lat === 0 ? 0.95 : 0.6}
+                strokeDasharray={b.lat === 0 ? undefined : "5 3"}
+              />
+            ),
+          )}
+          {/* Name and latitude on one line: the Moon's and Mercury's rows are only ~14 units apart. */}
+          <SvgText x={L - 8} y={y(b.lat) + 3} textAnchor="end" fill="currentColor" fontSize={8}>
+            <TSpan fillOpacity={0.8} fontFamily={STUDY_FONT.semibold}>{t(b.body)}</TSpan>
+            <TSpan fillOpacity={0.55}> {t(b.note)}</TSpan>
+          </SvgText>
+        </G>
+      ))}
+
+      <SvgText x={(L + Rr) / 2} y={y(0) - 7} textAnchor="middle" fontSize={8} fontFamily={STUDY_FONT.semibold} fill={ECLIPTIC}>
+        {t("learn.diagrams.ecliptic_latitude_zero")}
+      </SvgText>
+      <SvgText x={(L + Rr) / 2} y={H - 8} textAnchor="middle" fontSize={8} fontFamily={STUDY_FONT.semibold} fill={SIDEREAL}>
+        {t("learn.diagrams.belt_total_width")}
+      </SvgText>
+    </FigureFrame>
+  );
+}
+
+/* ── क्रान्तिवृत्त र विषुवत् रेखा — two great circles, one 23.44° angle ─ */
+
+/**
+ * The ecliptic and the celestial equator, and the two points they share.
+ *
+ * Two great circles on the same sphere must cross twice, and these cross at
+ * exactly `२३.४४°` — the obliquity. Those two crossings are the विषुव, and
+ * the points furthest from the equator are the अयनान्त. So the four seasonal
+ * markers are not four separate facts: they are where two circles meet, and
+ * where they are farthest apart.
+ *
+ * Drawn unrolled — longitude across, declination up — because the crossings
+ * and the extremes are what matter, and a sphere hides both behind itself.
+ */
+export function EclipticEquatorCross() {
+  const { t } = useTranslation();
+  const { lang } = useLocale();
+  const n = (v: string | number) => digits(lang, v);
+  const W = 540;
+  const H = 190;
+  const L = 46;
+  const Rr = W - 24;
+  const mid = 96;
+  const scale = 2.4;
+  const x = (deg: number) => L + (deg / 360) * (Rr - L);
+  const y = (dec: number) => mid - dec * scale;
+
+  const path = Array.from({ length: 145 }, (_, i) => {
+    const lon = (i / 144) * 360;
+    const dec = Math.asin(Math.sin(23.44 * (Math.PI / 180)) * Math.sin(lon * (Math.PI / 180))) / (Math.PI / 180);
+    return `${i ? "L" : "M"}${x(lon).toFixed(1)} ${y(dec).toFixed(1)}`;
+  }).join(" ");
+
+  const marks = [
+    { lon: 0, key: "learn.diagrams.spring_equinox", kind: "eq" },
+    { lon: 90, key: "learn.diagrams.summer_solstice", kind: "sol" },
+    { lon: 180, key: "learn.diagrams.autumn_equinox", kind: "eq" },
+    { lon: 270, key: "learn.diagrams.winter_solstice", kind: "sol" },
+  ];
+
+  return (
+    <FigureFrame
+      w={W}
+      h={H}
+      label={t("learn.diagrams.ecliptic_cross_label")}
+      caption={t("learn.diagrams.ecliptic_cross_caption")}
+    >
+      {/* the equator: declination zero by definition */}
+      <Line x1={L} y1={y(0)} x2={Rr} y2={y(0)} stroke={EQUATOR} strokeWidth={1.7} opacity={0.85} />
+      <SvgText x={Rr} y={y(0) - 6} textAnchor="end" fontSize={8} fontFamily={STUDY_FONT.semibold} fill={EQUATOR}>
+        {t("learn.diagrams.celestial_equator")}
+      </SvgText>
+
+      {[23.44, -23.44].map((d) => (
+        <G key={d}>
+          <Line x1={L} y1={y(d)} x2={Rr} y2={y(d)} stroke={INK} strokeOpacity={0.14} strokeWidth={0.7} strokeDasharray="3 3" />
+          <SvgText x={L - 5} y={y(d) + 3} textAnchor="end" fill="currentColor" fontSize={8} opacity={0.5}>
+            {d > 0 ? "+" : "−"}
+            {n("23.44")}°
+          </SvgText>
+        </G>
+      ))}
+
+      <Path d={path} fill="none" stroke={ECLIPTIC} strokeWidth={1.9} />
+      <SvgText x={x(45)} y={y(20) - 8} fontSize={8} fontFamily={STUDY_FONT.semibold} fill={ECLIPTIC}>
+        {t("learn.diagrams.ecliptic_curve")}
+      </SvgText>
+
+      {marks.map((m) => {
+        const dec = m.kind === "eq" ? 0 : m.lon === 90 ? 23.44 : -23.44;
+        const c = m.kind === "eq" ? TROPICAL : SIDEREAL;
+        const up = dec >= 0;
+        return (
+          <G key={m.key}>
+            <Circle cx={x(m.lon)} cy={y(dec)} r={3.6} fill={c} />
+            <SvgText
+              x={x(m.lon) + (m.lon > 300 ? -6 : 6)}
+              y={y(dec) + (up ? -9 : 16)}
+              textAnchor={m.lon > 300 ? "end" : "start"}
+              fontSize={8} fontFamily={STUDY_FONT.semibold}
+              fill={c}
+            >
+              {t(m.key)}
+            </SvgText>
+          </G>
+        );
+      })}
+
+      <SvgText x={L} y={H - 8} fill="currentColor" fontSize={8} opacity={0.5}>
+        {t("learn.diagrams.ecliptic_longitude_axis")}
+      </SvgText>
+    </FigureFrame>
+  );
+}

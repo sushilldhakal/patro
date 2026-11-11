@@ -6,52 +6,60 @@ import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
  * rather than importing a component, which keeps article files free of JSX and
  * gives one place to swap an implementation.
  *
- * Mirrors web's `src/lib/learn/learn-diagrams.tsx` registry 1:1 by key, so
- * article data files (which reference these ids) type-check unchanged.
+ * Mirrors web's `src/lib/learn/learn-diagrams.tsx` registry 1:1 by key, and
+ * draws what the website draws: its still figures (`components/learn/figures`)
+ * and its interactive studies (`components/learn/studies`) are ports of the
+ * website's own SVG, so a figure looks and moves the same in both apps. The
+ * 3D exceptions are the apsides orbit and the two-systems playground.
  */
 
 import type { ComponentType } from "react";
 import { Asset } from "expo-asset";
 import { EarthRotationDiagram as EarthRotationFigure, ServerPipelineDiagram as PipelineFigure } from "@vedic-patro/ui/kit/learn";
 import { HoraTodayDiagram } from "@/components/learn/diagrams/HoraTodayDiagram";
+/* Still figures: the website's own SVG drawings, ported line for line. */
+import { EclipseSeasonWindow, GregorianJump, HoraWeekdayCycle, SunRayAngle, YearLengthLadder } from "@/components/learn/figures/calendar-cycle-figures";
+import { DayLengthHourAngle, MoonriseSlip, SiderealSolarDay, SunriseSamplesTithi, TithiAcrossZones } from "@/components/learn/figures/day-timeline-figures";
+import { MandaShighra, PakshaStrip, RetrogradeLoop } from "@/components/learn/figures/motion-and-month-figures";
+import { EclipticEquatorCross, TwoZeroPoints, ZodiacBeltWidth } from "@/components/learn/figures/zodiac-frame-figures";
+import { RituWheel } from "@/components/learn/figures/RituWheelFigure";
+import { LunarSolarGap } from "@/components/learn/figures/LunarSolarGapFigure";
+import { SolarDeclinationYear } from "@/components/learn/figures/SolarDeclinationYearFigure";
+import { SolarMonthLengths } from "@/components/learn/figures/SolarMonthLengthsFigure";
+import { CircumpolarSky } from "@/components/learn/figures/CircumpolarSkyFigure";
+import { HierarchyFigure } from "@/components/learn/figures/HierarchyFigure";
+import { MoonPhasesStripFigure } from "@/components/learn/figures/MoonPhasesStripFigure";
+import { AdhikMassDiagram, SunriseTimeline } from "@/components/learn/figures/tithi-mechanics-figures";
 
 const earthGlobe = Asset.fromModule(require("@/assets/sky3d/earth.jpg")).uri;
 function EarthRotationDiagram() {
   return <EarthRotationFigure globeSrc={earthGlobe} />;
 }
-import { SunRayAngleDiagram } from "@/components/learn/diagrams/SunRayAngleDiagram";
-import { HoraWeekdayCycleDiagram } from "@/components/learn/diagrams/HoraWeekdayCycleDiagram";
-import { YearLengthLadderDiagram } from "@/components/learn/diagrams/YearLengthLadderDiagram";
-import { GregorianJumpDiagram } from "@/components/learn/diagrams/GregorianJumpDiagram";
-import { TwoZeroPointsDiagram } from "@/components/learn/diagrams/TwoZeroPointsDiagram";
-import { ZodiacBeltWidthDiagram } from "@/components/learn/diagrams/ZodiacBeltWidthDiagram";
-import { EclipticEquatorCrossDiagram } from "@/components/learn/diagrams/EclipticEquatorCrossDiagram";
-import { SunriseTimelineDiagram } from "@/components/learn/diagrams/SunriseTimelineDiagram";
-import { DayLengthHourAngleDiagram } from "@/components/learn/diagrams/DayLengthHourAngleDiagram";
-import { MoonriseSlipDiagram } from "@/components/learn/diagrams/MoonriseSlipDiagram";
-import { SiderealSolarDayDiagram } from "@/components/learn/diagrams/SiderealSolarDayDiagram";
-import { SunriseSamplesTithiDiagram } from "@/components/learn/diagrams/SunriseSamplesTithiDiagram";
-import { TithiAcrossZonesDiagram } from "@/components/learn/diagrams/TithiAcrossZonesDiagram";
-import { EarthOrbitDiagram } from "@/components/learn/diagrams/EarthOrbitDiagram";
-import { DeclinationYearDiagram } from "@/components/learn/diagrams/DeclinationYearDiagram";
-import { RituWheelDiagram } from "@/components/learn/diagrams/RituWheelDiagram";
-import { LunarSolarGapDiagram } from "@/components/learn/diagrams/LunarSolarGapDiagram";
-import { CircumpolarSkyDiagram } from "@/components/learn/diagrams/CircumpolarSkyDiagram";
-import { PakshaStripDiagram } from "@/components/learn/diagrams/PakshaStripDiagram";
-import { EclipseSeasonWindowDiagram } from "@/components/learn/diagrams/EclipseSeasonWindowDiagram";
-import { SolarMonthLengthsDiagram } from "@/components/learn/diagrams/SolarMonthLengthsDiagram";
-import { CalendarHierarchyDiagram } from "@/components/learn/diagrams/CalendarHierarchyDiagram";
-import { EquinoxPrecessionDiagram } from "@/components/learn/diagrams/EquinoxPrecessionDiagram";
 import { ApsidesOrbitDiagram } from "@/components/learn/diagrams/ApsidesOrbitDiagram";
-import { RetrogradeLoopDiagram } from "@/components/learn/diagrams/RetrogradeLoopDiagram";
-import { MandaShighraDiagram } from "@/components/learn/diagrams/MandaShighraDiagram";
-import { PrecessionConeDiagram } from "@/components/learn/diagrams/PrecessionConeDiagram";
-import { MoonOrbitTiltDiagram } from "@/components/learn/diagrams/MoonOrbitTiltDiagram";
-import { MoonPhasesDiagram } from "@/components/learn/diagrams/MoonPhasesDiagram";
-import { AdhikMaasDiagram } from "@/components/learn/diagrams/AdhikMaasDiagram";
+import { RashiFromStarsDiagram } from "@/components/learn/diagrams/RashiFromStarsDiagram";
+/* Studies: the website's interactive SVG studies, ported line for line. */
+import { HeliocentricOrbitStudy } from "@/components/learn/studies/HeliocentricOrbitStudyFigure";
+import { SunEarthMoonStudy } from "@/components/learn/studies/SunEarthMoonStudyFigure";
+import { AyanamshaWheel } from "@/components/learn/studies/AyanamshaWheelFigure";
+import { EquinoxPrecession } from "@/components/learn/studies/EquinoxPrecessionFigure";
+import { PrecessionCone } from "@/components/learn/studies/PrecessionConeFigure";
+import { ElongationStudy } from "@/components/learn/studies/ElongationStudyFigure";
+import { MoonOrbitTiltStudy } from "@/components/learn/studies/MoonOrbitTiltFigure";
+import { EclipseStudy } from "@/components/learn/studies/EclipseStudyFigure";
+import { SolarEclipseStudy } from "@/components/learn/studies/SolarEclipseStudyFigure";
 
-const SunriseVriddhiDiagram = () => <SunriseTimelineDiagram mode="vriddhi" />;
-const SunriseKshayaDiagram = () => <SunriseTimelineDiagram mode="kshaya" />;
+/* The website's "precession-sky": the equinox drifting round the fixed ring, then the axis's cone. */
+function PrecessionSkyDiagram() {
+  return (
+    <>
+      <EquinoxPrecession />
+      <PrecessionCone />
+    </>
+  );
+}
+
+const SunriseVriddhiDiagram = () => <SunriseTimeline mode="vriddhi" />;
+const SunriseKshayaDiagram = () => <SunriseTimeline mode="kshaya" />;
 import {
   RashiReferenceTable,
   GrahaReferenceTable,
@@ -64,75 +72,62 @@ import { ComputationReferenceDiagram } from "@/components/learn/diagrams/Referen
 function ServerPipelineDiagram() {
   return <PipelineFigure earthSrc={earthGlobe} />;
 }
-import {
-  SunEarthMoonDiagram,
-  AyanamshaDiagram,
-  TithiAngleDiagram,
-  EclipseDiagram,
-} from "@/components/learn/diagrams/LearnDiagramWidgets";
 import { TwoSystemsStudy } from "@/components/learn/playground/TwoSystemsStudy";
 
-const SolarEclipseDiagram = () => <EclipseDiagram mode="solar" />;
-const LunarEclipseDiagram = () => <EclipseDiagram mode="lunar" />;
 const TwoSystemsDiagram = () => <TwoSystemsStudy />;
 
 export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
-  /* Sun / Earth geometry — has native equivalent */
-  "sun-earth-moon": SunEarthMoonDiagram,
-  "ecliptic-belt": SunEarthMoonDiagram,
-
   /* Sun / Earth geometry */
-  "earth-orbit": EarthOrbitDiagram,
-  "earth-rotation": EarthRotationDiagram,
-  "declination-year": DeclinationYearDiagram,
-  "ritu-wheel": RituWheelDiagram,
-  "lunar-solar-gap": LunarSolarGapDiagram,
-  "circumpolar-sky": CircumpolarSkyDiagram,
-  "retrograde-loop": RetrogradeLoopDiagram,
-  "manda-shighra": MandaShighraDiagram,
-  "paksha-strip": PakshaStripDiagram,
-  "two-zero-points": TwoZeroPointsDiagram,
-  "zodiac-belt-width": ZodiacBeltWidthDiagram,
-  "ecliptic-equator-cross": EclipticEquatorCrossDiagram,
-  "hora-weekday-cycle": HoraWeekdayCycleDiagram,
-  "year-length-ladder": YearLengthLadderDiagram,
-  "gregorian-jump": GregorianJumpDiagram,
-  "eclipse-season-window": EclipseSeasonWindowDiagram,
-  "sun-ray-angle": SunRayAngleDiagram,
-  "sidereal-solar-day": SiderealSolarDayDiagram,
-  "day-length-hour-angle": DayLengthHourAngleDiagram,
-  "moonrise-slip": MoonriseSlipDiagram,
-  "sunrise-samples-tithi": SunriseSamplesTithiDiagram,
-  "tithi-across-zones": TithiAcrossZonesDiagram,
-  "solar-month-lengths": SolarMonthLengthsDiagram,
+  "sun-earth-moon": SunEarthMoonStudy,
+  "ecliptic-belt": SunEarthMoonStudy,
 
-  /* 3D — has native equivalent (playground system, already at parity) */
+  "earth-orbit": HeliocentricOrbitStudy,
+  "earth-rotation": EarthRotationDiagram,
+  "declination-year": SolarDeclinationYear,
+  "ritu-wheel": RituWheel,
+  "lunar-solar-gap": LunarSolarGap,
+  "circumpolar-sky": CircumpolarSky,
+  "retrograde-loop": RetrogradeLoop,
+  "manda-shighra": MandaShighra,
+  "paksha-strip": PakshaStrip,
+  "two-zero-points": TwoZeroPoints,
+  "zodiac-belt-width": ZodiacBeltWidth,
+  "ecliptic-equator-cross": EclipticEquatorCross,
+  "hora-weekday-cycle": HoraWeekdayCycle,
+  "year-length-ladder": YearLengthLadder,
+  "gregorian-jump": GregorianJump,
+  "eclipse-season-window": EclipseSeasonWindow,
+  "sun-ray-angle": SunRayAngle,
+  "sidereal-solar-day": SiderealSolarDay,
+  "day-length-hour-angle": DayLengthHourAngle,
+  "moonrise-slip": MoonriseSlip,
+  "sunrise-samples-tithi": SunriseSamplesTithi,
+  "tithi-across-zones": TithiAcrossZones,
+  "solar-month-lengths": SolarMonthLengths,
+
   "two-systems": TwoSystemsDiagram,
 
-  "calendar-hierarchy": CalendarHierarchyDiagram,
+  "calendar-hierarchy": HierarchyFigure,
 
-  /* Zodiac reference frames — has native equivalent */
-  "ayanamsha-wheel": AyanamshaDiagram,
+  "rashi-from-stars": RashiFromStarsDiagram,
+  "ayanamsha-wheel": AyanamshaWheel,
   "apsides-seasons": ApsidesOrbitDiagram,
 
-  /* Zodiac reference frames — placeholder, Phase 3 Tier 2/3 */
-  "equinox-precession": EquinoxPrecessionDiagram,
-  "precession-cone": PrecessionConeDiagram,
-  "precession-sky": PrecessionConeDiagram,
+  "equinox-precession": EquinoxPrecession,
+  "precession-cone": PrecessionCone,
+  "precession-sky": PrecessionSkyDiagram,
 
-  /* Moon — has native equivalent */
-  "tithi-elongation": TithiAngleDiagram,
+  "tithi-elongation": ElongationStudy,
 
   /* Moon */
-  "moon-phases": MoonPhasesDiagram,
-  "moon-orbit-tilt": MoonOrbitTiltDiagram,
-  "adhik-maas": AdhikMaasDiagram,
+  "moon-phases": MoonPhasesStripFigure,
+  "moon-orbit-tilt": MoonOrbitTiltStudy,
+  "adhik-maas": AdhikMassDiagram,
   "sunrise-vriddhi": SunriseVriddhiDiagram,
   "sunrise-kshaya": SunriseKshayaDiagram,
 
-  /* Eclipses — has native equivalent */
-  "lunar-eclipse": LunarEclipseDiagram,
-  "solar-eclipse": SolarEclipseDiagram,
+  "lunar-eclipse": EclipseStudy,
+  "solar-eclipse": SolarEclipseStudy,
 
   /* Live — today's planetary hour, wired to mobile's own panchang data */
   "hora-live": HoraTodayDiagram,

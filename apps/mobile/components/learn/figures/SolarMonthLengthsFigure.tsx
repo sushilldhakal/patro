@@ -1,0 +1,169 @@
+/**
+ * Why a वि.सं. month is 29–32 days long, drawn from the real calendar.
+ *
+ * A सौर मास is not a count of days — it is `३०°` of the Sun's travel along the
+ * राशि belt, from one सङ्क्रान्ति to the next. The Sun does not travel at a
+ * constant rate: near **उपसौर** (पुष–माघ) Earth is closest and the Sun's
+ * apparent motion is fastest, so those `३०°` are crossed in fewer days; near
+ * **अपसौर** (असार) it crawls, and the month stretches.
+ *
+ * So the bar chart is the orbit's eccentricity, read off the calendar: the
+ * short months cluster around उपसौर and the long ones around अपसौर, and the
+ * whole pattern is a single slow wave rather than an arbitrary table anyone
+ * had to memorise.
+ *
+ * Lengths come from `getBSMonthLength` — the same table the patro itself uses,
+ * not a model — averaged over a decade so one year's rounding does not read as
+ * a rule. The fractional averages are what show the wave; a single year would
+ * be a staircase of integers.
+ */
+
+import { G, Line, Rect, Text as SvgText } from "react-native-svg";
+import { FigureFrame } from "@/components/learn/figures/FigureFrame";
+import { STUDY_FONT } from "@/components/learn/study/study-ink";
+import { useMemo } from "react";
+
+import { useTranslation } from "@vedic-patro/i18n/react";
+
+import { useLocale } from "@vedic-patro/i18n/react";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
+import {
+  BS_MONTHS_NE,
+  BS_MONTH_NAMES,
+  BS_SUPPORTED_END_YEAR,
+  getBSMonthLength,
+} from "@vedic-patro/domain/calendar/bs-calendar";
+
+import { illustration } from "@vedic-patro/design-tokens";
+const W = 560;
+const H = 210;
+const PAD = { l: 30, r: 12, t: 26, b: 40 };
+
+const LONG = illustration.orange50;
+const SHORT = illustration.teal48;
+const MID = illustration.sky70;
+
+/** Months sampled per bar — enough that the fractional mean is stable. */
+const SAMPLE_YEARS = 10;
+
+export function SolarMonthLengths() {
+  const { t } = useTranslation();
+  const { lang } = useLocale();
+  const ne = lang !== "en";
+  const num = (v: number | string) => (ne ? toNepaliDigits(String(v)) : String(v));
+  const monthNames = ne ? BS_MONTHS_NE : ([...BS_MONTH_NAMES] as string[]);
+
+  /** Mean length of each महिना over the last decade the tables cover. */
+  const lengths = useMemo(() => {
+    const endYear = BS_SUPPORTED_END_YEAR - 1;
+    return Array.from({ length: 12 }, (_, m) => {
+      let total = 0;
+      for (let y = endYear - SAMPLE_YEARS; y < endYear; y += 1) {
+        total += getBSMonthLength(y, m + 1);
+      }
+      return total / SAMPLE_YEARS;
+    });
+  }, []);
+
+  const lo = 28.6;
+  const hi = 32.4;
+  const x = (i: number) => PAD.l + ((i + 0.5) / 12) * (W - PAD.l - PAD.r);
+  const y = (d: number) => {
+    const h = H - PAD.t - PAD.b;
+    return PAD.t + h - ((d - lo) / (hi - lo)) * h;
+  };
+  const barW = ((W - PAD.l - PAD.r) / 12) * 0.62;
+
+  /* Highlight the months that *contain* अपसौर and उपसौर, not the longest and
+     shortest bars. असार and साउन tie at 31.4 exactly, so picking by length
+     would hand the label to whichever indexOf reached first — and the caption
+     is making a claim about where Earth is in its orbit, not about which bar
+     won. Aphelion lands असार १९–२२ and perihelion पुष १८–२०. */
+  const longest = 2; // असार
+  const shortest = 8; // पुष
+
+  return (
+    <FigureFrame w={W} h={H} label={t("learn.study.month_lengths.aria")} caption={t("learn.study.month_lengths.caption")}>
+        {[29, 30, 31, 32].map((d) => (
+          <G key={d}>
+            <Line
+              x1={PAD.l}
+              x2={W - PAD.r}
+              y1={y(d)}
+              y2={y(d)}
+              stroke="currentColor"
+              strokeOpacity={0.13}
+              strokeWidth={0.6}
+              strokeDasharray="3 3"
+            />
+            <SvgText
+              x={PAD.l - 5}
+              y={y(d) + 3}
+              textAnchor="end"
+              fill="currentColor" fontSize={8} opacity={0.55}
+            >
+              {num(d)}
+            </SvgText>
+          </G>
+        ))}
+
+        {lengths.map((d, i) => {
+          const colour = i === longest ? LONG : i === shortest ? SHORT : MID;
+          const strong = i === longest || i === shortest;
+          return (
+            <G key={i}>
+              <Rect
+                x={x(i) - barW / 2}
+                y={y(d)}
+                width={barW}
+                height={H - PAD.b - y(d)}
+                fill={colour}
+                opacity={strong ? 0.85 : 0.42}
+                rx={1.5}
+              />
+              <SvgText
+                x={x(i)}
+                y={y(d) - 4}
+                textAnchor="middle"
+                fill="currentColor" fontSize={8}
+                opacity={strong ? 0.9 : 0.5}
+              >
+                {num(d.toFixed(1))}
+              </SvgText>
+              <SvgText
+                x={x(i)}
+                y={H - PAD.b + 12}
+                textAnchor="middle"
+                fill="currentColor" fontSize={8}
+                opacity={strong ? 0.95 : 0.5}
+                fontWeight={strong ? 700 : 400}
+              >
+                {monthNames[i]}
+              </SvgText>
+            </G>
+          );
+        })}
+
+        <SvgText
+          x={x(shortest)}
+          y={H - PAD.b + 25}
+          textAnchor="middle"
+          fontSize={8} fontFamily={STUDY_FONT.semibold}
+          fill={SHORT}
+        >
+          {t("learn.study.month_lengths.perihelion")}
+        </SvgText>
+        <SvgText
+          x={x(longest)}
+          y={H - PAD.b + 25}
+          textAnchor="middle"
+          fontSize={8} fontFamily={STUDY_FONT.semibold}
+          fill={LONG}
+        >
+          {t("learn.study.month_lengths.aphelion")}
+        </SvgText>
+      </FigureFrame>
+  );
+}
+
+export default SolarMonthLengths;

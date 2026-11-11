@@ -15,6 +15,7 @@
     "./gestures": "./src/native/gestures.ts",
     "./contract": "./src/contract.ts",
     "./classes": "./src/classes.ts",
+    "./glyph-art": "./src/kit/panchanga/glyph-art.ts",
     "./motion": {
       "react-native": "./src/native/motion.ts",
       "default": "./src/web/motion.ts"

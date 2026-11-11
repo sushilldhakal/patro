@@ -13,13 +13,20 @@
 - Cross-links use `LearnLink` / `LearnAppRouteLink` in `LearnProse.tsx` (Expo Router), not external URLs.
 - `history` is a dedicated native screen at `app/(tabs)/learn/history.tsx`.
 
-### Learn 3D
+### Learn diagrams
 
-Two separate things, and they are not interchangeable:
+The Learn diagrams draw what the website draws. A figure or study is ported
+from the website's file and keeps its geometry, timeline, colours and class
+constants (`@vedic-patro/design-tokens/classes/*`, read through `useSvgClass`
+/ `useTm` in `components/learn/study/study-ink.ts`), so a fix on either side is
+easy to carry across. The frame and controls are `components/learn/study/`.
+
+Three things, and they are not interchangeable:
 
 | | Where | What it is |
 |---|---|---|
-| Diagrams | `components/learn/diagrams/` | One scene per idea, wrapped in `LearnDiagram3D`. Small, fixed, illustrative. |
+| Figures & studies | `components/learn/figures/`, `components/learn/studies/` | Ports of the website's own SVG figures and interactive studies (`apps/web/src/components/learn`), drawn with `react-native-svg`. Registry: `lib/learn/learn-diagrams.tsx`. |
+| Diagrams | `components/learn/diagrams/` | The apsides orbit (still a `LearnDiagram3D` scene), the hand-ported राशि-from-stars study, and today's hora (wired to the app's panchang data). |
 | Playground | `components/learn/playground/` | **One** scene for every topic, configured per slug. |
 
 The playground is a port of the web app's `DayPlaygroundStudy` + `DaySimScene`,
