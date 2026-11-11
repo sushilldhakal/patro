@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type ComponentRef } from "react";
+import { RateAppCard } from "@/components/review/RateAppCard";
 import { adaptHomeView, adaptTabletHomeView, isPlannerView, plannerDays, shiftDateIso, useBestSlots, useDayMarks, usePersonalDays, usePlannerText, useUserEvents, type PlannerViewKind } from "@vedic-patro/features/events";
 import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
@@ -570,6 +571,7 @@ function HomeScreen() {
           />
           <AakashGocharEntryCard />
           <HomeVedaMantra dateAd={todayAd} />
+          <RateAppCard />
         </View>
       </Reveal>
     </View>

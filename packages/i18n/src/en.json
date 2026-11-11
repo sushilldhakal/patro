@@ -2930,6 +2930,12 @@
       "offline": "Offline use",
       "offline_years": "{{count}} calendar years saved on this device"
     },
+    "review": {
+      "title": "Rate Vedic Patro",
+      "body": "A one-minute review helps others find the patro too.",
+      "rate": "Rate now",
+      "later": "Later"
+    },
     "aakash_gochar": {
       "earth_sits_at_the_centre_and": "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
       "live_graha_transits_from_the_geocentric": "Live graha transits from the geocentric standpoint",

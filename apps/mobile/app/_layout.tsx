@@ -1,5 +1,6 @@
 import { useTrackPathname } from "@/lib/cross-tab-back";
 import { WidgetRefresher } from "@/components/widgets/WidgetRefresher";
+import { AppDayTracker } from "@/components/review/AppDayTracker";
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
@@ -338,6 +339,7 @@ function RootLayout() {
             >
               <LanguageQueryRefresh />
               <WidgetRefresher />
+              <AppDayTracker />
               <CalculationSystemQueryReset />
               <OfflineDataProvider>
                 <AuthProvider>
