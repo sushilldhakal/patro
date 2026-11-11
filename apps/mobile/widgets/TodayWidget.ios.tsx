@@ -1,3 +1,7 @@
+"use no memo";
+// The widget runtime has no react/compiler-runtime: React Compiler output (`_c(...)` memo caches in the
+// helper components below) throws there and the widget draws blank. Keep this file out of the compiler.
+
 import { AccessoryWidgetBackground, Capsule, Divider, HStack, Image, Spacer, Text, VStack, ZStack } from "@expo/ui/swift-ui";
 import {
   containerBackground,

@@ -370,14 +370,16 @@
                   "accessoryCircular",
                   "accessoryRectangular",
                   "accessoryInline"
-                ]
+                ],
+                "initialLayout": "./widgets/TodayWidget.ios.tsx"
               },
               "android": {
                 "minWidth": 110,
                 "minHeight": 110,
                 "targetCellWidth": 2,
                 "targetCellHeight": 2,
-                "resizeMode": "both"
+                "resizeMode": "both",
+                "initialLayout": "./widgets/TodayWidget.android.tsx"
               }
             },
             {
@@ -390,14 +392,16 @@
                   "systemMedium",
                   "systemLarge",
                   "systemExtraLarge"
-                ]
+                ],
+                "initialLayout": "./widgets/MonthWidget.ios.tsx"
               },
               "android": {
                 "minWidth": 180,
                 "minHeight": 180,
                 "targetCellWidth": 4,
                 "targetCellHeight": 3,
-                "resizeMode": "both"
+                "resizeMode": "both",
+                "initialLayout": "./widgets/MonthWidget.android.tsx"
               }
             }
           ]
