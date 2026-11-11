@@ -55,11 +55,13 @@ export const learnPageClasses = {
 
   // ── Topic card ────────────────────────────────────────────────────────────
   topicCard: "flex flex-col rounded-2xl border border-border bg-card",
-  topicHead: "flex flex-row items-start gap-3 px-5 pt-5",
+  topicHead: "flex flex-row items-center gap-3 px-5 pt-5",
   topicIcon: "flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary/10",
   topicTitleWrap: "min-w-0 flex-1",
   topicTitle: "text-base font-bold leading-snug text-foreground",
-  topicBadge: "shrink-0 rounded-full border px-2.5 py-0.5",
+  /** The section badge, on its own line under the icon and title so the title keeps the full width. */
+  topicBadgeRow: "flex flex-row px-5 pt-3",
+  topicBadge: "max-w-full self-start rounded-full border px-2.5 py-0.5",
   topicBadgeText: "text-xs font-semibold uppercase tracking-wide",
   topicSummary: "px-5 pt-3 text-sm leading-relaxed text-foreground/80",
   topicFooter: "mt-4 flex flex-row items-center justify-between border-t border-border/70 px-5 py-3",

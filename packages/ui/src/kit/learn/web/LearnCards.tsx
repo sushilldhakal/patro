@@ -83,13 +83,15 @@ export function LearnTopicCard({ topic, readMore, icon, href, onOpen }: LearnTop
             {topic.title}
           </Text>
         </Box>
-        {topic.sectionLabel && chip ? (
-          <Text as="span" className={cn(learnPageClasses.topicBadge, learnPageClasses.topicBadgeText, chip)}>
+      </Box>
+      {topic.sectionLabel && chip ? (
+        <Box className={learnPageClasses.topicBadgeRow}>
+          <Text as="span" className={cn(learnPageClasses.topicBadge, learnPageClasses.topicBadgeText, "truncate", chip)}>
             {topic.sectionLabel}
           </Text>
-        ) : null}
-      </Box>
-      <Text as="p" className={learnPageClasses.topicSummary} webClassName="flex-1">
+        </Box>
+      ) : null}
+      <Text as="p" className={learnPageClasses.topicSummary} webClassName="flex-1 line-clamp-4">
         {topic.summary}
       </Text>
       <Box className={learnPageClasses.topicFooter}>

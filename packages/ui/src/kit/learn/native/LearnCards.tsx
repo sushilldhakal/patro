@@ -47,15 +47,19 @@ export function LearnTopicCard({ topic, readMore, icon, onOpen }: LearnTopicCard
         <Box className={learnPageClasses.topicTitleWrap}>
           <Text className={learnPageClasses.topicTitle}>{topic.title}</Text>
         </Box>
-        {topic.sectionLabel ? (
-          <Box className={cn(learnPageClasses.topicBadge, chip ?? "border-border bg-muted")} nativeClassName="shrink">
+      </Box>
+      {topic.sectionLabel ? (
+        <Box className={learnPageClasses.topicBadgeRow}>
+          <Box className={cn(learnPageClasses.topicBadge, chip ?? "border-border bg-muted")}>
             <Text className={cn(learnPageClasses.topicBadgeText, chip ? chipText(chip) : "text-foreground")} numberOfLines={1}>
               {topic.sectionLabel}
             </Text>
           </Box>
-        ) : null}
-      </Box>
-      <Text className={learnPageClasses.topicSummary}>{topic.summary}</Text>
+        </Box>
+      ) : null}
+      <Text className={cn(learnPageClasses.topicSummary, "flex-1")} numberOfLines={4}>
+        {topic.summary}
+      </Text>
       <Box className={learnPageClasses.topicFooter}>
         <Text className={learnPageClasses.topicFooterText}>{readMore}</Text>
         <Icon node={learnIcons.arrowRight} size="md" tone="secondary" />
