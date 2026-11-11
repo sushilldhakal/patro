@@ -92,7 +92,7 @@ const TodayWidget = (props: TodayWidgetProps, environment: { colorScheme?: strin
   if (!hasData) {
     return (
       <Column modifiers={root}>
-        <DateBlock big={w < 160 ? 34 : 42} />
+        {props.day ? <DateBlock big={w < 160 ? 34 : 42} /> : <T s="Vedic Patro" sz={16} bold color={c.teal} />}
       </Column>
     );
   }

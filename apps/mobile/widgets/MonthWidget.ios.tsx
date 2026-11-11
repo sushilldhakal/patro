@@ -130,7 +130,7 @@ const MonthWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
   if (weeks.length === 0) {
     return (
       <VStack alignment="leading" modifiers={root}>
-        <T s={props.monthTitle || props.bsDate} size={16} weight="bold" color={c.red} />
+        <T s={props.monthTitle || props.bsDate || "Vedic Patro"} size={16} weight="bold" color={c.red} />
         <Spacer />
       </VStack>
     );

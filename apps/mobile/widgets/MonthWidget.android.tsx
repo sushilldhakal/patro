@@ -137,7 +137,7 @@ const MonthWidget = (props: TodayWidgetProps, environment: { colorScheme?: strin
   if (weeks.length === 0) {
     return (
       <Column modifiers={root}>
-        <T s={props.monthTitle || props.bsDate} sz={16} bold color={c.red} />
+        <T s={props.monthTitle || props.bsDate || "Vedic Patro"} sz={16} bold color={c.red} />
       </Column>
     );
   }

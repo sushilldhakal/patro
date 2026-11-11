@@ -317,16 +317,21 @@ export async function refreshTodayWidget(options: {
   for (const w of [today, month]) {
     if (!w) continue;
     try {
-      if (Platform.OS === "ios" && w.updateTimeline) {
+      w.updateSnapshot(now);
+    } catch {
+      continue; // no widget support (Expo Go, old build)
+    }
+    // iOS: tomorrow's entry flips the widget at local midnight without the app running. The snapshot
+    // above stays if the timeline call fails.
+    if (Platform.OS === "ios" && w.updateTimeline) {
+      try {
         w.updateTimeline([
           { date: new Date(), props: now },
           { date: midnight, props: tomorrow },
         ]);
-      } else {
-        w.updateSnapshot(now);
+      } catch {
+        /* keep the snapshot */
       }
-    } catch {
-      /* no widget support (Expo Go, old build) */
     }
   }
 }

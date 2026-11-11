@@ -148,10 +148,12 @@ const TodayWidget = (props: TodayWidgetProps, environment: WidgetEnvironment) =>
   }
 
   if (!hasData) {
+    // Before the app has sent anything (just installed, not opened yet).
     return (
       <VStack alignment="leading" spacing={4} modifiers={root}>
-        <DateBlock size={family === "systemSmall" ? 38 : 44} />
+        {props.day ? <DateBlock size={family === "systemSmall" ? 38 : 44} /> : <Image systemName="calendar" size={28} color={c.teal} />}
         <Spacer />
+        {props.day ? null : <T s="Vedic Patro" size={15} weight="bold" color={c.teal} />}
       </VStack>
     );
   }
