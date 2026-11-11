@@ -9,8 +9,8 @@ Use these strings in App Store Connect and Google Play Console. Keep the privacy
 
 ## English (default)
 
-**Name:** Vedic Patro  
-**Subtitle (Apple, 30 chars):** Nepali calendar & panchanga  
+**Name (Apple & Play, 30 chars):** Vedic Patro: Nepali Calendar  
+**Subtitle (Apple, 30 chars):** Panchang, Rashifal & Kundali  
 **Short description (Play, 80 chars):** Nepali BS calendar, daily panchanga, kundali and sky — in Nepali and English.
 
 **Full description**
@@ -47,7 +47,9 @@ Location is optional (While Using the App only): panchanga for your place, and t
 
 Panchanga times are astronomical calculations for the place you choose. They are a reference, not a substitute for a local printed almanac or a qualified adviser.
 
-**Keywords (Apple, 100 chars):** nepali patro,calendar,panchanga,bikram sambat,kundali,tithi,nakshatra,muhurta,rashifal,jyotish
+**Keywords (Apple, 100 chars):** tithi,muhurta,sait,bikram,sambat,date,converter,nepal,holiday,festival,jyotish,horoscope,panchanga
+
+Keyword rules: Apple already indexes every word of the name and subtitle, so the keyword field never repeats them (vedic, patro, nepali, calendar, panchang, rashifal, kundali). Words are joined across fields, so "nepali" + "date" + "converter" matches "nepali date converter". Commas only, no spaces; singular forms (Apple matches plurals). Name, subtitle and keywords can only be changed with a new app version.
 
 **Category**
 - Apple primary: Lifestyle  
