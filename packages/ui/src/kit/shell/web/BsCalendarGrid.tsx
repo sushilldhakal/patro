@@ -137,7 +137,7 @@ function DayCell({
     leftFest,
     rightFest,
     tithi,
-    extraFestCount,
+    hiddenFestCompact,
   } = cell;
   const edgeTone = isPublicHoliday ? "text-danger" : "text-foreground/85";
 
@@ -211,29 +211,27 @@ function DayCell({
               <Text className="md:hidden">{cell.secondaryLabelShort}</Text>
               <Text className="max-md:hidden">{cell.secondaryLabel}</Text>
             </Text>
-            {extraFestCount > 0 ? (
-              <Pressable
-                label={cell.extraFestAria}
-                onPress={onOpenFestivals}
-                className={cn("pointer-events-auto shrink-0 border-none max-md:px-0.5", cal.countBadge, cal.countBadgeText)}
-                webClassName="transition-opacity hover:opacity-90"
-              >
-                <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
-              </Pressable>
-            ) : null}
           </Text>
         </Box>
 
-        {/* The user's events are a "+N" badge at every width, never their titles. A click opens the day,
-            or the festival list when there are only festivals. */}
-        {cell.compactCount > 0 ? (
+        {/* One "+N" per cell: the festivals not written out and the user's events together. A phone cell
+            writes one festival name, a wide one three (centre and both edges). A click opens the day, or
+            the festival list when there are no events. */}
+        {cell.moreCompact > 0 || cell.moreWide > 0 ? (
           <Pressable
-            label={cell.compactCountAria}
+            label={cell.moreAria}
             onPress={cell.eventTitles.length > 0 ? onSelect : onOpenFestivals}
-            className={cn("pointer-events-auto mx-auto mt-auto shrink-0 border-none", cal.countBadgeCompact, cal.countBadgeText)}
+            className={cn(
+              "pointer-events-auto mx-auto mt-auto shrink-0 border-none",
+              cal.countBadgeCompact,
+              cal.countBadgeText,
+              cell.moreCompact === 0 && "max-md:hidden",
+              cell.moreWide === 0 && "md:hidden",
+            )}
             webClassName="transition-opacity hover:opacity-90"
           >
-            <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>
+            <Text className={cn(cal.countBadgeText, "md:hidden")}>{cell.moreCompactLabel}</Text>
+            <Text className={cn(cal.countBadgeText, "max-md:hidden")}>{cell.moreWideLabel}</Text>
           </Pressable>
         ) : null}
 
@@ -246,7 +244,7 @@ function DayCell({
             )}
           >
             <Text numberOfLines={2}>{mainFest}</Text>
-            {festivals.length > 1 && extraFestCount === 0
+            {festivals.length > 1 && hiddenFestCompact === 0
               ? festivals.slice(1, 3).map((name, fi) => (
                   <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("md:hidden", cal.festivalExtra)}>
                     {name}

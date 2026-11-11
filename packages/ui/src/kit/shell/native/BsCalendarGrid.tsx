@@ -117,7 +117,7 @@ export function BsCalendarGrid({
               const cellIndex = rowIndex * 7 + colIndex;
               if (!cell) return <View key={`empty-${cellIndex}`} style={colStyle(col, { minHeight: cellMinH })} className={cal.emptyCell} />;
 
-              const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, extraFestCount, tithi } = cell;
+              const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, hiddenFestCompact, tithi } = cell;
               /* The web mixes these tints into the card (`color-mix`); native has only the
                  translucent tint, so it is laid over the card instead of replacing it —
                  otherwise the grid lines' colour shows through. Holiday wins, as on the web. */
@@ -186,9 +186,14 @@ export function BsCalendarGrid({
                       <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
                         {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
                       </Text>
-                      {extraFestCount > 0 ? (
-                        <RNPressable onPress={openFestivals} className={cn(cal.countBadge, isCompact && cal.countBadgePhone)}>
-                          <Text className={cal.countBadgeText}>{cell.extraFestLabel}</Text>
+                      {!isCompact && cell.moreWideChips > 0 && !isOutside ? (
+                        // One "+N" for the festivals not on the edges and the events not drawn as chips.
+                        <RNPressable
+                          onPress={cell.eventTitles.length > 2 ? () => onSelectDay?.(cell.day) : openFestivals}
+                          accessibilityLabel={cell.moreAria}
+                          className={cal.countBadge}
+                        >
+                          <Text className={cal.countBadgeText}>{cell.moreWideChipsLabel}</Text>
                         </RNPressable>
                       ) : null}
                     </View>
@@ -208,15 +213,14 @@ export function BsCalendarGrid({
                             <Text numberOfLines={1} className={cal.eventChipText}>{event.title}</Text>
                           </RNPressable>
                         ))}
-                        {cell.eventTitles.length > 2 ? <Text className={cal.eventChipText}>{`+${cell.eventTitles.length - 2}`}</Text> : null}
                       </View>
                   ) : null}
 
                   {/* A phone cell: one "+N" for festivals and the user's events together. A tap opens the day, or the
                       festival list when there are only festivals. */}
-                  {isCompact && cell.compactCount > 0 && !isOutside ? (
-                    <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.compactCountAria} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
-                      <Text className={cal.countBadgeText}>{cell.compactCountLabel}</Text>
+                  {isCompact && cell.moreCompact > 0 && !isOutside ? (
+                    <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.moreAria} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
+                      <Text className={cal.countBadgeText}>{cell.moreCompactLabel}</Text>
                     </RNPressable>
                   ) : null}
 
@@ -229,7 +233,7 @@ export function BsCalendarGrid({
                           {mainFest}
                         </Text>
                       </RNPressable>
-                      {isCompact && festivals.length > 1 && extraFestCount === 0
+                      {isCompact && festivals.length > 1 && hiddenFestCompact === 0
                         ? festivals.slice(1, 3).map((name, fi) => (
                             <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-left", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
                               {name}

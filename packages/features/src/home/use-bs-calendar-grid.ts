@@ -42,21 +42,27 @@ export type BsCalendarCell = {
   mainFest?: string;
   leftFest?: string;
   rightFest?: string;
-  /** Festivals beyond the two edge labels (`+n` badge). */
-  extraFestCount: number;
-  extraFestLabel: string;
-  extraFestAria: string;
-  festCountLabel: string;
-  festCountAria: string;
+  /**
+   * Festivals a phone-width cell does not write out: it names one festival when there are three or
+   * more, and every festival when there are one or two.
+   */
+  hiddenFestCompact: number;
   festivalsTitle: string;
   /** The signed-in user's events, tasks and appointments on this day (titles, earliest first). */
   eventTitles: string[];
-  eventCountLabel: string;
-  eventCountAria: string;
-  /** A narrow cell's one badge: festivals (BS patro) and the user's events, tasks and appointments together. */
-  compactCount: number;
-  compactCountLabel: string;
-  compactCountAria: string;
+  /**
+   * A cell's one "+N" badge counts everything it does not show — unwritten festivals and the user's
+   * events together — so a cell never carries two badges. Phone width: one festival name is written.
+   */
+  moreCompact: number;
+  moreCompactLabel: string;
+  /** Wide cell (web md+): three festivals are written (centre and both edges); events are all in the badge. */
+  moreWide: number;
+  moreWideLabel: string;
+  /** Wide native cell: as `moreWide`, but the first two events are drawn as chips. */
+  moreWideChips: number;
+  moreWideChipsLabel: string;
+  moreAria: string;
   tithi: string;
   tithiIndex: number | null;
   moonTitle?: string;
@@ -135,7 +141,12 @@ export function useBsCalendarGrid({
     const festivals = !isOutside ? day.festivals.filter(Boolean) : [];
     const festCount = festivals.length;
     const eventTitles = !isOutside && events?.length ? eventsOnDate(events, day.date_ad).map((e) => e.title) : [];
-    const extraFestCount = festCount > 2 ? festCount - 2 : 0;
+    const eventCount = eventTitles.length;
+    const hiddenFestCompact = festCount > 2 ? festCount - 1 : 0;
+    const hiddenFestWide = Math.max(0, festCount - 3);
+    const moreCompact = hiddenFestCompact + eventCount;
+    const moreWide = hiddenFestWide + eventCount;
+    const moreWideChips = hiddenFestWide + Math.max(0, eventCount - 2);
     const primaryDayNum = primaryDate === "ad" ? civilIsoDayOfMonth(day.date_ad) : day.day;
     const secondary = getSecondaryCellDate(day, primaryDate, lang, i === 0);
     // The cell shows only the other calendar's day number; the month names are in
@@ -157,19 +168,16 @@ export function useBsCalendarGrid({
       mainFest: festivals[0],
       leftFest: festivals[1],
       rightFest: festivals[2],
-      extraFestCount,
-      extraFestLabel: `+${monoDigits(extraFestCount)}`,
-      extraFestAria: t("calendar.festivals_more", { count: extraFestCount }),
-      festCountLabel: `+${monoDigits(festCount)}`,
-      festCountAria: t("calendar.festivals_more", { count: festCount }),
+      hiddenFestCompact,
       festivalsTitle: festivals.join(" · "),
       eventTitles,
-      eventCountLabel: `+${monoDigits(eventTitles.length)}`,
-      eventCountAria: t("calendar.events_count", { count: eventTitles.length }),
-      // Festivals are written in the cell in both calendars; the badge counts only the user's events.
-      compactCount: eventTitles.length,
-      compactCountLabel: `+${monoDigits(eventTitles.length)}`,
-      compactCountAria: eventTitles.length ? t("calendar.events_count", { count: eventTitles.length }) : "",
+      moreCompact,
+      moreCompactLabel: `+${monoDigits(moreCompact)}`,
+      moreWide,
+      moreWideLabel: `+${monoDigits(moreWide)}`,
+      moreWideChips,
+      moreWideChipsLabel: `+${monoDigits(moreWideChips)}`,
+      moreAria: t("calendar.festivals_more", { count: Math.max(moreCompact, moreWide) }),
       tithi: bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne),
       tithiIndex: tithiIndexFromCalendarDay(day) ?? null,
       moonTitle: moonPhaseTitle(getPakshaPhase(day), isEn),
