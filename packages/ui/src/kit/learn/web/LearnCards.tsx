@@ -41,7 +41,7 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
           {card.heading}
         </Text>
       </Box>
-      <Box className="grid gap-2" webClassName="sm:grid-cols-2 lg:grid-cols-3">
+      <Box className="grid gap-2" webClassName="phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {card.topics.map((topic) => (
           <a
             key={topic.slug}

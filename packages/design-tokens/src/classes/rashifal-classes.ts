@@ -28,7 +28,7 @@ export const rashifalClasses = {
   statusBox:
     "rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm",
   personalWrap: "flex w-full flex-col gap-3",
-  signGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-3",
+  signGrid: "grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
 
   // ── Card ──────────────────────────────────────────────────────────────────
   card: "flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card",

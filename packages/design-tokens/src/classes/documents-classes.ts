@@ -49,7 +49,7 @@ export const documentsClasses = {
 
   // ── Category hub cards (grid on "all") ────────────────────────────────────
   hubHead: "flex flex-row flex-wrap items-end justify-between gap-2",
-  hubGrid: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
+  hubGrid: "grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
   hubCard: "group flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left",
   hubCardTop: "flex flex-row items-center gap-3.5",
   hubEmoji: "flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/10 text-2xl",
@@ -133,7 +133,7 @@ export const documentsClasses = {
   /** Chapter pills stay pinned under the site header while reading a long page. */
   pillsSticky: "sticky top-14 z-20 -mx-1 flex flex-row gap-1.5 overflow-x-auto bg-background/95 px-1 py-2 [scrollbar-width:none] supports-[backdrop-filter]:bg-background/80 supports-[backdrop-filter]:backdrop-blur",
   sectionLabel: "text-xs font-bold uppercase tracking-wider text-muted-foreground",
-  moreGrid: "grid grid-cols-1 gap-2 sm:grid-cols-2",
+  moreGrid: "grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2",
   moreCard: "flex flex-row items-center gap-3 rounded-xl border border-border bg-card px-4 py-3",
 
   // ── Document card ─────────────────────────────────────────────────────────

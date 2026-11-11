@@ -1,3 +1,4 @@
+import { cardGridColumns } from "@vedic-patro/ui";
 import { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
@@ -40,7 +41,7 @@ export default function RashifalScreen() {
   const { t } = useLocale();
   const colors = useThemeColors();
   const { width: screenWidth } = useBreakpoint();
-  const signCols = screenWidth >= 1280 ? 3 : screenWidth >= 640 ? 2 : 1;
+  const signCols = cardGridColumns(screenWidth - 32);
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);

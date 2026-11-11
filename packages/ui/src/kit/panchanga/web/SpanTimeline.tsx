@@ -130,7 +130,7 @@ export function SpanTimeline({ elementId, spans, udaya, current, nowLabel }: Spa
           ))}
         </div>
       ) : null}
-      <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="m-0 grid list-none grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 p-0">
         {spans.map((s) => (
           <SpanRow key={s.key} card={s} elementId={elementId} nowLabel={nowLabel} />
         ))}

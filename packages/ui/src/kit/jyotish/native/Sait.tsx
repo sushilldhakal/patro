@@ -1,3 +1,4 @@
+import { cardGridColumns } from "@vedic-patro/ui";
 import { useWindowDimensions } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -37,7 +38,7 @@ function useStagedMonths<T>(months: T[], first: number): T[] {
 }
 
 function columnsFor(width: number) {
-  return width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  return cardGridColumns(width - 32);
 }
 
 export function SaitDayCard({ d, suitability, personalize }: SaitDayCardProps) {

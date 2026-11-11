@@ -14,13 +14,13 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
           {heading}
         </Text>
       </Box>
-      <Grid cols={{ base: 1, sm: 2, lg: 3 }} gap={8}>
+      <Grid cols={4} cards gap={8}>
         {items.map((item) => (
           <Pressable
             key={item.key}
             label={item.label}
             onPress={item.onPress}
-            className="flex flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
+            className="flex flex-1 flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
             webClassName="transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]"
           >
             <Box className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10">{item.icon}</Box>

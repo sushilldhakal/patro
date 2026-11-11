@@ -15,7 +15,7 @@ function mostColumns(cols: GridProps["cols"]): number {
   return Math.max(cols.base, cols.xs ?? 0, cols.compact ?? 0, cols.sm ?? 0, cols.md ?? 0, cols.lg ?? 0);
 }
 
-export function Grid({ cols, minCellWidth, gap, gapX, gapY, as: Tag = "div", label, className, webClassName, children, testID }: GridProps) {
+export function Grid({ cols, minCellWidth, cards, gap, gapX, gapY, as: Tag = "div", label, className, webClassName, children, testID }: GridProps) {
   const c = typeof cols === "number" ? { base: cols } : cols;
   const x = gapX ?? gap;
   const y = gapY ?? gap;
@@ -27,6 +27,20 @@ export function Grid({ cols, minCellWidth, gap, gapX, gapY, as: Tag = "div", lab
       }
     : undefined;
   const columns = fit ? "grid" : cn("grid", BASE[c.base], c.xs && XS[c.xs], c.compact && COMPACT[c.compact], c.sm && SM[c.sm], c.md && MD[c.md], c.lg && LG[c.lg]);
+  if (cards) {
+    // Columns from the grid's own width (a container query), not the window's: the same list sits
+    // full-width on a phone and beside the sidebar on a laptop. Steps: CARD_GRID_STEPS.
+    const most = mostColumns(cols);
+    const cardCols = cn("grid grid-cols-1", most >= 2 && "@[18.75rem]:grid-cols-2", most >= 3 && "@[32.5rem]:grid-cols-3", most >= 4 && "@[51.25rem]:grid-cols-4");
+    const cardGaps = x === undefined && y === undefined ? undefined : { columnGap: x, rowGap: y };
+    return (
+      <div className="@container">
+        <Tag className={cn(cardCols, className, webClassName)} style={cardGaps} aria-label={label} data-testid={testID}>
+          {Children.toArray(children)}
+        </Tag>
+      </div>
+    );
+  }
   const gaps = x === undefined && y === undefined ? undefined : { columnGap: x, rowGap: y };
   return (
     <Tag

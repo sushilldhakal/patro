@@ -14,7 +14,7 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
           {heading}
         </Text>
       </Box>
-      <Grid cols={{ base: 1, sm: 2, lg: 3 }} gap={8}>
+      <Grid cols={4} cards gap={8}>
         {items.map((item) => (
           <Pressable
             key={item.key}

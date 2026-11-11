@@ -1,3 +1,4 @@
+import { cardGridColumns } from "@vedic-patro/ui";
 import { View, useWindowDimensions } from "react-native";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useGocharDeepDive } from "@vedic-patro/features/gochar";
@@ -22,7 +23,7 @@ export function GocharPlanetDeepDive({
 
   const pickerCols = width >= breakpoints.lg ? 9 : width >= breakpoints.sm ? 5 : 3;
   const pickerWidth = `${(100 / pickerCols - 1.5).toFixed(2)}%`;
-  const detailCols = width >= breakpoints.lg ? 4 : width >= breakpoints.sm ? 2 : 1;
+  const detailCols = cardGridColumns(width - 32);
   const detailWidth = detailCols === 1 ? "100%" : `${(100 / detailCols - 1.5).toFixed(2)}%`;
 
   return (

@@ -1,5 +1,6 @@
 import { Pressable, View } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { Grid } from "@vedic-patro/ui";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { useDocumentCard } from "@vedic-patro/features/documents";
 import type { DocumentSummary } from "@vedic-patro/api-client";
@@ -7,7 +8,7 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
 
-/** Compact list rows for the documents library's "सूची" view (the card view uses DocumentCard). */
+/** Compact list rows (wrapping into columns on wide screens) for the documents library's "सूची" view (the card view uses DocumentCard). */
 export function DocumentListRows({
   documents,
   onOpen,
@@ -16,11 +17,15 @@ export function DocumentListRows({
   onOpen: (doc: DocumentSummary) => void;
 }) {
   return (
-    <View className={documentsClasses.listShell}>
-      {documents.map((doc, i) => (
-        <DocumentListRow key={doc.slug} doc={doc} last={i === documents.length - 1} onPress={() => onOpen(doc)} />
+    // One row per line on a phone; two or three side by side on an iPad, so a long category isn't a
+    // screen-tall column. Each row is its own bordered box, so the columns need no shared dividers.
+    <Grid cols={3} minCellWidth={300} gap={8}>
+      {documents.map((doc) => (
+        <View key={doc.slug} className={cn(documentsClasses.listShell, "flex-1")}>
+          <DocumentListRow doc={doc} last onPress={() => onOpen(doc)} />
+        </View>
       ))}
-    </View>
+    </Grid>
   );
 }
 

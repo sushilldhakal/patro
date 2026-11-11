@@ -186,7 +186,7 @@ function LadderCard({ page }: { page: BrahmaManaPage }) {
             <>
               <p className="m-0 text-sm font-semibold text-muted-foreground">{ladder.partsLabel}</p>
               <ProportionBar ladder={ladder} />
-              <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2 xl:grid-cols-3">
+              <ul className="m-0 grid list-none grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-0">
                 {ladder.parts.flatMap((part) => [
                   part.mana ? (
                     <li key={`${part.key}-mana`} className="col-span-full pt-1">

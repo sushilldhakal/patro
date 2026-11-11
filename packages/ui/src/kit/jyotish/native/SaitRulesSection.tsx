@@ -1,3 +1,4 @@
+import { cardGridColumns } from "@vedic-patro/ui";
 import { Pressable, useWindowDimensions, View, ActivityIndicator } from "react-native";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -29,7 +30,7 @@ export function SaitRulesSection({ busy = false, ...props }: SaitRulesSectionPro
   const view = useSaitRules(props);
   if (!view) return null;
 
-  const cols = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+  const cols = cardGridColumns(width - 32);
   const cardWidth = cols === 1 ? "100%" : (`${(100 / cols - 1.5).toFixed(2)}%` as `${number}%`);
 
   return (

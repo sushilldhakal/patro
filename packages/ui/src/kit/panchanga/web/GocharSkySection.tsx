@@ -57,7 +57,7 @@ export function GocharSkySection({ gochar, dateLabel, onSelectPlanet, selectedPl
         </Text>
       </Box>
 
-      <Box className={cn("grid sm:grid-cols-2 lg:grid-cols-3", gocharClasses.skyGrid)}>
+      <Box className={cn("grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", gocharClasses.skyGrid)}>
         {cards.map((card) => {
           const key = card.key;
           const selected = selectedPlanet === key;

@@ -100,7 +100,7 @@ export const learnPageClasses = {
   moduleNum: "flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-xl font-bold text-secondary-foreground shadow-sm",
   moduleCount: "hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground sm:inline-flex",
   catHead: "mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-secondary/[0.06] px-3 py-2",
-  topicGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-3",
+  topicGrid: "grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
 
   // ── Article chrome ────────────────────────────────────────────────────────
   backLink: "items-center gap-1.5 text-sm",

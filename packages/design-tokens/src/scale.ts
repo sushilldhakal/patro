@@ -276,6 +276,8 @@ export const motion = {
 
 /** Layout breakpoints (min width, px). Same in both apps. */
 export const breakpoints = {
+  /** Card grids go two-up from here (every phone but the very smallest). */
+  phone: 340,
   /** Phone layouts tighten (icons, docks) below this. */
   compact: 480,
   xs: 400,

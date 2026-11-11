@@ -150,7 +150,7 @@ export function SaitProfilePicker({ selectedId, onSelect, isAuthenticated, rende
   );
 }
 
-const DAY_GRID = cn("grid sm:grid-cols-2 lg:grid-cols-3", saitClasses.dayGrid);
+const DAY_GRID = cn("grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", saitClasses.dayGrid);
 
 export function SaitCeremonyLayout({
   year, method, rules, engineVersion, enabledRuleIds, onToggleRule, rulesBusy = false,

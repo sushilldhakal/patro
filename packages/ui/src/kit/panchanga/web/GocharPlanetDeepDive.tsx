@@ -68,7 +68,7 @@ export function GocharPlanetDeepDive({ gochar, selected, onSelect }: Props) {
           ) : null}
         </Box>
 
-        <Box className={cn("grid sm:grid-cols-2 lg:grid-cols-4", gocharClasses.factGrid)}>
+        <Box className={cn("grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", gocharClasses.factGrid)}>
           {detail.facts.map((fact) => (
             <Detail key={fact.key} label={fact.label} value={fact.value} />
           ))}

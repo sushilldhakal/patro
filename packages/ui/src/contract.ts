@@ -40,6 +40,16 @@ export type BoxProps = StyleProps & {
 // ─── Grid ────────────────────────────────────────────────────────────────────
 
 /** Columns at the base width and from each breakpoint up (xs 400, compact 480, sm 640, md 768, lg 1024). */
+/** Grid width (px) from which a `cards` grid shows 2, 3 and 4 columns. */
+export const CARD_GRID_STEPS = [300, 520, 820] as const;
+
+/** Columns a `cards` grid of this width shows, capped at `most`. */
+export function cardGridColumns(width: number, most = 4): number {
+  let n = 1;
+  for (const step of CARD_GRID_STEPS) if (width >= step) n += 1;
+  return Math.max(1, Math.min(most, n));
+}
+
 export type GridColumns = number | { base: number; xs?: number; compact?: number; sm?: number; md?: number; lg?: number };
 
 /**
@@ -55,6 +65,13 @@ export type GridProps = StyleProps & {
    * leave each cell at least this many px, up to `cols` (read as the most).
    */
   minCellWidth?: number;
+  /**
+   * A grid of cards that fills the row: columns follow the grid's own width — 1 under 300px (a very
+   * small phone), 2 under 520 (phones), 3 under 820 (iPad portrait), 4 above (iPad landscape,
+   * desktop) — never more than `cols`. Lists of cards use this, so tall single-column stacks don't
+   * waste the width of an iPad. See CARD_GRID_STEPS.
+   */
+  cards?: boolean;
   /** Space between cells, in px (both directions unless `gapX` / `gapY` is given). */
   gap?: number;
   gapX?: number;

@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { Text } from "@/components/ui/Text";
 import { useLearnHub, type LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
 import { LearnTopicCard } from "@vedic-patro/ui/kit/learn";
+import { Grid } from "@vedic-patro/ui";
 import { LEARN_ICONS } from "@/lib/learn/learn-library";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -162,11 +163,11 @@ export default function LearnScreen() {
             </Pressable>
           </View>
         ) : hub.isFiltering ? (
-          <View className="gap-4">
+          <Grid cols={4} cards gap={12}>
             {hub.results.map((topic) => (
               <TopicCard key={topic.slug} topic={topic} readMore={copy.readMore} onOpen={openTopic} />
             ))}
-          </View>
+          </Grid>
         ) : (
           <View className="gap-12">
             {hub.modules.map((module) => (
@@ -200,11 +201,11 @@ export default function LearnScreen() {
                           </Pressable>
                         </View>
                       ) : null}
-                      <View className="gap-4">
+                      <Grid cols={4} cards gap={12}>
                         {section.topics.map((topic) => (
                           <TopicCard key={topic.slug} topic={topic} readMore={copy.readMore} onOpen={openTopic} />
                         ))}
-                      </View>
+                      </Grid>
                     </View>
                   ))}
                 </View>

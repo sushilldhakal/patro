@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { FlatList, Pressable, ScrollView, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { cardGridColumns } from "@vedic-patro/ui";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useDocumentDetail, useDocumentLibraryOptions, type DocumentChapterCard, type DocumentDetailPage } from "@vedic-patro/features/documents";
@@ -82,6 +83,7 @@ export default function DocumentDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
+  const { width: windowWidth } = useWindowDimensions();
   const { doc, copy } = page;
   // The shared player: it keeps playing after the reader leaves this page.
   const audio = useDocumentAudioSession({
@@ -118,6 +120,8 @@ export default function DocumentDetailScreen() {
 
   // Paginated books (Gita, Ashtavakra): chapter cards, verses on their own screen.
   if (page.layout === "chapters") {
+    // 2 across on a phone, 3 on iPad portrait, 4 in landscape (page padding is ~32px; content caps at max-w-page).
+    const chapterCols = cardGridColumns(Math.min(windowWidth, 1400) - 32);
     return (
       <View className="flex-1 bg-background">
         <FlatList
@@ -147,8 +151,9 @@ export default function DocumentDetailScreen() {
               />
             </View>
           }
-          numColumns={2}
-          columnWrapperClassName="gap-3"
+          key={`cols-${chapterCols}`}
+          numColumns={chapterCols}
+          columnWrapperClassName={chapterCols > 1 ? "gap-3" : undefined}
           contentContainerClassName="mx-auto w-full max-w-page gap-3 px-4 pb-48 pt-3 sm:px-6 md:pt-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

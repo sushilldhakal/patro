@@ -16,6 +16,7 @@
      the text scale is the ONLY font sizes used — prefer the named utilities
      (text-xs … text-4xl), avoid arbitrary text-[Npx] values. */
   /* tokens:tailwind-theme:start — generated from packages/design-tokens, run `npm run tokens` */
+  --breakpoint-phone: 21.25rem;
   --breakpoint-xs: 25rem;
   --breakpoint-compact: 30rem;
   --breakpoint-calendar: 62rem;

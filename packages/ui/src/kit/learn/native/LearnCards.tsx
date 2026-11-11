@@ -1,4 +1,4 @@
-import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
+import { Box, Grid, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useLearnMoreCard } from "@vedic-patro/features/common";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
@@ -23,9 +23,9 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
           {card.heading}
         </Text>
       </Box>
-      <Box className="gap-2">
+      <Grid cols={4} cards gap={8}>
         {card.topics.map((topic) => (
-          <Pressable key={topic.slug} onPress={() => onOpen(topic.slug)} label={topic.title} className={learnPageClasses.moreItem}>
+          <Pressable key={topic.slug} onPress={() => onOpen(topic.slug)} label={topic.title} className={cn(learnPageClasses.moreItem, "flex-1")}>
             <Box className={learnPageClasses.moreIcon}>{renderIcon(topic.icon)}</Box>
             <Text className={learnPageClasses.moreLabel} numberOfLines={1}>
               {topic.title}
@@ -33,7 +33,7 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
             <Icon node={learnIcons.arrowRight} size="sm" tone="muted" />
           </Pressable>
         ))}
-      </Box>
+      </Grid>
     </Box>
   );
 }
@@ -41,7 +41,7 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
 export function LearnTopicCard({ topic, readMore, icon, onOpen }: LearnTopicCardProps) {
   const chip = learnPageClasses.sectionChip[topic.section];
   return (
-    <Pressable onPress={onOpen} label={topic.title} className={cn(learnPageClasses.topicCard, "w-full")}>
+    <Pressable onPress={onOpen} label={topic.title} className={cn(learnPageClasses.topicCard, "w-full flex-1")}>
       <Box className={learnPageClasses.topicHead}>
         <Box className={learnPageClasses.topicIcon}>{icon}</Box>
         <Box className={learnPageClasses.topicTitleWrap}>

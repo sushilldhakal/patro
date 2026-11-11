@@ -57,7 +57,7 @@ export const tmFcard = cn(
 );
 
 export const tmKeys =
-  "mt-5 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3.5";
+  "mt-5 grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5";
 
 export const tmKey = cn(
   tmCardBase,
@@ -118,7 +118,7 @@ export const tmCalc = cn(
  * page is filled and a narrow one simply stacks them.
  */
 export const tmCases =
-  "mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] items-stretch gap-3.5";
+  "mt-5 grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-stretch gap-3.5";
 
 /** One calculation inside `tmCases` — the grid owns the spacing, so no top margin. */
 export const tmCalcCase = cn(tmCalc, "mt-0 h-full");

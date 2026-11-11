@@ -9,6 +9,7 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AppShell } from "@/components/AppShell";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
+import { Grid } from "@vedic-patro/ui";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { usePageViewMenu } from "@/lib/page-view-menu";
@@ -100,11 +101,11 @@ export default function DocumentsScreen() {
                     {view === "list" ? (
                       <DocumentListRows documents={section.documents} onOpen={(doc) => openDoc(doc.slug)} />
                     ) : (
-                      <View className="gap-4">
+                      <Grid cols={4} cards gap={12}>
                         {section.documents.map((doc) => (
                           <DocumentCard key={doc.slug} doc={doc} onPress={() => openDoc(doc.slug)} />
                         ))}
-                      </View>
+                      </Grid>
                     )}
                   </View>
                 ))}
@@ -115,11 +116,12 @@ export default function DocumentsScreen() {
                   <Text className={documentsClasses.sectionTitle}>{page.copy.hubTitle}</Text>
                   <Text className={documentsClasses.mutedText}>{page.copy.hubSubtitle}</Text>
                 </View>
+                <Grid cols={4} cards gap={12}>
                 {page.sections.map((section) => (
                   <Pressable
                     key={section.group.id}
                     onPress={() => select(section.group.id)}
-                    className={cn(documentsClasses.hubCard, "border border-border")}
+                    className={cn(documentsClasses.hubCard, "flex-1 border border-border")}
                   >
                     <View className={documentsClasses.hubCardTop} style={{ flexDirection: "row", alignItems: "center" }}>
                       <View className={documentsClasses.hubEmojiBox}>
@@ -146,6 +148,7 @@ export default function DocumentsScreen() {
                     </View>
                   </Pressable>
                 ))}
+                </Grid>
               </View>
             )}
           </>

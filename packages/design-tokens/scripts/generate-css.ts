@@ -169,6 +169,7 @@ function wheelControlColors(): Record<string, string> {
 
 function webTailwindTheme(indent: string): string[] {
   const out: string[] = [
+    `${indent}--breakpoint-phone: ${rem(breakpoints.phone)};`,
     `${indent}--breakpoint-xs: ${rem(breakpoints.xs)};`,
     `${indent}--breakpoint-compact: ${rem(breakpoints.compact)};`,
     `${indent}--breakpoint-calendar: ${rem(breakpoints.calendarWide)};`,

@@ -1,3 +1,4 @@
+import { cardGridColumns } from "@vedic-patro/ui";
 import { View, useWindowDimensions } from "react-native";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useGocharSkyCards } from "@vedic-patro/features/gochar";
@@ -42,7 +43,7 @@ export function GocharSkySection({
 }) {
   const { cards, copy } = useGocharSkyCards(gochar);
   const { width } = useWindowDimensions();
-  const cols = width >= breakpoints.lg ? 3 : width >= breakpoints.sm ? 2 : 1;
+  const cols = cardGridColumns(width - 32);
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (

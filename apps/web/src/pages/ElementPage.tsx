@@ -78,7 +78,7 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPageView["t
               {table.anchor.label}: <span className="font-bold text-foreground">{table.anchor.value}</span>
             </p>
           ) : null}
-          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
             {table.rows.map((row) => (
               <ToneRow key={row.key} row={row} elementId={elementId} compact />
             ))}
@@ -87,7 +87,7 @@ function TableView({ table, elementId }: { table: NonNullable<ElementPageView["t
       );
     default:
       return (
-        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5">
           {table.rows.map((row) => (
             <ToneRow key={row.key} row={row} elementId={elementId} />
           ))}

@@ -1,7 +1,7 @@
 import { Children, useCallback, useState } from "react";
 import { View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import type { GridColumns, GridProps } from "../contract";
+import { cardGridColumns, type GridColumns, type GridProps } from "../contract";
 
 /** Matches the website's breakpoints (`screens` in the design tokens). */
 const FROM: [keyof Exclude<GridColumns, number>, number][] = [
@@ -33,7 +33,7 @@ function mostColumns(cols: GridColumns): number {
   return Math.max(cols.base, cols.xs ?? 0, cols.compact ?? 0, cols.sm ?? 0, cols.md ?? 0, cols.lg ?? 0);
 }
 
-export function Grid({ cols, minCellWidth, gap = 0, gapX, gapY, label, className, nativeClassName, children, testID }: GridProps) {
+export function Grid({ cols, minCellWidth, cards, gap = 0, gapX, gapY, label, className, nativeClassName, children, testID }: GridProps) {
   const { width: screen } = useWindowDimensions();
   const [width, setWidth] = useState(0);
   const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -41,7 +41,9 @@ export function Grid({ cols, minCellWidth, gap = 0, gapX, gapY, label, className
     setWidth((prev) => (Math.abs(prev - next) < 0.5 ? prev : next));
   }, []);
   const x = gapX ?? gap;
-  const n = minCellWidth
+  const n = cards
+    ? cardGridColumns(width, mostColumns(cols))
+    : minCellWidth
     ? Math.max(1, Math.min(mostColumns(cols), Math.floor((width + x) / (minCellWidth + x))))
     : Math.max(1, columnsAt(cols, screen));
   const y = gapY ?? gap;

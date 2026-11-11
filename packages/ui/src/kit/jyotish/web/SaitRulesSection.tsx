@@ -80,7 +80,7 @@ function RulesBody({ view }: { view: NonNullable<ReturnType<typeof useSaitRules>
         <Box
           as="ol"
           className={saitClasses.ruleList}
-          webClassName="m-0 grid list-none grid-cols-1 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          webClassName="m-0 grid list-none grid-cols-1 phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-0"
         >
           {view.rules.map((r) => (
             <Box
