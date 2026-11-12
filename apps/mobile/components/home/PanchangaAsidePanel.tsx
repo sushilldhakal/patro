@@ -2,6 +2,8 @@ import type { CalendarEvent } from "@vedic-patro/api-client";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { useThemeColors } from "@/lib/theme-context";
 import { useRouter } from "expo-router";
 import { useDayEvents, usePersonalDays, type PersonalColumn } from "@vedic-patro/features/events";
 import { DEFAULT_PANCHANGA_LOCATION } from "@vedic-patro/read-models/geography/panchanga-location";
@@ -59,6 +61,7 @@ export function PanchangaAsidePanel({
   onOpenPersonal,
 }: Props) {
   const { t } = useLocale();
+  const colors = useThemeColors();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const dayEvents = useDayEvents(selectedAd, isAuthenticated);
@@ -110,8 +113,8 @@ export function PanchangaAsidePanel({
             accessibilityRole="button"
             className={homeClasses.asideAddToDay}
           >
-            <Text className="text-body font-semibold text-secondary">+</Text>
-            <Text className="text-caption font-medium text-secondary">{t("events.add_to_day")}</Text>
+            <Ionicons name="add-circle-outline" size={18} color={colors.secondary} />
+            <Text className={homeClasses.asideAddToDayLabel}>{t("events.add_to_day")}</Text>
           </Pressable>
         ) : null}
       </View>

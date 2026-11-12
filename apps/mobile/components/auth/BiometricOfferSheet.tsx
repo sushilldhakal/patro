@@ -10,7 +10,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { inkOn } from "@/lib/theme";
-import { useThemeColors } from "@/lib/theme-context";
+import { ThemeScope, useThemeColors } from "@/lib/theme-context";
 
 /** The phone sheet / tablet card's widest. */
 const CARD_MAX_WIDTH = 420;
@@ -42,6 +42,7 @@ export function BiometricOfferSheet({
 
   return (
     <Modal visible={open} transparent animationType={isTablet ? "fade" : "slide"} onRequestClose={onDecline} statusBarTranslucent>
+      <ThemeScope style={{ flex: 1 }}>
       <View className={isTablet ? "flex-1 items-center justify-center bg-black/40 px-6" : "flex-1 justify-end bg-black/40"}>
         <Pressable className="absolute inset-0" onPress={onDecline} accessibilityLabel={t("ui.auth.not_now")} />
         <View
@@ -92,6 +93,7 @@ export function BiometricOfferSheet({
           </Pressable>
         </View>
       </View>
+      </ThemeScope>
     </Modal>
   );
 }

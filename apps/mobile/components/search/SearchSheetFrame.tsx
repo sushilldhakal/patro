@@ -8,7 +8,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { Text } from "@/components/ui/Text";
-import { useThemeColors } from "@/lib/theme-context";
+import { ThemeScope, useThemeColors } from "@/lib/theme-context";
 import { useTabletUi } from "@/lib/tablet-ui";
 
 type Props = {
@@ -49,6 +49,7 @@ function TabletSearchCard({ open, onClose, query, onQueryChange, placeholder, la
   };
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+      <ThemeScope style={{ flex: 1 }}>
       <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-start", paddingTop: space["5xl"] * 2 }}>
         <Pressable
           style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: neutral.black, opacity: 0.35 }}
@@ -88,6 +89,7 @@ function TabletSearchCard({ open, onClose, query, onQueryChange, placeholder, la
           {children({ paddingTop: space.md, paddingHorizontal: space.lg, paddingBottom: space.xl })}
         </View>
       </View>
+      </ThemeScope>
     </Modal>
   );
 }
@@ -138,6 +140,7 @@ function PhoneSearchSheet({ open, onClose, query, onQueryChange, placeholder, la
       presentationStyle={Platform.OS === "ios" ? "pageSheet" : "fullScreen"}
       onRequestClose={onClose}
     >
+      <ThemeScope style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         {children(contentContainerStyle)}
 
@@ -173,6 +176,7 @@ function PhoneSearchSheet({ open, onClose, query, onQueryChange, placeholder, la
           </Pressable>
         </Animated.View>
       </View>
+      </ThemeScope>
     </Modal>
   );
 }

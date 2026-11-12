@@ -6,7 +6,7 @@ import { ALL_TABS, planRail, useDuoRail } from "@/lib/duo-rail";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
 import { useNavPress } from "@/lib/use-nav-press";
 import { useLocale } from "@/lib/i18n";
-import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch } from "@/lib/menu-request";
+import { requestLocationPicker, requestOpenMenu, requestSearch } from "@/lib/menu-request";
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { usePageViewSections } from "@/lib/page-view-menu";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
@@ -113,8 +113,10 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
         {extras.has("location") ? (
           <Stack.Toolbar.Button icon="location" accessibilityLabel={t("ui.search.location")} onPress={requestLocationPicker} />
         ) : null}
-        {/* "+" (create) for signed-in users in every pose, like the phone's top-right "+". */}
-        {isAuthenticated ? <Stack.Toolbar.Button icon="plus" accessibilityLabel={t("events.create")} onPress={requestAddReminder} /> : null}
+        {/* Portrait: search in the top bar, where every phone has it (the rail poses place it as an extra above). */}
+        {horizontal ? (
+          <Stack.Toolbar.Button icon="magnifyingglass" accessibilityLabel={t("ui.search.search")} onPress={requestSearch} />
+        ) : null}
         {extras.has("profile") && !horizontal ? (
           <Stack.Toolbar.Button
             icon={isAuthenticated ? "person.crop.circle.fill" : "person.crop.circle"}

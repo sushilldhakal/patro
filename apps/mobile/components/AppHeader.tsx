@@ -17,7 +17,7 @@ import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
-import { useThemeColors } from "@/lib/theme-context";
+import { ThemeScope, useThemeColors } from "@/lib/theme-context";
 import { usePageViewSections, type PageViewSection } from "@/lib/page-view-menu";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -122,6 +122,7 @@ function SidebarDrawer({
   if (!mounted) return null;
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+      <ThemeScope style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: "row" }}>
         <RNAnimated.View
           style={{
@@ -139,6 +140,7 @@ function SidebarDrawer({
           <RNAnimated.View style={{ flex: 1, backgroundColor: neutral.black, opacity: shown.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }) }} />
         </Pressable>
       </View>
+      </ThemeScope>
     </Modal>
   );
 }
@@ -344,6 +346,7 @@ export function ViewMenuButton() {
     <View ref={ref} collapsable={false}>
       <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
       <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
+        <ThemeScope style={{ flex: 1 }}>
         <Animated.View entering={FadeIn.duration(140)} style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(neutral.black, 0.18) }]}>
           <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t("ui.search.cancel")} />
         </Animated.View>
@@ -448,15 +451,17 @@ export function ViewMenuButton() {
             </View>
           </Animated.View>
         ) : null}
+        </ThemeScope>
       </Modal>
     </View>
   );
 }
 
 /**
- * The top bar: the side-menu button, the page's date controls, its view menu and, top right, "+" (a new
- * reminder; its sheet closes with an X, like search). Search, the tabs with the profile, place and settings sit at the bottom (FloatingNavBar). The sheets they open live
- * at the root (AppOverlays), so the buttons only send requests.
+ * The top bar: the side-menu button, the page's date controls, its view menu and, top right, search
+ * (a tablet adds place and "+"). The tabs and place sit at the bottom (FloatingNavBar); log-in and
+ * settings are at the foot of the side menu. The sheets they open live at the root (AppOverlays), so
+ * the buttons only send requests.
  */
 function AppHeaderView() {
   const { t } = useLocale();
@@ -483,9 +488,11 @@ function AppHeaderView() {
         {tablet ? <ViewSegmentedSwitch /> : null}
         <View className={cn("flex-row items-center justify-end gap-2", tablet && "min-w-0 flex-1")}>
           {tablet ? null : <ViewMenuButton />}
-          {tablet ? <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} /> : null}
+          <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
           {tablet ? <HeaderButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} /> : null}
-          {isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
+          {/* "+" only on a tablet. On a phone a new event starts from the day it is for: today's card on
+              home ("add to this day"), a long-press on a calendar day, a planner slot, or My events. */}
+          {tablet && isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
         </View>
       </View>
     </View>

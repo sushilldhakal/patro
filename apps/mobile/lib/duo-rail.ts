@@ -32,8 +32,8 @@ const FOLDED_TABS: ReadonlySet<TabRoute> = new Set<TabRoute>(["index", "panchang
 export const RAIL_EXTRAS = ["search", "location", "profile", "share"] as const;
 export type RailExtra = (typeof RAIL_EXTRAS)[number];
 
-/** Icons always in the rail: the side menu, "+" and "…" (the view menu stays in the top bar). */
-const FIXED_ICONS = 3;
+/** Icons always in the rail: the side menu and "…" (the view menu stays in the top bar). */
+const FIXED_ICONS = 2;
 
 export type RailPlan = {
   /** Toolbar actions shown as their own icons; the rest sit in the "…" menu. */

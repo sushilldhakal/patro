@@ -21,7 +21,7 @@ import { nativeShadow, radius, space, withAlpha } from "@vedic-patro/design-toke
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { requestLocationPicker, requestSearch } from "@/lib/menu-request";
+import { requestLocationPicker } from "@/lib/menu-request";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
 import { useBarAccessoryHeight } from "@/lib/bar-accessory";
@@ -218,9 +218,9 @@ function NavLabel({ fold, active, children }: { fold: RNAnimated.Value; active: 
   );
 }
 
-/** Search and place as round buttons stacked on the right, just above the bar (like a mail app's compose
- *  button); on the iPhone Duo also "…" (share, reminders, rashifal), which its portrait top bar has no
- *  room for beside the status bar ("+" is in the top bar, as on every phone). Settings are in the profile page. */
+/** Place as a round button on the right, just above the bar (search is in the top bar); on the iPhone
+ *  Duo also "…" (share, reminders, rashifal), which its portrait top bar has no room for beside the
+ *  status bar. */
 function FloatingActions() {
   const { t, lang } = useLocale();
   const accessory = useBarAccessoryHeight();
@@ -238,7 +238,6 @@ function FloatingActions() {
   return (
     // Above the audio player when one is docked over the bar, so neither crowds the other.
     <View pointerEvents="box-none" className={shellClasses.navFabStack} style={accessory > 0 ? { marginBottom: space.sm + accessory + space.md } : undefined}>
-      <ActionButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>

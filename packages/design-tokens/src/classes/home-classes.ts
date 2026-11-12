@@ -14,7 +14,9 @@ export const homeClasses = {
   /** The app's "+ add on this day" link under a day's card. */
   /** The day card's own list: the personal reading, the day's events, then "+ add". */
   asideDayList: "flex flex-col gap-2 px-4 pt-3 empty:hidden",
-  asideAddToDay: "mb-3 flex-row items-center gap-2 self-start rounded-full bg-muted px-3 py-2 active:opacity-70",
+  /** The phone's way to a new event now that the top bar has no "+": a full-width button, not a chip. */
+  asideAddToDay: "mb-3 w-full flex-row items-center justify-center gap-2 rounded-xl border border-secondary/40 bg-secondary/10 px-4 py-3 active:opacity-70",
+  asideAddToDayLabel: "min-w-0 shrink text-body font-semibold text-secondary",
   asideLink: "shrink-0 text-sm text-secondary",
   asideBody: "overflow-hidden bg-card",
   asideTabBar: "border-b border-border bg-surface-muted",

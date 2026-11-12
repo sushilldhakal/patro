@@ -18,7 +18,7 @@ import { type Profile } from "@/lib/auth/client";
 import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
+import { ThemeScope, useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useQueryClient } from "@tanstack/react-query";
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
@@ -269,6 +269,7 @@ function ProfilePickModal({
 
   return (
     <Modal visible={open} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <ThemeScope style={{ flex: 1 }}>
       {/* iOS: the native page sheet starts below the status bar and drags down to dismiss. */}
       <View className="flex-1 bg-background" style={{ paddingTop: Platform.OS === "ios" ? 0 : insets.top }}>
         <View className="flex-row items-center border-b border-border px-4 py-3">
@@ -306,6 +307,7 @@ function ProfilePickModal({
           )}
         </ScrollView>
       </View>
+      </ThemeScope>
     </Modal>
   );
 }
