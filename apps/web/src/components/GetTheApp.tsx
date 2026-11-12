@@ -1,7 +1,9 @@
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useTranslation } from "@vedic-patro/i18n/react";
 
-export const APP_STORE_URL = "https://apps.apple.com/us/app/vedic-patro/id6820382502";
+// No country in the path: a /us/ link showed the US storefront page to people in Nepal.
+// Without one, Apple opens the listing in the visitor's own store.
+export const APP_STORE_URL = "https://apps.apple.com/app/id6820382502";
 export const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.vedicpatro.mobile";
 
 function AppleLogo({ className }: { className?: string }) {

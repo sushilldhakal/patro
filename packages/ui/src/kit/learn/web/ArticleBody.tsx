@@ -3,6 +3,7 @@ import { Box, Icon, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { articlePageDigits, useArticlePages } from "../use-article-pages";
+import { webArticlePageAddress } from "./article-page-address";
 import {
   resolveArticle,
   resolveSeeAlso,
@@ -100,7 +101,7 @@ export function ArticleBody({
   const sections = resolveArticle(article, lang, sectionOffset);
   const seeAlso = hideSeeAlso ? [] : resolveSeeAlso(article.seeAlso, lang);
   const paged = Boolean(article.paged) && sections.length > 1;
-  const pager = useArticlePages(sections.length, paged);
+  const pager = useArticlePages(sections.length, paged, webArticlePageAddress);
   const shown = paged ? sections.filter((_, i) => i === pager.index) : sections;
   const showSeeAlso = seeAlso.length > 0 && (!paged || pager.index === sections.length - 1);
 
