@@ -14,9 +14,11 @@ import { statusOf, type PageStatus } from "../_shared";
 import { clockMinutes, spanText, useNowMs, type NowHeroView } from "../common/now-hero";
 import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+import { buildSunDaylightChart, type SunDaylightChartView } from "./daylight-chart";
 import { buildSunGrid, buildSunLayout, buildSunMatrix, buildSunMonths, type SunMatrixRow, type SunMonth } from "./model";
 
 export * from "./model";
+export * from "./daylight-chart";
 
 export type SunTimesPage = {
   copy: {
@@ -52,6 +54,8 @@ export type SunTimesPage = {
   defaultMonth: string;
   /** Today's sun, when the year holds today: up or down, the countdown, the day's length. */
   hero?: NowHeroView;
+  /** Year sunrise/sunset band + day-length strip (null while loading / empty). */
+  daylightChart: SunDaylightChartView | null;
 };
 
 export function useSunTimesPage({ year, era, location }: { year: number; era: Era; location: PanchangaLocation }): SunTimesPage {
@@ -68,12 +72,16 @@ export function useSunTimesPage({ year, era, location }: { year: number; era: Er
   const view = useMemo(() => {
     const grid = buildSunGrid(data, year, gregorian, lang);
     const layout = buildSunLayout(data, year, gregorian, lang, timeZone);
+    const zone = (data?.location?.timezone as string | undefined) ?? location.params.timezone ?? timeZone;
     return {
       layout,
       matrix: buildSunMatrix(layout, grid, lang),
       months: buildSunMonths(layout, grid, lang, (n) => t("sun_times.days_count", { count: digits(n) })),
+      daylightChart: data
+        ? buildSunDaylightChart({ data, year, gregorian, layout, lang, t, digits, timeZone: zone })
+        : null,
     };
-  }, [data, year, gregorian, lang, timeZone, t, digits]);
+  }, [data, year, gregorian, lang, timeZone, t, digits, location.params.timezone]);
 
   const locationLabel = displayLocationLabel(location, undefined, lang);
 
@@ -157,5 +165,6 @@ export function useSunTimesPage({ year, era, location }: { year: number; era: Er
     months: view.months,
     defaultMonth: view.layout.defaultMonth,
     hero,
+    daylightChart: view.daylightChart?.empty ? null : view.daylightChart,
   };
 }

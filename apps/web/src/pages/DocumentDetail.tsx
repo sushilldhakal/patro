@@ -14,7 +14,7 @@ import { useLocale } from "@vedic-patro/i18n/react";
 import { PageShell } from "@/components/PageShell";
 import { ChapterCard } from "@/components/documents/ChapterCard";
 import { DocumentsBreadcrumb, type Crumb } from "@/components/documents/DocumentLibraryViews";
-import { DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, DocumentJumpForm } from "@vedic-patro/ui/kit/jyotish";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ReaderRows } from "@/components/documents/ReaderRows";
 import { useDocumentPlaybackSession } from "@/lib/document-audio-session";
@@ -229,6 +229,18 @@ export function DocumentDetail() {
       {readerBar}
       {jumpForm}
       {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
+
+      {page.fullAudioUrl ? (
+        // Same top play control as chapter pages: one full recording for the whole document.
+        <DocumentGroupHeading
+          kind="chapter"
+          heading={header.title}
+          play={{
+            playing: mode === "full" && fullAudio.playing,
+            onPress: () => (mode === "full" ? fullAudio.toggle() : startFull()),
+          }}
+        />
+      ) : null}
 
       {page.chapterPills.length > 0 ? (
         <nav aria-label={copy.chapterNav} className={documentsClasses.pillsSticky}>

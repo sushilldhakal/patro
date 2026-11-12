@@ -4,11 +4,20 @@ import type { IconNode } from "../../contract";
 export const shellIcons = {
   /** The side-menu trigger: a window with a narrow left pane holding three short lines. */
   sidebar: [
-    ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "3" }],
-    ["path", { d: "M9 4v16" }],
-    ["path", { d: "M5 8.5h1" }],
-    ["path", { d: "M5 12h1" }],
-    ["path", { d: "M5 15.5h1" }],
+    ["rect", { x: "2.5", y: "4", width: "19", height: "16", rx: "3" }],
+    ["path", { d: "M10 4v16" }],
+    ["path", { d: "M5.25 8.5h2" }],
+    ["path", { d: "M5.25 12h2" }],
+    ["path", { d: "M5.25 15.5h2" }],
+  ],
+  /** The view-menu trigger (Lucide `list`). */
+  list: [
+    ["path", { d: "M3 6h.01" }],
+    ["path", { d: "M3 12h.01" }],
+    ["path", { d: "M3 18h.01" }],
+    ["path", { d: "M8 6h13" }],
+    ["path", { d: "M8 12h13" }],
+    ["path", { d: "M8 18h13" }],
   ],
   sunrise: [
     ["path", { d: "M12 2v8" }],

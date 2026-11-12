@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { topBarControlSize } from "../top-bar";
 import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
@@ -15,8 +16,6 @@ import { shellIcons } from "../icon-nodes";
  * one on a wide screen. The month panel opens as a sheet.
  */
 /** Header control heights: the website's `h-9.5` / `size-9.5`, and `8.5` on narrow phones. */
-const CONTROL = 38;
-const CONTROL_DENSE = 34;
 
 export function PatroCalendarHeader({
   era,
@@ -46,7 +45,7 @@ export function PatroCalendarHeader({
      their own height classes: on Android a Pressable sitting straight in a flex row lost
      `h-*` / `size-*` and collapsed to its text (the arrows, month button and पञ्चाङ्ग swap
      drew at half height). The location chip, already wrapped, was unaffected. */
-  const control = dense ? CONTROL_DENSE : CONTROL;
+  const control = topBarControlSize(windowWidth);
 
   const stepper = (
     <View className="flex-row items-center gap-2">

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { Icon } from "@vedic-patro/ui";
-import { shellIcons } from "@vedic-patro/ui/kit/shell";
+import { shellIcons, topBarControlSize } from "@vedic-patro/ui/kit/shell";
 import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -167,7 +167,10 @@ export function AppHeader() {
   return IS_IPHONE_DUO ? null : <AppHeaderView />;
 }
 
-/** A round icon button on the page background, the shape of the toolbar buttons iOS draws. */
+/**
+ * A top-bar key: the same size, corner and border as the page's date arrows next to it
+ * (`topBarControlSize`, `calendarHeaderClasses.iconButton`), so the whole bar is one row of keys.
+ */
 function HeaderButton({
   icon,
   label,
@@ -178,19 +181,29 @@ function HeaderButton({
   onPress: () => void;
 }) {
   const colors = useThemeColors();
+  const { width } = useWindowDimensions();
+  const size = topBarControlSize(width);
+  const glyph = Math.round(size * 0.58);
   return (
-    <Pressable
-      onPress={() => {
-        haptics.tick();
-        onPress();
-      }}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      hitSlop={4}
-      className="h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-60"
-    >
-      {icon === "sidebar" ? <Icon node={shellIcons.sidebar} size={22} strokeWidth={2} /> : <Ionicons name={icon} size={22} color={colors.foreground} />}
-    </Pressable>
+    <View style={{ width: size, height: size }}>
+      <Pressable
+        onPress={() => {
+          haptics.tick();
+          onPress();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        hitSlop={6}
+        className="h-full w-full items-center justify-center rounded-xl border border-border bg-card active:opacity-60"
+        style={{ borderCurve: "continuous" }}
+      >
+        {icon === "sidebar" || icon === "list" ? (
+          <Icon node={shellIcons[icon]} size={glyph} tone="secondary" />
+        ) : (
+          <Ionicons name={icon} size={glyph} color={colors.secondary} />
+        )}
+      </Pressable>
+    </View>
   );
 }
 
@@ -449,6 +462,8 @@ function AppHeaderView() {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
   const dateControls = useTopBarElement();
+  // The date controls' band is exactly one key tall, so they line up with the buttons either side.
+  const controlSize = topBarControlSize(useWindowDimensions().width);
   const tablet = useTabletUi();
   // Creating events, tasks and appointments is for signed-in users.
   const { isAuthenticated } = useAuth();
@@ -463,7 +478,7 @@ function AppHeaderView() {
           <HeaderButton icon="sidebar" label={t("menu_open")} onPress={requestOpenMenu} />
           {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
               otherwise make the bar grow. */}
-          <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>
+          <View className="min-w-0 flex-1 justify-start overflow-hidden" style={{ height: controlSize }}>{dateControls}</View>
         </View>
         {tablet ? <ViewSegmentedSwitch /> : null}
         <View className={cn("flex-row items-center justify-end gap-2", tablet && "min-w-0 flex-1")}>

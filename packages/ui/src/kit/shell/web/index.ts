@@ -156,3 +156,4 @@ export const shellKit = {
   AdhikMaasNotice,
 } satisfies ShellKit;
 export { shellIcons } from "../icon-nodes";
+export { TOP_BAR_CONTROL, TOP_BAR_CONTROL_DENSE, topBarControlSize } from "../top-bar";

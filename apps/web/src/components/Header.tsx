@@ -305,7 +305,7 @@ export function Header() {
             <Drawer direction="left" open={mobileOpen} onOpenChange={setMobileOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Icon node={shellIcons.sidebar} size={20} strokeWidth={2} />
+                  <Icon node={shellIcons.sidebar} size={20} />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
@@ -342,7 +342,7 @@ export function Header() {
             <Drawer direction="left" open={tabletOpen} onOpenChange={setTabletOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Icon node={shellIcons.sidebar} size={20} strokeWidth={2} />
+                  <Icon node={shellIcons.sidebar} size={20} />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
