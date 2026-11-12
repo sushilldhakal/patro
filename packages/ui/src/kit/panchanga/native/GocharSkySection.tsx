@@ -1,5 +1,5 @@
-import { cardGridColumns } from "@vedic-patro/ui";
-import { View, useWindowDimensions } from "react-native";
+import { View } from "react-native";
+import { useMeasuredCardColumns } from "../../shell/native/useMeasuredCardColumns";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useGocharSkyCards } from "@vedic-patro/features/gochar";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -42,9 +42,8 @@ export function GocharSkySection({
   selectedPlanet?: GrahaKey | null;
 }) {
   const { cards, copy } = useGocharSkyCards(gochar);
-  const { width } = useWindowDimensions();
-  const cols = cardGridColumns(width - 32);
-  const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
+  const columns = useMeasuredCardColumns();
+  const cardWidth = columns.width;
 
   return (
     <Box className={cn(gocharClasses.skyCard, "border border-border")}>
@@ -54,7 +53,7 @@ export function GocharSkySection({
         <Text className={gocharClasses.skyDate}>{dateLabel}</Text>
       </Box>
 
-      <Box className={cn("flex-row flex-wrap", gocharClasses.skyGrid)}>
+      <View onLayout={columns.onLayout} className={cn("flex-row flex-wrap", gocharClasses.skyGrid)}>
         {cards.map((card) => {
           const key = card.key;
           const selected = selectedPlanet === key;
@@ -97,7 +96,7 @@ export function GocharSkySection({
             </View>
           );
         })}
-      </Box>
+      </View>
     </Box>
   );
 }

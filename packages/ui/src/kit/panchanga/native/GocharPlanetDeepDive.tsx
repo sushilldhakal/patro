@@ -1,5 +1,5 @@
-import { cardGridColumns } from "@vedic-patro/ui";
 import { View, useWindowDimensions } from "react-native";
+import { useMeasuredCardColumns } from "../../shell/native/useMeasuredCardColumns";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
 import { useGocharDeepDive } from "@vedic-patro/features/gochar";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -18,13 +18,13 @@ export function GocharPlanetDeepDive({
   onSelect: (key: GrahaKey) => void;
 }) {
   const { width } = useWindowDimensions();
+  const detailColumns = useMeasuredCardColumns();
   const { picker, detail, copy } = useGocharDeepDive(gochar, selected);
   if (!detail) return null;
 
   const pickerCols = width >= breakpoints.lg ? 9 : width >= breakpoints.sm ? 5 : 3;
   const pickerWidth = `${(100 / pickerCols - 1.5).toFixed(2)}%`;
-  const detailCols = cardGridColumns(width - 32);
-  const detailWidth = detailCols === 1 ? "100%" : `${(100 / detailCols - 1.5).toFixed(2)}%`;
+  const detailWidth = detailColumns.width;
 
   return (
     <Box className={cn("flex-1", gocharClasses.deepCard)}>
@@ -66,11 +66,11 @@ export function GocharPlanetDeepDive({
           ) : null}
         </Box>
 
-        <Box className={cn("flex-row flex-wrap", gocharClasses.factGrid)}>
+        <View onLayout={detailColumns.onLayout} className={cn("flex-row flex-wrap", gocharClasses.factGrid)}>
           {detail.facts.map((fact) => (
             <Detail key={fact.key} width={detailWidth} label={fact.label} value={fact.value} />
           ))}
-        </Box>
+        </View>
 
         {detail.windows.length > 0 ? (
           <Box className={gocharClasses.windowsBox}>

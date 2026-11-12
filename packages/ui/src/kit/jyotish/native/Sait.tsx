@@ -1,4 +1,3 @@
-import { cardGridColumns } from "@vedic-patro/ui";
 import { useWindowDimensions } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -7,7 +6,7 @@ import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 import { useSaitAside } from "@vedic-patro/features/home";
 import { saitDayKey, useSaitCeremonyList, useSaitDayCard, useSaitProfilePicker } from "@vedic-patro/features/sait";
-import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
+import { Box, Grid, Icon, Pressable, Text } from "@vedic-patro/ui";
 import type { SaitAsidePanelProps, SaitCeremonyLayoutProps, SaitDayCardProps, SaitProfilePickerProps } from "../contract";
 import { iconBaby, iconChevronDown, iconChevronRight, iconChevronUp, iconClock3, iconCompass, iconUserRound } from "../icons";
 import { SuitabilityBadge } from "./SaitSuitability";
@@ -37,14 +36,12 @@ function useStagedMonths<T>(months: T[], first: number): T[] {
   return all ? months : months.slice(0, first);
 }
 
-function columnsFor(width: number) {
-  return cardGridColumns(width - 32);
-}
-
 export function SaitDayCard({ d, suitability, personalize }: SaitDayCardProps) {
   const { width } = useWindowDimensions();
   const card = useSaitDayCard({ d, personalize });
-  const factWidth = width >= 640 ? 33.33 : 50;
+  // Two facts a row: a card is ~280–560px wide, and at three a row a tithi such as
+  // "शुक्ल पक्ष त्रयोदशी" was cut to "शुक्ल पक्ष…".
+  const factWidth = 50;
   return (
     <Box className={cn(saitClasses.card, suitability ? SUITABILITY_STYLE[suitability].ring : null)}>
       {suitability ? (
@@ -182,18 +179,18 @@ export function SaitProfilePicker({ selectedId, onSelect, isAuthenticated, rende
   );
 }
 
+/* The shared card grid measures its own width: on an iPad this list sits beside the
+   sidebar, and columns taken from the window's width packed three ~290px cards into it. */
 function DayGrid({ children }: { children: ReactNode }) {
   return (
-    <Box className={saitClasses.dayGrid} nativeClassName="flex-row flex-wrap">
+    <Grid cols={3} cards gap={12}>
       {children}
-    </Box>
+    </Grid>
   );
 }
 
 function DayCell({ children }: { children: ReactNode }) {
-  const { width } = useWindowDimensions();
-  const cols = columnsFor(width);
-  return <Box widthPercent={cols === 1 ? 100 : 100 / cols - 1.5}>{children}</Box>;
+  return <>{children}</>;
 }
 
 export function SaitCeremonyLayout(props: SaitCeremonyLayoutProps) {

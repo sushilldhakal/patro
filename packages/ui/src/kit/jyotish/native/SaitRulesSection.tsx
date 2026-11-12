@@ -1,5 +1,5 @@
-import { cardGridColumns } from "@vedic-patro/ui";
-import { Pressable, useWindowDimensions, View, ActivityIndicator } from "react-native";
+import { Pressable, View, ActivityIndicator } from "react-native";
+import { useMeasuredCardColumns } from "../../shell/native/useMeasuredCardColumns";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useSaitRules } from "@vedic-patro/features/sait";
@@ -26,12 +26,10 @@ function RuleSwitch({ checked, onChange, label }: { checked: boolean; onChange: 
  * list stays primary; opens for readers who want the śāstra rationale.
  */
 export function SaitRulesSection({ busy = false, ...props }: SaitRulesSectionProps) {
-  const { width } = useWindowDimensions();
+  const columns = useMeasuredCardColumns();
   const view = useSaitRules(props);
   if (!view) return null;
-
-  const cols = cardGridColumns(width - 32);
-  const cardWidth = cols === 1 ? "100%" : (`${(100 / cols - 1.5).toFixed(2)}%` as `${number}%`);
+  const cardWidth = columns.width;
 
   return (
     <Box className={saitClasses.rulesCard}>
@@ -63,7 +61,7 @@ export function SaitRulesSection({ busy = false, ...props }: SaitRulesSectionPro
           ) : null}
 
           {view.rules.length > 0 ? (
-            <Box className={cn("flex-row flex-wrap", saitClasses.ruleList)}>
+            <View onLayout={columns.onLayout} className={cn("flex-row flex-wrap", saitClasses.ruleList)}>
               {view.rules.map((r) => (
                 <View
                   key={r.key}
@@ -87,7 +85,7 @@ export function SaitRulesSection({ busy = false, ...props }: SaitRulesSectionPro
                   ) : null}
                 </View>
               ))}
-            </Box>
+            </View>
           ) : null}
 
           {view.engine ? (
