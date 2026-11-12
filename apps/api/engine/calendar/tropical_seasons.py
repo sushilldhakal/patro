@@ -10,7 +10,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from engine.astronomy.engine import default_engine
 from engine.calendar.bikram_sambat import format_bs_date, gregorian_to_bs
 
 DAY_MS = 86_400_000
@@ -46,7 +45,11 @@ def solar_apparent_longitude(date: datetime) -> float:
     Swiss Ephemeris is this engine's astronomical authority, so there is no
     reason to carry a lower-precision approximation of it.
     """
-    return default_engine.sun_longitude(_julian_day(date), sidereal=False)
+    # Always the real sky, even for a ``?siddhanta=surya_siddhanta`` request: the
+    # seasons are where the Sun really is, not the Surya Siddhanta's sayana model.
+    from engine.astronomy.siddhanta import DRIK, siddhanta
+
+    return siddhanta(DRIK).engine.sun_longitude(_julian_day(date), sidereal=False)
 
 
 def _refine_crossing(target_deg: float, guess: datetime) -> datetime:

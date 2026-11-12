@@ -104,7 +104,7 @@ function getDetailValue<T>(p: PanchangaDay, key: string): T | undefined {
 
 export function getRituDisplayNe(p?: PanchangaDay | null): string | undefined {
   if (!p) return undefined;
-  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_pauranik");
+  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_vedic");
   if (ritu?.name_ne) return ritu.name_ne;
   if (typeof p.ritu === "object" && p.ritu?.name_ne) return p.ritu.name_ne;
   return p.ritu_ne;
@@ -114,7 +114,8 @@ export function getRituDisplayNe(p?: PanchangaDay | null): string | undefined {
 export function getRituDisplay(p?: PanchangaDay | null, lang?: string): string | undefined {
   if (!p) return undefined;
   const rawRitu = getDetailValue<RituBlock | string>(p, "ritu");
-  const ritu = typeof rawRitu === "object" ? rawRitu : getDetailValue<RituBlock>(p, "ritu_pauranik");
+  // Always the tropical (sayana) ritu — never the sidereal solar-month one (`ritu_pauranik`).
+  const ritu = typeof rawRitu === "object" ? rawRitu : getDetailValue<RituBlock>(p, "ritu_vedic");
   const top = typeof p.ritu === "object" ? p.ritu : undefined;
   const ne = ritu?.name_ne ?? top?.name_ne ?? p.ritu_ne;
   const rituName =
@@ -132,7 +133,7 @@ export function getRituDisplay(p?: PanchangaDay | null, lang?: string): string |
 
 export function getRituSeason(p?: PanchangaDay | null, lang?: string): string | undefined {
   if (!p) return undefined;
-  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_pauranik");
+  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_vedic");
   const season =
     ritu?.season ??
     (typeof p.ritu === "object" ? p.ritu?.season : undefined);
@@ -192,11 +193,6 @@ export function formatAdShort(
   } catch {
     return dateAd;
   }
-}
-
-export function getRituPauranik(p?: PanchangaDay | null): RituBlock | undefined {
-  if (!p) return undefined;
-  return getDetailValue<RituBlock>(p, "ritu_pauranik");
 }
 
 export function getRituVedic(p?: PanchangaDay | null): RituBlock | undefined {

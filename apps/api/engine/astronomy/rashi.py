@@ -38,13 +38,10 @@ RITU_DATA = [
     {"number": 6, "name": "Shishira", "name_sanskrit": "Shishira", "name_ne": "शिशिर", "season": "Winter"},
 ]
 
-# Southern-hemisphere civil month → ritu number (inverted meteorological seasons).
-SOUTHERN_MONTH_RITU: dict[int, int] = {
-    12: 2, 1: 2, 2: 2,    # Dec–Feb summer
-    3: 4, 4: 4, 5: 4,     # Mar–May autumn
-    6: 6, 7: 6, 8: 6,     # Jun–Aug winter
-    9: 1, 10: 1, 11: 1,   # Sep–Nov spring
-}
+# South of the equator the same arc of the Sun's path is the opposite season:
+# three ritus (180°) on. The seasons page shifts its cards the same way
+# (``displayRituSlot`` in packages/domain/src/calendar/ritu-display.ts).
+SOUTHERN_RITU_SHIFT = 3
 
 # Makara → Mithuna (rashi index 9, 10, 11, 0, 1, 2) is the sun's northward half. Read on the
 # tropical zodiac that is exactly winter solstice → summer solstice.
@@ -135,13 +132,13 @@ class RashiService:
     # ── ritu ────────────────────────────────────────────────────────────────
 
     def _ritu_from_sun(self, jd: float, *, sidereal: bool) -> dict[str, Any]:
-        index = self.sun_index(jd, sidereal=sidereal)
         # Six 60° arcs of the Sun's path, paired Meena + Mesha (Vasanta) … Makara +
         # Kumbha (Shishira). Read tropically that is the real sky: Shishira opens
         # at the winter solstice with Uttarayana, Varsha at the summer solstice
         # with Dakshinayana, and each equinox falls mid-Vasanta / mid-Sharad.
         # Read sidereally it is the solar-month (pauranik) ritu, Chaitra–Baisakh
         # Vasanta, which lags the real seasons by the ayanamsa.
+        index = self.sun_index(jd, sidereal=True) if sidereal else self.tropical_sun_index(jd)
         ritu = RITU_DATA[((index + 1) % 12) // 2]
         return {
             **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
@@ -149,16 +146,14 @@ class RashiService:
             "basis": "sidereal" if sidereal else "tropical",
         }
 
-    def _ritu_from_southern_month(self, jd: float, timezone_name: str) -> dict[str, Any]:
-        from engine.astronomy.ut_instant import local_civil_fields, ut_instant_from_jd
+    def tropical_sun_index(self, jd: float) -> int:
+        """0–11 tropical sign of the Sun in the real sky (Swiss Ephemeris), whatever
+        siddhanta the request computes in. The seasons are the Sun's real place on
+        its path; the Surya Siddhanta's sayana longitude (its nirayana longitude plus
+        its trepidating ayanamsha) does not follow them, so it never decides a ritu."""
+        from engine.astronomy.siddhanta import DRIK, siddhanta
 
-        month = local_civil_fields(ut_instant_from_jd(jd), timezone_name).month
-        ritu = RITU_DATA[SOUTHERN_MONTH_RITU[month] - 1]
-        return {
-            **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
-            "sun_rashi": self.sun_index(jd, sidereal=False) + 1,
-            "basis": "southern_local",
-        }
+        return rashi_index(siddhanta(DRIK).engine.sun_longitude(jd, sidereal=False))
 
     def ritu(
         self,
@@ -168,10 +163,22 @@ class RashiService:
         lat: float | None = None,
         timezone_name: str = "Asia/Kathmandu",
     ) -> dict[str, Any]:
-        """Season — sun-sign ritu in the north, local civil season south of the equator."""
-        if lat is not None and lat < 0:
-            return self._ritu_from_southern_month(jd, timezone_name)
-        return self._ritu_from_sun(jd, sidereal=sidereal)
+        """Season at the observer — the tropical (sayana) ritu, flipped south of the equator.
+
+        ``sidereal=True`` gives the pauranik solar-month ritu instead (kept for the
+        classical rules defined by it; never shown as the day's season).
+        ``timezone_name`` is accepted for callers' symmetry; the season depends only
+        on the instant and the hemisphere.
+        """
+        ritu = self._ritu_from_sun(jd, sidereal=sidereal)
+        if sidereal or lat is None or lat >= 0:
+            return ritu
+        flipped = RITU_DATA[(ritu["number"] - 1 + SOUTHERN_RITU_SHIFT) % 6]
+        return {
+            **ritu,
+            **{k: flipped[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
+            "basis": "tropical_southern",
+        }
 
     # ── ayana ───────────────────────────────────────────────────────────────
 

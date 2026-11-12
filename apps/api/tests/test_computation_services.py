@@ -335,9 +335,19 @@ class TestRashiService:
         july = default_engine.julian_day(datetime(2026, 7, 15, 6, tzinfo=timezone.utc))
         north = rashi_service.ritu(july, lat=27.7, timezone_name="Asia/Kathmandu")
         south = rashi_service.ritu(july, lat=-33.9, timezone_name="Australia/Sydney")
-        assert north["basis"] != "southern_local"
-        assert south["basis"] == "southern_local"
+        assert north["basis"] == "tropical"
+        assert north["name"] == "Varsha"
+        assert south["basis"] == "tropical_southern"
         assert south["name"] == "Shishira"
+
+    def test_ritu_is_the_real_sky_under_the_surya_siddhanta(self):
+        """The Surya Siddhanta's sayana longitude drifts from the real one; ritu must not."""
+        from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
+
+        for jd in SAMPLE_JDS:
+            drik = rashi_service.ritu(jd, lat=-33.9)
+            with use_siddhanta(SURYA_SIDDHANTA):
+                assert rashi_service.ritu(jd, lat=-33.9) == drik
 
     def test_aayan_flips_at_the_makara_boundary(self):
         """Uttarayana is tropical Makara→Mithuna (solstice to solstice); the mark agrees with the name."""

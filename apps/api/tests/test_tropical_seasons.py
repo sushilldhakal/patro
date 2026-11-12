@@ -40,3 +40,14 @@ def test_ritus_are_60_degree_arcs_with_the_solstices_on_their_edges():
     assert ritu_at(2026, 6, 20) == "Grishma" and ritu_at(2026, 6, 22) == "Varsha"
     assert ritu_at(2026, 12, 21) == "Hemanta" and ritu_at(2026, 12, 23) == "Shishira"
     assert ritu_at(2026, 3, 20) == "Vasanta" and ritu_at(2026, 9, 23) == "Sharad"
+
+
+def test_season_boundaries_ignore_the_surya_siddhanta():
+    """The seasons page shows the real sky's tropical ritus whatever siddhanta is chosen."""
+    from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
+
+    now = datetime(2026, 11, 12, 6, tzinfo=timezone.utc)
+    drik = tropical_season_cycle(now)
+    with use_siddhanta(SURYA_SIDDHANTA):
+        assert tropical_season_cycle(now) == drik
+    assert drik[0]["slot"] == 4  # mid-November is Hemanta, not the sidereal Sharad

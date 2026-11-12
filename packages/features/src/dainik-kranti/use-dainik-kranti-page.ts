@@ -26,7 +26,7 @@ import {
   type MonthCalendar,
   type PanchangaDay,
 } from "@vedic-patro/api-client";
-import { todayAdString } from "@vedic-patro/domain/calendar/bs-calendar";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import {
   defaultMobilePaksha,
   dowOf,
@@ -167,7 +167,8 @@ export function useDainikKrantiPage({
   const params = location.params;
   // The browse era (the calendar preference) decides AD vs BS; `isEn` only picks the text language.
   const adBrowse = isGregorianEra(era);
-  const nowKey = useMemo(() => todayAdString(), []);
+  // "Today" at the selected place, so the header's ritu is that place's (as on home).
+  const nowKey = useMemo(() => todayAdStringInTimezone(new Date(), params.timezone ?? "Asia/Kathmandu"), [params.timezone]);
   const at = (time: string) => t("dainik.at_time", { time: dg(time) });
   const angaEnd = (anga: CalendarDayAnga | undefined) => {
     const time = formatTimeShort(anga?.end ?? anga?.end_local_time);

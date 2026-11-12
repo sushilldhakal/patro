@@ -176,7 +176,10 @@ logger = logging.getLogger(__name__)
 # v58: classical चन्द्रबल (houses 1, 3, 6, 7, 10, 11), Wednesday अभिजित् omitted,
 #     and the shared 9-tara names (साधक). The daily rashifal tone follows the
 #     Moon's house, and its lucky number is that house.
-PANCHANGA_PAYLOAD_VERSION = 58
+# v59: ``ritu`` is always the real-sky tropical season (Swiss Ephemeris), also
+#     under the Surya Siddhanta, and south of the equator it is the tropical ritu
+#     three seasons on (Sydney in July is Shishira), not a civil-month table.
+PANCHANGA_PAYLOAD_VERSION = 59
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
