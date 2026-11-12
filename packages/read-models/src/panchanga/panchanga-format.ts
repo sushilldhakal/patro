@@ -200,11 +200,6 @@ export function getRituVedic(p?: PanchangaDay | null): RituBlock | undefined {
   return getDetailValue<RituBlock>(p, "ritu_vedic") ?? getDetailValue<RituBlock>(p, "ritu");
 }
 
-export function getAayanPauranik(p?: PanchangaDay | null): AayanBlock | undefined {
-  if (!p) return undefined;
-  return getDetailValue<AayanBlock>(p, "aayan_pauranik");
-}
-
 export function getAayanVedic(p?: PanchangaDay | null): AayanBlock | undefined {
   if (!p) return undefined;
   return getDetailValue<AayanBlock>(p, "aayan_vedic") ?? getDetailValue<AayanBlock>(p, "aayan");
@@ -216,7 +211,8 @@ export function getAyanaDisplay(
   day?: CalendarDay | null,
   lang?: string,
 ): { mark: AyanaMark; label: string } | undefined {
-  const aayan = getAayanVedic(p) ?? getAayanPauranik(p);
+  // Always the tropical ayana — never the sidereal Makar → Karka one (`aayan_pauranik`).
+  const aayan = getAayanVedic(p);
   const mark =
     day?.ayana_mark ??
     ayanaMarkFromName(aayan?.name) ??

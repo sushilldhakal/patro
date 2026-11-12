@@ -32,7 +32,6 @@ import {
   formatSpanEndTime,
   formatTimeRangeShort,
   formatTimeShort,
-  getAayanPauranik,
   getAayanVedic,
   getChandrabalamTable,
   getDinVisheshLabels,
@@ -230,7 +229,7 @@ export function usePanchakaLagnaSection(p: PanchangaDay, clock?: string) {
   };
 }
 
-/* ── ritu (the Sun's path) and ayana (pauranik struck through when the vedic one differs) ── */
+/* ── ritu and ayana: both the Sun's real (tropical) place on its path ── */
 export type DualValue = { struck?: string; value?: string };
 
 export function useRituSection(p: PanchangaDay) {
@@ -241,12 +240,12 @@ export function useRituSection(p: PanchangaDay) {
     return { struck: strike && pauranik ? pauranik : undefined, value: vedic ?? pauranik };
   };
   const rituV = getRituVedic(p);
-  const aayanP = getAayanPauranik(p);
   const aayanV = getAayanVedic(p);
   return {
     // Ritu is the Sun's real position on its path, never the solar month.
     ritu: dual(undefined, formatRituLabel(rituV, lang)),
-    ayana: dual(formatAayanLabel(aayanP, lang), formatAayanLabel(aayanV, lang), aayanP?.name !== aayanV?.name),
+    // Ayana is tropical too: Uttarayana from the winter solstice, not Makar Sankranti.
+    ayana: dual(undefined, formatAayanLabel(aayanV, lang)),
     dinamana: formatDurationFull(p, "dinamaan", lang) ?? "—",
     ratrimana: formatDurationFull(p, "ratrimana", lang) ?? "—",
     madhyahna: formatMadhyahnaDisplay(p, lang) ?? "—",

@@ -179,7 +179,9 @@ logger = logging.getLogger(__name__)
 # v59: ``ritu`` is always the real-sky tropical season (Swiss Ephemeris), also
 #     under the Surya Siddhanta, and south of the equator it is the tropical ritu
 #     three seasons on (Sydney in July is Shishira), not a civil-month table.
-PANCHANGA_PAYLOAD_VERSION = 59
+# v60: ayana (and the उ/द mark) is likewise always the real-sky tropical one,
+#     also under the Surya Siddhanta.
+PANCHANGA_PAYLOAD_VERSION = 60
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

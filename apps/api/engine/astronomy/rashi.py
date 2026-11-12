@@ -192,7 +192,8 @@ class RashiService:
         more every year — so it is kept only for the classical muhurta rules that
         are defined by it (``sidereal=True``).
         """
-        index = self.sun_index(jd, sidereal=sidereal)
+        # Tropical is the real sky (Swiss Ephemeris) under every siddhanta, like ritu.
+        index = self.sun_index(jd, sidereal=True) if sidereal else self.tropical_sun_index(jd)
         uttara = index in UTTARAYANA_RASHI_INDICES
         return {
             "name": "Uttarayana" if uttara else "Dakshinayana",

@@ -349,6 +349,14 @@ class TestRashiService:
             with use_siddhanta(SURYA_SIDDHANTA):
                 assert rashi_service.ritu(jd, lat=-33.9) == drik
 
+    def test_ayana_is_the_real_sky_under_the_surya_siddhanta(self):
+        from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
+
+        for jd in SAMPLE_JDS:
+            drik = rashi_service.aayan(jd)
+            with use_siddhanta(SURYA_SIDDHANTA):
+                assert rashi_service.aayan(jd) == drik
+
     def test_aayan_flips_at_the_makara_boundary(self):
         """Uttarayana is tropical Makara→Mithuna (solstice to solstice); the mark agrees with the name."""
         for jd in SAMPLE_JDS:
