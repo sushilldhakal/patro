@@ -667,7 +667,7 @@ function YearGrid({ anchor, events, marks, todayAd, onAnchorChange, onViewChange
                           onPress={() => {
                             haptics.tick();
                             onAnchorChange(iso);
-                            onViewChange("day");
+                            onViewChange("calendar");
                           }}
                           className="h-5 flex-1 items-center justify-center"
                         >

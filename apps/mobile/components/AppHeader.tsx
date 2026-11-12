@@ -4,7 +4,7 @@ import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView,
 import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DURATION, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
-import { neutral } from "@vedic-patro/design-tokens";
+import { neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { TABLET_SIDEBAR_WIDTH, useTabletUi } from "@/lib/tablet-ui";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -17,7 +17,7 @@ import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
 import { useTopBarElement } from "@/components/navigation/TopBarSlot";
 import { useThemeColors } from "@/lib/theme-context";
-import { usePageViewSections } from "@/lib/page-view-menu";
+import { usePageViewSections, type PageViewSection } from "@/lib/page-view-menu";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -263,11 +263,28 @@ function ViewSegmentedSwitch() {
 /** Where the view menu's button sits on screen, so the menu opens from under it. */
 type Anchor = { top: number; right: number };
 
+/** A short set of plain choices (दैनिक | साप्ताहिक | मासिक | वार्षिक) fits one row as a segmented switch. */
+function isSegmentSection(section: PageViewSection): boolean {
+  return (
+    section.options.length >= 2 &&
+    section.options.length <= 4 &&
+    section.options.every((o) => !o.icon && o.label.length <= 12)
+  );
+}
+
+/** The avatar letter for a row with no icon: the first character of the name, capitalised. */
+function initialOf(label: string): string {
+  return (Array.from(label.trim())[0] ?? "•").toLocaleUpperCase();
+}
+
 /**
  * The view menu: the focused page's own choices (वि.सं. | पञ्चाङ्ग on home, अहोरात्र | दिन-रात on the
- * panchanga, the profiles on rashifal and साइत…), the current one ticked, opening from its button like
- * Apple Calendar's view menu. Pages without choices get no button. (The iPhone Duo uses the native
+ * panchanga, the period and profiles on rashifal, साइत…), opening from its button like Apple
+ * Calendar's view menu. Pages without choices get no button. (The iPhone Duo uses the native
  * toolbar menu instead.)
+ *
+ * Short plain sets sit at the top as segmented switches and stay put; the rest (a long profile list)
+ * scrolls beneath its own fixed heading. The card never grows past about two thirds of the screen.
  */
 export function ViewMenuButton() {
   const { t } = useLocale();
@@ -279,63 +296,142 @@ export function ViewMenuButton() {
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
   const open = () =>
-    ref.current?.measureInWindow((x, y, w, h) => setAnchor({ top: y + h + 8, right: Math.max(8, width - (x + w)) }));
+    ref.current?.measureInWindow((x, y, w, h) => setAnchor({ top: y + h + 8, right: Math.max(12, width - (x + w)) }));
   const close = () => setAnchor(null);
 
   if (!sections) return null;
+
+  const choose = (onPress: () => void) => {
+    haptics.tick();
+    close();
+    onPress();
+  };
+
+  // The leading short sets become the fixed head; everything after them scrolls.
+  let split = 0;
+  while (split < sections.length && isSegmentSection(sections[split]!)) split++;
+  const head = sections.slice(0, split);
+  const body = sections.slice(split);
+  // One list below the head: its heading stays fixed above the scroll.
+  const fixedTitle = body.length === 1 && head.length > 0 ? body[0]!.title : undefined;
+
+  const panelWidth = Math.min(320, width - 24);
+  const maxHeight = anchor
+    ? Math.max(200, Math.min(height * 0.66, height - anchor.top - insets.bottom - 16))
+    : 0;
+
+  const sectionTitle = (title: string) => (
+    <Text className="px-4 pb-1.5 pt-3 text-caption font-semibold text-muted-foreground" style={nepaliTextStyle(13)}>
+      {title}
+    </Text>
+  );
 
   return (
     <View ref={ref} collapsable={false}>
       <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
       <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
-        <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t("ui.search.cancel")} />
+        <Animated.View entering={FadeIn.duration(140)} style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(neutral.black, 0.18) }]}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t("ui.search.cancel")} />
+        </Animated.View>
         {anchor ? (
           <Animated.View
             entering={ZoomIn.duration(180)}
-            style={{
-              position: "absolute",
-              top: anchor.top,
-              right: anchor.right,
-              minWidth: 240,
-              /* A long list (many saved profiles on rashifal) scrolls inside the menu
-                 instead of running off the bottom of the screen. */
-              maxHeight: Math.max(160, height - anchor.top - insets.bottom - 16),
-            }}
+            style={{ position: "absolute", top: anchor.top, right: anchor.right, width: panelWidth, maxHeight }}
           >
-            <Animated.View entering={FadeIn.duration(120)} className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
-              <ScrollView bounces={false} contentContainerClassName="py-2" showsVerticalScrollIndicator>
-                {sections.map((section, index) => (
-                  <View key={section.key} className={index > 0 ? "border-t border-border pt-1" : undefined}>
-                    {section.title ? (
-                      <Text className="px-4 pb-1 pt-2 text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
-                        {section.title}
-                      </Text>
-                    ) : null}
+            <View
+              className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg"
+              style={{ maxHeight, borderCurve: "continuous" }}
+            >
+              {head.map((section, index) => (
+                <View key={section.key} className={cn("px-3", index === 0 ? "pt-3" : "pt-2")}>
+                  {section.title ? (
+                    <Text className="px-1 pb-1.5 text-caption font-semibold text-muted-foreground" style={nepaliTextStyle(13)}>
+                      {section.title}
+                    </Text>
+                  ) : null}
+                  <View accessibilityRole="tablist" className="flex-row rounded-2xl bg-muted p-1" style={{ borderCurve: "continuous" }}>
                     {section.options.map((option) => (
                       <Pressable
                         key={option.key}
-                        accessibilityRole="menuitem"
+                        accessibilityRole="tab"
                         accessibilityState={{ selected: option.active }}
-                        onPress={() => {
-                          haptics.tick();
-                          close();
-                          option.onPress();
-                        }}
-                        className="min-h-12 flex-row items-center gap-3 px-4 py-3 active:bg-muted"
+                        onPress={() => (option.active ? close() : choose(option.onPress))}
+                        className={cn(
+                          "h-10 flex-1 items-center justify-center rounded-xl px-1",
+                          option.active ? "bg-background shadow-sm" : "active:opacity-60",
+                        )}
+                        style={{ borderCurve: "continuous" }}
                       >
-                        <View className="w-5 items-center">
-                          {option.active ? <Ionicons name="checkmark" size={18} color={colors.foreground} /> : null}
-                        </View>
-                        {option.icon ? <Icon node={option.icon} size={20} tone={option.active ? "secondary" : "muted"} /> : null}
-                        <Text className="text-body text-foreground" style={nepaliTextStyle(17)}>
+                        <Text
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                          className={cn("text-body", option.active ? "font-semibold text-foreground" : "text-muted-foreground")}
+                          style={nepaliTextStyle(14)}
+                        >
                           {option.label}
                         </Text>
                       </Pressable>
                     ))}
                   </View>
-                ))}
-              </ScrollView>
-            </Animated.View>
+                </View>
+              ))}
+              {head.length > 0 && body.length > 0 ? <View className="mt-3 h-px bg-border" /> : null}
+              {body.length === 0 && head.length > 0 ? <View className="h-3" /> : null}
+              {fixedTitle ? sectionTitle(fixedTitle) : null}
+              {body.length > 0 ? (
+                <ScrollView
+                  style={{ flexGrow: 0, flexShrink: 1 }}
+                  bounces={false}
+                  showsVerticalScrollIndicator
+                  contentContainerClassName={cn("pb-2", !fixedTitle && "pt-1")}
+                >
+                  {body.map((section, index) => (
+                    <View key={section.key} className={index > 0 ? "mt-1 border-t border-border" : undefined}>
+                      {section.title && !fixedTitle ? sectionTitle(section.title) : null}
+                      {section.options.map((option) => (
+                        <Pressable
+                          key={option.key}
+                          accessibilityRole="menuitem"
+                          accessibilityState={{ selected: option.active }}
+                          onPress={() => choose(option.onPress)}
+                          className={cn(
+                            "mx-2 min-h-12 flex-row items-center gap-3 rounded-2xl px-2 py-1.5",
+                            option.active ? "bg-muted" : "active:bg-muted",
+                          )}
+                          style={{ borderCurve: "continuous" }}
+                        >
+                          {option.icon ? (
+                            <View className="h-8 w-8 items-center justify-center">
+                              <Icon node={option.icon} size={20} tone={option.active ? "secondary" : "muted"} />
+                            </View>
+                          ) : (
+                            <View
+                              className={cn("h-8 w-8 items-center justify-center rounded-full", option.active ? "bg-secondary" : "bg-muted")}
+                              style={option.active ? undefined : { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border }}
+                            >
+                              <Text
+                                className={cn("text-caption font-semibold", option.active ? "text-white" : "text-muted-foreground")}
+                                style={nepaliTextStyle(13)}
+                              >
+                                {initialOf(option.label)}
+                              </Text>
+                            </View>
+                          )}
+                          <Text
+                            numberOfLines={1}
+                            className={cn("min-w-0 flex-1 text-body text-foreground", option.active && "font-semibold")}
+                            style={nepaliTextStyle(16)}
+                          >
+                            {option.label}
+                          </Text>
+                          {option.active ? <Ionicons name="checkmark" size={18} color={colors.secondary} /> : null}
+                        </Pressable>
+                      ))}
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : null}
+            </View>
           </Animated.View>
         ) : null}
       </Modal>

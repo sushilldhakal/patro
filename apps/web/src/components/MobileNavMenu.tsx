@@ -145,7 +145,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <h2 className={navMenuClasses.categoryTitle}>{current.category.title}</h2>
       <MobileNavMenuView label={menu.navAria} sections={current.sections} />
-      <GetTheApp variant="compact" className="mt-3 border-t border-border pt-3" />
+      <GetTheApp variant="compact" className={navMenuClasses.appLinks} />
     </div>
   );
 }

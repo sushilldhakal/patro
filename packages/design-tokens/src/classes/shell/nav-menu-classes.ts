@@ -19,6 +19,8 @@ export const navMenuClasses = {
   tabOn: "bg-card text-secondary shadow-sm",
   tabOff: "text-muted-foreground hover:text-foreground",
   categoryTitle: "mx-3 mt-3 text-base font-bold text-foreground",
+  /** The App Store / Google Play block at the foot of the website's drawer, inset like the tiles. */
+  appLinks: "mt-3 border-t border-border px-3 pb-1 pt-3",
   /** The app's side menu: four smaller tiles a row. */
   nativeTile: "w-full items-center gap-1.5 px-0.5 py-2",
   nativeIconWrap: "size-10 items-center justify-center rounded-2xl bg-muted/80 dark:bg-foreground/10",
