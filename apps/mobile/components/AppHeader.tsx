@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { Icon } from "@vedic-patro/ui";
+import { shellIcons } from "@vedic-patro/ui/kit/shell";
 import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -172,7 +173,7 @@ function HeaderButton({
   label,
   onPress,
 }: {
-  icon: "grid-outline" | "list" | "add" | "search-outline" | "location-outline";
+  icon: "sidebar" | "list" | "add" | "search-outline" | "location-outline";
   label: string;
   onPress: () => void;
 }) {
@@ -188,7 +189,7 @@ function HeaderButton({
       hitSlop={4}
       className="h-10 w-10 items-center justify-center rounded-full border border-border bg-card active:opacity-60"
     >
-      <Ionicons name={icon} size={22} color={colors.foreground} />
+      {icon === "sidebar" ? <Icon node={shellIcons.sidebar} size={22} strokeWidth={2} /> : <Ionicons name={icon} size={22} color={colors.foreground} />}
     </Pressable>
   );
 }
@@ -459,7 +460,7 @@ function AppHeaderView() {
             the middle of the bar, search, place and "+" on the right. The two sides share the leftover
             width equally, so the switch stays centred however wide the date controls are. */}
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <HeaderButton icon="grid-outline" label={t("menu_open")} onPress={requestOpenMenu} />
+          <HeaderButton icon="sidebar" label={t("menu_open")} onPress={requestOpenMenu} />
           {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
               otherwise make the bar grow. */}
           <View className="h-10 min-w-0 flex-1 justify-start overflow-hidden">{dateControls}</View>

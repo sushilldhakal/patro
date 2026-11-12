@@ -155,3 +155,4 @@ export const shellKit = {
   SunTimesYearGrid,
   AdhikMaasNotice,
 } satisfies ShellKit;
+export { shellIcons } from "../icon-nodes";

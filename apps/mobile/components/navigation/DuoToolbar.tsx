@@ -61,7 +61,7 @@ export function DuoToolbar({ tabsInBar }: { tabsInBar: boolean }) {
     <>
       <Stack.Screen options={{ title: "" }} />
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button icon="square.grid.2x2" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
+        <Stack.Toolbar.Button icon="sidebar.left" accessibilityLabel={t("menu_open")} onPress={requestOpenMenu} />
         {/* The page's date controls (TopBarSlot): a custom view, which iOS keeps in the top bar while the
             icons go to the rail — the month or date beside the view button, like Apple Calendar's title.
             In portrait the bar also carries the status bar's clock on its right, so the controls get a

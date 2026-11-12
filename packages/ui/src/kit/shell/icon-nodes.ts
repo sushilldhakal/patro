@@ -2,6 +2,14 @@ import type { IconNode } from "../../contract";
 
 /** Lucide node lists shared by both drawings. Copied so the kit does not import lucide-react. */
 export const shellIcons = {
+  /** The side-menu trigger: a window with a narrow left pane holding three short lines. */
+  sidebar: [
+    ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "3" }],
+    ["path", { d: "M9 4v16" }],
+    ["path", { d: "M5 8.5h1" }],
+    ["path", { d: "M5 12h1" }],
+    ["path", { d: "M5 15.5h1" }],
+  ],
   sunrise: [
     ["path", { d: "M12 2v8" }],
     ["path", { d: "m4.93 10.93 1.41 1.41" }],

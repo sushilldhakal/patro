@@ -6,7 +6,6 @@ import {
   Sparkles,
   Sun,
   Moon,
-  Menu,
   ChevronDown,
   ChevronRight,
   Settings,
@@ -28,7 +27,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
+import { CalendarSystemToggle, shellIcons } from "@vedic-patro/ui/kit/shell";
+import { Icon } from "@vedic-patro/ui";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { isJyotishRoute, isPanchangaRoute } from "@/lib/app-routes";
 import { useLocale } from "@/i18n/locale";
@@ -305,7 +305,7 @@ export function Header() {
             <Drawer direction="left" open={mobileOpen} onOpenChange={setMobileOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Menu className="size-5" />
+                  <Icon node={shellIcons.sidebar} size={20} strokeWidth={2} />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
@@ -342,7 +342,7 @@ export function Header() {
             <Drawer direction="left" open={tabletOpen} onOpenChange={setTabletOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Menu className="size-5" />
+                  <Icon node={shellIcons.sidebar} size={20} strokeWidth={2} />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
