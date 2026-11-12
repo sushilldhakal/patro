@@ -86,7 +86,7 @@ export function SaitCeremonyLayout({
         <PatroYearNavBlock era={era} onEraChange={onEraChange} year={year} onYearChange={onYearChange} location={location} onLocationChange={onLocationChange} className="" />
       )}
       renderBack={() => (
-        <Pressable onPress={() => router.push("/panchanga/details" as never)} className="flex-row items-center gap-1.5 self-start">
+        <Pressable onPress={() => router.navigate("/sait" as never)} className="flex-row items-center gap-1.5 self-start">
           <Ionicons name="grid-outline" size={14} color={colors.primary} />
           <Text className="text-sm text-primary underline" style={nepaliTextStyle()}>{t("sait.all_ceremonies")}</Text>
         </Pressable>

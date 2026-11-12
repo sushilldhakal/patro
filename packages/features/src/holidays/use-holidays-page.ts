@@ -111,7 +111,9 @@ export function useHolidaysPage({
     const i = at >= 0 ? at : ahead;
     if (i < 0) return undefined;
     const cur = dated[i]!;
-    const after = dated[i + 1];
+    // "After that" is the first one still to come. Not simply the next by start date: while a long holiday
+    // runs (तिहार बिदा, कात्तिक २२–२६), the next by start date can already be over (कात्तिक २५).
+    const after = dated.find((x, k) => k > i && x.start > todayAd);
     const on = at >= 0;
     const kind = tab === "holidays" ? "holiday" : "festival";
     const until = Date.parse(`${cur.start}T00:00:00+05:45`) - nowMs;
