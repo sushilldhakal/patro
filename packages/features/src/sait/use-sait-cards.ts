@@ -7,7 +7,8 @@
  */
 import { useMemo, useState } from "react";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitShuddhiPlanet, SaitShuddhiTone } from "@vedic-patro/api-client";
-import { BS_MONTH_NAMES } from "@vedic-patro/domain/calendar/bs-calendar";
+import { BS_MONTH_NAMES, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
+import { formatGregorianFromDateParts } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import type { SaitRuleEntry } from "@vedic-patro/domain/festivals/sait-rules-content";
@@ -45,29 +46,44 @@ export function useSaitCeremonyList({
   countLabel?: (count: number, year: number) => string;
 }) {
   const { t, lang, digits } = useLocale();
-  const byMonth = useMemo(() => {
+  const group = (list: SaitDetailDay[]) => {
     const map = new Map<number, SaitDetailDay[]>();
-    for (const d of days) {
-      const list = map.get(d.bs_month) ?? [];
-      list.push(d);
-      map.set(d.bs_month, list);
+    for (const d of list) {
+      const days = map.get(d.bs_month) ?? [];
+      days.push(d);
+      map.set(d.bs_month, days);
     }
     return [...map.entries()].sort(([a], [b]) => a - b);
-  }, [days]);
+  };
+  const byMonth = useMemo(() => group(days), [days]);
+  // The year on now: days already gone are split off, so a list can open on what is still to come.
+  const split = useMemo(() => {
+    const today = getCurrentBs();
+    if (year !== today.year) return null;
+    const isPast = (d: SaitDetailDay) => d.bs_month < today.month || (d.bs_month === today.month && d.bs_day < today.day);
+    return { upcoming: group(days.filter((d) => !isPast(d))), past: group(days.filter(isPast)), pastCount: days.filter(isPast).length };
+  }, [days, year]);
   const displayCount = count ?? days.length;
+  const monthView = ([month, monthDays]: [number, SaitDetailDay[]]) => ({
+    month,
+    label:
+      lang === "en"
+        ? t("sait.month_number", { month: digits(month) })
+        : (monthDays[0]?.bs_month_name_ne ?? t("sait.month_number", { month: digits(month) })),
+    count: t("sait.days_count", { count: digits(monthDays.length) }),
+    days: monthDays,
+  });
 
   return {
     displayCount,
     countText: countLabel ? countLabel(displayCount, year) : t("sait.count_label", { count: digits(displayCount), year: digits(year) }),
-    months: byMonth.map(([month, monthDays]) => ({
-      month,
-      label:
-        lang === "en"
-          ? t("sait.month_number", { month: digits(month) })
-          : (monthDays[0]?.bs_month_name_ne ?? t("sait.month_number", { month: digits(month) })),
-      count: t("sait.days_count", { count: digits(monthDays.length) }),
-      days: monthDays,
-    })),
+    months: byMonth.map(monthView),
+    /** This year only: the months still to come, and the ones gone (folded away by the app). */
+    upcomingMonths: split ? split.upcoming.map(monthView) : null,
+    past: split && split.pastCount > 0
+      ? { label: t("sait.past_days", { count: digits(split.pastCount) }), months: split.past.map(monthView) }
+      : null,
+    noneLeft: t("sait.none_left"),
     empty: emptyLabel ?? t("sait.empty_year"),
     nakshatra: {
       label: t("sait.nakshatra_tradition"),
@@ -75,6 +91,13 @@ export function useSaitCeremonyList({
     },
     allCeremonies: t("sait.all_ceremonies"),
   };
+}
+
+/** "२० अप्रिल २०२६" / "20 April 2026" from the API's ISO "2026-04-20" (left as it is if not one). */
+function gregorianLabel(iso: string | undefined, lang: string, digits: (n: number | string) => string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? "");
+  if (!m) return iso ?? "";
+  return formatGregorianFromDateParts({ year: Number(m[1]), month: Number(m[2]), day: Number(m[3]) }, lang, digits);
 }
 
 export function useSaitDayCard({ d, personalize }: { d: SaitDetailDay; personalize?: SaitPersonalizeDay }) {
@@ -89,7 +112,7 @@ export function useSaitDayCard({ d, personalize }: { d: SaitDetailDay; personali
     month: bilingualText(lang, d.bs_month_name_ne, BS_MONTH_NAMES[d.bs_month - 1] ?? d.bs_month_name_ne),
     day: digits(d.bs_day),
     weekday: bilingualText(lang, d.weekday_ne, d.weekday_en),
-    gregorian: d.gregorian,
+    gregorian: gregorianLabel(d.gregorian, lang, digits),
     window: `${digits(d.window_start)} – ${digits(d.window_end)}${overnight ? ` (${t("sait.1")})` : ""}`,
     windowNote: t("sait.lagna_window"),
     facts: [

@@ -63,17 +63,17 @@ export function AyanamshaSelector(props: AyanamshaSelectorProps) {
   );
 }
 
-export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, renderPlace }: ProfileFormProps) {
-  const f = useProfileForm({ initial, existing, onSaved, afterSave });
+export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, store, minimal, renderPlace }: ProfileFormProps) {
+  const f = useProfileForm({ initial, existing, onSaved, afterSave, store });
   const { form, copy } = f;
   return (
     <Box className={accountClasses.profileForm}>
       <Box className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <Field label={copy.fullName}><Input value={form.full_name} onChange={f.setName} className={accountClasses.input} /></Field>
-        <Field label={copy.phone}><Input value={form.phone ?? ""} onChange={f.setPhone} placeholder={copy.phonePlaceholder} className={accountClasses.input} /></Field>
+        {minimal ? null : <Field label={copy.phone}><Input value={form.phone ?? ""} onChange={f.setPhone} placeholder={copy.phonePlaceholder} className={accountClasses.input} /></Field>}
       </Box>
       <Box className={cn("sm:flex-row", accountClasses.fieldRow)}>
-        <Field label={copy.email}><Input type="email" value={form.email ?? ""} onChange={f.setEmail} className={accountClasses.input} /></Field>
+        {minimal ? null : <Field label={copy.email}><Input type="email" value={form.email ?? ""} onChange={f.setEmail} className={accountClasses.input} /></Field>}
         <Field label={copy.gender}><Chips options={f.genders} /></Field>
       </Box>
       <Field label={copy.birthPlace}>
@@ -85,10 +85,12 @@ export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, r
         <Field label={copy.birthTime}><Input value={form.birth_time ?? ""} onChange={f.setBirthTime} placeholder={copy.birthTimePlaceholder} className={accountClasses.input} /></Field>
         <Field label={copy.calendar}><Chips options={f.eras} /></Field>
       </Box>
-      <Box className={accountClasses.checkRow} nativeClassName="flex-row">
-        <Switch value={!!form.is_default} onValueChange={f.setDefault} />
-        <Text className={accountClasses.checkText}>{copy.setDefault}</Text>
-      </Box>
+      {minimal ? null : (
+        <Box className={accountClasses.checkRow} nativeClassName="flex-row">
+          <Switch value={!!form.is_default} onValueChange={f.setDefault} />
+          <Text className={accountClasses.checkText}>{copy.setDefault}</Text>
+        </Box>
+      )}
       {f.error ? <Text className={accountClasses.formError}>{f.error}</Text> : null}
       <Box className={accountClasses.formActions} nativeClassName="flex-row">
         <Button variant="ghost" label={copy.cancel} onPress={onCancel} disabled={f.busy} />

@@ -79,25 +79,40 @@ export function useKundaliDetailPage({
   auth,
   profiles,
   ayanamshaStorage,
+  guestProfile,
 }: {
   profileId: string | undefined;
   auth: { isAuthenticated: boolean; loading: boolean };
   /** The app's `useProfilesQuery` result. */
   profiles: { data?: Profile[]; isLoading: boolean; isError: boolean };
   ayanamshaStorage: AyanamshaStorage;
+  /** A kundali kept on the device with no account (the app's `/kundali/guest`): `undefined` while it
+   *  is read, `null` when there is none. Passing it opens the page without signing in. */
+  guestProfile?: Profile | null;
 }) {
   const { t, lang, digits } = useLocale();
   const [editOpen, setEditOpen] = useState(false);
   const [ayanamshaMode, setAyanamshaMode] = useAyanamshaMode(ayanamshaStorage);
   const authDialog = useAuthDialog();
 
-  const profile = useMemo(() => profiles.data?.find((p) => p.id === profileId), [profiles.data, profileId]);
+  const guest = guestProfile !== undefined || profileId === "guest";
+  const profile = useMemo(
+    () => (guest ? (guestProfile ?? undefined) : profiles.data?.find((p) => p.id === profileId)),
+    [guest, guestProfile, profiles.data, profileId],
+  );
   const moment = useMemo(() => (profile ? profileBirthMoment(profile) : null), [profile]);
   const location = useMemo(() => (profile ? profileLocation(profile) : null), [profile]);
 
   const profilesPending = auth.isAuthenticated && profiles.isLoading && !profiles.data;
-  const status: KundaliDetailStatus =
-    auth.loading || profilesPending
+  const status: KundaliDetailStatus = guest
+    ? guestProfile === undefined
+      ? "loading"
+      : !profile
+        ? "not-found"
+        : !moment || !location
+          ? "no-birth"
+          : "ready"
+    : auth.loading || profilesPending
       ? "loading"
       : !auth.isAuthenticated
         ? "login"

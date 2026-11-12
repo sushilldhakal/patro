@@ -38,11 +38,11 @@ function Label({
 }
 
 export function PotterWheel() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const cx = 168;
   const cy = 142;
   return (
-    <FigureFrame w={560} h={280} label={pick("कुमालेको चक्र", "The potter's wheel")}>
+    <FigureFrame w={560} h={280} label={t("learn_gola.the_potter_s_wheel")}>
       <Rect x={0} y={0} width={560} height={280} rx={16} fill={INK} opacity={0.04} />
       <Circle cx={cx} cy={cy} r={108} fill="none" stroke={INK} strokeWidth={1.5} opacity={0.35} />
       <Circle cx={cx} cy={cy} r={78} fill="none" stroke={TEAL} strokeWidth={1.25} strokeDasharray="4 6" />
@@ -56,26 +56,26 @@ export function PotterWheel() {
       <Circle cx={cx - 46} cy={cy + 28} r={7} fill={MARK} />
       <Path d="M122 170 q18 16 8 28" fill="none" stroke={MARK} strokeWidth={2.5} />
       <Polygon points="128,196 140,202 130,208" fill={MARK} />
-      <Label x={300} y={78} text={pick("पश्चिम — दैनिक गति", "West — daily motion")} anchor="start" fill={TEAL} />
-      <Label x={300} y={108} text={pick("पूर्व — ग्रहको गति", "East — the planet")} anchor="start" fill={MARK} />
-      <Label x={cx} y={148} text={pick("पृथ्वी", "Earth")} size={11} />
+      <Label x={300} y={78} text={t("learn_gola.west_daily_motion")} anchor="start" fill={TEAL} />
+      <Label x={300} y={108} text={t("learn_gola.east_the_planet")} anchor="start" fill={MARK} />
+      <Label x={cx} y={148} text={t("learn_gola.earth")} size={11} />
     </FigureFrame>
   );
 }
 
 export function SolarDayFigure() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   return (
-    <FigureFrame w={560} h={250} label={pick("नाक्षत्र दिन र सौर दिन", "Sidereal day and solar day")}>
+    <FigureFrame w={560} h={250} label={t("learn_gola.sidereal_day_and_solar_day")}>
       <Rect x={0} y={0} width={560} height={250} rx={16} fill={INK} opacity={0.04} />
       <EarthAt x={140} sun={0} star={0} />
       <EarthAt x={390} sun={-32} star={0} extra />
-      <Label x={140} y={222} text={pick("सँगै उदाउँदा", "Rising together")} />
-      <Label x={390} y={222} text={pick("तारा फर्किँदा +५९ असु", "Star returns, +59 asu")} />
+      <Label x={140} y={222} text={t("learn_gola.rising_together")} />
+      <Label x={390} y={222} text={t("learn_gola.star_returns_59_asu")} />
       <Circle cx={236} cy={32} r={4} fill={TEAL} />
-      <Label x={248} y={36} text={pick("तारा", "Star")} anchor="start" size={12} />
+      <Label x={248} y={36} text={t("learn_gola.star")} anchor="start" size={12} />
       <Circle cx={348} cy={32} r={5} fill={SUN} />
-      <Label x={360} y={36} text={pick("सूर्य", "Sun")} anchor="start" size={12} fill={SUN} />
+      <Label x={360} y={36} text={t("learn_gola.sun")} anchor="start" size={12} fill={SUN} />
     </FigureFrame>
   );
 }
@@ -102,17 +102,17 @@ function EarthAt({ x, sun, star, extra = false }: { x: number; sun: number; star
 }
 
 export function MonthBars() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const x0 = 168;
   const span = 340;
   const at = (days: number) => x0 + ((days - 29) / 1.7) * span;
   const rows = [
-    { y: 58, days: 30, label: pick("सावन ३०", "Savana 30"), color: TEAL },
-    { y: 118, days: 30.438, label: pick("सौर ३०.४४", "Solar 30.44"), color: SUN },
-    { y: 178, days: 29.531, label: pick("चान्द्र २९.५३", "Lunar 29.53"), color: MARK },
+    { y: 58, days: 30, label: t("learn_gola.savana_30"), color: TEAL },
+    { y: 118, days: 30.438, label: t("learn_gola.solar_30_44"), color: SUN },
+    { y: 178, days: 29.531, label: t("learn_gola.lunar_29_53"), color: MARK },
   ];
   return (
-    <FigureFrame w={560} h={240} label={pick("तीन मासको लम्बाइ", "The three month lengths")}>
+    <FigureFrame w={560} h={240} label={t("learn_gola.the_three_month_lengths")}>
       <Rect x={0} y={0} width={560} height={240} rx={16} fill={INK} opacity={0.04} />
       <Line x1={at(29)} y1={28} x2={at(29)} y2={210} stroke={INK} strokeWidth={1} opacity={0.2} />
       <Line x1={at(30.7)} y1={28} x2={at(30.7)} y2={210} stroke={INK} strokeWidth={1} opacity={0.2} />
@@ -129,30 +129,30 @@ export function MonthBars() {
 }
 
 export function AdhikSlip() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   return (
-    <FigureFrame w={560} h={230} label={pick("अधिक मास जम्मा हुँदै", "An adhik month accumulating")}>
+    <FigureFrame w={560} h={230} label={t("learn_gola.an_adhik_month_accumulating")}>
       <Rect x={0} y={0} width={560} height={230} rx={16} fill={INK} opacity={0.04} />
       {Array.from({ length: 8 }, (_, i) => (
         <Rect key={i} x={36 + i * 28} y={78} width={22} height={36 + i * 8} rx={4} fill={MARK} opacity={0.35 + i * 0.07} />
       ))}
       <Path d="M268 70 C300 70 300 150 332 150" fill="none" stroke={INK} strokeWidth={1.5} opacity={0.4} />
       <Rect x={348} y={56} width={168} height={78} rx={12} fill={GOOD} opacity={0.2} stroke={GOOD} strokeWidth={1.5} />
-      <Label x={432} y={90} text={pick("१ चान्द्र मास", "1 lunar month")} fill={GOOD} />
-      <Label x={432} y={114} text={pick("= अधिक मास", "= adhik month")} fill={GOOD} />
-      <Label x={148} y={196} text={pick("हरेक सौर मासको बाँकी", "Leftover of each solar month")} size={12} />
+      <Label x={432} y={90} text={t("learn_gola.1_lunar_month")} fill={GOOD} />
+      <Label x={432} y={114} text={t("learn_gola.adhik_month")} fill={GOOD} />
+      <Label x={148} y={196} text={t("learn_gola.leftover_of_each_solar_month")} size={12} />
     </FigureFrame>
   );
 }
 
 export function AvamaFill() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const gaps = [0.18, 0.4, 0.66, 1];
   return (
-    <FigureFrame w={560} h={230} label={pick("अवम दिन भरिँदै", "An avama day filling")}>
+    <FigureFrame w={560} h={230} label={t("learn_gola.an_avama_day_filling")}>
       <Rect x={0} y={0} width={560} height={230} rx={16} fill={INK} opacity={0.04} />
-      <Label x={36} y={28} text={pick("सूर्योदय", "Sunrise")} anchor="start" size={12} />
-      <Label x={520} y={28} text={pick("अर्को सूर्योदय", "Next sunrise")} anchor="end" size={12} />
+      <Label x={36} y={28} text={t("learn_gola.sunrise")} anchor="start" size={12} />
+      <Label x={520} y={28} text={t("learn_gola.next_sunrise")} anchor="end" size={12} />
       {gaps.map((gap, i) => {
         const y = 52 + i * 42;
         const w = 460;
@@ -166,22 +166,22 @@ export function AvamaFill() {
           </G>
         );
       })}
-      <Label x={400} y={214} text={pick("पूरो बाँकी = १ अवम", "A full remainder = 1 avama")} fill={RED} size={12} />
+      <Label x={400} y={214} text={t("learn_gola.a_full_remainder_1_avama")} fill={RED} size={12} />
     </FigureFrame>
   );
 }
 
 export function AharganaSteps() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const steps = [
-    { n: "65", t: pick("सौर", "solar"), c: TEAL },
-    { n: "+ 0", t: pick("अधिक छोडियो", "adhik dropped"), c: MARK },
-    { n: "65", t: pick("चान्द्र", "lunar"), c: TEAL },
-    { n: "− 1", t: pick("अवम छोडियो", "avama dropped"), c: MARK },
-    { n: "64", t: pick("अहर्गण", "ahargana"), c: GOOD },
+    { n: "65", t: t("learn_gola.solar"), c: TEAL },
+    { n: "+ 0", t: t("learn_gola.adhik_dropped"), c: MARK },
+    { n: "65", t: t("learn_gola.lunar"), c: TEAL },
+    { n: "− 1", t: t("learn_gola.avama_dropped"), c: MARK },
+    { n: "64", t: t("learn_gola.ahargana"), c: GOOD },
   ];
   return (
-    <FigureFrame w={560} h={250} label={pick("अहर्गणको पाँच कदम", "Five steps of the ahargana")}>
+    <FigureFrame w={560} h={250} label={t("learn_gola.five_steps_of_the_ahargana")}>
       <Rect x={0} y={0} width={560} height={250} rx={16} fill={INK} opacity={0.04} />
       {steps.map((step, i) => (
         <G key={step.t}>
@@ -195,30 +195,30 @@ export function AharganaSteps() {
 }
 
 export function MeridianShift() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const cx = 180;
   const cy = 128;
   const r = 78;
   const a = (-80 * Math.PI) / 180;
   return (
-    <FigureFrame w={560} h={250} label={pick("लङ्काभन्दा पूर्वको सूर्योदय", "Sunrise east of Lanka")}>
+    <FigureFrame w={560} h={250} label={t("learn_gola.sunrise_east_of_lanka")}>
       <Rect x={0} y={0} width={560} height={250} rx={16} fill={INK} opacity={0.04} />
       <Circle cx={cx} cy={cy} r={r} fill={TEAL} opacity={0.12} stroke={INK} strokeWidth={1.5} />
       <Line x1={cx} y1={cy - r} x2={cx} y2={cy + r} stroke={TEAL} strokeWidth={2} />
       <Line x1={cx} y1={cy} x2={cx + Math.cos(a) * r} y2={cy + Math.sin(a) * r} stroke={MARK} strokeWidth={2} />
       <Path d={`M ${cx} ${cy - 36} A 36 36 0 0 1 ${cx + Math.cos(a) * 36} ${cy + Math.sin(a) * 36}`} fill="none" stroke={MARK} strokeWidth={2} />
       <Circle cx={430} cy={70} r={16} fill={SUN} />
-      <Label x={430} y={108} text={pick("सूर्य", "Sun")} fill={SUN} />
-      <Label x={cx - 8} y={cy - r - 10} text={pick("लङ्का", "Lanka")} anchor="end" fill={TEAL} size={12} />
+      <Label x={430} y={108} text={t("learn_gola.sun")} fill={SUN} />
+      <Label x={cx - 8} y={cy - r - 10} text={t("learn_gola.lanka")} anchor="end" fill={TEAL} size={12} />
       <Label x={300} y={168} text="10°" anchor="start" fill={MARK} size={16} />
-      <Label x={430} y={168} text={pick("शोधन १′ ३८″", "correction 1′ 38″")} fill={MARK} />
-      <Label x={430} y={192} text={pick("पूर्वमा घट्छ", "subtracted in the east")} size={12} />
+      <Label x={430} y={168} text={t("learn_gola.correction_1_38")} fill={MARK} />
+      <Label x={430} y={192} text={t("learn_gola.subtracted_in_the_east")} size={12} />
     </FigureFrame>
   );
 }
 
 export function SineCircle() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const cx = 86;
   const cy = 214;
   const R = 160;
@@ -228,7 +228,7 @@ export function SineCircle() {
   const py = cy - R * Math.sin(a);
   const foot = cx + R * Math.cos(a);
   return (
-    <FigureFrame w={560} h={270} label={pick("भुजज्या र कोटिज्या", "Bhuja sine and koti sine")}>
+    <FigureFrame w={560} h={270} label={t("learn_gola.bhuja_sine_and_koti_sine")}>
       <Rect x={0} y={0} width={560} height={270} rx={16} fill={INK} opacity={0.04} />
       <Path d={`M ${cx + R} ${cy} A ${R} ${R} 0 0 0 ${cx} ${cy - R}`} fill="none" stroke={INK} strokeWidth={1.5} opacity={0.45} />
       <Line x1={cx} y1={cy} x2={cx + R + 16} y2={cy} stroke={INK} strokeWidth={1} opacity={0.3} />
@@ -239,21 +239,21 @@ export function SineCircle() {
       <Line x1={cx + R} y1={cy} x2={foot} y2={cy} stroke={RED} strokeWidth={3} />
       <Circle cx={px} cy={py} r={4} fill={INK} />
       <Label x={cx + 54} y={cy - 28} text="R 3438′" fill={TEAL} size={12} anchor="start" />
-      <Label x={px + 8} y={(py + cy) / 2} text={pick("भुज १७१९′", "bhuja 1719′")} anchor="start" fill={MARK} size={12} />
-      <Label x={(cx + foot) / 2} y={cy + 20} text={pick("कोटि", "koti")} fill={GOOD} size={12} />
-      <Label x={(cx + R + foot) / 2} y={cy + 20} text={pick("उत्क्रम", "versed")} fill={RED} size={12} />
+      <Label x={px + 8} y={(py + cy) / 2} text={t("learn_gola.bhuja_1719")} anchor="start" fill={MARK} size={12} />
+      <Label x={(cx + foot) / 2} y={cy + 20} text={t("learn_gola.koti")} fill={GOOD} size={12} />
+      <Label x={(cx + R + foot) / 2} y={cy + 20} text={t("learn_gola.versed")} fill={RED} size={12} />
       <Label x={px + 14} y={py - 8} text="30°" anchor="start" size={12} />
     </FigureFrame>
   );
 }
 
 export function MandaFigure() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const ex = 250;
   const ey = 140;
   const ox = ex + 36;
   return (
-    <FigureFrame w={560} h={280} label={pick("मन्द फल", "The manda correction")}>
+    <FigureFrame w={560} h={280} label={t("learn_gola.the_manda_correction")}>
       <Rect x={0} y={0} width={560} height={280} rx={16} fill={INK} opacity={0.04} />
       <Line x1={70} y1={ey} x2={470} y2={ey} stroke={INK} strokeWidth={1} opacity={0.25} />
       <Circle cx={ex} cy={ey} r={96} fill="none" stroke={INK} strokeWidth={1.25} strokeDasharray="5 5" opacity={0.55} />
@@ -263,24 +263,24 @@ export function MandaFigure() {
       <Line x1={ex} y1={ey} x2={ex + 92} y2={ey - 54} stroke={INK} strokeWidth={1.5} opacity={0.7} />
       <Line x1={ex} y1={ey} x2={ex + 70} y2={ey - 78} stroke={MARK} strokeWidth={2} />
       <Path d={`M ${ex + 48} ${ey - 28} A 56 56 0 0 0 ${ex + 40} ${ey - 46}`} fill="none" stroke={MARK} strokeWidth={2} />
-      <Label x={ex} y={ey + 24} text={pick("पृथ्वी", "Earth")} size={11} />
-      <Label x={430} y={ey + 4} text={pick("मन्दोच्च", "mandocca")} anchor="start" fill={TEAL} size={12} />
-      <Label x={360} y={52} text={pick("मध्यम", "mean")} size={12} />
-      <Label x={300} y={40} text={pick("स्पष्ट", "true")} fill={MARK} size={12} />
-      <Label x={168} y={78} text={pick("१° ७′", "1° 7′")} fill={MARK} size={16} />
+      <Label x={ex} y={ey + 24} text={t("learn_gola.earth")} size={11} />
+      <Label x={430} y={ey + 4} text={t("learn_gola.mandocca")} anchor="start" fill={TEAL} size={12} />
+      <Label x={360} y={52} text={t("learn_gola.mean")} size={12} />
+      <Label x={300} y={40} text={t("learn_gola.true")} fill={MARK} size={12} />
+      <Label x={168} y={78} text={t("learn_gola.1_7")} fill={MARK} size={16} />
     </FigureFrame>
   );
 }
 
 export function ShighraFigure() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const cx = 210;
   const cy = 140;
   const pr = 28;
   const px = cx + 92;
   const py = cy;
   return (
-    <FigureFrame w={560} h={270} label={pick("शीघ्र वृत्त र वक्री", "The shighra circle and retrogression")}>
+    <FigureFrame w={560} h={270} label={t("learn_gola.the_shighra_circle_and_retrogression")}>
       <Rect x={0} y={0} width={560} height={270} rx={16} fill={INK} opacity={0.04} />
       <Circle cx={cx} cy={cy} r={92} fill="none" stroke={INK} strokeWidth={1.5} opacity={0.4} />
       <Circle cx={cx} cy={cy} r={6} fill={SUN} />
@@ -290,18 +290,18 @@ export function ShighraFigure() {
       <Polygon points="296,104 308,114 292,116" fill={GOOD} />
       <Path d="M238 196 q-16 8 -8 20" fill="none" stroke={RED} strokeWidth={2.5} />
       <Polygon points="228,214 236,226 220,220" fill={RED} />
-      <Label x={cx} y={cy + 22} text={pick("पृथ्वी", "Earth")} size={11} />
-      <Label x={400} y={70} text={pick("अघि — मध्यम", "forward — mean")} anchor="start" fill={GOOD} size={12} />
-      <Label x={400} y={188} text={pick("पछाडि — नजिकको छेउ", "backward — near side")} anchor="start" fill={RED} size={12} />
-      <Label x={400} y={214} text={pick("छिटो पछाडि → वक्री", "backward wins → retrograde")} anchor="start" fill={RED} size={12} />
+      <Label x={cx} y={cy + 22} text={t("learn_gola.earth")} size={11} />
+      <Label x={400} y={70} text={t("learn_gola.forward_mean")} anchor="start" fill={GOOD} size={12} />
+      <Label x={400} y={188} text={t("learn_gola.backward_near_side")} anchor="start" fill={RED} size={12} />
+      <Label x={400} y={214} text={t("learn_gola.backward_wins_retrograde")} anchor="start" fill={RED} size={12} />
     </FigureFrame>
   );
 }
 
 export function EclipseCone() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   return (
-    <FigureFrame w={560} h={270} label={pick("चन्द्र छाया र सूर्य लम्बन", "The lunar shadow and solar parallax")}>
+    <FigureFrame w={560} h={270} label={t("learn_gola.the_lunar_shadow_and_solar_parallax")}>
       <Rect x={0} y={0} width={560} height={270} rx={16} fill={INK} opacity={0.04} />
       <Circle cx={36} cy={78} r={14} fill={SUN} />
       <Circle cx={150} cy={78} r={16} fill={TEAL} opacity={0.85} />
@@ -309,9 +309,9 @@ export function EclipseCone() {
       <Circle cx={286} cy={78} r={10} fill={PALE} stroke={INK} strokeWidth={1} />
       <Path d="M250 78 h28" stroke={MARK} strokeWidth={2} />
       <Polygon points="274,74 286,78 274,82" fill={MARK} />
-      <Label x={36} y={112} text={pick("सूर्य", "Sun")} size={11} />
-      <Label x={150} y={112} text={pick("पृथ्वी", "Earth")} size={11} />
-      <Label x={286} y={112} text={pick("चन्द्र · पूर्व", "Moon · east")} size={11} />
+      <Label x={36} y={112} text={t("learn_gola.sun")} size={11} />
+      <Label x={150} y={112} text={t("learn_gola.earth")} size={11} />
+      <Label x={286} y={112} text={t("learn_gola.moon_east")} size={11} />
       <Line x1={28} y1={140} x2={532} y2={140} stroke={INK} strokeWidth={1} opacity={0.15} />
       <Circle cx={120} cy={200} r={28} fill={TEAL} opacity={0.2} stroke={INK} strokeWidth={1.25} />
       <Circle cx={120} cy={200} r={3} fill={INK} />
@@ -320,8 +320,8 @@ export function EclipseCone() {
       <Circle cx={340} cy={150} r={12} fill={SUN} />
       <Line x1={120} y1={200} x2={340} y2={150} stroke={INK} strokeWidth={1.25} opacity={0.7} />
       <Line x1={120} y1={176} x2={340} y2={162} stroke={MARK} strokeWidth={1.75} />
-      <Label x={430} y={176} text={pick("केन्द्र — ढाकिन्छ", "Centre — covered")} anchor="start" size={12} />
-      <Label x={430} y={202} text={pick("सतह — लम्बन", "Surface — parallax")} anchor="start" fill={MARK} size={12} />
+      <Label x={430} y={176} text={t("learn_gola.centre_covered")} anchor="start" size={12} />
+      <Label x={430} y={202} text={t("learn_gola.surface_parallax")} anchor="start" fill={MARK} size={12} />
     </FigureFrame>
   );
 }

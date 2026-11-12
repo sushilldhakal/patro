@@ -51,6 +51,28 @@ function itemActive(pathname: string, href: string): boolean {
   return isNavActive(pathname, href);
 }
 
+/** Every page the side menu reaches, once each, for search: label, route and icon. */
+export function useNavPages(): { key: string; label: string; href: string; icon: DrawerIconName }[] {
+  const menu = useMobileNavMenu();
+  const seen = new Set<string>();
+  const out: { key: string; label: string; href: string; icon: DrawerIconName }[] = [];
+  const add = (key: string, label: string, href: string, icon: DrawerIconName) => {
+    if (seen.has(href)) return;
+    seen.add(href);
+    out.push({ key, label, href, icon });
+  };
+  const mainLabel = (id: string) => [...menu.main, ...menu.appOnly.mainExtra].find((m) => m.id === id)?.label ?? id;
+  for (const category of menu.categories) {
+    for (const section of category.sections) {
+      for (const { item, label } of section.items) add(item.id, label, itemHref(item), resolveDrawerIcon(section.id, item.id));
+    }
+  }
+  for (const id of ["home", "panchanga", "vastu", "learn", "shanti", "more"]) add(id, mainLabel(id), MAIN_HREF[id]!, resolveDrawerIcon("main", id));
+  add("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar"));
+  add("reminders", menu.appOnly.reminders, "/reminders", resolveDrawerIcon("patro", "reminders"));
+  return out;
+}
+
 /**
  * The side menu: three tabs (calendar & time, jyotish & muhurta, daily auspicious times), each a single
  * tile grid. The tile drawing is `@vedic-patro/ui/kit/shell`; this file supplies the routes, icons and

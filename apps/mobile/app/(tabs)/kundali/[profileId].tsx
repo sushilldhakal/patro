@@ -23,6 +23,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
+import { GUEST_PROFILE_ID, saveGuestProfile, useGuestProfile } from "@/lib/kundali/guest-profile";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,7 +42,16 @@ export default function KundaliDetailScreen() {
   const auth = useAuth();
   const { section, setSection } = useKundaliSection();
   const profiles = useProfilesQuery(auth.isAuthenticated);
-  const page = useKundaliDetailPage({ profileId, auth, profiles, ayanamshaStorage });
+  // `/kundali/guest`: the kundali a signed-out reader made, kept on the phone.
+  const isGuest = profileId === GUEST_PROFILE_ID;
+  const guest = useGuestProfile();
+  const page = useKundaliDetailPage({
+    profileId,
+    auth,
+    profiles,
+    ayanamshaStorage,
+    ...(isGuest ? { guestProfile: guest.profile } : {}),
+  });
   const { status, profile, moment, location, copy, authDialog } = page;
   const { detail, status: chartStatus } = useKundaliChart(
     status === "ready" ? moment : null,
@@ -241,11 +251,14 @@ export default function KundaliDetailScreen() {
           >
             <ProfileForm
               initial={profileToInput(profile)}
-              existing={profile}
+              existing={isGuest ? undefined : profile}
+              store={isGuest ? saveGuestProfile : undefined}
+              minimal={isGuest}
               onCancel={() => page.edit.setOpen(false)}
-              onSaved={async () => {
+              onSaved={async (saved) => {
                 page.edit.setOpen(false);
-                await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
+                if (isGuest) guest.setProfile(saved);
+                else await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
               }}
             />
           </ScrollView>

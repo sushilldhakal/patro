@@ -16,6 +16,7 @@ import { type Era } from "@vedic-patro/domain/calendar/era";
 import { useThemeColors } from "@/lib/theme-context";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { Box } from "@vedic-patro/ui";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 /** Page shell, year bar and the back link stay here. The list is shared. */
 export function SaitCeremonyLayout({
@@ -80,8 +81,13 @@ export function SaitCeremonyLayout({
           <Box className="gap-8">{body}</Box>
         </AppShell>
       )}
-      // The page starts at the year picker, like every dated page.
-      renderHeader={() => null}
+      // The ceremony's name first: the year picker alone left no word on screen saying which one this is.
+      renderHeader={() => (
+        <Box>
+          <Text className={saitClasses.pageTitle} style={nepaliTextStyle(22)}>{title}</Text>
+          {subtitle ? <Text className={saitClasses.pageSubtitle} style={nepaliTextStyle(14)}>{subtitle}</Text> : null}
+        </Box>
+      )}
       renderYearNav={() => (
         <PatroYearNavBlock era={era} onEraChange={onEraChange} year={year} onYearChange={onYearChange} location={location} onLocationChange={onLocationChange} className="" />
       )}

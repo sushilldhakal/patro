@@ -1,4 +1,3 @@
-import { cardGridColumns } from "@vedic-patro/ui";
 import { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
@@ -12,7 +11,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Text } from "@/components/ui/Text";
 import { AppShell } from "@/components/AppShell";
-import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
+import { RashifalSignChooser } from "@/components/rashifal/RashifalSignChooser";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
@@ -21,7 +20,6 @@ import { usePageViewMenu } from "@/lib/page-view-menu";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useLocale } from "@/lib/i18n";
 import { RASHIFAL_PERIOD_ICON } from "@/lib/rashifal-ui";
-import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -40,13 +38,12 @@ export default function RashifalScreen() {
   const initialPeriod = RASHIFAL_PERIODS.includes(params.period as RashifalPeriod) ? (params.period as RashifalPeriod) : "daily";
   const { t } = useLocale();
   const colors = useThemeColors();
-  const { width: screenWidth } = useBreakpoint();
-  const signCols = cardGridColumns(screenWidth - 32);
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
   const [date, setDate] = useBrowsedDay(() => new Date(`${todayAd}T12:00:00`));
   const [clock, setClock] = useState(() => defaultClockForTimezone(tz));
+  const [methodOpen, setMethodOpen] = useState(false);
   const dateAd = toAdStr(date);
   // The app addresses a day by its AD date.
   const day = useMemo(() => ({ key: [dateAd], query: new URLSearchParams({ date: dateAd, era: "ad" }) }), [dateAd]);
@@ -104,26 +101,32 @@ export default function RashifalScreen() {
           </View>
         ) : page.general.status === "ready" ? (
           <View className={rashifalClasses.panel}>
-            {page.copy.intro ? (
-              <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
-                {page.copy.intro}
-              </Text>
-            ) : null}
             {page.copy.moon ? (
               <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
                 {page.copy.moon}
               </Text>
             ) : null}
-            <Text className={rashifalClasses.methodNote} style={nepaliTextStyle()}>
-              {page.copy.methodNote}
-            </Text>
-            <View className="-m-2 flex-row flex-wrap">
-              {page.general.signs.map(({ sign, taraLine }) => (
-                <View key={sign.id} style={{ width: `${100 / signCols}%` }} className="p-2">
-                  <RashifalSignCard sign={sign} period={page.period} taraLine={taraLine} />
-                </View>
-              ))}
-            </View>
+            {/* The twelve as a grid with the reader's own rashi open, not twelve long readings in a row. */}
+            <RashifalSignChooser signs={page.general.signs} period={page.period} />
+            {/* How the readings are worked out (gochar, ashtakavarga, sudarshana…): there for whoever asks. */}
+            <Pressable onPress={() => setMethodOpen((v) => !v)} accessibilityRole="button" className={rashifalClasses.methodToggle}>
+              <Text className={rashifalClasses.methodToggleText} style={nepaliTextStyle()}>
+                {t("rashifal.how_worked_out")}
+              </Text>
+              <Ionicons name={methodOpen ? "chevron-up" : "chevron-down"} size={16} color={colors.mutedForeground} />
+            </Pressable>
+            {methodOpen ? (
+              <View className="gap-3">
+                {page.copy.intro ? (
+                  <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
+                    {page.copy.intro}
+                  </Text>
+                ) : null}
+                <Text className={rashifalClasses.methodNote} style={nepaliTextStyle()}>
+                  {page.copy.methodNote}
+                </Text>
+              </View>
+            ) : null}
           </View>
         ) : (
           <Text className={cn("py-8", rashifalClasses.intro)} style={nepaliTextStyle()}>

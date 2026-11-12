@@ -294,6 +294,10 @@ export type ProfileFormProps = {
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
   afterSave?: (isNew: boolean) => void;
+  /** Keep the profile elsewhere than the account (see useProfileForm). */
+  store?: (input: ProfileInput) => Promise<Profile>;
+  /** Birth details only: no phone, email or default switch (a kundali kept on the phone). */
+  minimal?: boolean;
   renderPlace: (args: {
     value: string;
     onSelect: (place: ProfilePlace) => void;

@@ -73,12 +73,15 @@ export function useProfileForm({
   existing,
   onSaved,
   afterSave,
+  store,
 }: {
   initial: ProfileInput;
   existing?: Profile;
   onSaved: (saved: Profile) => void;
   /** Platform follow-up once a profile is stored (the app reschedules its reminders). */
   afterSave?: (isNew: boolean) => void;
+  /** Keep the profile somewhere other than the account (the app's signed-out kundali keeps it on the phone). */
+  store?: (input: ProfileInput) => Promise<Profile>;
 }) {
   const { t } = useLocale();
   const [form, setForm] = useState<ProfileInput>(initial);
@@ -126,8 +129,12 @@ export function useProfileForm({
       // Drop empty strings so optional fields stay null on the server.
       const payload = Object.fromEntries(Object.entries(form).map(([k, v]) => [k, v === "" ? null : v])) as ProfileInput;
       payload.full_name = form.full_name.trim();
-      const saved = existing ? await updateProfile(existing.id, payload) : await createProfile(payload);
-      afterSave?.(!existing);
+      const saved = store
+        ? await store(payload)
+        : existing
+          ? await updateProfile(existing.id, payload)
+          : await createProfile(payload);
+      if (!store) afterSave?.(!existing);
       onSaved(saved);
     } catch {
       setError(t("profile.save_failed"));

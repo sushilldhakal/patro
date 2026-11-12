@@ -31,6 +31,15 @@ export const saitClasses = {
   monthCount: "text-sm text-muted-foreground",
   dayGrid: "gap-3",
   emptyText: "py-8 text-center text-sm text-muted-foreground",
+  /** The app's fold for this year's days already gone. */
+  pastToggle: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3",
+  pastToggleText: "text-sm font-semibold text-muted-foreground",
+  /** The ceremony's name at the top of its page (the app). */
+  pageTitle: "text-2xl font-bold text-foreground",
+  pageSubtitle: "mt-1 text-sm leading-relaxed text-muted-foreground",
+  /** A note above the list, e.g. the सिंहस्थ गुरु window. */
+  note: "rounded-xl border border-secondary/40 bg-secondary/10 p-4",
+  noteText: "text-sm leading-relaxed text-foreground",
 
   // ── Day card ──────────────────────────────────────────────────────────────
   card: "flex flex-col rounded-xl border border-border bg-card p-4",

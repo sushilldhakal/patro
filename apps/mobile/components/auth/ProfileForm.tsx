@@ -28,11 +28,16 @@ export function ProfileForm({
   existing,
   onCancel,
   onSaved,
+  store,
+  minimal,
 }: {
   initial: ProfileInput;
   existing?: Profile;
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
+  /** Keep it on the phone instead of the account (the signed-out kundali). */
+  store?: (input: ProfileInput) => Promise<Profile>;
+  minimal?: boolean;
 }) {
   const { lang } = useLocale();
   const [birthLocation, setBirthLocation] = useState<PanchangaLocation>(() => inputToLocation(initial));
@@ -42,6 +47,8 @@ export function ProfileForm({
       existing={existing}
       onCancel={onCancel}
       onSaved={onSaved}
+      store={store}
+      minimal={minimal}
       afterSave={(isNew) => void afterProfileSaved(lang === "en" ? "en" : "ne", isNew)}
       renderPlace={({ onSelectLabel }) => (
         <PatroHeaderLocation

@@ -12,6 +12,14 @@ export const kundaliClasses = {
   titleRow: "flex flex-row items-center gap-2.5",
   subtitle: "mt-1 text-sm",
   profileHint: "text-sm",
+  /** The signed-out hub: make a kundali kept on the phone, no account needed. */
+  guestCard: "gap-3 rounded-2xl border border-secondary/40 bg-secondary/10 p-5",
+  guestTitle: "text-lg font-bold text-foreground",
+  guestBody: "text-sm leading-relaxed text-muted-foreground",
+  guestRow: "flex-row items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3",
+  guestName: "min-w-0 shrink text-body font-semibold text-foreground",
+  sheetHead: "flex-row items-center justify-between border-b border-border px-4 py-3",
+  sheetTitle: "min-w-0 flex-1 text-center text-lg font-semibold tracking-tight text-foreground",
 
   // ── Empty / loading / error boxes ──────────────────────────────────────────
   emptyBox: "rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12",

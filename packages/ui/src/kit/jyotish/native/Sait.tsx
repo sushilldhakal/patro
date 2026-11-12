@@ -200,7 +200,24 @@ export function SaitCeremonyLayout(props: SaitCeremonyLayoutProps) {
     personalizeByDay, loading, notice, children, emptyLabel, countLabel, footer, renderShell, renderHeader, renderYearNav, renderBack,
   } = props;
   const list = useSaitCeremonyList({ days, count, year, emptyLabel, countLabel });
-  const months = useStagedMonths(list.months, 2);
+  // This year opens on the days still to come; the ones gone fold away under one row.
+  const months = useStagedMonths(list.upcomingMonths ?? list.months, 2);
+  const [pastOpen, setPastOpen] = useState(false);
+  const monthBlock = (month: (typeof list.months)[number]) => (
+    <Box key={month.month} className={saitClasses.monthBlock}>
+      <Box className={saitClasses.monthHeader}>
+        <Text className={saitClasses.monthTitle}>{month.label}</Text>
+        <Text className={saitClasses.monthCount}>{month.count}</Text>
+      </Box>
+      <DayGrid>
+        {month.days.map((day) => (
+          <DayCell key={`${saitDayKey(day)}-${day.window_start}`}>
+            <SaitDayCard d={day} suitability={suitabilityByDay?.get(saitDayKey(day))} personalize={personalizeByDay?.get(saitDayKey(day))} />
+          </DayCell>
+        ))}
+      </DayGrid>
+    </Box>
+  );
   return renderShell(
     <>
       {renderHeader()}
@@ -237,21 +254,18 @@ export function SaitCeremonyLayout(props: SaitCeremonyLayoutProps) {
             ))}
           </DayGrid>
         ) : days.length > 0 ? (
-          months.map((month) => (
-            <Box key={month.month} className={saitClasses.monthBlock}>
-              <Box className={saitClasses.monthHeader}>
-                <Text className={saitClasses.monthTitle}>{month.label}</Text>
-                <Text className={saitClasses.monthCount}>{month.count}</Text>
-              </Box>
-              <DayGrid>
-                {month.days.map((day) => (
-                  <DayCell key={`${saitDayKey(day)}-${day.window_start}`}>
-                    <SaitDayCard d={day} suitability={suitabilityByDay?.get(saitDayKey(day))} personalize={personalizeByDay?.get(saitDayKey(day))} />
-                  </DayCell>
-                ))}
-              </DayGrid>
-            </Box>
-          ))
+          <>
+            {months.length === 0 ? <Text className={saitClasses.emptyText}>{list.noneLeft}</Text> : months.map(monthBlock)}
+            {list.past ? (
+              <>
+                <Pressable onPress={() => setPastOpen((v) => !v)} selected={pastOpen} className={saitClasses.pastToggle}>
+                  <Text className={saitClasses.pastToggleText}>{list.past.label}</Text>
+                  <Icon node={pastOpen ? iconChevronUp : iconChevronDown} size={16} tone="muted" />
+                </Pressable>
+                {pastOpen ? list.past.months.map(monthBlock) : null}
+              </>
+            ) : null}
+          </>
         ) : (
           <Text className={saitClasses.emptyText}>{list.empty}</Text>
         )}

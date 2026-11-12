@@ -1,5 +1,10 @@
 import { NowHero } from "@vedic-patro/ui/kit/panchanga";
+import { useMemo, useState } from "react";
 import { TextInput } from "react-native";
+import { __iconNode as chevronDown } from "lucide-react/dist/esm/icons/chevron-down";
+import { __iconNode as chevronUp } from "lucide-react/dist/esm/icons/chevron-up";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+import { useLocale } from "@/lib/i18n";
 import { __iconNode as flag } from "lucide-react/dist/esm/icons/flag";
 import { __iconNode as partyPopper } from "lucide-react/dist/esm/icons/party-popper";
 import { __iconNode as searchIcon } from "lucide-react/dist/esm/icons/search";
@@ -29,6 +34,24 @@ export default function HolidaysScreen() {
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const { location } = usePanchangaLocation();
   const page = useHolidaysPage({ year, era, location: location.params });
+  const { t, digits } = useLocale();
+  const [pastOpen, setPastOpen] = useState(false);
+  // The year on now opens at today: what is still to come first, the ones over folded under one row.
+  // Not while searching or sorted by a column, where the reader has asked for an order of their own.
+  const split = useMemo(() => {
+    const sortedByColumn = page.columns.some((c) => c.sorted);
+    if (page.search.trim() || sortedByColumn) return null;
+    const today = todayAdStringInTimezone(new Date(), location.params.timezone ?? "Asia/Kathmandu");
+    const endOf = (row: HolidayRow) => {
+      const d = new Date(`${String(row.sortValues.adDate)}T12:00:00Z`);
+      if (Number.isNaN(d.getTime())) return "";
+      d.setUTCDate(d.getUTCDate() + Math.max(1, Number(row.sortValues.days) || 1) - 1);
+      return d.toISOString().slice(0, 10);
+    };
+    const past = page.rows.filter((row) => endOf(row) !== "" && endOf(row) < today);
+    if (past.length === 0 || past.length === page.rows.length) return null;
+    return { upcoming: page.rows.filter((row) => !past.includes(row)), past };
+  }, [page.rows, page.columns, page.search, location.params.timezone]);
   // सरकारी बिदा | सबै पर्व in the header's view menu.
   usePageViewMenu([
     {
@@ -41,6 +64,33 @@ export default function HolidaysScreen() {
       })),
     },
   ]);
+
+  const renderTable = (rows: HolidayRow[]) => (
+    <Table<HolidayRow>
+      className="mb-8"
+      columns={page.columns.map((col) => ({
+        key: col.key,
+        header: col.label,
+        width: col.width,
+        sorted: col.sorted,
+        onPress: () => page.toggleSort(col.key),
+      }))}
+      rows={rows}
+      rowKey={(row) => row.key}
+      renderCell={(row, col) => <HolidayCell row={row} column={col.key as HolidayColumnKey} yes={page.copy.yes} />}
+      empty={page.copy.empty}
+      classes={{
+        root: holidaysClasses.table,
+        head: holidaysClasses.tableHead,
+        headCell: holidaysClasses.headCell,
+        headText: holidaysClasses.headText,
+        row: holidaysClasses.row,
+        cell: holidaysClasses.cell,
+        emptyCell: holidaysClasses.emptyCell,
+        emptyText: holidaysClasses.emptyText,
+      }}
+    />
+  );
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
@@ -80,34 +130,20 @@ export default function HolidaysScreen() {
         <LoadingState label={page.copy.loading} />
       ) : (
         // A year is a few hundred rows; the first screenful draws with the page.
-        <Staged items={page.rows} first={30}>
-          {(rows) => (
-        <Table<HolidayRow>
-          className="mb-8"
-          columns={page.columns.map((col) => ({
-            key: col.key,
-            header: col.label,
-            width: col.width,
-            sorted: col.sorted,
-            onPress: () => page.toggleSort(col.key),
-          }))}
-          rows={rows}
-          rowKey={(row) => row.key}
-          renderCell={(row, col) => <HolidayCell row={row} column={col.key as HolidayColumnKey} yes={page.copy.yes} />}
-          empty={page.copy.empty}
-          classes={{
-            root: holidaysClasses.table,
-            head: holidaysClasses.tableHead,
-            headCell: holidaysClasses.headCell,
-            headText: holidaysClasses.headText,
-            row: holidaysClasses.row,
-            cell: holidaysClasses.cell,
-            emptyCell: holidaysClasses.emptyCell,
-            emptyText: holidaysClasses.emptyText,
-          }}
-        />
-          )}
-        </Staged>
+        <>
+          <Staged items={split ? split.upcoming : page.rows} first={30}>
+            {(rows) => renderTable(rows)}
+          </Staged>
+          {split ? (
+            <>
+              <Pressable onPress={() => setPastOpen((v) => !v)} label={t("holidays.past_count", { count: digits(split.past.length) })} className={cn("mb-8", holidaysClasses.pastToggle)}>
+                <Text className={holidaysClasses.pastToggleText}>{t("holidays.past_count", { count: digits(split.past.length) })}</Text>
+                <Icon node={pastOpen ? chevronUp : chevronDown} size="md" tone="muted" />
+              </Pressable>
+              {pastOpen ? renderTable(split.past) : null}
+            </>
+          ) : null}
+        </>
       )}
       <SeoContentSection route="holidays" />
     </AppShell>

@@ -5,6 +5,9 @@
  * app next to the key.
  */
 export const rashifalClasses = {
+  /** The app: the method behind the readings, folded under one row. */
+  methodToggle: "flex-row items-center justify-between rounded-xl border border-border px-4 py-3",
+  methodToggleText: "text-sm font-semibold text-muted-foreground",
   // ── Page ──────────────────────────────────────────────────────────────────
   eyebrow: "m-0 mt-1 text-xs uppercase tracking-eyebrow text-muted-foreground",
   navWrap: "mt-4",

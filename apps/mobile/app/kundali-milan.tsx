@@ -39,8 +39,8 @@ export default function KundaliMilanScreen() {
 
   return (
     <>
+      {/* No "नेपाली पात्रो · ज्योतिष · …" breadcrumb: that is the website's (search engines); the app has its own navigation. */}
       <KundaliPageShell
-        eyebrow={copy.eyebrow}
         icon={<AppNavIcon name="heart" size={28} color={colors.secondary} />}
         title={copy.title}
         subtitle={copy.subtitle}

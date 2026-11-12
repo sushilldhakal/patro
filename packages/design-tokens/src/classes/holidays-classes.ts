@@ -4,6 +4,9 @@
  * React Native does not inherit text style from a View.
  */
 export const holidaysClasses = {
+  /** The app: this year's holidays already over, folded under one row below the ones to come. */
+  pastToggle: "flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3",
+  pastToggleText: "text-sm font-semibold text-muted-foreground",
   tabBar: "flex-row gap-1 border-b border-border",
   tab: "-mb-px flex-row items-center gap-2 border-b-2 px-4 py-2.5",
   tabActive: "border-secondary",

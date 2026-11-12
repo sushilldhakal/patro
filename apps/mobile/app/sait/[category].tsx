@@ -17,17 +17,22 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { useSimhasthaSpans } from "@/lib/sait/simhastha";
 
 /** A sait ceremony — the app's drawing of `useSaitPage` (@vedic-patro/features). */
 export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
-  const { t, digits } = useLocale();
+  const { t, lang, digits } = useLocale();
   const colors = useThemeColors();
   const verdictStyle = suitabilityStyle(colors);
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const page = useSaitPage(category, year, location.params);
   const { personalize } = page;
+  // सिंहस्थ गुरु: say when Jupiter is in Simha this year, while the ceremony's rule for it is on.
+  const simhasthaRule = page.content?.rules?.some((r) => r.id === "simhastha") ?? false;
+  const simhasthaOn = simhasthaRule && (page.enabledRuleIds ? page.enabledRuleIds.has("simhastha") : true);
+  const simhastha = useSimhasthaSpans(year, simhasthaOn && era === "bs", lang, digits);
 
   if (!page.known || !page.id) {
     return (
@@ -60,7 +65,17 @@ export default function SaitCategoryScreen() {
       days={page.days}
       count={page.count}
       notice={
-        page.copy.requiresBirthDate ? (
+        simhasthaOn && simhastha.length > 0 ? (
+          <View className="gap-3">
+            {simhastha.map((span) => (
+              <View key={span.from} className={saitClasses.note}>
+                <Text className={saitClasses.noteText} style={nepaliTextStyle(14)}>
+                  {t("sait.simhastha_note", { from: span.from, to: span.to })}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : page.copy.requiresBirthDate ? (
           <View className={saitClasses.notice}>
             <View className={saitClasses.noticeIconWrap}>
               <Ionicons name="information-circle-outline" size={16} color={colors.secondary} />
