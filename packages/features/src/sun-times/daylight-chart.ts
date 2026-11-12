@@ -1,9 +1,10 @@
 /**
  * Year daylight chart for suryakranti: sunrise/sunset curves with the
- * daylight band between them, plus a day-length strip (sunset − sunrise).
+ * daylight band between them, plus a day-length strip (sunset − sunrise)
+ * and the four tropical hinges (ayana turns + equinoxes).
  */
 import type { SunYearResponse } from "@vedic-patro/api-client";
-import { formatClockNepali } from "@vedic-patro/domain/panchanga/panchanga-format";
+import { formatClockNepali, isAyanaNorthMark, type AyanaMark } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { type Lang } from "@vedic-patro/i18n/runtime";
@@ -30,6 +31,26 @@ export type SunDaylightChartPoint = {
   dateAd: string;
 };
 
+/** One of the four tropical hinges on the year curve. */
+export type SunSeasonMarkerKind = "uttarayana" | "dakshinayana" | "basanta_vishuv" | "sharad_vishuv";
+
+export type SunSeasonMarker = {
+  kind: SunSeasonMarkerKind;
+  /** Short badge on the chart (उ / द / वसन्त / हेमन्त). */
+  short: string;
+  /** Full name for legend / tooltip. */
+  label: string;
+  /** What this hinge means in one line. */
+  hint: string;
+  dayLabel: string;
+  dayLengthLabel: string;
+  x: number;
+  /** Dot on the day-length strip. */
+  y: number;
+  /** Label baseline above the main plot. */
+  labelY: number;
+};
+
 export type SunDaylightChartView = {
   width: number;
   height: number;
@@ -44,6 +65,8 @@ export type SunDaylightChartView = {
   lengthTicks: { y: number; label: string }[];
   xTicks: { x: number; label: string }[];
   points: SunDaylightChartPoint[];
+  /** उत्तरायण, दक्षिणायन, वसन्त विषुव, शरद् विषुव. */
+  markers: SunSeasonMarker[];
   todayIndex: number | null;
   longest: { dayLabel: string; dayLengthLabel: string; sunriseLabel: string; sunsetLabel: string };
   shortest: { dayLabel: string; dayLengthLabel: string; sunriseLabel: string; sunsetLabel: string };
@@ -57,14 +80,21 @@ export type SunDaylightChartView = {
   longestLabel: string;
   shortestLabel: string;
   spanLegend: string;
+  markersLegend: string;
   empty: boolean;
 };
 
 const W = 720;
-const H = 340;
-const PAD = { l: 52, r: 14, t: 14, b: 28 };
+const H = 368;
+const PAD = { l: 52, r: 14, t: 28, b: 28 };
 const GAP = 18;
 const LENGTH_H = 72;
+/**
+ * Observed daylight at the true विषुव (Sun on the equator). Atmospheric
+ * refraction + the solar disk make sunrise earlier and sunset later, so the
+ * day is ~12 h 7 m — not 12 h 0 m. Cutting at 12 h 0 m pushed शरद् ~5 days late.
+ */
+const EQUINOX_DAYLIGHT_MIN = 12 * 60 + 7;
 
 type Raw = {
   month: number;
@@ -73,6 +103,8 @@ type Raw = {
   dateAd: string;
   sunriseMin: number;
   sunsetMin: number;
+  /** True = उत्तरायण (northward), false = दक्षिणायन; undefined when the API omitted the mark. */
+  ayanaNorth?: boolean;
 };
 
 function clockLabel(min: number, lang: Lang, digits: Digits): string {
@@ -100,6 +132,7 @@ function collect(
       const sunriseMin = parseHHMM(d.sunrise);
       const sunsetMin = parseHHMM(d.sunset);
       if (sunriseMin == null || sunsetMin == null || sunsetMin <= sunriseMin) continue;
+      const ayanaNorth = d.ayana_mark ? isAyanaNorthMark(d.ayana_mark as AyanaMark) : undefined;
       if (gregorian) {
         if (!d.date_ad) continue;
         const ad = parseDateAd(d.date_ad);
@@ -112,6 +145,7 @@ function collect(
           dateAd: d.date_ad,
           sunriseMin,
           sunsetMin,
+          ayanaNorth,
         });
         continue;
       }
@@ -122,10 +156,120 @@ function collect(
         dateAd: d.date_ad,
         sunriseMin,
         sunsetMin,
+        ayanaNorth,
       });
     }
   }
   return out;
+}
+
+function adMonth(dateAd: string): number {
+  const m = Number(dateAd.split("-")[1]);
+  return Number.isFinite(m) ? m : 0;
+}
+
+/** Four tropical hinges from ayana flips + day≈night crossings. */
+function buildSeasonMarkers(args: {
+  raw: Raw[];
+  points: SunDaylightChartPoint[];
+  lengths: number[];
+  labelY: number;
+  t: T;
+}): SunSeasonMarker[] {
+  const { raw, points, lengths, labelY, t } = args;
+  const byKind = new Map<SunSeasonMarkerKind, SunSeasonMarker>();
+
+  const put = (kind: SunSeasonMarkerKind, idx: number) => {
+    const p = points[idx];
+    if (!p || byKind.has(kind)) return;
+    byKind.set(kind, {
+      kind,
+      short: t(`sun_times.chart_marker_${kind}_short`),
+      label: t(`sun_times.chart_marker_${kind}`),
+      hint: t(`sun_times.chart_marker_${kind}_hint`),
+      dayLabel: p.dayLabel,
+      dayLengthLabel: p.dayLengthLabel,
+      x: p.x,
+      y: p.lengthY,
+      labelY,
+    });
+  };
+
+  // अयन turns: the first day the sunrise ayana mark flips.
+  for (let i = 1; i < raw.length; i++) {
+    const prev = raw[i - 1]!.ayanaNorth;
+    const next = raw[i]!.ayanaNorth;
+    if (prev == null || next == null || prev === next) continue;
+    put(next ? "uttarayana" : "dakshinayana", i);
+  }
+
+  // Fallback solstices when the year has no ayana marks: Dec ≈ उत्तरायण, Jun ≈ दक्षिणायन.
+  if (!byKind.has("uttarayana") || !byKind.has("dakshinayana")) {
+    let winterIdx = 0;
+    let summerIdx = 0;
+    let winterScore = Infinity;
+    let summerScore = Infinity;
+    for (let i = 0; i < raw.length; i++) {
+      const m = adMonth(raw[i]!.dateAd);
+      const len = lengths[i]!;
+      // Prefer late December for winter, mid-June for summer; break ties by extreme day length.
+      if (m === 12 || m === 1) {
+        const score = len + (m === 1 ? 30 : 0);
+        if (score < winterScore) {
+          winterScore = score;
+          winterIdx = i;
+        }
+      }
+      if (m === 6 || m === 7) {
+        const score = -len + (m === 7 ? 30 : 0);
+        if (score < summerScore) {
+          summerScore = score;
+          summerIdx = i;
+        }
+      }
+    }
+    if (!byKind.has("uttarayana")) put("uttarayana", winterIdx);
+    if (!byKind.has("dakshinayana")) put("dakshinayana", summerIdx);
+  }
+
+  // विषुव: day closest to ~12 h 7 m in the spring / autumn windows (not 12 h 0 m —
+  // that cut is several days off the real equator crossing).
+  let springIdx = -1;
+  let autumnIdx = -1;
+  let springBest = Infinity;
+  let autumnBest = Infinity;
+  for (let i = 0; i < raw.length; i++) {
+    const month = adMonth(raw[i]!.dateAd);
+    const dist = Math.abs(lengths[i]! - EQUINOX_DAYLIGHT_MIN);
+    if ((month === 3 || month === 4) && dist < springBest) {
+      springBest = dist;
+      springIdx = i;
+    }
+    if ((month === 9 || month === 10) && dist < autumnBest) {
+      autumnBest = dist;
+      autumnIdx = i;
+    }
+  }
+  // Wider windows if a polar / edge year skipped Mar/Apr or Sep/Oct.
+  if (springIdx < 0 || autumnIdx < 0) {
+    for (let i = 0; i < raw.length; i++) {
+      const month = adMonth(raw[i]!.dateAd);
+      const dist = Math.abs(lengths[i]! - EQUINOX_DAYLIGHT_MIN);
+      if (springIdx < 0 && month >= 2 && month <= 5 && dist < springBest) {
+        springBest = dist;
+        springIdx = i;
+      }
+      if (autumnIdx < 0 && month >= 8 && month <= 11 && dist < autumnBest) {
+        autumnBest = dist;
+        autumnIdx = i;
+      }
+    }
+  }
+  if (springIdx >= 0) put("basanta_vishuv", springIdx);
+  if (autumnIdx >= 0) put("sharad_vishuv", autumnIdx);
+
+  const order: SunSeasonMarkerKind[] = ["uttarayana", "basanta_vishuv", "dakshinayana", "sharad_vishuv"];
+  return order.map((k) => byKind.get(k)).filter((m): m is SunSeasonMarker => !!m);
 }
 
 function roundDown(min: number, step: number) {
@@ -172,6 +316,7 @@ const EMPTY: SunDaylightChartView = {
   lengthTicks: [],
   xTicks: [],
   points: [],
+  markers: [],
   todayIndex: null,
   longest: { dayLabel: "", dayLengthLabel: "", sunriseLabel: "", sunsetLabel: "" },
   shortest: { dayLabel: "", dayLengthLabel: "", sunriseLabel: "", sunsetLabel: "" },
@@ -185,6 +330,7 @@ const EMPTY: SunDaylightChartView = {
   longestLabel: "",
   shortestLabel: "",
   spanLegend: "",
+  markersLegend: "",
   empty: true,
 };
 
@@ -213,12 +359,14 @@ export function buildSunDaylightChart(args: {
       longestLabel: t("sun_times.chart_longest"),
       shortestLabel: t("sun_times.chart_shortest"),
       spanLegend: t("sun_times.chart_span"),
+      markersLegend: t("sun_times.chart_markers"),
     };
   }
 
   const plotH = H - PAD.t - PAD.b - LENGTH_H - GAP;
   const plot = { x: PAD.l, y: PAD.t, w: W - PAD.l - PAD.r, h: plotH };
   const lengthPlot = { x: PAD.l, y: PAD.t + plotH + GAP, w: plot.w, h: LENGTH_H };
+  const markerLabelY = Math.max(11, PAD.t - 10);
 
   const riseMins = raw.map((p) => p.sunriseMin);
   const setMins = raw.map((p) => p.sunsetMin);
@@ -265,7 +413,10 @@ export function buildSunDaylightChart(args: {
   }
 
   const yTicks: { y: number; label: string }[] = [];
-  for (let m = clockLo; m <= clockHi; m += 60) {
+  const clockSpan = clockHi - clockLo;
+  const clockStep = clockSpan > 12 * 60 ? 180 : clockSpan > 8 * 60 ? 120 : 60;
+  const tickStart = roundUp(clockLo, clockStep);
+  for (let m = tickStart; m <= clockHi; m += clockStep) {
     yTicks.push({ y: yClock(m), label: clockLabel(m, lang, digits) });
   }
   const lengthTicks: { y: number; label: string }[] = [];
@@ -281,12 +432,13 @@ export function buildSunDaylightChart(args: {
     if (month === lastMonth) continue;
     lastMonth = month;
     const label = layout.monthLabels[month - 1] ?? String(month);
-    xTicks.push({ x: xs[i]!, label: label.length > 6 ? label.slice(0, 3) : label });
+    xTicks.push({ x: xs[i]!, label: label.length > 7 ? label.slice(0, 4) : label });
   }
 
   const todayAd = todayAdStringInTimezone(new Date(), timeZone);
   const todayIndex = points.findIndex((p) => p.dateAd === todayAd);
   const spanMin = longest.dayLengthMin - shortest.dayLengthMin;
+  const markers = buildSeasonMarkers({ raw, points, lengths, labelY: markerLabelY, t });
 
   return {
     width: W,
@@ -302,6 +454,7 @@ export function buildSunDaylightChart(args: {
     lengthTicks,
     xTicks,
     points,
+    markers,
     todayIndex: todayIndex >= 0 ? todayIndex : null,
     longest: {
       dayLabel: longest.dayLabel,
@@ -325,6 +478,7 @@ export function buildSunDaylightChart(args: {
     longestLabel: t("sun_times.chart_longest"),
     shortestLabel: t("sun_times.chart_shortest"),
     spanLegend: t("sun_times.chart_span"),
+    markersLegend: t("sun_times.chart_markers"),
     empty: false,
   };
 }

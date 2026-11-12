@@ -3581,6 +3581,44 @@ export const strings = {
     ne: "वि.सं. {{year}} को सूर्योदय–सूर्यास्त तालिका",
     en: "Sunrise and sunset grid for BS year {{year}}",
   },
+  "sun_times.chart_title": { ne: "दिनमान — उदायास्त अन्तर", en: "Day length — sunrise to sunset" },
+  "sun_times.chart_subtitle": {
+    ne: "वर्षभर सूर्योदय र सूर्यास्तको समय, र तिनबीचको अन्तर (दिनको लम्बाइ)",
+    en: "Sunrise and sunset across the year, and the daylight span between them",
+  },
+  "sun_times.chart_aria": {
+    ne: "{{year}} को सूर्योदय–सूर्यास्त र दिनमान ग्राफ",
+    en: "Sunrise, sunset, and day-length chart for {{year}}",
+  },
+  "sun_times.chart_day_length": { ne: "दिनमान", en: "Day length" },
+  "sun_times.chart_longest": { ne: "सबैभन्दा लामो दिन", en: "Longest day" },
+  "sun_times.chart_shortest": { ne: "सबैभन्दा छोटो दिन", en: "Shortest day" },
+  "sun_times.chart_span": { ne: "लामो–छोटो अन्तर", en: "Longest–shortest span" },
+  "sun_times.chart_markers": { ne: "अयन र विषुव", en: "Ayanas and equinoxes" },
+  "sun_times.chart_marker_uttarayana": { ne: "उत्तरायण", en: "Uttarayana" },
+  "sun_times.chart_marker_uttarayana_short": { ne: "उ", en: "N" },
+  "sun_times.chart_marker_uttarayana_hint": {
+    ne: "शीत अयनान्त — सूर्य उत्तरतिर फर्किने दिन (सबभन्दा छोटो दिन)",
+    en: "Winter solstice — Sun turns north (shortest day)",
+  },
+  "sun_times.chart_marker_dakshinayana": { ne: "दक्षिणायन", en: "Dakshinayana" },
+  "sun_times.chart_marker_dakshinayana_short": { ne: "द", en: "S" },
+  "sun_times.chart_marker_dakshinayana_hint": {
+    ne: "ग्रीष्म अयनान्त — सूर्य दक्षिणतिर फर्किने दिन (सबभन्दा लामो दिन)",
+    en: "Summer solstice — Sun turns south (longest day)",
+  },
+  "sun_times.chart_marker_basanta_vishuv": { ne: "वसन्त विषुव", en: "Basanta Vishuv" },
+  "sun_times.chart_marker_basanta_vishuv_short": { ne: "वसन्त", en: "Spring" },
+  "sun_times.chart_marker_basanta_vishuv_hint": {
+    ne: "वसन्त विषुव — दिन र रात झन्डै बराबर (सूर्य विषुवत् रेखामा)",
+    en: "Vernal equinox — day and night nearly equal",
+  },
+  "sun_times.chart_marker_sharad_vishuv": { ne: "शरद् विषुव", en: "Sharad Vishuv" },
+  "sun_times.chart_marker_sharad_vishuv_short": { ne: "शरद्", en: "Sharad" },
+  "sun_times.chart_marker_sharad_vishuv_hint": {
+    ne: "शरद् विषुव — दिन र रात झन्डै बराबर (शरद् ऋतुको सन्धि)",
+    en: "Autumnal equinox — day and night nearly equal (Sharad season hinge)",
+  },
 
   /* ── panchanga_year ──────────────────────────────────────────────────── */
   "panchanga_year.back": { ne: "दिन हेराइमा फर्कनुहोस्", en: "Back to day view" },

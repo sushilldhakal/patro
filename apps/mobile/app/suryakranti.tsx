@@ -6,7 +6,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
-import { SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
+import { SunTimesDaylightChart, SunTimesYearGrid } from "@vedic-patro/ui/kit/shell";
 import { Text } from "@/components/ui/Text";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -42,6 +42,8 @@ export default function SuryakrantiScreen() {
         onToday={() => setYear(getCurrentBs().year)}
       />
       {page.hero ? <NowHero hero={page.hero} /> : null}
+
+      <SunTimesDaylightChart chart={page.daylightChart} />
 
       <SunTimesYearGrid page={page} />
 

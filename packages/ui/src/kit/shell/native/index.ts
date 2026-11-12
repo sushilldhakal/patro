@@ -26,6 +26,7 @@ import { PatroYearNav, PatroYearNavBlock } from "./PatroYearNav";
 import { SeoContentSection } from "./SeoContentSection";
 import { SiteFooter } from "./SiteFooter";
 import { StatCard } from "./StatCard";
+import { SunTimesDaylightChart } from "./SunTimesDaylightChart";
 import { SunTimesYearGrid } from "./SunTimesYearGrid";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { VedicPatroLoader } from "./VedicPatroLoader";
@@ -63,6 +64,7 @@ export {
   SeoContentSection,
   SiteFooter,
   StatCard,
+  SunTimesDaylightChart,
   SunTimesYearGrid,
   TodayHighlightCard,
   VerticalEdgeLabel,
@@ -112,6 +114,7 @@ export type {
   SeoContentSectionProps,
   SiteFooterProps,
   StatCardProps,
+  SunTimesDaylightChartProps,
   SunTimesYearGridProps,
   TodayHighlightCardProps,
   VerticalEdgeLabelProps,
@@ -154,6 +157,7 @@ export const shellKit = {
   VerticalEdgeLabel,
   MatrixTable,
   SunTimesYearGrid,
+  SunTimesDaylightChart,
   AdhikMaasNotice,
 } satisfies ShellKit;
 export { shellIcons } from "../icon-nodes";

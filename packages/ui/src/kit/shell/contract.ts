@@ -470,6 +470,11 @@ export type SunTimesYearGridProps = {
   className?: string;
 };
 
+export type SunTimesDaylightChartProps = {
+  chart: SunTimesPage["daylightChart"];
+  className?: string;
+};
+
 export type AdhikMaasNoticeProps = {
   /** The BS year whose adhik maas the row names (nothing is drawn when it has none). */
   bsYear: number;
@@ -513,4 +518,5 @@ export type ShellKit = {
   VerticalEdgeLabel: ComponentType<VerticalEdgeLabelProps>;
   MatrixTable: ComponentType<MatrixTableProps>;
   SunTimesYearGrid: ComponentType<SunTimesYearGridProps>;
+  SunTimesDaylightChart: ComponentType<SunTimesDaylightChartProps>;
 };
