@@ -211,6 +211,33 @@ See **[DEPLOY_FEATURE_BRANCH.md](DEPLOY_FEATURE_BRANCH.md)** for a full checklis
 | nginx      | systemd (`nginx`)                    | 80, 443 public  |
 | FastAPI    | systemd (`nepali-holiday-api`)       | 127.0.0.1:8000  |
 | PostgreSQL | systemd (`postgresql`)               | 127.0.0.1:5432  |
+| Redis      | systemd (`redis-server`)             | 127.0.0.1:6379  |
 | React app  | static files served by nginx         | —               |
 
 Only nginx is exposed publicly; the API and database listen on localhost only.
+
+## Redis cache
+
+Redis is a shared, memory-bounded cache in front of Postgres/disk for every
+API worker (`REDIS_URL=redis://127.0.0.1:6379/0` in `/home/ubuntu/patro/.env`).
+Two layers use it:
+
+* `app/response_cache.py` — the gzipped year/month/gochar/document payloads.
+* `app/redis_response_middleware.py` — whole public `GET /v1/…` and `/og-image`
+  responses (daily panchanga, at-time, rashifal, festivals, sāit, spans, city
+  search…). Responses carry `X-Cache: HIT | MISS | BYPASS`.
+
+Settings in `/etc/redis/redis.conf` (2 GB of the box's 11 GB):
+
+```
+maxmemory 2gb
+maxmemory-policy allkeys-lfu     # evict the least *frequently* used keys first
+save 3600 1 300 1000             # snapshot so the cache survives a restart
+lazyfree-lazy-eviction yes
+lazyfree-lazy-expire yes
+```
+
+Apply live without a restart: `redis-cli CONFIG SET maxmemory 2gb` (and so on
+for each line). Check it: `redis-cli INFO memory | grep -E 'used_memory_human|maxmemory'`
+and `redis-cli INFO stats | grep -E 'keyspace_(hits|misses)|evicted_keys'`.
+Redis being down only costs speed: every cache call falls through as a miss.
