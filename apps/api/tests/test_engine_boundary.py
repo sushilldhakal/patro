@@ -78,16 +78,17 @@ class TestDuplicateAstronomyIsContained:
         )
 
     def test_tropical_seasons_now_uses_the_ephemeris(self):
-        """Post-migration: the two must agree exactly, not approximately."""
+        """Post-migration: the seasons read the one tropical source, which is the
+        drik ephemeris — they must agree exactly, not approximately."""
         from datetime import datetime, timezone
 
-        from engine.astronomy.engine import default_engine
+        from engine.astronomy.siddhanta import DRIK, siddhanta
+        from engine.astronomy.tropical_year import julian_day
         from engine.calendar.tropical_seasons import solar_apparent_longitude
 
-        from engine.calendar.tropical_seasons import _julian_day
-
+        drik = siddhanta(DRIK).engine
         for year in (1950, 2000, 2026, 2050, 2100):
             when = datetime(year, 3, 20, 12, 0, tzinfo=timezone.utc)
             got = solar_apparent_longitude(when)
-            want = default_engine.sun_longitude(_julian_day(when), sidereal=False)
+            want = drik.sun_longitude(julian_day(when), sidereal=False) % 360.0
             assert got == want, f"{year}: {got} != {want}"
