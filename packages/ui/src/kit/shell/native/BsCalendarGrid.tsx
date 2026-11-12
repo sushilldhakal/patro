@@ -19,13 +19,16 @@ import { TodayCellPulse, useMonthTravel } from "./month-motion";
 const TODAY_AD = new Date().toISOString().split("T")[0];
 const COLS = 7;
 const GAP = 1;
+/* `cal.grid` draws a 1px border on both sides. onLayout reports the outer width, so without
+   taking it off the seven columns ran 2px wider than the grid and the last column was clipped. */
+const GRID_BORDER_X = 2;
 function useGridWidth() {
   const [width, setWidth] = useState(0);
   const onLayout = useCallback((e: LayoutChangeEvent) => {
     const next = e.nativeEvent.layout.width;
     setWidth((prev) => (Math.abs(prev - next) < 0.5 ? prev : next));
   }, []);
-  const col = width > 0 ? Math.floor(((width - GAP * (COLS - 1)) / COLS) * 100) / 100 : 0;
+  const col = width > 0 ? Math.floor(((width - GRID_BORDER_X - GAP * (COLS - 1)) / COLS) * 100) / 100 : 0;
   return { onLayout, col };
 }
 
@@ -140,9 +143,12 @@ export function BsCalendarGrid({
                   }
                   delayLongPress={400}
                   style={colStyle(col, { minHeight: cellMinH })}
-                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, isOutside && cal.cellOutside, isToday && isCompact && "border-2 border-secondary")}
+                  className={cn(cal.cell, "active:opacity-90", isCompact ? cal.cellPhone : cal.cellWide, !isCompact && (leftFest || rightFest) && cal.cellWithEdgeLabels, isOutside && cal.cellOutside)}
                 >
                   {tintClass ? <View pointerEvents="none" className={cn("absolute inset-0", tintClass)} /> : null}
+                  {/* Today's ring is laid over the cell, not a border on it: a 2px border took 4px off an
+                      already narrow phone cell and pushed the AD date onto its own line. */}
+                  {isToday && isCompact ? <View pointerEvents="none" className="absolute inset-0 border-2 border-secondary" /> : null}
 
                   {isSelected ? (
                     <View pointerEvents="none" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderWidth: 2, borderColor: roles.primary }} />
@@ -150,7 +156,7 @@ export function BsCalendarGrid({
                   {pulse && isToday && !isOutside ? <TodayCellPulse todayAd={todayAd} store={todayPulse} ringClassName="border-2 border-secondary" /> : null}
 
                   {cell.tithiIndex != null && moon ? (
-                    <View pointerEvents="none" style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2, width: moonSize, height: moonSize }}>
+                    <View pointerEvents="none" style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2, minWidth: moonSize, minHeight: moonSize }}>
                       {moon({ tithiIndex: cell.tithiIndex, title: cell.moonTitle })}
                     </View>
                   ) : null}
@@ -173,7 +179,10 @@ export function BsCalendarGrid({
                     )}
                   </View>
 
-                  <View className="flex-1 items-center justify-center gap-0.5 py-0.5">
+                  {/* Phone: the date block takes its own height, right under the tithi, so every date in a
+                      row sits on one line. As `flex-1` in a cell sized by its content it measured as zero:
+                      a festival name or "+N" badge took its room and was drawn over the date. */}
+                  <View className={isCompact ? "items-center py-0.5" : "flex-1 items-center justify-center gap-0.5 py-0.5"}>
                     {/* On a phone the cell is too short for the badge: it pushed the date down
                         over the tithi. The today fill and ring already mark the cell. */}
                     {isToday && !isCompact ? (
@@ -181,9 +190,12 @@ export function BsCalendarGrid({
                         <Text className={cal.todayBadgeText}>{source.todayBadge}</Text>
                       </View>
                     ) : null}
-                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1">
+                    <View className={cn("flex-row items-baseline justify-center gap-x-1", isCompact ? "flex-nowrap" : "flex-wrap")}>
                       <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
-                      <Text className={cn(cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}>
+                      <Text
+                        numberOfLines={isCompact ? 1 : undefined}
+                        className={cn(isCompact && "shrink", cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}
+                      >
                         {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
                       </Text>
                       {!isCompact && cell.moreWideChips > 0 && !isOutside ? (
@@ -218,8 +230,11 @@ export function BsCalendarGrid({
 
                   {/* A phone cell: one "+N" for festivals and the user's events together. A tap opens the day, or the
                       festival list when there are only festivals. */}
+                  {/* Phone: the badge and festival lines sit together at the foot of the cell, so the
+                      festivals of one row line up whether or not a cell carries a badge. */}
+                  <View className={isCompact ? "mt-auto w-full min-w-0 gap-0.5" : "w-full min-w-0"}>
                   {isCompact && cell.moreCompact > 0 && !isOutside ? (
-                    <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.moreAria} className={cn("mt-auto self-start", cal.countBadgeCompact)}>
+                    <RNPressable onPress={cell.eventTitles.length > 0 ? () => onSelectDay?.(cell.day) : openFestivals} accessibilityLabel={cell.moreAria} className={cn("self-start", cal.countBadgeCompact)}>
                       <Text className={cal.countBadgeText}>{cell.moreCompactLabel}</Text>
                     </RNPressable>
                   ) : null}
@@ -243,6 +258,7 @@ export function BsCalendarGrid({
                     </View>
                   ) : null}
                   {hasFestival && !mainFest ? <View className="mt-0.5 h-1 w-1 rounded-full bg-accent" /> : null}
+                  </View>
                 </RNPressable>
               );
             })}

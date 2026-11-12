@@ -20,7 +20,9 @@ export function RelatedPageLinks({ heading, label, headingIcon, items, className
             key={item.key}
             label={item.label}
             onPress={item.onPress}
-            className="flex flex-1 flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
+            // `grow`, not `flex-1`: a Grid cell is sized by its content, and a flex-basis of 0
+            // collapsed the card so its text spilled over the card below.
+            className="flex grow flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-card px-3 py-2.5"
             webClassName="transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]"
           >
             <Box className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10">{item.icon}</Box>
