@@ -38,14 +38,6 @@ RITU_DATA = [
     {"number": 6, "name": "Shishira", "name_sanskrit": "Shishira", "name_ne": "शिशिर", "season": "Winter"},
 ]
 
-# Southern-hemisphere civil month → ritu number (inverted meteorological seasons).
-SOUTHERN_MONTH_RITU: dict[int, int] = {
-    12: 2, 1: 2, 2: 2,    # Dec–Feb summer
-    3: 4, 4: 4, 5: 4,     # Mar–May autumn
-    6: 6, 7: 6, 8: 6,     # Jun–Aug winter
-    9: 1, 10: 1, 11: 1,   # Sep–Nov spring
-}
-
 # Makara → Mithuna (rashi index 9, 10, 11, 0, 1, 2) is the sun's northward half. Read on the
 # tropical zodiac that is exactly winter solstice → summer solstice.
 UTTARAYANA_RASHI_INDICES = frozenset({9, 10, 11, 0, 1, 2})
@@ -134,7 +126,7 @@ class RashiService:
 
     # ── ritu ────────────────────────────────────────────────────────────────
 
-    def _ritu_from_sun(self, jd: float, *, sidereal: bool) -> dict[str, Any]:
+    def _ritu_from_sun(self, jd: float, *, sidereal: bool, southern: bool = False) -> dict[str, Any]:
         index = self.sun_index(jd, sidereal=sidereal)
         # Six 60° arcs of the Sun's path, paired Meena + Mesha (Vasanta) … Makara +
         # Kumbha (Shishira). Read tropically that is the real sky: Shishira opens
@@ -142,22 +134,19 @@ class RashiService:
         # with Dakshinayana, and each equinox falls mid-Vasanta / mid-Sharad.
         # Read sidereally it is the solar-month (pauranik) ritu, Chaitra–Baisakh
         # Vasanta, which lags the real seasons by the ayanamsa.
-        ritu = RITU_DATA[((index + 1) % 12) // 2]
+        slot = ((index + 1) % 12) // 2
+        # South of the equator the same Sun brings the opposite season: the arcs
+        # are read half a year on (three ritus), so the December solstice opens
+        # Varsha there and the June one Shishira. The seasons page
+        # (``displayRituSlot`` in the apps) shifts the same way, so the patro's
+        # ritu and the seasons page agree for every place.
+        if southern:
+            slot = (slot + 3) % 6
+        ritu = RITU_DATA[slot]
         return {
             **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
             "sun_rashi": index + 1,
-            "basis": "sidereal" if sidereal else "tropical",
-        }
-
-    def _ritu_from_southern_month(self, jd: float, timezone_name: str) -> dict[str, Any]:
-        from engine.astronomy.ut_instant import local_civil_fields, ut_instant_from_jd
-
-        month = local_civil_fields(ut_instant_from_jd(jd), timezone_name).month
-        ritu = RITU_DATA[SOUTHERN_MONTH_RITU[month] - 1]
-        return {
-            **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
-            "sun_rashi": self.sun_index(jd, sidereal=False) + 1,
-            "basis": "southern_local",
+            "basis": ("sidereal" if sidereal else "tropical") + ("_southern" if southern else ""),
         }
 
     def ritu(
@@ -168,10 +157,13 @@ class RashiService:
         lat: float | None = None,
         timezone_name: str = "Asia/Kathmandu",
     ) -> dict[str, Any]:
-        """Season — sun-sign ritu in the north, local civil season south of the equator."""
-        if lat is not None and lat < 0:
-            return self._ritu_from_southern_month(jd, timezone_name)
-        return self._ritu_from_sun(jd, sidereal=sidereal)
+        """Season at a place: the Sun's 60° arc, read half a year on south of the equator.
+
+        ``timezone_name`` is kept for callers; the season itself turns on the Sun
+        alone (the day it changes is the caller's local sunrise ``jd``).
+        """
+        del timezone_name
+        return self._ritu_from_sun(jd, sidereal=sidereal, southern=lat is not None and lat < 0)
 
     # ── ayana ───────────────────────────────────────────────────────────────
 
