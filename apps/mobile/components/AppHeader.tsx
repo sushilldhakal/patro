@@ -272,7 +272,8 @@ type Anchor = { top: number; right: number };
 export function ViewMenuButton() {
   const { t } = useLocale();
   const colors = useThemeColors();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const sections = usePageViewSections();
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
@@ -287,13 +288,22 @@ export function ViewMenuButton() {
     <View ref={ref} collapsable={false}>
       <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
       <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
-        <Pressable style={{ flex: 1 }} onPress={close} accessibilityLabel={t("ui.search.cancel")}>
-          {anchor ? (
-            <Animated.View
-              entering={ZoomIn.duration(180)}
-              style={{ position: "absolute", top: anchor.top, right: anchor.right, minWidth: 240 }}
-            >
-              <Animated.View entering={FadeIn.duration(120)} className="overflow-hidden rounded-3xl border border-border bg-card py-2 shadow-lg">
+        <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel={t("ui.search.cancel")} />
+        {anchor ? (
+          <Animated.View
+            entering={ZoomIn.duration(180)}
+            style={{
+              position: "absolute",
+              top: anchor.top,
+              right: anchor.right,
+              minWidth: 240,
+              /* A long list (many saved profiles on rashifal) scrolls inside the menu
+                 instead of running off the bottom of the screen. */
+              maxHeight: Math.max(160, height - anchor.top - insets.bottom - 16),
+            }}
+          >
+            <Animated.View entering={FadeIn.duration(120)} className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
+              <ScrollView bounces={false} contentContainerClassName="py-2" showsVerticalScrollIndicator>
                 {sections.map((section, index) => (
                   <View key={section.key} className={index > 0 ? "border-t border-border pt-1" : undefined}>
                     {section.title ? (
@@ -324,10 +334,10 @@ export function ViewMenuButton() {
                     ))}
                   </View>
                 ))}
-              </Animated.View>
+              </ScrollView>
             </Animated.View>
-          ) : null}
-        </Pressable>
+          </Animated.View>
+        ) : null}
       </Modal>
     </View>
   );

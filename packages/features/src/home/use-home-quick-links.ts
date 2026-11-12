@@ -52,15 +52,21 @@ function resolvePath(item: PanchangaSidebarItem): string {
   return item.to.replace(/\$(\w+)/g, (_, key: string) => item.params?.[key] ?? key);
 }
 
+/**
+ * Tiles home adds after a category's sidebar entries: the Learn guides sit in
+ * the bottom tab bar, not the sidebar, and home had no way into them.
+ */
+const EXTRA: Partial<Record<NavCategoryId, Omit<HomeQuickLink, "label"> & { labelKey: string }>> = {
+  calendar: { to: "/learn", feature: "learn", section: "main", labelKey: "nav.learn", search: "none" },
+};
+
 export function useHomeQuickLinks() {
   const { t } = useLocale();
   const sections = getPanchangaSidebarSections();
 
   return {
-    groups: NAV_CATEGORIES.map((category) => ({
-      id: category.id as NavCategoryId,
-      title: t(category.titleKey),
-      links: category.sectionIds.flatMap((sectionId): HomeQuickLink[] => {
+    groups: NAV_CATEGORIES.map((category) => {
+      const links = category.sectionIds.flatMap((sectionId): HomeQuickLink[] => {
         const section = sections.find((s) => s.id === sectionId);
         if (!section) return [];
         return section.items.map((item) => ({
@@ -70,7 +76,13 @@ export function useHomeQuickLinks() {
           label: t(LABEL[item.id] ?? item.labelKey),
           search: SEARCH[item.id] ?? "route",
         }));
-      }),
-    })),
+      });
+      const extra = EXTRA[category.id as NavCategoryId];
+      if (extra) {
+        const { labelKey, ...link } = extra;
+        links.push({ ...link, label: t(labelKey) });
+      }
+      return { id: category.id as NavCategoryId, title: t(category.titleKey), links };
+    }),
   };
 }

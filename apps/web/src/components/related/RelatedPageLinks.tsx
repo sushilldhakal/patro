@@ -31,6 +31,9 @@ const SITE_LINK_ICONS: Record<string, NavIconName> = {
   "chandra-grahan": "sun-moon",
   "surya-grahan": "eclipse",
   rashifal: "sun",
+  vastu: "compass",
+  documents: "book-marked",
+  "learn-hub": "book-open",
 };
 
 function iconForLinkId(id: string): LucideIcon {

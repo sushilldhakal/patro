@@ -23,10 +23,11 @@ export const SITE_LINK_GROUPS = {
     "dainikkranti",
     "panchak-patro",
     "ritu",
+    "adhik-maas",
     "brahma-mana",
   ],
-  jyotish: ["avakahada-chakra", "abhijit-muhurta", "kundali", "kundali-milan", "rashifal"],
-  daily: ["panchanga", "panchanga-year", "dainikkranti", "gochar", "aakash-gochar", "abhijit-muhurta"],
+  jyotish: ["avakahada-chakra", "abhijit-muhurta", "kundali", "kundali-milan", "rashifal", "vastu", "documents"],
+  daily: ["panchanga", "panchanga-year", "dainikkranti", "gochar", "aakash-gochar", "abhijit-muhurta", "learn-hub"],
   graha: [
     "gochar",
     "aakash-gochar",
@@ -66,6 +67,10 @@ export const SITE_LINK_LABEL_KEY: Record<string, string> = {
   "surya-grahan": "sidebar_nav.items.surya-grahan.label",
   "shanti-vidhi": "seo.routes.shanti_vidhi.title",
   "vivah-sait": "seo.routes.vivah_sait.title",
+  "adhik-maas": "sidebar_nav.items.adhik-maas.label",
+  vastu: "nav.vastu",
+  documents: "nav.documents",
+  "learn-hub": "nav.learn",
 };
 
 export const SITE_LINK_BLURB_KEY: Record<string, string> = {
@@ -106,6 +111,9 @@ export const PAGE_LEARN_SLUGS: Record<string, string[]> = {
   "kundali-milan": ["sidereal-vs-tropical"],
   "abhijit-muhurta": ["hora", "what-is-panchang"],
   "avakahada-chakra": ["nakshatra", "what-is-panchang"],
+  "adhik-maas": ["adhik-kshaya-maas", "lunar-month"],
+  vastu: ["what-is-panchang", "sky-rotation"],
+  documents: ["surya-siddhanta", "what-is-panchang"],
   "element:tithi": ["tithi", "tithi-vriddhi-kshaya"],
   "element:nakshatra": ["nakshatra"],
   "element:yoga": ["yoga"],
@@ -231,4 +239,10 @@ export function resolveSitePageIdForPath(
 
   const staticEntry = Object.entries(sitePaths).find(([, p]) => p === path);
   return staticEntry ? staticEntry[0] : null;
+}
+
+/** Pages with no related footer: home, and the kundali pages (they carry their own section nav). */
+export function isRelatedLinksExcludedPath(pathname: string): boolean {
+  const path = normalizeSitePath(pathname);
+  return path === "/" || path === "/kundali" || path.startsWith("/kundali/");
 }

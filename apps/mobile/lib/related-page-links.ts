@@ -7,7 +7,7 @@ import { elementHref } from "@/lib/element-routes";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 import { resolveNavIcon } from "@vedic-patro/icons";
 
-import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
+import { isRelatedLinksExcludedPath, normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
 
 /** This app's route for each static site link id. */
 export const SITE_LINK_PATH: Record<string, string> = {
@@ -33,6 +33,10 @@ export const SITE_LINK_PATH: Record<string, string> = {
   "surya-grahan": "/panchanga/surya-grahan",
   "shanti-vidhi": "/shanti-vidhi",
   "vivah-sait": "/vivah-sait",
+  "adhik-maas": "/adhik-maas",
+  vastu: "/vastu",
+  documents: "/documents",
+  "learn-hub": "/learn",
 };
 
 /** Same Lucide icons web's `SITE_LINK_ICONS` picks, as drawer icon names. */
@@ -58,6 +62,9 @@ export const SITE_LINK_ICON: Record<string, DrawerIconName> = {
   "chandra-grahan": "sun-moon",
   "surya-grahan": "eclipse",
   rashifal: "sun",
+  vastu: "compass",
+  documents: "book-marked",
+  "learn-hub": "book-open",
 };
 
 export function iconForLinkId(id: string): DrawerIconName {
@@ -66,13 +73,13 @@ export function iconForLinkId(id: string): DrawerIconName {
   return SITE_LINK_ICON[id] ?? "compass";
 }
 
-/** Pages that carry no related footer (home, hubs, account flows). */
-const EXCLUDED_PATHS = ["/", "/panchanga/details", "/more", "/documents", "/privacy", "/terms", "/learn"];
-const EXCLUDED_PREFIXES = ["/account", "/verify-email", "/reset-password", "/documents/", "/kundali/"];
+/** Pages that carry no related footer: home and kundali (shared rule), hubs, readers, account flows. */
+const EXCLUDED_PATHS = ["/panchanga/details", "/more", "/privacy", "/terms"];
+const EXCLUDED_PREFIXES = ["/account", "/verify-email", "/reset-password", "/documents/"];
 
 export function shouldShowRelatedLinks(pathname: string): boolean {
   const path = normalizeSitePath(pathname);
-  if (EXCLUDED_PATHS.includes(path)) return false;
+  if (isRelatedLinksExcludedPath(path) || EXCLUDED_PATHS.includes(path)) return false;
   return !EXCLUDED_PREFIXES.some((p) => path.startsWith(p));
 }
 

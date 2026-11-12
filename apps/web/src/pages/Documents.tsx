@@ -46,7 +46,7 @@ export function Documents() {
   const section = page.activeSection;
 
   return (
-    <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+    <PageShell className="min-w-0 max-w-full [overflow-wrap:anywhere]">
       <PageHeader icon={<BookOpen className="size-6 text-secondary" />} title={page.copy.title} subtitle={page.copy.subtitle} />
 
       {page.status === "error" ? (

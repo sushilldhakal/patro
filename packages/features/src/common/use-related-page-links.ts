@@ -1,8 +1,8 @@
 /**
  * The "related" cards that close a page, shared by the website's and the
- * app's `components/related/RelatedPageLinks.tsx`: published Learn articles
- * first (closest to what the reader just read), then peer pages from the
- * same group, six at most, with labels and blurbs. Each app works out the
+ * app's `components/related/RelatedPageLinks.tsx`: up to two published Learn
+ * articles first (closest to what the reader just read), then peer pages from
+ * the same group, four at most, with labels and blurbs. Each app works out the
  * page id from its own router and turns each card into its own link and icon.
  */
 import { LEARN_LIBRARY, type LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
@@ -16,13 +16,22 @@ import {
 import { useLocale } from "@vedic-patro/i18n/react";
 
 /** Articles and pages share one list, capped so the footer stays scannable. */
-export const RELATED_CARD_LIMIT = 6;
+export const RELATED_CARD_LIMIT = 4;
+/** Learn articles kept ahead of the pages, so every page also offers somewhere to go next. */
+const RELATED_LEARN_FIRST = 2;
 
 export type RelatedPageCard =
   | { kind: "learn"; key: string; slug: string; icon: LearnIconKey; label: string; description?: string }
   | { kind: "site"; key: string; linkId: string; label: string; description?: string };
 
 const PUBLISHED_BY_SLUG = new Map(LEARN_LIBRARY.filter((t) => t.status === "published").map((t) => [t.slug, t]));
+
+/** Two articles, then pages; whichever list runs short leaves its room to the other. */
+function pickCards(learn: RelatedPageCard[], site: RelatedPageCard[]): RelatedPageCard[] {
+  const head = learn.slice(0, RELATED_LEARN_FIRST);
+  const pages = site.slice(0, RELATED_CARD_LIMIT - head.length);
+  return [...head, ...pages, ...learn.slice(RELATED_LEARN_FIRST)].slice(0, RELATED_CARD_LIMIT);
+}
 
 export function useRelatedPageLinks(pageId: string | null) {
   const { t, lang } = useLocale();
@@ -63,7 +72,7 @@ export function useRelatedPageLinks(pageId: string | null) {
   });
 
   return {
-    cards: [...learnCards, ...siteCards].slice(0, RELATED_CARD_LIMIT),
+    cards: pickCards(learnCards, siteCards),
     heading: t("related_pages.heading"),
     aria: t("related_pages.aria"),
   };

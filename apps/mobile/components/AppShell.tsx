@@ -84,6 +84,11 @@ export function AppShell({
           </Reveal>
         ) : null}
         {body ? <Reveal index={1}>{body}</Reveal> : null}
+        {bodyReady ? (
+          <Reveal index={2}>
+            <RelatedPageLinks />
+          </Reveal>
+        ) : null}
       </View>
     );
   }

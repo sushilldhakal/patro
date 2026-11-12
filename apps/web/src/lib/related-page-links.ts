@@ -7,7 +7,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import type { Era } from "@vedic-patro/domain/calendar/era";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 
-import { normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
+import { isRelatedLinksExcludedPath, normalizeSitePath, resolveSitePageIdForPath } from "@vedic-patro/domain/panchanga/related-page-links";
 
 /** Static route for a site link id (dynamic ids use `element:` / `sait:` prefixes). */
 export const SITE_LINK_PATH: Record<string, string> = {
@@ -33,6 +33,10 @@ export const SITE_LINK_PATH: Record<string, string> = {
   "surya-grahan": "/panchanga/surya-grahan",
   "shanti-vidhi": "/shanti-vidhi",
   "vivah-sait": "/vivah-sait",
+  "adhik-maas": "/adhik-maas",
+  vastu: "/vastu",
+  documents: "/documents",
+  "learn-hub": "/learn",
 };
 
 const EXCLUDED_PATH_PREFIXES = [
@@ -44,7 +48,7 @@ const EXCLUDED_PATH_PREFIXES = [
 
 export function shouldShowRelatedLinks(pathname: string): boolean {
   const path = normalizeSitePath(pathname);
-  if (path === "/") return false;
+  if (isRelatedLinksExcludedPath(path)) return false;
   if (path === "/panchanga/details") return false;
   return !EXCLUDED_PATH_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 }

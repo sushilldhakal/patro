@@ -37,6 +37,7 @@ import { useLocale } from "@/lib/i18n";
 import { Reveal } from "@/components/ui/Reveal";
 import { ScrollHero } from "@/components/ui/ScrollHero";
 import { PageScrollView } from "@/components/ui/PageScrollView";
+import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 
 /** Daily panchanga — the app's drawing of `usePanchangaPage` (@vedic-patro/features). */
 /** Under the page (no sidebar), this much width fits the chart and the planet events side by side. */
@@ -251,6 +252,9 @@ export default function PanchangaScreen() {
             heading={page.copy.learnHeading}
             slugs={page.learnSlugs}
           />
+        </Reveal>
+        <Reveal>
+          <RelatedPageLinks />
         </Reveal>
       </View>
       ) : null}
