@@ -6,7 +6,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGestureProgress, useSpringPan } from "@vedic-patro/ui/gestures";
 import { SPRING_SHEET } from "@vedic-patro/ui/motion";
-import { useThemeColors } from "@/lib/theme-context";
+import { ThemeScope, useThemeColors } from "@/lib/theme-context";
 import { TABLET_DIALOG_WIDTH, useTabletUi } from "@/lib/tablet-ui";
 
 import { neutral, radius, space, withAlpha } from "@vedic-patro/design-tokens";
@@ -87,7 +87,7 @@ function NativePageSheet({ visible, onClose, onDismissed, children, sheetStyle }
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets
         >
-          {children}
+          <ThemeScope>{children}</ThemeScope>
         </ScrollView>
       </GestureHandlerRootView>
     </Modal>
@@ -249,7 +249,11 @@ function DrawnSheet({
   );
 
   /* A Modal is its own window on Android: gestures inside it need their own root. */
-  const rooted = <GestureHandlerRootView style={styles.fill}>{body}</GestureHandlerRootView>;
+  const rooted = (
+    <GestureHandlerRootView style={styles.fill}>
+      <ThemeScope style={styles.fill}>{body}</ThemeScope>
+    </GestureHandlerRootView>
+  );
 
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>

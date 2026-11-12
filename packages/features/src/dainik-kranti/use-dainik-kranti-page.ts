@@ -474,10 +474,17 @@ export function useDainikKrantiPage({
     : null;
 
   /* ── header copy ── */
+  // Ritu changes mid-month (the sayana Sun crosses a 60° boundary), so the header reads the days
+  // on screen, not the month's first day: today's ritu when today is shown (the same value home
+  // shows), else every ritu the shown days span ("शरद → हेमन्त").
   const ritu = useMemo(() => {
-    const dp = allDays.find((d) => d.panchanga?.ritu_ne)?.panchanga;
-    return dp ? getRituDisplay(dp as PanchangaDay, lang) : undefined;
-  }, [allDays, lang]);
+    const label = (d: (typeof days)[number]) =>
+      d.panchanga?.ritu_ne ? getRituDisplay(d.panchanga as PanchangaDay, lang) : undefined;
+    const today = days.find((d) => d.date_ad === nowKey);
+    if (today) return label(today);
+    const spanned = [...new Set(days.map(label).filter((r): r is string => Boolean(r)))];
+    return spanned.length ? spanned.join(" → ") : undefined;
+  }, [days, nowKey, lang]);
   const monthData = monthQ.data;
   const monthLabel = bilingualText(
     lang,

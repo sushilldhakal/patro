@@ -1,33 +1,12 @@
 import { Pressable, View } from "react-native";
-import * as Application from "expo-application";
-import * as Updates from "expo-updates";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import { APP_VERSION } from "@/lib/store-links";
-
-/**
- * Which build and which over-the-air update is running: version (build) ·
- * channel · update id and publish time, or the bundle the build shipped with.
- * So a tester can tell at a glance whether the latest push has arrived.
- */
-function runningBuildLine(): string {
-  const build = `${APP_VERSION} (${Application.nativeBuildVersion ?? "?"})`;
-  // Dev and simulator builds report an empty channel; show a dash rather than "· ·".
-  const channel = Updates.channel || "—";
-  const update =
-    Updates.isEmbeddedLaunch || !Updates.updateId
-      ? "embedded"
-      : [Updates.updateId.slice(0, 8), Updates.createdAt?.toISOString().slice(0, 16).replace("T", " ")]
-          .filter(Boolean)
-          .join(" · ");
-  return `${build} · ${channel} · ${update}`;
-}
 
 /**
  * The foot of the side menu: one row to the profile page, which holds the settings (language, calendar,
- * theme, offline data), and the running build for testers.
+ * theme, offline data). The running build line for testers sits at the foot of that page, not here.
  */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
   const { t } = useLocale();
@@ -45,9 +24,6 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
         </View>
         <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </Pressable>
-      <Text className="text-xs text-muted-foreground" selectable>
-        {runningBuildLine()}
-      </Text>
     </View>
   );
 }

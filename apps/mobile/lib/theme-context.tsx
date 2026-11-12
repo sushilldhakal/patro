@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useColorScheme as useSystemColorScheme, View } from "react-native";
+import { useColorScheme as useSystemColorScheme, View, type StyleProp, type ViewStyle } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import { colorScheme as nativeWindColorScheme } from "nativewind";
 import { darkTheme, lightTheme, type ThemeColors } from "@/lib/theme";
@@ -88,6 +88,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         {children}
       </View>
     </ThemeContext.Provider>
+  );
+}
+
+/**
+ * Re-applies the theme inside a `Modal`. A modal renders outside the provider's View (on web it is
+ * a portal on `document.body`), so the colour variables and the `dark` class set there never reach
+ * it, and `text-foreground` fell back to the light theme's dark text on a dark sheet.
+ */
+export function ThemeScope({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const { resolvedTheme } = useTheme();
+  return (
+    <View className={cn(resolvedTheme === "dark" && "dark")} style={[nativeWindThemeVars(resolvedTheme), style]}>
+      {children}
+    </View>
   );
 }
 

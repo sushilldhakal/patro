@@ -8640,7 +8640,7 @@ export const strings = {
   "sidebar_nav.categories.calendar": { ne: "पात्रो तथा काल गणना", en: "Calendar & time" },
   "sidebar_nav.categories.jyotish": { ne: "ज्योतिष तथा मुहूर्त", en: "Jyotish & muhurta" },
   "sidebar_nav.categories.daily": { ne: "दैनिक शुभाशुभ तथा शुभ मुहूर्त", en: "Daily auspicious times" },
-  "sidebar_nav.categories.daily_short": { ne: "दैनिक शुभाशुभ", en: "Daily" },
+  "sidebar_nav.categories.daily_short": { ne: "शुभाशुभ", en: "Daily" },
   "sidebar_nav.categories.calendar_short": { ne: "पात्रो", en: "Calendar" },
   "sidebar_nav.categories.jyotish_short": { ne: "ज्योतिष", en: "Jyotish" },
   "ui.search.festivals_title": { ne: "पर्व खोज्नुहोस्", en: "Search festivals" },

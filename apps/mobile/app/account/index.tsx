@@ -19,6 +19,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { afterProfileDeleted } from "@/lib/notifications/triggers";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
+import { runningBuildLine } from "@/lib/build-info";
 
 /**
  * The profile page, in categories like iOS Settings: who you are (or log in), your account (saved
@@ -168,6 +169,11 @@ export default function AccountScreen() {
             <ListRow icon="logout" title={t("account_page.sign_out")} tone="danger" onPress={() => void auth.logout()} />
           </ListGroup>
         ) : null}
+
+        {/* Version, for testers and support: where iOS Settings and most apps keep it, not in the menu. */}
+        <Text className="text-center text-xs text-muted-foreground" selectable>
+          {runningBuildLine()}
+        </Text>
       </View>
     </AppShell>
   );
