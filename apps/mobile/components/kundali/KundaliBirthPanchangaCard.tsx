@@ -19,7 +19,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import {
   formatTithiWithPaksha,
   formatAayanLabel,
-  getAayanVedic,
+  getAayan,
   getLagnaDisplay,
   getPanchangaDetail,
   getSunriseDisplay,
@@ -135,7 +135,7 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
   const vaaraNe = getVaaraNe(data, data.weekday);
   const vaaraEn = getVaaraEn(data, data.weekday);
 
-  const ayanaValue = formatAayanLabel(getAayanVedic(data), lang);
+  const ayanaValue = formatAayanLabel(getAayan(data), lang);
 
   const suryaRashi = getSuryaRashi(data);
   const suryaRashiValue = useMemo(() => {
