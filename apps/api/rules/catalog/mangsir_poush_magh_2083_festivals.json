@@ -56,8 +56,7 @@
   "magh": {
     "solar_day1": [
       { "id": "maghe-sankranti", "name_ne": "माघे संक्रान्ति" },
-      { "id": "maghi-parwa", "name_ne": "माघी पर्व" },
-      { "id": "uttarayan-arambha", "name_ne": "उत्तरायण आरम्भ" }
+      { "id": "maghi-parwa", "name_ne": "माघी पर्व" }
     ],
     "lunar": [
       { "tithi": 15, "paksha": "shukla", "festivals": [

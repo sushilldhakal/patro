@@ -64,7 +64,11 @@ from __future__ import annotations
 #    paired rashis from Mesha (a month late); the lunar month was cut at
 #    12:00 UTC and UTC dates instead of at sunrise; moonrise/moonset after the
 #    next sunrise were shown as this day's.
-ASTRONOMY_VERSION = 5
+# 6: ritu and ayana come from one source, engine.astronomy.tropical_year — the
+#    real-sky tropical Sun under every siddhanta. The sidereal (pauranik) ritu
+#    and ayana are gone from every payload, साइत Uttarayana gates are tropical,
+#    and उत्तरायण / दक्षिणायन आरम्भ fall on the solstices. Retires every cache.
+ASTRONOMY_VERSION = 6
 
 # Guards compose()'s decimal packing. Raise the multiplier below before this.
 _MAX_ASTRONOMY_VERSION = 99

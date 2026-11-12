@@ -39,10 +39,25 @@ def test_makar_sankranti_is_already_uttarayana() -> None:
     assert month["calendar"][0]["ayana_mark"] == "उ"
 
 
-def test_muhurta_rule_keeps_the_sidereal_ayana() -> None:
-    """Between the solstice and Makar Sankranti the two rules disagree, by design."""
-    from datetime import datetime, timezone
+def test_sait_rules_use_the_same_tropical_ayana() -> None:
+    """Between the solstice and Makar Sankranti it is already Uttarayana — for साइत too."""
+    from datetime import date, datetime, timezone
+
+    from engine.festivals.sait_rules import build_day_panchanga
 
     jd = default_engine.julian_day(datetime(2027, 1, 1, 1, tzinfo=timezone.utc))
     assert rashi_service.aayan(jd)["name"] == "Uttarayana"
-    assert rashi_service.aayan(jd, sidereal=True)["name"] == "Dakshinayana"
+    assert build_day_panchanga(date(2027, 1, 1), DEFAULT_LOCATION).aayan == "Uttarayana"
+
+
+def test_ayana_festivals_fall_on_the_solstices() -> None:
+    from engine.festivals.festival_rules import compute_festival_dates, load_festival_rules
+
+    rules = load_festival_rules()
+    north = compute_festival_dates("uttarayan-arambha", rules["uttarayan-arambha"], 2026)
+    south = compute_festival_dates("dakshinayan-arambha", rules["dakshinayan-arambha"], 2026)
+    # The festival is the first day whose sunrise is in the new ayana — the day the mark flips.
+    assert north[0].isoformat() == "2026-12-22"
+    assert south[0].isoformat() == "2026-06-22"
+    assert _row_on(2083, 9, north[0].isoformat())["ayana_mark"] == "उ"
+    assert _row_on(2083, 3, south[0].isoformat())["ayana_mark"] == "द"

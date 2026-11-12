@@ -32,7 +32,7 @@ import {
   formatSpanEndTime,
   formatTimeRangeShort,
   formatTimeShort,
-  getAayanVedic,
+  getAayan,
   getChandrabalamTable,
   getDinVisheshLabels,
   getLagnaDisplay,
@@ -45,7 +45,7 @@ import {
   getPanchangaDetail,
   getPlanetRows,
   getPlanetsAnchorLabel,
-  getRituVedic,
+  getRitu,
   getSolarCorrections,
   getSunriseDisplay,
   getSunsetDisplay,
@@ -234,18 +234,13 @@ export type DualValue = { struck?: string; value?: string };
 
 export function useRituSection(p: PanchangaDay) {
   const { lang } = useLocale();
-  const dual = (pauranik?: string, vedic?: string, differs?: boolean): DualValue | null => {
-    if (!pauranik && !vedic) return null;
-    const strike = differs ?? (pauranik != null && vedic != null && pauranik !== vedic);
-    return { struck: strike && pauranik ? pauranik : undefined, value: vedic ?? pauranik };
-  };
-  const rituV = getRituVedic(p);
-  const aayanV = getAayanVedic(p);
+  // One value each — the server's tropical ritu and ayana; nothing is struck through.
+  const one = (value?: string): DualValue | null => (value ? { value } : null);
+  const ritu = getRitu(p);
+  const aayan = getAayan(p);
   return {
-    // Ritu is the Sun's real position on its path, never the solar month.
-    ritu: dual(undefined, formatRituLabel(rituV, lang)),
-    // Ayana is tropical too: Uttarayana from the winter solstice, not Makar Sankranti.
-    ayana: dual(undefined, formatAayanLabel(aayanV, lang)),
+    ritu: one(formatRituLabel(ritu, lang)),
+    ayana: one(formatAayanLabel(aayan, lang)),
     dinamana: formatDurationFull(p, "dinamaan", lang) ?? "—",
     ratrimana: formatDurationFull(p, "ratrimana", lang) ?? "—",
     madhyahna: formatMadhyahnaDisplay(p, lang) ?? "—",

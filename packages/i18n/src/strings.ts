@@ -2131,6 +2131,7 @@ export const strings = {
   "holidays.type_bs_fixed": { ne: "वि.सं. तोकिएको", en: "Fixed BS date" },
   "holidays.type_ad_fixed": { ne: "ई.सं. तोकिएको", en: "Fixed AD date" },
   "holidays.type_adhik_arambha": { ne: "अधिक मास आरम्भ", en: "Adhik Maas start" },
+  "holidays.type_ayana": { ne: "अयनान्त (सायन)", en: "Solstice (tropical)" },
   "holidays.audience_kirat": { ne: "किरात धर्मावलम्बी", en: "Kirat faith only" },
   "holidays.audience_disability": { ne: "अपाङ्गता भएका कर्मचारी", en: "Employees with a disability only" },
   "holidays.audience_women": { ne: "महिला कर्मचारी", en: "Women employees only" },
@@ -3062,8 +3063,8 @@ export const strings = {
     en: "Muhūrta Chintāmaṇi — eclipse 1.32, Dur-muhūrta 1.37–40 (Śubhāśubha Prakaraṇa)",
   },
   "sait.x.bratabandha_season": {
-    ne: "काल — सूर्य उत्तरायण राशिमा हुनुपर्छ (मकरदेखि मिथुन: माघ–असार); चातुर्मास र अधिकमास वर्जित।",
-    en: "Season — Sun in an Uttarāyaṇa rāśi (Makara→Mithuna: Māgha–Āṣāḍha); Chaturmāsa & Adhik-māsa barred.",
+    ne: "काल — सूर्य उत्तरायणमा हुनुपर्छ (सायन: पुस ~६ को शीत अयनान्तदेखि असार ~६ को ग्रीष्म अयनान्तसम्म); चातुर्मास र अधिकमास वर्जित।",
+    en: "Season — Sun in Uttarāyaṇa (tropical: winter solstice ~Poush 6 to summer solstice ~Ashadh 6); Chaturmāsa & Adhik-māsa barred.",
   },
   "sait.x.bratabandha_season_gloss": {
     ne: "माघ, फाल्गुन, वैशाख, ज्येष्ठ र आषाढमा शुभ; सूर्य उत्तरतिर (उत्तरायण) हुँदा। अधिकमास र चातुर्मास वर्जित।",

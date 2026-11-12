@@ -181,7 +181,9 @@ logger = logging.getLogger(__name__)
 #     three seasons on (Sydney in July is Shishira), not a civil-month table.
 # v60: ayana (and the उ/द mark) is likewise always the real-sky tropical one,
 #     also under the Surya Siddhanta.
-PANCHANGA_PAYLOAD_VERSION = 60
+# v61: ``ritu_pauranik`` / ``ritu_vedic`` / ``aayan_pauranik`` / ``aayan_vedic``
+#     removed — ``ritu`` and ``aayan`` are the only (tropical) values.
+PANCHANGA_PAYLOAD_VERSION = 61
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

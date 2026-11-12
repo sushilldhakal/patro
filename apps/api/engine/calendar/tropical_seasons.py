@@ -1,8 +1,7 @@
-"""Tropical (sāyana) six-season cycle — ऋतु as six 60° arcs of the Sun's path.
+"""The seasons page: the current ऋतु and the next five season starts.
 
-Slot 0 (Vasanta) opens at 330°, so the solstices are boundaries — Varsha starts
-at 90° (summer solstice), Shishira at 270° (winter solstice) — and the equinoxes
-sit exactly mid-Vasanta (0°) and mid-Sharad (180°). Same arcs as ``RashiService.ritu``.
+Longitudes, arcs and crossings all come from :mod:`engine.astronomy.tropical_year`,
+the one source of truth for ritu and ayana — this module only lays them out.
 """
 
 from __future__ import annotations
@@ -10,57 +9,16 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from engine.astronomy import tropical_year as ty
 from engine.calendar.bikram_sambat import format_bs_date, gregorian_to_bs
 
-DAY_MS = 86_400_000
-SUN_DEG_PER_DAY = 360 / 365.2422
-# Tropical longitude where Vasanta (slot 0) begins.
-VASANTA_START_DEG = 330
-
-
-def _signed_angular_diff(deg: float) -> float:
-    return ((deg % 360) + 540) % 360 - 180
-
-
-def _julian_day(date: datetime) -> float:
-    return date.timestamp() * 1000 / DAY_MS + 2440587.5
+#: Kept for importers; the value lives in tropical_year.
+VASANTA_START_DEG = ty.VASANTA_START_DEG
 
 
 def solar_apparent_longitude(date: datetime) -> float:
-    """Apparent geocentric tropical Sun longitude [0, 360).
-
-    Delegates to the ephemeris. This used to be a hand-rolled Meeus chapter 25
-    low-precision series — the engine's only second implementation of a quantity
-    the astronomy layer already owned. Removed because it:
-
-    * disagreed with the ephemeris by up to 0.0057 deg, which is **8.4 minutes**
-      of season-boundary timing (the Sun moves 0.0411 deg/hour) — visible, since
-      boundaries are published to the minute;
-    * was CE-only by construction (``datetime.timestamp()`` cannot represent
-      BCE), making tropical seasons the one astronomy path in this engine that
-      was not BCE-safe;
-    * was invisible to ``EnvironmentProvenance``, so a cached season boundary
-      could not say what produced it.
-
-    Swiss Ephemeris is this engine's astronomical authority, so there is no
-    reason to carry a lower-precision approximation of it.
-    """
-    # Always the real sky, even for a ``?siddhanta=surya_siddhanta`` request: the
-    # seasons are where the Sun really is, not the Surya Siddhanta's sayana model.
-    from engine.astronomy.siddhanta import DRIK, siddhanta
-
-    return siddhanta(DRIK).engine.sun_longitude(_julian_day(date), sidereal=False)
-
-
-def _refine_crossing(target_deg: float, guess: datetime) -> datetime:
-    t_ms = guess.timestamp() * 1000
-    for _ in range(12):
-        err = _signed_angular_diff(
-            solar_apparent_longitude(datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc))
-            - target_deg
-        )
-        t_ms -= (err / SUN_DEG_PER_DAY) * DAY_MS
-    return datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc)
+    """Apparent tropical Sun longitude [0, 360) at *date* — the real sky."""
+    return ty.sun_longitude(ty.julian_day(date))
 
 
 def tropical_season_cycle(now: datetime | None = None, tz: Any = None) -> list[dict[str, Any]]:
@@ -68,32 +26,27 @@ def tropical_season_cycle(now: datetime | None = None, tz: Any = None) -> list[d
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
-    lambda_now = solar_apparent_longitude(now)
-    current_slot = int(((lambda_now - VASANTA_START_DEG) % 360) // 60)
+    now_jd = ty.julian_day(now)
+    lambda_now = ty.sun_longitude(now_jd)
+    current_slot = ty.ritu_slot(lambda_now)
     out: list[dict[str, Any]] = []
-    now_ms = now.timestamp() * 1000
 
     for i in range(6):
         slot = (current_slot + i) % 6
-        angle = (VASANTA_START_DEG + slot * 60) % 360
+        angle = ty.slot_start_deg(slot)
         if i == 0:
-            offset_deg = _signed_angular_diff(angle - lambda_now)
+            offset_deg = ty.signed_diff(angle - lambda_now)
         else:
-            offset_deg = ((angle - lambda_now) % 360 + 360) % 360
-        guess = datetime.fromtimestamp(
-            (now_ms + (offset_deg / SUN_DEG_PER_DAY) * DAY_MS) / 1000,
-            tz=timezone.utc,
-        )
-        start = _refine_crossing(angle, guess)
+            offset_deg = (angle - lambda_now) % 360
+        start = ty.jd_to_utc(ty.crossing_jd(angle, now_jd + offset_deg / ty.SUN_DEG_PER_DAY))
         local_day = start.astimezone(tz).date() if tz is not None else start.date()
-        start_ad = local_day.isoformat()
         bs = gregorian_to_bs(local_day)
         out.append(
             {
                 "slot": slot,
                 "angle": angle,
                 "start_instant_utc": start.isoformat(),
-                "start_ad": start_ad,
+                "start_ad": local_day.isoformat(),
                 "start_bs": format_bs_date(bs[0], bs[1], bs[2]),
                 "is_current": i == 0,
             }
@@ -111,7 +64,7 @@ def build_tropical_seasons_response(
     tz = resolve_observer_timezone(timezone_name)
     now = datetime.now(tz)
     cycle = tropical_season_cycle(now, tz)
-    south = lat is not None and lat < 0
+    south = ty.is_southern(lat)
     return {
         "timezone": timezone_name,
         "latitude": lat,

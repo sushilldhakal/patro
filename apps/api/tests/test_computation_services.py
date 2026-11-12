@@ -110,9 +110,8 @@ class TestServicesMatchTheFunctionsTheyReplace:
         jd = row["jd"]
         assert rashi_service.surya(jd).to_payload() == row["surya_rashi"]
         assert rashi_service.chandra(jd).to_payload() == row["chandra_rashi"]
-        # The golden rows were recorded on the sidereal (Makara → Mithuna) rule.
-        assert rashi_service.aayan(jd, sidereal=True) == row["aayan"]
-        assert rashi_service.ritu(jd, sidereal=True) == row["ritu"]
+        # Ritu and ayana are tropical now (engine.astronomy.tropical_year); the
+        # golden rows recorded the retired sidereal rule, so they are not compared.
 
     @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
     def test_lagna(self, row: dict):
@@ -326,15 +325,15 @@ class TestRashiService:
 
     def test_ritu_follows_the_sun_two_signs_at_a_time(self):
         for jd in SAMPLE_JDS:
-            ritu = rashi_service.ritu(jd, sidereal=True)
-            # Meena + Mesha is Vasanta (Chaitra–Baisakh), … Makara + Kumbha Shishira.
+            ritu = rashi_service.ritu(jd)
+            # Tropical Meena + Mesha is Vasanta, … Makara + Kumbha Shishira.
             assert ritu["number"] == RITU_DATA[ritu["sun_rashi"] % 12 // 2]["number"]
 
     def test_southern_hemisphere_gets_the_inverted_season(self):
         """Sydney in July is winter, Kathmandu in July is monsoon."""
         july = default_engine.julian_day(datetime(2026, 7, 15, 6, tzinfo=timezone.utc))
-        north = rashi_service.ritu(july, lat=27.7, timezone_name="Asia/Kathmandu")
-        south = rashi_service.ritu(july, lat=-33.9, timezone_name="Australia/Sydney")
+        north = rashi_service.ritu(july, lat=27.7)
+        south = rashi_service.ritu(july, lat=-33.9)
         assert north["basis"] == "tropical"
         assert north["name"] == "Varsha"
         assert south["basis"] == "tropical_southern"
@@ -348,6 +347,12 @@ class TestRashiService:
             drik = rashi_service.ritu(jd, lat=-33.9)
             with use_siddhanta(SURYA_SIDDHANTA):
                 assert rashi_service.ritu(jd, lat=-33.9) == drik
+
+    def test_ritu_and_ayana_have_no_sidereal_variant(self):
+        with pytest.raises(TypeError):
+            rashi_service.ritu(SAMPLE_JDS[0], sidereal=True)
+        with pytest.raises(TypeError):
+            rashi_service.aayan(SAMPLE_JDS[0], sidereal=True)
 
     def test_ayana_is_the_real_sky_under_the_surya_siddhanta(self):
         from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta

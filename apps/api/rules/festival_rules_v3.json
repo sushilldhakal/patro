@@ -840,7 +840,7 @@
       "bs_month": 4,
       "solar_day": 1,
       "duration_days": 1,
-      "notes": "Karka Sankranti — Shrawan 1; Dakshinayan begins",
+      "notes": "Karka Sankranti — Shrawan 1",
       "importance": "national",
       "category": "hindu"
     },
@@ -1640,11 +1640,10 @@
     "dakshinayan-arambha": {
       "name_en": "Dakshinayan Arambha",
       "name_ne": "दक्षिणायन आरम्भ",
-      "type": "solar",
-      "bs_month": 4,
-      "solar_day": 1,
+      "type": "ayana",
+      "ayana": "dakshina",
       "duration_days": 1,
-      "notes": "Sun's southward course begins — Shrawan 1",
+      "notes": "Sun's southward course begins — the June solstice (tropical 90°, ~Ashadh 6)",
       "importance": "national",
       "category": "hindu"
     },
@@ -3545,11 +3544,10 @@
     "uttarayan-arambha": {
       "name_en": "Uttarayan Arambha",
       "name_ne": "उत्तरायण आरम्भ",
-      "type": "solar",
-      "bs_month": 10,
-      "solar_day": 1,
+      "type": "ayana",
+      "ayana": "uttara",
       "duration_days": 1,
-      "notes": "With Maghe Sankranti — Magh 1",
+      "notes": "Sun's northward course begins — the December solstice (tropical 270°, ~Poush 6)",
       "importance": "national",
       "category": "hindu"
     },

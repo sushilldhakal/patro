@@ -221,20 +221,9 @@ def _assemble_udaya_panchanga(
             tithi_info=tithi_info,
         )
     ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
-    ritu_pauranik = rashi_service.ritu(
-        sunrise_jd,
-        sidereal=True,
-        lat=location.lat,
-        timezone_name=location.timezone,
-    )
-    ritu_vedic = rashi_service.ritu(
-        sunrise_jd,
-        sidereal=False,
-        lat=location.lat,
-        timezone_name=location.timezone,
-    )
-    aayan_pauranik = rashi_service.aayan(sunrise_jd, sidereal=True)
-    aayan_vedic = rashi_service.aayan(sunrise_jd, sidereal=False)
+    # Ritu and ayana: the tropical year, from its one source (engine.astronomy.tropical_year).
+    ritu = rashi_service.ritu(sunrise_jd, lat=location.lat)
+    aayan = rashi_service.aayan(sunrise_jd)
     lagna_spans = build_lagna_spans(
         sunrise_utc,
         next_sunrise_utc,
@@ -331,9 +320,7 @@ def _assemble_udaya_panchanga(
             "degrees": round(lahiri_ayanamsa, 6),
         },
         # The ayana shown everywhere is the real one: the Sun turns at the solstices.
-        "aayan": aayan_vedic,
-        "aayan_pauranik": aayan_pauranik,
-        "aayan_vedic": aayan_vedic,
+        "aayan": aayan,
         "vaara": {
             "number": vaara_num,
             "name_sanskrit": vaara_sanskrit,
@@ -355,9 +342,7 @@ def _assemble_udaya_panchanga(
         "surya_rashi": rashi_service.surya(sunrise_jd).to_payload(),
         "surya_nakshatra": surya_nakshatra,
         # The real season, from where the Sun is on its path — not the month.
-        "ritu": ritu_vedic,
-        "ritu_pauranik": ritu_pauranik,
-        "ritu_vedic": ritu_vedic,
+        "ritu": ritu,
         "lunar_month": lunar,
         "lunar_calendar": lunar_calendar,
         "planets": spashta_table(sunrise_jd),

@@ -102,6 +102,24 @@ def compute_solar_festival(
     return local_day + timedelta(days=solar_day - 1)
 
 
+def compute_ayana_festival(
+    rule: dict[str, Any],
+    gregorian_year: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> Optional[date]:
+    """First day of the new ayana — the tropical solstice, judged at sunrise.
+
+    From engine.astronomy.tropical_year, the one source of ayana, so the festival
+    day is the day the panchanga's ayana flips.
+    """
+    from engine.astronomy.tropical_year import ayana_start_date
+
+    try:
+        return ayana_start_date(gregorian_year, str(rule.get("ayana")), location)
+    except ValueError:
+        return None
+
+
 def compute_ad_fixed_festival(
     rule: dict[str, Any],
     gregorian_year: int,
@@ -156,6 +174,8 @@ def compute_festival_dates(
         start = compute_ad_fixed_festival(rule, gregorian_year)
     elif rule_type == "adhik_arambha":
         start = compute_adhik_arambha(rule, gregorian_year)
+    elif rule_type == "ayana":
+        start = compute_ayana_festival(rule, gregorian_year, location)
     else:
         return None
 

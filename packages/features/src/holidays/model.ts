@@ -49,7 +49,7 @@ export const HOLIDAY_COLUMNS: Record<HolidaysTab, readonly HolidayColumn[]> = {
   festivals: [NAME, BS_DATE, AD_DATE, TYPE, GOVT],
 };
 
-const KNOWN_TYPES = new Set(["lunar", "solar", "bs_fixed", "ad_fixed", "adhik_arambha"]);
+const KNOWN_TYPES = new Set(["lunar", "solar", "bs_fixed", "ad_fixed", "adhik_arambha", "ayana"]);
 
 /** The API's rule type ("bs_fixed") as words in the reader's language; unknown types show as sent. */
 function typeLabel(type: string, lang: Lang): string {

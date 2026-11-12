@@ -104,7 +104,7 @@ function getDetailValue<T>(p: PanchangaDay, key: string): T | undefined {
 
 export function getRituDisplayNe(p?: PanchangaDay | null): string | undefined {
   if (!p) return undefined;
-  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_vedic");
+  const ritu = getDetailValue<RituBlock>(p, "ritu");
   if (ritu?.name_ne) return ritu.name_ne;
   if (typeof p.ritu === "object" && p.ritu?.name_ne) return p.ritu.name_ne;
   return p.ritu_ne;
@@ -114,8 +114,8 @@ export function getRituDisplayNe(p?: PanchangaDay | null): string | undefined {
 export function getRituDisplay(p?: PanchangaDay | null, lang?: string): string | undefined {
   if (!p) return undefined;
   const rawRitu = getDetailValue<RituBlock | string>(p, "ritu");
-  // Always the tropical (sayana) ritu — never the sidereal solar-month one (`ritu_pauranik`).
-  const ritu = typeof rawRitu === "object" ? rawRitu : getDetailValue<RituBlock>(p, "ritu_vedic");
+  // The server's one tropical (sayana) ritu.
+  const ritu = typeof rawRitu === "object" ? rawRitu : undefined;
   const top = typeof p.ritu === "object" ? p.ritu : undefined;
   const ne = ritu?.name_ne ?? top?.name_ne ?? p.ritu_ne;
   const rituName =
@@ -133,7 +133,7 @@ export function getRituDisplay(p?: PanchangaDay | null, lang?: string): string |
 
 export function getRituSeason(p?: PanchangaDay | null, lang?: string): string | undefined {
   if (!p) return undefined;
-  const ritu = getDetailValue<RituBlock>(p, "ritu") ?? getDetailValue<RituBlock>(p, "ritu_vedic");
+  const ritu = getDetailValue<RituBlock>(p, "ritu");
   const season =
     ritu?.season ??
     (typeof p.ritu === "object" ? p.ritu?.season : undefined);
@@ -195,14 +195,14 @@ export function formatAdShort(
   }
 }
 
-export function getRituVedic(p?: PanchangaDay | null): RituBlock | undefined {
+export function getRitu(p?: PanchangaDay | null): RituBlock | undefined {
   if (!p) return undefined;
-  return getDetailValue<RituBlock>(p, "ritu_vedic") ?? getDetailValue<RituBlock>(p, "ritu");
+  return getDetailValue<RituBlock>(p, "ritu");
 }
 
-export function getAayanVedic(p?: PanchangaDay | null): AayanBlock | undefined {
+export function getAayan(p?: PanchangaDay | null): AayanBlock | undefined {
   if (!p) return undefined;
-  return getDetailValue<AayanBlock>(p, "aayan_vedic") ?? getDetailValue<AayanBlock>(p, "aayan");
+  return getDetailValue<AayanBlock>(p, "aayan");
 }
 
 /** Home-aside ayana: mark (उ/द) plus a short locale name. */
@@ -211,8 +211,8 @@ export function getAyanaDisplay(
   day?: CalendarDay | null,
   lang?: string,
 ): { mark: AyanaMark; label: string } | undefined {
-  // Always the tropical ayana — never the sidereal Makar → Karka one (`aayan_pauranik`).
-  const aayan = getAayanVedic(p);
+  // The server's one tropical ayana.
+  const aayan = getAayan(p);
   const mark =
     day?.ayana_mark ??
     ayanaMarkFromName(aayan?.name) ??

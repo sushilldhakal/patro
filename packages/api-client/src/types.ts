@@ -2293,8 +2293,6 @@ export interface PanchangaDay {
   udaya_lagna?: UdayaLagnaRow[];
   ritu?: { name?: string; name_ne?: string; season?: string } | string;
   ritu_ne?: string;
-  ritu_pauranik?: { name?: string; name_ne?: string; season?: string };
-  ritu_vedic?: { name?: string; name_ne?: string; season?: string };
   lagna?: { name?: string; name_ne?: string; degree_in_rashi?: number; longitude?: number };
   lagna_spans?: LagnaSpan[];
   detail?: {
@@ -2314,7 +2312,6 @@ export interface PanchangaDay {
     };
     muhurta?: PanchangaDay["muhurta"];
     ritu?: { name?: string; name_ne?: string; season?: string };
-    ritu_pauranik?: { name?: string; name_ne?: string; season?: string };
     choghadiya?: Array<{ name_ne: string; start_g: number; end_g: number; bad?: boolean; phase?: string }>;
     hora?: ApiHoraSlot[];
     hora_day?: ApiHoraSlot[];
@@ -2356,8 +2353,6 @@ export interface PanchangaDay {
   };
   madhyahna?: { local_time_short?: string; local_time?: string };
   aayan?: { name?: string; name_ne?: string };
-  aayan_pauranik?: { name?: string; name_ne?: string };
-  aayan_vedic?: { name?: string; name_ne?: string };
   lahiri_ayanamsa?: { degrees?: number };
   festivals?: Festival[];
   /** Rite timings for the day's ritual festivals, computed at the request's location. */

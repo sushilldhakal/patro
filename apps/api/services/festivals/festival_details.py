@@ -73,6 +73,12 @@ def festival_when(rule: dict[str, Any]) -> dict[str, str] | None:
     if kind == "ad_fixed" and rule.get("ad_month") and rule.get("ad_day"):
         month, day = int(rule["ad_month"]), int(rule["ad_day"])
         return {"ne": f"{AD_MONTHS_NE[month - 1]} {_ne_digits(day)}", "en": f"{AD_MONTHS_EN[month - 1]} {day}"}
+    if kind == "ayana":
+        north = rule.get("ayana") == "uttara"
+        return {
+            "ne": "शीत अयनान्त (सायन सूर्य २७०°)" if north else "ग्रीष्म अयनान्त (सायन सूर्य ९०°)",
+            "en": "December solstice (tropical Sun 270°)" if north else "June solstice (tropical Sun 90°)",
+        }
     if kind == "announced":
         # No rule of its own: the dates come from each year's government notice.
         return {"ne": "नेपाल सरकारले तोकेका दिन", "en": "On the days the Government of Nepal announces"}

@@ -1,7 +1,7 @@
 """RashiService — zodiac signs, ritu and ayana, keyed by Julian Day.
 
-The twelve rashis are a pure function of an ecliptic longitude, and ritu and
-ayana are functions of the Sun's rashi. All three used to live in
+The twelve rashis are a pure function of an ecliptic longitude. Ritu and ayana
+are delegated to :mod:`engine.astronomy.tropical_year` (tropical, real sky). All three used to live in
 :mod:`engine.astronomy.positions` behind ``datetime``-shaped helpers
 (``get_surya_rashi``, ``get_chandra_rashi``, ``get_ritu``, ``get_aayan``).
 
@@ -29,23 +29,9 @@ RASHI_NAMES_NE = [
     "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन",
 ]
 
-RITU_DATA = [
-    {"number": 1, "name": "Vasanta", "name_sanskrit": "Vasanta", "name_ne": "वसन्त", "season": "Spring"},
-    {"number": 2, "name": "Grishma", "name_sanskrit": "Grishma", "name_ne": "ग्रीष्म", "season": "Summer"},
-    {"number": 3, "name": "Varsha", "name_sanskrit": "Varsha", "name_ne": "वर्षा", "season": "Monsoon"},
-    {"number": 4, "name": "Sharad", "name_sanskrit": "Sharad", "name_ne": "शरद", "season": "Autumn"},
-    {"number": 5, "name": "Hemanta", "name_sanskrit": "Hemanta", "name_ne": "हेमन्त", "season": "Pre-winter"},
-    {"number": 6, "name": "Shishira", "name_sanskrit": "Shishira", "name_ne": "शिशिर", "season": "Winter"},
-]
-
-# South of the equator the same arc of the Sun's path is the opposite season:
-# three ritus (180°) on. The seasons page shifts its cards the same way
-# (``displayRituSlot`` in packages/domain/src/calendar/ritu-display.ts).
-SOUTHERN_RITU_SHIFT = 3
-
-# Makara → Mithuna (rashi index 9, 10, 11, 0, 1, 2) is the sun's northward half. Read on the
-# tropical zodiac that is exactly winter solstice → summer solstice.
-UTTARAYANA_RASHI_INDICES = frozenset({9, 10, 11, 0, 1, 2})
+# ऋतु and अयन live in engine.astronomy.tropical_year, the one source of truth;
+# re-exported here for existing imports.
+from engine.astronomy.tropical_year import RITU_DATA, ayana_at, ritu_at  # noqa: E402
 
 
 def rashi_index(longitude: float) -> int:
@@ -126,83 +112,18 @@ class RashiService:
         )
 
     def sun_index(self, jd: float, *, sidereal: bool = True) -> int:
-        """0–11 rashi index of the Sun — the input ritu and ayana are cut from."""
+        """0–11 rashi index of the Sun (sidereal by default). Not for ritu/ayana."""
         return rashi_index(self._engine.sun_longitude(jd, sidereal=sidereal))
 
-    # ── ritu ────────────────────────────────────────────────────────────────
+    # ── ritu and ayana: always the tropical year (engine.astronomy.tropical_year) ──
 
-    def _ritu_from_sun(self, jd: float, *, sidereal: bool) -> dict[str, Any]:
-        # Six 60° arcs of the Sun's path, paired Meena + Mesha (Vasanta) … Makara +
-        # Kumbha (Shishira). Read tropically that is the real sky: Shishira opens
-        # at the winter solstice with Uttarayana, Varsha at the summer solstice
-        # with Dakshinayana, and each equinox falls mid-Vasanta / mid-Sharad.
-        # Read sidereally it is the solar-month (pauranik) ritu, Chaitra–Baisakh
-        # Vasanta, which lags the real seasons by the ayanamsa.
-        index = self.sun_index(jd, sidereal=True) if sidereal else self.tropical_sun_index(jd)
-        ritu = RITU_DATA[((index + 1) % 12) // 2]
-        return {
-            **{k: ritu[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
-            "sun_rashi": index + 1,
-            "basis": "sidereal" if sidereal else "tropical",
-        }
+    def ritu(self, jd: float, *, lat: float | None = None) -> dict[str, Any]:
+        """Season at the observer — tropical, flipped south of the equator."""
+        return ritu_at(jd, lat)
 
-    def tropical_sun_index(self, jd: float) -> int:
-        """0–11 tropical sign of the Sun in the real sky (Swiss Ephemeris), whatever
-        siddhanta the request computes in. The seasons are the Sun's real place on
-        its path; the Surya Siddhanta's sayana longitude (its nirayana longitude plus
-        its trepidating ayanamsha) does not follow them, so it never decides a ritu."""
-        from engine.astronomy.siddhanta import DRIK, siddhanta
-
-        return rashi_index(siddhanta(DRIK).engine.sun_longitude(jd, sidereal=False))
-
-    def ritu(
-        self,
-        jd: float,
-        *,
-        sidereal: bool = False,
-        lat: float | None = None,
-        timezone_name: str = "Asia/Kathmandu",
-    ) -> dict[str, Any]:
-        """Season at the observer — the tropical (sayana) ritu, flipped south of the equator.
-
-        ``sidereal=True`` gives the pauranik solar-month ritu instead (kept for the
-        classical rules defined by it; never shown as the day's season).
-        ``timezone_name`` is accepted for callers' symmetry; the season depends only
-        on the instant and the hemisphere.
-        """
-        ritu = self._ritu_from_sun(jd, sidereal=sidereal)
-        if sidereal or lat is None or lat >= 0:
-            return ritu
-        flipped = RITU_DATA[(ritu["number"] - 1 + SOUTHERN_RITU_SHIFT) % 6]
-        return {
-            **ritu,
-            **{k: flipped[k] for k in ("number", "name", "name_sanskrit", "name_ne", "season")},
-            "basis": "tropical_southern",
-        }
-
-    # ── ayana ───────────────────────────────────────────────────────────────
-
-    def aayan(self, jd: float, *, sidereal: bool = False) -> dict[str, Any]:
-        """Uttarayana / Dakshinayana from the Sun's rashi.
-
-        Tropical by default: the Sun really turns north at the winter solstice
-        (tropical 270°, ~Poush 6) and south at the summer solstice (90°, ~Ashadh 6).
-        The sidereal rashi (Makar Sankranti → Karka Sankranti) lags those turns by
-        the ayanamsa — about 24 days now, and ~50″ (~20 min of the Sun's motion)
-        more every year — so it is kept only for the classical muhurta rules that
-        are defined by it (``sidereal=True``).
-        """
-        # Tropical is the real sky (Swiss Ephemeris) under every siddhanta, like ritu.
-        index = self.sun_index(jd, sidereal=True) if sidereal else self.tropical_sun_index(jd)
-        uttara = index in UTTARAYANA_RASHI_INDICES
-        return {
-            "name": "Uttarayana" if uttara else "Dakshinayana",
-            "name_ne": "उत्तरायण" if uttara else "दक्षिणायण",
-            "name_sanskrit": "Uttarayana" if uttara else "Dakshinayana",
-            "sun_rashi": index + 1,
-            "basis": "sidereal" if sidereal else "tropical",
-            "kranti_mark": "उ" if uttara else "द",
-        }
+    def aayan(self, jd: float) -> dict[str, Any]:
+        """Uttarayana (Dec solstice → Jun solstice) / Dakshinayana — tropical."""
+        return ayana_at(jd)
 
 
 def ayana_kranti_mark(aayan: dict) -> str:
