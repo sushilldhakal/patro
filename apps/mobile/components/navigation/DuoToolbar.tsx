@@ -13,7 +13,7 @@ import { useTopBarElement } from "@/components/navigation/TopBarSlot";
 import { ViewMenuButton } from "@/components/AppHeader";
 
 /** SF Symbol per tab, in `ALL_TABS` order. */
-const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
+const TAB_SF = ["house", "calendar", "sparkles", "moon", "heart.circle", "safari", "book"] as const;
 
 /** The system tint the tab bar on home uses for the selected tab. */
 const TAB_ACTIVE = "#007AFF"; // design-ok: the system tint of the native tab bar this imitates

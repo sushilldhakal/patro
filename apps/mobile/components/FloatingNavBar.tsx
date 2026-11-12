@@ -22,17 +22,16 @@ import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { requestLocationPicker, requestSearch } from "@/lib/menu-request";
-import { useAuth } from "@/lib/auth/AuthContext";
 import { pageLink } from "@/components/navigation/DuoToolbar";
 import { resetNavCompact, useNavCompact } from "@/lib/nav-compact";
 import { useBarAccessoryHeight } from "@/lib/bar-accessory";
 import { useTabletUi } from "@/lib/tablet-ui";
 
-/** The tabs the bar keeps on a narrow phone (home, panchanga, daily transit; the profile follows); the side menu
- *  reaches the rest. */
-const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti"]);
+/** The tabs the bar keeps on a narrow phone (home, panchanga, daily transit, sait); the side menu reaches the
+ *  rest, and its foot holds log-in / settings (there is no profile tab). */
+const BAR_TABS: ReadonlySet<string> = new Set(["/", "/panchanga", "/dainikkranti", "/sait"]);
 /** With room for six (Plus / Pro Max phones, tablets): kundali and vastu join them. */
-const BAR_TABS_WIDE: ReadonlySet<string> = new Set(["/", "/panchanga", "/kundali", "/dainikkranti", "/vastu"]);
+const BAR_TABS_WIDE: ReadonlySet<string> = new Set(["/", "/panchanga", "/kundali", "/dainikkranti", "/sait", "/vastu"]);
 /** Window width (pt) from which the bar shows six tabs: the Plus and Pro Max iPhones are 428–440. */
 const WIDE_BAR_MIN_WIDTH = 420;
 
@@ -97,10 +96,8 @@ function FloatingNavBarView() {
   const { width: windowWidth } = useWindowDimensions();
   const barTabs = windowWidth >= WIDE_BAR_MIN_WIDTH ? BAR_TABS_WIDE : BAR_TABS;
   const tabs = FLOATING_NAV.filter((item) => barTabs.has(item.href));
-  const tabCount = tabs.length + 1; // + profile
-  const activeIndex = pathname.startsWith("/account")
-    ? tabs.length
-    : tabs.findIndex((item) => isNavActive(pathname, item.href));
+  const tabCount = tabs.length;
+  const activeIndex = tabs.findIndex((item) => isNavActive(pathname, item.href));
   const [rowWidth, setRowWidth] = useState(0);
   const slot = rowWidth / tabCount;
   const slide = useRef(new RNAnimated.Value(0)).current;
@@ -183,7 +180,6 @@ function FloatingNavBarView() {
             </NavItem>
           );
         })}
-        <ProfileNavItem iconSize={iconSize} fold={fold} />
         </View>
       </RNAnimated.View>
       </View>
@@ -246,28 +242,6 @@ function FloatingActions() {
       <ActionButton icon="location-outline" label={t("ui.search.location")} onPress={requestLocationPicker} />
       {IS_IPHONE_DUO ? <ActionButton icon="ellipsis-horizontal" label={t("menu_open")} onPress={more} /> : null}
     </View>
-  );
-}
-
-/** The fourth item: the profile page, which holds the account (or sign-in) and the settings. */
-function ProfileNavItem({ iconSize, fold }: { iconSize: number; fold: RNAnimated.Value }) {
-  const { t } = useLocale();
-  const colors = useThemeColors();
-  const router = useRouter();
-  const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
-  const active = pathname.startsWith("/account");
-  return (
-    <NavItem active={active} onPress={() => router.push("/account" as never)}>
-      <Ionicons
-        name={isAuthenticated ? "person-circle" : "person-circle-outline"}
-        size={iconSize + 2}
-        color={active ? colors.foreground : colors.mutedForeground}
-      />
-      <NavLabel fold={fold} active={active}>
-        {isAuthenticated ? t("ui.nav.profile") : t("ui.nav.log_in")}
-      </NavLabel>
-    </NavItem>
   );
 }
 

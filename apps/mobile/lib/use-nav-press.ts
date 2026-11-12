@@ -6,9 +6,14 @@ import { scrollPageToTop } from "@/lib/page-scroll";
 /** Tabs that host their own stack: a sub-page sits on top of the tab's root page. */
 const STACK_TABS = new Set(["/panchanga", "/kundali", "/learn", "/documents"]);
 
-/** A floating-nav tab or a page inside one; everything else is pushed in the root stack. */
+/** A floating-nav tab or a page inside one; everything else is pushed in the root stack. Only the tabs
+ *  with a stack of their own have pages inside them: `/sait/vivah` is a root-stack page over the tabs. */
 function isTabPath(path: string): boolean {
-  return FLOATING_NAV.some((item) => (item.href === "/" ? path === "/" : path === item.href || path.startsWith(`${item.href}/`)));
+  return FLOATING_NAV.some((item) =>
+    item.href === "/"
+      ? path === "/"
+      : path === item.href || (STACK_TABS.has(item.href) && path.startsWith(`${item.href}/`)),
+  );
 }
 
 /**

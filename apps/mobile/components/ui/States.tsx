@@ -45,9 +45,12 @@ export function LoadingState({ label }: { label?: string | null }) {
 export function ErrorState({
   message,
   onRetry,
+  action,
 }: {
   message?: string;
   onRetry?: () => void;
+  /** A second button for the offline state, e.g. "download for offline use". */
+  action?: { label: string; onPress: () => void };
 }) {
   const { t } = useLocale();
   const colors = useThemeColors();
@@ -77,6 +80,11 @@ export function ErrorState({
         {onRetry ? (
           <Pressable onPress={onRetry} className="mt-2 rounded-lg bg-primary px-4 py-2">
             <Text className="text-body font-semibold text-primary-foreground">{t("ui.common.retry")}</Text>
+          </Pressable>
+        ) : null}
+        {action ? (
+          <Pressable onPress={action.onPress} accessibilityRole="button" className="mt-1 px-4 py-2 active:opacity-70">
+            <Text className="text-body font-semibold text-secondary">{action.label}</Text>
           </Pressable>
         ) : null}
       </MotionView>

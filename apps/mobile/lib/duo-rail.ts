@@ -19,7 +19,7 @@ export function useDuoRail(): { horizontal: boolean; slots: number; folded: bool
 }
 
 /** Every tab, in rail order. */
-export const ALL_TABS = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
+export const ALL_TABS = ["index", "panchanga", "kundali", "dainikkranti", "sait", "vastu", "learn"] as const;
 export type TabRoute = (typeof ALL_TABS)[number];
 
 /** Tabs the open display never shows (the side menu still reaches them): three tabs, like every phone. */

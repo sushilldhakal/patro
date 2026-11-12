@@ -22,11 +22,8 @@ import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
 import { SiteFooter } from "@/components/branding/SiteFooter";
-import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
-import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
 import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
-import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { useHomePatroView } from "@/lib/patro-view";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
@@ -473,6 +470,11 @@ function HomeScreen() {
                 : t("ui.home.could_not_load_calendar")
             }
             onRetry={homeMonth.retry}
+            action={
+              homeMonth.currentError instanceof OfflineUnavailableError
+                ? { label: t("ui.home.offline_data_action"), onPress: () => router.push("/account/offline-data" as never) }
+                : undefined
+            }
           />
         </View>
       ) : (
@@ -569,7 +571,6 @@ function HomeScreen() {
             bsYear={browseEra === "bs" ? year : getCurrentBs().year}
             onMore={(y) => router.push(`/adhik-maas?year=${y}` as never)}
           />
-          <AakashGocharEntryCard />
           <HomeVedaMantra dateAd={todayAd} />
           <RateAppCard />
         </View>
@@ -608,22 +609,6 @@ function HomeScreen() {
             today's panchanga appear first and their requests go out first. */}
         {belowFoldReady ? (
           <>
-            <Reveal>
-              <View className="mt-6">
-                <HomeRashifalSection
-                  dateAd={aside.dayAd}
-                  location={location.params}
-                  contentInset={cardInset}
-                />
-              </View>
-            </Reveal>
-
-            <Reveal>
-              <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
-                <HomeQuickLinks location={location} />
-              </View>
-            </Reveal>
-
             <Reveal>
               <SiteFooter className={homeClasses.footerNote} paddingHorizontal={cardInset} />
             </Reveal>

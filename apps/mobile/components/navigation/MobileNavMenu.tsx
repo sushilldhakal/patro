@@ -84,7 +84,8 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
         sectionItems.unshift(mainTile("home"));
         sectionItems.push(tile("reminders", menu.appOnly.reminders, "/reminders", resolveDrawerIcon("patro", "reminders")));
       }
-      if (section.id === "graha") {
+      // The 3D sky left home for the menu, so it leads the jyotish tab rather than sitting mid-list.
+      if (section.id === "jyotish") {
         sectionItems.unshift(tile("aakash-gochar", menu.appOnly.aakashGochar, "/aakash-gochar", resolveDrawerIcon("graha", "aakash-gochar")));
       }
       if (section.id === "tables") sectionItems.unshift(mainTile("panchanga"));

@@ -5,11 +5,11 @@ import { planRail, useDuoRail } from "@/lib/duo-rail";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV } from "@/lib/mobile-nav";
 
-/** SF Symbol per tab, in `FLOATING_NAV` order (home, panchanga, kundali, transit, vastu, learn). */
-const TAB_SF = ["house", "calendar", "sparkles", "moon", "safari", "book"] as const;
+/** SF Symbol per tab, in `FLOATING_NAV` order (home, panchanga, kundali, transit, sait, vastu, learn). */
+const TAB_SF = ["house", "calendar", "sparkles", "moon", "heart.circle", "safari", "book"] as const;
 
 /** Route name per tab, in `FLOATING_NAV` order. */
-const TAB_ROUTE = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
+const TAB_ROUTE = ["index", "panchanga", "kundali", "dainikkranti", "sait", "vastu", "learn"] as const;
 
 /**
  * iPhone Duo only. iOS 27.1 moves the bars it owns (the tab bar and the native header's toolbar)

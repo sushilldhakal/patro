@@ -25,7 +25,7 @@ const EDGE_SWIPE_WIDTH = 20;
  * Only the floating-nav destinations are tabs. Every other page lives in the
  * root stack (app/_layout.tsx), so it pushes over these and swipes back natively.
  */
-const TAB_SCREENS = ["index", "panchanga", "kundali", "dainikkranti", "vastu", "learn"] as const;
+const TAB_SCREENS = ["index", "panchanga", "kundali", "dainikkranti", "sait", "vastu", "learn"] as const;
 
 /**
  * On home, a drag from the left edge opens the side menu. Other tabs have no edge swipe: tabs are

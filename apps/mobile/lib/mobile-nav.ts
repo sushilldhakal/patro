@@ -6,7 +6,8 @@ import { useDuoPushedPage } from "@/lib/duo-page-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 
 /**
- * Primary floating bottom nav — matches web header sections, सिकाइ last.
+ * Primary floating bottom nav — matches web header sections, सिकाइ last. साइत holds the slot the
+ * profile tab had: the account is reached from the foot of the side menu.
  *
  * Labels here are the short forms, not the page titles: six tabs share the
  * pill, so "सूर्य पञ्चाङ्ग" and "दैनिक क्रान्ति" were already arriving as
@@ -19,6 +20,7 @@ export const FLOATING_NAV = [
   { href: "/panchanga", get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); }, get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); }, icon: FEATURE_ICON.panchanga },
   { href: "/kundali", get ne() { return tFor("ne", "nav.jyotish_kundali"); }, get en() { return tFor("en", "nav.jyotish_kundali"); }, icon: FEATURE_ICON.kundali },
   { href: "/dainikkranti", get ne() { return tFor("ne", "ui.mobile_nav.transit"); }, get en() { return tFor("en", "ui.mobile_nav.transit"); }, icon: FEATURE_ICON.dainikkranti },
+  { href: "/sait", get ne() { return tFor("ne", "panchanga.tabs.sait"); }, get en() { return tFor("en", "panchanga.tabs.sait"); }, icon: FEATURE_ICON.sait },
   { href: "/vastu", get ne() { return tFor("ne", "nav.vastu"); }, get en() { return tFor("en", "nav.vastu"); }, icon: FEATURE_ICON.vastu },
   { href: "/learn", get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); }, icon: FEATURE_ICON.learn },
 ] as const;
