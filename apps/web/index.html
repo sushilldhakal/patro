@@ -14,6 +14,20 @@
       (function () {
         try {
           var path = location.pathname.replace(/\/+$/, "");
+          if (path === "/download") {
+            // Store button (Facebook CTA). nginx already 302s iPhone/Android to their store;
+            // this catches what it cannot see: an iPad reporting a Mac user agent, or a page
+            // served without nginx. A computer goes home, where the Get the App card is.
+            var dua = navigator.userAgent || "";
+            if (/Android/i.test(dua)) {
+              location.replace("https://play.google.com/store/apps/details?id=com.vedicpatro.mobile");
+            } else if (/iPhone|iPad|iPod/i.test(dua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+              location.replace("https://apps.apple.com/app/id6820382502");
+            } else {
+              location.replace("/");
+            }
+            return;
+          }
           var q = new URLSearchParams(location.search);
           var appPage = path === "/app";
           if (!appPage && q.get("open") !== "app") return;
