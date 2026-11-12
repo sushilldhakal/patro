@@ -73,6 +73,19 @@ function ServerPipelineDiagram() {
   return <PipelineFigure earthSrc={earthGlobe} />;
 }
 import { TwoSystemsStudy } from "@/components/learn/playground/TwoSystemsStudy";
+import {
+  AdhikSlip,
+  AharganaSteps,
+  AvamaFill,
+  EclipseCone,
+  MandaFigure,
+  MeridianShift,
+  MonthBars,
+  PotterWheel,
+  ShighraFigure,
+  SineCircle,
+  SolarDayFigure,
+} from "@/components/learn/figures/siddhanta-gola-figures";
 
 const TwoSystemsDiagram = () => <TwoSystemsStudy />;
 
@@ -144,6 +157,18 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
   "table-tithi": TithiReferenceTable,
   "table-yoga": YogaReferenceTable,
   "table-karana": KaranaReferenceTable,
+
+  "ss-potter-wheel": PotterWheel,
+  "ss-solar-day": SolarDayFigure,
+  "ss-month-bars": MonthBars,
+  "ss-adhik-slip": AdhikSlip,
+  "ss-avama-fill": AvamaFill,
+  "ss-ahargana": AharganaSteps,
+  "ss-meridian": MeridianShift,
+  "ss-sine-circle": SineCircle,
+  "ss-manda": MandaFigure,
+  "ss-shighra": ShighraFigure,
+  "ss-eclipse-cone": EclipseCone,
 };
 
 export type { DiagramId };

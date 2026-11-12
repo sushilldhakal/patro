@@ -2,7 +2,9 @@ import { Fragment, type ReactNode } from "react";
 import { ScrollView } from "react-native";
 import { Box, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { tFor } from "@vedic-patro/i18n/runtime";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { articlePageDigits, useArticlePages } from "../use-article-pages";
 import {
   resolveArticle,
   resolveSeeAlso,
@@ -32,11 +34,15 @@ export function ArticleBody({
   const { lang } = useLocale();
   const sections = resolveArticle(article, lang, sectionOffset);
   const seeAlso = hideSeeAlso ? [] : resolveSeeAlso(article.seeAlso, lang);
+  const paged = Boolean(article.paged) && sections.length > 1;
+  const pager = useArticlePages(sections.length, paged);
+  const shown = paged ? sections.filter((_, i) => i === pager.index) : sections;
+  const showSeeAlso = seeAlso.length > 0 && (!paged || pager.index === sections.length - 1);
 
   return (
     <>
-      {sections.map((section) => (
-        <Box className={cls.section} key={section.key}>
+      {shown.map((section) => (
+        <Box className={paged ? cls.sectionPaged : cls.section} key={section.key}>
           <Box className={cls.secHead}>
             <Text className={cls.kicker}>{section.kicker}</Text>
             <Text as="h3" className={cls.title}>
@@ -155,7 +161,7 @@ export function ArticleBody({
           ))}
         </Box>
       ))}
-      {seeAlso.length > 0 ? (
+      {showSeeAlso ? (
         <Box className={cls.seeAlso}>
           {seeAlso.map((item) => (
             <Pressable key={item.slug} className={cls.seeAlsoItem} onPress={() => openArticle(item.slug)}>
@@ -165,6 +171,45 @@ export function ArticleBody({
               <Icon node={learnIcons.arrowRight} size={16} tone="secondary" />
             </Pressable>
           ))}
+        </Box>
+      ) : null}
+      {paged ? (
+        <Box className={cls.pager}>
+          <Pressable
+            className={cn(cls.pagerBtn, pager.index === 0 && cls.pagerBtnOff)}
+            disabled={pager.index === 0}
+            label={tFor(lang, "learn.pages.prev")}
+            onPress={pager.back}
+          >
+            <Icon node={learnIcons.arrowLeft} size={16} tone="secondary" />
+            <Text className={cls.pagerBtnText}>{tFor(lang, "learn.pages.prev")}</Text>
+          </Pressable>
+          <Text className={cls.pagerCount}>
+            {tFor(lang, "learn.pages.position", {
+              n: articlePageDigits(lang, pager.index + 1),
+              total: articlePageDigits(lang, sections.length),
+            })}
+          </Text>
+          <Pressable
+            className={cn(cls.pagerBtn, pager.index >= sections.length - 1 && cls.pagerBtnOff)}
+            disabled={pager.index >= sections.length - 1}
+            label={tFor(lang, "learn.pages.next")}
+            onPress={pager.forward}
+          >
+            <Text className={cls.pagerBtnText}>{tFor(lang, "learn.pages.next")}</Text>
+            <Icon node={learnIcons.arrowRight} size={16} tone="secondary" />
+          </Pressable>
+          <Box className={cls.dots}>
+            {sections.map((section, i) => (
+              <Pressable
+                key={section.key}
+                className={i === pager.index ? cls.dotOn : cls.dot}
+                label={tFor(lang, "learn.pages.jump", { n: articlePageDigits(lang, i + 1) })}
+                selected={i === pager.index}
+                onPress={() => pager.go(i)}
+              />
+            ))}
+          </Box>
         </Box>
       ) : null}
     </>

@@ -6,6 +6,15 @@
  */
 export const articleClasses = {
   section: "mt-14",
+  sectionPaged: "mt-2",
+  pager: "mt-8 flex flex-row flex-wrap items-center justify-between gap-3 border-t border-border pt-5",
+  pagerBtn: "flex flex-row items-center gap-2 rounded-full border border-border bg-card px-4 py-2",
+  pagerBtnOff: "opacity-40",
+  pagerBtnText: "text-sm font-semibold text-foreground",
+  pagerCount: "font-num text-sm font-semibold text-[var(--brand-saffron-bright)]",
+  dots: "mt-4 flex w-full flex-row flex-wrap justify-center gap-2",
+  dot: "h-2.5 w-2.5 rounded-full bg-border",
+  dotOn: "h-2.5 w-6 rounded-full bg-[var(--brand-green)]",
   secHead: "mb-2 flex flex-row flex-wrap items-baseline gap-3",
   kicker: "shrink-0 font-num text-sm font-bold tracking-wide text-[var(--brand-saffron-bright)]",
   title: "text-2xl font-bold leading-tight text-foreground",

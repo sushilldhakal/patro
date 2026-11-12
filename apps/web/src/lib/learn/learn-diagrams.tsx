@@ -63,6 +63,19 @@ import { SolarEclipseStudy } from "@/components/learn/SolarEclipseStudy";
 import { SunEarthMoonStudy } from "@/components/learn/SunEarthMoonStudy";
 import { TwoSystemsDiagram } from "@/components/learn/TwoSystemsDiagram";
 import {
+  AdhikSlip,
+  AharganaSteps,
+  AvamaFill,
+  EclipseCone,
+  MandaFigure,
+  MeridianShift,
+  MonthBars,
+  PotterWheel,
+  ShighraFigure,
+  SineCircle,
+  SolarDayFigure,
+} from "@/components/learn/siddhanta-gola-diagrams";
+import {
   GrahaReferenceTable,
   KaranaReferenceTable,
   NakshatraReferenceTable,
@@ -132,6 +145,18 @@ export const LEARN_DIAGRAMS = {
   "table-tithi": TithiReferenceTable,
   "table-yoga": YogaReferenceTable,
   "table-karana": KaranaReferenceTable,
+
+  "ss-potter-wheel": PotterWheel,
+  "ss-solar-day": SolarDayFigure,
+  "ss-month-bars": MonthBars,
+  "ss-adhik-slip": AdhikSlip,
+  "ss-avama-fill": AvamaFill,
+  "ss-ahargana": AharganaSteps,
+  "ss-meridian": MeridianShift,
+  "ss-sine-circle": SineCircle,
+  "ss-manda": MandaFigure,
+  "ss-shighra": ShighraFigure,
+  "ss-eclipse-cone": EclipseCone,
 } satisfies Partial<Record<DiagramId, () => React.ReactNode>>;
 
 export type { DiagramId };

@@ -111,6 +111,12 @@ export interface ArticleData {
   sections: ArticleSection[];
   /** Slugs to offer as further reading, in order. */
   seeAlso?: string[];
+  /**
+   * One section on screen at a time, with previous and next.
+   * A calculation chapter uses this so the reader works a single page —
+   * the picture, then the sum — and only then turns to the next page.
+   */
+  paged?: boolean;
 }
 
 /** Devanagari section numbers (०१, ०२ …) paired with Latin ones. */

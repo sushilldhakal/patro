@@ -588,6 +588,17 @@ export const LEARN_LIBRARY: LibraryTopic[] = [
     },
   },
   {
+    slug: "siddhanta-gola",
+    section: "calculation",
+    status: "published",
+    icon: "ScrollText",
+    title: { ne: "सूर्य सिद्धान्तको गणना, पृष्ठैपृष्ठ", en: "Surya Siddhanta Calculations, Page by Page" },
+    summary: {
+      ne: "सिद्धान्तशिरोमणिको गोलाध्यायले सूर्य सिद्धान्तका नियम किन मिल्छन् भनेर देखाउँछ — नाक्षत्र दिन, अधिक मास, अहर्गण, ज्या, मन्द र शीघ्र फल, अनि ग्रहण। प्रत्येक पृष्ठमा एउटा चित्र र एउटा हल गरिएको गणना।",
+      en: "The Goladhyaya of the Siddhanta Shiromani shows why the Surya Siddhanta's rules come out as they do — the sidereal day, the adhik month, the ahargana, the sine, the manda and shighra corrections, and eclipses. Each page is one picture and one worked calculation.",
+    },
+  },
+  {
     slug: "how-we-calculate",
     section: "calculation",
     status: "published",

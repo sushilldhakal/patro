@@ -1,6 +1,8 @@
 import { Fragment, type ReactNode } from "react";
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { tFor } from "@vedic-patro/i18n/runtime";
+import { articlePageDigits, useArticlePages } from "../use-article-pages";
 import {
   resolveArticle,
   resolveSeeAlso,
@@ -39,6 +41,13 @@ import {
   tmSecKicker,
   tmSecTitle,
   tmSection,
+  tmSectionPaged,
+  tmPager,
+  tmPagerBtn,
+  tmPagerCount,
+  tmPagerDot,
+  tmPagerDotOn,
+  tmPagerDots,
   tmSeeAlso,
   tmSeeAlsoItem,
 } from "@vedic-patro/design-tokens/classes/learn-classes";
@@ -90,11 +99,16 @@ export function ArticleBody({
   const { lang } = useLocale();
   const sections = resolveArticle(article, lang, sectionOffset);
   const seeAlso = hideSeeAlso ? [] : resolveSeeAlso(article.seeAlso, lang);
+  const paged = Boolean(article.paged) && sections.length > 1;
+  const pager = useArticlePages(sections.length, paged);
+  const shown = paged ? sections.filter((_, i) => i === pager.index) : sections;
+  const showSeeAlso = seeAlso.length > 0 && (!paged || pager.index === sections.length - 1);
 
   return (
     <>
-      {sections.map((section) => (
-        <Box as="section" className={tmSection} key={section.key}>
+      {paged ? <div id="learn-article-page" className="scroll-mt-24" /> : null}
+      {shown.map((section) => (
+        <Box as="section" className={paged ? tmSectionPaged : tmSection} key={section.key}>
           <Box className={tmSecHead}>
             <Text as="span" className={tmSecKicker}>
               {section.kicker}
@@ -227,7 +241,7 @@ export function ArticleBody({
           ))}
         </Box>
       ))}
-      {seeAlso.length > 0 ? (
+      {showSeeAlso ? (
         <Box className={tmSeeAlso}>
           {seeAlso.map((item) => (
             <ArticleAnchor key={item.slug} slug={item.slug} className={tmSeeAlsoItem} openArticle={openArticle}>
@@ -244,6 +258,36 @@ export function ArticleBody({
             </ArticleAnchor>
           ))}
         </Box>
+      ) : null}
+      {paged ? (
+        <nav className={tmPager} aria-label={tFor(lang, "learn.pages.position", { n: articlePageDigits(lang, pager.index + 1), total: articlePageDigits(lang, sections.length) })}>
+          <button type="button" className={tmPagerBtn} disabled={pager.index === 0} onClick={pager.back}>
+            <Icon node={learnIcons.arrowLeft} size={16} tone="secondary" />
+            {tFor(lang, "learn.pages.prev")}
+          </button>
+          <span className={tmPagerCount}>
+            {tFor(lang, "learn.pages.position", {
+              n: articlePageDigits(lang, pager.index + 1),
+              total: articlePageDigits(lang, sections.length),
+            })}
+          </span>
+          <button type="button" className={tmPagerBtn} disabled={pager.index >= sections.length - 1} onClick={pager.forward}>
+            {tFor(lang, "learn.pages.next")}
+            <Icon node={learnIcons.arrowRight} size={16} tone="secondary" />
+          </button>
+          <div className={tmPagerDots}>
+            {sections.map((section, i) => (
+              <button
+                key={section.key}
+                type="button"
+                className={i === pager.index ? `${tmPagerDot} ${tmPagerDotOn}` : tmPagerDot}
+                aria-current={i === pager.index ? "page" : undefined}
+                aria-label={tFor(lang, "learn.pages.jump", { n: articlePageDigits(lang, i + 1) })}
+                onClick={() => pager.go(i)}
+              />
+            ))}
+          </div>
+        </nav>
       ) : null}
     </>
   );

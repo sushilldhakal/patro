@@ -342,5 +342,22 @@ export const tmCalNo =
 export const tmCalGap =
   "flex w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[var(--tm-amber)] p-2 text-center opacity-90 [&_em]:text-sm [&_em]:font-semibold [&_em]:uppercase [&_em]:tracking-widest [&_em]:text-[var(--tm-ink-faint)] [&_em]:not-italic [&_span]:text-sm [&_span]:font-semibold [&_span]:text-[var(--tm-amber)]";
 
+/** One-page-at-a-time chapter: the page sits higher than a long scroll's first section. */
+export const tmSectionPaged = "mt-2";
+
+export const tmPager = "mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--tm-border)] pt-5";
+
+export const tmPagerBtn =
+  "inline-flex items-center gap-2 rounded-full border border-[var(--tm-border)] bg-[var(--tm-card)] px-4 py-2 text-sm font-semibold text-[var(--tm-ink)] transition-colors hover:border-[var(--tm-teal)] disabled:pointer-events-none disabled:opacity-40";
+
+export const tmPagerCount = "font-num text-sm font-semibold tabular-nums text-[var(--tm-amber)]";
+
+export const tmPagerDots = "mt-4 flex basis-full flex-wrap justify-center gap-1.5";
+
+export const tmPagerDot =
+  "h-2 w-2 rounded-full bg-[var(--tm-border)] transition-all hover:bg-[var(--tm-teal)]";
+
+export const tmPagerDotOn = "w-6 bg-[var(--tm-teal)]";
+
 export const nakshatraIcon =
   "block shrink-0 text-foreground [&_.ax]:stroke-secondary dark:[&_.ax]:stroke-[var(--brand-yellow)] [&_.ax-f]:fill-secondary dark:[&_.ax-f]:fill-[var(--brand-yellow)] [&_.ax-f]:stroke-none [&_.fx]:fill-current [&_.fx]:stroke-none";

@@ -48,6 +48,7 @@ import { calcLunarMonth } from "./calculation/calc-lunar-month";
 import { calcMoonrise } from "./calculation/calc-moonrise";
 import { calcNakshatra } from "./calculation/calc-nakshatra";
 import { calcSankranti } from "./calculation/calc-sankranti";
+import { siddhantaGola } from "./calculation/siddhanta-gola";
 import { calcSunrise } from "./calculation/calc-sunrise";
 import { calcSunset } from "./calculation/calc-sunset";
 import { calcTithi } from "./calculation/calc-tithi";
@@ -159,6 +160,7 @@ export const SHARED_ARTICLES: ArticleData[] = [
   timeScales,
   julianDay,
   calcLunarMonth,
+  siddhantaGola,
 
   /* Calendar comparison */
   leapYears,

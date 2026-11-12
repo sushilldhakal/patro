@@ -4216,6 +4216,12 @@
       "tip_scrub": "Tip: the bar below moves you anywhere in the year.",
       "tip_layers": "Tip: the chips below turn any layer on or off."
     },
+    "pages": {
+      "next": "Next page",
+      "position": "Page {{n}} of {{total}}",
+      "prev": "Previous page",
+      "jump": "Page {{n}}"
+    },
     "playground": {
       "all": "All",
       "axial_tilt": "Axial tilt",

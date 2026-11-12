@@ -54,6 +54,18 @@ export const DIAGRAM_IDS = [
   "hora-live",
   "server-pipeline",
   "computation-reference",
+  /* Siddhanta Goladhyaya — one picture per calculation page. */
+  "ss-potter-wheel",
+  "ss-solar-day",
+  "ss-month-bars",
+  "ss-adhik-slip",
+  "ss-avama-fill",
+  "ss-ahargana",
+  "ss-meridian",
+  "ss-sine-circle",
+  "ss-manda",
+  "ss-shighra",
+  "ss-eclipse-cone",
 ] as const;
 
 export type DiagramId = (typeof DIAGRAM_IDS)[number];
