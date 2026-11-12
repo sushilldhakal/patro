@@ -188,6 +188,20 @@ export const panchangaPageClasses = {
     sectionTitleIdle: "text-muted-foreground",
     list: "gap-0.5 px-1 pb-2",
     item: "gap-0.5",
+    /* App (iPad rail): an iOS-style sidebar. Groups are quiet labels with the chevron on the
+       right and space between them instead of rules; every page row is the same roomy size,
+       and only the open page is filled. */
+    appSection: "pb-2 pt-1",
+    appSectionHead: "w-full items-center gap-2 rounded-lg px-3 pb-1.5 pt-3",
+    appSectionTitle: "min-w-0 flex-1 text-xs font-bold tracking-wide",
+    appSectionTitleIdle: "text-muted-foreground",
+    appSectionTitleActive: "text-secondary",
+    appLink: "rounded-xl px-3 py-2.5",
+    appLinkActive: "bg-secondary/15",
+    appLinkLabel: "text-sm leading-snug",
+    appLinkLabelActive: "font-semibold text-secondary",
+    appLinkLabelIdle: "font-medium text-foreground",
+    appList: "gap-0.5 px-1",
   },
 
   // ── Directory (details hub) ───────────────────────────────────────────────

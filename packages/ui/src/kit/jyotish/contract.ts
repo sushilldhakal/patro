@@ -539,6 +539,8 @@ export type KundaliSidebarLinkArgs = {
   active: boolean;
   onPress?: () => void;
   className: string;
+  /** A section nested under a group (drawn a step quieter than the group rows). */
+  child?: boolean;
 };
 
 export type KundaliSidebarSubnavProps = {

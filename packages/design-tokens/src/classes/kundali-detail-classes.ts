@@ -305,6 +305,22 @@ export const kundaliDetailClasses = {
     toggleActiveText: "text-foreground",
     caption: "text-sm",
   },
+  /* The kundali sections listed under "जन्मकुण्डली निर्माण" in the app's iPad sidebar. One row each,
+     the disclosure chevron on the same row as its label, one highlight for the open section. */
+  sidebarSubnav: {
+    list: "ml-3 gap-0.5 border-l border-border py-1 pl-2",
+    row: "flex-row items-center rounded-lg",
+    rowActive: "bg-secondary/15",
+    link: "min-w-0 flex-1 px-2.5 py-2",
+    toggle: "px-2 py-2",
+    children: "ml-3 gap-0.5 border-l border-border/60 pl-2",
+    child: "rounded-lg px-2.5 py-1.5",
+    childActive: "bg-secondary/15",
+    label: "text-sm leading-snug",
+    labelActive: "font-semibold text-secondary",
+    labelIdle: "font-medium text-foreground",
+    childLabelIdle: "text-muted-foreground",
+  },
   sectionNav: {
     pill: "flex-row items-center gap-1.5 rounded-full border px-3 py-1.5",
     pillText: "text-xs",

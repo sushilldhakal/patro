@@ -66,29 +66,42 @@ export function KundaliSectionNav({ activeId, onNavigate, className, variant = "
 
 export function KundaliSidebarSubnav({ activeSectionId, renderLink }: KundaliSidebarSubnavProps) {
   const groups = useKundaliSidebarSubnav(activeSectionId);
+  const sub = kundaliDetailClasses.sidebarSubnav;
   return (
-    <Box className="ml-2 gap-0.5 border-l border-border/70 py-1 pl-2">
-      {groups.map((group) => (
-        <Box key={group.id}>
-          {renderLink({
-            hash: group.hasChildren ? group.target : group.target,
-            label: group.label,
-            active: group.active,
-            onPress: group.hasChildren ? group.open : undefined,
-            className: cn("rounded-lg px-2 py-1.5", group.active ? "bg-secondary/12" : undefined),
-          })}
-          {group.hasChildren ? (
-            <Pressable onPress={group.toggle} label={group.label} className="px-2 py-1.5">
-              <Icon node={group.expanded ? iconChevronUp : iconChevronDown} size={14} tone="muted" />
-            </Pressable>
-          ) : null}
-          {group.expanded ? group.children.map((child) => (
-            <Box key={child.id}>
-              {renderLink({ hash: child.id, label: child.label, active: child.active, className: cn("ml-2 rounded-lg py-1.5 pl-3", child.active ? "bg-primary/10" : undefined) })}
+    <Box className={sub.list}>
+      {groups.map((group) => {
+        /* A group with an open child is shown by its open list, not a second highlight. */
+        const childActive = group.children.some((child) => child.active);
+        const rowActive = group.active && !childActive;
+        return (
+          <Box key={group.id}>
+            {/* The chevron sits on the label's row: as a block of its own it dropped onto an empty line. */}
+            <Box className={cn(sub.row, rowActive && sub.rowActive)}>
+              {renderLink({
+                hash: group.target,
+                label: group.label,
+                active: rowActive,
+                onPress: group.hasChildren ? group.open : undefined,
+                className: sub.link,
+              })}
+              {group.hasChildren ? (
+                <Pressable onPress={group.toggle} label={group.label} className={sub.toggle}>
+                  <Icon node={group.expanded ? iconChevronUp : iconChevronDown} size={14} tone="muted" />
+                </Pressable>
+              ) : null}
             </Box>
-          )) : null}
-        </Box>
-      ))}
+            {group.hasChildren && group.expanded ? (
+              <Box className={sub.children}>
+                {group.children.map((child) => (
+                  <Box key={child.id}>
+                    {renderLink({ hash: child.id, label: child.label, active: child.active, child: true, className: cn(sub.child, child.active && sub.childActive) })}
+                  </Box>
+                ))}
+              </Box>
+            ) : null}
+          </Box>
+        );
+      })}
     </Box>
   );
 }

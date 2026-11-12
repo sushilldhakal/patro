@@ -42,7 +42,7 @@ function SectionChevron({ expanded, tone, reduced }: { expanded: boolean; tone: 
   return (
     <Animated.View
       style={{
-        transform: [{ rotate: expanded ? "-90deg" : "0deg" }],
+        transform: [{ rotate: expanded ? "90deg" : "0deg" }],
         transitionProperty: "transform",
         transitionDuration: armed && !reduced ? CHEVRON_TURN_MS : 0,
         transitionTimingFunction: CSS_EASE_IN_OUT,
@@ -73,7 +73,7 @@ export function PanchangaSidebarNav({
   const [placed, setPlaced] = useState(false);
   const y = useSharedValue(0);
   const h = useSharedValue(0);
-  const activeId = sections.flatMap((section) => section.items).find((item) => item.active)?.id ?? null;
+  const activeId = sections.flatMap((section) => section.items).find((item) => item.active && !item.trailing)?.id ?? null;
   const frame = activeId ? frames[activeId] : undefined;
   // At rest the row owns the highlight, so a press scale takes it along. The
   // pill is only on screen while it is travelling between rows.
@@ -157,23 +157,29 @@ export function PanchangaSidebarNav({
                look on the child: a style array that mixes a plain style with an animated one drops the plain part. */
             <View pointerEvents="none" accessible={false} style={{ position: "absolute", left: frame.x, top: 0, width: frame.width }}>
               <Animated.View style={pillStyle}>
-                <View className="flex-1 rounded-xl border border-secondary/30 bg-secondary/15" />
+                <View className={cn("flex-1", s.appLink, s.appLinkActive)} />
               </Animated.View>
             </View>
           ) : null}
           {sections.map((section) => (
-            <MotionView key={section.id} layout={RAIL_MOVE} className={cn("pb-1", s.section)}>
+            <MotionView key={section.id} layout={RAIL_MOVE} className={s.appSection}>
               {section.categoryTitle ? <Text className={s.categoryTitle}>{section.categoryTitle}</Text> : null}
+              {/* A quiet group label with its chevron on the right, as in an iPad sidebar: the old
+                  bold heading read as one more page in the list. */}
               <Pressable
                 onPress={section.onToggle}
-                className={cn("flex-row", s.sectionHead, section.hasActive && !section.expanded && "bg-secondary/5")}
+                className={cn("flex-row", s.appSectionHead)}
               >
+                <Text className={cn(s.appSectionTitle, section.hasActive ? s.appSectionTitleActive : s.appSectionTitleIdle)}>{section.title}</Text>
                 <SectionChevron expanded={section.expanded} tone={section.hasActive ? "secondary" : "muted"} reduced={reduced} />
-                <Text className={cn(s.sectionTitle, section.hasActive ? s.sectionTitleActive : s.sectionTitleIdle)}>{section.title}</Text>
               </Pressable>
               {section.items.length > 0 ? (
-                <Box className={s.list}>
-                  {section.items.map((item) => (
+                <Box className={s.appList}>
+                  {section.items.map((item) => {
+                    /* A page with its own section list (a kundali) shows the open section there;
+                       filling the page row as well drew two highlights at once. */
+                    const filled = item.active && !item.trailing;
+                    return (
                     <MotionView key={item.id} layout={RAIL_MOVE} className={s.item}>
                       <View
                         ref={(node) => {
@@ -184,22 +190,17 @@ export function PanchangaSidebarNav({
                       >
                         <Pressable
                           onPress={item.onPress}
-                          className={cn(s.link, !item.active && "active:bg-muted")}
-                          nativeClassName={
-                            item.active
-                              ? travelling
-                                ? "border border-transparent"
-                                : "border border-secondary/30 bg-secondary/15"
-                              : undefined
-                          }
+                          className={cn(s.appLink, !filled && "active:bg-muted")}
+                          nativeClassName={filled && !travelling ? s.appLinkActive : undefined}
                         >
-                          <Text className={cn(s.linkLabel, item.active ? s.linkLabelActive : s.linkLabelIdle)}>{item.label}</Text>
+                          <Text className={cn(s.appLinkLabel, item.active ? s.appLinkLabelActive : s.appLinkLabelIdle)}>{item.label}</Text>
                           {item.blurb ? <Text className={s.linkBlurb}>{item.blurb}</Text> : null}
                         </Pressable>
                       </View>
                       {item.trailing}
                     </MotionView>
-                  ))}
+                    );
+                  })}
                 </Box>
               ) : null}
             </MotionView>
