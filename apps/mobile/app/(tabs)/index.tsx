@@ -636,6 +636,7 @@ function HomeScreen() {
         <EventDetailSheet
           detail={detail}
           todayAd={todayAd}
+          primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
           onClose={() => setDetail(null)}
           onEdit={(event) => {
             editAfterDetail.current = event;

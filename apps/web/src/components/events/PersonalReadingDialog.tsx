@@ -1,4 +1,5 @@
-import { AlertCircle, CalendarDays, Orbit, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { AlertCircle, CalendarDays, ChevronRight, Orbit, User } from "lucide-react";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { personalDayCopy, usePlannerText, type PersonalColumn } from "@vedic-patro/features/events";
@@ -112,6 +113,11 @@ export function PersonalReadingDialog({ detail, onClose }: { detail: { date: str
                 ))}
               </div>
             ) : null}
+
+            <Link to="/jyotish/rashifal" onClick={onClose} className={cal.readingLink}>
+              {copy.viewRashifal}
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
           </div>
         ) : null}
       </DialogContent>

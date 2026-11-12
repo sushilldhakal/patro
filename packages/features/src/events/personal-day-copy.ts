@@ -50,6 +50,8 @@ export type PersonalDayCopy = {
    *  (weekday, tithi, Rahu kaal), the same for everyone — `generalHeading` says so. */
   sections: { label: string; lines: string[] }[];
   generalHeading: string;
+  /** "राशिफल हेर्नुहोस्": the link to the rashifal page at the foot of the details. */
+  viewRashifal: string;
   /** The profile's own reading, when the API sent one. */
   reading: {
     heading: string;
@@ -83,6 +85,7 @@ export function personalDayCopy(column: PersonalColumn, tx: Text): PersonalDayCo
     notes: dashaNotes(column).map((note) => personalReasonPhrase(note, tx)),
     sections,
     generalHeading: tx.t("calendar.personal_general"),
+    viewRashifal: tx.t("calendar.personal_view_rashifal"),
     reading: readingCopy(column.reading, tx),
   };
 }

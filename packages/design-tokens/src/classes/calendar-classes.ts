@@ -95,6 +95,9 @@ export const calendarClasses = {
   readingGroup: "flex flex-col gap-1 rounded-2xl bg-muted/60 px-4 py-3",
   readingRow: "flex items-start gap-3 py-1.5 text-base text-foreground",
   readingLabel: "m-0 text-xs font-semibold text-muted-foreground",
+  /** "राशिफल हेर्नुहोस्" at the foot of the personal-day dialog. */
+  readingLink:
+    "flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-muted/60 font-semibold text-foreground no-underline transition-colors hover:bg-muted",
   readingParagraph: "m-0 text-base leading-relaxed text-foreground",
   readingTrack: "h-1.5 overflow-hidden rounded-full bg-background",
 

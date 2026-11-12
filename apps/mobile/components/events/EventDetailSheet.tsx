@@ -1,10 +1,11 @@
-import type { ComponentProps, ReactNode } from "react";
+import { useContext, type ComponentProps, type ReactNode } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { isoToZoned } from "@vedic-patro/domain/calendar/event-time";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { daysBetween, personalDayCopy, useEventLabels, usePlannerText, type PersonalColumn } from "@vedic-patro/features/events";
+import { PlannerPrimaryDateContext, daysBetween, personalDayCopy, useEventLabels, usePlannerText, type PersonalColumn } from "@vedic-patro/features/events";
 import { haptics } from "@vedic-patro/ui/motion";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
@@ -56,6 +57,7 @@ export function EventDetailSheet({
   onClose,
   onEdit,
   onDismissed,
+  primaryDate = "bs",
 }: {
   detail: CalendarDetail | null;
   todayAd: string;
@@ -63,13 +65,20 @@ export function EventDetailSheet({
   onEdit: (event: CalendarEvent) => void;
   /** The card has finished going away: safe to open the edit form (two sheets at once fight on iOS). */
   onDismissed?: () => void;
+  /** The calendar the page leads with (वि.सं. / ई.सं.): the card's date follows it. */
+  primaryDate?: "bs" | "ad";
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <BottomSheetModal visible={detail != null} onClose={onClose} onDismissed={onDismissed} maxHeight="88%">
+    /* The home-indicator inset goes inside the scroll, not under it, so the card scrolls to the
+       bottom edge instead of stopping above an empty strip. */
+    <BottomSheetModal visible={detail != null} onClose={onClose} onDismissed={onDismissed} maxHeight="88%" sheetStyle={{ paddingBottom: 0 }}>
       {detail ? (
-        <ScrollView style={{ flexShrink: 1 }} bounces={false}>
-          <DetailBody detail={detail} todayAd={todayAd} onClose={onClose} onEdit={onEdit} />
-        </ScrollView>
+        <PlannerPrimaryDateContext.Provider value={primaryDate}>
+          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ paddingBottom: insets.bottom }} bounces={false}>
+            <DetailBody detail={detail} todayAd={todayAd} onClose={onClose} onEdit={onEdit} />
+          </ScrollView>
+        </PlannerPrimaryDateContext.Provider>
       ) : null}
     </BottomSheetModal>
   );
@@ -83,6 +92,14 @@ function DetailBody({ detail, todayAd, onClose, onEdit }: { detail: CalendarDeta
   const tx = usePlannerText();
   const fromToday = useFromToday(todayAd);
   const en = lang === "en";
+  const colors = useThemeColors();
+  const isAd = useContext(PlannerPrimaryDateContext) === "ad";
+  /** The line under "आज" / "Fri, Kartik 21, 2083": the full date in the page's calendar when the
+   *  first line is a word (today, tomorrow); the AD date only when the page leads with AD. */
+  const dateSub = (iso: string) => {
+    if (isAd) return adLong(iso, en);
+    return labels.day(iso).includes(labels.bsDate(iso)) ? undefined : tx.dayHeading(iso);
+  };
 
   if (detail.kind === "personal") {
     const copy = personalDayCopy(detail.column, tx);
@@ -97,7 +114,7 @@ function DetailBody({ detail, todayAd, onClose, onEdit }: { detail: CalendarDeta
           onClose={onClose}
         />
         <Group>
-          <Row icon="calendar-outline" primary={labels.day(detail.date)} secondary={adLong(detail.date, en)} badge={fromToday(detail.date)} />
+          <Row icon="calendar-outline" primary={labels.day(detail.date)} secondary={dateSub(detail.date)} badge={fromToday(detail.date)} />
           <Row icon="person-outline" primary={copy.profileName} />
           {reading?.dasha ? <Row icon="planet-outline" primary={reading.dasha} /> : null}
           {copy.notes.map((note) => (
@@ -166,6 +183,20 @@ function DetailBody({ detail, todayAd, onClose, onEdit }: { detail: CalendarDeta
             ))}
           </View>
         ) : null}
+
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => {
+            haptics.tick();
+            onClose();
+            router.push("/rashifal" as never);
+          }}
+          className="min-h-12 flex-row items-center justify-center gap-2 rounded-2xl bg-muted active:opacity-70"
+          style={{ borderCurve: "continuous" }}
+        >
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(16)}>{copy.viewRashifal}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.foreground} />
+        </Pressable>
       </View>
     );
   }
@@ -176,7 +207,7 @@ function DetailBody({ detail, todayAd, onClose, onEdit }: { detail: CalendarDeta
       <View className="gap-4 px-5 pb-6 pt-2">
         <Heading title={detail.name} kindLabel={t(detail.holiday ? "sections.public_holiday" : "holidays.festival")} style={style} onClose={onClose} />
         <Group>
-          <Row icon="calendar-outline" primary={labels.day(detail.date)} secondary={adLong(detail.date, en)} badge={fromToday(detail.date)} />
+          <Row icon="calendar-outline" primary={labels.day(detail.date)} secondary={dateSub(detail.date)} badge={fromToday(detail.date)} />
           <Row icon="sunny-outline" primary={t("events.all_day")} />
         </Group>
         <Pressable
@@ -232,7 +263,7 @@ function DetailBody({ detail, todayAd, onClose, onEdit }: { detail: CalendarDeta
         <Row
           icon="calendar-outline"
           primary={multiDay ? `${labels.day(start.date)} – ${labels.day(end.date)}` : labels.day(start.date)}
-          secondary={multiDay ? `${adLong(start.date, en)} – ${adLong(end.date, en)}` : adLong(start.date, en)}
+          secondary={multiDay ? (isAd ? `${adLong(start.date, en)} – ${adLong(end.date, en)}` : undefined) : dateSub(start.date)}
           badge={fromToday(start.date)}
         />
         <Row icon="time-outline" primary={timeLine} secondary={event.all_day ? undefined : labels.zone(event.timezone)} />

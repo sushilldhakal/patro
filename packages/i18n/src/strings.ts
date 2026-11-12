@@ -2433,6 +2433,7 @@ export const strings = {
   "calendar.personal_janma": { ne: "जन्म तारा", en: "Janma tara" },
   "calendar.personal_from": { ne: "{{time}} देखि {{reason}}", en: "from {{time}}, {{reason}}" },
   "calendar.personal_day": { ne: "तपाईंको दिन", en: "Your day" },
+  "calendar.personal_view_rashifal": { ne: "राशिफल हेर्नुहोस्", en: "View rashifal" },
   "calendar.personal_tone_best": { ne: "उत्तम", en: "Excellent" },
   "calendar.personal_tone_good": { ne: "शुभ", en: "Favourable" },
   "calendar.personal_tone_neutral": { ne: "सामान्य", en: "Ordinary" },
