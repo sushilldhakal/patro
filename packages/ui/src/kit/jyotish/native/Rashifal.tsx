@@ -153,7 +153,8 @@ export function RashifalGocharChips({ rows, className }: RashifalGocharChipsProp
 export function RashifalSignCard({ sign, period, taraLine, renderGlyph }: RashifalSignCardProps) {
   const card = useRashifalSignCard({ sign, period });
   return (
-    <Box className={rashifalClasses.card}>
+    // grow: cards side by side fill their row, so a short reading doesn't leave a gap under its card.
+    <Box className={rashifalClasses.card} nativeClassName="grow">
       <Box className={rashifalClasses.header} nativeClassName="flex-row">
         {renderGlyph(card.glyph)}
         <Box className={rashifalClasses.headerBody}>

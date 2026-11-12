@@ -31,7 +31,7 @@ export function Grid({ cols, minCellWidth, cards, gap, gapX, gapY, as: Tag = "di
     // Columns from the grid's own width (a container query), not the window's: the same list sits
     // full-width on a phone and beside the sidebar on a laptop. Steps: CARD_GRID_STEPS.
     const most = mostColumns(cols);
-    const cardCols = cn("grid grid-cols-1", most >= 2 && "@[18.75rem]:grid-cols-2", most >= 3 && "@[32.5rem]:grid-cols-3", most >= 4 && "@[51.25rem]:grid-cols-4");
+    const cardCols = cn("grid grid-cols-1", most >= 2 && "@[36.25rem]:grid-cols-2", most >= 3 && "@[55rem]:grid-cols-3", most >= 4 && "@[73.75rem]:grid-cols-4");
     const cardGaps = x === undefined && y === undefined ? undefined : { columnGap: x, rowGap: y };
     return (
       <div className="@container">

@@ -40,8 +40,13 @@ export type BoxProps = StyleProps & {
 // ─── Grid ────────────────────────────────────────────────────────────────────
 
 /** Columns at the base width and from each breakpoint up (xs 400, compact 480, sm 640, md 768, lg 1024). */
-/** Grid width (px) from which a `cards` grid shows 2, 3 and 4 columns. */
-export const CARD_GRID_STEPS = [300, 520, 820] as const;
+/**
+ * Grid width (px) from which a `cards` grid shows 2, 3 and 4 columns: each card keeps about 280px
+ * (2 × 280 + gap ≈ 580). A card carries an icon, a title, a chevron and a line or two of text; at the
+ * old 300/520/820 steps a phone squeezed two to a row (~170px each) and every line wrapped. Now a
+ * phone shows one card per row, an iPad in portrait two, in landscape three, a wide desktop four.
+ */
+export const CARD_GRID_STEPS = [580, 880, 1180] as const;
 
 /** Columns a `cards` grid of this width shows, capped at `most`. */
 export function cardGridColumns(width: number, most = 4): number {
@@ -66,9 +71,9 @@ export type GridProps = StyleProps & {
    */
   minCellWidth?: number;
   /**
-   * A grid of cards that fills the row: columns follow the grid's own width — 1 under 300px (a very
-   * small phone), 2 under 520 (phones), 3 under 820 (iPad portrait), 4 above (iPad landscape,
-   * desktop) — never more than `cols`. Lists of cards use this, so tall single-column stacks don't
+   * A grid of cards that fills the row: columns follow the grid's own width — 1 under 580px (phones),
+   * 2 under 880 (iPad portrait), 3 under 1180 (iPad landscape), 4 above (desktop) — never more than
+   * `cols`, so no card is squeezed below ~280px. Lists of cards use this, so tall single-column stacks don't
    * waste the width of an iPad. See CARD_GRID_STEPS.
    */
   cards?: boolean;

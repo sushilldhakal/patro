@@ -121,7 +121,7 @@ export default function DocumentsScreen() {
                   <Pressable
                     key={section.group.id}
                     onPress={() => select(section.group.id)}
-                    className={cn(documentsClasses.hubCard, "flex-1 border border-border")}
+                    className={cn(documentsClasses.hubCard, "grow border border-border")}
                   >
                     <View className={documentsClasses.hubCardTop} style={{ flexDirection: "row", alignItems: "center" }}>
                       <View className={documentsClasses.hubEmojiBox}>

@@ -8,7 +8,7 @@ import { iconBookOpen, iconChevronRight } from "../icons";
 export function DocumentCard({ doc, onPress }: DocumentCardProps) {
   const { title, subtitle, description, meta } = useDocumentCard(doc);
   return (
-    <Pressable onPress={onPress} label={title} className={`${documentsClasses.card} flex-1`}>
+    <Pressable onPress={onPress} label={title} className={`${documentsClasses.card} grow`}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <View className={documentsClasses.cardIcon} style={{ width: 36, height: 36, flexGrow: 0 }}>
           <Icon node={iconBookOpen} size="md" tone="secondary" />

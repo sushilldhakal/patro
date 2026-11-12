@@ -25,7 +25,7 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
       </Box>
       <Grid cols={4} cards gap={8}>
         {card.topics.map((topic) => (
-          <Pressable key={topic.slug} onPress={() => onOpen(topic.slug)} label={topic.title} className={cn(learnPageClasses.moreItem, "flex-1")}>
+          <Pressable key={topic.slug} onPress={() => onOpen(topic.slug)} label={topic.title} className={cn(learnPageClasses.moreItem, "grow")}>
             <Box className={learnPageClasses.moreIcon}>{renderIcon(topic.icon)}</Box>
             <Text className={learnPageClasses.moreLabel} numberOfLines={1}>
               {topic.title}
@@ -41,7 +41,7 @@ export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIc
 export function LearnTopicCard({ topic, readMore, icon, onOpen }: LearnTopicCardProps) {
   const chip = learnPageClasses.sectionChip[topic.section];
   return (
-    <Pressable onPress={onOpen} label={topic.title} className={cn(learnPageClasses.topicCard, "w-full flex-1")}>
+    <Pressable onPress={onOpen} label={topic.title} className={cn(learnPageClasses.topicCard, "w-full grow")}>
       <Box className={learnPageClasses.topicHead}>
         <Box className={learnPageClasses.topicIcon}>{icon}</Box>
         <Box className={learnPageClasses.topicTitleWrap}>
@@ -57,7 +57,7 @@ export function LearnTopicCard({ topic, readMore, icon, onOpen }: LearnTopicCard
           </Box>
         </Box>
       ) : null}
-      <Text className={cn(learnPageClasses.topicSummary, "flex-1")} numberOfLines={4}>
+      <Text className={cn(learnPageClasses.topicSummary, "grow")} numberOfLines={4}>
         {topic.summary}
       </Text>
       <Box className={learnPageClasses.topicFooter}>
