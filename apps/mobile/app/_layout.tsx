@@ -55,7 +55,7 @@ import { loadCalculationSystemPreference } from "@/lib/calculation-system-storag
 import { loadStoredLocation } from "@/lib/use-panchanga-location";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { usePatroCapabilities } from "@/lib/use-patro-capabilities";
-import { usePreviewAutoUpdate } from "@/lib/use-preview-auto-update";
+import { useAutoUpdate } from "@/lib/use-auto-update";
 import * as Updates from "expo-updates";
 import { Observe, ObserveRoot } from "@/lib/observe";
 import { PAGE_CHROME_ROUTES, PageChrome } from "@/components/navigation/PageChrome";
@@ -240,8 +240,9 @@ const RUNTIME_NOTO_FONTS = {
 
 function RootLayout() {
   useTrackPathname();
-  // Preview builds: the splash stays up while a newer update is checked for (lib/use-preview-auto-update.ts).
-  const updateSettled = usePreviewAutoUpdate();
+  // Store and TestFlight builds: the splash stays up while a newer update is checked for, and a
+  // return to the foreground opens one at once (lib/use-auto-update.ts).
+  const updateSettled = useAutoUpdate();
   const navigationRef = useNavigationContainerRef();
   useEffect(() => {
     if (navigationRef) sentryNavigation.registerNavigationContainer(navigationRef);

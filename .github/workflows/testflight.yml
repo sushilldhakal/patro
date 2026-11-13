@@ -3,7 +3,7 @@ name: TestFlight build (preview channel)
 # Builds the iOS app with the `testflight` profile and submits it to
 # TestFlight. That build follows the EAS `preview` channel, which
 # eas-update.yml publishes every push to main to, and it switches to a new
-# update as soon as it opens (lib/use-preview-auto-update.ts). So a native
+# update as soon as it opens (lib/use-auto-update.ts). So a native
 # build is only needed when something native changes: config, dependencies,
 # icons and splash, or a manual run from the Actions tab.
 #

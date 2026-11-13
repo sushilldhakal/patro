@@ -7,7 +7,7 @@ name: EAS Update
 # whose installed build has the same runtime (app version, app.json). A push
 # whose last commit message contains [ota production] publishes to production
 # too, for when the workflow cannot be started by hand. A preview build installs
-# it by itself (lib/use-preview-auto-update.ts); a development build can open
+# it by itself (lib/use-auto-update.ts); a development build can open
 # it from the dev launcher's update list.
 #
 # Needs the repository secret EXPO_TOKEN (expo.dev → Account settings → Access
