@@ -1,7 +1,10 @@
-name: EAS Update (preview)
+name: EAS Update
 
 # Publishes the app's JavaScript to the EAS `preview` channel on every push to
-# main that touches the app or the shared packages. A preview build installs
+# main that touches the app or the shared packages. Run by hand (Actions -> EAS
+# Update -> Run workflow) it can publish to `production` instead: the channel
+# App Store / Play Store builds listen on (eas.json), i.e. an OTA to live users
+# whose installed build has the same runtime (app version, app.json). A preview build installs
 # it by itself (lib/use-preview-auto-update.ts); a development build can open
 # it from the dev launcher's update list.
 #
@@ -16,9 +19,19 @@ on:
       - "packages/**"
       - "package-lock.json"
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Channel to publish to (production = App Store / Play Store users)
+        type: choice
+        options: [preview, production]
+        default: preview
+      message:
+        description: Update message shown in EAS
+        type: string
+        required: false
 
 concurrency:
-  group: eas-update-preview
+  group: eas-update-${{ inputs.channel || 'preview' }}
   cancel-in-progress: true
 
 jobs:
@@ -49,11 +62,12 @@ jobs:
         working-directory: apps/mobile
         env:
           # Through the environment, so quotes in a commit message can't break the command.
-          MESSAGE: ${{ github.event.head_commit.message || 'Manual run' }}
+          MESSAGE: ${{ inputs.message || github.event.head_commit.message || 'Manual run' }}
+          CHANNEL: ${{ inputs.channel || 'preview' }}
         run: >
           eas update
-          --channel preview
-          --environment preview
+          --channel "$CHANNEL"
+          --environment "$CHANNEL"
           --message "$MESSAGE"
           --platform all
           --non-interactive
