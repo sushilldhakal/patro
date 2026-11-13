@@ -20,6 +20,7 @@ import {
   YUGAS,
   kaliYearsElapsed,
   kalpaYearsElapsed,
+  brahmaYearsElapsed,
   SOLAR_YEARS_PER_DIVYA,
   timeAncestry,
   timeChildren,
@@ -219,6 +220,7 @@ export function nowLines(ceYear: number, text: Text): string[] {
     t("brahma_mana.now_mahayuga", { n: digits(NOW.mahayuga) }),
     t("brahma_mana.now_kali", { years: groupedYears(kaliYearsElapsed(ceYear), text) }),
     t("brahma_mana.now_kalpa_elapsed", { years: groupedYears(kalpaYearsElapsed(ceYear), text) }),
+    t("brahma_mana.now_brahma_elapsed", { years: groupedYears(brahmaYearsElapsed(ceYear), text) }),
   ];
 }
 

@@ -5146,6 +5146,7 @@
     "now_mahayuga": "Mahāyuga {{n}}",
     "now_kali": "{{years}} years of the Kali Yuga gone (since 3102 BCE)",
     "now_kalpa_elapsed": "Years gone in this Kalpa: {{years}}",
+    "now_brahma_elapsed": "Earth years since Brahmā's life began: {{years}}",
     "pada_title": "The Yugas by pāda",
     "pada_caption": "Surya Siddhanta 1.17: one tenth of the Mahāyuga ({{pada}} years, one pāda) times 4, 3, 2 and 1.",
     "col_yuga": "Yuga",

@@ -13,6 +13,7 @@ import {
   YUGAS,
   kaliYearsElapsed,
   kalpaYearsElapsed,
+  brahmaYearsElapsed,
   nowPathKeys,
   timeAncestry,
   timeChildren,
@@ -80,4 +81,5 @@ test("a key's ancestry rebuilds just its branch", () => {
 test("where we are now", () => {
   assert.equal(kaliYearsElapsed(2026), 5127);
   assert.equal(kalpaYearsElapsed(2026), 1_972_949_127);
+  assert.equal(brahmaYearsElapsed(2026), 155_521_972_949_127);
 });

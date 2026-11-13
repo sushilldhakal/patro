@@ -5835,6 +5835,10 @@ export const strings = {
     en: "{{years}} years of the Kali Yuga gone (since 3102 BCE)",
   },
   "brahma_mana.now_kalpa_elapsed": { ne: "यस कल्पमा बितेका वर्ष: {{years}}", en: "Years gone in this Kalpa: {{years}}" },
+  "brahma_mana.now_brahma_elapsed": {
+    ne: "ब्रह्माको आयु सुरु भएदेखि बितेका पृथ्वी वर्ष: {{years}}",
+    en: "Earth years since Brahmā's life began: {{years}}",
+  },
   "brahma_mana.pada_title": { ne: "पादअनुसार युग", en: "The Yugas by pāda" },
   "brahma_mana.pada_caption": {
     ne: "सूर्य सिद्धान्त १.१७: महायुगको दशांश ({{pada}} वर्ष, एक पाद) लाई ४, ३, २ र १ ले गुणन।",

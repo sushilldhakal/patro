@@ -242,3 +242,11 @@ export function kalpaYearsElapsed(ceYear: number): number {
     kaliYearsElapsed(ceYear)
   );
 }
+
+/**
+ * Earth (solar) years since Brahmā's life began: the 50 full Brahmā years of the first
+ * Parārdha, then what is gone of the present Kalpa (we are in the first day of year 51).
+ */
+export function brahmaYearsElapsed(ceYear: number): number {
+  return (NOW.brahmaYear - 1) * BRAHMA_YEAR_YEARS + kalpaYearsElapsed(ceYear);
+}
