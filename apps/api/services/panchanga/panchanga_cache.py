@@ -176,13 +176,14 @@ logger = logging.getLogger(__name__)
 # v58: classical चन्द्रबल (houses 1, 3, 6, 7, 10, 11), Wednesday अभिजित् omitted,
 #     and the shared 9-tara names (साधक). The daily rashifal tone follows the
 #     Moon's house, and its lucky number is that house.
-# v59: ``ritu`` is always the real-sky tropical season (Swiss Ephemeris), also
-#     under the Surya Siddhanta, and south of the equator it is the tropical ritu
-#     three seasons on (Sydney in July is Shishira), not a civil-month table.
-# v60: ayana (and the उ/द mark) is likewise always the real-sky tropical one,
-#     also under the Surya Siddhanta.
+# v59: south of the equator ``ritu`` is the Sun's arc read half a year on (the
+#     seasons page's rule), not the civil month — Sydney in mid-November is
+#     Grishma on every screen, not Vasanta in the patro and Grishma on /ritu.
+# v60: ``ritu`` and ayana (and the उ/द mark) are always the real-sky tropical
+#     ones (Swiss Ephemeris), also under the Surya Siddhanta.
 # v61: ``ritu_pauranik`` / ``ritu_vedic`` / ``aayan_pauranik`` / ``aayan_vedic``
-#     removed — ``ritu`` and ``aayan`` are the only (tropical) values.
+#     removed — ``ritu`` and ``aayan`` are the only (tropical) values, from the
+#     one source engine.astronomy.tropical_year.
 PANCHANGA_PAYLOAD_VERSION = 61
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must

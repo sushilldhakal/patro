@@ -330,7 +330,7 @@ class TestRashiService:
             assert ritu["number"] == RITU_DATA[ritu["sun_rashi"] % 12 // 2]["number"]
 
     def test_southern_hemisphere_gets_the_inverted_season(self):
-        """Sydney in July is winter, Kathmandu in July is monsoon."""
+        """Sydney in July is winter, Kathmandu in July is monsoon: the same Sun, half a year on."""
         july = default_engine.julian_day(datetime(2026, 7, 15, 6, tzinfo=timezone.utc))
         north = rashi_service.ritu(july, lat=27.7)
         south = rashi_service.ritu(july, lat=-33.9)
@@ -338,6 +338,11 @@ class TestRashiService:
         assert north["name"] == "Varsha"
         assert south["basis"] == "tropical_southern"
         assert south["name"] == "Shishira"
+        # Every day of the year the two are exactly three ritus apart.
+        for jd in SAMPLE_JDS:
+            n = rashi_service.ritu(jd, lat=27.7)["number"]
+            s = rashi_service.ritu(jd, lat=-33.9)["number"]
+            assert (n - 1 + 3) % 6 == s - 1
 
     def test_ritu_is_the_real_sky_under_the_surya_siddhanta(self):
         """The Surya Siddhanta's sayana longitude drifts from the real one; ritu must not."""
