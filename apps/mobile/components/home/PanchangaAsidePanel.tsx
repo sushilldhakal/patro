@@ -1,5 +1,4 @@
 import type { CalendarEvent } from "@vedic-patro/api-client";
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -12,18 +11,12 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { requestAddReminder } from "@/lib/menu-request";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
-import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
-import { SaitAsidePanel } from "./SaitAsidePanel";
 import type { CalendarDay, LocationParams, PanchangaDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@vedic-patro/design-tokens/cn";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
 import { type Era, isGregorianEra } from "@vedic-patro/domain/calendar/era";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-
-const TABS = ["panchanga", "sait", "muhurta"] as const;
-type TabId = (typeof TABS)[number];
 
 type Props = {
   month: number;
@@ -67,7 +60,6 @@ export function PanchangaAsidePanel({
   const dayEvents = useDayEvents(selectedAd, isAuthenticated);
   // "तपाईंको दिन · शुभ · …" for this day, as the planner's all-day row shows it.
   const personalDays = usePersonalDays([selectedAd], location ?? DEFAULT_PANCHANGA_LOCATION.params, isAuthenticated);
-  const [tab, setTab] = useState<TabId>("panchanga");
 
   const contextDay =
     selectedDay ??
@@ -77,7 +69,6 @@ export function PanchangaAsidePanel({
     null;
 
   const isSelectedToday = selectedAd === todayAd;
-  const highlightDay = contextDay?.day;
   const isAdCalendar = isGregorianEra(browseEra);
   const activeP = panchangaMatchesAside(p, selectedAd, { year, month, isAdCalendar }, contextDay)
     ? p
@@ -119,62 +110,19 @@ export function PanchangaAsidePanel({
         ) : null}
       </View>
 
+      {/* Panchanga only: साइत and मुहूर्त have their own pages a tap away (tab bar, side menu). */}
       <View className={homeClasses.asideBody}>
-        <View className={cn("flex-row", homeClasses.asideTabBar)}>
-          {TABS.map((id) => (
-            <Pressable
-              key={id}
-              onPress={() => setTab(id)}
-              className={cn(
-                homeClasses.asideTab,
-                "items-center justify-center",
-                tab === id && homeClasses.asideTabActive,
-              )}
-            >
-              <Text
-                className={cn(
-                  homeClasses.asideTabLabel,
-                  tab === id ? homeClasses.asideTabLabelActive : homeClasses.asideTabLabelIdle,
-                )}
-              >
-                {t(`panchanga.tabs.${id}`)}
-              </Text>
-              {tab === id ? (
-                <View className={homeClasses.asideTabIndicator} />
-              ) : null}
-            </Pressable>
-          ))}
-        </View>
-
         <View className={homeClasses.asidePanel}>
-          {error && !p && tab !== "sait" ? (
-            <ErrorState
-              message={t("ui.common.could_not_load_panchanga")}
-              onRetry={onRetry}
-            />
-          ) : loading && !p && tab !== "sait" ? (
+          {error && !p ? (
+            <ErrorState message={t("ui.common.could_not_load_panchanga")} onRetry={onRetry} />
+          ) : loading && !p ? (
             <LoadingState />
-          ) : tab === "panchanga" ? (
+          ) : (
             <PanchangaVivaranPanel
               p={activeP}
               selectedDay={contextDay}
               selectedAd={selectedAd}
               loading={loading && !activeP}
-            />
-          ) : tab === "muhurta" ? (
-            activeP ? (
-              <MuhurtaAsidePanel p={activeP} />
-            ) : (
-              <Text className="text-body py-6 text-center text-muted-foreground">
-                {t("ui.home.muhurta_details_unavailable")}
-              </Text>
-            )
-          ) : (
-            <SaitAsidePanel
-              year={year}
-              month={month}
-              highlightDay={highlightDay}
-              location={location}
             />
           )}
         </View>
