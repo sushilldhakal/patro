@@ -2,7 +2,7 @@ import type { LearnKit } from "../contract";
 import { ArticleBody } from "./ArticleBody";
 import { ChapterOverlay } from "./ChapterOverlay";
 import { ChapterStill, ChapterTip } from "./ChapterAsides";
-import { LearnMoreCard, LearnTopicCard } from "./LearnCards";
+import { LearnTopicCard } from "./LearnCards";
 import { EotGraph } from "./EotGraph";
 import { EarthRotationDiagram } from "./EarthRotationDiagram";
 import { ServerPipelineDiagram } from "./ServerPipelineDiagram";
@@ -24,7 +24,6 @@ export type {
   ChapterOverlayProps,
   ChapterStillProps,
   ChapterTipProps,
-  LearnMoreCardProps,
   LearnTopicCardProps,
   EotGraphProps,
   EarthRotationDiagramProps,
@@ -40,7 +39,6 @@ export {
   ChapterOverlay,
   ChapterStill,
   ChapterTip,
-  LearnMoreCard,
   LearnTopicCard,
   EotGraph,
   EarthRotationDiagram,
@@ -63,7 +61,6 @@ export const learnKit = {
   ChapterOverlay,
   ChapterStill,
   ChapterTip,
-  LearnMoreCard,
   LearnTopicCard,
   EotGraph,
   EarthRotationDiagram,

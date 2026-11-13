@@ -12,7 +12,6 @@ import {
   type KundaliProfilePickerHandle,
 } from "@/components/kundali/KundaliProfilePicker";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
-import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -72,7 +71,6 @@ function GuestKundali({ onLogin, onSignup }: { onLogin: () => void; onSignup: ()
       </View>
 
       <KundaliLoginPrompt title={t("kundali_guest.save_title")} body={t("kundali_guest.save_body")} onLogin={onLogin} onSignup={onSignup} />
-      <LearnMoreCard slugs={["rashi", "sidereal-vs-tropical", "nakshatra"]} />
 
       <BottomSheetModal visible={formOpen} onClose={() => setFormOpen(false)} keyboardAvoiding maxHeight="92%">
         <View className={kundaliClasses.sheetHead}>

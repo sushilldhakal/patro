@@ -1,7 +1,7 @@
 /**
- * Learn hub, article chrome and the "Learn more" card. Read by the website
- * (Learn.tsx, LearnArticle.tsx, LearnMoreCard.tsx) and the app (learn/index,
- * LearnArticleView, learn/[slug], LearnMoreCard). The article hero and the
+ * Learn hub and article chrome. Read by the website (Learn.tsx,
+ * LearnArticle.tsx) and the app (learn/index, LearnArticleView, learn/[slug]).
+ * Pages point to articles only through the related footer (RelatedPageLinks). The article hero and the
  * diagram internals use classes/learn-classes.ts and diagram-classes.ts.
  * Hover, group-*, transitions, rings and `inline-flex` stay in the website;
  * React Native layout (`flex-row` etc.) stays in the app.
@@ -120,12 +120,4 @@ export const learnPageClasses = {
   inlineLink: "items-center gap-1.5 text-sm text-secondary",
   inlineLinkText: "text-sm text-secondary",
   notFound: "flex flex-col items-center gap-4 py-16",
-
-  // ── "Learn more" card ─────────────────────────────────────────────────────
-  moreCard: "rounded-2xl border border-border bg-card/40 p-4 sm:p-5",
-  moreHead: "mb-3 flex flex-row items-center gap-2",
-  moreHeading: "text-sm font-semibold text-foreground",
-  moreItem: "flex flex-row items-center gap-2.5 rounded-xl border border-border/70 bg-background/40 px-3 py-2.5",
-  moreIcon: "flex size-7 shrink-0 items-center justify-center rounded-lg bg-secondary/10",
-  moreLabel: "min-w-0 flex-1 text-sm text-foreground",
 } as const;

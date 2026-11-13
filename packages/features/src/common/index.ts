@@ -3,7 +3,6 @@ export * from "./use-related-page-links";
 export * from "./use-seo-content-section";
 export * from "./use-language-switcher";
 export * from "./use-mobile-nav-menu";
-export * from "./use-learn-more-card";
 export * from "./use-site-footer";
 export * from "./use-vedic-patro-loader";
 export * from "./use-table-shell";

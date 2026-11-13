@@ -1,8 +1,7 @@
 import { Box, Icon, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { useLearnMoreCard } from "@vedic-patro/features/common";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
-import type { LearnMoreCardProps, LearnTopicCardProps } from "../contract";
+import type { LearnTopicCardProps } from "../contract";
 import { learnIcons } from "../icons";
 
 const SECTION_RING: Record<string, string> = {
@@ -28,37 +27,6 @@ function openLink(onOpen: () => void) {
     event.preventDefault();
     onOpen();
   };
-}
-
-export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIcon, hrefFor, onOpen }: LearnMoreCardProps) {
-  const card = useLearnMoreCard(slugs, heading);
-  if (card.topics.length === 0) return null;
-  return (
-    <Box as="section" className={cn(learnPageClasses.moreCard, className)}>
-      <Box className={learnPageClasses.moreHead}>
-        {headingIcon}
-        <Text as="h2" className={learnPageClasses.moreHeading}>
-          {card.heading}
-        </Text>
-      </Box>
-      <Box className="grid gap-2" webClassName="phone:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {card.topics.map((topic) => (
-          <a
-            key={topic.slug}
-            href={hrefFor(topic.slug)}
-            onClick={openLink(() => onOpen(topic.slug))}
-            className={cn(learnPageClasses.moreItem, "group transition-colors hover:border-secondary/60 hover:bg-secondary/[0.04]")}
-          >
-            <Box className={learnPageClasses.moreIcon}>{renderIcon(topic.icon)}</Box>
-            <Text as="span" className={learnPageClasses.moreLabel} webClassName="truncate">
-              {topic.title}
-            </Text>
-            <Icon node={learnIcons.arrowRight} size="sm" tone="muted" webClassName="transition-transform group-hover:translate-x-0.5 group-hover:text-secondary" />
-          </a>
-        ))}
-      </Box>
-    </Box>
-  );
 }
 
 export function LearnTopicCard({ topic, readMore, icon, href, onOpen }: LearnTopicCardProps) {

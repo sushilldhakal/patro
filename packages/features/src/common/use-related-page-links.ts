@@ -1,8 +1,9 @@
 /**
  * The "related" cards that close a page, shared by the website's and the
- * app's `components/related/RelatedPageLinks.tsx`: the page's own Learn
- * articles (PAGE_LEARN_SLUGS — pages have no separate "learn more" card) or up
- * to two derived ones, then peer pages from the same group, with labels and blurbs. Each app works out the
+ * app's `components/related/RelatedPageLinks.tsx` — the ONLY place a page
+ * points to Learn articles (there is no separate "learn more" card). Exactly
+ * four cards on every page: two Learn articles, then peer pages from the same
+ * group (whichever runs short gives its room to the other), with labels and blurbs. Each app works out the
  * page id from its own router and turns each card into its own link and icon.
  */
 import { LEARN_LIBRARY, type LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
@@ -10,13 +11,12 @@ import { bilingualText } from "@vedic-patro/domain/locale";
 import {
   SITE_LINK_BLURB_KEY,
   SITE_LINK_LABEL_KEY,
-  getPageLearnSlugs,
   getRelatedLearnSlugs,
   getRelatedSiteLinkIds,
 } from "@vedic-patro/domain/panchanga/related-page-links";
 import { useLocale } from "@vedic-patro/i18n/react";
 
-/** Articles and pages share one list, capped so the footer stays scannable. */
+/** Articles and pages share one list of exactly this many cards, on every page of both apps. */
 export const RELATED_CARD_LIMIT = 4;
 /** Learn articles kept ahead of the pages, so every page also offers somewhere to go next. */
 const RELATED_LEARN_FIRST = 2;
@@ -27,16 +27,8 @@ export type RelatedPageCard =
 
 const PUBLISHED_BY_SLUG = new Map(LEARN_LIBRARY.filter((t) => t.status === "published").map((t) => [t.slug, t]));
 
-/** Pages kept after a page's own articles, so the footer still leads somewhere else too. */
-const RELATED_PAGES_AFTER_OWN_ARTICLES = 2;
-
-/** Two articles, then pages; whichever list runs short leaves its room to the other. */
-function pickCards(learn: RelatedPageCard[], site: RelatedPageCard[], ownArticles: boolean): RelatedPageCard[] {
-  // A page with its own article list shows every one of them (this footer is its
-  // only "learn more"), then a couple of peer pages.
-  if (ownArticles) {
-    return [...learn, ...site.slice(0, Math.max(RELATED_CARD_LIMIT - learn.length, RELATED_PAGES_AFTER_OWN_ARTICLES))];
-  }
+/** Two articles, then pages; whichever list runs short leaves its room to the other. Always 4. */
+function pickCards(learn: RelatedPageCard[], site: RelatedPageCard[]): RelatedPageCard[] {
   const head = learn.slice(0, RELATED_LEARN_FIRST);
   const pages = site.slice(0, RELATED_CARD_LIMIT - head.length);
   return [...head, ...pages, ...learn.slice(RELATED_LEARN_FIRST)].slice(0, RELATED_CARD_LIMIT);
@@ -46,8 +38,7 @@ export function useRelatedPageLinks(pageId: string | null) {
   const { t, lang } = useLocale();
   if (!pageId) return { cards: [] as RelatedPageCard[], heading: "", aria: "" };
 
-  const ownSlugs = getPageLearnSlugs(pageId);
-  const learnCards: RelatedPageCard[] = (ownSlugs ?? getRelatedLearnSlugs(pageId)).flatMap((slug): RelatedPageCard[] => {
+  const learnCards: RelatedPageCard[] = getRelatedLearnSlugs(pageId).flatMap((slug): RelatedPageCard[] => {
     const topic = PUBLISHED_BY_SLUG.get(slug);
     if (!topic) return [];
     return [
@@ -82,7 +73,7 @@ export function useRelatedPageLinks(pageId: string | null) {
   });
 
   return {
-    cards: pickCards(learnCards, siteCards, ownSlugs != null),
+    cards: pickCards(learnCards, siteCards),
     heading: t("related_pages.heading"),
     aria: t("related_pages.aria"),
   };

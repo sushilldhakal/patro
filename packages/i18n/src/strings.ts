@@ -643,7 +643,6 @@ export const strings = {
     ne: "पञ्चाङ्ग लोड गर्न सकिएन। मिति जाँच गर्नुहोस् वा पुनः प्रयास गर्नुहोस्।",
     en: "Could not load almanac. Check the date or try again.",
   },
-  "panchanga.learn_heading": { ne: "पञ्चाङ्गका पाँच अङ्ग बुझ्नुहोस्", en: "Understand the five limbs of Almanac" },
   "panchanga.mode_aria": { ne: "पञ्चाङ्ग मोड", en: "Almanac mode" },
   "panchanga.mode_udaya": { ne: "उदय", en: "Udaya" },
   "panchanga.mode_udaya_title": { ne: "उदय-आधारित — मुद्रित पात्रो जस्तै", en: "Sunrise-based — like printed patro" },

@@ -4,7 +4,6 @@
  */
 import type { ReactNode } from "react";
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
-import type { LearnIconKey } from "@vedic-patro/domain/learn/learn-library";
 import type { LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
 import type { LunarReading, SolarReading, buildYearLadders } from "@vedic-patro/domain/astronomy/sky3d/two-systems";
 import type { ChapterVolumeLevel, DayChapterPlayer } from "@vedic-patro/features/learn";
@@ -38,18 +37,6 @@ export type ArticleBodyProps = {
   openArticle: (slug: string) => void;
   /** The app's diagram registry. An unknown id draws nothing. */
   renderDiagram?: (id: string) => ReactNode;
-};
-
-export type LearnMoreCardProps = {
-  slugs: string[];
-  heading?: string;
-  className?: string;
-  /** Book glyph beside the heading. Each app supplies its own icon set. */
-  headingIcon: ReactNode;
-  renderIcon: (icon: LearnIconKey) => ReactNode;
-  /** Website anchor. A normal click calls `onOpen`; modified clicks follow the href. */
-  hrefFor: (slug: string) => string;
-  onOpen: (slug: string) => void;
 };
 
 export type LearnTopicCardProps = {
@@ -190,7 +177,6 @@ export type LearnKit = {
   ChapterOverlay: (props: ChapterOverlayProps) => ReactNode;
   ChapterStill: (props: ChapterStillProps) => ReactNode;
   ChapterTip: (props: ChapterTipProps) => ReactNode;
-  LearnMoreCard: (props: LearnMoreCardProps) => ReactNode;
   LearnTopicCard: (props: LearnTopicCardProps) => ReactNode;
   EotGraph: (props: EotGraphProps) => ReactNode;
   EarthRotationDiagram: (props: EarthRotationDiagramProps) => ReactNode;

@@ -1,8 +1,7 @@
 import { Box, Grid, Icon, Pressable, Text } from "@vedic-patro/ui";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { useLearnMoreCard } from "@vedic-patro/features/common";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
-import type { LearnMoreCardProps, LearnTopicCardProps } from "../contract";
+import type { LearnTopicCardProps } from "../contract";
 import { learnIcons } from "../icons";
 
 function chipText(chip: string) {
@@ -10,32 +9,6 @@ function chipText(chip: string) {
     .split(" ")
     .filter((part) => part.startsWith("text-") || part.startsWith("dark:text-"))
     .join(" ");
-}
-
-export function LearnMoreCard({ slugs, heading, className, headingIcon, renderIcon, onOpen }: LearnMoreCardProps) {
-  const card = useLearnMoreCard(slugs, heading);
-  if (card.topics.length === 0) return null;
-  return (
-    <Box className={cn(learnPageClasses.moreCard, className)}>
-      <Box className={learnPageClasses.moreHead}>
-        {headingIcon}
-        <Text as="h2" className={learnPageClasses.moreHeading}>
-          {card.heading}
-        </Text>
-      </Box>
-      <Grid cols={4} cards gap={8}>
-        {card.topics.map((topic) => (
-          <Pressable key={topic.slug} onPress={() => onOpen(topic.slug)} label={topic.title} className={cn(learnPageClasses.moreItem, "grow")}>
-            <Box className={learnPageClasses.moreIcon}>{renderIcon(topic.icon)}</Box>
-            <Text className={learnPageClasses.moreLabel} numberOfLines={1}>
-              {topic.title}
-            </Text>
-            <Icon node={learnIcons.arrowRight} size="sm" tone="muted" />
-          </Pressable>
-        ))}
-      </Grid>
-    </Box>
-  );
 }
 
 export function LearnTopicCard({ topic, readMore, icon, onOpen }: LearnTopicCardProps) {
