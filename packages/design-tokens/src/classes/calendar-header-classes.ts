@@ -103,8 +103,11 @@ export const calendarHeaderClasses = {
   webDenseSwap: "max-xs:gap-1 max-xs:px-2",
   webDenseSwapLabel: "max-xs:text-xs",
   /** Drops under its button; on a phone it rises from the bottom as a sheet, as in the app. */
-  webPanel: "absolute top-full z-30 mt-2 shadow-lg md:w-85 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-auto max-md:z-[70] max-md:mt-0 max-md:max-h-[85dvh] max-md:overflow-y-auto max-md:rounded-b-none max-md:rounded-t-3xl max-md:p-5 max-md:pb-8 max-md:shadow-2xl",
+  /* Phones: a sheet from the TOP edge, so the on-screen keyboard (which iOS does not
+     always push content up for) never hides the search box or the results. */
+  webPanel: "absolute top-full z-30 mt-2 shadow-lg md:w-85 max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:bottom-auto max-md:z-[70] max-md:mt-0 max-md:max-h-[85dvh] max-md:overflow-y-auto max-md:rounded-t-none max-md:rounded-b-3xl max-md:p-5 max-md:pt-[max(1.25rem,env(safe-area-inset-top))] max-md:shadow-2xl max-md:animate-in max-md:slide-in-from-top max-md:duration-200",
   webScrim: "fixed inset-0 z-20 cursor-default max-md:z-[60] max-md:bg-black/40",
   webBadgeHover: "flex flex-col transition-shadow hover:ring-3 hover:ring-secondary/20 active:scale-95",
-  webLocationList: "flex max-h-72 flex-col gap-0.5 overflow-auto max-md:max-h-[55dvh]",
+  /* Short enough on phones that the list ends above an open keyboard. */
+  webLocationList: "flex max-h-72 flex-col gap-0.5 overflow-auto max-md:max-h-[40dvh]",
 } as const;

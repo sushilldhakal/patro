@@ -3,7 +3,6 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
-import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Card } from "@/components/ui/Card";
 import { DataTable, type TableColumn } from "@/components/ui/DataTable";
@@ -330,8 +329,6 @@ export default function BrahmaManaScreen() {
             </View>
           ))}
         </SectionCard>
-
-        <LearnMoreCard slugs={page.learnSlugs} />
       </View>
     </AppShell>
   );

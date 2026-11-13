@@ -199,9 +199,7 @@ export function usePanchangaPage({ location, date, clock, setClock, sources, ena
       yearLink: t("panchanga.year_link"),
       /* Prefer the backend's own explanation (an unreachable date says what to fix). */
       error: errorDetail || t("panchanga.error_load"),
-      learnHeading: t("panchanga.learn_heading"),
     },
-    learnSlugs: ["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"],
     /** The udaya day (wheel, timeline, date sections). */
     wheelData,
     /** `wheelData` is still the previous day while the browsed one loads. */

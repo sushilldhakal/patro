@@ -21,7 +21,6 @@ import {
   SunMoonSamvatSection,
 } from "@vedic-patro/ui/kit/panchanga";
 import { GocharPromoCard } from "@vedic-patro/ui/kit/panchanga";
-import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { useThemeColors } from "@/lib/theme-context";
@@ -246,12 +245,6 @@ export default function PanchangaScreen() {
 
         <Reveal>
           <GocharPromoCard onPress={() => router.push("/gochar" as never)} />
-        </Reveal>
-        <Reveal>
-          <LearnMoreCard
-            heading={page.copy.learnHeading}
-            slugs={page.learnSlugs}
-          />
         </Reveal>
         <Reveal>
           <RelatedPageLinks />

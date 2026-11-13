@@ -12,7 +12,6 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { DayTimeline, GhatiClock } from "@vedic-patro/ui/kit/panchanga";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
-import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
@@ -291,12 +290,6 @@ export function Panchanga() {
             search: patroRouteLinkSearch("/gochar", location, langEra) as never,
           })
         }
-      />
-
-      <LearnMoreCard
-        className="mt-7 max-sm:px-2.5"
-        heading={page.copy.learnHeading}
-        slugs={page.learnSlugs}
       />
 
       <RelatedPageLinks className="max-sm:px-2.5" />

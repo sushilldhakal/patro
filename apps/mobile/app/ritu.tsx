@@ -2,7 +2,6 @@ import { View } from "react-native";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
-import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { RituSeasons } from "@/components/RituSeasons";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useTheme } from "@/lib/theme-context";
@@ -26,8 +25,6 @@ export default function RituScreen() {
       <View className="mb-8">
         <RituSeasons location={location} />
       </View>
-
-      <LearnMoreCard slugs={ritu.learnSlugs} />
     </AppShell>
   );
 }

@@ -91,7 +91,7 @@ export const SITE_LINK_BLURB_KEY: Record<string, string> = {
  * that is quietly one link short.
  */
 export const PAGE_LEARN_SLUGS: Record<string, string[]> = {
-  panchanga: ["what-is-panchang", "tithi", "nakshatra"],
+  panchanga: ["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"],
   "panchanga-year": ["rashi", "what-is-panchang"],
   holidays: ["bikram-sambat", "calendar-differences"],
   converter: ["bikram-sambat", "calendar-differences"],
@@ -172,6 +172,15 @@ export function getRelatedSiteLinkIds(pageId: string, limit = RELATED_LINK_LIMIT
   const groupKey = primaryGroup(pageId);
   const group = SITE_LINK_GROUPS[groupKey];
   return pickCircular(group, pageId, limit);
+}
+
+/**
+ * A page's own Learn articles — the one list both apps show in the page's
+ * related footer (there is no separate "learn more" card), all of them, in order.
+ */
+export function getPageLearnSlugs(pageId: string): string[] | null {
+  const mapped = PAGE_LEARN_SLUGS[pageId];
+  return mapped?.length ? [...mapped] : null;
 }
 
 export function getRelatedLearnSlugs(pageId: string, limit = RELATED_LEARN_LIMIT): string[] {

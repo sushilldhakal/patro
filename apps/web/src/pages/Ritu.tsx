@@ -1,6 +1,5 @@
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Sprout } from "lucide-react";
-import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { PatroHeaderLocation } from "@/components/patro-date";
 import { RituSeasons } from "@/components/RituSeasons";
@@ -34,8 +33,6 @@ export function Ritu() {
       </div>
 
       <RituSeasons location={location} showHeader={false} />
-
-      <LearnMoreCard className="mt-7" slugs={ritu.learnSlugs} />
     </PageShell>
   );
 }

@@ -8,8 +8,6 @@ import { nowPathKeys } from "@vedic-patro/domain/calendar/brahma-mana";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { brahmaLadder, brahmaNotes, nowLines, padaRows, yearsRows } from "./model";
 
-const LEARN_SLUGS = ["ancient-calendars", "calendar-differences"];
-
 export function useBrahmaManaPage() {
   const { t, lang, digits } = useLocale();
   const text = useMemo(() => ({ t, lang, digits }), [t, lang, digits]);
@@ -63,7 +61,6 @@ export function useBrahmaManaPage() {
     },
     notes: { title: t("brahma_mana.notes_title"), items: notes },
     source: t("brahma_mana.source"),
-    learnSlugs: LEARN_SLUGS,
   };
 }
 

@@ -304,8 +304,9 @@ export function Header() {
           <div className="flex justify-start">
             <Drawer direction="left" open={mobileOpen} onOpenChange={setMobileOpen}>
               <DrawerTrigger asChild>
-                <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Icon node={shellIcons.sidebar} size={20} />
+                {/* 44px: a comfortable tap target, the same size as the account avatar opposite. */}
+                <Button variant="ghost" size="icon" className="size-11 shrink-0 rounded-full" aria-label={t("menu_open")}>
+                  <Icon node={shellIcons.sidebar} size={26} className="size-6.5" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">
@@ -341,8 +342,9 @@ export function Header() {
           <div className="flex justify-start">
             <Drawer direction="left" open={tabletOpen} onOpenChange={setTabletOpen}>
               <DrawerTrigger asChild>
-                <Button variant="ghost" size="icon" className="shrink-0" aria-label={t("menu_open")}>
-                  <Icon node={shellIcons.sidebar} size={20} />
+                {/* 44px: a comfortable tap target, the same size as the account avatar opposite. */}
+                <Button variant="ghost" size="icon" className="size-11 shrink-0 rounded-full" aria-label={t("menu_open")}>
+                  <Icon node={shellIcons.sidebar} size={26} className="size-6.5" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="flex h-full flex-col p-0">

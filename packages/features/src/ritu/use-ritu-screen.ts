@@ -1,13 +1,11 @@
 /**
  * The ritu page's header, shared by the website's `pages/Ritu.tsx` and the
- * app's `app/(tabs)/ritu.tsx`: title, the subtitle with the place, and the
- * Learn slugs under the seasons. The seasons themselves come from
+ * app's `app/(tabs)/ritu.tsx`: title and the subtitle with the place. Its Learn
+ * articles are in the related footer (PAGE_LEARN_SLUGS); the seasons come from
  * `useRituPage`.
  */
 import { displayLocationLabel, type PanchangaLocation } from "@vedic-patro/read-models/geography/panchanga-location";
 import { useLocale } from "@vedic-patro/i18n/react";
-
-const RITU_LEARN_SLUGS = ["why-seasons", "year-begins-baisakh"];
 
 export function useRituScreen(location: PanchangaLocation) {
   const { t, lang } = useLocale();
@@ -15,6 +13,5 @@ export function useRituScreen(location: PanchangaLocation) {
   return {
     title: t("ritu.title"),
     subtitle: `${t("ritu.subtitle")}${locationLabel ? ` · ${locationLabel}` : ""}`,
-    learnSlugs: RITU_LEARN_SLUGS,
   };
 }

@@ -1,5 +1,4 @@
 import { ArrowUp, ChevronRight, Hourglass, LocateFixed } from "lucide-react";
-import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useBrahmaManaPage, type BrahmaManaPage } from "@vedic-patro/features/brahma-mana";
@@ -305,7 +304,6 @@ export function BrahmaMana() {
         <p className="m-0 text-xs text-muted-foreground">{page.source}</p>
       </section>
 
-      <LearnMoreCard className="mt-7" slugs={page.learnSlugs} />
     </PageShell>
   );
 }
