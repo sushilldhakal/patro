@@ -27,7 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { AccountMenu } from "@/components/auth/AccountMenu";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { CalendarSystemToggle, shellIcons } from "@vedic-patro/ui/kit/shell";
+import { CalculationSystemToggle, CalendarSystemToggle, shellIcons } from "@vedic-patro/ui/kit/shell";
 import { Icon } from "@vedic-patro/ui";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { isJyotishRoute, isPanchangaRoute } from "@/lib/app-routes";
@@ -221,16 +221,20 @@ function MenuPreferences({ onNavigate }: { onNavigate?: () => void }) {
         </Link>
       ) : null}
       <div className="flex items-center justify-between gap-3">
-        <span className="text-sm text-foreground">{t("language")}</span>
-        <LanguageSwitcher />
-      </div>
-      <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-foreground">{t("calendar_system.label")}</span>
         <CalendarSystemToggle />
       </div>
       <div className="flex items-center justify-between gap-3">
-        <span className="text-sm text-foreground">{t("theme_toggle")}</span>
+        <span className="text-sm text-foreground">{t("language")}</span>
+        <LanguageSwitcher />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm text-foreground">{t("theme_label")}</span>
         <ThemeToggle showLabel />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm text-foreground">{t("calculation_system.label")}</span>
+        <CalculationSystemToggle />
       </div>
     </div>
   );

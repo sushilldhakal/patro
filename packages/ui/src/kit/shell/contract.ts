@@ -411,6 +411,10 @@ export type CalendarSystemToggleProps = {
   className?: string;
 };
 
+export type CalculationSystemToggleProps = {
+  className?: string;
+};
+
 export type PatroYearEraToggleProps = {
   era: Era;
   onEraChange: (era: Era) => void;
@@ -514,6 +518,7 @@ export type ShellKit = {
   PanchangaVivaranPanel: ComponentType<PanchangaVivaranPanelProps>;
   PatroYearEraToggle: ComponentType<PatroYearEraToggleProps>;
   CalendarSystemToggle: ComponentType<CalendarSystemToggleProps>;
+  CalculationSystemToggle: ComponentType<CalculationSystemToggleProps>;
   RituSeasons: ComponentType<RituSeasonsProps>;
   VerticalEdgeLabel: ComponentType<VerticalEdgeLabelProps>;
   MatrixTable: ComponentType<MatrixTableProps>;

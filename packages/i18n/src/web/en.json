@@ -12,6 +12,8 @@
   "calculation_system": {
     "label": "Calculation",
     "drik": "Drik (modern)",
+    "drik_short": "Drik",
+    "switch_aria": "Choose calculation",
     "drik_hint": "Modern ephemeris, as most panchangas use",
     "surya_siddhanta": "Surya Siddhanta",
     "surya_siddhanta_hint": "Traditional formulas, back to Satya Yuga",
@@ -3099,6 +3101,7 @@
     "tab": "Location"
   },
   "theme_toggle": "Toggle theme",
+  "theme_label": "Theme",
   "theme_light": "Light",
   "theme_dark": "Dark",
   "menu_open": "Open menu",

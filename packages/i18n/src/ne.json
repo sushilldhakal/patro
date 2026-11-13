@@ -12,6 +12,8 @@
   "calculation_system": {
     "label": "गणना पद्धति",
     "drik": "दृक् (आधुनिक)",
+    "drik_short": "दृक्",
+    "switch_aria": "गणना पद्धति छान्नुहोस्",
     "drik_hint": "आधुनिक खगोल गणना, धेरैजसो पात्रोले प्रयोग गर्ने",
     "surya_siddhanta": "सूर्य सिद्धान्त",
     "surya_siddhanta_hint": "परम्परागत सूत्र, सत्य युगसम्मको गणना",
@@ -4395,6 +4397,7 @@
     "tab": "स्थान"
   },
   "theme_toggle": "थिम परिवर्तन",
+  "theme_label": "थिम",
   "theme_light": "उज्यालो",
   "theme_dark": "अँध्यारो",
   "menu_open": "मेनु खोल्नुहोस्",

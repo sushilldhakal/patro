@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
+import { CalculationSystemToggle, CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
@@ -15,8 +16,9 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
  * data) either way, so a signed-out reader still reaches them. The build line for testers is at the
  * foot of that page.
  *
- * Above it, the three switches people reach for most — BS | AD, language and theme — so they
- * change in one tap without opening settings. Same controls as the settings page and toolbar.
+ * Above it, the switches people reach for most — BS | AD, language, theme and Drik | Surya
+ * Siddhanta — one labelled row each, so they change in one tap without opening settings. Same
+ * controls and order as the website's menu.
  */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
   const { t } = useLocale();
@@ -24,10 +26,19 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
   const { isAuthenticated } = useAuth();
   return (
     <View className="gap-4">
-      <View className="flex-row flex-wrap items-center gap-2">
-        <CalendarSystemToggle className="h-9" />
-        <LanguageSwitcher />
-        <ThemeSwitcher showLabel />
+      <View className="gap-3">
+        <PreferenceRow label={t("calendar_system.label")}>
+          <CalendarSystemToggle className="h-9" />
+        </PreferenceRow>
+        <PreferenceRow label={t("language")}>
+          <LanguageSwitcher />
+        </PreferenceRow>
+        <PreferenceRow label={t("theme_label")}>
+          <ThemeSwitcher showLabel />
+        </PreferenceRow>
+        <PreferenceRow label={t("calculation_system.label")}>
+          <CalculationSystemToggle className="h-9" />
+        </PreferenceRow>
       </View>
       <Pressable
         onPress={() => onNavigate("/account")}
@@ -40,6 +51,17 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
         </View>
         <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </Pressable>
+    </View>
+  );
+}
+
+function PreferenceRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View className="min-h-9 flex-row items-center justify-between gap-3">
+      <Text className="min-w-0 flex-1 text-sm text-foreground" numberOfLines={1}>
+        {label}
+      </Text>
+      {children}
     </View>
   );
 }

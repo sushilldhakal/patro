@@ -35,6 +35,8 @@ export const strings = {
   "calendar_system.onboarding_title": { ne: "तपाईंले कुन मिति प्रयोग गर्नुहुन्छ?", en: "Which dates do you use?" },
   "calculation_system.label": { ne: "गणना पद्धति", en: "Calculation" },
   "calculation_system.drik": { ne: "दृक् (आधुनिक)", en: "Drik (modern)" },
+  "calculation_system.drik_short": { ne: "दृक्", en: "Drik" },
+  "calculation_system.switch_aria": { ne: "गणना पद्धति छान्नुहोस्", en: "Choose calculation" },
   "calculation_system.drik_hint": { ne: "आधुनिक खगोल गणना, धेरैजसो पात्रोले प्रयोग गर्ने", en: "Modern ephemeris, as most panchangas use" },
   "calculation_system.surya_siddhanta": { ne: "सूर्य सिद्धान्त", en: "Surya Siddhanta" },
   "calculation_system.surya_siddhanta_hint": { ne: "परम्परागत सूत्र, सत्य युगसम्मको गणना", en: "Traditional formulas, back to Satya Yuga" },
@@ -5156,6 +5158,7 @@ export const strings = {
 
   /* ── theme_toggle ────────────────────────────────────────────────────── */
   "theme_toggle": { ne: "थिम परिवर्तन", en: "Toggle theme" },
+  "theme_label": { ne: "थिम", en: "Theme" },
 
   /* ── theme_light ─────────────────────────────────────────────────────── */
   "theme_light": { ne: "उज्यालो", en: "Light" },
