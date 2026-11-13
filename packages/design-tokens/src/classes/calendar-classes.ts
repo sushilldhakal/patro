@@ -72,7 +72,6 @@ export const calendarClasses = {
   festival: "text-center text-xs font-semibold leading-tight",
   festivalHoliday: "text-danger",
   festivalNormal: "text-foreground",
-  festivalExtra: "text-diagram-xs font-medium leading-tight opacity-90",
   festivalExtraStack: "gap-px",
 
   // ── Festival list (dialog on the website, sheet in the app) ───────────────

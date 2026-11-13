@@ -43,9 +43,11 @@ export type BsCalendarCell = {
   leftFest?: string;
   rightFest?: string;
   /**
-   * Festivals a phone-width cell does not write out: it names one festival when there are three or
-   * more, and every festival when there are one or two.
+   * The one festival line a phone-width cell writes: the first festival's name, or only its first word
+   * when the whole name is too long for the narrow cell; absent when even that would not fit.
    */
+  compactFest?: string;
+  /** Festivals a phone-width cell does not write out (all but `compactFest`); they are counted in "+N". */
   hiddenFestCompact: number;
   festivalsTitle: string;
   /** The signed-in user's events, tasks and appointments on this day (titles, earliest first). */
@@ -142,7 +144,8 @@ export function useBsCalendarGrid({
     const festCount = festivals.length;
     const eventTitles = !isOutside && events?.length ? eventsOnDate(events, day.date_ad).map((e) => e.title) : [];
     const eventCount = eventTitles.length;
-    const hiddenFestCompact = festCount > 2 ? festCount - 1 : 0;
+    const compactFest = festivals[0] ? compactFestivalLabel(festivals[0]) : undefined;
+    const hiddenFestCompact = festCount - (compactFest ? 1 : 0);
     const hiddenFestWide = Math.max(0, festCount - 3);
     const moreCompact = hiddenFestCompact + eventCount;
     const moreWide = hiddenFestWide + eventCount;
@@ -168,6 +171,7 @@ export function useBsCalendarGrid({
       mainFest: festivals[0],
       leftFest: festivals[1],
       rightFest: festivals[2],
+      compactFest,
       hiddenFestCompact,
       festivalsTitle: festivals.join(" · "),
       eventTitles,
@@ -222,4 +226,20 @@ export function useBsCalendarGrid({
     openFestivals: (cell: BsCalendarCell) => setFestivalDay({ day: cell.day, festivals: cell.festivals }),
     closeFestivals: () => setFestivalDay(null),
   };
+}
+
+/** Longest festival label (in code points) one line of a phone-width cell holds. */
+const COMPACT_FEST_MAX_DEVANAGARI = 10;
+const COMPACT_FEST_MAX_LATIN = 12;
+
+/**
+ * A phone cell's one festival line: the whole name when it fits, else its first word
+ * ("पापांकुशा एकादशी व्रत" → "पापांकुशा"), else nothing (the cell then shows only "+N").
+ */
+export function compactFestivalLabel(name: string): string | undefined {
+  const max = /[\u0900-\u097F]/.test(name) ? COMPACT_FEST_MAX_DEVANAGARI : COMPACT_FEST_MAX_LATIN;
+  const trimmed = name.trim();
+  if ([...trimmed].length <= max) return trimmed;
+  const first = trimmed.split(/[\s/,(]+/)[0];
+  return first && [...first].length <= max ? first : undefined;
 }

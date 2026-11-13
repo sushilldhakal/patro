@@ -120,7 +120,7 @@ export function BsCalendarGrid({
               const cellIndex = rowIndex * 7 + colIndex;
               if (!cell) return <View key={`empty-${cellIndex}`} style={colStyle(col, { minHeight: cellMinH })} className={cal.emptyCell} />;
 
-              const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, festivals, hasFestival, mainFest, leftFest, rightFest, hiddenFestCompact, tithi } = cell;
+              const { isOutside, isToday, isSelected, isWeekend, isPublicHoliday, hasFestival, mainFest, compactFest, leftFest, rightFest, tithi } = cell;
               /* The web mixes these tints into the card (`color-mix`); native has only the
                  translucent tint, so it is laid over the card instead of replacing it —
                  otherwise the grid lines' colour shows through. Holiday wins, as on the web. */
@@ -239,22 +239,15 @@ export function BsCalendarGrid({
                     </RNPressable>
                   ) : null}
 
-                  {mainFest && !isOutside ? (
+                  {(isCompact ? compactFest : mainFest) && !isOutside ? (
                     <View className={cn("w-full min-w-0", cal.festivalExtraStack)}>
                       {/* Tablet: the festival's name opens its details. A phone cell is too small to
-                          split, so a tap there selects the day. */}
+                          split, so a tap there selects the day; it writes one line, the rest are in "+N". */}
                       <RNPressable disabled={isCompact} onPress={openFestivals} accessibilityRole={isCompact ? undefined : "button"}>
-                        <Text numberOfLines={isCompact ? 2 : 1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
-                          {mainFest}
+                        <Text numberOfLines={1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                          {isCompact ? compactFest : mainFest}
                         </Text>
                       </RNPressable>
-                      {isCompact && festivals.length > 1 && hiddenFestCompact === 0
-                        ? festivals.slice(1, 3).map((name, fi) => (
-                            <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("text-left", cal.festivalExtra, isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
-                              {name}
-                            </Text>
-                          ))
-                        : null}
                     </View>
                   ) : null}
                   {hasFestival && !mainFest ? <View className="mt-0.5 h-1 w-1 rounded-full bg-accent" /> : null}

@@ -131,13 +131,12 @@ function DayCell({
     isSelected,
     isWeekend,
     isPublicHoliday,
-    festivals,
     hasFestival,
     mainFest,
     leftFest,
     rightFest,
     tithi,
-    hiddenFestCompact,
+    compactFest,
   } = cell;
   const edgeTone = isPublicHoliday ? "text-danger" : "text-foreground/85";
 
@@ -177,7 +176,7 @@ function DayCell({
           {tithi ? (
             <Text
               className={cn("w-full md:text-sm", cal.tithi, cal.tithiPhone)}
-              webClassName="max-md:line-clamp-2 max-md:whitespace-normal max-md:pt-2.5 max-md:leading-tight max-xs:text-diagram-xs"
+              webClassName="max-md:line-clamp-2 max-md:whitespace-normal max-md:pr-3.5 max-md:leading-tight max-xs:text-diagram-xs"
               numberOfLines={1}
             >
               {softBreakTithi(tithi)}
@@ -243,14 +242,15 @@ function DayCell({
               isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal,
             )}
           >
-            <Text numberOfLines={2}>{mainFest}</Text>
-            {festivals.length > 1 && hiddenFestCompact === 0
-              ? festivals.slice(1, 3).map((name, fi) => (
-                  <Text key={`${name}-${fi}`} numberOfLines={1} className={cn("md:hidden", cal.festivalExtra)}>
-                    {name}
-                  </Text>
-                ))
-              : null}
+            {/* Phone width: one line, the rest are in "+N". */}
+            {compactFest ? (
+              <Text numberOfLines={1} className="md:hidden">
+                {compactFest}
+              </Text>
+            ) : null}
+            <Text numberOfLines={2} className="max-md:hidden">
+              {mainFest}
+            </Text>
           </Text>
         ) : null}
       </Box>
