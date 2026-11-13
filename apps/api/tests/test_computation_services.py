@@ -344,28 +344,25 @@ class TestRashiService:
             s = rashi_service.ritu(jd, lat=-33.9)["number"]
             assert (n - 1 + 3) % 6 == s - 1
 
-    def test_ritu_is_the_real_sky_under_the_surya_siddhanta(self):
-        """The Surya Siddhanta's sayana longitude drifts from the real one; ritu must not."""
+    def test_surya_siddhanta_ritu_follows_the_real_precession(self):
+        """Under the Surya Siddhanta (no ephemeris) the tropical Sun is the text's Sun
+        turned by the real precession: within 2.5° of the real sky for 1000–2500 CE,
+        where the text's own trepidating ayanamsha drifts 8° off by 2500."""
+        from engine.astronomy import tropical_year as ty
         from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
 
-        for jd in SAMPLE_JDS:
-            drik = rashi_service.ritu(jd, lat=-33.9)
+        for year in range(1000, 2501, 100):
+            jd = 2451545.0 + (year - 2000) * 365.25
+            real = ty.sun_longitude(jd)
             with use_siddhanta(SURYA_SIDDHANTA):
-                assert rashi_service.ritu(jd, lat=-33.9) == drik
+                text = ty.sun_longitude(jd)
+            assert abs(((text - real + 540) % 360) - 180) < 2.5, year
 
     def test_ritu_and_ayana_have_no_sidereal_variant(self):
         with pytest.raises(TypeError):
             rashi_service.ritu(SAMPLE_JDS[0], sidereal=True)
         with pytest.raises(TypeError):
             rashi_service.aayan(SAMPLE_JDS[0], sidereal=True)
-
-    def test_ayana_is_the_real_sky_under_the_surya_siddhanta(self):
-        from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
-
-        for jd in SAMPLE_JDS:
-            drik = rashi_service.aayan(jd)
-            with use_siddhanta(SURYA_SIDDHANTA):
-                assert rashi_service.aayan(jd) == drik
 
     def test_aayan_flips_at_the_makara_boundary(self):
         """Uttarayana is tropical Makara→Mithuna (solstice to solstice); the mark agrees with the name."""

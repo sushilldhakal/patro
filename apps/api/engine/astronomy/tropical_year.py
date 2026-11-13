@@ -5,11 +5,12 @@ this module: the daily panchanga, the month and year grids, the seasons page,
 the साइत / muhurta rules, the birth panchanga and the festival days that mark
 the Sun's turn. Nothing else may cut a season or an ayana from a longitude.
 
-Both are read from the Sun's real apparent tropical (sayana) longitude, from
-the Swiss Ephemeris, whatever siddhanta a request computes in: the seasons are
-where the Sun really is, and neither the sidereal rashi (Makar / Karka
-Sankranti, which lag the solstices by the ayanamsa) nor the Surya Siddhanta's
-sayana model (its nirayana longitude plus a trepidating ayanamsha) follows them.
+Both are read from the Sun's tropical (sayana) longitude — its place against
+the equinox — never from the sidereal rashi (Makar / Karka Sankranti lag the
+solstices by the ayanamsa). Under drik that is the real sky from the Swiss
+Ephemeris. A Surya Siddhanta request may not consult the ephemeris, so there
+the text's Sun is turned tropical by the real precession, not by the text's
+trepidating ayanamsha (see ``sun_longitude``).
 
 * ऋतु — six 60° arcs from 330°: Vasanta 330–30 (vernal equinox mid-arc),
   Grishma 30–90, Varsha from the June solstice (90°), Sharad 150–210 (autumnal
@@ -60,9 +61,39 @@ def julian_day(moment: datetime) -> float:
     return _drik().julian_day(moment)
 
 
+#: Real precession of the equinoxes: the IAU 2006 general precession in longitude,
+#: linear term (5028.796195″ per Julian century). Linear on purpose: it carries
+#: the equinox round at the real ~25,770-year rate for any date, where the
+#: polynomial's higher terms run away outside a few millennia.
+PRECESSION_DEG_PER_DAY = 5028.796195 / 3600 / 36525
+#: Lahiri ayanamsha at J2000.0 (23° 51′ 11″) — anchors that drift to the sidereal frame.
+AYANAMSHA_J2000_DEG = 23.853056
+J2000 = 2451545.0
+
+
+def precession_ayanamsha(jd: float) -> float:
+    """Sidereal → tropical offset from the real, steady precession (not a trepidation)."""
+    return AYANAMSHA_J2000_DEG + (jd - J2000) * PRECESSION_DEG_PER_DAY
+
+
 def sun_longitude(jd: float) -> float:
-    """Apparent geocentric tropical Sun longitude [0, 360) — the real sky."""
-    return _drik().sun_longitude(jd, sidereal=False) % 360.0
+    """Tropical (sayana) Sun longitude [0, 360) — where the Sun is against the equinox.
+
+    * Drik (the default): the apparent tropical longitude from the Swiss Ephemeris,
+      the real sky.
+    * Surya Siddhanta: such a request never consults the ephemeris (it reaches dates
+      the ephemeris does not cover, back to the Satya Yuga). So the Sun's place comes
+      from the text itself (its nirayana longitude) and is turned tropical by the
+      REAL precession above — not by the text's own trepidating ayanamsha (±27°,
+      which would drift the seasons away from the solstices). Ritu and ayana stay
+      tropical under both systems.
+    """
+    from engine.astronomy.siddhanta import DRIK, current_siddhanta
+
+    active = current_siddhanta()
+    if active.id == DRIK:
+        return _drik().sun_longitude(jd, sidereal=False) % 360.0
+    return (active.engine.sun_longitude(jd, sidereal=True) + precession_ayanamsha(jd)) % 360.0
 
 
 def signed_diff(deg: float) -> float:

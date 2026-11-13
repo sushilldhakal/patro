@@ -42,12 +42,17 @@ def test_ritus_are_60_degree_arcs_with_the_solstices_on_their_edges():
     assert ritu_at(2026, 3, 20) == "Vasanta" and ritu_at(2026, 9, 23) == "Sharad"
 
 
-def test_season_boundaries_ignore_the_surya_siddhanta():
-    """The seasons page shows the real sky's tropical ritus whatever siddhanta is chosen."""
+def test_season_boundaries_stay_tropical_under_the_surya_siddhanta():
+    """Same seasons on the same days under either system — the Surya Siddhanta's
+    boundaries come from the real precession, so they sit within a day of drik's."""
     from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
 
     now = datetime(2026, 11, 12, 6, tzinfo=timezone.utc)
     drik = tropical_season_cycle(now)
     with use_siddhanta(SURYA_SIDDHANTA):
-        assert tropical_season_cycle(now) == drik
+        text = tropical_season_cycle(now)
     assert drik[0]["slot"] == 4  # mid-November is Hemanta, not the sidereal Sharad
+    assert [b["slot"] for b in text] == [b["slot"] for b in drik]
+    for a, b in zip(drik, text):
+        gap = abs(datetime.fromisoformat(a["start_instant_utc"]) - datetime.fromisoformat(b["start_instant_utc"]))
+        assert gap.total_seconds() < 86400, (a, b)
