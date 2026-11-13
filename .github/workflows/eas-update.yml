@@ -4,7 +4,9 @@ name: EAS Update
 # main that touches the app or the shared packages. Run by hand (Actions -> EAS
 # Update -> Run workflow) it can publish to `production` instead: the channel
 # App Store / Play Store builds listen on (eas.json), i.e. an OTA to live users
-# whose installed build has the same runtime (app version, app.json). A preview build installs
+# whose installed build has the same runtime (app version, app.json). A push
+# whose last commit message contains [ota production] publishes to production
+# too, for when the workflow cannot be started by hand. A preview build installs
 # it by itself (lib/use-preview-auto-update.ts); a development build can open
 # it from the dev launcher's update list.
 #
@@ -18,6 +20,7 @@ on:
       - "apps/mobile/**"
       - "packages/**"
       - "package-lock.json"
+      - ".github/workflows/eas-update.yml"
   workflow_dispatch:
     inputs:
       channel:
@@ -31,7 +34,7 @@ on:
         required: false
 
 concurrency:
-  group: eas-update-${{ inputs.channel || 'preview' }}
+  group: eas-update-${{ inputs.channel || (contains(github.event.head_commit.message, '[ota production]') && 'production') || 'preview' }}
   cancel-in-progress: true
 
 jobs:
@@ -63,7 +66,7 @@ jobs:
         env:
           # Through the environment, so quotes in a commit message can't break the command.
           MESSAGE: ${{ inputs.message || github.event.head_commit.message || 'Manual run' }}
-          CHANNEL: ${{ inputs.channel || 'preview' }}
+          CHANNEL: ${{ inputs.channel || (contains(github.event.head_commit.message, '[ota production]') && 'production') || 'preview' }}
         run: >
           eas update
           --channel "$CHANNEL"
