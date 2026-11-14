@@ -185,9 +185,9 @@ export function useGocharPage({
           chip: r.monthChip,
           name: ingressGrahaLabel(r.event, lng),
           detail: ingressEventDetail(r.event, lng),
-          relative: relativeDayLabel(daysFromRef(r.rowDateAd, refDateAd), lng, digits),
+          relative: relativeDayLabel(daysFromRef(r.rowDateAd, todayAd), lng, digits),
         })),
-    [allRows, filter, lng, refDateAd, digits],
+    [allRows, filter, lng, todayAd, digits],
   );
 
   const monthLabel = browse
