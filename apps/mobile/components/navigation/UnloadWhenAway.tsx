@@ -1,9 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { View } from "react-native";
 import { useThemeColors } from "@/lib/theme-context";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 
-/** How long a tab stays loaded after you leave it, so a quick look elsewhere and back is instant. */
-const UNLOAD_AFTER_MS = 20_000;
+/**
+ * How long a tab stays loaded after you leave it, so a quick look elsewhere and back is instant.
+ * Low-memory phones give a left tab's memory back much sooner.
+ */
+const UNLOAD_AFTER_MS = IS_LOW_MEMORY_DEVICE ? 3_000 : 20_000;
 
 type TabNavigation = {
   isFocused: () => boolean;

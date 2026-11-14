@@ -34,6 +34,9 @@ export function useReducedMotionPref(): boolean {
   return false;
 }
 
+/** Native-only (low-memory phones); the website ignores it. */
+export function setLowMemoryMotion(_low: boolean): void {}
+
 /** The website never vibrates. */
 export const haptics = {
   tick(): void {},

@@ -42,9 +42,23 @@ export const PRESS_SCALE = motion.native.pressScale;
 export const ENTER_SCALE = motion.native.enterScale;
 export const SHIFT = motion.native.shift;
 
-/** True when the OS asks for reduced motion. Scale and translation should drop; fades stay. */
+let lowMemoryMotion = false;
+
+/**
+ * The app calls this once at startup, before anything renders, on phones short on RAM. Motion
+ * then behaves as if the OS asked for Reduce Motion: less animation work on a weak main thread.
+ */
+export function setLowMemoryMotion(low: boolean): void {
+  lowMemoryMotion = low;
+}
+
+/**
+ * True when the OS asks for reduced motion, or on a low-memory phone. Scale and translation
+ * should drop; fades stay.
+ */
 export function useReducedMotionPref(): boolean {
-  return useReducedMotion();
+  const reduced = useReducedMotion();
+  return reduced || lowMemoryMotion;
 }
 
 function fire(run: () => Promise<void>): void {

@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 
-/** How long a screen has to stay out of sight before its GL scenes give their memory back. */
-const RELEASE_AFTER_MS = 12_000;
+/**
+ * How long a screen has to stay out of sight before its GL scenes give their memory back.
+ * Low-memory phones free it almost at once.
+ */
+const RELEASE_AFTER_MS = IS_LOW_MEMORY_DEVICE ? 1_000 : 12_000;
 
 /**
  * Whether the screen this runs in is showing: focused in its navigator and the app in the

@@ -3,6 +3,7 @@ import { WidgetRefresher } from "@/components/widgets/WidgetRefresher";
 import { AppDayTracker } from "@/components/review/AppDayTracker";
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
+import { DEVICE_MEMORY_GB, IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
 import * as Sentry from "@sentry/react-native";
 import { deviceStore } from "@/lib/device-store";
@@ -89,6 +90,9 @@ Sentry.init({
   tracesSampleRate: 0.2,
   integrations: [sentryNavigation],
 });
+// Lets Sentry split ANRs and crashes by RAM tier, to see whether low-memory mode helps.
+Sentry.setTag("low_memory_mode", IS_LOW_MEMORY_DEVICE ? "on" : "off");
+if (DEVICE_MEMORY_GB !== null) Sentry.setTag("device_ram_gb", String(DEVICE_MEMORY_GB));
 
 Observe.configure({
   environment: Updates.channel || (__DEV__ ? "development" : "production"),

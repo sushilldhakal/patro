@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { View } from "react-native";
 import Animated, {
   measure,
   useAnimatedReaction,
@@ -10,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { pageViewportH, usePageScrollY } from "@/lib/scroll-motion";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 
 /** How far a block rises as it arrives. */
 const RISE = 32;
@@ -31,6 +33,13 @@ const VIEW_EDGE = 56;
  * layout inside is untouched. Reduce Motion keeps the fade and drops the rise.
  */
 export function Reveal({ children, index = 0 }: { children: ReactNode; index?: number }) {
+  // Low-memory phones show the content at once: no animated view, and no reaction that re-runs
+  // on every scroll frame for each block. Same single wrapper view, so layout doesn't change.
+  if (IS_LOW_MEMORY_DEVICE) return <View>{children}</View>;
+  return <AnimatedReveal index={index}>{children}</AnimatedReveal>;
+}
+
+function AnimatedReveal({ children, index }: { children: ReactNode; index: number }) {
   const reduced = useReducedMotionPref();
   const { scrollY, scrolls: waitsForScroll } = usePageScrollY();
   const ref = useAnimatedRef<Animated.View>();
