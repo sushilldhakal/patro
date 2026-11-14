@@ -49,10 +49,10 @@ def test_card_links_are_unique_per_day_and_carry_the_card():
     assert fpc.card_page_url("d1", date(2026, 10, 13)) != a
 
 
-def test_app_link_defaults_to_the_sites_app_page(monkeypatch):
+def test_app_link_defaults_to_the_sites_download_page(monkeypatch):
     monkeypatch.setenv("FRONTEND_URL", "https://www.vedicpatro.com")
-    assert "app=www.vedicpatro.com%2Fapp" in fpc.card_page_url("d1", date(2026, 10, 13))  # scheme stripped for the image
-    assert fpc.app_caption_line().strip() == "मोबाइल एप: https://www.vedicpatro.com/app"
+    assert "app=www.vedicpatro.com%2Fdownload" in fpc.card_page_url("d1", date(2026, 10, 13))  # scheme stripped for the image
+    assert fpc.app_caption_line().strip() == "मोबाइल एप: https://www.vedicpatro.com/download"
     monkeypatch.setenv("APP_LINK", "https://vedicpatro.com/get")
     assert fpc.app_caption_line().strip() == "मोबाइल एप: https://vedicpatro.com/get"
     monkeypatch.setenv("APP_LINK", "off")

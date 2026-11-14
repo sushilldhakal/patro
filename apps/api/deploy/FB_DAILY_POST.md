@@ -25,8 +25,8 @@ Store when the app does not open; a computer stays on the web app. Facebook's cr
 sent to `/share/panchanga` by nginx and never runs the script, so the card is unchanged.
 
 **Mobile-app link slot:** the two extra cards fill the slot at the bottom right of the
-image, and their captions end with `मोबाइल एप: https://www.vedicpatro.com/app` — the same
-phone-to-app / computer-to-web page. Set `APP_LINK` to use another link, `off` to hide it.
+image, and their captions end with `मोबाइल एप: https://www.vedicpatro.com/download` — the store
+page (phone → App Store / Google Play, computer → home). Set `APP_LINK` to use another link, `off` to hide it.
 
 Preview a card without Facebook: open
 `/panchanga/og-preview?card=periods` (or `card=d1`, optionally `&app=text`) on the site,
