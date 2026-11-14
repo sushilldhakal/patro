@@ -439,6 +439,32 @@ export const strings = {
     ne: "विवाह साइत, शुभ विवाह, marriage muhurta",
     en: "vivah saait, marriage muhurta, wedding dates nepal, shubha vivah",
   },
+  /* /sait/:category — {{name}} is sait.categories.<id> */
+  "seo.routes.sait_page.title": {
+    ne: "{{name}} साइत {{bsYearNe}} — शुभ मिति र मुहूर्त | वैदिक पात्रो",
+    en: "{{name}} Saait {{bsYear}} — Auspicious Dates & Muhurta | Vedic Patro",
+  },
+  "seo.routes.sait_page.description": {
+    ne: "वि.सं. {{bsYearNe}} का {{name}} साइत — शुभ मिति, समय र लग्न, नेपाली पात्रो र वैदिक ज्योतिष अनुसार।",
+    en: "Auspicious {{name}} dates for BS {{bsYear}} ({{adYear}}) — date, time and lagna from the Nepali patro and Vedic jyotish.",
+  },
+  "seo.routes.sait_page.keywords": {
+    ne: "{{name}} साइत, {{name}} साइत {{bsYearNe}}, शुभ साइत, शुभ मुहूर्त",
+    en: "{{name}} saait, {{name}} muhurta {{adYear}}, auspicious dates nepal, shubha muhurta",
+  },
+  /* /panchanga/element/:name — {{name}} / {{blurb}} are panchanga_elements.<id>.* */
+  "seo.routes.element_page.title": {
+    ne: "आजको {{name}} · {{blurb}} | वैदिक पात्रो",
+    en: "Today's {{name}} · {{blurb}} | Vedic Patro",
+  },
+  "seo.routes.element_page.description": {
+    ne: "आजको {{name}}: {{blurb}}। सूर्योदयदेखि अर्को सूर्योदयसम्मको समय, तपाईंको स्थान अनुसार — वैदिक पात्रो।",
+    en: "Today's {{name}}: {{blurb}}. Times from sunrise to the next sunrise for your location — Vedic Patro.",
+  },
+  "seo.routes.element_page.keywords": {
+    ne: "आजको {{name}}, {{name}}, पञ्चाङ्ग, नेपाली पात्रो",
+    en: "today's {{name}}, {{name}}, panchang, nepali calendar",
+  },
 
   /* ── brand_vedic ─────────────────────────────────────────────────────── */
   "brand_vedic": { ne: "वैदिक", en: "Vedic" },

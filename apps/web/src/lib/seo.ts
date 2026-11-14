@@ -97,6 +97,28 @@ export function resolvePageSeo(pathname: string, t: TFunc): PageSeoMeta {
     }
   }
 
+  // Per-item pages: their own title/description, not the home page's (they were
+  // all sharing it, which Google reads as duplicates of `/`).
+  const saitMatch = normalized.match(/^\/sait\/([^/]+)$/);
+  const elementMatch = normalized.match(/^\/panchanga\/element\/([^/]+)$/);
+  const itemKey = saitMatch ? "seo.routes.sait_page" : elementMatch ? "seo.routes.element_page" : null;
+  if (itemKey) {
+    const id = (saitMatch ?? elementMatch)![1]!;
+    const name = t(saitMatch ? `sait.categories.${id}` : `panchanga_elements.${id}.title`);
+    const known = !name.startsWith("sait.") && !name.startsWith("panchanga_elements.");
+    if (known) {
+      const vars = { ...years, name, blurb: elementMatch ? t(`panchanga_elements.${id}.blurb`) : "" };
+      return {
+        title: t(`${itemKey}.title`, vars),
+        description: t(`${itemKey}.description`, vars),
+        keywords: t(`${itemKey}.keywords`, vars),
+        canonical,
+        noindex,
+        type: "website",
+      };
+    }
+  }
+
   const routeKey = ROUTE_SEO_KEYS[normalized];
   if (routeKey) {
     const keywords = t(`${routeKey}.keywords`, years);

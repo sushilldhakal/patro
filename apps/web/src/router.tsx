@@ -18,6 +18,7 @@ import { PanchangaShellLayout } from "./components/panchanga/PanchangaShellLayou
 import { PanchangaLocationProvider } from "./components/panchanga/use-panchanga-location";
 import { Home } from "./pages/Home";
 import { lazyRoute } from "./lib/lazy-route";
+import { RouteHeading } from "./components/seo/RouteHeading";
 import { RouteLoadingProvider } from "./lib/route-loading";
 import { PANCHANGA_SHELL_PATHS as PANCHANGA_SHELL_PATHS_CANONICAL } from "@vedic-patro/domain/panchanga/panchanga-shell-paths";
 import {
@@ -106,6 +107,7 @@ const rootRoute = createRootRoute({
             {/* Bottom padding on small screens so page content clears the floating
                 MobileBottomNav; removed at lg where the bar is hidden. */}
             <div className="pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
+              <RouteHeading />
               <Outlet />
               <SiteFooter />
             </div>

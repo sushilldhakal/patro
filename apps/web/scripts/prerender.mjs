@@ -54,6 +54,11 @@ let failed = 0;
 for (const pathname of PRERENDER_PATHS) {
   try {
     const appHtml = await render(pathname);
+    // A page whose markup has no visible text is what a crawler gets as a blank page.
+    const visible = appHtml.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, " ").trim();
+    if (visible.length < 200) {
+      throw new Error(`rendered almost no text (${visible.length} chars) — crawlers would see an empty page`);
+    }
     const headHtml = await buildHeadHtmlForPath(pathname);
     const html = inject(template, pathname, appHtml, headHtml);
     const outPath = outFileForPath(pathname);

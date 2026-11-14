@@ -5,6 +5,9 @@ type ModuleLoader = () => Promise<Record<string, ComponentType<unknown>>>;
 
 const eagerCache = new Map<string, ComponentType<unknown>>();
 
+/** Every lazyRoute's loader, so the SSR prerender can preload all of them (see preloadLazyRoutes). */
+const ssrLoaders = new Map<string, ModuleLoader>();
+
 const RELOAD_FLAG = "chunk-reload-at";
 
 /**
@@ -51,6 +54,7 @@ export function lazyRoute<
   const key = String(exportName);
 
   if (import.meta.env.SSR) {
+    ssrLoaders.set(key, loader as ModuleLoader);
     return function SsrRoute() {
       const Comp = eagerCache.get(key);
       if (!Comp) {
@@ -73,12 +77,11 @@ export function lazyRoute<
   };
 }
 
-/** Called from entry-server before renderToString. */
-export async function preloadLazyRoutes(loaders: ModuleLoader[], exportNames: string[]) {
+/** Called from entry-server before renderToString: loads every page module lazyRoute registered. */
+export async function preloadLazyRoutes() {
   await Promise.all(
-    loaders.map(async (load, i) => {
+    [...ssrLoaders].map(async ([name, load]) => {
       const mod = await load();
-      const name = exportNames[i]!;
       eagerCache.set(name, mod[name] as ComponentType<unknown>);
     }),
   );

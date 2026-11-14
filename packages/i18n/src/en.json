@@ -234,6 +234,16 @@
         "title": "Marriage Saait {{bsYear}} | Vedic Patro",
         "description": "Auspicious vivāha dates and muhurta for the browsed year — lagna-based marriage saait for Nepal.",
         "keywords": "vivah saait, marriage muhurta, wedding dates nepal, shubha vivah"
+      },
+      "sait_page": {
+        "title": "{{name}} Saait {{bsYear}} — Auspicious Dates & Muhurta | Vedic Patro",
+        "description": "Auspicious {{name}} dates for BS {{bsYear}} ({{adYear}}) — date, time and lagna from the Nepali patro and Vedic jyotish.",
+        "keywords": "{{name}} saait, {{name}} muhurta {{adYear}}, auspicious dates nepal, shubha muhurta"
+      },
+      "element_page": {
+        "title": "Today's {{name}} · {{blurb}} | Vedic Patro",
+        "description": "Today's {{name}}: {{blurb}}. Times from sunrise to the next sunrise for your location — Vedic Patro.",
+        "keywords": "today's {{name}}, {{name}}, panchang, nepali calendar"
       }
     }
   },
