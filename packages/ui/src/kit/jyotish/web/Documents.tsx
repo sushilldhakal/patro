@@ -95,13 +95,21 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
           <Box className={documentsClasses.verseProgressFill} webClassName="transition-[width]" widthPercent={card.progressPct} />
         </Box>
       ) : null}
-      {meaning ? (
+      {meaning || card.sections.length ? (
         <Box className={documentsClasses.verseMeaningWrap}>
           <button type="button" onClick={onToggleMeaning} aria-expanded={meaningOpen} className={cn(documentsClasses.verseMeaningToggle, documentsClasses.verseMeaningToggleText, "inline-flex items-center")}>
             {card.copy.meaning}
             <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
           </button>
-          {meaningOpen ? <Text as="p" className={cn(documentsClasses.verseMeaning, "whitespace-pre-line")}>{meaning}</Text> : null}
+          {meaningOpen && meaning ? <Text as="p" className={cn(documentsClasses.verseMeaning, "whitespace-pre-line")}>{meaning}</Text> : null}
+          {meaningOpen
+            ? card.sections.map((section) => (
+                <Box key={section.key} className={documentsClasses.verseSection}>
+                  <Text as="p" className={documentsClasses.verseSectionTitle}>{section.title}</Text>
+                  <Text as="p" className={cn(section.working ? documentsClasses.verseSectionWorking : documentsClasses.verseSectionBody, "whitespace-pre-line")}>{section.body}</Text>
+                </Box>
+              ))
+            : null}
         </Box>
       ) : null}
     </section>

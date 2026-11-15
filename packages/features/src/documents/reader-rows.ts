@@ -6,6 +6,7 @@
 import type { DocumentChapter, Shloka } from "@vedic-patro/api-client";
 import { suktaAttribution } from "@vedic-patro/domain/learn/sukta-attribution";
 import type { TFunction } from "@vedic-patro/i18n/react";
+import { suryaFiguresFor, type FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
 
 export type ReaderRow =
   | {
@@ -27,6 +28,7 @@ export type ReaderRow =
       sukta: number;
     }
   | { kind: "images"; key: string; urls: string[] }
+  | { kind: "surya-figure"; key: string; figure: FigureKey }
   | { kind: "verse"; key: string; shloka: Shloka };
 
 export type RowText = { t: TFunction; lang: string; digits: (n: number) => string };
@@ -153,4 +155,46 @@ export function inlineChapterRows(chapters: readonly DocumentChapter[], text: Ro
       : []),
     ...versesToRows(chapter.shlokas ?? [], text, `c${chapter.number ?? 0}-`),
   ]);
+}
+
+/**
+ * The Surya Siddhanta's diagrams, each placed before the verse card that holds the verse it
+ * explains. A card may carry several verses ("२९–३२"); its `verse_number` is the first. A
+ * figure waits until the card after its verse is loaded, so it never lands one card early.
+ */
+export function withSuryaFigures(rows: ReaderRow[], chapter: number, atStart: boolean, atEnd: boolean): ReaderRow[] {
+  const places = suryaFiguresFor(chapter);
+  if (!places.length) return rows;
+  const verseIdx = rows.flatMap((row, i) => (row.kind === "verse" ? [i] : []));
+  // The chapter page leaves out `verse_number`; the label's first number is the card's first verse.
+  const first = (j: number) => {
+    const shloka = (rows[verseIdx[j]!] as { shloka: Shloka }).shloka;
+    return shloka.verse_number ?? (Number.parseInt(canonVerseLabel(shloka.verse_label), 10) || 0);
+  };
+  const before = new Map<number, FigureKey[]>();
+  for (const place of places) {
+    let host = -1;
+    for (let j = 0; j < verseIdx.length; j += 1) {
+      if (first(j) <= place.verse) host = j;
+      else break;
+    }
+    if (host < 0) {
+      // the first loaded card is past this verse: only right at the chapter's start
+      if (!atStart || !verseIdx.length) continue;
+      host = 0;
+    } else if (host === verseIdx.length - 1 && !atEnd) {
+      if (first(host) !== place.verse) continue;
+    } else if (host === 0 && !atStart) {
+      if (first(0) !== place.verse) continue;
+    }
+    const at = verseIdx[host]!;
+    before.set(at, [...(before.get(at) ?? []), place.key]);
+  }
+  if (!before.size) return rows;
+  const out: ReaderRow[] = [];
+  rows.forEach((row, i) => {
+    for (const figure of before.get(i) ?? []) out.push({ kind: "surya-figure", key: `surya-figure-${chapter}-${figure}`, figure });
+    out.push(row);
+  });
+  return out;
 }

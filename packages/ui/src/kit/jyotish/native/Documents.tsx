@@ -78,13 +78,21 @@ export function ShlokaCard({ shloka, isActive, isPlaying, progress, meaningOpen,
           <Box className={documentsClasses.verseProgressFill} widthPercent={card.progressPct} />
         </Box>
       ) : null}
-      {meaning ? (
+      {meaning || card.sections.length ? (
         <Box className={documentsClasses.verseMeaningWrap}>
           <Pressable onPress={onToggleMeaning} className={documentsClasses.verseMeaningToggle} nativeClassName="flex-row items-center self-start">
             <Text className={documentsClasses.verseMeaningToggleText}>{card.copy.meaning}</Text>
             <Icon node={meaningOpen ? iconChevronUp : iconChevronDown} size={16} tone="secondary" />
           </Pressable>
-          {meaningOpen ? <Text className={documentsClasses.verseMeaning}>{meaning}</Text> : null}
+          {meaningOpen && meaning ? <Text className={documentsClasses.verseMeaning}>{meaning}</Text> : null}
+          {meaningOpen
+            ? card.sections.map((section) => (
+                <Box key={section.key} className={documentsClasses.verseSection}>
+                  <Text className={documentsClasses.verseSectionTitle}>{section.title}</Text>
+                  <Text className={section.working ? documentsClasses.verseSectionWorking : documentsClasses.verseSectionBody}>{section.body}</Text>
+                </Box>
+              ))
+            : null}
         </Box>
       ) : null}
     </Box>

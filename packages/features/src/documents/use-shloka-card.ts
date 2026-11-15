@@ -20,6 +20,12 @@ const CLOSING_LABEL = "\u0927\u094d\u092f\u093e\u0928\u092e\u094d"; // copy-ok
 const NOTE_LABEL = /^(\u091f\u0940\u0915\u093e|\u0938\u093e\u092e\u0917\u094d\u0930\u0940)/; // copy-ok
 /** Strip trailing numbers from note labels — "टीका 1.1" → "टीका". */
 const NOTE_NUMBER_SUFFIX = /\s*[\d\u0966-\u096F]+(?:[.\-][\d\u0966-\u096F]+)*\s*$/;
+const COMMENTARY_TITLE = {
+  ranganatha: "documents.commentary_ranganatha",
+  pandey: "documents.commentary_pandey",
+  kapileshwar: "documents.commentary_kapileshwar",
+  mishra: "documents.commentary_mishra",
+} as const;
 
 /** A verse with no clip of its own plays from its timestamp in the document's full recording. */
 /** A "what to do" note card (टीका / सामग्री), not a verse: it has no recording of its own. */
@@ -82,6 +88,22 @@ export function useShlokaCard({
       return value ? [{ kind, label: t(`documents.detail_${kind}`), value }] : [];
     }),
     meaning: bilingualText(lang, shloka.meaning_ne, shloka.meaning_en, ""),
+    /** Each book's commentary, then the worked sum, each under its own heading. */
+    sections: [
+      ...(shloka.commentaries ?? []).flatMap((c) => {
+        const body = bilingualText(lang, c.ne, c.en, "");
+        const title = COMMENTARY_TITLE[c.key as keyof typeof COMMENTARY_TITLE];
+        return body && title ? [{ key: c.key, title: t(title), body, working: false }] : [];
+      }),
+      ...(() => {
+        const legacy = bilingualText(lang, shloka.commentary_ne, shloka.commentary_en, "");
+        return legacy && !shloka.commentaries?.length ? [{ key: "ranganatha", title: t("documents.commentary_ranganatha"), body: legacy, working: false }] : [];
+      })(),
+      ...(() => {
+        const body = bilingualText(lang, shloka.working_ne, shloka.working_en, "");
+        return body ? [{ key: "working", title: t("documents.working"), body, working: true }] : [];
+      })(),
+    ],
     meaningIsNepali: lang === "ne",
     copy: {
       play: isPlaying ? t("documents.pause_verse") : t("documents.play_verse"),

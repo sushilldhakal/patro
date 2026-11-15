@@ -283,6 +283,18 @@ export const documentsClasses = {
   verseMeaningToggle: "gap-1 py-0.5",
   verseMeaningToggleText: "text-base font-semibold text-secondary",
   verseMeaning: "text-lg leading-relaxed text-foreground",
+  /** A Surya Siddhanta diagram between the verse cards. */
+  figure: "my-4 w-full rounded-xl border border-border bg-card p-3 sm:p-4",
+  figureTitle: "mb-2 text-base font-semibold text-foreground",
+  figureReadout: "mt-2 min-h-[2.75rem] font-mono text-sm leading-snug text-foreground",
+  figureControls: "mt-2 w-full flex-row items-center gap-3",
+  figureCaption: "mt-2 text-sm leading-relaxed text-muted-foreground",
+  figurePlayWeb: "rounded-full border border-border px-3 py-1 text-sm font-medium text-foreground hover:bg-muted",
+  /** One book's commentary (or the worked sum) under the meaning. */
+  verseSection: "mt-3 w-full border-l-2 border-secondary/40 pl-3",
+  verseSectionTitle: "text-sm font-semibold uppercase tracking-wide text-secondary",
+  verseSectionBody: "mt-1 text-base leading-relaxed text-foreground",
+  verseSectionWorking: "mt-1 font-mono text-sm leading-relaxed text-foreground",
 
   // ── Playback bar ──────────────────────────────────────────────────────────
   // A flat, full-width deep brand-teal band in both themes: small outlined prev / next buttons

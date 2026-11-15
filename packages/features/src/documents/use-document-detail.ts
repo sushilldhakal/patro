@@ -20,7 +20,7 @@ import {
   type Shloka,
 } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { bilingual, canonVerseLabel, chapterAnchor, inlineChapterRows, versesToRows, type ReaderRow } from "./reader-rows";
+import { bilingual, canonVerseLabel, chapterAnchor, inlineChapterRows, versesToRows, withSuryaFigures, type ReaderRow } from "./reader-rows";
 
 export * from "./reader-rows";
 
@@ -244,11 +244,13 @@ export function useDocumentChapter(
   }, [chapterQ.data]);
   const atStart = chapterQ.data != null && !chapterQ.hasPreviousPage;
   const imageUrls = data?.chapter.image_urls;
+  const atEnd = chapterQ.data != null && !chapterQ.hasNextPage;
   const rows = useMemo(() => {
-    const verseRows = versesToRows(shlokas, text);
+    let verseRows = versesToRows(shlokas, text);
+    if (slug === "surya-siddhanta") verseRows = withSuryaFigures(verseRows, chapterNumber, atStart, atEnd);
     if (!atStart || !imageUrls?.length) return verseRows;
     return [{ kind: "images" as const, key: `images-c${chapterNumber}`, urls: imageUrls }, ...verseRows];
-  }, [shlokas, text, atStart, imageUrls, chapterNumber]);
+  }, [shlokas, text, atStart, atEnd, imageUrls, chapterNumber, slug]);
   // Sibling chapters come from the (cached) document summary; a deep link
   // opened straight to this chapter has none until it loads.
   const numbers = chapterNumbersOf(docQ.data);

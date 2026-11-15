@@ -1,8 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { canonVerseLabel, type ReaderRow } from "@vedic-patro/features/documents";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { DocumentGroupHeading } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, SuryaFigure } from "@vedic-patro/ui/kit/jyotish";
+import { brand } from "@vedic-patro/design-tokens";
+import { figureInfo, type FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { useDocumentPlayback } from "@/hooks/use-document-playback";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -116,6 +118,9 @@ function RowView({
       />
     );
   }
+  if (row.kind === "surya-figure") {
+    return <SuryaFigureRow figure={row.figure} />;
+  }
   if (row.kind === "images") {
     return (
       <div className={documentsClasses.chapterImages}>
@@ -143,6 +148,7 @@ function estimateSlot(slot: Slot | undefined): number {
   if (slot.row.kind === "verse") return 176;
   if (slot.row.kind === "sukta") return 64;
   if (slot.row.kind === "images") return 220;
+  if (slot.row.kind === "surya-figure") return 470;
   return 80;
 }
 
@@ -370,5 +376,74 @@ function VirtualRows({
         })}
       </div>
     </div>
+  );
+}
+
+const FIGURE_FRAME_MS = 33;
+
+/** Plays a diagram while it is on screen (30 frames a second at most); the slider steps it by hand. */
+function SuryaFigureRow({ figure }: { figure: FigureKey }) {
+  const { t } = useLocale();
+  const { seconds, still } = figureInfo(figure, "en");
+  const [phase, setPhase] = useState(still);
+  // Reduced motion leaves the drawing still until the reader moves it.
+  const [playing, setPlaying] = useState(() => typeof window !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [node, setNode] = useState<HTMLElement | null>(null);
+  const [onScreen, setOnScreen] = useState(false);
+  const register = useCallback((el: unknown) => setNode(el as HTMLElement | null), []);
+
+  useEffect(() => {
+    if (!node) return;
+    const io = new IntersectionObserver(([entry]) => setOnScreen(Boolean(entry?.isIntersecting)), { rootMargin: "80px" });
+    io.observe(node);
+    return () => io.disconnect();
+  }, [node]);
+
+  useEffect(() => {
+    if (!playing || !onScreen) return;
+    let frame = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      frame = requestAnimationFrame(tick);
+      const dt = now - last;
+      if (dt < FIGURE_FRAME_MS || document.hidden) return;
+      last = now;
+      setPhase((p) => (p + Math.min(dt, 100) / 1000 / seconds) % 1);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [playing, onScreen, seconds]);
+
+  return (
+    <SuryaFigure
+      figureKey={figure}
+      phase={phase}
+      registerRef={register}
+      controls={
+        <>
+          <button
+            type="button"
+            onClick={() => setPlaying((p) => !p)}
+            className={documentsClasses.figurePlayWeb}
+            aria-pressed={playing}
+          >
+            {playing ? t("documents.figure_pause") : t("documents.figure_play")}
+          </button>
+          <input
+            type="range"
+            min={0}
+            max={1000}
+            value={Math.round(phase * 1000)}
+            onChange={(e) => {
+              setPlaying(false);
+              setPhase(Number(e.target.value) / 1000);
+            }}
+            aria-label={t("documents.figure_scrub")}
+            className="flex-1"
+            style={{ accentColor: brand.saffron }}
+          />
+        </>
+      }
+    />
   );
 }

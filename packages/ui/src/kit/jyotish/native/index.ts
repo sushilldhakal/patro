@@ -23,6 +23,7 @@ import {
 import { DocumentCard } from "./DocumentCard";
 import { DocumentJumpForm } from "./DocumentJumpForm";
 import { DocumentGroupHeading, PlaybackBar, ShlokaCard } from "./Documents";
+import { SuryaFigure } from "./SuryaFigure";
 import {
   RashifalComponents,
   RashifalDomains,
@@ -61,6 +62,7 @@ export type {
   SaitDayCardProps,
   SaitProfilePickerProps,
   ShlokaCardProps,
+  SuryaFigureProps,
   DocumentGroupHeadingProps,
   AyanamshaSelectorProps,
   HouseRequirementsFormProps,
@@ -106,6 +108,7 @@ export {
   SaitDayCard,
   SaitProfilePicker,
   ShlokaCard,
+  SuryaFigure,
   DocumentGroupHeading,
   AyanamshaSelector,
   HouseRequirementsForm,
@@ -161,6 +164,7 @@ export const jyotishKit = {
   SaitCeremonyLayout,
   SaitAsidePanel,
   ShlokaCard,
+  SuryaFigure,
   DocumentGroupHeading,
   PlaybackBar,
   AyanamshaSelector,

@@ -44,6 +44,14 @@ export interface DocumentSummary {
   full_audio_url?: string | null;
 }
 
+/** One book's commentary on a verse, in Nepali and English. */
+export interface ShlokaCommentary {
+  /** "ranganatha" | "pandey" | "kapileshwar" | "mishra" */
+  key: string;
+  ne?: string | null;
+  en?: string | null;
+}
+
 export interface Shloka {
   id: number;
   /** Reading order inside the document. Omitted on a scrolled chapter page (the cursors carry it). */
@@ -90,6 +98,14 @@ export interface Shloka {
   transliteration?: string | null;
   meaning_ne?: string | null;
   meaning_en?: string | null;
+  /** Pandey's worked sum for this verse. Empty when the commentary does not calculate. */
+  working_ne?: string | null;
+  working_en?: string | null;
+  /** Ranganatha's word-commentary for this verse. Empty when the tika adds nothing. */
+  commentary_ne?: string | null;
+  commentary_en?: string | null;
+  /** Each printed commentary on this verse, in its book's order. Absent for texts without one. */
+  commentaries?: ShlokaCommentary[] | null;
   /** null until the matching file is uploaded to R2. */
   audio_url?: string | null;
   audio_duration_seconds?: number | null;
@@ -144,7 +160,7 @@ export interface DocumentChapterDetail extends DocumentSummary {
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "27";
+const DOCUMENTS_LIST_CACHE_VERSION = "35";
 
 /** Verses requested per scroll. The server clamps anything outside 1..100. */
 export const CHAPTER_PAGE_SIZE = 25;

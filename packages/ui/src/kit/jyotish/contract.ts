@@ -34,6 +34,7 @@ import type {
   VerseDetailKind,
 } from "@vedic-patro/api-client";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import type { FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
 import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import type { ShadbalaScale } from "@vedic-patro/domain/jyotish/kundali/shadbala-chart";
 import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPanelConfig } from "@vedic-patro/features/kundali";
@@ -196,6 +197,17 @@ export type SaitAsidePanelProps = {
   adMonth?: number;
   location?: LocationParams;
   renderLink: (args: SaitAsideLinkArgs) => ReactNode;
+};
+
+/** A Surya Siddhanta diagram in the reader: the drawing, its live numbers and its caption. */
+export type SuryaFigureProps = {
+  figureKey: FigureKey;
+  /** Where the loop stands, 0..1. Each app's own clock moves it. */
+  phase: number;
+  /** The play button and slider, from the app that owns the clock. */
+  controls: ReactNode;
+  /** Website: the element the app watches to play only while it is on screen. */
+  registerRef?: (node: unknown) => void;
 };
 
 export type ShlokaCardProps = {
@@ -594,6 +606,7 @@ export type JyotishKit = {
   SaitCeremonyLayout: ComponentType<SaitCeremonyLayoutProps>;
   SaitAsidePanel: ComponentType<SaitAsidePanelProps>;
   ShlokaCard: ComponentType<ShlokaCardProps>;
+  SuryaFigure: ComponentType<SuryaFigureProps>;
   DocumentGroupHeading: ComponentType<DocumentGroupHeadingProps>;
   PlaybackBar: ComponentType<PlaybackBarProps>;
   AyanamshaSelector: ComponentType<AyanamshaSelectorProps>;

@@ -61,6 +61,14 @@ _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     ("meaning_hi", "TEXT"),
     # Samaveda mantra with the pitch digits (1, 2, 3) above the syllables.
     ("sanskrit_swara", "TEXT"),
+    # Pandey's worked sum for this verse, when the commentary calculates.
+    ("working_ne", "TEXT"),
+    ("working_en", "TEXT"),
+    # Ranganatha's word-commentary, in Nepali and English. Empty when the tika adds nothing.
+    ("commentary_ne", "TEXT"),
+    ("commentary_en", "TEXT"),
+    # Every printed commentary on the verse: a JSON list of {key, ne, en}.
+    ("commentaries", "TEXT"),
 ]
 
 _SCHEMA = """
@@ -114,6 +122,11 @@ CREATE TABLE IF NOT EXISTS shlokas (
     transliteration         TEXT,
     meaning_ne              TEXT,
     meaning_en              TEXT,
+    working_ne              TEXT,
+    working_en              TEXT,
+    commentary_ne           TEXT,
+    commentary_en           TEXT,
+    commentaries            TEXT,
     audio_key               TEXT,
     audio_duration_seconds  REAL,
     full_audio_start        REAL,
@@ -428,6 +441,11 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
                     shloka.get("meaning_en"),
+                    shloka.get("working_ne"),
+                    shloka.get("working_en"),
+                    shloka.get("commentary_ne"),
+                    shloka.get("commentary_en"),
+                    json.dumps(shloka["commentaries"], ensure_ascii=False) if shloka.get("commentaries") else None,
                     audio_key,
                     shloka.get("audio_duration_seconds"),
                     shloka.get("full_audio_start"),
@@ -478,8 +496,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
              verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
              group_title, veda_cite, devata, rishi, chhanda, svara, padapatha, meaning_hi,
              sanskrit_swara, sanskrit, transliteration, meaning_ne, meaning_en,
+             working_ne, working_en, commentary_ne, commentary_en, commentaries,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -522,9 +541,16 @@ def ensure_seeded() -> None:
 
             # The Puranas are manifests too (scripts/ingest_puranas.py writes them
             # from the CSV dataset), so the server needs nothing beyond git.
+            kept: set[str] = set()
             for path in paths:
                 manifest = json.loads(path.read_text(encoding="utf-8"))
+                kept.add(manifest["slug"])
                 _seed_from_manifest(conn, manifest)
+            # A manifest that was removed from the folder must leave the library.
+            for row in conn.execute("SELECT slug FROM documents"):
+                if row["slug"] not in kept:
+                    conn.execute("DELETE FROM shlokas WHERE document_slug = ?", (row["slug"],))
+                    conn.execute("DELETE FROM documents WHERE slug = ?", (row["slug"],))
 
             from services.scripture.shloka_sources import fill_sources
 
@@ -652,6 +678,11 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],
         "meaning_en": r["meaning_en"],
+        "working_ne": r["working_ne"] if "working_ne" in r.keys() else None,
+        "working_en": r["working_en"] if "working_en" in r.keys() else None,
+        "commentary_ne": r["commentary_ne"] if "commentary_ne" in r.keys() else None,
+        "commentary_en": r["commentary_en"] if "commentary_en" in r.keys() else None,
+        "commentaries": json.loads(r["commentaries"]) if "commentaries" in r.keys() and r["commentaries"] else None,
         "audio_key": r["audio_key"],
         "audio_duration_seconds": r["audio_duration_seconds"],
         "full_audio_start": r["full_audio_start"],

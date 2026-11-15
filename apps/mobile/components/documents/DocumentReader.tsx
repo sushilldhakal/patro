@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
-import { FlatList, Image, View } from "react-native";
+import { AccessibilityInfo, FlatList, Image, View } from "react-native";
 import { spaceUnit } from "@vedic-patro/design-tokens";
 import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
 import { canonVerseLabel, playsFromFullRecording, type ReaderRow } from "@vedic-patro/features/documents";
-import { DocumentGroupHeading } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, SuryaFigure } from "@vedic-patro/ui/kit/jyotish";
+import { figureInfo, type FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
+import { StudyPlayButton, StudyRange } from "@/components/learn/study/StudyCard";
+import { useStudyClock } from "@/components/learn/study/use-study-clock";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -172,6 +175,9 @@ export function DocumentReader({
           </View>
         );
       }
+      if (item.kind === "surya-figure") {
+        return <SuryaFigureRow figure={item.figure} />;
+      }
       if (item.kind === "images") {
         return (
           <View className={cn(documentsClasses.chapterImages, "mb-3")}>
@@ -247,6 +253,40 @@ export function DocumentReader({
         }}
       />
       <PlaybackBar audio={audio} documentTitle={documentTitle} chapterTitle={chapterTitle} />
+    </View>
+  );
+}
+
+/**
+ * A diagram row. The study clock plays it only while it is on screen and the screen is showing,
+ * at the study frame rate (lower on Android and low-memory phones); reduced motion leaves it still.
+ */
+function SuryaFigureRow({ figure }: { figure: FigureKey }) {
+  const { seconds, still } = figureInfo(figure, "en");
+  const clock = useStudyClock({ initial: still, speed: 1 / seconds, autoPlay: true });
+  const { setPlaying } = clock;
+  useEffect(() => {
+    let alive = true;
+    AccessibilityInfo.isReduceMotionEnabled().then((on) => {
+      if (alive && on) setPlaying(false);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [setPlaying]);
+  const phase = ((clock.value % 1) + 1) % 1;
+  return (
+    <View ref={clock.view.ref} onLayout={clock.view.onLayout}>
+      <SuryaFigure
+        figureKey={figure}
+        phase={phase}
+        controls={
+          <>
+            <StudyPlayButton playing={clock.playing} onPress={clock.toggle} />
+            <StudyRange min={0} max={1} value={phase} onChange={clock.scrubTo} />
+          </>
+        }
+      />
     </View>
   );
 }
