@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { Circle, Path } from "react-native-svg";
 import { brand } from "@vedic-patro/design-tokens";
 import { Layer, PIVOT, PIVOT_DX, RAYS } from "./VedicPatroMark";
+import { RELOADED_INTO_UPDATE } from "@/lib/splash-handoff";
 
 /** Same as the native splash's `backgroundColor` in app.json (#084548), so the hand-off is invisible. */
 const SPLASH_BG = brand.bluePressed;
@@ -58,9 +59,9 @@ export function SplashIntro({ ready }: { ready: boolean }) {
   const [done, setDone] = useState(Platform.OS === "web");
   const [minElapsed, setMinElapsed] = useState(false);
 
-  const moonY = useRef(new Animated.Value(-MARK_SIZE * 1.6)).current;
-  const sunY = useRef(new Animated.Value(MARK_SIZE * 1.6)).current;
-  const glow = useRef(new Animated.Value(0)).current;
+  const moonY = useRef(new Animated.Value(RELOADED_INTO_UPDATE ? 0 : -MARK_SIZE * 1.6)).current;
+  const sunY = useRef(new Animated.Value(RELOADED_INTO_UPDATE ? 0 : MARK_SIZE * 1.6)).current;
+  const glow = useRef(new Animated.Value(RELOADED_INTO_UPDATE ? 0.85 : 0)).current;
   const pop = useRef(new Animated.Value(1)).current;
   const spin = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(1)).current;
@@ -92,8 +93,11 @@ export function SplashIntro({ ready }: { ready: boolean }) {
   useEffect(() => {
     if (done || mode === null || entered.current) return;
     entered.current = true;
-    const minTimer = setTimeout(() => setMinElapsed(true), mode === "motion" ? MIN_SHOW_MS : 700);
-    if (mode === "still") {
+    // Reloaded into an update during launch: the entrance already played before the reload, so
+    // the logo starts in place (rays still turning) and the splash goes as soon as the app is ready.
+    const resumed = RELOADED_INTO_UPDATE;
+    const minTimer = setTimeout(() => setMinElapsed(true), mode === "motion" && !resumed ? MIN_SHOW_MS : resumed ? 0 : 700);
+    if (mode === "still" || resumed) {
       moonY.setValue(0);
       sunY.setValue(0);
       glow.setValue(0.85);

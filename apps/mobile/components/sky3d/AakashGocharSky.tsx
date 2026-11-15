@@ -98,6 +98,10 @@ import { formatPoleYear } from "@vedic-patro/domain/astronomy/sky3d/pole-year";
 
 import { illustration, midnight, neutral, radius, space, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
+
+/** Sensor mode: the camera closes 63% of the gap to the phone's direction in this many seconds. */
+const SENSOR_GLIDE_TAU_S = 0.12;
+
 const Scene = memo(AakashGocharScene);
 
 const CANVAS_BG = wheel.sky2;
@@ -465,19 +469,43 @@ export function AakashGocharSky({
   // `onSample` below picks the new yaw back up for the dial. Left null (no
   // sensor data yet, or permission denied) simply leaves the last view alone,
   // so the reader can still drag the dial by hand rather than being frozen.
+  //
+  // The camera glides toward the (already low-pass filtered) reading every frame instead of
+  // jumping to each sample: samples arrive 10–25 times a second, and jumping to them read as a
+  // shaking sky. Nothing here re-renders React; it only writes the view ref the scene reads.
+  const sensorLatest = deviceOrientation.latest;
   useEffect(() => {
     if (!sensorMode) return;
-    if (deviceOrientation.headingDeg != null) {
-      // Negated for the same reason `onCompassHeadingChange` negates: camera
-      // yaw and true azimuth run opposite each other.
-      view.current.yaw = -deviceOrientation.headingDeg * DEG_TO_RAD;
-    }
-    if (deviceOrientation.pitchDeg != null) {
-      // Same clamp the manual drag gesture uses in this view — short of true
-      // vertical, where the yaw axis degenerates.
-      view.current.pitch = Math.min(1.45, Math.max(-1.45, deviceOrientation.pitchDeg * DEG_TO_RAD));
-    }
-  }, [sensorMode, deviceOrientation.headingDeg, deviceOrientation.pitchDeg]);
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      const k = 1 - Math.exp(-dt / SENSOR_GLIDE_TAU_S);
+      const { headingDeg, pitchDeg } = sensorLatest.current;
+      const v = view.current;
+      if (headingDeg != null) {
+        // Negated for the same reason `onCompassHeadingChange` negates: camera
+        // yaw and true azimuth run opposite each other.
+        const target = -headingDeg * DEG_TO_RAD;
+        const d = Math.atan2(Math.sin(target - v.yaw), Math.cos(target - v.yaw));
+        // Kept in the same [-2π, 0] range the direct write used to give.
+        let yaw = v.yaw + d * k;
+        while (yaw > 0) yaw -= 2 * Math.PI;
+        while (yaw <= -2 * Math.PI) yaw += 2 * Math.PI;
+        v.yaw = yaw;
+      }
+      if (pitchDeg != null) {
+        // Same clamp the manual drag gesture uses in this view — short of true
+        // vertical, where the yaw axis degenerates.
+        const target = Math.min(1.45, Math.max(-1.45, pitchDeg * DEG_TO_RAD));
+        v.pitch += (target - v.pitch) * k;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [sensorMode, sensorLatest]);
 
   /** Camera passthrough only once the permission is actually granted — AR mode
       alone would otherwise leave a black rectangle where the lens should be. */

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import * as Updates from "expo-updates";
+import { markSplashReload } from "@/lib/splash-handoff";
 
 /**
  * Channels whose builds pick up a published update on their own: TestFlight (`preview`) and the
@@ -52,7 +53,11 @@ export function useAutoUpdate(): boolean {
         const fetched = await Updates.fetchUpdateAsync();
         // While the splash is up, or right as the reader returns to the app: open it now.
         // A launch download that ran past the splash budget opens on the next return or launch.
-        if (fetched.isNew && (launching || onForeground)) await Updates.reloadAsync();
+        if (fetched.isNew && (launching || onForeground)) {
+          // The reloaded app keeps the splash's logo in place instead of replaying its entrance.
+          if (launching) markSplashReload();
+          await Updates.reloadAsync();
+        }
       } catch {
         // Offline or the server is unreachable: keep running what is installed.
       } finally {

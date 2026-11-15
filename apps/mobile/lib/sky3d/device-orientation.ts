@@ -36,7 +36,7 @@
  * rewrite.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import * as Location from "expo-location";
 import { Accelerometer } from "expo-sensors";
 import { createSubscriptionScope } from "@vedic-patro/domain/subscription-scope";
@@ -48,28 +48,43 @@ export type DeviceOrientation = {
   pitchDeg: number | null;
   /** Whether both sensors are live — false while permissions are still being asked for. */
   available: boolean;
+  /**
+   * The smoothed heading and tilt, updated on every sample without a re-render. The camera reads
+   * this every frame; `headingDeg` / `pitchDeg` above only change by whole degrees, for the UI.
+   */
+  latest: MutableRefObject<{ headingDeg: number | null; pitchDeg: number | null }>;
 };
 
-const ACCEL_UPDATE_MS = 100;
-
-/**
- * Readings that move less than this don't re-render. Each sample re-rendered the whole sky screen,
- * and sensor noise alone changes the reading on nearly every one.
+/*
+ * Holding a phone up to the sky, the raw readings shake: the accelerometer picks up every tremor
+ * of the hand, and the compass jitters by a degree or two. Fed straight into the camera that read
+ * as a shaking sky. Star-map apps smooth both, and so does this:
+ *
+ * 1. Each sensor goes through a low-pass filter (the gravity vector component-wise, the heading as
+ *    a unit vector so 359° → 1° doesn't swing the long way round). Hand tremor is 4–12 Hz; a
+ *    time constant of ~0.2 s removes it and still follows a deliberate turn.
+ * 2. The camera doesn't jump to each filtered sample; it glides toward it every frame
+ *    (components/sky3d/AakashGocharSky.tsx), so the view moves at the display's rate.
+ * 3. React only hears about whole-degree changes, so the screen isn't re-rendered per sample.
  */
-const MIN_VISIBLE_DEG = 0.5;
+const ACCEL_UPDATE_MS = 40;
+/** Low-pass time constant for both sensors, seconds. */
+const SMOOTH_TAU_S = 0.2;
+/** `headingDeg` / `pitchDeg` (state) change only by at least this much. */
+const UI_STEP_DEG = 1;
+
+const RAD = 180 / Math.PI;
+
+/** Low-pass blend for a sample `dtMs` after the last one. */
+function blend(dtMs: number): number {
+  return 1 - Math.exp(-Math.max(1, Math.min(500, dtMs)) / 1000 / SMOOTH_TAU_S);
+}
 
 export function useDeviceOrientation(active: boolean): DeviceOrientation {
   const [headingDeg, setHeadingDeg] = useState<number | null>(null);
   const [pitchDeg, setPitchDeg] = useState<number | null>(null);
   const [available, setAvailable] = useState(false);
-
-  // Read inside the effect via refs rather than in the dependency array —
-  // the two subscriptions are independent and neither should tear the other
-  // down just because a sample nudged the other's state.
-  const shownHeading = useRef<number | null>(null);
-  const shownPitch = useRef<number | null>(null);
-  const headingRef = useRef(headingDeg);
-  headingRef.current = headingDeg;
+  const latest = useRef<{ headingDeg: number | null; pitchDeg: number | null }>({ headingDeg: null, pitchDeg: null });
 
   useEffect(() => {
     if (!active) {
@@ -77,6 +92,16 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
       return;
     }
     const scope = createSubscriptionScope();
+    // Filter state: heading as a unit vector, gravity as a vector, and when each last arrived.
+    let hx = 0;
+    let hy = 0;
+    let hAt = 0;
+    let gx = 0;
+    let gy = 0;
+    let gz = 0;
+    let gAt = 0;
+    let shownHeading: number | null = null;
+    let shownPitch: number | null = null;
 
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -89,21 +114,48 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
         if (scope.closed) return;
         const deg = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
         if (!(deg >= 0)) return;
-        const shown = shownHeading.current;
-        if (shown != null && Math.abs(((deg - shown + 540) % 360) - 180) < MIN_VISIBLE_DEG) return;
-        shownHeading.current = deg;
-        setHeadingDeg(deg);
+        const now = Date.now();
+        const ux = Math.cos(deg / RAD);
+        const uy = Math.sin(deg / RAD);
+        if (hAt === 0) {
+          hx = ux;
+          hy = uy;
+        } else {
+          const k = blend(now - hAt);
+          hx += (ux - hx) * k;
+          hy += (uy - hy) * k;
+        }
+        hAt = now;
+        const smooth = (Math.atan2(hy, hx) * RAD + 360) % 360;
+        latest.current.headingDeg = smooth;
+        if (shownHeading == null || Math.abs(((smooth - shownHeading + 540) % 360) - 180) >= UI_STEP_DEG) {
+          shownHeading = smooth;
+          setHeadingDeg(smooth);
+        }
       });
       if (!scope.add(heading)) return;
 
       Accelerometer.setUpdateInterval(ACCEL_UPDATE_MS);
       const accel = Accelerometer.addListener(({ x, y, z }) => {
         if (scope.closed) return;
-        const pitch = Math.atan2(-z, -y) * (180 / Math.PI);
-        const shown = shownPitch.current;
-        if (shown != null && Math.abs(pitch - shown) < MIN_VISIBLE_DEG) return;
-        shownPitch.current = pitch;
-        setPitchDeg(pitch);
+        const now = Date.now();
+        if (gAt === 0) {
+          gx = x;
+          gy = y;
+          gz = z;
+        } else {
+          const k = blend(now - gAt);
+          gx += (x - gx) * k;
+          gy += (y - gy) * k;
+          gz += (z - gz) * k;
+        }
+        gAt = now;
+        const pitch = Math.atan2(-gz, -gy) * RAD;
+        latest.current.pitchDeg = pitch;
+        if (shownPitch == null || Math.abs(pitch - shownPitch) >= UI_STEP_DEG) {
+          shownPitch = pitch;
+          setPitchDeg(pitch);
+        }
       });
       if (!scope.add(accel)) return;
 
@@ -114,11 +166,10 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
 
     return () => {
       scope.close();
-      shownHeading.current = null;
-      shownPitch.current = null;
+      latest.current = { headingDeg: null, pitchDeg: null };
       setAvailable(false);
     };
   }, [active]);
 
-  return { headingDeg, pitchDeg, available };
+  return { headingDeg, pitchDeg, available, latest };
 }
