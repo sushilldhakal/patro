@@ -1,4 +1,6 @@
-import { memo, type ComponentProps } from "react";
+import { memo, useState, type ComponentProps } from "react";
+import { Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { brand, neutral, withAlpha } from "@vedic-patro/design-tokens";
@@ -8,6 +10,9 @@ import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { WheelPanel } from "@/components/panchanga/WheelPanel";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
+import { useLocale } from "@/lib/i18n";
+import { useThemeColors } from "@/lib/theme-context";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
 import { PanchangaWheel as KitWheel, type WheelAtTimeClient, type WheelChartAssets } from "@vedic-patro/ui/kit/panchanga";
 
@@ -36,7 +41,50 @@ type Props = Omit<
   "chartAssets" | "atTime" | "renderSkySheet" | "renderRashiPanel" | "renderScrubber" | "safeTop" | "safeBottom" | "loadingMark"
 >;
 
+/** Once someone on a low-memory phone opens the wheel, it stays open for the rest of the session. */
+let wheelOpenedThisSession = false;
+
+/**
+ * On low-memory phones the wheel waits for a tap. react-native-svg draws its ~900 shapes and
+ * labels in software on the main thread, and on phones like the TECNO Spark 6 Go that draw
+ * alone blocked the app past Android's 5 s ANR limit (Sentry PATRO-B). Other phones get the
+ * wheel straight away, as before.
+ */
 function PanchangaWheelImpl(props: Props) {
+  const [open, setOpen] = useState(!IS_LOW_MEMORY_DEVICE || wheelOpenedThisSession);
+  if (!open) {
+    return (
+      <WheelGate
+        onOpen={() => {
+          wheelOpenedThisSession = true;
+          setOpen(true);
+        }}
+      />
+    );
+  }
+  return <WheelBody {...props} />;
+}
+
+function WheelGate({ onOpen }: { onOpen: () => void }) {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  return (
+    <View className="items-center gap-3 rounded-2xl border border-border bg-card px-5 py-8">
+      <Ionicons name="sunny-outline" size={28} color={colors.mutedForeground} />
+      <Text className="text-base font-semibold text-foreground">{t("panchanga.wheel_gate.title")}</Text>
+      <Text className="text-center text-sm text-muted-foreground">{t("panchanga.wheel_gate.body")}</Text>
+      <Pressable
+        onPress={onOpen}
+        accessibilityRole="button"
+        className="mt-1 rounded-full bg-primary px-5 py-2.5 active:opacity-80"
+      >
+        <Text className="text-sm font-semibold text-primary-foreground">{t("panchanga.wheel_gate.show")}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function WheelBody(props: Props) {
   const insets = useSafeAreaInsets();
   return (
     <KitWheel

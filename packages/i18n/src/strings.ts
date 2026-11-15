@@ -802,6 +802,12 @@ export const strings = {
   "panchanga.wheel_panel.nepali_month": { ne: "नेपाली महिना", en: "Nepali month" },
   "panchanga.wheel_panel.padas": { ne: "{{count}} पद", en: "{{count}} padas" },
   "panchanga.wheel_panel.nakshatras": { ne: "नक्षत्रहरू", en: "Nakshatras" },
+  "panchanga.wheel_gate.title": { ne: "पञ्चाङ्ग चक्र", en: "Panchanga wheel" },
+  "panchanga.wheel_gate.body": {
+    ne: "यो फोनमा चक्र भारी हुन सक्छ, त्यसैले थिच्दा मात्र खुल्छ।",
+    en: "The wheel is heavy for this phone, so it opens when you tap.",
+  },
+  "panchanga.wheel_gate.show": { ne: "चक्र देखाउनुहोस्", en: "Show wheel" },
   "panchanga.hora.day": { ne: "वार", en: "Day" },
   "panchanga.hora.hora": { ne: "होरा", en: "Hora" },
   "panchanga.hora.lord": { ne: "स्वामी", en: "Lord" },

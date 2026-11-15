@@ -461,6 +461,11 @@
       "padas": "{{count}} padas",
       "nakshatras": "Nakshatras"
     },
+    "wheel_gate": {
+      "title": "Panchanga wheel",
+      "body": "The wheel is heavy for this phone, so it opens when you tap.",
+      "show": "Show wheel"
+    },
     "hora": {
       "day": "Day",
       "hora": "Hora",
