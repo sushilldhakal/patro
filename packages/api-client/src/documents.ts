@@ -58,6 +58,11 @@ export interface Shloka {
    * null for documents with no such sub-grouping (most of them).
    */
   sukta_number?: number | null;
+  /**
+   * Name of the group this verse belongs to (a Mahabharata upaparva, such as
+   * अनुक्रमणीपर्व). The word अध्याय means the source only numbers the section.
+   */
+  group_title?: string | null;
   /** Traditional Anukramani attribution for this Sukta — null until sourced. */
   sukta_rishi?: string | null;
   sukta_devata?: string | null;
@@ -139,7 +144,7 @@ export interface DocumentChapterDetail extends DocumentSummary {
 // `?v=` is a one-off cache-buster: the list URL never changes when a document is
 // added, so copies cached by browsers/Cloudflare under the old headers would
 // hide a newly filed text. Bump the value to force every client to refetch.
-const DOCUMENTS_LIST_CACHE_VERSION = "24";
+const DOCUMENTS_LIST_CACHE_VERSION = "27";
 
 /** Verses requested per scroll. The server clamps anything outside 1..100. */
 export const CHAPTER_PAGE_SIZE = 25;

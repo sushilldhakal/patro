@@ -102,7 +102,7 @@ def document_detail(slug: str, request: Request):
 
 # Payload-shape token. ``_cache_version()`` follows manifest bytes and the bucket
 # URL, so a code-only change to the page (cursors, slim verses) needs its own bump.
-_CHAPTER_PAGE_CACHE = "p1"
+_CHAPTER_PAGE_CACHE = "p2"
 
 
 def _chapter_cache_key(

@@ -71,27 +71,54 @@ function groupHeading(shlokas: readonly Shloka[], at: number, sukta: number, { t
     : t("documents.mantra_range", { from: digits(from), to: digits(to) });
 }
 
+/** A numbered adhyaya whose source gives it no name of its own. */
+const NUMBERED_SECTION = "अध्याय";
+
+/** The heading and note for one group of verses. */
+function sectionHeading(
+  shloka: Shloka,
+  shlokas: readonly Shloka[],
+  at: number,
+  sukta: number,
+  text: RowText,
+): { heading: string; meta?: string } {
+  const { t, lang, digits } = text;
+  const named = shloka.group_title?.trim();
+  if (named === NUMBERED_SECTION) {
+    return { heading: t("documents.chapter_label", { number: digits(sukta) }) };
+  }
+  if (named) {
+    return { heading: named, meta: t("documents.chapter_label", { number: digits(sukta) }) };
+  }
+  // A verse with its own details line (वेद.com) needs no sukta-wide attribution above it.
+  const ownDetails = Boolean(shloka.devata || shloka.rishi || shloka.chhanda || shloka.svara);
+  const meta = ownDetails
+    ? []
+    : [
+        shloka.sukta_rishi ? `${t("documents.sukta_rishi")}: ${suktaAttribution(lang, shloka.sukta_rishi)}` : null,
+        shloka.sukta_devata ? `${t("documents.sukta_devata")}: ${suktaAttribution(lang, shloka.sukta_devata)}` : null,
+        shloka.sukta_chhanda ? `${t("documents.sukta_chhanda")}: ${suktaAttribution(lang, shloka.sukta_chhanda)}` : null,
+      ].filter(Boolean);
+  return {
+    heading: groupHeading(shlokas, at, sukta, text),
+    meta: meta.length ? meta.join(" · ") : undefined,
+  };
+}
+
 /** Verses with a sukta heading inserted wherever the sukta changes. */
 export function versesToRows(shlokas: readonly Shloka[], text: RowText, keyPrefix = ""): ReaderRow[] {
-  const { t, lang } = text;
   const rows: ReaderRow[] = [];
   let current: number | null | undefined;
   shlokas.forEach((shloka, at) => {
     const sukta = shloka.sukta_number ?? null;
     if (sukta != null && sukta !== current) {
-      // A verse with its own details line (वेद.com) needs no sukta-wide attribution above it.
-      const ownDetails = Boolean(shloka.devata || shloka.rishi || shloka.chhanda || shloka.svara);
-      const meta = ownDetails ? [] : [
-        shloka.sukta_rishi ? `${t("documents.sukta_rishi")}: ${suktaAttribution(lang, shloka.sukta_rishi)}` : null,
-        shloka.sukta_devata ? `${t("documents.sukta_devata")}: ${suktaAttribution(lang, shloka.sukta_devata)}` : null,
-        shloka.sukta_chhanda ? `${t("documents.sukta_chhanda")}: ${suktaAttribution(lang, shloka.sukta_chhanda)}` : null,
-      ].filter(Boolean);
+      const section = sectionHeading(shloka, shlokas, at, sukta, text);
       rows.push({
         kind: "sukta",
         key: `${keyPrefix}sukta-${sukta}-${shloka.id}`,
-        heading: groupHeading(shlokas, at, sukta, text),
+        heading: section.heading,
         sukta,
-        meta: meta.length ? meta.join(" · ") : undefined,
+        meta: section.meta,
       });
     }
     current = sukta;

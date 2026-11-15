@@ -46,6 +46,9 @@ _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     ("sukta_rishi", "TEXT"),
     ("sukta_devata", "TEXT"),
     ("sukta_chhanda", "TEXT"),
+    # Heading of the group sukta_number opens. A Sanskrit name (अनुक्रमणीपर्व),
+    # or the word अध्याय when the source only numbers the section.
+    ("group_title", "TEXT"),
     # Which Veda verse this shloka quotes, e.g. "rigveda:1.1.3". Null when it
     # isn't a quotation from the four samhitas.
     ("veda_cite", "TEXT"),
@@ -98,6 +101,7 @@ CREATE TABLE IF NOT EXISTS shlokas (
     sukta_rishi             TEXT,
     sukta_devata            TEXT,
     sukta_chhanda           TEXT,
+    group_title             TEXT,
     veda_cite               TEXT,
     devata                  TEXT,
     rishi                   TEXT,
@@ -411,6 +415,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("sukta_rishi"),
                     shloka.get("sukta_devata"),
                     shloka.get("sukta_chhanda"),
+                    shloka.get("group_title"),
                     shloka.get("veda_cite"),
                     shloka.get("devata"),
                     shloka.get("rishi"),
@@ -471,10 +476,10 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
              verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
-             veda_cite, devata, rishi, chhanda, svara, padapatha, meaning_hi,
+             group_title, veda_cite, devata, rishi, chhanda, svara, padapatha, meaning_hi,
              sanskrit_swara, sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -634,6 +639,7 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "sukta_rishi": r["sukta_rishi"],
         "sukta_devata": r["sukta_devata"],
         "sukta_chhanda": r["sukta_chhanda"],
+        "group_title": r["group_title"] if "group_title" in r.keys() else None,
         "veda_cite": r["veda_cite"] if "veda_cite" in r.keys() else None,
         "devata": r["devata"],
         "rishi": r["rishi"],

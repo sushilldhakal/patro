@@ -36,9 +36,8 @@ export type DocumentChapterCard = {
 
 const retry = (count: number, error: unknown) => !isNotFound(error) && count < 2;
 
-/** Kandas 1–19. Kanda 20 has no recording yet. The API sends the same key once it is deployed. */
-const ATHARVAVEDA_KHANDA_AUDIO =
-  "https://pub-34db505dd7474db98d79fb75e870ff22.r2.dev/documents/atharvaveda";
+/** Public R2 origin. A chapter recording lives under `documents/…` until the API sends `full_audio_url`. */
+const DOCUMENT_AUDIO = "https://pub-34db505dd7474db98d79fb75e870ff22.r2.dev/documents";
 
 function chapterRecordingUrl(
   slug: string | undefined,
@@ -46,9 +45,16 @@ function chapterRecordingUrl(
   fromApi: string | null | undefined,
 ): string | undefined {
   if (fromApi) return fromApi;
-  if (slug !== "atharvaveda" || chapter < 1 || chapter > 19) return undefined;
-  const folder = String(chapter).padStart(2, "0");
-  return `${ATHARVAVEDA_KHANDA_AUDIO}/${folder}/atharvaveda_khanda_${chapter}.mp3`;
+  // Kandas 1–19. Kanda 20 has no recording yet.
+  if (slug === "atharvaveda" && chapter >= 1 && chapter <= 19) {
+    const folder = String(chapter).padStart(2, "0");
+    return `${DOCUMENT_AUDIO}/atharvaveda/${folder}/atharvaveda_khanda_${chapter}.mp3`;
+  }
+  // One file per adhyaya: documents/gita/bhagavad-gita/bhagavad-gita-1.mp3 … 18.
+  if (slug === "bhagavad-gita" && chapter >= 1 && chapter <= 18) {
+    return `${DOCUMENT_AUDIO}/gita/bhagavad-gita/bhagavad-gita-${chapter}.mp3`;
+  }
+  return undefined;
 }
 
 /**
