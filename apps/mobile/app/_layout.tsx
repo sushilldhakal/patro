@@ -62,6 +62,8 @@ import { Observe, ObserveRoot } from "@/lib/observe";
 import { PAGE_CHROME_ROUTES, PageChrome } from "@/components/navigation/PageChrome";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useDropPagesBehindTabs } from "@/lib/root-stack";
+// Registers the Android chart-font aliases at launch (see the file).
+import "@/lib/svg-chart-font";
 
 /** Deep links to a page (`/holidays`) still open over the tabs, so back always has somewhere to go. */
 export const unstable_settings = { anchor: "(tabs)" };

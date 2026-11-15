@@ -1,11 +1,10 @@
-import { memo, type ComponentProps } from "react";
+import { memo, useMemo, type ComponentProps } from "react";
 import Ketu from "@/assets/graha/ketu.svg";
 import Rahu from "@/assets/graha/rahu.svg";
-import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
+import { useSvgChartFonts } from "@/lib/svg-chart-font";
 import { WheelChart as KitWheelChart, type WheelChartAssets } from "@vedic-patro/ui/kit/panchanga";
 
-const assets: WheelChartAssets = {
-  fontFamily: NOTO_DEVANAGARI_CHART,
+const assetsBase: Omit<WheelChartAssets, "fontFamily"> = {
   skyTop: {
     sun: require("@/assets/sky3d/top/sun.png"),
     moon: require("@/assets/sky3d/top/moon.png"),
@@ -22,6 +21,8 @@ const assets: WheelChartAssets = {
 type Props = Omit<ComponentProps<typeof KitWheelChart>, "assets">;
 
 function WheelChartImpl(props: Props) {
+  const fonts = useSvgChartFonts();
+  const assets = useMemo<WheelChartAssets>(() => ({ ...assetsBase, fontFamily: fonts.chart }), [fonts]);
   return <KitWheelChart {...props} assets={assets} />;
 }
 
