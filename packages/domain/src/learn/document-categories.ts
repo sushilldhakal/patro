@@ -165,7 +165,7 @@ export const DOCUMENT_CATEGORY_GROUPS: DocumentCategoryGroup[] = [
     emoji: "📕",
     ne: "कथा",
     en: "Katha",
-    blurb: { ne: "व्रतकथा — सत्यनारायण, हरितालिका, ऋषिपञ्चमी", en: "Vrat kathas — Satyanarayan, Haritalika, Rishi Panchami" },
+    blurb: { ne: "स्वस्थानी, सत्यनारायण, हरिश्चन्द्र र अन्य व्रतकथा", en: "Swasthani, Satyanarayan, Harishchandra and other vrat kathas" },
     topics: [
       { id: "vrat-katha", ne: "व्रतकथा", en: "Vrat katha" },
       { id: "purana-katha", ne: "पौराणिक कथा", en: "Puranic katha" },
