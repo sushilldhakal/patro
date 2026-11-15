@@ -50,15 +50,26 @@ export function useHomeVedaMantra(
 
   useEffect(() => {
     if (!dateAd || !data || offlineDays <= 0) return;
-    for (let i = 1; i <= offlineDays; i += 1) {
-      const next = addDays(dateAd, i);
-      void queryClient.prefetchQuery({
-        queryKey: vedaDailyKeys.day(next),
-        queryFn: () => fetchVedaDaily(next),
-        staleTime: DOCUMENTS_STALE_TIME,
-      });
-    }
-  }, [dateAd, data, offlineDays, queryClient]);
+    // One day at a time, in the background: six parallel calls at launch competed with the
+    // home screen's own requests on slow connections (Sentry flagged them as N+1 calls).
+    let cancelled = false;
+    void (async () => {
+      for (let i = 1; i <= offlineDays; i += 1) {
+        if (cancelled) return;
+        const next = addDays(dateAd, i);
+        await queryClient.prefetchQuery({
+          queryKey: vedaDailyKeys.day(next),
+          queryFn: () => fetchVedaDaily(next),
+          staleTime: DOCUMENTS_STALE_TIME,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // `data` only gates the start; a refetch of today's mantra shouldn't restart the run.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateAd, Boolean(data), offlineDays, queryClient]);
 
   const sanskrit = data?.shloka.sanskrit ?? "";
   const wordTrack = useMemo(() => buildWordTrack(sanskrit), [sanskrit]);
