@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { requireOptionalNativeModule } from "expo";
 import { brand } from "@vedic-patro/design-tokens";
+import { validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import type * as DeviceCalendarModule from "expo-calendar/legacy";
 import { deviceStore } from "@/lib/device-store";
 import { createEvent, deleteEvent, listEvents, updateEvent, type CalendarEvent, type CalendarEventInput, type EventRepeat } from "./api";
@@ -155,7 +156,7 @@ function toInput(ev: DeviceCalendarModule.Event, profileId: string | null): Cale
     all_day: Boolean(ev.allDay),
     starts_at: toIso(ev.startDate),
     ends_at: toIso(ev.endDate),
-    timezone: ev.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kathmandu",
+    timezone: validTimeZone(ev.timeZone),
     repeat: repeatOf(ev.recurrenceRule),
     alerts,
     source_kind: "device",
@@ -349,7 +350,7 @@ function deviceDetails(DeviceCalendar: Calendar, e: CalendarEvent) {
     allDay: e.all_day,
     startDate: new Date(e.starts_at),
     endDate: new Date(e.ends_at),
-    timeZone: e.timezone,
+    timeZone: validTimeZone(e.timezone),
     recurrenceRule: recurrenceOf(DeviceCalendar, e.repeat),
     alarms: (e.alerts ?? []).map((minutes) => ({ relativeOffset: -minutes })),
   };

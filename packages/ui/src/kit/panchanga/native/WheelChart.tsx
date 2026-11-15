@@ -104,6 +104,7 @@ function WheelGlyph({ art, size, cx, cy, color, opacity = 1 }: { art: GlyphArt |
 }
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { wheelPalette } from "../wheel-palette";
+import { svgFont } from "../../../native/svg-font";
 import { DEG, CX, CY, ORBIT_SCALE, grahaAtSvgPoint, planetIconSize, planetVisualRadius } from "@vedic-patro/domain/panchanga/wheel-chart-geometry";
 import {
   earthTop,
@@ -356,7 +357,7 @@ function RingLabel({
   // Flipping rotates the stack too, so reverse the rows to keep reading order.
   const stack = rows && rows.length > 1 ? (flip ? [...rows].reverse() : rows) : null;
   const fontSize = size ?? 11;
-  const FONT = useWheelAssets().fontFamily;
+  const FONT = svgFont(useWheelAssets().fontFamily);
 
   return (
     <G transform={`rotate(${-(L + spin)} ${CX} ${CY})`}>
@@ -437,7 +438,8 @@ function WheelChartImpl({
   bleedTop = 0,
   bleedBottom = 0,
 }: WheelChartProps) {
-  const { skyTop: SKY_TOP, earthTop: EARTH_TOP, nodeIcons: WHEEL_NODE_ICONS, fontFamily: FONT } = useWheelAssets();
+  const { skyTop: SKY_TOP, earthTop: EARTH_TOP, nodeIcons: WHEEL_NODE_ICONS, fontFamily: fontName } = useWheelAssets();
+  const FONT = svgFont(fontName);
 
   const { pick, gregMonths } = useWheelChartLabels();
   const lineTarget = lineTargetProp ?? 1;

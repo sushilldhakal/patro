@@ -1,9 +1,9 @@
-import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+import { todayAdStringInTimezone, validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 
 /** Milliseconds `timeZone` is ahead of UTC at `date` (minute precision). */
 function zoneOffsetMs(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: validTimeZone(timeZone),
     hourCycle: "h23",
     year: "numeric",
     month: "2-digit",

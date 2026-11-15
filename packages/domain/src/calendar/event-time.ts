@@ -1,3 +1,5 @@
+import { validTimeZone } from "./zoned-time";
+
 /**
  * Wall-clock times in a named zone. An event is written as a date and a time in the place's zone
  * (a साइत's window is Nepal's local time), and stored as the instant they name.
@@ -8,7 +10,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /** Offset of `zone` from UTC at `utcMs`, in minutes (Kathmandu: +345). */
 function zoneOffsetMinutes(utcMs: number, zone: string): number {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: zone,
+    timeZone: validTimeZone(zone),
     hourCycle: "h23",
     year: "numeric",
     month: "2-digit",

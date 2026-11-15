@@ -2,7 +2,7 @@ import { useId, useMemo, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
 import { Box, Text } from "@vedic-patro/ui";
-import { fontFamily } from "@vedic-patro/design-tokens";
+import { svgFonts } from "../../../native/svg-font";
 import { WHEEL_SIZE } from "@vedic-patro/domain/vastu/vastu";
 import {
   VASTU_DIR16, VASTU_ELEMENT_COLOR, VASTU_ELEMENT_ORDER, VASTU_GUNA_COLOR, VASTU_INNER4, VASTU_PADAS,
@@ -16,7 +16,8 @@ import type { VastuPurushaWheelProps } from "../contract";
 import { ArcLabel, DegreeTicks, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette, type TickSegment } from "./WheelMarks";
 import { ZoomStage } from "../../panchanga/native/ZoomStage";
 
-const fonts = fontFamily.native;
+/** SVG labels only: see svg-font.ts. */
+const fonts = svgFonts;
 const press = (fn: () => void): any => fn;
 
 const {

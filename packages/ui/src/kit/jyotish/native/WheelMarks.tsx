@@ -1,11 +1,12 @@
 import { memo, type ReactNode } from "react";
 import { G, Path, Text as SvgText } from "react-native-svg";
-import { fontFamily } from "@vedic-patro/design-tokens";
+import { svgFonts } from "../../../native/svg-font";
 import { vastuWheelPoint } from "@vedic-patro/domain/vastu/vastu";
 import { PURUSHA_PATH } from "../purusha-path";
 import type { VastuCenter, VastuMarks } from "../contract";
 
-const fonts = fontFamily.native;
+/** SVG labels only: see svg-font.ts. */
+const fonts = svgFonts;
 
 function normBearing(bearing: number): number {
   return ((bearing % 360) + 360) % 360;

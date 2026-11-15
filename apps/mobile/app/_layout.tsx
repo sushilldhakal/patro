@@ -62,8 +62,7 @@ import { Observe, ObserveRoot } from "@/lib/observe";
 import { PAGE_CHROME_ROUTES, PageChrome } from "@/components/navigation/PageChrome";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useDropPagesBehindTabs } from "@/lib/root-stack";
-// Registers the Android chart-font aliases at launch (see the file).
-import "@/lib/svg-chart-font";
+import { svgFontsSettled } from "@/lib/svg-fonts";
 
 /** Deep links to a page (`/holidays`) still open over the tabs, so back always has somewhere to go. */
 export const unstable_settings = { anchor: "(tabs)" };
@@ -316,7 +315,17 @@ function RootLayout() {
     };
   }, []);
 
-  const ready = loaded && onboarded !== null && webFontReady && updateSettled;
+  // Android: SVG text needs its font aliases before the first chart draws (lib/svg-fonts.ts).
+  const [svgFontsReady, setSvgFontsReady] = useState(Platform.OS !== "android");
+  useEffect(() => {
+    let active = true;
+    void svgFontsSettled.then(() => active && setSvgFontsReady(true));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const ready = loaded && onboarded !== null && webFontReady && updateSettled && svgFontsReady;
 
   useEffect(() => {
     if (!ready) return;

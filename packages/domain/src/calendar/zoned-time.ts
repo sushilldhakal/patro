@@ -31,13 +31,43 @@ function utcMsFromParts(
   return d.getTime();
 }
 
+
+const zoneCheck = new Map<string, boolean>();
+
+/**
+ * `timeZone` if this device's Intl knows it, else the device's own zone (else UTC). Intl throws a
+ * RangeError for a zone it doesn't know, and that crashed whatever was rendering. Phone calendars
+ * synced from Exchange can hold Windows names ("India Standard Time"), and older devices lack some
+ * newer IANA names.
+ */
+export function validTimeZone(timeZone: string | null | undefined): string {
+  if (timeZone) {
+    let ok = zoneCheck.get(timeZone);
+    if (ok === undefined) {
+      try {
+        new Intl.DateTimeFormat("en-US", { timeZone });
+        ok = true;
+      } catch {
+        ok = false;
+      }
+      zoneCheck.set(timeZone, ok);
+    }
+    if (ok) return timeZone;
+  }
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+}
+
 /** Wall-clock parts for a timezone (24h). */
 export function getZonedTimeParts(
   date: Date,
   timeZone: string
 ): { hour: number; minute: number; second: number } {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: validTimeZone(timeZone),
     hour: "numeric",
     minute: "numeric",
     second: "numeric",
@@ -61,7 +91,7 @@ export function getZonedTimeParts(
  */
 function zoneOffsetMs(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: validTimeZone(timeZone),
     era: "short",
     year: "numeric",
     month: "2-digit",
@@ -129,7 +159,7 @@ export function getZonedDateTimeParts(
 } {
   const t = getZonedTimeParts(date, timeZone);
   const dtf = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: validTimeZone(timeZone),
     year: "numeric",
     month: "numeric",
     day: "numeric",
@@ -186,7 +216,7 @@ export function clockStringInTimezone(
  */
 export function todayAdStringInTimezone(date: Date, timeZone: string): string {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: validTimeZone(timeZone),
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { Trash2 } from "lucide-react";
 import { deleteEvent, listEvents } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
@@ -33,7 +34,7 @@ export function UpcomingEvents() {
                   <p className="truncate text-sm font-medium">{e.title}</p>
                   <p className="text-xs text-muted-foreground">
                     {t(`events.kind_${kind}`)} ·{" "}
-                    {new Date(e.starts_at).toLocaleString(lang === "en" ? "en-US" : "ne-NP", e.all_day ? { dateStyle: "medium", timeZone: e.timezone } : { dateStyle: "medium", timeStyle: "short", timeZone: e.timezone })}
+                    {new Date(e.starts_at).toLocaleString(lang === "en" ? "en-US" : "ne-NP", e.all_day ? { dateStyle: "medium", timeZone: validTimeZone(e.timezone) } : { dateStyle: "medium", timeStyle: "short", timeZone: validTimeZone(e.timezone) })}
                   </p>
                 </div>
                 <button

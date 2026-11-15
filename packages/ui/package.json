@@ -16,6 +16,10 @@
     "./contract": "./src/contract.ts",
     "./classes": "./src/classes.ts",
     "./glyph-art": "./src/kit/panchanga/glyph-art.ts",
+    "./svg-font": {
+      "react-native": "./src/native/svg-font.ts",
+      "default": "./src/web/svg-font.ts"
+    },
     "./motion": {
       "react-native": "./src/native/motion.ts",
       "default": "./src/web/motion.ts"

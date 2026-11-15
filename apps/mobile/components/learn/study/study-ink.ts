@@ -7,7 +7,8 @@
  * the website's rather than a dark canvas dropped into a light article.
  */
 import { useMemo } from "react";
-import { brand, fontFamily, midnight, mix, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { brand, midnight, mix, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { svgFonts } from "@vedic-patro/ui/svg-font";
 import { useTheme } from "@/lib/theme-context";
 
 export type StudyInk = {
@@ -197,11 +198,7 @@ export function useSvgClass(): (cls: string | false | null | undefined) => SvgCl
 }
 
 /** SVG text faces: the website's `font: 700 13px var(--pn-font)` and friends. */
-export const STUDY_FONT = {
-  regular: fontFamily.native.regular,
-  semibold: fontFamily.native.semibold,
-  bold: fontFamily.native.bold,
-} as const;
+export const STUDY_FONT = svgFonts;
 
 /**
  * react-native-svg has no reliable `dominant-baseline: central`, so centred

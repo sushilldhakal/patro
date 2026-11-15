@@ -22,10 +22,10 @@ import { brand, breakpoints, dark, fontFamily, illustration, light, neutral, wit
 import { patroSecBand } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
+import { svgFonts } from "../../../native/svg-font";
 
 type DayCycleMode = "Day-Night" | "Calendar Day";
 const FONT = fontFamily.native.semibold;
-const FONT_SM = fontFamily.native.medium;
 const PAGE_HORIZONTAL_PADDING = 16;
 const nepaliSvgTextCenter = { alignmentBaseline: "central" as const };
 function nepaliTextStyle(): TextStyle {
@@ -467,7 +467,7 @@ function EventMarker({
         textAnchor={anchor}
         fill={isSun ? C.sun : C.muted}
         fontSize={15}
-        fontFamily={FONT}
+        fontFamily={svgFonts.semibold}
       >
         {digits(clock)}
       </SvgText>
@@ -643,13 +643,13 @@ export function DayTimeline({
         <Rect key={`night-${i}`} x={gx(a)} y={RULER_H - 8} width={Math.max(0, gx(b) - gx(a))} height={H - RULER_H + 2} fill={C.night} />
       ))}
 
-      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end">
+      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="end">
         {copy.hour}
       </SvgText>
       {/* घडी counts from sunrise, so it means nothing on a midnight-anchored
           chart — web drops the row there and so does this. */}
       {!isCivil && (
-        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end" opacity={0.75}>
+        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="end" opacity={0.75}>
           {copy.ghati}
         </SvgText>
       )}
@@ -658,7 +658,7 @@ export function DayTimeline({
       {data.civilHourTicks.map(({ hour, g }) => (
         <G key={`h-${hour}-${g}`}>
           <Line x1={gx(g)} y1={30} x2={gx(g)} y2={24} stroke={C.tick} strokeWidth={1} />
-          <SvgText x={gx(g)} y={18} fill={C.fg} fontSize={15} fontFamily={FONT} textAnchor="middle">
+          <SvgText x={gx(g)} y={18} fill={C.fg} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="middle">
             {digits(hour)}
           </SvgText>
         </G>
@@ -667,7 +667,7 @@ export function DayTimeline({
       {!isCivil && GHATI_TICKS.map((g) => (
         <G key={`g-${g}`}>
           <Line x1={gx(g)} y1={30} x2={gx(g)} y2={36} stroke={C.tick} strokeWidth={1} />
-          <SvgText x={gx(g)} y={48} fill={C.muted} fontSize={15} fontFamily={FONT_SM} textAnchor="middle">
+          <SvgText x={gx(g)} y={48} fill={C.muted} fontSize={15} fontFamily={svgFonts.medium} textAnchor="middle">
             {digits(g)}
           </SvgText>
         </G>
@@ -702,7 +702,7 @@ export function DayTimeline({
               y={y + BAND / 2 + 4}
               fill={C.fg}
               fontSize={15}
-              fontFamily={FONT}
+              fontFamily={svgFonts.semibold}
               fontWeight="700"
               {...nepaliSvgTextCenter}
             >
@@ -749,7 +749,7 @@ export function DayTimeline({
                         y={y + BAND / 2 + 4}
                         fill={s.bad ? C.danger : C.fg}
                         fontSize={15}
-                        fontFamily={FONT}
+                        fontFamily={svgFonts.semibold}
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
                       >
@@ -763,7 +763,7 @@ export function DayTimeline({
                         y={labelY}
                         fill={tr.cls === "shubha" ? C.good : C.danger}
                         fontSize={15}
-                        fontFamily={FONT}
+                        fontFamily={svgFonts.semibold}
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
                       >
@@ -800,7 +800,7 @@ export function DayTimeline({
               return (
                 <G key={`cut-${si}`}>
                   <TransitionArrow x2={x2} y={y} C={C} />
-                  <SvgText x={clampX(x2, 22)} y={y + rowBand + 16} fill={C.fg} fontSize={15} fontFamily={FONT_SM} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
+                  <SvgText x={clampX(x2, 22)} y={y + rowBand + 16} fill={C.fg} fontSize={15} fontFamily={svgFonts.medium} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
                     {time}
                   </SvgText>
                 </G>
@@ -814,7 +814,7 @@ export function DayTimeline({
         <G>
           <Line x1={gx(nowG)} y1={RULER_H - 6} x2={gx(nowG)} y2={H - 4} stroke={C.now} strokeWidth={1.4} />
           <Rect x={clampX(gx(nowG), 30) - 48} y={RULER_H - 22} width={100} height={17} rx={9} fill={C.now} />
-          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill={neutral.white} fontSize={15} fontFamily={FONT} textAnchor="middle">
+          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill={neutral.white} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="middle">
             {nowLabel} {tLabel(nowG)}
           </SvgText>
         </G>
@@ -827,11 +827,11 @@ export function DayTimeline({
   const labelColumn = (
     <>
       <Rect x={0} y={0} width={X0} height={H} fill={C.card} />
-      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end">
+      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="end">
         {copy.hour}
       </SvgText>
       {!isCivil && (
-        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end" opacity={0.75}>
+        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={svgFonts.semibold} textAnchor="end" opacity={0.75}>
           {copy.ghati}
         </SvgText>
       )}
@@ -842,7 +842,7 @@ export function DayTimeline({
           y={trackY(ti) + rowBandAt(ti) / 2 + 4}
           fill={C.fg}
           fontSize={15}
-          fontFamily={FONT}
+          fontFamily={svgFonts.semibold}
           fontWeight="700"
           {...nepaliSvgTextCenter}
         >

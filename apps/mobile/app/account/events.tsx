@@ -1,4 +1,5 @@
 import { Alert, Linking, Platform, Pressable, Share, View } from "react-native";
+import { validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteEvent, listEvents } from "@vedic-patro/api-client";
 import { useCalendarFeed } from "@vedic-patro/features/events";
@@ -44,7 +45,7 @@ export default function AccountEventsScreen() {
               <View className="min-w-0 flex-1">
                 <Text className="text-body text-foreground" numberOfLines={1} style={nepaliTextStyle(16)}>{e.title}</Text>
                 <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
-                  {new Date(e.starts_at).toLocaleString(lang === "en" ? "en-US" : "ne-NP", e.all_day ? { dateStyle: "medium", timeZone: e.timezone } : { dateStyle: "medium", timeStyle: "short", timeZone: e.timezone })}
+                  {new Date(e.starts_at).toLocaleString(lang === "en" ? "en-US" : "ne-NP", e.all_day ? { dateStyle: "medium", timeZone: validTimeZone(e.timezone) } : { dateStyle: "medium", timeStyle: "short", timeZone: validTimeZone(e.timezone) })}
                 </Text>
               </View>
               <Pressable

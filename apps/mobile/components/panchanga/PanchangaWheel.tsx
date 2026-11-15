@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, type ComponentProps } from "react";
+import { memo, useState, type ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
@@ -9,14 +9,15 @@ import Rahu from "@/assets/graha/rahu.svg";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { WheelPanel } from "@/components/panchanga/WheelPanel";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
-import { useSvgChartFonts } from "@/lib/svg-chart-font";
+import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
 import { PanchangaWheel as KitWheel, type WheelAtTimeClient, type WheelChartAssets } from "@vedic-patro/ui/kit/panchanga";
 
-const chartAssetsBase: Omit<WheelChartAssets, "fontFamily"> = {
+const chartAssets: WheelChartAssets = {
+  fontFamily: NOTO_DEVANAGARI_CHART,
   skyTop: {
     sun: require("@/assets/sky3d/top/sun.png"),
     moon: require("@/assets/sky3d/top/moon.png"),
@@ -85,8 +86,6 @@ function WheelGate({ onOpen }: { onOpen: () => void }) {
 
 function WheelBody(props: Props) {
   const insets = useSafeAreaInsets();
-  const fonts = useSvgChartFonts();
-  const chartAssets = useMemo<WheelChartAssets>(() => ({ ...chartAssetsBase, fontFamily: fonts.chart }), [fonts]);
   return (
     <KitWheel
       {...props}

@@ -2,7 +2,7 @@ import { useId } from "react";
 import { View } from "react-native";
 import Svg, { Defs, G, Line, Path, Pattern, Rect as SvgRect, Text as SvgText } from "react-native-svg";
 import { Text } from "@vedic-patro/ui";
-import { fontFamily } from "@vedic-patro/design-tokens";
+import { svgFonts } from "../../../native/svg-font";
 import {
   VASTU_ELEMENT_COLOR,
   vastuDirection,
@@ -237,7 +237,7 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
                       alignmentBaseline="central"
                       fill={ink.text}
                       fontSize={(tight ? 7.5 : 9.5) * fs}
-                      fontFamily={fontFamily.native.bold}
+                      fontFamily={svgFonts.bold}
                     >
                       {label(room)}
                     </SvgText>
@@ -249,7 +249,7 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
                         fill={ink.text}
                         fillOpacity={0.7}
                         fontSize={7.5 * fs}
-                        fontFamily={fontFamily.native.regular}
+                        fontFamily={svgFonts.regular}
                       >
                         {roomSize(room.rect)}
                       </SvgText>
@@ -266,7 +266,7 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
                   textAnchor="middle"
                   fill={ink.text}
                   fontSize={10 * fs}
-                  fontFamily={fontFamily.native.bold}
+                  fontFamily={svgFonts.bold}
                 >
                   {sketch.labels.brahmasthan}
                 </SvgText>
@@ -277,7 +277,7 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
                   fill={ink.text}
                   fillOpacity={0.75}
                   fontSize={8 * fs}
-                  fontFamily={fontFamily.native.regular}
+                  fontFamily={svgFonts.regular}
                 >
                   {roomSize(court)}
                 </SvgText>
@@ -287,7 +287,7 @@ export function HouseSketch({ size, plot, facing, assignments, ink, center, mark
                   textAnchor="middle"
                   fill={DOOR_COLOR}
                   fontSize={8 * fs}
-                  fontFamily={fontFamily.native.semibold}
+                  fontFamily={svgFonts.semibold}
                 >
                   {sketch.labels.openToSky}
                 </SvgText>

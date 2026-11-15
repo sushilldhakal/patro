@@ -1,4 +1,5 @@
 import type { CalendarEvent } from "@vedic-patro/api-client";
+import { validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 
 /** The three kinds the app shows; the older "reminder" reads as a task. */
 export function eventKindOf(e: Pick<CalendarEvent, "kind">): "event" | "task" | "appointment" {
@@ -9,6 +10,6 @@ export function eventKindOf(e: Pick<CalendarEvent, "kind">): "event" | "task" | 
 export function eventTimeText(e: CalendarEvent, lang: string, allDay: string): string {
   if (e.all_day) return allDay;
   const fmt = (iso: string) =>
-    new Date(iso).toLocaleTimeString(lang === "en" ? "en-US" : "ne-NP", { hour: "numeric", minute: "2-digit", timeZone: e.timezone });
+    new Date(iso).toLocaleTimeString(lang === "en" ? "en-US" : "ne-NP", { hour: "numeric", minute: "2-digit", timeZone: validTimeZone(e.timezone) });
   return e.ends_at && e.ends_at !== e.starts_at ? `${fmt(e.starts_at)} – ${fmt(e.ends_at)}` : fmt(e.starts_at);
 }

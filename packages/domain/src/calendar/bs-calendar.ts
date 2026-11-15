@@ -1,3 +1,4 @@
+import { validTimeZone } from "./zoned-time";
 import calendarData from "./bs-calendar-data.json"
 import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "./patro-day"
 
@@ -365,7 +366,7 @@ type ZonedParts = {
 /** Civil date + clock in an IANA timezone (for BS conversion). */
 export function getZonedParts(date: Date, timeZone?: string): ZonedParts {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
+    timeZone: timeZone ? validTimeZone(timeZone) : undefined,
     era: "short",
     year: "numeric",
     month: "numeric",

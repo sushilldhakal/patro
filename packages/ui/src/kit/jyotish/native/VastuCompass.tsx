@@ -1,12 +1,13 @@
 import { useId } from "react";
 import Svg, { Circle, ClipPath, Defs, G, Path } from "react-native-svg";
-import { fontFamily } from "@vedic-patro/design-tokens";
+import { svgFonts } from "../../../native/svg-font";
 import { annularSectorPath } from "@vedic-patro/domain/vastu/vastu";
 import { VASTU_COMPASS_RING as R, useVastuCompassRing } from "@vedic-patro/features/vastu";
 import type { VastuCompassRingProps } from "../contract";
 import { ArcLabel, DegreeTicks, PadaCodeLabel, RingSeparators, VastuPurushaSilhouette } from "./WheelMarks";
 
-const fonts = fontFamily.native;
+/** SVG labels only: see svg-font.ts. */
+const fonts = svgFonts;
 
 export function VastuCompassRing({ size, center, ink, marks }: VastuCompassRingProps) {
   const ring = useVastuCompassRing();

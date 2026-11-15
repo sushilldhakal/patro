@@ -19,6 +19,7 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
+import { svgFont } from "../../../native/svg-font";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/drawing/jyotish/avakahada-wheel";
 
 /**
@@ -98,7 +99,7 @@ function RadialText({
       y={y}
       fill={fill}
       fontSize={size}
-      fontFamily={face}
+      fontFamily={svgFont(face)}
       fontWeight={bold ? "bold" : "600"}
       textAnchor="middle"
       {...nepaliSvgTextCenter}
