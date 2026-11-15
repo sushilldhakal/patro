@@ -329,7 +329,7 @@ def ask(key: str, model: str, sp: dict) -> tuple[dict | None, float]:
         "model": model,
         "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}],
         "temperature": 0.1,
-        "max_tokens": 9000,
+        "max_tokens": 16000,
         "response_format": {"type": "json_object"},
     }
     if "deepseek" in model:
@@ -466,6 +466,115 @@ def clean_verse(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip(" ।")
 
 
+# Checked by hand. The nakshatra table of chapter 8 is decoded word by word (each bhoga is in
+# tens of minutes; a polar longitude is bhoga × 10′ + 800′ for each star passed), and the
+# result agrees with the drawing's table in packages/drawing/src/learn/surya-figures.ts.
+VERSE_FIXES: dict[tuple[int, int], dict[str, str]] = {
+    (8, 2): {
+        "sanskrit": "अष्टार्णवाः शून्यकृताः पञ्चषष्टिर्नगेषवः । अष्टार्था अब्धयोऽष्टागा अङ्गागा मनवस्तथा",
+        "meaning_en": "The bhogas (each in tens of minutes): Aśvinī 48, Bharaṇī 40, Kṛttikā 65, Rohiṇī 57, Mṛgaśiras 58, Ārdrā 4, Punarvasu 78, Puṣya 76, Āśleṣā 14. So Aśvinī's polar longitude is 480′ = 8°, Bharaṇī's 400′ + 800′ = 20°, Kṛttikā's 650′ + 1600′ = 37°30′.",
+        "meaning_ne": "भोग (दश कलाका एकाइमा): अश्विनी ४८, भरणी ४०, कृत्तिका ६५, रोहिणी ५७, मृगशिरा ५८, आर्द्रा ४, पुनर्वसु ७८, पुष्य ७६, आश्लेषा १४। यसरी अश्विनीको ध्रुवक ४८०′ = ८°, भरणीको ४००′ + ८००′ = २०°, कृत्तिकाको ६५०′ + १६००′ = ३७°३०′ हुन्छ।",
+    },
+    (8, 3): {
+        "sanskrit": "कृतेषवो युगरसाः शून्यबाणा वियद्रसाः । खवेदाः सागरनगा गजागाः सागरर्तवः",
+        "meaning_en": "Further bhogas: Maghā 54, Pūrva Phalgunī 64, Uttara Phalgunī 50, Hasta 60, Citrā 40, Svātī 74, Viśākhā 78, Anurādhā 64. Hasta thus stands at 600′ + 9600′ = 170° and Citrā at 400′ + 10400′ = 180°.",
+        "meaning_ne": "थप भोग: मघा ५४, पूर्वफाल्गुनी ६४, उत्तरफाल्गुनी ५०, हस्त ६०, चित्रा ४०, स्वाती ७४, विशाखा ७८, अनुराधा ६४। यसरी हस्त ६००′ + ९६००′ = १७०° मा र चित्रा ४००′ + १०४००′ = १८०° मा पर्छ।",
+    },
+    (8, 4): {
+        "meaning_en": "Jyeṣṭhā 14, Mūla 6, Pūrva Āṣāḍhā 4. Uttara Āṣāḍhā (Vaiśva) stands at the middle of Pūrva Āṣāḍhā's portion, 260°; Abhijit at the end of that portion, 266°40′; and Śravaṇa at the end of Uttara Āṣāḍhā's portion, 280°.",
+        "meaning_ne": "ज्येष्ठा १४, मूल ६, पूर्वाषाढा ४। उत्तराषाढा (वैश्व) पूर्वाषाढाको भागको बीचमा, २६०° मा; अभिजित् त्यही भागको अन्त्यमा, २६६°४०′ मा; र श्रवण उत्तराषाढाको भागको अन्त्यमा, २८०° मा रहन्छ।",
+    },
+    (8, 5): {
+        "meaning_en": "Dhaniṣṭhā (Śraviṣṭhā) stands at the junction of the third and fourth quarters of Śravaṇa's portion, 290°. Then, from their own portions: Śatabhiṣaj 80, Pūrva Bhādrapadā 36, Uttara Bhādrapadā 22.",
+        "meaning_ne": "धनिष्ठा (श्रविष्ठा) श्रवणको भागको तेस्रो र चौथो चरणको सन्धिमा, २९०° मा रहन्छ। त्यसपछि आफ्नै भागबाट: शतभिषा ८०, पूर्वभाद्रपदा ३६, उत्तरभाद्रपदा २२।",
+    },
+    (8, 6): {
+        "sanskrit": "रन्ध्राद्रयः क्रमादेषां विक्षेपाः स्युरपक्रमात् । दिङ्मासविषयाः सौम्ये याम्ये पञ्चदिशो नव",
+        "meaning_en": "Revatī 79 (so 359°50′). Their latitudes from the ecliptic, in order: Aśvinī 10° north, Bharaṇī 12° north, Kṛttikā 5° north; Rohiṇī 5° south, Mṛgaśiras 10° south, Ārdrā 9° south.",
+        "meaning_ne": "रेवती ७९ (यसरी ३५९°५०′)। क्रान्तिवृत्तबाट तिनका विक्षेप क्रमशः: अश्विनी १०° उत्तर, भरणी १२° उत्तर, कृत्तिका ५° उत्तर; रोहिणी ५° दक्षिण, मृगशिरा १०° दक्षिण, आर्द्रा ९° दक्षिण।",
+    },
+    (8, 7): {
+        "meaning_en": "Punarvasu 6° north, Puṣya 0°, Āśleṣā 7° south, Maghā 0°, Pūrva Phalgunī 12° north, Uttara Phalgunī 13° north; Hasta 11° south, Citrā 2° south; Svātī 37° north.",
+        "meaning_ne": "पुनर्वसु ६° उत्तर, पुष्य ०°, आश्लेषा ७° दक्षिण, मघा ०°, पूर्वफाल्गुनी १२° उत्तर, उत्तरफाल्गुनी १३° उत्तर; हस्त ११° दक्षिण, चित्रा २° दक्षिण; स्वाती ३७° उत्तर।",
+    },
+    (8, 8): {
+        "sanskrit": "याम्येऽध्यर्धत्रिकृतवो नव सार्धशरेषवः । उत्तरस्यां तथा षष्टिस्त्रिंशत् षट्त्रिंशदेव हि",
+        "meaning_en": "To the south: Viśākhā 1½°, Anurādhā 3°, Jyeṣṭhā 4°, Mūla 9°, Pūrva Āṣāḍhā 5½°, Uttara Āṣāḍhā 5°. To the north: Abhijit 60°, Śravaṇa 30°, Dhaniṣṭhā 36°.",
+        "meaning_ne": "दक्षिणतर्फ: विशाखा १½°, अनुराधा ३°, ज्येष्ठा ४°, मूल ९°, पूर्वाषाढा ५½°, उत्तराषाढा ५°। उत्तरतर्फ: अभिजित् ६०°, श्रवण ३०°, धनिष्ठा ३६°।",
+    },
+    (8, 9): {
+        "sanskrit": "दक्षिणे त्वर्धभागस्तु चतुर्विंशतिरुत्तरे । भागाः षड्विंशतिः खं च दास्रादीनां यथाक्रमम्",
+        "meaning_en": "Śatabhiṣaj ½° south, Pūrva Bhādrapadā 24° north, Uttara Bhādrapadā 26° north, and Revatī 0°: these are the latitudes of the stars from Aśvinī onward, in order.",
+        "meaning_ne": "शतभिषा ½° दक्षिण, पूर्वभाद्रपदा २४° उत्तर, उत्तरभाद्रपदा २६° उत्तर र रेवती ०°: अश्विनीदेखि क्रमशः ताराहरूका विक्षेप यिनै हुन्।",
+    },
+}
+
+
+# Numbers the model decoded wrongly, put right in every field of that verse.
+# 2.19 कुञ्जराश्विनगाश्विनः: 8 2 7 2 read from the right is 2728 (the 14th sine), not 2782.
+NUMBER_FIXES: dict[tuple[int, int], list[tuple[str, str]]] = {
+    (2, 19): [("2782", "2728"), ("२७८२", "२७२८")],
+    # गुणाग्निचन्द्राः 3 3 1 → 133 (Mercury); द्विरसाक्षीणि 2 6 2 → 262 (Venus)
+    (2, 35): [("Mercury 132°", "Mercury 133°"), ("Venus 32°", "Venus 262°"), ("बुध १३२°", "बुध १३३°"), ("शुक्र ३२°", "शुक्र २६२°")],
+    (12, 84): [("1043206", "1043209"), ("1,043,206", "1,043,209"), ("१०४३२०६", "१०४३२०९")],
+}
+
+# Orbits of 12.85-90 as Pandey prints them, which the verses' word-numerals give when read
+# from the right: Mars 8146909, Moon's apogee 38328484, Jupiter 51375764, Rahu 80572864,
+# Saturn 127668255, stars 259890000, sky 18712080864000000.
+VERSE_FIXES.update({
+    (2, 35): {
+        "sanskrit": "युग्मान्तेऽर्थाद्रयः खाग्निसुराः सूर्या नवार्णवाः । ओजे द्व्यगा वसुयमा रदा रुद्रा गजाब्धयः\nकुजादीनामतः शैघ्र्या युग्मान्तेऽर्थाग्निदस्रकाः । गुणाग्निचन्द्राः खनगा द्विरसाक्षीणि गोऽग्नयः",
+    },
+    (12, 1): {
+        "sanskrit": "अथार्कांशसमुद्भूतं प्रणिपत्य कृताञ्जलिः । भक्त्या परमयाऽभ्यर्च्य पप्रच्छेदं मयासुरः",
+        "meaning_en": "Then Mayāsura, with folded hands, bowed to the being born of a portion of the Sun, worshipped him with the highest devotion, and asked him this.",
+        "meaning_ne": "त्यसपछि मयासुरले हात जोडेर सूर्यको अंशबाट उत्पन्न पुरुषलाई प्रणाम गरे, परम भक्तिले पूजा गरे र उहाँसँग यो सोधे।",
+    },
+    (12, 86): {
+        "meaning_en": "The orbit of Venus's śīghra is 2,664,637 yojanas (sapta 7, agni 3, rasa 6, abdhi 4, rasa 6, ṣaṭ 6, yama 2, read from the right). Then the orbit of the Sun, Mercury and Venus is 4,331,500 yojanas (kha 0, kha 0, artha 5, eka 1, sura 33, arṇava 4): one orbit, because their mean revolutions are equal.",
+        "meaning_ne": "शुक्रको शीघ्रोच्चको कक्षा २६,६४,६३७ योजन हो (सप्त ७, अग्नि ३, रस ६, अब्धि ४, रस ६, षट् ६, यम २, दायाँबाट पढ्दा)। त्यसपछि सूर्य, बुध र शुक्रको कक्षा ४३,३१,५०० योजन हो (ख ०, ख ०, अर्थ ५, एक १, सुर ३३, अर्णव ४): तिनका मध्यम भगण बराबर भएकाले एउटै कक्षा।",
+    },
+    (12, 87): {
+        "sanskrit": "कुजस्याप्यङ्कशून्याङ्कषड्वेदैकभुजङ्गमाः । चन्द्रोच्चस्य कृताष्टाब्धिवसुद्वित्र्यष्टवह्नयः",
+        "meaning_en": "The orbit of Mars is 8,146,909 yojanas (aṅka 9, śūnya 0, aṅka 9, ṣaṭ 6, veda 4, eka 1, bhujaṅgama 8, read from the right). The orbit of the Moon's apogee is 38,328,484 yojanas.",
+        "meaning_ne": "मङ्गलको कक्षा ८१,४६,९०९ योजन हो (अङ्क ९, शून्य ०, अङ्क ९, षट् ६, वेद ४, एक १, भुजङ्गम ८, दायाँबाट पढ्दा)। चन्द्रोच्चको कक्षा ३,८३,२८,४८४ योजन हो।",
+    },
+    (12, 88): {
+        "sanskrit": "कृतर्तुमुनिपञ्चाद्रिगुणेन्दुविषया गुरोः । स्वर्भानोर्वेदतर्काष्टद्विशैलार्थखकुञ्जराः",
+        "meaning_en": "Jupiter's orbit is 51,375,764 yojanas (kṛta 4, ṛtu 6, muni 7, pañca 5, adri 7, guṇa 3, indu 1, viṣaya 5, read from the right). Rahu's (Svarbhānu's) orbit is 80,572,864 yojanas (veda 4, tarka 6, aṣṭa 8, dvi 2, śaila 7, artha 5, kha 0, kuñjara 8).",
+        "meaning_ne": "बृहस्पतिको कक्षा ५,१३,७५,७६४ योजन हो (कृत ४, ऋतु ६, मुनि ७, पञ्च ५, अद्रि ७, गुण ३, इन्दु १, विषय ५, दायाँबाट पढ्दा)। राहु (स्वर्भानु) को कक्षा ८,०५,७२,८६४ योजन हो (वेद ४, तर्क ६, अष्ट ८, द्वि २, शैल ७, अर्थ ५, ख ०, कुञ्जर ८)।",
+        "working_en": "1. Jupiter: 4 6 7 5 7 3 1 5 read from the right = 51375764 yojanas\n2. Rahu: 4 6 8 2 7 5 0 8 read from the right = 80572864 yojanas",
+        "working_ne": "१. बृहस्पति: ४ ६ ७ ५ ७ ३ १ ५ दायाँबाट पढ्दा = ५१३७५७६४ योजन\n२. राहु: ४ ६ ८ २ ७ ५ ० ८ दायाँबाट पढ्दा = ८०५७२८६४ योजन",
+    },
+    (12, 89): {
+        "sanskrit": "पञ्चबाणाक्षिनागर्तुरसाद्र्यर्काः शनेस्ततः । भानां खखखशून्याङ्कवसुरन्ध्रशराश्विनः",
+        "meaning_en": "Next, Saturn's orbit is 127,668,255 yojanas (pañca 5, bāṇa 5, akṣi 2, nāga 8, ṛtu 6, rasa 6, adri 7, arka 12). The orbit of the stars is 259,890,000 yojanas: sixty times the Sun's orbit of 4,331,500, rounded as the verse gives it.",
+        "meaning_ne": "त्यसपछि शनिको कक्षा १२,७६,६८,२५५ योजन हो (पञ्च ५, बाण ५, अक्षि २, नाग ८, ऋतु ६, रस ६, अद्रि ७, अर्क १२)। नक्षत्रको कक्षा २५,९८,९०,००० योजन हो, सूर्यको कक्षा ४३,३१,५०० को साठी गुणा, श्लोकले दिएझैँ।",
+        "working_en": "1. Saturn: 5 5 2 8 6 6 7 12 read from the right = 127668255 yojanas\n2. Stars: 0 0 0 0 9 8 9 5 2 read from the right = 259890000 yojanas\n3. Check: 4331500 × 60 = 259890000",
+        "working_ne": "१. शनि: ५ ५ २ ८ ६ ६ ७ १२ दायाँबाट पढ्दा = १२७६६८२५५ योजन\n२. नक्षत्र: ० ० ० ० ९ ८ ९ ५ २ दायाँबाट पढ्दा = २५९८९०००० योजन\n३. जाँच: ४३३१५०० × ६० = २५९८९००००",
+    },
+    (12, 90): {
+        "meaning_en": "The orbit of the sky (khakakṣā) is 18,712,080,864,000,000 yojanas: the circumference of the egg of Brahma, within which the Sun's rays spread on every side.",
+        "meaning_ne": "आकाशको कक्षा (खकक्षा) १,८७,१२,०८,०८,६४,००,००,००० योजन हो: ब्रह्माण्डको परिधि, जसभित्र सूर्यका किरण चारैतिर फैलिन्छन्।",
+        "working_en": "1. Word-numerals: kha 0, vyoma 0, kha-traya 0 0 0, kha 0, sāgara 4, ṣaṭka 6, nāga 8, vyoma 0, aṣṭa 8, śūnya 0, yama 2, rūpa 1, naga 7, aṣṭa 8, candra 1\n2. Read from the right = 18712080864000000 yojanas\n3. Check: the Moon's kalpa revolutions × its orbit = 57753336000 × 324000 = 18712080864000000",
+        "working_ne": "१. शब्दाङ्क: ख ०, व्योम ०, खत्रय ० ० ०, ख ०, सागर ४, षट्क ६, नाग ८, व्योम ०, अष्ट ८, शून्य ०, यम २, रूप १, नग ७, अष्ट ८, चन्द्र १\n२. दायाँबाट पढ्दा = १८७१२०८०८६४०००००० योजन\n३. जाँच: चन्द्रका कल्पभगण × चन्द्रकक्षा = ५७७५३३३६००० × ३२४००० = १८७१२०८०८६४००००००",
+    },
+})
+
+
+def _fix_numbers(item: dict, swaps: list[tuple[str, str]]) -> None:
+    for field in ("meaning_en", "meaning_ne", "working_en", "working_ne"):
+        if item.get(field):
+            for old, new in swaps:
+                item[field] = item[field].replace(old, new)
+    for comment in item.get("commentaries") or []:
+        for field in ("en", "ne"):
+            if comment.get(field):
+                for old, new in swaps:
+                    comment[field] = comment[field].replace(old, new)
+
+
 def apply() -> None:
     doc = json.loads(MANIFEST.read_text(encoding="utf-8"))
     spans = json.loads(SPANS.read_text(encoding="utf-8"))
@@ -515,12 +624,16 @@ def apply() -> None:
             sanskrit = "\n".join(lines) or clean_verse(sp.get("tail") or "")
             if not sanskrit:
                 continue
+            # a passage the model gave no meaning for got one per verse in a second pass
+            single = (row.get("verse_meanings") or {}).get(str(sp["a"])) or {}
+            fix = VERSE_FIXES.get((c, sp["a"]), {})
+            sanskrit = fix.get("sanskrit", sanskrit)
             item: dict = {
                 "verse_number": sp["a"],
                 "verse_label": label,
                 "sanskrit": sanskrit,
-                "meaning_ne": to_dev_digits(row.get("meaning_ne") or "") or None,
-                "meaning_en": row.get("meaning_en") or None,
+                "meaning_ne": to_dev_digits(fix.get("meaning_ne") or row.get("meaning_ne") or single.get("meaning_ne") or "") or None,
+                "meaning_en": fix.get("meaning_en") or row.get("meaning_en") or single.get("meaning_en") or None,
                 "audio_file": None,
             }
             commentaries = []
@@ -539,6 +652,10 @@ def apply() -> None:
                 fixes += n
                 item["working_en"] = working_en
                 item["working_ne"] = to_dev_digits(working_ne) or None
+            if fix.get("working_en"):
+                item["working_en"], item["working_ne"] = fix["working_en"], fix.get("working_ne")
+            if (c, sp["a"]) in NUMBER_FIXES:
+                _fix_numbers(item, NUMBER_FIXES[(c, sp["a"])])
             shlokas.append(item)
         chapters.append({"number": c, "title_ne": title_ne, "title_en": title_en, "shlokas": shlokas})
     verses = sum(len(ch["shlokas"]) for ch in chapters)
