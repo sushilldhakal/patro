@@ -177,14 +177,22 @@ export function clockStringInTimezone(
   return withSeconds ? `${hm}:${String(second).padStart(2, "0")}` : hm;
 }
 
-/** YYYY-MM-DD for "today" in the given timezone. */
+/**
+ * YYYY-MM-DD for "today" in the given timezone.
+ *
+ * Built from `formatToParts`, not `format("en-CA")`: browsers and crawlers with
+ * thin locale data fall back to en-US and print "10/29/2026", which crashed the
+ * website calendar (Sentry PATRO-WEB-5).
+ */
 export function todayAdStringInTimezone(date: Date, timeZone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(date);
+  }).formatToParts(date);
+  const read = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${read("year").padStart(4, "0")}-${read("month").padStart(2, "0")}-${read("day").padStart(2, "0")}`;
 }
 
 export function resolveTimeZone(

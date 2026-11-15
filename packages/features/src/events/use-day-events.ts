@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { listEvents, type CalendarEvent } from "@vedic-patro/api-client";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
 /** "YYYY-MM-DD" of an instant on the wall clock of `timeZone`. */
 function localDate(iso: string, timeZone: string): string {
   try {
-    return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
+    return todayAdStringInTimezone(new Date(iso), timeZone);
   } catch {
     return iso.slice(0, 10);
   }

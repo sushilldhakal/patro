@@ -1,3 +1,5 @@
+import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
+
 /** Milliseconds `timeZone` is ahead of UTC at `date` (minute precision). */
 function zoneOffsetMs(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -32,11 +34,5 @@ export function weekdayOf(dateAd: string): number {
 }
 
 export function todayIn(timeZone: string, now = new Date()): string {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-  return parts;
+  return todayAdStringInTimezone(now, timeZone);
 }
