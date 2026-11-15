@@ -4,8 +4,9 @@
  * next, how far through it is, and how long until it changes. Each page
  * builds one; both apps draw it with the kit's `NowHero`.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { parseHHMM } from "@vedic-patro/domain/panchanga/time-format";
+import { useForegroundInterval } from "./app-foreground";
 
 type T = (key: string, values?: Record<string, unknown>) => string;
 type Digits = (v: string | number) => string;
@@ -31,10 +32,7 @@ export type NowHeroView = {
 /** `Date.now()`, again every 30 seconds while the page is open. */
 export function useNowMs(): number {
   const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 30_000);
-    return () => clearInterval(id);
-  }, []);
+  useForegroundInterval(() => setNow(Date.now()), 30_000);
   return now;
 }
 

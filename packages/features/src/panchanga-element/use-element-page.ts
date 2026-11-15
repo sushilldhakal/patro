@@ -7,7 +7,7 @@
  * chandrabala/tarabala show the day's strength cards. Each app keeps the
  * browsed month/day where it likes and passes it in.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   elementKeys,
@@ -30,6 +30,7 @@ import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/ca
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
 import { balamBoard, elementTable, spanCards, spanNow, udayaSummary } from "./model";
+import { useForegroundInterval } from "../common/app-foreground";
 
 export * from "./model";
 
@@ -93,11 +94,7 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
 
   // Span pages mark the span the clock is in; a minute tick keeps it moving.
   const [spanTick, setSpanTick] = useState(0);
-  useEffect(() => {
-    if (!isSpan) return;
-    const id = setInterval(() => setSpanTick((n) => n + 1), 60_000);
-    return () => clearInterval(id);
-  }, [isSpan]);
+  useForegroundInterval(() => setSpanTick((n) => n + 1), 60_000, isSpan);
   const spans = useMemo(() => {
     void spanTick;
     return spanQuery.data ? spanCards(spanQuery.data.spans, text) : [];
@@ -107,11 +104,7 @@ export function useElementPage({ name, location, month, day }: ElementPageScope)
   // On today the boards follow the clock: which slot is on, and how long it has left.
   const live = Boolean(meta && !isSpan) && dateAd === todayAd;
   const [tick, setTick] = useState(0);
-  useEffect(() => {
-    if (!live) return;
-    const id = setInterval(() => setTick((n) => n + 1), 30_000);
-    return () => clearInterval(id);
-  }, [live]);
+  useForegroundInterval(() => setTick((n) => n + 1), 30_000, live);
   const nowMin = useMemo(() => {
     if (!live) return undefined;
     void tick;

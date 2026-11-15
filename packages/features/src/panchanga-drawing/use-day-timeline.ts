@@ -5,13 +5,14 @@
  * live clock on today, where the "now" needle sits and what it says, and the
  * band, legend, axis and section copy. Each app draws the chart.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
 import { buildCivilTimelineData, buildDayTimelineData, needleGhatiOnVedicChart } from "@vedic-patro/read-models/panchanga/day-timeline-data";
 import { minutesOnVedicChart } from "@vedic-patro/drawing/panchanga/day-timeline-layout";
 import { getPlanetRows, getSunriseLagnaRow } from "@vedic-patro/read-models/panchanga/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { useForegroundInterval } from "../common/app-foreground";
 
 export type DayTimelineMode = "Day-Night" | "Calendar Day";
 
@@ -50,11 +51,7 @@ export function useDayTimeline({
   const timeZone = resolveTimeZone(p?.location?.timezone, timezone);
 
   const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    if (!isToday) return;
-    const id = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(id);
-  }, [isToday]);
+  useForegroundInterval(() => setNow(new Date()), 30_000, isToday);
 
   const busy = loading || (isCivil ? civilLoading || !civil : !p) || !data;
 

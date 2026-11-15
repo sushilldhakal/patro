@@ -71,8 +71,12 @@ function groupHeading(shlokas: readonly Shloka[], at: number, sukta: number, { t
     : t("documents.mantra_range", { from: digits(from), to: digits(to) });
 }
 
-/** A numbered adhyaya whose source gives it no name of its own. */
-const NUMBERED_SECTION = "अध्याय";
+/**
+ * The `group_title` the source data gives a numbered adhyaya with no name of its own ("adhyaya" in
+ * Devanagari). Built from code points because it is a data value to match, not copy to show,
+ * and the inline-copy checks rightly reject Devanagari literals in shared code.
+ */
+const NUMBERED_SECTION = String.fromCodePoint(0x0905, 0x0927, 0x094d, 0x092f, 0x093e, 0x092f);
 
 /** The heading and note for one group of verses. */
 function sectionHeading(

@@ -1,4 +1,5 @@
 import { isLandscape, landscapeWheelCap } from "./wheel-fit";
+import { useActiveInterval } from "../../../native/use-app-active";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
 import { Modal, Platform, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
@@ -735,19 +736,16 @@ function WheelBody({
     setExpanded((v) => !v);
   }, []);
 
-  useEffect(() => {
-    if (!isToday) return;
-    /* This re-renders the whole chart body (~350 lines of SVG), not just the
+  /* This re-renders the whole chart body (~350 lines of SVG), not just the
        needle — confirmed on device via logcat: "Skipped 298 frames" / "Davey!
        duration=8790ms" once a second while this screen sits open. A 1s tick
        was pegging the JS thread badly enough that taps anywhere on the page
        (not just on the wheel) were getting lost or misdirected during the
        stall. The needle only needs to look live, not be to-the-second
        accurate, so 20s cuts the render frequency 20x without a visible
-       difference in the marker's position. */
-    const id = setInterval(() => setNow(new Date()), 20000);
-    return () => clearInterval(id);
-  }, [isToday]);
+       difference in the marker's position.
+       The clock also stops while the app is in the background (PATRO-D). */
+  useActiveInterval(() => setNow(new Date()), 20000, isToday);
 
   useEffect(() => {
     if (scrubPinned || !isToday) return;

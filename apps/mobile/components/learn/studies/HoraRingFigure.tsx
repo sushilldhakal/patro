@@ -53,6 +53,7 @@ import {
   horaTextArc,
   type HoraPlanetKey,
 } from "./hora-data";
+import { useForegroundInterval } from "@vedic-patro/features/common";
 
 const PROG_STEPS = 10_000;
 
@@ -111,11 +112,7 @@ export function HoraRing({ p, isToday, timezone }: { p: PanchangaDay; isToday?: 
     return Math.max(0, Math.min(60, g));
   }, [now, det.sunriseMin, tz]);
 
-  useEffect(() => {
-    if (!isToday) return;
-    const id = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(id);
-  }, [isToday]);
+  useForegroundInterval(() => setNow(new Date()), 30_000, isToday);
 
   const [prog, setProg] = useState(() => {
     if (isToday) {

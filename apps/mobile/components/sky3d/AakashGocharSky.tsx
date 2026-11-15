@@ -22,6 +22,7 @@ import type { GestureResponderEvent, PanResponderGestureState } from "react-nati
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Canvas } from "@/components/sky3d/GeocentricSkyCanvas";
+import { useScreenActive } from "@/lib/use-screen-active";
 import { SheetSection } from "@/components/ui/OverlaySheet";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { Text } from "@/components/ui/Text";
@@ -474,8 +475,10 @@ export function AakashGocharSky({
   // jumping to each sample: samples arrive 10–25 times a second, and jumping to them read as a
   // shaking sky. Nothing here re-renders React; it only writes the view ref the scene reads.
   const sensorLatest = deviceOrientation.latest;
+  // Stopped while the sky is out of sight or the app is backgrounded (the sensors stop too).
+  const { active: skyOnScreen } = useScreenActive();
   useEffect(() => {
-    if (!sensorMode) return;
+    if (!sensorMode || !skyOnScreen) return;
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
@@ -505,7 +508,7 @@ export function AakashGocharSky({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [sensorMode, sensorLatest]);
+  }, [sensorMode, skyOnScreen, sensorLatest]);
 
   /** Camera passthrough only once the permission is actually granted — AR mode
       alone would otherwise leave a black rectangle where the lens should be. */

@@ -39,6 +39,7 @@ import {
 import { formatWheelPlaybackRate, WHEEL_MAX_PLAY_SPEED, WHEEL_PLAY_BASE_MS } from "@vedic-patro/domain/panchanga/wheel-year-playback";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { useAppForeground } from "../common/app-foreground";
 
 /** Days from an edge (at 1×) at which the window grows toward it. */
 const EXTEND_MARGIN = 45;
@@ -155,8 +156,10 @@ export function usePanchangaYearPage({ era, location, date, setDate, setClock, e
     setDate(parseAdStr(dayAd));
   }, [dayAd, adDateStr, setDate, play.dir]);
 
+  // Playback stops stepping while the app is in the background (the wheel would redraw there).
+  const foreground = useAppForeground();
   useEffect(() => {
-    if (play.dir === 0 || !total) return;
+    if (play.dir === 0 || !total || !foreground) return;
     const tick = Math.max(33, Math.round(WHEEL_PLAY_BASE_MS / play.speed));
     const id = setInterval(() => {
       setDayAd((ad) => {
@@ -167,7 +170,7 @@ export function usePanchangaYearPage({ era, location, date, setDate, setClock, e
       });
     }, tick);
     return () => clearInterval(id);
-  }, [play, total, days]);
+  }, [play, total, days, foreground]);
 
   /* Run the window out ahead of playback: grow to MAX_MONTHS_EACH, then slide. */
   useEffect(() => {

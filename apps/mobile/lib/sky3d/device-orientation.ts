@@ -40,6 +40,7 @@ import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import * as Location from "expo-location";
 import { Accelerometer } from "expo-sensors";
 import { createSubscriptionScope } from "@vedic-patro/domain/subscription-scope";
+import { useScreenActive } from "@/lib/use-screen-active";
 
 export type DeviceOrientation = {
   /** Compass heading, degrees, 0 = true north, clockwise. Null until the first reading arrives. */
@@ -86,8 +87,12 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
   const [available, setAvailable] = useState(false);
   const latest = useRef<{ headingDeg: number | null; pitchDeg: number | null }>({ headingDeg: null, pitchDeg: null });
 
+  // Sensors stop while the sky is out of sight or the app is in the background.
+  const { active: screenActive } = useScreenActive();
+  const live = active && screenActive;
+
   useEffect(() => {
-    if (!active) {
+    if (!live) {
       setAvailable(false);
       return;
     }
@@ -169,7 +174,7 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
       latest.current = { headingDeg: null, pitchDeg: null };
       setAvailable(false);
     };
-  }, [active]);
+  }, [live]);
 
   return { headingDeg, pitchDeg, available, latest };
 }

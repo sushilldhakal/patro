@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useMemo, useRef, useState, type ReactNode } from "react";
 import type { CalendarEvent } from "@vedic-patro/api-client";
 import { AccessibilityInfo, PanResponder, Pressable, Text as RNText, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import Animated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
@@ -31,6 +31,7 @@ import { haptics } from "@vedic-patro/ui/motion";
 import type { PersonalDayChipProps, PlannerViewProps } from "../contract";
 import { eventKindOf, eventTimeText } from "../event-text";
 import { iconBriefcase, iconChevronLeft, iconChevronRight, iconStar, iconSun } from "../icons";
+import { useActiveInterval } from "../../../native/use-app-active";
 
 /**
  * The home calendar's planner views drawn the way Apple Calendar draws them, for iPhone, iPad and
@@ -431,10 +432,7 @@ function TimeGrid({ view, days, strip, events, marks, slots, yogas, personal, to
 
 function useNow() {
   const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(id);
-  }, []);
+  useActiveInterval(() => setNow(new Date()), 60_000);
   return now;
 }
 

@@ -3,6 +3,7 @@ import { WidgetRefresher } from "@/components/widgets/WidgetRefresher";
 import { AppDayTracker } from "@/components/review/AppDayTracker";
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
+import "@/lib/app-foreground";
 import { DEVICE_MEMORY_GB, IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
 import * as Sentry from "@sentry/react-native";
@@ -129,6 +130,18 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+/**
+ * Queries `shouldPersistQuery` keeps out of the offline cache gain nothing from the 7-day gcTime
+ * (that only exists so a query lives long enough to be saved), yet it kept every one in memory
+ * for the whole session: the 1.6 MB bhava reference, a ~120 KB at-time panchanga per scrub
+ * position, each year wheel, every full month. Once no screen uses them they now go after a few
+ * minutes (sooner on low-memory phones), and come back from the edge cache or the offline store.
+ */
+const UNPERSISTED_GC_TIME = IS_LOW_MEMORY_DEVICE ? 2 * 60_000 : 15 * 60_000;
+for (const key of [["month"], ["panchanga", "year-wheel"], ["panchanga", "at-time"], ["bhava-reference"]]) {
+  queryClient.setQueryDefaults(key, { gcTime: UNPERSISTED_GC_TIME });
+}
 
 /**
  * One retry helps a dropped connection; it only doubles the wait for a timeout

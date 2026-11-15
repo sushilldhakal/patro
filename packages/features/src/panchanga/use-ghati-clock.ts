@@ -5,10 +5,11 @@
  * hour / minute / second (all in locale digits), and the labels. Each app
  * draws the panel.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { parseTimeToMinutes } from "@vedic-patro/domain/panchanga/ghati-clock";
 import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { useForegroundInterval } from "../common/app-foreground";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -28,10 +29,7 @@ export function useGhatiClock({
   const [now, setNow] = useState(() => new Date());
   const timeZone = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), tickMs);
-    return () => clearInterval(id);
-  }, [tickMs]);
+  useForegroundInterval(() => setNow(new Date()), tickMs);
 
   const { hour, minute, second } = getZonedTimeParts(now, timeZone);
   const sunriseMin = parseTimeToMinutes(sunrise) ?? 5 * 60 + 12;

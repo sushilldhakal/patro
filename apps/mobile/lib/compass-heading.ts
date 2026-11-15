@@ -24,6 +24,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
 import { createSubscriptionScope } from "@vedic-patro/domain/subscription-scope";
+import { useScreenActive } from "@/lib/use-screen-active";
 export { dampHeading } from "@vedic-patro/domain/geography/compass-heading";
 
 export type CompassPermissionState = "unnecessary" | "prompt-required" | "granted" | "denied";
@@ -63,8 +64,15 @@ export function useCompassHeading(active: boolean): {
     }
   }, []);
 
+  // Off while the screen is out of sight or the app is in the background: readings would keep
+  // re-rendering a tab you left (Android redraws it, even backgrounded). The last heading stays,
+  // so the wheel doesn't jump and the page's no-heading timeout doesn't fire while you're away.
+  const { active: screenActive } = useScreenActive();
+  const live = active && screenActive;
+
   useEffect(() => {
-    if (!active) {
+    if (!live) {
+      if (active) return;
       prevHeading.current = null;
       shownHeading.current = null;
       setHeading(null);
@@ -104,7 +112,9 @@ export function useCompassHeading(active: boolean): {
       shownHeading.current = null;
       setAvailable(false);
     };
-  }, [active]);
+    // `active` only decides whether a pause clears the reading.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live]);
 
   return { heading, available, drifting, permissionState, requestPermission };
 }

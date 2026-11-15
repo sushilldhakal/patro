@@ -55,7 +55,8 @@ export function EclipseStudy() {
   }, [playing, live]);
 
   useEffect(() => {
-    if (!playingNodes) return;
+    // Off-screen or in a tab you left, like the Moon loop above.
+    if (!playingNodes || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
       if (now - last < STUDY_FRAME_MS) {
@@ -69,7 +70,7 @@ export function EclipseStudy() {
     };
     rafNode.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafNode.current);
-  }, [playingNodes]);
+  }, [playingNodes, live]);
 
   const events = useMemo(() => findEclipses(RANGE), []);
 
