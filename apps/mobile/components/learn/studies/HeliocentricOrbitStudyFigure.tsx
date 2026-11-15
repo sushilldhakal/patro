@@ -1,6 +1,6 @@
 
 import { StudyB, StudyCaption, StudyCard, StudyControls, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useRef, useState } from "react";
 import { HeliocentricOrbitDiagram } from "@/components/learn/studies/HeliocentricOrbitDiagramFigure";
 import { useTranslation } from "@vedic-patro/i18n/react";
@@ -57,6 +57,10 @@ export function HeliocentricOrbitStudy() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setMeanDeg((prev) => (prev + dt * 10) % 360);

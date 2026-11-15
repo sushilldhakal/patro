@@ -1,6 +1,6 @@
 
 import { StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow, StudySliderLabel, StudySliderRow } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocaleDigits } from "@/components/learn/study/study-digits";
@@ -41,6 +41,10 @@ export function EclipseStudy() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        rafMoon.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setDay((prev) => (prev + dt * MOON_PLAY_SPEED) % RANGE);
@@ -54,6 +58,10 @@ export function EclipseStudy() {
     if (!playingNodes) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        rafNode.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setPrecDays((prev) => (prev + dt * NODE_PLAY_SPEED) % ECLIPSE_YEAR);

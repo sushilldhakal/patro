@@ -1,7 +1,7 @@
 import { Circle, ClipPath, Defs, Ellipse, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from "react-native-svg";
 import { useSvgClass } from "@/components/learn/study/study-ink";
 import { StudyB, StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow, StudySliderLabel, StudySliderRow, StudySvg } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { edBodyLabel, hoEarthGroup, motBaseDot, motEarthGlow, motEarthLabel, motEclipseBannerType, motEclipseGlowType, motHeightPost, motLegendLabel, motMoon, motMoonEclipsing, motMoonHaloDir, motMoonLabel, motMoonSubmerged, motNode, motNodeDot, motNodeLabel, motNodeLine, motNodeTrack, motOrbit, motPlaneFace, motPlaneLabel, motPlaneRim, motSeasonBanner, motShadowDot, motShadowLabel, motSunBeamAligned, motSunLabel, motSunLineAligned, motSunOutlineAligned, motTiltArc, motTiltLabel, motTiltRef } from "@vedic-patro/design-tokens/classes/diagram-classes";
@@ -389,6 +389,10 @@ export function MoonOrbitTiltStudy() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setDayT((p) => (p + dt * PLAYBACK_DAYS_PER_SEC) % YEAR_RANGE);

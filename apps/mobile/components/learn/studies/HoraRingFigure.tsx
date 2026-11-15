@@ -27,7 +27,7 @@ import { illustration, neutral, space, withAlpha } from "@vedic-patro/design-tok
 import { GrahaPlanetIcon } from "@vedic-patro/ui/kit/panchanga";
 import { StudyCard, StudyPlayButton, StudyRange, StudyScrubRow } from "@/components/learn/study/StudyCard";
 import { STUDY_FONT, useStudyInk, useSvgClass, useTm } from "@/components/learn/study/study-ink";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import {
   HORA_CX,
   HORA_CY,
@@ -186,6 +186,10 @@ export function HoraRing({ p, isToday, timezone }: { p: PanchangaDay; isToday?: 
     let last = performance.now();
     let frame = 0;
     const loop = (t: number) => {
+      if (t - last < STUDY_FRAME_MS) {
+        frame = requestAnimationFrame(loop);
+        return;
+      }
       const dt = t - last;
       last = t;
       setProg((prev) => {

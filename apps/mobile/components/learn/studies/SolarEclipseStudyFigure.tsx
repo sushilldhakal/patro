@@ -1,7 +1,7 @@
 import { Circle, ClipPath, Defs, Ellipse, G, Line, Path, RadialGradient, Rect, Stop, Text as SvgText } from "react-native-svg";
 import { useSvgClass } from "@/components/learn/study/study-ink";
 import { StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow, StudySliderLabel, StudySliderRow, StudySvg } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { edBodyLabel, hoEarthGroup, solAntumbra, solBannerType, solCorona, solEarthGlow, solEyeFrame, solEyeMoon, solEyeRim, solEyeSky, solEyeStatus, solEyeSun, solEyeTitle, solLegendLabel, solLight, solMoon, solMoonLabel, solPenumbra, solRay, solSpotAnti, solSpotPen, solSpotUmbra, solSunGlow, solUmbra } from "@vedic-patro/design-tokens/classes/diagram-classes";
 import { useTranslation } from "@vedic-patro/i18n/react";
@@ -257,6 +257,10 @@ export function SolarEclipseStudy() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setSweep((p) => (p + dt * 0.16) % 1);

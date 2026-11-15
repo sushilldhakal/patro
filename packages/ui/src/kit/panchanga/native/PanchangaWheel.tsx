@@ -1,7 +1,7 @@
 import { isLandscape, landscapeWheelCap } from "./wheel-fit";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
-import { Modal, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
+import { Modal, Platform, Pressable, StatusBar, Text, View, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Svg, { Path, Polygon, Rect } from "react-native-svg";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -32,6 +32,31 @@ import {
   rewindIcon,
   rotateCcwIcon,
 } from "../icons";
+
+/** Android: least time between wheel redraws while the time slider is dragged. */
+const SCRUB_REDRAW_MS = 150;
+
+/** `value`, updated at most once per `ms` (the latest value always lands). `ms` 0 passes it through. */
+function useThrottledValue<T>(value: T, ms: number): T {
+  const [shown, setShown] = useState(value);
+  const lastAt = useRef(0);
+  useEffect(() => {
+    if (ms <= 0) return;
+    const wait = lastAt.current + ms - Date.now();
+    if (wait <= 0) {
+      lastAt.current = Date.now();
+      setShown(value);
+      return;
+    }
+    const id = setTimeout(() => {
+      lastAt.current = Date.now();
+      setShown(value);
+    }, wait);
+    return () => clearTimeout(id);
+  }, [value, ms]);
+  return ms <= 0 ? value : shown;
+}
+
 
 export type YearWheelScrub = {
   day: number;
@@ -565,6 +590,11 @@ function WheelBody({
   const [scrubG, setScrubG] = useState(() => (isToday ? nowG : 0));
   const [debouncedScrubG, setDebouncedScrubG] = useState(scrubG);
   const effectiveG = rangeMode ? (clockG ?? 0) : scrubG;
+  /* Each new position redraws the whole wheel. The slider reports every step, and on Android
+     that redraw is slow enough that a drag queued far more than it could draw (the app froze).
+     The planets there move at most ~7 times a second while dragging, and land exactly when the
+     drag stops. The clock text and slider still follow every step. */
+  const markerG = useThrottledValue(effectiveG, Platform.OS === "android" ? SCRUB_REDRAW_MS : 0);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedScrubG(scrubG), 400);
@@ -615,8 +645,8 @@ function WheelBody({
        back. At 2×/4×/8× that reads as planets circling, then reversing. Use
        the day's own snapshot so they only ever advance along the orbit. */
     if (rangeMode) return buildWheelMarkersFromDetail(det);
-    return buildWheelMarkers(p, det, effectiveG);
-  }, [atTimeData, p, det, effectiveG, rangeMode]);
+    return buildWheelMarkers(p, det, markerG);
+  }, [atTimeData, p, det, markerG, rangeMode]);
 
   /* The selected graha's card in the header; the wheel's needle points at the same one. */
   const lineBody = useMemo(

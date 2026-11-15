@@ -1,6 +1,6 @@
 
 import { StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useEffect, useRef, useState } from "react";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/panchanga/nakshatra-icons";
@@ -43,6 +43,10 @@ export function SunEarthMoonStudy() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setDay((prev) => (prev + dt * 14) % TROPICAL_YEAR);

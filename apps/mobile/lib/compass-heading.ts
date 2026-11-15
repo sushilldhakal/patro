@@ -31,6 +31,9 @@ export type CompassPermissionState = "unnecessary" | "prompt-required" | "grante
 /** `accuracy` at or below this reads as "wave the phone in a figure eight". */
 const DRIFT_ACCURACY = 1;
 
+/** Heading changes smaller than this don't re-render. */
+const MIN_VISIBLE_TURN_DEG = 0.5;
+
 export function useCompassHeading(active: boolean): {
   heading: number | null;
   available: boolean;
@@ -46,6 +49,7 @@ export function useCompassHeading(active: boolean): {
   const [permissionState, setPermissionState] = useState<CompassPermissionState>("prompt-required");
 
   const prevHeading = useRef<number | null>(null);
+  const shownHeading = useRef<number | null>(null);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     try {
@@ -62,6 +66,7 @@ export function useCompassHeading(active: boolean): {
   useEffect(() => {
     if (!active) {
       prevHeading.current = null;
+      shownHeading.current = null;
       setHeading(null);
       setAvailable(false);
       setDrifting(false);
@@ -79,6 +84,11 @@ export function useCompassHeading(active: boolean): {
         if (!(raw >= 0)) return;
         const next = prevHeading.current == null ? raw : dampHeading(prevHeading.current, raw);
         prevHeading.current = next;
+        // Android sends readings many times a second, and each one re-renders the page. A turn
+        // under half a degree isn't visible, so only bigger ones reach React.
+        const shown = shownHeading.current;
+        if (shown != null && Math.abs(((next - shown + 540) % 360) - 180) < MIN_VISIBLE_TURN_DEG) return;
+        shownHeading.current = next;
         setHeading(next);
         setAvailable(true);
         setDrifting(!trueNorth || h.accuracy <= DRIFT_ACCURACY);
@@ -91,6 +101,7 @@ export function useCompassHeading(active: boolean): {
     return () => {
       scope.close();
       prevHeading.current = null;
+      shownHeading.current = null;
       setAvailable(false);
     };
   }, [active]);

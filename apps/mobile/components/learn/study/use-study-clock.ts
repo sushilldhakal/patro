@@ -7,6 +7,8 @@
  * showing, so an article full of paused-off-screen studies costs nothing.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { useOnScreen } from "@/lib/use-on-screen";
 import { useScreenActive } from "@/lib/use-screen-active";
 
@@ -21,6 +23,14 @@ type Options = {
   step?: (value: number, dt: number) => number;
   autoPlay?: boolean;
 };
+
+/**
+ * Least time between drawn frames of a study animation. Every frame re-renders the study and
+ * redraws its whole SVG, labels included; at 60 a second that kept Android's main thread busy
+ * enough to stutter and, on weaker phones, to freeze. Android draws at most 30 a second (20 on
+ * low-memory phones), which still reads as smooth for these slow orbits. iOS draws every frame.
+ */
+export const STUDY_FRAME_MS = Platform.OS === "android" ? (IS_LOW_MEMORY_DEVICE ? 50 : 33) : 0;
 
 export type StudyView = ReturnType<typeof useOnScreen>;
 
@@ -39,6 +49,10 @@ export function useStudyClock({ initial, speed = 1, step, autoPlay = false }: Op
     let last = performance.now();
     let raf = 0;
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       /* A long stall (app switch, a dropped frame burst) must not jump the
          study forward by seconds. */
       const dt = Math.min(0.1, (now - last) / 1000);

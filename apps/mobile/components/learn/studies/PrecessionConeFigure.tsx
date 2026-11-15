@@ -1,7 +1,7 @@
 import { Circle, Defs, Ellipse, G, Line, Marker, Path, Polyline, RadialGradient, Stop, Text as SvgText } from "react-native-svg";
 import { STUDY_FONT, useTm } from "@/components/learn/study/study-ink";
 import { StudyCaption, StudyCard, StudyControls, StudyHl, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow, StudySliderLabel, StudySliderRow, StudySvg } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocaleDigits } from "@/components/learn/study/study-digits";
@@ -90,6 +90,10 @@ export function PrecessionCone() {
     if (!playing || !live) return;
     let last = performance.now();
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       setPhi((p) => (p + dt * 0.5) % TAU); // ~0.5 rad/s → full cycle ≈ 12.5 s

@@ -1,4 +1,4 @@
-import { useId, useMemo, type ReactNode } from "react";
+import { memo, useCallback, useId, useMemo, useRef, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Polygon, Text as SvgText } from "react-native-svg";
 import { Box, Text } from "@vedic-patro/ui";
@@ -73,9 +73,22 @@ function HitSector({
 }
 
 
-export function VastuPurushaWheel({
-  size, selected, onSelect, centerContent, headingDeg = null, center, ink, marks, fullscreenOverlay, onFullscreenChange,
-}: VastuPurushaWheelProps) {
+/**
+ * The wheel itself, without the compass heading. A heading turns the View around it instead of the
+ * SVG, so each compass reading (many a second) rotates a drawn layer instead of re-rendering and
+ * redrawing ~800 shapes and labels on the main thread, which froze Android phones on other wheels.
+ */
+const WheelDrawing = memo(function WheelDrawing({
+  px, selected, onSelect, centerContent, center, ink, marks,
+}: {
+  px: number;
+  selected: VastuSelectionId;
+  onSelect: (id: VastuSelectionId) => void;
+  centerContent?: ReactNode;
+  center: VastuPurushaWheelProps["center"];
+  ink: VastuPurushaWheelProps["ink"];
+  marks: VastuPurushaWheelProps["marks"];
+}) {
   const w = useVastuPurushaWheel();
   const digits = w.digits;
   const CX = center.cx;
@@ -126,10 +139,6 @@ export function VastuPurushaWheel({
   const clipId = `vastu-purusha-${useId().replace(/:/g, "")}`;
 
   return (
-    <View>
-      <ZoomStage size={size ?? WHEEL_SIZE} fullscreenOverlay={fullscreenOverlay} onFullscreenChange={onFullscreenChange}>
-      {(px) => (
-      <View style={{ width: px, height: px }}>
       <Svg
         width={px}
         height={px}
@@ -141,11 +150,7 @@ export function VastuPurushaWheel({
             <Circle cx={CX} cy={CY} r={DIR16_INNER} />
           </ClipPath>
         </Defs>
-        <G
-          transform={
-            headingDeg == null ? undefined : `rotate(${(-headingDeg).toFixed(2)} ${CX} ${CY})`
-          }
-        >
+        <G>
           <Circle cx={CX} cy={CY} r={DEG_OUTER} fill={VASTU_INK.background} />
 
           {/* Triguna ring */}
@@ -474,12 +479,36 @@ export function VastuPurushaWheel({
             )}
           </G>
         </G>
-        {headingDeg != null ? (
-          <G pointerEvents="none">
-            <Polygon points={`${CX - 9},6 ${CX + 9},6 ${CX},24`} fill={VASTU_INK.text} />
-          </G>
-        ) : null}
       </Svg>
+  );
+});
+
+export function VastuPurushaWheel({
+  size, selected, onSelect, centerContent, headingDeg = null, center, ink, marks, fullscreenOverlay, onFullscreenChange,
+}: VastuPurushaWheelProps) {
+  const w = useVastuPurushaWheel();
+  const CX = center.cx;
+  const CY = center.cy;
+  // page.select is a new function on every render; the drawing gets one that never changes.
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+  const stableSelect = useCallback((id: VastuSelectionId) => onSelectRef.current(id), []);
+
+  return (
+    <View>
+      <ZoomStage size={size ?? WHEEL_SIZE} fullscreenOverlay={fullscreenOverlay} onFullscreenChange={onFullscreenChange}>
+      {(px) => (
+      <View style={{ width: px, height: px }}>
+      <View style={headingDeg == null ? undefined : { transform: [{ rotate: `${(-headingDeg).toFixed(1)}deg` }] }}>
+        <WheelDrawing px={px} selected={selected} onSelect={stableSelect} centerContent={centerContent} center={center} ink={ink} marks={marks} />
+      </View>
+      {headingDeg != null ? (
+        <View pointerEvents="none" style={{ position: "absolute", left: 0, top: 0, width: px, height: px }}>
+          <Svg width={px} height={px} viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}>
+            <Polygon points={`${CX - 9},6 ${CX + 9},6 ${CX},24`} fill={ink.text} />
+          </Svg>
+        </View>
+      ) : null}
       {/* The centre is a real touch target on top of the drawing: a tap on an SVG shape was dropped once
           that shape was the selection (the outline drawn over it), so the Brahmasthan could not be
           opened a second time. */}

@@ -1,6 +1,6 @@
 
 import { StudyCard, StudyControls, StudyPlayButton, StudyPresetButton, StudyPresetRow, StudyRange, StudyReadoutGrid, StudyRo, StudyRoK, StudyRoV, StudyScrubRow } from "@/components/learn/study/StudyCard";
-import { useStudyLive } from "@/components/learn/study/use-study-clock";
+import { STUDY_FRAME_MS, useStudyLive } from "@/components/learn/study/use-study-clock";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
@@ -63,6 +63,10 @@ export function ElongationStudy({ animMonths = 2, earthPathMonths }: ElongationS
     let last = performance.now();
     let lastPaint = last;
     const tick = (now: number) => {
+      if (now - last < STUDY_FRAME_MS) {
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = (now - last) / 1000;
       last = now;
       animDayRef.current = (animDayRef.current + dt * LUNAR_DAYS_PER_SEC) % animSpan;

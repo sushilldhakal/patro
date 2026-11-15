@@ -52,6 +52,12 @@ export type DeviceOrientation = {
 
 const ACCEL_UPDATE_MS = 100;
 
+/**
+ * Readings that move less than this don't re-render. Each sample re-rendered the whole sky screen,
+ * and sensor noise alone changes the reading on nearly every one.
+ */
+const MIN_VISIBLE_DEG = 0.5;
+
 export function useDeviceOrientation(active: boolean): DeviceOrientation {
   const [headingDeg, setHeadingDeg] = useState<number | null>(null);
   const [pitchDeg, setPitchDeg] = useState<number | null>(null);
@@ -60,6 +66,8 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
   // Read inside the effect via refs rather than in the dependency array —
   // the two subscriptions are independent and neither should tear the other
   // down just because a sample nudged the other's state.
+  const shownHeading = useRef<number | null>(null);
+  const shownPitch = useRef<number | null>(null);
   const headingRef = useRef(headingDeg);
   headingRef.current = headingDeg;
 
@@ -80,7 +88,11 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
       const heading = await Location.watchHeadingAsync((h) => {
         if (scope.closed) return;
         const deg = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
-        if (deg >= 0) setHeadingDeg(deg);
+        if (!(deg >= 0)) return;
+        const shown = shownHeading.current;
+        if (shown != null && Math.abs(((deg - shown + 540) % 360) - 180) < MIN_VISIBLE_DEG) return;
+        shownHeading.current = deg;
+        setHeadingDeg(deg);
       });
       if (!scope.add(heading)) return;
 
@@ -88,6 +100,9 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
       const accel = Accelerometer.addListener(({ x, y, z }) => {
         if (scope.closed) return;
         const pitch = Math.atan2(-z, -y) * (180 / Math.PI);
+        const shown = shownPitch.current;
+        if (shown != null && Math.abs(pitch - shown) < MIN_VISIBLE_DEG) return;
+        shownPitch.current = pitch;
         setPitchDeg(pitch);
       });
       if (!scope.add(accel)) return;
@@ -99,6 +114,8 @@ export function useDeviceOrientation(active: boolean): DeviceOrientation {
 
     return () => {
       scope.close();
+      shownHeading.current = null;
+      shownPitch.current = null;
       setAvailable(false);
     };
   }, [active]);
