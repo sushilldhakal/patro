@@ -25,6 +25,7 @@ const COMMENTARY_TITLE = {
   pandey: "documents.commentary_pandey",
   kapileshwar: "documents.commentary_kapileshwar",
   mishra: "documents.commentary_mishra",
+  padya: "documents.commentary_padya",
 } as const;
 
 /** A verse with no clip of its own plays from its timestamp in the document's full recording. */

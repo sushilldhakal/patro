@@ -7436,6 +7436,7 @@ export const strings = {
   "documents.commentary_pandey": { ne: "पाण्डेयको उपपत्ति", en: "Pandey's proof" },
   "documents.commentary_kapileshwar": { ne: "कपिलेश्वर शास्त्रीको तत्त्वामृत", en: "Kapileshwar Shastri's Tattvāmṛta" },
   "documents.commentary_mishra": { ne: "बलदेवप्रसाद मिश्रको भाषाटीका", en: "Baldev Prasad Mishra's bhāṣā-ṭīkā" },
+  "documents.commentary_padya": { ne: "नेपाली पद्यानुवाद", en: "Nepali verse rendering" },
   "documents.working": { ne: "गणना", en: "Working" },
   "documents.figure_play": { ne: "चित्र चलाउनुहोस्", en: "Play the drawing" },
   "documents.figure_pause": { ne: "चित्र रोक्नुहोस्", en: "Pause the drawing" },
