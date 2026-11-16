@@ -10,6 +10,9 @@
  *
  * The Facebook scheme (fb<appId>) is already in app.json since the app id is
  * public. See docs/social-sign-in.md for the full setup.
+ *
+ * It also switches on Meta App Events once extra.facebookClientToken is set
+ * (see the end of this file).
  */
 const appJson = require("./app.json");
 
@@ -44,6 +47,20 @@ module.exports = () => {
   // EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8090 npx expo start. Release builds never set it.
   const apiOverride = (process.env.EXPO_PUBLIC_API_BASE_URL || "").trim();
   if (apiOverride) expo.extra = { ...(expo.extra ?? {}), apiBaseUrl: apiOverride };
+
+  // Meta App Events (plugins/with-meta-app-events.js). The client token is public (it ships in
+  // every build) but the SDK refuses to start without it, so the SDK is configured only once
+  // extra.facebookClientToken is filled in; until then a build behaves exactly as before.
+  const metaExtra = expo.extra ?? {};
+  if (metaExtra.facebookAppId && metaExtra.facebookClientToken) {
+    expo.plugins = [
+      ...(expo.plugins ?? []),
+      [
+        "./plugins/with-meta-app-events.js",
+        { appID: metaExtra.facebookAppId, clientToken: metaExtra.facebookClientToken, displayName: expo.name },
+      ],
+    ];
+  }
 
   return { expo };
 };

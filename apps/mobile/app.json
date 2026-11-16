@@ -468,6 +468,7 @@
       "googleIosClientId": "87401467000-p62fl4jjhr2la688pnr0q7i6g2nbd73g.apps.googleusercontent.com",
       "googleAndroidClientId": "87401467000-p1k8l38hbfn125v45kmj62u4iujnd29f.apps.googleusercontent.com",
       "facebookAppId": "1044570391345268",
+      "facebookClientToken": "a335241d86113e04ab860aa96ef9987b",
       "router": {},
       "eas": {
         "projectId": "875bd091-9544-4881-9b60-7a268c11a7ac"
