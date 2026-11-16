@@ -36,6 +36,19 @@ function colStyle(col: number, extra?: object) {
   return col > 0 ? { width: col, maxWidth: col, minWidth: 0, ...extra } : { flex: 1, flexBasis: 0, minWidth: 0, ...extra };
 }
 
+/**
+ * Cut a line to the cell width in JavaScript. `numberOfLines` makes Android build an Ellipsizer,
+ * and measuring that on a Devanagari line is the draw ANR (Sentry PATRO-8) and the tap ANR
+ * (Sentry PATRO-H).
+ */
+function clipToCell(text: string | null | undefined, col: number, share = 1): string {
+  if (!text || col <= 0) return text ?? "";
+  const max = Math.max(4, Math.floor(((col - 8) * share) / 9));
+  const chars = Array.from(text);
+  if (chars.length <= max) return text;
+  return `${chars.slice(0, Math.max(1, max - 1)).join("")}…`;
+}
+
 /** Month grid for the app: rows of seven columns, drawn with React Native (no CSS grid). The moon glyph is supplied by each app. */
 export function BsCalendarGrid({
   days,
@@ -167,10 +180,9 @@ export function BsCalendarGrid({
                   <View className="w-full flex-row items-start justify-start" style={{ minHeight: tithiRowMinH, paddingTop: englishPhone ? moonSize - 4 : 0 }}>
                     {tithi ? (
                       <Text
-                        numberOfLines={englishPhone ? 2 : 1}
                         className={cn("flex-1", cal.tithi, "text-left", isTablet ? "text-sm" : englishPhone ? "text-diagram-xs leading-tight" : cal.tithiPhone)}
                       >
-                        {englishPhone ? softBreakTithi(tithi) : tithi}
+                        {clipToCell(englishPhone ? softBreakTithi(tithi) : tithi, col, englishPhone ? 1 : 0.85)}
                       </Text>
                     ) : isEnriching && !isOutside ? (
                       <View className={cal.tithiPending} />
@@ -193,10 +205,9 @@ export function BsCalendarGrid({
                     <View className={cn("flex-row items-baseline justify-center gap-x-1", isCompact ? "flex-nowrap" : "flex-wrap")}>
                       <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
                       <Text
-                        numberOfLines={isCompact ? 1 : undefined}
                         className={cn(isCompact && "shrink", cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}
                       >
-                        {isCompact ? cell.secondaryLabelShort : cell.secondaryLabel}
+                        {clipToCell(isCompact ? cell.secondaryLabelShort : cell.secondaryLabel, col, 0.45)}
                       </Text>
                       {!isCompact && cell.moreWideChips > 0 && !isOutside ? (
                         // One "+N" for the festivals not on the edges and the events not drawn as chips.
@@ -222,7 +233,7 @@ export function BsCalendarGrid({
                             onPress={onOpenEvent ? () => onOpenEvent(event) : () => onSelectDay?.(cell.day)}
                             className={cn(cal.eventChipNative, "active:opacity-70")}
                           >
-                            <Text numberOfLines={1} className={cal.eventChipText}>{event.title}</Text>
+                            <Text className={cal.eventChipText}>{clipToCell(event.title, col, 0.9)}</Text>
                           </RNPressable>
                         ))}
                       </View>
@@ -244,8 +255,8 @@ export function BsCalendarGrid({
                       {/* Tablet: the festival's name opens its details. A phone cell is too small to
                           split, so a tap there selects the day; it writes one line, the rest are in "+N". */}
                       <RNPressable disabled={isCompact} onPress={openFestivals} accessibilityRole={isCompact ? undefined : "button"}>
-                        <Text numberOfLines={1} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
-                          {isCompact ? compactFest : mainFest}
+                        <Text className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                          {clipToCell(isCompact ? compactFest : mainFest, col, 0.9)}
                         </Text>
                       </RNPressable>
                     </View>

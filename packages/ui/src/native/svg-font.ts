@@ -21,9 +21,20 @@ export function setSvgFontAliases(map: ReadonlyMap<string, string>): void {
   if (Platform.OS === "android") aliases = map;
 }
 
-/** The family name to give react-native-svg text. Read it at render time, not at module load. */
+/**
+ * The family name to give react-native-svg text. Read it at render time, not at module load.
+ *
+ * On Android 8 and later, react-native-svg opens `assets/fonts/<family>.ttf` on the main thread
+ * for every label, on every draw, before it asks React Native for a font it already holds.
+ * That read is the ANR on the home screen and the day chart (Sentry PATRO-8, PATRO-9, PATRO-C,
+ * PATRO-G). A name with no file in assets skips the read. Until the alias is registered, and if
+ * registering fails, use the system face.
+ */
 export function svgFont(name: string): string {
-  return aliases.get(name) ?? name;
+  const alias = aliases.get(name);
+  if (alias) return alias;
+  if (Platform.OS === "android") return "sans-serif";
+  return name;
 }
 
 /** `fontFamily.native` for react-native-svg text. Getters, so each read sees the registered aliases. */

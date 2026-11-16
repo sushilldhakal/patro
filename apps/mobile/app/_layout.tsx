@@ -93,6 +93,12 @@ Sentry.init({
   sendDefaultPii: false,
   tracesSampleRate: 0.2,
   integrations: [sentryNavigation],
+  // A phone with no signal cannot resolve the host. That is not a defect in the app (PATRO-J).
+  beforeSend(event) {
+    const text = (event.exception?.values ?? []).map((value) => `${value.type ?? ""} ${value.value ?? ""}`).join("\n");
+    if (/UnknownHostException|Unable to resolve host|Network request failed/.test(text)) return null;
+    return event;
+  },
 });
 // Lets Sentry split ANRs and crashes by RAM tier, to see whether low-memory mode helps.
 Sentry.setTag("low_memory_mode", IS_LOW_MEMORY_DEVICE ? "on" : "off");

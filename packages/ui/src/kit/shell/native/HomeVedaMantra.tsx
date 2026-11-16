@@ -32,19 +32,20 @@ export function HomeVedaMantra({
         ) : null}
       </Box>
       <Box className={home.vedaBody}>
-        <Text as="p" className={home.vedaSanskrit}>
+        {/* One Text per token, not one paragraph of nested spans. A tap on the shloka asks
+            Android for the character under the finger, and that walk ANRs on a long Devanagari
+            line (Sentry PATRO-H). */}
+        <Box className="flex-row flex-wrap">
           {tokens.map((tok, i) =>
-            i === activeToken ? (
-              /* Same size as the line around it: the kit's Text sizes itself (text-body) when
-                 no size is given, so the highlighted word shrank while it was being read. */
-              <Text key={i} className={cn(home.vedaSanskrit, home.vedaWord)}>
+            /\n/.test(tok) ? (
+              <Box key={i} className="w-full" />
+            ) : (
+              <Text key={i} className={cn(home.vedaSanskrit, i === activeToken && home.vedaWord)}>
                 {tok}
               </Text>
-            ) : (
-              tok
             ),
           )}
-        </Text>
+        </Box>
         <Box className={home.vedaFooter}>
           <Pressable label={readMore} onPress={onOpenPassage} webClassName="hover:underline">
             <Text className={home.vedaMore}>{readMore}</Text>

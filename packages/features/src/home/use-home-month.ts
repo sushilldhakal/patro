@@ -114,22 +114,25 @@ export function useHomeMonth({
       ...(canFetchPrev ? [shiftPatroBrowseMonth(era, prevBs.year, prevBs.month, -1)] : []),
       ...(canFetchNext ? [shiftPatroBrowseMonth(era, nextBs.year, nextBs.month, 1)] : []),
     ];
-    // One at a time: a burst of parallel month calls competes with the shown month's own
-    // requests on a slow phone connection (and Sentry flags it as an N+1 call pattern).
+    // One at a time, and only after the home screen has finished loading. Doing it inside
+    // that same trace is what Sentry reports as an N+1 call (PATRO-F).
     let cancelled = false;
-    void (async () => {
-      for (const { year: y, month: m } of ahead) {
-        if (cancelled) return;
-        if (y === 0) continue;
-        await queryClient.prefetchQuery({
-          queryKey: ["panchanga", "month", system, era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
-          queryFn: () => fetchMonth(y, m, location, { full: false, era }),
-          staleTime: HOUR,
-        });
-      }
-    })();
+    const timer = setTimeout(() => {
+      void (async () => {
+        for (const { year: y, month: m } of ahead) {
+          if (cancelled) return;
+          if (y === 0) continue;
+          await queryClient.prefetchQuery({
+            queryKey: ["panchanga", "month", system, era, lang, y, m, locationCacheKey(location), "lite", "intl"] as const,
+            queryFn: () => fetchMonth(y, m, location, { full: false, era }),
+            staleTime: HOUR,
+          });
+        }
+      })();
+    }, 12_000);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shownReady, system, era, lang, prevBs.year, prevBs.month, nextBs.year, nextBs.month, panchangaView, isGregorian, canFetchPrev, canFetchNext, locationCacheKey(location)]);

@@ -13,7 +13,7 @@
     "dev:android": "expo run:android",
     "lint": "tsc --noEmit",
     "icons": "node scripts/generate-icons.mjs",
-    "postinstall": "node scripts/generate-icons.mjs",
+    "postinstall": "node scripts/generate-icons.mjs && node scripts/patch-expo-observe.mjs",
     "build:android": "eas build --platform android --profile production",
     "build:ios": "eas build --platform ios --profile production",
     "build:preview": "eas build --profile preview --platform all",

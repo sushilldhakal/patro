@@ -50,22 +50,25 @@ export function useHomeVedaMantra(
 
   useEffect(() => {
     if (!dateAd || !data || offlineDays <= 0) return;
-    // One day at a time, in the background: six parallel calls at launch competed with the
-    // home screen's own requests on slow connections (Sentry flagged them as N+1 calls).
+    // After the home screen's own load. Six calls in that same trace are what Sentry reports
+    // as an N+1 (PATRO-E), even one after another. A later pass still fills the offline cache.
     let cancelled = false;
-    void (async () => {
-      for (let i = 1; i <= offlineDays; i += 1) {
-        if (cancelled) return;
-        const next = addDays(dateAd, i);
-        await queryClient.prefetchQuery({
-          queryKey: vedaDailyKeys.day(next),
-          queryFn: () => fetchVedaDaily(next),
-          staleTime: DOCUMENTS_STALE_TIME,
-        });
-      }
-    })();
+    const timer = setTimeout(() => {
+      void (async () => {
+        for (let i = 1; i <= offlineDays; i += 1) {
+          if (cancelled) return;
+          const next = addDays(dateAd, i);
+          await queryClient.prefetchQuery({
+            queryKey: vedaDailyKeys.day(next),
+            queryFn: () => fetchVedaDaily(next),
+            staleTime: DOCUMENTS_STALE_TIME,
+          });
+        }
+      })();
+    }, 12_000);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
     // `data` only gates the start; a refetch of today's mantra shouldn't restart the run.
     // eslint-disable-next-line react-hooks/exhaustive-deps
