@@ -5,6 +5,7 @@ import "../global.css";
 import "@/lib/quiet-native-gl-logs";
 import "@/lib/app-foreground";
 import "@/lib/install-analytics";
+import "@/lib/meta-app-events";
 import { DEVICE_MEMORY_GB, IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider, useNavigationContainerRef, useRootNavigationState, useRouter, type ErrorBoundaryProps } from "expo-router";
 import * as Sentry from "@sentry/react-native";
