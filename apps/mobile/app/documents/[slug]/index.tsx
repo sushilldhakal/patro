@@ -56,7 +56,12 @@ function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpCh
   );
 }
 
-function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard }) {
+/**
+ * `fill` shares a row's width between cards. Only in a multi-column grid: in a single column
+ * flex-1 (basis 0) inside the list's scroll content let a card shrink to its border, and the
+ * chapter list drew as a stack of empty outlines.
+ */
+function ChapterRow({ slug, card, fill }: { slug: string; card: DocumentChapterCard; fill: boolean }) {
   const router = useRouter();
   const colors = useThemeColors();
   const title = card.title || card.heading;
@@ -64,7 +69,7 @@ function ChapterRow({ slug, card }: { slug: string; card: DocumentChapterCard })
     <Pressable
       onPress={() => router.push(`/documents/${slug}/${card.number}` as never)}
       accessibilityRole="button"
-      className={cn(documentsClasses.sectionCard, "mb-0 flex-1 active:opacity-80")}
+      className={cn(documentsClasses.sectionCard, "mb-0 active:opacity-80", fill && "flex-1")}
     >
       <View className={documentsClasses.sectionCardTop}>
         <Text className={cn(documentsClasses.sectionCardTitle, "min-w-0 flex-1")} numberOfLines={1}>
@@ -127,7 +132,7 @@ export default function DocumentDetailScreen() {
         <FlatList
           data={page.chapters}
           keyExtractor={(c) => String(c.number)}
-          renderItem={({ item }) => <ChapterRow slug={doc.slug} card={item} />}
+          renderItem={({ item }) => <ChapterRow slug={doc.slug} card={item} fill={chapterCols > 1} />}
           // Folds the floating bar to its icons while reading down (lib/nav-compact.ts).
           onScroll={(e) => reportNavScrollJS(e.nativeEvent.contentOffset.y)}
           scrollEventThrottle={32}
