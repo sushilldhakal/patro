@@ -108,6 +108,8 @@ export interface Shloka {
   commentaries?: ShlokaCommentary[] | null;
   /** null until the matching file is uploaded to R2. */
   audio_url?: string | null;
+  /** Rigveda: the whole sukta's recording this verse belongs to (a signed link, like `audio_url`). */
+  sukta_audio_url?: string | null;
   audio_duration_seconds?: number | null;
   /**
    * Where this verse sits inside the document's `full_audio_url`, seconds —

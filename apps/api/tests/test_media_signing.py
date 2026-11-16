@@ -61,3 +61,16 @@ def test_ttl_always_outlasts_the_window(signing, monkeypatch):
 
 def test_full_urls_pass_through(signing):
     assert document_views._resolve_asset_url("https://cdn.example/x.png") == "https://cdn.example/x.png"
+
+
+def test_rigveda_verse_carries_its_signed_sukta_link(signing):
+    verse = document_views._resolve_shloka(
+        {"audio_key": "documents/rigveda/10/rigveda_10_165_03.mp3", "sukta_number": 165}
+    )
+    assert urlsplit(verse["sukta_audio_url"]).path == "/vedicpatro/documents/rigveda/10/rigveda_10_sukta_165.mp3"
+    assert "X-Amz-Signature=" in verse["sukta_audio_url"]
+
+
+def test_other_verses_have_no_sukta_link(signing):
+    verse = document_views._resolve_shloka({"audio_key": "documents/gita/1_1.mp3", "sukta_number": 3})
+    assert "sukta_audio_url" not in verse

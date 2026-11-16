@@ -123,7 +123,7 @@ def document_detail(slug: str, request: Request):
 
 # Payload-shape token. ``_cache_version()`` follows manifest bytes and the bucket
 # URL, so a code-only change to the page (cursors, slim verses) needs its own bump.
-_CHAPTER_PAGE_CACHE = "p8"
+_CHAPTER_PAGE_CACHE = "p9"
 
 
 def _chapter_cache_key(
@@ -138,7 +138,7 @@ def _chapter_cache_key(
 ) -> str:
     version = _cache_version()
     if not paged:
-        return f"documents_chapter_v{version}_{slug}_{chapter_number}"
+        return f"documents_chapter_{_CHAPTER_PAGE_CACHE}_v{version}_{slug}_{chapter_number}"
     verse_key = documents_db.verse_label_key(verse) if verse and verse.strip() else ""
     cursor_key = "" if cursor is None else str(cursor)
     return (

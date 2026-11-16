@@ -36,27 +36,6 @@ export type DocumentChapterCard = {
 
 const retry = (count: number, error: unknown) => !isNotFound(error) && count < 2;
 
-/** Public R2 origin. A chapter recording lives under `documents/…` until the API sends `full_audio_url`. */
-const DOCUMENT_AUDIO = "https://pub-34db505dd7474db98d79fb75e870ff22.r2.dev/documents";
-
-function chapterRecordingUrl(
-  slug: string | undefined,
-  chapter: number,
-  fromApi: string | null | undefined,
-): string | undefined {
-  if (fromApi) return fromApi;
-  // Kandas 1–19. Kanda 20 has no recording yet.
-  if (slug === "atharvaveda" && chapter >= 1 && chapter <= 19) {
-    const folder = String(chapter).padStart(2, "0");
-    return `${DOCUMENT_AUDIO}/atharvaveda/${folder}/atharvaveda_khanda_${chapter}.mp3`;
-  }
-  // One file per adhyaya: documents/gita/bhagavad-gita/bhagavad-gita-1.mp3 … 18.
-  if (slug === "bhagavad-gita" && chapter >= 1 && chapter <= 18) {
-    return `${DOCUMENT_AUDIO}/gita/bhagavad-gita/bhagavad-gita-${chapter}.mp3`;
-  }
-  return undefined;
-}
-
 /**
  * Verses on one infinite-query page. A server that has not been deployed with
  * keyset paging still returns the whole chapter as `chapter.shlokas`.
@@ -329,7 +308,8 @@ export function useDocumentChapter(
     isFetchingPreviousPage: chapterQ.isFetchingPreviousPage,
     /** Load the page that contains `label` when it is not on screen yet. False when no such verse. */
     focusVerse,
-    fullAudioUrl: chapterRecordingUrl(slug, chapterNumber, data?.full_audio_url),
+    // Only the API names a recording: links are signed per file, so none is built here.
+    fullAudioUrl: data?.full_audio_url ?? undefined,
     copy: {
       backToChapters: t("documents.back_to_chapters"),
       backToList: t("documents.back_to_list"),

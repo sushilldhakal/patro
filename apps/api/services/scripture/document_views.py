@@ -9,6 +9,7 @@ caching stays in the router.
 
 from __future__ import annotations
 
+import re
 from datetime import date
 from typing import Any
 
@@ -61,13 +62,40 @@ def _resolve_document_summary(doc: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# Rigveda verse clips are ``…/rigveda_MM_SS_VV.mp3``; the whole sukta, uploaded beside
+# them, is ``…/rigveda_MM_sukta_SSS.mp3`` (sukta padded to 3 digits).
+_RIGVEDA_VERSE_FILE = re.compile(r"^(.*/)rigveda_(\d{2})_\d+_\d+\.mp3$")
+
+
+def _sukta_audio_key(audio_key: str | None, sukta: Any) -> str | None:
+    """The object key of the sukta recording a Rigveda verse clip belongs to, else None.
+
+    Resolved here, not in the client: audio links are signed per object, so a client can no
+    longer derive the sukta link by rewriting the verse link.
+    """
+    if not audio_key or sukta is None:
+        return None
+    match = _RIGVEDA_VERSE_FILE.match(audio_key)
+    if not match:
+        return None
+    try:
+        number = int(sukta)
+    except (TypeError, ValueError):
+        return None
+    return f"{match[1]}rigveda_{match[2]}_sukta_{number:03d}.mp3"
+
+
 def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
     audio_key = s.pop("audio_key", None)
     # Kept in the database, not sent: nothing shows them yet (the Hindi meaning is the
     # source of a Nepali one still to come), and every verse would carry them.
     s.pop("meaning_hi", None)
     s.pop("padapatha", None)
-    return {**s, "audio_url": _resolve_asset_url(audio_key)}
+    out = {**s, "audio_url": _resolve_asset_url(audio_key)}
+    sukta_key = _sukta_audio_key(audio_key, s.get("sukta_number"))
+    if sukta_key:
+        out["sukta_audio_url"] = _resolve_asset_url(sukta_key)
+    return out
 
 
 # Present on the row, unused by the verse card, its play button, or the transport bar.

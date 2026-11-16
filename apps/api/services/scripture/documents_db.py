@@ -376,6 +376,10 @@ def _resolve_full_audio_key(audio_prefix: str | None, full_audio_file: Any) -> s
         return None
     if full_audio_file.startswith("http://") or full_audio_file.startswith("https://"):
         return full_audio_file
+    if full_audio_file.startswith("/"):
+        # A bucket-absolute key: the recording sits outside the verse clips' audio_prefix
+        # (the Gita's chapter files are under documents/gita/bhagavad-gita/).
+        return full_audio_file.lstrip("/")
     prefix = (audio_prefix or "").strip().strip("/")
     return f"{prefix}/{full_audio_file}" if prefix else full_audio_file
 
