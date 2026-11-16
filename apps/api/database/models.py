@@ -334,3 +334,49 @@ class CalendarEvent(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
     )
+
+
+class AppInstallation(Base):
+    """One install of the mobile app, known only by a random id the app made up.
+
+    The app generates ``installation_id`` on first launch and keeps it in its own
+    storage, so it survives updates and is new after a reinstall. It names no
+    person and no hardware: no IMEI, advertising id or fingerprint, and no IP
+    address is stored (``country_code`` comes from the CDN's country header).
+    ``user_id`` is set only while a signed-in account uses the install, to tell
+    unique people from unique devices.
+    """
+
+    __tablename__ = "app_installations"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    installation_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    platform: Mapped[str] = mapped_column(String(16), nullable=False)  # "ios" | "android"
+    app_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    os_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    country_code: Mapped[str | None] = mapped_column(String(2), nullable=True)
+    user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    first_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, index=True, nullable=False
+    )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, index=True, nullable=False
+    )
+
+
+class AppInstallationEvent(Base):
+    """What an install did and when: ``first_open``, ``app_open`` (one a day), ``app_update``."""
+
+    __tablename__ = "app_installation_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    installation_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    event_type: Mapped[str] = mapped_column(String(24), nullable=False)
+    app_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, nullable=False)
+
+
+Index("ix_app_installation_events_created", AppInstallationEvent.created_at)

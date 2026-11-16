@@ -146,3 +146,23 @@ def wait_for(read, timeout: float = 60.0, interval: float = 0.25):
             return value
         time.sleep(interval)
     return None
+
+
+def within_limit(name: str, limit: int, window: int) -> bool:
+    """True while ``name`` has been counted at most ``limit`` times in the current ``window`` seconds.
+
+    A fixed-window counter shared by every worker. With Redis unavailable nothing
+    is limited (True), the same fail-open rule as :func:`claim_once`.
+    """
+    client = _get_client()
+    if client is None:
+        return True
+    try:
+        key = _PREFIX + "limit:" + name
+        count = client.incr(key)
+        if count == 1:
+            client.expire(key, window)
+        return int(count) <= limit
+    except Exception as exc:
+        _trip(exc)
+        return True

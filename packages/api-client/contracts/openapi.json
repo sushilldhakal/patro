@@ -1000,6 +1000,70 @@
     "title": "HouseRequirementInput",
     "type": "object"
    },
+   "InstallAck": {
+    "properties": {
+     "new": {
+      "default": false,
+      "title": "New",
+      "type": "boolean"
+     },
+     "ok": {
+      "default": true,
+      "title": "Ok",
+      "type": "boolean"
+     }
+    },
+    "title": "InstallAck",
+    "type": "object"
+   },
+   "InstallReport": {
+    "properties": {
+     "app_version": {
+      "anyOf": [
+       {
+        "maxLength": 32,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "App Version"
+     },
+     "installation_id": {
+      "maxLength": 36,
+      "minLength": 36,
+      "title": "Installation Id",
+      "type": "string"
+     },
+     "os_version": {
+      "anyOf": [
+       {
+        "maxLength": 32,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Os Version"
+     },
+     "platform": {
+      "enum": [
+       "ios",
+       "android"
+      ],
+      "title": "Platform",
+      "type": "string"
+     }
+    },
+    "required": [
+     "installation_id",
+     "platform"
+    ],
+    "title": "InstallReport",
+    "type": "object"
+   },
    "LeftoverSpaceOut": {
     "properties": {
      "id": {
@@ -4683,6 +4747,251 @@
     "summary": "Update Reminder",
     "tags": [
      "guidance"
+    ]
+   }
+  },
+  "/v1/admin/analytics/installs/daily": {
+   "get": {
+    "operationId": "installs_daily_v1_admin_analytics_installs_daily_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "days",
+      "required": false,
+      "schema": {
+       "default": 30,
+       "maximum": 366,
+       "minimum": 1,
+       "title": "Days",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "header",
+      "name": "x-admin-key",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Admin-Key"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Installs Daily",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
+  "/v1/admin/analytics/installs/overview": {
+   "get": {
+    "operationId": "installs_overview_v1_admin_analytics_installs_overview_get",
+    "parameters": [
+     {
+      "in": "header",
+      "name": "x-admin-key",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Admin-Key"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Installs Overview",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
+  "/v1/admin/analytics/installs/platforms": {
+   "get": {
+    "operationId": "installs_platforms_v1_admin_analytics_installs_platforms_get",
+    "parameters": [
+     {
+      "in": "header",
+      "name": "x-admin-key",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Admin-Key"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Installs Platforms",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
+  "/v1/analytics/install/heartbeat": {
+   "post": {
+    "operationId": "install_heartbeat_v1_analytics_install_heartbeat_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InstallReport"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InstallAck"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Install Heartbeat",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
+  "/v1/analytics/install/register": {
+   "post": {
+    "operationId": "register_install_v1_analytics_install_register_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InstallReport"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InstallAck"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Register Install",
+    "tags": [
+     "analytics"
     ]
    }
   },

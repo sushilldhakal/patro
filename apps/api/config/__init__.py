@@ -353,3 +353,10 @@ def smtp_config() -> dict[str, object] | None:
         "reply_to": os.getenv("SMTP_REPLY_TO", "").strip(),
         "use_tls": os.getenv("SMTP_USE_TLS", "true").lower() == "true",
     }
+
+
+# ─── Install analytics ──────────────────────────────────────────────────────────
+
+def admin_api_key() -> str | None:
+    """Secret the ``/admin/analytics`` routes require in ``X-Admin-Key``. Unset → those routes answer 404."""
+    return (os.getenv("ADMIN_API_KEY") or "").strip() or None
