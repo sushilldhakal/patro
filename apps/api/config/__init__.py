@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 
 from dotenv import dotenv_values, load_dotenv
 
@@ -272,6 +273,44 @@ def r2_public_base_url() -> str | None:
     is used as-is and needs this unset.
     """
     return (os.getenv("R2_PUBLIC_BASE_URL") or "").strip().rstrip("/") or None
+
+
+@dataclass(frozen=True)
+class R2Signing:
+    host: str
+    bucket: str
+    access_key_id: str
+    secret_access_key: str
+
+
+def r2_signing() -> R2Signing | None:
+    """Credentials for signing short-lived links to the *private* R2 bucket.
+
+    Set all of ``R2_S3_ENDPOINT`` (``https://<account>.r2.cloudflarestorage.com``),
+    ``R2_BUCKET``, ``R2_ACCESS_KEY_ID`` and ``R2_SECRET_ACCESS_KEY`` (a read-only,
+    bucket-scoped token is enough) and every audio link the API returns becomes
+    a signed, expiring one instead of ``R2_PUBLIC_BASE_URL`` + key — which lets
+    the bucket's public access be switched off. Any one missing → None.
+    """
+    endpoint = (os.getenv("R2_S3_ENDPOINT") or "").strip().rstrip("/")
+    bucket = (os.getenv("R2_BUCKET") or "").strip()
+    key_id = (os.getenv("R2_ACCESS_KEY_ID") or "").strip()
+    secret = (os.getenv("R2_SECRET_ACCESS_KEY") or "").strip()
+    if not (endpoint and bucket and key_id and secret):
+        return None
+    host = endpoint.split("://", 1)[-1].split("/", 1)[0]
+    return R2Signing(host=host, bucket=bucket, access_key_id=key_id, secret_access_key=secret)
+
+
+def r2_signing_window_seconds() -> int:
+    """How often signed links roll over (default 6 h). Links are identical within a window."""
+    return max(60, int(float(os.getenv("R2_SIGNING_WINDOW_HOURS", "6")) * 3600))
+
+
+def r2_signed_url_ttl_seconds() -> int:
+    """Lifetime of a signed link from its window's start (default 30 h, capped at SigV4's 7 days)."""
+    ttl = int(float(os.getenv("R2_SIGNED_URL_TTL_HOURS", "30")) * 3600)
+    return min(7 * 86400, max(ttl, r2_signing_window_seconds() + 3600))
 
 
 # ─── Open Graph share image ─────────────────────────────────────────────────────

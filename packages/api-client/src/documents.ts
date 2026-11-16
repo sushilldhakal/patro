@@ -329,15 +329,20 @@ const audioAvailability = new Map<string, Promise<boolean>>();
 /**
  * Whether a verse recording is actually in storage. Some verses carry an `audio_url`
  * whose file was never uploaded (a 404 from the bucket); a play button on one of those
- * did nothing at all. One HEAD request per URL, remembered for the session. When the
+ * did nothing at all. One one-byte ranged GET per URL, remembered for the session — not
+ * HEAD: the links are signed for GET only (the bucket is private), so R2 refuses a HEAD
+ * on them with 403 whether or not the file exists. When the
  * check itself cannot answer — offline, or a CORS refusal on a dev origin — it reports
  * `true`, so a working button is never hidden by a failed check.
  */
 export function isAudioAvailable(url: string): Promise<boolean> {
   let known = audioAvailability.get(url);
   if (!known) {
-    known = fetch(url, { method: "HEAD" })
-      .then((res) => res.status !== 404 && res.status !== 403 && res.status !== 410)
+    known = fetch(url, { headers: { Range: "bytes=0-0" } })
+      .then((res) => {
+        void res.body?.cancel().catch(() => undefined);
+        return res.status !== 404 && res.status !== 403 && res.status !== 410;
+      })
       .catch(() => true);
     audioAvailability.set(url, known);
   }

@@ -13,14 +13,16 @@ from datetime import date
 from typing import Any
 
 import config
-from services.scripture import documents_db
+from services.scripture import documents_db, media_signing
 
 
 def _resolve_asset_url(key: str | None) -> str | None:
     """Turn a stored R2 object key into a playable URL.
 
     A manifest may already give a full ``http(s)://`` URL (e.g. a cover image
-    hosted elsewhere) — used as-is. A bare key needs ``R2_PUBLIC_BASE_URL``;
+    hosted elsewhere) — used as-is. A bare key becomes a short-lived signed link
+    when R2 signing is configured (the bucket is private; see
+    :mod:`services.scripture.media_signing`), otherwise needs ``R2_PUBLIC_BASE_URL``;
     without it there is nothing to resolve against, so the key is dropped
     rather than handed to the client as a broken relative path.
     """
@@ -28,6 +30,9 @@ def _resolve_asset_url(key: str | None) -> str | None:
         return None
     if key.startswith("http://") or key.startswith("https://"):
         return key
+    signed = media_signing.signed_url(key)
+    if signed:
+        return signed
     base = config.r2_public_base_url()
     if not base:
         return None

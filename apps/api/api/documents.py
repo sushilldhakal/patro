@@ -34,7 +34,7 @@ from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException, Query, Request
 
 import config
-from services.scripture import document_views, documents_db
+from services.scripture import document_views, documents_db, media_signing
 from app import response_cache
 
 router = APIRouter(tags=["documents"])
@@ -63,9 +63,27 @@ def _cache_version() -> str:
     depends on ``R2_PUBLIC_BASE_URL`` as much as on the manifests. Keyed on manifests alone, one
     answer given while the setting was missing or different — every recording link ``null`` —
     was served for as long as the manifests stayed unchanged, even after the setting was fixed.
+
+    Signed audio links expire, so while signing is on the key also carries the signing window
+    (:func:`media_signing.cache_token`): each window builds fresh links.
     """
     base = config.r2_public_base_url() or ""
-    return f"{documents_db.content_version()}-{hashlib.sha1(base.encode()).hexdigest()[:8]}"
+    signing = config.r2_signing()
+    if signing is not None:
+        base = f"signed:{signing.host}/{signing.bucket}"
+    token = media_signing.cache_token()
+    suffix = f"-{token}" if token else ""
+    return f"{documents_db.content_version()}-{hashlib.sha1(base.encode()).hexdigest()[:8]}{suffix}"
+
+
+def _persist() -> bool:
+    """Keep these payloads in the permanent cache tier only while their links don't expire.
+
+    Signed links roll over every window, so a signed payload stays in Redis (bounded, evicts
+    on its own) and is rebuilt from SQLite on a miss, instead of leaving a row per window in
+    Postgres forever.
+    """
+    return config.r2_signing() is None
 
 
 def _or_404(view, *args):
@@ -89,6 +107,7 @@ def list_documents(request: Request):
         build,
         cache_control=_LIST_CACHE_CONTROL,
         cdn_cache_control=_LIST_CDN_CACHE_CONTROL,
+        persist=_persist(),
     )
 
 
@@ -97,7 +116,9 @@ def document_detail(slug: str, request: Request):
     build = _or_404(document_views.document_view, slug)
 
     cache_key = f"documents_detail_v{_cache_version()}_{slug}"
-    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+    return response_cache.serve_cached_json(
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+    )
 
 
 # Payload-shape token. ``_cache_version()`` follows manifest bytes and the bucket
@@ -169,7 +190,9 @@ def document_chapter_detail(
         limit=clamped,
         verse=verse_text or None,
     )
-    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+    return response_cache.serve_cached_json(
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+    )
 
 
 @router.get("/veda/details/{kind}")
@@ -184,7 +207,9 @@ def veda_verses_by_detail(
     """Every mantra with this देवता (devata), ऋषि (rishi), छन्द (chhanda) or स्वर (svara)."""
     build = _or_404(document_views.verse_detail_view, kind, value, slug, offset, limit)
     cache_key = f"veda_details_v{_cache_version()}_{kind}_{slug or 'all'}_{offset}_{limit}_{value.strip()}"
-    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+    return response_cache.serve_cached_json(
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+    )
 
 
 @router.get("/veda/details/{kind}/values")
@@ -196,7 +221,9 @@ def veda_detail_values(
     """Every distinct देवता / ऋषि / छन्द / स्वर with its mantra count."""
     build = _or_404(document_views.detail_values_view, kind, slug)
     cache_key = f"veda_detail_values_v{_cache_version()}_{kind}_{slug or 'all'}"
-    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+    return response_cache.serve_cached_json(
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+    )
 
 
 @router.get("/veda/daily")
@@ -217,5 +244,5 @@ def veda_daily(
 
     cache_key = f"veda_daily_f2_v{_cache_version()}_{when.isoformat()}"
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600"
+        request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600", persist=_persist()
     )
