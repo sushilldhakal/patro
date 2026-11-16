@@ -38,6 +38,7 @@ class PuranaSpec:
     group_cols: tuple[str, ...]
     title_parts: tuple[tuple[str, str, str], ...]
     subverse_col: str | None = None
+    category: str = "purana"
 
 
 PURANAS: tuple[PuranaSpec, ...] = (
@@ -241,7 +242,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Devigita_cleaned_with_devanagari.csv",
         "devi-gita",
         45,
-        "devi-bhagavata",
+        "other",
         "देवीगीता",
         "देवीगीता",
         "Devi Gita",
@@ -249,6 +250,7 @@ PURANAS: tuple[PuranaSpec, ...] = (
         "Sanskrit text of the Devi Gita, by chapter.",
         ("Chapter",),
         (("Chapter", "अध्याय", "Chapter"),),
+        category="gita",
     ),
 )
 
@@ -638,11 +640,12 @@ def _seed_one(conn: sqlite3.Connection, spec: PuranaSpec, path: Path) -> None:
             (slug, order_index, category, subcategory, title_sa, title_ne, title_en,
              subtitle_ne, subtitle_en, description_ne, description_en, source_ne, source_en,
              cover_image, has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key)
-        VALUES (?, ?, 'purana', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 1, 0, ?, ?, NULL)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 1, 0, ?, ?, NULL)
         """,
         (
             spec.slug,
             spec.order_index,
+            spec.category,
             spec.subcategory,
             spec.title_sa,
             spec.title_ne,

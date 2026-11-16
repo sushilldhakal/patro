@@ -76,6 +76,9 @@ def main(only: list[str]) -> None:
     for spec in PURANAS:
         if only and spec.slug not in only:
             continue
+        if spec.slug == "agni-purana":
+            print("skip agni-purana: verses are taken from aagni-purana.txt, not the CSV")
+            continue
         if conn.execute("SELECT 1 FROM documents WHERE slug = ?", (spec.slug,)).fetchone() is None:
             print(f"skip {spec.slug}: no CSV")
             continue
