@@ -10,7 +10,8 @@ Both do the same thing — register the install if it is new, otherwise refresh
 event log (``first_open`` / ``app_open`` / ``app_update``) is derived on the
 server; a client cannot write events of its own.
 
-Admin, behind ``X-Admin-Key`` (``ADMIN_API_KEY``; unset → 404)::
+Admin, for ``X-Admin-Key`` (``ADMIN_API_KEY``) or a signed-in account listed in
+``ADMIN_EMAILS`` (neither set → 404)::
 
     GET /v1/admin/analytics/installs/overview
     GET /v1/admin/analytics/installs/daily?days=30
@@ -30,6 +31,7 @@ from pydantic import BaseModel, Field, field_validator
 
 import config
 from app.security import DbSession, _bearer, decode_access_token
+from database.models import User
 from services.platform import install_analytics, redis_cache
 
 router = APIRouter(tags=["analytics"])
@@ -113,14 +115,28 @@ def install_heartbeat(body: InstallReport, request: Request, db: DbSession, user
     return _report(body, request, db, user_id)
 
 
-def _admin(response: Response, x_admin_key: Annotated[str | None, Header()] = None) -> None:
-    expected = config.admin_api_key()
-    if expected is None:
+def _admin(
+    response: Response,
+    db: DbSession,
+    user_id: Annotated[str | None, Depends(_optional_user_id)],
+    x_admin_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Let in the admin key, or a signed-in, verified account whose address is in ``ADMIN_EMAILS``."""
+    key = config.admin_api_key()
+    emails = config.admin_emails()
+    if key is None and not emails:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
-    if not x_admin_key or not hmac.compare_digest(x_admin_key.encode(), expected.encode()):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid admin key")
     # Never held by the browser, the CDN or the response cache.
     response.headers["Cache-Control"] = "no-store"
+    if key and x_admin_key and hmac.compare_digest(x_admin_key.encode(), key.encode()):
+        return
+    user = db.get(User, user_id) if user_id else None
+    if user is None or not user.is_active:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED, "Not authenticated", headers={"Cache-Control": "no-store"}
+        )
+    if not user.is_verified or user.email.lower() not in emails:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Not an admin", headers={"Cache-Control": "no-store"})
 
 
 _admin_router = APIRouter(prefix="/admin/analytics/installs", dependencies=[Depends(_admin)])

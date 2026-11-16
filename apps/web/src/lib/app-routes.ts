@@ -78,6 +78,7 @@ export const ROUTES: RouteMeta[] = [
   { id: "settings", path: "/account/settings", seoKey: "seo.routes.settings", noindex: true, prerender: true },
   { id: "verify-email", path: "/verify-email", seoKey: "seo.routes.verify_email", noindex: true, prerender: true },
   { id: "reset-password", path: "/reset-password", seoKey: "seo.routes.reset_password", noindex: true, prerender: true },
+  { id: "admin-installs", path: "/admin/installs", noindex: true },
   { id: "privacy", path: "/privacy", seoKey: "seo.routes.privacy", sitemap: { changefreq: "monthly", priority: "0.3" }, prerender: true },
   { id: "terms", path: "/terms", seoKey: "seo.routes.terms", sitemap: { changefreq: "monthly", priority: "0.3" }, prerender: true },
 ];

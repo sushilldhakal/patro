@@ -78,6 +78,7 @@ const Account = lazyRoute(() => import("./pages/Account"), "Account");
 const Settings = lazyRoute(() => import("./pages/Settings"), "Settings");
 const VerifyEmail = lazyRoute(() => import("./pages/VerifyEmail"), "VerifyEmail");
 const ResetPassword = lazyRoute(() => import("./pages/ResetPassword"), "ResetPassword");
+const AdminInstalls = lazyRoute(() => import("./pages/AdminInstalls"), "AdminInstalls");
 const Privacy = lazyRoute(() => import("./pages/Legal"), "Privacy");
 const Terms = lazyRoute(() => import("./pages/Legal"), "Terms");
 
@@ -347,6 +348,7 @@ const accountRoute = createRoute({ getParentRoute: () => rootRoute, path: "/acco
 const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/account/settings", component: Settings });
 const verifyEmailRoute = createRoute({ getParentRoute: () => rootRoute, path: "/verify-email", component: VerifyEmail });
 const resetPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: "/reset-password", component: ResetPassword });
+const adminInstallsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/admin/installs", component: AdminInstalls });
 const privacyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/privacy", component: Privacy });
 const termsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/terms", component: Terms });
 
@@ -401,6 +403,7 @@ const routeTree = rootRoute.addChildren([
   marriageSaitRoute,
   accountRoute,
   settingsRoute,
+  adminInstallsRoute,
   verifyEmailRoute,
   resetPasswordRoute,
   privacyRoute,

@@ -14,7 +14,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.routers import install_analytics as router_module
 from database.db import Base, get_db
-from database.models import AppInstallation, AppInstallationEvent
+from database.models import AppInstallation, AppInstallationEvent, User
 from services.platform import install_analytics, redis_cache
 
 ADMIN = {"X-Admin-Key": "let-me-in"}
@@ -97,7 +97,8 @@ def test_address_limit(setup, monkeypatch):
 def test_admin_needs_the_key(setup, monkeypatch):
     client, _ = setup
     assert client.get("/admin/analytics/installs/overview").status_code == 401
-    assert client.get("/admin/analytics/installs/overview", headers={"X-Admin-Key": "wrong"}).status_code == 401
+    denied = client.get("/admin/analytics/installs/overview", headers={"X-Admin-Key": "wrong"})
+    assert denied.status_code == 401 and denied.headers["cache-control"] == "no-store"
     ok = client.get("/admin/analytics/installs/overview", headers=ADMIN)
     assert ok.status_code == 200 and ok.headers["cache-control"] == "no-store"
     monkeypatch.delenv("ADMIN_API_KEY")
@@ -142,3 +143,27 @@ def test_events_and_read_outs(setup):
         assert split["platforms"][0] == {"value": "ios", "installations": 2, "active_30d": 1}
         assert {v["value"] for v in split["app_versions"]} == {"1.2.2", "1.2.3"}
         assert split["countries"] == [{"value": "NP", "installations": 3, "active_30d": 2}]
+
+
+def test_admin_by_signed_in_email(setup, monkeypatch):
+    client, Session = setup
+    monkeypatch.delenv("ADMIN_API_KEY")
+    monkeypatch.setenv("ADMIN_EMAILS", "Boss@Example.com, other@example.com")
+    with Session() as db:
+        users = {
+            "boss": User(email="boss@example.com", password_hash="x", is_verified=True),
+            "unverified": User(email="other@example.com", password_hash="x", is_verified=False),
+            "guest": User(email="guest@example.com", password_hash="x", is_verified=True),
+        }
+        db.add_all(users.values())
+        db.commit()
+        ids = {name: user.id for name, user in users.items()}
+
+    def as_user(name):
+        client.app.dependency_overrides[router_module._optional_user_id] = lambda: ids.get(name)
+        return client.get("/admin/analytics/installs/overview").status_code
+
+    assert as_user("boss") == 200
+    assert as_user("unverified") == 403
+    assert as_user("guest") == 403
+    assert as_user("nobody") == 401

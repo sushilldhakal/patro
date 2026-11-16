@@ -360,3 +360,8 @@ def smtp_config() -> dict[str, object] | None:
 def admin_api_key() -> str | None:
     """Secret the ``/admin/analytics`` routes require in ``X-Admin-Key``. Unset → those routes answer 404."""
     return (os.getenv("ADMIN_API_KEY") or "").strip() or None
+
+
+def admin_emails() -> frozenset[str]:
+    """Accounts allowed to read ``/admin/analytics`` when signed in (``ADMIN_EMAILS``, comma-separated)."""
+    return frozenset(e.strip().lower() for e in (os.getenv("ADMIN_EMAILS") or "").split(",") if e.strip())
