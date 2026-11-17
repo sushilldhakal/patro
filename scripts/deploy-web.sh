@@ -73,8 +73,25 @@ test -f "${WEB_ROOT}/index.html" || { echo "index.html missing after publish" >&
 test -f "${WEB_ROOT}/robots.txt" || { echo "robots.txt missing after publish" >&2; exit 1; }
 test -f "${WEB_ROOT}/llms.txt" || { echo "llms.txt missing after publish" >&2; exit 1; }
 
+# Old addresses answered with one 301 (apps/web/src/lib/app-routes.ts → dist/redirects.map), read by
+# the `map` in the live nginx site file. A map that fails `nginx -t` is put back to the previous one.
+REDIRECT_MAP="${REDIRECT_MAP:-/etc/nginx/vedicpatro-redirects.map}"
+if [[ -f "${WEB_DIR}/dist/redirects.map" ]]; then
+  echo "==> Installing redirects.map → ${REDIRECT_MAP}"
+  [[ -f "${REDIRECT_MAP}" ]] && sudo cp "${REDIRECT_MAP}" "${REDIRECT_MAP}.prev"
+  sudo cp "${WEB_DIR}/dist/redirects.map" "${REDIRECT_MAP}"
+fi
+
 if systemctl is-active --quiet nginx 2>/dev/null; then
   echo "==> Reloading nginx"
-  sudo nginx -t
+  if ! sudo nginx -t; then
+    if [[ -f "${REDIRECT_MAP}.prev" ]]; then
+      echo "nginx -t failed — restoring the previous redirects.map" >&2
+      sudo cp "${REDIRECT_MAP}.prev" "${REDIRECT_MAP}"
+      sudo nginx -t
+    else
+      exit 1
+    fi
+  fi
   sudo systemctl reload nginx
 fi

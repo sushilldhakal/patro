@@ -12,6 +12,7 @@
  * panchanga-elements.ts) in public-indexable-paths.ts, same as before.
  */
 import { PANCHANGA_SHELL_PATHS } from "@vedic-patro/domain/panchanga/panchanga-shell-paths";
+import { RETIRED_SLUG_REDIRECTS } from "@vedic-patro/domain/learn/merged-pages";
 import { isKundaliRoute } from "@vedic-patro/domain/jyotish/kundali/kundali-routes";
 
 export type SitemapChangefreq = "daily" | "weekly" | "monthly";
@@ -174,4 +175,61 @@ export function shouldShowPanchangaSidebar(pathname: string): boolean {
 /** Client navigations that keep the persistent panchanga shell mounted. */
 export function isPanchangaShellNavigation(from: string, to: string): boolean {
   return shouldShowPanchangaSidebar(from) && shouldShowPanchangaSidebar(to);
+}
+
+
+// ---------------------------------------------------------------------------
+// Server-side redirects. Old addresses the router still answers with a client-side
+// <Navigate> (kept for links clicked inside the app). Before JS runs, nginx would
+// serve them the home page's HTML — the home title and canonical, status 200 — so
+// Google filed them as duplicates of the home page. The build writes these to
+// dist/redirects.map, and nginx answers them with one 301 before any HTML.
+
+export interface LegacyRedirect {
+  from: string;
+  to: string;
+  /** Carry the query string over (search pages whose state lives in it). */
+  keepQuery?: boolean;
+}
+
+/** Old page paths. Retired learn slugs are added from the learn data by `redirectMapLines`. */
+export const LEGACY_REDIRECTS: LegacyRedirect[] = [
+  { from: "/chandrakranti", to: "/dainikkranti", keepQuery: true },
+  { from: "/दैनिकक्रान्ति", to: "/dainikkranti", keepQuery: true }, // copy-ok: legacy Nepali URL
+  { from: "/sun-times", to: "/suryakranti" },
+  { from: "/history", to: "/learn/surya-siddhanta#history" },
+  { from: "/panchanga/graha-sthiti", to: "/gochar", keepQuery: true },
+];
+
+/** Every server-side redirect, chains collapsed so each old address takes one hop. */
+export function allRedirects(): LegacyRedirect[] {
+  const learn: LegacyRedirect[] = Object.entries(RETIRED_SLUG_REDIRECTS).map(([slug, target]) => ({
+    from: `/learn/${slug}`,
+    to: `/learn/${target}`,
+  }));
+  // One entry per old address (nginx refuses a map with a key twice); the hand-written list wins.
+  const byFrom = new Map<string, LegacyRedirect>();
+  for (const r of [...LEGACY_REDIRECTS, ...learn]) if (!byFrom.has(r.from)) byFrom.set(r.from, r);
+  const all = [...byFrom.values()];
+  const settle = (r: LegacyRedirect): LegacyRedirect => {
+    let to = r.to;
+    for (let hops = 0; hops < 10; hops++) {
+      const next = byFrom.get(to.split("#", 1)[0]!);
+      if (!next) break;
+      const hash = to.includes("#") ? to.slice(to.indexOf("#")) : "";
+      to = next.to.includes("#") ? next.to : next.to + hash;
+    }
+    return { ...r, to };
+  };
+  return all.map(settle);
+}
+
+/**
+ * Lines for nginx's `map` (included from /etc/nginx/vedicpatro-redirects.map):
+ * `"<old path>" "<new path>";`. Quoted, because `#` starts an nginx comment.
+ */
+export function redirectMapLines(): string[] {
+  return allRedirects().map(
+    (r) => `"${r.from}" "${r.to}${r.keepQuery && !r.to.includes("#") ? "$is_args$args" : ""}";`,
+  );
 }

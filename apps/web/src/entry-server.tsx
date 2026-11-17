@@ -8,6 +8,7 @@ import { preloadLazyRoutes } from "./lib/lazy-route";
 import { buildHeadHtml } from "./lib/seo";
 
 export { PRERENDER_PATHS } from "./lib/seo";
+export { redirectMapLines } from "./lib/app-routes";
 
 export async function buildHeadHtmlForPath(pathname: string): Promise<string> {
   const i18nInstance = initSsrI18n();

@@ -35,6 +35,7 @@ import {
 } from "./lib/url-state";
 import { validateDocumentDetailSearch, validateDocumentsListSearch, validateVedaVerseDetailSearch } from "./lib/documents-api";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { NotFoundPage } from "./components/NotFoundPage";
 
 const Panchanga = lazyRoute(() => import("./pages/Panchanga"), "Panchanga");
 const PanchangaOgPreview = lazyRoute(() => import("./pages/PanchangaOgPreview"), "PanchangaOgPreview");
@@ -434,6 +435,7 @@ export function createAppRouter(history?: RouterHistory) {
   return createRouter({
     routeTree,
     defaultErrorComponent: RouteErrorFallback,
+    defaultNotFoundComponent: NotFoundPage,
     ...(history ? { history } : {}),
     ...(basepath ? { basepath } : {}),
   });
