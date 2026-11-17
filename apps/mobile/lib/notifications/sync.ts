@@ -37,12 +37,47 @@ function futureDays(range: GuidanceRange | null | undefined, today: string): num
  * earlier (including by an offline pack), so a phone with no signal keeps
  * firing the notifications it already knows about.
  */
-export async function syncNotifications(options: {
+export interface SyncOptions {
   lang: "ne" | "en";
   /** Re-fetch even if the cache still looks fresh (after a profile or place change). */
   force?: boolean;
-}): Promise<SyncResult> {
-  const { lang, force = false } = options;
+}
+
+// One sync at a time. App start, the offline pack, a profile save and the background task can all
+// ask at once; two overlapping runs each fetched a week of rashifal and rescheduled every
+// notification, twice the work on phones short of memory (Sentry PATRO-K shows the doubled
+// fetches just before a freeze on a Redmi 9A). Calls made while one runs fold into a single next
+// run (forced if any of them asked, in the language last asked for).
+let running = false;
+let queued: { promise: Promise<SyncResult>; options: Required<SyncOptions> } | null = null;
+let current: Promise<SyncResult> | null = null;
+
+export function syncNotifications(options: SyncOptions): Promise<SyncResult> {
+  const asked: Required<SyncOptions> = { lang: options.lang, force: options.force ?? false };
+  if (queued) {
+    queued.options = { lang: asked.lang, force: queued.options.force || asked.force };
+    return queued.promise;
+  }
+  if (!running) return start(asked);
+  const entry = { options: asked } as { promise: Promise<SyncResult>; options: Required<SyncOptions> };
+  entry.promise = current!.catch(() => undefined).then(() => {
+    queued = null;
+    return start(entry.options);
+  });
+  queued = entry;
+  return entry.promise;
+}
+
+function start(options: Required<SyncOptions>): Promise<SyncResult> {
+  running = true;
+  current = runSync(options).finally(() => {
+    running = false;
+  });
+  return current;
+}
+
+async function runSync(options: Required<SyncOptions>): Promise<SyncResult> {
+  const { lang, force } = options;
   if (Platform.OS === "web") return { scheduled: 0, online: false, permission: "denied" };
   await notifStore.setLang(lang);
 

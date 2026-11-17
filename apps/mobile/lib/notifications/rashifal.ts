@@ -9,6 +9,7 @@ import type { Profile } from "@/lib/auth/client";
 import { instantCacheKey } from "@vedic-patro/domain/calendar/instant-query";
 import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 import { notifStore } from "./store";
 import type { RashifalCache, RashifalDayEntry, RashifalSettings } from "./types";
 
@@ -16,6 +17,22 @@ import type { RashifalCache, RashifalDayEntry, RashifalSettings } from "./types"
 export const RASHIFAL_DAYS = 7;
 /** Re-fetch once fewer than this many future days remain cached. */
 const REFRESH_BELOW_DAYS = 4;
+/**
+ * Days fetched at the same time. All seven at once was a burst of downloads and JSON parses that
+ * low-memory phones (Redmi 9A, PATRO-K) went into right before freezing; they now go one by one.
+ */
+const FETCH_AT_ONCE = IS_LOW_MEMORY_DEVICE ? 1 : 2;
+
+/** `fn` over `items`, at most `limit` at a time, results in the items' order. */
+async function mapLimited<T, R>(items: readonly T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let next = 0;
+  const worker = async () => {
+    for (let i = next++; i < items.length; i = next++) out[i] = await fn(items[i]!);
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
 
 function addDays(dateAd: string, delta: number): string {
   const [y, m, d] = dateAd.split("-").map(Number);
@@ -80,8 +97,10 @@ export async function syncRashifalCache(options: {
   if (!online || (!force && futureCount >= REFRESH_BELOW_DAYS)) return usableCache;
 
   const dates = Array.from({ length: RASHIFAL_DAYS }, (_, i) => addDays(today, i));
-  const results = await Promise.all(
-    dates.map(async (date): Promise<[string, RashifalDayEntry | null]> => {
+  const results = await mapLimited(
+    dates,
+    FETCH_AT_ONCE,
+    async (date): Promise<[string, RashifalDayEntry | null]> => {
       try {
         if (usable) {
           const res = await fetchPersonalRashifal(
@@ -102,7 +121,7 @@ export async function syncRashifalCache(options: {
       } catch {
         return [date, null];
       }
-    }),
+    },
   );
 
   const days: Record<string, RashifalDayEntry> = {};
