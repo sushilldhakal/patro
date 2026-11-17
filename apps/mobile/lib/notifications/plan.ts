@@ -10,6 +10,7 @@ import type {
 import { WINDOW_OPTIONS, decodeReminderLabel } from "./types";
 import { weekdayOf, zonedInstant } from "./zoned";
 
+import { formatDigits } from "@vedic-patro/domain/calendar/bs-calendar";
 import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Pure planning: cached guidance + reminder rules + settings → the notifications
@@ -57,11 +58,8 @@ function pickLines(day: GuidanceDay, lang: "ne" | "en", field: "do" | "dont" | "
   return lang === "ne" ? day[`${field}_ne`] : day[`${field}_en`];
 }
 
-const NE_DIGITS = "०१२३४५६७८९";
-
 function localDigits(value: number, lang: "ne" | "en"): string {
-  const text = String(Math.round(value));
-  return lang === "ne" ? text.replace(/[0-9]/g, (d) => NE_DIGITS[Number(d)]) : text;
+  return formatDigits(Math.round(value), lang);
 }
 
 /**

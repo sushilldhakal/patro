@@ -312,6 +312,22 @@
        }
       ]
      },
+     "personal_en": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Personal En",
+      "type": "array"
+     },
+     "personal_ne": {
+      "default": [],
+      "items": {
+       "type": "string"
+      },
+      "title": "Personal Ne",
+      "type": "array"
+     },
      "personal_tone": {
       "anyOf": [
        {
