@@ -33,7 +33,20 @@ export interface GuidanceDay {
   personal_ne?: string[];
   personal_en?: string[];
   /** The profile's own reading of the day; `percent` is its day score. Absent without a birth chart. */
-  reading?: { percent?: number | null } | null;
+  reading?: {
+    percent?: number | null;
+    /** The six life areas scored for this profile's day. */
+    domains?: Array<{ key?: string | null; label_ne?: string | null; label_en?: string | null; percent?: number | null }>;
+  } | null;
+  /** Chandrabala / tarabala through the day for this profile's janma rashi and nakshatra. */
+  personal?: {
+    segments?: Array<{
+      start: string;
+      end: string;
+      chandra?: { house: number; state: "good" | "weak" | "ashtama" };
+      tara?: { num: number; name_ne: string; name_en: string; state: "good" | "caution" | "bad" };
+    }>;
+  } | null;
   windows: GuidanceWindow[];
 }
 

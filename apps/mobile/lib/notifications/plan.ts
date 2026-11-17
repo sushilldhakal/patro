@@ -46,7 +46,7 @@ export interface PlanInput {
   budget: number;
 }
 
-/* Room for the profile's own line on top of the three shared ones; the OS shows the rest when the
+/* Room for the profile's own lines and one shared line; the OS shows the rest when the
    notification is expanded. */
 const BODY_LIMIT = 320;
 
@@ -76,12 +76,64 @@ export function personalLine(day: GuidanceDay, lang: "ne" | "en"): string | null
   return lines.length > 0 ? lines[lines.length - 1] : null;
 }
 
+/** A stable small number from a string, so the pick is the same every time the schedule is rebuilt. */
+function seedOf(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Tarabala and chandrabala at sunrise: read from this profile's own janma nakshatra and rashi. */
+function balaLine(day: GuidanceDay, lang: "ne" | "en"): string | null {
+  const seg = day.personal?.segments?.[0];
+  if (!seg) return null;
+  const parts: string[] = [];
+  if (seg.tara) {
+    parts.push(
+      tFor(lang, "ui.notifications.tarabala", {
+        name: lang === "ne" ? seg.tara.name_ne : seg.tara.name_en,
+        state: tFor(lang, `ui.notifications.state_${seg.tara.state}`),
+      }),
+    );
+  }
+  if (seg.chandra) {
+    parts.push(
+      tFor(lang, "ui.notifications.chandrabala", {
+        house: localDigits(seg.chandra.house, lang),
+        state: tFor(lang, `ui.notifications.state_${seg.chandra.state}`),
+      }),
+    );
+  }
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+/** The strongest and weakest life area of this profile's day. */
+function areasLine(day: GuidanceDay, lang: "ne" | "en"): string | null {
+  const scored = (day.reading?.domains ?? []).filter(
+    (d): d is typeof d & { percent: number } => typeof d.percent === "number" && !!(lang === "ne" ? d.label_ne : d.label_en),
+  );
+  if (scored.length < 2) return null;
+  const sorted = [...scored].sort((a, b) => b.percent - a.percent);
+  const best = sorted[0];
+  const worst = sorted[sorted.length - 1];
+  if (best.percent === worst.percent) return null;
+  const area = (d: typeof best) => `${lang === "ne" ? d.label_ne : d.label_en} ${localDigits(d.percent, lang)}%`;
+  return `${tFor(lang, "ui.notifications.strong_area", { area: area(best) })} · ${tFor(lang, "ui.notifications.weak_area", { area: area(worst) })}`;
+}
+
 /**
- * The profile's own line first (with its day score), then the first "Do / Don't / Careful" line.
- * Those three come from the weekday, tithi and day windows, which every profile shares; without the
- * personal line on top, every profile's briefing read the same.
+ * What each profile's briefing says: its own day score and tone line, its tarabala and chandrabala,
+ * its strongest and weakest life area, then ONE of the day's shared Do / Don't / Careful lines.
+ *
+ * The shared lines come from the weekday, tithi and day windows, so every profile has the same ones
+ * and the weekday line comes back every week. Showing all three first made six profiles read the
+ * same, and the same as last Tuesday. Which shared line is shown is picked from the profile and the
+ * date, so two profiles on one day, or one profile on two Tuesdays, usually get different ones.
  */
-export function briefingBody(day: GuidanceDay, lang: "ne" | "en"): string {
+export function briefingBody(day: GuidanceDay, lang: "ne" | "en", profileId = ""): string {
   const labels =
     lang === "ne"
       ? { do: tFor("ne", "ui.reminders.do"), dont: tFor("ne", "ui.reminders.don_t"), careful: tFor("ne", "kundali.caution") }
@@ -92,9 +144,27 @@ export function briefingBody(day: GuidanceDay, lang: "ne" | "en"): string {
     const percent = day.reading?.percent;
     parts.push(typeof percent === "number" ? `${localDigits(percent, lang)}% · ${own}` : own);
   }
+  const bala = balaLine(day, lang);
+  if (bala) parts.push(bala);
+  const areas = areasLine(day, lang);
+  if (areas) parts.push(areas);
+
+  const shared: string[] = [];
   for (const field of ["do", "dont", "careful"] as const) {
-    const first = pickLines(day, lang, field).find((line) => line !== own);
-    if (first) parts.push(`${labels[field]}: ${first}`);
+    for (const line of pickLines(day, lang, field)) {
+      if (line !== own) shared.push(`${labels[field]}: ${line}`);
+    }
+  }
+  if (shared.length > 0) {
+    // With nothing personal to show (no birth chart), fall back to the first line of each kind.
+    if (parts.length === 0) {
+      for (const field of ["do", "dont", "careful"] as const) {
+        const first = shared.find((line) => line.startsWith(`${labels[field]}: `));
+        if (first) parts.push(first);
+      }
+    } else {
+      parts.push(shared[seedOf(`${profileId}|${day.date}`) % shared.length]);
+    }
   }
   return clip(parts.length > 0 ? parts.join("\n") : lang === "ne" ? day.summary_ne : day.summary_en);
 }
@@ -139,7 +209,7 @@ export function planNotifications(input: PlanInput): PlannedNotification[] {
         id: `brief:${profile.id}:${day.date}`,
         fireAt,
         title: `${profile.name} · ${lang === "ne" ? day.weekday_ne ?? "" : day.weekday_en ?? ""}`.replace(/ · $/, ""),
-        body: briefingBody(day, lang),
+        body: briefingBody(day, lang, profile.id),
         channel: "daily-guidance",
         data: { type: "briefing", profileId: profile.id, date: day.date },
       });

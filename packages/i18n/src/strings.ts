@@ -9041,6 +9041,15 @@ export const strings = {
   "ui.notifications.starts_in_lead_min": { ne: "{{lead}} मिनेटमा सुरु", en: "Starts in {{lead}} min" },
   "ui.notifications.starts_now": { ne: "अहिलेदेखि", en: "Starts now" },
   "ui.notifications.today_s_rashifal": { ne: "आजको राशिफल", en: "Today's rashifal" },
+  "ui.notifications.tarabala": { ne: "ताराबल: {{name}} ({{state}})", en: "Tara: {{name}} ({{state}})" },
+  "ui.notifications.chandrabala": { ne: "चन्द्रबल: {{house}}औं भाव ({{state}})", en: "Moon: house {{house}} ({{state}})" },
+  "ui.notifications.state_good": { ne: "शुभ", en: "good" },
+  "ui.notifications.state_caution": { ne: "सावधान", en: "caution" },
+  "ui.notifications.state_bad": { ne: "अशुभ", en: "weak" },
+  "ui.notifications.state_weak": { ne: "कमजोर", en: "weak" },
+  "ui.notifications.state_ashtama": { ne: "अष्टम चन्द्र", en: "8th Moon" },
+  "ui.notifications.strong_area": { ne: "बलियो: {{area}}", en: "Strong: {{area}}" },
+  "ui.notifications.weak_area": { ne: "कमजोर: {{area}}", en: "Weak: {{area}}" },
 
   /* ── ui.onboarding ──────────────────────────────────────────────────────── */
   "ui.onboarding.skip": { ne: "छोड्नुहोस्", en: "Skip" },
