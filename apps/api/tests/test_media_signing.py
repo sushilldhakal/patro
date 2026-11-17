@@ -74,3 +74,13 @@ def test_rigveda_verse_carries_its_signed_sukta_link(signing):
 def test_other_verses_have_no_sukta_link(signing):
     verse = document_views._resolve_shloka({"audio_key": "documents/gita/1_1.mp3", "sukta_number": 3})
     assert "sukta_audio_url" not in verse
+
+
+def test_default_links_last_six_to_eight_hours(signing, monkeypatch):
+    monkeypatch.delenv("R2_SIGNING_WINDOW_HOURS")
+    monkeypatch.delenv("R2_SIGNED_URL_TTL_HOURS")
+    url = media_signing.signed_url(_KEY)
+    assert parse_qs(urlsplit(url).query)["X-Amz-Expires"] == [str(8 * 3600)]
+    start = 1_800_000_000 // 7200 * 7200
+    assert media_signing.signed_url(_KEY, now=start) == media_signing.signed_url(_KEY, now=start + 7199)
+    assert media_signing.signed_url(_KEY, now=start) != media_signing.signed_url(_KEY, now=start + 7200)

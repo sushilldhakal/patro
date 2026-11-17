@@ -4,16 +4,16 @@ The bucket is not public: the only way to fetch a recording is a SigV4
 query-signed ``GET`` link that this module builds locally (no network call).
 Each link names one object and stops working ``R2_SIGNED_URL_TTL_HOURS`` after
 the start of the window it was issued in, so a link copied out of the network
-tab or the JSON is useless a day later, and the bucket itself can't be listed or
+tab or the JSON stops working within hours, and the bucket itself can't be listed or
 crawled.
 
 Links are deterministic within a window — signed at the window's start, not at
 request time — so a whole chapter payload is identical for everyone during that
 window and can still be cached (Redis, the edge, the browser). The window index
 goes into the documents cache key (:func:`cache_token`); a new window builds new
-links. With the defaults (6 h window, 30 h lifetime) every link handed out stays
-valid for at least 24 h, which covers a reader left open overnight and the
-app's one-hour staleTime with room to spare.
+links. With the defaults (2 h window, 8 h lifetime) every link handed out stays
+valid for at least 6 h: a long listening session and the app's one-hour
+staleTime fit, and a copied link stops working the same day.
 
 Turned on by setting the R2 S3 credentials (see :func:`config.r2_signing`). When
 they're absent (local dev, tests), callers fall back to the public base URL.

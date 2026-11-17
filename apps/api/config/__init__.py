@@ -303,13 +303,17 @@ def r2_signing() -> R2Signing | None:
 
 
 def r2_signing_window_seconds() -> int:
-    """How often signed links roll over (default 6 h). Links are identical within a window."""
-    return max(60, int(float(os.getenv("R2_SIGNING_WINDOW_HOURS", "6")) * 3600))
+    """How often signed links roll over (default 2 h). Links are identical within a window."""
+    return max(60, int(float(os.getenv("R2_SIGNING_WINDOW_HOURS", "2")) * 3600))
 
 
 def r2_signed_url_ttl_seconds() -> int:
-    """Lifetime of a signed link from its window's start (default 30 h, capped at SigV4's 7 days)."""
-    ttl = int(float(os.getenv("R2_SIGNED_URL_TTL_HOURS", "30")) * 3600)
+    """Lifetime of a signed link from its window's start (default 8 h, capped at SigV4's 7 days).
+
+    With the 2 h window every link handed out works for 6-8 h: a long listening session, and a
+    link copied out of the network tab is dead the same day.
+    """
+    ttl = int(float(os.getenv("R2_SIGNED_URL_TTL_HOURS", "8")) * 3600)
     return min(7 * 86400, max(ttl, r2_signing_window_seconds() + 3600))
 
 

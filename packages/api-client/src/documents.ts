@@ -343,7 +343,10 @@ export function isAudioAvailable(url: string): Promise<boolean> {
     known = fetch(url, { headers: { Range: "bytes=0-0" } })
       .then((res) => {
         void res.body?.cancel().catch(() => undefined);
-        return res.status !== 404 && res.status !== 403 && res.status !== 410;
+        // 403 is an expired or refused signature, not a missing file: the bucket is private, so a
+        // file that is not there answers 404. Hiding the button on 403 would hide it for good
+        // (the answer is kept per verse) after a reader opened a cached chapter hours later.
+        return res.status !== 404 && res.status !== 410;
       })
       .catch(() => true);
     audioAvailability.set(url, known);
