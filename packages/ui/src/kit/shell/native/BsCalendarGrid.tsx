@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Pressable as RNPressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
+import { Platform, Pressable as RNPressable, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import Animated from "react-native-reanimated";
 import { useColorScheme } from "nativewind";
 import { mobileRoles } from "@vedic-patro/design-tokens";
@@ -36,18 +36,39 @@ function colStyle(col: number, extra?: object) {
   return col > 0 ? { width: col, maxWidth: col, minWidth: 0, ...extra } : { flex: 1, flexBasis: 0, minWidth: 0, ...extra };
 }
 
+/* Devanagari marks drawn on, under or over the letter before them: they add no width. */
+const ZERO_WIDTH = /[\u0900-\u0902\u093A\u093C\u0941-\u0948\u094D\u0951-\u0957\u0962\u0963\u200C\u200D]/;
+/* Marks drawn beside the letter (ा ि ी ो ौ ः): about half a letter. */
+const HALF_WIDTH = /[\u0903\u093B\u093E-\u0940\u0949-\u094C\u094E\u094F]/;
+
 /**
- * Cut a line to the cell width in JavaScript. `numberOfLines` makes Android build an Ellipsizer,
- * and measuring that on a Devanagari line is the draw ANR (Sentry PATRO-8) and the tap ANR
- * (Sentry PATRO-H).
+ * Cut a line to the cell width in JavaScript, on Android only. `numberOfLines` makes Android build
+ * an Ellipsizer, and measuring that on a Devanagari line is the draw ANR (Sentry PATRO-8) and the
+ * tap ANR (Sentry PATRO-H). iOS has no such stall, so it keeps the full text and native ellipsis.
+ *
+ * Width is estimated per letter, not per code point: अष्टमी is six code points but about four
+ * letters wide, and counting code points cut it to "अष्ट…" in a cell it fits.
  */
 function clipToCell(text: string | null | undefined, col: number, share = 1): string {
-  if (!text || col <= 0) return text ?? "";
-  const max = Math.max(4, Math.floor(((col - 8) * share) / 9));
+  if (!text || col <= 0 || Platform.OS !== "android") return text ?? "";
+  const room = ((col - 8) * share) / 7.2; // ≈ one 12pt letter
   const chars = Array.from(text);
-  if (chars.length <= max) return text;
-  return `${chars.slice(0, Math.max(1, max - 1)).join("")}…`;
+  let used = 0;
+  for (let i = 0; i < chars.length; i += 1) {
+    const ch = chars[i];
+    used += ZERO_WIDTH.test(ch) ? 0 : HALF_WIDTH.test(ch) ? 0.45 : ch === " " ? 0.4 : 1;
+    if (used > room) {
+      let cut = i;
+      // Never end on a half letter (a consonant left with its virama).
+      while (cut > 1 && chars[cut - 1] === "\u094D") cut -= 1; // copy-ok: virama
+      return `${chars.slice(0, Math.max(1, cut - 1)).join("").trimEnd()}…`;
+    }
+  }
+  return text;
 }
+
+/** iOS truncates natively (one line); Android gets an already-clipped string and no line limit. */
+const ONE_LINE = Platform.OS === "android" ? undefined : 1;
 
 /** Month grid for the app: rows of seven columns, drawn with React Native (no CSS grid). The moon glyph is supplied by each app. */
 export function BsCalendarGrid({
@@ -180,6 +201,7 @@ export function BsCalendarGrid({
                   <View className="w-full flex-row items-start justify-start" style={{ minHeight: tithiRowMinH, paddingTop: englishPhone ? moonSize - 4 : 0 }}>
                     {tithi ? (
                       <Text
+                        numberOfLines={Platform.OS === "android" ? undefined : englishPhone ? 2 : 1}
                         className={cn("flex-1", cal.tithi, "text-left", isTablet ? "text-sm" : englishPhone ? "text-diagram-xs leading-tight" : cal.tithiPhone)}
                       >
                         {clipToCell(englishPhone ? softBreakTithi(tithi) : tithi, col, englishPhone ? 1 : 0.85)}
@@ -205,6 +227,7 @@ export function BsCalendarGrid({
                     <View className={cn("flex-row items-baseline justify-center gap-x-1", isCompact ? "flex-nowrap" : "flex-wrap")}>
                       <Text className={cn(cal.dayNumber, lang === "en" ? "font-num-bold" : "font-num", dayNumClass, dayColorClass)}>{cell.primaryDay}</Text>
                       <Text
+                        numberOfLines={isCompact ? ONE_LINE : undefined}
                         className={cn(isCompact && "shrink", cal.secondaryDate, lang === "en" && "font-num", cell.secondaryNamed ? cal.secondaryDateNamed : cal.secondaryDatePlain, isTablet && "text-sm")}
                       >
                         {clipToCell(isCompact ? cell.secondaryLabelShort : cell.secondaryLabel, col, 0.45)}
@@ -233,7 +256,7 @@ export function BsCalendarGrid({
                             onPress={onOpenEvent ? () => onOpenEvent(event) : () => onSelectDay?.(cell.day)}
                             className={cn(cal.eventChipNative, "active:opacity-70")}
                           >
-                            <Text className={cal.eventChipText}>{clipToCell(event.title, col, 0.9)}</Text>
+                            <Text numberOfLines={ONE_LINE} className={cal.eventChipText}>{clipToCell(event.title, col, 0.9)}</Text>
                           </RNPressable>
                         ))}
                       </View>
@@ -255,7 +278,7 @@ export function BsCalendarGrid({
                       {/* Tablet: the festival's name opens its details. A phone cell is too small to
                           split, so a tap there selects the day; it writes one line, the rest are in "+N". */}
                       <RNPressable disabled={isCompact} onPress={openFestivals} accessibilityRole={isCompact ? undefined : "button"}>
-                        <Text className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
+                        <Text numberOfLines={ONE_LINE} className={cn(cal.festival, "text-left", isPublicHoliday ? cal.festivalHoliday : cal.festivalNormal)}>
                           {clipToCell(isCompact ? compactFest : mainFest, col, 0.9)}
                         </Text>
                       </RNPressable>
