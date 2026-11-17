@@ -17,6 +17,8 @@ Full permission story: `permissions-review.md`.
 | Device ID | Yes (push notification token, with time zone and locale) — only when signed in | Yes | No | App functionality (reminders) |
 | Crash data | Yes (Sentry, `sendDefaultPii: false`, no user set) | No | No | App functionality |
 | Performance data | Yes (Sentry traces at 20%, EAS Observe launch and screen timings; personal route params filtered) | No | No | App functionality |
+| Product interaction | Yes (Meta SDK App Events: install and app opens, from 1.2.3) | No | No | Third-party advertising (measuring Meta app-install ads) and Analytics |
+| Other diagnostic data | Yes (Meta SDK sends device model, OS version, app version with each event) | No | No | Third-party advertising and Analytics |
 | Precise location | Yes, only if the user allows it | No* | No | App functionality (panchanga place) |
 | Coarse location | Yes, only if the user allows it | No* | No | App functionality (panchanga place) |
 
@@ -31,9 +33,11 @@ Signed out, events (including imported phone-calendar events) stay on the device
 | Photos / Video | Camera is a **live preview** in Aakash Gochar only. Nothing is captured, saved or uploaded. |
 | Audio | Microphone permission is off. |
 | Health / Fitness / Motion | Tilt and compass stay on the device and are never stored or sent. |
-| Browsing history, advertising data, purchases, product analytics | Not used in the app. |
+| Browsing history, advertising data, purchases | Not used in the app. No in-app purchases, so Meta needs no App Store shared secret. |
 | Contacts | The app never reads the address book. Invitee emails are typed by the user and are declared under Other user content. |
 
-## Third-party partners (sign-in only)
+## Third-party partners
 
 Google, Apple and Facebook authenticate the user. We receive an email (or Apple Hide My Email relay). They are **not** trackers.
+
+Meta SDK (App Events, `plugins/with-meta-app-events.js`, from 1.2.3) reports installs and app opens to Meta so app-install ads can be measured. The advertising ID is never collected (no ATT prompt, `FacebookAdvertiserIDCollectionEnabled` false), Meta measures iOS through SKAdNetwork / AEM, and events carry no account id. So it is declared as Product interaction + Other diagnostic data, **not linked**, **not tracking**.
