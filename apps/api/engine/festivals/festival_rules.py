@@ -140,11 +140,7 @@ def compute_bs_fixed_festival(
     bs_day = rule.get("bs_day", 1)
     if not bs_month:
         return None
-    # A day first kept in a given year (जेनजी शहीद दिवस from BS 2083) has no earlier dates.
-    from_bs_year = int(rule.get("from_bs_year") or 0)
     for bs_year in (gregorian_year + 56, gregorian_year + 57):
-        if bs_year < from_bs_year:
-            continue
         try:
             greg = bs_to_gregorian(bs_year, bs_month, bs_day)
             if greg.year == gregorian_year:
@@ -152,6 +148,23 @@ def compute_bs_fixed_festival(
         except ValueError:
             continue
     return None
+
+
+def first_observed_date(rule: dict[str, Any]) -> Optional[date]:
+    """The earliest day a festival can fall on, or None when it has no known start.
+
+    A festival that began in a known year has no earlier dates: Constitution Day
+    is kept from BS 2073 (the constitution came on BS 2072 Asoj 3), so BS 2072
+    and before show none. ``from_bs_year`` counts from Baishakh 1 of that BS year,
+    ``from_ad_year`` from 1 January of that AD year (UN days, birth anniversaries
+    of people born on an AD date). Each is the first year the day was kept.
+    """
+    bounds: list[date] = []
+    if rule.get("from_bs_year"):
+        bounds.append(bs_to_gregorian(int(rule["from_bs_year"]), 1, 1))
+    if rule.get("from_ad_year"):
+        bounds.append(date(int(rule["from_ad_year"]), 1, 1))
+    return max(bounds) if bounds else None
 
 
 def compute_festival_dates(
@@ -180,6 +193,9 @@ def compute_festival_dates(
         return None
 
     if start is None:
+        return None
+    first_day = first_observed_date(rule)
+    if first_day is not None and start < first_day:
         return None
 
     # A span that closes on another tithi or another festival's day rather than

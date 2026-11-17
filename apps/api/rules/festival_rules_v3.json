@@ -5,7 +5,8 @@
     "date_updated": "2026-07-29",
     "model": "lunar_month_based",
     "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on. v3.4: `end_at` closes a span on another festival's start day (Tihar holiday: Laxmi Puja → Bhai Tika). v3.3: `date_selection` accepts the kaal-vyapini modes madhyahna / aparahna / pradosh alongside udaya and boundary — the day a tithi pervades that part of the day, for observances whose date is not the udaya-tithi day (Vijaya Dashami, Laxmi Puja).",
-    "tradition_field": "Optional. Present only on rules whose date depends on the observing tradition (Smarta vs Vaishnava Ekadashi). Absent means the rule is tradition-neutral and is emitted for every tradition. See docs/phase-7-preparation.md and engine/vedic/tradition.py."
+    "tradition_field": "Optional. Present only on rules whose date depends on the observing tradition (Smarta vs Vaishnava Ekadashi). Absent means the rule is tradition-neutral and is emitted for every tradition. See docs/phase-7-preparation.md and engine/vedic/tradition.py.",
+    "from_year_field": "Optional. from_bs_year / from_ad_year: the first year a festival was kept (Baishakh 1 / 1 January of that year). No date is computed before it — Constitution Day (promulgated BS 2072 Asoj 3) has from_bs_year 2073. Applies to every rule type."
   },
   "festivals": {
     "tihar": {
@@ -180,6 +181,7 @@
       "bs_day": 25,
       "duration_days": 1,
       "audience": "kirat",
+      "from_bs_year": 1943,
       "notes": "A holiday for the Kirat faith only, not a general rest day. Kartik 25.",
       "importance": "community",
       "category": "kirat"
@@ -294,6 +296,7 @@
       "bs_month": 2,
       "bs_day": 15,
       "duration_days": 1,
+      "from_bs_year": 2066,
       "notes": "Jestha 15 — Nepal became a republic on this day in BS 2065",
       "importance": "national",
       "category": "national"
@@ -305,6 +308,7 @@
       "bs_month": 6,
       "bs_day": 3,
       "duration_days": 1,
+      "from_bs_year": 2073,
       "notes": "Asoj 3 — Nepal's constitution promulgated BS 2072",
       "importance": "national",
       "category": "national"
@@ -316,6 +320,7 @@
       "bs_month": 10,
       "bs_day": 16,
       "duration_days": 1,
+      "from_bs_year": 1998,
       "notes": "Magh 16 — martyrs of the democracy movement",
       "importance": "national",
       "category": "national"
@@ -327,6 +332,7 @@
       "bs_month": 1,
       "bs_day": 11,
       "duration_days": 1,
+      "from_bs_year": 2064,
       "notes": "Baishakh 11 — people's movement II of BS 2062/63",
       "importance": "national",
       "category": "national"
@@ -338,6 +344,7 @@
       "bs_month": 9,
       "bs_day": 27,
       "duration_days": 1,
+      "from_bs_year": 1780,
       "notes": "Poush 27 — birth anniversary of Prithvi Narayan Shah",
       "importance": "national",
       "category": "national"
@@ -541,6 +548,7 @@
       "ad_month": 12,
       "ad_day": 25,
       "duration_days": 1,
+      "from_ad_year": 336,
       "notes": "Christian holiday — December 25",
       "importance": "national",
       "category": "christian"
@@ -552,6 +560,7 @@
       "ad_month": 3,
       "ad_day": 8,
       "duration_days": 1,
+      "from_ad_year": 1914,
       "notes": "Holiday for women employees only, 8 March.",
       "importance": "national",
       "category": "national",
@@ -851,6 +860,7 @@
       "bs_month": 3,
       "bs_day": 29,
       "duration_days": 1,
+      "from_bs_year": 1872,
       "notes": "Birth of Adikavi Bhanubhakta Acharya — Asar 29",
       "importance": "national",
       "category": "cultural"
@@ -862,6 +872,7 @@
       "bs_month": 3,
       "bs_day": 15,
       "duration_days": 1,
+      "from_bs_year": 2061,
       "notes": "Ropain begins — Asar 15",
       "importance": "national",
       "category": "cultural"
@@ -895,6 +906,7 @@
       "bs_month": 11,
       "bs_day": 7,
       "duration_days": 1,
+      "from_bs_year": 2008,
       "notes": "Falgun 7 — end of Rana rule (BS 2007); MoHA public holiday",
       "importance": "national",
       "category": "national"
@@ -917,6 +929,7 @@
       "ad_month": 5,
       "ad_day": 1,
       "duration_days": 1,
+      "from_ad_year": 1890,
       "notes": "May 1 — workers' day",
       "importance": "national",
       "category": "national"
@@ -1003,7 +1016,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "hindu"
+      "category": "hindu",
+      "from_ad_year": 1018
     },
     "ganga-saptami": {
       "name_en": "Ganga Saptami Vrata",
@@ -1147,7 +1161,8 @@
       "bs_day": 12,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2073
     },
     "kirat-samaj-sudhar-diwas": {
       "name_en": "Kirat Samaj Sudhar Diwas",
@@ -1167,7 +1182,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2012
     },
     "world-earth-day": {
       "name_en": "World Earth Day",
@@ -1177,7 +1193,8 @@
       "ad_day": 22,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1970
     },
     "world-book-day": {
       "name_en": "World Book and Copyright Day",
@@ -1187,7 +1204,8 @@
       "ad_day": 23,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1995
     },
     "world-press-freedom-day": {
       "name_en": "World Press Freedom Day",
@@ -1197,7 +1215,8 @@
       "ad_day": 3,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1994
     },
     "vrish-sankranti": {
       "name_en": "Vrish Sankranti",
@@ -1329,7 +1348,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "from_bs_year": 1970
     },
     "gorakhkali-puja-jestha": {
       "name_en": "Gorakhkali Puja",
@@ -1436,7 +1456,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "hindu"
+      "category": "hindu",
+      "from_ad_year": 1399
     },
     "jya-punhi": {
       "name_en": "Jya Punhi",
@@ -1534,7 +1555,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1994
     },
     "world-telecommunication-day": {
       "name_en": "World Telecommunication Day",
@@ -1544,7 +1566,8 @@
       "ad_day": 17,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1969
     },
     "world-biodiversity-day": {
       "name_en": "International Day for Biological Diversity",
@@ -1554,7 +1577,8 @@
       "ad_day": 22,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2001
     },
     "international-everest-day": {
       "name_en": "International Everest Day",
@@ -1564,7 +1588,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_ad_year": 2008
     },
     "world-environment-day": {
       "name_en": "World Environment Day",
@@ -1574,7 +1599,8 @@
       "ad_day": 5,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1974
     },
     "world-yoga-day": {
       "name_en": "International Day of Yoga",
@@ -1584,7 +1610,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2015
     },
     "world-blood-donor-day": {
       "name_en": "World Blood Donor Day",
@@ -1594,7 +1621,8 @@
       "ad_day": 14,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2004
     },
     "anti-child-labour-day": {
       "name_en": "World Day Against Child Labour",
@@ -1604,7 +1632,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2002
     },
     "world-refugee-day": {
       "name_en": "World Refugee Day",
@@ -1614,7 +1643,8 @@
       "ad_day": 20,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2001
     },
     "world-population-day": {
       "name_en": "World Population Day",
@@ -1624,7 +1654,8 @@
       "ad_day": 11,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1990
     },
     "caste-untouchability-abolition-day": {
       "name_en": "National Day for Abolition of Caste Discrimination and Untouchability",
@@ -1635,6 +1666,7 @@
       "duration_days": 1,
       "importance": "national",
       "category": "national",
+      "from_bs_year": 2064,
       "notes": "Jestha 21 — the House declared Nepal free of untouchability on Jestha 21, 2063."
     },
     "dakshinayan-arambha": {
@@ -1800,7 +1832,8 @@
       "ad_day": 28,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2011
     },
     "world-tiger-day": {
       "name_en": "World Tiger Day",
@@ -1810,7 +1843,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2010
     },
     "international-friendship-day": {
       "name_en": "International Friendship Day",
@@ -1830,7 +1864,8 @@
       "ad_day": 30,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "world-breastfeeding-week-start": {
       "name_en": "World Breastfeeding Week",
@@ -1840,7 +1875,8 @@
       "ad_day": 1,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1992
     },
     "world-indigenous-peoples-day": {
       "name_en": "International Day of the World's Indigenous Peoples",
@@ -1850,7 +1886,8 @@
       "ad_day": 9,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1995
     },
     "international-youth-day": {
       "name_en": "International Youth Day",
@@ -1860,7 +1897,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2000
     },
     "world-calligraphy-day": {
       "name_en": "World Calligraphy Day",
@@ -2110,7 +2148,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "from_bs_year": 1924
     },
     "gunla-parva-samapti": {
       "name_en": "Gunla Parva Samapti",
@@ -2229,7 +2268,8 @@
       "ad_day": 19,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2010
     },
     "world-day-against-nuclear-tests": {
       "name_en": "International Day Against Nuclear Tests",
@@ -2239,7 +2279,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2010
     },
     "world-day-against-enforced-disappearance": {
       "name_en": "International Day of the Victims of Enforced Disappearances",
@@ -2249,7 +2290,8 @@
       "ad_day": 30,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2011
     },
     "world-physiotherapy-day": {
       "name_en": "World Physiotherapy Day",
@@ -2259,7 +2301,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1996
     },
     "international-literacy-day": {
       "name_en": "International Literacy Day",
@@ -2269,7 +2312,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1967
     },
     "world-suicide-prevention-day": {
       "name_en": "World Suicide Prevention Day",
@@ -2279,7 +2323,8 @@
       "ad_day": 10,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2003
     },
     "world-ozone-day": {
       "name_en": "World Ozone Day",
@@ -2289,7 +2334,8 @@
       "ad_day": 16,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1995
     },
     "kanya-sankranti": {
       "name_en": "Kanya Sankranti",
@@ -2735,7 +2781,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "from_bs_year": 1967
     },
     "gai-puja": {
       "name_en": "Gai Puja",
@@ -2824,6 +2871,7 @@
       "importance": "regional",
       "category": "cultural",
       "alias_of": "falgunanda-jayanti",
+      "from_bs_year": 1943,
       "notes": "Same day as falgunanda-jayanti (Kartik 25 every year, rat32 2079–2083); kept only as an alias."
     },
     "national-film-day": {
@@ -2844,7 +2892,8 @@
       "ad_day": 17,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2019
     },
     "world-alzheimers-day": {
       "name_en": "World Alzheimer's Day",
@@ -2854,7 +2903,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1994
     },
     "world-peace-day": {
       "name_en": "International Day of Peace",
@@ -2864,7 +2914,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2002
     },
     "international-sign-languages-day": {
       "name_en": "International Day of Sign Languages",
@@ -2874,7 +2925,8 @@
       "ad_day": 23,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2018
     },
     "world-pharmacists-day": {
       "name_en": "World Pharmacists Day",
@@ -2884,7 +2936,8 @@
       "ad_day": 25,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2010
     },
     "world-tourism-day": {
       "name_en": "World Tourism Day",
@@ -2894,7 +2947,8 @@
       "ad_day": 27,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1980
     },
     "world-rabies-day": {
       "name_en": "World Rabies Day",
@@ -2904,7 +2958,8 @@
       "ad_day": 28,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2007
     },
     "world-heart-day": {
       "name_en": "World Heart Day",
@@ -2914,7 +2969,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2011
     },
     "world-smile-day": {
       "name_en": "World Smile Day",
@@ -2934,7 +2990,8 @@
       "ad_day": 2,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2007
     },
     "world-animal-day": {
       "name_en": "World Animal Day",
@@ -2954,7 +3011,8 @@
       "ad_day": 5,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1994
     },
     "world-sight-day": {
       "name_en": "World Sight Day",
@@ -2974,7 +3032,8 @@
       "ad_day": 9,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1969
     },
     "world-mental-health-day": {
       "name_en": "World Mental Health Day",
@@ -2984,7 +3043,8 @@
       "ad_day": 10,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1992
     },
     "world-disaster-reduction-day": {
       "name_en": "International Day for Disaster Risk Reduction",
@@ -2994,7 +3054,8 @@
       "ad_day": 13,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2009
     },
     "world-handwashing-day": {
       "name_en": "Global Handwashing Day",
@@ -3004,7 +3065,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2008
     },
     "international-rural-women-day": {
       "name_en": "International Day of Rural Women",
@@ -3014,7 +3076,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2008
     },
     "world-food-day": {
       "name_en": "World Food Day",
@@ -3024,7 +3087,8 @@
       "ad_day": 16,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1981
     },
     "world-poverty-eradication-day": {
       "name_en": "International Day for the Eradication of Poverty",
@@ -3034,7 +3098,8 @@
       "ad_day": 17,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1993
     },
     "world-development-information-day": {
       "name_en": "World Development Information Day",
@@ -3044,7 +3109,8 @@
       "ad_day": 24,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1973
     },
     "un-day": {
       "name_en": "United Nations Day",
@@ -3054,7 +3120,8 @@
       "ad_day": 24,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1948
     },
     "world-freedom-day": {
       "name_en": "World Freedom Day",
@@ -3064,7 +3131,8 @@
       "ad_day": 9,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2001
     },
     "world-science-for-peace-day": {
       "name_en": "World Science Day for Peace and Development",
@@ -3074,7 +3142,8 @@
       "ad_day": 10,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2002
     },
     "world-pneumonia-day": {
       "name_en": "World Pneumonia Day",
@@ -3084,7 +3153,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2009
     },
     "world-diabetes-day": {
       "name_en": "World Diabetes Day",
@@ -3094,7 +3164,8 @@
       "ad_day": 14,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1991
     },
     "world-radiography-day": {
       "name_en": "World Radiography Day",
@@ -3104,7 +3175,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2012
     },
     "international-tolerance-day": {
       "name_en": "International Day for Tolerance",
@@ -3114,7 +3186,8 @@
       "ad_day": 16,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1996
     },
     "world-heritage-trafficking-day": {
       "name_en": "International Day Against Illicit Trafficking of Cultural Property",
@@ -3124,7 +3197,8 @@
       "ad_day": 14,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2020
     },
     "world-nuclear-disarmament-day": {
       "name_en": "International Day for the Total Elimination of Nuclear Weapons",
@@ -3134,7 +3208,8 @@
       "ad_day": 26,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "international-elders-day": {
       "name_en": "International Day of Older Persons",
@@ -3144,7 +3219,8 @@
       "ad_day": 1,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1991
     },
     "world-urbanization-day": {
       "name_en": "World Cities Day",
@@ -3154,7 +3230,8 @@
       "ad_day": 31,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "vrishchik-sankranti": {
       "name_en": "Vrishchik Sankranti",
@@ -3286,6 +3363,7 @@
       "importance": "regional",
       "category": "cultural",
       "audience": "sikh",
+      "from_ad_year": 1470,
       "notes": "Holiday for the Sikh community."
     },
     "nimbarkacharya-jayanti": {
@@ -3429,7 +3507,8 @@
       "bs_day": 15,
       "duration_days": 1,
       "importance": "national",
-      "category": "cultural"
+      "category": "cultural",
+      "from_bs_year": 1942
     },
     "gorakhkali-puja-poush": {
       "name_en": "Gorakhkali Puja",
@@ -3465,7 +3544,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "cultural"
+      "category": "cultural",
+      "from_ad_year": 1667
     },
     "arniko-smriti-diwas": {
       "name_en": "Arniko Smriti Diwas",
@@ -3509,7 +3589,8 @@
       "bs_day": 27,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2078
     },
     "national-bhakka-diwas": {
       "name_en": "National Bhakka Diwas",
@@ -3692,7 +3773,8 @@
       "ad_day": 17,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1941
     },
     "international-mens-day": {
       "name_en": "International Men's Day",
@@ -3702,7 +3784,8 @@
       "ad_day": 19,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1999
     },
     "world-toilet-day": {
       "name_en": "World Toilet Day",
@@ -3712,7 +3795,8 @@
       "ad_day": 19,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2001
     },
     "world-philosophy-day": {
       "name_en": "World Philosophy Day",
@@ -3732,7 +3816,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1997
     },
     "international-violence-against-women-day": {
       "name_en": "International Day for the Elimination of Violence against Women",
@@ -3742,7 +3827,8 @@
       "ad_day": 25,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1981
     },
     "world-aids-day": {
       "name_en": "World AIDS Day",
@@ -3752,7 +3838,8 @@
       "ad_day": 1,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1988
     },
     "international-day-against-slavery": {
       "name_en": "International Day for the Abolition of Slavery",
@@ -3772,6 +3859,7 @@
       "ad_day": 3,
       "duration_days": 1,
       "audience": "disability",
+      "from_ad_year": 1992,
       "notes": "A holiday for employees with a disability only, not a general rest day.",
       "importance": "national",
       "category": "international"
@@ -3784,7 +3872,8 @@
       "ad_day": 5,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "international-volunteer-day": {
       "name_en": "International Volunteer Day",
@@ -3794,7 +3883,8 @@
       "ad_day": 5,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1986
     },
     "international-civil-aviation-day": {
       "name_en": "International Civil Aviation Day",
@@ -3804,7 +3894,8 @@
       "ad_day": 7,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1994
     },
     "international-menstrual-hygiene-day": {
       "name_en": "International Menstrual Hygiene Day",
@@ -3814,7 +3905,8 @@
       "ad_day": 28,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "international-anti-corruption-day": {
       "name_en": "International Anti-Corruption Day",
@@ -3824,7 +3916,8 @@
       "ad_day": 9,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2004
     },
     "international-human-rights-day": {
       "name_en": "International Human Rights Day",
@@ -3834,7 +3927,8 @@
       "ad_day": 10,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1950
     },
     "international-mountain-day": {
       "name_en": "International Mountain Day",
@@ -3844,7 +3938,8 @@
       "ad_day": 11,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2003
     },
     "international-neutrality-day": {
       "name_en": "International Day of Neutrality",
@@ -3854,7 +3949,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2017
     },
     "international-migrants-day": {
       "name_en": "International Migrants Day",
@@ -3864,7 +3960,8 @@
       "ad_day": 18,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2000
     },
     "world-meditation-day": {
       "name_en": "World Meditation Day",
@@ -3874,7 +3971,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2024
     },
     "international-education-day": {
       "name_en": "International Day of Education",
@@ -3884,7 +3982,8 @@
       "ad_day": 24,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2019
     },
     "international-customs-day": {
       "name_en": "International Customs Day",
@@ -3894,7 +3993,8 @@
       "ad_day": 26,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1983
     },
     "world-leprosy-day": {
       "name_en": "World Leprosy Day",
@@ -3914,7 +4014,8 @@
       "ad_day": 2,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1997
     },
     "world-cancer-day": {
       "name_en": "World Cancer Day",
@@ -3924,7 +4025,8 @@
       "ad_day": 4,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2000
     },
     "safer-internet-day": {
       "name_en": "Safer Internet Day",
@@ -3944,7 +4046,8 @@
       "ad_day": 11,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2016
     },
     "kumbha-sankranti": {
       "name_en": "Kumbha Sankranti",
@@ -4268,7 +4371,8 @@
       "ad_day": 13,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2012
     },
     "valentines-day": {
       "name_en": "Valentine's Day",
@@ -4288,7 +4392,8 @@
       "ad_day": 20,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2009
     },
     "international-mother-language-day": {
       "name_en": "International Mother Language Day",
@@ -4298,7 +4403,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2000
     },
     "world-ngo-day": {
       "name_en": "World NGO Day",
@@ -4308,7 +4414,8 @@
       "ad_day": 27,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "zero-discrimination-day": {
       "name_en": "Zero Discrimination Day",
@@ -4318,7 +4425,8 @@
       "ad_day": 1,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "world-wildlife-day": {
       "name_en": "World Wildlife Day",
@@ -4328,7 +4436,8 @@
       "ad_day": 3,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2014
     },
     "world-consumer-rights-day": {
       "name_en": "World Consumer Rights Day",
@@ -4338,7 +4447,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1983
     },
     "international-day-of-happiness": {
       "name_en": "International Day of Happiness",
@@ -4348,7 +4458,8 @@
       "ad_day": 20,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2013
     },
     "world-oral-health-day": {
       "name_en": "World Oral Health Day",
@@ -4358,7 +4469,8 @@
       "ad_day": 20,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2013
     },
     "world-poetry-day": {
       "name_en": "World Poetry Day",
@@ -4368,7 +4480,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2000
     },
     "world-water-day": {
       "name_en": "World Water Day",
@@ -4378,7 +4491,8 @@
       "ad_day": 22,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1993
     },
     "world-meteorological-day": {
       "name_en": "World Meteorological Day",
@@ -4388,7 +4502,8 @@
       "ad_day": 23,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1961
     },
     "world-tb-day": {
       "name_en": "World Tuberculosis Day",
@@ -4398,7 +4513,8 @@
       "ad_day": 24,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1982
     },
     "world-theatre-day": {
       "name_en": "World Theatre Day",
@@ -4408,7 +4524,8 @@
       "ad_day": 27,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1962
     },
     "world-autism-awareness-day": {
       "name_en": "World Autism Awareness Day",
@@ -4418,7 +4535,8 @@
       "ad_day": 2,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2008
     },
     "april-fools-day": {
       "name_en": "April Fools' Day",
@@ -4438,7 +4556,8 @@
       "ad_day": 7,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1950
     },
     "world-astrology-day": {
       "name_en": "World Astrology Day",
@@ -4458,7 +4577,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2011
     },
     "khayu-sanhlu": {
       "name_en": "Khayu Sanhlu (Newar New Year)",
@@ -4713,7 +4833,8 @@
       "bs_day": 10,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2051
     },
     "pratilipi-adhikar-diwas": {
       "name_en": "Copyright Day",
@@ -4807,7 +4928,8 @@
       "ad_day": 18,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1983
     },
     "international-wellness-day": {
       "name_en": "International Wellness Day",
@@ -4827,7 +4949,8 @@
       "ad_day": 25,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2008
     },
     "world-intellectual-property-day": {
       "name_en": "World Intellectual Property Day",
@@ -4837,7 +4960,8 @@
       "ad_day": 26,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2001
     },
     "world-workplace-safety-day": {
       "name_en": "World Day for Safety and Health at Work",
@@ -4847,7 +4971,8 @@
       "ad_day": 28,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2003
     },
     "international-dance-day": {
       "name_en": "International Dance Day",
@@ -4857,7 +4982,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1982
     },
     "world-red-cross-day": {
       "name_en": "World Red Cross Day",
@@ -4867,7 +4993,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1948
     },
     "world-memory-reconciliation-day": {
       "name_en": "World Day of Remembrance and Reconciliation",
@@ -4877,7 +5004,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2005
     },
     "international-nurses-day": {
       "name_en": "International Nurses Day",
@@ -4887,7 +5015,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1965
     },
     "darsha-shraddha-jestha": {
       "name_en": "Darsha Shraddha",
@@ -4931,7 +5060,8 @@
       "bs_day": 2,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2051
     },
     "shukla-ashtami-brata-jestha": {
       "name_en": "Shukla Ashtami Brata",
@@ -4976,7 +5106,8 @@
       "ad_day": 31,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1988
     },
     "world-forest-consumer-day": {
       "name_en": "World Forest Consumer Day",
@@ -4996,7 +5127,8 @@
       "ad_day": 1,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2012
     },
     "world-bicycle-day": {
       "name_en": "World Bicycle Day",
@@ -5006,7 +5138,8 @@
       "ad_day": 3,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2018
     },
     "child-abuse-prevention-day": {
       "name_en": "Day Against Abuse of Innocent Children",
@@ -5026,7 +5159,8 @@
       "ad_day": 8,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2009
     },
     "national-farmer-day": {
       "name_en": "National Farmers Day",
@@ -5523,7 +5657,8 @@
       "bs_day": 2,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2058
     },
     "mande-diwas": {
       "name_en": "Mande Diwas",
@@ -5543,7 +5678,8 @@
       "bs_day": 6,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2040
     },
     "pushpalal-smriti-diwas": {
       "name_en": "Pushpalal Smriti Diwas",
@@ -5553,7 +5689,8 @@
       "bs_day": 7,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2036
     },
     "nivritti-bharan-diwas": {
       "name_en": "Nivritti Bharan Diwas",
@@ -5573,7 +5710,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2006
     },
     "international-family-remittance-day": {
       "name_en": "International Day of Family Remittances",
@@ -5583,7 +5721,8 @@
       "ad_day": 16,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2015
     },
     "world-drought-day": {
       "name_en": "World Day to Combat Desertification and Drought",
@@ -5593,7 +5732,8 @@
       "ad_day": 17,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1995
     },
     "world-day-end-sexual-violence-conflict": {
       "name_en": "International Day for the Elimination of Sexual Violence in Conflict",
@@ -5603,7 +5743,8 @@
       "ad_day": 19,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2015
     },
     "world-music-day": {
       "name_en": "World Music Day",
@@ -5613,7 +5754,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1982
     },
     "world-olympic-day": {
       "name_en": "World Olympic Day",
@@ -5623,7 +5765,8 @@
       "ad_day": 23,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1948
     },
     "msme-day": {
       "name_en": "MSME Day",
@@ -5633,7 +5776,8 @@
       "ad_day": 27,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2017
     },
     "world-asteroid-day": {
       "name_en": "World Asteroid Day",
@@ -5643,7 +5787,8 @@
       "ad_day": 30,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2015
     },
     "world-sports-journalism-day": {
       "name_en": "World Sports Journalism Day",
@@ -5663,7 +5808,8 @@
       "ad_day": 12,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2023
     },
     "world-youth-skills-day": {
       "name_en": "World Youth Skills Day",
@@ -5673,7 +5819,8 @@
       "ad_day": 15,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2015
     },
     "world-day-aid-victims-chemical-weapons": {
       "name_en": "Day of Remembrance for Victims of Chemical Weapons",
@@ -5683,7 +5830,8 @@
       "ad_day": 29,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 2006
     },
     "adukh-navami-brata": {
       "name_en": "Adukh Navami Vrata",
@@ -6267,7 +6415,8 @@
       "adhik_policy": "skip",
       "duration_days": 1,
       "importance": "regional",
-      "category": "hindu"
+      "category": "hindu",
+      "from_ad_year": 1480
     },
     "lai-chahre": {
       "name_en": "Lai Chahre",
@@ -6315,7 +6464,8 @@
       "bs_day": 1,
       "duration_days": 1,
       "importance": "national",
-      "category": "national"
+      "category": "national",
+      "from_bs_year": 2053
     },
     "pi-day": {
       "name_en": "Pi Day",
@@ -6325,7 +6475,8 @@
       "ad_day": 14,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1988
     },
     "national-magar-day": {
       "name_en": "National Magar Day",
@@ -6403,7 +6554,8 @@
       "ad_day": 21,
       "duration_days": 1,
       "importance": "minor",
-      "category": "international"
+      "category": "international",
+      "from_ad_year": 1966
     },
     "harisiddhi-bhavani-jatra": {
       "name_en": "Harisiddhi Bhavani Jatra",
