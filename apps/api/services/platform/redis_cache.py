@@ -166,3 +166,38 @@ def within_limit(name: str, limit: int, window: int) -> bool:
     except Exception as exc:
         _trip(exc)
         return True
+
+
+def presence_touch(name: str, member: str, now: float, keep: int) -> bool:
+    """Mark ``member`` as seen at ``now`` in the sorted set ``name``, dropping entries older than ``keep`` s.
+
+    For live counts ("open right now"). False when Redis is unavailable, so the caller can say
+    the live number is unknown rather than zero.
+    """
+    client = _get_client()
+    if client is None:
+        return False
+    try:
+        key = _PREFIX + "presence:" + name
+        pipe = client.pipeline()
+        pipe.zadd(key, {member: now})
+        pipe.zremrangebyscore(key, "-inf", now - keep)
+        pipe.expire(key, keep)
+        pipe.execute()
+        return True
+    except Exception as exc:
+        _trip(exc)
+        return False
+
+
+def presence_members(name: str, since: float) -> list[str] | None:
+    """Members of the sorted set ``name`` seen at or after ``since``; None when Redis is unavailable."""
+    client = _get_client()
+    if client is None:
+        return None
+    try:
+        raw = client.zrangebyscore(_PREFIX + "presence:" + name, since, "+inf")
+        return [m.decode() if isinstance(m, bytes) else str(m) for m in raw]
+    except Exception as exc:
+        _trip(exc)
+        return None

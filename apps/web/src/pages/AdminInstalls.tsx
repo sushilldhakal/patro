@@ -19,16 +19,32 @@ type Overview = {
   android: number;
   ios: number;
   new_today: number;
+  new_7d: number;
   signed_in: number;
+  lapsed_30d: number;
+  sessions_today: number;
+  sessions_7d: number;
+  sessions_per_active_today: number | null;
+  dau_mau: number | null;
+  retention: Record<"d1" | "d7" | "d30", { rate: number | null; retained: number; cohort: number }>;
   as_of: string;
 };
-type Day = { date: string; new_installations: number; active_installations: number; app_updates: number };
+type Day = {
+  date: string;
+  new_installations: number;
+  active_installations: number;
+  app_updates: number;
+  sessions: number;
+};
+type LiveCounts = { total: number; ios: number; android: number } | null;
+type Live = { online_now: LiveCounts; last_15m: LiveCounts; last_60m: LiveCounts; as_of: string };
 type Split = { value: string; installations: number; active_30d: number };
 type Platforms = { platforms: Split[]; app_versions: Split[]; countries: Split[] };
 type Stats = { overview: Overview; days: Day[]; platforms: Platforms };
 
 const BASE = "/v1/admin/analytics/installs";
 const DAYS = 30;
+const LIVE_REFRESH_MS = 15_000;
 
 async function fetchStats(): Promise<Stats> {
   const [overview, daily, platforms] = await Promise.all([
@@ -49,13 +65,52 @@ function Notice({ title, body, children }: { title: string; body: string; childr
   );
 }
 
-function Tile({ label, value, hint }: { label: string; value: number; hint?: string }) {
+function Tile({ label, value, hint }: { label: string; value: number | string | null; hint?: string }) {
+  const shown = value == null ? "—" : typeof value === "number" ? value.toLocaleString("en") : value;
   return (
     <div className="rounded-lg border bg-card p-4">
       <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="mt-1 text-3xl font-semibold tabular-nums">{value.toLocaleString("en")}</div>
+      <div className="mt-1 text-3xl font-semibold tabular-nums">{shown}</div>
       {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
     </div>
+  );
+}
+
+const percent = (rate: number | null | undefined) => (rate == null ? null : `${Math.round(rate * 100)}%`);
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="mt-2 text-base font-semibold">{children}</h2>;
+}
+
+/** Who has the app open now, polled every 15 s while the page is open. */
+function LivePanel() {
+  const live = useQuery({
+    queryKey: ["admin", "installs", "live"],
+    queryFn: () => authFetch<Live>(`${BASE}/live`),
+    refetchInterval: LIVE_REFRESH_MS,
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+  });
+  const now = live.data?.online_now;
+  const split = (c: LiveCounts) => (c ? `iOS ${c.ios} · Android ${c.android}` : "not available");
+  return (
+    <section className="rounded-lg border bg-card p-4">
+      <div className="flex items-center gap-2">
+        <span className="relative flex size-2.5" aria-hidden>
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+          <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+        </span>
+        <h2 className="text-base font-semibold">Open right now</h2>
+        <span className="ml-auto text-xs text-muted-foreground">updates every 15 seconds</span>
+      </div>
+      {live.isError && <p className="mt-2 text-sm text-destructive">Could not load the live numbers.</p>}
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Tile label="Open now" value={now?.total ?? null} hint={now ? split(now) : "live data unavailable"} />
+        <Tile label="Last 15 minutes" value={live.data?.last_15m?.total ?? null} hint={split(live.data?.last_15m ?? null)} />
+        <Tile label="Last hour" value={live.data?.last_60m?.total ?? null} hint={split(live.data?.last_60m ?? null)} />
+      </div>
+    </section>
   );
 }
 
@@ -103,7 +158,8 @@ function DailyTable({ days }: { days: Day[] }) {
             <TableHead>Day (UTC)</TableHead>
             <TableHead className="text-right">New</TableHead>
             <TableHead className="text-right">Active</TableHead>
-            <TableHead className="w-1/2" aria-hidden />
+            <TableHead className="w-1/3" aria-hidden />
+            <TableHead className="text-right">Opens</TableHead>
             <TableHead className="text-right">Updated</TableHead>
           </TableRow>
         </TableHeader>
@@ -119,6 +175,7 @@ function DailyTable({ days }: { days: Day[] }) {
                   style={{ width: `${(day.active_installations / peak) * 100}%` }}
                 />
               </TableCell>
+              <TableCell className="text-right tabular-nums">{day.sessions}</TableCell>
               <TableCell className="text-right tabular-nums">{day.app_updates}</TableCell>
             </TableRow>
           ))}
@@ -182,16 +239,59 @@ export function AdminInstalls() {
       </div>
       {query.error && <p className="text-sm text-destructive">Could not refresh. Showing the last numbers.</p>}
 
+      <LivePanel />
+
+      <SectionTitle>Installs</SectionTitle>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Tile label="Total installs" value={overview.total_installations} hint="ever seen" />
         <Tile label="New today" value={overview.new_today} hint="UTC day" />
-        <Tile label="Active 24 hours" value={overview.active_24h} />
-        <Tile label="Active 7 days" value={overview.active_7d} />
-        <Tile label="Active 30 days" value={overview.active_30d} />
+        <Tile label="New in 7 days" value={overview.new_7d} />
+        <Tile label="Signed in" value={overview.signed_in} hint="installs with an account" />
         <Tile label="iOS" value={overview.ios} />
         <Tile label="Android" value={overview.android} />
-        <Tile label="Signed in" value={overview.signed_in} hint="installs with an account" />
+        <Tile
+          label="Lapsed"
+          value={overview.lapsed_30d}
+          hint="not opened in 30 days: uninstalled or stopped using"
+        />
       </div>
+
+      <SectionTitle>Usage</SectionTitle>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <Tile label="Active 24 hours" value={overview.active_24h} hint="daily active installs" />
+        <Tile label="Active 7 days" value={overview.active_7d} />
+        <Tile label="Active 30 days" value={overview.active_30d} hint="monthly active installs" />
+        <Tile label="Stickiness" value={percent(overview.dau_mau)} hint="daily ÷ monthly active" />
+        <Tile label="Opens today" value={overview.sessions_today} hint="every launch or return after 5 min" />
+        <Tile label="Opens in 7 days" value={overview.sessions_7d} />
+        <Tile
+          label="Opens per active install"
+          value={overview.sessions_per_active_today}
+          hint="today"
+        />
+      </div>
+
+      <SectionTitle>Retention</SectionTitle>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {(["d1", "d7", "d30"] as const).map((key) => {
+          const r = overview.retention[key];
+          const days = key.slice(1);
+          return (
+            <Tile
+              key={key}
+              label={`Came back on day ${days}`}
+              value={percent(r.rate)}
+              hint={r.cohort ? `${r.retained} of ${r.cohort} new installs` : `needs installs at least ${days} days old`}
+            />
+          );
+        })}
+      </div>
+
+      <p className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">
+        Uninstalls: a deleted app cannot send anything, so this page cannot count them. "Lapsed" above is the closest
+        stand-in. Exact uninstall numbers are in Google Play Console (Statistics → Uninstalls) and App Store Connect
+        (Analytics → Deletions).
+      </p>
 
       <DailyTable days={days} />
 

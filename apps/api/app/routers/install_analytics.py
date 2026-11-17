@@ -4,6 +4,7 @@ Public, called by the mobile app with a random id it generated for itself::
 
     POST /v1/analytics/install/register    first launch
     POST /v1/analytics/install/heartbeat   every launch / return to the foreground
+    POST /v1/analytics/install/ping        every minute while the app is on screen
 
 Both do the same thing — register the install if it is new, otherwise refresh
 ``last_seen_at`` — so a lost first request is made good by the next one. The
@@ -16,6 +17,7 @@ Admin, for ``X-Admin-Key`` (``ADMIN_API_KEY``) or a signed-in account listed in
     GET /v1/admin/analytics/installs/overview
     GET /v1/admin/analytics/installs/daily?days=30
     GET /v1/admin/analytics/installs/platforms
+    GET /v1/admin/analytics/installs/live       open right now / last 15 / 60 min
 """
 
 from __future__ import annotations
@@ -40,6 +42,9 @@ router = APIRouter(tags=["analytics"])
 _REPORT_EVERY_S = 60
 # New and repeat reports from one address, per hour. A household behind one address is far below it.
 _PER_ADDRESS_PER_HOUR = 120
+# Live pings (one a minute per open app) touch only Redis, so the per-address allowance is larger.
+_PINGS_PER_ADDRESS_PER_HOUR = 600
+_PING_EVERY_S = 30
 
 
 class InstallReport(BaseModel):
@@ -47,17 +52,33 @@ class InstallReport(BaseModel):
     platform: Literal["ios", "android"]
     app_version: str | None = Field(None, max_length=32)
     os_version: str | None = Field(None, max_length=32)
+    # True when the app was just opened (cold start, or back after a while in the background).
+    session_start: bool = False
 
     @field_validator("installation_id")
     @classmethod
     def _random_uuid(cls, value: str) -> str:
-        try:
-            parsed = uuid.UUID(value)
-        except ValueError as exc:
-            raise ValueError("installation_id must be a UUID") from exc
-        if parsed.version != 4:
-            raise ValueError("installation_id must be a random (version 4) UUID")
-        return str(parsed)
+        return _uuid4(value)
+
+
+class PresencePing(BaseModel):
+    installation_id: str = Field(..., min_length=36, max_length=36)
+    platform: Literal["ios", "android"]
+
+    @field_validator("installation_id")
+    @classmethod
+    def _random_uuid(cls, value: str) -> str:
+        return _uuid4(value)
+
+
+def _uuid4(value: str) -> str:
+    try:
+        parsed = uuid.UUID(value)
+    except ValueError as exc:
+        raise ValueError("installation_id must be a UUID") from exc
+    if parsed.version != 4:
+        raise ValueError("installation_id must be a random (version 4) UUID")
+    return str(parsed)
 
 
 class InstallAck(BaseModel):
@@ -88,6 +109,10 @@ def _report(body: InstallReport, request: Request, db, user_id: str | None) -> I
     # The address is used for this count only and is never stored.
     if not redis_cache.within_limit(f"install:{_address(request)}", _PER_ADDRESS_PER_HOUR, 3600):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Too many requests")
+    install_analytics.record_presence(body.installation_id, body.platform)
+    # Counted before the repeat filter below: a quick background-and-back is still an open.
+    if body.session_start and redis_cache.claim_once(f"install-session:{body.installation_id}", _REPORT_EVERY_S):
+        install_analytics.record_session(db, body.platform)
     if not redis_cache.claim_once(f"install-seen:{body.installation_id}", _REPORT_EVERY_S):
         return InstallAck()
     result = install_analytics.record_seen(
@@ -113,6 +138,16 @@ def register_install(body: InstallReport, request: Request, db: DbSession, user_
 @router.post("/analytics/install/heartbeat", response_model=InstallAck)
 def install_heartbeat(body: InstallReport, request: Request, db: DbSession, user_id: UserId):
     return _report(body, request, db, user_id)
+
+
+@router.post("/analytics/install/ping", response_model=InstallAck)
+def install_ping(body: PresencePing, request: Request):
+    """The app is on screen: counted in the live numbers for a couple of minutes. Nothing is stored."""
+    if not redis_cache.within_limit(f"install-ping:{_address(request)}", _PINGS_PER_ADDRESS_PER_HOUR, 3600):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Too many requests")
+    if redis_cache.claim_once(f"install-ping:{body.installation_id}", _PING_EVERY_S):
+        install_analytics.record_presence(body.installation_id, body.platform)
+    return InstallAck()
 
 
 def _admin(
@@ -155,6 +190,11 @@ def installs_daily(db: DbSession, days: int = Query(30, ge=1, le=366)):
 @_admin_router.get("/platforms")
 def installs_platforms(db: DbSession):
     return install_analytics.platforms(db)
+
+
+@_admin_router.get("/live")
+def installs_live():
+    return install_analytics.live()
 
 
 router.include_router(_admin_router)

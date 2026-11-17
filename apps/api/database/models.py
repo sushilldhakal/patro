@@ -380,3 +380,19 @@ class AppInstallationEvent(Base):
 
 
 Index("ix_app_installation_events_created", AppInstallationEvent.created_at)
+
+
+class AppDailySessions(Base):
+    """How many times the app was opened (cold start or back from the background) per UTC day and platform.
+
+    A running count, not one row per open: the event log keeps one ``app_open`` per install per
+    day, this keeps the total so "opens per active install" can be shown without a row per open.
+    """
+
+    __tablename__ = "app_daily_sessions"
+    __table_args__ = (UniqueConstraint("day", "platform", name="uq_app_daily_sessions_day_platform"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    day: Mapped[str] = mapped_column(String(10), nullable=False)  # YYYY-MM-DD, UTC
+    platform: Mapped[str] = mapped_column(String(16), nullable=False)
+    sessions: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

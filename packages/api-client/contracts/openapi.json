@@ -1071,6 +1071,11 @@
       ],
       "title": "Platform",
       "type": "string"
+     },
+     "session_start": {
+      "default": false,
+      "title": "Session Start",
+      "type": "boolean"
      }
     },
     "required": [
@@ -1383,6 +1388,30 @@
      "type"
     ],
     "title": "PlannedWindowOut",
+    "type": "object"
+   },
+   "PresencePing": {
+    "properties": {
+     "installation_id": {
+      "maxLength": 36,
+      "minLength": 36,
+      "title": "Installation Id",
+      "type": "string"
+     },
+     "platform": {
+      "enum": [
+       "ios",
+       "android"
+      ],
+      "title": "Platform",
+      "type": "string"
+     }
+    },
+    "required": [
+     "installation_id",
+     "platform"
+    ],
+    "title": "PresencePing",
     "type": "object"
    },
    "ProfileCreate": {
@@ -4830,6 +4859,58 @@
     ]
    }
   },
+  "/v1/admin/analytics/installs/live": {
+   "get": {
+    "operationId": "installs_live_v1_admin_analytics_installs_live_get",
+    "parameters": [
+     {
+      "in": "header",
+      "name": "x-admin-key",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Admin-Key"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "summary": "Installs Live",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
   "/v1/admin/analytics/installs/overview": {
    "get": {
     "operationId": "installs_overview_v1_admin_analytics_installs_overview_get",
@@ -4975,6 +5056,48 @@
      }
     ],
     "summary": "Install Heartbeat",
+    "tags": [
+     "analytics"
+    ]
+   }
+  },
+  "/v1/analytics/install/ping": {
+   "post": {
+    "description": "The app is on screen: counted in the live numbers for a couple of minutes. Nothing is stored.",
+    "operationId": "install_ping_v1_analytics_install_ping_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PresencePing"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InstallAck"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Install Ping",
     "tags": [
      "analytics"
     ]

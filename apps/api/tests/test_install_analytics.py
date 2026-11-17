@@ -42,6 +42,14 @@ def setup(monkeypatch):
     # No Redis in tests: nothing throttled unless a test says so.
     monkeypatch.setattr(redis_cache, "claim_once", lambda name, ttl: True)
     monkeypatch.setattr(redis_cache, "within_limit", lambda name, limit, window: True)
+    # An in-memory stand-in for the Redis presence set.
+    presence: dict[str, float] = {}
+    monkeypatch.setattr(
+        redis_cache, "presence_touch", lambda name, member, now, keep: presence.__setitem__(member, now) or True
+    )
+    monkeypatch.setattr(
+        redis_cache, "presence_members", lambda name, since: [m for m, t in presence.items() if t >= since]
+    )
     return TestClient(app), Session
 
 
@@ -136,6 +144,7 @@ def test_events_and_read_outs(setup):
             "new_installations": 1,
             "active_installations": 2,
             "app_updates": 1,
+            "sessions": 0,
         }
         assert days[3]["new_installations"] == 1  # b, three days ago
 
@@ -167,3 +176,52 @@ def test_admin_by_signed_in_email(setup, monkeypatch):
     assert as_user("unverified") == 403
     assert as_user("guest") == 403
     assert as_user("nobody") == 401
+
+
+def test_sessions_live_and_lapsed(setup, monkeypatch):
+    client, Session = setup
+    ios, android = _report(), _report(platform="android")
+    client.post("/analytics/install/register", json={**ios, "session_start": True})
+    client.post("/analytics/install/heartbeat", json={**ios, "session_start": True})
+    client.post("/analytics/install/heartbeat", json={**ios})  # back without a new session
+    client.post("/analytics/install/register", json={**android, "session_start": True})
+    assert client.post("/analytics/install/ping", json={"installation_id": ios["installation_id"], "platform": "ios"}).json()["ok"]
+
+    view = client.get("/admin/analytics/installs/overview", headers=ADMIN).json()
+    assert view["sessions_today"] == 3 and view["sessions_7d"] == 3
+    assert view["sessions_per_active_today"] == 1.5 and view["dau_mau"] == 1.0
+    assert view["lapsed_30d"] == 0 and view["new_7d"] == 2
+    assert view["retention"]["d1"] == {"rate": None, "retained": 0, "cohort": 0}
+    assert client.get("/admin/analytics/installs/daily?days=1", headers=ADMIN).json()["days"][-1]["sessions"] == 3
+
+    live = client.get("/admin/analytics/installs/live", headers=ADMIN).json()
+    assert live["online_now"] == {"total": 2, "ios": 1, "android": 1}
+    assert live["last_60m"]["total"] == 2
+
+    monkeypatch.setattr(redis_cache, "presence_members", lambda name, since: None)
+    assert client.get("/admin/analytics/installs/live", headers=ADMIN).json()["online_now"] is None
+    assert client.get("/admin/analytics/installs/live").status_code == 401
+
+
+def test_retention_and_lapsed(setup):
+    _, Session = setup
+    with Session() as db:
+        kept, gone, old = (str(uuid.uuid4()) for _ in range(3))
+        start = NOW - timedelta(days=10)
+        for iid in (kept, gone):
+            install_analytics.record_seen(db, installation_id=iid, platform="ios", now=start)
+        install_analytics.record_seen(db, installation_id=kept, platform="ios", now=start + timedelta(days=1))
+        install_analytics.record_seen(db, installation_id=kept, platform="ios", now=start + timedelta(days=7))
+        install_analytics.record_seen(db, installation_id=old, platform="android", now=NOW - timedelta(days=45))
+        view = install_analytics.overview(db, NOW)
+        # The 45-day-old install belongs to the day-1 and day-7 cohorts too, and never came back.
+        assert view["retention"]["d1"] == {"rate": 1 / 3, "retained": 1, "cohort": 3}
+        assert view["retention"]["d7"] == {"rate": 1 / 3, "retained": 1, "cohort": 3}
+        assert view["retention"]["d30"]["cohort"] == 1  # only the 45-day-old install has had 30 days
+        assert view["lapsed_30d"] == 1
+
+
+def test_ping_validation(setup):
+    client, _ = setup
+    assert client.post("/analytics/install/ping", json={"installation_id": "x" * 36, "platform": "ios"}).status_code == 422
+    assert client.post("/analytics/install/ping", json={"installation_id": str(uuid.uuid4()), "platform": "web"}).status_code == 422
