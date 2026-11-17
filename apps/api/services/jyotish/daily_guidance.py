@@ -322,13 +322,22 @@ def build_day_guidance(
 
     personal_tone: str | None = None
     reading: dict[str, Any] | None = None
+    personal_ne: list[str] = []
+    personal_en: list[str] = []
     if natal is not None:
         from services.jyotish.rashifal_api import personal_rashifal_for_gregorian
 
         personal = personal_rashifal_for_gregorian(natal, greg, location, period="daily")
         personal_tone = personal.get("tone")
         reading = _day_reading(personal)
-        add(rules["personal"].get(personal_tone or ""))
+        personal_rule = rules["personal"].get(personal_tone or "")
+        add(personal_rule)
+        # The same line on its own, so a notification can lead with what is this person's and not
+        # the weekday / tithi lines every profile shares.
+        for field in ("do", "careful"):
+            a, b = _lines(personal_rule, field)
+            personal_ne.extend(a)
+            personal_en.extend(b)
 
     summary_ne = " ".join((do_ne[:1] + careful_ne[:1] + dont_ne[:1])[:2])
     summary_en = " ".join((do_en[:1] + careful_en[:1] + dont_en[:1])[:2])
@@ -351,6 +360,8 @@ def build_day_guidance(
         "dont_en": dont_en,
         "careful_ne": careful_ne,
         "careful_en": careful_en,
+        "personal_ne": personal_ne,
+        "personal_en": personal_en,
         "windows": windows,
     }
     if natal is not None:

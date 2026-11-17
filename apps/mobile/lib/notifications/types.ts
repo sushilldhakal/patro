@@ -29,6 +29,11 @@ export interface GuidanceDay {
   dont_en: string[];
   careful_ne: string[];
   careful_en: string[];
+  /** The line set by this profile's own chart (its tone). Missing in copies cached before the API sent it. */
+  personal_ne?: string[];
+  personal_en?: string[];
+  /** The profile's own reading of the day; `percent` is its day score. Absent without a birth chart. */
+  reading?: { percent?: number | null } | null;
   windows: GuidanceWindow[];
 }
 

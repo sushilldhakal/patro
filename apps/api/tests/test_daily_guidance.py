@@ -156,6 +156,21 @@ def test_profile_day_carries_its_own_reading():
     assert "reading" not in build_day_guidance(greg, DEFAULT_LOCATION, None)
 
 
+def test_personal_lines_are_the_profiles_own():
+    """``personal_*`` holds only the line set by this profile's tone, so a notification can lead with it
+    instead of the weekday and tithi lines every profile shares."""
+    from services.jyotish.daily_guidance import _rules, build_day_guidance, natal_chart_for_profile
+
+    natal = natal_chart_for_profile(_born())
+    day = build_day_guidance(date(2026, 11, 11), DEFAULT_LOCATION, natal)
+    rule = _rules()["personal"][day["personal_tone"]]
+    assert day["personal_ne"] == rule.get("do_ne", []) + rule.get("careful_ne", [])
+    assert day["personal_en"] == rule.get("do_en", []) + rule.get("careful_en", [])
+    assert day["personal_ne"] and len(day["personal_ne"]) == len(day["personal_en"])
+    bare = build_day_guidance(date(2026, 11, 11), DEFAULT_LOCATION, None)
+    assert bare["personal_ne"] == [] and bare["personal_en"] == []
+
+
 def test_chandra_houses_are_the_classical_set():
     from services.jyotish.daily_guidance import _chandra_state
 
@@ -243,6 +258,7 @@ def test_guidance_endpoint_includes_personal_tone(client):
     body = res.json()
     assert len(body["days"]) == 2
     assert body["days"][0]["personal_tone"] in {"best", "good", "neutral", "bad", "worst"}
+    assert body["days"][0]["personal_ne"] and body["days"][0]["personal_en"]
 
 
 def test_guidance_is_owner_scoped(client):

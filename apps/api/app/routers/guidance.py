@@ -91,6 +91,8 @@ class DayGuidanceOut(BaseModel):
     dont_en: list[str] = []
     careful_ne: list[str] = []
     careful_en: list[str] = []
+    personal_ne: list[str] = []
+    personal_en: list[str] = []
     windows: list[_WindowOut] = []
     personal: PersonalOut | None = None
 

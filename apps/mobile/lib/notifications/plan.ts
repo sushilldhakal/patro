@@ -45,7 +45,9 @@ export interface PlanInput {
   budget: number;
 }
 
-const BODY_LIMIT = 230;
+/* Room for the profile's own line on top of the three shared ones; the OS shows the rest when the
+   notification is expanded. */
+const BODY_LIMIT = 320;
 
 function clip(text: string): string {
   return text.length <= BODY_LIMIT ? text : `${text.slice(0, BODY_LIMIT - 1).trimEnd()}…`;
@@ -55,15 +57,45 @@ function pickLines(day: GuidanceDay, lang: "ne" | "en", field: "do" | "dont" | "
   return lang === "ne" ? day[`${field}_ne`] : day[`${field}_en`];
 }
 
-/** "Do / Don't / Careful" body — first line of each, which fits a collapsed notification. */
+const NE_DIGITS = "०१२३४५६७८९";
+
+function localDigits(value: number, lang: "ne" | "en"): string {
+  const text = String(Math.round(value));
+  return lang === "ne" ? text.replace(/[0-9]/g, (d) => NE_DIGITS[Number(d)]) : text;
+}
+
+/**
+ * The line that is this profile's own: set by its birth chart read against the day (the tone).
+ * The API sends it as `personal_*`; a copy cached before that has it as the last line of "do"
+ * (good days) or "careful" (bad days), which is where the API has always appended it.
+ */
+export function personalLine(day: GuidanceDay, lang: "ne" | "en"): string | null {
+  const explicit = lang === "ne" ? day.personal_ne : day.personal_en;
+  if (explicit && explicit.length > 0) return explicit[0];
+  if (!day.personal_tone) return null;
+  const field = day.personal_tone === "bad" || day.personal_tone === "worst" ? "careful" : "do";
+  const lines = pickLines(day, lang, field);
+  return lines.length > 0 ? lines[lines.length - 1] : null;
+}
+
+/**
+ * The profile's own line first (with its day score), then the first "Do / Don't / Careful" line.
+ * Those three come from the weekday, tithi and day windows, which every profile shares; without the
+ * personal line on top, every profile's briefing read the same.
+ */
 export function briefingBody(day: GuidanceDay, lang: "ne" | "en"): string {
   const labels =
     lang === "ne"
       ? { do: tFor("ne", "ui.reminders.do"), dont: tFor("ne", "ui.reminders.don_t"), careful: tFor("ne", "kundali.caution") }
       : { do: "Do", dont: "Don't", careful: "Careful" };
   const parts: string[] = [];
+  const own = personalLine(day, lang);
+  if (own) {
+    const percent = day.reading?.percent;
+    parts.push(typeof percent === "number" ? `${localDigits(percent, lang)}% · ${own}` : own);
+  }
   for (const field of ["do", "dont", "careful"] as const) {
-    const first = pickLines(day, lang, field)[0];
+    const first = pickLines(day, lang, field).find((line) => line !== own);
     if (first) parts.push(`${labels[field]}: ${first}`);
   }
   return clip(parts.length > 0 ? parts.join("\n") : lang === "ne" ? day.summary_ne : day.summary_en);
