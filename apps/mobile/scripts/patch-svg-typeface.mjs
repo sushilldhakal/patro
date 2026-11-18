@@ -23,8 +23,29 @@ const blockStart = "    Typeface typeface = null;\n    int weight = font.absolut
 const blockEnd = "    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {\n      typeface = Typeface.create(typeface, weight, isItalic);\n    }\n";
 const fieldAnchor = '  private static final String TTF = ".ttf";\n';
 
+/*
+ * Second cost: measuring and drawing each label also calls paint.setFontVariationSettings("'wght' N"),
+ * which builds a new native typeface every time (the PATRO-C main thread sits in
+ * createFromTypefaceWithVariation, waiting on GC). The app's fonts are static, so a 'wght' axis
+ * changes nothing, and the weight is already applied by Typeface.create(typeface, weight, italic).
+ * Only call it when the text asks for real variation settings, which the app never does.
+ */
+const VARIATION_MARK = "font.fontVariationSettings != null && font.fontVariationSettings.length() > 0";
+const variationCall = `      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        paint.setFontVariationSettings(`;
+const variationGuarded = `      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ${VARIATION_MARK}) {
+        paint.setFontVariationSettings(`;
+
 for (const file of [join(root, "node_modules", rel), join(root, "../../node_modules", rel)]) {
   if (!existsSync(file)) continue;
+  const current = readFileSync(file, "utf8");
+  if (!current.includes(VARIATION_MARK)) {
+    if (current.split(variationCall).length === 3) {
+      writeFileSync(file, current.split(variationCall).join(variationGuarded));
+    } else {
+      console.warn(`patch-svg-typeface: ${rel} changed shape; variation guard not applied`);
+    }
+  }
   const source = readFileSync(file, "utf8");
   if (source.includes(MARK)) continue;
   const start = source.indexOf(blockStart);
