@@ -18,7 +18,7 @@
  * CSS decision, so there is no measurement and no layout flash.
  */
 
-import { Defs, G, Marker, Path, Rect, Text as SvgText } from "react-native-svg";
+import { G, Path, Rect, Text as SvgText } from "react-native-svg";
 import { STUDY_FONT, useStudyInk, useTm } from "@/components/learn/study/study-ink";
 import { View, useWindowDimensions } from "react-native";
 import Svg from "react-native-svg";
@@ -187,16 +187,16 @@ function Down({
   ruleSide?: number;
 }) {
   const tm = useTm();
+  /* The arrowhead is drawn here, not as a <Marker>: a marker filled with currentColor crashes
+     react-native-svg on Android (ClassCastException in getCurrentColor, Sentry PATRO-M). Same
+     shape and size as the old marker (7×7 at stroke width 1.5, tip 2.1 past the line end). */
+  const dir = to >= from ? 1 : -1;
+  const tip = to + 2.1 * dir;
+  const base = tip - 10.5 * dir;
   return (
     <G>
-      <Path
-        d={`M${x},${from} L${x},${to}`}
-        fill="none"
-        stroke={tm(color)}
-        strokeWidth={1.5}
-        opacity={0.65}
-        markerEnd="url(#hier-arrow)"
-      />
+      <Path d={`M${x},${from} L${x},${to}`} fill="none" stroke={tm(color)} strokeWidth={1.5} opacity={0.65} />
+      <Path d={`M${x - 5.25},${base} L${x},${tip} L${x + 5.25},${base} Z`} fill={tm(color)} opacity={0.65 * 0.75} />
       {rule && (
         <SvgText
           x={x + 7 * ruleSide}
@@ -211,16 +211,6 @@ function Down({
         </SvgText>
       )}
     </G>
-  );
-}
-
-function ArrowDefs() {
-  return (
-    <Defs>
-      <Marker id="hier-arrow" markerWidth="7" markerHeight="7" refX="5.6" refY="3.5" orient="auto">
-        <Path d="M0,0 L7,3.5 L0,7 Z" fill="currentColor" opacity={0.75} />
-      </Marker>
-    </Defs>
   );
 }
 
@@ -249,7 +239,6 @@ function WideLayout() {
 
   return (
     <HierSvg w={width} h={height}>
-      <ArrowDefs />
 
       <Node
         x={mid - 110}
@@ -433,7 +422,6 @@ function StackedLayout() {
 
   return (
     <HierSvg w={width} h={rows.height}>
-      <ArrowDefs />
       {rows.out.map((r, i) => {
         const prev = rows.out[i - 1];
         return (
