@@ -54,7 +54,7 @@ export async function saveGuestProfile(input: ProfileInput): Promise<Profile> {
 export function useGuestProfile() {
   const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
   const reload = useCallback(() => {
-    void getGuestProfile().then(setProfile);
+    void getGuestProfile().then(setProfile).catch(() => setProfile(null));
   }, []);
   useEffect(reload, [reload]);
   return { profile, reload, setProfile };

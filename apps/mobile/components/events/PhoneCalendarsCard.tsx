@@ -37,9 +37,13 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
   const [exportOn, setExportOn] = useState(true);
 
   const load = useCallback(async () => {
-    setCalendars(await listPhoneCalendars());
-    setChosen(await getChosenCalendars());
-    setExportOn(await phoneExportEnabled());
+    try {
+      setCalendars(await listPhoneCalendars());
+      setChosen(await getChosenCalendars());
+      setExportOn(await phoneExportEnabled());
+    } catch {
+      /* calendar access was withdrawn mid-read: keep what is shown */
+    }
   }, []);
 
   useEffect(() => {
@@ -50,7 +54,7 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
         // iOS asks only once: after a refusal the button would do nothing, so show the Settings link.
         setDenied(access === "settings");
         if (access === "granted") void load();
-      });
+      }).catch(() => {});
     check();
     // Back from Settings with access turned on: show it without leaving the screen.
     const sub = AppState.addEventListener("change", (state) => {
@@ -77,7 +81,7 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
   const toggleExport = async (on: boolean) => {
     setExportOn(on);
     await setPhoneExportEnabled(on);
-    if (on) void exportToPhoneCalendar().then(() => onImported?.());
+    if (on) void exportToPhoneCalendar().then(() => onImported?.()).catch(() => {});
   };
 
   const toggle = async (id: string, on: boolean) => {
@@ -92,6 +96,9 @@ export function PhoneCalendarsCard({ onImported }: { onImported?: () => void }) 
     try {
       setResult(await importPhoneCalendars(chosen));
       onImported?.();
+    } catch {
+      // Offline or calendar access lost: no count to show this time.
+      setResult(null);
     } finally {
       setBusy(false);
     }

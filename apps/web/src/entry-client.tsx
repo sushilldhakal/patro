@@ -6,12 +6,14 @@ import i18n from "./i18n/index";
 import { syncDocumentLang } from "./lib/fonts";
 import { initAnalytics } from "./lib/analytics";
 import { initSentry, sentryRootErrorHandlers } from "./lib/sentry";
+import { recoverFromStaleChunks } from "./lib/lazy-route";
 import App from "./App";
 
 syncDocumentLang(i18n.language);
 
 initAnalytics();
 initSentry();
+recoverFromStaleChunks();
 
 const root = document.getElementById("root");
 if (!root) {

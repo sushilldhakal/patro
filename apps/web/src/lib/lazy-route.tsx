@@ -16,6 +16,37 @@ const RELOAD_FLAG = "chunk-reload-at";
  * URLs that no longer exist; a reload picks up the fresh manifest. The
  * timestamp guard stops a reload loop when the import is genuinely broken.
  */
+/** Reload once (at most every 30 s) to pick up the new build. False when a reload just happened. */
+function reloadOnce(): boolean {
+  try {
+    const lastReload = Number(sessionStorage.getItem(RELOAD_FLAG) ?? 0);
+    if (Date.now() - lastReload <= 30_000) return false;
+    sessionStorage.setItem(RELOAD_FLAG, String(Date.now()));
+  } catch {
+    return false; // storage unavailable: no loop guard, so no reload
+  }
+  window.location.reload();
+  return true;
+}
+
+const STALE_CHUNK = /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module/i;
+
+/**
+ * Chunk imports outside lazyRoute/importWithRetry (Vite's preload helper, a library's own
+ * `import()`) fail the same way after a redeploy, as an unhandled rejection (Sentry PATRO-WEB-2).
+ * Reload once for those too.
+ */
+export function recoverFromStaleChunks(): void {
+  window.addEventListener("vite:preloadError", (event) => {
+    if (reloadOnce()) event.preventDefault();
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason: unknown = event.reason;
+    const message = reason instanceof Error ? reason.message : String(reason ?? "");
+    if (STALE_CHUNK.test(message) && reloadOnce()) event.preventDefault();
+  });
+}
+
 export function importWithRetry<M>(loader: () => Promise<M>): Promise<M> {
   return loader().then(
     (mod) => {
@@ -27,17 +58,8 @@ export function importWithRetry<M>(loader: () => Promise<M>): Promise<M> {
       return mod;
     },
     (err: unknown) => {
-      try {
-        const lastReload = Number(sessionStorage.getItem(RELOAD_FLAG) ?? 0);
-        if (Date.now() - lastReload > 30_000) {
-          sessionStorage.setItem(RELOAD_FLAG, String(Date.now()));
-          window.location.reload();
-          // Keep the route suspended while the reload happens.
-          return new Promise<never>(() => {});
-        }
-      } catch {
-        /* storage unavailable — fall through to the error boundary */
-      }
+      // Keep the route suspended while the reload happens; otherwise show the error boundary.
+      if (reloadOnce()) return new Promise<never>(() => {});
       throw err;
     },
   );

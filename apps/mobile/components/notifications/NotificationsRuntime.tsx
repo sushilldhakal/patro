@@ -55,7 +55,7 @@ export function NotificationsRuntime() {
     void run().catch(() => {});
 
     const sub = AppState.addEventListener("change", (state) => {
-      if (state === "active") void syncNotifications({ lang: langRef.current });
+      if (state === "active") void syncNotifications({ lang: langRef.current }).catch(() => {});
     });
     return () => sub.remove();
   }, [isAuthenticated, loading]);
