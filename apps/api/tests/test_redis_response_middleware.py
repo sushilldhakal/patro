@@ -262,8 +262,8 @@ def test_waiters_compute_themselves_when_the_answer_is_not_cacheable(fake):
     assert all(r.status_code == 200 for r in responses)
 
 
-def test_versioned_fixed_data_is_kept_a_month_in_redis():
-    month = 30 * 24 * 3600
+def test_versioned_fixed_data_is_kept_400_days_in_redis():
+    month = 400 * 24 * 3600
     cc = "public, max-age=3600, s-maxage=86400"
     assert mw.ttl_for("/api/v1/panchanga/2083/8", {"cv": "6206"}, cc) == month
     assert mw.ttl_for("/api/v1/panchanga/2083/8", {}, cc) == 3600  # no version → edge lifetime
@@ -275,3 +275,10 @@ def test_versioned_fixed_data_is_kept_a_month_in_redis():
     assert mw.ttl_for(
         "/api/v1/panchanga/rashifal/personal", {"date": "2026-11-25", "cv": "6206"}, "private, max-age=120"
     ) == 6 * 3600
+
+
+def test_documents_and_veda_stay_out_of_redis():
+    assert not mw._eligible_path("/api/v1/documents/rigveda/chapters/1")
+    assert not mw._eligible_path("/api/v1/documents")
+    assert not mw._eligible_path("/api/v1/veda/daily")
+    assert mw._eligible_path("/api/v1/panchanga/2083/8")

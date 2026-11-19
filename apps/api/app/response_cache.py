@@ -131,12 +131,12 @@ def _path(cache_key: str) -> Path:
     return RESPONSE_CACHE_DIR / f"v{CACHE_PAYLOAD_VERSION}_{safe}.json.gz"
 
 
-def read_cached_bytes(cache_key: str, *, persist: bool = True) -> bytes | None:
+def read_cached_bytes(cache_key: str, *, persist: bool = True, redis: bool = True) -> bytes | None:
     # Tiers, fastest first: Redis (shared by every worker, bounded LRU) →
     # Postgres (primary store, survives restarts) → disk (local-dev fallback
     # when DATABASE_URL is unset). The versioned filename doubles as the key.
     path = _path(cache_key)
-    hit = redis_cache.get_bytes(path.name)
+    hit = redis_cache.get_bytes(path.name) if redis else None
     if hit is not None:
         return hit
     if not persist:
@@ -148,16 +148,17 @@ def read_cached_bytes(cache_key: str, *, persist: bool = True) -> bytes | None:
             data = path.read_bytes()
         except FileNotFoundError:
             data = None
-    if data is not None:
+    if data is not None and redis:
         redis_cache.set_bytes(path.name, data)  # backfill so the next read is a Redis hit
     return data
 
 
-def write_cached_bytes(cache_key: str, payload: Any, *, persist: bool = True) -> bytes:
+def write_cached_bytes(cache_key: str, payload: Any, *, persist: bool = True, redis: bool = True) -> bytes:
     path = _path(cache_key)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     compressed = gzip.compress(raw, compresslevel=6)
-    redis_cache.set_bytes(path.name, compressed)
+    if redis:
+        redis_cache.set_bytes(path.name, compressed)
     if not persist:
         # Redis only: short-lived payloads (expiring links) must not pile up in Postgres or on disk.
         return compressed
@@ -199,37 +200,62 @@ def serve_cached_json(
     cache_control: str = DEFAULT_CACHE_CONTROL,
     cdn_cache_control: str | None = None,
     persist: bool = True,
+    redis: bool = True,
 ) -> Response:
     """Serve a deterministic payload from the gzip disk cache, computing once.
 
     ``cdn_cache_control`` lets the edge cache on a different policy than the
     browser (default: the same as ``cache_control``). ``persist=False`` keeps the
     payload in Redis only (no Postgres row, no disk file) — for payloads whose
-    key rolls over, such as ones carrying expiring signed links.
+    key rolls over, such as ones carrying expiring signed links. ``redis=False``
+    keeps it out of Redis; with ``persist=False`` as well nothing is kept on the
+    server and the CDN (``cdn_cache_control``) is the only cache.
     """
-    compressed = read_cached_bytes(cache_key, persist=persist)
+    if not persist and not redis:
+        compressed = _build_compressed(build)
+    else:
+        compressed = _read_or_build(cache_key, build, persist=persist, redis=redis)
+    return _response(request, compressed, cache_control, cdn_cache_control)
+
+
+def _build_compressed(build: Callable[[], Any]) -> bytes:
+    try:
+        payload = build()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return gzip.compress(raw, compresslevel=6)
+
+
+def _read_or_build(cache_key: str, build: Callable[[], Any], *, persist: bool, redis: bool) -> bytes:
+    compressed = read_cached_bytes(cache_key, persist=persist, redis=redis)
     if compressed is None:
         with _build_lock(cache_key):
             # Re-check under the lock: a racing request may have built it while
             # we waited, turning our expensive compute into a cheap disk read.
-            compressed = read_cached_bytes(cache_key, persist=persist)
+            compressed = read_cached_bytes(cache_key, persist=persist, redis=redis)
             if compressed is None:
                 # Cross-worker: only one process builds a missing key; the others
                 # wait for its result instead of repeating a multi-second build.
                 with redis_cache.build_lock(cache_key) as owner:
                     if not owner:
-                        compressed = redis_cache.wait_for(lambda: read_cached_bytes(cache_key, persist=persist))
+                        compressed = redis_cache.wait_for(
+                            lambda: read_cached_bytes(cache_key, persist=persist, redis=redis)
+                        )
                     else:
                         # Owner re-check: another worker may have finished and
                         # released between our first read and taking the lock.
-                        compressed = read_cached_bytes(cache_key, persist=persist)
+                        compressed = read_cached_bytes(cache_key, persist=persist, redis=redis)
                     if compressed is None:
                         try:
                             payload = build()
                         except ValueError as exc:
                             raise HTTPException(status_code=400, detail=str(exc)) from exc
-                        compressed = write_cached_bytes(cache_key, payload, persist=persist)
+                        compressed = write_cached_bytes(cache_key, payload, persist=persist, redis=redis)
+    return compressed
 
+
+def _response(request: Request, compressed: bytes, cache_control: str, cdn_cache_control: str | None) -> Response:
     headers = {
         "Cache-Control": cache_control,
         # Cloudflare and other CDNs honour CDN-Cache-Control over Cache-Control,

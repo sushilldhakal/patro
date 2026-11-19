@@ -92,9 +92,10 @@ def _cache_version() -> str:
 def _persist() -> bool:
     """Keep these payloads in the permanent cache tier only while their links don't expire.
 
-    Signed links roll over every window, so a signed payload stays in Redis (bounded, evicts
-    on its own) and is rebuilt from SQLite on a miss, instead of leaving a row per window in
-    Postgres forever.
+    Signed links roll over every window, so a signed payload is rebuilt from SQLite on a
+    miss instead of leaving a row per window in Postgres forever. Documents never go into
+    Redis (``redis=False`` below): Cloudflare caches them by their Cache-Control, and their
+    bulk would push the calendar data out of Redis memory.
     """
     return config.r2_signing() is None
 
@@ -120,7 +121,7 @@ def list_documents(request: Request):
         build,
         cache_control=_LIST_CACHE_CONTROL,
         cdn_cache_control=_LIST_CDN_CACHE_CONTROL,
-        persist=_persist(),
+        persist=_persist(), redis=False,
     )
 
 
@@ -130,7 +131,7 @@ def document_detail(slug: str, request: Request):
 
     cache_key = f"documents_detail_v{_cache_version()}_{slug}"
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist(), redis=False
     )
 
 
@@ -204,7 +205,7 @@ def document_chapter_detail(
         verse=verse_text or None,
     )
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist(), redis=False
     )
 
 
@@ -221,7 +222,7 @@ def veda_verses_by_detail(
     build = _or_404(document_views.verse_detail_view, kind, value, slug, offset, limit)
     cache_key = f"veda_details_v{_cache_version()}_{kind}_{slug or 'all'}_{offset}_{limit}_{value.strip()}"
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist(), redis=False
     )
 
 
@@ -235,7 +236,7 @@ def veda_detail_values(
     build = _or_404(document_views.detail_values_view, kind, slug)
     cache_key = f"veda_detail_values_v{_cache_version()}_{kind}_{slug or 'all'}"
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist()
+        request, cache_key, build, cache_control=_CACHE_CONTROL, persist=_persist(), redis=False
     )
 
 
@@ -257,5 +258,5 @@ def veda_daily(
 
     cache_key = f"veda_daily_f2_v{_cache_version()}_{when.isoformat()}"
     return response_cache.serve_cached_json(
-        request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600", persist=_persist()
+        request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600", persist=_persist(), redis=False
     )

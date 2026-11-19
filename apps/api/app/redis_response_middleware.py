@@ -15,7 +15,8 @@ requested responses stay resident and rarely used ones are evicted first.
 What is cached, and for how long:
 
 * Only ``GET`` on the public, versioned data routes (``/v1/…``) and
-  ``/og-image``. None of those routes read the signed-in user; user routes
+  ``/og-image`` — except documents and the Veda reader, which Cloudflare alone
+  caches. None of those routes read the signed-in user; user routes
   (``/auth``, ``/profiles``, ``/events``…) are never touched.
 * Only ``200`` responses without ``Set-Cookie``, and not ``private`` /
   ``no-store`` / ``no-cache``.
@@ -27,8 +28,7 @@ What is cached, and for how long:
   lists them with their own lifetime.
 
 The key is a hash of host + path + sorted query, plus the panchanga payload
-version, ``RESPONSE_CACHE_EPOCH`` and (for documents) the manifests' content
-version. It deliberately does NOT include the deployed git revision: that
+version and ``RESPONSE_CACHE_EPOCH``. It deliberately does NOT include the deployed git revision: that
 emptied the whole cache on every push, and the first minutes after each deploy
 then ran every request cold (the load test measured 87% CPU cold against 16%
 warm for the same 300 users). Data changes already change the key — the app
@@ -79,10 +79,11 @@ _MAX_TTL_S = int(os.getenv("REDIS_RESPONSE_MAX_TTL_S", str(30 * 24 * 3600)))
 # the app's cache version (cv/sv/gv/ev/v) — cannot go stale: new data means a new
 # version and so a new key. Redis keeps those for this long, independent of how
 # briefly Cloudflare and browsers are told to keep them, so when an edge copy
-# expires the server answers from Redis instead of computing again. 2 GB holds a
-# full year for every popular city several times over (~200 MB measured), and
-# allkeys-lfu evicts the least-used first if it ever fills.
-_PINNED_TTL_S = int(os.getenv("REDIS_RESPONSE_PINNED_TTL_S", str(30 * 24 * 3600)))
+# expires the server answers from Redis instead of computing again. One year for
+# every popular city measured ~160 MB, so 2 GB holds the ten years the warm job
+# builds (scripts/warm_cache.py --years 10); allkeys-lfu evicts the least-used
+# first if it ever fills. Unversioned answers stay capped at _MAX_TTL_S.
+_PINNED_TTL_S = int(os.getenv("REDIS_RESPONSE_PINNED_TTL_S", str(400 * 24 * 3600)))
 _VERSION_PARAMS = ("cv", "sv", "gv", "ev", "v")
 _MONTH_PATH = re.compile(r"/panchanga/-?\d+/\d+(?:/|$)|/nepal/sait/-?\d+/")
 _MIN_TTL_S = 30
@@ -153,18 +154,6 @@ def _epoch() -> str:
     return f"{RESPONSE_CACHE_EPOCH}.{extra}" if extra else RESPONSE_CACHE_EPOCH
 
 
-def _content_version(path: str) -> str:
-    """Manifest content version for document responses (their URLs never change on an edit)."""
-    if "/documents" not in path and "/veda/" not in path:
-        return ""
-    try:
-        from api.documents import _cache_version
-
-        return _cache_version()
-    except Exception:  # pragma: no cover - never fail a request over the key
-        return ""
-
-
 def _payload_version() -> str:
     from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
 
@@ -187,7 +176,7 @@ def ttl_for(path: str, query: dict[str, str], cache_control: str | None) -> int 
     if ttl is None or (cache_control and "private" in cache_control.lower()):
         return ttl
     if _pinned(path, query, _is_fixed_day(path, query)):
-        ttl = max(ttl, _PINNED_TTL_S)
+        return max(ttl, _PINNED_TTL_S)
     return min(ttl, _MAX_TTL_S)
 
 
@@ -223,9 +212,17 @@ def _base_ttl(path: str, query: dict[str, str], cache_control: str | None) -> in
     return None
 
 
+# Documents and the Veda reader (the Learn tab's library) stay out of Redis:
+# Cloudflare holds them (api/documents.py Cache-Control), and their bulk — every
+# chapter page in several versions — would crowd the calendar data out of memory.
+_CDN_ONLY = ("/documents", "/veda/")
+
+
 def _eligible_path(path: str) -> bool:
     if path.endswith("/og-image"):
         return True
+    if any(marker in path for marker in _CDN_ONLY):
+        return False
     return f"/{config.api_version()}/" in path
 
 
@@ -244,7 +241,6 @@ def cache_key(scope, epoch: str | None = None) -> str:
         urlencode(query),
         _payload_version(),
         epoch if epoch is not None else _epoch(),
-        _content_version(scope["path"]),
     ))
     return _KEY_NS + hashlib.sha256(raw.encode("utf-8")).hexdigest()
 

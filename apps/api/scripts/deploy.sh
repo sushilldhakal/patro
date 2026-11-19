@@ -126,40 +126,20 @@ if [[ "${health_ok}" -ne 1 ]]; then
   exit 1
 fi
 
-echo "==> Warming documents cache"
+echo "==> Seeding documents"
 # The service restart above resets services/scripture/documents_db.py's in-process
-# _seeded flag, so the next request to touch it pays a real reseed (parses
-# every data/documents_source/*.json manifest — ~1.5s with the Rigveda
-# corpus) plus, per document, a cache-miss build the first time its content
-# hash changes. Without this, that cost lands on whichever real visitor's
-# request happens to be first — which is exactly the "why is this page
-# taking 5-8s" complaint. Paying it here, synchronously, as part of the
-# deploy instead, means every real visitor after this point hits an
-# already-warm cache. Best-effort: a warm-up failure never fails the deploy.
-python - <<'PYEOF' || echo "WARNING: cache warm-up failed (non-fatal)" >&2
+# _seeded flag, so the next request to touch it pays a real reseed (parses every
+# data/documents_source/*.json manifest — ~1.5s with the Rigveda corpus). A few
+# list requests pay that here, spread over the workers, instead of the first
+# visitors. Chapters are not pre-built: documents are cached by Cloudflare only
+# (never Redis), so a server-side build would be thrown away.
+python - <<'PYEOF' || echo "WARNING: documents seed failed (non-fatal)" >&2
 import urllib.request
 
-BASE = "http://127.0.0.1:8000/v1"
-
-
-def get_json(path: str):
-    with urllib.request.urlopen(f"{BASE}{path}", timeout=30) as resp:
-        import json
-
-        return json.loads(resp.read())
-
-
-docs = get_json("/documents")["documents"]
-for doc in docs:
-    slug = doc["slug"]
-    detail = get_json(f"/documents/{slug}")
-    if doc["has_chapters"] and not doc.get("inline_chapters"):
-        for chapter in detail["chapters"]:
-            number = chapter["number"]
-            if number is not None:
-                get_json(f"/documents/{slug}/chapters/{number}")
-
-print(f"Warmed {len(docs)} documents")
+for _ in range(6):
+    with urllib.request.urlopen("http://127.0.0.1:8000/v1/documents", timeout=30) as resp:
+        resp.read()
+print("Seeded documents")
 PYEOF
 
 # Documents are cached at the edge for hours (api/documents.py) and their URLs do
@@ -189,7 +169,7 @@ if [[ "${DOCS_CHANGED}" == "1" ]]; then
 fi
 
 # Refill the caches for what people open next (scripts/warm_cache.py). Started,
-# not waited for: it takes ~20 min at 3 requests at a time.
+# not waited for: the first ten-year build takes hours; later runs take minutes.
 if sudo -n true 2>/dev/null && systemctl cat vedicpatro-warm-cache.service >/dev/null 2>&1; then
   echo "==> Starting cache warm in the background"
   sudo systemctl start --no-block vedicpatro-warm-cache.service || true
