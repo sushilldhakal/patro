@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Text as RNText, View } from "react-native";
 import Svg, { Circle, Line, Path, Text as SvgText } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { brand, midnight, mix, mobileRoles, withAlpha } from "@vedic-patro/design-tokens";
@@ -44,7 +44,10 @@ function FigureKeyList({ items, tone }: { items: KeyItem[]; tone: Record<Tone, s
             )}
           </Svg>
           {item.mark ? (
-            <Text className={`${documentsClasses.figureKeyMark} text-foreground`}>{item.mark}</Text>
+            // Coloured like its mark, as on the website (the near-white moon reads as ink).
+            <Text className={documentsClasses.figureKeyMark}>
+              <RNText style={{ color: tone[item.tone === "moon" ? "ink" : item.tone] }}>{item.mark}</RNText>
+            </Text>
           ) : null}
           <Text className={documentsClasses.figureKeyText}>{item.text}</Text>
         </View>
@@ -120,7 +123,7 @@ export function SuryaFigure({ figureKey, phase, controls }: SuryaFigureProps) {
         {frame.readout.map((line, i) =>
           line ? (
             <Text key={i} className="text-sm text-foreground">
-              {line}
+              <RNText style={{ fontVariant: ["tabular-nums"] }}>{line}</RNText>
             </Text>
           ) : null,
         )}
