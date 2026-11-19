@@ -220,9 +220,8 @@
       "tithi": 10,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "madhyahna",
       "duration_days": 1,
-      "notes": "Main day of Dashain — Devi Visarjan. Tika falls on the day Dashami pervades madhyahna, not on the udaya-Dashami day: in 2024 Dashami ran 10-12 11:14 to 10-13 09:24 NPT and Tika was the 12th.",
+      "notes": "The day Dashami holds sunrise (Nirnaya Sindhu, Kashyapa: उदये दशमी किञ्चित्; Dharma Sindhu: औदयिकस्वल्पदशमी); a Navami-viddha Dashami is rejected.",
       "importance": "national",
       "category": "hindu"
     },
@@ -598,9 +597,8 @@
       "tithi": 7,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "aparahna",
       "duration_days": 1,
-      "notes": "Seventh day of Dashain. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
+      "notes": "Saptami at sunrise, the day before Maha Ashtami (unless Ashtami is vriddhi or Saptami kshaya).",
       "importance": "national",
       "category": "hindu"
     },
@@ -612,9 +610,9 @@
       "tithi": 8,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "aparahna",
+      "date_selection": "para_yuta",
       "duration_days": 1,
-      "notes": "Eighth day of Dashain — Kalratri. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
+      "notes": "Navami-joined, never Saptami-viddha (Nirnaya Sindhu: सप्तमीमिश्रिताष्टमी वर्जनीया; Dharma Sindhu: घटिकामात्राप्यौदयिकी नवमीयुता ग्राह्या): the day Ashtami holds sunrise, the second when it holds two.",
       "importance": "national",
       "category": "hindu"
     },
@@ -626,9 +624,8 @@
       "tithi": 9,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "aparahna",
       "duration_days": 1,
-      "notes": "Ninth day of Dashain. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
+      "notes": "The day Navami holds sunrise (Dharma Sindhu: परैव ग्राह्या; Nirnaya Sindhu: न कुर्यान्नवमीं दशम्याम्), so it never merges with Ashtami unless Navami is kshaya.",
       "importance": "national",
       "category": "hindu"
     },
@@ -2594,11 +2591,11 @@
       "tithi": 8,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "aparahna",
+      "date_selection": "para_yuta",
       "duration_days": 1,
       "importance": "national",
       "category": "hindu",
-      "notes": "Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024)."
+      "notes": "The night of Maha Ashtami: the same Navami-joined Ashtami day."
     },
     "devi-visarjan": {
       "name_en": "Devi Visarjan",
@@ -2608,11 +2605,10 @@
       "tithi": 10,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "madhyahna",
       "duration_days": 1,
       "importance": "national",
       "category": "hindu",
-      "notes": "Same civil day as Vijaya Dashami — resolved by the same madhyahna-vyapini Dashami."
+      "notes": "With Vijaya Dashami: the day Dashami holds sunrise."
     },
     "papankusha-ekadashi": {
       "name_en": "Papankusha Ekadashi Vrata",
@@ -6030,7 +6026,6 @@
       "tithi": 7,
       "paksha": "shukla",
       "adhik_policy": "skip",
-      "date_selection": "aparahna",
       "end_tithi": 12,
       "end_date_selection": "udaya",
       "duration_days": 7,

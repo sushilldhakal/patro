@@ -1,9 +1,8 @@
-"""Kaal windows and kaal-vyapini festival dates against the published patro.
+"""Kaal windows, and the festivals whose day is chosen by one — read from the panchanga.
 
-The reference dates are the observed Nepali (MoHA / panchanga samiti) dates for
-Dashain and Tihar. They are the point of these rules: for these observances the
-printed *udaya* tithi is not the festival day, and in 2024 the two differ for
-the whole Dashain week.
+A festival day is checked against what its own tithi does that day (holds sunrise,
+pervades pradosha …), never against an English date. Dashain's days follow Nirnaya
+Sindhu / Dharma Sindhu and are checked year by year in tests/test_dashain_2083.py.
 """
 
 from __future__ import annotations
@@ -105,71 +104,31 @@ class TestVyapiniSelection:
         assert vyapini_date(start, end, "pradosh", DEFAULT_LOCATION) == date(2024, 10, 31)
 
 
-# (festival id, gregorian year, published Nepali date)
-DASHAIN = [
-    ("fulpati", 2021, date(2021, 10, 12)),
-    ("maha-ashtami", 2021, date(2021, 10, 13)),
-    ("maha-navami", 2021, date(2021, 10, 14)),
-    ("vijaya-dashami", 2021, date(2021, 10, 15)),
-    ("fulpati", 2022, date(2022, 10, 2)),
-    ("maha-ashtami", 2022, date(2022, 10, 3)),
-    ("maha-navami", 2022, date(2022, 10, 4)),
-    ("vijaya-dashami", 2022, date(2022, 10, 5)),
-    ("fulpati", 2023, date(2023, 10, 21)),
-    ("maha-ashtami", 2023, date(2023, 10, 22)),
-    ("maha-navami", 2023, date(2023, 10, 23)),
-    ("vijaya-dashami", 2023, date(2023, 10, 24)),
-    # 2024 is the year the whole week parts company with the udaya tithi.
-    ("fulpati", 2024, date(2024, 10, 9)),
-    ("maha-ashtami", 2024, date(2024, 10, 10)),
-    ("maha-navami", 2024, date(2024, 10, 11)),
-    ("vijaya-dashami", 2024, date(2024, 10, 12)),
-    ("fulpati", 2025, date(2025, 9, 29)),
-    ("maha-ashtami", 2025, date(2025, 9, 30)),
-    ("maha-navami", 2025, date(2025, 10, 1)),
-    ("vijaya-dashami", 2025, date(2025, 10, 2)),
-]
-
-TIHAR = [
-    ("laxmi-puja", 2021, date(2021, 11, 4)),
-    ("laxmi-puja", 2022, date(2022, 10, 24)),
-    ("laxmi-puja", 2023, date(2023, 11, 12)),
-    ("laxmi-puja", 2024, date(2024, 10, 31)),
-    ("laxmi-puja", 2025, date(2025, 10, 20)),
-    ("gai-puja", 2024, date(2024, 10, 31)),
-    ("gai-puja", 2025, date(2025, 10, 20)),
-    # The Tihar public holiday opens on the Laxmi Puja day (and closes on Bhai Tika).
-    ("tihar", 2024, date(2024, 10, 31)),
-    ("tihar", 2025, date(2025, 10, 20)),
-]
+YEARS = (2021, 2022, 2023, 2024, 2025, 2026)
 
 
-@pytest.mark.parametrize("festival_id,gregorian_year,expected", DASHAIN + TIHAR)
-def test_festival_matches_published_patro(
-    festival_id: str, gregorian_year: int, expected: date
-):
-    result = compute_festival_dates(
-        festival_id, RULES[festival_id], gregorian_year, DEFAULT_LOCATION
-    )
+def _amavasya_pervades_pradosh(day: date) -> bool:
+    """Kartik Amavasya (tithi 30) runs through some of this day's pradosha."""
+    from engine.astronomy.ut_instant import as_julian_day
+    from engine.panchanga.angas import panchanga_service
+
+    start, end = kaal_window(day, "pradosh", DEFAULT_LOCATION)
+    probes = [start + (end - start) * k / 8 for k in range(9)]
+    return any(panchanga_service.tithi_number(as_julian_day(t)) == 30 for t in probes)
+
+
+@pytest.mark.parametrize("year", YEARS)
+def test_laxmi_puja_is_the_amavasya_of_pradosha(year: int):
+    result = compute_festival_dates("laxmi-puja", RULES["laxmi-puja"], year, DEFAULT_LOCATION)
     assert result is not None
-    assert result[0] == expected
+    assert _amavasya_pervades_pradosh(result[0])
 
 
-def test_dashain_2024_departs_from_the_udaya_tithi():
-    """The regression this rule exists for: in 2024 every Dashain tithi opened
-    late enough that its udaya day is the day after the observance."""
-    for festival_id, expected, udaya_tithi in (
-        ("fulpati", date(2024, 10, 9), 6),
-        ("maha-ashtami", date(2024, 10, 10), 7),
-        ("maha-navami", date(2024, 10, 11), 8),
-        ("vijaya-dashami", date(2024, 10, 12), 9),
-    ):
-        result = compute_festival_dates(
-            festival_id, RULES[festival_id], 2024, DEFAULT_LOCATION
-        )
-        assert result is not None and result[0] == expected
-        # The printed patro shows the *previous* tithi against that civil day.
-        assert get_udaya_tithi(expected, DEFAULT_LOCATION)["tithi"] == udaya_tithi
+@pytest.mark.parametrize("year", YEARS)
+def test_the_tihar_holiday_opens_on_laxmi_puja(year: int):
+    laxmi = compute_festival_dates("laxmi-puja", RULES["laxmi-puja"], year, DEFAULT_LOCATION)
+    tihar = compute_festival_dates("tihar", RULES["tihar"], year, DEFAULT_LOCATION)
+    assert laxmi is not None and tihar is not None and tihar[0] == laxmi[0]
 
 
 def test_devi_visarjan_tracks_vijaya_dashami():
@@ -191,44 +150,33 @@ def test_gai_puja_shares_the_laxmi_puja_day():
 
 
 def test_udaya_rules_are_untouched_by_the_kaal_machinery():
-    """Rules without date_selection must resolve exactly as they did before."""
-    for festival_id, year, expected in (
-        ("ghatasthapana", 2024, date(2024, 10, 3)),
-        ("kojagrat-purnima", 2024, date(2024, 10, 17)),
-        ("bhai-tika", 2024, date(2024, 11, 3)),
-        ("chhath", 2024, date(2024, 11, 7)),
-    ):
-        assert "date_selection" not in RULES[festival_id]
-        result = compute_festival_dates(festival_id, RULES[festival_id], year, DEFAULT_LOCATION)
-        assert result is not None and result[0] == expected
+    """Rules without date_selection fall on the day their tithi holds sunrise."""
+    for festival_id in ("ghatasthapana", "kojagrat-purnima", "bhai-tika", "chhath"):
+        rule = RULES[festival_id]
+        assert "date_selection" not in rule
+        result = compute_festival_dates(festival_id, rule, 2024, DEFAULT_LOCATION)
+        assert result is not None
+        udaya = get_udaya_tithi(result[0], DEFAULT_LOCATION)
+        assert (udaya["tithi"], udaya["paksha"]) == (rule["tithi"], rule["paksha"])
 
 
 def test_unknown_date_selection_falls_back_to_udaya():
-    found = find_festival_in_lunar_month(
-        lunar_month_name="Ashwin",
-        tithi=10,
-        paksha="shukla",
-        gregorian_year=2024,
-        date_selection="sandhya",  # type: ignore[arg-type]
-        location=DEFAULT_LOCATION,
-    )
-    assert found == date(2024, 10, 13)
+    kw = dict(lunar_month_name="Ashwin", tithi=10, paksha="shukla", gregorian_year=2024, location=DEFAULT_LOCATION)
+    found = find_festival_in_lunar_month(date_selection="sandhya", **kw)  # type: ignore[arg-type]
+    assert found == find_festival_in_lunar_month(date_selection="udaya", **kw)
 
 
 # Every rule that sets ``date_selection`` must appear here, and every id here
 # must be checked above. tests/test_cultural_rule_knobs.py enforces the first
 # half, so a new rule taking the knob cannot ship without coverage.
-COVERED_RULE_IDS = frozenset(
-    {fid for fid, _year, _expected in DASHAIN + TIHAR}
-    | {"devi-visarjan", "kalratri", "dashain-vidaa"}
-)
+COVERED_RULE_IDS = frozenset({"laxmi-puja", "gai-puja", "tihar", "maha-ashtami", "kalratri"})
 
 
 def test_every_covered_id_is_actually_exercised():
-    checked = {fid for fid, _year, _expected in DASHAIN + TIHAR}
-    checked |= {"devi-visarjan"}  # test_devi_visarjan_tracks_vijaya_dashami
-    checked |= {"kalratri"}       # test_kalratri_tracks_maha_ashtami
-    checked |= {"dashain-vidaa"}  # test_dashain_vidaa_opens_on_fulpati
+    checked = {"laxmi-puja", "tihar"}  # the pradosha tests above
+    checked |= {"gai-puja"}            # test_gai_puja_shares_the_laxmi_puja_day
+    checked |= {"kalratri"}            # test_kalratri_tracks_maha_ashtami
+    checked |= {"maha-ashtami"}        # tests/test_dashain_2083.py, every year 2078–2090
     assert COVERED_RULE_IDS == checked
 
 
@@ -242,12 +190,9 @@ def test_kalratri_tracks_maha_ashtami():
 
 
 def test_dashain_vidaa_opens_on_fulpati():
-    """The MoHA Dashain block starts on Phulpati (aparahna Saptami)."""
-    assert RULES["dashain-vidaa"]["date_selection"] == "aparahna"
+    """The Dashain holiday block starts on Phulpati (Saptami at sunrise)."""
     for year in (2021, 2024, 2025, 2026):
         fulpati = compute_festival_dates("fulpati", RULES["fulpati"], year, DEFAULT_LOCATION)
-        vidaa = compute_festival_dates(
-            "dashain-vidaa", RULES["dashain-vidaa"], year, DEFAULT_LOCATION
-        )
+        vidaa = compute_festival_dates("dashain-vidaa", RULES["dashain-vidaa"], year, DEFAULT_LOCATION)
         assert fulpati is not None and vidaa is not None
         assert vidaa[0] == fulpati[0]

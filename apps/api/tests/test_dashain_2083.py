@@ -1,7 +1,11 @@
-"""BS 2083 Dashain, read from the panchanga — never from English dates.
+"""Dashain, read from the panchanga — never from English dates.
 
-Ghatasthapana is Ashwin Shukla Pratipada; Maha Ashtami, Maha Navami and Vijaya Dashami fall on
-the days their tithis name, in that order; the दशैं बिदा runs from Phulpati (Saptami) through
+Nirnaya Sindhu and Dharma Sindhu: महाअष्टमी is Navami-joined and never Saptami-viddha
+("सप्तमीमिश्रिताष्टमी वर्जनीया"; "घटिकामात्राप्यौदयिकी नवमीयुता ग्राह्या") — the day Ashtami holds
+sunrise, the second when it holds two; महानवमी the day Navami holds sunrise ("न कुर्यान्नवमीं
+दशम्याम्"); विजया दशमी the day Dashami holds sunrise (Navami-viddha Dashami is rejected). So
+फूलपाती, अष्टमी, नवमी and दशमी are four days in a row, each on its own sunrise, unless a tithi is
+kshaya (it touches no sunrise) or Ashtami is vriddhi. The दशैं बिदा runs from Phulpati through
 Dwadashi and is a public holiday on every day of it.
 """
 
@@ -11,7 +15,11 @@ from datetime import date, timedelta
 
 from engine.astronomy.location import DEFAULT_LOCATION
 from services.festivals.holiday_generator import festivals_on_date, generate_bs_festivals, is_public_holiday
-from tests.panchanga_facts import runs_on
+import pytest
+
+from engine.astronomy.siddhanta import use_siddhanta
+from services.festivals.holiday_generator import clear_year_payload_memo
+from tests.panchanga_facts import runs_on, tithis_of
 
 
 def _ids(day: date) -> list[str]:
@@ -62,3 +70,35 @@ def test_single_day_vidaa_rows_are_folded_into_the_block():
     while day <= _day(block, "end_date"):
         assert not any(i.startswith("dashain-vidaa-") for i in _ids(day)), day
         day += timedelta(days=1)
+
+
+def _holds_sunrise_or_kshaya(day: date, tithi: int) -> bool:
+    """The tithi holds this day's sunrise, or it is kshaya and runs within this day."""
+    at_sunrise, seen = tithis_of(day)
+    if at_sunrise == tithi:
+        return True
+    return tithi in seen and tithis_of(day + timedelta(days=1))[0] != tithi
+
+
+@pytest.mark.parametrize("siddhanta_id", ["drik", "surya_siddhanta"])
+@pytest.mark.parametrize("bs_year", range(2078, 2091))
+def test_ashtami_navami_and_dashami_each_keep_their_own_sunrise(siddhanta_id, bs_year):
+    with use_siddhanta(siddhanta_id):
+        clear_year_payload_memo()
+        fest = {f["id"]: f for f in generate_bs_festivals(bs_year, DEFAULT_LOCATION)["festivals"]}
+        phulpati, ashtami, navami, dashami = (
+            _day(fest[k]) for k in ("fulpati", "maha-ashtami", "maha-navami", "vijaya-dashami")
+        )
+        # Never Saptami-viddha: Ashtami at sunrise, and the second sunrise when it holds two.
+        assert _holds_sunrise_or_kshaya(ashtami, 8)
+        assert tithis_of(ashtami)[0] != 7
+        assert tithis_of(ashtami + timedelta(days=1))[0] != 8
+        assert _holds_sunrise_or_kshaya(navami, 9)
+        assert _holds_sunrise_or_kshaya(dashami, 10)
+        assert tithis_of(dashami)[0] != 9  # Navami-viddha Dashami is rejected
+        assert _holds_sunrise_or_kshaya(phulpati, 7)
+        assert phulpati < ashtami <= navami < dashami
+        # Ashtami and Navami share a day only when Navami touches no sunrise.
+        if ashtami == navami:
+            assert tithis_of(navami + timedelta(days=1))[0] != 9
+        clear_year_payload_memo()

@@ -191,7 +191,10 @@ logger = logging.getLogger(__name__)
 #     Kathmandu civil day it falls), not read from the published table, and the
 #     drik ayanamsha follows ``?ayanamsha=`` for every sidereal position; the
 #     ``ayanamsa`` labels name the ayanamsha used.
-PANCHANGA_PAYLOAD_VERSION = 63
+# v64: Dashain by Nirnaya Sindhu / Dharma Sindhu — Maha Ashtami Navami-joined (never
+#     Saptami-viddha), Maha Navami and Vijaya Dashami at sunrise, Phulpati Saptami at
+#     sunrise; a kshaya tithi's festival on the observer's day, not the UTC one.
+PANCHANGA_PAYLOAD_VERSION = 64
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

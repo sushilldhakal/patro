@@ -58,9 +58,17 @@ def off_its_definition(festival: dict, rule: dict) -> str | None:
         at_sunrise, seen = tithis_of(day)
         if want not in seen:
             return f"tithi {want} does not run on its day (sunrise {at_sunrise})"
-        if rule.get("date_selection", "udaya") == "udaya" and at_sunrise != want:
-            if tithis_of(day + timedelta(days=1))[0] == want:
-                return f"tithi {want} holds the next sunrise, not this day's"
+        selection = rule.get("date_selection", "udaya")
+        next_sunrise = tithis_of(day + timedelta(days=1))[0]
+        if selection == "udaya" and at_sunrise != want and next_sunrise == want:
+            return f"tithi {want} holds the next sunrise, not this day's"
+        if selection == "para_yuta":
+            # Joined with the next tithi, never the one before: on a day it holds sunrise
+            # (the second, when it holds two); only a kshaya tithi may sit off sunrise.
+            if next_sunrise == want:
+                return f"tithi {want} holds the next sunrise too: that day is the one joined with the next"
+            if at_sunrise != want and tithis_of(day - timedelta(days=1))[0] == want:
+                return f"tithi {want} held the previous sunrise"
     elif kind == "solar" and rule.get("bs_month"):
         if bs_of(day)[1:] != (rule["bs_month"], 1):
             return f"not on the first day (sankranti) of BS month {rule['bs_month']}"

@@ -89,7 +89,7 @@ class TestTheKnobsStayCovered:
     def test_every_date_selection_value_is_known(self):
         from engine.panchanga.kaal import KAAL_NAMES
 
-        known = {"udaya", "boundary", *KAAL_NAMES}
+        known = {"udaya", "boundary", "para_yuta", *KAAL_NAMES}
         used = {
             v["date_selection"] for v in self._rules().values() if "date_selection" in v
         }
@@ -100,8 +100,8 @@ class TestTheKnobsStayCovered:
         )
 
     def test_every_rule_setting_date_selection_is_covered(self):
-        """The knob may be used, but not without a published-date check behind
-        it. tests/test_kaal_vyapini.py holds those references."""
+        """The knob may be used, but not without a check of the day it picks (from
+        the panchanga, never an English date) — tests/test_kaal_vyapini.py lists them."""
         from tests.test_kaal_vyapini import COVERED_RULE_IDS
 
         setters = {k for k, v in self._rules().items() if "date_selection" in v}

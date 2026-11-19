@@ -30,8 +30,14 @@ def _festival(id_: str, start: str) -> dict:
     }
 
 
+def _day_of(festival_id: str, bs_year: int = 2083) -> date:
+    return date.fromisoformat(
+        next(f for f in get_bs_festivals(bs_year, DEFAULT_LOCATION)["festivals"] if f["id"] == festival_id)["start_date"]
+    )
+
+
 def test_guru_purnima_day_drops_redundant_vrata_labels():
-    day = date(2026, 7, 29)
+    day = _day_of("guru-purnima")
     payload = festivals_on_date(day, DEFAULT_LOCATION)
     names = {f["id"] for f in payload["festivals"]}
 
@@ -104,7 +110,7 @@ def test_year_filter_keeps_a_multi_day_festival_covered_on_one_of_its_days():
 
 def test_janai_purnima_day_drops_generic_purnima_vrata():
     bs_payload = get_bs_festivals(2083, DEFAULT_LOCATION)
-    day = date(2026, 8, 28)
+    day = _day_of("janai-purnima")
     active = festivals_for_day(bs_payload["festivals"], day)
     ids = {f["id"] for f in active}
 

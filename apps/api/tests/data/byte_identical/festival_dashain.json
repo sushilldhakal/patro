@@ -428,6 +428,19 @@
       "category": "hindu",
       "duration_days": 1,
       "end_date": "2026-10-20",
+      "id": "maha-navami",
+      "importance": "national",
+      "is_public_holiday": false,
+      "name_en": "Maha Navami",
+      "name_ne": "महानवमी",
+      "notes": "The day Navami holds sunrise (Dharma Sindhu: परैव ग्राह्या; Nirnaya Sindhu: न कुर्यान्नवमीं दशम्याम्), so it never merges with Ashtami unless Navami is kshaya.",
+      "start_date": "2026-10-20",
+      "type": "lunar"
+    },
+    {
+      "category": "hindu",
+      "duration_days": 1,
+      "end_date": "2026-10-20",
       "id": "adukh-navami-brata",
       "importance": "regional",
       "is_public_holiday": false,
@@ -452,7 +465,7 @@
     },
     {
       "category": "national",
-      "duration_days": 7,
+      "duration_days": 6,
       "end_date": "2026-10-23",
       "id": "dashain-vidaa",
       "importance": "national",
@@ -460,7 +473,7 @@
       "name_en": "Dashain Holiday",
       "name_ne": "दशैं बिदा",
       "notes": "The government's Dashain rest-day block, every year from Phulpati through Dwadashi. Ghatasthapana is a separate rest day six days earlier. A year's MoHA notice can still replace these dates.",
-      "start_date": "2026-10-17",
+      "start_date": "2026-10-18",
       "type": "lunar"
     }
   ],

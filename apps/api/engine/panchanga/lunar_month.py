@@ -31,7 +31,10 @@ MonthModel = Literal["amanta", "purnimant", "festival"]
 #   udaya     — the day whose sunrise the tithi holds (what printed patro prints)
 #   boundary  — the day the tithi begins, sunrise ignored
 #   madhyahna / aparahna / pradosh — the day the tithi pervades that kaal
-DateSelection = Literal["udaya", "boundary", "madhyahna", "aparahna", "pradosh"]
+#: ``para_yuta``: the tithi joined with the next one, never with the one before — Nirnaya
+#: Sindhu / Dharma Sindhu for शरद् महाअष्टमी ("सप्तमीमिश्रिताष्टमी वर्जनीया"; "घटिकामात्राप्यौदयिकी
+#: नवमीयुता ग्राह्या"): the day it holds sunrise, and when it holds two, the second.
+DateSelection = Literal["udaya", "boundary", "madhyahna", "aparahna", "pradosh", "para_yuta"]
 
 # MoHA patro: when Shrawan civil Purnima falls early in the month, observance
 # shifts to the next civil month (Bhadau) — common in Adhik years.
@@ -718,6 +721,9 @@ def _resolve_tithi_day(
         boundary = _boundary_tithi_date_in_month(month, tithi, paksha, location)
         return (boundary, False) if boundary else None
 
+    if date_selection == "para_yuta":
+        return _para_yuta_tithi_day(month, tithi, paksha, location)
+
     if date_selection in KAAL_NAMES:
         vyapini = _vyapini_tithi_date_in_month(
             month, tithi, paksha, date_selection, location
@@ -733,6 +739,29 @@ def _resolve_tithi_day(
 
     boundary = _boundary_tithi_date_in_month(month, tithi, paksha, location)
     return (boundary, False) if boundary else None
+
+
+def _para_yuta_tithi_day(
+    month: LunarMonth, tithi: int, paksha: str, location: ObserverLocation
+) -> Optional[tuple[date, bool]]:
+    """The day the tithi is joined with the next one and not with the one before.
+
+    The first day it holds sunrise has no earlier tithi at its sunrise; when it holds
+    the next sunrise too (vriddhi), that second day is the one joined with the next tithi.
+    A kshaya tithi holds no sunrise: it can only be kept on the day it runs.
+    """
+    first = _search_tithi_in_month(month, tithi, paksha, location)
+    if first is None:
+        boundary = _boundary_tithi_date_in_month(month, tithi, paksha, location)
+        return (boundary, False) if boundary else None
+    following = first + timedelta(days=1)
+    try:
+        udaya = get_udaya_tithi(following, location)
+    except (RuntimeError, TypeError, ValueError):
+        return (first, True)
+    if udaya["tithi"] == tithi and udaya["paksha"] == paksha:
+        return (following, True)
+    return (first, True)
 
 
 def _candidate_rank(gregorian_year: int):

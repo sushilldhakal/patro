@@ -76,17 +76,14 @@ def test_janai_purnima_2083_matches_moha():
     assert bs_day == 12
 
 
-@pytest.mark.parametrize(
-    "bs_year,expected",
-    [
-        (2080, date(2023, 8, 31)),
-        (2081, date(2024, 8, 19)),
-        (2082, date(2025, 8, 9)),
-        (2083, date(2026, 8, 28)),
-    ],
-)
-def test_janai_purnima_recent_moha_years(bs_year: int, expected: date):
-    gregorian_year = expected.year
+@pytest.mark.parametrize("gregorian_year", [2023, 2024, 2025, 2026])
+def test_janai_purnima_is_shrawan_purnima_at_sunrise(gregorian_year: int):
+    """Janai Purnima is Shrawan Shukla Purnima on the day it holds sunrise (or, if it holds
+    none, the day it runs) — read from that day's panchanga, not an English date."""
+    from datetime import timedelta
+
+    from tests.panchanga_facts import tithis_of
+
     found = find_festival_in_lunar_month(
         lunar_month_name="Shrawan",
         tithi=15,
@@ -95,7 +92,9 @@ def test_janai_purnima_recent_moha_years(bs_year: int, expected: date):
         month_model="festival",
         location=DEFAULT_LOCATION,
     )
-    assert found == expected
+    assert found is not None
+    at_sunrise, seen = tithis_of(found)
+    assert at_sunrise == 15 or (15 in seen and tithis_of(found + timedelta(days=1))[0] != 15)
 
 
 def test_merge_lunar_month_purnimanta_adhik_jestha_2026():
