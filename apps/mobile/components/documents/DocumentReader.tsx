@@ -16,6 +16,8 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { reportNavScrollJS } from "@/lib/nav-compact";
+import { useSharedValue } from "react-native-reanimated";
+import { PageScrollContext } from "@/lib/scroll-motion";
 
 const LIST_BOTTOM_INSET = 48 * spaceUnit;
 
@@ -64,6 +66,9 @@ export function DocumentReader({
 }: Props) {
   const { lang } = useLocale();
   const listRef = useRef<FlatList<ReaderRow>>(null);
+  // The list's offset, handed to its rows: a figure plays only while `useOnScreen` sees it, and
+  // without this every figure laid out below the fold counted as off screen for good.
+  const scrollY = useSharedValue(0);
   const hasFull = audio.full.available;
   const edges = useRef(false);
   useEffect(() => {
@@ -209,50 +214,56 @@ export function DocumentReader({
 
   return (
     <View className="flex-1">
-      <FlatList
-        ref={listRef}
-        data={rows}
-        keyExtractor={(r) => r.key}
-        renderItem={renderItem}
-        ListHeaderComponent={
-          <View>
-            {header}
-            {loadingPrev && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
-          </View>
-        }
-        ListFooterComponent={
-          <View>
-            {loadingNext && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
-            {footer}
-          </View>
-        }
-        onEndReached={() => {
-          if (edges.current) onEndReached?.();
-        }}
-        onEndReachedThreshold={0.6}
-        onStartReached={() => {
-          if (edges.current) onStartReached?.();
-        }}
-        onStartReachedThreshold={0.6}
-        maintainVisibleContentPosition={onStartReached ? { minIndexForVisible: 1 } : undefined}
-        contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
-        contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        initialNumToRender={12}
-        // Folds the floating bar to its icons while reading down (lib/nav-compact.ts).
-        onScroll={(e) => reportNavScrollJS(e.nativeEvent.contentOffset.y)}
-        scrollEventThrottle={32}
-        windowSize={9}
-        onScrollToIndexFailed={(info) => {
-          // Row not measured yet: jump near it, then retry once it has rendered.
-          listRef.current?.scrollToOffset({
-            offset: info.averageItemLength * info.index,
-            animated: false,
-          });
-          setTimeout(() => scrollToIndex(info.index), 120);
-        }}
-      />
+      <PageScrollContext.Provider value={scrollY}>
+        <FlatList
+          ref={listRef}
+          data={rows}
+          keyExtractor={(r) => r.key}
+          renderItem={renderItem}
+          ListHeaderComponent={
+            <View>
+              {header}
+              {loadingPrev && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
+            </View>
+          }
+          ListFooterComponent={
+            <View>
+              {loadingNext && loadingLabel ? <Text className={documentsClasses.edgeNote}>{loadingLabel}</Text> : null}
+              {footer}
+            </View>
+          }
+          onEndReached={() => {
+            if (edges.current) onEndReached?.();
+          }}
+          onEndReachedThreshold={0.6}
+          onStartReached={() => {
+            if (edges.current) onStartReached?.();
+          }}
+          onStartReachedThreshold={0.6}
+          maintainVisibleContentPosition={onStartReached ? { minIndexForVisible: 1 } : undefined}
+          contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
+          contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          initialNumToRender={12}
+          // Folds the floating bar to its icons while reading down (lib/nav-compact.ts).
+          onScroll={(e) => {
+            const y = e.nativeEvent.contentOffset.y;
+            scrollY.set(y);
+            reportNavScrollJS(y);
+          }}
+          scrollEventThrottle={32}
+          windowSize={9}
+          onScrollToIndexFailed={(info) => {
+            // Row not measured yet: jump near it, then retry once it has rendered.
+            listRef.current?.scrollToOffset({
+              offset: info.averageItemLength * info.index,
+              animated: false,
+            });
+            setTimeout(() => scrollToIndex(info.index), 120);
+          }}
+        />
+      </PageScrollContext.Provider>
       <PlaybackBar audio={audio} documentTitle={documentTitle} chapterTitle={chapterTitle} />
     </View>
   );
