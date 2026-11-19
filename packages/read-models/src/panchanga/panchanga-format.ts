@@ -200,6 +200,19 @@ export function getRitu(p?: PanchangaDay | null): RituBlock | undefined {
   return getDetailValue<RituBlock>(p, "ritu");
 }
 
+/** Sidereal companion. Absent on days cached before it was added. */
+export function getRituVedic(p?: PanchangaDay | null): RituBlock | undefined {
+  if (!p) return undefined;
+  const block = getDetailValue<RituBlock>(p, "ritu_vedic");
+  return block && typeof block === "object" ? block : undefined;
+}
+
+export function getAayanVedic(p?: PanchangaDay | null): AayanBlock | undefined {
+  if (!p) return undefined;
+  const block = getDetailValue<AayanBlock>(p, "aayan_vedic");
+  return block && typeof block === "object" ? block : undefined;
+}
+
 export function getAayan(p?: PanchangaDay | null): AayanBlock | undefined {
   if (!p) return undefined;
   return getDetailValue<AayanBlock>(p, "aayan");

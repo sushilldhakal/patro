@@ -42,6 +42,49 @@ def test_ritus_are_60_degree_arcs_with_the_solstices_on_their_edges():
     assert ritu_at(2026, 3, 20) == "Vasanta" and ritu_at(2026, 9, 23) == "Sharad"
 
 
+def test_vedic_season_lags_the_real_one():
+    """Each real start carries the sidereal crossing of the same degree, about
+    the ayanamsha (~24 days) later — the Vedic season does not line up with the sky."""
+    from datetime import date
+
+    from engine.astronomy.engine import default_engine
+    from engine.astronomy.rashi import rashi_service
+    from engine.astronomy.tropical_year import vedic_ritu_at
+    from engine.calendar.tropical_seasons import ayana_cycle, build_tropical_seasons_response
+
+    now = datetime(2026, 11, 12, 6, tzinfo=timezone.utc)
+    for b in tropical_season_cycle(now):
+        gap = (date.fromisoformat(b["vedic"]["start_ad"]) - date.fromisoformat(b["start_ad"])).days
+        assert 20 <= gap <= 28, b
+    current, upcoming = ayana_cycle(now)
+    assert current["name"] == "Dakshinayana" and current["is_current"]
+    assert current["start_ad"] == "2026-06-21" and current["vedic"]["start_ad"] == "2026-07-16"
+    assert upcoming["name"] == "Uttarayana" and upcoming["angle"] == 270
+    assert upcoming["start_ad"] == "2026-12-21"  # 20:50 UTC, the 22nd only in Kathmandu
+    assert upcoming["vedic"]["start_ad"] == "2027-01-14"
+
+    payload = build_tropical_seasons_response(lat=27.7, timezone_name="Asia/Kathmandu")
+    assert payload["boundaries"][0]["is_current"] is True
+    assert payload["vedic_siddhanta"] == "drik"
+
+    jd = default_engine.julian_day(datetime(2026, 11, 16, 6, tzinfo=timezone.utc))
+    assert rashi_service.ritu(jd)["name"] == "Hemanta"
+    assert vedic_ritu_at(jd)["name"] != "Hemanta"
+
+
+def test_sait_cache_key_splits_by_siddhanta():
+    from engine.astronomy.location import DEFAULT_LOCATION
+    from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta
+    from services.festivals.sait_generator import sait_location_key
+
+    bare = sait_location_key(DEFAULT_LOCATION)
+    with use_siddhanta(SURYA_SIDDHANTA):
+        other = sait_location_key(DEFAULT_LOCATION)
+    assert bare != other
+    assert other.endswith("~ss")
+    assert len(other) <= 80
+
+
 def test_season_boundaries_stay_tropical_under_the_surya_siddhanta():
     """Same seasons on the same days under either system — the Surya Siddhanta's
     boundaries come from the real precession, so they sit within a day of drik's."""

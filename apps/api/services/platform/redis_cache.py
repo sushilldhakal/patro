@@ -137,6 +137,18 @@ def build_lock(key: str, ttl: int = 120) -> Iterator[bool]:
                 pass
 
 
+def lock_held(key: str) -> bool:
+    """True while some caller holds :func:`build_lock` for ``key`` (False when Redis is down)."""
+    client = _get_client()
+    if client is None:
+        return False
+    try:
+        return bool(client.exists(_PREFIX + "lock:" + key))
+    except Exception as exc:
+        _trip(exc)
+        return False
+
+
 def wait_for(read, timeout: float = 60.0, interval: float = 0.25):
     """Poll ``read()`` until it returns a value or ``timeout`` elapses."""
     deadline = time.monotonic() + timeout

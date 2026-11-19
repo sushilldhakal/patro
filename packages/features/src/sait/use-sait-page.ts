@@ -22,6 +22,7 @@ import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/pro
 import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/festivals/sait-data";
 import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/festivals/sait-rules-content";
 import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationBasisLabel } from "../_shared";
 
 const HOUR = 1000 * 60 * 60;
 
@@ -36,23 +37,29 @@ export function useSaitPersonalize(year: number, category: string, location: Loc
   const birthTz = selectedProfile?.timezone ?? "Asia/Kathmandu";
   const gender = selectedProfile?.gender ?? "";
 
+  // Only a chosen profile has a janma rāśi. "General (no profile)" must not keep
+  // the last profile's verdicts (keepPreviousData would): those Avoid / śānti
+  // lines are houses counted from that profile's Moon.
+  const profileOn = Boolean(selectedProfile) && Boolean(birth?.moment);
   const query = useQuery({
     queryKey: saitPersonalizeKey(year, category, location, birth?.moment ?? null, birthTz, gender),
     queryFn: () => fetchSaitPersonalize(year, category, location, birth!.moment, birthTz, gender),
-    enabled: Boolean(category) && Boolean(selectedProfile) && Boolean(birth?.moment),
+    enabled: Boolean(category) && profileOn,
     staleTime: HOUR,
-    placeholderData: keepPreviousData,
+    placeholderData: profileOn ? keepPreviousData : undefined,
   });
 
-  const days = query.data?.days;
+  const data = profileOn ? query.data : undefined;
+  const days = data?.days;
   const suitabilityByDay = useMemo(() => new Map<string, SaitSuitability>((days ?? []).map((d) => [`${d.bs_month}-${d.bs_day}`, d.suitability])), [days]);
   const personalizeByDay = useMemo(() => new Map<string, SaitPersonalizeDay>((days ?? []).map((d) => [`${d.bs_month}-${d.bs_day}`, d])), [days]);
 
-  return { selectedProfile, setSelectedProfile, counts: query.data?.counts ?? null, suitabilityByDay, personalizeByDay, data: query.data };
+  return { selectedProfile, setSelectedProfile, counts: data?.counts ?? null, suitabilityByDay, personalizeByDay, data };
 }
 
 export function useSaitPage(category: string | undefined, year: number, location: LocationParams | undefined) {
   const { t, lang, digits } = useLocale();
+  const basis = useCalculationBasisLabel();
   const id = category as SaitCategoryId | undefined;
   const known = Boolean(id && SAIT_CATEGORY_LABELS[id]);
   const content = known ? SAIT_RULES_CONTENT[id!] : undefined;
@@ -109,7 +116,7 @@ export function useSaitPage(category: string | undefined, year: number, location
       empty: t("sait.empty_year"),
       noDates: t("sait.no_dates_year"),
     },
-    countLabel: (n: number, y: number) => t("sait.count_label", { count: digits(n), year: digits(y) }),
+    countLabel: (n: number, y: number) => t("sait.count_label", { count: digits(n), year: digits(y), basis }),
     // Rule toggles (muhūrta categories)
     enabledRuleIds: hasToggles ? enabledRuleIds : undefined,
     toggleRule: hasToggles
@@ -142,6 +149,7 @@ export function useSaitPage(category: string | undefined, year: number, location
 /** Vivah (marriage) sait — its own page in both apps, always a muhūrta category. */
 export function useVivahSaitPage(year: number, era: string, location: LocationParams | undefined) {
   const { t, digits } = useLocale();
+  const basis = useCalculationBasisLabel();
   const detailQuery = useQuery({
     queryKey: saitDetailKey(year, "vivah", location),
     queryFn: () => fetchSaitDetail(year, "vivah", location),
@@ -153,7 +161,7 @@ export function useVivahSaitPage(year: number, era: string, location: LocationPa
     content: SAIT_RULES_CONTENT.vivah,
     copy: { title: t("sait.marriage.title"), subtitle: t("sait.marriage.subtitle"), empty: t("sait.marriage.empty_year") },
     countLabel: (n: number, y: number) =>
-      t(gregorian ? "sait.marriage.count_label_ad" : "sait.marriage.count_label_bs", { count: digits(n), year: digits(y) }),
+      t(gregorian ? "sait.marriage.count_label_ad" : "sait.marriage.count_label_bs", { count: digits(n), year: digits(y), basis }),
     engineVersion: detailQuery.data?.engine_version,
     days: detailQuery.data?.days ?? [],
     loading: detailQuery.isLoading && !detailQuery.data,

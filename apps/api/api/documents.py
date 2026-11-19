@@ -39,13 +39,26 @@ from app import response_cache
 
 router = APIRouter(tags=["documents"])
 
-# Static reference text, but the URL never changes when a manifest is added or
-# edited (the content-hash suffix lives only in the server-side cache key). A
-# day-long browser/edge TTL plus a week of stale-while-revalidate therefore hid
-# new documents from returning visitors and Cloudflare after a deploy. Keep the
-# TTL short so a new document or tab appears within minutes; the gzip disk cache
-# in response_cache still protects the origin.
-_CACHE_CONTROL = "public, max-age=300, s-maxage=300, stale-while-revalidate=300"
+# Static reference text. Chapters were ~45% of all requests that reached the
+# server (three days of nginx logs) because the edge kept them only 5 minutes.
+# The URL does not change when a manifest is edited, so freshness comes from
+# elsewhere: the deploy purges Cloudflare (scripts/deploy.sh, when a Cloudflare
+# token is configured) and the Redis key carries the manifests' content hash.
+#
+# The edge lifetime is still bounded by the signed audio links inside the
+# payload: with signing on, a link works for (TTL - window) after it is handed
+# out at the latest, so edge + stale lifetime must stay below that or a cached
+# chapter would hand out dead audio links. Without signing a day is fine.
+def _document_cache_control() -> str:
+    if config.r2_signing() is None:
+        return "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400"
+    safe = config.r2_signed_url_ttl_seconds() - config.r2_signing_window_seconds()
+    edge = max(300, min(86400, int(safe * 0.66)))
+    swr = max(60, min(3600, safe - edge - 600))
+    return f"public, max-age={min(edge, 3600)}, s-maxage={edge}, stale-while-revalidate={swr}"
+
+
+_CACHE_CONTROL = _document_cache_control()
 
 # The *list* is what changes when a document is added, so browsers never reuse
 # it without asking the server first (``no-cache``: revalidate every time — the

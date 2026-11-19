@@ -26,9 +26,16 @@ class FakeRedis:
     def set(self, key, value, ex=None, nx=False):
         if nx and key in self.data:
             return False
-        self.data[key] = value
+        self.data[key] = value.encode() if isinstance(value, str) else value
         self.ttls[key] = ex
         return True
+
+    def exists(self, key):
+        return int(key in self.data)
+
+    def delete(self, key):
+        self.data.pop(key, None)
+        self.ttls.pop(key, None)
 
 
 @pytest.fixture
@@ -178,3 +185,78 @@ def test_ttl_rules():
     assert mw.ttl_for("/api/v1/panchanga/year/2083", {}, "public, max-age=86400, s-maxage=31536000") == 7 * 24 * 3600
     assert mw.ttl_for("/api/v1/nepal/festivals", {}, None) == 15 * 60
     assert mw.ttl_for("/api/v1/nepal/festivals", {"year": "2083"}, None) == 24 * 3600
+
+
+def test_stale_if_error_is_added_to_public_responses(fake):
+    client = _app([])
+    miss = client.get("/api/v1/panchanga/2026-11-12")
+    hit = client.get("/api/v1/panchanga/2026-11-12")
+    for r in (miss, hit):
+        assert "stale-if-error=86400" in r.headers["cache-control"]
+    assert "stale-if-error" not in client.get("/api/v1/private-thing").headers["cache-control"]
+
+
+def test_key_does_not_change_on_deploy_but_epoch_flushes(monkeypatch):
+    scope = {"path": "/api/v1/x", "query_string": b"a=1", "headers": [(b"host", b"h")]}
+    first = mw.cache_key(scope)
+    assert mw.cache_key(scope) == first  # no git revision in the key any more
+    monkeypatch.setenv("RESPONSE_CACHE_EPOCH", "flush-1")
+    assert mw.cache_key(scope) != first
+
+
+def test_personal_rashifal_is_kept_server_side_only_for_a_named_day():
+    personal = "/api/v1/panchanga/rashifal/personal"
+    assert mw.ttl_for(personal, {"date": "2026-11-19"}, "private, max-age=120") == 6 * 3600
+    assert mw.ttl_for(personal, {}, "private, max-age=120") is None
+    assert mw.ttl_for(personal, {"date": "2026-11-19"}, "private, no-store") is None
+    assert mw.ttl_for("/api/v1/kundali/detail", {"date": "x"}, "private, max-age=120") is None
+
+
+def _async_app(calls: list[str]):
+    import asyncio
+
+    app = FastAPI()
+    app.add_middleware(mw.RedisResponseCacheMiddleware)
+
+    @app.get("/api/v1/nepal/sait/2083/month/9")
+    async def slow_shared():
+        calls.append("shared")
+        await asyncio.sleep(0.3)
+        return {"ok": True}
+
+    @app.get("/api/v1/slow-private")
+    async def slow_private():
+        calls.append("private")
+        await asyncio.sleep(0.2)
+        return JSONResponse({"ok": True}, headers={"Cache-Control": "private, no-store"})
+
+    return app
+
+
+def _gather(app, path: str, n: int):
+    import asyncio
+
+    import httpx
+
+    async def run():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://t") as c:
+            return await asyncio.gather(*(c.get(path) for _ in range(n)))
+
+    return asyncio.run(run())
+
+
+def test_simultaneous_identical_misses_compute_once(fake):
+    calls: list[str] = []
+    responses = _gather(_async_app(calls), "/api/v1/nepal/sait/2083/month/9", 5)
+    assert calls == ["shared"]
+    assert all(r.status_code == 200 and r.json() == {"ok": True} for r in responses)
+    assert sorted(r.headers["x-cache"] for r in responses) == ["HIT"] * 4 + ["MISS"]
+    assert not any(k.startswith("vp:lock:") for k in fake.data)  # lock released
+
+
+def test_waiters_compute_themselves_when_the_answer_is_not_cacheable(fake):
+    calls: list[str] = []
+    responses = _gather(_async_app(calls), "/api/v1/slow-private", 3)
+    assert len(calls) == 3
+    assert all(r.status_code == 200 for r in responses)

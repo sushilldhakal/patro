@@ -184,7 +184,10 @@ logger = logging.getLogger(__name__)
 # v61: ``ritu_pauranik`` / ``ritu_vedic`` / ``aayan_pauranik`` / ``aayan_vedic``
 #     removed — ``ritu`` and ``aayan`` are the only (tropical) values, from the
 #     one source engine.astronomy.tropical_year.
-PANCHANGA_PAYLOAD_VERSION = 61
+# v62: ``ritu_vedic`` and ``aayan_vedic`` are back as a sidereal companion. The
+#     tropical ``ritu`` and ``aayan`` are unchanged; the companion is so a
+#     reader can see the Vedic season does not line up with the real one.
+PANCHANGA_PAYLOAD_VERSION = 62
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

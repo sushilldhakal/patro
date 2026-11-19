@@ -2,8 +2,12 @@
  * ऋतु — the six seasons, driven by the Sun's tropical longitude (the API
  * computes the boundaries). South of the equator the displayed season shifts
  * three slots; the dates do not. This turns the boundaries into card data.
+ *
+ * Each real-sky start may carry a `vedic` crossing: the day the sidereal Sun
+ * reaches the same degree. The two are shown together so the reader sees the
+ * season the texts name does not line up with the one in the sky.
  */
-import type { TropicalSeasonsResponse } from "@vedic-patro/api-client";
+import type { SolarCrossing, TropicalSeasonsResponse } from "@vedic-patro/api-client";
 import { adToBS } from "@vedic-patro/domain/calendar/bs-calendar";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 
@@ -17,22 +21,38 @@ export function fmtAdDayMonth(adStr: string, lang: "ne" | "en"): string {
   return civilNoon(adStr).toLocaleDateString(lang === "en" ? "en-US" : "ne-NP", { day: "numeric", month: "short", timeZone: "UTC" });
 }
 
+/** Signed whole days from `fromAd` to `toAd`. */
+export const daysBetween = (fromAd: string, toAd: string) => Math.round((midnightUtcMs(toAd) - midnightUtcMs(fromAd)) / DAY);
+
+export interface CivilDay {
+  /** `YYYY-MM-DD` in the place's zone. */
+  ad: string;
+  bs: { day: number; month: number };
+}
+
+/** A crossing's civil day at the place, in AD and BS. */
+export function civilDayOf(crossing: SolarCrossing, tz: string): CivilDay {
+  const ad = todayAdStringInTimezone(new Date(crossing.start_instant_utc), tz);
+  const bs = adToBS(civilNoon(ad));
+  return { ad, bs: { day: bs.day, month: bs.month } };
+}
+
 export interface SeasonItem {
   solarSlot: number;
   angle: number;
-  startBs: { day: number; month: number };
+  startBs: CivilDay["bs"];
   startAd: string;
   isCurrent: boolean;
   daysUntil: number;
   progress: { elapsed: number; total: number; pct: number } | null;
+  /** The sidereal Sun's crossing of the same degree (the sankranti). */
+  vedic?: CivilDay;
 }
 
 export function seasonItems(boundaries: TropicalSeasonsResponse["boundaries"] | undefined, todayAd: string, tz: string, nowMs: number): SeasonItem[] {
   if (!boundaries?.length) return [];
-  const todayMid = midnightUtcMs(todayAd);
   return boundaries.map((b, i) => {
-    const startAd = todayAdStringInTimezone(new Date(b.start_instant_utc), tz);
-    const bs = adToBS(civilNoon(startAd));
+    const start = civilDayOf(b, tz);
     const next = boundaries[i + 1];
     let progress: SeasonItem["progress"] = null;
     if (b.is_current && next) {
@@ -44,11 +64,12 @@ export function seasonItems(boundaries: TropicalSeasonsResponse["boundaries"] | 
     return {
       solarSlot: b.slot,
       angle: b.angle,
-      startBs: { day: bs.day, month: bs.month },
-      startAd,
+      startBs: start.bs,
+      startAd: start.ad,
       isCurrent: b.is_current,
-      daysUntil: Math.round((midnightUtcMs(startAd) - todayMid) / DAY),
+      daysUntil: daysBetween(todayAd, start.ad),
       progress,
+      vedic: b.vedic ? civilDayOf(b.vedic, tz) : undefined,
     };
   });
 }

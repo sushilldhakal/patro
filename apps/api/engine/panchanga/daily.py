@@ -16,6 +16,7 @@ from engine.astronomy.moon import (
 from engine.panchanga.angas import panchanga_service
 from engine.panchanga.spashta import spashta_table
 from engine.astronomy.rashi import rashi_service
+from engine.astronomy.tropical_year import vedic_ayana_at, vedic_ritu_at
 from engine.astronomy.sun import sun_service
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
@@ -224,6 +225,9 @@ def _assemble_udaya_panchanga(
     # Ritu and ayana: the tropical year, from its one source (engine.astronomy.tropical_year).
     ritu = rashi_service.ritu(sunrise_jd, lat=location.lat)
     aayan = rashi_service.aayan(sunrise_jd)
+    # Companion only. ``ritu`` and ``aayan`` stay the real-sky tropical values.
+    ritu_vedic = vedic_ritu_at(sunrise_jd, location.lat)
+    aayan_vedic = vedic_ayana_at(sunrise_jd)
     lagna_spans = build_lagna_spans(
         sunrise_utc,
         next_sunrise_utc,
@@ -321,6 +325,7 @@ def _assemble_udaya_panchanga(
         },
         # The ayana shown everywhere is the real one: the Sun turns at the solstices.
         "aayan": aayan,
+        "aayan_vedic": aayan_vedic,
         "vaara": {
             "number": vaara_num,
             "name_sanskrit": vaara_sanskrit,
@@ -343,6 +348,7 @@ def _assemble_udaya_panchanga(
         "surya_nakshatra": surya_nakshatra,
         # The real season, from where the Sun is on its path — not the month.
         "ritu": ritu,
+        "ritu_vedic": ritu_vedic,
         "lunar_month": lunar,
         "lunar_calendar": lunar_calendar,
         "planets": spashta_table(sunrise_jd),

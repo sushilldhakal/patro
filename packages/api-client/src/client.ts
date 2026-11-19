@@ -84,9 +84,9 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // instead of serving stale ones. Bump here — one place for both apps.
 
 /** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga/panchanga_cache.py. */
-export const PANCHANGA_CACHE_VERSION = "6106";
+export const PANCHANGA_CACHE_VERSION = "6206";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
-export const SAIT_CACHE_VERSION = "17";
+export const SAIT_CACHE_VERSION = "18";
 /** Graha sthiti / asta / vakri / eclipse (`gv=`). */
 export const GRAHA_CACHE_VERSION = "5";
 export const KUNDALI_ENGINE_VERSION = "8";
@@ -212,7 +212,7 @@ export const fetchPanchangaAtTime = (
 
 export const seasonsKeys = {
   tropical: (location?: LocationParams) =>
-    ["seasons", "tropical", locationCacheKey(location)] as const,
+    ["seasons", "tropical", getCalculationSystem(), locationCacheKey(location)] as const,
 };
 
 export const fetchTropicalSeasons = (location?: LocationParams) =>
@@ -257,6 +257,7 @@ export const saitDetailKey = (
     "sait",
     "detail",
     SAIT_CACHE_VERSION,
+    getCalculationSystem(),
     year,
     category,
     locationCacheKey(location),
@@ -276,6 +277,7 @@ export const saitPersonalizeKey = (
     "sait",
     "personalize",
     SAIT_CACHE_VERSION,
+    getCalculationSystem(),
     year,
     category,
     locationCacheKey(location),
@@ -604,7 +606,7 @@ export const panchakKeys = {
 export const saitKeys = {
   years: () => ["sait", "years"] as const,
   entries: (year: number, category: string, location?: LocationParams) =>
-    ["sait", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const,
+    ["sait", SAIT_CACHE_VERSION, getCalculationSystem(), year, category, locationCacheKey(location)] as const,
 };
 
 
@@ -938,7 +940,7 @@ export const fetchUpcomingFestivals = (
 export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");
 
 export const saitMonthAllKey = (year: number, month: number, location?: LocationParams) =>
-  ["sait", "month-all", SAIT_CACHE_VERSION, year, month, locationCacheKey(location)] as const;
+  ["sait", "month-all", SAIT_CACHE_VERSION, getCalculationSystem(), year, month, locationCacheKey(location)] as const;
 
 export const fetchSaitAbout = () => get<SaitAboutResponse>("/nepal/sait/about");
 

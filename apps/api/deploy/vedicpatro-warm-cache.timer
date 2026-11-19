@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly cache warm for the next 60 days, calendar months, sait and year pages
+
+[Timer]
+# 18:30 UTC = 00:15 NPT: just after midnight in Nepal, when "today" and the
+# 60-day window move forward and traffic is lowest.
+OnCalendar=*-*-* 18:30:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

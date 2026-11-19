@@ -35,6 +35,7 @@ import type {
 } from "@vedic-patro/api-client";
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import type { FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
+import type { TableKey } from "@vedic-patro/drawing/learn/surya-tables";
 import type { BhavaHouse } from "@vedic-patro/domain/jyotish/bhava";
 import type { ShadbalaScale } from "@vedic-patro/domain/jyotish/kundali/shadbala-chart";
 import type { GrahaDetailsInput, KundaliNavIcon, KundaliSectionId, DivisionalPanelConfig } from "@vedic-patro/features/kundali";
@@ -208,6 +209,11 @@ export type SuryaFigureProps = {
   controls: ReactNode;
   /** Website: the element the app watches to play only while it is on screen. */
   registerRef?: (node: unknown) => void;
+};
+
+/** A Surya Siddhanta reference table: a table on wide screens, an accordion on phones. */
+export type SuryaTableProps = {
+  tableKey: TableKey;
 };
 
 export type ShlokaCardProps = {
@@ -607,6 +613,7 @@ export type JyotishKit = {
   SaitAsidePanel: ComponentType<SaitAsidePanelProps>;
   ShlokaCard: ComponentType<ShlokaCardProps>;
   SuryaFigure: ComponentType<SuryaFigureProps>;
+  SuryaTable: ComponentType<SuryaTableProps>;
   DocumentGroupHeading: ComponentType<DocumentGroupHeadingProps>;
   PlaybackBar: ComponentType<PlaybackBarProps>;
   AyanamshaSelector: ComponentType<AyanamshaSelectorProps>;

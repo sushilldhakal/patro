@@ -7,6 +7,14 @@
     "name_sanskrit": "Dakshinayana",
     "sun_rashi": 7
   },
+  "aayan_vedic": {
+    "basis": "sidereal",
+    "kranti_mark": "द",
+    "name": "Dakshinayana",
+    "name_ne": "दक्षिणायण",
+    "name_sanskrit": "Dakshinayana",
+    "sun_rashi": 7
+  },
   "anchor": "sunrise",
   "ayanamsa": {
     "degrees": 24.233762,
@@ -2456,6 +2464,16 @@
   },
   "ritu": {
     "basis": "tropical",
+    "name": "Sharad",
+    "name_ne": "शरद",
+    "name_sanskrit": "Sharad",
+    "number": 4,
+    "season": "Autumn",
+    "solar_slot": 3,
+    "sun_rashi": 7
+  },
+  "ritu_vedic": {
+    "basis": "sidereal",
     "name": "Sharad",
     "name_ne": "शरद",
     "name_sanskrit": "Sharad",

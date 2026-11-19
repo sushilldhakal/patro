@@ -11,18 +11,39 @@
  * The drawing box is 360 × 200.
  */
 import { udayasta } from "./surya-figure";
+import { CLASSICAL_DRAW } from "./surya-classical";
+import { GANITA } from "./surya-ganita";
+import { MORE, type MoreKey } from "./surya-more";
+import {
+  arc,
+  circle,
+  DEV,
+  dms,
+  fmt,
+  H,
+  L,
+  line,
+  num,
+  path,
+  polar,
+  RAD,
+  SURYA_SINES,
+  suryaArc,
+  suryaJya,
+  text,
+  tri,
+  TRIJYA,
+  W,
+  wrap,
+  type FigureFrame,
+  type Lang,
+  type Shape,
+  type Tone,
+} from "./surya-kit";
 
-export type Lang = "ne" | "en";
-export type Tone = "ink" | "muted" | "faint" | "sun" | "moon" | "earth" | "accent" | "shadow" | "planet";
+export { SURYA_SINES, suryaJya } from "./surya-kit";
+export type { FigureFrame, Lang, MathPart, Shape, Step, Tone } from "./surya-kit";
 
-type Style = { fill?: Tone; stroke?: Tone; w?: number; dash?: string; opacity?: number };
-export type Shape =
-  | ({ k: "circle"; x: number; y: number; r: number } & Style)
-  | ({ k: "line"; x1: number; y1: number; x2: number; y2: number } & Style)
-  | ({ k: "path"; d: string } & Style)
-  | { k: "text"; x: number; y: number; text: string; tone: Tone; size?: number; anchor?: "start" | "middle" | "end"; bold?: boolean };
-
-export type FigureFrame = { shapes: Shape[]; readout: string[] };
 
 export type FigureKey =
   | "time-units"
@@ -47,12 +68,19 @@ export type FigureKey =
   | "bhugola"
   | "kaksha"
   | "armillary"
-  | "measures";
+  | "measures"
+  | "kalpa"
+  | "ahargana"
+  | "deshantara"
+  | "sighra-construction"
+  | "sighra-inferior"
+  | "sighra-superior"
+  | MoreKey;
 
 type Meta = { title: [string, string]; caption: [string, string]; seconds: number; still: number };
 
 /** [Nepali, English] pairs. */
-const META: Record<FigureKey, Meta> = {
+const META: Record<Exclude<FigureKey, keyof typeof CLASSICAL_DRAW | MoreKey>, Meta> = {
   "time-units": {
     title: ["कालका एकाइ", "Units of time"],
     caption: ["६ प्राण = १ पल, ६० पल = १ घटी, ६० घटी = १ नाक्षत्र अहोरात्र।", "6 prāṇas make a pala, 60 palas a ghaṭī, 60 ghaṭīs a sidereal day."],
@@ -193,98 +221,109 @@ const META: Record<FigureKey, Meta> = {
   },
 };
 
+/** The lettered constructions with their worked arithmetic (surya-classical.ts). */
+const CLASSICAL_META: Record<keyof typeof CLASSICAL_DRAW, Meta> = {
+  kalpa: {
+    title: ["कल्प र सृष्टिदेखिका वर्ष", "The kalpa and the years since creation"],
+    caption: [
+      "१४ मनु र १५ सन्धिले एक कल्प। ६ मनु, ७ सन्धि, २७ महायुग र २८औँको कृत बितेपछि ग्रह गणना सुरु हुन्छ।",
+      "Fourteen Manus and fifteen twilights make a kalpa. The count starts after 6 Manus, 7 twilights, 27 mahāyugas and the Kṛta of the 28th.",
+    ],
+    seconds: 30,
+    still: 0.455,
+  },
+  ahargana: {
+    title: ["अहर्गण: दिनको गन्ती", "Ahargaṇa: counting the days"],
+    caption: [
+      "सौर मासबाट अधिमास, चान्द्र मास, तिथि र क्षय तिथि निकालेर लङ्काका मध्यरात गनिन्छ।",
+      "From solar months come the intercalary months, lunar months, tithis and omitted tithis, and so the midnights at Laṅkā.",
+    ],
+    seconds: 36,
+    still: 0.6,
+  },
+  deshantara: {
+    title: ["देशान्तर: आफ्नो ठाउँको संशोधन", "Deśāntara: correcting for one's own place"],
+    caption: [
+      "लङ्का–उज्जयिनी–मेरु रेखाबाट पूर्व वा पश्चिमको दूरी योजनमा, र त्यसले ग्रह र समयमा ल्याउने फरक।",
+      "The distance east or west of the Laṅkā–Ujjayinī–Meru line in yojanas, and what it changes in the planets and the time.",
+    ],
+    seconds: 30,
+    still: 0.05,
+  },
+  "sighra-construction": {
+    title: ["शीघ्रफलको रचना", "Constructing the śīghra correction"],
+    caption: [
+      "मध्यम ग्रह म को परिधिमा स्पष्ट ग्रह ग। गल भुजफल, मल कोटिफल, भूग कर्ण। ∠मभूग शीघ्रफल हो।",
+      "The true planet P rides the epicycle round the mean planet M. PF is bhujaphala, MF kotiphala, EP the hypotenuse; ∠MEP is the correction.",
+    ],
+    seconds: 30,
+    still: 0.18,
+  },
+  "sighra-inferior": {
+    title: ["भित्री ग्रहको शीघ्रफल (शुक्र)", "Śīghra of an inner planet (Venus)"],
+    caption: [
+      "सूर्यवरिपरि पृथ्वी र शुक्र। भूसू मध्यम ग्रह, सूशु शीघ्रोच्च। शुक्रको परिधि २६२° = दुई कक्षाको अनुपात।",
+      "Earth and Venus round the sun. EH is the mean planet, HV the śīghrocca. Venus's 262° epicycle is the ratio of the two orbits.",
+    ],
+    seconds: 30,
+    still: 0.2,
+  },
+  "sighra-superior": {
+    title: ["बाहिरी ग्रहको शीघ्रफल (बृहस्पति)", "Śīghra of an outer planet (Jupiter)"],
+    caption: [
+      "सूर्यवरिपरि सानो वृत्तमा पृथ्वी, ठूलोमा बृहस्पति। सूबृ मध्यम ग्रह, सूभू शीघ्रोच्च। परिधि ७०° = पृथ्वी ÷ बृहस्पतिको कक्षा।",
+      "Earth on the small circle round the sun, Jupiter on the large one. HJ is the mean planet, EH the śīghrocca. The 70° epicycle is the ratio of the orbits.",
+    ],
+    seconds: 30,
+    still: 0.3,
+  },
+};
+
 /** Where each figure stands: before the first verse of the passage it explains. */
 export const SURYA_FIGURE_PLACES: { chapter: number; verse: number; key: FigureKey }[] = [
   { chapter: 1, verse: 10, key: "time-units" },
   { chapter: 1, verse: 15, key: "yuga" },
+  { chapter: 1, verse: 19, key: "kalpa" },
   { chapter: 1, verse: 29, key: "mean-motion" },
+  { chapter: 1, verse: 45, key: "ahargana" },
   { chapter: 1, verse: 59, key: "earth-size" },
+  { chapter: 1, verse: 61, key: "deshantara" },
   { chapter: 2, verse: 1, key: "manda" },
   { chapter: 2, verse: 15, key: "sine-table" },
   { chapter: 2, verse: 28, key: "declination" },
   { chapter: 2, verse: 34, key: "sighra" },
+  { chapter: 2, verse: 39, key: "sighra-construction" },
+  { chapter: 2, verse: 41, key: "sighra-inferior" },
+  { chapter: 2, verse: 41, key: "sighra-superior" },
   { chapter: 2, verse: 61, key: "day-length" },
-  { chapter: 3, verse: 1, key: "gnomon" },
-  { chapter: 4, verse: 1, key: "lunar-eclipse" },
+  { chapter: 3, verse: 8, key: "gnomon" },
+  { chapter: 4, verse: 10, key: "lunar-eclipse" },
   { chapter: 5, verse: 1, key: "parallax" },
-  { chapter: 5, verse: 10, key: "solar-eclipse" },
+  { chapter: 5, verse: 13, key: "solar-eclipse" },
   { chapter: 6, verse: 1, key: "projection" },
-  { chapter: 7, verse: 1, key: "conjunction" },
+  { chapter: 7, verse: 12, key: "conjunction" },
   { chapter: 8, verse: 1, key: "nakshatra" },
   { chapter: 9, verse: 1, key: "udayasta" },
-  { chapter: 10, verse: 1, key: "moon-phase" },
+  { chapter: 10, verse: 9, key: "moon-phase" },
   { chapter: 11, verse: 1, key: "pata" },
   { chapter: 12, verse: 32, key: "bhugola" },
-  { chapter: 12, verse: 78, key: "kaksha" },
-  { chapter: 13, verse: 1, key: "armillary" },
+  { chapter: 12, verse: 75, key: "kaksha" },
+  { chapter: 13, verse: 4, key: "armillary" },
   { chapter: 14, verse: 1, key: "measures" },
 ];
 
+const MORE_PLACES: { chapter: number; verse: number; key: FigureKey }[] = (Object.keys(MORE) as MoreKey[]).map((key) => ({ chapter: MORE[key].chapter, verse: MORE[key].verse, key }));
+
 export function suryaFiguresFor(chapter: number): { verse: number; key: FigureKey }[] {
-  return SURYA_FIGURE_PLACES.filter((p) => p.chapter === chapter);
+  return [...SURYA_FIGURE_PLACES, ...MORE_PLACES].filter((p) => p.chapter === chapter).sort((a, b) => a.verse - b.verse);
 }
 
 export function figureInfo(key: FigureKey, lang: Lang): { title: string; caption: string; seconds: number; still: number } {
-  const m = META[key];
+  const m: Meta = key in MORE ? MORE[key as MoreKey] : key in CLASSICAL_META ? CLASSICAL_META[key as keyof typeof CLASSICAL_META] : META[key as keyof typeof META];
   const i = lang === "en" ? 1 : 0;
   return { title: m.title[i], caption: m.caption[i], seconds: m.seconds, still: m.still };
 }
 
-// ---------------------------------------------------------------- helpers
-
-const DEV = "०१२३४५६७८९";
-const RAD = Math.PI / 180;
-const W = 360;
-const H = 200;
-
-function num(lang: Lang, value: number | string): string {
-  const s = String(value);
-  return lang === "ne" ? s.replace(/[0-9]/g, (d) => DEV[Number(d)]!) : s;
-}
-function fmt(lang: Lang, value: number, digits = 0): string {
-  return num(lang, value.toFixed(digits));
-}
-/** 23.5 → 23°30′ */
-function dms(lang: Lang, deg: number): string {
-  const sign = deg < 0 ? "−" : "";
-  let a = Math.abs(deg);
-  let d = Math.floor(a);
-  let m = Math.round((a - d) * 60);
-  if (m === 60) {
-    d += 1;
-    m = 0;
-  }
-  a = d;
-  return `${sign}${num(lang, a)}°${m ? num(lang, String(m).padStart(2, "0")) + "′" : ""}`;
-}
-function L(lang: Lang, ne: string, en: string): string {
-  return lang === "en" ? en : ne;
-}
-function circle(x: number, y: number, r: number, s: Style): Shape {
-  return { k: "circle", x, y, r, ...s };
-}
-function line(x1: number, y1: number, x2: number, y2: number, s: Style): Shape {
-  return { k: "line", x1, y1, x2, y2, ...s };
-}
-function path(d: string, s: Style): Shape {
-  return { k: "path", d, ...s };
-}
-function text(x: number, y: number, t: string, tone: Tone = "ink", size = 11, anchor: "start" | "middle" | "end" = "middle", bold = false): Shape {
-  return { k: "text", x, y, text: t, tone, size, anchor, bold };
-}
-function polar(cx: number, cy: number, r: number, deg: number): { x: number; y: number } {
-  // 0° points right, angles grow anticlockwise (east is anticlockwise on these sky drawings)
-  return { x: cx + r * Math.cos(deg * RAD), y: cy - r * Math.sin(deg * RAD) };
-}
-function arc(cx: number, cy: number, r: number, from: number, to: number): string {
-  const a = polar(cx, cy, r, from);
-  const b = polar(cx, cy, r, to);
-  const large = Math.abs(to - from) > 180 ? 1 : 0;
-  const sweep = to > from ? 0 : 1;
-  return `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} A ${r} ${r} 0 ${large} ${sweep} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
-}
-const wrap = (deg: number) => ((deg % 360) + 360) % 360;
-const tri = (t: number) => 1 - Math.abs(1 - 2 * t); // 0 → 1 → 0
 
 // ---------------------------------------------------------------- chapter 1
 
@@ -438,9 +477,6 @@ function earthSize(t: number, lang: Lang): FigureFrame {
 
 // ---------------------------------------------------------------- chapter 2
 
-/** Surya Siddhanta 2.17–22: the 24 sines in minutes, radius 3438. */
-export const SURYA_SINES = [225, 449, 671, 890, 1105, 1315, 1520, 1719, 1910, 2093, 2267, 2431, 2585, 2728, 2859, 2978, 3084, 3177, 3256, 3321, 3372, 3409, 3431, 3438];
-const TRIJYA = 3438;
 
 function sineTable(t: number, lang: Lang): FigureFrame {
   const step = Math.min(23, Math.floor(tri(t) * 24));
@@ -482,31 +518,6 @@ function sineTable(t: number, lang: Lang): FigureFrame {
   };
 }
 
-/** Linear interpolation in the Surya Siddhanta's own table (2.31–32). */
-export function suryaJya(deg: number): number {
-  const a = wrap(deg);
-  const q = a % 180;
-  const x = q > 90 ? 180 - q : q;
-  const idx = x / 3.75;
-  const i = Math.floor(idx);
-  const lo = i === 0 ? 0 : SURYA_SINES[i - 1]!;
-  const hi = SURYA_SINES[Math.min(23, i)]!;
-  const v = lo + (hi - lo) * (idx - i);
-  return a >= 180 ? -v : v;
-}
-function suryaArc(jya: number): number {
-  const s = Math.min(TRIJYA, Math.abs(jya));
-  let prev = 0;
-  for (let i = 0; i < 24; i += 1) {
-    const hi = SURYA_SINES[i]!;
-    if (s <= hi) {
-      const deg = (i + (s - prev) / (hi - prev)) * 3.75;
-      return jya < 0 ? -deg : deg;
-    }
-    prev = hi;
-  }
-  return jya < 0 ? -90 : 90;
-}
 
 function declination(t: number, lang: Lang): FigureFrame {
   const lon = t * 360;
@@ -1217,11 +1228,16 @@ const DRAW: Record<FigureKey, (t: number, lang: Lang) => FigureFrame> = {
   kaksha,
   armillary,
   measures,
+  ...CLASSICAL_DRAW,
+  ...(Object.fromEntries((Object.keys(MORE) as MoreKey[]).map((k) => [k, MORE[k].draw])) as Record<MoreKey, (t: number, lang: Lang) => FigureFrame>),
 };
 
+/** One frame of a figure: its shapes, live numbers and, where written, the worked arithmetic. */
 export function suryaFigure(key: FigureKey, t: number, lang: Lang): FigureFrame {
   const turn = ((t % 1) + 1) % 1;
-  return DRAW[key](turn, lang);
+  const frame = DRAW[key](turn, lang);
+  const steps = frame.steps ?? GANITA[key]?.(turn, lang);
+  return steps ? { ...frame, steps } : frame;
 }
 
 export const SURYA_FIGURE_BOX = { width: W, height: H };

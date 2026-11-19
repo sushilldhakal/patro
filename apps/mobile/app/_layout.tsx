@@ -134,7 +134,9 @@ const queryClient = new QueryClient({
       // Two retries with the default backoff (1 s, 2 s) kept a failed screen on its
       // loader for 3+ s before showing the error or the offline copy.
       retry: (failureCount, error) => failureCount < 1 && isWorthRetrying(error),
-      retryDelay: 800,
+      // Jittered: when the server sheds load (503), thousands of phones must not
+      // all come back in the same instant.
+      retryDelay: () => 800 + Math.random() * 1700,
     },
   },
 });

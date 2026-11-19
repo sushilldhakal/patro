@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { canonVerseLabel, type ReaderRow } from "@vedic-patro/features/documents";
 import { useLocale } from "@vedic-patro/i18n/react";
-import { DocumentGroupHeading, SuryaFigure } from "@vedic-patro/ui/kit/jyotish";
+import { DocumentGroupHeading, SuryaFigure, SuryaTable } from "@vedic-patro/ui/kit/jyotish";
 import { brand } from "@vedic-patro/design-tokens";
 import { figureInfo, type FigureKey } from "@vedic-patro/drawing/learn/surya-figures";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
@@ -118,6 +118,7 @@ function RowView({
       />
     );
   }
+  if (row.kind === "surya-table") return <SuryaTable tableKey={row.table} />;
   if (row.kind === "surya-figure") {
     return <SuryaFigureRow figure={row.figure} />;
   }
@@ -148,7 +149,8 @@ function estimateSlot(slot: Slot | undefined): number {
   if (slot.row.kind === "verse") return 176;
   if (slot.row.kind === "sukta") return 64;
   if (slot.row.kind === "images") return 220;
-  if (slot.row.kind === "surya-figure") return 470;
+  if (slot.row.kind === "surya-figure") return 860;
+  if (slot.row.kind === "surya-table") return 640;
   return 80;
 }
 
@@ -381,13 +383,12 @@ function VirtualRows({
 
 const FIGURE_FRAME_MS = 33;
 
-/** Plays a diagram while it is on screen (30 frames a second at most); the slider steps it by hand. */
+/** A diagram stands still until the reader presses play; then it runs while on screen (30 frames a second at most). */
 function SuryaFigureRow({ figure }: { figure: FigureKey }) {
   const { t } = useLocale();
   const { seconds, still } = figureInfo(figure, "en");
   const [phase, setPhase] = useState(still);
-  // Reduced motion leaves the drawing still until the reader moves it.
-  const [playing, setPlaying] = useState(() => typeof window !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [playing, setPlaying] = useState(false);
   const [node, setNode] = useState<HTMLElement | null>(null);
   const [onScreen, setOnScreen] = useState(false);
   const register = useCallback((el: unknown) => setNode(el as HTMLElement | null), []);

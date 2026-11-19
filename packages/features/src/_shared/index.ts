@@ -5,6 +5,7 @@
 import { keepPreviousData, useQuery, type QueryKey, type UseQueryResult } from "@tanstack/react-query";
 import type { LocationParams } from "@vedic-patro/api-client";
 import type { Era } from "@vedic-patro/domain/calendar/era";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 
 /** How long a year of patro data stays fresh — the same on every year page, in both apps. */
 export const YEAR_DATA_STALE_TIME = 1000 * 60 * 60;
@@ -41,4 +42,16 @@ export function statusOf(query: { isLoading: boolean; isError: boolean; data?: u
   if (query.data !== undefined) return "ready";
   if (query.isError) return "error";
   return "loading";
+}
+
+/**
+ * "Drik (modern)" / "Surya Siddhanta": the system the reader chose on Account,
+ * named on every page whose days or times it computed. Reading it here also
+ * re-renders the page when the choice changes, so its query keys (which read
+ * the system) refetch.
+ */
+export function useCalculationBasisLabel(): string {
+  const { t } = useLocale();
+  const { system } = useCalculationSystem();
+  return t(system === "surya_siddhanta" ? "calculation_system.surya_siddhanta" : "calculation_system.drik");
 }

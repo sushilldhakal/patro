@@ -13,6 +13,7 @@ import { getPlanetRows, getSunriseLagnaRow } from "@vedic-patro/read-models/panc
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useForegroundInterval } from "../common/app-foreground";
+import { useCalculationBasisLabel } from "../_shared";
 
 export type DayTimelineMode = "Day-Night" | "Calendar Day";
 
@@ -40,6 +41,7 @@ export function useDayTimeline({
   civilLoading?: boolean;
 }) {
   const { t } = useLocale();
+  const basis = useCalculationBasisLabel();
   const isCivil = mode === "Calendar Day";
   const data = isCivil ? (civil ? buildCivilTimelineData(civil, p ?? undefined) : null) : p ? buildDayTimelineData(p) : null;
   const planets = (() => {
@@ -100,9 +102,10 @@ export function useDayTimeline({
     nowLabel,
     copy: {
       title: t("panchanga.day_cycle.title"),
-      subtitle: isCivil
-        ? t("ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
-        : t("ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise"),
+      // The periods' times come from the reader's calculation system; say which.
+      subtitle: `${t(
+        isCivil ? "ui.panchanga.full_panchanga_timeline_midnight_to_midnight" : "ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise",
+      )} · ${basis}`,
       good: t("panchanga.day_cycle.good"),
       bad: t("panchanga.day_cycle.bad"),
       night: t("panchanga.day_cycle.night"),

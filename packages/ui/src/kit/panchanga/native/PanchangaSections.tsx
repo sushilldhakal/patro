@@ -297,6 +297,7 @@ function DualValueDisplay({ value }: { value: DualValue | null }) {
     <View className={cn("flex flex-col", sc.dual)}>
       {value.struck ? <Text className={sc.strike}>{value.struck}</Text> : null}
       <Text className={sc.strong}>{value.value}</Text>
+      {value.note ? <Text className="text-xs text-muted-foreground">{value.note}</Text> : null}
     </View>
   );
 }
@@ -366,7 +367,7 @@ export function MuhurtaTimingsSection({ p }: { p: PanchangaDay }) {
 
   if (s.combined) {
     return (
-      <PanchangaSection titleKey="sections.muhurta_timings">
+      <PanchangaSection titleNe={s.copy.combinedTitle}>
         <PanchangaTableBody>
           <PanchangaGroupLabel>{s.copy.good}</PanchangaGroupLabel>
           <MuhurtaRows rows={s.good} variant="good" />
@@ -380,14 +381,14 @@ export function MuhurtaTimingsSection({ p }: { p: PanchangaDay }) {
   return (
     <>
       {s.good.length > 0 && (
-        <PanchangaSection titleKey="sections.auspicious_timings">
+        <PanchangaSection titleNe={s.copy.goodTitle}>
           <PanchangaTableBody>
             <MuhurtaRows rows={s.good} variant="good" />
           </PanchangaTableBody>
         </PanchangaSection>
       )}
       {s.bad.length > 0 && (
-        <PanchangaSection titleKey="sections.inauspicious_timings">
+        <PanchangaSection titleNe={s.copy.badTitle}>
           <PanchangaTableBody>
             <MuhurtaRows rows={s.bad} variant="bad" />
           </PanchangaTableBody>

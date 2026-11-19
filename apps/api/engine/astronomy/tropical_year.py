@@ -23,7 +23,7 @@ trepidating ayanamsha (see ``sun_longitude``).
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
-from typing import Any
+from typing import Any, Callable
 
 SUN_DEG_PER_DAY = 360 / 365.2422
 
@@ -100,12 +100,35 @@ def signed_diff(deg: float) -> float:
     return ((deg % 360) + 540) % 360 - 180
 
 
+def _refine_crossing(longitude: Callable[[float], float], target_deg: float, guess_jd: float) -> float:
+    """JD at which *longitude* reaches *target_deg*, refined from *guess_jd* (the
+    crossing nearest the guess)."""
+    jd = guess_jd
+    for _ in range(16):
+        jd -= signed_diff(longitude(jd) - target_deg) / SUN_DEG_PER_DAY
+    return jd
+
+
 def crossing_jd(target_deg: float, guess_jd: float) -> float:
     """JD at which the tropical Sun reaches *target_deg*, refined from *guess_jd*."""
-    jd = guess_jd
-    for _ in range(12):
-        jd -= signed_diff(sun_longitude(jd) - target_deg) / SUN_DEG_PER_DAY
-    return jd
+    return _refine_crossing(sun_longitude, target_deg, guess_jd)
+
+
+def sidereal_sun_longitude(jd: float) -> float:
+    """Nirayana Sun of the request's siddhanta — the Vedic (sidereal) place.
+
+    Tropical ritu and ayana must not call this. The Vedic companion uses it so
+    the reader can see the season the texts name from the sidereal Sun, which
+    lags the real season by the ayanamsha.
+    """
+    from engine.astronomy.siddhanta import current_siddhanta
+
+    return current_siddhanta().engine.sun_longitude(jd, sidereal=True) % 360.0
+
+
+def sidereal_crossing_jd(target_deg: float, guess_jd: float) -> float:
+    """JD at which the sidereal Sun reaches *target_deg*, refined from *guess_jd*."""
+    return _refine_crossing(sidereal_sun_longitude, target_deg, guess_jd)
 
 
 def jd_to_utc(jd: float) -> datetime:
@@ -115,7 +138,7 @@ def jd_to_utc(jd: float) -> datetime:
 # ── ritu ─────────────────────────────────────────────────────────────────────
 
 def ritu_slot(longitude: float) -> int:
-    """0–5 ritu slot (northern) of a tropical longitude: 0 Vasanta … 5 Shishira."""
+    """0–5 ritu slot (northern) of a longitude: 0 Vasanta … 5 Shishira."""
     return int(((longitude - VASANTA_START_DEG) % 360) // 60)
 
 
@@ -127,18 +150,21 @@ def is_southern(lat: float | None) -> bool:
     return lat is not None and lat < 0
 
 
-def ritu_at(jd: float, lat: float | None = None) -> dict[str, Any]:
-    """The season at the observer at *jd*."""
-    lon = sun_longitude(jd)
+def _ritu_from(lon: float, lat: float | None) -> dict[str, Any]:
     slot = ritu_slot(lon)
     south = is_southern(lat)
     ritu = RITU_DATA[(slot + SOUTHERN_RITU_SHIFT) % 6 if south else slot]
-    return {
-        **{k: ritu[k] for k in _RITU_KEYS},
-        "solar_slot": slot,
-        "sun_rashi": int(lon // 30) % 12 + 1,
-        "basis": "tropical_southern" if south else "tropical",
-    }
+    return {**{k: ritu[k] for k in _RITU_KEYS}, "solar_slot": slot, "sun_rashi": int(lon // 30) % 12 + 1}
+
+
+def ritu_at(jd: float, lat: float | None = None) -> dict[str, Any]:
+    """The season at the observer at *jd*."""
+    return {**_ritu_from(sun_longitude(jd), lat), "basis": "tropical_southern" if is_southern(lat) else "tropical"}
+
+
+def vedic_ritu_at(jd: float, lat: float | None = None) -> dict[str, Any]:
+    """The season the sidereal Sun names, on the same 60° arcs as the tropical one."""
+    return {**_ritu_from(sidereal_sun_longitude(jd), lat), "basis": "sidereal"}
 
 
 # ── ayana ────────────────────────────────────────────────────────────────────
@@ -148,17 +174,25 @@ def is_uttarayana(longitude: float) -> bool:
     return longitude >= UTTARAYANA_START_DEG or longitude < DAKSHINAYANA_START_DEG
 
 
-def ayana_at(jd: float) -> dict[str, Any]:
-    lon = sun_longitude(jd)
+def _ayana_from(lon: float, basis: str) -> dict[str, Any]:
     uttara = is_uttarayana(lon)
     return {
         "name": "Uttarayana" if uttara else "Dakshinayana",
         "name_ne": "उत्तरायण" if uttara else "दक्षिणायण",
         "name_sanskrit": "Uttarayana" if uttara else "Dakshinayana",
         "sun_rashi": int(lon // 30) % 12 + 1,
-        "basis": "tropical",
+        "basis": basis,
         "kranti_mark": "उ" if uttara else "द",
     }
+
+
+def ayana_at(jd: float) -> dict[str, Any]:
+    return _ayana_from(sun_longitude(jd), "tropical")
+
+
+def vedic_ayana_at(jd: float) -> dict[str, Any]:
+    """Uttarayana / Dakshinayana from the sidereal Sun (Makara / Karka Sankranti)."""
+    return _ayana_from(sidereal_sun_longitude(jd), "sidereal")
 
 
 def ayana_turn_jd(gregorian_year: int, ayana: str) -> float:

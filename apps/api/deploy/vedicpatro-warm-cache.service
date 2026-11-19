@@ -1,0 +1,22 @@
+[Unit]
+Description=Pre-build the pages people are about to open (Redis, disk and Cloudflare caches)
+Documentation=https://github.com/sushilldhakal/patro/tree/main/apps/api/scripts/warm_cache.py
+After=network-online.target nepali-holiday-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/patro
+Environment=PYTHONUNBUFFERED=1
+# Started by the nightly timer and, without waiting, by apps/api/scripts/deploy.sh
+# after every API deploy. 3 requests at a time through the public URL.
+ExecStart=/home/ubuntu/patro/.venv/bin/python apps/api/scripts/warm_cache.py
+# The building happens in the API workers; this process only sends requests, and
+# never more than 3 at once — below the load-shed lane, so visitors keep priority.
+Nice=10
+TimeoutStartSec=2h
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vedicpatro-warm-cache

@@ -130,12 +130,30 @@ export interface CivilTimelineLagna {
 
 // ─── Tropical seasons ─────────────────────────────────────────────────────────
 
-export interface TropicalSeasonBoundary {
-  slot: number;
-  angle: number;
+/** When the Sun crosses a degree: the UTC instant and the place's civil day. */
+export interface SolarCrossing {
   start_instant_utc: string;
   start_ad: string;
   start_bs: string;
+}
+
+/** A real-sky start, with the sidereal Sun's crossing of the same degree beside it. */
+export interface SolarCrossingWithVedic extends SolarCrossing {
+  /** Absent from responses built before the Vedic companion existed. */
+  vedic?: SolarCrossing;
+}
+
+export interface TropicalSeasonBoundary extends SolarCrossingWithVedic {
+  slot: number;
+  angle: number;
+  is_current: boolean;
+}
+
+/** Uttarayana / Dakshinayana: the solstice turn, and its Vedic (sankranti) turn. */
+export interface AyanaBoundary extends SolarCrossingWithVedic {
+  name: string;
+  name_ne: string;
+  angle: number;
   is_current: boolean;
 }
 
@@ -1617,6 +1635,10 @@ export interface TropicalSeasonsResponse {
   latitude?: number;
   southern_hemisphere: boolean;
   boundaries: TropicalSeasonBoundary[];
+  /** The real-sky half-year now in force, then the next one. */
+  ayanas?: AyanaBoundary[];
+  /** The siddhanta whose nirayana Sun gave the ``vedic`` crossings. */
+  vedic_siddhanta?: string;
   /** @deprecated */
   segments?: TropicalSeasonSegment[];
 }
@@ -2293,6 +2315,9 @@ export interface PanchangaDay {
   udaya_lagna?: UdayaLagnaRow[];
   ritu?: { name?: string; name_ne?: string; season?: string } | string;
   ritu_ne?: string;
+  /** Sidereal companion of ``ritu``. The tropical value stays the one to read as the season. */
+  ritu_vedic?: { name?: string; name_ne?: string; season?: string };
+  aayan_vedic?: { name?: string; name_ne?: string };
   lagna?: { name?: string; name_ne?: string; degree_in_rashi?: number; longitude?: number };
   lagna_spans?: LagnaSpan[];
   detail?: {

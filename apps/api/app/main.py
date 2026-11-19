@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 
 from app.era_middleware import EraMiddleware
 from app.siddhanta_middleware import SiddhantaMiddleware
+from app.load_shed_middleware import LoadShedMiddleware
 from app.redis_response_middleware import RedisResponseCacheMiddleware
 from engine.astronomy.engine import EphemerisError
 from fastapi.middleware.gzip import GZipMiddleware
@@ -129,7 +130,7 @@ def _cors_origins() -> list[str]:
 # Middleware order matters, and Starlette applies it outermost-last: whatever is
 # added last wraps everything added before it. The stack below is, outside in:
 #
-#   CORS  ->  RedisResponseCache  ->  Siddhanta  ->  EraMiddleware  ->  GZip  ->  routes
+#   CORS  ->  RedisResponseCache  ->  LoadShed  ->  Siddhanta  ->  EraMiddleware  ->  GZip  ->  routes
 #
 # JSON here compresses ~10×+ (full month: 1.17 MB → ~100 KB over the wire).
 # Skips responses that already set Content-Encoding (pre-gzipped year cache).
@@ -144,6 +145,12 @@ app.add_middleware(EraMiddleware)
 # Calculation system (drik / Surya Siddhanta) for the whole request. Outside the
 # era gate, which already computes (a BS date's Julian Day can need sankrantis).
 app.add_middleware(SiddhantaMiddleware)
+
+# Per-worker cap on requests that compute, with a separate lane for personal
+# answers (kundali, personal rashifal): overload becomes a fast 503 the app
+# answers from its offline copy, not a minute-long queue. Inside the Redis cache
+# so hits never wait; outside Siddhanta/Era, which already compute.
+app.add_middleware(LoadShedMiddleware)
 
 # Shared Redis cache of whole public GET responses (final, era-rendered, gzipped
 # bytes). Outside Siddhanta/Era/GZip so a hit skips all of them; inside CORS so

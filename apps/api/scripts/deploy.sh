@@ -81,8 +81,20 @@ UNITS_CHANGED=0
 install_unit "${SERVICE_NAME}.service" 1
 install_unit vedicpatro-fb-daily.service 0
 install_unit vedicpatro-fb-daily.timer 0
+install_unit vedicpatro-warm-cache.service 1
+install_unit vedicpatro-warm-cache.timer 1
 if [[ "${UNITS_CHANGED}" == "1" ]]; then
   sudo systemctl daemon-reload
+fi
+if sudo -n true 2>/dev/null && ! systemctl is-enabled --quiet vedicpatro-warm-cache.timer 2>/dev/null; then
+  sudo systemctl enable --now vedicpatro-warm-cache.timer
+fi
+
+# More uvicorn workers than cores + 1 only fight over the CPU (see the unit file).
+CORES="$(nproc 2>/dev/null || echo 2)"
+ENV_WORKERS="$(grep -E '^WEB_CONCURRENCY=' "${REPO_DIR}/.env" 2>/dev/null | tail -1 | cut -d= -f2 || true)"
+if [[ -n "${ENV_WORKERS}" && "${ENV_WORKERS}" -gt $((CORES + 1)) ]]; then
+  echo "WARNING: .env sets WEB_CONCURRENCY=${ENV_WORKERS} on ${CORES} cores — use $((CORES + 1))" >&2
 fi
 
 echo "==> Restarting service"
@@ -149,6 +161,39 @@ for doc in docs:
 
 print(f"Warmed {len(docs)} documents")
 PYEOF
+
+# Documents are cached at the edge for hours (api/documents.py) and their URLs do
+# not change on an edit, so a deploy that changes a manifest purges Cloudflare.
+# The free plan has no prefix purge, so this purges the zone; the warm job below
+# refills the busy pages. Needs CLOUDFLARE_API_TOKEN (Zone → Cache Purge) and
+# CLOUDFLARE_ZONE_ID in .env; without them it only prints a reminder.
+LAST_API_SHA="$(cat "${REPO_DIR}/.deploy/api.sha" 2>/dev/null || true)"
+DOCS_CHANGED=0
+if [[ -z "${LAST_API_SHA}" ]] || ! git -C "${REPO_DIR}" cat-file -e "${LAST_API_SHA}^{commit}" 2>/dev/null \
+  || [[ -n "$(git -C "${REPO_DIR}" diff --name-only "${LAST_API_SHA}" HEAD -- apps/api/data/documents_source apps/api/api/documents.py)" ]]; then
+  DOCS_CHANGED=1
+fi
+if [[ "${DOCS_CHANGED}" == "1" ]]; then
+  CF_TOKEN="$(grep -E '^CLOUDFLARE_API_TOKEN=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)"
+  CF_ZONE="$(grep -E '^CLOUDFLARE_ZONE_ID=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)"
+  if [[ -n "${CF_TOKEN}" && -n "${CF_ZONE}" ]]; then
+    echo "==> Documents changed — purging Cloudflare cache"
+    curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/purge_cache" \
+      -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json" \
+      --data '{"purge_everything":true}' >/dev/null \
+      && echo "    purged" || echo "WARNING: Cloudflare purge failed (non-fatal)" >&2
+  else
+    echo "NOTE: documents changed but CLOUDFLARE_API_TOKEN/CLOUDFLARE_ZONE_ID are not in .env;" >&2
+    echo "      Cloudflare keeps old chapters for up to ~4 h. Purge in the dashboard if needed." >&2
+  fi
+fi
+
+# Refill the caches for what people open next (scripts/warm_cache.py). Started,
+# not waited for: it takes ~20 min at 3 requests at a time.
+if sudo -n true 2>/dev/null && systemctl cat vedicpatro-warm-cache.service >/dev/null 2>&1; then
+  echo "==> Starting cache warm in the background"
+  sudo systemctl start --no-block vedicpatro-warm-cache.service || true
+fi
 
 if [[ -f .env ]] && grep -qE '^DATABASE_URL=' .env; then
   if ! grep -qE '^GOOGLE_CLIENT_ID=' .env; then

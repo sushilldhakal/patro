@@ -27,9 +27,29 @@ What is cached, and for how long:
   lists them with their own lifetime.
 
 The key is a hash of host + path + sorted query, plus the panchanga payload
-version and the deployed git revision, so any deploy starts from fresh entries
-(old ones age out through LFU/TTL). Hashing also keeps birth details from the
+version, ``RESPONSE_CACHE_EPOCH`` and (for documents) the manifests' content
+version. It deliberately does NOT include the deployed git revision: that
+emptied the whole cache on every push, and the first minutes after each deploy
+then ran every request cold (the load test measured 87% CPU cold against 16%
+warm for the same 300 users). Data changes already change the key — the app
+sends cv/sv/gv/ev/v versions in the URL and the payload version is part of it —
+so a code change that alters a response without bumping one of those must bump
+``RESPONSE_CACHE_EPOCH`` below. Hashing also keeps birth details from the
 personal rashifal query out of the key names.
+
+Identical misses share one build. When many requests miss the same key at the
+same moment (a festival morning, the first minutes after a cache entry
+expires), the first takes a Redis lock and computes; the rest wait for its
+stored answer instead of each running the same 1 s build. A waiter that sees
+the lock released without an answer (the response was not cacheable) or waits
+longer than ``_PEER_WAIT_S`` computes on its own, so nothing ever hangs on it.
+
+Public responses also get ``stale-if-error`` added to Cache-Control, so when the
+server is overloaded or down Cloudflare keeps serving the last good copy.
+
+Personal rashifal is ``private`` for every shared cache, but the same person
+reopens it many times a day; ``_PRIVATE_SERVER_ROUTES`` keeps those answers in
+Redis (server side only, still sent as private) when the URL names the day.
 
 Every Redis failure is a miss: the request runs exactly as it would without
 this layer.
@@ -37,13 +57,13 @@ this layer.
 
 from __future__ import annotations
 
+import asyncio
 import gzip
 import hashlib
 import json
 import logging
 import os
 import re
-from pathlib import Path
 from urllib.parse import parse_qsl, urlencode
 
 import config
@@ -81,6 +101,27 @@ _UNMARKED_ROUTES: tuple[tuple[str, int, int], ...] = (
     ("/vastu/rooms", _LONG, _LONG),
 )
 
+# Bump when a code change alters responses without changing any version the URL
+# or payload carries; RESPONSE_CACHE_EPOCH in .env adds to it for an emergency flush.
+RESPONSE_CACHE_EPOCH = "1"
+
+# Personal answers (Cache-Control: private) kept in Redis for this long when the
+# URL names a fixed day. Never shared with Cloudflare: the stored headers still
+# say private, and the key is a hash of the full query.
+_PRIVATE_SERVER_ROUTES: tuple[tuple[str, int], ...] = (
+    ("/panchanga/rashifal/personal", 6 * 3600),
+    ("/panchanga/rashifal/janma", 6 * 3600),
+)
+
+# How long a request waits for an identical in-flight build before computing on
+# its own. Below nginx's proxy_read_timeout so a waiter never turns into a 504.
+_PEER_WAIT_S = float(os.getenv("REDIS_RESPONSE_PEER_WAIT_S", "8"))
+_LOCK_TTL_S = 30
+
+# Added to public Cache-Control: Cloudflare serves the last good copy for this
+# long when the origin errors or times out.
+_STALE_IF_ERROR = os.getenv("STALE_IF_ERROR_S", "86400")
+
 # Headers replayed on a hit. Everything else (CORS, timing, cache-status) is
 # per-request and added by outer layers.
 _STORED_HEADERS = frozenset({
@@ -96,29 +137,21 @@ _MAX_AGE = re.compile(r"(?:^|[,\s])max-age=(\d+)")
 _S_MAXAGE = re.compile(r"s-maxage=(\d+)")
 
 
-def _code_version() -> str:
-    """Deployed git revision (or ``APP_BUILD_ID``); orphans old entries on deploy."""
-    build = os.getenv("APP_BUILD_ID", "").strip()
-    if build:
-        return build[:12]
-    for parent in Path(__file__).resolve().parents:
-        git = parent / ".git"
-        if git.is_dir():
-            try:
-                head = (git / "HEAD").read_text().strip()
-                if head.startswith("ref: "):
-                    ref = head[5:]
-                    ref_file = git / ref
-                    if ref_file.exists():
-                        return ref_file.read_text().strip()[:12]
-                    for line in (git / "packed-refs").read_text().splitlines():
-                        if line.endswith(" " + ref):
-                            return line.split(" ", 1)[0][:12]
-                    return "unknown"
-                return head[:12]
-            except OSError:
-                return "unknown"
-    return "dev"
+def _epoch() -> str:
+    extra = os.getenv("RESPONSE_CACHE_EPOCH", "").strip()
+    return f"{RESPONSE_CACHE_EPOCH}.{extra}" if extra else RESPONSE_CACHE_EPOCH
+
+
+def _content_version(path: str) -> str:
+    """Manifest content version for document responses (their URLs never change on an edit)."""
+    if "/documents" not in path and "/veda/" not in path:
+        return ""
+    try:
+        from api.documents import _cache_version
+
+        return _cache_version()
+    except Exception:  # pragma: no cover - never fail a request over the key
+        return ""
 
 
 def _payload_version() -> str:
@@ -138,6 +171,10 @@ def ttl_for(path: str, query: dict[str, str], cache_control: str | None) -> int 
     fixed = _is_fixed_day(path, query)
     if cache_control:
         cc = cache_control.lower()
+        if "private" in cc and "no-store" not in cc and query.get("date"):
+            for marker, ttl in _PRIVATE_SERVER_ROUTES:
+                if path.endswith(marker):
+                    return ttl
         if "private" in cc or "no-store" in cc or "no-cache" in cc:
             return None
         if not cc.startswith("public"):
@@ -175,16 +212,30 @@ def _header(scope, name: bytes) -> str:
     return ""
 
 
-def cache_key(scope, code_version: str) -> str:
+def cache_key(scope, epoch: str | None = None) -> str:
     query = sorted(parse_qsl(scope.get("query_string", b"").decode("latin-1"), keep_blank_values=True))
     raw = "\n".join((
         _header(scope, b"host").split(":")[0].lower(),
         scope.get("root_path", "") + scope["path"],
         urlencode(query),
         _payload_version(),
-        code_version,
+        epoch if epoch is not None else _epoch(),
+        _content_version(scope["path"]),
     ))
     return _KEY_NS + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def with_stale_if_error(headers: list[tuple[bytes, bytes]]) -> list[tuple[bytes, bytes]]:
+    """Add ``stale-if-error`` to public Cache-Control / CDN-Cache-Control that lack it."""
+    out = []
+    for k, v in headers:
+        lk = k.lower()
+        if lk in (b"cache-control", b"cdn-cache-control"):
+            low = v.lower()
+            if low.startswith(b"public") and b"stale-if-error" not in low:
+                v = v + b", stale-if-error=" + _STALE_IF_ERROR.encode()
+        out.append((k, v))
+    return out
 
 
 def _pack(headers: list[tuple[bytes, bytes]], body: bytes) -> bytes:
@@ -203,7 +254,6 @@ class RedisResponseCacheMiddleware:
 
     def __init__(self, app):
         self.app = app
-        self.code_version = _code_version()
 
     async def __call__(self, scope, receive, send):
         if (
@@ -216,20 +266,47 @@ class RedisResponseCacheMiddleware:
             return
 
         accepts_gzip = "gzip" in _header(scope, b"accept-encoding").lower()
-        key = cache_key(scope, self.code_version)
+        key = cache_key(scope)
 
-        blob = redis_cache.get_bytes(key)
-        if blob is not None:
-            try:
-                headers, body = _unpack(blob)
-            except Exception:  # corrupt entry → treat as a miss
-                headers = None
-            if headers is not None:
-                await self._send_hit(send, headers, body, accepts_gzip)
+        if await self._try_hit(key, send, accepts_gzip):
+            return
+
+        # Miss. One request per key computes; identical ones arriving meanwhile
+        # wait for its stored answer (see module docstring).
+        with redis_cache.build_lock(key, ttl=_LOCK_TTL_S) as owner:
+            if not owner and await self._wait_for_peer(key, send, accepts_gzip):
                 return
+            await self._compute(scope, receive, send, key, accepts_gzip)
 
-        # Miss: always ask the inner stack for gzip so Redis holds compressed
-        # bytes; undo it below for the rare client that cannot take gzip.
+    async def _try_hit(self, key: str, send, accepts_gzip: bool) -> bool:
+        blob = redis_cache.get_bytes(key)
+        if blob is None:
+            return False
+        try:
+            headers, body = _unpack(blob)
+        except Exception:  # corrupt entry → treat as a miss
+            return False
+        await self._send_hit(send, headers, body, accepts_gzip)
+        return True
+
+    async def _wait_for_peer(self, key: str, send, accepts_gzip: bool) -> bool:
+        """Wait for the lock owner's stored answer; False → compute it here instead."""
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + _PEER_WAIT_S
+        delay = 0.02
+        while loop.time() < deadline:
+            await asyncio.sleep(delay)
+            delay = min(delay * 1.6, 0.25)
+            if await self._try_hit(key, send, accepts_gzip):
+                return True
+            if not redis_cache.lock_held(key):
+                # Owner finished. Its answer may have landed just now; else it was not cacheable.
+                return await self._try_hit(key, send, accepts_gzip)
+        return False
+
+    async def _compute(self, scope, receive, send, key: str, accepts_gzip: bool) -> None:
+        # Always ask the inner stack for gzip so Redis holds compressed bytes;
+        # undo it below for the rare client that cannot take gzip.
         inner_headers = [(k, v) for k, v in scope.get("headers", []) if k != b"accept-encoding"]
         inner_headers.append((b"accept-encoding", b"gzip"))
         inner_scope = {**scope, "headers": inner_headers}
@@ -240,7 +317,7 @@ class RedisResponseCacheMiddleware:
 
         async def send_wrapper(message):
             if message["type"] == "http.response.start":
-                headers = list(message.get("headers", []))
+                headers = with_stale_if_error(list(message.get("headers", [])))
                 lower = {k.lower(): v.decode("latin-1") for k, v in headers}
                 state["gzip"] = lower.get(b"content-encoding", "").lower() == "gzip"
                 if message.get("status") == 200 and b"set-cookie" not in lower:
@@ -302,7 +379,7 @@ class RedisResponseCacheMiddleware:
             body = gzip.decompress(body)
             headers = [(k, v) for k, v in headers if k != b"content-encoding"]
         out = [
-            *headers,
+            *with_stale_if_error(headers),
             (b"content-length", str(len(body)).encode()),
             (b"vary", b"Accept-Encoding"),
             (b"x-cache", b"HIT"),

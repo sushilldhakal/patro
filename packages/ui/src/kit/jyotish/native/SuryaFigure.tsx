@@ -3,7 +3,7 @@ import Svg, { Circle, Line, Path, Text as SvgText } from "react-native-svg";
 import { useColorScheme } from "nativewind";
 import { brand, mix, mobileRoles, withAlpha } from "@vedic-patro/design-tokens";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { figureInfo, suryaFigure, SURYA_FIGURE_BOX, type Shape, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
+import { figureInfo, suryaFigure, SURYA_FIGURE_BOX, type MathPart, type Shape, type Step, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { Text } from "@vedic-patro/ui";
 import type { SuryaFigureProps } from "../contract";
@@ -28,9 +28,41 @@ function ShapeView({ s, tone }: { s: Shape; tone: Record<Tone, string> }) {
   return <Path d={s.d} {...style} />;
 }
 
+function Part({ part }: { part: MathPart }) {
+  if (typeof part === "string") return <Text className="text-base text-foreground">{part}</Text>;
+  return (
+    <View className={documentsClasses.figureFrac}>
+      <Text className={documentsClasses.figureFracNum}>{part.n}</Text>
+      <Text className={documentsClasses.figureFracDen}>{part.d}</Text>
+    </View>
+  );
+}
+
+/** The worked arithmetic under the drawing, the same steps as the website. */
+export function MathSteps({ steps, title }: { steps: Step[]; title: string }) {
+  return (
+    <View className={documentsClasses.figureMath}>
+      <Text className={documentsClasses.figureMathTitle}>{title}</Text>
+      {steps.map((step, i) => (
+        <View key={i} className={documentsClasses.figureMathStep}>
+          <Text className={documentsClasses.figureMathNumber}>{i + 1}.</Text>
+          <View className={documentsClasses.figureMathBody}>
+            <Text className={documentsClasses.figureMathSay}>{step.say}</Text>
+            <View className={documentsClasses.figureMathEq}>
+              {step.eq.map((part, j) => (
+                <Part key={j} part={part} />
+              ))}
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 /** The website's Surya Siddhanta diagram, drawn with react-native-svg. */
 export function SuryaFigure({ figureKey, phase, controls }: SuryaFigureProps) {
-  const { lang } = useLocale();
+  const { lang, t } = useLocale();
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
   const language = lang === "en" ? "en" : "ne";
@@ -68,6 +100,7 @@ export function SuryaFigure({ figureKey, phase, controls }: SuryaFigureProps) {
       </View>
       <View className={documentsClasses.figureControls}>{controls}</View>
       <Text className={documentsClasses.figureCaption}>{info.caption}</Text>
+      {frame.steps?.length ? <MathSteps steps={frame.steps} title={t("documents.figure_math")} /> : null}
     </View>
   );
 }

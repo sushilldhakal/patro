@@ -26,6 +26,23 @@ CACHE_DIR = ROOT / "cache"
 SAIT_ENGINE_VERSION = stamp("4.11.0")
 
 
+def sait_location_key(location: ObserverLocation) -> str:
+    """Cache identity for one place under the request's siddhanta.
+
+    Drik keeps the bare location key, so the rows already stored stay valid.
+    Any other siddhanta gets a short suffix (``location_key`` is varchar(80);
+    a full ``~surya_siddhanta`` plus a long timezone can overflow it).
+    """
+    from engine.astronomy.siddhanta import SURYA_SIDDHANTA, current_siddhanta
+
+    key = location.cache_key()
+    namespace = current_siddhanta().cache_namespace
+    if not namespace:
+        return key
+    suffix = "~ss" if namespace == SURYA_SIDDHANTA else f"~{namespace[:6]}"
+    return f"{key}{suffix}"[:80]
+
+
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
     return CACHE_DIR / f"sait_{bs_year}_{category}_{safe_key}.json"
@@ -43,19 +60,19 @@ def load_sait_cached(
     category: str,
     location: ObserverLocation,
 ) -> dict[str, Any] | None:
-    path = sait_cache_path(bs_year, category, location.cache_key())
+    path = sait_cache_path(bs_year, category, sait_location_key(location))
     if not path.exists():
         return None
     with path.open(encoding="utf-8") as fh:
         cached = json.load(fh)
-    if not _cache_is_valid(cached, location.cache_key()):
+    if not _cache_is_valid(cached, sait_location_key(location)):
         return None
     return cached
 
 
 def save_sait_cache(payload: dict[str, Any], location: ObserverLocation) -> None:
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    path = sait_cache_path(payload["bs_year"], payload["category"], location.cache_key())
+    path = sait_cache_path(payload["bs_year"], payload["category"], sait_location_key(location))
     with path.open("w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
 
@@ -183,7 +200,7 @@ def get_generated_sait(
         "category": category,
         "months": by_month,
         "engine_version": SAIT_ENGINE_VERSION,
-        "location_key": location.cache_key(),
+        "location_key": sait_location_key(location),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": "computed",
         # True when a scarce year was recomputed with the widened nakṣatra set;

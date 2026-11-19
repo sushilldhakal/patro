@@ -33,6 +33,8 @@ import {
   formatTimeRangeShort,
   formatTimeShort,
   getAayan,
+  getAayanVedic,
+  getRituVedic,
   getChandrabalamTable,
   getDinVisheshLabels,
   getLagnaDisplay,
@@ -59,6 +61,7 @@ import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/calendar/samvatsara";
 import { tithiIndexFromPanchanga } from "@vedic-patro/read-models/panchanga/tithi-wheel-data";
 import { useCalendarSystem, useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationBasisLabel } from "../_shared";
 
 type AngaEnd = { name_ne?: string; name?: string; end_local_time?: string; end_ghati_clock?: string; end_hours_clock?: string };
 type Anga = AngaEnd & { next?: AngaEnd };
@@ -230,17 +233,21 @@ export function usePanchakaLagnaSection(p: PanchangaDay, clock?: string) {
 }
 
 /* ── ritu and ayana: both the Sun's real (tropical) place on its path ── */
-export type DualValue = { struck?: string; value?: string };
+export type DualValue = { struck?: string; value?: string; note?: string };
 
 export function useRituSection(p: PanchangaDay) {
-  const { lang } = useLocale();
-  // One value each — the server's tropical ritu and ayana; nothing is struck through.
-  const one = (value?: string): DualValue | null => (value ? { value } : null);
+  const { t, lang } = useLocale();
+  // The value is the real-sky (tropical) season. The note is the sidereal one,
+  // shown beside it so the two can be compared — they do not line up.
+  const beside = (value: string | undefined, vedic: string | undefined): DualValue | null => {
+    if (!value) return null;
+    return { value, note: vedic ? t("ritu.vedic_beside", { name: vedic }) : undefined };
+  };
   const ritu = getRitu(p);
   const aayan = getAayan(p);
   return {
-    ritu: one(formatRituLabel(ritu, lang)),
-    ayana: one(formatAayanLabel(aayan, lang)),
+    ritu: beside(formatRituLabel(ritu, lang), formatRituLabel(getRituVedic(p), lang)),
+    ayana: beside(formatAayanLabel(aayan, lang), formatAayanLabel(getAayanVedic(p), lang)),
     dinamana: formatDurationFull(p, "dinamaan", lang) ?? "—",
     ratrimana: formatDurationFull(p, "ratrimana", lang) ?? "—",
     madhyahna: formatMadhyahnaDisplay(p, lang) ?? "—",
@@ -256,6 +263,7 @@ export type MuhurtaTiming = { label: string; range?: { start: string; end?: stri
 
 export function useMuhurtaTimingsSection(p: PanchangaDay) {
   const { t, lang } = useLocale();
+  const basis = useCalculationBasisLabel();
   const rows = getMuhurtaRows(p, lang);
   if (!rows.length) return null;
   const timing = (row: { label: string; value: string }): MuhurtaTiming => {
@@ -273,7 +281,14 @@ export function useMuhurtaTimingsSection(p: PanchangaDay) {
     bad,
     /** Both kinds present: one section with two groups; otherwise one section per kind. */
     combined: good.length > 0 && bad.length > 0,
-    copy: { good: t("sections.auspicious_timings"), bad: t("sections.inauspicious_timings") },
+    copy: {
+      good: t("sections.auspicious_timings"),
+      bad: t("sections.inauspicious_timings"),
+      /** Section titles name the calculation system that produced the times. */
+      combinedTitle: `${t("sections.muhurta_timings")} · ${basis}`,
+      goodTitle: `${t("sections.auspicious_timings")} · ${basis}`,
+      badTitle: `${t("sections.inauspicious_timings")} · ${basis}`,
+    },
   };
 }
 

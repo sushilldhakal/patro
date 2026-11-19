@@ -2728,7 +2728,10 @@ export const strings = {
     en: "Requires the child's birth date.",
   },
   "sait.empty_year": { ne: "यस वर्ष कुनै शुभ मुहूर्त छैन।", en: "No auspicious muhūrta this year." },
-  "sait.count_label": { ne: "वि.सं. {{year}} मा {{count}} शुभ दिन", en: "{{count}} auspicious days in BS {{year}}" },
+  "sait.count_label": {
+    ne: "{{basis}} अनुसार वि.सं. {{year}} मा {{count}} शुभ दिन",
+    en: "{{count}} auspicious days in BS {{year}} based on {{basis}}",
+  },
   "sait.no_dates_year": {
     ne: "यस वर्षका लागि साइत सूची उपलब्ध छैन।",
     en: "No auspicious dates listed for this year.",
@@ -2749,12 +2752,12 @@ export const strings = {
     en: "No strict vivāha muhūrta this year.",
   },
   "sait.marriage.count_label_bs": {
-    ne: "वि.सं. {{year}} मा {{count}} शुद्ध विवाह दिन",
-    en: "{{count}} strict vivāha days in BS {{year}}",
+    ne: "{{basis}} अनुसार वि.सं. {{year}} मा {{count}} शुद्ध विवाह दिन",
+    en: "{{count}} strict vivāha days in BS {{year}} based on {{basis}}",
   },
   "sait.marriage.count_label_ad": {
-    ne: "{{year}} मा {{count}} शुद्ध विवाह दिन",
-    en: "{{count}} strict vivāha days in {{year}}",
+    ne: "{{basis}} अनुसार {{year}} मा {{count}} शुद्ध विवाह दिन",
+    en: "{{count}} strict vivāha days in {{year}} based on {{basis}}",
   },
   "sait.sources.heading": { ne: "शास्त्रीय स्रोत", en: "Classical sources" },
   "sait.sources.blurb": {
@@ -5101,6 +5104,19 @@ export const strings = {
     ne: "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
     en: "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",
   },
+  "ritu.vedic_label": { ne: "वैदिक", en: "Vedic" },
+  "ritu.vedic_note": {
+    ne: "हरेक कार्डको «वैदिक» पङ्क्ति निरयण सूर्य त्यही अंशमा पुग्ने दिन हो (सङ्क्रान्ति)। अयन चलनका कारण शास्त्रका ऋतु र अयन आकाशका वास्तविक ऋतुभन्दा करिब अयनांशजति दिन पछि पर्छन्।",
+    en: "Each card's “Vedic” line is the day the sidereal Sun reaches the same degree (the sankranti). Because of precession, the seasons and ayanas the texts name now fall about the ayanamsha's worth of days after the real ones in the sky.",
+  },
+  "ritu.vedic_beside": { ne: "वैदिक: {{name}}", en: "Vedic: {{name}}" },
+  "ritu.shift_later": { ne: "{{days}} दिन पछि", en: "{{days}} days later" },
+  "ritu.shift_earlier": { ne: "{{days}} दिन अघि", en: "{{days}} days earlier" },
+  "ritu.shift_same": { ne: "उही दिन", en: "same day" },
+  "ritu.ayana_title": { ne: "अयन", en: "Ayana" },
+  "ritu.ayana_current": { ne: "चालू अयन", en: "Current ayana" },
+  "ritu.uttarayana": { ne: "उत्तरायण", en: "Uttarayana" },
+  "ritu.dakshinayana": { ne: "दक्षिणायण", en: "Dakshinayana" },
 
   /* ── rashis ──────────────────────────────────────────────────────────── */
   "rashis.1": { ne: "मेष", en: "Aries" },
@@ -7441,6 +7457,9 @@ export const strings = {
   "documents.figure_play": { ne: "चित्र चलाउनुहोस्", en: "Play the drawing" },
   "documents.figure_pause": { ne: "चित्र रोक्नुहोस्", en: "Pause the drawing" },
   "documents.figure_scrub": { ne: "चित्र सार्नुहोस्", en: "Move the drawing" },
+  "documents.figure_math": { ne: "गणित, चरणबद्ध", en: "The mathematics, step by step" },
+  "documents.table_show_all": { ne: "सबै {{count}} पङ्क्ति हेर्नुहोस्", en: "Show all {{count}} rows" },
+  "documents.table_show_less": { ne: "कम देखाउनुहोस्", en: "Show fewer" },
   "documents.transliteration": { ne: "उच्चारण (IAST)", en: "Transliteration" },
   "documents.now_playing": { ne: "बज्दैछ · श्लोक {{label}}", en: "Now playing · verse {{label}}" },
   "documents.prev_verse": { ne: "अघिल्लो श्लोक", en: "Previous verse" },

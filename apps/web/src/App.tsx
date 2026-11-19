@@ -33,6 +33,8 @@ const queryClient = new QueryClient({
         error instanceof ApiError && error.status >= 400 && error.status < 500
           ? false
           : failureCount < 1,
+      // Jittered so browsers turned away by a busy server (503) don't all retry at once.
+      retryDelay: () => 800 + Math.random() * 1700,
       refetchOnWindowFocus: false,
       // Always run and always settle. Under the default "online" mode React
       // Query consults its own connectivity guess before retrying, and when

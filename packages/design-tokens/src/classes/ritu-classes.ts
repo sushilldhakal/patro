@@ -26,6 +26,9 @@ export const rituClasses = {
   nameWrap: "min-w-0 flex-1",
   name: "text-xl font-bold leading-tight text-foreground",
 
+  startLabel: "text-xs text-muted-foreground",
+  startValue: "text-sm font-semibold text-accent",
+
   metaRow: "items-baseline justify-between gap-2",
   metaText: "text-sm font-semibold text-foreground",
   metaFrom: "text-xs text-foreground",
@@ -35,6 +38,14 @@ export const rituClasses = {
   progressRow: "items-baseline justify-between gap-2",
   progressText: "text-sm text-foreground",
   progressPct: "text-xs font-semibold text-foreground",
+
+  /** The Vedic (sidereal) crossover under each card's real-sky start. */
+  vedicRow: "items-baseline justify-between gap-2 border-t border-dashed border-foreground/15 pt-2",
+  vedicText: "min-w-0 flex-1 text-xs text-muted-foreground",
+  vedicLabel: "font-semibold text-foreground",
+  vedicShift: "shrink-0 text-xs font-semibold text-warning",
+  subsection: "mt-6",
+  subsectionTitle: "mb-3 text-lg font-bold",
 
   southNote: "mx-0.5 mt-2.5 text-sm leading-normal text-foreground",
 } as const;

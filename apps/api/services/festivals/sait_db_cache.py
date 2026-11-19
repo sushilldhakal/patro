@@ -47,7 +47,9 @@ def load_sait_db(
         from database.db import db_session
         from database.models import SaitCache
 
-        loc_key = location.cache_key()
+        from services.festivals.sait_generator import sait_location_key
+
+        loc_key = sait_location_key(location)
         with db_session() as session:
             row = session.execute(
                 select(SaitCache).where(
@@ -78,7 +80,9 @@ def save_sait_db(
         from database.db import db_session
         from database.models import SaitCache
 
-        loc_key = location.cache_key()
+        from services.festivals.sait_generator import sait_location_key
+
+        loc_key = sait_location_key(location)
         body = json.dumps(payload, ensure_ascii=False)
         with db_session() as session:
             row = session.execute(

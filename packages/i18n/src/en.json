@@ -1920,7 +1920,7 @@
     "unknown_ceremony": "Unknown ceremony",
     "requires_birth_date": "Requires the child's birth date.",
     "empty_year": "No auspicious muhūrta this year.",
-    "count_label": "{{count}} auspicious days in BS {{year}}",
+    "count_label": "{{count}} auspicious days in BS {{year}} based on {{basis}}",
     "no_dates_year": "No auspicious dates listed for this year.",
     "nakshatra_tradition": "Nakṣatra tradition",
     "nakshatra_modes": {
@@ -1934,8 +1934,8 @@
       "title": "Marriage Saait",
       "subtitle": "Strict, śāstra-derived vivāha muhūrtas — computed by the book, not tracking the committee list.",
       "empty_year": "No strict vivāha muhūrta this year.",
-      "count_label_bs": "{{count}} strict vivāha days in BS {{year}}",
-      "count_label_ad": "{{count}} strict vivāha days in {{year}}"
+      "count_label_bs": "{{count}} strict vivāha days in BS {{year}} based on {{basis}}",
+      "count_label_ad": "{{count}} strict vivāha days in {{year}} based on {{basis}}"
     },
     "sources": {
       "heading": "Classical sources",
@@ -4351,7 +4351,17 @@
     "winter": "Winter",
     "june_solstice": "June solstice",
     "december_solstice": "December solstice",
-    "southern_hemisphere_note": "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same)."
+    "southern_hemisphere_note": "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",
+    "vedic_label": "Vedic",
+    "vedic_note": "Each card's “Vedic” line is the day the sidereal Sun reaches the same degree (the sankranti). Because of precession, the seasons and ayanas the texts name now fall about the ayanamsha's worth of days after the real ones in the sky.",
+    "vedic_beside": "Vedic: {{name}}",
+    "shift_later": "{{days}} days later",
+    "shift_earlier": "{{days}} days earlier",
+    "shift_same": "same day",
+    "ayana_title": "Ayana",
+    "ayana_current": "Current ayana",
+    "uttarayana": "Uttarayana",
+    "dakshinayana": "Dakshinayana"
   },
   "rashis": {
     "1": "Aries",
@@ -6191,6 +6201,9 @@
     "figure_play": "Play the drawing",
     "figure_pause": "Pause the drawing",
     "figure_scrub": "Move the drawing",
+    "figure_math": "The mathematics, step by step",
+    "table_show_all": "Show all {{count}} rows",
+    "table_show_less": "Show fewer",
     "transliteration": "Transliteration",
     "now_playing": "Now playing · verse {{label}}",
     "prev_verse": "Previous verse",

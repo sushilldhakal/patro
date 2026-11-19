@@ -891,22 +891,22 @@
      "verse_number": 42,
      "verse_label": "४२",
      "sanskrit": "खखरन्ध्राणि जैवस्य शौक्रस्यार्थगुणेषवः । गोऽग्नयः शनिमन्दस्य पातानामथ वामतः",
-     "meaning_ne": "एउटा कल्पमा बृहस्पतिको मन्दोच्च (अपसिस) का ९०० भगण, शुक्रको मन्दोच्चका ७३५ भगण, र शनिको मन्दोच्चका २९ भगण हुन्छन्। मिश्रको भाषा-टीकाअनुसार यही अर्थ हो। ग्रहका पात (नोड) मंगलदेखि सुरु गरेर पश्चिम दिशामा घुम्छन्, र तिनका भगण संख्या पछि आउँछन्। श्लोकले केवल संख्या दिन्छ, र शब्दलाई शब्द-संख्या नियमअनुसार पढ्नुपर्छ।",
-     "meaning_en": "A kalpa contains 900 revolutions of Jupiter's mandocca (apsis), 735 of Venus's mandocca, and 29 of Saturn's mandocca, per Mishra's Hindi tika. The nodes (pātas) of the planets, beginning with Mars, move westward, and their revolution counts follow. The verse gives only the numbers, and the words are read by the katapayadi-style word-number convention.",
+     "meaning_ne": "एउटा कल्पमा बृहस्पतिको मन्दोच्च (अपसिस) का ९०० भगण, शुक्रको मन्दोच्चका ५३५ भगण, र शनिको मन्दोच्चका ३९ भगण हुन्छन्। ग्रहका पात (नोड) मंगलदेखि सुरु गरेर पश्चिम दिशामा घुम्छन्, र तिनका भगण संख्या पछि आउँछन्। श्लोकले केवल संख्या दिन्छ, र शब्दलाई भूतसंख्या नियमअनुसार दायाँबाट बायाँ पढ्नुपर्छ।",
+     "meaning_en": "A kalpa contains 900 revolutions of Jupiter's mandocca (apsis), 535 of Venus's mandocca, and 39 of Saturn's mandocca. The nodes (pātas) of the planets, beginning with Mars, move westward, and their revolution counts follow. The verse gives only the numbers, and the words are read as word-numerals (bhūtasaṅkhyā), right to left.",
      "audio_file": null,
      "commentaries": [
       {
        "key": "ranganatha",
-       "ne": "'खखरन्ध्राणि' शब्दले बृहस्पतिका लागि ९०० दिन्छ, दायाँबाट बायाँ पढेर।\n'अर्थगुणेषवः' शब्दले शुक्रका लागि ७३५ दिन्छ: इषु (५) एकाइ, गुण (३) दशक, अर्थ (७) सयौँ।\n'गोऽग्नयः' शब्द शनिको मन्दोच्चका लागि दिइएको छ, तर स्क्यानमा यसको संख्या अस्पष्ट छ।\n'पातानामथ वामतः' पदको अर्थ यस्तो बुझिन्छ कि मंगलदेखि सुरु गरी ग्रहका पात पश्चिम (वाम) दिशामा घुम्छन्, र तिनका भगण पछि भनिन्छन्।\nटीकाले वैकल्पिक व्याख्या पनि दिन्छ: पहिलो र अन्तिम अंकको क्रम उल्टाउन सकिन्छ, ताकि बीचका अंक ग्रहसँग मिल्छन्।",
-       "en": "The compound 'khakharandhrāṇi' gives 900 for Jupiter (Guru), with the reading taken right to left.\nThe compound 'arthaguṇeṣavaḥ' gives 735 for Venus (Śukra): iṣu (5) is units, guṇa (3) is tens, artha (7) is hundreds.\nThe phrase 'gonagnayaḥ' is given for Saturn's mandocca, and the scan's reading of its figure is garbled.\nThe words 'pātānām atha vāmataḥ' are read to mean that the nodes of the planets, from Mars onward, move westward (vāma, leftward), and their revolutions are stated next.\nThe commentary offers an alternative: the order of the first and last figures may be reversed, so that the middle ones correspond to the planets in the same way."
+       "ne": "'खखरन्ध्राणि' शब्दले बृहस्पतिका लागि ९०० दिन्छ, दायाँबाट बायाँ पढेर।\n'अर्थगुणेषवः' शब्दले शुक्रका लागि ५३५ दिन्छ: इषु (५) एकाइ, गुण (३) दशक, अर्थ (५, पाँच इन्द्रियार्थ) सयौँ।\n'गोऽग्नयः' शब्दले शनिको मन्दोच्चका लागि ३९ दिन्छ: गो (९) एकाइ, अग्नि (३) दशक।\n'पातानामथ वामतः' पदको अर्थ यस्तो बुझिन्छ कि मंगलदेखि सुरु गरी ग्रहका पात पश्चिम (वाम) दिशामा घुम्छन्, र तिनका भगण पछि भनिन्छन्।\nटीकाले वैकल्पिक व्याख्या पनि दिन्छ: पहिलो र अन्तिम अंकको क्रम उल्टाउन सकिन्छ, ताकि बीचका अंक ग्रहसँग मिल्छन्।",
+       "en": "The compound 'khakharandhrāṇi' gives 900 for Jupiter (Guru), with the reading taken right to left.\nThe compound 'arthaguṇeṣavaḥ' gives 535 for Venus (Śukra): iṣu (5) is units, guṇa (3) is tens, artha (5, the five objects of sense) is hundreds.\nThe phrase 'go'gnayaḥ' gives 39 for Saturn's mandocca: go (9) is units, agni (3) is tens.\nThe words 'pātānām atha vāmataḥ' are read to mean that the nodes of the planets, from Mars onward, move westward (vāma, leftward), and their revolutions are stated next.\nThe commentary offers an alternative: the order of the first and last figures may be reversed, so that the middle ones correspond to the planets in the same way."
       },
       {
        "key": "mishra",
-       "ne": "मिश्रको भाषा-टीकामा एउटा कल्पमा बृहस्पतिको मन्दोच्च ९००, शुक्रको मन्दोच्च ७३५, र शनिको मन्दोच्च २९ भगण दिइएको छ, र ग्रहका पात पश्चिम दिशामा घुम्छन्।",
-       "en": "Mishra's tika gives the kalpa counts: Jupiter's mandocca 900, Venus's mandocca 735, and Saturn's mandocca 29 bhaganas, with the planetary nodes moving westward."
+       "ne": "मिश्रको भाषा-टीकामा एउटा कल्पमा बृहस्पतिको मन्दोच्च ९००, शुक्रको मन्दोच्च ५३५, र शनिको मन्दोच्च ३९ भगण दिइएको छ, र ग्रहका पात पश्चिम दिशामा घुम्छन्।",
+       "en": "Mishra's tika gives the kalpa counts: Jupiter's mandocca 900, Venus's mandocca 535, and Saturn's mandocca 39 bhaganas, with the planetary nodes moving westward."
       }
      ],
-     "working_en": "1. Jupiter (khakharandhrāṇi): randhra = 9 (hundreds), kha = 0 (tens), kha = 0 (units) → 900\n2. Venus (arthaguṇeṣavaḥ): iṣu = 5 (units), guṇa = 3 (tens), artha = 7 (hundreds) → 735\n3. Saturn (gonagnayaḥ): Mishra's tika gives 29; the scanned verse figure is not legible enough to recompute",
+     "working_en": "1. Jupiter (khakharandhrāṇi): randhra = 9 (hundreds), kha = 0 (tens), kha = 0 (units) → 900\n2. Venus (arthaguṇeṣavaḥ): iṣu = 5 (units), guṇa = 3 (tens), artha = 5 (hundreds) → 535\n3. Saturn (go'gnayaḥ): go = 9 (units), agni = 3 (tens) → 39",
      "working_ne": null
     },
     {

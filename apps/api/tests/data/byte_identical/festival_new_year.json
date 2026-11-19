@@ -7,6 +7,14 @@
     "name_sanskrit": "Uttarayana",
     "sun_rashi": 1
   },
+  "aayan_vedic": {
+    "basis": "sidereal",
+    "kranti_mark": "उ",
+    "name": "Uttarayana",
+    "name_ne": "उत्तरायण",
+    "name_sanskrit": "Uttarayana",
+    "sun_rashi": 12
+  },
   "anchor": "sunrise",
   "ayanamsa": {
     "degrees": 24.225887,
@@ -2510,6 +2518,16 @@
     "season": "Spring",
     "solar_slot": 0,
     "sun_rashi": 1
+  },
+  "ritu_vedic": {
+    "basis": "sidereal",
+    "name": "Vasanta",
+    "name_ne": "वसन्त",
+    "name_sanskrit": "Vasanta",
+    "number": 1,
+    "season": "Spring",
+    "solar_slot": 0,
+    "sun_rashi": 12
   },
   "samvatsara": {
     "cycle": 54,

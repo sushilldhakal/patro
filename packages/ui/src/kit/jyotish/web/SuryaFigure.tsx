@@ -1,6 +1,6 @@
 import { brand } from "@vedic-patro/design-tokens";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { figureInfo, suryaFigure, SURYA_FIGURE_BOX, type Shape, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
+import { figureInfo, suryaFigure, SURYA_FIGURE_BOX, type MathPart, type Shape, type Step, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { SuryaFigureProps } from "../contract";
 
@@ -36,9 +36,43 @@ function ShapeView({ s }: { s: Shape }) {
   return <path d={s.d} {...style} />;
 }
 
+function Part({ part }: { part: MathPart }) {
+  if (typeof part === "string") return <span className="whitespace-pre-wrap">{part}</span>;
+  return (
+    <span className={documentsClasses.figureFracWeb}>
+      <span className={documentsClasses.figureFracNum}>{part.n}</span>
+      <span className={documentsClasses.figureFracDen}>{part.d}</span>
+    </span>
+  );
+}
+
+/** The worked arithmetic: each step a sentence, then its equation with stacked fractions. */
+export function MathSteps({ steps, title }: { steps: Step[]; title: string }) {
+  return (
+    <details open className={documentsClasses.figureMath}>
+      <summary className={`${documentsClasses.figureMathTitle} cursor-pointer`}>{title}</summary>
+      <ol>
+        {steps.map((step, i) => (
+          <li key={i} className={`${documentsClasses.figureMathStep} flex`}>
+            <span className={documentsClasses.figureMathNumber}>{i + 1}.</span>
+            <div className={documentsClasses.figureMathBody}>
+              <p className={documentsClasses.figureMathSay}>{step.say}</p>
+              <div className={`${documentsClasses.figureMathEq} flex`} style={{ fontVariantNumeric: "tabular-nums" }}>
+                {step.eq.map((part, j) => (
+                  <Part key={j} part={part} />
+                ))}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
 /** A Surya Siddhanta diagram: shapes and live numbers from @vedic-patro/drawing, same as the app. */
 export function SuryaFigure({ figureKey, phase, controls, registerRef }: SuryaFigureProps) {
-  const { lang } = useLocale();
+  const { lang, t } = useLocale();
   const language = lang === "en" ? "en" : "ne";
   const info = figureInfo(figureKey, language);
   const frame = suryaFigure(figureKey, phase, language);
@@ -55,6 +89,7 @@ export function SuryaFigure({ figureKey, phase, controls, registerRef }: SuryaFi
       </div>
       <div className={`${documentsClasses.figureControls} flex`}>{controls}</div>
       <p className={documentsClasses.figureCaption}>{info.caption}</p>
+      {frame.steps?.length ? <MathSteps steps={frame.steps} title={t("documents.figure_math")} /> : null}
     </figure>
   );
 }

@@ -11,15 +11,23 @@ Group=ubuntu
 WorkingDirectory=/home/ubuntu/patro/apps/api
 Environment=PYTHONUNBUFFERED=1
 # Worker processes. Uvicorn reads WEB_CONCURRENCY when --workers is not given.
-# One process serialises every uncached request, and the maths is CPU-bound, so
-# several workers let cache hits and cold builds run side by side. Redis shares
-# the cache between them. A WEB_CONCURRENCY line in .env overrides this default
-# (EnvironmentFile wins over Environment) — that is the knob to turn.
-Environment=WEB_CONCURRENCY=10
+# The maths is CPU-bound and the VM has 2 cores: 3 workers keep both cores busy
+# while one waits on Redis/Postgres. 10 workers (the old value) only fought over
+# the same 2 cores and multiplied memory; under the load test they answered
+# everything later instead of more at once. Redis shares the cache between them.
+# A WEB_CONCURRENCY line in .env overrides this default (EnvironmentFile wins
+# over Environment) — keep it at cores + 1.
+Environment=WEB_CONCURRENCY=3
 EnvironmentFile=-/home/ubuntu/patro/.env
 # Loopback only: nginx (and Cloudflare in front of it) is the public entry
 # point. Binding 0.0.0.0 let anyone reach the API directly on :8000.
-ExecStart=/home/ubuntu/patro/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
+# --limit-concurrency: per worker, connections + tasks; past it uvicorn answers
+#   503 at once (app/load_shed_middleware.py sheds computing requests earlier).
+#   Counts nginx's idle keepalive connections too, so it stays well above them.
+# --backlog: room for a burst of new connections while workers are busy.
+# --timeout-keep-alive: longer than nginx's upstream keepalive_timeout (20 s),
+#   so nginx always closes an idle upstream connection first.
+ExecStart=/home/ubuntu/patro/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000 --limit-concurrency 400 --backlog 2048 --timeout-keep-alive 30
 Restart=always
 RestartSec=5
 KillMode=mixed
