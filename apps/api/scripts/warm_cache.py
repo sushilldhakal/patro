@@ -218,7 +218,8 @@ def build_paths(
                 later.append(f"/nepal/sait/{y}/month/{m}?{loc}&sv={sv}")
             for cat in categories:
                 later.append(f"/nepal/sait/{y}/{cat}?{loc}&sv={sv}")
-                later.append(f"/nepal/sait/{y}/{cat}/detail?{loc}&sv={sv}")
+                if not cat.endswith("-jurne"):  # agni-/rudri-jurne have no detail page (400)
+                    later.append(f"/nepal/sait/{y}/{cat}/detail?{loc}&sv={sv}")
 
         for y in year_list:
             for lang in LANGS:
