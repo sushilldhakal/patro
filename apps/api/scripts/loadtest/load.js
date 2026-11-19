@@ -63,11 +63,30 @@ for (const s of ['home', 'calendar', 'day', 'document', 'rashifal', 'sait', 'kun
   options.thresholds[`cdn_hit{screen:${s}}`] = ['rate>=0'];
   options.thresholds[`origin_duration{screen:${s}}`] = ['avg>=0'];
   options.thresholds[`http_req_failed{screen:${s}}`] = ['rate>=0'];
+  for (const t of ['cloudflare', 'redis', 'disk', 'computed']) {
+    options.thresholds[`served_${t}{screen:${s}}`] = ['count>=0'];
+  }
 }
 
 const cdnHit = new Rate('cdn_hit');          // answered by Cloudflare, never reached the server
 const originReq = new Counter('origin_requests');
 const originTime = new Trend('origin_duration', true);
+// Who answered each request:
+//   cloudflare — edge cache, never reached the server
+//   redis      — server answered from the shared Redis response cache (X-Cache: HIT)
+//   disk       — server answered from its disk/Postgres payload cache or another
+//                cheap path: under COMPUTED_MS of time inside the app (Server-Timing)
+//   computed   — the server actually built the answer
+const COMPUTED_MS = parseFloat(__ENV.COMPUTED_MS || '30');
+const served = {
+  cloudflare: new Counter('served_cloudflare'), redis: new Counter('served_redis'),
+  disk: new Counter('served_disk'), computed: new Counter('served_computed'),
+};
+const computeMs = new Trend('server_compute_ms', true);
+function serverMs(res) {
+  const m = /app;dur=([0-9.]+)/.exec(res.headers['Server-Timing'] || '');
+  return m ? parseFloat(m[1]) : null;
+}
 
 // ─── Users ───────────────────────────────────────────────────────────────────
 
@@ -149,6 +168,15 @@ function record(res, screen) {
   const hit = res.headers['Cf-Cache-Status'] === 'HIT';
   cdnHit.add(hit, tags);
   if (!hit) { originReq.add(1, tags); originTime.add(res.timings.duration, tags); }
+  if (res.status < 200 || res.status >= 300) return;
+  let tier = 'cloudflare';
+  if (!hit) {
+    const ms = serverMs(res);
+    if (res.headers['X-Cache'] === 'HIT') tier = 'redis';
+    else if (ms !== null && ms < COMPUTED_MS) tier = 'disk';
+    else { tier = 'computed'; if (ms !== null) computeMs.add(ms, tags); }
+  }
+  served[tier].add(1, tags);
 }
 function get(path, screen) {
   record(http.get(BASE + path, { tags: { screen, name: screen } }), screen);
