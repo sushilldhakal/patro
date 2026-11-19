@@ -30,8 +30,8 @@ const RAMP = __ENV.RAMP || (USERS > 200 ? '3m' : '30s');
 const HOLD = __ENV.HOLD || (USERS > 200 ? '5m' : '1m');
 
 // Production app cache versions (packages/api-client/src/client.ts at release).
-const CV = __ENV.CV || '6106';
-const SV = __ENV.SV || '17';
+const CV = __ENV.CV || '6206';
+const SV = __ENV.SV || '18';
 const DV = '42';
 const EV = '8';
 const GV = '5';
