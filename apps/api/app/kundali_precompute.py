@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Mirrors packages/api-client/src/client.ts (KUNDALI_ENGINE_VERSION) and the
 # app's default ayanamsha (packages/features … DEFAULT_AYANAMSHA_MODE).
-KUNDALI_ENGINE_VERSION = "8"
+KUNDALI_ENGINE_VERSION = "9"
 DEFAULT_AYANAMSHA = "nepal"
 REPORT_LANGS = ("ne",)
 

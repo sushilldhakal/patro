@@ -7,8 +7,8 @@ import ne from "@vedic-patro/i18n/ne.json";
 import { configureCalendarPersistence } from "@vedic-patro/domain/calendar/calendar-system";
 import { getStoredLanguage, setStoredLanguage, type AppLanguage } from "@/lib/language-storage";
 import { setStoredCalendar } from "@/lib/calendar-system-storage";
-import { configureCalculationSystemPersistence } from "@vedic-patro/domain/calendar/calculation-system";
-import { setStoredCalculationSystem } from "@/lib/calculation-system-storage";
+import { configureAyanamshaPersistence, configureCalculationSystemPersistence } from "@vedic-patro/domain/calendar/calculation-system";
+import { setStoredAyanamsha, setStoredCalculationSystem } from "@/lib/calculation-system-storage";
 
 export type { AppLanguage };
 
@@ -24,6 +24,7 @@ configureCalendarPersistence({ persist: (c) => void setStoredCalendar(c) });
 
 /** Drik or the Surya Siddhanta: what every panchanga and kundali request is computed with. */
 configureCalculationSystemPersistence({ persist: (s) => void setStoredCalculationSystem(s) });
+configureAyanamshaPersistence({ persist: (mode) => void setStoredAyanamsha(mode) });
 
 export { useLocale, useTranslation, useCalendarSystem, useCalculationSystem } from "@vedic-patro/i18n/react";
 

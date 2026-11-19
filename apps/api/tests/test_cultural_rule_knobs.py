@@ -42,7 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SAMPLES = [
     ("Ashwin", 9, "shukla"),    # Maha Navami
     ("Kartik", 15, "krishna"),  # Laxmi Puja
-    ("Shrawan", 11, "shukla"),  # an Ekadashi
+    ("Bhadra", 11, "shukla"),   # an Ekadashi (starts after sunrise, so the two choices differ)
     ("Poush", 11, "shukla"),    # Putrada Ekadashi (the Smarta/Vaishnava pair)
 ]
 

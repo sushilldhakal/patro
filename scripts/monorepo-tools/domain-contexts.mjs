@@ -23,10 +23,10 @@ const REPO = resolve(dirname(new URL(import.meta.url).pathname), "../..");
 const CONTEXTS = {
   astronomy: ["ayanamsha", "moon-phase-svg", "sunrise-icon-art", "eclipse-date", "ephemeris-adapters", "sky3d/"],
   calendar: [
-    "bs-calendar", "bs-calendar-data.json", "era", "instant", "instant-query", "zoned-time",
+    "bs-calendar", "bs-calendar-data/", "era", "instant", "instant-query", "zoned-time",
     "patro-day", "patro-browse-params", "patro-browse-range", "patro-era-label", "patro-month-labels",
     "patro-year-axis", "patro-year-browse-step", "patro-headline-subtitle", "samvatsara",
-    "samvatsara-table.json", "local-calendar", "ritu-display",
+    "samvatsara-table.json", "samvatsara-table.surya_siddhanta.json", "local-calendar", "ritu-display",
   ],
   panchanga: [
     "choghadiya-display", "day-timeline-data", "day-timeline-layout", "ghati-clock", "hora-short-name",

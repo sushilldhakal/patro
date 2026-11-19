@@ -21,7 +21,6 @@ import {
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { useKundaliMilanPage, type MilanDetails } from "@vedic-patro/features/kundali";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 
 function BirthDetailsTable({ details }: { details: MilanDetails }) {
   return (
@@ -46,7 +45,7 @@ function BirthDetailsTable({ details }: { details: MilanDetails }) {
 export function KundaliMilan() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const pickerRef = useRef<MilanProfilePickerHandle>(null);
-  const page = useKundaliMilanPage({ isAuthenticated, authLoading, ayanamshaStorage });
+  const page = useKundaliMilanPage({ isAuthenticated, authLoading });
   const { status, authDialog, copy, boyProfile, girlProfile, matchStatus, milan } = page;
 
   useRouteLoading(authLoading);

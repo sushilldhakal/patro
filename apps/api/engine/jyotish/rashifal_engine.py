@@ -69,6 +69,7 @@ sunrise, so a rashifal is a function of (day, latitude, longitude, timezone).
 
 from __future__ import annotations
 
+from engine.astronomy.sidereal import ayanamsha_label
 from dataclasses import dataclass
 from datetime import date
 from typing import Any, Literal
@@ -1627,7 +1628,7 @@ def method_block(period: Period, *, sample_step: int, days: int) -> dict[str, An
     """What the numbers were made of — shipped with every payload."""
     return {
         "frame": "drik_ganita",
-        "ayanamsa": "Lahiri",
+        "ayanamsa": ayanamsha_label(),
         "anchor": "sunrise",
         "engine": "rashifal_v2",
         "layers": list(LAYER_KEYS),

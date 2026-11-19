@@ -23,9 +23,9 @@ import {
   requestJson,
   apiBases,
   DEFAULT_API_VERSION,
-  setCalculationSystemResolver,
+  setCalculationResolver,
 } from "@vedic-patro/api-client";
-import { getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+import { getCalculation } from "@vedic-patro/domain/calendar/calculation-system";
 
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
@@ -419,7 +419,7 @@ function webLocationQuery(path: string, location?: LocationParams): string {
  * choice (drik / सूर्य सिद्धान्त). Mixing systems overlays the wrong festival
  * dates on a month grid — e.g. drik भाई टीका on सूर्य सिद्धान्त अधिक कार्तिक प्रतिपदा.
  */
-setCalculationSystemResolver(() => getCalculationSystem());
+setCalculationResolver(() => getCalculation());
 
 configureApiClient({
   baseUrl: BASE,

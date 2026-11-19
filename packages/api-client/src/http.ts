@@ -6,9 +6,10 @@
  */
 
 import {
+  DEFAULT_AYANAMSHA,
   DEFAULT_CALCULATION_SYSTEM,
-  withCalculationSystem,
-  type CalculationSystem,
+  withCalculation,
+  type Calculation,
 } from "@vedic-patro/domain/calendar/calculation-system";
 
 // ─── Errors ───────────────────────────────────────────────────────────────────
@@ -96,20 +97,20 @@ export interface RequestOptions extends RequestInit {
 
 // ─── Calculation system ───────────────────────────────────────────────────────
 
-let calculationSystemFor: (path: string) => CalculationSystem = () => DEFAULT_CALCULATION_SYSTEM;
+let calculationFor: (path: string) => Calculation = () => ({ system: DEFAULT_CALCULATION_SYSTEM, ayanamsha: DEFAULT_AYANAMSHA });
 
 /**
- * Which calculation system (drik / Surya Siddhanta) each request asks for, by path.
- * Both apps send the reader's choice on every request. Requests default to drik,
- * which the API also assumes without the parameter.
+ * Which calculation (drik / Surya Siddhanta, and drik's ayanamsha) each request asks
+ * for, by path. Both apps send the reader's choice on every request. Requests default
+ * to drik with Lahiri, which the API also assumes without the parameters.
  */
-export function setCalculationSystemResolver(resolve: (path: string) => CalculationSystem): void {
-  calculationSystemFor = resolve;
+export function setCalculationResolver(resolve: (path: string) => Calculation): void {
+  calculationFor = resolve;
 }
 
-/** `url` with the `siddhanta` parameter the resolver asks for on `path` (none for drik). */
-export function withRequestCalculationSystem(url: string, path: string): string {
-  return withCalculationSystem(url, calculationSystemFor(path));
+/** `url` with the `siddhanta` / `ayanamsha` parameters the resolver asks for on `path`. */
+export function withRequestCalculation(url: string, path: string): string {
+  return withCalculation(url, calculationFor(path));
 }
 
 /**
@@ -134,7 +135,7 @@ export async function fetchWithTimeout(url: string, path: string, options: Reque
           controller.abort();
         }, timeoutMs);
   try {
-    return await fetch(withRequestCalculationSystem(url, path), { ...init, signal: controller.signal });
+    return await fetch(withRequestCalculation(url, path), { ...init, signal: controller.signal });
   } catch (error) {
     if (timedOut && timeoutMs != null) throw new TimeoutError(path, timeoutMs);
     if (callerSignal?.aborted) throw error;

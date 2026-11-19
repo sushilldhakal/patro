@@ -1,5 +1,4 @@
 import { tFor } from "@vedic-patro/i18n/runtime";
-import type { CalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 export type WindowKind = "shubh" | "ashubh";
 
 export interface GuidanceWindow {
@@ -58,8 +57,8 @@ export interface GuidanceRange {
   days: GuidanceDay[];
   /** When this copy was fetched — lets the UI say how fresh offline data is. */
   fetchedAt?: number;
-  /** The calculation system it was computed in (absent on copies saved before it was recorded: drik). */
-  system?: CalculationSystem;
+  /** The calculation it was computed in (`calculationKey`: `drik`, `drik.kp`, `surya_siddhanta`). */
+  calculation?: string;
 }
 
 /** A reminder *rule*: window times differ daily, so each day is materialised from the cache. */

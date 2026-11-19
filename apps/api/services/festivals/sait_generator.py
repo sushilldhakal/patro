@@ -23,24 +23,25 @@ CACHE_DIR = ROOT / "cache"
 # 4.11.0: sait days carry the pūrṇimānta lunar month, which moved when amanta
 #         months started being named from the Sankranti they contain rather
 #         than from the Sun's rashi at their Purnima.
-SAIT_ENGINE_VERSION = stamp("4.11.0")
+SAIT_ENGINE_VERSION = stamp("4.12.0")  # 4.12: computed BS months; drik follows the chosen ayanamsha
 
 
 def sait_location_key(location: ObserverLocation) -> str:
-    """Cache identity for one place under the request's siddhanta.
+    """Cache identity for one place under the request's calculation.
 
-    Drik keeps the bare location key, so the rows already stored stay valid.
-    Any other siddhanta gets a short suffix (``location_key`` is varchar(80);
-    a full ``~surya_siddhanta`` plus a long timezone can overflow it).
+    Drik with Lahiri keeps the bare location key. Any other calculation gets a short
+    suffix (``location_key`` is varchar(80); a full ``~surya_siddhanta`` plus a long
+    timezone can overflow it): ``~ss`` for the Surya Siddhanta, ``~kp`` for drik with KP.
     """
-    from engine.astronomy.siddhanta import SURYA_SIDDHANTA, current_siddhanta
+    from engine.astronomy.siddhanta import SURYA_SIDDHANTA, calculation_id
 
     key = location.cache_key()
-    namespace = current_siddhanta().cache_namespace
-    if not namespace:
+    calc = calculation_id()
+    if calc == "drik":
         return key
-    suffix = "~ss" if namespace == SURYA_SIDDHANTA else f"~{namespace[:6]}"
-    return f"{key}{suffix}"[:80]
+    suffix = "~ss" if calc == SURYA_SIDDHANTA else "~" + calc.split(".", 1)[-1][:11]
+    # The suffix is kept whole; the place is shortened if the two overflow the column.
+    return f"{key[: 80 - len(suffix)]}{suffix}"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:

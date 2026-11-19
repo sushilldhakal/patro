@@ -21,7 +21,7 @@
     "name": "Lahiri"
   },
   "bs_date": {
-    "day": 1,
+    "day": 2,
     "month": 12,
     "month_name": "Chaitra",
     "month_name_ne": "चैत्र",
@@ -419,7 +419,7 @@
     "vipala": 22
   },
   "display": {
-    "bs_ne": "वि.सं. १९८६ चैत्र १ शनिवार",
+    "bs_ne": "वि.सं. १९८६ चैत्र २ शनिवार",
     "gregorian_en": "1930 Mar 15, Saturday",
     "ns_ne": "ने.सं. १०४९ चिल्लागा प्रतिपदा - 16"
   },

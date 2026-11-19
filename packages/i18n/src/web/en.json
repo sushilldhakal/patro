@@ -197,7 +197,7 @@
       },
       "gochar": {
         "title": "Planetary Transits (Gochar) | Vedic Patro",
-        "description": "Live graha positions, upcoming sign and nakshatra changes, and per-planet transit windows — Lahiri sidereal, for your city.",
+        "description": "Live graha positions, upcoming sign and nakshatra changes, and per-planet transit windows — sidereal in the ayanamsha you chose (Lahiri by default), for your city.",
         "keywords": "gochar, planetary transit, graha gochar, rashi change, retrograde"
       },
       "aakash_gochar": {
@@ -909,7 +909,7 @@
   },
   "rashifal": {
     "title": "Rashifal",
-    "subtitle": "Daily, weekly, monthly and yearly rashifal from sunrise panchanga — gochar with vedha, Ashtakavarga, Sudarshana chakra, chandrabala and the sign lord, on Lahiri Drik Ganita.",
+    "subtitle": "Daily, weekly, monthly and yearly rashifal from sunrise panchanga — gochar with vedha, Ashtakavarga, Sudarshana chakra, chandrabala and the sign lord, in the calculation you chose (Lahiri Drik Ganita by default).",
     "eyebrow": "Nepali Patro · Jyotish · Rashifal",
     "tabs_label": "Rashifal period",
     "tabs": {
@@ -1065,7 +1065,7 @@
     "parashari_bindu_tables_per_rashi_sarv_sums_the_seven_gr": "Parashari bindu tables per rashi. Sarv* sums the seven grahas (excludes Lagna). Reduced charts apply Trikona then Ekadhipatya Shodhana.",
     "reduced_ashtakavarga": "Reduced Ashtakavarga",
     "ayanamsha": "Ayanamsha",
-    "grahas_lagna_and_nakshatra_are_computed_in_this_ayanams": " · Grahas, lagna and nakshatra are computed in this ayanamsha; tithi/yoga/karana stay Lahiri-based.",
+    "ayanamsha_applies_everywhere": " · The patro, tithi, nakshatra, yoga, karana, BS months, festivals, sait and kundali are all computed in this ayanamsha.",
     "lord": "Lord",
     "bhava_bala_house_strength_virupas": "Bhava Bala — House Strength (Virupas)",
     "explore_houses": "Explore your houses",
@@ -3578,7 +3578,7 @@
     },
     "nakshatra": {
       "what": "A nakshatra is one of the 27 lunar mansions — equal 13°20′ divisions of the zodiac through which the Moon passes, occupying each for roughly a day.",
-      "how": "The ecliptic (360°) is divided into 27 equal arcs of 13°20′. After applying the Lahiri ayanamsha, the nakshatra is read from the Moon's sidereal longitude; begin/end times are the instants the Moon crosses each 13°20′ boundary.",
+      "how": "The ecliptic (360°) is divided into 27 equal arcs of 13°20′. After applying the ayanamsha you chose (Lahiri by default), the nakshatra is read from the Moon's sidereal longitude; begin/end times are the instants the Moon crosses each 13°20′ boundary.",
       "meaning": "The nakshatra drives the birth star (janma nakshatra), tarabala, and muhurta. Each is ruled by a deity and a planet and carries its own nature (fixed, movable, fierce, and so on)."
     },
     "yoga": {
@@ -3999,7 +3999,7 @@
   "graha_descriptions": {
     "graha-sthiti": {
       "what": "Graha sthiti is the precise celestial position of the nine grahas (Sun, Moon, Mars, Mercury, Jupiter, Venus, Rahu, Ketu) and the ascendant (लग्न) at a given moment. Each planet's sign, nakshatra, pada, nakshatra lord/sub-lord, full degree, latitude (shara), speed, right ascension and declination are shown.",
-      "how": "Values are computed at local sunrise from the Swiss Ephemeris. Rekhamsha and full degree are sidereal longitudes with the Lahiri ayanamsha applied; nakshatra, pada and lord/sub-lord are derived from that same sidereal longitude. Shara (latitude), right ascension and declination come from an ecliptic-to-equatorial transform and are ayanamsha-independent. Retrograde (negative speed) and combustion near the Sun are also flagged.",
+      "how": "Values are computed at local sunrise from the Swiss Ephemeris. Rekhamsha and full degree are sidereal longitudes with the ayanamsha you chose applied (Lahiri by default); nakshatra, pada and lord/sub-lord are derived from that same sidereal longitude. Shara (latitude), right ascension and declination come from an ecliptic-to-equatorial transform and are ayanamsha-independent. Retrograde (negative speed) and combustion near the Sun are also flagged.",
       "meaning": "Graha sthiti underpins the birth chart, transits (gochar), muhurta and daily prediction. The nakshatra lord and sub-lord are used in KP (Krishnamurti Paddhati) to judge results, while declination shows a planet's north/south tilt from the celestial equator."
     },
     "graha-asta": {
@@ -5212,7 +5212,7 @@
       "motion": "Motion",
       "no_upcoming_transits_this_month": "No upcoming transits this month.",
       "pick_a_planet": "Pick a planet",
-      "positions_are_computed_at_local_sunrise": "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",
+      "positions_are_computed_at_local_sunrise": "Positions are computed at local sunrise (udaya) — sidereal in the ayanamsha you chose (Lahiri by default).",
       "seen_the_day_s_panchang_now": "Seen the day's panchang? Now check where the planets are moving and how today's transits affect your sign.",
       "sign": "Sign",
       "speed": "Speed",
@@ -5353,7 +5353,7 @@
       "x_b8d3d3cc": "{{v0}} · pada {{v1}}",
       "divisional_charts_2": "Divisional Charts",
       "navagraha_shanti": "Navagraha Shanti",
-      "x_4836cfed": "Parashari Shadbala (Lahiri sidereal, JPL)",
+      "x_4836cfed": "Parashari Shadbala (sidereal in the chosen ayanamsha, JPL)",
       "x_bab6a0ed": "{{v0}}× required",
       "x_b48812f0": "{{v0}} defeats {{v1}} ({{v2}} virupa, {{v3}}° apart)",
       "x_0d730df7": "Varga strength — scored out of 20 ({{v0}} full). The planet's capacity to give its results.",

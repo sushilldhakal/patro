@@ -7,62 +7,29 @@
  * passes its auth state, its profiles query and its ayanamsha storage; the
  * chart itself is read with `useKundaliChart`.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Profile } from "@vedic-patro/api-client";
-import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { DEFAULT_AYANAMSHA, parseStoredAyanamsha } from "@vedic-patro/domain/calendar/calculation-system";
+export { AYANAMSHA_STORAGE_KEY } from "@vedic-patro/domain/calendar/calculation-system";
 import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
-import { useLocale } from "@vedic-patro/i18n/react";
+import { useCalculationSystem, useLocale } from "@vedic-patro/i18n/react";
 import { useAuthDialog } from "./use-kundali-hub-page";
 
-export const DEFAULT_AYANAMSHA_MODE: AyanamshaMode = "nepal";
-export const AYANAMSHA_STORAGE_KEY = "dhakalPatroAyanamshaMode";
+export const DEFAULT_AYANAMSHA_MODE: AyanamshaMode = DEFAULT_AYANAMSHA;
 
 /** A stored value, or null when it is not one of the ayanamsha modes. */
-export function parseAyanamshaMode(raw: string | null | undefined): AyanamshaMode | null {
-  return raw && AYANAMSHA_MODES.some((m) => m.id === raw) ? (raw as AyanamshaMode) : null;
-}
+export const parseAyanamshaMode = parseStoredAyanamsha;
 
-/** Where the app keeps the reader's ayanamsha choice (sync on the web, async in the app). */
-export type AyanamshaStorage = {
-  load: () => AyanamshaMode | null | Promise<AyanamshaMode | null>;
-  /** Omit to keep a change for this visit only. */
-  save?: (mode: AyanamshaMode) => void | Promise<void>;
-};
-
-/** Every open picker hears a change, so Settings and the kundali pages stay on the same mode. */
-const ayanamshaListeners = new Set<(mode: AyanamshaMode) => void>();
-
-/** The ayanamsha mode, read once from storage and written back on change. */
-export function useAyanamshaMode(storage: AyanamshaStorage, fallback: AyanamshaMode = DEFAULT_AYANAMSHA_MODE) {
-  const [mode, setModeState] = useState<AyanamshaMode>(() => {
-    const saved = storage.load();
-    return saved instanceof Promise ? fallback : (saved ?? fallback);
-  });
-  useEffect(() => {
-    const saved = storage.load();
-    if (!(saved instanceof Promise)) return;
-    let live = true;
-    void saved.then((value) => {
-      if (live && value) setModeState(value);
-    });
-    return () => {
-      live = false;
-    };
-    // Read once on mount; later changes are written by `setMode`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    ayanamshaListeners.add(setModeState);
-    return () => {
-      ayanamshaListeners.delete(setModeState);
-    };
-  }, []);
-  const setMode = (next: AyanamshaMode) => {
-    setModeState(next);
-    void storage.save?.(next);
-    for (const hear of ayanamshaListeners) hear(next);
-  };
-  return [mode, setMode] as const;
+/**
+ * The reader's ayanamsha and its setter — one choice for the whole app (Account and the
+ * kundali pages share it): every request carries it, so the panchanga, BS months,
+ * festivals, साइत and the kundali all follow it under drik. Each app loads and saves it
+ * at start-up (`configureAyanamshaPersistence`).
+ */
+export function useAyanamshaMode() {
+  const { ayanamsha, setAyanamsha } = useCalculationSystem();
+  return [ayanamsha, setAyanamsha] as const;
 }
 
 export type KundaliDetailStatus = "loading" | "login" | "not-found" | "no-birth" | "ready";
@@ -78,21 +45,19 @@ export function useKundaliDetailPage({
   profileId,
   auth,
   profiles,
-  ayanamshaStorage,
   guestProfile,
 }: {
   profileId: string | undefined;
   auth: { isAuthenticated: boolean; loading: boolean };
   /** The app's `useProfilesQuery` result. */
   profiles: { data?: Profile[]; isLoading: boolean; isError: boolean };
-  ayanamshaStorage: AyanamshaStorage;
   /** A kundali kept on the device with no account (the app's `/kundali/guest`): `undefined` while it
    *  is read, `null` when there is none. Passing it opens the page without signing in. */
   guestProfile?: Profile | null;
 }) {
   const { t, lang, digits } = useLocale();
   const [editOpen, setEditOpen] = useState(false);
-  const [ayanamshaMode, setAyanamshaMode] = useAyanamshaMode(ayanamshaStorage);
+  const [ayanamshaMode, setAyanamshaMode] = useAyanamshaMode();
   const authDialog = useAuthDialog();
 
   const guest = guestProfile !== undefined || profileId === "guest";

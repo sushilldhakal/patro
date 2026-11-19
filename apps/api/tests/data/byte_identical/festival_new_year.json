@@ -433,7 +433,7 @@
       "is_public_holiday": true,
       "name_en": "Nepali New Year",
       "name_ne": "नयाँ वर्ष",
-      "notes": "MoHA BS 2083-01-01",
+      "notes": "Baishakh 1 — official BS calendar first day",
       "start_date": "2026-04-14",
       "type": "bs_fixed"
     },

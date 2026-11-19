@@ -28,7 +28,7 @@ if (Platform.OS !== "web") installForegroundHandler();
 export function NotificationsRuntime() {
   const { isAuthenticated, loading } = useAuth();
   const { lang } = useLocale();
-  const { system } = useCalculationSystem();
+  const { key: calculation } = useCalculationSystem();
   const router = useRouter();
   const langRef = useRef<"ne" | "en">(lang === "en" ? "en" : "ne");
   langRef.current = lang === "en" ? "en" : "ne";
@@ -61,13 +61,13 @@ export function NotificationsRuntime() {
     return () => sub.remove();
   }, [isAuthenticated, loading]);
 
-  // Wording follows the app language, and windows and the widget follow the calculation system
-  // (drik / Surya Siddhanta): rebuild the schedule when either changes. The caches keep the
+  // Wording follows the app language, and windows and the widget follow the calculation
+  // (drik / Surya Siddhanta, and drik's ayanamsha): rebuild the schedule when either changes. The caches keep the
   // system they were computed in, so this sync refetches after a switch.
   useEffect(() => {
     if (Platform.OS === "web" || loading) return;
     void syncNotifications({ lang: langRef.current }).catch(() => {});
-  }, [lang, system, loading]);
+  }, [lang, calculation, loading]);
 
   useEffect(() => {
     if (Platform.OS === "web") return;

@@ -7,6 +7,7 @@ janma rashi the tone is the house the transit Moon occupies, the same table as
 
 from __future__ import annotations
 
+from engine.astronomy.sidereal import ayanamsha_label
 from typing import Any, Literal
 
 from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
@@ -215,7 +216,7 @@ def build_daily_rashifal(
         "vaara_num": vaara_num,
         "method": {
             "frame": "drik_ganita",
-            "ayanamsa": "Lahiri",
+            "ayanamsa": ayanamsha_label(),
             "chandrabala": "transit_moon_house",
             "moorti": "transit_moon_house_from_janma_rashi",
         },

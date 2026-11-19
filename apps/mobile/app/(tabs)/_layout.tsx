@@ -12,6 +12,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { DuoNativeTabs } from "@/components/navigation/DuoNativeTabs";
 import { useThemeColors } from "@/lib/theme-context";
+import { CalculationRemount } from "@/components/navigation/CalculationRemount";
 
 /** Width of the left-edge strip that starts the menu swipe on home, in points. */
 const EDGE_SWIPE_WIDTH = 20;
@@ -86,7 +87,9 @@ function JsTabsLayout() {
       )}
       screenLayout={({ route, navigation, children }) => (
         <UnloadWhenAway navigation={navigation}>
-          <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>
+          <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>
+            <CalculationRemount>{children}</CalculationRemount>
+          </PanchangaTabsShell>
         </UnloadWhenAway>
       )}
       tabBar={() => (IS_IPHONE_DUO ? null : <FloatingNavBar />)}

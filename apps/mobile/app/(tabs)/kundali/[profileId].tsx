@@ -20,7 +20,6 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { GUEST_PROFILE_ID, saveGuestProfile, useGuestProfile } from "@/lib/kundali/guest-profile";
@@ -49,7 +48,6 @@ export default function KundaliDetailScreen() {
     profileId,
     auth,
     profiles,
-    ayanamshaStorage,
     ...(isGuest ? { guestProfile: guest.profile } : {}),
   });
   const { status, profile, moment, location, copy, authDialog } = page;

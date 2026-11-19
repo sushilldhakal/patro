@@ -189,16 +189,32 @@ def test_ingress_endpoint_negative_ad_range():
     assert payload["events"]
 
 
+def _ad_label(client: TestClient, bs_key: str) -> str:
+    """The AD label (Julian before 1582) the API gives a BS day, e.g. ``-0037-07-07``."""
+    year, month, day = (int(x) for x in bs_key.split("-"))
+    parts = client.get(
+        "/v1/panchanga",
+        params={"era": "bs", "year": year, "month": month, "day": day, "lean": "true", **LOCATION_PARAMS},
+    ).json()["date_parts"]["gregorian"]
+    signed = -(parts["year"] - 1) if parts["era"] == "bc" else parts["year"]
+    return f"{'-' if signed < 0 else ''}{abs(signed):04d}-{parts['month']:02d}-{parts['day']:02d}"
+
+
 def test_ingress_endpoint_bs_and_ad_agree_in_bce():
-    """BS 20-04-14 *is* -0037-07-02, so both eras must resolve to one timeline."""
+    """A BS range and the AD range the API says it covers resolve to one timeline."""
     client = TestClient(app)
     bs = client.get(
         "/v1/nepal/gochar/ingress",
         params={**EARLY_BS_RANGE, "level": "pada", "grahas": "sun", **LOCATION_PARAMS},
     ).json()
+    ad_range = {
+        "from": _ad_label(client, EARLY_BS_RANGE["from"]),
+        "to": _ad_label(client, EARLY_BS_RANGE["to"]),
+        "era": "ad",
+    }
     ad = client.get(
         "/v1/nepal/gochar/ingress",
-        params={**BCE_AD_RANGE, "level": "pada", "grahas": "sun", **LOCATION_PARAMS},
+        params={**ad_range, "level": "pada", "grahas": "sun", **LOCATION_PARAMS},
     ).json()
     def _core_events(payload: dict) -> list[dict]:
         keep = {"graha", "level", "entry_time_utc", "entry_jd", "entry_vedic_jd", "label_ne"}

@@ -1,5 +1,11 @@
 import { validTimeZone } from "./zoned-time";
-import calendarData from "./bs-calendar-data.json"
+import drikTable from "./bs-calendar-data/drik.json"
+import drikRamanTable from "./bs-calendar-data/drik.raman.json"
+import drikKpTable from "./bs-calendar-data/drik.kp.json"
+import drikTrueCitraTable from "./bs-calendar-data/drik.true_citra.json"
+import drikTruePushyaTable from "./bs-calendar-data/drik.true_pushya.json"
+import suryaSiddhantaTable from "./bs-calendar-data/surya_siddhanta.json"
+import { calculationKey } from "./calculation-system"
 import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "./patro-day"
 
 export const BS_MONTH_NAMES = [
@@ -93,34 +99,73 @@ function isoFromDays(days: number): string {
   return `${year}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`
 }
 
+type PackedTable = typeof drikTable
+
 /**
- * The table ships packed (see `notes_packed` in the JSON): 12 digits per year, each a
- * month's length minus 29, and Baisakh 1 only where it does not follow from the year
- * before. Unpacked once here into the same two maps the keyed form gave.
+ * One table per calculation, generated from the API's own months
+ * (apps/api/scripts/generate_frontend_bs_calendar.py): every BS month starts on the
+ * Kathmandu day of its sankranti as that calculation finds it, so the device's
+ * BS ↔ AD agrees with the server's for the reader's choice.
  */
-function unpackCalendar(): { lengths: Record<number, BsMonthLengths>; baisakh1: Record<number, string> } {
+const PACKED_TABLES: Record<string, PackedTable> = {
+  drik: drikTable,
+  "drik.raman": drikRamanTable,
+  "drik.kp": drikKpTable,
+  "drik.true_citra": drikTrueCitraTable,
+  "drik.true_pushya": drikTruePushyaTable,
+  surya_siddhanta: suryaSiddhantaTable,
+}
+
+/** The year span and browse floors — the same in every table. */
+const calendarData = drikTable
+
+type BsMonthStart = { year: number; month: number; adMs: number }
+
+type BsTable = {
+  lengths: Record<number, BsMonthLengths>
+  baisakh1: Record<number, string>
+  monthStarts: BsMonthStart[]
+}
+
+/**
+ * A table ships packed (see `notes_packed` in the JSON): 12 digits per year, each a
+ * month's length minus 29, and Baisakh 1 only where it does not follow from the year
+ * before. Unpacked once per calculation, on first use.
+ */
+function unpackCalendar(data: PackedTable): BsTable {
   const lengths: Record<number, BsMonthLengths> = {}
   const baisakh1: Record<number, string> = {}
-  const anchors: Record<string, string> = calendarData.baisakh_1_ad_anchors
-  const packed = calendarData.month_lengths_packed
+  const anchors: Record<string, string> = data.baisakh_1_ad_anchors
+  const packed = data.month_lengths_packed
   let day = Number.NaN
-  for (let year = calendarData.first_year; year <= calendarData.last_year + 1; year++) {
+  for (let year = data.first_year; year <= data.last_year + 1; year++) {
     const anchor = anchors[String(year)]
     if (anchor) {
       const [, sign, y, m, d] = /^(-?)(\d+)-(\d\d)-(\d\d)$/.exec(anchor) ?? []
       day = daysFromCivil(Number(`${sign}${y}`), Number(m), Number(d))
     }
     baisakh1[year] = isoFromDays(day)
-    if (year > calendarData.last_year) break
-    const offset = (year - calendarData.first_year) * 12
+    if (year > data.last_year) break
+    const offset = (year - data.first_year) * 12
     const row = Array.from({ length: 12 }, (_, i) => 29 + Number(packed[offset + i]))
     lengths[year] = asMonthLengths(row)
     day += row.reduce((sum, n) => sum + n, 0)
   }
-  return { lengths, baisakh1 }
+  return { lengths, baisakh1, monthStarts: buildMonthStarts(lengths, baisakh1) }
 }
 
-const { lengths: BS_YEAR_MONTH_LENGTHS, baisakh1: BAISAKH_1_AD } = unpackCalendar()
+const unpacked = new Map<string, BsTable>()
+
+/** The reader's calculation's table (drik's when a key has none). */
+function activeTable(): BsTable {
+  const key = PACKED_TABLES[calculationKey()] ? calculationKey() : "drik"
+  let table = unpacked.get(key)
+  if (!table) {
+    table = unpackCalendar(PACKED_TABLES[key]!)
+    unpacked.set(key, table)
+  }
+  return table
+}
 
 /** First BS year with full server panchanga cache on typical deploy (browse floor may still be 60). */
 export const BS_PANCHANGA_START_YEAR =
@@ -137,12 +182,8 @@ export const BS_SUPPORTED_START_YEAR =
       : calendarData.start_year
 export const BS_SUPPORTED_END_YEAR = calendarData.end_year
 
-/** First BS year in embedded `baisakh_1_ad` / `month_lengths` (includes 1–59, not only browse floor). */
-export const BS_OFFLINE_TABLE_START_YEAR = Math.min(
-  ...Object.keys(BAISAKH_1_AD).map(Number).filter((y) => Number.isFinite(y) && y >= 1),
-)
-
-type BsMonthStart = { year: number; month: number; adMs: number }
+/** First BS year in the embedded tables (includes 1–59, not only browse floor). */
+export const BS_OFFLINE_TABLE_START_YEAR = calendarData.first_year
 
 function parseAdDateOnly(isoDate: string): number {
   const { year, month, day } = parseCivilIso(isoDate)
@@ -174,15 +215,15 @@ function localDateFromUtcMs(ms: number): Date {
   return new Date(ms)
 }
 
-function buildMonthStarts(): BsMonthStart[] {
+function buildMonthStarts(lengths: Record<number, BsMonthLengths>, baisakh1Of: Record<number, string>): BsMonthStart[] {
   const starts: BsMonthStart[] = []
-  for (let year = BS_OFFLINE_TABLE_START_YEAR; year <= BS_SUPPORTED_END_YEAR; year += 1) {
-    const baisakh1 = BAISAKH_1_AD[year]
+  for (let year = calendarData.first_year; year <= calendarData.end_year; year += 1) {
+    const baisakh1 = baisakh1Of[year]
     if (!baisakh1) continue
     let cursor = parseAdDateOnly(baisakh1)
     for (let month = 1; month <= 12; month += 1) {
       starts.push({ year, month, adMs: cursor })
-      const days = BS_YEAR_MONTH_LENGTHS[year]?.[month - 1] ?? 30
+      const days = lengths[year]?.[month - 1] ?? 30
       cursor += days * 86_400_000
     }
   }
@@ -190,13 +231,15 @@ function buildMonthStarts(): BsMonthStart[] {
   return starts
 }
 
-const BS_MONTH_STARTS = buildMonthStarts()
-
 function monthStartFor(year: number, month: number): BsMonthStart | undefined {
-  return BS_MONTH_STARTS.find((s) => s.year === year && s.month === month)
+  // Months are in order from BS 1, twelve a year: the index is direct (checked, in case of a gap).
+  const starts = activeTable().monthStarts
+  const at = starts[(year - calendarData.first_year) * 12 + (month - 1)]
+  return at && at.year === year && at.month === month ? at : starts.find((s) => s.year === year && s.month === month)
 }
 
 export function getBSMonthLength(year: number, month: number): number {
+  const { lengths: BS_YEAR_MONTH_LENGTHS, baisakh1: BAISAKH_1_AD } = activeTable()
   const monthLength = BS_YEAR_MONTH_LENGTHS[year]?.[month - 1]
   if (monthLength) return monthLength
   const current = monthStartFor(year, month)
@@ -231,6 +274,7 @@ export function bsToAdOrNull(year: number, month: number, day: number): Date | n
 }
 
 export function bsToAD(year: number, month: number, day: number): Date {
+  const { lengths: BS_YEAR_MONTH_LENGTHS, baisakh1: BAISAKH_1_AD } = activeTable()
   const monthStart = monthStartFor(year, month)
   if (!monthStart) {
     const baisakh1 = BAISAKH_1_AD[year]
@@ -253,6 +297,7 @@ export function bsToAD(year: number, month: number, day: number): Date {
 
 export function adToBS(date: Date): BikramSambatDate {
   const adMs = normalizeToUtcDate(date)
+  const BS_MONTH_STARTS = activeTable().monthStarts
   const fallback = BS_MONTH_STARTS[0]
   if (!fallback) return { year: BS_SUPPORTED_START_YEAR, month: 1, day: 1, monthName: BS_MONTH_NAMES[0] }
   let match = fallback

@@ -60,17 +60,6 @@ export const AYANAMSHA_MODES: AyanamshaModeInfo[] = [
   },
 ];
 
-/**
- * True when the mode's zodiac matches the API's panchanga angas, which are
- * always computed in Lahiri (Nepal Panchang uses a Lahiri-equivalent
- * ayanamsha). For other modes the graha/lagna longitudes come back shifted,
- * so nakshatra-derived fields must be recomputed from the longitude instead
- * of read from the Lahiri anga blocks.
- */
-export function matchesPanchangaAngas(mode: AyanamshaMode): boolean {
-  return mode === "nepal" || mode === "lahiri";
-}
-
 export function getAyanamshaModeInfo(mode: AyanamshaMode): AyanamshaModeInfo {
   return AYANAMSHA_MODES.find((m) => m.id === mode) ?? AYANAMSHA_MODES[0]!;
 }

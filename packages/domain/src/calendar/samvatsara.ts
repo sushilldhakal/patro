@@ -1,6 +1,8 @@
 import type { Era } from "./era";
 import { signedFromBbs } from "./patro-year-axis";
 import SAMVATSARA_TABLE from "./samvatsara-table.json";
+import SAMVATSARA_TABLE_SURYA from "./samvatsara-table.surya_siddhanta.json";
+import { getCalculationSystem } from "./calculation-system";
 
 /** Nepal Bikram Sambat samvatsara (60-year Jovian cycle) — mirrors backend true-Jupiter rules. */
 
@@ -95,7 +97,9 @@ function samvatsaraIndex(year: number): number | undefined {
   if (!Number.isInteger(year) || year === 0) return undefined;
   if (year < SAMVATSARA_TABLE_MIN_YEAR || year > SAMVATSARA_TABLE_MAX_YEAR) return undefined;
   const position = year - SAMVATSARA_TABLE_MIN_YEAR - (year > 0 && SAMVATSARA_TABLE_MIN_YEAR < 0 ? 1 : 0);
-  const code = SAMVATSARA_TABLE.packed.charCodeAt(position);
+  // The Surya Siddhanta names years from the text's mean Jupiter, as the API does under it.
+  const table = getCalculationSystem() === "surya_siddhanta" ? SAMVATSARA_TABLE_SURYA : SAMVATSARA_TABLE;
+  const code = table.packed.charCodeAt(position);
   return Number.isNaN(code) ? undefined : code - 48;
 }
 

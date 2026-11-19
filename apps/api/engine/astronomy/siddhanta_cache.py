@@ -1,4 +1,4 @@
-"""``functools.lru_cache`` that also keys on the request's siddhanta.
+"""``functools.lru_cache`` that also keys on the request's calculation (siddhanta + ayanamsha).
 
 A result computed from the ephemeris (a month start, a sankranti moment, a
 samvatsara) differs between siddhantas, so a plain cache would hand one siddhanta's
@@ -12,7 +12,7 @@ import functools
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from engine.astronomy.siddhanta import current_siddhanta
+from engine.astronomy.siddhanta import calculation_id
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -25,7 +25,7 @@ def siddhanta_lru_cache(maxsize: int | None = 128) -> Callable[[F], F]:
 
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            return cached(current_siddhanta().id, *args, **kwargs)
+            return cached(calculation_id(), *args, **kwargs)
 
         wrapper.cache_clear = cached.cache_clear  # type: ignore[attr-defined]
         wrapper.cache_info = cached.cache_info  # type: ignore[attr-defined]

@@ -91,24 +91,29 @@ function CapabilitiesBootstrap() {
 }
 
 /**
- * Drik and the Surya Siddhanta give different days and festival dates, so on a
- * switch every cached response is dropped and the screens on show fetch again.
+ * Drik and the Surya Siddhanta (and drik's ayanamsha) give different days and festival
+ * dates, so on a switch every cached response is dropped and the screens on show fetch again.
  */
 function CalculationSystemQueryReset() {
-  const { system } = useCalculationSystem();
+  // The whole calculation: the system and drik's ayanamsha.
+  const { key } = useCalculationSystem();
   const queryClient = useQueryClient();
-  const previous = useRef(system);
+  const previous = useRef(key);
   useEffect(() => {
-    if (previous.current === system) return;
-    previous.current = system;
+    if (previous.current === key) return;
+    previous.current = key;
     void queryClient.resetQueries();
-  }, [system, queryClient]);
+  }, [key, queryClient]);
   return null;
 }
 
 function AppRoutes({ appRouter }: { appRouter: AnyRouter }) {
   useTranslation();
-  return <RouterProvider router={appRouter} />;
+  // A calculation switch (drik / Surya Siddhanta, drik's ayanamsha) redraws the page: BS ↔ AD
+  // reads that calculation's month table, and a memoised date would otherwise keep the old one.
+  // The router keeps its URL, so the reader stays on the same page.
+  const { key } = useCalculationSystem();
+  return <RouterProvider key={key} router={appRouter} />;
 }
 
 export function AppProviders({

@@ -14,11 +14,11 @@ import {
   type MilanPersonQuery,
   type Profile,
 } from "@vedic-patro/api-client";
-import { getAyanamshaModeInfo } from "@vedic-patro/domain/astronomy/ayanamsha";
+import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import { formatProfileBirthLabel, profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { useAuthDialog, type KundaliHubStatus } from "./use-kundali-hub-page";
-import { useAyanamshaMode, type AyanamshaStorage } from "./use-kundali-detail-page";
+import { getAyanamsha } from "@vedic-patro/domain/calendar/calculation-system";
 
 export const MILAN_STALE_TIME = 1000 * 60 * 5;
 
@@ -52,16 +52,15 @@ export function milanQueryFromProfile(profile: Profile | null): MilanPersonQuery
 export function useKundaliMilanPage({
   isAuthenticated,
   authLoading,
-  ayanamshaStorage,
 }: {
   isAuthenticated: boolean;
   authLoading: boolean;
-  /** Where the reader's ayanamsha choice is read from (the page does not write it back). */
-  ayanamshaStorage: AyanamshaStorage;
 }) {
   const { t, lang } = useLocale();
   const authDialog = useAuthDialog();
-  const [ayanamsha, setAyanamsha] = useAyanamshaMode({ load: ayanamshaStorage.load }, "lahiri");
+  // Starts from the reader's ayanamsha; a change here compares these two charts only and is
+  // not saved (the requests name it, so it never changes the rest of the app).
+  const [ayanamsha, setAyanamsha] = useState<AyanamshaMode>(getAyanamsha);
   const [boyProfile, setBoyProfile] = useState<Profile | null>(null);
   const [girlProfile, setGirlProfile] = useState<Profile | null>(null);
   const en = lang === "en";

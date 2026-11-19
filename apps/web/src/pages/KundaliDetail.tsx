@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { hasStoredSession } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { CalculationSystemSelector } from "@/components/kundali/CalculationSystemSelector";
@@ -101,7 +100,7 @@ export function KundaliDetail() {
   // — collapsing what was a 3-hop waterfall (auth check -> profiles -> chart)
   // into 2 parallel round trips followed by the chart fetch.
   const profiles = useProfilesQuery(hasStoredSession());
-  const page = useKundaliDetailPage({ profileId, auth, profiles, ayanamshaStorage });
+  const page = useKundaliDetailPage({ profileId, auth, profiles });
   const { status, profile, copy } = page;
 
   useRouteLoading(auth.loading);

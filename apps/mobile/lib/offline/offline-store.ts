@@ -2,7 +2,7 @@ import { fetchYearWheelCalendar, locationCacheKey, yearWheelRequestPath, type Lo
 import { getOfflineResponse } from "@/lib/offline/offline-http";
 import { getOfflineDb, OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
 import { isCurrentlyOnline, isCurrentlyOnWifi } from "@/lib/offline/network-status";
-import { DEFAULT_CALCULATION_SYSTEM, getCalculationSystem, withCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+import { calculationKey, getCalculation, withCalculation } from "@vedic-patro/domain/calendar/calculation-system";
 
 export { OFFLINE_STORE_SUPPORTED };
 
@@ -32,7 +32,7 @@ const parsedYears = new Map<string, Promise<YearWheelCalendar | null>>();
 
 export function getCachedYear(year: number, location?: LocationParams): Promise<YearWheelCalendar | null> {
   if (!OFFLINE_STORE_SUPPORTED) return Promise.resolve(null);
-  const key = `${year}:${locationCacheKey(location)}:${getCalculationSystem()}`;
+  const key = `${year}:${locationCacheKey(location)}:${calculationKey()}`;
   let hit = parsedYears.get(key);
   if (hit) {
     // Most recently used goes last, so the oldest is evicted first.
@@ -51,30 +51,20 @@ export function getCachedYear(year: number, location?: LocationParams): Promise<
 
 async function readCachedYear(year: number, location?: LocationParams): Promise<YearWheelCalendar | null> {
   // Current store: the raw response saved by an offline pack, keyed by the path the request went out
-  // with, which names the calculation system (lib/api.ts): a Surya Siddhanta reader reads only
-  // Surya Siddhanta years, offline as online.
-  const system = getCalculationSystem();
-  const saved = await getOfflineResponse(withCalculationSystem(yearWheelRequestPath(year, location), system));
+  // with, which names the calculation (lib/api.ts): a Surya Siddhanta or KP reader reads only their
+  // own calculation's years, offline as online.
+  const calculation = getCalculation();
+  const saved = await getOfflineResponse(withCalculation(yearWheelRequestPath(year, location), calculation));
   if (saved) {
     try {
       return JSON.parse(saved) as YearWheelCalendar;
     } catch {
-      /* fall through to the older table */
+      /* unreadable copy: nothing offline for this year */
     }
   }
-  // Older installs saved whole years in their own table, before the Surya Siddhanta existed: drik only.
-  if (system !== DEFAULT_CALCULATION_SYSTEM) return null;
-  const db = await getOfflineDb();
-  const row = await db.getFirstAsync<{ payload: string }>(
-    "SELECT payload FROM bs_year_cache WHERE year = ? AND location_key = ?",
-    [year, locationCacheKey(location)],
-  );
-  if (!row) return null;
-  try {
-    return JSON.parse(row.payload) as YearWheelCalendar;
-  } catch {
-    return null;
-  }
+  // Older installs saved whole years in their own table, from the published calendar before any
+  // calculation choice existed: no calculation now reads them.
+  return null;
 }
 
 export async function isYearDownloaded(year: number, location?: LocationParams): Promise<boolean> {
@@ -131,6 +121,14 @@ export async function listDownloadedYears(location?: LocationParams): Promise<Do
     count: years.length,
     approxBytes,
   };
+}
+
+/** Every year an older build saved in its own table, for every place (they predate computed months). */
+export async function clearLegacyYears(): Promise<void> {
+  if (!OFFLINE_STORE_SUPPORTED) return;
+  const db = await getOfflineDb();
+  await db.runAsync("DELETE FROM bs_year_cache");
+  parsedYears.clear();
 }
 
 export async function clearDownloadedYears(location?: LocationParams): Promise<void> {

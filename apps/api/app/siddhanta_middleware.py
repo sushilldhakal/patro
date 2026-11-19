@@ -1,9 +1,11 @@
-"""Which siddhanta a request computes in: drik (default) or the Surya Siddhanta.
+"""Which calculation a request computes in: a siddhanta — drik (default) or the Surya
+Siddhanta — and, under drik, an ayanamsha (Lahiri by default).
 
 ``?siddhanta=surya_siddhanta`` on any route switches every engine call made for
-that request — the panchanga, the kundali, the calendar grid — to the
-Surya Siddhanta (see engine.astronomy.siddhanta). The value is in the URL,
-so the CDN caches each siddhanta's answers as different objects.
+that request — the panchanga, the kundali, the calendar grid, BS months, festivals,
+साइत — to the Surya Siddhanta; ``?ayanamsha=kp`` makes drik compute every sidereal
+position with that ayanamsha (see engine.astronomy.siddhanta). The values are in the
+URL, so the CDN caches each calculation's answers as different objects.
 
 A pure ASGI middleware, not ``BaseHTTPMiddleware``: the ContextVar it sets must
 reach the route's threadpool worker, and must be set before EraMiddleware turns
@@ -15,9 +17,22 @@ from __future__ import annotations
 import json
 from urllib.parse import parse_qs
 
-from engine.astronomy.siddhanta import resolve_siddhanta, use_siddhanta
+from engine.astronomy.siddhanta import resolve_siddhanta, use_ayanamsha, use_siddhanta
 
 QUERY_PARAM = "siddhanta"
+AYANAMSHA_PARAM = "ayanamsha"
+
+
+def _bad_request(detail: str):
+    body = json.dumps({"detail": detail}).encode("utf-8")
+    return (
+        {
+            "type": "http.response.start",
+            "status": 400,
+            "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())],
+        },
+        {"type": "http.response.body", "body": body},
+    )
 
 
 class SiddhantaMiddleware:
@@ -28,25 +43,30 @@ class SiddhantaMiddleware:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
-        raw = parse_qs(scope.get("query_string", b"").decode("latin-1")).get(QUERY_PARAM, [None])[-1]
+        query = parse_qs(scope.get("query_string", b"").decode("latin-1"))
+        raw = query.get(QUERY_PARAM, [None])[-1]
+        requested_ayanamsha = query.get(AYANAMSHA_PARAM, [None])[-1] or None
         try:
             siddhanta_id = resolve_siddhanta(raw)
         except ValueError as exc:
-            body = json.dumps({"detail": str(exc)}).encode("utf-8")
-            await send({
-                "type": "http.response.start",
-                "status": 400,
-                "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())],
-            })
-            await send({"type": "http.response.body", "body": body})
+            for message in _bad_request(str(exc)):
+                await send(message)
             return
-        header = (b"x-siddhanta", siddhanta_id.encode("ascii"))
 
-        async def send_with_siddhanta(message) -> None:
-            # Say which siddhanta computed the body.
-            if message["type"] == "http.response.start":
-                message = {**message, "headers": [*message.get("headers", []), header]}
-            await send(message)
+        with use_siddhanta(siddhanta_id) as active:
+            try:
+                choice = active.resolve_ayanamsha(requested_ayanamsha)
+            except ValueError as exc:
+                for message in _bad_request(str(exc)):
+                    await send(message)
+                return
+            headers = [(b"x-siddhanta", siddhanta_id.encode("ascii")), (b"x-ayanamsha", choice.key.encode("ascii"))]
 
-        with use_siddhanta(siddhanta_id):
-            await self.app(scope, receive, send_with_siddhanta)
+            async def send_with_calculation(message) -> None:
+                # Say which calculation computed the body.
+                if message["type"] == "http.response.start":
+                    message = {**message, "headers": [*message.get("headers", []), *headers]}
+                await send(message)
+
+            with use_ayanamsha(requested_ayanamsha):
+                await self.app(scope, receive, send_with_calculation)

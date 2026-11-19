@@ -31,7 +31,10 @@ RULE_VERSION = "v3"
 # 1.0.10: `from_bs_year` on fixed BS days — जेनजी शहीद दिवस has no date before BS 2083.
 # 1.0.11: `from_bs_year` / `from_ad_year` apply to every rule type — a festival
 # shows no date before the year it was first kept.
-ENGINE_VERSION = stamp("1.0.11")
+# 1.0.12: lunar, solar and BS-fixed festivals follow the request's calculation
+# (siddhanta + ayanamsha) everywhere; only Gregorian-fixed and announced dates
+# (Eid) are pinned. BS months are computed too, and caches key on the calculation.
+ENGINE_VERSION = stamp("1.0.12")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"

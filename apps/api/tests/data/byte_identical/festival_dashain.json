@@ -21,7 +21,7 @@
     "name": "Lahiri"
   },
   "bs_date": {
-    "day": 3,
+    "day": 4,
     "month": 7,
     "month_name": "Kartik",
     "month_name_ne": "कार्तिक",
@@ -419,24 +419,11 @@
     "vipala": 57
   },
   "display": {
-    "bs_ne": "वि.सं. २०८३ कार्तिक ३ मङ्गलवार",
+    "bs_ne": "वि.सं. २०८३ कार्तिक ४ मङ्गलवार",
     "gregorian_en": "2026 Oct 20, Tuesday",
     "ns_ne": "ने.सं. ११४६ शुक्ल पक्ष नवमी - 9"
   },
   "festivals": [
-    {
-      "category": "hindu",
-      "duration_days": 1,
-      "end_date": "2026-10-20",
-      "id": "maha-navami",
-      "importance": "national",
-      "is_public_holiday": false,
-      "name_en": "Maha Navami",
-      "name_ne": "महानवमी",
-      "notes": "BS 2083-07-03 (कात्तिक ३). Navami holds sunrise on Oct 20; the aparahna rule alone gives Oct 19.",
-      "start_date": "2026-10-20",
-      "type": "lunar"
-    },
     {
       "category": "hindu",
       "duration_days": 1,
@@ -472,7 +459,7 @@
       "is_public_holiday": true,
       "name_en": "Dashain Holiday",
       "name_ne": "दशैं बिदा",
-      "notes": "MoHA BS 2083-06-31 – 2083-07-06, 7 days",
+      "notes": "The government's Dashain rest-day block, every year from Phulpati through Dwadashi. Ghatasthapana is a separate rest day six days earlier. A year's MoHA notice can still replace these dates.",
       "start_date": "2026-10-17",
       "type": "lunar"
     }

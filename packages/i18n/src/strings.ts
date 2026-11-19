@@ -360,8 +360,8 @@ export const strings = {
   },
   "seo.routes.gochar.title": { ne: "ग्रह गोचर | वैदिक पात्रो", en: "Planetary Transits (Gochar) | Vedic Patro" },
   "seo.routes.gochar.description": {
-    ne: "प्रत्यक्ष ग्रह स्थिति, आगामी राशि र नक्षत्र परिवर्तन, र प्रत्येक ग्रहका गोचर सीमा — लाहिरी निरयन, तपाईंको स्थान अनुसार।",
-    en: "Live graha positions, upcoming sign and nakshatra changes, and per-planet transit windows — Lahiri sidereal, for your city.",
+    ne: "प्रत्यक्ष ग्रह स्थिति, आगामी राशि र नक्षत्र परिवर्तन, र प्रत्येक ग्रहका गोचर सीमा — तपाईंले छानेको अयनांशमा निरयन (पूर्वनिर्धारित लाहिरी), तपाईंको स्थान अनुसार।",
+    en: "Live graha positions, upcoming sign and nakshatra changes, and per-planet transit windows — sidereal in the ayanamsha you chose (Lahiri by default), for your city.",
   },
   "seo.routes.gochar.keywords": {
     ne: "गोचर, ग्रह गोचर, राशि परिवर्तन, वक्री",
@@ -828,8 +828,8 @@ export const strings = {
   /* ── rashifal ────────────────────────────────────────────────────────── */
   "rashifal.title": { ne: "राशिफल", en: "Rashifal" },
   "rashifal.subtitle": {
-    ne: "सूर्योदय पञ्चाङ्गबाट दैनिक, साप्ताहिक, मासिक र वार्षिक राशिफल — गोचर र वेध, अष्टकवर्ग, सुदर्शन चक्र, चन्द्रबल र राशिस्वामीको संयुक्त गणना (लाहिरी दृक गणित)।",
-    en: "Daily, weekly, monthly and yearly rashifal from sunrise panchanga — gochar with vedha, Ashtakavarga, Sudarshana chakra, chandrabala and the sign lord, on Lahiri Drik Ganita.",
+    ne: "सूर्योदय पञ्चाङ्गबाट दैनिक, साप्ताहिक, मासिक र वार्षिक राशिफल — गोचर र वेध, अष्टकवर्ग, सुदर्शन चक्र, चन्द्रबल र राशिस्वामीको संयुक्त गणना (तपाईंले छानेको गणना — पूर्वनिर्धारित लाहिरी दृक गणित)।",
+    en: "Daily, weekly, monthly and yearly rashifal from sunrise panchanga — gochar with vedha, Ashtakavarga, Sudarshana chakra, chandrabala and the sign lord, in the calculation you chose (Lahiri Drik Ganita by default).",
   },
   "rashifal.eyebrow": { ne: "नेपाली पात्रो · ज्योतिष · राशिफल", en: "Nepali Patro · Jyotish · Rashifal" },
   "rashifal.tabs_label": { ne: "राशिफल अवधि", en: "Rashifal period" },
@@ -1121,9 +1121,9 @@ export const strings = {
   },
   "kundali.reduced_ashtakavarga": { ne: "शोध्य अष्टकवर्ग", en: "Reduced Ashtakavarga" },
   "kundali.ayanamsha": { ne: "अयनांश", en: "Ayanamsha" },
-  "kundali.grahas_lagna_and_nakshatra_are_computed_in_this_ayanams": {
-    ne: " · ग्रह, लग्न र नक्षत्र यसै अयनांशमा गणना हुन्छ; तिथि/योग/करण भने लाहिरीमा आधारित रहन्छन्।",
-    en: " · Grahas, lagna and nakshatra are computed in this ayanamsha; tithi/yoga/karana stay Lahiri-based.",
+  "kundali.ayanamsha_applies_everywhere": {
+    ne: " · पात्रो, तिथि, नक्षत्र, योग, करण, महिना, चाडपर्व, साइत र कुण्डली सबै यसै अयनांशमा गणना हुन्छन्।",
+    en: " · The patro, tithi, nakshatra, yoga, karana, BS months, festivals, sait and kundali are all computed in this ayanamsha.",
   },
   "kundali.lord": { ne: "स्वामी", en: "Lord" },
   "kundali.bhava_bala_house_strength_virupas": {
@@ -5621,8 +5621,8 @@ export const strings = {
     en: "A nakshatra is one of the 27 lunar mansions — equal 13°20′ divisions of the zodiac through which the Moon passes, occupying each for roughly a day.",
   },
   "element_descriptions.nakshatra.how": {
-    ne: "राशिचक्र (३६०°) लाई १३°२०′ का २७ बराबर भागमा बाँडिन्छ। लाहिरी अयनांश लगाएपछि चन्द्रमाको निरयन (sidereal) देशान्तरबाट नक्षत्र निकालिन्छ; आरम्भ–अन्त्य चन्द्रमाले प्रत्येक १३°२०′ सीमा पार गर्ने क्षण हुन्।",
-    en: "The ecliptic (360°) is divided into 27 equal arcs of 13°20′. After applying the Lahiri ayanamsha, the nakshatra is read from the Moon's sidereal longitude; begin/end times are the instants the Moon crosses each 13°20′ boundary.",
+    ne: "राशिचक्र (३६०°) लाई १३°२०′ का २७ बराबर भागमा बाँडिन्छ। तपाईंले छानेको अयनांश (पूर्वनिर्धारित लाहिरी) लगाएपछि चन्द्रमाको निरयन (sidereal) देशान्तरबाट नक्षत्र निकालिन्छ; आरम्भ–अन्त्य चन्द्रमाले प्रत्येक १३°२०′ सीमा पार गर्ने क्षण हुन्।",
+    en: "The ecliptic (360°) is divided into 27 equal arcs of 13°20′. After applying the ayanamsha you chose (Lahiri by default), the nakshatra is read from the Moon's sidereal longitude; begin/end times are the instants the Moon crosses each 13°20′ boundary.",
   },
   "element_descriptions.nakshatra.meaning": {
     ne: "नक्षत्रले जन्म नक्षत्र, ताराबल र मुहूर्त निर्धारण गर्छ। प्रत्येकको आफ्नै देवता, स्वामी ग्रह र स्वभाव (ध्रुव, चर, उग्र आदि) हुन्छ।",
@@ -6064,8 +6064,8 @@ export const strings = {
     en: "Graha sthiti is the precise celestial position of the nine grahas (Sun, Moon, Mars, Mercury, Jupiter, Venus, Rahu, Ketu) and the ascendant (लग्न) at a given moment. Each planet's sign, nakshatra, pada, nakshatra lord/sub-lord, full degree, latitude (shara), speed, right ascension and declination are shown.",
   },
   "graha_descriptions.graha-sthiti.how": {
-    ne: "यी मान सूर्योदयको क्षणमा स्विस इफेमेरिसबाट गणना गरिन्छ। रेखांश र पूर्ण डिग्री लाहिरी अयनांश लगाएको निरयन (sidereal) देशान्तर हुन्; नक्षत्र, पद र स्वामी/उप स्वामी सोही निरयन देशान्तरबाट निकालिन्छ। शर (अक्षांश), विषुवांश र क्रान्ति क्रान्तिवृत्तबाट विषुवत् वृत्तमा रूपान्तरण गरेर आउँछ, जुन अयनांश-निरपेक्ष हुन्छ। ऋणात्मक गति (वक्री) र सूर्यसमीप अस्त पनि सङ्केत गरिन्छ।",
-    en: "Values are computed at local sunrise from the Swiss Ephemeris. Rekhamsha and full degree are sidereal longitudes with the Lahiri ayanamsha applied; nakshatra, pada and lord/sub-lord are derived from that same sidereal longitude. Shara (latitude), right ascension and declination come from an ecliptic-to-equatorial transform and are ayanamsha-independent. Retrograde (negative speed) and combustion near the Sun are also flagged.",
+    ne: "यी मान सूर्योदयको क्षणमा स्विस इफेमेरिसबाट गणना गरिन्छ। रेखांश र पूर्ण डिग्री तपाईंले छानेको अयनांश (पूर्वनिर्धारित लाहिरी) लगाएको निरयन (sidereal) देशान्तर हुन्; नक्षत्र, पद र स्वामी/उप स्वामी सोही निरयन देशान्तरबाट निकालिन्छ। शर (अक्षांश), विषुवांश र क्रान्ति क्रान्तिवृत्तबाट विषुवत् वृत्तमा रूपान्तरण गरेर आउँछ, जुन अयनांश-निरपेक्ष हुन्छ। ऋणात्मक गति (वक्री) र सूर्यसमीप अस्त पनि सङ्केत गरिन्छ।",
+    en: "Values are computed at local sunrise from the Swiss Ephemeris. Rekhamsha and full degree are sidereal longitudes with the ayanamsha you chose applied (Lahiri by default); nakshatra, pada and lord/sub-lord are derived from that same sidereal longitude. Shara (latitude), right ascension and declination come from an ecliptic-to-equatorial transform and are ayanamsha-independent. Retrograde (negative speed) and combustion near the Sun are also flagged.",
   },
   "graha_descriptions.graha-sthiti.meaning": {
     ne: "ग्रह स्थिति जन्मकुण्डली, गोचर, मुहूर्त र दैनिक फलादेशको आधार हो। नक्षत्र स्वामी र उप स्वामी KP (कृष्णमूर्ति पद्धति) मा घटनाको फल निर्धारण गर्न प्रयोग हुन्छ, र क्रान्तिले ग्रहको उत्तर/दक्षिण झुकाव देखाउँछ।",
@@ -7968,8 +7968,8 @@ export const strings = {
   },
   "ui.gochar.pick_a_planet": { ne: "ग्रह छान्नुहोस्", en: "Pick a planet" },
   "ui.gochar.positions_are_computed_at_local_sunrise": {
-    ne: "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",
-    en: "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",
+    ne: "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — तपाईंले छानेको अयनांशमा निरयन (पूर्वनिर्धारित लाहिरी)।",
+    en: "Positions are computed at local sunrise (udaya) — sidereal in the ayanamsha you chose (Lahiri by default).",
   },
   "ui.gochar.seen_the_day_s_panchang_now": {
     ne: "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
@@ -9150,7 +9150,7 @@ export const strings = {
   "ui.kundali.x_b8d3d3cc": { ne: "{{v0}} · पद {{v1}}", en: "{{v0}} · pada {{v1}}" },
   "ui.kundali.divisional_charts_2": { ne: "कुण्डली चक्र", en: "Divisional Charts" },
   "ui.kundali.navagraha_shanti": { ne: "शान्ति विधि", en: "Navagraha Shanti" },
-  "ui.kundali.x_4836cfed": { ne: "पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", en: "Parashari Shadbala (Lahiri sidereal, JPL)" },
+  "ui.kundali.x_4836cfed": { ne: "पाराशरी षड्बल (छानेको अयनांशमा निरयण, जेपीएल)", en: "Parashari Shadbala (sidereal in the chosen ayanamsha, JPL)" },
   "ui.kundali.x_bab6a0ed": { ne: "{{v0}}× आवश्यक", en: "{{v0}}× required" },
   "ui.kundali.x_b48812f0": { ne: "{{v0}} ले {{v1}} लाई पराजित ({{v2}} विरुप, {{v3}}° को दूरी)", en: "{{v0}} defeats {{v1}} ({{v2}} virupa, {{v3}}° apart)" },
   "ui.kundali.x_0d730df7": { ne: "वर्गीय बल — २० अंकको मापन ({{v0}} पूर्ण)। ग्रहले आफ्ना फल दिने क्षमता।", en: "Varga strength — scored out of 20 ({{v0}} full). The planet's capacity to give its results." },

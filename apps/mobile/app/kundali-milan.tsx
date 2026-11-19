@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { ThemeScope, useThemeColors } from "@/lib/theme-context";
@@ -32,7 +31,7 @@ export default function KundaliMilanScreen() {
   const colors = useThemeColors();
   const queryClient = useQueryClient();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const page = useKundaliMilanPage({ isAuthenticated, authLoading, ayanamshaStorage });
+  const page = useKundaliMilanPage({ isAuthenticated, authLoading });
   const { status, authDialog, copy, boyProfile, girlProfile, matchStatus, milan } = page;
   const [addOpen, setAddOpen] = useState(false);
   const [pickRole, setPickRole] = useState<MilanRole | null>(null);

@@ -26,7 +26,9 @@ import { ELEMENT_META } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { formatBsDateKey } from "@vedic-patro/domain/calendar/patro-day";
 import { SITEMAP_SAIT_CATEGORIES } from "@/lib/sitemap-routes";
 import { OFFLINE_STORE_SUPPORTED, readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";
-import { beginCapture, captureTotals, OfflineMissError, resetCaptureCounters } from "@/lib/offline/offline-http";
+import { beginCapture, captureTotals, clearOfflineHttp, OfflineMissError, resetCaptureCounters } from "@/lib/offline/offline-http";
+import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
+import { clearLegacyYears } from "@/lib/offline/offline-store";
 import { isCurrentlyOnline, isCurrentlyOnWifi } from "@/lib/offline/network-status";
 
 /**
@@ -123,10 +125,41 @@ export async function readSavedPacks(): Promise<Record<string, SavedPack>> {
   return (await readJsonMeta<Record<string, SavedPack>>(PACK_META_KEY)) ?? {};
 }
 
+/**
+ * Where a place's pack is recorded: per calculation too, since each one (drik, KP, the
+ * Surya Siddhanta…) saves its own answers — a drik pack is nothing to a KP reader offline.
+ */
+export function packKey(locationKey: string): string {
+  const calc = calculationKey();
+  return calc === "drik" ? locationKey : `${locationKey}|${calc}`;
+}
+
 async function writeSavedPack(pack: SavedPack): Promise<void> {
   const all = await readSavedPacks();
-  all[pack.selection.locationKey] = pack;
+  all[packKey(pack.selection.locationKey)] = pack;
   await writeJsonMeta(PACK_META_KEY, all);
+}
+
+/** Bumped when saved answers stop being right: 2 = BS months and festivals are computed, not published. */
+const OFFLINE_DATA_EPOCH = 2;
+const OFFLINE_DATA_EPOCH_KEY = "offline_data_epoch";
+
+/**
+ * Once per epoch: drop saved answers an older build computed differently and mark every pack
+ * unfinished, so the Offline Data screen offers to download it again. Stale days are worse than
+ * none — offline, they would show the published calendar's months, not the reader's calculation.
+ */
+export async function retireOutdatedOfflineData(): Promise<boolean> {
+  if (!OFFLINE_STORE_SUPPORTED) return false;
+  const epoch = (await readJsonMeta<number>(OFFLINE_DATA_EPOCH_KEY)) ?? 1;
+  if (epoch >= OFFLINE_DATA_EPOCH) return false;
+  await clearOfflineHttp();
+  await clearLegacyYears();
+  const packs = await readSavedPacks();
+  for (const key of Object.keys(packs)) packs[key] = { ...packs[key]!, done: [], finished: false, updatedAt: Date.now() };
+  await writeJsonMeta(PACK_META_KEY, packs);
+  await writeJsonMeta(OFFLINE_DATA_EPOCH_KEY, OFFLINE_DATA_EPOCH);
+  return true;
 }
 
 export async function clearSavedPacks(): Promise<void> {
@@ -385,7 +418,7 @@ export async function runPackDownload(
 ): Promise<PackProgress> {
   // Finished units are kept across selections: a year saved by an earlier,
   // narrower window is never downloaded again.
-  const saved = (await readSavedPacks())[selection.locationKey];
+  const saved = (await readSavedPacks())[packKey(selection.locationKey)];
   const pack: SavedPack = {
     selection,
     done: saved?.done ?? [],

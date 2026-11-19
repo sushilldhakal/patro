@@ -8,7 +8,6 @@ import { DailyBriefingCard, RashifalNotificationCard, SectionTitle } from "@/com
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 import { useCalculationSystem, useCalendarSystem, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
@@ -89,7 +88,7 @@ export function LanguageCalendarSettings() {
   const l = lang === "en" ? "en" : "ne";
   const { calendar, setCalendar } = useCalendarSystem();
   const { system, setSystem } = useCalculationSystem();
-  const [ayanamsha, setAyanamsha] = useAyanamshaMode(ayanamshaStorage);
+  const [ayanamsha, setAyanamsha] = useAyanamshaMode();
 
   return (
     <View className="gap-6">

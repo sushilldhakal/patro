@@ -266,6 +266,31 @@ CALC_RISE = swe.CALC_RISE
 CALC_SET = swe.CALC_SET
 
 
+_AYANAMSHA_MODES: dict[str, int] | None = None
+
+
+def _ayanamsha_modes() -> dict[str, int]:
+    global _AYANAMSHA_MODES
+    if _AYANAMSHA_MODES is None:
+        from engine.astronomy.sidereal import AYANAMSHA_MODES
+
+        _AYANAMSHA_MODES = AYANAMSHA_MODES
+    return _AYANAMSHA_MODES
+
+
+_REQUESTED_AYANAMSHA = None
+
+
+def _requested_ayanamsha() -> str | None:
+    """The request's ayanamsha name (a ContextVar read; the import is resolved once)."""
+    global _REQUESTED_AYANAMSHA
+    if _REQUESTED_AYANAMSHA is None:
+        from engine.astronomy.siddhanta import requested_ayanamsha
+
+        _REQUESTED_AYANAMSHA = requested_ayanamsha
+    return _REQUESTED_AYANAMSHA()
+
+
 class EphemerisError(Exception):
     pass
 
@@ -710,12 +735,26 @@ class SwissEphemerisEngine(EngineBase):
         self._ayanamsa = ayanamsa
         swe.set_sid_mode(ayanamsa)
 
+    def _mode(self, ayanamsa: int | None = None) -> int:
+        """The sidereal mode of a call: the one passed, else the request's ayanamsha, else Lahiri.
+
+        The request's choice (``?ayanamsha=kp``) reaches every sidereal position this way —
+        the panchanga's nakshatra and yoga, the sankrantis that open BS months, festivals,
+        साइत and the kundali alike — without each caller passing it.
+        """
+        if ayanamsa is not None:
+            return ayanamsa
+        requested = _requested_ayanamsha()
+        if requested is None:
+            return self._ayanamsa
+        return _ayanamsha_modes().get(requested.strip().lower(), self._ayanamsa)
+
     def _calc(
         self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
     ) -> tuple[float, float]:
         """Cached (longitude % 360, speed) for one body — the single calc_ut hot path."""
         _ensure_ephemeris_for_thread()
-        mode = self._ayanamsa if ayanamsa is None else ayanamsa
+        mode = self._mode(ayanamsa)
         key = (body, round(jd, 9), sidereal, mode if sidereal else -1)
         cached = self._calc_cache.get(key)
         if cached is not None:
@@ -889,7 +928,7 @@ class SwissEphemerisEngine(EngineBase):
     ) -> float:
         """Sidereal ascendant longitude in degrees [0, 360)."""
         _ensure_ephemeris_for_thread()
-        mode = self._ayanamsa if ayanamsa is None else ayanamsa
+        mode = self._mode(ayanamsa)
         swe.set_sid_mode(mode)
         try:
             _, ascmc = swe.houses(jd, lat, lon, b"P")
@@ -901,7 +940,7 @@ class SwissEphemerisEngine(EngineBase):
     def ayanamsa(self, jd: float, *, mode: int | None = None) -> float:
         """Ayanamsa in degrees at the given JD."""
         _ensure_ephemeris_for_thread()
-        swe.set_sid_mode(self._ayanamsa if mode is None else mode)
+        swe.set_sid_mode(self._mode(mode))
         return _ayanamsa_degrees(jd)
 
     def obliquity(self, jd: float) -> float:
@@ -1077,7 +1116,7 @@ class SwissEphemerisEngine(EngineBase):
         a shared or ambiguous traditional name).
         """
         _ensure_ephemeris_for_thread()
-        swe.set_sid_mode(self._ayanamsa)
+        swe.set_sid_mode(self._mode())
         try:
             xx, _stnam, _retflags = swe.fixstar2_ut(star, jd, swe.FLG_SIDEREAL)
             mag, _stnam2 = swe.fixstar2_mag(star)

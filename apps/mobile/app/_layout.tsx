@@ -50,6 +50,7 @@ import { AuthProvider } from "@/lib/auth/AuthContext";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
 import { NotificationsRuntime } from "@/components/notifications/NotificationsRuntime";
+import { CalculationRemount } from "@/components/navigation/CalculationRemount";
 import { PlaybackSession } from "@/lib/audio-session";
 import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
@@ -195,19 +196,20 @@ function LanguageQueryRefresh() {
 }
 
 /**
- * Drik and the Surya Siddhanta give different days, so on a switch every cached
- * response is dropped and the screens on show fetch again in the new system.
+ * Drik, the Surya Siddhanta and drik's ayanamsha give different days, so on a switch
+ * every cached response is dropped and the screens on show fetch again in the new system.
  * Query keys also name the system so a restored offline cache cannot mix them.
  */
 function CalculationSystemQueryReset() {
-  const { system } = useCalculationSystem();
+  // The whole calculation: the system and drik's ayanamsha.
+  const { key } = useCalculationSystem();
   const queryClient = useQueryClient();
-  const previous = useRef(system);
+  const previous = useRef(key);
   useEffect(() => {
-    if (previous.current === system) return;
-    previous.current = system;
+    if (previous.current === key) return;
+    previous.current = key;
     void queryClient.resetQueries();
-  }, [system, queryClient]);
+  }, [key, queryClient]);
   return null;
 }
 
@@ -470,20 +472,23 @@ function RootShell({
             ...(railFade ?? {}),
             contentStyle: { backgroundColor: colors.background },
           }}
-          screenLayout={({ route, children }) =>
-            IS_IPHONE_DUO && route.name === "(tabs)" ? (
+          screenLayout={({ route, children }) => {
+            // The tabs rebuild their own scenes on a calculation switch (app/(tabs)/_layout.tsx);
+            // rebuilding the tab navigator here would forget which tab was open.
+            const page = route.name === "(tabs)" ? children : <CalculationRemount>{children}</CalculationRemount>;
+            return IS_IPHONE_DUO && route.name === "(tabs)" ? (
               // The tab scenes keep clear of the rail themselves (DuoNativeTabs), so no second inset here.
-              children
+              page
             ) : IS_IPHONE_DUO ? (
               // Duo pages pushed over the tabs: the same native toolbar as the tabs, the page kept clear of
               // the rail by the native SafeAreaView, and the floating bar back in unfolded portrait.
-              <DuoPageFrame>{children}</DuoPageFrame>
+              <DuoPageFrame>{page}</DuoPageFrame>
             ) : PAGE_CHROME_ROUTES.has(route.name) ? (
-              <PageChrome routeName={route.name}>{children}</PageChrome>
+              <PageChrome routeName={route.name}>{page}</PageChrome>
             ) : (
-              children
-            )
-          }
+              page
+            );
+          }}
         >
           {/* The tabs are the base of the stack and there is only ever one of them: a link to a
               tab page from a pushed page brings this instance back instead of stacking a copy. */}

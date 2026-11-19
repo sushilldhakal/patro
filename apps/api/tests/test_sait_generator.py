@@ -216,9 +216,11 @@ def test_engine_version_bumped():
     # 4.11.0 — no rules change: the pūrṇimānta lunar month stored on every sait
     # day moved when amanta months started being named from the Sankranti they
     # contain instead of the Sun's rashi at their Purnima.
+    # 4.12.0 — BS months are computed in the request's calculation, and drik
+    # follows the chosen ayanamsha for every position.
     # The stored version also carries the astronomy axis (services/payload_version)
     # so an ephemeris fix invalidates this cache without a rules change.
-    assert SAIT_ENGINE_VERSION == stamp("4.11.0")
+    assert SAIT_ENGINE_VERSION == stamp("4.12.0")
 
 
 def test_dagdha_tithi_table():

@@ -21,7 +21,7 @@
     "name": "Lahiri"
   },
   "bs_date": {
-    "day": 22,
+    "day": 23,
     "month": 7,
     "month_name": "Kartik",
     "month_name_ne": "कार्तिक",
@@ -419,7 +419,7 @@
     "vipala": 5
   },
   "display": {
-    "bs_ne": "वि.सं. २०८३ कार्तिक २२ आइतवार",
+    "bs_ne": "वि.सं. २०८३ कार्तिक २३ आइतवार",
     "gregorian_en": "2026 Nov 8, Sunday",
     "ns_ne": "ने.सं. ११४६ कौलागा चतुर्दशी - 29"
   },
@@ -433,7 +433,7 @@
       "is_public_holiday": true,
       "name_en": "Tihar Holiday",
       "name_ne": "तिहार बिदा",
-      "notes": "MoHA BS 2083-07-22 – 2083-07-26, 5 days",
+      "notes": "Tihar public holiday — Laxmi Puja through the day after Bhai Tika. Starts on the Laxmi Puja day (pradosh-vyapini Amavasya), closes on Bhai Tika, then keeps the next civil day, so the span is 4–6 days as the tithis fall.",
       "start_date": "2026-11-08",
       "type": "lunar"
     },
@@ -499,6 +499,19 @@
       "name_en": "Laxmi Prasad Devkota Jayanti",
       "name_ne": "महाकवि लक्ष्मीप्रसाद देवकोटाको जन्म जयन्ती",
       "notes": null,
+      "start_date": "2026-11-08",
+      "type": "lunar"
+    },
+    {
+      "category": "hindu",
+      "duration_days": 1,
+      "end_date": "2026-11-08",
+      "id": "gai-puja",
+      "importance": "national",
+      "is_public_holiday": false,
+      "name_en": "Gai Puja",
+      "name_ne": "गाई पूजा",
+      "notes": "Gai Tihar — a morning puja on the Laxmi Puja day (pradosh-vyapini Amavasya), as the 2081 and 2082 calendars have it. BS 2083 lists it the next morning, when the Amavasya holds sunrise (holiday_overrides 2083).",
       "start_date": "2026-11-08",
       "type": "lunar"
     },

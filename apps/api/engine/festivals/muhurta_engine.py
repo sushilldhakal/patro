@@ -32,6 +32,7 @@ curated data still takes precedence at the API layer (see ``services.festivals.s
 
 from __future__ import annotations
 
+
 from dataclasses import dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
 
@@ -594,8 +595,8 @@ class _DayGate:
     vaara: int = 0  # Sunday = 1 … Saturday = 7 (for the Dagdha check)
 
 
-def _eclipse_near(greg: date, pad_days: int) -> bool:
-    """True when a solar or lunar eclipse maximum falls within ±pad_days of ``greg``."""
+def _eclipse_near(greg: date, pad_days: int, timezone_name: str = "Asia/Kathmandu") -> bool:
+    """True when a solar or lunar eclipse maximum falls within ±pad_days of ``greg`` (the place's day)."""
     if pad_days <= 0:
         return False
     noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=timezone.utc)
@@ -610,7 +611,8 @@ def _eclipse_near(greg: date, pad_days: int) -> bool:
             if tmax is not None:
                 maxima.append(tmax)
     for tmax in maxima:
-        ecl_date = default_engine.datetime_from_jd(tmax).date()
+        # The place's civil day of the maximum, not the UTC one.
+        ecl_date = default_engine.datetime_from_jd(tmax).astimezone(resolve_observer_timezone(timezone_name)).date()
         if abs((ecl_date - greg).days) <= pad_days:
             return True
     return False
@@ -792,7 +794,7 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
     dp = build_day_panchanga(greg, location)
     if dp.is_adhik_maas:
         return _DayGate(False)
-    if rule.eclipse_pad_days and _eclipse_near(greg, rule.eclipse_pad_days):
+    if rule.eclipse_pad_days and _eclipse_near(greg, rule.eclipse_pad_days, location.timezone):
         return _DayGate(False)
     if rule.block_sankranti:
         # Sankranti = the Sun changes sidereal rāśi within the vedic day.

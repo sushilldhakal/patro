@@ -74,7 +74,7 @@ import {
   instantCacheKey,
 } from "@vedic-patro/domain/calendar/instant";
 import type { Era } from "@vedic-patro/domain/calendar/era";
-import { getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
 import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
@@ -84,12 +84,12 @@ import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 // instead of serving stale ones. Bump here — one place for both apps.
 
 /** Keep in step with CACHE_PAYLOAD_VERSION in apps/api/services/panchanga/panchanga_cache.py. */
-export const PANCHANGA_CACHE_VERSION = "6206";
+export const PANCHANGA_CACHE_VERSION = "6306";
 /** Sait listings (`sv=`). Bump when the sait engine changes. */
-export const SAIT_CACHE_VERSION = "18";
+export const SAIT_CACHE_VERSION = "19";
 /** Graha sthiti / asta / vakri / eclipse (`gv=`). */
-export const GRAHA_CACHE_VERSION = "5";
-export const KUNDALI_ENGINE_VERSION = "8";
+export const GRAHA_CACHE_VERSION = "6";
+export const KUNDALI_ENGINE_VERSION = "9";
 export const BHAVA_REFERENCE_VERSION = "26";
 export const YOGA_REFERENCE_VERSION = "3";
 
@@ -212,7 +212,7 @@ export const fetchPanchangaAtTime = (
 
 export const seasonsKeys = {
   tropical: (location?: LocationParams) =>
-    ["seasons", "tropical", getCalculationSystem(), locationCacheKey(location)] as const,
+    ["seasons", "tropical", calculationKey(), locationCacheKey(location)] as const,
 };
 
 export const fetchTropicalSeasons = (location?: LocationParams) =>
@@ -257,7 +257,7 @@ export const saitDetailKey = (
     "sait",
     "detail",
     SAIT_CACHE_VERSION,
-    getCalculationSystem(),
+    calculationKey(),
     year,
     category,
     locationCacheKey(location),
@@ -277,7 +277,7 @@ export const saitPersonalizeKey = (
     "sait",
     "personalize",
     SAIT_CACHE_VERSION,
-    getCalculationSystem(),
+    calculationKey(),
     year,
     category,
     locationCacheKey(location),
@@ -609,7 +609,7 @@ export const panchakKeys = {
 export const saitKeys = {
   years: () => ["sait", "years"] as const,
   entries: (year: number, category: string, location?: LocationParams) =>
-    ["sait", SAIT_CACHE_VERSION, getCalculationSystem(), year, category, locationCacheKey(location)] as const,
+    ["sait", SAIT_CACHE_VERSION, calculationKey(), year, category, locationCacheKey(location)] as const,
 };
 
 
@@ -910,7 +910,7 @@ export const fetchPatroMonth = (year: number, month: number) =>
 
 export const holidayKeys = {
   holidays: (year: number, era: Era = "bs", location?: LocationParams, language: Lang = normalizeLang()) =>
-    ["holidays", getCalculationSystem(), era, language, year, locationCacheKey(location)] as const,
+    ["holidays", calculationKey(), era, language, year, locationCacheKey(location)] as const,
   festivals: (
     year: number,
     era: Era = "bs",
@@ -919,10 +919,10 @@ export const holidayKeys = {
     language: Lang = normalizeLang(),
   ) =>
     month != null
-      ? (["festivals", getCalculationSystem(), era, language, year, month, locationCacheKey(location)] as const)
-      : (["festivals", getCalculationSystem(), era, language, year, locationCacheKey(location)] as const),
+      ? (["festivals", calculationKey(), era, language, year, month, locationCacheKey(location)] as const)
+      : (["festivals", calculationKey(), era, language, year, locationCacheKey(location)] as const),
   upcoming: (days = 90, limit = 15, holidaysOnly = false, location?: LocationParams) =>
-    ["festivals", "upcoming", getCalculationSystem(), days, limit, holidaysOnly, locationCacheKey(location)] as const,
+    ["festivals", "upcoming", calculationKey(), days, limit, holidaysOnly, locationCacheKey(location)] as const,
 };
 
 /** Next festivals from today (observer TZ), across the BS-year boundary. */
@@ -943,7 +943,7 @@ export const fetchUpcomingFestivals = (
 export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");
 
 export const saitMonthAllKey = (year: number, month: number, location?: LocationParams) =>
-  ["sait", "month-all", SAIT_CACHE_VERSION, getCalculationSystem(), year, month, locationCacheKey(location)] as const;
+  ["sait", "month-all", SAIT_CACHE_VERSION, calculationKey(), year, month, locationCacheKey(location)] as const;
 
 export const fetchSaitAbout = () => get<SaitAboutResponse>("/nepal/sait/about");
 

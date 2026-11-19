@@ -95,11 +95,12 @@ class TestTheReportedFailure:
         )
 
 
-class TestOfficialTableIsUntouched:
-    """Years inside the authoritative table must not go through the solver."""
+class TestMonthsAreComputed:
+    """Every month — the published years included — starts where the request's
+    calculation puts its sankranti: on the Kathmandu civil day it falls."""
 
     @pytest.mark.parametrize("year", [BS_MIN_YEAR, 2081, 2082, 2083, BS_MAX_YEAR])
-    def test_table_years_still_monotonic(self, year: int):
+    def test_months_stay_in_order(self, year: int):
         previous = None
         for month in range(1, 13):
             start = get_bs_month_start_civil(year, month).to_jd_ut()
@@ -107,9 +108,49 @@ class TestOfficialTableIsUntouched:
                 assert start > previous
             previous = start
 
-    def test_bs_2083_month_lengths_match_the_table(self):
+    @pytest.mark.parametrize("siddhanta_id", ["drik", "surya_siddhanta"])
+    def test_a_month_starts_on_the_kathmandu_day_of_its_sankranti(self, siddhanta_id: str):
+        from zoneinfo import ZoneInfo
+
+        from engine.astronomy.engine import default_engine
+        from engine.astronomy.siddhanta import use_siddhanta
+        from engine.calendar.sankranti import find_sankranti_after_jd
+
+        with use_siddhanta(siddhanta_id):
+            for month in range(1, 13):
+                start = get_bs_month_start_civil(2083, month)
+                jd = find_sankranti_after_jd(month - 1, start.to_jd_ut() - 3, max_days=6)
+                local = default_engine.datetime_from_jd(jd).astimezone(ZoneInfo("Asia/Kathmandu")).date()
+                assert (start.year, start.month, start.day) == (local.year, local.month, local.day)
+
+    def test_the_rule_is_the_one_the_published_calendar_keeps(self):
+        """With the Surya Siddhanta's sankrantis the local-day rule reproduces the published
+        months (the published patro is siddhantic); "before sunrise" matched a quarter of them."""
+        from engine.astronomy.jd_calendar import CivilDay
+        from engine.astronomy.siddhanta import use_siddhanta
         from engine.calendar.constants import get_bs_year_data
 
-        data = get_bs_year_data(2083)
-        assert data is not None
-        assert [get_bs_month_length(2083, m) for m in range(1, 13)] == list(data[0])
+        matched = total = 0
+        with use_siddhanta("surya_siddhanta"):
+            for year in range(2000, 2087):
+                lengths, year_start = get_bs_year_data(year)
+                published = CivilDay.from_date(year_start).to_jd_ut()
+                for month in range(1, 13):
+                    total += 1
+                    matched += get_bs_month_start_civil(year, month).to_jd_ut() == published
+                    published += lengths[month - 1]
+        assert matched / total >= 0.9, f"{matched}/{total}"
+
+    def test_each_calculation_has_its_own_months(self):
+        from engine.astronomy.siddhanta import use_ayanamsha, use_siddhanta
+
+        def lengths():
+            return [get_bs_month_length(2083, m) for m in range(1, 13)]
+
+        drik = lengths()
+        with use_siddhanta("surya_siddhanta"):
+            surya = lengths()
+        with use_ayanamsha("raman"):
+            raman = lengths()
+        assert sum(drik) in (365, 366) and sum(surya) in (365, 366) and sum(raman) in (365, 366)
+        assert drik != surya and drik != raman

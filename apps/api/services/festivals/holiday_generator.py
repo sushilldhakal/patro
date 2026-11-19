@@ -10,7 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from engine.astronomy.siddhanta import current_siddhanta
+from engine.astronomy.siddhanta import calculation_id
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.festivals import tradition as tradition_module
 from engine.calendar.bikram_sambat import (
@@ -36,7 +36,7 @@ from services.platform.cache_meta import cache_is_valid, stamp_payload
 # In-process memo of parsed year payloads — one disk JSON read per year per
 # location per process instead of one per request/day-row. Callers must treat
 # the payloads read-only.
-# (kind, year, location, siddhanta): each siddhanta has its own year.
+# (kind, year, location, calculation): each siddhanta and ayanamsha has its own year.
 _year_payload_memo: dict[tuple[str, int, str, str], dict[str, Any]] = {}
 _YEAR_PAYLOAD_MEMO_MAX = 512
 
@@ -57,24 +57,26 @@ def festival_location(location: ObserverLocation) -> ObserverLocation:
     )
 
 
-def is_national_location(location: ObserverLocation) -> bool:
-    return location.cache_key() == DEFAULT_LOCATION.cache_key()
-
-
 def _memo_get(kind: str, year: int, location: ObserverLocation) -> dict[str, Any] | None:
-    return _year_payload_memo.get((kind, year, location.cache_key(), current_siddhanta().id))
+    return _year_payload_memo.get((kind, year, location.cache_key(), calculation_id()))
 
 
 def _memo_put(kind: str, year: int, location: ObserverLocation, payload: dict[str, Any]) -> None:
     if len(_year_payload_memo) >= _YEAR_PAYLOAD_MEMO_MAX:
         _year_payload_memo.clear()
-    _year_payload_memo[(kind, year, location.cache_key(), current_siddhanta().id)] = payload
+    _year_payload_memo[(kind, year, location.cache_key(), calculation_id())] = payload
+
+
+#: Dates no calculation can give: Gregorian-fixed days and dates fixed by sighting or decree (Eid).
+_ANNOUNCED_TYPES = frozenset({"ad_fixed", "announced"})
 
 
 def _override_applies(override: dict[str, Any], location: ObserverLocation) -> bool:
-    """MoHA overrides pin Nepal's announced dates; abroad, a lunar festival
-    follows the observer's own tithi instead."""
-    return is_national_location(location) or override.get("type") != "lunar"
+    """Whether a published date replaces the computed one: only for a day no calculation
+    gives (``ad_fixed``, ``announced``). Lunar, solar and BS-fixed festivals always follow
+    the request's calculation — its siddhanta and ayanamsha — never a published calendar."""
+    del location  # every place computes them alike now
+    return override.get("type") in _ANNOUNCED_TYPES
 
 
 def clear_year_payload_memo() -> None:
@@ -263,7 +265,8 @@ def _apply_gregorian_year_overrides(
     for bs_year_key in (str(gregorian_year + 56), str(gregorian_year + 57)):
         for festival_id, override in overrides_data.get(bs_year_key, {}).items():
             if override.get("omit"):
-                merged.pop(festival_id, None)
+                # Not a rest day that BS year: only the holiday list drops it
+                # (see generate_holidays); the festival calendar keeps it.
                 continue
             if not _override_applies(override, location):
                 continue
@@ -322,7 +325,15 @@ def generate_festivals(
     # absent under the default leaves every existing payload byte-identical.
     if tradition != tradition_module.DEFAULT:
         payload["tradition"] = tradition
-    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
+    return stamp_payload(payload, location.cache_key(), siddhanta=calculation_id())
+
+
+def _omitted_that_year(entry: dict[str, Any]) -> bool:
+    """MoHA left this festival off the rest days of the BS year it falls in."""
+    from engine.calendar.bikram_sambat import gregorian_to_bs
+
+    bs_year = gregorian_to_bs(date.fromisoformat(entry["start_date"]))[0]
+    return bool(load_holiday_overrides().get(str(bs_year), {}).get(entry["id"], {}).get("omit"))
 
 
 def generate_holidays(
@@ -334,7 +345,7 @@ def generate_holidays(
     Audience-limited rows are in this list and are not general rest days.
     """
     festival_payload = generate_festivals(gregorian_year, location)
-    holidays = _filter_public_holidays(festival_payload["festivals"])
+    holidays = [h for h in _filter_public_holidays(festival_payload["festivals"]) if not _omitted_that_year(h)]
     payload = {
         **festival_payload,
         "count": len(holidays),
@@ -346,25 +357,25 @@ def generate_holidays(
 
 def festivals_cache_path(gregorian_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    sid = current_siddhanta().id
+    sid = calculation_id()
     return CACHE_DIR / f"festivals_{gregorian_year}_{safe_key}_{sid}.json"
 
 
 def cache_path(gregorian_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    sid = current_siddhanta().id
+    sid = calculation_id()
     return CACHE_DIR / f"holidays_{gregorian_year}_{safe_key}_{sid}.json"
 
 
 def bs_festivals_cache_path(bs_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    sid = current_siddhanta().id
+    sid = calculation_id()
     return CACHE_DIR / f"festivals_bs_{bs_year}_{safe_key}_{sid}.json"
 
 
 def bs_cache_path(bs_year: int, location_key: str) -> Path:
     safe_key = location_key.replace("/", "_")
-    sid = current_siddhanta().id
+    sid = calculation_id()
     return CACHE_DIR / f"holidays_bs_{bs_year}_{safe_key}_{sid}.json"
 
 
@@ -374,7 +385,7 @@ def load_festivals_cached(gregorian_year: int, location: ObserverLocation) -> di
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=calculation_id()):
         return None
     return cached
 
@@ -392,7 +403,7 @@ def load_cached(gregorian_year: int, location: ObserverLocation) -> dict[str, An
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=calculation_id()):
         return None
     return cached
 
@@ -410,7 +421,7 @@ def load_bs_festivals_cached(bs_year: int, location: ObserverLocation) -> dict[s
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=calculation_id()):
         return None
     return cached
 
@@ -428,7 +439,7 @@ def load_bs_cached(bs_year: int, location: ObserverLocation) -> dict[str, Any] |
         return None
     with open(path, encoding="utf-8") as f:
         cached = json.load(f)
-    if not cache_is_valid(cached, location.cache_key(), siddhanta=current_siddhanta().id):
+    if not cache_is_valid(cached, location.cache_key(), siddhanta=calculation_id()):
         return None
     return cached
 
@@ -532,7 +543,7 @@ def generate_bs_festivals(
         "count": len(festivals),
         "festivals": festivals,
     }
-    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
+    return stamp_payload(payload, location.cache_key(), siddhanta=calculation_id())
 
 
 def generate_bs_holidays(
@@ -560,7 +571,7 @@ def generate_bs_holidays(
         "count": len(holidays),
         "holidays": holidays,
     }
-    return stamp_payload(payload, location.cache_key(), siddhanta=current_siddhanta().id)
+    return stamp_payload(payload, location.cache_key(), siddhanta=calculation_id())
 
 
 def precompute_bs_year(
@@ -852,7 +863,7 @@ def festivals_on_date(
             "festivals": active,
         },
         location.cache_key(),
-        siddhanta=current_siddhanta().id,
+        siddhanta=calculation_id(),
     )
 
 
@@ -884,7 +895,7 @@ def holidays_on_date(
             "holidays": active,
         },
         location.cache_key(),
-        siddhanta=current_siddhanta().id,
+        siddhanta=calculation_id(),
     )
 
 

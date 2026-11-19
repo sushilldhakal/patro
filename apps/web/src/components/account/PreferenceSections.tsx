@@ -5,7 +5,6 @@ import { useCalculationSystem, useCalendarSystem, useLocale } from "@vedic-patro
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
-import { ayanamshaStorage } from "@/lib/kundali/ayanamsha-storage";
 
 type ThemePreference = "system" | "light" | "dark";
 
@@ -14,7 +13,7 @@ export function LanguageCalendarSection() {
   const { t, lang, setLang } = useLocale();
   const { calendar, setCalendar } = useCalendarSystem();
   const { system, setSystem } = useCalculationSystem();
-  const [ayanamsha, setAyanamsha] = useAyanamshaMode(ayanamshaStorage);
+  const [ayanamsha, setAyanamsha] = useAyanamshaMode();
   const language = lang === "en" ? "en" : "ne";
   return (
     <div className={accountClasses.settingsStack}>

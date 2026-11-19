@@ -21,12 +21,17 @@ import {
 } from "react";
 import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import {
+  DEFAULT_AYANAMSHA,
   DEFAULT_CALCULATION_SYSTEM,
+  calculationKey,
+  getAyanamsha,
   getCalculationSystem,
+  setAyanamsha,
   setCalculationSystem,
   subscribeCalculationSystem,
   type CalculationSystem,
 } from "@vedic-patro/domain/calendar/calculation-system";
+import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import {
   DEFAULT_CALENDAR,
   getCalendarSystem,
@@ -68,12 +73,23 @@ export function useCalendarSystem(): { calendar: CalendarSystem; setCalendar: (c
 }
 
 /**
- * The calculation system (drik / Surya Siddhanta) the reader relies on. Re-renders
- * the caller when it changes; server rendering always sees drik.
+ * The calculation the reader relies on: the system (drik / Surya Siddhanta), drik's
+ * ayanamsha, and both as one `key` (`drik`, `drik.kp`, `surya_siddhanta`). Re-renders the
+ * caller when either changes; server rendering always sees drik with Lahiri.
  */
-export function useCalculationSystem(): { system: CalculationSystem; setSystem: (s: CalculationSystem) => void } {
+export function useCalculationSystem(): {
+  system: CalculationSystem;
+  setSystem: (s: CalculationSystem) => void;
+  ayanamsha: AyanamshaMode;
+  setAyanamsha: (mode: AyanamshaMode) => void;
+  key: string;
+} {
   const system = useSyncExternalStore(subscribeCalculationSystem, getCalculationSystem, () => DEFAULT_CALCULATION_SYSTEM);
-  return useMemo(() => ({ system, setSystem: setCalculationSystem }), [system]);
+  const ayanamsha = useSyncExternalStore(subscribeCalculationSystem, getAyanamsha, () => DEFAULT_AYANAMSHA);
+  return useMemo(
+    () => ({ system, setSystem: setCalculationSystem, ayanamsha, setAyanamsha, key: calculationKey({ system, ayanamsha }) }),
+    [system, ayanamsha],
+  );
 }
 
 /**

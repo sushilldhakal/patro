@@ -15,6 +15,11 @@ import {
   getCalculationSystem,
   parseStoredCalculationSystem,
   setCalculationSystem,
+  AYANAMSHA_STORAGE_KEY,
+  configureAyanamshaPersistence,
+  getAyanamsha,
+  parseStoredAyanamsha,
+  setAyanamsha,
 } from "@vedic-patro/domain/calendar/calculation-system";
 
 /** Matches i18next LanguageDetector / our LanguageBootstrap (same key in the app). */
@@ -77,8 +82,9 @@ export function initCalendarPreference(): void {
 let calculationPreferenceReady = false;
 
 /**
- * The reader's drik / Surya Siddhanta choice (Account), restored before the first render
- * so every request already carries it (lib/api.ts). Browser only; prerender keeps drik.
+ * The reader's calculation (Account): drik / Surya Siddhanta and drik's ayanamsha, restored
+ * before the first render so every request already carries it (lib/api.ts). Browser only;
+ * prerender keeps drik with Lahiri.
  */
 export function initCalculationSystemPreference(): void {
   if (calculationPreferenceReady || typeof window === "undefined") return;
@@ -86,6 +92,11 @@ export function initCalculationSystemPreference(): void {
   configureCalculationSystemPersistence({
     persist: (system) => setLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY, system),
   });
+  configureAyanamshaPersistence({
+    persist: (mode) => setLocalStorageItem(AYANAMSHA_STORAGE_KEY, mode),
+  });
   const stored = parseStoredCalculationSystem(getLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY));
   if (stored && stored !== getCalculationSystem()) setCalculationSystem(stored);
+  const ayanamsha = parseStoredAyanamsha(getLocalStorageItem(AYANAMSHA_STORAGE_KEY));
+  if (ayanamsha && ayanamsha !== getAyanamsha()) setAyanamsha(ayanamsha);
 }

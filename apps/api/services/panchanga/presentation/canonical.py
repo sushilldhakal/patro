@@ -6,6 +6,7 @@ All other formats (Toyanath patro, raw engine, regional variants) derive from th
 
 from __future__ import annotations
 
+from engine.astronomy.sidereal import ayanamsha_label
 from typing import Any
 
 from services.panchanga.presentation.helpers import (
@@ -98,7 +99,7 @@ def to_canonical(daily_state: dict[str, Any]) -> dict[str, Any]:
             "ritu": daily_state.get("ritu"),
             "ritu_ne": daily_state.get("ritu_ne"),
             "aayan": daily_state.get("aayan"),
-            "ayanamsa": "Lahiri",
+            "ayanamsa": ayanamsha_label(),
         },
         "festivals": festival_list(daily_state.get("festivals")),
         "is_public_holiday": daily_state.get("is_public_holiday", False),

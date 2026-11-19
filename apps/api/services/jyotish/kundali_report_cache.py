@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 #     the report prints; Oja-Yugma Bala now requires both rashi+navamsha parity.
 # v10: yoga rules aligned to BPHS (Kemadruma now also needs no planet in an
 #      angle from the Lagna, plus catalog-only fixes read by the Kundali page).
-KUNDALI_REPORT_VERSION = 10
+KUNDALI_REPORT_VERSION = 11  # 11: computed BS dates
 
 # Reports embed a build_panchanga_at_time block — sunrise, sunset and the angas
 # hanging off them — so an ephemeris change invalidates them even when no yoga
@@ -75,10 +75,10 @@ _ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
 
 
 def cache_enabled() -> bool:
-    """Only for the siddhanta these rows were computed in (the one with no cache namespace)."""
-    from engine.astronomy.siddhanta import current_siddhanta
+    """Only for the calculation these rows were computed in (drik with Lahiri)."""
+    from engine.astronomy.siddhanta import is_default_calculation
 
-    if current_siddhanta().cache_namespace:
+    if not is_default_calculation():
         return False
     return os.environ.get("KUNDALI_REPORT_CACHE", "true").lower() not in {"0", "false", "no"}
 

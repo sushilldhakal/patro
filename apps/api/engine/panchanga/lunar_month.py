@@ -198,14 +198,14 @@ def build_lunar_year(gregorian_year: int) -> LunarYear:
     )
 
 
-# Keyed by (siddhanta, year): each siddhanta gives its own months.
+# Keyed by (calculation, year): each siddhanta and ayanamsha gives its own months.
 _lunar_year_cache: dict[tuple[str, int], LunarYear] = {}
 
 
 def get_lunar_year(gregorian_year: int) -> LunarYear:
-    from engine.astronomy.siddhanta import current_siddhanta
+    from engine.astronomy.siddhanta import calculation_id
 
-    key = (current_siddhanta().id, gregorian_year)
+    key = (calculation_id(), gregorian_year)
     if key not in _lunar_year_cache:
         _lunar_year_cache[key] = build_lunar_year(gregorian_year)
     return _lunar_year_cache[key]
@@ -715,7 +715,7 @@ def _resolve_tithi_day(
     ranks below an exact one from another month.
     """
     if date_selection == "boundary":
-        boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
+        boundary = _boundary_tithi_date_in_month(month, tithi, paksha, location)
         return (boundary, False) if boundary else None
 
     if date_selection in KAAL_NAMES:
@@ -731,7 +731,7 @@ def _resolve_tithi_day(
     if exact:
         return (exact, True)
 
-    boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
+    boundary = _boundary_tithi_date_in_month(month, tithi, paksha, location)
     return (boundary, False) if boundary else None
 
 
@@ -766,11 +766,19 @@ def _boundary_tithi_instant_in_month(
     return tithi_datetime
 
 
-def _boundary_tithi_date_in_month(month: LunarMonth, tithi: int, paksha: str) -> Optional[date]:
+def _boundary_tithi_date_in_month(
+    month: LunarMonth, tithi: int, paksha: str, location: ObserverLocation = DEFAULT_LOCATION
+) -> Optional[date]:
+    """The observer's civil day this month's *tithi* begins on.
+
+    The observer's day, never the UTC one: a tithi that starts in Kathmandu between
+    midnight and 05:45 is still the day before in UTC, which put a kshaya tithi's
+    festival a day early.
+    """
     tithi_datetime = _boundary_tithi_instant_in_month(month, tithi, paksha)
     if tithi_datetime is None:
         return None
-    return tithi_datetime.date()
+    return tithi_datetime.astimezone(resolve_observer_timezone(location.timezone)).date()
 
 
 def _vyapini_tithi_date_in_month(
@@ -796,7 +804,7 @@ def _search_tithi_in_month(
     paksha: str,
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> Optional[date]:
-    candidate_date = _boundary_tithi_date_in_month(month, tithi, paksha)
+    candidate_date = _boundary_tithi_date_in_month(month, tithi, paksha, location)
     if candidate_date is None:
         return None
 

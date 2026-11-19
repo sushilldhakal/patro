@@ -169,11 +169,10 @@ def test_each_siddhanta_owns_its_range_and_cache_namespace():
 def test_calendar_caches_never_hand_one_systems_month_to_the_other():
     from engine.calendar.bikram_sambat import get_bs_month_start_civil
 
-    # Past the official table, so the month start is computed from sankrantis.
-    drik = get_bs_month_start_civil(2150, 4)
+    drik = get_bs_month_start_civil(2500, 4)
     with use_siddhanta(SURYA_SIDDHANTA):
-        surya = get_bs_month_start_civil(2150, 4)
-    assert get_bs_month_start_civil(2150, 4) == drik
+        surya = get_bs_month_start_civil(2500, 4)
+    assert get_bs_month_start_civil(2500, 4) == drik
     assert surya != drik  # the text's year is longer, so its sankranti falls days later by then
 
 
@@ -308,11 +307,8 @@ _SS_ROUTES = (
 )
 
 
-def test_no_surya_siddhanta_route_borrows_from_drik(client, monkeypatch, tmp_path):
-    """Each route above, asked in the Surya Siddhanta from a place no cache has seen, is computed
-    without one Swiss Ephemeris position, rise/set, house, eclipse or ayanamsha call — not even
-    through a helper that forgot to ask the request's siddhanta. Drik's engine is built first, so
-    only its constructor (which sets Lahiri once) is excused."""
+def _fresh_place(monkeypatch, tmp_path) -> str:
+    """A place no cache has seen, with every disk cache sent to *tmp_path*: each request computes."""
     import random
 
     import app.response_cache as response_cache
@@ -329,7 +325,31 @@ def test_no_surya_siddhanta_route_borrows_from_drik(client, monkeypatch, tmp_pat
         monkeypatch.setattr(module, attr, tmp_path / attr)
     holiday_generator.clear_year_payload_memo()
     siddhanta(DRIK).engine  # noqa: B018 — its constructor's set_sid_mode is not a computation
+    rng = random.Random()
+    return f"lat={rng.uniform(26.5, 29.5):.5f}&lon={rng.uniform(80.5, 88.0):.5f}&tz=Asia/Kathmandu"
 
+
+def _ask_every_route(client, place: str, calculation: str, check) -> list[str]:
+    failures = []
+    for route in _SS_ROUTES:
+        joiner = "&" if "?" in route else "?"
+        try:
+            response = client.get(f"{route}{joiner}{place}&{calculation}")
+        except AssertionError as exc:
+            failures.append(f"{route}: {exc}")
+            continue
+        problem = check(response)
+        if problem or response.status_code != 200:
+            failures.append(f"{route}: {response.status_code} {problem or ''} {response.text[:120]}")
+    return failures
+
+
+def test_no_surya_siddhanta_route_borrows_from_drik(client, monkeypatch, tmp_path):
+    """Each route above, asked in the Surya Siddhanta from a place no cache has seen, is computed
+    without one Swiss Ephemeris position, rise/set, house, eclipse or ayanamsha call — not even
+    through a helper that forgot to ask the request's siddhanta. Drik's engine is built first, so
+    only its constructor (which sets Lahiri once) is excused."""
+    place = _fresh_place(monkeypatch, tmp_path)
     borrowed: list[str] = []
 
     def guard(name, real):
@@ -350,17 +370,38 @@ def test_no_surya_siddhanta_route_borrows_from_drik(client, monkeypatch, tmp_pat
         if hasattr(swe, name):
             monkeypatch.setattr(swe, name, guard(name, getattr(swe, name)))
 
-    rng = random.Random()
-    place = f"lat={rng.uniform(26.5, 29.5):.5f}&lon={rng.uniform(80.5, 88.0):.5f}&tz=Asia/Kathmandu"
-    failures = []
-    for route in _SS_ROUTES:
-        borrowed.clear()
-        joiner = "&" if "?" in route else "?"
-        try:
-            response = client.get(f"{route}{joiner}{place}&siddhanta=surya_siddhanta")
-        except AssertionError as exc:
-            failures.append(f"{route}: {exc}")
-            continue
-        if borrowed or response.status_code != 200 or response.headers.get("x-siddhanta") != SURYA_SIDDHANTA:
-            failures.append(f"{route}: {response.status_code} {sorted(set(borrowed))} {response.text[:120]}")
+    def check(response):
+        if borrowed or response.headers.get("x-siddhanta") != SURYA_SIDDHANTA:
+            found = sorted(set(borrowed))
+            borrowed.clear()
+            return f"borrowed {found}"
+        return None
+
+    failures = _ask_every_route(client, place, "siddhanta=surya_siddhanta", check)
+    assert not failures, "\n".join(failures)
+
+
+@pytest.mark.parametrize("ayanamsha, mode", [("kp", swe.SIDM_KRISHNAMURTI), ("raman", swe.SIDM_RAMAN)])
+def test_every_drik_route_uses_the_chosen_ayanamsha(client, monkeypatch, tmp_path, ayanamsha, mode):
+    """Each route above, asked in drik with another ayanamsha, sets no other sidereal mode — not
+    Lahiri through a helper that forgot the request's ayanamsha: the panchanga's nakshatra and
+    yoga, the sankrantis that open BS months, festivals, साइत and the kundali all follow it."""
+    place = _fresh_place(monkeypatch, tmp_path)
+    modes: list[int] = []
+    real_set = swe.set_sid_mode
+
+    def record(m, *args, **kwargs):
+        modes.append(m)
+        return real_set(m, *args, **kwargs)
+
+    monkeypatch.setattr(swe, "set_sid_mode", record)
+
+    def check(response):
+        wrong = sorted({m for m in modes if m != mode})
+        modes.clear()
+        if response.headers.get("x-ayanamsha") != ayanamsha:
+            return f"x-ayanamsha {response.headers.get('x-ayanamsha')}"
+        return f"sidereal modes {wrong}" if wrong else None
+
+    failures = _ask_every_route(client, place, f"ayanamsha={ayanamsha}", check)
     assert not failures, "\n".join(failures)

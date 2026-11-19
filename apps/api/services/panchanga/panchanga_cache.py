@@ -187,7 +187,11 @@ logger = logging.getLogger(__name__)
 # v62: ``ritu_vedic`` and ``aayan_vedic`` are back as a sidereal companion. The
 #     tropical ``ritu`` and ``aayan`` are unchanged; the companion is so a
 #     reader can see the Vedic season does not line up with the real one.
-PANCHANGA_PAYLOAD_VERSION = 62
+# v63: BS months are computed in the request's calculation (its sankranti, on the
+#     Kathmandu civil day it falls), not read from the published table, and the
+#     drik ayanamsha follows ``?ayanamsha=`` for every sidereal position; the
+#     ``ayanamsa`` labels name the ayanamsha used.
+PANCHANGA_PAYLOAD_VERSION = 63
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
@@ -308,11 +312,11 @@ def _decode_payload(stored: Any) -> dict[str, Any]:
 
 
 def cache_enabled() -> bool:
-    """Only for the siddhanta these rows were computed in (the one with no cache namespace)."""
+    """Only for the calculation these rows were computed in (drik with Lahiri)."""
     import config
-    from engine.astronomy.siddhanta import current_siddhanta
+    from engine.astronomy.siddhanta import is_default_calculation
 
-    return current_siddhanta().cache_namespace == "" and config.panchanga_sqlite_cache_enabled()
+    return is_default_calculation() and config.panchanga_sqlite_cache_enabled()
 
 
 def _connect() -> sqlite3.Connection:

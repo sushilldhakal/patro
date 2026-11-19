@@ -21,6 +21,7 @@ Rahu = Mean Ascending Node; Ketu = Rahu + 180° (both always Vakri by convention
 
 from __future__ import annotations
 
+from engine.astronomy.sidereal import ayanamsha_label
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -934,7 +935,7 @@ def build_gochar(
         # needs it to place the rashi belt — it is the shift that walks Mesha
         # away from वसन्त सम्पात over the centuries.
         "ayanamsa": {
-            "name": "Lahiri",
+            "name": ayanamsha_label(),
             "degrees": round(sun_service.ayanamsa(as_julian_day(sunrise_utc)), 6),
         },
         "gochar": gochar,

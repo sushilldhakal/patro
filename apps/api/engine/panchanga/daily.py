@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from engine.astronomy.sidereal import ayanamsha_label
 from datetime import date
 from typing import Any
 
@@ -320,7 +321,7 @@ def _assemble_udaya_panchanga(
             location.timezone,
         ),
         "lahiri_ayanamsa": {
-            "name": "Lahiri",
+            "name": ayanamsha_label(),
             "degrees": round(lahiri_ayanamsa, 6),
         },
         # The ayana shown everywhere is the real one: the Sun turns at the solstices.

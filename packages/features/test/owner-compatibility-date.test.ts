@@ -36,15 +36,15 @@ test("by default the construction date is picked in Bikram Sambat, with Nepali m
   const fields = hook.rerender().dateFields;
   assert.equal(field(fields, "year").value, "2083");
   assert.equal(field(fields, "month").value, "7");
-  assert.equal(field(fields, "day").value, "15");
+  assert.equal(field(fields, "day").value, "16");
   assert.deepEqual(field(fields, "month").options.map((o) => o.label), BS_MONTHS_NE);
 });
 
 test("a BS pick is stored as the AD day it falls on", () => {
   const hook = render();
   hook.result.setCandidateDate("2026-11-01");
-  field(hook.rerender().dateFields, "month").onChange("1"); // वैशाख 15, 2083
-  assert.equal(hook.rerender().candidateDate, "2026-04-28");
+  field(hook.rerender().dateFields, "month").onChange("1"); // वैशाख 16, 2083
+  assert.equal(hook.rerender().candidateDate, "2026-04-29");
   field(hook.result.dateFields, "day").onChange("32"); // past the month's end → its last day
   const days = field(hook.rerender().dateFields, "day");
   assert.equal(days.value, String(days.options.length));

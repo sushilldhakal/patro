@@ -9,7 +9,9 @@ import { clearDownloadedYears, listDownloadedYears } from "@/lib/offline/offline
 import {
   clearSavedPacks,
   estimatePackSize,
+  packKey,
   readSavedPacks,
+  retireOutdatedOfflineData,
   runPackDownload,
   type PackGroupId,
   type PackProgress,
@@ -18,6 +20,7 @@ import {
   type SavedPack,
 } from "@/lib/offline/offline-pack";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { useCalculationSystem } from "@/lib/i18n";
 import { locationCacheKey, type LocationParams } from "@/lib/api";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 
@@ -126,7 +129,7 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
       offlineHttpSummary(),
       listDownloadedYears(locationRef.current.params),
     ]);
-    const mine = packs[locationCacheKey(locationRef.current.params)];
+    const mine = packs[packKey(locationCacheKey(locationRef.current.params))];
     const next = summarize(mine, totals);
     if (legacy.years.length > 0) {
       const years = [...new Set([...next.years, ...legacy.years])].sort((a, b) => a - b);
@@ -139,9 +142,11 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
     setUnfinished(mine && !mine.finished ? mine : null);
   }, []);
 
+  const { key: calculation } = useCalculationSystem();
   useEffect(() => {
-    void refreshSummary();
-  }, [refreshSummary, location.label]);
+    // Saved answers from an older calculation go first, so the summary never counts them.
+    void retireOutdatedOfflineData().finally(() => void refreshSummary());
+  }, [refreshSummary, location.label, calculation]);
 
   useEffect(() => {
     readJsonMeta<boolean>(WIFI_ONLY_PREF_KEY).then((stored) => {
