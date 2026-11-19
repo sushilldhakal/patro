@@ -7,7 +7,7 @@
  */
 import { arrowHead, fr, grp, mark } from "./surya-classical";
 import type { FigureDef } from "./surya-more-a";
-import { arc, circle, dms, fmt, L, line, num, path, polar, suryaArc, suryaJya, text, TRIJYA, wrap, type FigureFrame, type Lang, type Shape, type Step, type Tone } from "./surya-kit";
+import { arc, circle, dms, fmt, key, L, line, num, path, polar, suryaArc, suryaJya, text, TRIJYA, wrap, type FigureFrame, type Lang, type Shape, type Step } from "./surya-kit";
 
 const RAD = Math.PI / 180;
 const KTM = 27.7;
@@ -53,7 +53,7 @@ function directionCircle(t: number, lang: Lang): FigureFrame {
   let prev: number | null = null;
   for (let h = -85; h <= 85; h += 1) {
     const p = shadowTip(KTM, dec, h);
-    if (p.up < 0.2) continue;
+    if (p.up < 0.2 || Math.hypot(p.x, p.y) > r * 1.8) continue;
     const q = X(p);
     d += `${d ? "L" : "M"} ${q.x.toFixed(1)} ${q.y.toFixed(1)} `;
     const len = Math.hypot(p.x, p.y);
@@ -67,7 +67,9 @@ function directionCircle(t: number, lang: Lang): FigureFrame {
   const hour = -80 + t * 160;
   const tip = shadowTip(KTM, dec, hour);
   if (tip.up > 0.2) {
-    const q = X(tip);
+    const len0 = Math.hypot(tip.x, tip.y);
+    const cut = Math.min(1, (r * 1.8) / Math.max(1e-6, len0));
+    const q = X({ x: tip.x * cut, y: tip.y * cut });
     const inside = Math.hypot(tip.x, tip.y) <= r;
     shapes.push(line(cx, cy, q.x, q.y, { stroke: "shadow", w: 3 }));
     shapes.push(circle(q.x, q.y, 3.5, { fill: inside ? "accent" : "ink" }));
@@ -94,17 +96,9 @@ function directionCircle(t: number, lang: Lang): FigureFrame {
       }
     }
     shapes.push(line(n1.x, n1.y, n2.x, n2.y, { stroke: "planet", w: 1.4 }));
-    shapes.push(text(n1.x, n1.y - 6, L(lang, "मत्स्य", "fish"), "planet", 8.5));
+    shapes.push(text(n1.x + 8, n1.y - 4, L(lang, "उ", "N"), "planet", 10.5, "start", true), text(n2.x + 8, n2.y + 12, L(lang, "द", "S"), "planet", 10.5, "start", true));
   }
-  shapes.push(circle(cx, cy, 3, { fill: "ink" }));
-  const lx = 232;
-  const legend: [string, Tone][] = [
-    [L(lang, "१२ अङ्गुलको शङ्कु बीचमा", "12-digit gnomon at the centre"), "ink"],
-    [L(lang, "छायाको टुप्पो वृत्तमा पस्दा: प", "Shadow tip enters: W"), "accent"],
-    [L(lang, "निस्कँदा: पू", "Leaves: E"), "accent"],
-    [L(lang, "दुईबाट मत्स्य: उत्तर–दक्षिण", "A fish from both: N–S"), "planet"],
-  ];
-  legend.forEach(([s, tone], i) => shapes.push(text(lx, 40 + i * 20, s, tone, 8.8, "start")));
+  shapes.push(circle(cx, cy, 3, { fill: "ink" }), text(cx + 6, cy + 14, L(lang, "श", "G"), "ink", 10.5, "start", true));
   const len = Math.hypot(tip.x, tip.y);
   const steps: Step[] = [
     { say: L(lang, "समतल भुइँमा वृत्त, बीचमा १२ अङ्गुलको शङ्कु (३.१–२)", "A circle on level ground, a 12-digit gnomon at its centre (3.1–2)"), eq: [`${L(lang, "वृत्तको अर्धव्यास", "circle radius")} = ${num(lang, r)} ${L(lang, "अङ्गुल", "digits")}`] },
@@ -112,7 +106,7 @@ function directionCircle(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "बिहान छायाको टुप्पो वृत्तमा पस्ने बिन्दु पश्चिम, दिउँसो निस्कने बिन्दु पूर्व (३.२)", "Morning entry point is west, afternoon exit point east (3.2)"), eq: [`${L(lang, "छाया", "shadow")} = ${num(lang, r)} → ${hour < 0 ? L(lang, "प", "W") : L(lang, "पू", "E")}`] },
     { say: L(lang, "दुई बिन्दुबाट बराबर चापले मत्स्य बनाउँदा बीचको रेखा उत्तर–दक्षिण (३.३–४)", "Equal arcs from both points make a fish; its line is north–south (3.3–4)"), eq: [L(lang, "पूर्व–पश्चिम रेखा ⟂ उत्तर–दक्षिण रेखा", "E–W line ⟂ N–S line")] },
   ];
-  return { shapes, readout: [`${L(lang, "मध्याह्नबाट", "from noon")} ${dms(lang, hour)} (${fmt(lang, hour / 6, 1)} ${L(lang, "घटी", "gh.")})`, tip.up > 0.2 ? `${L(lang, "छाया", "shadow")} ${fmt(lang, len, 1)} ${L(lang, "अङ्गुल", "digits")}` : ""], steps };
+  return { shapes, key: [key("ink", L(lang, "श", "G"), L(lang, "बीचको १२ अङ्गुल शङ्कु", "The 12-digit gnomon at the centre")), key("shadow", "", L(lang, "अहिलेको छाया; थोप्ला रेखा: दिनभरिको टुप्पोको बाटो", "Shadow now; dotted: the tip's path through the day"), "line"), key("accent", L(lang, "प", "W"), L(lang, "बिहान टुप्पो वृत्तमा पस्ने बिन्दु: पश्चिम", "Where the tip enters in the morning: west")), key("accent", L(lang, "पू", "E"), L(lang, "दिउँसो निस्कने बिन्दु: पूर्व", "Where it leaves in the afternoon: east")), key("planet", L(lang, "उ–द", "N–S"), L(lang, "दुई बिन्दुबाट बनेको मत्स्यको रेखा: उत्तर–दक्षिण", "The fish's line from both points: north–south"), "line")], readout: [`${L(lang, "मध्याह्नबाट", "from noon")} ${dms(lang, hour)} (${fmt(lang, hour / 6, 1)} ${L(lang, "घटी", "gh.")})`, tip.up > 0.2 ? `${L(lang, "छाया", "shadow")} ${fmt(lang, len, 1)} ${L(lang, "अङ्गुल", "digits")}` : ""], steps };
 }
 
 // ---------------------------------------------------------------- 3.9–11 the ayanāṃśa
@@ -137,22 +131,14 @@ function ayanamsha(t: number, lang: Lang): FigureFrame {
   const shapes: Shape[] = [path(arc(cx, cy, R, 90 - 40, 90 + 40), { stroke: "muted", w: 1 }), line(cx, cy, cx, cy - R - 8, { stroke: "faint", dash: "3 3" }), text(cx, cy - R - 12, L(lang, "मेष ०°", "Aries 0°"), "muted", 9)];
   for (const s of [-27, 27]) {
     const p = polar(cx, cy, R, 90 - s);
-    shapes.push(line(cx, cy, p.x, p.y, { stroke: "faint" }), text(p.x, p.y - 6, `${s > 0 ? "+" : "−"}${num(lang, 27)}°`, "muted", 8.5));
+    const lp = polar(cx, cy, R + 14, 90 - s);
+    shapes.push(line(cx, cy, p.x, p.y, { stroke: "faint" }), text(lp.x + (s > 0 ? 8 : -8), lp.y, `${s > 0 ? "+" : "−"}${num(lang, 27)}°`, "muted", 10.5, s > 0 ? "start" : "end"));
   }
   const p = polar(cx, cy, R - 4, 90 - a.ayan);
   shapes.push(line(cx, cy, p.x, p.y, { stroke: "accent", w: 2.4 }), arrowHead({ x: cx, y: cy }, p, "accent"));
-  const pn = polar(cx, cy, R + 8, 90 - now.ayan);
-  shapes.push(circle(pn.x, pn.y, 3, { fill: "ink" }), text(pn.x, pn.y + 16, L(lang, "आज", "now"), "ink", 8.5, "middle", true));
-  shapes.push(circle(cx, cy, 4, { fill: "earth" }));
-  const lx = 206;
-  const legend: [string, Tone][] = [
-    [L(lang, "भचक्र महायुगमा ६०० पटक", "The zodiac swings 600 times"), "ink"],
-    [L(lang, "पूर्व–पश्चिम २७° सम्म डोलिन्छ", "a mahāyuga, up to 27° each way"), "ink"],
-    [L(lang, "एक डोलाइ = ७२०० वर्ष", "One swing = 7200 years"), "muted"],
-    [L(lang, "आधुनिक: अयन सधैँ एकतर्फ", "Modern: precession goes one way,"), "muted"],
-    [L(lang, "करिब ५०.३″ प्रतिवर्ष", "about 50.3″ a year"), "muted"],
-  ];
-  legend.forEach(([s, tone], i) => shapes.push(text(lx, 46 + i * 20, s, tone, 8.8, "start")));
+  const pn = polar(cx, cy, R - 14, 90 - now.ayan);
+  shapes.push(circle(pn.x, pn.y, 3, { fill: "ink" }), text(pn.x + (pn.x < cx ? 9 : -9), pn.y + 4, L(lang, "आ", "N"), "ink", 10.5, pn.x < cx ? "start" : "end", true));
+  shapes.push(circle(cx, cy, 4, { fill: "earth" }), text(cx, cy + 16, L(lang, "भू", "E"), "earth", 10.5, "middle", true));
   const steps: Step[] = [
     { say: L(lang, "भचक्रका भगण: ३० × २० = ६०० प्रति महायुग (३.९–१०)", "Revolutions of the zodiac: 30 × 20 = 600 a mahāyuga (3.9–10)"), eq: [`${num(lang, 30)} × ${num(lang, 20)} = ${num(lang, 600)}`] },
     { say: L(lang, "कलि आरम्भदेखि वर्ष × ६०० ÷ युगवर्ष = भगण", "Years since Kali × 600 ÷ years in a yuga = revolutions"), eq: [fr(`${grp(lang, Math.round(years))} × ${num(lang, 600)}`, grp(lang, 4320000)), ` = ${fmt(lang, a.rev, 4)} → ${dms(lang, a.deg)}`] },
@@ -161,7 +147,7 @@ function ayanamsha(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "आज (कलि ५१२७): पाठको अयनांश र आधुनिक लाहिरी", "Now (Kali 5127): the text's ayanāṃśa against modern Lahiri"), eq: [`${dms(lang, Math.abs(now.ayan))} · ${L(lang, "लाहिरी", "Lahiri")} ≈ ${dms(lang, 24.2)}`] },
     { say: L(lang, "छायाबाट मापेको सूर्य र गणनाको सूर्यको अन्तरले अयनांश जाँच्ने (३.११)", "Check the ayanāṃśa by the gap between the shadow-sun and the computed sun (3.11)"), eq: [L(lang, "अयन = छायार्क − करणागत अर्क", "ayana = shadow sun − computed sun")] },
   ];
-  return { shapes, readout: [`${L(lang, "कलिदेखि", "since Kali")} ${grp(lang, Math.round(years))} ${L(lang, "वर्ष", "years")}`, `${L(lang, "अयनांश", "ayanāṃśa")} ${a.ayan >= 0 ? "+" : "−"}${dms(lang, Math.abs(a.ayan))}`], steps };
+  return { shapes, key: [key("earth", L(lang, "भू", "E"), L(lang, "पृथ्वी", "Earth")), key("accent", "", L(lang, "तीर: अहिलेको अयनांश (कर्सरको वर्षमा)", "Arrow: the ayanāṃśa in the cursor's year"), "line"), key("ink", L(lang, "आ", "N"), L(lang, "आज (कलि ५१२७) को अयनांश", "The ayanāṃśa now (Kali 5127)")), key("muted", "", L(lang, "भचक्र महायुगमा ६०० पटक, पूर्व–पश्चिम २७° सम्म डोलिन्छ; एक डोलाइ ७२०० वर्ष", "The zodiac swings 600 times a mahāyuga, up to 27° each way; one swing is 7200 years"), "line"), key("muted", "", L(lang, "आधुनिक: अयन सधैँ एकतर्फ, करिब ५०.३″ प्रतिवर्ष", "Modern: precession goes one way, about 50.3″ a year"), "line")], readout: [`${L(lang, "कलिदेखि", "since Kali")} ${grp(lang, Math.round(years))} ${L(lang, "वर्ष", "years")}`, `${L(lang, "अयनांश", "ayanāṃśa")} ${a.ayan >= 0 ? "+" : "−"}${dms(lang, Math.abs(a.ayan))}`], steps };
 }
 
 // ---------------------------------------------------------------- 3.12–17 the latitude triangle
@@ -188,9 +174,6 @@ function akshaTriangle(t: number, lang: Lang): FigureFrame {
     text((bx + tip.x) / 2, by + 14, L(lang, `पलभा ${fmt(lang, pal, 2)}`, `shadow ${pal.toFixed(2)}`), "muted", 9),
     text((top.x + tip.x) / 2 + 8, (top.y + tip.y) / 2 - 4, L(lang, `पलकर्ण ${fmt(lang, karna, 2)}`, `hyp. ${karna.toFixed(2)}`), "sun", 9, "start"),
   ];
-  shapes.push(text(200, 30, L(lang, "विषुव दिनको मध्याह्न छाया", "Noon shadow on an equinox"), "ink", 9.5, "start", true));
-  shapes.push(text(200, 48, L(lang, "शङ्कु = कोटि, पलभा = भुज", "gnomon = koṭi, shadow = bhuja"), "muted", 8.8, "start"));
-  shapes.push(text(200, 64, L(lang, "शिरबिन्दुको कोण = अक्षांश", "angle at the top = latitude"), "muted", 8.8, "start"));
   const steps: Step[] = [
     { say: L(lang, "विषुव मध्याह्नको छाया नै पलभा (३.१२)", "The equinox noon shadow is the palabhā (3.12)"), eq: [`${num(lang, 12)} × tan ${dms(lang, lat)} = ${fmt(lang, pal, 2)} ${L(lang, "अङ्गुल", "digits")}`] },
     { say: L(lang, "पलकर्ण = √(१४४ + पलभा²) (३.८)", "Hypotenuse = √(144 + shadow²) (3.8)"), eq: [`√(${num(lang, 144)} + ${fmt(lang, pal, 2)}²) = ${fmt(lang, karna, 2)}`] },
@@ -198,7 +181,7 @@ function akshaTriangle(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "अक्षज्या = पलभा × त्रिज्या ÷ पलकर्ण (३.१३)", "Latitude sine = shadow × R ÷ hypotenuse (3.13)"), eq: [fr(`${fmt(lang, pal, 2)} × ${num(lang, TRIJYA)}`, fmt(lang, karna, 2)), ` = ${fmt(lang, aksha)} → ${dms(lang, suryaArc(aksha))}`] },
     { say: L(lang, "उल्टो: अक्षांशबाट पलभा (३.१६–१७)", "Back: the shadow from the latitude (3.16–17)"), eq: [`√(${num(lang, TRIJYA)}² − ${fmt(lang, aksha)}²) = ${fmt(lang, Math.sqrt(TRIJYA ** 2 - aksha ** 2))} → `, fr(`${num(lang, 12)} × ${fmt(lang, aksha)}`, fmt(lang, Math.sqrt(TRIJYA ** 2 - aksha ** 2))), ` = ${fmt(lang, pal, 2)}`] },
   ];
-  return { shapes, readout: [`${L(lang, "अक्षांश", "latitude")} ${dms(lang, lat)}`, `${L(lang, "पलभा", "palabhā")} ${fmt(lang, pal, 2)} · ${L(lang, "पलकर्ण", "hyp.")} ${fmt(lang, karna, 2)}`], steps };
+  return { shapes, key: [key("ink", L(lang, "१२", "12"), L(lang, "शङ्कु = कोटि", "Gnomon = koṭi"), "line"), key("shadow", "", L(lang, "विषुव दिनको मध्याह्न छाया (पलभा) = भुज", "Equinox noon shadow (palabhā) = bhuja"), "line"), key("sun", "", L(lang, "पलकर्ण", "The hypotenuse"), "line"), key("accent", "", L(lang, "शिरको कोण = अक्षांश", "Angle at the top = latitude"), "line")], readout: [`${L(lang, "अक्षांश", "latitude")} ${dms(lang, lat)}`, `${L(lang, "पलभा", "palabhā")} ${fmt(lang, pal, 2)} · ${L(lang, "पलकर्ण", "hyp.")} ${fmt(lang, karna, 2)}`], steps };
 }
 
 // ---------------------------------------------------------------- 3.18–21 the noon shadow through the year
@@ -225,7 +208,6 @@ function noonSun(t: number, lang: Lang): FigureFrame {
   const ray = Math.hypot(tipX - bx, 12 * k) || 1;
   const sunP = { x: top.x - ((tipX - bx) / ray) * 46, y: Math.max(40, top.y - ((12 * k) / ray) * 46) };
   shapes.push(circle(sunP.x, sunP.y, 7, { fill: "sun" }));
-  shapes.push(text(14, 22, L(lang, "काठमाडौँ, मध्याह्नको छाया वर्षभरि", "Kathmandu, the noon shadow through the year"), "ink", 9.5, "start", true));
   const lj = (dec >= 0 ? 1 : -1) * ((suryaJya(Math.abs(dec)) * TRIJYA) / 1397);
   const steps: Step[] = [
     { say: L(lang, "मध्याह्न छायाबाट नतांश (३.१४–१५)", "Zenith distance from the noon shadow (3.14–15)"), eq: [`${L(lang, "ज्या", "sin")} z = `, fr(`${fmt(lang, sh, 2)} × ${num(lang, TRIJYA)}`, `√(${num(lang, 144)} + ${fmt(lang, sh, 2)}²)`), ` = ${fmt(lang, jz)} → z = ${dms(lang, Math.abs(z))}`] },
@@ -233,7 +215,7 @@ function noonSun(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "क्रान्तिबाट सूर्यको भुज: क्रान्तिज्या × त्रिज्या ÷ १३९७ (३.१९)", "The sun's longitude from it: decl. sine × R ÷ 1397 (3.19)"), eq: [fr(`${fmt(lang, suryaJya(Math.abs(dec)))} × ${num(lang, TRIJYA)}`, num(lang, 1397)), ` = ${fmt(lang, Math.abs(lj))} → ${dms(lang, suryaArc(Math.abs(lj)))}`] },
     { say: L(lang, "उल्टो: सूर्यबाट मध्याह्न छाया (३.२०–२१)", "Back: the noon shadow from the sun (3.20–21)"), eq: [fr(`${num(lang, 12)} × ${fmt(lang, jz)}`, fmt(lang, jc)), ` = ${fmt(lang, sh, 2)} ${L(lang, "अङ्गुल", "digits")}`] },
   ];
-  return { shapes, readout: [`${L(lang, "सूर्य", "sun")} ${dms(lang, lon)} · ${L(lang, "क्रान्ति", "decl.")} ${dms(lang, dec)}`, `${L(lang, "मध्याह्न छाया", "noon shadow")} ${fmt(lang, sh, 2)} ${L(lang, "अङ्गुल", "digits")} ${z >= 0 ? L(lang, "उत्तरतिर", "to the north") : L(lang, "दक्षिणतिर", "to the south")}`], steps };
+  return { shapes, key: [key("ink", "", L(lang, "१२ अङ्गुल शङ्कु", "12-digit gnomon"), "line"), key("shadow", "", L(lang, "काठमाडौँको मध्याह्न छाया (वर्षभरि बदलिन्छ)", "Kathmandu's noon shadow, changing through the year"), "line"), key("sun", "", L(lang, "मध्याह्नको सूर्य", "The noon sun"))], readout: [`${L(lang, "सूर्य", "sun")} ${dms(lang, lon)} · ${L(lang, "क्रान्ति", "decl.")} ${dms(lang, dec)}`, `${L(lang, "मध्याह्न छाया", "noon shadow")} ${fmt(lang, sh, 2)} ${L(lang, "अङ्गुल", "digits")} ${z >= 0 ? L(lang, "उत्तरतिर", "to the north") : L(lang, "दक्षिणतिर", "to the south")}`], steps };
 }
 
 // ---------------------------------------------------------------- 3.22–27 the agrā (sunrise amplitude)
@@ -247,14 +229,13 @@ function agra(t: number, lang: Lang): FigureFrame {
   const ag = suryaArc(agj);
   const cx = 110;
   const cy = 150;
-  const shapes: Shape[] = [line(14, cy, 230, cy, { stroke: "muted", w: 1.2 }), text(14, cy + 14, L(lang, "पूर्वी क्षितिज", "eastern horizon"), "muted", 8.5, "start")];
+  const shapes: Shape[] = [line(14, cy, 230, cy, { stroke: "muted", w: 1.2 })];
   const E = { x: cx, y: cy };
   mark(shapes, E, L(lang, "पू", "E"), 0, 14, "ink", 3);
   const rise = { x: cx - ag * 2.4, y: cy };
-  shapes.push(circle(rise.x, rise.y, 7, { fill: "sun" }));
+  shapes.push(circle(rise.x, rise.y, 7, { fill: "sun" }), text(rise.x, rise.y - 12, L(lang, "सू", "Su"), "sun", 10.5, "middle", true));
   shapes.push(line(rise.x, rise.y, rise.x + 70 * Math.cos((90 - KTM) * RAD) * (1), rise.y - 70 * Math.sin((90 - KTM) * RAD), { stroke: "sun", w: 1, dash: "3 3" }));
   shapes.push(path(`M ${E.x} ${cy + 3} L ${rise.x} ${cy + 3}`, { stroke: "accent", w: 3 }));
-  shapes.push(text(14, 22, L(lang, "पूर्वतिर हेर्दा: बायाँ उत्तर, दायाँ दक्षिण", "Facing east: north to the left, south to the right"), "ink", 9, "start", true));
   for (const s of [-1, 1]) {
     const x = cx - s * 24 * 2.4;
     shapes.push(line(x, cy - 4, x, cy + 4, { stroke: "faint" }), text(x, cy + 24, `${num(lang, 24)}° ${s > 0 ? L(lang, "उ", "N") : L(lang, "द", "S")}`, "faint", 8));
@@ -270,7 +251,7 @@ function agra(t: number, lang: Lang): FigureFrame {
       eq: [samaJ === null ? L(lang, "आज पार गर्दैन", "not today") : `${L(lang, "सम–शङ्कुज्या", "prime-vertical altitude sine")} = `, ...(samaJ === null ? [] : [fr(`${fmt(lang, kj)} × ${num(lang, TRIJYA)}`, fmt(lang, suryaJya(KTM))), ` = ${fmt(lang, samaJ)}`])],
     },
   ];
-  return { shapes, readout: [`${L(lang, "सूर्य", "sun")} ${dms(lang, lon)} · ${L(lang, "क्रान्ति", "decl.")} ${dms(lang, dec)}`, `${L(lang, "अग्रा", "agrā")} ${dms(lang, Math.abs(ag))} ${ag >= 0 ? L(lang, "उत्तर", "N") : L(lang, "दक्षिण", "S")}`], steps };
+  return { shapes, key: [key("ink", L(lang, "पू", "E"), L(lang, "ठीक पूर्व बिन्दु", "Due east")), key("sun", L(lang, "सू", "Su"), L(lang, "सूर्य उदाउने बिन्दु", "Where the sun rises")), key("accent", "", L(lang, "अग्रा: पूर्वबाट उत्तर वा दक्षिण दूरी", "Agrā: the distance north or south of east"), "line"), key("muted", "", L(lang, "पूर्वतिर हेर्दा बायाँ उत्तर, दायाँ दक्षिण; थोप्ला रेखा: सूर्य चढ्ने बाटो", "Facing east: north left, south right; dotted: the sun's climb"), "line")], readout: [`${L(lang, "सूर्य", "sun")} ${dms(lang, lon)} · ${L(lang, "क्रान्ति", "decl.")} ${dms(lang, dec)}`, `${L(lang, "अग्रा", "agrā")} ${dms(lang, Math.abs(ag))} ${ag >= 0 ? L(lang, "उत्तर", "N") : L(lang, "दक्षिण", "S")}`], steps };
 }
 
 // ---------------------------------------------------------------- 3.28–40 the shadow at any hour
@@ -307,9 +288,7 @@ function ishtaShadow(t: number, lang: Lang): FigureFrame {
   }
   shapes.push(path(d, { stroke: "faint", dash: "3 2" }));
   const q = { x: cx + Math.max(-20, Math.min(20, tip.x)) * k, y: cy - Math.max(-16, Math.min(16, tip.y)) * k };
-  shapes.push(line(cx, cy, q.x, q.y, { stroke: "shadow", w: 3.5 }), circle(q.x, q.y, 3.5, { fill: "accent" }), circle(cx, cy, 3, { fill: "ink" }));
-  shapes.push(text(236, 30, L(lang, "सूर्य वृष १° (क्रान्ति +२०°)", "Sun at Taurus 0° (decl. +20°)"), "ink", 8.8, "start", true));
-  shapes.push(text(236, 48, L(lang, "माथिबाट हेर्दा छायाको बाटो", "The shadow's path seen from above"), "muted", 8.5, "start"));
+  shapes.push(line(cx, cy, q.x, q.y, { stroke: "shadow", w: 3.5 }), circle(q.x, q.y, 3.5, { fill: "accent" }), circle(cx, cy, 3, { fill: "ink" }), text(q.x + 6, q.y - 6, L(lang, "टु", "T"), "accent", 10.5, "start", true));
   const steps: Step[] = [
     { say: L(lang, "चरज्या: क्रान्तिज्या × पलभा ÷ १२ = कुज्या; × त्रिज्या ÷ द्युज्या (२.६१)", "Ascensional sine: decl. sine × shadow ÷ 12, then × R ÷ day-radius (2.61)"), eq: [fr(`${fmt(lang, kujya, 1)} × ${num(lang, TRIJYA)}`, fmt(lang, dyu)), ` = ${fmt(lang, charaJ, 1)}`] },
     { say: L(lang, "अन्त्या = त्रिज्या + चरज्या (उत्तर क्रान्ति) (३.३४)", "Antyā = R + ascensional sine for north declination (3.34)"), eq: [`${num(lang, TRIJYA)} + ${fmt(lang, charaJ, 1)} = ${fmt(lang, antya, 1)}`] },
@@ -321,7 +300,7 @@ function ishtaShadow(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "कोणशङ्कु: सूर्य ठीक कुनामा (आग्नेय, नैर्ऋत्य…) हुँदाको शङ्कु; त्रिज्या² ÷ २ बाट (३.२८–३३)", "Corner gnomon: the altitude when the sun stands in a corner direction, from R² ÷ 2 (3.28–33)"), eq: [`√(${num(lang, TRIJYA)}² ÷ ${num(lang, 2)}) = ${fmt(lang, TRIJYA / Math.SQRT2)} ${L(lang, "(कुनाको दिशाको ज्या)", "(sine of 45°)")}`] },
     { say: L(lang, "उल्टो: छायाबाट शङ्कु र नतकाल (३.३७–३९)", "Back: from the shadow, the altitude and the hour (3.37–39)"), eq: [L(lang, "दृग्ज्या = त्रिज्या × छाया ÷ कर्ण → शङ्कु → छेद → नत", "zenith sine = R × shadow ÷ hyp. → altitude → divisor → hour")] },
   ];
-  return { shapes, readout: [`${L(lang, "मध्याह्नबाट", "from noon")} ${fmt(lang, H / 6, 2)} ${L(lang, "घटी", "gh.")}`, `${L(lang, "छाया", "shadow")} ${fmt(lang, sh, 2)} ${L(lang, "अङ्गुल", "digits")}`], steps };
+  return { shapes, key: [key("ink", "", L(lang, "बीचमा शङ्कु; माथिबाट हेरेको", "Gnomon at the centre, seen from above")), key("shadow", "", L(lang, "अहिलेको छाया", "The shadow now"), "line"), key("accent", L(lang, "टु", "T"), L(lang, "छायाको टुप्पो; थोप्ला रेखा: दिनभरिको बाटो", "Shadow tip; dotted: its path through the day")), key("muted", "", L(lang, "सूर्य वृष ०° (क्रान्ति +२०°), काठमाडौँ", "Sun at Taurus 0° (decl. +20°), Kathmandu"), "line")], readout: [`${L(lang, "मध्याह्नबाट", "from noon")} ${fmt(lang, H / 6, 2)} ${L(lang, "घटी", "gh.")}`, `${L(lang, "छाया", "shadow")} ${fmt(lang, sh, 2)} ${L(lang, "अङ्गुल", "digits")}`], steps };
 }
 
 // ---------------------------------------------------------------- 3.43–48 the rising times of the signs
@@ -351,7 +330,7 @@ function rashiUdaya(t: number, lang: Lang): FigureFrame {
   const total = r.reduce((a, b) => a + b, 0);
   const x0 = 16;
   const w = 328;
-  const shapes: Shape[] = [text(180, 16, L(lang, "काठमाडौँमा राशिहरू उदाउन लाग्ने समय (असु)", "Time for each sign to rise at Kathmandu (asus)"), "ink", 9.5, "middle", true)];
+  const shapes: Shape[] = [];
   let x = x0;
   const at = t * total;
   let acc = 0;
@@ -360,14 +339,12 @@ function rashiUdaya(t: number, lang: Lang): FigureFrame {
     const ww = (v / total) * w;
     if (at >= acc && at < acc + v) which = i;
     shapes.push(path(`M ${x.toFixed(1)} 60 h ${ww.toFixed(1)} v 40 h ${(-ww).toFixed(1)} Z`, { fill: i < 6 ? "sun" : "planet", opacity: i === which ? 0.6 : 0.18, stroke: "ink", w: 0.5 }));
-    shapes.push(text(x + ww / 2, 84, L(lang, RASHI[i]![0], RASHI[i]![1].slice(0, 3)), "ink", 8, "middle"));
-    shapes.push(text(x + ww / 2, 116, grp(lang, Math.round(v)), "muted", 7.5));
+    shapes.push(text(x + ww / 2, 84, num(lang, i + 1), "ink", 10.5, "middle", true));
     x += ww;
     acc += v;
   });
   const cx = x0 + (at / total) * w;
   shapes.push(line(cx, 52, cx, 108, { stroke: "accent", w: 2 }));
-  shapes.push(text(180, 146, L(lang, "मेष–मीन जस्ता छोटा, कर्क–धनु जस्ता लामा: जम्मा २१६०० असु = ६० घटी", "Short signs near Aries, long ones near Libra: 21,600 asus = 60 ghaṭī in all"), "muted", 8.5));
   const c = charaKhanda();
   const i3 = which % 6;
   const lankaIdx = i3 < 3 ? i3 : 5 - i3;
@@ -378,7 +355,7 @@ function rashiUdaya(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "मेष–मिथुन: लङ्का − चरखण्ड; कर्क–कन्या: उल्टो क्रममा + चरखण्ड (३.४४–४५)", "Aries–Gemini: Laṅkā − part; Cancer–Virgo: reversed + part (3.44–45)"), eq: [`${L(lang, RASHI[which]![0], RASHI[which]![1])}: ${num(lang, LANKA[lankaIdx]!)} ${(which < 3 || which >= 9) ? "−" : "+"} ${fmt(lang, c[lankaIdx]!)} = ${grp(lang, Math.round(r[which]!))} ${L(lang, "असु", "asus")}`] },
     { say: L(lang, "तुला–मीन: मेष–कन्याकै उल्टो क्रम (३.४५)", "Libra–Pisces: the same six in reverse (3.45)"), eq: [`${grp(lang, Math.round(r[which]!))} ÷ ${num(lang, 360)} = ${fmt(lang, r[which]! / 360, 2)} ${L(lang, "घटी", "ghaṭī")}`] },
   ];
-  return { shapes, readout: [`${L(lang, "उदाउँदै", "rising")}: ${L(lang, RASHI[which]![0], RASHI[which]![1])}`, `${grp(lang, Math.round(r[which]!))} ${L(lang, "असु", "asus")} = ${fmt(lang, r[which]! / 360, 2)} ${L(lang, "घटी", "gh.")}`], steps };
+  return { shapes, key: [key("sun", "", L(lang, "मेष–कन्या (१–६)", "Aries–Virgo (1–6)")), key("planet", "", L(lang, "तुला–मीन (७–१२)", "Libra–Pisces (7–12)")), key("accent", "", L(lang, "कर्सर: अहिले उदाउँदै गरेको राशि", "Cursor: the sign rising now"), "line"), key("muted", "", L(lang, "अंक = राशि क्रम (१ मेष … १२ मीन); चौडाइ = उदयकाल; जम्मा २१६०० असु = ६० घटी", "Number = sign (1 Aries … 12 Pisces); width = rising time; 21,600 asus = 60 ghaṭī in all"), "line")], readout: [`${L(lang, "उदाउँदै", "rising")}: ${L(lang, RASHI[which]![0], RASHI[which]![1])}`, `${grp(lang, Math.round(r[which]!))} ${L(lang, "असु", "asus")} = ${fmt(lang, r[which]! / 360, 2)} ${L(lang, "घटी", "gh.")}`], steps };
 }
 
 /** The twelve rising times, Aries first. */
@@ -417,7 +394,7 @@ function lagna(t: number, lang: Lang): FigureFrame {
   const cx = 100;
   const cy = 104;
   const R = 78;
-  const shapes: Shape[] = [circle(cx, cy, R, { stroke: "muted", w: 1 }), line(cx - R - 10, cy, cx + R + 10, cy, { stroke: "earth", w: 1.4 }), text(8, cy + 28, L(lang, "पूर्व क्षितिज", "east horizon"), "earth", 8, "start")];
+  const shapes: Shape[] = [circle(cx, cy, R, { stroke: "muted", w: 1 }), line(cx - R - 10, cy, cx + R + 10, cy, { stroke: "earth", w: 1.4 })];
   // the zodiac drawn so that the ascendant sits on the eastern horizon (left)
   const rot = (lon: number) => 180 + (lon - lg);
   for (let i = 0; i < 12; i += 1) {
@@ -425,14 +402,12 @@ function lagna(t: number, lang: Lang): FigureFrame {
     const b = polar(cx, cy, R - 8, rot(i * 30));
     shapes.push(line(a.x, a.y, b.x, b.y, { stroke: "faint" }));
     const lab = polar(cx, cy, R - 18, rot(i * 30 + 15));
-    shapes.push(text(lab.x, lab.y + 3, L(lang, RASHI[i]![0], RASHI[i]![1].slice(0, 3)), "muted", 7.5));
+    shapes.push(text(lab.x, lab.y + 4, num(lang, i + 1), "muted", 10.5));
   }
   const S = polar(cx, cy, R, rot(sun));
-  shapes.push(circle(S.x, S.y, 6, { fill: "sun" }));
+  shapes.push(circle(S.x, S.y, 6, { fill: "sun" }), text(S.x, S.y - 10, L(lang, "सू", "Su"), "sun", 10.5, "middle", true));
   const A = polar(cx, cy, R, rot(lg));
   shapes.push(circle(A.x, A.y, 4.5, { fill: "accent" }), text(A.x - 6, A.y - 8, L(lang, "लग्न", "asc."), "accent", 9.5, "end", true));
-  shapes.push(text(214, 30, L(lang, "सूर्य वृश्चिक १२° (सायन)", "Sun at Scorpio 12° (tropical)"), "ink", 8.8, "start", true));
-  shapes.push(text(214, 48, L(lang, "सूर्योदयदेखिको समयबाट लग्न", "The ascendant from time since sunrise"), "muted", 8.5, "start"));
   const steps: Step[] = [
     { say: L(lang, "सूर्योदयदेखि बितेको समय असुमा (३.४७)", "Time since sunrise in asus (3.47)"), eq: [`${fmt(lang, gh, 1)} ${L(lang, "घटी", "gh.")} × ${num(lang, 360)} = ${grp(lang, Math.round(asus))}`] },
     { say: L(lang, "सूर्यको राशिको भोग्य असु: उदयासु × बाँकी अंश ÷ ३० (३.४६)", "Remaining asus of the sun's sign: rising × degrees left ÷ 30 (3.46)"), eq: [fr(`${grp(lang, Math.round(r[si]!))} × ${fmt(lang, 30 - inSign, 1)}`, num(lang, 30)), ` = ${grp(lang, Math.round(bhogya))}`] },
@@ -440,7 +415,7 @@ function lagna(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "शेष × ३० ÷ अशुद्ध राशिको उदयासु = अंश (३.४८)", "Remainder × 30 ÷ that sign's rising time = degrees (3.48)"), eq: [`${L(lang, "लग्न", "ascendant")} = ${L(lang, RASHI[Math.floor(lg / 30)]![0], RASHI[Math.floor(lg / 30)]![1])} ${dms(lang, lg % 30)}`] },
     { say: L(lang, "लग्न सूर्यभन्दा पछि भए रात, अगाडि भए दिन (३.५०–५१)", "Ascendant behind the sun: night; ahead: day (3.50–51)"), eq: [L(lang, "समय = सूर्य र लग्नबीचका असु ÷ ३६० घटी", "time = asus between sun and ascendant ÷ 360 ghaṭī")] },
   ];
-  return { shapes, readout: [`${L(lang, "सूर्योदयदेखि", "since sunrise")} ${fmt(lang, gh, 1)} ${L(lang, "घटी", "gh.")}`, `${L(lang, "लग्न", "ascendant")} ${L(lang, RASHI[Math.floor(lg / 30)]![0], RASHI[Math.floor(lg / 30)]![1])} ${dms(lang, lg % 30)}`], steps };
+  return { shapes, key: [key("sun", L(lang, "सू", "Su"), L(lang, "सूर्य, वृश्चिक १२° (सायन)", "Sun at Scorpio 12° (tropical)")), key("accent", L(lang, "लग्न", "asc."), L(lang, "पूर्व क्षितिजमा उदाउँदै गरेको बिन्दु", "The point rising on the eastern horizon")), key("earth", "", L(lang, "क्षितिज (बायाँ पूर्व)", "Horizon, east on the left"), "line"), key("muted", "", L(lang, "अंक: राशि (१ मेष … १२ मीन)", "Numbers: the signs (1 Aries … 12 Pisces)"), "line")], readout: [`${L(lang, "सूर्योदयदेखि", "since sunrise")} ${fmt(lang, gh, 1)} ${L(lang, "घटी", "gh.")}`, `${L(lang, "लग्न", "ascendant")} ${L(lang, RASHI[Math.floor(lg / 30)]![0], RASHI[Math.floor(lg / 30)]![1])} ${dms(lang, lg % 30)}`], steps };
 }
 
 export const MORE_B = {

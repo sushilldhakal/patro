@@ -7,7 +7,7 @@
  * t and carries its arithmetic. copy-ok-file
  */
 import { arrowHead, box, fr, grp, mark, sighraParts } from "./surya-classical";
-import { arc, circle, dms, fmt, L, line, num, path, polar, suryaArc, suryaJya, SURYA_SINES, text, TRIJYA, wrap, type FigureFrame, type Lang, type Shape, type Step, type Tone } from "./surya-kit";
+import { arc, circle, dms, fmt, key, L, line, num, path, polar, suryaArc, suryaJya, SURYA_SINES, text, TRIJYA, wrap, type FigureFrame, type Lang, type Shape, type Step, type Tone } from "./surya-kit";
 
 export type FigureDef = {
   chapter: number;
@@ -38,7 +38,7 @@ function monthKinds(t: number, lang: Lang): FigureFrame {
     { ne: "चान्द्र मास", en: "lunar month", per: CIVIL / LUNAR_MONTHS, tone: "accent" },
     { ne: "सौर मास", en: "solar month", per: CIVIL / SOLAR_MONTHS, tone: "sun" },
   ];
-  const shapes: Shape[] = [text(180, 16, L(lang, "एक सौर वर्षमा कति मास?", "How many months in one solar year?"), "ink", 10, "middle", true)];
+  const shapes: Shape[] = [];
   tracks.forEach((tr, i) => {
     const y = 36 + i * 34;
     shapes.push(text(x0 - 6, y + 13, L(lang, tr.ne, tr.en), "ink", 9, "end"));
@@ -53,7 +53,6 @@ function monthKinds(t: number, lang: Lang): FigureFrame {
   });
   const cx = x0 + (days / 365.2588) * w;
   shapes.push(line(cx, 30, cx, 176, { stroke: "accent", w: 1.8 }));
-  shapes.push(text(x0, 192, L(lang, "दिव्य अहोरात्र = एक सौर वर्ष (१.१४)", "A day-and-night of the gods = one solar year (1.14)"), "muted", 8.5, "start"));
   const steps: Step[] = [
     { say: L(lang, "नाक्षत्र अहोरात्र: ६० घटी; ३० नाक्षत्र दिन = नाक्षत्र मास (१.१२)", "Sidereal day: 60 ghaṭī; 30 of them make a sidereal month (1.12)"), eq: [fr(grp(lang, SIDEREAL), grp(lang, MY)), ` = ${fmt(lang, SIDEREAL / MY, 4)} ${L(lang, "नाक्षत्र दिन प्रतिवर्ष", "sidereal days a year")}`] },
     { say: L(lang, "सावन दिन: सूर्योदयदेखि सूर्योदय; ३० सावन दिन = सावन मास", "Civil day: sunrise to sunrise; 30 make a civil month"), eq: [fr(grp(lang, CIVIL), grp(lang, MY)), ` = ${fmt(lang, CIVIL / MY, 4)} ${L(lang, "सावन दिन", "civil days")}`] },
@@ -61,7 +60,7 @@ function monthKinds(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "सौर मास: सूर्यको एक संक्रान्तिदेखि अर्कोसम्म; १२ सौर मास = वर्ष (१.१३)", "Solar month: one saṅkrānti to the next; 12 make the year (1.13)"), eq: [fr(`${grp(lang, CIVIL)}`, grp(lang, SOLAR_MONTHS)), ` = ${fmt(lang, CIVIL / SOLAR_MONTHS, 4)} ${L(lang, "दिन", "days")}`] },
     { say: L(lang, "चित्रको दिनमा", "At the drawing's day"), eq: [`${fmt(lang, days, 1)} ${L(lang, "दिन", "days")} → ${fmt(lang, days / (CIVIL / LUNAR_MONTHS), 2)} ${L(lang, "चान्द्र", "lunar")}, ${fmt(lang, days / (CIVIL / SOLAR_MONTHS), 2)} ${L(lang, "सौर", "solar")}`] },
   ];
-  return { shapes, readout: [`${L(lang, "दिन", "day")} ${fmt(lang, days)}`, `${L(lang, "तिथि", "tithis")} ${fmt(lang, (days * TITHIS) / CIVIL, 1)} · ${L(lang, "नाक्षत्र दिन", "sidereal days")} ${fmt(lang, (days * SIDEREAL) / CIVIL, 1)}`], steps };
+  return { shapes, key: [...tracks.map((tr) => key(tr.tone, "", `${L(lang, tr.ne, tr.en)}: ${fmt(lang, tr.per, 2)} ${L(lang, "दिनको", "days each")}`)), key("accent", "", L(lang, "ठाडो रेखा: वर्षभित्र अहिलेसम्म; दायाँको अंक: वर्षमा कति मास", "Upright line: how far into the year; number at right: months in a year"), "line"), key("muted", "", L(lang, "दिव्य अहोरात्र = एक सौर वर्ष (१.१४)", "A day of the gods = one solar year (1.14)"), "line")], readout: [`${L(lang, "दिन", "day")} ${fmt(lang, days)}`, `${L(lang, "तिथि", "tithis")} ${fmt(lang, (days * TITHIS) / CIVIL, 1)} · ${L(lang, "नाक्षत्र दिन", "sidereal days")} ${fmt(lang, (days * SIDEREAL) / CIVIL, 1)}`], steps };
 }
 
 // ---------------------------------------------------------------- 1.25–28 the eastward lag
@@ -81,20 +80,10 @@ function eastwardLag(t: number, lang: Lang): FigureFrame {
   const U = polar(cx, cy, R - 28, sun);
   shapes.push(line(cx, cy, S.x, S.y, { stroke: "faint", dash: "2 3" }));
   shapes.push(path(arc(cx, cy, R - 14, star, moon), { stroke: "muted", w: 3 }));
-  mark(shapes, S, L(lang, "तारा", "star"), 0, -8, "planet", 3);
+  mark(shapes, S, L(lang, "ता", "S"), 0, -8, "planet", 3);
+  shapes.push(text(M.x + 10, M.y + 4, L(lang, "च", "M"), "ink", 10.5, "start", true), text(U.x + 10, U.y + 4, L(lang, "सू", "Su"), "sun", 10.5, "start", true), text(cx + 8, cy + 4, L(lang, "भू", "E"), "earth", 10.5, "start", true));
   shapes.push(circle(M.x, M.y, 5, { fill: "moon", stroke: "muted", w: 0.6 }));
   shapes.push(circle(U.x, U.y, 5.5, { fill: "sun" }));
-  shapes.push(text(cx, cy + R + 16, L(lang, "आकाश पश्चिमतिर घुम्छ (घडीको दिशा)", "The sky turns west (clockwise)"), "muted", 8.5));
-  const lx = 206;
-  const lines: [string, Tone][] = [
-    [L(lang, "चन्द्र ताराभन्दा पछि पर्छ", "The moon falls behind the star"), "muted"],
-    [L(lang, "→ पूर्वतिर हिँडेको देखिन्छ", "→ so it seems to move east"), "ink"],
-    [L(lang, "सूर्य दिनमा ५९′ मात्र पछि", "The sun lags only 59′ a day"), "sun"],
-    [L(lang, "६० विकला = १ कला", "60 vikalā = 1 kalā"), "muted"],
-    [L(lang, "६० कला = १ अंश, ३० अंश = १ राशि", "60 kalā = 1°, 30° = 1 sign"), "muted"],
-    [L(lang, "१२ राशि = १ भगण (१.२८)", "12 signs = 1 revolution (1.28)"), "muted"],
-  ];
-  lines.forEach(([s, tone], i) => shapes.push(text(lx, 40 + i * 20, s, tone, 9, "start")));
   const lag = (790.58 / 60) * days;
   const steps: Step[] = [
     { say: L(lang, "तारामण्डल महायुगमा यति पटक घुम्छ (१.३४)", "The star sphere turns this many times in a mahāyuga (1.34)"), eq: [`${grp(lang, SIDEREAL)}`] },
@@ -103,7 +92,7 @@ function eastwardLag(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "चित्रका दिनमा जम्मा", "Total over the drawing's days"), eq: [`${fmt(lang, days, 2)} × ${fmt(lang, 790.58 / 60, 2)}° = ${dms(lang, lag)}`] },
     { say: L(lang, "एक भगण कलामा र विकलामा (१.२८)", "One revolution in minutes and seconds (1.28)"), eq: [`${num(lang, 12)} × ${num(lang, 30)} × ${num(lang, 60)} = ${grp(lang, 21600)}′ = ${grp(lang, 1296000)}″`] },
   ];
-  return { shapes, readout: [`${L(lang, "दिन", "days")} ${fmt(lang, days, 2)}`, `${L(lang, "चन्द्र ताराभन्दा पछि", "moon behind the star")} ${dms(lang, wrap(lag))}`], steps };
+  return { shapes, key: [key("earth", L(lang, "भू", "E"), L(lang, "पृथ्वी", "Earth")), key("planet", L(lang, "ता", "S"), L(lang, "एउटा तारा: दिनमा पूरा एक फन्को पश्चिमतिर", "A star: one full turn west each day")), key("moon", L(lang, "च", "M"), L(lang, "चन्द्र: ताराभन्दा दिनमा १३° पछि पर्छ", "Moon: falls 13° a day behind the star")), key("sun", L(lang, "सू", "Su"), L(lang, "सूर्य: दिनमा ५९′ मात्र पछि", "Sun: only 59′ a day behind")), key("muted", "", L(lang, "पछि पर्नु = पूर्वतिर हिँडेको देखिनु; ६० विकला = १ कला, ६० कला = १°, ३०° = १ राशि, १२ राशि = १ भगण", "Lagging = seeming to move east; 60″ = 1′, 60′ = 1°, 30° = 1 sign, 12 signs = 1 revolution"), "line")], readout: [`${L(lang, "दिन", "days")} ${fmt(lang, days, 2)}`, `${L(lang, "चन्द्र ताराभन्दा पछि", "moon behind the star")} ${dms(lang, wrap(lag))}`], steps };
 }
 
 // ---------------------------------------------------------------- 1.35–40 intercalary months and lost tithis
@@ -140,8 +129,6 @@ function adhimasa(t: number, lang: Lang): FigureFrame {
   }
   const now = t * span;
   shapes.push(line(X(now), 50, X(now), 140, { stroke: "ink", w: 1.4 }));
-  shapes.push(text(180, 160, L(lang, "संक्रान्ति नपर्ने चान्द्र मास अधिमास हुन्छ", "A lunar month without a saṅkrānti is intercalary"), "muted", 9));
-  shapes.push(text(180, 178, L(lang, "३ सौर वर्ष ≈ ३७ चान्द्र मास", "3 solar years ≈ 37 lunar months"), "muted", 9));
   const solarDone = Math.floor(now / solarM);
   const lunarDone = moons.filter((m) => m <= now).length;
   const steps: Step[] = [
@@ -154,6 +141,7 @@ function adhimasa(t: number, lang: Lang): FigureFrame {
   ];
   return {
     shapes,
+    key: [key("sun", "", L(lang, "माथिको रेखा: सौर मासका संक्रान्ति", "Top line: the saṅkrāntis of the solar months"), "line"), key("muted", "", L(lang, "तलको रेखा: चान्द्र मासका औंसी", "Bottom line: the new moons"), "line"), key("accent", "", L(lang, "संक्रान्ति नपर्ने चान्द्र मास = अधिमास; ३ सौर वर्ष ≈ ३७ चान्द्र मास", "A lunar month with no saṅkrānti is intercalary; 3 solar years ≈ 37 lunar months"))],
     readout: [`${L(lang, "सौर मास", "solar months")} ${num(lang, solarDone)} · ${L(lang, "चान्द्र मास", "lunar months")} ${num(lang, Math.max(0, lunarDone - 1))}`, adhika >= 0 ? L(lang, "यो अवधिमा एउटा अधिमास परेको छ", "one intercalary month falls in this span") : ""],
     steps,
   };
@@ -168,7 +156,6 @@ function ishtaGhati(t: number, lang: Lang): FigureFrame {
   const x0 = 30;
   const w = 300;
   const shapes: Shape[] = [
-    text(180, 20, L(lang, "लङ्काको मध्यरातदेखि बितेको घटी", "Ghaṭīs since midnight at Laṅkā"), "ink", 10, "middle", true),
     line(x0, 60, x0 + w, 60, { stroke: "muted", w: 1 }),
     line(x0, 130, x0 + w, 130, { stroke: "muted", w: 1 }),
   ];
@@ -187,7 +174,7 @@ function ishtaGhati(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "सूर्यका लागि", "For the sun"), eq: [fr(`${fmt(lang, 59.14, 2)}′ × ${fmt(lang, gh, 1)}`, num(lang, 60)), ` = ${fmt(lang, sun, 2)}′`] },
     { say: L(lang, "मध्यरातपछिको समयमा जोड्ने, अघि भए घटाउने (१.६७)", "Added after midnight, subtracted before it (1.67)"), eq: [`+ ${fmt(lang, moon, 1)}′`] },
   ];
-  return { shapes, readout: [`${fmt(lang, gh, 1)} ${L(lang, "घटी", "ghaṭī")}`, `${L(lang, "चन्द्र", "Moon")} +${fmt(lang, moon, 1)}′ · ${L(lang, "सूर्य", "Sun")} +${fmt(lang, sun, 1)}′`], steps };
+  return { shapes, key: [key("accent", "", L(lang, "लङ्काको मध्यरातदेखि बितेको घटी", "Ghaṭīs since midnight at Laṅkā")), key("moon", "", L(lang, "चन्द्रले त्यति समयमा हिँडेको कला", "Minutes the moon moves in that time")), key("sun", "", L(lang, "सूर्यले हिँडेको कला", "Minutes the sun moves"))], readout: [`${fmt(lang, gh, 1)} ${L(lang, "घटी", "ghaṭī")}`, `${L(lang, "चन्द्र", "Moon")} +${fmt(lang, moon, 1)}′ · ${L(lang, "सूर्य", "Sun")} +${fmt(lang, sun, 1)}′`], steps };
 }
 
 // ---------------------------------------------------------------- 1.68–70 the planets' greatest latitudes
@@ -223,7 +210,6 @@ function vikshepa(t: number, lang: Lang): FigureFrame {
   shapes.push(circle(cx, moonY, 4.5, { fill: "moon", stroke: "muted", w: 0.6 }));
   shapes.push(text(x0, mid + 14, L(lang, "पात", "node"), "accent", 9, "start", true));
   shapes.push(text(x0 + w / 2, mid + 14, L(lang, "पात", "node"), "accent", 9, "middle", true));
-  shapes.push(text(x0, 190, L(lang, "रेखाहरू: चन्द्र २७०′, मङ्गल ९०′, बुध–शुक्र–शनि १२०′, बृहस्पति ६०′", "Curves: Moon 270′, Mars 90′, Mercury–Venus–Saturn 120′, Jupiter 60′"), "muted", 8.2, "start"));
   const lat = (270 * suryaJya(d)) / TRIJYA;
   const steps: Step[] = [
     { say: L(lang, "चन्द्रको परम शर: भचक्रको ८०औँ भाग (१.६८)", "The moon's greatest latitude: an eightieth of the circle (1.68)"), eq: [fr(`${grp(lang, 21600)}′`, num(lang, 80)), ` = ${num(lang, 270)}′ = ${num(lang, 4)}°${num(lang, 30)}′`] },
@@ -231,7 +217,7 @@ function vikshepa(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "१.७० ले पनि त्यही: २७, ९, १२, ६, १२, १२ लाई १० ले गुणा", "1.70 says the same: 27, 9, 12, 6, 12, 12 times ten"), eq: [`${num(lang, 270)}, ${num(lang, 90)}, ${num(lang, 120)}, ${num(lang, 60)}, ${num(lang, 120)}, ${num(lang, 120)}′`] },
     { say: L(lang, "पातबाट टाढा हुँदा चन्द्रको शर (२.५७)", "The moon's latitude at a distance from the node (2.57)"), eq: [fr(`${num(lang, 270)}′ × ${L(lang, "ज्या", "sin")} ${dms(lang, d)}`, num(lang, TRIJYA)), ` = ${fmt(lang, lat, 1)}′`] },
   ];
-  return { shapes, readout: [`${L(lang, "पातबाट", "from the node")} ${dms(lang, d)}`, `${L(lang, "चन्द्रको शर", "moon's latitude")} ${fmt(lang, Math.abs(lat), 1)}′ ${lat >= 0 ? L(lang, "उत्तर", "N") : L(lang, "दक्षिण", "S")}`], steps };
+  return { shapes, key: [...LATS.map((p) => key(p.tone, "", `${L(lang, p.ne, p.en)}: ${L(lang, "परम शर", "greatest")} ${num(lang, p.max)}′`, "line")), key("accent", L(lang, "पात", "node"), L(lang, "क्रान्तिवृत्त काट्ने बिन्दु", "Where the path crosses the ecliptic"))], readout: [`${L(lang, "पातबाट", "from the node")} ${dms(lang, d)}`, `${L(lang, "चन्द्रको शर", "moon's latitude")} ${fmt(lang, Math.abs(lat), 1)}′ ${lat >= 0 ? L(lang, "उत्तर", "N") : L(lang, "दक्षिण", "S")}`], steps };
 }
 
 // ---------------------------------------------------------------- 2.29–33 looking up a sine
@@ -274,7 +260,6 @@ function jyaLookup(t: number, lang: Lang): FigureFrame {
     shapes.push(text(tx, y, `${num(lang, (j + 1) * 225)}′`, on ? "accent" : "muted", 9, "start"));
     shapes.push(text(tx + 90, y, num(lang, SURYA_SINES[j]!), on ? "accent" : "muted", 9, "start", on));
   }
-  shapes.push(text(tx, 136, L(lang, "पीलो: भुजज्या · हरियो: कोटिज्या", "yellow: sine · green: cosine"), "muted", 8.5, "start"));
   const steps: Step[] = [
     { say: L(lang, "केन्द्र = ग्रह − उच्च (२.२९)", "Anomaly = planet − apsis (2.29)"), eq: [`κ = ${dms(lang, k)} → ${L(lang, "पद", "quadrant")} ${num(lang, pada)}`] },
     { say: L(lang, "विषम पदमा गत भाग, सम पदमा बाँकी भाग भुज (२.३०)", "Odd quadrant: the part passed; even: the part to come (2.30)"), eq: [`${L(lang, "भुज", "bhuja")} = ${dms(lang, bhuja)} · ${L(lang, "कोटि", "koṭi")} = ${dms(lang, koti)}`] },
@@ -282,7 +267,7 @@ function jyaLookup(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "गत पिण्ड + शेष × खण्ड ÷ २२५ (२.३२)", "Passed sine + remainder × difference ÷ 225 (2.32)"), eq: [`${num(lang, lo)} + `, fr(`${fmt(lang, rem, 1)} × ${num(lang, hi - lo)}`, num(lang, 225)), ` = ${fmt(lang, jya, 1)}`] },
     { say: L(lang, "उल्टो: ज्याबाट चाप (२.३३)", "Back: the arc from a sine (2.33)"), eq: [`${num(lang, idx)} × ${num(lang, 225)} + `, fr(`(${fmt(lang, jya, 1)} − ${num(lang, lo)}) × ${num(lang, 225)}`, num(lang, hi - lo)), ` = ${grp(lang, Math.round(idx * 225 + ((jya - lo) * 225) / (hi - lo)))}′`] },
   ];
-  return { shapes, readout: [`κ ${dms(lang, k)} · ${L(lang, "भुज", "bhuja")} ${dms(lang, bhuja)}`, `${L(lang, "भुजज्या", "sine")} ${fmt(lang, jya, 1)} · ${L(lang, "कोटिज्या", "cosine")} ${fmt(lang, suryaJya(koti), 1)}`], steps };
+  return { shapes, key: [key("sun", "", L(lang, "भुजज्या (sine)", "Sine (bhujajyā)"), "line"), key("planet", "", L(lang, "कोटिज्या (cosine)", "Cosine (koṭijyā)"), "line"), key("accent", "", L(lang, "केन्द्र κ र अहिलेको पद", "The anomaly κ and its quadrant")), key("muted", L(lang, "उच्च", "apsis"), L(lang, "उच्चको दिशा, जहाँबाट केन्द्र गनिन्छ", "Direction of the apsis, where κ is counted from"), "line")], readout: [`κ ${dms(lang, k)} · ${L(lang, "भुज", "bhuja")} ${dms(lang, bhuja)}`, `${L(lang, "भुजज्या", "sine")} ${fmt(lang, jya, 1)} · ${L(lang, "कोटिज्या", "cosine")} ${fmt(lang, suryaJya(koti), 1)}`], steps };
 }
 
 // ---------------------------------------------------------------- 2.43–45 the order of the four corrections
@@ -312,7 +297,7 @@ function correctionOrder(t: number, lang: Lang): FigureFrame {
     { lab: ["पूर्ण मन्द", "full manda"], v: m3, tone: "sun" },
     { lab: ["स्पष्ट", "true"], v: m4, tone: "accent" },
   ];
-  const shapes: Shape[] = [text(180, 16, L(lang, "मङ्गल: चार संशोधन क्रमैसँग (२.४४)", "Mars: the four corrections in order (2.44)"), "ink", 10, "middle", true)];
+  const shapes: Shape[] = [];
   stages.forEach((s, i) => {
     box(shapes, 8 + i * 70, 40, 64, 42, L(lang, s.lab[0], s.lab[1]), dms(lang, s.v), s.tone);
     if (i) shapes.push(line(8 + i * 70 - 6, 61, 8 + i * 70, 61, { stroke: "muted" }), arrowHead({ x: 8 + i * 70 - 6, y: 61 }, { x: 8 + i * 70, y: 61 }, "muted"));
@@ -335,7 +320,7 @@ function correctionOrder(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "अन्तमा त्यसबाट पूर्ण शीघ्रफल", "Last, the whole śīghra equation from that"), eq: [`${dms(lang, m3)} + ${dms(lang, s4)} = ${dms(lang, m4)}`] },
     { say: L(lang, "मेषादि केन्द्रमा मन्दफल ऋण, तुलादिमा धन (२.४५)", "Manda equation subtracted when κ is in Aries–Virgo, added in Libra–Pisces (2.45)"), eq: [`${L(lang, "मन्द परिधि", "manda epicycle")} ${num(lang, 75)}° / ${num(lang, 72)}° · ${L(lang, "शीघ्र", "śīghra")} ${num(lang, 235)}° / ${num(lang, 232)}°`] },
   ];
-  return { shapes, readout: [`${L(lang, "मध्यम", "mean")} ${dms(lang, mean)} → ${L(lang, "स्पष्ट", "true")} ${dms(lang, m4)}`, `${L(lang, "जम्मा संशोधन", "total correction")} ${dms(lang, ((((m4 - mean) % 360) + 540) % 360) - 180)}`], steps };
+  return { shapes, key: [...stages.map((s2) => key(s2.tone, "", `${L(lang, s2.lab[0], s2.lab[1])}: ${dms(lang, s2.v)}`)), key("muted", "", L(lang, "मङ्गल, २.४४ को क्रम; तलको रेखामा मध्यमबाट ±४०°", "Mars, the order of 2.44; the strip shows ±40° around the mean"), "line")], readout: [`${L(lang, "मध्यम", "mean")} ${dms(lang, mean)} → ${L(lang, "स्पष्ट", "true")} ${dms(lang, m4)}`, `${L(lang, "जम्मा संशोधन", "total correction")} ${dms(lang, ((((m4 - mean) % 360) + 540) % 360) - 180)}`], steps };
 }
 
 // ---------------------------------------------------------------- 2.46–55 true daily motion and retrogression
@@ -367,8 +352,6 @@ function trueMotion(t: number, lang: Lang): FigureFrame {
   const k = t * 360;
   const v = motionAt(k);
   shapes.push(circle(x0 + (k / 360) * w, mid - v * sc, 4.5, { fill: v < 0 ? "accent" : "ink" }));
-  shapes.push(text(x0, 20, L(lang, "मङ्गलको स्पष्ट दैनिक गति (कला) — शीघ्रकेन्द्रअनुसार", "Mars's true daily motion (′) against the śīghra anomaly"), "ink", 9.5, "start", true));
-  shapes.push(text(x0 + w / 2, 192, L(lang, "शून्यमुनि = वक्री", "below zero = retrograde"), "muted", 8.5));
   const a = sighraParts(k, 235, 232).phala;
   const b = sighraParts(k + kRate, 235, 232).phala;
   const steps: Step[] = [
@@ -377,7 +360,7 @@ function trueMotion(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "स्पष्ट गति = मध्यम गति + शीघ्रफलको परिवर्तन (२.४६–५१ यही गति दिन्छ)", "True motion = mean + change in the equation (2.46–51 give this motion)"), eq: [`${fmt(lang, 31.44, 2)} + ${fmt(lang, (b - a) * 60, 2)} = ${fmt(lang, v, 2)}′`] },
     { say: L(lang, "ऋणात्मक भए वक्री: मङ्गल केन्द्र १६४° मा वक्री, १९६° मा मार्गी (२.५३–५४)", "Negative means retrograde: Mars at κ 164°, direct again at 196° (2.53–54)"), eq: [v < 0 ? L(lang, "अहिले वक्री", "now retrograde") : L(lang, "अहिले मार्गी", "now direct")] },
   ];
-  return { shapes, readout: [`κ ${dms(lang, k)}`, `${L(lang, "दैनिक गति", "daily motion")} ${fmt(lang, v, 1)}′ ${v < 0 ? L(lang, "वक्री", "retrograde") : ""}`], steps };
+  return { shapes, key: [key("accent", "", L(lang, "मङ्गलको स्पष्ट दैनिक गति (कला), शीघ्रकेन्द्रअनुसार", "Mars's true daily motion (′) against the śīghra anomaly"), "line"), key("planet", "", L(lang, "१६४°–१९६°: पाठअनुसार वक्री भाग", "164°–196°: retrograde by the text"), "line"), key("muted", "0", L(lang, "शून्यमुनि = वक्री", "Below zero = retrograde"), "line")], readout: [`κ ${dms(lang, k)}`, `${L(lang, "दैनिक गति", "daily motion")} ${fmt(lang, v, 1)}′ ${v < 0 ? L(lang, "वक्री", "retrograde") : ""}`], steps };
 }
 
 // ---------------------------------------------------------------- 2.56–58 a planet's latitude and true declination
@@ -409,14 +392,13 @@ function planetLatitude(t: number, lang: Lang): FigureFrame {
   const yp10 = mid - (kr + (shara / 60) * 5) * sc;
   shapes.push(line(x, ye, x, yp10, { stroke: "accent", w: 2.4 }));
   shapes.push(circle(x, yp10, 4.5, { fill: "accent" }));
-  shapes.push(text(x0, 20, L(lang, "पीलो: क्रान्तिवृत्त · सुन्तला: शर (५ गुणा ठूलो)", "Yellow: ecliptic · orange: latitude (drawn 5× larger)"), "muted", 8.5, "start"));
   const steps: Step[] = [
     { say: L(lang, "मङ्गलको परम शर ९०′; ग्रह − पातको ज्या (२.५६–५७)", "Mars's greatest latitude 90′; sine of planet − node (2.56–57)"), eq: [`${L(lang, "ज्या", "sin")}(${dms(lang, lon)} − ${dms(lang, node)}) = ${fmt(lang, suryaJya(lon - node))}`] },
     { say: L(lang, "शर = परम शर × ज्या ÷ शीघ्रकर्ण (२.५७)", "Latitude = greatest × sine ÷ śīghra hypotenuse (2.57)"), eq: [fr(`${num(lang, 90)}′ × ${fmt(lang, suryaJya(lon - node))}`, fmt(lang, karna)), ` = ${fmt(lang, shara, 1)}′`] },
     { say: L(lang, "ग्रहको क्रान्ति (२.२८)", "The planet's declination (2.28)"), eq: [fr(`${fmt(lang, suryaJya(lon))} × ${num(lang, 1397)}`, num(lang, TRIJYA)), ` = ${fmt(lang, krJ)} → ${dms(lang, kr)}`] },
     { say: L(lang, "एकै दिशा भए जोड्ने, फरक भए घटाउने: स्पष्ट क्रान्ति (२.५८)", "Same direction: add; opposite: subtract — the true declination (2.58)"), eq: [`${dms(lang, kr)} ${shara >= 0 ? "+" : "−"} ${fmt(lang, Math.abs(shara), 1)}′ = ${dms(lang, decl)}`] },
   ];
-  return { shapes, readout: [`${L(lang, "भोग", "longitude")} ${dms(lang, lon)} · ${L(lang, "शर", "latitude")} ${fmt(lang, shara, 1)}′`, `${L(lang, "स्पष्ट क्रान्ति", "true declination")} ${dms(lang, decl)}`], steps };
+  return { shapes, key: [key("earth", "", L(lang, "विषुव", "Equator"), "line"), key("sun", "", L(lang, "क्रान्तिवृत्त (ग्रहको क्रान्ति)", "Ecliptic (the planet's declination)"), "line"), key("accent", "", L(lang, "शर, ५ गुणा ठूलो; टुप्पो = स्पष्ट क्रान्ति", "Latitude, drawn 5× larger; its tip is the true declination"), "line")], readout: [`${L(lang, "भोग", "longitude")} ${dms(lang, lon)} · ${L(lang, "शर", "latitude")} ${fmt(lang, shara, 1)}′`, `${L(lang, "स्पष्ट क्रान्ति", "true declination")} ${dms(lang, decl)}`], steps };
 }
 
 // ---------------------------------------------------------------- 2.64–69 tithi, nakshatra, yoga, karaṇa
@@ -473,6 +455,9 @@ function panchangaElements(t: number, lang: Lang): FigureFrame {
   const M = polar(cx, cy, R - 22, moon);
   shapes.push(line(cx, cy, S.x, S.y, { stroke: "sun", w: 1 }), line(cx, cy, M.x, M.y, { stroke: "muted", w: 1 }));
   shapes.push(circle(S.x, S.y, 6, { fill: "sun" }), circle(M.x, M.y, 5, { fill: "moon", stroke: "muted", w: 0.6 }));
+  const sl = polar(cx, cy, R - 40, sun);
+  const ml = polar(cx, cy, R - 40, moon);
+  shapes.push(text(sl.x, sl.y + 4, L(lang, "सू", "Su"), "sun", 10.5, "middle", true), text(ml.x, ml.y + 4, L(lang, "च", "Mo"), "ink", 10.5, "middle", true));
   const paksha = p.tithi < 15 ? L(lang, "शुक्ल", "Śukla") : L(lang, "कृष्ण", "Kṛṣṇa");
   const tn = p.tithi === 29 ? L(lang, "औंसी", "Amāvāsyā") : L(lang, TITHI15[p.tithi % 15]![0], TITHI15[p.tithi % 15]![1]);
   const nk = NAKSHATRA27[p.nak]!;
@@ -496,7 +481,7 @@ function panchangaElements(t: number, lang: Lang): FigureFrame {
     { say: L(lang, "करण: आधा तिथि; ७ चर करण ८ पटक, ४ स्थिर करण (२.६७–६९)", "Karaṇa: half a tithi; 7 movable ones eight times, 4 fixed (2.67–69)"), eq: [fr(dms(lang, p.e), `${num(lang, 6)}°`), ` = ${num(lang, p.karana + 1)}${L(lang, "औँ करण", "th karaṇa")} → ${L(lang, kr[0], kr[1])}`] },
     { say: L(lang, "जाँच: ३० तिथि × ७२०′ = २७ नक्षत्र × ८००′ = भचक्र", "Check: 30 × 720′ = 27 × 800′ = the full circle"), eq: [`${num(lang, 30)} × ${num(lang, 720)} = ${num(lang, 27)} × ${num(lang, 800)} = ${grp(lang, 21600)}′`] },
   ];
-  return { shapes, readout: [`${L(lang, "सूर्य", "Sun")} ${dms(lang, sun)} · ${L(lang, "चन्द्र", "Moon")} ${dms(lang, moon)}`, `${L(lang, "भोगान्तर", "moon − sun")} ${dms(lang, p.e)}`], steps };
+  return { shapes, key: [key("sun", L(lang, "सू", "Su"), L(lang, "सूर्य", "Sun")), key("moon", L(lang, "च", "Mo"), L(lang, "चन्द्र", "Moon")), key("muted", "", L(lang, "खैरो चाप: चन्द्र − सूर्य (तिथि यसैबाट)", "Grey arc: moon − sun, which gives the tithi"), "line"), key("accent", "", L(lang, "बाहिरी घेराका २७ चिन्ह: नक्षत्र; सुन्तला: चन्द्रको नक्षत्र", "27 ticks: the nakshatras; orange: the moon's"), "line")], readout: [`${L(lang, "सूर्य", "Sun")} ${dms(lang, sun)} · ${L(lang, "चन्द्र", "Moon")} ${dms(lang, moon)}`, `${L(lang, "भोगान्तर", "moon − sun")} ${dms(lang, p.e)}`], steps };
 }
 
 export const MORE_A = {

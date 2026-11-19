@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ahargana, sighraParts } from "../src/learn/surya-classical";
-import { suryaFigure, suryaFiguresFor } from "../src/learn/surya-figures";
+import { figureView, suryaFigure, suryaFiguresFor } from "../src/learn/surya-figures";
 
 test("the śīghra correction equals the angle drawn around the sun", () => {
   // Earth's orbit and the planet's orbit in the ratio p : 360 (Venus) — the angle at the earth
@@ -26,11 +26,15 @@ test("every placed figure draws, in both languages, with its worked steps finite
   const all = Array.from({ length: 14 }, (_, i) => suryaFiguresFor(i + 1)).flat();
   assert.ok(all.length >= 70, `only ${all.length} figures`);
   for (const { key } of all) {
+    const v = figureView(key, "ne");
+    assert.ok(v.w > 60 && v.h > 40 && v.w < 420 && v.h < 260, `${key}: odd drawing area ${v.w}×${v.h}`);
     for (const lang of ["ne", "en"] as const) {
       for (const t of [0, 0.13, 0.37, 0.5, 0.71, 0.99]) {
         const f = suryaFigure(key, t, lang);
         assert.ok(f.shapes.length > 0, key);
         assert.ok((f.steps?.length ?? 0) >= 3, `${key}: too few steps`);
+        assert.ok((f.key?.length ?? 0) >= 2, `${key}: needs a key`);
+        for (const sh of f.shapes) if (sh.k === "text") assert.ok((sh.size ?? 11) >= 10.5 && sh.tone !== "moon" && sh.tone !== "faint", `${key}: unreadable label "${sh.text}"`);
         const text = JSON.stringify(f);
         assert.ok(!/NaN|Infinity|undefined/.test(text), `${key} ${lang} ${t}`);
       }

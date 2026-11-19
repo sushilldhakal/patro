@@ -289,6 +289,11 @@ export const documentsClasses = {
   figureReadout: "mt-2 min-h-[2.75rem] font-mono text-sm leading-snug text-foreground",
   figureControls: "mt-2 w-full flex-row items-center gap-3",
   figureCaption: "mt-2 text-sm leading-relaxed text-muted-foreground",
+  /** The key under a drawing: a coloured mark, its initial and what it stands for. */
+  figureKey: "mt-2 w-full flex-row flex-wrap gap-x-4 gap-y-1.5",
+  figureKeyItem: "flex-row items-center gap-1.5",
+  figureKeyMark: "text-sm font-semibold",
+  figureKeyText: "text-sm leading-snug text-foreground",
   /** The worked arithmetic under a figure: numbered steps, each a sentence and an equation. */
   figureMath: "mt-3 w-full rounded-lg border border-border bg-muted/40 px-3 py-2",
   figureMathTitle: "text-sm font-semibold text-secondary",

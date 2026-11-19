@@ -1019,3 +1019,11 @@ html[data-iphone-duo] [data-app-header] {
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
+
+/* The earth in the Surya Siddhanta drawings: teal, apart from the saffron accent. */
+:root {
+  --surya-earth: #0b565a;
+}
+.dark {
+  --surya-earth: #5fc4c0;
+}

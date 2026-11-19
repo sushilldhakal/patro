@@ -13,7 +13,33 @@ export type Shape =
   | ({ k: "path"; d: string } & Style)
   | { k: "text"; x: number; y: number; text: string; tone: Tone; size?: number; anchor?: "start" | "middle" | "end"; bold?: boolean };
 
-export type FigureFrame = { shapes: Shape[]; readout: string[]; steps?: Step[] };
+/** One line of a figure's key: the coloured mark, the initial drawn beside it, and what it stands for. */
+export type KeyItem = { tone: Tone; mark?: string; text: string; as?: "dot" | "line" | "ring" };
+export type FigureFrame = { shapes: Shape[]; readout: string[]; steps?: Step[]; key?: KeyItem[] };
+
+/** Short initials for the bodies, as the figures letter them. */
+const INITIALS: Record<string, [string, string]> = {
+  चन्द्र: ["च", "Mo"],
+  सूर्य: ["सू", "Su"],
+  मङ्गल: ["मं", "Ma"],
+  बुध: ["बु", "Me"],
+  गुरु: ["गु", "Ju"],
+  बृहस्पति: ["बृ", "Ju"],
+  शुक्र: ["शु", "Ve"],
+  शनि: ["श", "Sa"],
+};
+
+/** The initial for a body's Nepali name (falls back to its first two letters). */
+export function initial(lang: Lang, ne: string, en: string): string {
+  const hit = INITIALS[ne.split(" ")[0]!];
+  if (hit) return lang === "en" ? hit[1] : hit[0];
+  return lang === "en" ? en.slice(0, 2) : [...ne].slice(0, 2).join("");
+}
+
+/** A key item. */
+export function key(tone: Tone, mark: string, text: string, as: "dot" | "line" | "ring" = "dot"): KeyItem {
+  return { tone, mark, text, as };
+}
 
 /** One line of worked mathematics under a figure. A part is plain text or a fraction. */
 export type MathPart = string | { n: string; d: string };

@@ -1,6 +1,6 @@
 import { brand } from "@vedic-patro/design-tokens";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
-import { figureInfo, suryaFigure, SURYA_FIGURE_BOX, type MathPart, type Shape, type Step, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
+import { figureInfo, figureView, suryaFigure, type KeyItem, type MathPart, type Shape, type Step, type Tone } from "@vedic-patro/drawing/learn/surya-figures";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { SuryaFigureProps } from "../contract";
 
@@ -10,7 +10,7 @@ const TONE: Record<Tone, string> = {
   faint: "color-mix(in srgb, var(--foreground) 22%, transparent)",
   sun: brand.gold,
   moon: brand.offWhite,
-  earth: "var(--primary)",
+  earth: "var(--surya-earth)",
   accent: brand.saffron,
   shadow: "color-mix(in srgb, var(--foreground) 70%, var(--card))",
   planet: brand.verified,
@@ -34,6 +34,36 @@ function ShapeView({ s }: { s: Shape }) {
   if (s.k === "circle") return <circle cx={s.x} cy={s.y} r={Math.max(0, s.r)} {...style} />;
   if (s.k === "line") return <line x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} {...style} />;
   return <path d={s.d} {...style} />;
+}
+
+function Swatch({ item }: { item: KeyItem }) {
+  const c = TONE[item.tone];
+  return (
+    <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" className="shrink-0">
+      {item.as === "line" ? (
+        <line x1="1" y1="6" x2="17" y2="6" stroke={c} strokeWidth="3" strokeLinecap="round" />
+      ) : item.as === "ring" ? (
+        <circle cx="9" cy="6" r="4.5" fill="none" stroke={c} strokeWidth="1.6" />
+      ) : (
+        <circle cx="9" cy="6" r="5" fill={c} stroke="var(--muted-foreground)" strokeWidth="1.2" />
+      )}
+    </svg>
+  );
+}
+
+/** What each mark and initial in the drawing stands for. */
+function FigureKeyList({ items }: { items: KeyItem[] }) {
+  return (
+    <ul className={`${documentsClasses.figureKey} flex`}>
+      {items.map((item, i) => (
+        <li key={i} className={`${documentsClasses.figureKeyItem} flex`}>
+          <Swatch item={item} />
+          {item.mark ? <span className={documentsClasses.figureKeyMark} style={{ color: TONE[item.tone === "moon" ? "ink" : item.tone] }}>{item.mark}</span> : null}
+          <span className={documentsClasses.figureKeyText}>{item.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function Part({ part }: { part: MathPart }) {
@@ -76,14 +106,16 @@ export function SuryaFigure({ figureKey, phase, controls, registerRef }: SuryaFi
   const language = lang === "en" ? "en" : "ne";
   const info = figureInfo(figureKey, language);
   const frame = suryaFigure(figureKey, phase, language);
+  const view = figureView(figureKey, language);
   return (
     <figure ref={registerRef as ((node: HTMLElement | null) => void) | undefined} className={documentsClasses.figure}>
       <figcaption className={documentsClasses.figureTitle}>{info.title}</figcaption>
-      <svg viewBox={`0 0 ${SURYA_FIGURE_BOX.width} ${SURYA_FIGURE_BOX.height}`} className="h-auto w-full max-w-xl" role="img" aria-label={info.caption}>
+      <svg viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} className="h-auto w-full max-w-xl" style={{ maxHeight: "28rem" }} role="img" aria-label={info.caption}>
         {frame.shapes.map((s, i) => (
           <ShapeView key={i} s={s} />
         ))}
       </svg>
+      {frame.key?.length ? <FigureKeyList items={frame.key} /> : null}
       <div className={documentsClasses.figureReadout} style={{ fontVariantNumeric: "tabular-nums" }}>
         {frame.readout.map((line, i) => (line ? <p key={i}>{line}</p> : null))}
       </div>

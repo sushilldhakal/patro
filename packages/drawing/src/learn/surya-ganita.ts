@@ -62,7 +62,7 @@ function yuga(t: number, lang: Lang): Step[] {
 const CIVIL = 1577917828;
 
 function meanMotion(t: number, lang: Lang): Step[] {
-  const days = Math.round(t * 3 * 365.2588);
+  const days = Math.round(t * 365.2588);
   const sunRev = (4320000 * days) / CIVIL;
   const moonRev = (57753336 * days) / CIVIL;
   const sunDay = (4320000 * 21600) / CIVIL;
