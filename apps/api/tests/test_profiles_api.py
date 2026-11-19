@@ -163,3 +163,34 @@ def test_users_have_independent_defaults(client):
     assert bob_self["is_default"] is True
     client.act_as("alice")
     assert _defaults(client) == ["Alice self"]
+
+
+def test_saving_a_profile_builds_its_kundali_in_the_background(client, monkeypatch):
+    calls = []
+    monkeypatch.setattr(profiles_router, "precompute_kundali", lambda snap: calls.append(snap))
+    c = client[0] if isinstance(client, tuple) else client
+    body = {"full_name": "A", "birth_date": "2050-05-12", "birth_time": "04:45", "birth_era": "bs",
+            "latitude": 27.7, "longitude": 85.3, "timezone": "Asia/Kathmandu"}
+    created = c.post("/profiles", json=body)
+    assert created.status_code == 201
+    assert calls and calls[0]["birth_date"] == "2050-05-12"
+    pid = created.json()["id"]
+    c.patch(f"/profiles/{pid}", json={"notes": "x"})
+    assert len(calls) == 1  # no birth change, no rebuild
+    c.patch(f"/profiles/{pid}", json={"birth_time": "05:00"})
+    assert len(calls) == 2
+
+
+def test_kundali_query_matches_the_app():
+    from app.kundali_precompute import kundali_query
+
+    class P:
+        birth_date, birth_time, birth_era = "2050-05-12", "04:45", "BS"
+        latitude, longitude, timezone = 27.0, 85.3, "Asia/Kathmandu"
+
+    q = kundali_query(P())
+    assert q["inputEra"] == q["era"] == "bs"
+    assert (q["year"], q["month"], q["day"], q["clock"]) == ("2050", "5", "12", "04:45")
+    assert q["_loc"] == "lat=27&lon=85.3&timezone=Asia%2FKathmandu"
+    P.latitude = None
+    assert kundali_query(P()) is None

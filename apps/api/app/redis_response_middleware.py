@@ -73,7 +73,18 @@ logger = logging.getLogger(__name__)
 
 _KEY_NS = "resp:"
 _MAX_BODY_BYTES = int(os.getenv("REDIS_RESPONSE_MAX_BYTES", str(4 * 1024 * 1024)))
-_MAX_TTL_S = int(os.getenv("REDIS_RESPONSE_MAX_TTL_S", str(7 * 24 * 3600)))
+_MAX_TTL_S = int(os.getenv("REDIS_RESPONSE_MAX_TTL_S", str(30 * 24 * 3600)))
+
+# A response pinned to fixed data — the URL names its day/month/year AND carries
+# the app's cache version (cv/sv/gv/ev/v) — cannot go stale: new data means a new
+# version and so a new key. Redis keeps those for this long, independent of how
+# briefly Cloudflare and browsers are told to keep them, so when an edge copy
+# expires the server answers from Redis instead of computing again. 2 GB holds a
+# full year for every popular city several times over (~200 MB measured), and
+# allkeys-lfu evicts the least-used first if it ever fills.
+_PINNED_TTL_S = int(os.getenv("REDIS_RESPONSE_PINNED_TTL_S", str(30 * 24 * 3600)))
+_VERSION_PARAMS = ("cv", "sv", "gv", "ev", "v")
+_MONTH_PATH = re.compile(r"/panchanga/-?\d+/\d+(?:/|$)|/nepal/sait/-?\d+/")
 _MIN_TTL_S = 30
 
 # Deterministic routes that send no Cache-Control today, with
@@ -166,8 +177,21 @@ def _is_fixed_day(path: str, query: dict[str, str]) -> bool:
     return bool(_FIXED_DAY_PATH.search(path) or any(query.get(k) for k in _FIXED_DAY_QUERY))
 
 
+def _pinned(path: str, query: dict[str, str], fixed: bool) -> bool:
+    return any(query.get(k) for k in _VERSION_PARAMS) and (fixed or bool(_MONTH_PATH.search(path)))
+
+
 def ttl_for(path: str, query: dict[str, str], cache_control: str | None) -> int | None:
     """Seconds to keep this response in Redis, or None to skip it."""
+    ttl = _base_ttl(path, query, cache_control)
+    if ttl is None or (cache_control and "private" in cache_control.lower()):
+        return ttl
+    if _pinned(path, query, _is_fixed_day(path, query)):
+        ttl = max(ttl, _PINNED_TTL_S)
+    return min(ttl, _MAX_TTL_S)
+
+
+def _base_ttl(path: str, query: dict[str, str], cache_control: str | None) -> int | None:
     fixed = _is_fixed_day(path, query)
     if cache_control:
         cc = cache_control.lower()

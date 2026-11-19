@@ -9,7 +9,10 @@ import { fetchKundaliDetail, kundaliDetailKeys, type LocationParams } from "@ved
 import type { AyanamshaMode } from "@vedic-patro/domain/astronomy/ayanamsha";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant-query";
 
-export const KUNDALI_CHART_STALE_TIME = 1000 * 60 * 5;
+/** A birth chart is fixed for one birth; the query key carries the engine version,
+ * so a stored chart is reused (and kept offline) until the engine itself changes.
+ * Every reopen used to refetch after 5 minutes. */
+export const KUNDALI_CHART_STALE_TIME = Infinity;
 
 export type KundaliChartStatus = "idle" | "loading" | "error" | "ready";
 

@@ -11,10 +11,10 @@ of time removes it.
 What it requests, for every popular city (/v1/nepal/cities/popular) and both
 languages, with the exact URL shapes and cache versions the app sends:
 
-* each day from 2 days ago to 60 days ahead (day page), daily rashifal for the
-  coming week, weekly and monthly rashifal for today;
-* the calendar month 3 back to 3 ahead, with its five element strips and the
-  gochar ingress list, plus the city-less patro month and header;
+* each day from 2 days ago to a year ahead (day page), daily rashifal for the
+  coming month, weekly and monthly rashifal for today;
+* every month of this BS year plus 3 either side of now, with its five element
+  strips and the gochar ingress list, plus the city-less patro month and header;
 * every sait category for this BS year (and next, late in the year): month
   lists, category lists and detail pages;
 * festivals, holidays, special months and the year pages.
@@ -25,7 +25,9 @@ more than ``--workers`` requests at once (default 3), below the server's
 load-shed lane, so it cannot crowd out real visitors.
 
 Run by scripts/deploy.sh after every API deploy (in the background) and nightly
-by the vedicpatro-warm-cache.timer systemd unit.
+by the vedicpatro-warm-cache.timer systemd unit. Redis keeps these pinned
+answers for 30 days (app/redis_response_middleware.py), so after the first full
+run a nightly pass is mostly fast cache hits plus the newly added day.
 
     python apps/api/scripts/warm_cache.py                     # everything
     python apps/api/scripts/warm_cache.py --days 7 --cities 3 # quick
@@ -143,7 +145,10 @@ def build_paths(w: Warmer, v: dict[str, str], cities: list[int], days: int, mont
     cv, sv, gv, dv = v["cv"], v["sv"], v["gv"], v["dv"]
     now = datetime.now(NEPAL_TZ).date()
     by, bm = bs_today(w)
-    month_list = [month_shift(by, bm, k) for k in range(-months, months + 1)]
+    month_list = sorted(
+        {month_shift(by, bm, k) for k in range(-months, months + 1)} | {(by, m) for m in range(1, 13)},
+        key=lambda ym: abs((ym[0] * 12 + ym[1]) - (by * 12 + bm)),
+    )
     lengths = {ym: month_length(w, *ym) for ym in month_list}
     sait_years = [by] + ([by + 1] if bm >= 10 else [])
     try:
@@ -173,8 +178,10 @@ def build_paths(w: Warmer, v: dict[str, str], cities: list[int], days: int, mont
                 target.append(
                     f"/panchanga/{day}?era=ad&festivals=true&detail=true&slim=true&cv={cv}&{loc}&language={lang}"
                 )
-            if -1 <= offset <= 7:
-                first.append(f"/panchanga/rashifal?date={day}&era=ad&period=daily&cv={cv}&{loc}")
+            if -1 <= offset <= 30:
+                (first if offset <= 7 else later).append(
+                    f"/panchanga/rashifal?date={day}&era=ad&period=daily&cv={cv}&{loc}"
+                )
         for period in ("weekly", "monthly"):
             first.append(f"/panchanga/rashifal?date={now.isoformat()}&era=ad&period={period}&cv={cv}&{loc}")
 
@@ -227,7 +234,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--base", default="https://www.vedicpatro.com/api/v1")
     ap.add_argument("--workers", type=int, default=3)
-    ap.add_argument("--days", type=int, default=60)
+    ap.add_argument("--days", type=int, default=365)
     ap.add_argument("--months", type=int, default=3, help="calendar months either side of now")
     ap.add_argument("--cities", type=int, default=0, help="only the first N popular cities (0 = all)")
     ap.add_argument("--timeout", type=float, default=60)

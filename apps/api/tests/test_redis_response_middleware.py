@@ -182,7 +182,7 @@ def test_no_redis_url_means_no_layer(monkeypatch):
 def test_ttl_rules():
     assert mw.ttl_for("/api/v1/x", {}, "public, max-age=0, s-maxage=3600") is None
     assert mw.ttl_for("/api/v1/x", {}, "no-store") is None
-    assert mw.ttl_for("/api/v1/panchanga/year/2083", {}, "public, max-age=86400, s-maxage=31536000") == 7 * 24 * 3600
+    assert mw.ttl_for("/api/v1/panchanga/year/2083", {}, "public, max-age=86400, s-maxage=31536000") == 30 * 24 * 3600
     assert mw.ttl_for("/api/v1/nepal/festivals", {}, None) == 15 * 60
     assert mw.ttl_for("/api/v1/nepal/festivals", {"year": "2083"}, None) == 24 * 3600
 
@@ -260,3 +260,18 @@ def test_waiters_compute_themselves_when_the_answer_is_not_cacheable(fake):
     responses = _gather(_async_app(calls), "/api/v1/slow-private", 3)
     assert len(calls) == 3
     assert all(r.status_code == 200 for r in responses)
+
+
+def test_versioned_fixed_data_is_kept_a_month_in_redis():
+    month = 30 * 24 * 3600
+    cc = "public, max-age=3600, s-maxage=86400"
+    assert mw.ttl_for("/api/v1/panchanga/2083/8", {"cv": "6206"}, cc) == month
+    assert mw.ttl_for("/api/v1/panchanga/2083/8", {}, cc) == 3600  # no version → edge lifetime
+    assert mw.ttl_for("/api/v1/nepal/sait/2083/month/8", {"sv": "18"}, None) == month
+    assert mw.ttl_for("/api/v1/panchanga/rashifal", {"date": "2026-11-25", "cv": "6206"}, cc) == month
+    # "now" answers keep their short life even when versioned
+    assert mw.ttl_for("/api/v1/panchanga/at-time", {"datetime": "x", "cv": "6206"}, "public, max-age=60") == 60
+    # personal stays server-side for hours, not a month
+    assert mw.ttl_for(
+        "/api/v1/panchanga/rashifal/personal", {"date": "2026-11-25", "cv": "6206"}, "private, max-age=120"
+    ) == 6 * 3600

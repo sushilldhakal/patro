@@ -25,6 +25,9 @@ import { formatRashiDisplay } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { rashifalRangeLabel, rashifalStepDate } from "@vedic-patro/domain/jyotish/rashifal-ui";
 import { useLocale } from "@vedic-patro/i18n/react";
 
+/** Readings are keyed by day + period (+ profile), so a stored one stays right for hours. */
+const RASHIFAL_STALE_TIME = 6 * 60 * 60_000;
+
 export type RashifalDay = { key: readonly unknown[]; query: URLSearchParams };
 
 /** A profile can only be read personally when it has a birth date and place. */
@@ -54,7 +57,9 @@ export function useRashifalPage({
     // Skipped once a profile is selected — the personal reading is a different
     // computation, not a filtered view of these twelve.
     enabled: !profile,
-    staleTime: 1000 * 60 * 30,
+    // Keyed by day + period + place, so a stored reading is the right one for
+    // hours: reopening the screen reads the phone's copy instead of the network.
+    staleTime: RASHIFAL_STALE_TIME,
   });
 
   const personalQ = useQuery({
@@ -72,7 +77,9 @@ export function useRashifalPage({
         location,
       ),
     enabled: Boolean(profile && chart),
-    staleTime: 1000 * 60 * 10,
+    // Personal: never in any shared cache, so the phone's copy is the cheapest one
+    // there is. Same day/period/profile key → reuse it (the server keeps it 6 h too).
+    staleTime: RASHIFAL_STALE_TIME,
   });
 
   const general: RashifalBlock | undefined = generalQ.data;

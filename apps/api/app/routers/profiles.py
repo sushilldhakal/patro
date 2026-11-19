@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 
 from database.models import Profile
 from database.schemas import ProfileCreate, ProfileOut, ProfileUpdate
+from app.kundali_precompute import precompute_kundali, snapshot
 from app.security import CurrentUser, DbSession
 from engine.identity.profiles import ProfileNotFound
 from services.identity import profiles as use_cases
@@ -24,8 +25,13 @@ def list_profiles(user: CurrentUser, db: DbSession) -> list[Profile]:
 
 
 @router.post("", response_model=ProfileOut, status_code=status.HTTP_201_CREATED)
-def create_profile(body: ProfileCreate, user: CurrentUser, db: DbSession) -> Profile:
-    return use_cases.create_profile(SqlProfileRepository(db), user.id, body.model_dump())
+def create_profile(
+    body: ProfileCreate, user: CurrentUser, db: DbSession, background: BackgroundTasks
+) -> Profile:
+    profile = use_cases.create_profile(SqlProfileRepository(db), user.id, body.model_dump())
+    # Build the chart now so its first open is a cache hit (app/kundali_precompute.py).
+    background.add_task(precompute_kundali, snapshot(profile))
+    return profile
 
 
 @router.get("/{profile_id}", response_model=ProfileOut)
@@ -36,16 +42,21 @@ def get_profile(profile_id: str, user: CurrentUser, db: DbSession) -> Profile:
         raise profile_not_found() from None
 
 
+_BIRTH_FIELDS = {"birth_date", "birth_time", "birth_era", "latitude", "longitude", "timezone"}
+
+
 @router.patch("/{profile_id}", response_model=ProfileOut)
 def update_profile(
-    profile_id: str, body: ProfileUpdate, user: CurrentUser, db: DbSession
+    profile_id: str, body: ProfileUpdate, user: CurrentUser, db: DbSession, background: BackgroundTasks
 ) -> Profile:
+    changes = body.model_dump(exclude_unset=True)
     try:
-        return use_cases.update_profile(
-            SqlProfileRepository(db), user.id, profile_id, body.model_dump(exclude_unset=True)
-        )
+        profile = use_cases.update_profile(SqlProfileRepository(db), user.id, profile_id, changes)
     except ProfileNotFound:
         raise profile_not_found() from None
+    if _BIRTH_FIELDS & changes.keys():
+        background.add_task(precompute_kundali, snapshot(profile))
+    return profile
 
 
 @router.delete("/{profile_id}", status_code=status.HTTP_204_NO_CONTENT)

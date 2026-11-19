@@ -358,6 +358,9 @@ export const kundaliDetailKeys = {
       instantCacheKey(moment),
       locationCacheKey(location),
       ayanamsha ?? "lahiri",
+      // A chart never changes for one birth; only an engine change can alter it.
+      // In the key, so the phone can keep a chart for good (staleTime Infinity).
+      `ev${KUNDALI_ENGINE_VERSION}`,
     ] as const,
 };
 
