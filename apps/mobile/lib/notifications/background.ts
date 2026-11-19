@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
 import { tokenStore } from "@/lib/auth/client";
+import { loadCalculationSystemPreference } from "@/lib/calculation-system-storage";
 import { notifStore } from "./store";
 import { syncNotifications } from "./sync";
 
@@ -17,6 +18,9 @@ if (Platform.OS !== "web") {
   TaskManager.defineTask(NOTIFICATION_REFRESH_TASK, async () => {
     try {
       await tokenStore.load();
+      // The app is closed, so the root layout never loaded the reader's drik / Surya Siddhanta
+      // choice: without this the widget and notifications were refreshed in drik.
+      await loadCalculationSystemPreference();
       await syncNotifications({ lang: await notifStore.getLang() });
       return BackgroundTask.BackgroundTaskResult.Success;
     } catch {

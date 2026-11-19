@@ -100,8 +100,8 @@ let calculationSystemFor: (path: string) => CalculationSystem = () => DEFAULT_CA
 
 /**
  * Which calculation system (drik / Surya Siddhanta) each request asks for, by path.
- * The app sends its reader's choice on every request; the website only on kundali
- * ones. Requests default to drik, which the API also assumes without the parameter.
+ * Both apps send the reader's choice on every request. Requests default to drik,
+ * which the API also assumes without the parameter.
  */
 export function setCalculationSystemResolver(resolve: (path: string) => CalculationSystem): void {
   calculationSystemFor = resolve;

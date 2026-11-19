@@ -245,3 +245,122 @@ def test_a_surya_siddhanta_request_never_touches_the_ephemeris(client, monkeypat
     assert day.status_code == 200, day.text
     chart = client.get(f"/v1/kundali/detail?{loc}&datetime=1990-05-15T10:30:00&siddhanta=surya_siddhanta&ayanamsha=raman")
     assert chart.status_code == 200, chart.text
+
+
+# Every route that computes the sky, as the apps call it. A Surya Siddhanta request to any of
+# them must be answered by the text alone: the panchanga day and month (tithi, nakshatra, yoga,
+# karana), muhurta, every साइत page and its personal verdicts, festivals and holidays, sankranti,
+# gochar, eclipses, the seasons and every kundali route.
+_BIRTH = "birth_era=ad&birth_year=1990&birth_month=5&birth_day=15&birth_clock=10:30&birth_lat=27.7&birth_lon=85.3"
+_SS_ROUTES = (
+    "/v1/panchanga?era=bs&year=2083&month=5&day=9",
+    "/v1/panchanga/today",
+    "/v1/panchanga/2083-05-09",
+    "/v1/nepal/panchanga/2083-05-09",
+    "/v1/panchanga/2083/5",
+    "/v1/nepal/panchanga/month/2083/5",
+    "/v1/panchanga/ad/2026/9",
+    "/v1/nepal/patro/2083/5",
+    "/v1/nepal/patro/ad/2026/9",
+    "/v1/calendar/header/2083/5",
+    "/v1/panchanga/at-time?datetime=2026-09-01T10:30:00",
+    "/v1/panchanga/jd/2461290.5",
+    "/v1/panchanga/element/tithi/day/2083-05-09",
+    "/v1/panchanga/element/nakshatra/month/2083/5",
+    "/v1/panchanga/element/yoga/spans?start_jd=2461290.5&end_jd=2461295.5",
+    "/v1/panchanga/rashifal",
+    f"/v1/panchanga/rashifal/janma?{_BIRTH}",
+    f"/v1/panchanga/rashifal/personal?{_BIRTH}",
+    "/v1/panchanga/year/2083/sun",
+    "/v1/panchanga/year/2083",
+    "/v1/nepal/sait/2083/griha-aarambha",
+    "/v1/nepal/sait/2083/griha-aarambha/detail",
+    "/v1/nepal/sait/2083/vivah/detail",
+    "/v1/nepal/sait/2083/month/5",
+    "/v1/nepal/sait/2083/griha-aarambha/personalize?janma_nakshatra=4&janma_rashi=2",
+    f"/v1/nepal/sait/2083/vivah/personalize?{_BIRTH}",
+    "/v1/nepal/festivals?year=2026",
+    "/v1/nepal/festivals/upcoming",
+    "/v1/festivals/bs/2083",
+    "/v1/festivals/2026-10-21",
+    "/v1/holidays/2026",
+    "/v1/nepal/holidays?year=2026",
+    "/v1/nepal/sankranti/year/2026",
+    "/v1/nepal/sankranti/2026-09-17",
+    "/v1/nepal/special-months/2083",
+    "/v1/nepal/panchak/year/2026",
+    "/v1/nepal/gochar/2026-09-01",
+    "/v1/nepal/gochar/ingress?from=2026-09-01&to=2026-10-01",
+    "/v1/nepal/gochar/year/2083",
+    "/v1/nepal/graha-sthiti/2026-09-01",
+    "/v1/nepal/graha-asta/year/2026",
+    "/v1/nepal/graha-vakri/year/2026",
+    "/v1/nepal/eclipse/solar/year/2026",
+    "/v1/nepal/eclipse/lunar/year/2026",
+    "/v1/planetary/positions?datetime=2026-09-01T10:30:00",
+    "/v1/seasons/tropical",
+    "/v1/shadbala?datetime=1990-05-15T10:30:00",
+    "/v1/kundali/detail?datetime=1990-05-15T10:30:00&ayanamsha=kp",
+    "/v1/kundali/vimshottari?datetime=1990-05-15T10:30:00",
+    "/v1/kundali/1990-05-15",
+    "/v1/kundali/report?datetime=1990-05-15T10:30:00&lang=ne",
+    "/v1/veda/daily",
+)
+
+
+def test_no_surya_siddhanta_route_borrows_from_drik(client, monkeypatch, tmp_path):
+    """Each route above, asked in the Surya Siddhanta from a place no cache has seen, is computed
+    without one Swiss Ephemeris position, rise/set, house, eclipse or ayanamsha call — not even
+    through a helper that forgot to ask the request's siddhanta. Drik's engine is built first, so
+    only its constructor (which sets Lahiri once) is excused."""
+    import random
+
+    import app.response_cache as response_cache
+    import services.festivals.holiday_generator as holiday_generator
+    import services.festivals.sait_generator as sait_generator
+    import services.panchanga.year_cache as year_cache
+
+    for module, attr in (
+        (response_cache, "RESPONSE_CACHE_DIR"),
+        (holiday_generator, "CACHE_DIR"),
+        (sait_generator, "CACHE_DIR"),
+        (year_cache, "YEAR_CACHE_DIR"),
+    ):
+        monkeypatch.setattr(module, attr, tmp_path / attr)
+    holiday_generator.clear_year_payload_memo()
+    siddhanta(DRIK).engine  # noqa: B018 — its constructor's set_sid_mode is not a computation
+
+    borrowed: list[str] = []
+
+    def guard(name, real):
+        def call(*args, **kwargs):
+            if current_siddhanta().id != DRIK:
+                borrowed.append(name)
+                raise AssertionError(f"a Surya Siddhanta request called swe.{name}")
+            return real(*args, **kwargs)
+
+        return call
+
+    for name in (
+        "calc_ut", "calc", "rise_trans", "rise_trans_true_hor", "houses", "houses_ex", "set_sid_mode",
+        "get_ayanamsa_ut", "get_ayanamsa_ex_ut", "pheno_ut", "time_equ", "fixstar_ut", "fixstar2_ut",
+        "cotrans", "azalt", "nod_aps_ut", "sol_eclipse_when_glob", "sol_eclipse_when_loc",
+        "lun_eclipse_when", "lun_eclipse_when_loc",
+    ):
+        if hasattr(swe, name):
+            monkeypatch.setattr(swe, name, guard(name, getattr(swe, name)))
+
+    rng = random.Random()
+    place = f"lat={rng.uniform(26.5, 29.5):.5f}&lon={rng.uniform(80.5, 88.0):.5f}&tz=Asia/Kathmandu"
+    failures = []
+    for route in _SS_ROUTES:
+        borrowed.clear()
+        joiner = "&" if "?" in route else "?"
+        try:
+            response = client.get(f"{route}{joiner}{place}&siddhanta=surya_siddhanta")
+        except AssertionError as exc:
+            failures.append(f"{route}: {exc}")
+            continue
+        if borrowed or response.status_code != 200 or response.headers.get("x-siddhanta") != SURYA_SIDDHANTA:
+            failures.append(f"{route}: {response.status_code} {sorted(set(borrowed))} {response.text[:120]}")
+    assert not failures, "\n".join(failures)

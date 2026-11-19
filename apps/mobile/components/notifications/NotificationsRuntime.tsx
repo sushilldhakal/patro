@@ -3,7 +3,7 @@ import { AppState, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useLocale } from "@/lib/i18n";
+import { useCalculationSystem, useLocale } from "@/lib/i18n";
 import {
   registerNotificationRefreshTask,
 } from "@/lib/notifications/background";
@@ -28,6 +28,7 @@ if (Platform.OS !== "web") installForegroundHandler();
 export function NotificationsRuntime() {
   const { isAuthenticated, loading } = useAuth();
   const { lang } = useLocale();
+  const { system } = useCalculationSystem();
   const router = useRouter();
   const langRef = useRef<"ne" | "en">(lang === "en" ? "en" : "ne");
   langRef.current = lang === "en" ? "en" : "ne";
@@ -60,11 +61,13 @@ export function NotificationsRuntime() {
     return () => sub.remove();
   }, [isAuthenticated, loading]);
 
-  // Wording follows the app language: rebuild the schedule when it changes.
+  // Wording follows the app language, and windows and the widget follow the calculation system
+  // (drik / Surya Siddhanta): rebuild the schedule when either changes. The caches keep the
+  // system they were computed in, so this sync refetches after a switch.
   useEffect(() => {
     if (Platform.OS === "web" || loading) return;
     void syncNotifications({ lang: langRef.current }).catch(() => {});
-  }, [lang, loading]);
+  }, [lang, system, loading]);
 
   useEffect(() => {
     if (Platform.OS === "web") return;

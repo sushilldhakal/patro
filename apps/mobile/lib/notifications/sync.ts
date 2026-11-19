@@ -13,6 +13,7 @@ import { syncRashifalCache } from "./rashifal";
 import { applySchedule, NOTIFICATION_BUDGET } from "./scheduler";
 import { notifStore, type CachedProfile } from "./store";
 import type { GuidanceRange } from "./types";
+import { DEFAULT_CALCULATION_SYSTEM, getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 import { todayIn } from "./zoned";
 
 /** Days of guidance fetched and cached ahead — what offline use runs on. */
@@ -150,12 +151,15 @@ async function runSync(options: Required<SyncOptions>): Promise<SyncResult> {
   }
 
   const guidance: Record<string, GuidanceRange | null> = {};
+  const system = getCalculationSystem();
   for (const profile of profiles) {
     let range = (await notifStore.getGuidance(profile.id)) ?? null;
+    // A copy computed in the other system is never used, online or off: its windows are not this reader's.
+    if (range && (range.system ?? DEFAULT_CALCULATION_SYSTEM) !== system) range = null;
     const needsFetch = force || futureDays(range, today) < REFRESH_BELOW_DAYS || range?.location.timezone !== tz;
     if (online && needsFetch) {
       try {
-        range = { ...(await fetchDailyGuidance(profile.id, today, GUIDANCE_DAYS, location.params)), fetchedAt: Date.now() };
+        range = { ...(await fetchDailyGuidance(profile.id, today, GUIDANCE_DAYS, location.params)), fetchedAt: Date.now(), system };
         await notifStore.setGuidance(profile.id, range);
       } catch {
         /* fall back to whatever is cached */

@@ -77,8 +77,8 @@ export function initCalendarPreference(): void {
 let calculationPreferenceReady = false;
 
 /**
- * Drik / Surya Siddhanta for the kundali section (the website offers it there only;
- * lib/api.ts sends it on kundali requests). Browser only; prerender keeps drik.
+ * The reader's drik / Surya Siddhanta choice (Account), restored before the first render
+ * so every request already carries it (lib/api.ts). Browser only; prerender keeps drik.
  */
 export function initCalculationSystemPreference(): void {
   if (calculationPreferenceReady || typeof window === "undefined") return;

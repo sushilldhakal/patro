@@ -7,6 +7,7 @@ import {
 } from "@/lib/api";
 import type { Profile } from "@/lib/auth/client";
 import { instantCacheKey } from "@vedic-patro/domain/calendar/instant-query";
+import { getCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
 import { profileChartParams } from "@vedic-patro/read-models/jyotish/kundali/profile-chart";
 import { getRashiName } from "@vedic-patro/domain/panchanga/rashi-i18n";
 import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
@@ -87,9 +88,10 @@ export async function syncRashifalCache(options: {
     defaultProfile && chart && chart.location.params.lat != null && chart.location.params.lon != null,
   );
 
+  // The calculation system is part of the key: a switch must not keep the other system's week.
   const key = usable
-    ? `personal:${defaultProfile!.id}:${instantCacheKey(chart!.moment)}:${JSON.stringify(location)}`
-    : `general:${settings.guestSignId ?? "moon"}:${JSON.stringify(location)}`;
+    ? `personal:${defaultProfile!.id}:${instantCacheKey(chart!.moment)}:${JSON.stringify(location)}:${getCalculationSystem()}`
+    : `general:${settings.guestSignId ?? "moon"}:${JSON.stringify(location)}:${getCalculationSystem()}`;
 
   const cached = (await notifStore.getRashifalCache()) ?? null;
   const usableCache = cached && cached.key === key ? cached : null;
