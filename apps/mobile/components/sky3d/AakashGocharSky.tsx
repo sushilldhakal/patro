@@ -328,6 +328,7 @@ export function AakashGocharSky({
   useEffect(() => () => clearTimeout(fovHideTimer.current), []);
   const [toggles, setToggles] = useState<SceneToggles>({
     rashiBelt: true,
+    orbitLines: false,
     nakshatraBelt: true,
     monthRing: false,
     primeMeridian: true,
@@ -1612,6 +1613,8 @@ export function AakashGocharSky({
         {mode === "horizon" ? null : sheetChip("primeMeridian", t("ui.sky3d.placename_meridian", { placeName }))}
         {mode !== "space" ? sheetChip("vedicStars", t("ui.sky3d.vedic_stars")) : null}
         {mode === "globe" ? sheetChip("tilt", t("learn.playground.tilt")) : null}
+        {/* Each graha's ±45-day path, in every view. Off by default. */}
+        {sheetChip("orbitLines", t("ui.sky3d.orbit_lines"))}
       </SheetSection>
       <SheetSection heading={t("ui.sky3d.belts")}>
         {sheetChip("rashiBelt", t("panchanga.wheel.rashi"))}

@@ -751,6 +751,7 @@ export function AakashGocharSky({
     grid: true,
     labels: true,
     rashiBelt: true,
+    orbitLines: false,
     vedicStars: true,
     constellations: true,
     primeMeridian: true,
@@ -2179,6 +2180,12 @@ export function AakashGocharSky({
                   onPress={() => setToggles((t) => ({ ...t, tilt: !t.tilt }))}
                 />
               ) : null}
+              {/* Each graha's ±45-day path, in every view. Off by default. */}
+              <Chip
+                active={toggles.orbitLines}
+                label={pick(tFor(undefined, "ui.sky3d.orbit_lines"), tFor("en", "ui.sky3d.orbit_lines"))}
+                onPress={() => setToggles((t) => ({ ...t, orbitLines: !t.orbitLines }))}
+              />
             </div>
             <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
               {pick(tFor(undefined, "ui.sky3d.belts"), tFor("en", "ui.sky3d.belts"))}

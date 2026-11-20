@@ -8890,6 +8890,7 @@ export const strings = {
   "ui.sky3d.no_favourites_yet": { ne: "अझै कुनै मनपर्ने छैन", en: "No favourites yet" },
   "ui.sky3d.nothing_found": { ne: "केही भेटिएन", en: "Nothing found" },
   "ui.sky3d.nothing_looked_at_yet": { ne: "अझै केही हेरिएको छैन", en: "Nothing looked at yet" },
+  "ui.sky3d.orbit_lines": { ne: "ग्रह रेखा", en: "Orbit lines" },
   "ui.sky3d.orbit_s_perpendicular": { ne: "कक्षाको लम्ब", en: "Orbit's perpendicular" },
   "ui.sky3d.paused": { ne: "रोकिएको", en: "Paused" },
   "ui.sky3d.paused_2": { ne: "⏸ रोकिएको", en: "⏸ paused" },

@@ -393,6 +393,12 @@ export type SceneToggles = {
   /** The twelve राशि — gold belt plus their names. */
   rashiBelt: boolean;
   /**
+   * ग्रह रेखा — each graha's path over ±45 days, in every view. Off unless
+   * asked for: nine criss-crossing lines over the sky are clutter to anyone
+   * not reading a vakri loop.
+   */
+  orbitLines: boolean;
+  /**
    * The twenty-seven नक्षत्र — green strip, names, and the तारापुञ्ज each
    * नक्षत्र is named for (रोहिणी as the Hyades, ज्येष्ठा as Antares, …).
    */
@@ -1517,12 +1523,11 @@ export function AakashGocharScene({
     for (const key of GEO_BODY_ORDER) out[key] = makeDynamicLine(TRAIL_STEPS + 1, GRAHA_COLOR[key], 0.4);
     return out;
   }, []);
-  /* The trails read as a belt themselves — nine criss-crossing arcs with
-     राशि belt off is just a mesh, not nine paths anyone can follow. They ride
-     the same switch rather than one of their own. */
+  /* Nine criss-crossing arcs are a mesh over the sky unless you came to read
+     them, so they have their own switch — ग्रह रेखा — and start off. */
   useEffect(() => {
-    for (const key of GEO_BODY_ORDER) trails[key].visible = toggles.rashiBelt;
-  }, [toggles.rashiBelt, trails]);
+    for (const key of GEO_BODY_ORDER) trails[key].visible = toggles.orbitLines;
+  }, [toggles.orbitLines, trails]);
 
   /** यम/वरुण/अरुण — plain spheres, no texture, no pick target, no trail.
       {@link runFrame} moves and sizes them; nothing else about a graha
@@ -4636,7 +4641,7 @@ export function AakashGocharScene({
     /* क्षितिज bakes the sidereal time into every point, so the trails have to
        turn with the sky each frame — from the stored samples, which is a few
        hundred cheap projections, not the orbital sweep above. */
-    if (horizon && toggles.rashiBelt) {
+    if (horizon && toggles.orbitLines) {
       for (const key of GEO_BODY_ORDER) {
         const samples = trailSamples.current[key];
         if (!samples) continue;
