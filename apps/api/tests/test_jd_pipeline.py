@@ -34,9 +34,9 @@ class TestJulianDayIsTheIdentity:
     def test_same_day_reached_four_ways_has_one_jd(self):
         """AD parts, BS parts, the legacy path form and ``?jd=`` must agree."""
         by_ad = get("?inputEra=ad&year=2026&month=7&day=31&era=bs")
-        by_bs = get("?inputEra=bs&year=2083&month=4&day=16&era=bs")
+        by_bs = get("?inputEra=bs&year=2083&month=4&day=15&era=bs")
         by_path = client.get(
-            f"/v1/panchanga/2083-04-16?era=bs&inputEra=bs&{LOCATION}&{LEAN}"
+            f"/v1/panchanga/2083-04-15?era=bs&inputEra=bs&{LOCATION}&{LEAN}"
         ).json()
         by_jd = get(f"?jd={by_ad['jd_ut']}&era=bs")
 
@@ -88,7 +88,7 @@ class TestInputEraIsNotDisplayEra:
         day = get("?inputEra=ad&year=2026&month=7&day=31&era=bs")
         assert day["date_parts"]["era"] == "bs"
         assert day["date_parts"]["vikram"] == {
-            "era": "bs", "year": 2083, "month": 4, "day": 16,
+            "era": "bs", "year": 2083, "month": 4, "day": 15,
         }
         assert day["date_parts"]["gregorian"] == {
             "era": "ad", "year": 2026, "month": 7, "day": 31,
@@ -150,8 +150,8 @@ class TestYearsAreAlwaysPositive:
         assert bbs["vikram"] == {"era": "bbs", "year": 4, "month": 1, "day": 1}
         # BBS 1 is 58 BCE, so BBS 4 falls in 61 BCE — not BC 4.
         # A Julian label, per the pre-1582 convention in jd_calendar; the month opens
-        # on the Kathmandu day of its sankranti.
-        assert bbs["gregorian"] == {"era": "bc", "year": 61, "month": 3, "day": 18}
+        # on the Kathmandu day of its (Surya Siddhanta) sankranti.
+        assert bbs["gregorian"] == {"era": "bc", "year": 61, "month": 3, "day": 13}
 
     def test_bbs_1_sits_immediately_before_bs_1(self):
         """The two eras are consecutive — there is no year zero between them."""

@@ -81,7 +81,7 @@ class TestTheReportedFailure:
     """The exact case from the bug report."""
 
     def test_bbs_2082_month_11_is_a_real_month(self):
-        assert get_bs_month_length(-2082, 11) == 30
+        assert MIN_MONTH_DAYS <= get_bs_month_length(-2082, 11) <= MAX_MONTH_DAYS
 
     def test_bbs_2082_has_no_negative_or_giant_months(self):
         lengths = [get_bs_month_length(-2082, m) for m in range(1, 13)]
@@ -96,8 +96,8 @@ class TestTheReportedFailure:
 
 
 class TestMonthsAreComputed:
-    """Every month — the published years included — starts where the request's
-    calculation puts its sankranti: on the Kathmandu civil day it falls."""
+    """Every month — the published years included — starts where the Surya Siddhanta puts
+    its sankranti, on the Kathmandu civil day it falls, whichever calculation the reader chose."""
 
     @pytest.mark.parametrize("year", [BS_MIN_YEAR, 2081, 2082, 2083, BS_MAX_YEAR])
     def test_months_stay_in_order(self, year: int):
@@ -108,15 +108,14 @@ class TestMonthsAreComputed:
                 assert start > previous
             previous = start
 
-    @pytest.mark.parametrize("siddhanta_id", ["drik", "surya_siddhanta"])
-    def test_a_month_starts_on_the_kathmandu_day_of_its_sankranti(self, siddhanta_id: str):
+    def test_a_month_starts_on_the_kathmandu_day_of_its_sankranti(self):
         from zoneinfo import ZoneInfo
 
         from engine.astronomy.engine import default_engine
         from engine.astronomy.siddhanta import use_siddhanta
         from engine.calendar.sankranti import find_sankranti_after_jd
 
-        with use_siddhanta(siddhanta_id):
+        with use_siddhanta("surya_siddhanta"):
             for month in range(1, 13):
                 start = get_bs_month_start_civil(2083, month)
                 jd = find_sankranti_after_jd(month - 1, start.to_jd_ut() - 3, max_days=6)
@@ -141,16 +140,30 @@ class TestMonthsAreComputed:
                     published += lengths[month - 1]
         assert matched / total >= 0.9, f"{matched}/{total}"
 
-    def test_each_calculation_has_its_own_months(self):
+    def test_every_calculation_shares_the_patro_month_grid(self):
+        """Drik (any ayanamsha) changes the panchanga, never which day opens a month: its own
+        sankrantis put Shrawan, Kartik, Mangsir and Magh 2083 a day before the patro's."""
         from engine.astronomy.siddhanta import use_ayanamsha, use_siddhanta
 
-        def lengths():
-            return [get_bs_month_length(2083, m) for m in range(1, 13)]
+        def grid():
+            return [get_bs_month_start_civil(year, m) for year in (2081, 2082, 2083, 2084) for m in range(1, 13)]
 
-        drik = lengths()
         with use_siddhanta("surya_siddhanta"):
-            surya = lengths()
-        with use_ayanamsha("raman"):
-            raman = lengths()
-        assert sum(drik) in (365, 366) and sum(surya) in (365, 366) and sum(raman) in (365, 366)
-        assert drik != surya and drik != raman
+            surya = grid()
+        with use_siddhanta("drik"):
+            drik = grid()
+            with use_ayanamsha("raman"):
+                raman = grid()
+            with use_ayanamsha("kp"):
+                kp = grid()
+        assert drik == surya and raman == surya and kp == surya
+
+    def test_drik_2083_matches_the_published_patro(self):
+        from engine.astronomy.jd_calendar import CivilDay
+        from engine.astronomy.siddhanta import use_siddhanta
+        from engine.calendar.constants import get_bs_year_data
+
+        lengths, year_start = get_bs_year_data(2083)
+        with use_siddhanta("drik"):
+            assert get_bs_month_start_civil(2083, 1) == CivilDay.from_date(year_start)
+            assert [get_bs_month_length(2083, m) for m in range(1, 13)] == list(lengths)

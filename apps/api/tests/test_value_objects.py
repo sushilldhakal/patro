@@ -137,8 +137,8 @@ def test_patro_day_unpacks_like_the_old_pair():
     days = list(iter_bs_month_days(2083, 7))
     first = days[0]
     bs_day, civil = first
-    assert (bs_day, civil) == (1, date(2026, 10, 17)) == (first[0], first[1])
-    assert first.bs == BsDate(2083, 7, 1) and first.gregorian == date(2026, 10, 17)
+    assert (bs_day, civil) == (1, date(2026, 10, 18)) == (first[0], first[1])
+    assert first.bs == BsDate(2083, 7, 1) and first.gregorian == date(2026, 10, 18)
     assert [d.day for d in days] == list(range(1, len(days) + 1))
     year = list(iter_bs_year_days(2083))
     assert year[0].bs == BsDate(2083, 1, 1) and year[-1].bs.month == 12

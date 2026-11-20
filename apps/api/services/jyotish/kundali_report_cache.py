@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 #     the report prints; Oja-Yugma Bala now requires both rashi+navamsha parity.
 # v10: yoga rules aligned to BPHS (Kemadruma now also needs no planet in an
 #      angle from the Lagna, plus catalog-only fixes read by the Kundali page).
-KUNDALI_REPORT_VERSION = 11  # 11: computed BS dates
+KUNDALI_REPORT_VERSION = 12  # 12: drik BS dates on the Surya Siddhanta month grid
 
 # Reports embed a build_panchanga_at_time block — sunrise, sunset and the angas
 # hanging off them — so an ephemeris change invalidates them even when no yoga

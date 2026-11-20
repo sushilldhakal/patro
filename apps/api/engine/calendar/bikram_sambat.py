@@ -1,15 +1,17 @@
-"""Bikram Sambat conversion, computed in the request's calculation.
+"""Bikram Sambat conversion: one month grid for every calculation.
 
-Every BS month begins on the Kathmandu civil day its sankranti falls on, the
-sankranti found by the request's siddhanta and ayanamsha (drik with Lahiri by
-default, or the Surya Siddhanta, or drik with KP …). Nothing is read from a
-published table: a reader who chose the Surya Siddhanta gets the text's months,
-and the default view gets drik's. The published month-length table
-(``BS_CALENDAR_DATA``) only anchors the first guess of where a Mesha sankranti is.
+Every BS month begins on the Kathmandu civil day its Surya Siddhanta sankranti
+falls on — the patro's own months, whichever siddhanta or ayanamsha the reader
+chose. Drik changes the panchanga drawn on those days (and its own sankranti
+moments), never which day opens a month, so a drik reader's Baishakh 1 is the
+Surya Siddhanta reader's. Nothing is read from a published table; the published
+month-length table (``BS_CALENDAR_DATA``) only anchors the first guess of where a
+Mesha sankranti is.
 
 The local-date rule is the one the published calendar keeps: with the Surya
 Siddhanta's sankrantis it reproduces 94% of the official months of BS 2000–2086,
-where "before sunrise, else the next day" matched 25%.
+where "before sunrise, else the next day" matched 25%. Drik's own sankrantis
+(the grid before this) missed a third of them.
 """
 
 from __future__ import annotations
@@ -147,8 +149,30 @@ def _mesha_start_estimate_jd(bs_year: int) -> float:
     return anchor_jd + (_year_index(bs_year) - anchor_index) * _SIDEREAL_YEAR_DAYS
 
 
-@siddhanta_lru_cache(maxsize=16384)
 def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
+    """The civil day a BS month begins: one calendar for every calculation.
+
+    Bikram Sambat is Nepal's civil calendar, and its months are opened by the Surya
+    Siddhanta's sankrantis — the patro every reader lives by. Drik (any ayanamsha)
+    changes the panchanga drawn on those days, never which day is Baishakh 1: a drik
+    reader and a Surya Siddhanta reader see the same month grid. Drik's own sankranti
+    moments still drive its panchanga and festivals.
+    """
+    from engine.astronomy.siddhanta import (
+        SURYA_SIDDHANTA,
+        current_siddhanta,
+        use_ayanamsha,
+        use_siddhanta,
+    )
+
+    if current_siddhanta().id == SURYA_SIDDHANTA:
+        return _solve_bs_month_start_civil(bs_year, bs_month)
+    with use_siddhanta(SURYA_SIDDHANTA), use_ayanamsha(None):
+        return _solve_bs_month_start_civil(bs_year, bs_month)
+
+
+@siddhanta_lru_cache(maxsize=16384)
+def _solve_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     # Pure function of (year, month) — the sankranti instant that opens a BS
     # month never changes. Locating one civil day probes up to ~50 month starts
     # (month scan + get_bs_month_length's lookahead), so this is the difference
@@ -179,7 +203,7 @@ def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     else:
         # 25 days past the previous month's start the Sun is always still in
         # that month's sign — the shortest solar month is ~29.3 days.
-        previous = _get_bs_month_start_civil(bs_year, bs_month - 1)
+        previous = _solve_bs_month_start_civil(bs_year, bs_month - 1)
         search_jd = previous.to_jd_ut() + 25.0
 
     sankranti_jd = find_sankranti_after_jd(bs_month - 1, search_jd, max_days=45)

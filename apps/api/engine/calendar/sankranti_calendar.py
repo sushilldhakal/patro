@@ -7,7 +7,7 @@ from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.calendar.bikram_sambat import _sankranti_start_date, gregorian_to_bs
+from engine.calendar.bikram_sambat import _sankranti_start_date, get_bs_month_start, gregorian_to_bs
 from engine.calendar.numerals import to_nepali_digits
 from engine.astronomy.ut_instant import day_instant_utc
 from engine.calendar.sankranti import (
@@ -47,8 +47,16 @@ def format_sankranti_entry(
     timezone_name: str = DEFAULT_LOCATION.timezone,
 ) -> dict[str, Any]:
     """Structured sankranti record with BS month boundary convention."""
-    bs_month_start = _sankranti_start_date(dt)
-    bs_year, bs_month, _ = gregorian_to_bs(bs_month_start)
+    # The month this sankranti names begins on the patro's own day for it (the Surya
+    # Siddhanta's, for every calculation), which a drik moment can miss by a day.
+    sankranti_day = _sankranti_start_date(dt)
+    bs_year, day_month, _ = gregorian_to_bs(sankranti_day)
+    bs_month = to_rashi + 1
+    if day_month == 12 and bs_month == 1:
+        bs_year += 1
+    elif day_month == 1 and bs_month == 12:
+        bs_year -= 1
+    bs_month_start = get_bs_month_start(bs_year, bs_month)
     festival = SANKRANTI_FESTIVALS.get(to_rashi)
 
     return {

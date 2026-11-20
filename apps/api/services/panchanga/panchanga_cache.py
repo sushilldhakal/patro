@@ -194,7 +194,10 @@ logger = logging.getLogger(__name__)
 # v64: Dashain by Nirnaya Sindhu / Dharma Sindhu — Maha Ashtami Navami-joined (never
 #     Saptami-viddha), Maha Navami and Vijaya Dashami at sunrise, Phulpati Saptami at
 #     sunrise; a kshaya tithi's festival on the observer's day, not the UTC one.
-PANCHANGA_PAYLOAD_VERSION = 64
+# v65: drik and the Surya Siddhanta share one BS month grid — the Surya Siddhanta's
+#     sankrantis open every month; drik's own sankrantis had put a third of its months a
+#     day off the patro.
+PANCHANGA_PAYLOAD_VERSION = 65
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

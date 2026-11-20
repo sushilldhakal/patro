@@ -60,25 +60,25 @@ test("the cross-era line under an AD month is the BS span, with the BS era label
 test("the cross-era line under a day is the other calendar's date", () => {
   const digits = patroHeadlineDigits;
   assert.equal(formatPatroDayCrossEraSubtitle("2026-08-16", "bs", "en", digits("en")), "16 August 2026 AD");
-  assert.equal(formatPatroDayCrossEraSubtitle("2026-08-16", "ad", "en", digits("en")), "Sha 32, 2083 BS");
-  assert.equal(formatPatroDayCrossEraSubtitle("2026-08-16", "ad", "ne", digits("ne")), "साउन ३२, २०८३ वि.सं.");
+  assert.equal(formatPatroDayCrossEraSubtitle("2026-08-16", "ad", "en", digits("en")), "Sha 31, 2083 BS");
+  assert.equal(formatPatroDayCrossEraSubtitle("2026-08-16", "ad", "ne", digits("ne")), "साउन ३१, २०८३ वि.सं.");
 });
 
 test("the API's Devanagari BS line is not shown to English readers when the date is known", () => {
-  const display = { bs_ne: "साउन ३२, २०८३", gregorian_en: "16 August 2026" };
+  const display = { bs_ne: "साउन ३१, २०८३", gregorian_en: "16 August 2026" };
   assert.equal(
     crossEraSubtitleFromPanchangaDisplay(display, "ad", { lang: "en", dateAd: "2026-08-16" }),
-    "Sha 32, 2083 BS",
+    "Sha 31, 2083 BS",
   );
   // Nepali keeps the API's own line; a BS era keeps the Gregorian line.
-  assert.equal(crossEraSubtitleFromPanchangaDisplay(display, "ad", { lang: "ne", dateAd: "2026-08-16" }), "साउन ३२, २०८३");
+  assert.equal(crossEraSubtitleFromPanchangaDisplay(display, "ad", { lang: "ne", dateAd: "2026-08-16" }), "साउन ३१, २०८३");
   assert.equal(crossEraSubtitleFromPanchangaDisplay(display, "bs", { lang: "en", dateAd: "2026-08-16" }), "16 August 2026");
-  assert.equal(crossEraSubtitleFromPanchangaDisplay(display, "ad"), "साउन ३२, २०८३");
+  assert.equal(crossEraSubtitleFromPanchangaDisplay(display, "ad"), "साउन ३१, २०८३");
 });
 
 test("moon-event dates follow the calendar and name the month in the UI language", () => {
-  assert.equal(formatEventDate("2026-08-16", "en", "bs"), "Shrawan 32");
-  assert.equal(formatEventDate("2026-08-16", "ne", "bs"), "साउन ३२");
+  assert.equal(formatEventDate("2026-08-16", "en", "bs"), "Shrawan 31");
+  assert.equal(formatEventDate("2026-08-16", "ne", "bs"), "साउन ३१");
   assert.equal(formatEventDate("2026-08-16", "en", "ad"), "Aug 16");
   assert.equal(formatEventDate("2026-08-16", "ne", "ad"), "अगस्ट १६");
 });
@@ -86,11 +86,11 @@ test("moon-event dates follow the calendar and name the month in the UI language
 test("dasha dates follow the calendar and name the month in the UI language", () => {
   const instant = new Date("2026-08-16T06:00:00Z");
   const tz = "Asia/Kathmandu";
-  assert.equal(formatDashaInstant(instant, "en", tz, "bs"), "Shrawan 32, 2083");
+  assert.equal(formatDashaInstant(instant, "en", tz, "bs"), "Shrawan 31, 2083");
   assert.equal(formatDashaInstant(instant, "en", tz, "ad"), "Aug 16, 2026");
-  assert.equal(formatDashaInstant(instant, "ne", tz, "bs"), "साउन ३२, २०८३");
+  assert.equal(formatDashaInstant(instant, "ne", tz, "bs"), "साउन ३१, २०८३");
   assert.equal(formatDashaInstant(instant, "ne", tz, "ad"), "अगस्ट १६, २०२६");
-  assert.match(formatDashaMoment(instant, "en", tz, undefined, "bs"), /^Shrawan 32, 2083/);
+  assert.match(formatDashaMoment(instant, "en", tz, undefined, "bs"), /^Shrawan 31, 2083/);
   assert.match(formatDashaMoment(instant, "en", tz, undefined, "ad"), /^August 16, 2026/);
   assert.match(formatDashaMoment(instant, "ne", tz, undefined, "ad"), /^अगस्ट/);
 });

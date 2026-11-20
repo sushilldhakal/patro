@@ -168,13 +168,17 @@ def test_each_siddhanta_owns_its_range_and_cache_namespace():
 
 
 def test_calendar_caches_never_hand_one_systems_month_to_the_other():
-    from engine.calendar.bikram_sambat import get_bs_month_start_civil
+    # The patro's month grid is the Surya Siddhanta's for every calculation, but the solver
+    # under it is cached per calculation: drik's own sankranti day must never be handed out
+    # as the text's, nor the other way round.
+    from engine.calendar.bikram_sambat import _solve_bs_month_start_civil, get_bs_month_start_civil
 
-    drik = get_bs_month_start_civil(2500, 4)
+    drik = _solve_bs_month_start_civil(2500, 4)
     with use_siddhanta(SURYA_SIDDHANTA):
-        surya = get_bs_month_start_civil(2500, 4)
-    assert get_bs_month_start_civil(2500, 4) == drik
+        surya = _solve_bs_month_start_civil(2500, 4)
+    assert _solve_bs_month_start_civil(2500, 4) == drik
     assert surya != drik  # the text's year is longer, so its sankranti falls days later by then
+    assert get_bs_month_start_civil(2500, 4) == surya
 
 
 def test_samvatsara_is_closed_form_under_the_surya_siddhanta():

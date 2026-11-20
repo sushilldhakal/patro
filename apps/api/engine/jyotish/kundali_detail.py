@@ -2213,7 +2213,7 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     first instead of as one flat, unranked list.
 # v8: the birth panchanga's ayana is the real (tropical, solstice-to-solstice)
 #     one, not Makar → Karka Sankranti; cached charts carry the old name.
-KUNDALI_DETAIL_VERSION = 9  # 9: computed BS birth dates; the ayanamsha reaches every position
+KUNDALI_DETAIL_VERSION = 10  # 10: drik BS birth dates on the Surya Siddhanta grid; 9: 9: computed BS birth dates; the ayanamsha reaches every position
 
 
 def assemble_kundali_detail(

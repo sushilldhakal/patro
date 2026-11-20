@@ -34,7 +34,8 @@ RULE_VERSION = "v3"
 # 1.0.12: lunar, solar and BS-fixed festivals follow the request's calculation
 # (siddhanta + ayanamsha) everywhere; only Gregorian-fixed and announced dates
 # (Eid) are pinned. BS months are computed too, and caches key on the calculation.
-ENGINE_VERSION = stamp("1.0.12")
+# 1.0.13: drik's BS months are the Surya Siddhanta's (one patro grid for every calculation).
+ENGINE_VERSION = stamp("1.0.13")
 
 RULES_PATH = Path(__file__).resolve().parents[2] / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parents[2] / "rules" / "holiday_overrides_v1.json"

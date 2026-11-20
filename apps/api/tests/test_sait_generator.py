@@ -220,7 +220,7 @@ def test_engine_version_bumped():
     # follows the chosen ayanamsha for every position.
     # The stored version also carries the astronomy axis (services/payload_version)
     # so an ephemeris fix invalidates this cache without a rules change.
-    assert SAIT_ENGINE_VERSION == stamp("4.12.0")
+    assert SAIT_ENGINE_VERSION == stamp("4.13.0")
 
 
 def test_dagdha_tithi_table():

@@ -21,7 +21,7 @@
     "name": "Lahiri"
   },
   "bs_date": {
-    "day": 23,
+    "day": 22,
     "month": 7,
     "month_name": "Kartik",
     "month_name_ne": "कार्तिक",
@@ -419,7 +419,7 @@
     "vipala": 5
   },
   "display": {
-    "bs_ne": "वि.सं. २०८३ कार्तिक २३ आइतवार",
+    "bs_ne": "वि.सं. २०८३ कार्तिक २२ आइतवार",
     "gregorian_en": "2026 Nov 8, Sunday",
     "ns_ne": "ने.सं. ११४६ कौलागा चतुर्दशी - 29"
   },

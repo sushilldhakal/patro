@@ -142,9 +142,10 @@ async function writeSavedPack(pack: SavedPack): Promise<void> {
 
 /**
  * Bumped when saved answers stop being right: 2 = BS months and festivals are computed, not
- * published; 3 = a URL without siddhanta= means the Surya Siddhanta, no longer drik.
+ * published; 3 = a URL without siddhanta= means the Surya Siddhanta, no longer drik;
+ * 4 = drik uses the Surya Siddhanta's BS months (its own put a third of them a day off).
  */
-const OFFLINE_DATA_EPOCH = 3;
+const OFFLINE_DATA_EPOCH = 4;
 const OFFLINE_DATA_EPOCH_KEY = "offline_data_epoch";
 
 /**

@@ -23,7 +23,7 @@ CACHE_DIR = ROOT / "cache"
 # 4.11.0: sait days carry the pūrṇimānta lunar month, which moved when amanta
 #         months started being named from the Sankranti they contain rather
 #         than from the Sun's rashi at their Purnima.
-SAIT_ENGINE_VERSION = stamp("4.12.0")  # 4.12: computed BS months; drik follows the chosen ayanamsha
+SAIT_ENGINE_VERSION = stamp("4.13.0")  # 4.13: drik uses the Surya Siddhanta BS month grid; 4.12: computed BS months; drik follows the chosen ayanamsha
 
 
 def sait_location_key(location: ObserverLocation) -> str:
