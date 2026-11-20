@@ -1,6 +1,9 @@
 // URL golden calls for apps/mobile/lib/api.ts. Signature-specific; keep the
 // arguments the screens and the offline pack use.
 import * as api from "@/lib/api";
+import { setCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+// The goldens are drik with Lahiri; new installs default to the Surya Siddhanta.
+setCalculationSystem("drik");
 const L = [undefined, { city_id: 1283240, timezone: "Asia/Kathmandu" }, { lat: 27.7, lon: 85.3, timezone: "Asia/Kathmandu" }, { city: "Pokhara", lat: 28.2, lon: 83.98 }] as any[];
 const moment = { inputEra: "bs", year: 2050, month: 5, day: 12, clock: "06:30" } as any;
 const a: any = api;

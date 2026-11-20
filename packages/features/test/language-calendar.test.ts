@@ -16,6 +16,10 @@ import { monthLabel, monthShortLabel } from "@vedic-patro/domain/calendar/patro-
 import { formatEventDate } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { getSecondaryCellDate } from "@vedic-patro/read-models/calendar/local-calendar";
 import { eraDayLabel, stampDate } from "../src/graha/model";
+import { setCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+
+// These dates are drik with Lahiri; new installs default to the Surya Siddhanta.
+setCalculationSystem("drik");
 
 const day = { day: 1, date_ad: "2026-08-16", tithi: "", festivals: [] } as never;
 

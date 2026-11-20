@@ -4,8 +4,9 @@ import ne from "@vedic-patro/i18n/web/ne.json";
 import { getStoredLanguage, initCalculationSystemPreference, initCalendarPreference } from "@/lib/user-preferences";
 
 // Calendar system (BS/AD) is independent of language; load it before first render.
-initCalendarPreference();
+// Calculation first: it tells a returning visitor by the calendar initCalendarPreference stores.
 initCalculationSystemPreference();
+initCalendarPreference();
 
 function clientInitialLng(): Lang {
   if (typeof window === "undefined") return "ne";

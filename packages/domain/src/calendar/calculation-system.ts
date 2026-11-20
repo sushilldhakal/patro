@@ -16,8 +16,18 @@ export type CalculationSystem = "drik" | "surya_siddhanta";
 
 export const CALCULATION_SYSTEMS: readonly CalculationSystem[] = ["drik", "surya_siddhanta"];
 
-/** New installs rely on drik, as every panchanga did before the choice existed. */
-export const DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "drik";
+/**
+ * New installs rely on the सूर्य सिद्धान्त until the reader picks drik in Account.
+ * Readers who used the app before this default changed keep drik
+ * (`LEGACY_CALCULATION_SYSTEM`): each app stores it for them on first launch.
+ */
+export const DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "surya_siddhanta";
+
+/** What every reader relied on before the choice defaulted to the Surya Siddhanta. */
+export const LEGACY_CALCULATION_SYSTEM: CalculationSystem = "drik";
+
+/** What the API assumes when a request names no `siddhanta` (apps/api/app/siddhanta_middleware.py). */
+export const API_DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "drik";
 
 /** Where the choice is stored (both apps). */
 export const CALCULATION_SYSTEM_STORAGE_KEY = "calculationSystem";
@@ -127,7 +137,7 @@ export function configureCalculationSystemPersistence(opts: { persist: (system: 
  * so the CDN and the app's offline store key the two systems apart.
  */
 export function withCalculationSystem(url: string, system: CalculationSystem): string {
-  if (system === DEFAULT_CALCULATION_SYSTEM) return url;
+  if (system === API_DEFAULT_CALCULATION_SYSTEM) return url;
   return withQueryParam(url, CALCULATION_SYSTEM_QUERY_PARAM, system);
 }
 

@@ -1,9 +1,12 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
+import { isOnboardingComplete } from "@/lib/onboarding-storage";
+
 import {
   AYANAMSHA_STORAGE_KEY,
   CALCULATION_SYSTEM_STORAGE_KEY,
+  LEGACY_CALCULATION_SYSTEM,
   parseStoredAyanamsha,
   parseStoredCalculationSystem,
   setAyanamsha,
@@ -50,11 +53,21 @@ export function setStoredAyanamsha(mode: AyanamshaMode): Promise<void> {
 /**
  * Loads the calculation — system and ayanamsha — before the main app renders
  * (app/_layout.tsx) and in the background refresh, so the very first requests already
- * carry it. Nothing stored means drik with Lahiri, the default.
+ * carry it. Nothing stored: a new install stays on the default (the Surya Siddhanta;
+ * onboarding stores it), while a reader who finished onboarding before that default
+ * keeps drik, stored now so it never changes under them.
  */
 export async function loadCalculationSystemPreference(): Promise<void> {
-  const [stored, ayanamsha] = await Promise.all([getStoredCalculationSystem(), readStored(AYANAMSHA_STORAGE_KEY)]);
+  const [stored, ayanamsha, onboarded] = await Promise.all([
+    getStoredCalculationSystem(),
+    readStored(AYANAMSHA_STORAGE_KEY),
+    isOnboardingComplete(),
+  ]);
   if (stored) setCalculationSystem(stored);
+  else if (onboarded) {
+    setCalculationSystem(LEGACY_CALCULATION_SYSTEM);
+    await setStoredCalculationSystem(LEGACY_CALCULATION_SYSTEM);
+  }
   const mode = parseStoredAyanamsha(ayanamsha);
   if (mode) setAyanamsha(mode);
 }

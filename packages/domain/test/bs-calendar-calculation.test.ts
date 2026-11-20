@@ -2,14 +2,15 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { adToBS, bsToAD, getBSMonthLength } from "../src/calendar/bs-calendar";
-import { DEFAULT_AYANAMSHA, setAyanamsha, setCalculationSystem } from "../src/calendar/calculation-system";
+import { DEFAULT_AYANAMSHA, DEFAULT_CALCULATION_SYSTEM, setAyanamsha, setCalculationSystem } from "../src/calendar/calculation-system";
 
 const utc = (iso: string) => new Date(`${iso}T00:00:00Z`);
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 test("the device's BS dates follow the reader's calculation, as the API's do", () => {
   try {
-    // Drik with Lahiri (the default): Baisakh 1, 2083 is 14 April 2026, Kartik 1 is 17 October.
+    setCalculationSystem("drik");
+    // Drik with Lahiri: Baisakh 1, 2083 is 14 April 2026, Kartik 1 is 17 October.
     assert.equal(iso(bsToAD(2083, 1, 1)), "2026-04-14");
     assert.equal(iso(bsToAD(2083, 7, 1)), "2026-10-17");
     // Raman's zodiac starts earlier: Baisakh 1 is 12 April.
@@ -24,7 +25,7 @@ test("the device's BS dates follow the reader's calculation, as the API's do", (
       [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
     );
   } finally {
-    setCalculationSystem("drik");
+    setCalculationSystem(DEFAULT_CALCULATION_SYSTEM);
     setAyanamsha(DEFAULT_AYANAMSHA);
   }
 });

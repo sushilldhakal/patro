@@ -11,6 +11,7 @@ import {
 } from "@vedic-patro/domain/calendar/calendar-system";
 import {
   CALCULATION_SYSTEM_STORAGE_KEY,
+  LEGACY_CALCULATION_SYSTEM,
   configureCalculationSystemPersistence,
   getCalculationSystem,
   parseStoredCalculationSystem,
@@ -84,7 +85,11 @@ let calculationPreferenceReady = false;
 /**
  * The reader's calculation (Account): drik / Surya Siddhanta and drik's ayanamsha, restored
  * before the first render so every request already carries it (lib/api.ts). Browser only;
- * prerender keeps drik with Lahiri.
+ * prerender keeps the default (the Surya Siddhanta).
+ *
+ * Nothing stored: a new visitor gets the default, the Surya Siddhanta. A returning
+ * visitor (a stored calendar or language — so this runs before initCalendarPreference,
+ * which stores the calendar) keeps drik, stored now so it never changes under them.
  */
 export function initCalculationSystemPreference(): void {
   if (calculationPreferenceReady || typeof window === "undefined") return;
@@ -95,7 +100,11 @@ export function initCalculationSystemPreference(): void {
   configureAyanamshaPersistence({
     persist: (mode) => setLocalStorageItem(AYANAMSHA_STORAGE_KEY, mode),
   });
-  const stored = parseStoredCalculationSystem(getLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY));
+  let stored = parseStoredCalculationSystem(getLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY));
+  if (!stored && (getLocalStorageItem(CALENDAR_STORAGE_KEY) != null || getStoredLanguage() != null)) {
+    stored = LEGACY_CALCULATION_SYSTEM;
+    setLocalStorageItem(CALCULATION_SYSTEM_STORAGE_KEY, stored);
+  }
   if (stored && stored !== getCalculationSystem()) setCalculationSystem(stored);
   const ayanamsha = parseStoredAyanamsha(getLocalStorageItem(AYANAMSHA_STORAGE_KEY));
   if (ayanamsha && ayanamsha !== getAyanamsha()) setAyanamsha(ayanamsha);

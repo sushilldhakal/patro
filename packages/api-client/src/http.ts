@@ -7,7 +7,7 @@
 
 import {
   DEFAULT_AYANAMSHA,
-  DEFAULT_CALCULATION_SYSTEM,
+  API_DEFAULT_CALCULATION_SYSTEM,
   withCalculation,
   type Calculation,
 } from "@vedic-patro/domain/calendar/calculation-system";
@@ -97,12 +97,12 @@ export interface RequestOptions extends RequestInit {
 
 // ─── Calculation system ───────────────────────────────────────────────────────
 
-let calculationFor: (path: string) => Calculation = () => ({ system: DEFAULT_CALCULATION_SYSTEM, ayanamsha: DEFAULT_AYANAMSHA });
+let calculationFor: (path: string) => Calculation = () => ({ system: API_DEFAULT_CALCULATION_SYSTEM, ayanamsha: DEFAULT_AYANAMSHA });
 
 /**
  * Which calculation (drik / Surya Siddhanta, and drik's ayanamsha) each request asks
- * for, by path. Both apps send the reader's choice on every request. Requests default
- * to drik with Lahiri, which the API also assumes without the parameters.
+ * for, by path. Both apps send the reader's choice on every request. Without a resolver,
+ * requests ask for drik with Lahiri, which the API also assumes without the parameters.
  */
 export function setCalculationResolver(resolve: (path: string) => Calculation): void {
   calculationFor = resolve;

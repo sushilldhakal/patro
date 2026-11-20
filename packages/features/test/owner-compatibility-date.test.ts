@@ -8,6 +8,10 @@ import { DEFAULT_CALENDAR, setCalendarSystem } from "@vedic-patro/domain/calenda
 import { registerBundle, setLanguage } from "@vedic-patro/i18n/runtime";
 import { useOwnerCompatibility } from "../src/vastu/use-owner-compatibility";
 import { renderHook } from "./helpers/render-hook";
+import { setCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
+
+// These dates are drik with Lahiri; new installs default to the Surya Siddhanta.
+setCalculationSystem("drik");
 
 const require = createRequire(import.meta.url);
 registerBundle("ne", require("@vedic-patro/i18n/ne.json"));

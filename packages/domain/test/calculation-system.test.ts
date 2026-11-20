@@ -30,6 +30,12 @@ test("a request that already names a system keeps it", () => {
   assert.equal(withCalculationSystem(url, "surya_siddhanta"), url);
 });
 
+test("a new install starts on the Surya Siddhanta; requests omit only the API's own default, drik", () => {
+  assert.equal(DEFAULT_CALCULATION_SYSTEM, "surya_siddhanta");
+  assert.equal(getCalculationSystem(), "surya_siddhanta");
+  assert.equal(withCalculation("/panchanga/2083/7"), "/panchanga/2083/7?siddhanta=surya_siddhanta");
+});
+
 test("stored values parse loosely and the store notifies on change only", () => {
   assert.equal(parseStoredCalculationSystem(" Surya-Siddhanta "), "surya_siddhanta");
   assert.equal(parseStoredCalculationSystem("bogus"), null);
@@ -37,9 +43,9 @@ test("stored values parse loosely and the store notifies on change only", () => 
   const off = subscribeCalculationSystem(() => {
     calls += 1;
   });
-  setCalculationSystem("surya_siddhanta");
-  setCalculationSystem("surya_siddhanta");
-  assert.equal(getCalculationSystem(), "surya_siddhanta");
+  setCalculationSystem("drik");
+  setCalculationSystem("drik");
+  assert.equal(getCalculationSystem(), "drik");
   setCalculationSystem(DEFAULT_CALCULATION_SYSTEM);
   off();
   assert.equal(calls, 2);
