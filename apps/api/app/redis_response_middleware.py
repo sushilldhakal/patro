@@ -80,9 +80,9 @@ _MAX_TTL_S = int(os.getenv("REDIS_RESPONSE_MAX_TTL_S", str(30 * 24 * 3600)))
 # version and so a new key. Redis keeps those for this long, independent of how
 # briefly Cloudflare and browsers are told to keep them, so when an edge copy
 # expires the server answers from Redis instead of computing again. One year for
-# every popular city measured ~160 MB, so 2 GB holds the ten years the warm job
-# builds (scripts/warm_cache.py --years 10); allkeys-lfu evicts the least-used
-# first if it ever fills. Unversioned answers stay capped at _MAX_TTL_S.
+# every popular city measured ~160 MB, but with both siddhantas, both languages and
+# old cv versions the ten warmed years (scripts/warm_cache.py --years 10) filled
+# 2 GB, so Redis has 4 GB; allkeys-lfu evicts the least-used first when full. Unversioned answers stay capped at _MAX_TTL_S.
 _PINNED_TTL_S = int(os.getenv("REDIS_RESPONSE_PINNED_TTL_S", str(400 * 24 * 3600)))
 _VERSION_PARAMS = ("cv", "sv", "gv", "ev", "v")
 _MONTH_PATH = re.compile(r"/panchanga/-?\d+/\d+(?:/|$)|/nepal/sait/-?\d+/")

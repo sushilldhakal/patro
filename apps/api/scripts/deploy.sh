@@ -6,6 +6,7 @@ set -euo pipefail
 REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
 APP_DIR="${REPO_DIR}/apps/api"
 SERVICE_NAME="nepali-holiday-api"
+NGINX_CACHE_DIR="${NGINX_CACHE_DIR:-/var/cache/nginx/patro}"
 
 cd "${APP_DIR}"
 
@@ -159,6 +160,32 @@ if [[ -n "${LAST_API_SHA}" ]] && git -C "${REPO_DIR}" cat-file -e "${LAST_API_SH
     CLOUDFLARE_ZONE_ID="$(grep -E '^CLOUDFLARE_ZONE_ID=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)" \
       python scripts/purge_documents.py ${CHANGED_DOCS} \
       || echo "WARNING: document purge failed (non-fatal)" >&2
+    # The same pages from the nginx response cache (deploy/nginx-patro-api-cache.conf).
+    # Each cache file names its key on a "KEY: <host><uri>|<origin>" line.
+    if [[ -d "${NGINX_CACHE_DIR}" ]]; then
+      for slug in ${CHANGED_DOCS}; do
+        sudo grep -rlZ --binary-files=text -E "^KEY: [^/]*/api/v1/documents(/${slug}([/?|]|$)|[?|])" "${NGINX_CACHE_DIR}" \
+          | sudo xargs -0 -r rm -f
+      done
+    fi
+  fi
+fi
+
+# The nginx response cache stores whole public responses under their URL, like
+# Cloudflare. A code change that alters responses without changing their URLs
+# bumps RESPONSE_CACHE_EPOCH or the panchanga payload version (both part of the
+# Redis key); when either changes, empty the nginx cache. Redis still holds
+# everything else, so the refill costs Redis reads, not builds.
+if [[ -d "${NGINX_CACHE_DIR}" ]]; then
+  CACHE_VER="$(RESPONSE_CACHE_EPOCH="$(grep -E '^RESPONSE_CACHE_EPOCH=' "${REPO_DIR}/.env" 2>/dev/null | tail -1 | cut -d= -f2- || true)" \
+    python -c 'from app.redis_response_middleware import _epoch, _payload_version; print(_epoch(), _payload_version())' 2>/dev/null || true)"
+  LAST_CACHE_VER="$(cat "${REPO_DIR}/.deploy/nginx-cache.ver" 2>/dev/null || true)"
+  if [[ -z "${CACHE_VER}" || "${CACHE_VER}" != "${LAST_CACHE_VER}" ]]; then
+    echo "==> Cache version changed (${LAST_CACHE_VER:-none} → ${CACHE_VER:-unknown}) — emptying the nginx response cache"
+    sudo find "${NGINX_CACHE_DIR}" -mindepth 1 -delete || echo "WARNING: nginx cache purge failed (non-fatal)" >&2
+    if [[ -n "${CACHE_VER}" ]]; then
+      mkdir -p "${REPO_DIR}/.deploy" && echo "${CACHE_VER}" > "${REPO_DIR}/.deploy/nginx-cache.ver"
+    fi
   fi
 fi
 

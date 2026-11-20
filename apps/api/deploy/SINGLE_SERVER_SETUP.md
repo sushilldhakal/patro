@@ -67,6 +67,8 @@ every push.
 ```bash
 cd /home/ubuntu/patro
 sudo cp deploy/nginx-vedicpatro.conf /etc/nginx/sites-available/vedicpatro
+sudo cp deploy/nginx-patro-api-cache.conf /etc/nginx/snippets/patro-api-cache.conf   # API response cache rules
+sudo mkdir -p /var/cache/nginx/patro && sudo chown www-data:www-data /var/cache/nginx/patro
 sudo ln -sf /etc/nginx/sites-available/vedicpatro /etc/nginx/sites-enabled/vedicpatro
 sudo rm -f /etc/nginx/sites-enabled/default        # also removes the old sslip.io site if present
 sudo nginx -t && sudo systemctl reload nginx
@@ -227,17 +229,20 @@ Two layers use it:
   responses (daily panchanga, at-time, rashifal, festivals, sāit, spans, city
   search…). Responses carry `X-Cache: HIT | MISS | BYPASS`.
 
-Settings in `/etc/redis/redis.conf` (2 GB of the box's 11 GB):
+Settings in `/etc/redis/redis.conf` (4 GB of the box's 11 GB). At 2 GB it filled
+up (Nov 2026: 2.00 of 2.00 GB, 207k keys evicted, 51% hit rate): the ten warmed
+years cover both siddhantas, both languages and old `cv` versions, far more than
+the ~160 MB-per-year estimate.
 
 ```
-maxmemory 2gb
+maxmemory 4gb
 maxmemory-policy allkeys-lfu     # evict the least *frequently* used keys first
 save 3600 1 300 1000             # snapshot so the cache survives a restart
 lazyfree-lazy-eviction yes
 lazyfree-lazy-expire yes
 ```
 
-Apply live without a restart: `redis-cli CONFIG SET maxmemory 2gb` (and so on
+Apply live without a restart: `redis-cli CONFIG SET maxmemory 4gb` (and so on
 for each line). Check it: `redis-cli INFO memory | grep -E 'used_memory_human|maxmemory'`
 and `redis-cli INFO stats | grep -E 'keyspace_(hits|misses)|evicted_keys'`.
 Redis being down only costs speed: every cache call falls through as a miss.

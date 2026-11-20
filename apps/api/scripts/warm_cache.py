@@ -37,7 +37,8 @@ lane, so it cannot crowd out real visitors.
 Run by scripts/deploy.sh after every API deploy (in the background) and nightly
 by the vedicpatro-warm-cache.timer systemd unit. Redis keeps these pinned
 answers for 400 days (app/redis_response_middleware.py); one year for every
-popular city measured ~160 MB, so ten years fit in its 2 GB.
+popular city measured ~160 MB, but with both siddhantas, both languages and old
+cv versions ten years filled 2 GB; Redis now has 4 GB.
 
     python apps/api/scripts/warm_cache.py                              # 10 years via the public URL
     python apps/api/scripts/warm_cache.py --years 1 --days 7 --cities 3 # quick
