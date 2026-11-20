@@ -143,29 +143,22 @@ print("Seeded documents")
 PYEOF
 
 # Documents are cached at the edge for hours (api/documents.py) and their URLs do
-# not change on an edit, so a deploy that changes a manifest purges Cloudflare. So
-# does one that changes which calculation a URL without ?siddhanta= means.
-# The free plan has no prefix purge, so this purges the zone; the warm job below
-# refills the busy pages. Needs CLOUDFLARE_API_TOKEN (Zone → Cache Purge) and
-# CLOUDFLARE_ZONE_ID in .env; without them it only prints a reminder.
+# not change on an edit. A deploy that edits a manifest clears ONLY those
+# documents' pages from Cloudflare, URL by URL (scripts/purge_documents.py).
+# The whole site is never purged: that would throw away every cached calendar
+# page and send all visitors to the server at once. Needs CLOUDFLARE_API_TOKEN
+# (Zone → Cache Purge) and CLOUDFLARE_ZONE_ID in .env; without them it only
+# prints a note and the pages refresh within ~4 h.
 LAST_API_SHA="$(cat "${REPO_DIR}/.deploy/api.sha" 2>/dev/null || true)"
-DOCS_CHANGED=0
-if [[ -z "${LAST_API_SHA}" ]] || ! git -C "${REPO_DIR}" cat-file -e "${LAST_API_SHA}^{commit}" 2>/dev/null \
-  || [[ -n "$(git -C "${REPO_DIR}" diff --name-only "${LAST_API_SHA}" HEAD -- apps/api/data/documents_source apps/api/api/documents.py apps/api/engine/astronomy/siddhanta/__init__.py apps/api/app/siddhanta_middleware.py)" ]]; then
-  DOCS_CHANGED=1
-fi
-if [[ "${DOCS_CHANGED}" == "1" ]]; then
-  CF_TOKEN="$(grep -E '^CLOUDFLARE_API_TOKEN=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)"
-  CF_ZONE="$(grep -E '^CLOUDFLARE_ZONE_ID=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)"
-  if [[ -n "${CF_TOKEN}" && -n "${CF_ZONE}" ]]; then
-    echo "==> Documents changed — purging Cloudflare cache"
-    curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/purge_cache" \
-      -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json" \
-      --data '{"purge_everything":true}' >/dev/null \
-      && echo "    purged" || echo "WARNING: Cloudflare purge failed (non-fatal)" >&2
-  else
-    echo "NOTE: documents changed but CLOUDFLARE_API_TOKEN/CLOUDFLARE_ZONE_ID are not in .env;" >&2
-    echo "      Cloudflare keeps old chapters for up to ~4 h. Purge in the dashboard if needed." >&2
+if [[ -n "${LAST_API_SHA}" ]] && git -C "${REPO_DIR}" cat-file -e "${LAST_API_SHA}^{commit}" 2>/dev/null; then
+  CHANGED_DOCS="$(git -C "${REPO_DIR}" diff --name-only "${LAST_API_SHA}" HEAD -- 'apps/api/data/documents_source/*.json' \
+    | xargs -r -n1 basename | sed 's/\.json$//' | tr '\n' ' ')"
+  if [[ -n "${CHANGED_DOCS// /}" ]]; then
+    echo "==> Documents changed (${CHANGED_DOCS}) — clearing just their pages from Cloudflare"
+    CLOUDFLARE_API_TOKEN="$(grep -E '^CLOUDFLARE_API_TOKEN=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)" \
+    CLOUDFLARE_ZONE_ID="$(grep -E '^CLOUDFLARE_ZONE_ID=' "${REPO_DIR}/.env" 2>/dev/null | cut -d= -f2- || true)" \
+      python scripts/purge_documents.py ${CHANGED_DOCS} \
+      || echo "WARNING: document purge failed (non-fatal)" >&2
   fi
 fi
 
