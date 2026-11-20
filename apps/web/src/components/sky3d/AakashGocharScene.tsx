@@ -2014,6 +2014,14 @@ export function AakashGocharScene({
   /** The instant the sweep in progress is drawing, so all nine lines agree. */
   const trailBaseDt = useRef(0);
   /**
+   * Each trail's samples as sidereal longitude/latitude pairs, kept from the
+   * last sweep. In क्षितिज the points are re-projected from these every frame:
+   * the orbital arithmetic only needs redoing every two days, but the sky
+   * turns with the clock, and a trail projected once would stay behind as a
+   * second line beside the ecliptic while a followed graha runs the clock.
+   */
+  const trailSamples = useRef<Partial<Record<GrahaKey, Float64Array>>>({});
+  /**
    * The sky mapping the zodiac band was last projected with. The band is a
    * couple of thousand vertices; re-projecting it when nothing has moved is the
    * single most expensive thing this loop can do, and outside the horizon view
@@ -4603,9 +4611,12 @@ export function AakashGocharScene({
       trailCursor.current += 1;
       const line = trails[key];
       const shift = calibration[key] ?? 0;
+      const samples = (trailSamples.current[key] ??= new Float64Array((TRAIL_STEPS + 1) * 2));
       for (let i = 0; i <= TRAIL_STEPS; i += 1) {
         const offsetDays = -TRAIL_DAYS + (i / TRAIL_STEPS) * TRAIL_DAYS * 2;
         const b = geocentricPointAt(key, trailBaseDt.current + offsetDays, shift);
+        samples[i * 2] = b.longitude;
+        samples[i * 2 + 1] = b.latitude;
         if (space) {
           setPoint(
             line,
@@ -4621,6 +4632,20 @@ export function AakashGocharScene({
         }
       }
       flushLine(line);
+    }
+    /* क्षितिज bakes the sidereal time into every point, so the trails have to
+       turn with the sky each frame — from the stored samples, which is a few
+       hundred cheap projections, not the orbital sweep above. */
+    if (horizon && toggles.rashiBelt) {
+      for (const key of GEO_BODY_ORDER) {
+        const samples = trailSamples.current[key];
+        if (!samples) continue;
+        const line = trails[key];
+        for (let i = 0; i <= TRAIL_STEPS; i += 1) {
+          setPoint(line, i, place(samples[i * 2], samples[i * 2 + 1], DOME * 0.99));
+        }
+        flushLine(line);
+      }
     }
 
     /* Keep the previous array whenever nothing has moved half a pixel. Names
