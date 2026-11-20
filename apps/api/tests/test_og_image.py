@@ -70,7 +70,8 @@ def test_share_title_uses_bikram_sambat_date():
     """The link-preview title is Nepali all the way through: the Bikram Sambat
     date, never the Gregorian one (which stays in the URL)."""
     client = TestClient(__import__("app.main", fromlist=["app"]).app)
-    resp = client.get("/share/panchanga", params={"date": "2026-07-25", "place": "Kathmandu"})
+    # _payload() is drik's day, so ask the share page for drik too.
+    resp = client.get("/share/panchanga", params={"date": "2026-07-25", "place": "Kathmandu", "siddhanta": "drik"})
     assert resp.status_code == 200
     title = resp.text.split('<title>')[1].split('</title>')[0]
     f = og_fields(_payload(), date_ad="2026-07-25", location_name="Kathmandu")

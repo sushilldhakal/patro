@@ -88,7 +88,8 @@ def test_default_engine_follows_the_current_siddhanta_and_resets():
 
 
 def test_resolve_siddhanta_accepts_the_names_and_refuses_others():
-    assert resolve_siddhanta(None) == DRIK
+    assert resolve_siddhanta(None) == SURYA_SIDDHANTA
+    assert resolve_siddhanta("drik") == DRIK
     assert resolve_siddhanta("surya-siddhanta") == SURYA_SIDDHANTA
     with pytest.raises(ValueError):
         resolve_siddhanta("bogus")
@@ -202,9 +203,13 @@ DAY = "/v1/panchanga?lat=27.7&lon=85.32&tz=Asia/Kathmandu&lean=true"
 
 
 def test_api_computes_in_the_requested_system_and_says_so(client):
-    drik = client.get(f"{DAY}&era=ad&year=2026&month=11&day=1")
+    default = client.get(f"{DAY}&era=ad&year=2026&month=11&day=1")
+    drik = client.get(f"{DAY}&era=ad&year=2026&month=11&day=1&siddhanta=drik")
     surya = client.get(f"{DAY}&era=ad&year=2026&month=11&day=1&siddhanta=surya_siddhanta")
-    assert drik.status_code == surya.status_code == 200
+    assert default.status_code == drik.status_code == surya.status_code == 200
+    # No siddhanta= means the Surya Siddhanta.
+    assert default.headers["x-siddhanta"] == "surya_siddhanta"
+    assert default.json() == surya.json()
     assert drik.headers["x-siddhanta"] == "drik"
     assert surya.headers["x-siddhanta"] == "surya_siddhanta"
     assert drik.json() != surya.json()
@@ -212,7 +217,8 @@ def test_api_computes_in_the_requested_system_and_says_so(client):
 
 def test_api_reaches_satya_yuga_only_under_the_surya_siddhanta(client):
     deep = "era=bbs&year=3891137&month=1&day=1"
-    assert client.get(f"{DAY}&{deep}").status_code == 400
+    assert client.get(f"{DAY}&{deep}&siddhanta=drik").status_code == 400
+    assert client.get(f"{DAY}&{deep}").status_code == 200  # a bare URL is the Surya Siddhanta
     response = client.get(f"{DAY}&{deep}&siddhanta=surya_siddhanta")
     assert response.status_code == 200, response.text
     assert response.json()["date_bs"] == "3891137-01-01"
@@ -403,5 +409,5 @@ def test_every_drik_route_uses_the_chosen_ayanamsha(client, monkeypatch, tmp_pat
             return f"x-ayanamsha {response.headers.get('x-ayanamsha')}"
         return f"sidereal modes {wrong}" if wrong else None
 
-    failures = _ask_every_route(client, place, f"ayanamsha={ayanamsha}", check)
+    failures = _ask_every_route(client, place, f"siddhanta=drik&ayanamsha={ayanamsha}", check)
     assert not failures, "\n".join(failures)

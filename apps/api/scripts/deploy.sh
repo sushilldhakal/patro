@@ -143,14 +143,15 @@ print("Seeded documents")
 PYEOF
 
 # Documents are cached at the edge for hours (api/documents.py) and their URLs do
-# not change on an edit, so a deploy that changes a manifest purges Cloudflare.
+# not change on an edit, so a deploy that changes a manifest purges Cloudflare. So
+# does one that changes which calculation a URL without ?siddhanta= means.
 # The free plan has no prefix purge, so this purges the zone; the warm job below
 # refills the busy pages. Needs CLOUDFLARE_API_TOKEN (Zone → Cache Purge) and
 # CLOUDFLARE_ZONE_ID in .env; without them it only prints a reminder.
 LAST_API_SHA="$(cat "${REPO_DIR}/.deploy/api.sha" 2>/dev/null || true)"
 DOCS_CHANGED=0
 if [[ -z "${LAST_API_SHA}" ]] || ! git -C "${REPO_DIR}" cat-file -e "${LAST_API_SHA}^{commit}" 2>/dev/null \
-  || [[ -n "$(git -C "${REPO_DIR}" diff --name-only "${LAST_API_SHA}" HEAD -- apps/api/data/documents_source apps/api/api/documents.py)" ]]; then
+  || [[ -n "$(git -C "${REPO_DIR}" diff --name-only "${LAST_API_SHA}" HEAD -- apps/api/data/documents_source apps/api/api/documents.py apps/api/engine/astronomy/siddhanta/__init__.py apps/api/app/siddhanta_middleware.py)" ]]; then
   DOCS_CHANGED=1
 fi
 if [[ "${DOCS_CHANGED}" == "1" ]]; then

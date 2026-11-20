@@ -1,9 +1,9 @@
-"""Which calculation a request computes in: a siddhanta — drik (default) or the Surya
-Siddhanta — and, under drik, an ayanamsha (Lahiri by default).
+"""Which calculation a request computes in: a siddhanta — the Surya Siddhanta (default)
+or drik — and, under drik, an ayanamsha (Lahiri by default).
 
-``?siddhanta=surya_siddhanta`` on any route switches every engine call made for
-that request — the panchanga, the kundali, the calendar grid, BS months, festivals,
-साइत — to the Surya Siddhanta; ``?ayanamsha=kp`` makes drik compute every sidereal
+A request without ``?siddhanta=`` computes every engine call — the panchanga, the
+kundali, the calendar grid, BS months, festivals, साइत — in the Surya Siddhanta;
+``?siddhanta=drik`` switches it all to drik, and ``?ayanamsha=kp`` makes drik compute every sidereal
 position with that ayanamsha (see engine.astronomy.siddhanta). The values are in the
 URL, so the CDN caches each calculation's answers as different objects.
 

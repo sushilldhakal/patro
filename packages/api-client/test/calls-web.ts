@@ -1,8 +1,8 @@
 // URL golden calls for apps/web/src/lib/api.ts.
 import * as api from "@/lib/api";
 import { setCalculationSystem } from "@vedic-patro/domain/calendar/calculation-system";
-// The goldens are drik with Lahiri; new installs default to the Surya Siddhanta.
-setCalculationSystem("drik");
+// The goldens are the Surya Siddhanta: the default, so no siddhanta= in the URLs.
+setCalculationSystem("surya_siddhanta");
 const L = [undefined, { city_id: 1283240, timezone: "Asia/Kathmandu" }, { lat: 27.7, lon: 85.3, timezone: "Asia/Kathmandu" }, { city: "Pokhara", lat: 28.2, lon: 83.98 }, { city: "पोखरा", lat: 28.2, lon: 83.98 }] as any[];
 const moment = { inputEra: "bs", year: 2050, month: 5, day: 12, clock: "06:30" } as any;
 const display = { era: "bs", language: "ne" } as any;

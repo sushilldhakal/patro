@@ -20,7 +20,8 @@ client = TestClient(app)
 
 # Kathmandu, so the observer timezone is fixed and "today" is deterministic.
 LOCATION = "lat=27.7172&lon=85.3240&timezone=Asia/Kathmandu"
-LEAN = "detail=false&festivals=false"
+# Drik: these days, BS ↔ AD pairs and range limits are drik's (a bare URL is the Surya Siddhanta).
+LEAN = "detail=false&festivals=false&siddhanta=drik"
 
 
 def get(url: str):

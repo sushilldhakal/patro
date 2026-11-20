@@ -16,6 +16,7 @@ def test_kundali_detail_endpoint():
         "/v1/kundali/detail",
         params={
             "datetime": "1993-06-12T10:30:00",
+            "siddhanta": "drik",
             "ayanamsha": "nepal",
             "lat": 27.7172,
             "lon": 85.3240,

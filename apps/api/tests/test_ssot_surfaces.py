@@ -26,7 +26,7 @@ def test_browse_limits_match_ephemeris_constants():
 
 
 def test_meta_capabilities_exposes_limits_and_cache_version():
-    r = client.get("/meta/capabilities")
+    r = client.get("/meta/capabilities?siddhanta=drik")
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["ephemeris_signed_min"] == PATRO_EPHEMERIS_SIGNED_MIN

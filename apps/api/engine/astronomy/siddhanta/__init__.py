@@ -1,5 +1,5 @@
-"""The calculation a request computes in: a siddhanta — drik (default) or the Surya
-Siddhanta — and, under drik, the ayanamsha the reader chose (Lahiri by default).
+"""The calculation a request computes in: a siddhanta — the Surya Siddhanta (a request's
+default) or drik — and, under drik, the ayanamsha the reader chose (Lahiri by default).
 
 The middleware (app/siddhanta_middleware.py) picks both per request with
 :func:`use_siddhanta` and :func:`use_ayanamsha`; they live in ContextVars, so they
@@ -37,6 +37,7 @@ __all__ = [
     "ComputableRange",
     "DRIK",
     "SIDDHANTA_IDS",
+    "REQUEST_DEFAULT_SIDDHANTA",
     "SURYA_SIDDHANTA",
     "Siddhanta",
     "calculation_id",
@@ -52,10 +53,16 @@ __all__ = [
 ]
 
 
+#: What a request computes in when it names no ``siddhanta``: the Surya Siddhanta. Outside a
+#: request (scripts, precompute, tests) the context default stays drik, which the shared
+#: precomputed stores hold (:func:`is_default_calculation`).
+REQUEST_DEFAULT_SIDDHANTA = SURYA_SIDDHANTA
+
+
 def resolve_siddhanta(raw: str | None) -> str:
-    """A ``siddhanta`` query value → its id (drik when absent). ValueError when unknown."""
+    """A ``siddhanta`` query value → its id (the Surya Siddhanta when absent). ValueError when unknown."""
     if raw is None or raw.strip() == "":
-        return DRIK
+        return REQUEST_DEFAULT_SIDDHANTA
     value = raw.strip().lower().replace("-", "_")
     value = _ALIASES.get(value, value)
     if value not in _SIDDHANTAS:

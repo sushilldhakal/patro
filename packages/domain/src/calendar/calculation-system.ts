@@ -27,12 +27,12 @@ export const DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "surya_siddhanta";
 export const LEGACY_CALCULATION_SYSTEM: CalculationSystem = "drik";
 
 /** What the API assumes when a request names no `siddhanta` (apps/api/app/siddhanta_middleware.py). */
-export const API_DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "drik";
+export const API_DEFAULT_CALCULATION_SYSTEM: CalculationSystem = "surya_siddhanta";
 
 /** Where the choice is stored (both apps). */
 export const CALCULATION_SYSTEM_STORAGE_KEY = "calculationSystem";
 
-/** The API's query parameter, sent only when the system is not drik. */
+/** The API's query parameter, sent only when the system is not the Surya Siddhanta (the API's default). */
 export const CALCULATION_SYSTEM_QUERY_PARAM = "siddhanta";
 
 /** Where the ayanamsha is stored (both apps; the name predates the shared store). */
@@ -132,8 +132,8 @@ export function configureCalculationSystemPersistence(opts: { persist: (system: 
 }
 
 /**
- * `url` with `siddhanta=<system>` added, unless the system is drik (the API's
- * default) or the URL already names one. The value goes in the URL, not a header,
+ * `url` with `siddhanta=<system>` added, unless the system is the Surya Siddhanta
+ * (the API's default) or the URL already names one. The value goes in the URL, not a header,
  * so the CDN and the app's offline store key the two systems apart.
  */
 export function withCalculationSystem(url: string, system: CalculationSystem): string {

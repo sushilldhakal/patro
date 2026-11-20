@@ -82,7 +82,7 @@ def about():
         "version": "2.2.0",
         "repository": "https://github.com/sushilldhakal/patro",
         "calculation_engine": {
-            "framework": "Drik (Swiss Ephemeris) by default; the Surya Siddhanta on request (?siddhanta=surya_siddhanta), back to the start of Satya Yuga",
+            "framework": "The Surya Siddhanta by default, back to the start of Satya Yuga; Drik (Swiss Ephemeris) on request (?siddhanta=drik)",
             "ephemeris": "JPL (NASA's Jet Propulsion Laboratory) — true sidereal Sun/Moon longitudes",
             "ayanamsa": "Lahiri (Chitrapaksha) — standard for Nepali panchanga",
             "sunrise_model": "Geometric horizon, atmospheric refraction 0.5667°",
