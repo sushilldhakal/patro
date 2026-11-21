@@ -2,8 +2,8 @@
 //! auspicious / inauspicious timings (`muhurta.py`, `muhurta_timings.py`).
 
 use astronomy::{angles::Anga, engine::sun_longitude};
-use serde_json::{Map, Value, json};
-use timescale::{JdInstant, PyInstant, UtcInstant, Zone};
+use serde::Serialize;
+use timescale::{PyInstant, UtcInstant, Zone};
 
 use crate::{
     angas::{NAKSHATRA_SPAN, Paksha, karana, nakshatra, tithi, yoga},
@@ -108,27 +108,63 @@ fn add_seconds_trunc(at: UtcInstant, seconds: f64) -> UtcInstant {
     at.add_micros(whole_i * 1_000_000 + micro)
 }
 
+/// A daily inauspicious period (Rahu Kalam, Yamaganda, Gulika).
+#[derive(Debug, Serialize)]
+pub(crate) struct PeriodBlock {
+    lord: &'static str,
+    period_no: u32,
+    start_time: String,
+    end_time: String,
+    start_local: String,
+    end_local: String,
+    start_utc: String,
+    end_utc: String,
+    is_auspicious: bool,
+}
+
 fn period_block<I: PyInstant>(
     sunrise: I,
     sunset: I,
     period: u32,
     zone: &Zone,
-    lord: &str,
-) -> Value {
+    lord: &'static str,
+) -> PeriodBlock {
     let hora_s = sunset.seconds_since(sunrise) / 8.0;
     let start = sunrise.add_seconds_f64(f64::from(period - 1) * hora_s);
     let end = sunrise.add_seconds_f64(f64::from(period) * hora_s);
     let (sl, el) = (start.wall(zone), end.wall(zone));
-    json!({
-        "lord": lord, "period_no": period, "start_time": sl.hm, "end_time": el.hm,
-        "start_local": sl.iso, "end_local": el.iso,
-        "start_utc": start.to_string(), "end_utc": end.to_string(), "is_auspicious": false,
-    })
+    PeriodBlock {
+        lord,
+        period_no: period,
+        start_time: sl.hm,
+        end_time: el.hm,
+        start_local: sl.iso,
+        end_local: el.iso,
+        start_utc: start.to_string(),
+        end_utc: end.to_string(),
+        is_auspicious: false,
+    }
 }
 
-fn abhijit<I: PyInstant>(sunrise: I, sunset: I, zone: &Zone, vaara: u32) -> Value {
+/// The Abhijit muhurta (absent on Wednesdays).
+#[derive(Debug, Serialize)]
+pub(crate) struct Abhijit {
+    name: &'static str,
+    muhurta_no: u32,
+    start_time: String,
+    end_time: String,
+    start_local: String,
+    end_local: String,
+    start_utc: String,
+    end_utc: String,
+    solar_noon: String,
+    duration_minutes: f64,
+    is_auspicious: bool,
+}
+
+fn abhijit<I: PyInstant>(sunrise: I, sunset: I, zone: &Zone, vaara: u32) -> Option<Abhijit> {
     if vaara % 7 == 3 {
-        return Value::Null;
+        return None;
     }
     let total = sunset.seconds_since(sunrise);
     let muhurta_s = total / 15.0;
@@ -136,32 +172,65 @@ fn abhijit<I: PyInstant>(sunrise: I, sunset: I, zone: &Zone, vaara: u32) -> Valu
     let start = sunrise.add_seconds_f64(7.0 * muhurta_s);
     let end = sunrise.add_seconds_f64(8.0 * muhurta_s);
     let (sl, el) = (start.wall(zone), end.wall(zone));
-    json!({
-        "name": "Abhijit", "muhurta_no": 8, "start_time": sl.hm, "end_time": el.hm,
-        "start_local": sl.iso, "end_local": el.iso,
-        "start_utc": start.to_string(), "end_utc": end.to_string(),
-        "solar_noon": noon.wall(zone).hm, "duration_minutes": py_round(muhurta_s / 60.0, 1), "is_auspicious": true,
+    Some(Abhijit {
+        name: "Abhijit",
+        muhurta_no: 8,
+        start_time: sl.hm,
+        end_time: el.hm,
+        start_local: sl.iso,
+        end_local: el.iso,
+        start_utc: start.to_string(),
+        end_utc: end.to_string(),
+        solar_noon: noon.wall(zone).hm,
+        duration_minutes: py_round(muhurta_s / 60.0, 1),
+        is_auspicious: true,
     })
 }
 
-/// `build_muhurta_block` alone, for a Julian Day sunrise: Python enriches the block
-/// (`enrich_muhurta_block`) only for `datetime` instants.
-pub(crate) fn muhurta_civil(
-    sunrise: JdInstant,
-    sunset: JdInstant,
+/// The muhurta block of the daily payload.
+#[derive(Debug, Serialize)]
+pub(crate) struct Muhurta {
+    hora_duration_minutes: f64,
+    #[serde(rename = "muhurta_duration_minutes")]
+    each_minutes: f64,
+    rahu_kalam: PeriodBlock,
+    yamaganda: PeriodBlock,
+    gulika: PeriodBlock,
+    abhijit: Option<Abhijit>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    auspicious_timings: Option<Vec<Entry>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    inauspicious_timings: Option<Vec<Entry>>,
+}
+
+/// `build_muhurta_block` alone: the periods and Abhijit without the extended timings.
+/// A Julian Day sunrise gets only this (Python enriches the block, with
+/// `enrich_muhurta_block`, only for `datetime` instants), and so does a month row
+/// that does not carry the timings.
+pub(crate) fn muhurta_basic<I: PyInstant>(
+    sunrise: I,
+    sunset: I,
     vaara: u32,
     zone: &Zone,
-) -> Value {
+) -> Muhurta {
     let total = sunset.seconds_since(sunrise);
     let w = vaara as usize % 7;
-    json!({
-        "hora_duration_minutes": py_round(total / 8.0 / 60.0, 1),
-        "muhurta_duration_minutes": py_round(total / 15.0 / 60.0, 1),
-        "rahu_kalam": period_block(sunrise, sunset, RAHU_KALAM_PERIOD[w], zone, "Rahu"),
-        "yamaganda": period_block(sunrise, sunset, YAMAGANDA_PERIOD[w], zone, "Yama"),
-        "gulika": period_block(sunrise, sunset, GULIKA_PERIOD[w], zone, "Gulika (Manda-putra)"),
-        "abhijit": abhijit(sunrise, sunset, zone, vaara),
-    })
+    Muhurta {
+        hora_duration_minutes: py_round(total / 8.0 / 60.0, 1),
+        each_minutes: py_round(total / 15.0 / 60.0, 1),
+        rahu_kalam: period_block(sunrise, sunset, RAHU_KALAM_PERIOD[w], zone, "Rahu"),
+        yamaganda: period_block(sunrise, sunset, YAMAGANDA_PERIOD[w], zone, "Yama"),
+        gulika: period_block(
+            sunrise,
+            sunset,
+            GULIKA_PERIOD[w],
+            zone,
+            "Gulika (Manda-putra)",
+        ),
+        abhijit: abhijit(sunrise, sunset, zone, vaara),
+        auspicious_timings: None,
+        inauspicious_timings: None,
+    }
 }
 
 /// The span of a panchanga day and its observer, shared by the timing helpers.
@@ -172,38 +241,54 @@ struct Day<'a> {
     zone: &'a Zone,
 }
 
+/// One timing window of the day.
+#[derive(Debug, Serialize)]
+pub(crate) struct Segment {
+    start_time: String,
+    end_time: String,
+    start_local_time: String,
+    start_local_time_short: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    until_full_night: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    end_local_time: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    end_local_time_short: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    spans_midnight: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    subtitle_en: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    subtitle_ne: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    is_auspicious: Option<bool>,
+}
+
 impl Day<'_> {
     /// `_segment`.
-    fn segment(&self, start: UtcInstant, end: UtcInstant, tail: Tail) -> Value {
+    fn segment(&self, start: UtcInstant, end: UtcInstant, tail: Tail) -> Segment {
         let until_full_night = tail == Tail::RunsOn;
         let day_end = self.next_sunrise;
         let local = self.zone.local(start);
-        let mut out = Map::new();
-        out.insert("start_time".into(), json!(start.to_string()));
-        out.insert("end_time".into(), json!(end.to_string()));
-        out.insert("start_local_time".into(), json!(local.to_string()));
-        out.insert("start_local_time_short".into(), json!(local.hm()));
-        if until_full_night || end >= day_end {
-            out.insert("until_full_night".into(), json!(true));
+        let ends_inside = end < day_end;
+        Segment {
+            start_time: start.to_string(),
+            end_time: end.to_string(),
+            start_local_time: local.to_string(),
+            start_local_time_short: local.hm(),
+            until_full_night: (until_full_night || end >= day_end).then_some(true),
+            end_local_time: ends_inside
+                .then(|| from_sunrise(end, self.sunrise, self.zone).local_time),
+            end_local_time_short: ends_inside.then(|| self.zone.local(end).hm()),
+            spans_midnight: (end.fields().0 != start.fields().0).then_some(true),
+            subtitle_en: None,
+            subtitle_ne: None,
+            is_auspicious: None,
         }
-        if end < day_end {
-            out.insert(
-                "end_local_time".into(),
-                json!(from_sunrise(end, self.sunrise, self.zone).local_time),
-            );
-            out.insert(
-                "end_local_time_short".into(),
-                json!(self.zone.local(end).hm()),
-            );
-        }
-        if end.fields().0 != start.fields().0 {
-            out.insert("spans_midnight".into(), json!(true));
-        }
-        Value::Object(out)
     }
 
     /// `_clip_segment` to the day (sunrise → next sunrise).
-    fn clip(&self, start: UtcInstant, end: UtcInstant) -> Option<Value> {
+    fn clip(&self, start: UtcInstant, end: UtcInstant) -> Option<Segment> {
         let (vs, ve) = (start.max(self.sunrise), end.min(self.next_sunrise));
         (vs < ve).then(|| {
             self.segment(
@@ -219,9 +304,47 @@ impl Day<'_> {
     }
 }
 
-fn entry(key: &str, name_en: &str, name_ne: &str, segments: Vec<Value>, tone: Tone) -> Value {
-    let auspicious = tone == Tone::Good;
-    json!({"key": key, "name_en": name_en, "name_ne": name_ne, "is_auspicious": auspicious, "segments": Value::Array(segments)})
+/// The older four-field segment of the Rahu, Yamaganda, Gulika and Abhijit entries.
+#[derive(Debug, Serialize)]
+pub(crate) struct PlainSegment {
+    start_local_time_short: String,
+    end_local_time_short: String,
+    start_time: String,
+    end_time: String,
+}
+
+/// A segment of a timing entry.
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub(crate) enum Part {
+    Window(Segment),
+    Plain(PlainSegment),
+}
+
+/// One named timing with its windows.
+#[derive(Debug, Serialize)]
+pub(crate) struct Entry {
+    key: &'static str,
+    name_en: &'static str,
+    name_ne: &'static str,
+    is_auspicious: bool,
+    segments: Vec<Part>,
+}
+
+fn entry(
+    key: &'static str,
+    name_en: &'static str,
+    name_ne: &'static str,
+    segments: Vec<Segment>,
+    tone: Tone,
+) -> Entry {
+    Entry {
+        key,
+        name_en,
+        name_ne,
+        is_auspicious: tone == Tone::Good,
+        segments: segments.into_iter().map(Part::Window).collect(),
+    }
 }
 
 struct Interval {
@@ -331,14 +454,14 @@ fn yoga_intervals(day: &Day<'_>) -> Vec<Interval> {
     out
 }
 
-fn period_windows(day: &Day<'_>, nak: &Interval, offset: u32) -> Option<Value> {
+fn period_windows(day: &Day<'_>, nak: &Interval, offset: u32) -> Option<Segment> {
     let duration = nak.end.seconds_since(nak.start);
     let period = duration * 4.0 / 60.0;
     let start = add_seconds_trunc(nak.start, duration * f64::from(offset) / 60.0);
     day.clip(start, add_seconds_trunc(start, period))
 }
 
-fn vishti_spans(day: &Day<'_>) -> Vec<Value> {
+fn vishti_spans(day: &Day<'_>) -> Vec<Segment> {
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
     while cursor < day.next_sunrise {
@@ -374,7 +497,7 @@ fn overlap_windows(
     moons: &[Interval],
     suns: &[Interval],
     counts: &[usize; 8],
-) -> Vec<Value> {
+) -> Vec<Segment> {
     let mut out = Vec::new();
     for moon in moons {
         for sun in suns {
@@ -388,7 +511,7 @@ fn overlap_windows(
     out
 }
 
-fn baana_segments(day: &Day<'_>) -> Vec<Value> {
+fn baana_segments(day: &Day<'_>) -> Vec<Segment> {
     let band = |jd: f64| u32::try_from(py_int(py_mod(sun_longitude(jd), 30.0))).unwrap_or(0);
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
@@ -407,11 +530,11 @@ fn baana_segments(day: &Day<'_>) -> Vec<Value> {
             _ => None,
         };
         if let Some((en, ne)) = meta {
-            if let Some(Value::Object(mut seg)) = day.clip(cursor, band_end) {
-                seg.insert("subtitle_en".into(), json!(en));
-                seg.insert("subtitle_ne".into(), json!(ne));
-                seg.insert("is_auspicious".into(), json!(false));
-                out.push(Value::Object(seg));
+            if let Some(mut seg) = day.clip(cursor, band_end) {
+                seg.subtitle_en = Some(en);
+                seg.subtitle_ne = Some(ne);
+                seg.is_auspicious = Some(false);
+                out.push(seg);
             }
         }
         if band_end >= day.next_sunrise {
@@ -422,7 +545,14 @@ fn baana_segments(day: &Day<'_>) -> Vec<Value> {
     out
 }
 
-fn push_if(list: &mut Vec<Value>, key: &str, en: &str, ne: &str, segments: Vec<Value>, tone: Tone) {
+fn push_if(
+    list: &mut Vec<Entry>,
+    key: &'static str,
+    en: &'static str,
+    ne: &'static str,
+    segments: Vec<Segment>,
+    tone: Tone,
+) {
     if !segments.is_empty() {
         list.push(entry(key, en, ne, segments, tone));
     }
@@ -433,7 +563,7 @@ fn push_if(list: &mut Vec<Value>, key: &str, en: &str, ne: &str, segments: Vec<V
     clippy::too_many_lines,
     reason = "one list of classical timings, kept in the Python order"
 )]
-fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
+fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Entry>, Vec<Entry>) {
     let day_s = day.sunset.seconds_since(day.sunrise);
     let night_s = day.next_sunrise.seconds_since(day.sunset);
     let (day_part, night_part) = (day_s / 15.0, night_s / 15.0);
@@ -443,11 +573,11 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
     let moons = moon_intervals(day);
     let suns = sun_intervals(day);
 
-    let amrit: Vec<Value> = moons
+    let amrit: Vec<Segment> = moons
         .iter()
         .filter_map(|n| period_windows(day, n, AMRITA_VARJYAM[n.index % 27].0))
         .collect();
-    let varjyam: Vec<Value> = moons
+    let varjyam: Vec<Segment> = moons
         .iter()
         .filter_map(|n| period_windows(day, n, AMRITA_VARJYAM[n.index % 27].1))
         .collect();
@@ -460,7 +590,7 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
         Tone::Good,
     );
     push_if(&mut bad, "varjyam", "Varjyam", "वर्ज्यम्", varjyam, Tone::Bad);
-    let sarvartha: Vec<Value> = moons
+    let sarvartha: Vec<Segment> = moons
         .iter()
         .filter(|n| SARVARTHA_SIDDHI[w].contains(&n.index))
         .filter_map(|n| day.clip(n.start, n.end))
@@ -523,7 +653,7 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
         Tone::Good,
     ));
 
-    let dur: Vec<Value> = DUR_MUHURTA[w]
+    let dur: Vec<Segment> = DUR_MUHURTA[w]
         .iter()
         .filter_map(|&i| {
             let (base, part, n) = if i < 15 {
@@ -553,7 +683,7 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
         vishti_spans(day),
         Tone::Bad,
     );
-    let ganda: Vec<Value> = moons
+    let ganda: Vec<Segment> = moons
         .iter()
         .filter(|n| GANDA_MOOLA.contains(&n.index))
         .filter_map(|n| day.clip(n.start, n.end))
@@ -625,7 +755,7 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
         visha,
         Tone::Bad,
     );
-    let visha_yoga: Vec<Value> = yoga_intervals(day)
+    let visha_yoga: Vec<Segment> = yoga_intervals(day)
         .iter()
         .filter_map(|y| {
             let (_, ghatis) = YOGA_VISHA.iter().find(|(n, _)| *n == y.number)?;
@@ -649,13 +779,27 @@ fn extended(day: &Day<'_>, vaara: u32) -> (Vec<Value>, Vec<Value>) {
     (good, bad)
 }
 
-fn legacy_entry(key: &str, en: &str, ne: &str, block: &Value, tone: Tone) -> Option<Value> {
-    block.get("start_time")?.as_str()?;
-    let seg = json!({
-        "start_local_time_short": block["start_time"], "end_local_time_short": block["end_time"],
-        "start_time": block["start_local"], "end_time": block["end_local"],
-    });
-    Some(entry(key, en, ne, vec![seg], tone))
+/// An entry for a daily period or Abhijit, with its older four-field segment.
+fn legacy_entry(
+    key: &'static str,
+    en: &'static str,
+    ne: &'static str,
+    window: Option<(&str, &str, &str, &str)>,
+    tone: Tone,
+) -> Option<Entry> {
+    let (start_time, end_time, start_local, end_local) = window?;
+    Some(Entry {
+        key,
+        name_en: en,
+        name_ne: ne,
+        is_auspicious: tone == Tone::Good,
+        segments: vec![Part::Plain(PlainSegment {
+            start_local_time_short: start_time.to_owned(),
+            end_local_time_short: end_time.to_owned(),
+            start_time: start_local.to_owned(),
+            end_time: end_local.to_owned(),
+        })],
+    })
 }
 
 /// `build_muhurta_block` + `enrich_muhurta_block`.
@@ -665,7 +809,7 @@ pub(crate) fn muhurta(
     next_sunrise: UtcInstant,
     vaara: u32,
     zone: &Zone,
-) -> Value {
+) -> Muhurta {
     let total = sunset.seconds_since(sunrise);
     let w = vaara as usize % 7;
     let rahu = period_block(sunrise, sunset, RAHU_KALAM_PERIOD[w], zone, "Rahu");
@@ -689,7 +833,14 @@ pub(crate) fn muhurta(
         "abhijit",
         "Abhijit Muhurta",
         "अभिजित् मुहूर्त",
-        &abhijit,
+        abhijit.as_ref().map(|a| {
+            (
+                a.start_time.as_str(),
+                a.end_time.as_str(),
+                a.start_local.as_str(),
+                a.end_local.as_str(),
+            )
+        }),
         Tone::Good,
     ) {
         good.insert(2.min(good.len()), e);
@@ -699,14 +850,24 @@ pub(crate) fn muhurta(
         ("yamaganda", "Yamaganda", "यमगण्ड", &yama),
         ("gulika", "Gulika Kaal", "गुलिक काल", &gulika),
     ] {
-        if let Some(e) = legacy_entry(key, en, ne, block, Tone::Bad) {
+        let window = Some((
+            block.start_time.as_str(),
+            block.end_time.as_str(),
+            block.start_local.as_str(),
+            block.end_local.as_str(),
+        ));
+        if let Some(e) = legacy_entry(key, en, ne, window, Tone::Bad) {
             bad.insert(0, e);
         }
     }
-    json!({
-        "hora_duration_minutes": py_round(total / 8.0 / 60.0, 1),
-        "muhurta_duration_minutes": py_round(total / 15.0 / 60.0, 1),
-        "rahu_kalam": rahu, "yamaganda": yama, "gulika": gulika, "abhijit": abhijit,
-        "auspicious_timings": good, "inauspicious_timings": bad,
-    })
+    Muhurta {
+        hora_duration_minutes: py_round(total / 8.0 / 60.0, 1),
+        each_minutes: py_round(total / 15.0 / 60.0, 1),
+        rahu_kalam: rahu,
+        yamaganda: yama,
+        gulika,
+        abhijit,
+        auspicious_timings: Some(good),
+        inauspicious_timings: Some(bad),
+    }
 }

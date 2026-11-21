@@ -11,6 +11,7 @@ astronomy.workspace = true
 calendar.workspace = true
 flate2.workspace = true
 rusqlite.workspace = true
+serde.workspace = true
 # Exact float parsing (as Python's `json`): the persistent day store reads payloads back.
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 thiserror.workspace = true

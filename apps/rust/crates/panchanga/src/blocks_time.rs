@@ -1,27 +1,55 @@
 //! Choghadiya, hora, ritu and ayana blocks of the daily payload.
 
 use astronomy::engine::sun_longitude;
+use serde::Serialize;
 use serde_json::{Value, json};
 use timescale::{PyInstant, Zone};
 
 use crate::{
+    payload::to_value,
     pyfloat::{py_floordiv, py_int, py_mod, py_round},
     text_tables::{
         CHO_DAY_START, CHO_NIGHT_START, CHOGHADIYA, DAY_LORD, HORA_PLANETS, HORA_SEQUENCE, RITU,
     },
 };
 
-fn cho_segment(c: (&str, &str, &str, &str, bool), start: f64, end: f64, phase: &str) -> Value {
+/// One choghadiya segment in ghati coordinates.
+#[derive(Debug, Serialize)]
+pub(crate) struct ChoSegment {
+    name_ne: &'static str,
+    name_en: &'static str,
+    name: &'static str,
+    quality_ne: &'static str,
+    quality_en: &'static str,
+    start_g: f64,
+    end_g: f64,
+    bad: bool,
+    phase: &'static str,
+}
+
+fn cho_segment(
+    c: (&'static str, &'static str, &'static str, &'static str, bool),
+    start: f64,
+    end: f64,
+    phase: &'static str,
+) -> ChoSegment {
     let (name_ne, name_en, quality_ne, quality_en, bad) = c;
-    json!({
-        "name_ne": name_ne, "name_en": name_en, "name": name_en, "quality_ne": quality_ne, "quality_en": quality_en,
-        "start_g": start, "end_g": end, "bad": bad, "phase": phase,
-    })
+    ChoSegment {
+        name_ne,
+        name_en,
+        name: name_en,
+        quality_ne,
+        quality_en,
+        start_g: start,
+        end_g: end,
+        bad,
+        phase,
+    }
 }
 
 /// `build_choghadiya`: eight day and eight night segments in ghati coordinates.
 #[must_use]
-pub fn choghadiya(day_ghati: f64, vaara: u32) -> Value {
+pub(crate) fn choghadiya_list(day_ghati: f64, vaara: u32) -> Vec<ChoSegment> {
     let d_seg = day_ghati / 8.0;
     let n_seg = (60.0 - day_ghati) / 8.0;
     let dow = vaara as usize % 7;
@@ -45,7 +73,13 @@ pub fn choghadiya(day_ghati: f64, vaara: u32) -> Value {
             "night",
         ));
     }
-    Value::Array(segments)
+    segments
+}
+
+/// [`choghadiya_list`] as a JSON tree, for callers that still build trees.
+#[must_use]
+pub fn choghadiya(day_ghati: f64, vaara: u32) -> Value {
+    to_value(&choghadiya_list(day_ghati, vaara))
 }
 
 fn hora_lord(vaara: u32, index: usize) -> &'static str {
@@ -70,43 +104,63 @@ enum Phase {
     Night,
 }
 
+/// One hora slot with its local clock and ghati span.
+#[derive(Debug, Serialize)]
+pub(crate) struct HoraSlot {
+    index: usize,
+    phase: &'static str,
+    phase_ne: &'static str,
+    planet: &'static str,
+    planet_ne: &'static str,
+    planet_en: &'static str,
+    quality_ne: &'static str,
+    tone: &'static str,
+    bad: bool,
+    start_local_time_short: String,
+    end_local_time_short: String,
+    start_g: f64,
+    end_g: f64,
+}
+
 fn hora_slot<I: PyInstant>(
     index: usize,
     phase: Phase,
-    planet: &str,
+    planet: &'static str,
     span: &HoraSpan<I>,
     zone: &Zone,
-) -> Value {
+) -> HoraSlot {
     let night = phase == Phase::Night;
     let (_, planet_ne, planet_en, bad) = HORA_PLANETS
         .iter()
         .copied()
         .find(|p| p.0 == planet)
         .unwrap_or(HORA_PLANETS[0]);
-    json!({
-        "index": index,
-        "phase": if night { "night" } else { "day" },
-        "phase_ne": if night { "रात" } else { "दिन" },
-        "planet": planet, "planet_ne": planet_ne, "planet_en": planet_en,
-        "quality_ne": if bad { "अशुभ" } else { "शुभ" },
-        "tone": if bad { "bad" } else { "good" },
-        "bad": bad,
-        "start_local_time_short": span.start.wall(zone).hm,
-        "end_local_time_short": span.end.wall(zone).hm,
-        "start_g": py_round(span.start_g, 4),
-        "end_g": py_round(span.end_g, 4),
-    })
+    HoraSlot {
+        index,
+        phase: if night { "night" } else { "day" },
+        phase_ne: if night { "रात" } else { "दिन" },
+        planet,
+        planet_ne,
+        planet_en,
+        quality_ne: if bad { "अशुभ" } else { "शुभ" },
+        tone: if bad { "bad" } else { "good" },
+        bad,
+        start_local_time_short: span.start.wall(zone).hm,
+        end_local_time_short: span.end.wall(zone).hm,
+        start_g: py_round(span.start_g, 4),
+        end_g: py_round(span.end_g, 4),
+    }
 }
 
 /// `build_hora`: twelve day and twelve night hora slots.
 #[must_use]
-pub fn hora<I: PyInstant>(
+pub(crate) fn hora_slot_list<I: PyInstant>(
     sunrise: I,
     sunset: I,
     next_sunrise: I,
     vaara: u32,
     zone: &Zone,
-) -> Value {
+) -> Vec<HoraSlot> {
     let day_s = sunset.seconds_since(sunrise);
     let night_s = next_sunrise.seconds_since(sunset);
     let day_ghati = (day_s / (day_s + night_s) * 60.0).min(60.0);
@@ -145,7 +199,19 @@ pub fn hora<I: PyInstant>(
             zone,
         ));
     }
-    Value::Array(slots)
+    slots
+}
+
+/// [`hora_slot_list`] as a JSON tree, for callers that still build trees.
+#[must_use]
+pub fn hora<I: PyInstant>(
+    sunrise: I,
+    sunset: I,
+    next_sunrise: I,
+    vaara: u32,
+    zone: &Zone,
+) -> Value {
+    to_value(&hora_slot_list(sunrise, sunset, next_sunrise, vaara, zone))
 }
 
 /// Real precession (IAU 2006, linear term), degrees per day.

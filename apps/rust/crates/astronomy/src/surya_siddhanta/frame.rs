@@ -4,7 +4,7 @@ use super::{
     body::{Body, MeanBody},
     modulo::{py_mod, signed, wrap},
     position::true_position,
-    yuga::{MAHAYUGA_DAYS, mean_longitude, revolution_fraction},
+    yuga::{MAHAYUGA_DAYS, YEAR_DAYS, mean_longitude, revolution_fraction},
 };
 
 /// Obliquity of the ecliptic (Burgess II.28): 24°.
@@ -43,6 +43,9 @@ pub fn equatorial(sayana_longitude: f64, latitude: f64) -> (f64, f64) {
     let dec = (beta.sin() * eps.cos() + beta.cos() * eps.sin() * lam.sin()).asin();
     (wrap(ra.to_degrees()), dec.to_degrees())
 }
+
+/// Degrees the sidereal time advances in a day: a full turn plus the mean Sun's motion.
+pub(super) const SIDEREAL_RATE: f64 = 360.0 + 360.0 / YEAR_DAYS;
 
 /// Local sidereal time as an angle: the mean Sun's sayana longitude + the mean-solar hour angle.
 #[must_use]

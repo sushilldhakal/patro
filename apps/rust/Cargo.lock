@@ -1459,6 +1459,7 @@ dependencies = [
  "criterion",
  "flate2",
  "rusqlite",
+ "serde",
  "serde_json",
  "thiserror",
  "timescale",

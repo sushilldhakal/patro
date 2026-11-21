@@ -2,15 +2,17 @@
 //! panchaka rahita blocks of the daily payload.
 
 use astronomy::surya_siddhanta::{
-    Body, ascendant, ascendant_sayana, ayanamsha, equatorial, true_longitude_and_speed,
-    true_position,
+    Body, ascendant, ascendant_sayana, ayanamsha, equatorial, next_ascendant_crossing,
+    next_lagna_change, true_longitude_and_speed, true_position,
 };
+use serde::Serialize;
 use serde_json::{Map, Value, json};
 use timescale::{PyInstant, UtcInstant, Zone};
 
 use crate::{
     angas::{nakshatra, tithi},
     daily::{RASHI_NAMES, RASHI_NAMES_NE, from_sunrise, idx},
+    payload::to_value,
     pyfloat::{py_int, py_mod, py_round, py_round_int},
 };
 
@@ -69,18 +71,68 @@ impl Graha {
         }
     }
 
-    fn payload(&self, sun: f64) -> Value {
+    fn payload(&self, sun: f64) -> Planet {
         let i = idx(py_int(self.longitude / 30.0) % 12);
-        let retro = self.is_retrograde();
-        let combust = self.is_combust(sun);
-        json!({
-            "longitude": self.longitude, "speed": self.speed, "rashi": i + 1,
-            "rashi_name": RASHI_NAMES[i], "rashi_ne": RASHI_NAMES_NE[i],
-            "dms": dms(self.longitude, 3),
-            "deg_in_rashi": py_round(py_mod(self.longitude, 30.0), 6),
-            "dms_in_rashi": dms(py_mod(self.longitude, 30.0), 2),
-            "is_retrograde": retro, "is_combust": combust,
-        })
+        Planet {
+            longitude: self.longitude,
+            speed: self.speed,
+            rashi: i + 1,
+            rashi_name: RASHI_NAMES[i],
+            rashi_ne: RASHI_NAMES_NE[i],
+            dms: dms(self.longitude, 3),
+            deg_in_rashi: py_round(py_mod(self.longitude, 30.0), 6),
+            dms_in_rashi: dms(py_mod(self.longitude, 30.0), 2),
+            is_retrograde: self.is_retrograde(),
+            is_combust: self.is_combust(sun),
+        }
+    }
+}
+
+/// One graha of the spashta table.
+#[derive(Debug, Serialize)]
+pub(crate) struct Planet {
+    longitude: f64,
+    speed: f64,
+    rashi: usize,
+    rashi_name: &'static str,
+    rashi_ne: &'static str,
+    dms: String,
+    deg_in_rashi: f64,
+    dms_in_rashi: String,
+    is_retrograde: bool,
+    is_combust: bool,
+}
+
+/// `spashta_table`: every graha at sunrise, in the text's order with Ketu last.
+#[derive(Debug, Serialize)]
+pub(crate) struct PlanetTable {
+    sun: Planet,
+    moon: Planet,
+    mercury: Planet,
+    venus: Planet,
+    mars: Planet,
+    jupiter: Planet,
+    saturn: Planet,
+    rahu: Planet,
+    ketu: Planet,
+}
+
+impl PlanetTable {
+    pub(crate) fn new(jd: f64) -> Self {
+        let grahas = spashta_grahas(jd);
+        let sun = grahas[0].longitude;
+        let row = |i: usize| grahas[i].payload(sun);
+        Self {
+            sun: row(0),
+            moon: row(1),
+            mercury: row(2),
+            venus: row(3),
+            mars: row(4),
+            jupiter: row(5),
+            saturn: row(6),
+            rahu: row(7),
+            ketu: row(8),
+        }
     }
 }
 
@@ -151,16 +203,9 @@ pub fn graha_positions(jd: f64) -> Vec<GrahaPosition> {
         .collect()
 }
 
-/// `spashta_table`: every graha at sunrise with rashi, DMS, वक्री and अस्त flags.
+/// The graha table as a JSON tree, for callers that still build trees.
 pub(crate) fn planets(jd: f64) -> Value {
-    let grahas = spashta_grahas(jd);
-    let sun = grahas[0].longitude;
-    Value::Object(
-        grahas
-            .iter()
-            .map(|g| (g.key.to_owned(), g.payload(sun)))
-            .collect(),
-    )
+    to_value(&PlanetTable::new(jd))
 }
 
 /// `planet_astro_extras(jd, graha)`: ecliptic latitude (शर), right ascension and
@@ -242,10 +287,6 @@ pub(crate) fn instant_lagna(jd: f64, lat: f64, lon: f64) -> Value {
     block
 }
 
-fn lagna_rashi(jd: f64, lat: f64, lon: f64) -> usize {
-    idx(py_int(ascendant(jd, lat, lon) / 30.0) % 12)
-}
-
 /// `lagna_service.lagna`: the rising sign at sunrise.
 pub(crate) fn lagna(jd: f64, lat: f64, lon: f64) -> Value {
     let asc = ascendant(jd, lat, lon);
@@ -256,23 +297,15 @@ pub(crate) fn lagna(jd: f64, lat: f64, lon: f64) -> Value {
     })
 }
 
-/// `lagna_service.next_boundary`: JD the ascendant next enters the following sign.
+/// When the ascendant next enters a new sign, in closed form (a four-hour search
+/// window would miss the longer signs at high latitude; there is none now).
 fn next_lagna_boundary(jd: f64, lat: f64, lon: f64) -> f64 {
-    let current = lagna_rashi(jd, lat, lon);
-    let (mut start, mut end) = (jd, jd + 4.0 / 24.0);
-    for _ in 0..50 {
-        if end - start < 1.0 / 86400.0 {
-            return end;
-        }
-        let mid = start + (end - start) / 2.0;
-        if lagna_rashi(mid, lat, lon) == current {
-            start = mid;
-        } else {
-            end = mid;
-        }
-    }
-    end
+    next_lagna_change(jd, lat, lon).unwrap_or(jd + FALLBACK_SPAN_DAYS)
 }
+
+/// Where the ascendant never leaves its sign (beyond the polar circle), a span ends
+/// after this many days.
+const FALLBACK_SPAN_DAYS: f64 = 4.0 / 24.0;
 
 const NAVAMSHA_DEG: f64 = 30.0 / 9.0;
 
@@ -285,50 +318,56 @@ fn degree_in_rashi<I: PyInstant>(at: I, lat: f64, lon: f64) -> f64 {
     py_mod(ascendant(at.to_jd(), lat, lon), 30.0)
 }
 
-/// `find_lagna_degree_crossing`: when the ascendant (mod 30°) reaches `target`.
-fn degree_crossing<I: PyInstant>(start: I, end: I, target: f64, lat: f64, lon: f64) -> Option<I> {
+/// When the ascendant, inside lagna `rashi`'s span from `start` to `end`, reaches
+/// `deg` degrees of the sign, solved directly. A degree the span starts on counts at
+/// its start.
+fn degree_crossing<I: PyInstant>(
+    start: I,
+    end: I,
+    rashi: usize,
+    deg: f64,
+    lat: f64,
+    lon: f64,
+) -> Option<I> {
     if end <= start {
         return None;
     }
     let d_start = degree_in_rashi(start, lat, lon);
-    let mut d_end = degree_in_rashi(end, lat, lon);
-    if d_end < d_start {
-        d_end += 30.0;
-    }
-    let mut adj = target;
-    if adj < d_start - 0.02 {
-        adj += 30.0;
-    }
-    if adj > d_end + 0.02 || adj < d_start - 0.02 {
-        return None;
-    }
-    if (d_start - target).abs() < 0.03 || (target == 0.0 && d_start < 0.5) {
+    if (d_start - deg).abs() < 0.03 || (deg == 0.0 && d_start < 0.5) {
         return Some(start);
     }
-    let (mut lo, mut hi) = (start, end);
-    for _ in 0..64 {
-        if hi.seconds_since(lo) <= 2.0 {
-            return Some(I::midpoint(lo, hi));
-        }
-        let mid = I::midpoint(lo, hi);
-        if degree_in_rashi(mid, lat, lon) < target - 1e-6 {
-            lo = mid;
-        } else {
-            hi = mid;
-        }
-    }
-    Some(hi)
+    #[expect(clippy::cast_precision_loss, reason = "a sign number is 1-12")]
+    let target = 30.0 * (rashi - 1) as f64 + deg;
+    let at = next_ascendant_crossing(start.to_jd(), lat, lon, target)?;
+    // The ascendant moves ~0.004° a second: a crossing a few seconds past the end
+    // still belongs to this span.
+    (at <= end.to_jd() + END_SLACK_DAYS)
+        .then(|| start.at_boundary(at))
+        .flatten()
 }
 
+/// Seconds (in days) past a span's end a navamsha crossing is still counted in it.
+const END_SLACK_DAYS: f64 = 5.0 / 86_400.0;
+
 /// `pushkara_times_for_span`: the span is read back from its printed ISO text.
-fn pushkara_hits<I: PyInstant>(span: &LagnaSpan<I>, lat: f64, lon: f64, zone: &Zone) -> Vec<Value> {
+fn pushkara_hits<I: PyInstant>(
+    span: &LagnaSpan<I>,
+    lat: f64,
+    lon: f64,
+    zone: &Zone,
+) -> Vec<PushkaraHit> {
     let start = span.start.reparse();
     let end = span.end.reparse();
     pushkara_degrees(span.number)
         .into_iter()
         .filter_map(|deg| {
-            let local = degree_crossing(start, end, deg, lat, lon)?.wall(zone);
-            Some(json!({"degree": py_round(deg, 4), "degree_dms": dms_label(deg), "local_time": local.hms, "local_time_short": local.hm}))
+            let local = degree_crossing(start, end, span.number, deg, lat, lon)?.wall(zone);
+            Some(PushkaraHit {
+                degree: py_round(deg, 4),
+                degree_dms: dms_label(deg),
+                local_time: local.hms,
+                local_time_short: local.hm,
+            })
         })
         .collect()
 }
@@ -345,8 +384,7 @@ pub(crate) fn lagna_spans_with_pushkara<I: PyInstant>(
     let mut spans = lagna_spans_plain(sunrise, next_sunrise, lat, lon, zone);
     for span in &mut spans {
         let hits = pushkara_hits(span, lat, lon, zone);
-        span.json
-            .insert("pushkara_navamsha".into(), Value::Array(hits));
+        span.row.pushkara_navamsha = Some(hits);
     }
     spans
 }
@@ -362,13 +400,47 @@ fn dms_label(deg: f64) -> String {
     format!("{d}°{m:02}'")
 }
 
+/// A pushkara navamsha crossing inside a lagna span.
+#[derive(Debug, Clone, Serialize)]
+pub(crate) struct PushkaraHit {
+    degree: f64,
+    degree_dms: String,
+    local_time: String,
+    local_time_short: String,
+}
+
+/// A lagna span as the payload prints it.
+#[derive(Debug, Clone, Serialize)]
+pub(crate) struct LagnaRow {
+    number: usize,
+    name: &'static str,
+    name_ne: &'static str,
+    degree_in_rashi: f64,
+    longitude: f64,
+    start_time: String,
+    start_ghati_clock: String,
+    start_hours_clock: String,
+    start_local_time: String,
+    end_time: String,
+    end_ghati_clock: String,
+    end_hours_clock: String,
+    end_local_time: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pushkara_navamsha: Option<Vec<PushkaraHit>>,
+}
+
 /// One lagna period, kept typed for the blocks derived from it.
 pub(crate) struct LagnaSpan<I> {
     pub(crate) number: usize,
     pub(crate) start: I,
     pub(crate) end: I,
     /// The span as the payload prints it.
-    pub(crate) json: Map<String, Value>,
+    pub(crate) row: LagnaRow,
+}
+
+/// The spans' rows as a JSON tree, for callers that still build trees.
+pub(crate) fn lagna_rows_value<I>(spans: &[LagnaSpan<I>]) -> Value {
+    to_value(&spans.iter().map(|s| &s.row).collect::<Vec<_>>())
 }
 
 /// `build_lagna_spans`: twelve lagna periods from sunrise, the twelfth stretched to
@@ -390,35 +462,38 @@ pub(crate) fn lagna_spans_plain<I: PyInstant>(
         let mut end = if index == 11 {
             next_sunrise
         } else {
-            cursor.add_days_f64(next_lagna_boundary(cursor_jd, lat, lon) - cursor_jd)
+            // The first second the next sign is rising, so reading the ascendant
+            // there gives the next sign's number.
+            cursor
+                .at_boundary(next_lagna_boundary(cursor_jd, lat, lon))
+                .unwrap_or(cursor.add_seconds(60))
         };
         if end <= cursor {
             end = cursor.add_seconds(60);
         }
         let s = from_sunrise(cursor, sunrise, zone);
         let e = from_sunrise(end, sunrise, zone);
-        let mut row = Map::new();
-        row.insert("number".into(), json!(i + 1));
-        row.insert("name".into(), json!(RASHI_NAMES[i]));
-        row.insert("name_ne".into(), json!(RASHI_NAMES_NE[i]));
-        row.insert(
-            "degree_in_rashi".into(),
-            json!(py_round(py_mod(asc, 30.0), 4)),
-        );
-        row.insert("longitude".into(), json!(py_round(asc, 6)));
-        row.insert("start_time".into(), json!(cursor.to_string()));
-        row.insert("start_ghati_clock".into(), json!(s.ghati_clock));
-        row.insert("start_hours_clock".into(), json!(s.hours_clock));
-        row.insert("start_local_time".into(), json!(s.local_time));
-        row.insert("end_time".into(), json!(end.to_string()));
-        row.insert("end_ghati_clock".into(), json!(e.ghati_clock));
-        row.insert("end_hours_clock".into(), json!(e.hours_clock));
-        row.insert("end_local_time".into(), json!(e.local_time));
+        let row = LagnaRow {
+            number: i + 1,
+            name: RASHI_NAMES[i],
+            name_ne: RASHI_NAMES_NE[i],
+            degree_in_rashi: py_round(py_mod(asc, 30.0), 4),
+            longitude: py_round(asc, 6),
+            start_time: cursor.to_string(),
+            start_ghati_clock: s.ghati_clock,
+            start_hours_clock: s.hours_clock,
+            start_local_time: s.local_time,
+            end_time: end.to_string(),
+            end_ghati_clock: e.ghati_clock,
+            end_hours_clock: e.hours_clock,
+            end_local_time: e.local_time,
+            pushkara_navamsha: None,
+        };
         spans.push(LagnaSpan {
             number: i + 1,
             start: cursor,
             end,
-            json: row,
+            row,
         });
         cursor = end;
     }
@@ -436,25 +511,46 @@ pub(crate) fn lagna_spans(
     lagna_spans_with_pushkara(sunrise, next_sunrise, lat, lon, zone)
 }
 
+/// One udaya lagna row: a lagna span with short clock fields.
+#[derive(Debug, Serialize)]
+pub(crate) struct UdayaRow {
+    number: usize,
+    name: &'static str,
+    name_ne: &'static str,
+    start_time: String,
+    end_time: String,
+    start_local_time: String,
+    end_local_time: String,
+    start_local_time_short: String,
+    end_local_time_short: String,
+    start_hours_clock: String,
+    end_hours_clock: String,
+    pushkara_navamsha: Vec<PushkaraHit>,
+}
+
 /// `build_udaya_lagna`: the lagna spans with short clock fields.
-pub(crate) fn udaya_lagna<I>(spans: &[LagnaSpan<I>]) -> Value {
-    Value::Array(
-        spans
-            .iter()
-            .map(|span| {
-                let s = &span.json;
-                let short = |k: &str| s[k].as_str().unwrap_or_default().chars().take(5).collect::<String>();
-                json!({
-                    "number": s["number"], "name": s["name"], "name_ne": s["name_ne"],
-                    "start_time": s["start_time"], "end_time": s["end_time"],
-                    "start_local_time": s["start_local_time"], "end_local_time": s["end_local_time"],
-                    "start_local_time_short": short("start_local_time"), "end_local_time_short": short("end_local_time"),
-                    "start_hours_clock": s["start_hours_clock"], "end_hours_clock": s["end_hours_clock"],
-                    "pushkara_navamsha": s.get("pushkara_navamsha").cloned().unwrap_or_else(|| json!([])),
-                })
-            })
-            .collect(),
-    )
+pub(crate) fn udaya_lagna<I>(spans: &[LagnaSpan<I>]) -> Vec<UdayaRow> {
+    let short = |t: &str| t.chars().take(5).collect::<String>();
+    spans
+        .iter()
+        .map(|span| {
+            let r = &span.row;
+            UdayaRow {
+                number: r.number,
+                name: r.name,
+                name_ne: r.name_ne,
+                start_time: r.start_time.clone(),
+                end_time: r.end_time.clone(),
+                start_local_time: r.start_local_time.clone(),
+                end_local_time: r.end_local_time.clone(),
+                start_local_time_short: short(&r.start_local_time),
+                end_local_time_short: short(&r.end_local_time),
+                start_hours_clock: r.start_hours_clock.clone(),
+                end_hours_clock: r.end_hours_clock.clone(),
+                pushkara_navamsha: r.pushkara_navamsha.clone().unwrap_or_default(),
+            }
+        })
+        .collect()
 }
 
 fn panchaka_label(remainder: u32) -> (&'static str, &'static str, bool) {

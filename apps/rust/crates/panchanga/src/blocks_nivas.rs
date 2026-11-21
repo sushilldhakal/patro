@@ -1,6 +1,6 @@
 //! Nivas and shool: directional abodes and homa indicators (`nivas_shool.py`).
 
-use serde_json::{Map, Value, json};
+use serde::Serialize;
 use timescale::{PyInstant, Zone};
 
 use crate::{
@@ -19,48 +19,109 @@ use crate::{angas::NAKSHATRA_SPAN, pyfloat::py_int};
 /// Disha shool direction index (0 E, 1 W, 2 N, 3 S) by Python weekday (Monday first).
 const DISHA_SHOOLA: [usize; 7] = [0, 2, 2, 3, 1, 0, 1];
 
-fn direction(i: usize) -> Map<String, Value> {
-    let (key, en, ne) = DIRECTIONS[i % 4];
-    let mut m = Map::new();
-    m.insert("direction_key".into(), json!(key));
-    m.insert("name_en".into(), json!(en));
-    m.insert("name_ne".into(), json!(ne));
-    m
+/// A compass direction.
+#[derive(Debug, Clone, Serialize)]
+struct Direction {
+    #[serde(rename = "direction_key")]
+    key: &'static str,
+    name_en: &'static str,
+    name_ne: &'static str,
 }
 
-fn disha_shool(weekday_py: usize) -> Value {
+fn direction(i: usize) -> Direction {
+    let (key, name_en, name_ne) = DIRECTIONS[i % 4];
+    Direction {
+        key,
+        name_en,
+        name_ne,
+    }
+}
+
+/// Disha shool: the day's forbidden direction and the four safe ones.
+#[derive(Debug, Serialize)]
+struct DishaShool {
+    #[serde(flatten)]
+    forbidden: Direction,
+    auspicious_directions: Vec<Direction>,
+}
+
+fn disha_shool(weekday_py: usize) -> DishaShool {
     let i = DISHA_SHOOLA[weekday_py % 7];
-    let mut out = direction(i);
-    let safe: Vec<Value> = (0..4)
-        .filter(|j| *j != i)
-        .map(|j| Value::Object(direction(j)))
-        .collect();
-    out.insert("auspicious_directions".into(), Value::Array(safe));
-    Value::Object(out)
+    DishaShool {
+        forbidden: direction(i),
+        auspicious_directions: (0..4).filter(|j| *j != i).map(direction).collect(),
+    }
 }
 
-fn agnivasa(tithi_absolute: u32, weekday_py: usize) -> Map<String, Value> {
+#[derive(Debug, Clone, Serialize)]
+struct Agnivasa {
+    name_en: &'static str,
+    name_ne: &'static str,
+    subtitle_en: &'static str,
+    subtitle_ne: &'static str,
+    is_auspicious: bool,
+}
+
+fn agnivasa(tithi_absolute: u32, weekday_py: usize) -> Agnivasa {
     let vaara = [2, 3, 4, 5, 6, 7, 1][weekday_py % 7];
-    let (en, ne, sub_en, sub_ne, good) =
+    let (name_en, name_ne, subtitle_en, subtitle_ne, is_auspicious) =
         AGNIVASA[[0, 1, 2, 0][((tithi_absolute + vaara + 1) % 4) as usize]];
-    obj(
-        json!({"name_en": en, "name_ne": ne, "subtitle_en": sub_en, "subtitle_ne": sub_ne, "is_auspicious": good}),
-    )
+    Agnivasa {
+        name_en,
+        name_ne,
+        subtitle_en,
+        subtitle_ne,
+        is_auspicious,
+    }
 }
 
-fn shivavasa(tithi_absolute: u32) -> Map<String, Value> {
+#[derive(Debug, Clone, Serialize)]
+struct Shivavasa {
+    name_en: &'static str,
+    name_ne: &'static str,
+    is_auspicious: bool,
+}
+
+fn shivavasa(tithi_absolute: u32) -> Shivavasa {
     let paksha_tithi = (tithi_absolute - 1) % 15 + 1;
-    let (en, ne, good) = SHIVAVASA[[6, 0, 1, 2, 3, 4, 5][((paksha_tithi * 2 + 5) % 7) as usize]];
-    obj(json!({"name_en": en, "name_ne": ne, "is_auspicious": good}))
+    let (name_en, name_ne, is_auspicious) =
+        SHIVAVASA[[6, 0, 1, 2, 3, 4, 5][((paksha_tithi * 2 + 5) % 7) as usize]];
+    Shivavasa {
+        name_en,
+        name_ne,
+        is_auspicious,
+    }
 }
 
-fn kumbha(paksha_tithi: u32, weekday_py: usize) -> Map<String, Value> {
-    let i = (weekday_py + paksha_tithi as usize) % 7;
-    let (en, ne, good) = KUMBHACHAKRA_PARTS[i];
-    obj(json!({"name_en": en, "name_ne": ne, "is_auspicious": good, "index": i}))
+#[derive(Debug, Clone, Serialize)]
+struct Kumbha {
+    name_en: &'static str,
+    name_ne: &'static str,
+    is_auspicious: bool,
+    index: usize,
 }
 
-fn homahuti<I: PyInstant>(at: I) -> Map<String, Value> {
+fn kumbha(paksha_tithi: u32, weekday_py: usize) -> Kumbha {
+    let index = (weekday_py + paksha_tithi as usize) % 7;
+    let (name_en, name_ne, is_auspicious) = KUMBHACHAKRA_PARTS[index];
+    Kumbha {
+        name_en,
+        name_ne,
+        is_auspicious,
+        index,
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct Homahuti {
+    key: &'static str,
+    symbol: &'static str,
+    name_en: &'static str,
+    name_ne: &'static str,
+    is_auspicious: bool,
+}
+
+fn homahuti<I: PyInstant>(at: I) -> Homahuti {
     let jd = at.to_jd();
     let mut sun_nak = py_int(sun_longitude(jd) / NAKSHATRA_SPAN) + 1;
     if sun_nak > 27 {
@@ -68,23 +129,99 @@ fn homahuti<I: PyInstant>(at: I) -> Map<String, Value> {
     }
     let moon_nak = i64::from(nakshatra(jd).number);
     let distance = usize::try_from((moon_nak - sun_nak).rem_euclid(27)).unwrap_or(0);
-    let (key, symbol, en, ne, good) = HOMAHUTI_GRAHAS[(distance / 3) % 9];
-    obj(json!({"key": key, "symbol": symbol, "name_en": en, "name_ne": ne, "is_auspicious": good}))
+    let (key, symbol, name_en, name_ne, is_auspicious) = HOMAHUTI_GRAHAS[(distance / 3) % 9];
+    Homahuti {
+        key,
+        symbol,
+        name_en,
+        name_ne,
+        is_auspicious,
+    }
 }
 
 fn moon_rashi_number<I: PyInstant>(at: I) -> usize {
     usize::try_from(py_int(moon_longitude(at.to_jd()) / 30.0) % 12).unwrap_or(0) + 1
 }
 
-fn chandra_vasa<I: PyInstant>(at: I) -> Map<String, Value> {
+fn chandra_vasa<I: PyInstant>(at: I) -> Direction {
     direction([2, 0, 3, 1][moon_rashi_number(at) % 4])
 }
 
-fn obj(v: Value) -> Map<String, Value> {
-    match v {
-        Value::Object(m) => m,
-        _ => Map::new(),
-    }
+/// How a timed span ends: with its end clock, or running to the next sunrise.
+#[derive(Debug, Clone, Serialize)]
+#[serde(untagged)]
+enum SpanEnd {
+    At {
+        end_time: String,
+        end_local_time: String,
+        end_local_time_short: String,
+    },
+    Until {
+        until_full_night: bool,
+    },
+}
+
+/// A span of the day with its start clock, its own fields and its end.
+#[derive(Debug, Clone, Serialize)]
+struct Timed<T> {
+    start_time: String,
+    start_local_time_short: String,
+    #[serde(flatten)]
+    value: T,
+    #[serde(flatten)]
+    end: SpanEnd,
+}
+
+/// The span in force at sunrise (the first one), or the bare value when none.
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum Current<T> {
+    Span(Timed<T>),
+    Bare(T),
+}
+
+/// A block of spans with the one in force.
+#[derive(Debug, Serialize)]
+struct Spans<T> {
+    current: Current<T>,
+    segments: Vec<Timed<T>>,
+}
+
+fn spans<T: Clone>(segments: Vec<Timed<T>>, fallback: impl FnOnce() -> T) -> Spans<T> {
+    let current = segments
+        .first()
+        .cloned()
+        .map_or_else(|| Current::Bare(fallback()), Current::Span);
+    Spans { current, segments }
+}
+
+#[derive(Debug, Serialize)]
+struct Bhadra {
+    name_en: &'static str,
+    name_ne: &'static str,
+    subtitle_en: &'static str,
+    subtitle_ne: &'static str,
+    is_auspicious: bool,
+    loka: &'static str,
+}
+
+#[derive(Debug, Serialize)]
+struct Bhadravasa {
+    active: bool,
+    segments: Vec<Timed<Bhadra>>,
+}
+
+/// The nivas and shool block: abodes by tithi, nakshatra and Moon sign.
+#[derive(Debug, Serialize)]
+pub(crate) struct NivasShool {
+    homahuti: Spans<Homahuti>,
+    disha_shool: DishaShool,
+    rahu_vasa: Direction,
+    agnivasa: Spans<Agnivasa>,
+    shivavasa: Spans<Shivavasa>,
+    chandra_vasa: Spans<Direction>,
+    bhadravasa: Bhadravasa,
+    kumbha_chakra: Spans<Kumbha>,
 }
 
 struct Window<'a, I> {
@@ -110,43 +247,40 @@ impl<I: PyInstant> Window<'_, I> {
         points
     }
 
-    fn attach_end(&self, span: &mut Map<String, Value>, end: I) {
+    fn end_of(&self, end: I) -> SpanEnd {
         if end >= self.next_sunrise {
-            span.insert("until_full_night".into(), json!(true));
-            return;
+            return SpanEnd::Until {
+                until_full_night: true,
+            };
         }
-        span.insert("end_time".into(), json!(end.to_string()));
-        span.insert(
-            "end_local_time".into(),
-            json!(from_sunrise(end, self.sunrise, self.zone).local_time),
-        );
-        span.insert("end_local_time_short".into(), json!(end.wall(self.zone).hm));
+        SpanEnd::At {
+            end_time: end.to_string(),
+            end_local_time: from_sunrise(end, self.sunrise, self.zone).local_time,
+            end_local_time_short: end.wall(self.zone).hm,
+        }
     }
 
-    fn timed(&self, bounds: &[I], value: impl Fn(I) -> Map<String, Value>) -> Vec<Value> {
+    fn span<T>(&self, start: I, end: I, value: T) -> Timed<T> {
+        Timed {
+            start_time: start.to_string(),
+            start_local_time_short: start.wall(self.zone).hm,
+            value,
+            end: self.end_of(end),
+        }
+    }
+
+    fn timed<T>(&self, bounds: &[I], value: impl Fn(I) -> T) -> Vec<Timed<T>> {
         bounds
             .iter()
             .enumerate()
             .map(|(i, &start)| {
                 let end = bounds.get(i + 1).copied().unwrap_or(self.next_sunrise);
-                let mut span = Map::new();
-                span.insert("start_time".into(), json!(start.to_string()));
-                span.insert(
-                    "start_local_time_short".into(),
-                    json!(start.wall(self.zone).hm),
-                );
-                span.extend(value(start));
-                if end < self.next_sunrise {
-                    self.attach_end(&mut span, end);
-                } else {
-                    span.insert("until_full_night".into(), json!(true));
-                }
-                Value::Object(span)
+                self.span(start, end, value(start))
             })
             .collect()
     }
 
-    fn vishti(&self) -> Vec<Value> {
+    fn vishti(&self) -> Vec<Timed<Bhadra>> {
         let mut out = Vec::new();
         let mut cursor = self.sunrise;
         while cursor < self.next_sunrise {
@@ -160,32 +294,24 @@ impl<I: PyInstant> Window<'_, I> {
                 6 | 7 | 9 | 10 => (2, "patala"),
                 _ => (1, "prithvi"),
             };
-            let (en, ne, sub_en, sub_ne, good) = BHADRA_LOKA[loka_index];
-            let mut span = Map::new();
-            span.insert("start_time".into(), json!(cursor.to_string()));
-            span.insert(
-                "start_local_time_short".into(),
-                json!(cursor.wall(self.zone).hm),
-            );
-            span.extend(obj(json!({"name_en": en, "name_ne": ne, "subtitle_en": sub_en, "subtitle_ne": sub_ne, "is_auspicious": good})));
-            span.insert("loka".into(), json!(loka));
-            if end < self.next_sunrise {
-                self.attach_end(&mut span, end);
-            } else {
-                span.insert("until_full_night".into(), json!(true));
-            }
-            out.push(Value::Object(span));
+            let (name_en, name_ne, subtitle_en, subtitle_ne, is_auspicious) =
+                BHADRA_LOKA[loka_index];
+            out.push(self.span(
+                cursor,
+                end,
+                Bhadra {
+                    name_en,
+                    name_ne,
+                    subtitle_en,
+                    subtitle_ne,
+                    is_auspicious,
+                    loka,
+                },
+            ));
             cursor = end.add_seconds(90);
         }
         out
     }
-}
-
-fn current(segments: &[Value], fallback: impl FnOnce() -> Map<String, Value>) -> Value {
-    segments
-        .first()
-        .cloned()
-        .unwrap_or_else(|| Value::Object(fallback()))
 }
 
 /// `build_nivas_shool_block` for the day from sunrise to the next sunrise.
@@ -194,7 +320,7 @@ pub(crate) fn nivas_shool<I: PyInstant>(
     next_sunrise: I,
     weekday_py: usize,
     zone: &Zone,
-) -> Value {
+) -> NivasShool {
     let w = Window {
         sunrise,
         next_sunrise,
@@ -217,15 +343,24 @@ pub(crate) fn nivas_shool<I: PyInstant>(
     let homa = w.timed(&homa_bounds, homahuti);
     let chandra = w.timed(&rashi_bounds, chandra_vasa);
     let bhadra = w.vishti();
-    let (rv_key, rv_en, rv_ne) = RAHU_VASA[weekday_py % 7];
-    json!({
-        "homahuti": {"current": current(&homa, || homahuti(sunrise)), "segments": homa},
-        "disha_shool": disha_shool(weekday_py),
-        "rahu_vasa": {"direction_key": rv_key, "name_en": rv_en, "name_ne": rv_ne},
-        "agnivasa": {"current": current(&agni, || agnivasa(tithi_at(sunrise).number, weekday_py)), "segments": agni},
-        "shivavasa": {"current": current(&shiva, || shivavasa(tithi_at(sunrise).number)), "segments": shiva},
-        "chandra_vasa": {"current": current(&chandra, || chandra_vasa(sunrise)), "segments": chandra},
-        "bhadravasa": {"active": !bhadra.is_empty(), "segments": bhadra},
-        "kumbha_chakra": {"current": current(&kumbh, || kumbha(tithi_at(sunrise).display_number, weekday_py)), "segments": kumbh},
-    })
+    let (key, name_en, name_ne) = RAHU_VASA[weekday_py % 7];
+    NivasShool {
+        homahuti: spans(homa, || homahuti(sunrise)),
+        disha_shool: disha_shool(weekday_py),
+        rahu_vasa: Direction {
+            key,
+            name_en,
+            name_ne,
+        },
+        agnivasa: spans(agni, || agnivasa(tithi_at(sunrise).number, weekday_py)),
+        shivavasa: spans(shiva, || shivavasa(tithi_at(sunrise).number)),
+        chandra_vasa: spans(chandra, || chandra_vasa(sunrise)),
+        bhadravasa: Bhadravasa {
+            active: !bhadra.is_empty(),
+            segments: bhadra,
+        },
+        kumbha_chakra: spans(kumbh, || {
+            kumbha(tithi_at(sunrise).display_number, weekday_py)
+        }),
+    }
 }

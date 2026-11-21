@@ -1,11 +1,13 @@
 //! Chandrabalam, tarabalam, their navatara tables and the daily rashifal.
 
-use serde_json::{Map, Value, json};
+use serde::Serialize;
+use serde_json::{Value, json};
 use timescale::{PyInstant, Zone};
 
 use crate::{
     daily::{NAKSHATRA_NAMES_NE, RASHI_NAMES, RASHI_NAMES_NE, from_sunrise, nepali_digits},
     names::NAKSHATRA_NAMES,
+    payload::to_value,
     text_tables::{
         LUCKY_COLOR_EN, LUCKY_COLOR_NE, MOORTI_EN, MOORTI_NE, MOORTI_PHALA_EN, MOORTI_PHALA_NE,
         NAVATARA, RASHI_NAMA_AKSHARAS_NE, RASHI_TITLE_EN, REMEDY_EN, REMEDY_NE, TONE_PHALA_EN,
@@ -96,25 +98,63 @@ fn navatara_number(moon: usize, target: usize, cycle: usize) -> usize {
     if diff == 0 { 1 } else { (9 - diff % 9) % 9 + 1 }
 }
 
+/// One nakshatra graded by navatara from the Moon's.
+#[derive(Debug, Serialize)]
+struct TaraRow {
+    index: usize,
+    name: &'static str,
+    name_en: &'static str,
+    tara: &'static str,
+    quality: &'static str,
+    tone: &'static str,
+    tara_num: usize,
+}
+
 /// `build_tarabala_table`: all 27 nakshatras graded by navatara from the Moon's.
-pub(crate) fn tarabala_table(block: &Value) -> Value {
-    let moon = number(&block["number"]) - 1;
-    let rows: Vec<Value> = (0..27)
-        .map(|i| {
-            let tara_num = navatara_number(moon, i, 27);
-            let (tara, _, quality, _, tone) = NAVATARA[tara_num - 1];
-            json!({
-                "index": i, "name": NAKSHATRA_NAMES_NE[i], "name_en": NAKSHATRA_NAMES[i],
-                "tara": tara, "quality": quality, "tone": tone, "tara_num": tara_num,
+#[derive(Debug, Serialize)]
+pub(crate) struct TarabalaTable {
+    moon_index: usize,
+    moon_label: String,
+    moon_label_en: String,
+    rows: Vec<TaraRow>,
+}
+
+impl TarabalaTable {
+    pub(crate) fn new(block: &Value) -> Self {
+        let moon = number(&block["number"]) - 1;
+        let rows = (0..27)
+            .map(|i| {
+                let tara_num = navatara_number(moon, i, 27);
+                let (tara, _, quality, _, tone) = NAVATARA[tara_num - 1];
+                TaraRow {
+                    index: i,
+                    name: NAKSHATRA_NAMES_NE[i],
+                    name_en: NAKSHATRA_NAMES[i],
+                    tara,
+                    quality,
+                    tone,
+                    tara_num,
+                }
             })
-        })
-        .collect();
-    json!({
-        "moon_index": moon,
-        "moon_label": block["name_ne"].as_str().unwrap_or(NAKSHATRA_NAMES_NE[moon]),
-        "moon_label_en": block["name"].as_str().unwrap_or(NAKSHATRA_NAMES[moon]),
-        "rows": rows,
-    })
+            .collect();
+        Self {
+            moon_index: moon,
+            moon_label: block["name_ne"]
+                .as_str()
+                .unwrap_or(NAKSHATRA_NAMES_NE[moon])
+                .to_owned(),
+            moon_label_en: block["name"]
+                .as_str()
+                .unwrap_or(NAKSHATRA_NAMES[moon])
+                .to_owned(),
+            rows,
+        }
+    }
+}
+
+/// The tarabala table as a JSON tree, for callers that still build trees.
+pub(crate) fn tarabala_table(block: &Value) -> Value {
+    to_value(&TarabalaTable::new(block))
 }
 
 fn chandra_house_quality(house: usize) -> (&'static str, &'static str) {
@@ -126,25 +166,63 @@ fn chandra_house_quality(house: usize) -> (&'static str, &'static str) {
     }
 }
 
+/// One janma rashi graded by the transit Moon's house.
+#[derive(Debug, Serialize)]
+struct ChandraRow {
+    index: usize,
+    name: &'static str,
+    name_en: &'static str,
+    house: usize,
+    tara: String,
+    quality: &'static str,
+    tone: &'static str,
+}
+
 /// `build_chandrabalam_table`: twelve janma rashis graded by the transit Moon's house.
-pub(crate) fn chandrabala_table(chandra_rashi: &Value) -> Value {
-    let moon = number(&chandra_rashi["number"]) - 1;
-    let rows: Vec<Value> = (0..12)
-        .map(|i| {
-            let house = (moon + 12 - i) % 12 + 1;
-            let (quality, tone) = chandra_house_quality(house);
-            json!({
-                "index": i, "name": RASHI_NAMES_NE[i], "name_en": RASHI_NAMES[i], "house": house,
-                "tara": format!("{}औं भाव", nepali_digits(house)), "quality": quality, "tone": tone,
+#[derive(Debug, Serialize)]
+pub(crate) struct ChandrabalaTable {
+    moon_index: usize,
+    moon_label: String,
+    moon_label_en: String,
+    rows: Vec<ChandraRow>,
+}
+
+impl ChandrabalaTable {
+    pub(crate) fn new(chandra_rashi: &Value) -> Self {
+        let moon = number(&chandra_rashi["number"]) - 1;
+        let rows = (0..12)
+            .map(|i| {
+                let house = (moon + 12 - i) % 12 + 1;
+                let (quality, tone) = chandra_house_quality(house);
+                ChandraRow {
+                    index: i,
+                    name: RASHI_NAMES_NE[i],
+                    name_en: RASHI_NAMES[i],
+                    house,
+                    tara: format!("{}औं भाव", nepali_digits(house)),
+                    quality,
+                    tone,
+                }
             })
-        })
-        .collect();
-    json!({
-        "moon_index": moon,
-        "moon_label": chandra_rashi["name_ne"].as_str().unwrap_or(RASHI_NAMES_NE[moon]),
-        "moon_label_en": chandra_rashi["name"].as_str().unwrap_or(RASHI_NAMES[moon]),
-        "rows": rows,
-    })
+            .collect();
+        Self {
+            moon_index: moon,
+            moon_label: chandra_rashi["name_ne"]
+                .as_str()
+                .unwrap_or(RASHI_NAMES_NE[moon])
+                .to_owned(),
+            moon_label_en: chandra_rashi["name"]
+                .as_str()
+                .unwrap_or(RASHI_NAMES[moon])
+                .to_owned(),
+            rows,
+        }
+    }
+}
+
+/// The chandrabala table as a JSON tree, for callers that still build trees.
+pub(crate) fn chandrabala_table(chandra_rashi: &Value) -> Value {
+    to_value(&ChandrabalaTable::new(chandra_rashi))
 }
 
 fn moorti(house: usize) -> usize {
@@ -163,52 +241,108 @@ fn tone_index(tone: &str) -> usize {
         .unwrap_or(2)
 }
 
+/// One sign of the daily rashifal.
+#[derive(Debug, Serialize)]
+struct SignRow {
+    index: usize,
+    id: usize,
+    name: &'static str,
+    name_en: &'static str,
+    title_en: &'static str,
+    syllables_ne: &'static str,
+    tara: String,
+    quality: &'static str,
+    tone: &'static str,
+    house_from_moon: usize,
+    moorti: &'static str,
+    moorti_ne: &'static str,
+    moorti_en: &'static str,
+    lucky_color_ne: &'static str,
+    lucky_color_en: &'static str,
+    lucky_number_ne: String,
+    lucky_number_en: String,
+    prediction_ne: String,
+    prediction_en: String,
+}
+
+/// How the rashifal was worked out.
+#[derive(Debug, Serialize)]
+struct Method {
+    frame: &'static str,
+    ayanamsa: &'static str,
+    chandrabala: &'static str,
+    moorti: &'static str,
+}
+
 /// `build_daily_rashifal`: twelve signs from the chandrabala table.
-pub(crate) fn rashifal(table: &Value, vaara: u32) -> Value {
-    let rows = table["rows"].as_array().map_or(&[][..], Vec::as_slice);
-    let signs: Vec<Value> = rows
-        .iter()
-        .map(|row| {
-            let i = number(&row["index"]);
-            let tone = row["tone"].as_str().unwrap_or("neutral");
-            let house = number(&row["house"]);
-            let m = moorti(house);
-            let t = tone_index(tone);
-            let weak = matches!(tone, "bad" | "worst");
-            let moorti_key = ["swarna", "rajata", "tamra", "loha"][m];
-            let prediction = |phala: &[&str; 5], moorti_phala: &[&str; 4], remedy: &[&str; 12]| {
-                let mut parts = vec![phala[t], moorti_phala[m]];
-                if weak {
-                    parts.push(remedy[i % 12]);
+#[derive(Debug, Serialize)]
+pub(crate) struct Rashifal {
+    period: &'static str,
+    anchor: &'static str,
+    vaara_num: u32,
+    method: Method,
+    moon_index: usize,
+    moon_label: String,
+    moon_label_en: String,
+    signs: Vec<SignRow>,
+}
+
+impl Rashifal {
+    pub(crate) fn new(table: &ChandrabalaTable, vaara: u32) -> Self {
+        let signs = table
+            .rows
+            .iter()
+            .map(|row| {
+                let i = row.index;
+                let (tone, house) = (row.tone, row.house);
+                let m = moorti(house);
+                let t = tone_index(tone);
+                let weak = matches!(tone, "bad" | "worst");
+                let prediction =
+                    |phala: &[&str; 5], moorti_phala: &[&str; 4], remedy: &[&str; 12]| {
+                        let mut parts = vec![phala[t], moorti_phala[m]];
+                        if weak {
+                            parts.push(remedy[i % 12]);
+                        }
+                        parts.join(" ")
+                    };
+                SignRow {
+                    index: i,
+                    id: i + 1,
+                    name: row.name,
+                    name_en: row.name_en,
+                    title_en: RASHI_TITLE_EN[i],
+                    syllables_ne: RASHI_NAMA_AKSHARAS_NE[i],
+                    tara: row.tara.clone(),
+                    quality: row.quality,
+                    tone,
+                    house_from_moon: house,
+                    moorti: ["swarna", "rajata", "tamra", "loha"][m],
+                    moorti_ne: MOORTI_NE[m],
+                    moorti_en: MOORTI_EN[m],
+                    lucky_color_ne: LUCKY_COLOR_NE[m],
+                    lucky_color_en: LUCKY_COLOR_EN[m],
+                    lucky_number_ne: nepali_digits(house),
+                    lucky_number_en: house.to_string(),
+                    prediction_ne: prediction(&TONE_PHALA_NE, &MOORTI_PHALA_NE, &REMEDY_NE),
+                    prediction_en: prediction(&TONE_PHALA_EN, &MOORTI_PHALA_EN, &REMEDY_EN),
                 }
-                parts.join(" ")
-            };
-            json!({
-                "index": i, "id": i + 1, "name": row["name"], "name_en": row["name_en"],
-                "title_en": RASHI_TITLE_EN[i], "syllables_ne": RASHI_NAMA_AKSHARAS_NE[i],
-                "tara": row["tara"], "quality": row["quality"], "tone": tone, "house_from_moon": house,
-                "moorti": moorti_key, "moorti_ne": MOORTI_NE[m], "moorti_en": MOORTI_EN[m],
-                "lucky_color_ne": LUCKY_COLOR_NE[m], "lucky_color_en": LUCKY_COLOR_EN[m],
-                "lucky_number_ne": nepali_digits(house), "lucky_number_en": house.to_string(),
-                "prediction_ne": prediction(&TONE_PHALA_NE, &MOORTI_PHALA_NE, &REMEDY_NE),
-                "prediction_en": prediction(&TONE_PHALA_EN, &MOORTI_PHALA_EN, &REMEDY_EN),
             })
-        })
-        .collect();
-    let mut meta = Map::new();
-    meta.insert("period".into(), json!("daily"));
-    meta.insert("anchor".into(), json!("sunrise"));
-    meta.insert("vaara_num".into(), json!(vaara));
-    meta.insert(
-        "method".into(),
-        json!({
-            "frame": "drik_ganita", "ayanamsa": "Surya Siddhanta",
-            "chandrabala": "transit_moon_house", "moorti": "transit_moon_house_from_janma_rashi",
-        }),
-    );
-    meta.insert("moon_index".into(), table["moon_index"].clone());
-    meta.insert("moon_label".into(), table["moon_label"].clone());
-    meta.insert("moon_label_en".into(), table["moon_label_en"].clone());
-    meta.insert("signs".into(), Value::Array(signs));
-    Value::Object(meta)
+            .collect();
+        Self {
+            period: "daily",
+            anchor: "sunrise",
+            vaara_num: vaara,
+            method: Method {
+                frame: "drik_ganita",
+                ayanamsa: "Surya Siddhanta",
+                chandrabala: "transit_moon_house",
+                moorti: "transit_moon_house_from_janma_rashi",
+            },
+            moon_index: table.moon_index,
+            moon_label: table.moon_label.clone(),
+            moon_label_en: table.moon_label_en.clone(),
+            signs,
+        }
+    }
 }

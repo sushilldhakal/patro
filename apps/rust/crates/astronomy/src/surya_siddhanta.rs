@@ -23,6 +23,7 @@
 mod body;
 mod eclipse;
 mod frame;
+mod lagna;
 mod modulo;
 mod position;
 mod rise_set;
@@ -38,6 +39,7 @@ pub use frame::{
     OBLIQUITY, altitude, ascendant, ascendant_sayana, ayanamsha, equation_of_time_days, equatorial,
     local_sidereal_degrees,
 };
+pub use lagna::{next_ascendant_crossing, next_lagna_change};
 pub use position::{SPEED_HALF_STEP, true_longitude_and_speed, true_position};
 pub use rise_set::{Crossing, next_rise_or_set};
 pub use yuga::{

@@ -2,7 +2,7 @@
 
 use super::{
     body::Body,
-    frame::{altitude, ayanamsha, equatorial, local_sidereal_degrees},
+    frame::{SIDEREAL_RATE, altitude, ayanamsha, equatorial, local_sidereal_degrees},
     modulo::wrap,
     position::true_position,
 };
@@ -23,17 +23,21 @@ const SCAN_STEP: f64 = 1.0 / 48.0;
 const SCAN_WINDOW: f64 = 1.6;
 /// Bisection steps once a Moon crossing is bracketed (~1 ms).
 const BISECTIONS: usize = 32;
-/// Half-width (days, ~43 min) of the bracket around the Sun's predicted crossing.
-const SUN_BRACKET: f64 = 0.03;
+/// Half-width (days, ~43 min) of the bracket around a predicted crossing.
+const BRACKET: f64 = 0.03;
+/// Prediction passes for a body whose right ascension moves quickly (the Moon moves
+/// 13° a day against the sky's 361°, so each pass shrinks the error ~25-fold).
+const MOVING_BODY_PASSES: usize = 4;
 
 /// The first rise or set of `body` after `jd_start` (JD UT), or `None` when it
 /// does not cross within 1.6 days.
 ///
-/// The Sun's crossing is solved directly: its hour angle at the horizon (from the
+/// The crossing is solved directly: the body's hour angle at the horizon (from its
 /// declination, as the text derives day length from the ascensional difference)
-/// predicts the time, and a bracketed secant finishes it in a few evaluations. The
-/// Moon, and the Sun near the poles, use a 30-minute scan and a bisection. Results
-/// are memoized per start, place and horizon.
+/// predicts the time, and a bracketed secant finishes it in a few evaluations. Near
+/// the poles, and when the prediction could have skipped an earlier crossing, a
+/// 30-minute scan and a bisection decide. Results are memoized per start, place and
+/// horizon.
 #[must_use]
 pub fn next_rise_or_set(
     body: Body,
@@ -51,11 +55,8 @@ pub fn next_rise_or_set(
         longitude,
         horizon,
         || {
-            let solved = match body {
-                Body::Sun => sun_crossing(jd_start, latitude, longitude, crossing, horizon),
-                _ => None,
-            };
-            solved.or_else(|| scan(body, jd_start, latitude, longitude, crossing, horizon))
+            direct_crossing(body, jd_start, latitude, longitude, crossing, horizon)
+                .or_else(|| scan(body, jd_start, latitude, longitude, crossing, horizon))
         },
     )
 }
@@ -103,12 +104,15 @@ fn scan(
     None
 }
 
-/// The Sun's first crossing after `jd_start`, solved directly: the hour angle of
-/// the crossing (from the declination, as the text derives day length from the
-/// ascensional difference) predicts it, and a bracketed secant finishes it.
+/// A body's first crossing after `jd_start`, solved directly: the hour angle of the
+/// crossing (from the declination, as the text derives day length from the
+/// ascensional difference) predicts it, and a bracketed secant finishes it. The
+/// Moon's right ascension moves 13° a day, so its prediction is repeated, each pass
+/// shrinking the error about twenty-fold, until it settles within seconds.
 /// `None` near the poles or when the prediction does not bracket a crossing; the
 /// full scan decides those.
-fn sun_crossing(
+fn direct_crossing(
+    body: Body,
     jd_start: f64,
     latitude: f64,
     longitude: f64,
@@ -116,29 +120,38 @@ fn sun_crossing(
     horizon: f64,
 ) -> Option<f64> {
     let rising = crossing == Crossing::Rise;
-    let mid = jd_start + 0.5;
-    let (ra, dec) = equatorial(true_position(Body::Sun, mid).0 + ayanamsha(mid), 0.0);
-    let (phi, d) = (latitude.to_radians(), dec.to_radians());
-    let cos_h0 = (horizon.to_radians().sin() - phi.sin() * d.sin()) / (phi.cos() * d.cos());
-    if cos_h0.is_nan() || cos_h0.abs() >= 0.85 {
-        return None;
+    let passes = if body == Body::Sun {
+        1
+    } else {
+        MOVING_BODY_PASSES
+    };
+    let lst_start = local_sidereal_degrees(jd_start, longitude);
+    let phi = latitude.to_radians();
+    let mut estimate = jd_start + 0.5;
+    for _ in 0..passes {
+        let (lon, lat) = true_position(body, estimate);
+        let (ra, dec) = equatorial(lon + ayanamsha(estimate), lat);
+        let d = dec.to_radians();
+        let cos_h0 = (horizon.to_radians().sin() - phi.sin() * d.sin()) / (phi.cos() * d.cos());
+        if cos_h0.is_nan() || cos_h0.abs() >= 0.85 {
+            return None;
+        }
+        let h0 = cos_h0.acos().to_degrees();
+        let target = if rising { -h0 } else { h0 };
+        estimate = jd_start + wrap(target + ra - lst_start) / SIDEREAL_RATE;
     }
-    let h0 = cos_h0.acos().to_degrees();
-    let hour_now = local_sidereal_degrees(jd_start, longitude) - ra;
-    let target = if rising { -h0 } else { h0 };
-    let estimate = jd_start + wrap(target - hour_now) / 360.0;
-    let (lo, hi) = (estimate - SUN_BRACKET, estimate + SUN_BRACKET);
+    let (lo, hi) = (estimate - BRACKET, estimate + BRACKET);
     // The same crossing a day earlier must be clearly before the start, or the
     // prediction may have skipped one that falls just after it.
     let day_earlier = estimate - 1.0;
     if lo <= jd_start
-        || day_earlier + 2.0 * SUN_BRACKET >= jd_start
+        || day_earlier + 2.0 * BRACKET >= jd_start
         || hi >= jd_start + SCAN_WINDOW - SCAN_STEP
     {
         return None;
     }
     let sign = if rising { 1.0 } else { -1.0 };
-    let g = |t: f64| sign * (altitude(Body::Sun, t, latitude, longitude) - horizon);
+    let g = |t: f64| sign * (altitude(body, t, latitude, longitude) - horizon);
     let (g_lo, g_hi) = (g(lo), g(hi));
     if !(g_lo < 0.0 && g_hi > 0.0) {
         return None;

@@ -13,7 +13,9 @@ use timescale::{CivilDay, PyInstant, ZonedInstant};
 use crate::{
     angas::tithi,
     blocks_bala::{chandrabala_table, chandrabalam, tarabala_table, tarabalam},
-    blocks_lagna::{lagna, lagna_spans_with_pushkara, panchaka_rahita, udaya_lagna},
+    blocks_lagna::{
+        lagna, lagna_rows_value, lagna_spans_with_pushkara, panchaka_rahita, udaya_lagna,
+    },
     daily::{
         DailyError, Location, chandra_rashi_spans, karana_block, nakshatra_block,
         nakshatra_pada_spans, paksha_block, rashi_payload, tithi_block, yoga_block,
@@ -77,8 +79,8 @@ pub fn midnight_overlay(
     let tara_table = tarabala_table(&nakshatra);
     let chandra_table = chandrabala_table(&chandra_rashi);
     let panchaka = panchaka_rahita(midnight, &spans, vaara, zone);
-    let udaya = udaya_lagna(&spans);
-    let lagna_spans = Value::Array(spans.into_iter().map(|s| Value::Object(s.json)).collect());
+    let udaya = crate::payload::to_value(&udaya_lagna(&spans));
+    let lagna_spans = lagna_rows_value(&spans);
 
     Ok(MidnightOverlay {
         detail: vec![

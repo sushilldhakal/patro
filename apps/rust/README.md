@@ -94,6 +94,23 @@ from it instead of searching again.
 - `yearly` + `events`: every boundary generated once per 64-day chunk and read back by
   binary search (`next_event`, `prev_event`, `events_between`, `next_sankranti`);
   sunrise/sunset memoized per start and place.
+- Lagna in closed form: `surya_siddhanta::lagna` inverts the ascendant formula for the
+  sidereal time at which the rising point reaches a degree (`next_ascendant_crossing`),
+  so a sign change or a pushkara navamsha crossing is a formula plus a few evaluations,
+  not a search. The sign never changes within a four-hour window at high latitude now;
+  there is no window. The pushkara lists are complete (Python dropped a sign's crossings
+  at random, depending on sub-second jitter at the span end).
+- Rise and set: `direct_crossing` predicts the crossing from the hour angle, repeated a
+  few times for the Moon (its right ascension moves 13° a day), then a bracketed secant
+  finishes it. The 30-minute scan remains for the poles and for the rare window where the
+  prediction could have skipped a crossing.
+- Typed blocks: the heavy blocks of the daily payload (bala tables and rashifal, hora,
+  choghadiya, nivas and shool, lagna rows and udaya lagna, planets, muhurta) are structs
+  whose field order is their JSON key order (`panchanga::payload::to_value` makes the tree
+  where a caller still needs one). The month and year rows read a *light* payload
+  (`build_daily_light`: the same keys and values, without the blocks a row discards), which
+  makes a lite month or year several times faster. `tests/light_payload.rs` pins that the
+  light payload equals the full one on every key it has.
 - Contract: the API's shape is Python's, because the mobile and web apps read it:
   the same routes, keys in the same order, types, lists, names and integers. The
   *values* are the engine's own. Boundaries are the engine's solved times, printed

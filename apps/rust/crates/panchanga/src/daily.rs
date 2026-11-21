@@ -21,9 +21,12 @@ use timescale::{CivilDay, JdInstant, Moment, PyInstant, UtcInstant, Zone};
 
 use crate::{
     angas::{NAKSHATRA_SPAN, Paksha, Tithi, karana, nakshatra, tithi, vara, yoga},
-    blocks_bala::{chandrabala_table, chandrabalam, rashifal, tarabala_table, tarabalam},
-    blocks_lagna::{lagna, lagna_spans, lagna_spans_plain, panchaka_rahita, planets, udaya_lagna},
-    blocks_muhurta::{muhurta, muhurta_civil},
+    blocks_bala::{ChandrabalaTable, Rashifal, TarabalaTable, chandrabalam, tarabalam},
+    blocks_lagna::{
+        PlanetTable, lagna, lagna_rows_value, lagna_spans, lagna_spans_plain, panchaka_rahita,
+        udaya_lagna,
+    },
+    blocks_muhurta::{Muhurta, muhurta, muhurta_basic},
     blocks_nivas::nivas_shool,
     blocks_solar::{civil_probe_day, solar_corrections},
     blocks_time::{aayan, aayan_vedic, choghadiya, hora, ritu, ritu_vedic},
@@ -34,6 +37,7 @@ use crate::{
     lunar_month::{calendar_layers, merge_for_day},
     names::{KARANA_NAMES, NAKSHATRA_NAMES, VAARA_ENGLISH, VAARA_NAMES, YOGA_NAMES},
     nepal_sambat::{NsInput, ns_date},
+    payload::to_value,
     pyfloat::{py_floordiv, py_int, py_mod, py_round, py_round_int},
     samvatsara::samvatsara_payload,
 };
@@ -963,11 +967,32 @@ pub fn build_daily(day: CivilDay, location: &Location) -> Result<Value, DailyErr
         if let Some(payload) = crate::store::get(&stored_key) {
             return std::sync::Arc::new(Ok(payload));
         }
-        let built = day_times(day, location).and_then(|times| assemble(day, times, location, None));
+        let built = day_times(day, location)
+            .and_then(|times| assemble(day, times, location, None, Detail::Full));
         if let Ok(payload) = &built {
             crate::store::put(&stored_key, location.city_id, payload);
         }
         std::sync::Arc::new(built)
+    }))
+    .clone()
+}
+
+/// [`build_daily`] without the blocks a month or year row never reads (see
+/// [`Detail::Light`]): the same values for every key it has, at a fraction of the work.
+///
+/// # Errors
+///
+/// As [`build_daily`].
+pub fn build_daily_light(day: CivilDay, location: &Location) -> Result<Value, DailyError> {
+    if !day.is_datetime_range() {
+        return Err(DailyError::BeforeGregorian(day));
+    }
+    let key = DailyKey::of(day, location);
+    (*DAILY_LIGHT_MEMO.get_or_insert_with(&key, || {
+        std::sync::Arc::new(
+            day_times(day, location)
+                .and_then(|times| assemble(day, times, location, None, Detail::Light)),
+        )
     }))
     .clone()
 }
@@ -990,7 +1015,7 @@ pub fn precompute_day(
     if force == Precompute::SkipStored && crate::store::contains(&key) {
         return Ok(false);
     }
-    let payload = assemble(day, day_times(day, location)?, location, None)?;
+    let payload = assemble(day, day_times(day, location)?, location, None, Detail::Full)?;
     crate::store::put(&key, location.city_id, &payload);
     Ok(true)
 }
@@ -1036,6 +1061,18 @@ impl DailyKey {
     }
 }
 
+/// How much of the daily payload to build.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Detail {
+    /// Every block (what the day routes return).
+    Full,
+    /// What a month or year row reads: the angas, sun and moon times, the lunar and
+    /// Nepal Sambat dates, the Abhijit window. Without the blocks that cost the most
+    /// (the muhurta timings, lagna spans, nivas, hora, the graha table, the bala
+    /// tables), which a row discards.
+    Light,
+}
+
 /// What a daily payload depends on: the day and every field of the location.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct DailyKey {
@@ -1053,6 +1090,11 @@ struct DailyKey {
 static DAILY_MEMO: std::sync::LazyLock<crate::memo::Memo<DailyKey, Result<Value, DailyError>>> =
     std::sync::LazyLock::new(|| crate::memo::Memo::new(96));
 
+/// Recently built light days (a few KB each): a year of month rows.
+static DAILY_LIGHT_MEMO: std::sync::LazyLock<
+    crate::memo::Memo<DailyKey, Result<Value, DailyError>>,
+> = std::sync::LazyLock::new(|| crate::memo::Memo::new(400));
+
 /// `build_daily_panchanga_civil`: the udaya panchanga of a civil day on the signed
 /// patro axis, for days `datetime` cannot hold (before 1582-10-15, and BCE).
 ///
@@ -1069,12 +1111,18 @@ pub fn build_daily_civil(
     location: &Location,
     patro: calendar::BsDate,
 ) -> Result<Value, DailyError> {
-    assemble(day, day_times_jd(day, location)?, location, Some(patro))
+    assemble(
+        day,
+        day_times_jd(day, location)?,
+        location,
+        Some(patro),
+        Detail::Full,
+    )
 }
 
 /// The blocks Python builds differently for a `datetime` and a `UtInstant` sunrise.
 trait DayInstant: PyInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Value;
+    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Muhurta;
     fn lagna_rows(
         sunrise: Self,
         next: Self,
@@ -1085,7 +1133,7 @@ trait DayInstant: PyInstant {
 }
 
 impl DayInstant for UtcInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Value {
+    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Muhurta {
         muhurta(sunrise, sunset, next, vaara, zone)
     }
 
@@ -1101,8 +1149,8 @@ impl DayInstant for UtcInstant {
 }
 
 impl DayInstant for JdInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, _next: Self, vaara: u32, zone: &Zone) -> Value {
-        muhurta_civil(sunrise, sunset, vaara, zone)
+    fn muhurta_block(sunrise: Self, sunset: Self, _next: Self, vaara: u32, zone: &Zone) -> Muhurta {
+        muhurta_basic(sunrise, sunset, vaara, zone)
     }
 
     fn lagna_rows(
@@ -1162,7 +1210,9 @@ fn assemble<I: DayInstant>(
     times: DayTimes<I>,
     location: &Location,
     patro: Option<calendar::BsDate>,
+    detail: Detail,
 ) -> Result<Value, DailyError> {
+    let full = detail == Detail::Full;
     let zone = &location.zone;
     let observer = location.observer();
     let DayTimes {
@@ -1234,24 +1284,32 @@ fn assemble<I: DayInstant>(
     );
     let day_ghati = (day_s / (day_s + night_s) * 60.0).min(60.0);
     b.insert("day_ghati", json!(day_ghati));
-    b.insert("choghadiya", choghadiya(day_ghati, vaara.number));
-    b.insert(
-        "hora",
-        hora(sunrise, sunset, next_sunrise, vaara.number, zone),
-    );
-    b.insert(
-        "solar_corrections",
-        solar_corrections(solar_day, location.lat, location.lon, zone, sunrise),
-    );
+    if full {
+        b.insert("choghadiya", choghadiya(day_ghati, vaara.number));
+        b.insert(
+            "hora",
+            hora(sunrise, sunset, next_sunrise, vaara.number, zone),
+        );
+        b.insert(
+            "solar_corrections",
+            solar_corrections(solar_day, location.lat, location.lon, zone, sunrise),
+        );
+    }
     b.insert(
         "muhurta",
-        I::muhurta_block(sunrise, sunset, next_sunrise, vaara.number, zone),
+        to_value(&if full {
+            I::muhurta_block(sunrise, sunset, next_sunrise, vaara.number, zone)
+        } else {
+            muhurta_basic(sunrise, sunset, vaara.number, zone)
+        }),
     );
     let weekday_py = usize::try_from(i64::from(vaara.number) + 6).map_or(0, |w| w % 7);
-    b.insert(
-        "nivas_shool",
-        nivas_shool(sunrise, next_sunrise, weekday_py, zone),
-    );
+    if full {
+        b.insert(
+            "nivas_shool",
+            to_value(&nivas_shool(sunrise, next_sunrise, weekday_py, zone)),
+        );
+    }
     b.insert(
         "moonrise",
         moonrise.map_or(Value::Null, |t| time_block(t, zone, ShortClock::Truncated)),
@@ -1278,50 +1336,58 @@ fn assemble<I: DayInstant>(
     b.insert("aayan_vedic", aayan_vedic(sunrise_jd));
     b.insert("tithi", tithi_block(sunrise, sunrise, zone, &tithi_info));
     let nak_block = nakshatra_block(sunrise, sunrise, zone);
-    b.insert("tarabalam", tarabalam(sunrise, &nak_block, zone));
-    b.insert("tarabala_table", tarabala_table(&nak_block));
+    if full {
+        b.insert("tarabalam", tarabalam(sunrise, &nak_block, zone));
+        b.insert("tarabala_table", to_value(&TarabalaTable::new(&nak_block)));
+    }
     b.insert("nakshatra", nak_block);
     b.insert("yoga", yoga_block(sunrise, sunrise, zone));
     b.insert("karana", karana_block(sunrise, sunrise, zone));
     b.insert("paksha", paksha_block(&lunar, paksha));
     let chandra_rashi = rashi_payload(moon_longitude(sunrise_jd));
-    let bala_table = chandrabala_table(&chandra_rashi);
-    b.insert("rashifal", rashifal(&bala_table, vaara.number));
-    b.insert("chandrabala_table", bala_table);
+    if full {
+        let bala_table = ChandrabalaTable::new(&chandra_rashi);
+        b.insert(
+            "rashifal",
+            to_value(&Rashifal::new(&bala_table, vaara.number)),
+        );
+        b.insert("chandrabala_table", to_value(&bala_table));
+    }
     b.insert("chandra_rashi", chandra_rashi);
     b.insert("moon_phase", moon_phase(sunrise_jd));
-    let rashi_spans = chandra_rashi_spans(sunrise, next_sunrise, zone);
-    b.insert("chandrabalam", chandrabalam(sunrise, &rashi_spans, zone));
-    b.insert("chandra_rashi_spans", rashi_spans);
-    b.insert(
-        "nakshatra_pada_spans",
-        nakshatra_pada_spans(sunrise, next_sunrise, zone),
-    );
+    if full {
+        let rashi_spans = chandra_rashi_spans(sunrise, next_sunrise, zone);
+        b.insert("chandrabalam", chandrabalam(sunrise, &rashi_spans, zone));
+        b.insert("chandra_rashi_spans", rashi_spans);
+        b.insert(
+            "nakshatra_pada_spans",
+            nakshatra_pada_spans(sunrise, next_sunrise, zone),
+        );
+    }
     b.insert("surya_rashi", rashi_payload(sun_longitude(sunrise_jd)));
     b.insert("surya_nakshatra", surya_nakshatra(sunrise_jd));
     b.insert("ritu", ritu(sunrise_jd, location.lat));
     b.insert("ritu_vedic", ritu_vedic(sunrise_jd, location.lat));
-    b.insert("planets", planets(sunrise_jd));
-    b.insert(
-        "planets_anchor",
-        json!({
-            "type": "udayakal",
-            "local_time": sunrise.add_seconds(30).wall(zone).hm,
-            "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
-            "label_en": "Udayakalika Spashtagraha (sunrise)",
-        }),
-    );
-    b.insert("lagna", lagna(sunrise_jd, location.lat, location.lon));
-    let spans = I::lagna_rows(sunrise, next_sunrise, location.lat, location.lon, zone);
-    b.insert("udaya_lagna", udaya_lagna(&spans));
-    b.insert(
-        "panchaka_rahita",
-        panchaka_rahita(sunrise, &spans, vaara.number, zone),
-    );
-    b.insert(
-        "lagna_spans",
-        Value::Array(spans.into_iter().map(|s| Value::Object(s.json)).collect()),
-    );
+    if full {
+        b.insert("planets", to_value(&PlanetTable::new(sunrise_jd)));
+        b.insert(
+            "planets_anchor",
+            json!({
+                "type": "udayakal",
+                "local_time": sunrise.add_seconds(30).wall(zone).hm,
+                "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
+                "label_en": "Udayakalika Spashtagraha (sunrise)",
+            }),
+        );
+        b.insert("lagna", lagna(sunrise_jd, location.lat, location.lon));
+        let spans = I::lagna_rows(sunrise, next_sunrise, location.lat, location.lon, zone);
+        b.insert("udaya_lagna", to_value(&udaya_lagna(&spans)));
+        b.insert(
+            "panchaka_rahita",
+            panchaka_rahita(sunrise, &spans, vaara.number, zone),
+        );
+        b.insert("lagna_spans", lagna_rows_value(&spans));
+    }
     b.insert("lunar_calendar", lunar_layers);
     b.insert("lunar_month", lunar);
     b.insert(

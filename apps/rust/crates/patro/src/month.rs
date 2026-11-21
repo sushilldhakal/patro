@@ -1,7 +1,7 @@
 //! The BS month grid (`build_month_calendar`, `_month_row_from_panchanga`, `_stamp_month_grid`).
 
 use calendar::BsDate;
-use panchanga::daily::{DailyError, Location, build_daily, build_daily_civil};
+use panchanga::daily::{DailyError, Location, build_daily, build_daily_civil, build_daily_light};
 use serde_json::{Map, Value, json};
 use timescale::CivilDay;
 
@@ -118,15 +118,41 @@ fn embed_for(day: CivilDay, location: &Location, raw: &Value, embed: Embed, grid
     state
 }
 
+/// How much of a day's panchanga a month row needs.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum RawDetail {
+    /// Only what the row itself reads: no heavy blocks to build and throw away.
+    Light,
+    /// Everything, for rows that embed the panchanga.
+    Full,
+}
+
+impl RawDetail {
+    fn for_embed(embed: Embed) -> Self {
+        if embed == Embed::Lite {
+            Self::Light
+        } else {
+            Self::Full
+        }
+    }
+}
+
 /// `_panchanga_for_patro_day`: the CE builder for a `datetime` day, the signed-axis
-/// builder (with the patro date the caller already knows) for any other.
+/// builder (with the patro date the caller already knows) for any other. A row that
+/// carries no embedded panchanga reads only the light payload, which skips the
+/// blocks that cost the most and a row discards.
 pub(crate) fn patro_day_raw(
     day: CivilDay,
     location: &Location,
     bs: BsDate,
+    detail: RawDetail,
 ) -> Result<Value, DailyError> {
     if day.is_datetime_range() {
-        build_daily(day, location)
+        if detail == RawDetail::Light {
+            build_daily_light(day, location)
+        } else {
+            build_daily(day, location)
+        }
     } else {
         build_daily_civil(day, location, bs)
     }
@@ -298,7 +324,7 @@ pub fn month_calendar(
             month: bs_month,
             day: offset + 1,
         };
-        let p = patro_day_raw(day, location, bs)?;
+        let p = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
         let todays = festivals
             .as_ref()
             .map(|f| f.on_day(day))
@@ -481,6 +507,7 @@ pub fn month_calendar_at_clock(
             month: bs_month,
             day: length.min(15),
         },
+        RawDetail::Light,
     )?;
     let lunar = &mid_raw["lunar_month"];
     let mut out = Map::new();
@@ -662,7 +689,7 @@ pub fn gregorian_month_calendar(
     for offset in 0..length {
         let day = start.add_days(offset);
         let bs = calendar::locate_patro_day(day)?;
-        let p = patro_day_raw(day, location, bs)?;
+        let p = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
         let todays = if day.is_datetime_range() {
             festivals.on_day(day)
         } else {

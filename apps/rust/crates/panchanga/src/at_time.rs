@@ -9,7 +9,9 @@ use timescale::{CivilDay, JdInstant, PyInstant, UtcInstant, Zone};
 
 use crate::{
     angas::{tithi, vara},
-    blocks_lagna::{instant_lagna, lagna_spans_with_pushkara, planets_with_extras},
+    blocks_lagna::{
+        instant_lagna, lagna_rows_value, lagna_spans_with_pushkara, planets_with_extras,
+    },
     daily::{
         DailyError, Location, day_times, day_times_jd, karana_block, nakshatra_block, tithi_block,
         yoga_block,
@@ -89,18 +91,13 @@ pub fn vedic_day_jd(
 /// rebuilds them (`build_lagna_spans` + `enrich_lagna_spans_with_pushkara`).
 #[must_use]
 pub fn day_lagna_spans<I: PyInstant>(day: &VedicDay<I>, location: &Location) -> Value {
-    Value::Array(
-        lagna_spans_with_pushkara(
-            day.sunrise,
-            day.next_sunrise,
-            location.lat,
-            location.lon,
-            &location.zone,
-        )
-        .into_iter()
-        .map(|s| Value::Object(s.json))
-        .collect(),
-    )
+    lagna_rows_value(&lagna_spans_with_pushkara(
+        day.sunrise,
+        day.next_sunrise,
+        location.lat,
+        location.lon,
+        &location.zone,
+    ))
 }
 
 /// The blocks the at-time route reads at the instant itself.

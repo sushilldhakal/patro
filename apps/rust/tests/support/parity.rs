@@ -15,6 +15,18 @@ const SECONDS_TOLERANCE: f64 = 2.5;
 const MINUTE_TOLERANCE: f64 = 61.0;
 /// Largest drift of a float derived from a time (ghati, hours, degrees at sunrise).
 const FLOAT_TOLERANCE: f64 = 0.011;
+/// The civil timeline reads ghati clocks at pala resolution (0.4 minute), so a second
+/// of drift across a pala edge moves its minute values by one pala.
+const PALA_MINUTES: f64 = 0.41;
+
+fn float_tolerance(path: &str) -> f64 {
+    if path.contains("civil_timeline") {
+        PALA_MINUTES
+    } else {
+        FLOAT_TOLERANCE
+    }
+}
+
 /// Largest drift (days) of a Julian Day printed as text.
 const JD_TEXT_TOLERANCE: f64 = 3e-5;
 
@@ -44,6 +56,18 @@ pub(crate) fn value_difference(path: &str, rust: &Value, python: &Value) -> Opti
             a.iter()
                 .find_map(|(k, v)| value_difference(&format!("{path}.{k}"), v, &b[k]))
         }
+        // The Python server skipped a sign's navamsha crossings at random (its span
+        // end sat a hair past the next sign, so the span's degree range was empty
+        // or whole depending on sub-second jitter). Rust lists every crossing; the
+        // lists may differ, their items must have the same shape.
+        (Value::Array(a), Value::Array(b)) if path.ends_with("pushkara_navamsha") => {
+            let keys = |v: &Value| v.as_object().map(|o| o.keys().cloned().collect::<Vec<_>>());
+            let shape = a.first().map(keys);
+            a.iter()
+                .chain(b)
+                .any(|item| shape.as_ref().is_some_and(|s| *s != keys(item)))
+                .then(|| format!("{path}: items differ in shape"))
+        }
         (Value::Array(a), Value::Array(b)) => {
             if a.len() != b.len() {
                 return Some(format!("{path}: {} items vs {}", a.len(), b.len()));
@@ -66,7 +90,7 @@ pub(crate) fn value_difference(path: &str, rust: &Value, python: &Value) -> Opti
             let same = match (a.as_i64(), b.as_i64()) {
                 (Some(x), Some(y)) => x == y,
                 _ => match (a.as_f64(), b.as_f64()) {
-                    (Some(x), Some(y)) => (x - y).abs() <= FLOAT_TOLERANCE,
+                    (Some(x), Some(y)) => (x - y).abs() <= float_tolerance(path),
                     _ => a == b,
                 },
             };
