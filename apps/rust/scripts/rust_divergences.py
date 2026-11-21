@@ -50,6 +50,17 @@ fix, delete the entry here.
 10. Not patched: ``/share/panchanga`` for a day before 1582-10-15 — Python
     answers 500; Rust renders the page from the Julian-day state.
 
+11. Lunar month day edges follow the observer's own sunrise (the udaya rule), not
+    Kathmandu's: which civil days a lunar month holds (first day, last day, Purnima
+    day, the pūrṇimānta windows festivals search) are decided at each location.
+    Month names and adhik / kshaya status are global instants and do not change.
+    The patch makes Python's ``udaya_day_on_or_after`` read the observer of the
+    entry point that called it.
+
+12. Kshaya years: the masa a kshaya month skips (its second sankranti's name) keeps no
+    lunar festivals that year — the owner's rule. Python fell back to the
+    neighbouring year's occurrence. 1983 (Poush–Magh kshaya): no Magh festivals.
+
     from rust_divergences import apply; apply()
 """
 
@@ -157,6 +168,8 @@ def apply() -> None:
     _patch_gregorian_browse_month()
     _patch_civil_day_strftime()
     _patch_gochar_local_stamp()
+    _patch_local_lunar_month_days()
+    _patch_kshaya_drops_festivals()
 
     original_conjunct = sr._conjunct
     sr._conjunct = lambda chart, a, b: a != b and original_conjunct(chart, a, b)
@@ -226,3 +239,107 @@ def _patch_gochar_local_stamp() -> None:
         return out
 
     gochar._attach_local_time = attach
+
+
+def _patch_local_lunar_month_days() -> None:
+    """Thread the entry point's observer down to ``udaya_day_on_or_after``."""
+    import contextvars
+    from datetime import timedelta
+
+    import engine.festivals.festival_rules as fr
+    import engine.festivals.muhurta_engine as me
+    import engine.festivals.sait_rules as sr
+    import engine.panchanga.daily as daily
+    import engine.panchanga.lunar_month as lm
+    import engine.panchanga.nepal_sambat as ns
+    import services.festivals.holiday_generator as hg
+    import services.festivals.sait_generator as sg
+    from engine.astronomy.location import DEFAULT_LOCATION
+    from engine.astronomy.sun import calculate_sunrise
+    from engine.astronomy.timescale import resolve_observer_timezone
+
+    import services.panchanga.panchanga_cache as pc
+
+    # Never read or write the persistent day / year caches with patched calculations:
+    # a stored year would hide the patch, and a written one would leak it into the
+    # local cache the unpatched server reads.
+    pc.cache_enabled = lambda: False
+    import gzip
+    import json as _json
+
+    import services.panchanga.year_cache as yc
+
+    yc.read_year_cache = lambda *a, **k: None
+    yc.write_year_cache = lambda bs_year, location, payload, *, variant: gzip.compress(
+        _json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8"),
+        compresslevel=6,
+    )
+
+    observer = contextvars.ContextVar("rust_divergence_observer", default=DEFAULT_LOCATION)
+
+    def udaya_day_on_or_after(instant):
+        loc = observer.get()
+        day = instant.astimezone(resolve_observer_timezone(loc.timezone)).date()
+        if calculate_sunrise(
+            day, latitude=loc.lat, longitude=loc.lon, timezone_name=loc.timezone
+        ) < instant:
+            day += timedelta(days=1)
+        return day
+
+    lm.udaya_day_on_or_after = udaya_day_on_or_after
+
+    def at(location_index, location_key, func):
+        def wrapped(*args, **kwargs):
+            loc = kwargs.get(location_key)
+            if loc is None and len(args) > location_index:
+                loc = args[location_index]
+            token = observer.set(loc if loc is not None else DEFAULT_LOCATION)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                observer.reset(token)
+
+        return wrapped
+
+    daily.build_daily_panchanga_at_jd = at(1, "location", daily.build_daily_panchanga_at_jd)
+    compute = at(3, "location", fr.compute_festival_dates)
+    fr.compute_festival_dates = compute
+    hg.compute_festival_dates = compute
+    find = at(6, "location", lm.find_festival_in_lunar_month)
+    lm.find_festival_in_lunar_month = find
+    ns.find_festival_in_lunar_month = find
+    fr.find_festival_in_lunar_month = find
+    build = at(1, "location", sr.build_day_panchanga)
+    sr.build_day_panchanga = build
+    me.build_day_panchanga = build
+    sg.build_day_panchanga = build
+    hg.get_special_months_for_bs_year = at(1, "location", hg.get_special_months_for_bs_year)
+
+
+def _patch_kshaya_drops_festivals() -> None:
+    import engine.festivals.festival_rules as fr
+    import engine.panchanga.lunar_month as lm
+    import engine.panchanga.nepal_sambat as ns
+    from engine.calendar.constants import BS_MONTH_NAMES
+    from engine.panchanga.kshaya_maas import count_sankrantis_in_period
+
+    def dropped(name, gregorian_year):
+        for year in (gregorian_year - 1, gregorian_year):
+            for m in lm.get_lunar_year(year).months:
+                if gregorian_year not in (m.start_Aausi.year, m.end_Aausi.year):
+                    continue
+                sankrantis = count_sankrantis_in_period(m.start_Aausi, m.end_Aausi)
+                if len(sankrantis) >= 2 and BS_MONTH_NAMES[sankrantis[0]] == name:
+                    return True
+        return False
+
+    original = lm.find_festival_in_lunar_month
+
+    def find(lunar_month_name, tithi, paksha, gregorian_year, *args, **kwargs):
+        if dropped(lunar_month_name, gregorian_year):
+            return None
+        return original(lunar_month_name, tithi, paksha, gregorian_year, *args, **kwargs)
+
+    lm.find_festival_in_lunar_month = find
+    ns.find_festival_in_lunar_month = find
+    fr.find_festival_in_lunar_month = find

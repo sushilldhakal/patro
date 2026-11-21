@@ -150,7 +150,9 @@ pub fn compute_festival_dates(
         "solar" => solar(rule, gregorian_year),
         "bs_fixed" => bs_fixed(rule, gregorian_year),
         "ad_fixed" => ad_fixed(rule, gregorian_year),
-        "adhik_arambha" => adhik_month_first_day(gregorian_year, text(rule, "lunar_month")),
+        "adhik_arambha" => {
+            adhik_month_first_day(gregorian_year, text(rule, "lunar_month"), observer)
+        }
         "ayana" => ayana(rule, gregorian_year, observer),
         _ => None,
     }?;

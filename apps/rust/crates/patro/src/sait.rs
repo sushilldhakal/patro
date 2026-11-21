@@ -943,7 +943,7 @@ fn build_day_panchanga(day: CivilDay, location: &Location) -> Result<DayPanchang
     } else {
         "Uttarayana"
     };
-    let layers = calendar_layers(day, tithi_info.paksha);
+    let layers = calendar_layers(day, tithi_info.paksha, &location.observer());
     let purnimanta = &layers["purnimant"];
     let lunar_month = purnimanta["name"].as_str().map(str::to_owned);
     let is_adhik_maas = purnimanta["is_adhik"].as_bool().unwrap_or(false);

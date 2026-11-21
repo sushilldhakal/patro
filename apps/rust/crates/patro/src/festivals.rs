@@ -1238,7 +1238,7 @@ pub fn special_months_payload(bs_year: i32, location: &Location) -> Result<Value
     let mut adhik_by_start: HashMap<String, Value> = HashMap::new();
     let mut kshaya = json!({"is_kshaya": false});
     for g_year in (year_start.year - 1)..=year_end.year {
-        let special = lunar_month::special_months_for_gregorian_year(g_year);
+        let special = lunar_month::special_months_for_gregorian_year(g_year, &location.observer());
         for month in special["adhik_months"]
             .as_array()
             .cloned()

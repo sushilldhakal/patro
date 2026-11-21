@@ -20,6 +20,10 @@ sys.path.insert(0, str(Path.cwd()))
 from engine.astronomy.location import ObserverLocation  # noqa: E402
 from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta  # noqa: E402
 from engine.panchanga.daily import build_daily_panchanga  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rust_divergences import apply as _apply_divergences  # noqa: E402
+
+_apply_divergences()
 
 PLACES = [
     ObserverLocation(),

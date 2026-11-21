@@ -17,6 +17,7 @@ pub use blocks_time::choghadiya as choghadiya_segments;
 mod boundaries;
 pub mod daily;
 pub mod lunar_month;
+pub mod memo;
 mod names;
 mod nepal_sambat;
 pub mod pyfloat;

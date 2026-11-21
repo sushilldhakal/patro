@@ -1092,7 +1092,7 @@ fn assemble<I: DayInstant>(
         (bs, lunar, layers, ns, headers, civil_probe_day())
     } else {
         let bs = calendar::civil_to_bs(day)?;
-        let lunar = merge_for_day(day, paksha);
+        let lunar = merge_for_day(day, paksha, &observer);
         let ns = ns_date(
             &NsInput {
                 day,
@@ -1108,7 +1108,7 @@ fn assemble<I: DayInstant>(
         )
         .ok_or(DailyError::NepalSambat(day))?;
         let headers = display_headers(day, bs, vaara_english, &ns);
-        let layers = calendar_layers(day, paksha);
+        let layers = calendar_layers(day, paksha, &observer);
         (bs, lunar, layers, ns, headers, day)
     };
 

@@ -5,19 +5,17 @@
 //! Sun's rashi at its opening Aausi; it is adhik when the Sun is in the same rashi at
 //! both of its Aausis (no sankranti inside).
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, LazyLock, Mutex},
-};
+use std::sync::{Arc, LazyLock};
 
 use astronomy::engine::{Observer, rise_set_on_day, sun_longitude};
 use astronomy::surya_siddhanta::{Body, Crossing};
 use serde_json::{Value, json};
-use timescale::{CivilDay, Moment, UtcInstant, Zone};
+use timescale::{CivilDay, Moment, UtcInstant};
 
 use crate::{
     angas::{Paksha, tithi},
     boundaries::{tithi_end, tithi_start},
+    memo::Memo,
     pyfloat::py_int,
 };
 
@@ -88,24 +86,19 @@ fn find_aausi(after: UtcInstant) -> Option<UtcInstant> {
     find_next_tithi(15, Paksha::Krishna, after, 35).map(tithi_end)
 }
 
-fn kathmandu_observer() -> Observer {
-    Observer {
-        latitude: 27.7172,
-        longitude: 85.324,
-        zone: Zone::kathmandu(),
-    }
-}
-
-/// First Kathmandu civil day whose sunrise is at or after `instant`.
-fn udaya_day_on_or_after(instant: UtcInstant, kathmandu: &Observer) -> CivilDay {
-    let day = kathmandu.zone.local(instant).day();
-    match rise_set_on_day(Body::Sun, day, kathmandu, Crossing::Rise) {
+/// First civil day at the observer whose sunrise is at or after `instant`: a patro day
+/// belongs to whatever prevails at its own sunrise (the udaya rule), so a lunar month's
+/// days come from the observer's sunrise, not Kathmandu's.
+fn udaya_day_on_or_after(instant: UtcInstant, observer: &Observer) -> CivilDay {
+    let day = observer.zone.local(instant).day();
+    match rise_set_on_day(Body::Sun, day, observer, Crossing::Rise) {
         Some(Moment::Utc(sunrise)) if sunrise < instant => day.add_days(1),
         _ => day,
     }
 }
 
-/// One amanta lunar month.
+/// One amanta lunar month, as global instants: its name and adhik status are the same
+/// for every observer.
 #[derive(Debug, Clone)]
 pub(crate) struct LunarMonth {
     pub(crate) start_aausi: UtcInstant,
@@ -113,9 +106,6 @@ pub(crate) struct LunarMonth {
     pub(crate) end_aausi: UtcInstant,
     pub(crate) name: &'static str,
     pub(crate) is_adhik: bool,
-    pub(crate) first_day: CivilDay,
-    pub(crate) last_day: CivilDay,
-    pub(crate) purnima_day: CivilDay,
 }
 
 impl LunarMonth {
@@ -126,9 +116,29 @@ impl LunarMonth {
             self.name.to_owned()
         }
     }
+
+    /// The month's civil days at an observer.
+    fn days(&self, observer: &Observer) -> MonthDays {
+        MonthDays {
+            first: udaya_day_on_or_after(self.start_aausi, observer),
+            last: udaya_day_on_or_after(self.end_aausi, observer).add_days(-1),
+            purnima: udaya_day_on_or_after(self.end_purnima, observer).add_days(-1),
+        }
+    }
 }
 
-fn compute_lunar_month(start: UtcInstant, kathmandu: &Observer) -> Option<LunarMonth> {
+/// A lunar month's civil days at one observer.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct MonthDays {
+    /// First day: the first sunrise after its opening Aausi.
+    pub(crate) first: CivilDay,
+    /// Last day: the closing Aausi still prevails at its sunrise.
+    pub(crate) last: CivilDay,
+    /// The day whose sunrise Purnima prevails at.
+    pub(crate) purnima: CivilDay,
+}
+
+fn compute_lunar_month(start: UtcInstant) -> Option<LunarMonth> {
     let purnima = find_purnima(start.add_micros(2 * MICROS_PER_DAY))?;
     let next = find_aausi(purnima.add_micros(2 * MICROS_PER_DAY))?;
     let rashi = sun_rashi_at(start);
@@ -138,9 +148,6 @@ fn compute_lunar_month(start: UtcInstant, kathmandu: &Observer) -> Option<LunarM
         end_aausi: next,
         name: BS_MONTH_NAMES[rashi],
         is_adhik: rashi == sun_rashi_at(next),
-        first_day: udaya_day_on_or_after(start, kathmandu),
-        last_day: udaya_day_on_or_after(next, kathmandu).add_days(-1),
-        purnima_day: udaya_day_on_or_after(purnima, kathmandu).add_days(-1),
     })
 }
 
@@ -152,12 +159,11 @@ pub(crate) struct LunarYear {
 }
 
 fn build_lunar_year(year: i32) -> LunarYear {
-    let kathmandu = kathmandu_observer();
     let mut months = Vec::new();
     let start = UtcInstant::from_utc(CivilDay::new(year, 2, 15), 0, 0, 0, 0);
     if let Some(mut current) = start.and_then(find_aausi) {
         for _ in 0..14 {
-            let Some(month) = compute_lunar_month(current, &kathmandu) else {
+            let Some(month) = compute_lunar_month(current) else {
                 break;
             };
             current = month.end_aausi;
@@ -171,20 +177,61 @@ fn build_lunar_year(year: i32) -> LunarYear {
     LunarYear { months, adhik_name }
 }
 
-static LUNAR_YEARS: LazyLock<Mutex<HashMap<i32, Arc<LunarYear>>>> = LazyLock::new(Mutex::default);
+/// Lunar years kept in memory: every request reads its own year and the two beside it.
+const LUNAR_YEAR_CAPACITY: usize = 256;
 
-/// The lunar year of a Gregorian year, built once per process (`get_lunar_year`).
+static LUNAR_YEARS: LazyLock<Memo<i32, LunarYear>> =
+    LazyLock::new(|| Memo::new(LUNAR_YEAR_CAPACITY));
+
+/// The lunar year of a Gregorian year, memoized (`get_lunar_year`).
 pub(crate) fn lunar_year(year: i32) -> Arc<LunarYear> {
-    if let Some(found) = LUNAR_YEARS
-        .lock()
-        .expect("lunar year cache lock")
-        .get(&year)
-    {
-        return Arc::clone(found);
+    LUNAR_YEARS.get_or_insert_with(&year, || Arc::new(build_lunar_year(year)))
+}
+
+/// Per-location month days kept in memory (a year's 14 months at one observer).
+const MONTH_DAYS_CAPACITY: usize = 2048;
+
+type DaysKey = (i32, String);
+
+static MONTH_DAYS: LazyLock<Memo<DaysKey, [MonthDays]>> =
+    LazyLock::new(|| Memo::new(MONTH_DAYS_CAPACITY));
+
+fn observer_key(observer: &Observer) -> String {
+    format!(
+        "{:.4}_{:.4}_{}",
+        observer.latitude,
+        observer.longitude,
+        observer.zone.name()
+    )
+}
+
+/// A lunar month with its civil days at one observer.
+type ObservedMonth = (LunarMonth, MonthDays);
+
+/// A lunar year and its months' civil days at an observer.
+pub(crate) struct ObservedYear {
+    pub(crate) year: Arc<LunarYear>,
+    pub(crate) days: Arc<[MonthDays]>,
+}
+
+impl ObservedYear {
+    fn months(&self) -> impl Iterator<Item = (&LunarMonth, &MonthDays)> {
+        self.year.months.iter().zip(self.days.iter())
     }
-    let built = Arc::new(build_lunar_year(year));
-    let mut cache = LUNAR_YEARS.lock().expect("lunar year cache lock");
-    Arc::clone(cache.entry(year).or_insert(built))
+}
+
+/// [`lunar_year`] with its month days at `observer`, memoized per (year, observer).
+pub(crate) fn observed_year(year: i32, observer: &Observer) -> ObservedYear {
+    let lunar = lunar_year(year);
+    let days = MONTH_DAYS.get_or_insert_with(&(year, observer_key(observer)), || {
+        lunar
+            .months
+            .iter()
+            .map(|m| m.days(observer))
+            .collect::<Vec<_>>()
+            .into()
+    });
+    ObservedYear { year: lunar, days }
 }
 
 /// A pūrṇimānta window: the day after the previous Purnima through this Purnima.
@@ -198,21 +245,20 @@ struct PurnimantWindow {
     is_adhik: bool,
 }
 
-fn purnimant_windows(year: &LunarYear) -> Vec<PurnimantWindow> {
-    let kathmandu = kathmandu_observer();
-    let mut prev: Option<UtcInstant> = None;
-    year.months
-        .iter()
-        .map(|m| {
+fn purnimant_windows(year: &ObservedYear) -> Vec<PurnimantWindow> {
+    let mut prev: Option<(UtcInstant, CivilDay)> = None;
+    year.months()
+        .map(|(m, d)| {
             let window = PurnimantWindow {
-                start: prev.map_or(m.first_day, |p| udaya_day_on_or_after(p, &kathmandu)),
-                end_purnima: m.purnima_day,
-                start_dt: prev.map_or(m.start_aausi, |p| p.add_micros(MICROS_PER_DAY)),
+                // `udaya_day_on_or_after(previous Purnima)`: the day after its Purnima day.
+                start: prev.map_or(d.first, |(_, purnima)| purnima.add_days(1)),
+                end_purnima: d.purnima,
+                start_dt: prev.map_or(m.start_aausi, |(p, _)| p.add_micros(MICROS_PER_DAY)),
                 end_dt: m.end_purnima,
                 name: m.name,
                 is_adhik: m.is_adhik,
             };
-            prev = Some(m.end_purnima);
+            prev = Some((m.end_purnima, d.purnima));
             window
         })
         .collect()
@@ -260,28 +306,24 @@ impl MonthPayload<'_> {
     }
 }
 
-fn years_around(day: CivilDay) -> [Arc<LunarYear>; 3] {
+fn years_around(day: CivilDay, observer: &Observer) -> [ObservedYear; 3] {
     [
-        lunar_year(day.year - 1),
-        lunar_year(day.year),
-        lunar_year(day.year + 1),
+        observed_year(day.year - 1, observer),
+        observed_year(day.year, observer),
+        observed_year(day.year + 1, observer),
     ]
 }
 
-fn amanta_for(day: CivilDay) -> Value {
-    for year in years_around(day) {
-        if let Some(m) = year
-            .months
-            .iter()
-            .find(|m| m.first_day <= day && day <= m.last_day)
-        {
+fn amanta_for(day: CivilDay, observer: &Observer) -> Value {
+    for year in years_around(day, observer) {
+        if let Some((m, d)) = year.months().find(|(_, d)| d.first <= day && day <= d.last) {
             return MonthPayload {
                 name: Some(m.name),
                 full_name: Some(m.full_name()),
                 is_adhik: m.is_adhik,
                 month_type: if m.is_adhik { "adhik" } else { "nija" },
                 paksha_model: "amanta",
-                window: Some((m.first_day, m.last_day)),
+                window: Some((d.first, d.last)),
                 solar_name: Some(m.name),
                 festival_masa: Some(m.name),
             }
@@ -291,8 +333,8 @@ fn amanta_for(day: CivilDay) -> Value {
     MonthPayload::unknown("amanta").to_json()
 }
 
-fn festival_masa_for(day: CivilDay) -> Value {
-    for year in years_around(day) {
+fn festival_masa_for(day: CivilDay, observer: &Observer) -> Value {
+    for year in years_around(day, observer) {
         if let Some(w) = purnimant_windows(&year)
             .iter()
             .find(|w| w.start <= day && day <= w.end_purnima)
@@ -325,28 +367,29 @@ fn next_masa(name: &'static str) -> &'static str {
 }
 
 /// `compute_purnimanta_paksha`: the pūrṇimānta month of a day at paksha granularity.
-fn purnimanta_paksha(day: CivilDay, paksha: Paksha) -> Value {
-    let mut context = None;
-    for year in years_around(day) {
-        let mut prev: Option<&LunarMonth> = None;
-        for m in &year.months {
-            if m.first_day <= day && day <= m.last_day {
-                context = Some((m.clone(), prev.cloned()));
+fn purnimanta_paksha(day: CivilDay, paksha: Paksha, observer: &Observer) -> Value {
+    let mut context: Option<(ObservedMonth, Option<ObservedMonth>)> = None;
+    for year in years_around(day, observer) {
+        let mut prev: Option<(&LunarMonth, &MonthDays)> = None;
+        for (m, d) in year.months() {
+            if d.first <= day && day <= d.last {
+                context = Some(((m.clone(), *d), prev.map(|(pm, pd)| (pm.clone(), *pd))));
                 break;
             }
-            prev = Some(m);
+            prev = Some((m, d));
         }
         if context.is_some() {
             break;
         }
     }
-    let Some((mut month, prev)) = context else {
+    let Some(((mut month, mut days), prev)) = context else {
         return MonthPayload::unknown("purnimant").to_json();
     };
     // The junction Aausi closes the previous month, so its Krishna paksha stays contiguous.
-    if paksha == Paksha::Krishna && day == month.first_day {
-        if let Some(prev) = prev {
-            month = prev;
+    if paksha == Paksha::Krishna && day == days.first {
+        if let Some((prev_month, prev_days)) = prev {
+            month = prev_month;
+            days = prev_days;
         }
     }
     let (name, is_adhik, month_type) = if month.is_adhik {
@@ -366,7 +409,7 @@ fn purnimanta_paksha(day: CivilDay, paksha: Paksha) -> Value {
         is_adhik,
         month_type,
         paksha_model: "purnimant",
-        window: Some((month.first_day, month.last_day)),
+        window: Some((days.first, days.last)),
         solar_name: Some(month.name),
         festival_masa: Some(name),
     }
@@ -375,9 +418,9 @@ fn purnimanta_paksha(day: CivilDay, paksha: Paksha) -> Value {
 
 /// `merge_lunar_month_for_day`: the amanta month plus the pūrṇimānta fields.
 #[must_use]
-pub(crate) fn merge_for_day(day: CivilDay, paksha: Paksha) -> Value {
-    let mut amanta = amanta_for(day);
-    let purnim = purnimanta_paksha(day, paksha);
+pub(crate) fn merge_for_day(day: CivilDay, paksha: Paksha, observer: &Observer) -> Value {
+    let mut amanta = amanta_for(day, observer);
+    let purnim = purnimanta_paksha(day, paksha, observer);
     if let Value::Object(map) = &mut amanta {
         for (to, from) in [
             ("purnimanta_name", "name"),
@@ -396,7 +439,7 @@ pub(crate) fn merge_for_day(day: CivilDay, paksha: Paksha) -> Value {
 
 /// `get_lunar_calendar_layers`: adhik summary, amanta, pūrṇimānta and festival masa.
 #[must_use]
-pub fn calendar_layers(day: CivilDay, paksha: Paksha) -> Value {
+pub fn calendar_layers(day: CivilDay, paksha: Paksha, observer: &Observer) -> Value {
     let adhik = lunar_year(day.year).adhik_name;
     json!({
         "adhik_maas": {
@@ -404,9 +447,9 @@ pub fn calendar_layers(day: CivilDay, paksha: Paksha) -> Value {
             "name": adhik,
             "name_ne": adhik.map(|n| format!("अधिक {}", masa_ne(n))),
         },
-        "amanta": amanta_for(day),
-        "purnimant": purnimanta_paksha(day, paksha),
-        "festival_masa": festival_masa_for(day),
+        "amanta": amanta_for(day, observer),
+        "purnimant": purnimanta_paksha(day, paksha, observer),
+        "festival_masa": festival_masa_for(day, observer),
     })
 }
 
@@ -618,6 +661,25 @@ fn bs_civil_fifteenth(
         .find(|d| udaya_tithi(*d, observer) == Some((15, paksha)))
 }
 
+/// Whether a kshaya month drops the masa `name` in `gregorian_year`: two sankrantis in
+/// one lunar month skip the second month's name, and that masa's lunar festivals are not
+/// observed (owner's rule; Python fell back to the neighbouring year's date).
+fn dropped_by_kshaya(name: &str, gregorian_year: i32) -> bool {
+    [gregorian_year - 1, gregorian_year]
+        .into_iter()
+        .filter(|y| kshaya_possible(*y))
+        .any(|y| {
+            lunar_year(y).months.iter().any(|m| {
+                let in_year = m.start_aausi.fields().0.year == gregorian_year
+                    || m.end_aausi.fields().0.year == gregorian_year;
+                in_year && {
+                    let sankrantis = sankrantis_in_period(m.start_aausi, m.end_aausi);
+                    sankrantis.len() >= 2 && BS_MONTH_NAMES[sankrantis[0] as usize] == name
+                }
+            })
+        })
+}
+
 /// `find_festival_in_lunar_month` for the festival month model with adhik months
 /// skipped, as every rule in the rule book uses it.
 #[must_use]
@@ -651,9 +713,12 @@ pub fn find_festival_in_lunar_month(
             return Some(day);
         }
     }
+    if dropped_by_kshaya(name, gregorian_year) {
+        return None;
+    }
     let mut candidates: Vec<(CivilDay, bool)> = Vec::new();
     for search_year in [gregorian_year - 1, gregorian_year] {
-        let year = lunar_year(search_year);
+        let year = observed_year(search_year, observer);
         for w in purnimant_windows(&year)
             .into_iter()
             .filter(|w| w.name == name && !w.is_adhik)
@@ -664,9 +729,6 @@ pub fn find_festival_in_lunar_month(
                 end_aausi: w.end_dt.add_micros(MICROS_PER_DAY),
                 name: w.name,
                 is_adhik: w.is_adhik,
-                first_day: w.start,
-                last_day: w.end_purnima,
-                purnima_day: w.end_purnima,
             };
             candidates.extend(resolve_tithi_day(
                 &month, display, paksha, selection, observer,
@@ -690,13 +752,17 @@ pub fn find_festival_in_lunar_month(
 /// First day of the year's Adhik Maas when it is `name` (`compute_adhik_arambha`), or of
 /// any Adhik Maas when `name` is `None`.
 #[must_use]
-pub fn adhik_month_first_day(gregorian_year: i32, name: Option<&str>) -> Option<CivilDay> {
-    let year = lunar_year(gregorian_year);
-    let adhik = year.months.iter().find(|m| m.is_adhik)?;
+pub fn adhik_month_first_day(
+    gregorian_year: i32,
+    name: Option<&str>,
+    observer: &Observer,
+) -> Option<CivilDay> {
+    let year = observed_year(gregorian_year, observer);
+    let (adhik, days) = year.months().find(|(m, _)| m.is_adhik)?;
     if name.is_some_and(|n| n != adhik.name) {
         return None;
     }
-    Some(adhik.first_day)
+    Some(days.first)
 }
 
 const RASHI_NAMES: [&str; 12] = [
@@ -762,23 +828,34 @@ fn kshaya_info(start: UtcInstant, end: UtcInstant) -> Option<Value> {
     }))
 }
 
-/// Adhik and kshaya-month metadata for one Gregorian year (`get_special_months_for_gregorian_year`).
+/// Whether a kshaya month can fall in `gregorian_year`'s lunar year: every kshaya month
+/// is flanked by two adhik months in the same or an adjacent lunar year (BS 2039:
+/// Adhik Ashwin before, Adhik Phalgun after), so with fewer than two adhik months in
+/// the three lunar years around it there is nothing to search for.
+fn kshaya_possible(gregorian_year: i32) -> bool {
+    (gregorian_year - 1..=gregorian_year + 1)
+        .map(|y| lunar_year(y).months.iter().filter(|m| m.is_adhik).count())
+        .sum::<usize>()
+        >= 2
+}
+
+/// Adhik and kshaya-month metadata for one Gregorian year
+/// (`get_special_months_for_gregorian_year`), with each month's dates at `observer`.
 #[must_use]
-pub fn special_months_for_gregorian_year(gregorian_year: i32) -> Value {
-    let year = lunar_year(gregorian_year);
+pub fn special_months_for_gregorian_year(gregorian_year: i32, observer: &Observer) -> Value {
+    let year = observed_year(gregorian_year, observer);
     let adhik_months = year
-        .months
-        .iter()
-        .filter(|m| m.is_adhik)
-        .map(|m| {
+        .months()
+        .filter(|(m, _)| m.is_adhik)
+        .map(|(m, d)| {
             json!({
                 "has_adhik_maas": true,
                 "month_name": m.name,
                 "full_name_en": m.full_name(),
                 "full_name_ne": format!("अधिक {}", masa_ne(m.name)),
-                "start_date": m.first_day.to_string(),
-                "end_date": m.last_day.to_string(),
-                "purnima_date": m.purnima_day.to_string(),
+                "start_date": d.first.to_string(),
+                "end_date": d.last.to_string(),
+                "purnima_date": d.purnima.to_string(),
             })
         })
         .collect::<Vec<_>>();
@@ -798,11 +875,16 @@ pub fn special_months_for_gregorian_year(gregorian_year: i32) -> Value {
             },
         );
     let mut kshaya = json!({"is_kshaya": false});
-    for month in &year.months {
+    let candidates: Vec<(&LunarMonth, &MonthDays)> = if kshaya_possible(gregorian_year) {
+        year.months().collect()
+    } else {
+        Vec::new()
+    };
+    for (month, days) in candidates {
         if let Some(mut info) = kshaya_info(month.start_aausi, month.end_aausi) {
             if let Some(map) = info.as_object_mut() {
-                map.insert("start_date".into(), json!(month.first_day.to_string()));
-                map.insert("end_date".into(), json!(month.last_day.to_string()));
+                map.insert("start_date".into(), json!(days.first.to_string()));
+                map.insert("end_date".into(), json!(days.last.to_string()));
                 map.insert(
                     "adhik_months".into(),
                     Value::Array(
@@ -832,4 +914,25 @@ pub fn special_months_for_gregorian_year(gregorian_year: i32) -> Value {
         "adhik_months": adhik_months,
         "kshaya_maas": kshaya,
     })
+}
+
+/// Every kshaya month among the lunar months special months scans for a Gregorian year
+/// (from the first Aausi after 15 February), found by testing every month with no
+/// shortcut: the reference the shortcut is checked against.
+#[doc(hidden)]
+#[must_use]
+pub fn kshaya_months_exhaustive(gregorian_year: i32) -> Vec<String> {
+    lunar_year(gregorian_year)
+        .months
+        .iter()
+        .filter(|m| kshaya_info(m.start_aausi, m.end_aausi).is_some())
+        .map(|m| m.start_aausi.to_string())
+        .collect()
+}
+
+/// Whether the two-adhik shortcut would search `gregorian_year` for a kshaya month.
+#[doc(hidden)]
+#[must_use]
+pub fn kshaya_searched(gregorian_year: i32) -> bool {
+    kshaya_possible(gregorian_year)
 }

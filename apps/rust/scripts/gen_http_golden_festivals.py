@@ -44,6 +44,10 @@ rc.write_cached_bytes = (
 
 from fastapi.testclient import TestClient  # noqa: E402
 from app.main import app  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rust_divergences import apply as _apply_divergences  # noqa: E402
+
+_apply_divergences()
 
 REQUESTS = [
     # High-traffic listings: Kathmandu / Pokhara / New York, BS and AD, languages.
