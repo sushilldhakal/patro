@@ -92,6 +92,19 @@ impl Anga {
         }
     }
 
+    /// The finer anga this one's boundaries are a subset of, and how many of its
+    /// spans make one of this anga's: a tithi ends where every second karana ends,
+    /// a nakshatra where every fourth pada ends. Deriving them from the finer
+    /// table means two names for one instant never differ by a rounding.
+    #[must_use]
+    pub const fn finer(self) -> Option<(Self, u32)> {
+        match self {
+            Self::Tithi => Some((Self::Karana, 2)),
+            Self::Nakshatra => Some((Self::Pada, 4)),
+            _ => None,
+        }
+    }
+
     /// The 0-based span the angle is in.
     #[must_use]
     #[expect(

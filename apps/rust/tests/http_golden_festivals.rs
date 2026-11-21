@@ -1,8 +1,10 @@
 //! Festival/holiday HTTP routes against real `FastAPI` responses.
 //!
 //! Matches status, response headers and body bytes for every recorded request.
-//! Stamp metadata (`generated_at`, `hash`) is compared structurally after removing
-//! those volatile fields.
+//! Stamp metadata (`generated_at`, `hash`) is compared after removing those volatile
+//! fields. Times may drift by the allowed seconds (`support::parity`).
+
+mod support;
 
 use std::io::Read as _;
 
@@ -31,7 +33,7 @@ fn strip_stamp(mut value: Value) -> Value {
     value
 }
 
-fn diff_message(path: &str, body: &str, want: &str) -> String {
+fn diff_message(path: &str, body: &str, want: &str, why: &str) -> String {
     let at = body
         .bytes()
         .zip(want.bytes())
@@ -39,7 +41,7 @@ fn diff_message(path: &str, body: &str, want: &str) -> String {
         .unwrap_or(body.len().min(want.len()));
     let lo = at.saturating_sub(120);
     format!(
-        "{path}: body differs at byte {at}\n rust:   …{}…\n python: …{}…",
+        "{path}: body differs [{why}] at byte {at}\n rust:   …{}…\n python: …{}…",
         body.get(lo..(at + 120).min(body.len())).unwrap_or(""),
         want.get(lo..(at + 120).min(want.len())).unwrap_or("")
     )
@@ -79,26 +81,25 @@ async fn festival_routes_match_fastapi() {
             "{path}"
         );
         let want = case["body"].as_str().expect("body");
-        if body != want {
+        if let Some(why) = support::parity::difference(&body, want) {
             let parsed_rust = serde_json::from_str::<Value>(&body);
             let parsed_python = serde_json::from_str::<Value>(want);
-            if let (Ok(rust_value), Ok(py_value)) = (parsed_rust, parsed_python) {
-                let has_stamp = rust_value.get("generated_at").is_some()
-                    || rust_value.get("hash").is_some()
-                    || py_value.get("generated_at").is_some()
-                    || py_value.get("hash").is_some();
-                if has_stamp {
-                    assert_eq!(
-                        strip_stamp(rust_value),
-                        strip_stamp(py_value),
-                        "{path}: payload mismatch excluding generated_at/hash",
-                    );
-                } else {
-                    panic!("{}", diff_message(path, &body, want));
+            let stamped_only = match (parsed_rust, parsed_python) {
+                (Ok(rust_value), Ok(py_value)) => {
+                    let has_stamp = [&rust_value, &py_value]
+                        .iter()
+                        .any(|v| v.get("generated_at").is_some() || v.get("hash").is_some());
+                    has_stamp
+                        && support::parity::value_difference(
+                            "$",
+                            &strip_stamp(rust_value),
+                            &strip_stamp(py_value),
+                        )
+                        .is_none()
                 }
-            } else {
-                panic!("{}", diff_message(path, &body, want));
-            }
+                _ => false,
+            };
+            assert!(stamped_only, "{}", diff_message(path, &body, want, &why));
         }
         for k in [
             "cache-control",

@@ -3,6 +3,10 @@
 //! The patro date comes from `calendar::locate_patro_day` and must equal the one
 //! Python's `locate_patro_day_for_civil` found; the payload must match byte for byte.
 
+#[path = "../../../tests/support/parity.rs"]
+#[expect(dead_code, reason = "this test uses part of the shared comparator")]
+mod parity;
+
 use std::sync::LazyLock;
 
 use panchanga::daily::{Location, build_daily_civil};
@@ -15,23 +19,7 @@ static GOLDEN: LazyLock<Value> = LazyLock::new(|| {
 });
 
 fn first_difference(path: &str, got: &Value, want: &Value) -> Option<String> {
-    match (got, want) {
-        (Value::Object(g), Value::Object(w)) => {
-            let (gk, wk): (Vec<_>, Vec<_>) = (g.keys().collect(), w.keys().collect());
-            if gk != wk {
-                return Some(format!("{path}: keys {gk:?} vs python {wk:?}"));
-            }
-            w.iter()
-                .find_map(|(k, wv)| first_difference(&format!("{path}.{k}"), &g[k], wv))
-        }
-        (Value::Array(g), Value::Array(w)) if g.len() == w.len() => g
-            .iter()
-            .zip(w)
-            .enumerate()
-            .find_map(|(i, (gv, wv))| first_difference(&format!("{path}[{i}]"), gv, wv)),
-        _ if got == want => None,
-        _ => Some(format!("{path}: rust {got} vs python {want}")),
-    }
+    parity::value_difference(path, got, want)
 }
 
 fn int(v: &Value) -> i64 {
@@ -39,7 +27,7 @@ fn int(v: &Value) -> i64 {
 }
 
 #[test]
-fn civil_daily_payloads_match_python_exactly() {
+fn civil_daily_payloads_match_python_within_the_allowed_drift() {
     let cases = GOLDEN.as_array().expect("a list of days");
     let mut failures = Vec::new();
     for case in cases {

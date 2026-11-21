@@ -144,6 +144,10 @@ impl PyInstant for ZonedInstant {
         self.utc.micros_since(earlier.utc)
     }
 
+    fn ceil_second(self) -> Self {
+        self.with_utc(self.utc.ceil_second())
+    }
+
     fn astimezone(self, zone: &Zone) -> WallClock {
         PyInstant::astimezone(self.utc, zone)
     }

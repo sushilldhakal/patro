@@ -1,5 +1,7 @@
 //! Catalog-route parity against `FastAPI` (`scripts/gen_http_golden_catalog.py`).
 
+mod support;
+
 use std::io::Read as _;
 
 use api::AppState;
@@ -56,7 +58,7 @@ async fn catalog_responses_match_fastapi() {
         );
 
         let want = case["body"].as_str().expect("body");
-        if body != want {
+        if let Some(why) = support::parity::difference(&body, want) {
             let at = body
                 .bytes()
                 .zip(want.bytes())
@@ -64,7 +66,7 @@ async fn catalog_responses_match_fastapi() {
                 .unwrap_or(body.len().min(want.len()));
             let lo = at.saturating_sub(120);
             panic!(
-                "{path}: body differs at byte {at}\n rust:   …{}…\n python: …{}…",
+                "{path}: body differs [{why}] at byte {at}\n rust:   …{}…\n python: …{}…",
                 body.get(lo..(at + 120).min(body.len())).unwrap_or(""),
                 want.get(lo..(at + 120).min(want.len())).unwrap_or("")
             );
@@ -85,6 +87,12 @@ async fn catalog_responses_match_fastapi() {
             );
         }
         for (k, v) in case["headers"].as_object().expect("headers") {
+            // `Vary: Accept-Encoding` goes with gzip, which starts at 1024 bytes;
+            // whole-second timestamps are shorter than Python's microsecond ones, so
+            // a body just over the line there can fall under it here.
+            if k == "vary" && headers.get(k).is_none() && body.len() < 1024 {
+                continue;
+            }
             let mut want = v.as_str().expect("header").to_owned();
             if (k == "cache-control" || k == "cdn-cache-control")
                 && want.starts_with("public")

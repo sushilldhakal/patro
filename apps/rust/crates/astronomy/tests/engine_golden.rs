@@ -1,5 +1,9 @@
 //! `astronomy::engine` against the Python engine under the Surya Siddhanta.
 
+#[path = "../../../tests/support/parity.rs"]
+#[expect(dead_code, reason = "this test uses part of the shared comparator")]
+mod parity;
+
 use std::sync::LazyLock;
 
 use astronomy::{
@@ -58,6 +62,14 @@ fn rise_and_set_on_a_civil_day() {
             Moment::Utc(i) => i.to_string(),
             Moment::Jd(jd) => format!("jd:{jd:?}"),
         });
-        assert_eq!(got.as_deref(), c[8].as_str(), "{c}");
+        // The engine solves the crossing; a printed second may differ from the
+        // recording's bisection by the allowed drift.
+        let (got, want) = (got.expect("rises"), c[8].as_str().expect("time"));
+        let (got_jd, want_jd) = (got.strip_prefix("jd:"), want.strip_prefix("jd:"));
+        assert!(
+            parity::text_close(got_jd.unwrap_or(&got), want_jd.unwrap_or(want))
+                && got_jd.is_some() == want_jd.is_some(),
+            "{c}: rust {got} vs python {want}"
+        );
     }
 }

@@ -94,11 +94,20 @@ from it instead of searching again.
 - `yearly` + `events`: every boundary generated once per 64-day chunk and read back by
   binary search (`next_event`, `prev_event`, `events_between`, `next_sankranti`);
   sunrise/sunset memoized per start and place.
-- Compatibility: the API still returns the exact microsecond the Python bisections
-  land on. `panchanga::boundaries`, the sankranti bracket scans and rise/set replay
-  those bisections against the known root, evaluating positions only next to it.
-  The full searches stay as test oracles (`engine_replay`, `sankranti_replay`,
-  `rise_set_replay` compare them bit for bit).
+- Contract: the API's shape is Python's, because the mobile and web apps read it:
+  the same routes, keys in the same order, types, lists, names and integers. The
+  *values* are the engine's own. Boundaries are the engine's solved times, printed
+  as the first whole second the new anga is in force (Julian Day instants keep the
+  exact boundary), so a time can differ from the Python server's by a second or two,
+  an `HH:MM` display by a minute at a rounding edge, and a float derived from a time
+  by a hair. Where Python gave up (a 30-hour search window cannot hold the Sun's
+  ~13-day nakshatra) the engine answers with the real end.
+- Tests: `tests/support/parity.rs` is the one comparator the Python-recorded goldens use
+  (shape exact, printed times within the drift; `parity_rules.rs` pins the rules).
+  The engine itself is checked on its own terms, not against Python:
+  `boundaries_correct`, `sankranti_correct` and `rise_set_correct` assert the new anga
+  holds at the returned second and the old one a second before, the Sun changes rashi
+  at the entry, and the Sun is on the horizon, rising or setting, at the answer.
 
 ## Stack
 

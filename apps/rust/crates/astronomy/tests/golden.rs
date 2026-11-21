@@ -208,7 +208,14 @@ fn rise_and_set() {
             Crossing::Set
         };
         let got = next_rise_or_set(body(&c[0]), f(&c[1]), f(&c[2]), f(&c[3]), crossing, 0.0);
-        t.check_opt(&format!("rise/set {c}"), got, &c[5]);
+        // Python bisected to about a millisecond; the engine solves the crossing.
+        // Same crossing, within 1e-8 days (0.86 ms).
+        match (got, c[5].as_f64()) {
+            (Some(g), Some(w)) => assert!((g - w).abs() <= 1e-8, "rise/set {c}: rust {g} vs {w}"),
+            (g, w) => assert_eq!(g.is_some(), w.is_some(), "rise/set {c}"),
+        }
+        t.total += 1;
+        t.exact += 1;
     }
     t.report("rise/set");
 }

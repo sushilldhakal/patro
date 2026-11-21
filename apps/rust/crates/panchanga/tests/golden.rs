@@ -1,5 +1,9 @@
 //! The angas and their boundaries against the Python server under the Surya Siddhanta.
 
+#[path = "../../../tests/support/parity.rs"]
+#[expect(dead_code, reason = "this test uses part of the shared comparator")]
+mod parity;
+
 use std::sync::LazyLock;
 
 use panchanga::{
@@ -87,7 +91,7 @@ fn vara_matches() {
 }
 
 #[test]
-fn boundaries_land_on_the_same_microsecond() {
+fn boundaries_land_within_the_allowed_drift() {
     for c in cases("finders") {
         let at: UtcInstant = c[1].as_str().expect("iso").parse().expect("parses");
         let got = match c[0].as_str().expect("name") {
@@ -104,6 +108,36 @@ fn boundaries_land_on_the_same_microsecond() {
             "sun_nakshatra_end" => sun_nakshatra_end(at),
             other => panic!("unknown finder {other}"),
         };
-        assert_eq!(got.to_string(), c[2].as_str().expect("iso"), "{c}");
+        let want = c[2].as_str().expect("iso");
+        // Python searched a fixed window and answered with its edge when the
+        // boundary lay beyond it (the Sun stays in a nakshatra for ~13 days, a
+        // 30-hour window cannot hold its end). The engine finds the real boundary.
+        let name = c[0].as_str().expect("name");
+        let window_hours = match name {
+            "moon_rashi_end" => 60,
+            "moon_pada_end" => 8,
+            _ => 30,
+        };
+        let edge = if name.ends_with("_start") {
+            at.add_hours(-window_hours)
+        } else {
+            at.add_hours(window_hours)
+        };
+        if want.parse::<UtcInstant>().ok() == Some(edge) {
+            let beyond = if name.ends_with("_start") {
+                got <= edge
+            } else {
+                got >= edge
+            };
+            assert!(
+                beyond,
+                "{c}: rust {got} is inside the window python gave up at"
+            );
+            continue;
+        }
+        assert!(
+            parity::text_close(&got.to_string(), want),
+            "{c}: rust {got} vs python {want}"
+        );
     }
 }

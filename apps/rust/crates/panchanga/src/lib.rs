@@ -29,7 +29,6 @@ mod text_tables;
 pub use angas::{
     Karana, Nakshatra, Paksha, Tithi, Vara, Yoga, elongation, karana, nakshatra, tithi, vara, yoga,
 };
-pub use boundaries::reference as boundary_reference;
 pub use boundaries::{
     karana_end, karana_start, moon_pada_end, moon_rashi_end, nakshatra_end, nakshatra_start,
     sun_nakshatra_end, tithi_end, tithi_start, yoga_end, yoga_start,

@@ -18,6 +18,16 @@ type Key = (&'static str, Anga, i64);
 static TABLES: LazyLock<Cache<Key, Arc<[Crossing]>>> = LazyLock::new(|| Cache::new(8192));
 
 fn build(eph: &(impl Ephemeris + ?Sized), anga: Anga, index: i64) -> Arc<[Crossing]> {
+    if let Some((fine, per)) = anga.finer() {
+        return chunk(eph, fine, index)
+            .iter()
+            .filter(|c| c.multiple % per == 0)
+            .map(|c| Crossing {
+                jd: c.jd,
+                multiple: c.multiple / per,
+            })
+            .collect();
+    }
     #[expect(
         clippy::cast_precision_loss,
         reason = "chunk numbers are far below 2^52"

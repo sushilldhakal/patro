@@ -11,6 +11,8 @@ const TOLERANCE_DAYS: f64 = 2e-9;
 const MIN_STEP_DAYS: f64 = 2e-4;
 
 /// The root of `f` in `[a, b]`, given `f(a) < 0 <= f(b)`, by the Illinois method.
+/// Returns the upper end of the final bracket, where `f` is already non-negative:
+/// the first instant the angle has reached its target.
 ///
 /// Surya Siddhanta longitudes move in steps of about ten seconds (the float
 /// resolution of days since creation), so `f` may be a staircase. A secant crawls
@@ -55,7 +57,7 @@ pub fn illinois(f: impl Fn(f64) -> f64, mut a: f64, mut fa: f64, mut b: f64, mut
             slow = 0;
         }
     }
-    f64::midpoint(a, b)
+    b
 }
 
 /// One crossing: when an angle reached a multiple of its span, and which multiple.

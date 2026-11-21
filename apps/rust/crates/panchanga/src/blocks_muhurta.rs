@@ -397,7 +397,7 @@ fn baana_segments(day: &Day<'_>) -> Vec<Value> {
             break;
         }
         let degree = band(cursor.to_jd()) + 1;
-        let band_end = span_end(cursor, 36, Anga::SunDegree, band);
+        let band_end = span_end(cursor, Anga::SunDegree);
         let meta = match degree {
             1 | 10 | 19 | 28 => Some(("Mrityu", "मृत्यु")),
             2 | 11 | 20 | 29 => Some(("Agni", "अग्नि")),

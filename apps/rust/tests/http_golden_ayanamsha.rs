@@ -1,6 +1,8 @@
 //! `ayanamsha=` parity against real `FastAPI` responses (`gen_http_golden_ayanamsha.py`),
 //! "now" pinned on both sides.
 
+mod support;
+
 use std::io::Read as _;
 
 use api::AppState;
@@ -90,7 +92,7 @@ async fn responses_match_fastapi_ayanamsha() {
             continue;
         }
         let want = case["body"].as_str().expect("body");
-        if body != want {
+        if let Some(why) = support::parity::difference(&body, want) {
             let at = body
                 .bytes()
                 .zip(want.bytes())
@@ -107,7 +109,7 @@ async fn responses_match_fastapi_ayanamsha() {
                 _ => "unparsable".into(),
             };
             failures.push(format!(
-                "{path}: body differs at byte {at} ({structural})\n rust:   …{}…\n python: …{}…",
+                "{path}: body differs [{why}] at byte {at} ({structural})\n rust:   …{}…\n python: …{}…",
                 body.get(lo..(at + 120).min(body.len())).unwrap_or(""),
                 want.get(lo..(at + 120).min(want.len())).unwrap_or("")
             ));

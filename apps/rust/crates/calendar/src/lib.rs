@@ -11,6 +11,4 @@ pub use bikram_sambat::{
     BsDate, BsError, SIGNED_YEAR_MAX, SIGNED_YEAR_MIN, bs_to_civil, civil_to_bs, locate_patro_day,
     month_length, month_start, month_starts,
 };
-pub use sankranti::{
-    find_sankranti_after_jd, find_sankranti_after_jd_scan, scan_rashi, sun_rashi_at_jd,
-};
+pub use sankranti::{find_sankranti_after_jd, sun_rashi_at_jd};

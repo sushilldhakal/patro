@@ -1,5 +1,7 @@
 //! Gochar and graha routes on Julian and BCE days against real `FastAPI` responses (`gen_http_golden_civil_graha.py`).
 
+mod support;
+
 use std::io::Read as _;
 
 use api::AppState;
@@ -53,7 +55,7 @@ async fn responses_match_fastapi_civil_graha() {
             "{path}"
         );
         let want = case["body"].as_str().expect("body");
-        if body != want {
+        if let Some(why) = support::parity::difference(&body, want) {
             let at = body
                 .bytes()
                 .zip(want.bytes())
@@ -61,7 +63,7 @@ async fn responses_match_fastapi_civil_graha() {
                 .unwrap_or(body.len().min(want.len()));
             let lo = at.saturating_sub(120);
             panic!(
-                "{path}: body differs at byte {at}\n rust:   …{}…\n python: …{}…",
+                "{path}: body differs [{why}] at byte {at}\n rust:   …{}…\n python: …{}…",
                 body.get(lo..(at + 120).min(body.len())).unwrap_or(""),
                 want.get(lo..(at + 120).min(want.len())).unwrap_or("")
             );

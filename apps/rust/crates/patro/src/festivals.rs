@@ -907,165 +907,20 @@ fn nepali_digits(number: i32) -> String {
         .collect()
 }
 
-fn py_mod(x: f64, m: f64) -> f64 {
-    let remainder = x % m;
-    if remainder == 0.0 {
-        0.0
-    } else if remainder < 0.0 {
-        remainder + m
-    } else {
-        remainder
-    }
-}
-
-fn angular_error(value_deg: f64, target_deg: f64) -> f64 {
-    py_mod(value_deg - target_deg + 180.0, 360.0) - 180.0
-}
-
 #[expect(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
-    reason = "longitude / 30 is in [0, 12], as in Python int(sun_long / 30) % 12"
+    reason = "longitude / 30 is in [0, 12]"
 )]
 fn sun_rashi_at_time(at: UtcInstant) -> u32 {
     (sun_longitude(at.to_jd()) / 30.0) as u32 % 12
 }
 
-fn angular_error_at_time(at: UtcInstant, target_deg: f64) -> f64 {
-    angular_error(sun_longitude(at.to_jd()), target_deg)
-}
-
-fn bisect_sankranti_time(target_deg: f64, low: UtcInstant, high: UtcInstant) -> UtcInstant {
-    let mut low = low;
-    let mut high = high;
-    for _ in 0..60 {
-        if high.micros_since(low).abs() < 1_000_000 {
-            break;
-        }
-        let mid = UtcInstant::midpoint(low, high);
-        let mid_err = angular_error_at_time(mid, target_deg);
-        let low_err = angular_error_at_time(low, target_deg);
-        if low_err == 0.0 {
-            return low;
-        }
-        if mid_err == 0.0 {
-            return mid;
-        }
-        if low_err * mid_err <= 0.0 {
-            high = mid;
-        } else {
-            low = mid;
-        }
-    }
-    high
-}
-
-#[expect(
-    clippy::many_single_char_names,
-    clippy::float_cmp,
-    reason = "Brent's method keeps Python's exact-equality checks and canonical symbol names"
-)]
-fn brent_sankranti_time(target_deg: f64, low: UtcInstant, high: UtcInstant) -> UtcInstant {
-    let epoch = UtcInstant::from_utc(CivilDay::new(1970, 1, 1), 0, 0, 0, 0)
-        .expect("unix epoch is representable");
-    let instant_at = |seconds: f64| epoch.add_seconds_f64(seconds);
-    let f = |seconds: f64| angular_error_at_time(instant_at(seconds), target_deg);
-    let mut a = low.seconds_since(epoch);
-    let mut b = high.seconds_since(epoch);
-    let mut fa = f(a);
-    let mut fb = f(b);
-    if fa == 0.0 {
-        return instant_at(a);
-    }
-    if fb == 0.0 {
-        return instant_at(b);
-    }
-    if fa * fb > 0.0 {
-        return bisect_sankranti_time(target_deg, low, high);
-    }
-    if fa.abs() < fb.abs() {
-        (a, b, fa, fb) = (b, a, fb, fa);
-    }
-    let mut c = a;
-    let mut fc = fa;
-    let mut d = a;
-    let mut mflag = true;
-    for _ in 0..50 {
-        if (b - a).abs() <= 1.0 || fb == 0.0 {
-            return instant_at(b);
-        }
-        let mut s = if fa != fc && fb != fc {
-            (a * fb * fc) / ((fa - fb) * (fa - fc))
-                + (b * fa * fc) / ((fb - fa) * (fb - fc))
-                + (c * fa * fb) / ((fc - fa) * (fc - fb))
-        } else {
-            b - fb * (b - a) / (fb - fa)
-        };
-        let q = (3.0 * a + b) / 4.0;
-        let cond1 = !(q.min(b) < s && s < q.max(b));
-        let cond2 = mflag && (s - b).abs() >= (b - c).abs() / 2.0;
-        let cond3 = !mflag && (s - b).abs() >= (c - d).abs() / 2.0;
-        let cond4 = mflag && (b - c).abs() < 1.0;
-        let cond5 = !mflag && (c - d).abs() < 1.0;
-        if cond1 || cond2 || cond3 || cond4 || cond5 {
-            s = f64::midpoint(a, b);
-            mflag = true;
-        } else {
-            mflag = false;
-        }
-        let fs = f(s);
-        d = c;
-        c = b;
-        fc = fb;
-        if fa * fs < 0.0 {
-            b = s;
-            fb = fs;
-        } else {
-            a = s;
-            fa = fs;
-        }
-        if fa.abs() < fb.abs() {
-            (a, b, fa, fb) = (b, a, fb, fa);
-        }
-    }
-    instant_at(b)
-}
-
+/// The Sun's entry into `target_rashi` near `after`, as the first second the Sun is
+/// in it (see [`calendar::find_sankranti_after_jd`]).
 fn find_sankranti(target_rashi: u32, after: UtcInstant, max_days: u32) -> Option<UtcInstant> {
-    let target_deg = f64::from(target_rashi * 30);
-    let prev_rashi = (target_rashi + 11) % 12;
-    let current_rashi = sun_rashi_at_time(after);
-    let rashi_jd = calendar::scan_rashi(target_rashi, after.to_jd());
-    let rashi_at = |at: UtcInstant| rashi_jd(at.to_jd());
-    let (low, high) = if current_rashi == target_rashi {
-        let mut search = after;
-        (0..max_days).find_map(|_| {
-            search = search.add_days_f64(-1.0);
-            (rashi_at(search) == prev_rashi).then_some((search, after))
-        })?
-    } else if current_rashi == prev_rashi {
-        let mut search = after;
-        (0..max_days).find_map(|_| {
-            search = search.add_days_f64(1.0);
-            (rashi_at(search) == target_rashi).then_some((after, search))
-        })?
-    } else {
-        let mut search = after;
-        let mut found_prev = None;
-        (0..max_days * 12).find_map(|_| {
-            search = search.add_days_f64(1.0);
-            let rashi = rashi_at(search);
-            if rashi == prev_rashi {
-                found_prev = Some(search);
-                None
-            } else if rashi == target_rashi {
-                found_prev.map(|p| (p, search))
-            } else {
-                None
-            }
-        })?
-    };
-    Some(brent_sankranti_time(target_deg, low, high))
+    let jd = calendar::find_sankranti_after_jd(target_rashi, after.to_jd(), max_days)?;
+    timescale::PyInstant::at_boundary(after, jd)
 }
 
 fn sankranti_timestamp(at: UtcInstant, zone: &Zone) -> Value {

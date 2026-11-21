@@ -115,6 +115,15 @@ impl UtcInstant {
         self.add_micros(hours * 3600 * MICROS_PER_SECOND)
     }
 
+    /// This instant rounded up to a whole second.
+    #[must_use]
+    pub const fn ceil_to_second(self) -> Self {
+        match self.micros.rem_euclid(MICROS_PER_SECOND) {
+            0 => self,
+            over => self.add_micros(MICROS_PER_SECOND - over),
+        }
+    }
+
     /// Microseconds from `earlier` to `self`.
     #[must_use]
     pub const fn micros_since(self, earlier: Self) -> i64 {

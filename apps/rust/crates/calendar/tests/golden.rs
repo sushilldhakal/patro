@@ -86,13 +86,13 @@ fn conversions() {
 }
 
 #[test]
-fn sankrantis_match_to_the_bit() {
+fn sankrantis_match_within_the_solver_tolerance() {
     for c in cases("sankranti") {
         let got = find_sankranti_after_jd(u(&c[0]), c[1].as_f64().expect("jd"), 45);
-        assert_eq!(
-            got.map(f64::to_bits),
-            c[2].as_f64().map(f64::to_bits),
-            "sankranti {c}"
-        );
+        // Python bisected to a second; the engine solves the entry. Within 2.6 s.
+        match (got, c[2].as_f64()) {
+            (Some(g), Some(w)) => assert!((g - w).abs() < 3e-5, "sankranti {c}: rust {g} vs {w}"),
+            (g, w) => assert_eq!(g.is_some(), w.is_some(), "sankranti {c}"),
+        }
     }
 }

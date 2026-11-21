@@ -99,6 +99,26 @@ pub trait PyInstant: Copy + PartialEq + PartialOrd + fmt::Debug + fmt::Display {
     /// this kind (a `datetime` truncates to the second).
     fn from_jd(jd: f64) -> Option<Self>;
 
+    /// This instant rounded up to a whole second (a Julian Day instant is exact).
+    #[must_use]
+    fn ceil_second(self) -> Self;
+
+    /// The first instant of this kind (and zone) at which a boundary at Julian Day
+    /// `jd` has passed: the next whole second for a `datetime`, a hair after `jd`
+    /// for a Julian Day instant. Reading any anga at the result gives the one that
+    /// begins at the boundary.
+    #[must_use]
+    fn at_boundary(self, jd: f64) -> Option<Self> {
+        /// Slack (µs) over the 40 µs resolution of a Julian Day near the present.
+        const SLACK_MICROS: i64 = 100;
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "the offset from `self` is days, far below i64 microseconds"
+        )]
+        let delta = ((jd - self.to_jd()) * 86_400e6).round() as i64;
+        Some(self.add_micros(delta + SLACK_MICROS).ceil_second())
+    }
+
     /// `self + timedelta(days=days)` for a float.
     #[must_use]
     fn add_days_f64(self, days: f64) -> Self {
@@ -189,6 +209,10 @@ impl PyInstant for UtcInstant {
 
     fn from_jd(jd: f64) -> Option<Self> {
         Self::from_jd_truncated(jd)
+    }
+
+    fn ceil_second(self) -> Self {
+        self.ceil_to_second()
     }
 
     fn parse_py(text: &str) -> Option<Self> {
@@ -299,6 +323,15 @@ impl PyInstant for JdInstant {
 
     fn from_jd(jd: f64) -> Option<Self> {
         Some(Self(jd))
+    }
+
+    fn ceil_second(self) -> Self {
+        self
+    }
+
+    fn at_boundary(self, jd: f64) -> Option<Self> {
+        // One microsecond-scale step past the root, so the new anga is in force.
+        Some(Self(jd + 1e-8))
     }
 
     fn parse_py(text: &str) -> Option<Self> {
