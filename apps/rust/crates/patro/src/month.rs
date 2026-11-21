@@ -7,7 +7,7 @@ use timescale::CivilDay;
 
 use crate::{
     caches::bs_year_festivals,
-    day::{DayBuildOptions, DetailMode, FestivalMode, SlimMode, build_daily_state},
+    day::{DayBuildOptions, DayError, DetailMode, FestivalMode, SlimMode, build_daily_state},
 };
 
 const BS_MONTH_NAMES: [&str; 12] = [
@@ -344,6 +344,169 @@ pub fn month_calendar(
         out.insert("era".into(), json!("bbs"));
         out.insert("bbs".into(), json!(-bs_year));
     }
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a weekday index is 0-6"
+    )]
+    let first_weekday = ((start.to_jd_ut() + 0.5) % 7.0) as u32;
+    out.insert("first_weekday".into(), json!(first_weekday));
+    out.insert("limits".into(), browse_limits());
+    Ok(Value::Object(out))
+}
+
+/// `instant_row_from_date`: one clock-mode grid row from the at-time payload at
+/// `clock` on `day` (no `festivals` yet; Python adds them after `panchanga`).
+fn instant_row(
+    day: CivilDay,
+    bs_day: u32,
+    clock: &str,
+    location: &Location,
+) -> Result<Map<String, Value>, MonthError> {
+    let snap = crate::at_time::at_time_on_day(day, clock, location).map_err(|e| match e {
+        DayError::NotPorted(_) => MonthError::NotPorted("clock= month grids before 1582-10-15"),
+        other => MonthError::BadRequest(other.to_string()),
+    })?;
+    let name = |block: &str, key: &str| snap[block].get(key).cloned().unwrap_or(Value::Null);
+    let sun = |key: &str| snap["sun"].get(key).cloned().unwrap_or(Value::Null);
+    let mut r = Map::new();
+    for (k, v) in [
+        ("day", json!(bs_day)),
+        ("date_ad", json!(day.to_string())),
+        ("weekday", snap["weekday"].clone()),
+        ("weekday_ne", snap["weekday"].clone()),
+        ("weekday_en", snap["weekday_en"].clone()),
+        ("tithi", snap["tithi"]["name"].clone()),
+        ("tithi_ne", name("tithi", "name_ne")),
+        ("nakshatra", snap["nakshatra"]["name"].clone()),
+        ("nakshatra_ne", name("nakshatra", "name_ne")),
+        ("yoga", snap["yoga"]["name"].clone()),
+        ("yoga_ne", name("yoga", "name_ne")),
+        ("karana", snap["karana"]["name"].clone()),
+        ("karana_ne", name("karana", "name_ne")),
+        ("sunrise", sun("sunrise")),
+        ("sunset", sun("sunset")),
+        ("mode", json!("ephemeris")),
+        ("query_instant", snap["query_instant"].clone()),
+    ] {
+        r.insert(k.to_owned(), v);
+    }
+    let abhijit = match snap.get("abhijit") {
+        Some(a) if truthy(Some(a)) => a.clone(),
+        _ => snap["muhurta"]["abhijit"].clone(),
+    };
+    let text = |key: &str| {
+        abhijit
+            .get(key)
+            .and_then(Value::as_str)
+            .filter(|s| !s.is_empty())
+    };
+    let abhijit_row = match (text("start_time"), text("end_time")) {
+        (Some(start), Some(end)) => {
+            let mut ab = Map::new();
+            ab.insert("start_time".into(), json!(start));
+            ab.insert("end_time".into(), json!(end));
+            if let Some(noon) = abhijit.get("solar_noon").filter(|v| truthy(Some(v))) {
+                ab.insert("solar_noon".into(), noon.clone());
+            }
+            Some(Value::Object(ab))
+        }
+        _ => None,
+    };
+    r.insert("panchanga".into(), snap);
+    if let Some(ab) = abhijit_row {
+        r.insert("abhijit".into(), ab);
+    }
+    Ok(r)
+}
+
+/// `build_month_calendar_at_clock`: the BS month grid in ephemeris mode, each day's
+/// panchanga read at the civil `clock` (`?clock=HH:MM`).
+///
+/// # Errors
+///
+/// [`MonthError::BadRequest`] for a bad month or clock, [`MonthError::NotPorted`]
+/// for days before 1582-10-15.
+pub fn month_calendar_at_clock(
+    bs_year: i32,
+    bs_month: u32,
+    location: &Location,
+    clock: &str,
+    international: International,
+    embed: Embed,
+) -> Result<Value, MonthError> {
+    if !(1..=12).contains(&bs_month) {
+        return Err(MonthError::BadRequest("bs_month must be 1..12".into()));
+    }
+    let start = calendar::month_start(bs_year, bs_month)?;
+    let length = calendar::month_length(bs_year, bs_month)?;
+    let year_start = calendar::month_start(bs_year, 1)?;
+    let year_end = calendar::month_start(bs_year + 1, 1)?.add_days(-1);
+    let festivals =
+        (bs_year >= 60 && year_start.is_datetime_range() && year_end.is_datetime_range())
+            .then(|| bs_year_festivals(bs_year, location));
+    let mut rows = Vec::with_capacity(length as usize);
+    for offset in 0..length {
+        let day = start.add_days(i32::try_from(offset).unwrap_or(0));
+        let mut r = instant_row(day, offset + 1, clock, location)?;
+        let todays = festivals
+            .as_ref()
+            .map(|f| festivals::festivals_for_day(f, day))
+            .unwrap_or_default();
+        r.insert("festivals".into(), festival_names(&todays, international));
+        match embed {
+            Embed::Lite => {
+                r.shift_remove("panchanga");
+            }
+            Embed::FullSlim => {
+                if let Some(Value::Object(fields)) = r.get_mut("panchanga") {
+                    for key in MONTH_EMBED_SLIM_DROP_KEYS {
+                        fields.shift_remove(key);
+                    }
+                    if truthy(fields.get("udaya_lagna")) {
+                        fields.shift_remove("lagna_spans");
+                    }
+                }
+            }
+            Embed::Full => {}
+        }
+        rows.push(Value::Object(r));
+    }
+    let mid = start.add_days(i32::try_from(length.min(15)).unwrap_or(1) - 1);
+    let mid_raw = patro_day_raw(
+        mid,
+        location,
+        BsDate {
+            year: bs_year,
+            month: bs_month,
+            day: length.min(15),
+        },
+    )?;
+    let lunar = &mid_raw["lunar_month"];
+    let mut out = Map::new();
+    out.insert("year_bs".into(), json!(bs_year));
+    out.insert("month_bs".into(), json!(bs_month));
+    out.insert(
+        "month_name".into(),
+        json!(BS_MONTH_NAMES[bs_month as usize - 1]),
+    );
+    out.insert(
+        "month_name_ne".into(),
+        json!(BS_MONTH_NAMES_NE[bs_month as usize - 1]),
+    );
+    out.insert("month_start_ad".into(), json!(start.to_string()));
+    out.insert("month_length".into(), json!(length));
+    out.insert("lunar_month".into(), lunar["name"].clone());
+    out.insert("lunar_month_full".into(), lunar["full_name"].clone());
+    out.insert(
+        "lunar_month_is_adhik".into(),
+        lunar.get("is_adhik").cloned().unwrap_or(json!(false)),
+    );
+    out.insert("lunar_month_type".into(), lunar["type"].clone());
+    out.insert("location".into(), location.as_json());
+    out.insert("mode".into(), json!("ephemeris"));
+    out.insert("clock".into(), json!(clock));
+    out.insert("calendar".into(), Value::Array(rows));
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,

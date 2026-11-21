@@ -1,0 +1,152 @@
+[
+ {
+  "method": "GET",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://vedicpatro.com"
+  },
+  "status": 200,
+  "headers": {
+   "access-control-allow-origin": "https://vedicpatro.com",
+   "vary": "Origin",
+   "content-type": "application/json"
+  },
+  "body": null
+ },
+ {
+  "method": "GET",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://evil.example"
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json"
+  },
+  "body": null
+ },
+ {
+  "method": "GET",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {},
+  "status": 200,
+  "headers": {
+   "content-type": "application/json"
+  },
+  "body": null
+ },
+ {
+  "method": "GET",
+  "path": "/v1/panchanga/2083/7?city_id=1283240",
+  "request_headers": {
+   "Origin": "http://localhost:5173",
+   "Accept-Encoding": "gzip"
+  },
+  "status": 200,
+  "headers": {
+   "access-control-allow-origin": "http://localhost:5173",
+   "vary": "Accept-Encoding, Origin",
+   "content-type": "application/json"
+  },
+  "body": null
+ },
+ {
+  "method": "GET",
+  "path": "/v1/panchanga/2083/13?city_id=1283240",
+  "request_headers": {
+   "Origin": "https://www.vedicpatro.com"
+  },
+  "status": 400,
+  "headers": {
+   "access-control-allow-origin": "https://www.vedicpatro.com",
+   "vary": "Origin",
+   "content-type": "application/json"
+  },
+  "body": null
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://vedicpatro.com",
+   "Access-Control-Request-Method": "GET"
+  },
+  "status": 200,
+  "headers": {
+   "access-control-allow-origin": "https://vedicpatro.com",
+   "access-control-allow-methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+   "access-control-max-age": "600",
+   "vary": "Origin",
+   "content-type": "text/plain; charset=utf-8"
+  },
+  "body": "OK"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://vedicpatro.com",
+   "Access-Control-Request-Method": "GET",
+   "Access-Control-Request-Headers": "x-client, content-type"
+  },
+  "status": 200,
+  "headers": {
+   "access-control-allow-origin": "https://vedicpatro.com",
+   "access-control-allow-methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+   "access-control-allow-headers": "x-client, content-type",
+   "access-control-max-age": "600",
+   "vary": "Origin",
+   "content-type": "text/plain; charset=utf-8"
+  },
+  "body": "OK"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://evil.example",
+   "Access-Control-Request-Method": "GET"
+  },
+  "status": 400,
+  "headers": {
+   "access-control-allow-methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+   "access-control-max-age": "600",
+   "vary": "Origin",
+   "content-type": "text/plain; charset=utf-8"
+  },
+  "body": "Disallowed CORS origin"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://vedicpatro.com",
+   "Access-Control-Request-Method": "TRACE"
+  },
+  "status": 400,
+  "headers": {
+   "access-control-allow-origin": "https://vedicpatro.com",
+   "access-control-allow-methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+   "access-control-max-age": "600",
+   "vary": "Origin",
+   "content-type": "text/plain; charset=utf-8"
+  },
+  "body": "Disallowed CORS method"
+ },
+ {
+  "method": "OPTIONS",
+  "path": "/v1/convert/ad-to-bs/2026-03-12",
+  "request_headers": {
+   "Origin": "https://evil.example",
+   "Access-Control-Request-Method": "TRACE"
+  },
+  "status": 400,
+  "headers": {
+   "access-control-allow-methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+   "access-control-max-age": "600",
+   "vary": "Origin",
+   "content-type": "text/plain; charset=utf-8"
+  },
+  "body": "Disallowed CORS origin, method"
+ }
+]

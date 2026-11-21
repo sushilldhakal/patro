@@ -58,7 +58,7 @@ const NIGHT_KAALS: [&str; 2] = ["pradosh", "purva_ratri"];
 fn timedelta_div(micros: i64, n: i64) -> i64 {
     let (mut q, r) = (micros.div_euclid(n), micros.rem_euclid(n));
     let r2 = r * 2;
-    if r2 > n || (r2 == n && q % 2 == 1) {
+    if r2 > n || (r2 == n && q.rem_euclid(2) == 1) {
         q += 1;
     }
     q
@@ -673,10 +673,75 @@ pub fn festival_saits(day: CivilDay, festival_ids: &[String], location: &Locatio
     out
 }
 
-/// Ceremony saits — empty until `muhurta_engine` is ported.
+/// One ceremony's muhurta windows on a day (`muhurta_windows(cat, day, refine=True)`),
+/// found by the muhurta engine in the `patro` crate.
+#[derive(Debug, Clone)]
+pub struct CeremonyWindows {
+    /// `vivah`, `bratabandha` or `griha-pravesh`.
+    pub category: &'static str,
+    /// `(start, end)` of each window, in scan order.
+    pub windows: Vec<(UtcInstant, UtcInstant)>,
+}
+
+/// The ceremonies a day route times, with the local lagnas each permits (`CEREMONY_SAITS`).
+pub const CEREMONY_SAITS: [(&str, &[u32]); 3] = [
+    ("vivah", &[2, 3, 6, 7, 9, 12]),
+    ("bratabandha", &SHUBHA_LAGNAS),
+    ("griha-pravesh", &SHUBHA_LAGNAS),
+];
+
+/// `ceremony_saits`: one row per stretch of a muhurta window under a single
+/// permitted local lagna, so the times are the minutes that lagna holds the horizon.
 #[must_use]
-pub fn ceremony_saits(_day: CivilDay, _location: &Location) -> Vec<Value> {
-    Vec::new()
+pub fn ceremony_saits(day: CivilDay, location: &Location, found: &[CeremonyWindows]) -> Vec<Value> {
+    if found.iter().all(|c| c.windows.is_empty()) {
+        return Vec::new();
+    }
+    let Some(sky) = local_sky(day, location) else {
+        return Vec::new();
+    };
+    let zone = &location.zone;
+    let mut out = Vec::new();
+    for ceremony in found {
+        let Some((_, permitted)) = CEREMONY_SAITS.iter().find(|(c, _)| *c == ceremony.category)
+        else {
+            continue;
+        };
+        for &(start, end) in &ceremony.windows {
+            let whole = Window { start, end };
+            for span in &sky.lagna_spans {
+                if !permitted.contains(&span.number) {
+                    continue;
+                }
+                let Some(part) = intersect(whole, span.window) else {
+                    continue;
+                };
+                // Slivers at a lagna change are no sait, as for the festivals.
+                if part.duration_micros() < MIN_SAIT_MICROS {
+                    continue;
+                }
+                let mut row = Map::new();
+                row.insert("kind".into(), json!("ceremony"));
+                row.insert("festival_id".into(), json!(ceremony.category));
+                row.insert("timezone".into(), json!(zone.name()));
+                row.insert("ritual".into(), json!(ceremony.category));
+                row.insert("kaal".into(), Value::Null);
+                row.insert("window".into(), Value::Object(time_block(start, end, zone)));
+                row.insert(
+                    "sait".into(),
+                    Value::Object(time_block(part.start, part.end, zone)),
+                );
+                row.insert(
+                    "lagna".into(),
+                    json!({"number": span.number, "name": span.name, "name_ne": span.name_ne}),
+                );
+                row.insert("alternate".into(), Value::Null);
+                row.insert("facing".into(), Value::Null);
+                out.push(Value::Object(row));
+            }
+        }
+    }
+    out
 }
 
 /// Day-route attachment: enrich festivals and compute `festival_saits`.
@@ -684,6 +749,7 @@ pub fn attach_festival_saits(
     festivals: &mut [Value],
     day: CivilDay,
     location: &Location,
+    ceremonies: &[CeremonyWindows],
 ) -> Vec<Value> {
     crate::details::attach_festival_details(festivals);
     let ids: Vec<String> = festivals
@@ -691,6 +757,6 @@ pub fn attach_festival_saits(
         .filter_map(|f| f.get("id").and_then(Value::as_str).map(str::to_owned))
         .collect();
     let mut saits = festival_saits(day, &ids, location);
-    saits.extend(ceremony_saits(day, location));
+    saits.extend(ceremony_saits(day, location, ceremonies));
     saits
 }

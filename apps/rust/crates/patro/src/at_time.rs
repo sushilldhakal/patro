@@ -783,6 +783,23 @@ fn muhurta_now(muhurta: &Map<String, Value>, instant: UtcInstant) -> Value {
     Value::Object(out)
 }
 
+/// `build_panchanga_at_time(parse_clock_on_date(clock, day, ...), location)`: the
+/// at-time payload at an observer-local clock on a civil day.
+///
+/// # Errors
+///
+/// [`DayError::BadRequest`] for a bad clock, [`DayError::NotPorted`] before 1582-10-15.
+pub fn at_time_on_day(day: CivilDay, clock: &str, location: &Location) -> Result<Value, DayError> {
+    let zone = observer_zone(location);
+    if !day.is_datetime_range() {
+        // `local_wall_instant`: the wall clock on the Julian Day axis.
+        let (hour, minute, second) = clock_parts(clock)?;
+        return at_time_payload_jd(local_wall_jd(day, hour, minute, second, &zone), location);
+    }
+    let instant = clock_on_day(clock, day, &zone)?;
+    at_time_payload(instant, location)
+}
+
 /// `build_panchanga_at_time`.
 ///
 /// # Errors

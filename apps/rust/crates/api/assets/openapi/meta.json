@@ -1,0 +1,18 @@
+{
+ "/openapi.json": {
+  "file": "openapi.json",
+  "content-type": "application/json"
+ },
+ "/docs": {
+  "file": "docs.html",
+  "content-type": "text/html; charset=utf-8"
+ },
+ "/redoc": {
+  "file": "redoc.html",
+  "content-type": "text/html; charset=utf-8"
+ },
+ "/docs/oauth2-redirect": {
+  "file": "oauth2-redirect.html",
+  "content-type": "text/html; charset=utf-8"
+ }
+}

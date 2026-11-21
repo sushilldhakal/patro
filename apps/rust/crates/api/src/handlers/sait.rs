@@ -108,7 +108,11 @@ fn emit_json(
             }
         }
     }
-    (StatusCode::OK, out, body).into_response()
+    let mut response = (StatusCode::OK, out, body).into_response();
+    response
+        .extensions_mut()
+        .insert(crate::respond::PreEraLen(compact.len()));
+    response
 }
 
 /// FastAPI/pydantic `int_parsing` body for a bad query integer.

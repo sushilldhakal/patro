@@ -258,12 +258,7 @@ pub(crate) async fn month(
     if !(1..=12).contains(&bs_month) {
         return detail(StatusCode::BAD_REQUEST, "month must be 1..12");
     }
-    if q.contains_key("clock") {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "clock= month grids are not ported to the Rust server yet",
-        );
-    }
+    let clock = q.get("clock").filter(|c| !c.is_empty()).cloned();
     let slim = match flag(&q, "slim") {
         Ok(v) => v,
         Err(r) => return r,
@@ -275,17 +270,22 @@ pub(crate) async fn month(
     };
     let month_u = u32::try_from(bs_month).unwrap_or(1);
     let built = tokio::task::spawn_blocking(move || {
-        month_calendar(
-            signed,
-            month_u,
-            &loc,
-            if exclude_international {
-                International::Exclude
-            } else {
-                International::Include
-            },
-            embed,
-        )
+        let international = if exclude_international {
+            International::Exclude
+        } else {
+            International::Include
+        };
+        match clock {
+            Some(clock) => patro::month::month_calendar_at_clock(
+                signed,
+                month_u,
+                &loc,
+                &clock,
+                international,
+                embed,
+            ),
+            None => month_calendar(signed, month_u, &loc, international, embed),
+        }
     })
     .await;
     let payload = match built {
@@ -443,20 +443,6 @@ pub(crate) async fn bc_month(
         Ok(Err(e)) => month_error(e),
         Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
     }
-}
-
-/// `POST /v1/generate/{year}`, `/v1/generate/panchanga/{bs_year}` and
-/// `/v1/generate/panchanga/popular/{bs_year}`: Python's precompute jobs, which fill
-/// its SQLite / Postgres caches. The Rust server has no persistent cache yet (step 5),
-/// so they answer 501 instead of burning CPU on work nothing would keep.
-pub(crate) async fn generate(Path(raw): Path<String>) -> Response {
-    if let Err(r) = path_int(&raw, "year") {
-        return r;
-    }
-    detail(
-        StatusCode::NOT_IMPLEMENTED,
-        "precompute jobs need the persistent cache, which the Rust server does not have yet",
-    )
 }
 
 /// `GET /v1/nepal/patro/ad/{ad_year}/{ad_month}`: an AD month's daily panchanga

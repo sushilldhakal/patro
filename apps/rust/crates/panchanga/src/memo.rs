@@ -6,9 +6,9 @@
 //! `capacity` entries.
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     hash::Hash,
-    sync::{Arc, Mutex, PoisonError},
+    sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError},
 };
 
 struct Slot<V: ?Sized> {
@@ -18,6 +18,8 @@ struct Slot<V: ?Sized> {
 
 struct Inner<K, V: ?Sized> {
     slots: HashMap<K, Slot<V>>,
+    /// Keys a thread is computing now; others asking for them wait.
+    pending: HashSet<K>,
     clock: u64,
 }
 
@@ -25,6 +27,8 @@ struct Inner<K, V: ?Sized> {
 pub struct Memo<K, V: ?Sized> {
     capacity: usize,
     inner: Mutex<Inner<K, V>>,
+    /// Signalled whenever a pending key finishes (or its builder panics).
+    ready: Condvar,
 }
 
 impl<K, V: ?Sized> std::fmt::Debug for Memo<K, V> {
@@ -43,28 +47,47 @@ impl<K: Eq + Hash + Clone, V: ?Sized> Memo<K, V> {
             capacity: capacity.max(1),
             inner: Mutex::new(Inner {
                 slots: HashMap::new(),
+                pending: HashSet::new(),
                 clock: 0,
             }),
+            ready: Condvar::new(),
         }
     }
 
     /// The value for `key`, computing it with `build` on a miss.
     ///
-    /// `build` runs without the lock held, so two threads may compute the same key at
-    /// once; the first to finish is kept and both get it. A poisoned lock is recovered
-    /// (every entry is a complete value, so nothing half-written can be read).
+    /// Single-flight: while one thread builds a key, others asking for the same key
+    /// wait for its value instead of computing it again. `build` runs without the
+    /// lock held, so different keys build in parallel. If `build` panics, a waiter
+    /// takes over. A poisoned lock is recovered (every entry is a complete value).
     pub fn get_or_insert_with(&self, key: &K, build: impl FnOnce() -> Arc<V>) -> Arc<V> {
-        if let Some(hit) = self.touch(key) {
-            return hit;
+        let mut inner = self.lock();
+        loop {
+            inner.clock += 1;
+            let now = inner.clock;
+            if let Some(slot) = inner.slots.get_mut(key) {
+                slot.last_used = now;
+                return Arc::clone(&slot.value);
+            }
+            if !inner.pending.contains(key) {
+                break;
+            }
+            inner = self
+                .ready
+                .wait(inner)
+                .unwrap_or_else(PoisonError::into_inner);
         }
+        inner.pending.insert(key.clone());
+        drop(inner);
+
+        let guard = Pending { memo: self, key };
         let value = build();
-        let mut inner = self.inner.lock().unwrap_or_else(PoisonError::into_inner);
+        std::mem::forget(guard);
+
+        let mut inner = self.lock();
+        inner.pending.remove(key);
         inner.clock += 1;
         let now = inner.clock;
-        if let Some(slot) = inner.slots.get_mut(key) {
-            slot.last_used = now;
-            return Arc::clone(&slot.value);
-        }
         if inner.slots.len() >= self.capacity
             && let Some(oldest) = inner
                 .slots
@@ -81,17 +104,13 @@ impl<K: Eq + Hash + Clone, V: ?Sized> Memo<K, V> {
                 last_used: now,
             },
         );
+        drop(inner);
+        self.ready.notify_all();
         value
     }
 
-    fn touch(&self, key: &K) -> Option<Arc<V>> {
-        let mut inner = self.inner.lock().unwrap_or_else(PoisonError::into_inner);
-        inner.clock += 1;
-        let now = inner.clock;
-        inner.slots.get_mut(key).map(|slot| {
-            slot.last_used = now;
-            Arc::clone(&slot.value)
-        })
+    fn lock(&self) -> MutexGuard<'_, Inner<K, V>> {
+        self.inner.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// How many entries it holds.
@@ -108,6 +127,19 @@ impl<K: Eq + Hash + Clone, V: ?Sized> Memo<K, V> {
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
+    }
+}
+
+/// Clears a pending key if its builder panics, so waiters do not hang.
+struct Pending<'a, K: Eq + Hash + Clone, V: ?Sized> {
+    memo: &'a Memo<K, V>,
+    key: &'a K,
+}
+
+impl<K: Eq + Hash + Clone, V: ?Sized> Drop for Pending<'_, K, V> {
+    fn drop(&mut self) {
+        self.memo.lock().pending.remove(self.key);
+        self.memo.ready.notify_all();
     }
 }
 
@@ -130,5 +162,29 @@ mod tests {
             99,
             "2 was evicted"
         );
+    }
+
+    #[test]
+    fn concurrent_askers_share_one_build() {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        let memo: Arc<Memo<u32, u32>> = Arc::new(Memo::new(4));
+        let builds = Arc::new(AtomicUsize::new(0));
+        let threads: Vec<_> = (0..8)
+            .map(|_| {
+                let memo = Arc::clone(&memo);
+                let builds = Arc::clone(&builds);
+                std::thread::spawn(move || {
+                    *memo.get_or_insert_with(&7, || {
+                        builds.fetch_add(1, Ordering::SeqCst);
+                        std::thread::sleep(std::time::Duration::from_millis(50));
+                        Arc::new(49)
+                    })
+                })
+            })
+            .collect();
+        for t in threads {
+            assert_eq!(t.join().expect("thread"), 49);
+        }
+        assert_eq!(builds.load(Ordering::SeqCst), 1);
     }
 }

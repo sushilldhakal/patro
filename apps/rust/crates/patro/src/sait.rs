@@ -1685,7 +1685,7 @@ fn edge_refine(
     godhuli: Option<(UtcInstant, UtcInstant)>,
     dur_intervals: &[(UtcInstant, UtcInstant)],
     sankranti_intervals: &[(UtcInstant, UtcInstant)],
-) -> UtcInstant {
+) -> (UtcInstant, UtcInstant) {
     while bad.seconds_since(good).abs() > f64::from(REFINE_TOLERANCE_SECONDS as i32) {
         let mid = UtcInstant::midpoint(good, bad);
         let in_godhuli = godhuli.is_some_and(|(s, e)| s <= mid && mid < e);
@@ -1707,7 +1707,29 @@ fn edge_refine(
             bad = mid;
         }
     }
-    good
+    (good, bad)
+}
+
+/// `muhurta_windows(cat, day, location, refine=True)` for each ceremony a day
+/// route times (`CEREMONY_SAITS`). A day the engine cannot judge yields no windows.
+pub(crate) fn ceremony_windows(
+    greg: CivilDay,
+    location: &Location,
+) -> Vec<festivals::CeremonyWindows> {
+    let rules = ceremony_rules();
+    festivals::CEREMONY_SAITS
+        .iter()
+        .map(|(category, _)| festivals::CeremonyWindows {
+            category,
+            windows: rules
+                .get(category)
+                .and_then(|rule| muhurta_windows_for_rule(rule, greg, location, true).ok())
+                .unwrap_or_default()
+                .into_iter()
+                .map(|w| (w.start, w.end))
+                .collect(),
+        })
+        .collect()
 }
 
 fn muhurta_windows_for_rule(
@@ -1845,7 +1867,8 @@ fn muhurta_windows_for_rule(
                         godhuli,
                         &dur_intervals,
                         &sankranti_intervals,
-                    );
+                    )
+                    .0;
                 }
                 if stop < end {
                     stop = edge_refine(
@@ -1859,7 +1882,8 @@ fn muhurta_windows_for_rule(
                         godhuli,
                         &dur_intervals,
                         &sankranti_intervals,
-                    );
+                    )
+                    .1;
                 }
             }
             if stop.seconds_since(start_refined) >= f64::from(MIN_WINDOW_SECONDS as i32) {
@@ -1893,7 +1917,8 @@ fn muhurta_windows_for_rule(
                     godhuli,
                     &dur_intervals,
                     &sankranti_intervals,
-                );
+                )
+                .0;
             }
             if stop < end {
                 stop = edge_refine(
@@ -1907,7 +1932,8 @@ fn muhurta_windows_for_rule(
                     godhuli,
                     &dur_intervals,
                     &sankranti_intervals,
-                );
+                )
+                .1;
             }
         }
         if stop.seconds_since(start_refined) >= f64::from(MIN_WINDOW_SECONDS as i32) {

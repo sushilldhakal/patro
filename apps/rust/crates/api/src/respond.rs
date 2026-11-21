@@ -73,20 +73,37 @@ fn with_stale_if_error(directive: &str) -> String {
     }
 }
 
-fn rendered_body(payload: &Value, q: &Query) -> String {
-    match era_of(q) {
-        Some(era) => {
-            let language = match q.get("language").map(|l| l.trim().to_lowercase()) {
-                Some(l) if l == "en" || l == "ne" => l,
-                _ => patro::era::era_language(&era).to_owned(),
-            };
-            dumps(
-                &patro::era::render_for_era(payload, &era, &language),
-                Style::Default,
-            )
-        }
-        None => dumps(payload, Style::Compact),
-    }
+/// The body as sent, and the size `GZipMiddleware` judged it by. Python's era
+/// middleware sits outside `GZip`, so `GZip` saw the compact route body before the era
+/// layer re-rendered it: the 1024-byte threshold applies to that size.
+fn rendered_body(payload: &Value, q: &Query) -> (String, PreEraLen) {
+    let compact = dumps(payload, Style::Compact);
+    let pre = PreEraLen(compact.len());
+    let Some(era) = era_of(q) else {
+        return (compact, pre);
+    };
+    let language = match q.get("language").map(|l| l.trim().to_lowercase()) {
+        Some(l) if l == "en" || l == "ne" => l,
+        _ => patro::era::era_language(&era).to_owned(),
+    };
+    (
+        dumps(
+            &patro::era::render_for_era(payload, &era, &language),
+            Style::Default,
+        ),
+        pre,
+    )
+}
+
+/// The body size `GZipMiddleware` saw, before the era layer re-rendered it; read
+/// by the identity-path `Vary` layer.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct PreEraLen(pub(crate) usize);
+
+/// Tags a response with the size `GZip` judged.
+fn tagged(mut response: Response, pre: PreEraLen) -> Response {
+    response.extensions_mut().insert(pre);
+    response
 }
 
 /// A JSON 200 from a plain route (no explicit cache headers), with the
@@ -97,7 +114,7 @@ pub(crate) fn json_plain_payload(
     request_headers: &HeaderMap,
     started: Instant,
 ) -> Response {
-    let body = rendered_body(payload, q);
+    let (body, pre) = rendered_body(payload, q);
     let mut headers = HeaderMap::new();
     let set = |h: &mut HeaderMap, k: &'static str, v: &str| {
         if let Ok(v) = HeaderValue::from_str(v) {
@@ -111,7 +128,7 @@ pub(crate) fn json_plain_payload(
         .get(header::ACCEPT_ENCODING)
         .and_then(|v| v.to_str().ok())
         .is_some_and(|v| v.to_lowercase().contains("gzip"))
-        && body.len() >= 1024;
+        && pre.0 >= 1024;
     let bytes = if gzip {
         let mut enc = GzEncoder::new(Vec::with_capacity(body.len() / 4), Compression::new(6));
         if enc.write_all(body.as_bytes()).is_ok() {
@@ -123,7 +140,7 @@ pub(crate) fn json_plain_payload(
                     "server-timing",
                     &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
                 );
-                return (StatusCode::OK, headers, compressed).into_response();
+                return tagged((StatusCode::OK, headers, compressed).into_response(), pre);
             }
         }
         body.into_bytes()
@@ -135,7 +152,7 @@ pub(crate) fn json_plain_payload(
         "server-timing",
         &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
     );
-    (StatusCode::OK, headers, bytes).into_response()
+    tagged((StatusCode::OK, headers, bytes).into_response(), pre)
 }
 
 /// A 200 body with its own content type and headers (a `StreamingResponse`), the
@@ -240,7 +257,53 @@ pub(crate) fn json_payload(
     cdn_cache_control: Option<&str>,
     started: Instant,
 ) -> Response {
-    let body = rendered_body(payload, q);
+    cached_json(
+        payload,
+        q,
+        request_headers,
+        (cache_control, cdn_cache_control),
+        started,
+        RouteVary::Set,
+    )
+}
+
+/// [`json_payload`] for a route that returns its own `JSONResponse` with cache
+/// headers but no `Vary` of its own (the day and at-time routes): `Vary` is then
+/// only what `GZipMiddleware` adds.
+pub(crate) fn json_response_payload(
+    payload: &Value,
+    q: &Query,
+    request_headers: &HeaderMap,
+    cache_control: &str,
+    cdn_cache_control: Option<&str>,
+    started: Instant,
+) -> Response {
+    cached_json(
+        payload,
+        q,
+        request_headers,
+        (cache_control, cdn_cache_control),
+        started,
+        RouteVary::None,
+    )
+}
+
+/// Whether the route sets `Vary: Accept-Encoding` itself (the response cache does).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RouteVary {
+    Set,
+    None,
+}
+
+fn cached_json(
+    payload: &Value,
+    q: &Query,
+    request_headers: &HeaderMap,
+    (cache_control, cdn_cache_control): (&str, Option<&str>),
+    started: Instant,
+    route_vary: RouteVary,
+) -> Response {
+    let (body, pre) = rendered_body(payload, q);
     let directive = with_stale_if_error(cache_control);
     let cdn_directive = with_stale_if_error(cdn_cache_control.unwrap_or(cache_control));
     let mut headers = HeaderMap::new();
@@ -251,25 +314,31 @@ pub(crate) fn json_payload(
     };
     set(&mut headers, "cache-control", &directive);
     set(&mut headers, "cdn-cache-control", &cdn_directive);
-    set(&mut headers, "vary", "Accept-Encoding");
+    if route_vary == RouteVary::Set {
+        set(&mut headers, "vary", "Accept-Encoding");
+    }
     set(&mut headers, "content-type", "application/json");
     set(&mut headers, "x-siddhanta", "surya_siddhanta");
     set(&mut headers, "x-ayanamsha", "surya_siddhanta");
     let gzip = request_headers
         .get(header::ACCEPT_ENCODING)
         .and_then(|v| v.to_str().ok())
-        .is_some_and(|v| v.to_lowercase().contains("gzip"));
+        .is_some_and(|v| v.to_lowercase().contains("gzip"))
+        // Cached bytes are stored gzipped whatever their size; a plain
+        // `JSONResponse` is compressed by `GZipMiddleware` from 1024 bytes.
+        && (route_vary == RouteVary::Set || pre.0 >= 1024);
     let bytes = if gzip {
         let mut enc = GzEncoder::new(Vec::with_capacity(body.len() / 4), Compression::new(6));
         if enc.write_all(body.as_bytes()).is_ok() {
             if let Ok(compressed) = enc.finish() {
                 set(&mut headers, "content-encoding", "gzip");
+                set(&mut headers, "vary", "Accept-Encoding");
                 set(
                     &mut headers,
                     "server-timing",
                     &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
                 );
-                return (StatusCode::OK, headers, compressed).into_response();
+                return tagged((StatusCode::OK, headers, compressed).into_response(), pre);
             }
         }
         body.into_bytes()
@@ -281,7 +350,7 @@ pub(crate) fn json_payload(
         "server-timing",
         &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
     );
-    (StatusCode::OK, headers, bytes).into_response()
+    tagged((StatusCode::OK, headers, bytes).into_response(), pre)
 }
 
 /// The display era a request named, if any (`EraMiddleware` renders only then).
@@ -414,9 +483,10 @@ pub(crate) fn json_compact(
     cdn_cache_control: Option<&str>,
     started: Instant,
 ) -> Response {
-    let body = rendered_body(payload, q);
+    let (body, pre) = rendered_body(payload, q);
     json_body(
         body,
+        pre,
         request_headers,
         cache_control,
         cdn_cache_control,
@@ -426,6 +496,7 @@ pub(crate) fn json_compact(
 
 fn json_body(
     body: String,
+    pre: PreEraLen,
     request_headers: &HeaderMap,
     cache_control: Option<&str>,
     cdn_cache_control: Option<&str>,
@@ -443,25 +514,27 @@ fn json_body(
     if let Some(cdn) = cdn_cache_control {
         set(&mut headers, "cdn-cache-control", &with_stale_if_error(cdn));
     }
-    set(&mut headers, "vary", "Accept-Encoding");
     set(&mut headers, "content-type", "application/json");
     set(&mut headers, "x-siddhanta", "surya_siddhanta");
     set(&mut headers, "x-ayanamsha", "surya_siddhanta");
     let gzip = request_headers
         .get(header::ACCEPT_ENCODING)
         .and_then(|v| v.to_str().ok())
-        .is_some_and(|v| v.to_lowercase().contains("gzip"));
+        .is_some_and(|v| v.to_lowercase().contains("gzip"))
+        // `GZipMiddleware(minimum_size=1024)`, which adds `Vary` only when it compresses.
+        && pre.0 >= 1024;
     let bytes = if gzip {
         let mut enc = GzEncoder::new(Vec::with_capacity(body.len() / 4), Compression::new(6));
         if enc.write_all(body.as_bytes()).is_ok() {
             if let Ok(compressed) = enc.finish() {
                 set(&mut headers, "content-encoding", "gzip");
+                set(&mut headers, "vary", "Accept-Encoding");
                 set(
                     &mut headers,
                     "server-timing",
                     &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
                 );
-                return (StatusCode::OK, headers, compressed).into_response();
+                return tagged((StatusCode::OK, headers, compressed).into_response(), pre);
             }
         }
         body.into_bytes()
@@ -473,7 +546,7 @@ fn json_body(
         "server-timing",
         &format!("app;dur={:.1}", started.elapsed().as_secs_f64() * 1000.0),
     );
-    (StatusCode::OK, headers, bytes).into_response()
+    tagged((StatusCode::OK, headers, bytes).into_response(), pre)
 }
 
 /// A `serve_cached_json` 200 to a POST: `Cache-Control` and `CDN-Cache-Control` as

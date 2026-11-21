@@ -1,0 +1,7 @@
+# Compile vendored C (the Swiss Ephemeris in `swiss-eph`) without fused
+# multiply-add. Clang on Apple Silicon contracts a*b+c into one FMA by default,
+# which changes the last bits of every Swiss Ephemeris result; pyswisseph is
+# built without it, and drik must match it bit for bit
+# (crates/ephemeris/tests/swe_golden.rs fails without this).
+[env]
+CFLAGS = "-ffp-contract=off"

@@ -1,0 +1,4352 @@
+{
+ "now": "2026-11-21T19:24:22.905925+00:00",
+ "steps": [
+  {
+   "step": {
+    "m": "POST",
+    "p": "/auth/signup",
+    "json": {
+     "email": "carol@example.com",
+     "password": "carolpassword"
+    },
+    "capture": {
+     "carol": "access_token"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=255.8",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YzM2ODkxMS1iY2M2LTQ3ODktYjEyNS0yNmY0MGRlYjc4ZjQiLCJlbWFpbCI6ImNhcm9sQGV4YW1wbGUuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc5NTI4OTA2MywiZXhwIjoxNzk1MjkwODYzfQ.MbaEUGb3tNfKbQT2VWMJHaV5CBQMbVt0X7MG9e6RHeI",
+    "refresh_token": "cnSEAf82HMVeVasUpFQ9ag8ecN554n5bit0QLIO8jTI",
+    "token_type": "bearer",
+    "expires_in": 1800
+   },
+   "outbox": [
+    {
+     "kind": "verify",
+     "to": "carol@example.com"
+    }
+   ]
+  },
+  {
+   "step": {
+    "m": "POST",
+    "p": "/auth/signup",
+    "json": {
+     "email": "dave@example.com",
+     "password": "davepassword"
+    },
+    "capture": {
+     "dave": "access_token"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=243.3",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZTQxMDFlNS1iMjdlLTQ2NzAtYjYzNy01MTMzZWFlYjhjNDQiLCJlbWFpbCI6ImRhdmVAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg5MDYzLCJleHAiOjE3OTUyOTA4NjN9.dyMjMj07tWEGknxwD57RmYhxfEyjUa1H6gfWKUf4Uio",
+    "refresh_token": "CUsUYpaM2yFKDEOpXYEcDcL-K64OUCazAdSXMr22QJk",
+    "token_type": "bearer",
+    "expires_in": 1800
+   },
+   "outbox": [
+    {
+     "kind": "verify",
+     "to": "dave@example.com"
+    }
+   ]
+  },
+  {
+   "step": {
+    "m": "POST",
+    "p": "/profiles",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    },
+    "json": {
+     "full_name": "Carol BS",
+     "birth_date": "2050-05-15",
+     "birth_time": "06:30",
+     "birth_era": "bs",
+     "latitude": 27.7172,
+     "longitude": 85.324,
+     "timezone": "Asia/Kathmandu"
+    },
+    "capture": {
+     "g1": "id"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=8.4",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "full_name": "Carol BS",
+    "phone": null,
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": 27.7172,
+    "longitude": 85.324,
+    "timezone": "Asia/Kathmandu",
+    "birth_date": "2050-05-15",
+    "birth_time": "06:30",
+    "birth_era": "bs",
+    "notes": null,
+    "is_default": true,
+    "id": "f8ae2722-3781-46d1-9bc6-2ff2e2d4781f",
+    "created_at": "2026-11-21T19:24:23.414096Z",
+    "updated_at": "2026-11-21T19:24:23.414096Z"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "POST",
+    "p": "/profiles",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    },
+    "json": {
+     "full_name": "No birth"
+    },
+    "capture": {
+     "g2": "id"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=4.0",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "full_name": "No birth",
+    "phone": null,
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": null,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": false,
+    "id": "4d08fb38-5a37-44bf-b092-c9ff119eaa45",
+    "created_at": "2026-11-21T19:24:23.427357Z",
+    "updated_at": "2026-11-21T19:24:23.427357Z"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "POST",
+    "p": "/profiles",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    },
+    "json": {
+     "full_name": "Carol AD",
+     "birth_date": "1990-02-03",
+     "birth_time": "23:45",
+     "birth_era": "ad",
+     "latitude": 40.7128,
+     "longitude": -74.006,
+     "timezone": "America/New_York"
+    },
+    "capture": {
+     "g3": "id"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=4.1",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "full_name": "Carol AD",
+    "phone": null,
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": 40.7128,
+    "longitude": -74.006,
+    "timezone": "America/New_York",
+    "birth_date": "1990-02-03",
+    "birth_time": "23:45",
+    "birth_era": "ad",
+    "notes": null,
+    "is_default": false,
+    "id": "8fa946dc-795f-442f-b282-00e055368d26",
+    "created_at": "2026-11-21T19:24:23.433262Z",
+    "updated_at": "2026-11-21T19:24:23.433262Z"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "POST",
+    "p": "/profiles",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    },
+    "json": {
+     "full_name": "Bad birth",
+     "birth_date": "2050-05",
+     "latitude": 27.7,
+     "longitude": 85.3
+    },
+    "capture": {
+     "g4": "id"
+    }
+   },
+   "status": 201,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=28.9",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "full_name": "Bad birth",
+    "phone": null,
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": 27.7,
+    "longitude": 85.3,
+    "timezone": null,
+    "birth_date": "2050-05",
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": false,
+    "id": "dc063d7b-cea2-4f68-977f-7f83122e25ad",
+    "created_at": "2026-11-21T19:24:23.463047Z",
+    "updated_at": "2026-11-21T19:24:23.463047Z"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?from=2026-11-22&days=3",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=313.8",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "f8ae2722-3781-46d1-9bc6-2ff2e2d4781f",
+    "days": [
+     {
+      "date": "2026-11-22",
+      "personal_tone": "neutral",
+      "summary_ne": "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Offer water to the Sun and rise at sunrise. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्।",
+       "प्रदोषमा शिव पूजा गर्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Offer water to the Sun and rise at sunrise.",
+       "Worship Shiva at pradosh (dusk).",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "अहंकार वा हतारमा निर्णय नगर्नुहोस्; हाकिम वा सरकारी अधिकारीसँग झगडा नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Don't decide in haste or pride; avoid disputes with authority.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "00:39",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "03:24",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:44",
+        "end": "05:38"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:11",
+        "end": "06:32"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "05:55",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "ganda_moola",
+        "name_ne": "गण्ड मूल",
+        "name_en": "Ganda Moola",
+        "start": "06:32",
+        "end": "03:24"
+       },
+       {
+        "kind": "ashubh",
+        "key": "vidaal_yoga",
+        "name_ne": "विडाल योग",
+        "name_en": "Vidaal Yoga",
+        "start": "06:32",
+        "end": "03:24"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:32",
+        "end": "06:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "06:32",
+        "end": "07:05"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_yoga",
+        "name_ne": "योग विष",
+        "name_en": "Yoga Visha",
+        "start": "06:32",
+        "end": "23:14"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "11:48",
+        "end": "13:07"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "14:26",
+        "end": "15:44"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "15:39",
+        "end": "16:21"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "15:44",
+        "end": "17:03"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:03",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:03",
+        "end": "18:24"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "20:20",
+        "end": "21:55"
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:21",
+        "end": "00:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "23:29",
+        "end": "01:03"
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 11,
+        "name_ne": "कुम्भ",
+        "name_en": "Kumbha"
+       },
+       "janma_nakshatra": {
+        "number": 23,
+        "name_ne": "धनिष्ठा",
+        "name_en": "Dhanishta"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": false
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "asta": false,
+         "vakri": false
+        }
+       },
+       "segments": [
+        {
+         "start": "06:33",
+         "end": "27:24",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 6,
+          "name_ne": "साधक",
+          "name_en": "Sadhaka",
+          "state": "good"
+         }
+        },
+        {
+         "start": "27:24",
+         "end": "30:34",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 7,
+          "name_ne": "निधन",
+          "name_en": "Naidhana",
+          "state": "bad"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-08-06",
+      "weekday_ne": "आइतवार",
+      "weekday_en": "Sunday",
+      "tithi_ne": "त्रयोदशी",
+      "tithi_en": "Trayodashi",
+      "nakshatra_ne": "अश्विनी",
+      "nakshatra_en": "Ashwini",
+      "reading": {
+       "percent": 49,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र मङ्गल अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको २ भावमा रहेकाले यस अवधिको मूल विषय धन, वाणी र परिवारसँग जोडिएको छ, भने अन्तर्दशेश मङ्गल २ भावमा भएकाले धन, वाणी र परिवारसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; सूर्य चक्र भने कमजोर भएकाले प्रतिष्ठा, अधिकार र पदीय पक्षमा चाप पर्न सक्छ। स्वास्थ्य पक्षमा भने सतर्कता चाहिन्छ; शरीर र आत्मविश्वाससँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र मेष राशिबाट ९ भावमा रहेकाले भाग्य, धर्म र गुरुमा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। शनि, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। जन्म अष्टकवर्गमा लग्न राशिमा २६ बिन्दु छन् — औसत स्तरको आधार, जसले गोचरको फल जस्ताको तस्तै देखाउँछ। चन्द्रबल मित्र (शुभ) र गोचर चन्द्र जन्म राशिबाट ३ भावमा — मूर्ति ताम्र। लग्नेश सूर्य ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Mars Antardasha. The Mahadasha lord Jupiter sits in house 2 of your birth chart, so the period's underlying subject is money, speech and family; the Antardasha lord Mars in house 2 brings money, speech and family to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Surya frame is weaker, so standing, authority and position can come under pressure. Health calls for care, though — do not rush anything touching body and self-confidence. Moon transiting Mesha into house 9 can press on fortune, dharma and mentors — that is the area to stay alert in. Saturn, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. The Lagna sign holds 26 bindus in your natal Ashtakavarga — an average base, which lets the transits read much as they stand. Chandrabala is Mitra (auspicious), with the transit Moon 3 houses from your natal Moon — a Tamra (copper) moorti. Your Lagna lord Sun stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2030-02-25T23:57:19.133333+05:45"
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "end": "2027-10-03T09:59:14.333333+05:45"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "neutral",
+         "percent": 47
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "neutral",
+         "percent": 46
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "bad",
+         "percent": 28
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 33
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "मेष",
+         "sign_en": "Mesha",
+         "house": 9,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "तुला",
+         "sign_en": "Tula",
+         "house": 3,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "कन्या",
+         "sign_en": "Kanya",
+         "house": 2,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 8,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 3
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 7,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     },
+     {
+      "date": "2026-11-23",
+      "personal_tone": "neutral",
+      "summary_ne": "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Worship Shiva, offer milk or water; keep the mind calm. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Worship Shiva, offer milk or water; keep the mind calm.",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "भावनामा बगेर ठूला आर्थिक निर्णय नगर्नुहोस्।",
+       "रिक्ता तिथि — शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Avoid big money decisions made on emotion.",
+       "Rikta tithi — don't begin auspicious work.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:45",
+        "end": "05:39"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:12",
+        "end": "06:33"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "05:49",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "06:33",
+        "end": "02:32"
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "06:33",
+        "end": "23:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "06:33",
+        "end": "07:25"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "07:52",
+        "end": "09:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "10:29",
+        "end": "11:48"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "12:09",
+        "end": "12:51"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "12:39",
+        "end": "14:12"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "13:07",
+        "end": "14:26"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "14:15",
+        "end": "14:57"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:03",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:03",
+        "end": "18:24"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "21:55",
+        "end": "23:27"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "23:11",
+        "end": "00:40"
+       },
+       {
+        "kind": "ashubh",
+        "key": "bhadra",
+        "name_ne": "भद्रा",
+        "name_en": "Bhadra",
+        "start": "23:12",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:22",
+        "end": "00:16"
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 11,
+        "name_ne": "कुम्भ",
+        "name_en": "Kumbha"
+       },
+       "janma_nakshatra": {
+        "number": 23,
+        "name_ne": "धनिष्ठा",
+        "name_en": "Dhanishta"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": false
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "asta": false,
+         "vakri": false
+        }
+       },
+       "segments": [
+        {
+         "start": "06:34",
+         "end": "26:33",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 7,
+          "name_ne": "निधन",
+          "name_en": "Naidhana",
+          "state": "bad"
+         }
+        },
+        {
+         "start": "26:33",
+         "end": "30:35",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 8,
+          "name_ne": "मित्र",
+          "name_en": "Mitra",
+          "state": "good"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-08-07",
+      "weekday_ne": "सोमवार",
+      "weekday_en": "Monday",
+      "tithi_ne": "चतुर्दशी",
+      "tithi_en": "Chaturdashi",
+      "nakshatra_ne": "भरणी",
+      "nakshatra_en": "Bharani",
+      "reading": {
+       "percent": 48,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र मङ्गल अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको २ भावमा रहेकाले यस अवधिको मूल विषय धन, वाणी र परिवारसँग जोडिएको छ, भने अन्तर्दशेश मङ्गल २ भावमा भएकाले धन, वाणी र परिवारसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; सूर्य चक्र भने कमजोर भएकाले प्रतिष्ठा, अधिकार र पदीय पक्षमा चाप पर्न सक्छ। स्वास्थ्य पक्षमा भने सतर्कता चाहिन्छ; शरीर र आत्मविश्वाससँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र मेष राशिबाट ९ भावमा रहेकाले भाग्य, धर्म र गुरुमा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। शनि, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। जन्म अष्टकवर्गमा लग्न राशिमा २६ बिन्दु छन् — औसत स्तरको आधार, जसले गोचरको फल जस्ताको तस्तै देखाउँछ। चन्द्रबल मित्र (शुभ) र गोचर चन्द्र जन्म राशिबाट ३ भावमा — मूर्ति ताम्र। लग्नेश सूर्य ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Mars Antardasha. The Mahadasha lord Jupiter sits in house 2 of your birth chart, so the period's underlying subject is money, speech and family; the Antardasha lord Mars in house 2 brings money, speech and family to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Surya frame is weaker, so standing, authority and position can come under pressure. Health calls for care, though — do not rush anything touching body and self-confidence. Moon transiting Mesha into house 9 can press on fortune, dharma and mentors — that is the area to stay alert in. Saturn, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. The Lagna sign holds 26 bindus in your natal Ashtakavarga — an average base, which lets the transits read much as they stand. Chandrabala is Mitra (auspicious), with the transit Moon 3 houses from your natal Moon — a Tamra (copper) moorti. Your Lagna lord Sun stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2030-02-25T23:57:19.133333+05:45"
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "end": "2027-10-03T09:59:14.333333+05:45"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "neutral",
+         "percent": 47
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "neutral",
+         "percent": 46
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "bad",
+         "percent": 28
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 33
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "मेष",
+         "sign_en": "Mesha",
+         "house": 9,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "तुला",
+         "sign_en": "Tula",
+         "house": 3,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "कन्या",
+         "sign_en": "Kanya",
+         "house": 2,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 8,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 3
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 7,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     },
+     {
+      "date": "2026-11-24",
+      "personal_tone": "neutral",
+      "summary_ne": "हनुमान/कार्तिकेयको स्मरण गर्नुहोस्; साहस चाहिने काम सुरु गर्नुहोस्। मन चञ्चल हुन सक्छ; भावुक निर्णयमा सावधानी।",
+      "summary_en": "Remember Hanuman/Kartikeya; start tasks that need courage. The mind can be restless; be careful with emotional decisions.",
+      "do_ne": [
+       "हनुमान/कार्तिकेयको स्मरण गर्नुहोस्; साहस चाहिने काम सुरु गर्नुहोस्।",
+       "पूर्णिमा — दान, सत्यनारायण पूजा र चन्द्र दर्शन।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Remember Hanuman/Kartikeya; start tasks that need courage.",
+       "Purnima — charity, Satyanarayan puja, moon-gazing.",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "रिसमा बोल्न वा विवादमा पर्न बच्नुहोस्; ऋण लेनदेन नगर्नुहोस्।",
+       "विष्टि (भद्रा) करणमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Avoid anger and disputes; avoid taking or giving loans.",
+       "Avoid starting auspicious work during Vishti (Bhadra) karana.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "मन चञ्चल हुन सक्छ; भावुक निर्णयमा सावधानी।",
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "The mind can be restless; be careful with emotional decisions.",
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "01:22",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "02:52",
+        "end": "04:23"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "02:52",
+        "end": "04:19"
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:46",
+        "end": "05:40"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:13",
+        "end": "06:34"
+       },
+       {
+        "kind": "shubh",
+        "key": "sarvartha_siddhi",
+        "name_ne": "सर्वार्थ सिद्धि योग",
+        "name_en": "Sarvartha Siddhi Yoga",
+        "start": "06:34",
+        "end": "01:22"
+       },
+       {
+        "kind": "ashubh",
+        "key": "bhadra",
+        "name_ne": "भद्रा",
+        "name_en": "Bhadra",
+        "start": "06:34",
+        "end": "10:19"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:34",
+        "end": "05:28"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "08:40",
+        "end": "09:22"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "09:11",
+        "end": "10:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "11:48",
+        "end": "13:07"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "13:57",
+        "end": "15:28"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "14:26",
+        "end": "15:44"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:03",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:03",
+        "end": "18:24"
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi_randhra",
+        "name_ne": "तिथि रन्ध्र",
+        "name_en": "Tithi Randhra",
+        "start": "21:23",
+        "end": "23:23"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "22:28",
+        "end": "23:22"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "23:05",
+        "end": "00:36"
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:22",
+        "end": "00:16"
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 11,
+        "name_ne": "कुम्भ",
+        "name_en": "Kumbha"
+       },
+       "janma_nakshatra": {
+        "number": 23,
+        "name_ne": "धनिष्ठा",
+        "name_en": "Dhanishta"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": false
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "asta": false,
+         "vakri": false
+        }
+       },
+       "segments": [
+        {
+         "start": "06:35",
+         "end": "08:17",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 8,
+          "name_ne": "मित्र",
+          "name_en": "Mitra",
+          "state": "good"
+         }
+        },
+        {
+         "start": "08:17",
+         "end": "25:22",
+         "chandra": {
+          "house": 4,
+          "state": "weak"
+         },
+         "tara": {
+          "num": 8,
+          "name_ne": "मित्र",
+          "name_en": "Mitra",
+          "state": "good"
+         }
+        },
+        {
+         "start": "25:22",
+         "end": "30:35",
+         "chandra": {
+          "house": 4,
+          "state": "weak"
+         },
+         "tara": {
+          "num": 9,
+          "name_ne": "परम मित्र",
+          "name_en": "Parama Mitra",
+          "state": "good"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-08-08",
+      "weekday_ne": "मङ्गलवार",
+      "weekday_en": "Tuesday",
+      "tithi_ne": "पूर्णिमा",
+      "tithi_en": "Purnima",
+      "nakshatra_ne": "कृत्तिका",
+      "nakshatra_en": "Krittika",
+      "reading": {
+       "percent": 48,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र मङ्गल अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको २ भावमा रहेकाले यस अवधिको मूल विषय धन, वाणी र परिवारसँग जोडिएको छ, भने अन्तर्दशेश मङ्गल २ भावमा भएकाले धन, वाणी र परिवारसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; सूर्य चक्र भने कमजोर भएकाले प्रतिष्ठा, अधिकार र पदीय पक्षमा चाप पर्न सक्छ। स्वास्थ्य पक्षमा भने सतर्कता चाहिन्छ; शरीर र आत्मविश्वाससँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र मेष राशिबाट ९ भावमा रहेकाले भाग्य, धर्म र गुरुमा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। शनि, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। जन्म अष्टकवर्गमा लग्न राशिमा २६ बिन्दु छन् — औसत स्तरको आधार, जसले गोचरको फल जस्ताको तस्तै देखाउँछ। चन्द्रबल मित्र (शुभ) र गोचर चन्द्र जन्म राशिबाट ३ भावमा — मूर्ति ताम्र। लग्नेश सूर्य ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Mars Antardasha. The Mahadasha lord Jupiter sits in house 2 of your birth chart, so the period's underlying subject is money, speech and family; the Antardasha lord Mars in house 2 brings money, speech and family to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Surya frame is weaker, so standing, authority and position can come under pressure. Health calls for care, though — do not rush anything touching body and self-confidence. Moon transiting Mesha into house 9 can press on fortune, dharma and mentors — that is the area to stay alert in. Saturn, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. The Lagna sign holds 26 bindus in your natal Ashtakavarga — an average base, which lets the transits read much as they stand. Chandrabala is Mitra (auspicious), with the transit Moon 3 houses from your natal Moon — a Tamra (copper) moorti. Your Lagna lord Sun stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2030-02-25T23:57:19.133333+05:45"
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "end": "2027-10-03T09:59:14.333333+05:45"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "neutral",
+         "percent": 47
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "neutral",
+         "percent": 46
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "bad",
+         "percent": 28
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 33
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "मेष",
+         "sign_en": "Mesha",
+         "house": 9,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "तुला",
+         "sign_en": "Tula",
+         "house": 3,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "कन्या",
+         "sign_en": "Kanya",
+         "house": 2,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 8,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 3
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 7,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     }
+    ],
+    "location": {
+     "lat": 27.7172,
+     "lon": 85.324,
+     "timezone": "Asia/Kathmandu"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g2}/daily-guidance?from=2026-11-22&days=2&lat=27.7172&lon=85.324&timezone=Asia/Kathmandu",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=119.0",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "4d08fb38-5a37-44bf-b092-c9ff119eaa45",
+    "days": [
+     {
+      "date": "2026-11-22",
+      "personal_tone": null,
+      "summary_ne": "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Offer water to the Sun and rise at sunrise. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्।",
+       "प्रदोषमा शिव पूजा गर्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।"
+      ],
+      "do_en": [
+       "Offer water to the Sun and rise at sunrise.",
+       "Worship Shiva at pradosh (dusk).",
+       "Abhijit muhurta is good for starting new work."
+      ],
+      "dont_ne": [
+       "अहंकार वा हतारमा निर्णय नगर्नुहोस्; हाकिम वा सरकारी अधिकारीसँग झगडा नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Don't decide in haste or pride; avoid disputes with authority.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [],
+      "personal_en": [],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "00:39",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "03:24",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:44",
+        "end": "05:38"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:11",
+        "end": "06:32"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "05:55",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "ganda_moola",
+        "name_ne": "गण्ड मूल",
+        "name_en": "Ganda Moola",
+        "start": "06:32",
+        "end": "03:24"
+       },
+       {
+        "kind": "ashubh",
+        "key": "vidaal_yoga",
+        "name_ne": "विडाल योग",
+        "name_en": "Vidaal Yoga",
+        "start": "06:32",
+        "end": "03:24"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:32",
+        "end": "06:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "06:32",
+        "end": "07:05"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_yoga",
+        "name_ne": "योग विष",
+        "name_en": "Yoga Visha",
+        "start": "06:32",
+        "end": "23:14"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "11:48",
+        "end": "13:07"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "14:26",
+        "end": "15:45"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "15:39",
+        "end": "16:21"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "15:45",
+        "end": "17:03"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:03",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:03",
+        "end": "18:24"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "20:20",
+        "end": "21:55"
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:21",
+        "end": "00:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "23:29",
+        "end": "01:03"
+       }
+      ],
+      "personal": null,
+      "date_bs": "2083-08-06",
+      "weekday_ne": "आइतवार",
+      "weekday_en": "Sunday",
+      "tithi_ne": "त्रयोदशी",
+      "tithi_en": "Trayodashi",
+      "nakshatra_ne": "अश्विनी",
+      "nakshatra_en": "Ashwini"
+     },
+     {
+      "date": "2026-11-23",
+      "personal_tone": null,
+      "summary_ne": "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Worship Shiva, offer milk or water; keep the mind calm. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।"
+      ],
+      "do_en": [
+       "Worship Shiva, offer milk or water; keep the mind calm.",
+       "Abhijit muhurta is good for starting new work."
+      ],
+      "dont_ne": [
+       "भावनामा बगेर ठूला आर्थिक निर्णय नगर्नुहोस्।",
+       "रिक्ता तिथि — शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Avoid big money decisions made on emotion.",
+       "Rikta tithi — don't begin auspicious work.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [],
+      "personal_en": [],
+      "windows": [
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:45",
+        "end": "05:39"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:12",
+        "end": "06:33"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "05:49",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "06:33",
+        "end": "02:32"
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "06:33",
+        "end": "23:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "06:33",
+        "end": "07:25"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "07:52",
+        "end": "09:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "10:29",
+        "end": "11:48"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "12:09",
+        "end": "12:51"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "12:39",
+        "end": "14:12"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "13:07",
+        "end": "14:26"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "14:15",
+        "end": "14:57"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:03",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:03",
+        "end": "18:24"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "21:55",
+        "end": "23:27"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "23:11",
+        "end": "00:40"
+       },
+       {
+        "kind": "ashubh",
+        "key": "bhadra",
+        "name_ne": "भद्रा",
+        "name_en": "Bhadra",
+        "start": "23:12",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:22",
+        "end": "00:16"
+       }
+      ],
+      "personal": null,
+      "date_bs": "2083-08-07",
+      "weekday_ne": "सोमवार",
+      "weekday_en": "Monday",
+      "tithi_ne": "चतुर्दशी",
+      "tithi_en": "Chaturdashi",
+      "nakshatra_ne": "भरणी",
+      "nakshatra_en": "Bharani"
+     }
+    ],
+    "location": {
+     "lat": 27.7,
+     "lon": 85.32,
+     "timezone": "Asia/Kathmandu"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g3}/daily-guidance?from=2027-03-14&days=2&lat=40.7128&lon=-74.006&timezone=America/New_York",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=155.5",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "8fa946dc-795f-442f-b282-00e055368d26",
+    "days": [
+     {
+      "date": "2027-03-14",
+      "personal_tone": "neutral",
+      "summary_ne": "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Offer water to the Sun and rise at sunrise. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Offer water to the Sun and rise at sunrise.",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "अहंकार वा हतारमा निर्णय नगर्नुहोस्; हाकिम वा सरकारी अधिकारीसँग झगडा नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Don't decide in haste or pride; avoid disputes with authority.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "00:03",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "00:41",
+        "end": "01:30"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "03:55",
+        "end": "05:26"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "04:52",
+        "end": "06:19"
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "05:39",
+        "end": "06:28"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "06:03",
+        "end": "07:17"
+       },
+       {
+        "kind": "shubh",
+        "key": "sarvartha_siddhi",
+        "name_ne": "सर्वार्थ सिद्धि योग",
+        "name_en": "Sarvartha Siddhi Yoga",
+        "start": "07:17",
+        "end": "22:39"
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "07:17",
+        "end": "22:39"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "12:43",
+        "end": "13:30"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "13:07",
+        "end": "14:34"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "15:03",
+        "end": "15:50"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "16:01",
+        "end": "17:29"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "17:23",
+        "end": "18:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "17:29",
+        "end": "18:56"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "18:56",
+        "end": "19:21"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "18:56",
+        "end": "20:10"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "19:37",
+        "end": "21:08"
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi_randhra",
+        "name_ne": "तिथि रन्ध्र",
+        "name_en": "Tithi Randhra",
+        "start": "23:46",
+        "end": "05:22"
+       },
+       {
+        "kind": "ashubh",
+        "key": "bhadra",
+        "name_ne": "भद्रा",
+        "name_en": "Bhadra",
+        "start": "23:48",
+        "end": null
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 2,
+        "name_ne": "वृष",
+        "name_en": "Vrishabha"
+       },
+       "janma_nakshatra": {
+        "number": 3,
+        "name_ne": "कृत्तिका",
+        "name_en": "Krittika"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": true
+        },
+        "antar": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": true
+        }
+       },
+       "segments": [
+        {
+         "start": "07:18",
+         "end": "22:40",
+         "chandra": {
+          "house": 1,
+          "state": "good"
+         },
+         "tara": {
+          "num": 2,
+          "name_ne": "सम्पत्",
+          "name_en": "Sampat",
+          "state": "good"
+         }
+        },
+        {
+         "start": "22:40",
+         "end": "31:16",
+         "chandra": {
+          "house": 1,
+          "state": "good"
+         },
+         "tara": {
+          "num": 3,
+          "name_ne": "विपत्",
+          "name_en": "Vipat",
+          "state": "bad"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-11-30",
+      "weekday_ne": "आइतवार",
+      "weekday_en": "Sunday",
+      "tithi_ne": "सप्तमी",
+      "tithi_en": "Saptami",
+      "nakshatra_ne": "रोहिणी",
+      "nakshatra_en": "Rohini",
+      "reading": {
+       "percent": 56,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र गुरु अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको ९ भावमा रहेकाले यस अवधिको मूल विषय भाग्य, धर्म र गुरुसँग जोडिएको छ, भने अन्तर्दशेश गुरु ९ भावमा भएकाले भाग्य, धर्म र गुरुसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; लग्न चक्र भने कमजोर भएकाले आफ्नै प्रयास, शरीर र आत्मविश्वासमा चाप पर्न सक्छ। स्वास्थ्य पक्ष सबैभन्दा बलियो छ — शरीर र आत्मविश्वासमा लगानी गरेको समय र मिहिनेतले प्रतिफल दिन्छ। अध्ययन पक्षमा भने सतर्कता चाहिन्छ; धन, वाणी र परिवारसँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र वृष राशिबाट ८ भावमा रहेकाले परिवर्तन, गुप्त विषय र जोखिममा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। मंगल, बृहस्पति, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। शनि अस्त भएकाले त्यससँग जोडिएको विषयमा अहिले निर्णय गर्न हतार नगर्नुहोस्। जन्म अष्टकवर्गमा तपाईंको लग्न राशिमा ४४ बिन्दु छन् — यो औसतभन्दा बलियो हो, त्यसैले प्रतिकूल गोचरले पनि दीर्घकालीन असर पार्दैन। चन्द्रबल जन्म (मध्यम) र गोचर चन्द्र जन्म राशिबाट १ भावमा — मूर्ति स्वर्ण। लग्नेश शुक्र ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Jupiter Antardasha. The Mahadasha lord Jupiter sits in house 9 of your birth chart, so the period's underlying subject is fortune, dharma and mentors; the Antardasha lord Jupiter in house 9 brings fortune, dharma and mentors to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Lagna frame is weaker, so your own effort, body and confidence can come under pressure. Health is the strongest side — time and effort put into body and self-confidence return a real result. Learning calls for care, though — do not rush anything touching money, speech and family. Moon transiting Vrishabha into house 8 can press on change, hidden matters and risk — that is the area to stay alert in. Mars, Jupiter, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. Saturn is combust, so hold off on decisions tied to what it signifies. Your natal Ashtakavarga gives the Lagna sign 44 bindus — above average, so even an adverse transit does not leave a lasting mark. Chandrabala is Janma (medium), with the transit Moon 1 houses from your natal Moon — a Swarna (gold) moorti. Your Lagna lord Venus stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2041-03-20T05:28:00.355714-04:00"
+        },
+        "antar": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2027-05-08T12:45:45.955714-04:00"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "bad",
+         "percent": 34
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "worst",
+         "percent": 23
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "neutral",
+         "percent": 56
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "bad",
+         "percent": 28
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "worst",
+         "percent": 16
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 29
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 5,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "वृष",
+         "sign_en": "Vrishabha",
+         "house": 8,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 5
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 5,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 4
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "मकर",
+         "sign_en": "Makara",
+         "house": 4,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 6,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 2
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "मकर",
+         "sign_en": "Makara",
+         "house": 4,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     },
+     {
+      "date": "2027-03-15",
+      "personal_tone": "good",
+      "summary_ne": "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Worship Shiva, offer milk or water; keep the mind calm. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "आजको ग्रहस्थिति तपाईंका लागि अनुकूल छ।"
+      ],
+      "do_en": [
+       "Worship Shiva, offer milk or water; keep the mind calm.",
+       "Abhijit muhurta is good for starting new work.",
+       "Today's sky is favourable for you."
+      ],
+      "dont_ne": [
+       "भावनामा बगेर ठूला आर्थिक निर्णय नगर्नुहोस्।",
+       "विष्टि (भद्रा) करणमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Avoid big money decisions made on emotion.",
+       "Avoid starting auspicious work during Vishti (Bhadra) karana.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "आजको ग्रहस्थिति तपाईंका लागि अनुकूल छ।"
+      ],
+      "personal_en": [
+       "Today's sky is favourable for you."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "00:07",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "00:41",
+        "end": "01:30"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "01:20",
+        "end": "02:50"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "03:24",
+        "end": "04:50"
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "05:37",
+        "end": "06:26"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "06:02",
+        "end": "07:16"
+       },
+       {
+        "kind": "shubh",
+        "key": "sarvartha_siddhi",
+        "name_ne": "सर्वार्थ सिद्धि योग",
+        "name_en": "Sarvartha Siddhi Yoga",
+        "start": "07:16",
+        "end": "21:14"
+       },
+       {
+        "kind": "ashubh",
+        "key": "bhadra",
+        "name_ne": "भद्रा",
+        "name_en": "Bhadra",
+        "start": "07:16",
+        "end": "10:43"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "07:16",
+        "end": "00:07"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "08:43",
+        "end": "10:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "11:39",
+        "end": "13:06"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "12:43",
+        "end": "13:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "12:57",
+        "end": "14:27"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "13:30",
+        "end": "14:17"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "14:34",
+        "end": "16:02"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "15:03",
+        "end": "15:50"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "15:50",
+        "end": "16:37"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "18:57",
+        "end": "19:22"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "18:57",
+        "end": "20:11"
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "21:14",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "21:37",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi_randhra",
+        "name_ne": "तिथि रन्ध्र",
+        "name_en": "Tithi Randhra",
+        "start": "21:37",
+        "end": null
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 2,
+        "name_ne": "वृष",
+        "name_en": "Vrishabha"
+       },
+       "janma_nakshatra": {
+        "number": 3,
+        "name_ne": "कृत्तिका",
+        "name_en": "Krittika"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": true
+        },
+        "antar": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": true
+        }
+       },
+       "segments": [
+        {
+         "start": "07:16",
+         "end": "09:59",
+         "chandra": {
+          "house": 1,
+          "state": "good"
+         },
+         "tara": {
+          "num": 3,
+          "name_ne": "विपत्",
+          "name_en": "Vipat",
+          "state": "bad"
+         }
+        },
+        {
+         "start": "09:59",
+         "end": "21:14",
+         "chandra": {
+          "house": 2,
+          "state": "weak"
+         },
+         "tara": {
+          "num": 3,
+          "name_ne": "विपत्",
+          "name_en": "Vipat",
+          "state": "bad"
+         }
+        },
+        {
+         "start": "21:14",
+         "end": "31:14",
+         "chandra": {
+          "house": 2,
+          "state": "weak"
+         },
+         "tara": {
+          "num": 4,
+          "name_ne": "क्षेम",
+          "name_en": "Kshema",
+          "state": "good"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-12-01",
+      "weekday_ne": "सोमवार",
+      "weekday_en": "Monday",
+      "tithi_ne": "अष्टमी",
+      "tithi_en": "Ashtami",
+      "nakshatra_ne": "मृगशिरा",
+      "nakshatra_en": "Mrigashira",
+      "reading": {
+       "percent": 59,
+       "prediction_ne": "आज तपाईंको कुण्डलीका हिसाबले प्रायः अनुकूल छ। हाल तपाईंको गुरु महादशाभित्र गुरु अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको ९ भावमा रहेकाले यस अवधिको मूल विषय भाग्य, धर्म र गुरुसँग जोडिएको छ, भने अन्तर्दशेश गुरु ९ भावमा भएकाले भाग्य, धर्म र गुरुसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; लग्न चक्र भने कमजोर भएकाले आफ्नै प्रयास, शरीर र आत्मविश्वासमा चाप पर्न सक्छ। स्वास्थ्य पक्ष सबैभन्दा बलियो छ — शरीर र आत्मविश्वासमा लगानी गरेको समय र मिहिनेतले प्रतिफल दिन्छ। अध्ययन पक्षमा भने सतर्कता चाहिन्छ; धन, वाणी र परिवारसँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र वृष राशिबाट ८ भावमा रहेकाले परिवर्तन, गुप्त विषय र जोखिममा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। मंगल, बृहस्पति, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। शनि अस्त भएकाले त्यससँग जोडिएको विषयमा अहिले निर्णय गर्न हतार नगर्नुहोस्। जन्म अष्टकवर्गमा तपाईंको लग्न राशिमा ४४ बिन्दु छन् — यो औसतभन्दा बलियो हो, त्यसैले प्रतिकूल गोचरले पनि दीर्घकालीन असर पार्दैन। चन्द्रबल जन्म (मध्यम) र गोचर चन्द्र जन्म राशिबाट १ भावमा — मूर्ति स्वर्ण। लग्नेश शुक्र ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। योजनाबद्ध रूपमा अघि बढ्दा नतिजा पक्षमा आउँछ; अनावश्यक विवाद र हतारो निर्णयबाट टाढै रहनुहोस्।",
+       "prediction_en": "Today is broadly favourable by your chart. You are currently running Jupiter Mahadasha with Jupiter Antardasha. The Mahadasha lord Jupiter sits in house 9 of your birth chart, so the period's underlying subject is fortune, dharma and mentors; the Antardasha lord Jupiter in house 9 brings fortune, dharma and mentors to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Lagna frame is weaker, so your own effort, body and confidence can come under pressure. Health is the strongest side — time and effort put into body and self-confidence return a real result. Learning calls for care, though — do not rush anything touching money, speech and family. Moon transiting Vrishabha into house 8 can press on change, hidden matters and risk — that is the area to stay alert in. Mars, Jupiter, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. Saturn is combust, so hold off on decisions tied to what it signifies. Your natal Ashtakavarga gives the Lagna sign 44 bindus — above average, so even an adverse transit does not leave a lasting mark. Chandrabala is Janma (medium), with the transit Moon 1 houses from your natal Moon — a Swarna (gold) moorti. Your Lagna lord Venus stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Planned, deliberate steps pay off; stay clear of avoidable disputes and rushed decisions.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2041-03-20T05:28:00.355714-04:00"
+        },
+        "antar": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2027-05-08T12:45:45.955714-04:00"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "neutral",
+         "percent": 49
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "worst",
+         "percent": 25
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "best",
+         "percent": 75
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "bad",
+         "percent": 30
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 29
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 6,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "वृष",
+         "sign_en": "Vrishabha",
+         "house": 8,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 5
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 5,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 4
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "मकर",
+         "sign_en": "Makara",
+         "house": 4,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 6,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 2
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "मकर",
+         "sign_en": "Makara",
+         "house": 4,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "कर्कट",
+         "sign_en": "Karka",
+         "house": 10,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     }
+    ],
+    "location": {
+     "lat": 40.71,
+     "lon": -74.01,
+     "timezone": "America/New_York"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g4}/daily-guidance?from=2026-12-31&days=1",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=17.8",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "dc063d7b-cea2-4f68-977f-7f83122e25ad",
+    "days": [
+     {
+      "date": "2026-12-31",
+      "personal_tone": null,
+      "summary_ne": "गुरु/विष्णुको पूजा; ज्ञान, शिक्षा र दानका लागि शुभ। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Worship the guru/Vishnu; favourable for learning and charity. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "गुरु/विष्णुको पूजा; ज्ञान, शिक्षा र दानका लागि शुभ।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।"
+      ],
+      "do_en": [
+       "Worship the guru/Vishnu; favourable for learning and charity.",
+       "Abhijit muhurta is good for starting new work."
+      ],
+      "dont_ne": [
+       "गुरु वा ठूलाबडाको अनादर नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Don't disrespect teachers or elders.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [],
+      "personal_en": [],
+      "windows": [
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "05:09",
+        "end": "06:04"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "05:25",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:37",
+        "end": "06:59"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "06:59",
+        "end": "08:16"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "06:59",
+        "end": "07:23"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:59",
+        "end": "11:39"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "09:33",
+        "end": "10:49"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "10:24",
+        "end": "11:05"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:45",
+        "end": "12:26"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "13:23",
+        "end": "14:39"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:48",
+        "end": "14:29"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "14:29",
+        "end": "15:10"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "15:21",
+        "end": "16:56"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:12",
+        "end": "17:40"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:12",
+        "end": "18:35"
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi",
+        "name_ne": "तिथि",
+        "name_en": "Tithi",
+        "start": "17:33",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "tithi_randhra",
+        "name_ne": "तिथि रन्ध्र",
+        "name_en": "Tithi Randhra",
+        "start": "17:33",
+        "end": "03:33"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_yoga",
+        "name_ne": "योग विष",
+        "name_en": "Yoga Visha",
+        "start": "17:50",
+        "end": "20:05"
+       },
+       {
+        "kind": "ashubh",
+        "key": "aadal_yoga",
+        "name_ne": "आडाल योग",
+        "name_en": "Aadal Yoga",
+        "start": "21:19",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:38",
+        "end": "00:34"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "23:52",
+        "end": "01:26"
+       }
+      ],
+      "personal": null,
+      "date_bs": "2083-09-16",
+      "weekday_ne": "बिहिवार",
+      "weekday_en": "Thursday",
+      "tithi_ne": "अष्टमी",
+      "tithi_en": "Ashtami",
+      "nakshatra_ne": "हस्त",
+      "nakshatra_en": "Hasta"
+     }
+    ],
+    "location": {
+     "lat": 27.7172,
+     "lon": 85.324,
+     "timezone": "Asia/Kathmandu"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?days=1",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=19.2",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "f8ae2722-3781-46d1-9bc6-2ff2e2d4781f",
+    "days": [
+     {
+      "date": "2026-11-21",
+      "personal_tone": "neutral",
+      "summary_ne": "शनि/हनुमानको स्मरण; अनुशासन, सेवा र दानका लागि राम्रो। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Remember Shani/Hanuman; good for discipline, service and charity. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "शनि/हनुमानको स्मरण; अनुशासन, सेवा र दानका लागि राम्रो।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Remember Shani/Hanuman; good for discipline, service and charity.",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "नयाँ ठूलो काम वा यात्रा हतारमा सुरु नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Don't begin big new ventures or travel in haste.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "visha_yoga",
+        "name_ne": "योग विष",
+        "name_en": "Yoga Visha",
+        "start": "01:18",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "01:29",
+        "end": "03:05"
+       },
+       {
+        "kind": "ashubh",
+        "key": "ganda_moola",
+        "name_ne": "गण्ड मूल",
+        "name_en": "Ganda Moola",
+        "start": "03:53",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "vidaal_yoga",
+        "name_ne": "विडाल योग",
+        "name_en": "Vidaal Yoga",
+        "start": "03:53",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "04:44",
+        "end": "05:38"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:11",
+        "end": "06:32"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "05:33",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:29",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "06:32",
+        "end": "07:51"
+       },
+       {
+        "kind": "ashubh",
+        "key": "ganda_moola",
+        "name_ne": "गण्ड मूल",
+        "name_en": "Ganda Moola",
+        "start": "06:32",
+        "end": "03:53"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "06:32",
+        "end": "06:48"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "07:14",
+        "end": "07:56"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "09:10",
+        "end": "10:29"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "10:10",
+        "end": "11:43"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:27",
+        "end": "12:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "13:07",
+        "end": "14:26"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:33",
+        "end": "14:15"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "15:54",
+        "end": "17:30"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:04",
+        "end": "17:31"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:04",
+        "end": "18:25"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "17:04",
+        "end": "17:58"
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:21",
+        "end": "00:15"
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 11,
+        "name_ne": "कुम्भ",
+        "name_en": "Kumbha"
+       },
+       "janma_nakshatra": {
+        "number": 23,
+        "name_ne": "धनिष्ठा",
+        "name_en": "Dhanishta"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": false
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "asta": false,
+         "vakri": false
+        }
+       },
+       "segments": [
+        {
+         "start": "06:32",
+         "end": "27:53",
+         "chandra": {
+          "house": 2,
+          "state": "weak"
+         },
+         "tara": {
+          "num": 5,
+          "name_ne": "प्रत्यक्",
+          "name_en": "Pratyak",
+          "state": "bad"
+         }
+        },
+        {
+         "start": "27:53",
+         "end": "30:33",
+         "chandra": {
+          "house": 3,
+          "state": "good"
+         },
+         "tara": {
+          "num": 6,
+          "name_ne": "साधक",
+          "name_en": "Sadhaka",
+          "state": "good"
+         }
+        }
+       ]
+      },
+      "date_bs": "2083-08-05",
+      "weekday_ne": "शनिवार",
+      "weekday_en": "Saturday",
+      "tithi_ne": "द्वादशी",
+      "tithi_en": "Dwadashi",
+      "nakshatra_ne": "रेवती",
+      "nakshatra_en": "Revati",
+      "reading": {
+       "percent": 50,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र मङ्गल अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको २ भावमा रहेकाले यस अवधिको मूल विषय धन, वाणी र परिवारसँग जोडिएको छ, भने अन्तर्दशेश मङ्गल २ भावमा भएकाले धन, वाणी र परिवारसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; सूर्य चक्र भने कमजोर भएकाले प्रतिष्ठा, अधिकार र पदीय पक्षमा चाप पर्न सक्छ। स्वास्थ्य पक्षमा भने सतर्कता चाहिन्छ; शरीर र आत्मविश्वाससँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र मीन राशिबाट ८ भावमा रहेकाले परिवर्तन, गुप्त विषय र जोखिममा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। शनि, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। जन्म अष्टकवर्गमा लग्न राशिमा २६ बिन्दु छन् — औसत स्तरको आधार, जसले गोचरको फल जस्ताको तस्तै देखाउँछ। चन्द्रबल परम मित्र (अति शुभ) र गोचर चन्द्र जन्म राशिबाट २ भावमा — मूर्ति रजत। लग्नेश सूर्य ४ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले घर, माता र मनको शान्तिसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Mars Antardasha. The Mahadasha lord Jupiter sits in house 2 of your birth chart, so the period's underlying subject is money, speech and family; the Antardasha lord Mars in house 2 brings money, speech and family to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Surya frame is weaker, so standing, authority and position can come under pressure. Health calls for care, though — do not rush anything touching body and self-confidence. Moon transiting Meena into house 8 can press on change, hidden matters and risk — that is the area to stay alert in. Saturn, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. The Lagna sign holds 26 bindus in your natal Ashtakavarga — an average base, which lets the transits read much as they stand. Chandrabala is Parama Mitra (very auspicious), with the transit Moon 2 houses from your natal Moon — a Rajata (silver) moorti. Your Lagna lord Sun stands in house 4, friend's sign, so it is effort tied to home, mother and peace of mind that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2030-02-25T23:57:19.133333+05:45"
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "end": "2027-10-03T09:59:14.333333+05:45"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "neutral",
+         "percent": 47
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "neutral",
+         "percent": 53
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "worst",
+         "percent": 18
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "bad",
+         "percent": 31
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 38
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 8,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 3
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "तुला",
+         "sign_en": "Tula",
+         "house": 3,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "कन्या",
+         "sign_en": "Kanya",
+         "house": 2,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मीन",
+         "sign_en": "Meena",
+         "house": 8,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 3
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "कुम्भ",
+         "sign_en": "Kumbha",
+         "house": 7,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "सिंह",
+         "sign_en": "Simha",
+         "house": 1,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     }
+    ],
+    "location": {
+     "lat": 27.7172,
+     "lon": 85.324,
+     "timezone": "Asia/Kathmandu"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?from=2030-01-01T00:00:00&days=1",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 200,
+   "headers": {
+    "content-type": "application/json",
+    "vary": "Accept-Encoding",
+    "content-encoding": "gzip",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=370.1",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "version": "1",
+    "profile_id": "f8ae2722-3781-46d1-9bc6-2ff2e2d4781f",
+    "days": [
+     {
+      "date": "2030-01-01",
+      "personal_tone": "neutral",
+      "summary_ne": "हनुमान/कार्तिकेयको स्मरण गर्नुहोस्; साहस चाहिने काम सुरु गर्नुहोस्। यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+      "summary_en": "Remember Hanuman/Kartikeya; start tasks that need courage. Avoid beginning auspicious work during Yamaganda.",
+      "do_ne": [
+       "हनुमान/कार्तिकेयको स्मरण गर्नुहोस्; साहस चाहिने काम सुरु गर्नुहोस्।",
+       "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।",
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+       "Remember Hanuman/Kartikeya; start tasks that need courage.",
+       "Abhijit muhurta is good for starting new work.",
+       "An ordinary day — keep to your routine."
+      ],
+      "dont_ne": [
+       "रिसमा बोल्न वा विवादमा पर्न बच्नुहोस्; ऋण लेनदेन नगर्नुहोस्।",
+       "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+       "Avoid anger and disputes; avoid taking or giving loans.",
+       "Don't start new work, travel or purchases during Rahu Kaal."
+      ],
+      "careful_ne": [
+       "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।",
+       "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+       "Avoid beginning auspicious work during Yamaganda.",
+       "Gulika Kaal suits repeating tasks, not new beginnings."
+      ],
+      "personal_ne": [
+       "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "personal_en": [
+       "An ordinary day — keep to your routine."
+      ],
+      "windows": [
+       {
+        "kind": "ashubh",
+        "key": "ganda_moola",
+        "name_ne": "गण्ड मूल",
+        "name_en": "Ganda Moola",
+        "start": "01:22",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "vidaal_yoga",
+        "name_ne": "विडाल योग",
+        "name_en": "Vidaal Yoga",
+        "start": "01:22",
+        "end": null
+       },
+       {
+        "kind": "shubh",
+        "key": "brahma_muhurta",
+        "name_ne": "ब्रह्म मुहूर्त",
+        "name_en": "Brahma Muhurta",
+        "start": "05:09",
+        "end": "06:05"
+       },
+       {
+        "kind": "shubh",
+        "key": "pratah_sandhya",
+        "name_ne": "प्रातः सन्ध्या",
+        "name_en": "Pratah Sandhya",
+        "start": "05:37",
+        "end": "07:00"
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "06:37",
+        "end": null
+       },
+       {
+        "kind": "ashubh",
+        "key": "varjyam",
+        "name_ne": "वर्ज्यम्",
+        "name_en": "Varjyam",
+        "start": "07:00",
+        "end": "08:13"
+       },
+       {
+        "kind": "ashubh",
+        "key": "baana",
+        "name_ne": "बाण",
+        "name_en": "Baana",
+        "start": "07:00",
+        "end": "05:09"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "09:02",
+        "end": "09:43"
+       },
+       {
+        "kind": "ashubh",
+        "key": "yamaganda",
+        "name_ne": "यमगण्ड",
+        "name_en": "Yamaganda",
+        "start": "09:33",
+        "end": "10:50"
+       },
+       {
+        "kind": "shubh",
+        "key": "abhijit",
+        "name_ne": "अभिजित् मुहूर्त",
+        "name_en": "Abhijit Muhurta",
+        "start": "11:46",
+        "end": "12:27"
+       },
+       {
+        "kind": "ashubh",
+        "key": "gulika",
+        "name_ne": "गुलिक काल",
+        "name_en": "Gulika Kaal",
+        "start": "12:07",
+        "end": "13:23"
+       },
+       {
+        "kind": "shubh",
+        "key": "vijaya_muhurta",
+        "name_ne": "विजय मुहूर्त",
+        "name_en": "Vijaya Muhurta",
+        "start": "13:49",
+        "end": "14:30"
+       },
+       {
+        "kind": "ashubh",
+        "key": "rahu_kalam",
+        "name_ne": "राहु काल",
+        "name_en": "Rahu Kaal",
+        "start": "14:40",
+        "end": "15:57"
+       },
+       {
+        "kind": "shubh",
+        "key": "amrit_kalam",
+        "name_ne": "अमृत काल",
+        "name_en": "Amrit Kalam",
+        "start": "15:41",
+        "end": "17:10"
+       },
+       {
+        "kind": "shubh",
+        "key": "godhuli_muhurta",
+        "name_ne": "गोधूलि मुहूर्त",
+        "name_en": "Godhuli Muhurta",
+        "start": "17:13",
+        "end": "17:41"
+       },
+       {
+        "kind": "shubh",
+        "key": "sayahna_sandhya",
+        "name_ne": "सायं सन्ध्या",
+        "name_en": "Sayahna Sandhya",
+        "start": "17:13",
+        "end": "18:36"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_tithi",
+        "name_ne": "तिथि विष",
+        "name_en": "Tithi Visha",
+        "start": "18:27",
+        "end": "19:54"
+       },
+       {
+        "kind": "ashubh",
+        "key": "visha_yoga",
+        "name_ne": "योग विष",
+        "name_en": "Yoga Visha",
+        "start": "19:52",
+        "end": "21:58"
+       },
+       {
+        "kind": "ashubh",
+        "key": "dur_muhurtam",
+        "name_ne": "दुर्मुहूर्तम्",
+        "name_en": "Dur Muhurtam",
+        "start": "22:44",
+        "end": "23:39"
+       },
+       {
+        "kind": "shubh",
+        "key": "nishita_muhurta",
+        "name_ne": "निशिता मुहूर्त",
+        "name_en": "Nishita Muhurta",
+        "start": "23:39",
+        "end": "00:34"
+       }
+      ],
+      "personal": {
+       "janma_rashi": {
+        "number": 11,
+        "name_ne": "कुम्भ",
+        "name_en": "Kumbha"
+       },
+       "janma_nakshatra": {
+        "number": 23,
+        "name_ne": "धनिष्ठा",
+        "name_en": "Dhanishta"
+       },
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "asta": false,
+         "vakri": false
+        },
+        "antar": {
+         "lord": "rahu",
+         "lord_ne": "राहु",
+         "lord_en": "Rahu",
+         "asta": false,
+         "vakri": false
+        }
+       },
+       "segments": [
+        {
+         "start": "07:00",
+         "end": "25:23",
+         "chandra": {
+          "house": 10,
+          "state": "good"
+         },
+         "tara": {
+          "num": 4,
+          "name_ne": "क्षेम",
+          "name_en": "Kshema",
+          "state": "good"
+         }
+        },
+        {
+         "start": "25:23",
+         "end": "31:00",
+         "chandra": {
+          "house": 10,
+          "state": "good"
+         },
+         "tara": {
+          "num": 5,
+          "name_ne": "प्रत्यक्",
+          "name_en": "Pratyak",
+          "state": "bad"
+         }
+        }
+       ]
+      },
+      "date_bs": "2086-09-17",
+      "weekday_ne": "मङ्गलवार",
+      "weekday_en": "Tuesday",
+      "tithi_ne": "द्वादशी",
+      "tithi_en": "Dwadashi",
+      "nakshatra_ne": "अनुराधा",
+      "nakshatra_en": "Anuradha",
+      "reading": {
+       "percent": 49,
+       "prediction_ne": "आज मिश्र फल दिन्छ — सामान्य काम राम्रै चल्छ। हाल तपाईंको गुरु महादशाभित्र मङ्गल अन्तर्दशा चलिरहेको छ। महादशेश गुरु जन्मकुण्डलीको २ भावमा रहेकाले यस अवधिको मूल विषय धन, वाणी र परिवारसँग जोडिएको छ, भने अन्तर्दशेश मङ्गल २ भावमा भएकाले धन, वाणी र परिवारसँग जोडिएका प्रसङ्ग अहिले अगाडि आउँछन्। सुदर्शन चक्रमा चन्द्र चक्र बलियो देखिन्छ — मन, भावना र घरेलु शान्तिले साथ दिन्छ; सूर्य चक्र भने कमजोर भएकाले प्रतिष्ठा, अधिकार र पदीय पक्षमा चाप पर्न सक्छ। करियर पक्ष सबैभन्दा बलियो छ — साहस, प्रयास र भाइबहिनीमा लगानी गरेको समय र मिहिनेतले प्रतिफल दिन्छ। सम्बन्ध पक्षमा भने सतर्कता चाहिन्छ; घर, माता र मनको शान्तिसँग सम्बन्धित काममा हतार नगर्नुहोस्। गोचरमा चन्द्र वृश्चिक राशिबाट ४ भावमा रहेकाले घर, माता र मनको शान्तिमा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्। बुध, शुक्र, शनि, राहु, केतु वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो। बुध अस्त भएकाले त्यससँग जोडिएको विषयमा अहिले निर्णय गर्न हतार नगर्नुहोस्। जन्म अष्टकवर्गमा लग्न राशिमा २६ बिन्दु छन् — औसत स्तरको आधार, जसले गोचरको फल जस्ताको तस्तै देखाउँछ। चन्द्रबल जन्म (मध्यम) र गोचर चन्द्र जन्म राशिबाट १० भावमा — मूर्ति ताम्र। लग्नेश सूर्य ५ भावमा मित्रक्षेत्री अवस्थामा छन्, त्यसैले बुद्धि, सिर्जना र सन्तानसँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ। ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+       "prediction_en": "Today is mixed — routine work goes fine. You are currently running Jupiter Mahadasha with Mars Antardasha. The Mahadasha lord Jupiter sits in house 2 of your birth chart, so the period's underlying subject is money, speech and family; the Antardasha lord Mars in house 2 brings money, speech and family to the front right now. Across the Sudarshana chakras the Chandra frame is the strong one — support comes through mind, emotion and domestic peace; the Surya frame is weaker, so standing, authority and position can come under pressure. Career is the strongest side — time and effort put into courage, effort and siblings return a real result. Relationships calls for care, though — do not rush anything touching home, mother and peace of mind. Moon transiting Vrishchika into house 4 can press on home, mother and peace of mind — that is the area to stay alert in. Mercury, Venus, Saturn, Rahu and Ketu stand retrograde, so unfinished business started earlier resurfaces — a better window for closing what is open than for starting something new. Mercury is combust, so hold off on decisions tied to what it signifies. The Lagna sign holds 26 bindus in your natal Ashtakavarga — an average base, which lets the transits read much as they stand. Chandrabala is Janma (medium), with the transit Moon 10 houses from your natal Moon — a Tamra (copper) moorti. Your Lagna lord Sun stands in house 5, friend's sign, so it is effort tied to intellect, creativity and children that decides the overall result. Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+       "dasha": {
+        "maha": {
+         "lord": "jupiter",
+         "lord_ne": "गुरु",
+         "lord_en": "Jupiter",
+         "end": "2030-02-25T23:57:19.133333+05:45"
+        },
+        "antar": {
+         "lord": "mars",
+         "lord_ne": "मङ्गल",
+         "lord_en": "Mars",
+         "end": "2027-10-03T09:59:14.333333+05:45"
+        }
+       },
+       "domains": [
+        {
+         "key": "career",
+         "label_ne": "करियर",
+         "label_en": "Career",
+         "tone": "good",
+         "percent": 70
+        },
+        {
+         "key": "finance",
+         "label_ne": "आर्थिक",
+         "label_en": "Finance",
+         "tone": "good",
+         "percent": 60
+        },
+        {
+         "key": "health",
+         "label_ne": "स्वास्थ्य",
+         "label_en": "Health",
+         "tone": "neutral",
+         "percent": 45
+        },
+        {
+         "key": "love",
+         "label_ne": "सम्बन्ध",
+         "label_en": "Relationships",
+         "tone": "bad",
+         "percent": 36
+        },
+        {
+         "key": "learning",
+         "label_ne": "अध्ययन",
+         "label_en": "Learning",
+         "tone": "bad",
+         "percent": 39
+        },
+        {
+         "key": "travel",
+         "label_ne": "यात्रा",
+         "label_en": "Travel",
+         "tone": "bad",
+         "percent": 41
+        }
+       ],
+       "gochar": [
+        {
+         "graha": "sun",
+         "graha_ne": "सूर्य",
+         "graha_en": "Sun",
+         "sign_ne": "धनु",
+         "sign_en": "Dhanu",
+         "house": 5,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "moon",
+         "graha_ne": "चन्द्र",
+         "graha_en": "Moon",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "mars",
+         "graha_ne": "मंगल",
+         "graha_en": "Mars",
+         "sign_ne": "मकर",
+         "sign_en": "Makara",
+         "house": 6,
+         "favourable": true,
+         "retrograde": false,
+         "bindu": 4
+        },
+        {
+         "graha": "mercury",
+         "graha_ne": "बुध",
+         "graha_en": "Mercury",
+         "sign_ne": "धनु",
+         "sign_en": "Dhanu",
+         "house": 5,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 4
+        },
+        {
+         "graha": "jupiter",
+         "graha_ne": "बृहस्पति",
+         "graha_en": "Jupiter",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": false,
+         "retrograde": false,
+         "bindu": 5
+        },
+        {
+         "graha": "venus",
+         "graha_ne": "शुक्र",
+         "graha_en": "Venus",
+         "sign_ne": "वृश्चिक",
+         "sign_en": "Vrishchika",
+         "house": 4,
+         "favourable": true,
+         "retrograde": true,
+         "bindu": 4
+        },
+        {
+         "graha": "saturn",
+         "graha_ne": "शनि",
+         "graha_en": "Saturn",
+         "sign_ne": "मेष",
+         "sign_en": "Mesha",
+         "house": 9,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": 2
+        },
+        {
+         "graha": "rahu",
+         "graha_ne": "राहु",
+         "graha_en": "Rahu",
+         "sign_ne": "धनु",
+         "sign_en": "Dhanu",
+         "house": 5,
+         "favourable": false,
+         "retrograde": true,
+         "bindu": null
+        },
+        {
+         "graha": "ketu",
+         "graha_ne": "केतु",
+         "graha_en": "Ketu",
+         "sign_ne": "मिथुन",
+         "sign_en": "Mithuna",
+         "house": 11,
+         "favourable": true,
+         "retrograde": true,
+         "bindu": null
+        }
+       ]
+      }
+     }
+    ],
+    "location": {
+     "lat": 27.7172,
+     "lon": 85.324,
+     "timezone": "Asia/Kathmandu"
+    }
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?lat=abc"
+   },
+   "status": 401,
+   "headers": {
+    "www-authenticate": "Bearer",
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=1.0",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": "Not authenticated"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?lat=abc&days=0&from=x",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 422,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=2.5",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": [
+     {
+      "type": "float_parsing",
+      "loc": [
+       "query",
+       "lat"
+      ],
+      "msg": "Input should be a valid number, unable to parse string as a number",
+      "input": "abc"
+     },
+     {
+      "type": "date_from_datetime_parsing",
+      "loc": [
+       "query",
+       "from"
+      ],
+      "msg": "Input should be a valid date or datetime, input is too short",
+      "input": "x",
+      "ctx": {
+       "error": "input is too short"
+      }
+     },
+     {
+      "type": "greater_than_equal",
+      "loc": [
+       "query",
+       "days"
+      ],
+      "msg": "Input should be greater than or equal to 1",
+      "input": "0",
+      "ctx": {
+       "ge": 1
+      }
+     }
+    ]
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?days=40&from=2026-11-22T05:00:00",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 422,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=2.2",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": [
+     {
+      "type": "date_from_datetime_inexact",
+      "loc": [
+       "query",
+       "from"
+      ],
+      "msg": "Datetimes provided to dates should have zero time - e.g. be exact dates",
+      "input": "2026-11-22T05:00:00"
+     },
+     {
+      "type": "less_than_equal",
+      "loc": [
+       "query",
+       "days"
+      ],
+      "msg": "Input should be less than or equal to 31",
+      "input": "40",
+      "ctx": {
+       "le": 31
+      }
+     }
+    ]
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?from=2026-11-22",
+    "headers": {
+     "Authorization": "Bearer ${dave}"
+    }
+   },
+   "status": 404,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=2.7",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": "Profile not found"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?city=Nowhereville-Zzz",
+    "headers": {
+     "Authorization": "Bearer ${carol}"
+    }
+   },
+   "status": 400,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=45.7",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": "City not found (city='Nowhereville-Zzz')"
+   },
+   "outbox": []
+  },
+  {
+   "step": {
+    "m": "GET",
+    "p": "/profiles/${g1}/daily-guidance?city=Nowhereville-Zzz"
+   },
+   "status": 400,
+   "headers": {
+    "content-type": "application/json",
+    "x-siddhanta": "surya_siddhanta",
+    "x-ayanamsha": "surya_siddhanta",
+    "server-timing": "app;dur=20.3",
+    "cache-control": "private, no-store",
+    "cdn-cache-control": "private, no-store"
+   },
+   "body": {
+    "detail": "City not found (city='Nowhereville-Zzz')"
+   },
+   "outbox": []
+  }
+ ]
+}

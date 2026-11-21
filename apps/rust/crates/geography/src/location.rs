@@ -72,7 +72,12 @@ pub fn resolve_location(q: &LocationQuery, cities: &Cities) -> Result<Location, 
         };
         let Some(row) = row else {
             let label = q.city_id.map_or_else(
-                || format!("city={:?}", q.city.clone().unwrap_or_default()),
+                || {
+                    format!(
+                        "city={}",
+                        common::pyjson::py_repr_str(q.city.as_deref().unwrap_or_default())
+                    )
+                },
                 |id| format!("city_id={id}"),
             );
             return Err(LocationError::Invalid(format!("City not found ({label})")));

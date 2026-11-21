@@ -114,6 +114,20 @@ async fn share_responses_match_fastapi() {
             ));
             continue;
         }
+        for k in [
+            "cache-control",
+            "cdn-cache-control",
+            "vary",
+            "content-type",
+            "x-siddhanta",
+            "x-ayanamsha",
+        ] {
+            assert!(
+                case["headers"].get(k).is_some() || headers.get(k).is_none(),
+                "{path}: header {k} {:?} sent, Python sends none",
+                headers.get(k)
+            );
+        }
         for (k, v) in case["headers"].as_object().expect("headers") {
             let mut want = v.as_str().expect("header").to_owned();
             // /share is outside the Redis layer, so no stale-if-error is added.

@@ -661,23 +661,45 @@ fn bs_civil_fifteenth(
         .find(|d| udaya_tithi(*d, observer) == Some((15, paksha)))
 }
 
-/// Whether a kshaya month drops the masa `name` in `gregorian_year`: two sankrantis in
-/// one lunar month skip the second month's name, and that masa's lunar festivals are not
-/// observed (owner's rule; Python fell back to the neighbouring year's date).
-fn dropped_by_kshaya(name: &str, gregorian_year: i32) -> bool {
+/// The kshaya months that skip the masa `name` and touch `gregorian_year`: two
+/// sankrantis in one lunar month skip a masa name, and that masa's lunar festivals
+/// are not observed in that cycle (owner's rule; Python fell back to a neighbouring
+/// year's date). Each window is the kshaya month's civil span (UTC dates).
+fn kshaya_drops(name: &str, gregorian_year: i32) -> Vec<(CivilDay, CivilDay)> {
     [gregorian_year - 1, gregorian_year]
         .into_iter()
         .filter(|y| kshaya_possible(*y))
-        .any(|y| {
-            lunar_year(y).months.iter().any(|m| {
-                let in_year = m.start_aausi.fields().0.year == gregorian_year
-                    || m.end_aausi.fields().0.year == gregorian_year;
-                in_year && {
-                    let sankrantis = sankrantis_in_period(m.start_aausi, m.end_aausi);
-                    sankrantis.len() >= 2 && BS_MONTH_NAMES[sankrantis[0] as usize] == name
-                }
-            })
+        .flat_map(|y| {
+            lunar_year(y)
+                .months
+                .iter()
+                .filter(|m| {
+                    let in_year = m.start_aausi.fields().0.year == gregorian_year
+                        || m.end_aausi.fields().0.year == gregorian_year;
+                    in_year && {
+                        let sankrantis = sankrantis_in_period(m.start_aausi, m.end_aausi);
+                        sankrantis.len() >= 2 && BS_MONTH_NAMES[sankrantis[0] as usize] == name
+                    }
+                })
+                .map(|m| (m.start_aausi.fields().0, m.end_aausi.fields().0))
+                .collect::<Vec<_>>()
         })
+        .collect()
+}
+
+/// Whether a found occurrence is the one a kshaya month swallowed: a fallback to a
+/// neighbouring year's date, or a date inside the kshaya month itself. A real
+/// occurrence of the masa earlier in the same Gregorian year stays (Poush in
+/// January 2028 survives the December 2028 kshaya).
+fn swallowed_by_kshaya(
+    day: CivilDay,
+    gregorian_year: i32,
+    windows: &[(CivilDay, CivilDay)],
+) -> bool {
+    day.year != gregorian_year
+        || windows
+            .iter()
+            .any(|(start, end)| *start <= day && day <= *end)
 }
 
 /// `find_festival_in_lunar_month` for the festival month model with adhik months
@@ -713,9 +735,7 @@ pub fn find_festival_in_lunar_month(
             return Some(day);
         }
     }
-    if dropped_by_kshaya(name, gregorian_year) {
-        return None;
-    }
+    let kshaya = kshaya_drops(name, gregorian_year);
     let mut candidates: Vec<(CivilDay, bool)> = Vec::new();
     for search_year in [gregorian_year - 1, gregorian_year] {
         let year = observed_year(search_year, observer);
@@ -747,6 +767,7 @@ pub fn find_festival_in_lunar_month(
             )
         })
         .map(|(day, _)| day)
+        .filter(|day| kshaya.is_empty() || !swallowed_by_kshaya(*day, gregorian_year, &kshaya))
 }
 
 /// First day of the year's Adhik Maas when it is `name` (`compute_adhik_arambha`), or of

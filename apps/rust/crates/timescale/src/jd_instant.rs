@@ -88,6 +88,13 @@ pub trait PyInstant: Copy + PartialEq + PartialOrd + fmt::Debug + fmt::Display {
     /// `parse_ephemeris_instant` of what [`fmt::Display`] writes.
     fn parse_py(text: &str) -> Option<Self>;
 
+    /// `parse_ephemeris_instant(self.isoformat())`: the instant read back from its
+    /// own printed text (rounded to what the text holds).
+    #[must_use]
+    fn reparse(self) -> Self {
+        Self::parse_py(&self.to_string()).unwrap_or(self)
+    }
+
     /// The instant at a Julian Day, as `ut_instant_from_jd` hands it back for
     /// this kind (a `datetime` truncates to the second).
     fn from_jd(jd: f64) -> Option<Self>;

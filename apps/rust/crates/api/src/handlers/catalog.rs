@@ -16,7 +16,7 @@ use serde_json::json;
 
 use crate::{
     handlers::panchanga::location,
-    respond::{Query, detail, era_error, json_compact, siddhanta_error},
+    respond::{Query, detail, era_error, json_compact, json_payload, siddhanta_error},
     state::AppState,
 };
 
@@ -280,7 +280,7 @@ pub async fn documents_list(
     let started = Instant::now();
     let (cache, cdn) = state.documents.list_cache_headers();
     match catalog::documents_list(&state.documents) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cdn), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cdn), started),
         Err(error) => handle(error),
     }
 }
@@ -298,7 +298,7 @@ pub async fn document_detail(
     let started = Instant::now();
     let cache = state.documents.document_cache_header();
     match catalog::document_detail(&state.documents, &slug) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cache), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cache), started),
         Err(error) => handle(error),
     }
 }
@@ -336,7 +336,7 @@ pub async fn document_chapter_detail(
         direction,
         q.get("verse").map(String::as_str),
     ) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cache), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cache), started),
         Err(error) => handle(error),
     }
 }
@@ -373,7 +373,7 @@ pub async fn veda_details(
         offset,
         limit,
     ) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cache), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cache), started),
         Err(error) => handle(error),
     }
 }
@@ -391,7 +391,7 @@ pub async fn veda_detail_values(
     let started = Instant::now();
     let cache = state.documents.document_cache_header();
     match catalog::veda_detail_values(&state.documents, &kind, q.get("slug").map(String::as_str)) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cache), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cache), started),
         Err(error) => handle(error),
     }
 }
@@ -408,7 +408,7 @@ pub async fn veda_daily(
     let started = Instant::now();
     let cache = state.documents.veda_daily_cache_header();
     match catalog::veda_daily(&state.documents, q.get("date").map(String::as_str)) {
-        Ok(payload) => json_compact(&payload, &q, &headers, Some(cache), Some(cache), started),
+        Ok(payload) => json_payload(&payload, &q, &headers, cache, Some(cache), started),
         Err(error) => handle(error),
     }
 }

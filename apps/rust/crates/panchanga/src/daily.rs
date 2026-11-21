@@ -469,7 +469,7 @@ fn enrich_next<I: PyInstant>(
 ) {
     // Python reads the end back from the printed `end_time` (`_parse_instant`),
     // which rounds a Julian Day instant to the microsecond.
-    let end = I::parse_py(&end.to_string()).unwrap_or(end);
+    let end = end.reparse();
     let next_end = find_end(end.add_seconds(90));
     let Some(Value::Object(next)) = block.get_mut("next") else {
         return;
@@ -594,7 +594,7 @@ pub(crate) fn karana_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Value
     Value::Object(block)
 }
 
-fn rashi_payload(longitude: f64) -> Value {
+pub(crate) fn rashi_payload(longitude: f64) -> Value {
     let index = idx(py_int(longitude / 30.0) % 12);
     json!({
         "number": index + 1, "name": RASHI_NAMES[index], "name_ne": RASHI_NAMES_NE[index],
@@ -635,7 +635,7 @@ fn attach_end<I: PyInstant>(
     span.insert("end_ghati_clock".into(), json!(info.ghati_clock));
 }
 
-fn chandra_rashi_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zone: &Zone) -> Value {
+pub(crate) fn chandra_rashi_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zone: &Zone) -> Value {
     let mut spans = Vec::new();
     let mut cursor = sunrise;
     while cursor < next_sunrise && spans.len() < 4 {
@@ -655,7 +655,11 @@ fn chandra_rashi_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zone: &Zone) -
     Value::Array(spans)
 }
 
-fn nakshatra_pada_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zone: &Zone) -> Value {
+pub(crate) fn nakshatra_pada_spans<I: PyInstant>(
+    sunrise: I,
+    next_sunrise: I,
+    zone: &Zone,
+) -> Value {
     let mut spans = Vec::new();
     let mut cursor = sunrise;
     while cursor < next_sunrise && spans.len() < 8 {
@@ -827,7 +831,7 @@ fn day_times_as<I: PyInstant>(
 }
 
 /// `paksha_block`: the paksha with its pūrṇimānta month label.
-fn paksha_block(lunar: &Value, paksha: Paksha) -> Value {
+pub(crate) fn paksha_block(lunar: &Value, paksha: Paksha) -> Value {
     let month_name = lunar["purnimanta_name"]
         .as_str()
         .or_else(|| lunar["name"].as_str())
@@ -951,8 +955,101 @@ pub fn build_daily(day: CivilDay, location: &Location) -> Result<Value, DailyErr
     if !day.is_datetime_range() {
         return Err(DailyError::BeforeGregorian(day));
     }
-    assemble(day, day_times(day, location)?, location, None)
+    let key = DailyKey::of(day, location);
+    // A day's panchanga never changes for its key; day routes, month grids, the
+    // civil timeline and the midnight view all rebuild the same days.
+    (*DAILY_MEMO.get_or_insert_with(&key, || {
+        let stored_key = key.stored();
+        if let Some(payload) = crate::store::get(&stored_key) {
+            return std::sync::Arc::new(Ok(payload));
+        }
+        let built = day_times(day, location).and_then(|times| assemble(day, times, location, None));
+        if let Ok(payload) = &built {
+            crate::store::put(&stored_key, location.city_id, payload);
+        }
+        std::sync::Arc::new(built)
+    }))
+    .clone()
 }
+
+/// `precompute_range` for one day: computes and stores it unless it is stored
+/// already (or `force`). Whether a row was written.
+///
+/// # Errors
+///
+/// As [`build_daily`].
+pub fn precompute_day(
+    day: CivilDay,
+    location: &Location,
+    force: Precompute,
+) -> Result<bool, DailyError> {
+    if !day.is_datetime_range() {
+        return Err(DailyError::BeforeGregorian(day));
+    }
+    let key = DailyKey::of(day, location).stored();
+    if force == Precompute::SkipStored && crate::store::contains(&key) {
+        return Ok(false);
+    }
+    let payload = assemble(day, day_times(day, location)?, location, None)?;
+    crate::store::put(&key, location.city_id, &payload);
+    Ok(true)
+}
+
+/// The payload the persistent store holds for this day and location, if any.
+#[must_use]
+pub fn stored_day(day: CivilDay, location: &Location) -> Option<Value> {
+    crate::store::get(&DailyKey::of(day, location).stored())
+}
+
+/// Whether [`precompute_day`] recomputes days already stored (`force=`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Precompute {
+    /// Leave stored days alone.
+    SkipStored,
+    /// Recompute and overwrite.
+    Force,
+}
+
+impl DailyKey {
+    fn of(day: CivilDay, location: &Location) -> Self {
+        Self {
+            day,
+            lat: location.lat.to_bits(),
+            lon: location.lon.to_bits(),
+            zone: location.zone.name().to_owned(),
+            name: location.name.clone(),
+            city_id: location.city_id,
+        }
+    }
+
+    /// The persistent store's key.
+    fn stored(&self) -> String {
+        format!(
+            "{}|{:016x}|{:016x}|{}|{}|{}",
+            self.day,
+            self.lat,
+            self.lon,
+            self.zone,
+            self.name,
+            self.city_id.map_or_else(String::new, |c| c.to_string())
+        )
+    }
+}
+
+/// What a daily payload depends on: the day and every field of the location.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct DailyKey {
+    day: CivilDay,
+    lat: u64,
+    lon: u64,
+    zone: String,
+    name: String,
+    city_id: Option<i64>,
+}
+
+/// Recently built days (about 60 KB each).
+static DAILY_MEMO: std::sync::LazyLock<crate::memo::Memo<DailyKey, Result<Value, DailyError>>> =
+    std::sync::LazyLock::new(|| crate::memo::Memo::new(512));
 
 /// `build_daily_panchanga_civil`: the udaya panchanga of a civil day on the signed
 /// patro axis, for days `datetime` cannot hold (before 1582-10-15, and BCE).

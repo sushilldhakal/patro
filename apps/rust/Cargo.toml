@@ -22,7 +22,9 @@ config = { version = "0.15", default-features = false, features = ["toml"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 thiserror = "2"
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal"] }
+redis = { version = "0.27", default-features = false, features = ["aio", "tokio-comp", "connection-manager"] }
+sha2 = "0.10"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal", "sync", "time"] }
 tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.7", features = ["trace", "timeout"] }
 tracing = "0.1"
@@ -41,6 +43,18 @@ vastu = { path = "crates/vastu" }
 flate2 = "1"
 regex = "1"
 rusqlite = { version = "0.41", features = ["bundled"] }
+accounts = { path = "crates/accounts" }
+ephemeris = { path = "crates/ephemeris" }
+swiss-eph = "=0.2.1"
+tokio-postgres = "0.7"
+deadpool-postgres = "0.14"
+bcrypt = "0.17"
+jsonwebtoken = "9"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+lettre = { version = "0.11", default-features = false, features = ["builder", "smtp-transport", "tokio1", "tokio1-rustls-tls", "hostname"] }
+getrandom = "0.3"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4"] }
 
 # Lints from the rust-best-practices skill (github.com/morganlinton/BeautifulRust,
 # lints/lints.toml). Every crate opts in with `[lints] workspace = true`.
@@ -84,6 +98,7 @@ rust-version.workspace = true
 publish.workspace = true
 
 [dependencies]
+accounts.workspace = true
 anyhow.workspace = true
 api.workspace = true
 axum.workspace = true
@@ -97,6 +112,7 @@ workspace = true
 
 [dev-dependencies]
 flate2.workspace = true
+tokio-postgres.workspace = true
 patro.workspace = true
 serde_json.workspace = true
 timescale.workspace = true

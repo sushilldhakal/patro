@@ -10,16 +10,74 @@ use crate::{handlers, middleware, state::AppState};
 /// Paths mirror the Python API (apps/api) exactly, so a client can point at either.
 pub fn router(state: AppState) -> Router {
     let timeout = state.config.request_timeout();
-    let routes = Router::new()
+    let mut routes = Router::new()
         .merge(panchanga())
         .merge(festivals())
         .merge(catalog())
         .merge(sait())
         .merge(graha())
         .merge(kundali())
-        .merge(vastu())
-        .with_state(state);
+        .merge(vastu());
+    if state.accounts.is_some() {
+        routes = routes.merge(accounts());
+    }
+    let routes = routes.with_state(state);
     middleware::apply(routes, timeout)
+}
+
+/// The account layer (`app/routers/*`), mounted only with a database.
+fn accounts() -> Router<AppState> {
+    use axum::routing::{delete, put};
+    use handlers::{account as a, analytics as an, events as ev};
+    Router::new()
+        .route("/auth/signup", post(a::signup))
+        .route("/auth/login", post(a::login))
+        .route("/auth/google", post(a::google))
+        .route("/auth/facebook", post(a::facebook))
+        .route("/auth/apple", post(a::apple))
+        .route("/auth/refresh", post(a::refresh))
+        .route("/auth/logout", post(a::logout))
+        .route("/auth/me", get(a::me).delete(a::delete_me))
+        .route("/auth/verify-email", post(a::verify_email))
+        .route("/auth/resend-verification", post(a::resend_verification))
+        .route("/auth/forgot-password", post(a::forgot_password))
+        .route("/auth/reset-password", post(a::reset_password))
+        .route("/profiles", get(a::list_profiles).post(a::create_profile))
+        .route(
+            "/profiles/{profile_id}",
+            get(a::get_profile)
+                .patch(a::update_profile)
+                .delete(a::delete_profile),
+        )
+        .route(
+            "/profiles/{profile_id}/daily-guidance",
+            get(handlers::guidance::daily_guidance),
+        )
+        .route("/devices", post(a::register_device))
+        .route("/devices/{device_id}", delete(a::unregister_device))
+        .route(
+            "/reminders",
+            get(a::list_reminders).post(a::create_reminder),
+        )
+        .route(
+            "/reminders/{reminder_id}",
+            put(a::update_reminder).delete(a::delete_reminder),
+        )
+        .route("/events", get(ev::list_events).post(ev::create_event))
+        .route("/events/feed", get(ev::get_feed))
+        .route("/events/feed/reset", post(ev::reset_feed))
+        .route(
+            "/events/{event_id}",
+            put(ev::update_event).delete(ev::delete_event),
+        )
+        .route("/calendar/{file}", get(ev::calendar_feed))
+        .route("/v1/analytics/install/register", post(an::register))
+        .route("/v1/analytics/install/heartbeat", post(an::heartbeat))
+        .route("/v1/analytics/install/ping", post(an::ping))
+        .route("/v1/admin/analytics/installs/overview", get(an::overview))
+        .route("/v1/admin/analytics/installs/daily", get(an::daily))
+        .route("/v1/admin/analytics/installs/platforms", get(an::platforms))
+        .route("/v1/admin/analytics/installs/live", get(an::live))
 }
 
 /// Health, the day and month panchanga, calendar header and date conversion.
@@ -55,6 +113,13 @@ fn panchanga() -> Router<AppState> {
             get(handlers::panchanga::bc_month),
         )
         .route("/health", get(handlers::health::health))
+        .route("/openapi.json", get(handlers::openapi::openapi_json))
+        .route("/docs", get(handlers::openapi::docs))
+        .route(
+            "/docs/oauth2-redirect",
+            get(handlers::openapi::oauth2_redirect),
+        )
+        .route("/redoc", get(handlers::openapi::redoc))
         .route("/v1/panchanga", get(handlers::day::panchanga_day_query))
         .route(
             "/v1/panchanga/today",
@@ -272,14 +337,17 @@ fn graha() -> Router<AppState> {
             "/v1/nepal/patro/ad/{ad_year}/{ad_month}",
             get(handlers::panchanga::nepal_patro_ad),
         )
-        .route("/v1/generate/{year}", post(handlers::panchanga::generate))
+        .route(
+            "/v1/generate/{year}",
+            post(handlers::generate::holiday_year),
+        )
         .route(
             "/v1/generate/panchanga/{bs_year}",
-            post(handlers::panchanga::generate),
+            post(handlers::generate::panchanga_year),
         )
         .route(
             "/v1/generate/panchanga/popular/{bs_year}",
-            post(handlers::panchanga::generate),
+            post(handlers::generate::panchanga_popular),
         )
         .route(
             "/v1/nepal/eclipse/{kind}/year/{year}",

@@ -26,17 +26,12 @@ use crate::{
     state::AppState,
 };
 
-/// The shared front half: gates, `ayanamsha=` (only the Surya Siddhanta is ported),
+/// The shared front half: gates (`ayanamsha=` is read and ignored under the Surya
+/// Siddhanta, as in Python),
 /// the location and the instant (`instant_for_request`).
 fn instant_request(q: &Query, state: &AppState) -> Result<(Location, UtcInstant), Response> {
     if let Some(r) = era_error(q).or_else(|| siddhanta_error(q)) {
         return Err(r);
-    }
-    if q.get("ayanamsha").is_some_and(|a| !a.trim().is_empty()) {
-        return Err(detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "ayanamsha= modes are not ported to the Rust server yet",
-        ));
     }
     let jd = match jd_param(q)? {
         Some(jd) => Some(jd),
@@ -577,12 +572,6 @@ pub(crate) async fn milan(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) ->
     let started = Instant::now();
     if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
         return r;
-    }
-    if q.get("ayanamsha").is_some_and(|a| !a.trim().is_empty()) {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "ayanamsha= modes are not ported to the Rust server yet",
-        );
     }
     let errors = milan_errors(&q);
     if !errors.is_empty() {

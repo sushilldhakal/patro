@@ -22,7 +22,7 @@ use serde_json::{Value, json};
 use crate::{
     handlers::panchanga::{location, month_error, path_int, signed_browse_year},
     respond::{
-        LIVE, Query, detail, detail_json, era_error, flag, json_payload, json_plain_payload,
+        Query, detail, detail_json, era_error, flag, json_plain_payload, json_response_payload,
         raw_payload, siddhanta_error,
     },
     state::AppState,
@@ -128,12 +128,6 @@ fn resolve_and_build_day(
         Ok(v) => v,
         Err(response) => return response,
     };
-    if civil {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "civil=true day timelines are not ported to the Rust server yet",
-        );
-    }
     let midnight = match reference(q) {
         Ok(r) => r == "midnight",
         Err(response) => return response,
@@ -149,19 +143,15 @@ fn resolve_and_build_day(
             Err(error) => return day_error(error),
         },
     };
-    if midnight {
-        let message = if timescale::CivilDay::from_jd_ut(jd).is_datetime_range() {
-            "reference=midnight is not ported to the Rust server yet"
-        } else {
-            "midnight reference for BCE civil days is not supported yet"
-        };
-        return detail(StatusCode::NOT_IMPLEMENTED, message);
-    }
-    let payload = match patro::day::day_payload_for_jd(jd, &location, options) {
+    let variant = patro::day::DayVariant {
+        midnight,
+        civil_timeline: civil,
+    };
+    let payload = match patro::day::day_payload_for_jd_with(jd, &location, options, variant) {
         Ok(value) => value,
         Err(error) => return day_error(error),
     };
-    json_payload(&payload, q, headers, DAILY_CACHE_CONTROL, None, started)
+    json_response_payload(&payload, q, headers, DAILY_CACHE_CONTROL, None, started)
 }
 
 /// `GET /v1/panchanga/{date_key}`.
@@ -234,7 +224,7 @@ pub(crate) async fn calendar_header(
         Ok(value) => value,
         Err(error) => return day_error(error),
     };
-    json_payload(&payload, &q, &headers, LIVE, None, started)
+    json_plain_payload(&payload, &q, &headers, started)
 }
 
 /// `GET /v1/convert/ad-to-bs/{ad_date}`.
@@ -255,7 +245,7 @@ pub(crate) async fn convert_ad_to_bs(
         Ok(value) => value,
         Err(error) => return day_error(error),
     };
-    json_payload(&payload, &q, &headers, LIVE, None, started)
+    json_plain_payload(&payload, &q, &headers, started)
 }
 
 /// `GET /v1/convert/bs-to-ad/{bs_date}`.
@@ -272,7 +262,7 @@ pub(crate) async fn convert_bs_to_ad(
         Ok(value) => value,
         Err(error) => return day_error(error),
     };
-    json_payload(&payload, &q, &headers, LIVE, None, started)
+    json_plain_payload(&payload, &q, &headers, started)
 }
 
 /// pydantic `Literal` checks for query values, in declaration order.

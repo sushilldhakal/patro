@@ -104,12 +104,6 @@ pub(crate) async fn rashifal(
     if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
         return r;
     }
-    if q.get("ayanamsha").is_some_and(|a| !a.trim().is_empty()) {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "ayanamsha= modes are not ported to the Rust server yet",
-        );
-    }
     let period = match period(&q) {
         Ok(p) => p,
         Err(response) => return response,
@@ -220,12 +214,6 @@ pub(crate) async fn personal(
     let started = Instant::now();
     if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
         return r;
-    }
-    if q.get("ayanamsha").is_some_and(|a| !a.trim().is_empty()) {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "ayanamsha= modes are not ported to the Rust server yet",
-        );
     }
     let mut errors = Vec::new();
     let birth_lat = required_float(&q, "birth_lat", &mut errors);

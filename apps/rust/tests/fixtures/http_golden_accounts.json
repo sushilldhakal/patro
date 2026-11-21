@@ -1,0 +1,4229 @@
+[
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {}
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "email"
+     ],
+     "msg": "Field required",
+     "input": {}
+    },
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "password"
+     ],
+     "msg": "Field required",
+     "input": {}
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {
+    "email": "nope",
+    "password": "short"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.4",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "value_error",
+     "loc": [
+      "body",
+      "email"
+     ],
+     "msg": "value is not a valid email address: An email address must have an @-sign.",
+     "input": "nope",
+     "ctx": {
+      "reason": "An email address must have an @-sign."
+     }
+    },
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "password"
+     ],
+     "msg": "String should have at least 8 characters",
+     "input": "short",
+     "ctx": {
+      "min_length": 8
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {
+    "email": "a@b.test",
+    "password": "password123",
+    "full_name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "value_error",
+     "loc": [
+      "body",
+      "email"
+     ],
+     "msg": "value is not a valid email address: The part after the @-sign is a special-use or reserved name that cannot be used with email.",
+     "input": "a@b.test",
+     "ctx": {
+      "reason": "The part after the @-sign is a special-use or reserved name that cannot be used with email."
+     }
+    },
+    {
+     "type": "string_too_long",
+     "loc": [
+      "body",
+      "full_name"
+     ],
+     "msg": "String should have at most 120 characters",
+     "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "ctx": {
+      "max_length": 120
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "raw": "{bad json",
+   "headers": {
+    "content-type": "application/json"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "json_invalid",
+     "loc": [
+      "body",
+      1
+     ],
+     "msg": "JSON decode error",
+     "input": {},
+     "ctx": {
+      "error": "Expecting property name enclosed in double quotes"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "raw": "email=x",
+   "headers": {
+    "content-type": "text/plain"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.8",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "model_attributes_type",
+     "loc": [
+      "body"
+     ],
+     "msg": "Input should be a valid dictionary or object to extract fields from",
+     "input": "email=x"
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {
+    "email": "Alice.Test@Example.COM",
+    "password": "password123"
+   },
+   "capture": {
+    "alice": "access_token",
+    "alice_refresh": "refresh_token"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=251.2",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzM5LCJleHAiOjE3OTUyOTAxMzl9.oa9JnkJ_TKqfP81s20O3_-QvSSgRMuBBWbnWBnLR37M",
+   "refresh_token": "pmvWVgGWqWI3gsgs_ykApspqWBGiqi8M4kb1ga-ftuk",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": [
+   {
+    "kind": "verify",
+    "to": "alice.test@example.com"
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {
+    "email": "alice.test@example.com",
+    "password": "password123"
+   }
+  },
+  "status": 409,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Email already registered"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "alice.test@example.com",
+    "password": "wrong-pass"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=237.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid email or password"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "nobody@example.com",
+    "password": "password123"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid email or password"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "ALICE.test@example.com",
+    "password": "password123"
+   },
+   "capture": {
+    "alice2_refresh": "refresh_token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=237.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzM5LCJleHAiOjE3OTUyOTAxMzl9.oa9JnkJ_TKqfP81s20O3_-QvSSgRMuBBWbnWBnLR37M",
+   "refresh_token": "dcommPl00elmSuDzbDfr5IGV5xB8YMqGGkoH2_k8k5A",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "alice.test@example.com",
+    "password": ""
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "password"
+     ],
+     "msg": "String should have at least 1 character",
+     "input": "",
+     "ctx": {
+      "min_length": 1
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me"
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=26.4",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Basic abc"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.8",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer not.a.jwt"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired token"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "id": "54423670-5aaf-4bcf-accc-85571502111e",
+   "email": "alice.test@example.com",
+   "is_verified": false,
+   "created_at": "2026-11-21T19:12:19.237188Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/resend-verification",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.4",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Verification email sent"
+  },
+  "outbox": [
+   {
+    "kind": "verify",
+    "to": "alice.test@example.com"
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/verify-email",
+   "json": {
+    "token": "bogus"
+   }
+  },
+  "status": 400,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired link"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/verify-email",
+   "json": {
+    "token": "${outbox:verify}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Email verified"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/verify-email",
+   "json": {
+    "token": "${outbox:verify}"
+   }
+  },
+  "status": 400,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired link"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "id": "54423670-5aaf-4bcf-accc-85571502111e",
+   "email": "alice.test@example.com",
+   "is_verified": true,
+   "created_at": "2026-11-21T19:12:19.237188Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/resend-verification",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Already verified"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${alice_refresh}"
+   },
+   "capture": {
+    "r3": "refresh_token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzQwLCJleHAiOjE3OTUyOTAxNDB9.wOqn2uirSf4gQzFpXMJpawHnw__W7CcKyQPIL8W6RA8",
+   "refresh_token": "aAieRGsOg461bG3jIPrm1j4WTZAcHhi8KZVbxThDKgQ",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${alice_refresh}"
+   },
+   "capture": {
+    "r4": "refresh_token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzQwLCJleHAiOjE3OTUyOTAxNDB9.wOqn2uirSf4gQzFpXMJpawHnw__W7CcKyQPIL8W6RA8",
+   "refresh_token": "XhLykewEoOJT0E8EkvlEpv3Le_V20_vToGYcVKnktS0",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${r3}"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired refresh token"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${alice_refresh}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.4",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzQwLCJleHAiOjE3OTUyOTAxNDB9.wOqn2uirSf4gQzFpXMJpawHnw__W7CcKyQPIL8W6RA8",
+   "refresh_token": "e8ZyR17p7PZiA0jO3mS6b_plT7nsUC31nrHnydhSktM",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/logout",
+   "json": {
+    "refresh_token": "${r4}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Logged out"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${r4}"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired refresh token"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/logout",
+   "json": {
+    "refresh_token": "never-issued"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Logged out"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {}
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "refresh_token"
+     ],
+     "msg": "Field required",
+     "input": {}
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/forgot-password",
+   "json": {
+    "email": "ghost@example.com"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "If that email exists, a reset link has been sent"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/forgot-password",
+   "json": {
+    "email": "Alice.Test@example.com"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "If that email exists, a reset link has been sent"
+  },
+  "outbox": [
+   {
+    "kind": "reset",
+    "to": "alice.test@example.com"
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/reset-password",
+   "json": {
+    "token": "bogus",
+    "password": "short"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "password"
+     ],
+     "msg": "String should have at least 8 characters",
+     "input": "short",
+     "ctx": {
+      "min_length": 8
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/reset-password",
+   "json": {
+    "token": "bogus",
+    "password": "longenough1"
+   }
+  },
+  "status": 400,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired link"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/reset-password",
+   "json": {
+    "token": "${outbox:reset}",
+    "password": "newpassword1"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=240.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Password updated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/reset-password",
+   "json": {
+    "token": "${outbox:reset}",
+    "password": "newpassword2"
+   }
+  },
+  "status": 400,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.2",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired link"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "alice.test@example.com",
+    "password": "password123"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=235.8",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid email or password"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/refresh",
+   "json": {
+    "refresh_token": "${alice2_refresh}"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired refresh token"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/login",
+   "json": {
+    "email": "alice.test@example.com",
+    "password": "newpassword1"
+   },
+   "capture": {
+    "alice": "access_token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=240.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NDQyMzY3MC01YWFmLTRiY2YtYWNjYy04NTU3MTUwMjExMWUiLCJlbWFpbCI6ImFsaWNlLnRlc3RAZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzk1Mjg4MzQwLCJleHAiOjE3OTUyOTAxNDB9.wOqn2uirSf4gQzFpXMJpawHnw__W7CcKyQPIL8W6RA8",
+   "refresh_token": "lH2IakK0H1HJBngrFWfYRYnE9ZU4O_dtX_1tLi6wbSw",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/google",
+   "json": {
+    "id_token": "x"
+   }
+  },
+  "status": 503,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.3",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Google sign-in is not configured"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/facebook",
+   "json": {
+    "access_token": "x"
+   }
+  },
+  "status": 503,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Facebook sign-in is not configured"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/apple",
+   "json": {
+    "identity_token": "x",
+    "email": "a@b.com"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.3",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Invalid or expired Apple token"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/apple",
+   "json": {}
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "identity_token"
+     ],
+     "msg": "Field required",
+     "input": {}
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/auth/signup",
+   "json": {
+    "email": "bob@example.org",
+    "password": "bobpassword"
+   },
+   "capture": {
+    "bob": "access_token"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=238.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMjE3NWI0My1mZWU2LTQ2NzMtYjBjNi0xZWE5NDg1NjRjZDEiLCJlbWFpbCI6ImJvYkBleGFtcGxlLm9yZyIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3OTUyODgzNDEsImV4cCI6MTc5NTI5MDE0MX0.66FMY2p-5irfGN4WCdvyZJps0yI4X6Yj7XTPhb_Wt5w",
+   "refresh_token": "SoM_TfXibhspDtD766Ae_qQZhN2edqaxXVDtLVI__jI",
+   "token_type": "bearer",
+   "expires_in": 1800
+  },
+  "outbox": [
+   {
+    "kind": "verify",
+    "to": "bob@example.org"
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": [],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles"
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.8",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "full_name": ""
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "full_name"
+     ],
+     "msg": "String should have at least 1 character",
+     "input": "",
+     "ctx": {
+      "min_length": 1
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "full_name": "Ram",
+    "latitude": 100,
+    "longitude": "abc",
+    "email": "bad",
+    "is_default": "maybe"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.4",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "value_error",
+     "loc": [
+      "body",
+      "email"
+     ],
+     "msg": "value is not a valid email address: An email address must have an @-sign.",
+     "input": "bad",
+     "ctx": {
+      "reason": "An email address must have an @-sign."
+     }
+    },
+    {
+     "type": "less_than_equal",
+     "loc": [
+      "body",
+      "latitude"
+     ],
+     "msg": "Input should be less than or equal to 90",
+     "input": 100,
+     "ctx": {
+      "le": 90.0
+     }
+    },
+    {
+     "type": "float_parsing",
+     "loc": [
+      "body",
+      "longitude"
+     ],
+     "msg": "Input should be a valid number, unable to parse string as a number",
+     "input": "abc"
+    },
+    {
+     "type": "bool_parsing",
+     "loc": [
+      "body",
+      "is_default"
+     ],
+     "msg": "Input should be a valid boolean, unable to interpret input",
+     "input": "maybe"
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "json": {
+    "full_name": ""
+   }
+  },
+  "status": 401,
+  "headers": {
+   "www-authenticate": "Bearer",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "full_name": "Ram Sharma",
+    "email": "Ram@Example.COM",
+    "gender": "male",
+    "country": "Nepal",
+    "city": "Kathmandu",
+    "location_label": "Kathmandu, Nepal",
+    "latitude": 27.7172,
+    "longitude": 85.324,
+    "timezone": "Asia/Kathmandu",
+    "birth_date": "2050-05-15",
+    "birth_time": "06:30",
+    "birth_era": "bs",
+    "notes": "self"
+   },
+   "capture": {
+    "p1": "id"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=7.1",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Ram Sharma",
+   "phone": null,
+   "email": "Ram@example.com",
+   "gender": "male",
+   "country": "Nepal",
+   "city": "Kathmandu",
+   "location_label": "Kathmandu, Nepal",
+   "latitude": 27.7172,
+   "longitude": 85.324,
+   "timezone": "Asia/Kathmandu",
+   "birth_date": "2050-05-15",
+   "birth_time": "06:30",
+   "birth_era": "bs",
+   "notes": "self",
+   "is_default": true,
+   "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+   "created_at": "2026-11-21T19:12:21.072777Z",
+   "updated_at": "2026-11-21T19:12:21.072777Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "full_name": "Sita",
+    "is_default": false,
+    "latitude": 27
+   },
+   "capture": {
+    "p2": "id"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Sita",
+   "phone": null,
+   "email": null,
+   "gender": null,
+   "country": null,
+   "city": null,
+   "location_label": null,
+   "latitude": 27.0,
+   "longitude": null,
+   "timezone": null,
+   "birth_date": null,
+   "birth_time": null,
+   "birth_era": null,
+   "notes": null,
+   "is_default": false,
+   "id": "7d14c897-aca3-4ddd-a4a9-4c2d47c3f1c7",
+   "created_at": "2026-11-21T19:12:21.085083Z",
+   "updated_at": "2026-11-21T19:12:21.085083Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "full_name": "Hari",
+    "is_default": true,
+    "phone": "98"
+   },
+   "capture": {
+    "p3": "id"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.3",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Hari",
+   "phone": "98",
+   "email": null,
+   "gender": null,
+   "country": null,
+   "city": null,
+   "location_label": null,
+   "latitude": null,
+   "longitude": null,
+   "timezone": null,
+   "birth_date": null,
+   "birth_time": null,
+   "birth_era": null,
+   "notes": null,
+   "is_default": true,
+   "id": "94f70eda-3cf5-4efb-b638-36e769d0b0e8",
+   "created_at": "2026-11-21T19:12:21.090312Z",
+   "updated_at": "2026-11-21T19:12:21.090312Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "vary": "Accept-Encoding",
+   "content-encoding": "gzip",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": [
+   {
+    "full_name": "Hari",
+    "phone": "98",
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": null,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": true,
+    "id": "94f70eda-3cf5-4efb-b638-36e769d0b0e8",
+    "created_at": "2026-11-21T19:12:21.090312Z",
+    "updated_at": "2026-11-21T19:12:21.090312Z"
+   },
+   {
+    "full_name": "Ram Sharma",
+    "phone": null,
+    "email": "Ram@example.com",
+    "gender": "male",
+    "country": "Nepal",
+    "city": "Kathmandu",
+    "location_label": "Kathmandu, Nepal",
+    "latitude": 27.7172,
+    "longitude": 85.324,
+    "timezone": "Asia/Kathmandu",
+    "birth_date": "2050-05-15",
+    "birth_time": "06:30",
+    "birth_era": "bs",
+    "notes": "self",
+    "is_default": false,
+    "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+    "created_at": "2026-11-21T19:12:21.072777Z",
+    "updated_at": "2026-11-21T19:12:21.091893Z"
+   },
+   {
+    "full_name": "Sita",
+    "phone": null,
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": 27.0,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": false,
+    "id": "7d14c897-aca3-4ddd-a4a9-4c2d47c3f1c7",
+    "created_at": "2026-11-21T19:12:21.085083Z",
+    "updated_at": "2026-11-21T19:12:21.085083Z"
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles/${p1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Ram Sharma",
+   "phone": null,
+   "email": "Ram@example.com",
+   "gender": "male",
+   "country": "Nepal",
+   "city": "Kathmandu",
+   "location_label": "Kathmandu, Nepal",
+   "latitude": 27.7172,
+   "longitude": 85.324,
+   "timezone": "Asia/Kathmandu",
+   "birth_date": "2050-05-15",
+   "birth_time": "06:30",
+   "birth_era": "bs",
+   "notes": "self",
+   "is_default": false,
+   "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+   "created_at": "2026-11-21T19:12:21.072777Z",
+   "updated_at": "2026-11-21T19:12:21.091893Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles/does-not-exist",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles/${p1}",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PATCH",
+   "p": "/profiles/${p2}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "is_default": true,
+    "phone": "123",
+    "notes": null
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Sita",
+   "phone": "123",
+   "email": null,
+   "gender": null,
+   "country": null,
+   "city": null,
+   "location_label": null,
+   "latitude": 27.0,
+   "longitude": null,
+   "timezone": null,
+   "birth_date": null,
+   "birth_time": null,
+   "birth_era": null,
+   "notes": null,
+   "is_default": true,
+   "id": "7d14c897-aca3-4ddd-a4a9-4c2d47c3f1c7",
+   "created_at": "2026-11-21T19:12:21.085083Z",
+   "updated_at": "2026-11-21T19:12:21.114555Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PATCH",
+   "p": "/profiles/${p1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "latitude": -91
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "greater_than_equal",
+     "loc": [
+      "body",
+      "latitude"
+     ],
+     "msg": "Input should be greater than or equal to -90",
+     "input": -91,
+     "ctx": {
+      "ge": -90.0
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PATCH",
+   "p": "/profiles/${p1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {}
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "full_name": "Ram Sharma",
+   "phone": null,
+   "email": "Ram@example.com",
+   "gender": "male",
+   "country": "Nepal",
+   "city": "Kathmandu",
+   "location_label": "Kathmandu, Nepal",
+   "latitude": 27.7172,
+   "longitude": 85.324,
+   "timezone": "Asia/Kathmandu",
+   "birth_date": "2050-05-15",
+   "birth_time": "06:30",
+   "birth_era": "bs",
+   "notes": "self",
+   "is_default": false,
+   "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+   "created_at": "2026-11-21T19:12:21.072777Z",
+   "updated_at": "2026-11-21T19:12:21.091893Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PATCH",
+   "p": "/profiles/${p1}",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   },
+   "json": {
+    "phone": "1"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "vary": "Accept-Encoding",
+   "content-encoding": "gzip",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.7",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": [
+   {
+    "full_name": "Sita",
+    "phone": "123",
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": 27.0,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": true,
+    "id": "7d14c897-aca3-4ddd-a4a9-4c2d47c3f1c7",
+    "created_at": "2026-11-21T19:12:21.085083Z",
+    "updated_at": "2026-11-21T19:12:21.114555Z"
+   },
+   {
+    "full_name": "Ram Sharma",
+    "phone": null,
+    "email": "Ram@example.com",
+    "gender": "male",
+    "country": "Nepal",
+    "city": "Kathmandu",
+    "location_label": "Kathmandu, Nepal",
+    "latitude": 27.7172,
+    "longitude": 85.324,
+    "timezone": "Asia/Kathmandu",
+    "birth_date": "2050-05-15",
+    "birth_time": "06:30",
+    "birth_era": "bs",
+    "notes": "self",
+    "is_default": false,
+    "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+    "created_at": "2026-11-21T19:12:21.072777Z",
+    "updated_at": "2026-11-21T19:12:21.091893Z"
+   },
+   {
+    "full_name": "Hari",
+    "phone": "98",
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": null,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": false,
+    "id": "94f70eda-3cf5-4efb-b638-36e769d0b0e8",
+    "created_at": "2026-11-21T19:12:21.090312Z",
+    "updated_at": "2026-11-21T19:12:21.113988Z"
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/profiles/${p2}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 204,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=5.2",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": "",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/profiles/${p2}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.1",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": [
+   {
+    "full_name": "Ram Sharma",
+    "phone": null,
+    "email": "Ram@example.com",
+    "gender": "male",
+    "country": "Nepal",
+    "city": "Kathmandu",
+    "location_label": "Kathmandu, Nepal",
+    "latitude": 27.7172,
+    "longitude": 85.324,
+    "timezone": "Asia/Kathmandu",
+    "birth_date": "2050-05-15",
+    "birth_time": "06:30",
+    "birth_era": "bs",
+    "notes": "self",
+    "is_default": true,
+    "id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+    "created_at": "2026-11-21T19:12:21.072777Z",
+    "updated_at": "2026-11-21T19:12:21.137497Z"
+   },
+   {
+    "full_name": "Hari",
+    "phone": "98",
+    "email": null,
+    "gender": null,
+    "country": null,
+    "city": null,
+    "location_label": null,
+    "latitude": null,
+    "longitude": null,
+    "timezone": null,
+    "birth_date": null,
+    "birth_time": null,
+    "birth_era": null,
+    "notes": null,
+    "is_default": false,
+    "id": "94f70eda-3cf5-4efb-b638-36e769d0b0e8",
+    "created_at": "2026-11-21T19:12:21.090312Z",
+    "updated_at": "2026-11-21T19:12:21.113988Z"
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/devices",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "push_token": "short",
+    "platform": "web"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "push_token"
+     ],
+     "msg": "String should have at least 10 characters",
+     "input": "short",
+     "ctx": {
+      "min_length": 10
+     }
+    },
+    {
+     "type": "literal_error",
+     "loc": [
+      "body",
+      "platform"
+     ],
+     "msg": "Input should be 'ios' or 'android'",
+     "input": "web",
+     "ctx": {
+      "expected": "'ios' or 'android'"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/devices",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "push_token": "ExponentPushToken[abc123]",
+    "platform": "ios",
+    "timezone": "Asia/Kathmandu"
+   },
+   "capture": {
+    "d1": "id"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=6.0"
+  },
+  "body": {
+   "push_token": "ExponentPushToken[abc123]",
+   "platform": "ios",
+   "timezone": "Asia/Kathmandu",
+   "locale": null,
+   "id": "6e1aa7e0-4edf-435c-9407-e817554aa7e4"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/devices",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "push_token": "ExponentPushToken[abc123]",
+    "platform": "ios",
+    "locale": "ne"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.5"
+  },
+  "body": {
+   "push_token": "ExponentPushToken[abc123]",
+   "platform": "ios",
+   "timezone": null,
+   "locale": "ne",
+   "id": "6e1aa7e0-4edf-435c-9407-e817554aa7e4"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/devices",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   },
+   "json": {
+    "push_token": "ExponentPushToken[abc123]",
+    "platform": "android"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.4"
+  },
+  "body": {
+   "push_token": "ExponentPushToken[abc123]",
+   "platform": "android",
+   "timezone": null,
+   "locale": null,
+   "id": "6e1aa7e0-4edf-435c-9407-e817554aa7e4"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/devices/${d1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.7"
+  },
+  "body": {
+   "detail": "Device not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/devices/${d1}",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   }
+  },
+  "status": 204,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.4"
+  },
+  "body": "",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8"
+  },
+  "body": [],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "window_kind": "bad",
+    "window_key": "",
+    "lead_minutes": 500
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "literal_error",
+     "loc": [
+      "body",
+      "window_kind"
+     ],
+     "msg": "Input should be 'shubh' or 'ashubh'",
+     "input": "bad",
+     "ctx": {
+      "expected": "'shubh' or 'ashubh'"
+     }
+    },
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "window_key"
+     ],
+     "msg": "String should have at least 1 character",
+     "input": "",
+     "ctx": {
+      "min_length": 1
+     }
+    },
+    {
+     "type": "less_than_equal",
+     "loc": [
+      "body",
+      "lead_minutes"
+     ],
+     "msg": "Input should be less than or equal to 180",
+     "input": 500,
+     "ctx": {
+      "le": 180
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "window_kind": "ashubh",
+    "window_key": "rahu_kalam",
+    "weekdays": [
+     7
+    ]
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.9"
+  },
+  "body": {
+   "detail": "weekdays must be 0 (Sunday) to 6"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "window_kind": "ashubh",
+    "window_key": "rahu_kalam",
+    "weekdays": [
+     3,
+     1,
+     3
+    ],
+    "profile_id": "${p1}",
+    "label": "Rahu"
+   },
+   "capture": {
+    "rem1": "id"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.8"
+  },
+  "body": {
+   "id": "17e44038-4be0-4d4d-a830-827871900759",
+   "profile_id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+   "window_kind": "ashubh",
+   "window_key": "rahu_kalam",
+   "lead_minutes": 10,
+   "weekdays": [
+    1,
+    3
+   ],
+   "label": "Rahu",
+   "enabled": true
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   },
+   "json": {
+    "window_kind": "shubh",
+    "window_key": "abhijit",
+    "profile_id": "${p1}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PUT",
+   "p": "/reminders/${rem1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "window_kind": "shubh",
+    "window_key": "abhijit",
+    "lead_minutes": 0,
+    "enabled": false
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.1"
+  },
+  "body": {
+   "id": "17e44038-4be0-4d4d-a830-827871900759",
+   "profile_id": null,
+   "window_kind": "shubh",
+   "window_key": "abhijit",
+   "lead_minutes": 0,
+   "weekdays": [],
+   "label": null,
+   "enabled": false
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PUT",
+   "p": "/reminders/${rem1}",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   },
+   "json": {
+    "window_kind": "shubh",
+    "window_key": "abhijit"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": "Reminder not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/reminders",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5"
+  },
+  "body": [
+   {
+    "id": "17e44038-4be0-4d4d-a830-827871900759",
+    "profile_id": null,
+    "window_kind": "shubh",
+    "window_key": "abhijit",
+    "lead_minutes": 0,
+    "weekdays": [],
+    "label": null,
+    "enabled": false
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/reminders/${rem1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 204,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.3"
+  },
+  "body": "",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/reminders/${rem1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.2"
+  },
+  "body": {
+   "detail": "Reminder not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {}
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "title"
+     ],
+     "msg": "Field required",
+     "input": {}
+    },
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "starts_at"
+     ],
+     "msg": "Field required",
+     "input": {}
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "Naive",
+    "starts_at": "2026-12-01T10:00:00"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.0"
+  },
+  "body": {
+   "detail": "Times must carry a timezone"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "Backwards",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "ends_at": "2026-12-01T09:00:00Z"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": "An event cannot end before it starts"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "R",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "repeat": "hourly"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": "Unknown repeat: hourly"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "K",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "kind": "meeting"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5"
+  },
+  "body": {
+   "detail": "Unknown kind: meeting"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "   ",
+    "starts_at": "2026-12-01T10:00:00Z"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.2"
+  },
+  "body": {
+   "detail": "A title is needed"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "I",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "invitees": [
+     "ok@example.com",
+     "not an email"
+    ]
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.1"
+  },
+  "body": {
+   "detail": "Not an email address: not an email"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "A",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "alerts": [
+     1,
+     2,
+     3
+    ],
+    "priority": 5
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "less_than_equal",
+     "loc": [
+      "body",
+      "priority"
+     ],
+     "msg": "Input should be less than or equal to 3",
+     "input": 5,
+     "ctx": {
+      "le": 3
+     }
+    },
+    {
+     "type": "too_long",
+     "loc": [
+      "body",
+      "alerts"
+     ],
+     "msg": "List should have at most 2 items after validation, not 3",
+     "input": [
+      1,
+      2,
+      3
+     ],
+     "ctx": {
+      "field_type": "List",
+      "max_length": 2,
+      "actual_length": 3
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "D",
+    "starts_at": "tomorrow"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "datetime_from_date_parsing",
+     "loc": [
+      "body",
+      "starts_at"
+     ],
+     "msg": "Input should be a valid datetime or date, input is too short",
+     "input": "tomorrow",
+     "ctx": {
+      "error": "input is too short"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "P",
+    "starts_at": "2026-12-01T10:00:00Z",
+    "profile_id": "does-not-exist"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.0"
+  },
+  "body": {
+   "detail": "Profile not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "  Bratabandha, muhurta; family ceremony at the temple with the whole extended family  ",
+    "starts_at": "2026-12-01T10:15:00+05:45",
+    "ends_at": "2026-12-01T12:00:00+05:45",
+    "location": " Pashupati ",
+    "notes": "Bring\\nflowers",
+    "alerts": [
+     1440,
+     99999
+    ],
+    "repeat": "yearly",
+    "kind": "appointment",
+    "priority": 3,
+    "source_kind": "sait",
+    "source_key": "bratabandha",
+    "profile_id": "${p1}",
+    "invitees": [
+     " Guest@Example.com ",
+     "guest@example.com",
+     "two@example.org"
+    ]
+   },
+   "capture": {
+    "e1": "id"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=5.8"
+  },
+  "body": {
+   "kind": "appointment",
+   "priority": 3,
+   "title": "Bratabandha, muhurta; family ceremony at the temple with the whole extended family",
+   "location": "Pashupati",
+   "notes": "Bring\\nflowers",
+   "all_day": false,
+   "starts_at": "2026-12-01T04:30:00Z",
+   "ends_at": "2026-12-01T06:15:00Z",
+   "timezone": "Asia/Kathmandu",
+   "repeat": "yearly",
+   "alerts": [
+    1440
+   ],
+   "source_kind": "sait",
+   "source_key": "bratabandha",
+   "invitees": [
+    "guest@example.com",
+    "two@example.org"
+   ],
+   "profile_id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+   "id": "9be95529-149b-43ce-a305-77236e64bca5",
+   "created_at": "2026-11-21T19:12:21.254060Z",
+   "updated_at": "2026-11-21T19:12:21.254060Z"
+  },
+  "outbox": [
+   {
+    "kind": "invite",
+    "to": "guest@example.com",
+    "title": "Bratabandha, muhurta; family ceremony at the temple with the whole extended family",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:0\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T061500Z\r\nSUMMARY:Bratabandha\\, muhurta\\; family ceremony at the temple with the who\r\n le extended family\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:guest\r\n @example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nLOCATION:Pashupati\r\nDESCRIPTION:Bring\\\\nflowers\r\nRRULE:FREQ=YEARLY\r\nPRIORITY:1\r\nSTATUS:CONFIRMED\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Bratabandha\\, muhurta\\; family ceremony at the temple with the\r\n  whole extended family\r\nTRIGGER:-PT1440M\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": false
+   },
+   {
+    "kind": "invite",
+    "to": "two@example.org",
+    "title": "Bratabandha, muhurta; family ceremony at the temple with the whole extended family",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:0\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T061500Z\r\nSUMMARY:Bratabandha\\, muhurta\\; family ceremony at the temple with the who\r\n le extended family\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:guest\r\n @example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nLOCATION:Pashupati\r\nDESCRIPTION:Bring\\\\nflowers\r\nRRULE:FREQ=YEARLY\r\nPRIORITY:1\r\nSTATUS:CONFIRMED\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Bratabandha\\, muhurta\\; family ceremony at the temple with the\r\n  whole extended family\r\nTRIGGER:-PT1440M\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": false
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "Dashain",
+    "all_day": true,
+    "starts_at": "2026-10-20T18:15:00Z",
+    "ends_at": "2026-10-22T18:14:00Z",
+    "timezone": "Asia/Kathmandu",
+    "kind": "task",
+    "priority": 1
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.0"
+  },
+  "body": {
+   "kind": "task",
+   "priority": 1,
+   "title": "Dashain",
+   "location": null,
+   "notes": null,
+   "all_day": true,
+   "starts_at": "2026-10-20T18:15:00Z",
+   "ends_at": "2026-10-22T18:14:00Z",
+   "timezone": "Asia/Kathmandu",
+   "repeat": "never",
+   "alerts": [],
+   "source_kind": null,
+   "source_key": null,
+   "invitees": [],
+   "profile_id": null,
+   "id": "63769ad5-87f4-4446-b30c-076195fa92cc",
+   "created_at": "2026-11-21T19:12:21.261710Z",
+   "updated_at": "2026-11-21T19:12:21.261710Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "Old one",
+    "starts_at": 1600000000,
+    "repeat": "never"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.1"
+  },
+  "body": {
+   "kind": "event",
+   "priority": 0,
+   "title": "Old one",
+   "location": null,
+   "notes": null,
+   "all_day": false,
+   "starts_at": "2020-09-13T12:26:40Z",
+   "ends_at": "2020-09-13T12:26:40Z",
+   "timezone": "Asia/Kathmandu",
+   "repeat": "never",
+   "alerts": [],
+   "source_kind": null,
+   "source_key": null,
+   "invitees": [],
+   "profile_id": null,
+   "id": "a130b01b-9d2d-4b81-9294-115a9f324a98",
+   "created_at": "2026-11-21T19:12:21.266625Z",
+   "updated_at": "2026-11-21T19:12:21.266625Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "From phone",
+    "starts_at": "2026-11-30T03:00:00Z",
+    "source_kind": "device"
+   }
+  },
+  "status": 201,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.1"
+  },
+  "body": {
+   "kind": "event",
+   "priority": 0,
+   "title": "From phone",
+   "location": null,
+   "notes": null,
+   "all_day": false,
+   "starts_at": "2026-11-30T03:00:00Z",
+   "ends_at": "2026-11-30T03:00:00Z",
+   "timezone": "Asia/Kathmandu",
+   "repeat": "never",
+   "alerts": [],
+   "source_kind": "device",
+   "source_key": null,
+   "invitees": [],
+   "profile_id": null,
+   "id": "f2da84cb-6aa7-4875-9043-0e2ca6060f92",
+   "created_at": "2026-11-21T19:12:21.271028Z",
+   "updated_at": "2026-11-21T19:12:21.271028Z"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "vary": "Accept-Encoding",
+   "content-encoding": "gzip",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.0"
+  },
+  "body": [
+   {
+    "kind": "event",
+    "priority": 0,
+    "title": "Old one",
+    "location": null,
+    "notes": null,
+    "all_day": false,
+    "starts_at": "2020-09-13T12:26:40Z",
+    "ends_at": "2020-09-13T12:26:40Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "never",
+    "alerts": [],
+    "source_kind": null,
+    "source_key": null,
+    "invitees": [],
+    "profile_id": null,
+    "id": "a130b01b-9d2d-4b81-9294-115a9f324a98",
+    "created_at": "2026-11-21T19:12:21.266625Z",
+    "updated_at": "2026-11-21T19:12:21.266625Z"
+   },
+   {
+    "kind": "task",
+    "priority": 1,
+    "title": "Dashain",
+    "location": null,
+    "notes": null,
+    "all_day": true,
+    "starts_at": "2026-10-20T18:15:00Z",
+    "ends_at": "2026-10-22T18:14:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "never",
+    "alerts": [],
+    "source_kind": null,
+    "source_key": null,
+    "invitees": [],
+    "profile_id": null,
+    "id": "63769ad5-87f4-4446-b30c-076195fa92cc",
+    "created_at": "2026-11-21T19:12:21.261710Z",
+    "updated_at": "2026-11-21T19:12:21.261710Z"
+   },
+   {
+    "kind": "event",
+    "priority": 0,
+    "title": "From phone",
+    "location": null,
+    "notes": null,
+    "all_day": false,
+    "starts_at": "2026-11-30T03:00:00Z",
+    "ends_at": "2026-11-30T03:00:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "never",
+    "alerts": [],
+    "source_kind": "device",
+    "source_key": null,
+    "invitees": [],
+    "profile_id": null,
+    "id": "f2da84cb-6aa7-4875-9043-0e2ca6060f92",
+    "created_at": "2026-11-21T19:12:21.271028Z",
+    "updated_at": "2026-11-21T19:12:21.271028Z"
+   },
+   {
+    "kind": "appointment",
+    "priority": 3,
+    "title": "Bratabandha, muhurta; family ceremony at the temple with the whole extended family",
+    "location": "Pashupati",
+    "notes": "Bring\\nflowers",
+    "all_day": false,
+    "starts_at": "2026-12-01T04:30:00Z",
+    "ends_at": "2026-12-01T06:15:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "yearly",
+    "alerts": [
+     1440
+    ],
+    "source_kind": "sait",
+    "source_key": "bratabandha",
+    "invitees": [
+     "guest@example.com",
+     "two@example.org"
+    ],
+    "profile_id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+    "id": "9be95529-149b-43ce-a305-77236e64bca5",
+    "created_at": "2026-11-21T19:12:21.254060Z",
+    "updated_at": "2026-11-21T19:12:21.254060Z"
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events?since=2026-01-01T00:00:00Z",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "vary": "Accept-Encoding",
+   "content-encoding": "gzip",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.9"
+  },
+  "body": [
+   {
+    "kind": "task",
+    "priority": 1,
+    "title": "Dashain",
+    "location": null,
+    "notes": null,
+    "all_day": true,
+    "starts_at": "2026-10-20T18:15:00Z",
+    "ends_at": "2026-10-22T18:14:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "never",
+    "alerts": [],
+    "source_kind": null,
+    "source_key": null,
+    "invitees": [],
+    "profile_id": null,
+    "id": "63769ad5-87f4-4446-b30c-076195fa92cc",
+    "created_at": "2026-11-21T19:12:21.261710Z",
+    "updated_at": "2026-11-21T19:12:21.261710Z"
+   },
+   {
+    "kind": "event",
+    "priority": 0,
+    "title": "From phone",
+    "location": null,
+    "notes": null,
+    "all_day": false,
+    "starts_at": "2026-11-30T03:00:00Z",
+    "ends_at": "2026-11-30T03:00:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "never",
+    "alerts": [],
+    "source_kind": "device",
+    "source_key": null,
+    "invitees": [],
+    "profile_id": null,
+    "id": "f2da84cb-6aa7-4875-9043-0e2ca6060f92",
+    "created_at": "2026-11-21T19:12:21.271028Z",
+    "updated_at": "2026-11-21T19:12:21.271028Z"
+   },
+   {
+    "kind": "appointment",
+    "priority": 3,
+    "title": "Bratabandha, muhurta; family ceremony at the temple with the whole extended family",
+    "location": "Pashupati",
+    "notes": "Bring\\nflowers",
+    "all_day": false,
+    "starts_at": "2026-12-01T04:30:00Z",
+    "ends_at": "2026-12-01T06:15:00Z",
+    "timezone": "Asia/Kathmandu",
+    "repeat": "yearly",
+    "alerts": [
+     1440
+    ],
+    "source_kind": "sait",
+    "source_key": "bratabandha",
+    "invitees": [
+     "guest@example.com",
+     "two@example.org"
+    ],
+    "profile_id": "0cdd8d4f-5c36-42a7-8e15-cc4f45d0f14e",
+    "id": "9be95529-149b-43ce-a305-77236e64bca5",
+    "created_at": "2026-11-21T19:12:21.254060Z",
+    "updated_at": "2026-11-21T19:12:21.254060Z"
+   }
+  ],
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events?since=yesterday",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "datetime_from_date_parsing",
+     "loc": [
+      "query",
+      "since"
+     ],
+     "msg": "Input should be a valid datetime or date, input is too short",
+     "input": "yesterday",
+     "ctx": {
+      "error": "input is too short"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PUT",
+   "p": "/events/${e1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "Bratabandha",
+    "starts_at": "2026-12-01T04:30:00Z",
+    "invitees": [
+     "two@example.org",
+     "three@example.net"
+    ],
+    "notes": null,
+    "timezone": "Asia/Kathmandu"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=5.3"
+  },
+  "body": {
+   "kind": "event",
+   "priority": 0,
+   "title": "Bratabandha",
+   "location": null,
+   "notes": null,
+   "all_day": false,
+   "starts_at": "2026-12-01T04:30:00Z",
+   "ends_at": "2026-12-01T04:30:00Z",
+   "timezone": "Asia/Kathmandu",
+   "repeat": "never",
+   "alerts": [],
+   "source_kind": null,
+   "source_key": null,
+   "invitees": [
+    "two@example.org",
+    "three@example.net"
+   ],
+   "profile_id": null,
+   "id": "9be95529-149b-43ce-a305-77236e64bca5",
+   "created_at": "2026-11-21T19:12:21.254060Z",
+   "updated_at": "2026-11-21T19:12:21.289677Z"
+  },
+  "outbox": [
+   {
+    "kind": "invite",
+    "to": "two@example.org",
+    "title": "Bratabandha",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:three\r\n @example.net\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": false
+   },
+   {
+    "kind": "invite",
+    "to": "three@example.net",
+    "title": "Bratabandha",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:three\r\n @example.net\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": false
+   },
+   {
+    "kind": "invite",
+    "to": "guest@example.com",
+    "title": "Bratabandha",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:CANCEL\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:three\r\n @example.net\r\nSTATUS:CANCELLED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": true
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "PUT",
+   "p": "/events/${e1}",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   },
+   "json": {
+    "title": "x",
+    "starts_at": "2026-12-01T04:30:00Z"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.4"
+  },
+  "body": {
+   "detail": "Event not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "PUT",
+   "p": "/events/${e1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "title": "x",
+    "starts_at": "2026-12-01T04:30:00"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.5"
+  },
+  "body": {
+   "detail": "Times must carry a timezone"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events/feed",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "capture": {
+    "feed": "token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.3"
+  },
+  "body": {
+   "token": "hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370",
+   "path": "/calendar/hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370.ics",
+   "synced_at": null,
+   "synced_app": null
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events/feed",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8"
+  },
+  "body": {
+   "token": "hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370",
+   "path": "/calendar/hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370.ics",
+   "synced_at": null,
+   "synced_app": null
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/calendar/${feed}.ics",
+   "headers": {
+    "User-Agent": "Mozilla/5.0"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-disposition": "inline; filename=\"vedic-patro.ics\"",
+   "cache-control": "private, max-age=900",
+   "content-type": "text/calendar; charset=utf-8",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.3"
+  },
+  "body": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Vedic Patro\r\nREFRESH-INTERVAL;VALUE=DURATION:PT1H\r\nX-PUBLISHED-TTL:PT1H\r\nBEGIN:VEVENT\r\nUID:63769ad5-87f4-4446-b30c-076195fa92cc@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART;VALUE=DATE:20261021\r\nDTEND;VALUE=DATE:20261023\r\nSUMMARY:Dashain\r\nPRIORITY:9\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events/feed",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8"
+  },
+  "body": {
+   "token": "hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370",
+   "path": "/calendar/hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370.ics",
+   "synced_at": null,
+   "synced_app": null
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/calendar/${feed}.ics",
+   "headers": {
+    "User-Agent": "Google-Calendar-Importer"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-disposition": "inline; filename=\"vedic-patro.ics\"",
+   "cache-control": "private, max-age=900",
+   "content-type": "text/calendar; charset=utf-8",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.7"
+  },
+  "body": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Vedic Patro\r\nREFRESH-INTERVAL;VALUE=DURATION:PT1H\r\nX-PUBLISHED-TTL:PT1H\r\nBEGIN:VEVENT\r\nUID:63769ad5-87f4-4446-b30c-076195fa92cc@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART;VALUE=DATE:20261021\r\nDTEND;VALUE=DATE:20261023\r\nSUMMARY:Dashain\r\nPRIORITY:9\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/events/feed",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.3"
+  },
+  "body": {
+   "token": "hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370",
+   "path": "/calendar/hq9shDVUQppzelMXbvfOfH3aImaBTi9jmUjxgn9x370.ics",
+   "synced_at": "2026-11-21T19:12:21.321091Z",
+   "synced_app": "google"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/events/feed/reset",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "capture": {
+    "feed2": "token"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.3"
+  },
+  "body": {
+   "token": "frvfYoW23_A3RmzVzZRg3mws7Rcjll62IRky9drIbJo",
+   "path": "/calendar/frvfYoW23_A3RmzVzZRg3mws7Rcjll62IRky9drIbJo.ics",
+   "synced_at": null,
+   "synced_app": null
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/calendar/${feed}.ics"
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.7"
+  },
+  "body": {
+   "detail": "Calendar not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/calendar/${feed2}.ics",
+   "headers": {
+    "User-Agent": "iOS/17.0 (21A329) dataaccessd/1.0"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-disposition": "inline; filename=\"vedic-patro.ics\"",
+   "cache-control": "private, max-age=900",
+   "content-type": "text/calendar; charset=utf-8",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.8"
+  },
+  "body": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:Vedic Patro\r\nREFRESH-INTERVAL;VALUE=DURATION:PT1H\r\nX-PUBLISHED-TTL:PT1H\r\nBEGIN:VEVENT\r\nUID:63769ad5-87f4-4446-b30c-076195fa92cc@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART;VALUE=DATE:20261021\r\nDTEND;VALUE=DATE:20261023\r\nSUMMARY:Dashain\r\nPRIORITY:9\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/calendar/${feed2}"
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.4"
+  },
+  "body": {
+   "detail": "Not Found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/events/${e1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 204,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=3.0"
+  },
+  "body": "",
+  "outbox": [
+   {
+    "kind": "invite",
+    "to": "two@example.org",
+    "title": "Bratabandha",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:CANCEL\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:three\r\n @example.net\r\nSTATUS:CANCELLED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": true
+   },
+   {
+    "kind": "invite",
+    "to": "three@example.net",
+    "title": "Bratabandha",
+    "ics": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Vedic Patro//Events//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:CANCEL\r\nBEGIN:VEVENT\r\nUID:9be95529-149b-43ce-a305-77236e64bca5@vedicpatro.com\r\nDTSTAMP:20261121T191221Z\r\nSEQUENCE:1795288341\r\nDTSTART:20261201T043000Z\r\nDTEND:20261201T043000Z\r\nSUMMARY:Bratabandha\r\nORGANIZER;CN=alice.test@example.com:mailto:alice.test@example.com\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:two@e\r\n xample.org\r\nATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:three\r\n @example.net\r\nSTATUS:CANCELLED\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+    "organizer_name": "alice.test@example.com",
+    "cancelled": true
+   }
+  ]
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/events/${e1}",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 404,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.1"
+  },
+  "body": {
+   "detail": "Event not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/register",
+   "json": {
+    "installation_id": "x",
+    "platform": "web"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.4"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "string_too_short",
+     "loc": [
+      "body",
+      "installation_id"
+     ],
+     "msg": "String should have at least 36 characters",
+     "input": "x",
+     "ctx": {
+      "min_length": 36
+     }
+    },
+    {
+     "type": "literal_error",
+     "loc": [
+      "body",
+      "platform"
+     ],
+     "msg": "Input should be 'ios' or 'android'",
+     "input": "web",
+     "ctx": {
+      "expected": "'ios' or 'android'"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/register",
+   "json": {
+    "installation_id": "zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz",
+    "platform": "ios"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "value_error",
+     "loc": [
+      "body",
+      "installation_id"
+     ],
+     "msg": "Value error, installation_id must be a UUID",
+     "input": "zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz",
+     "ctx": {
+      "error": {}
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/register",
+   "json": {
+    "installation_id": "8d2f4c1e-3b7a-1f5e-9c2d-1a2b3c4d5e6f",
+    "platform": "ios"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.0"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "value_error",
+     "loc": [
+      "body",
+      "installation_id"
+     ],
+     "msg": "Value error, installation_id must be a random (version 4) UUID",
+     "input": "8d2f4c1e-3b7a-1f5e-9c2d-1a2b3c4d5e6f",
+     "ctx": {
+      "error": {}
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/register",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   },
+   "json": {
+    "installation_id": "8D2F4C1E-3B7A-4F5E-9C2D-1A2B3C4D5E6F",
+    "platform": "ios",
+    "app_version": " 1.2.3 ",
+    "os_version": "18.1"
+   },
+   "extra_headers": {
+    "cf-ipcountry": "np"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=5.3"
+  },
+  "body": {
+   "ok": true,
+   "new": true
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/heartbeat",
+   "json": {
+    "installation_id": "8d2f4c1e-3b7a-4f5e-9c2d-1a2b3c4d5e6f",
+    "platform": "ios",
+    "app_version": "1.2.4",
+    "session_start": true
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=5.3"
+  },
+  "body": {
+   "ok": true,
+   "new": false
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/register",
+   "json": {
+    "installation_id": "1c9e6a47-55aa-4b3c-8d1e-2f3a4b5c6d7e",
+    "platform": "android",
+    "app_version": "1.2.3"
+   },
+   "extra_headers": {
+    "cf-ipcountry": "XX"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.7"
+  },
+  "body": {
+   "ok": true,
+   "new": true
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/ping",
+   "json": {
+    "installation_id": "8d2f4c1e-3b7a-4f5e-9c2d-1a2b3c4d5e6f",
+    "platform": "ios"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.2"
+  },
+  "body": {
+   "ok": true,
+   "new": false
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "POST",
+   "p": "/v1/analytics/install/ping",
+   "json": {
+    "installation_id": "8d2f4c1e-3b7a-4f5e-9c2d-1a2b3c4d5e6f"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=0.7"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "missing",
+     "loc": [
+      "body",
+      "platform"
+     ],
+     "msg": "Field required",
+     "input": {
+      "installation_id": "8d2f4c1e-3b7a-4f5e-9c2d-1a2b3c4d5e6f"
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/overview"
+  },
+  "status": 401,
+  "headers": {
+   "cache-control": "no-store",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/overview",
+   "headers": {
+    "X-Admin-Key": "wrong"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "cache-control": "no-store",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1"
+  },
+  "body": {
+   "detail": "Not authenticated"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/overview",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   }
+  },
+  "status": 403,
+  "headers": {
+   "cache-control": "no-store",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.4"
+  },
+  "body": {
+   "detail": "Not an admin"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/overview",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "cache-control": "no-store",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=8.4"
+  },
+  "body": {
+   "total_installations": 2,
+   "active_24h": 2,
+   "active_7d": 2,
+   "active_30d": 2,
+   "android": 1,
+   "ios": 1,
+   "new_today": 2,
+   "new_7d": 2,
+   "signed_in": 1,
+   "lapsed_30d": 0,
+   "sessions_today": 1,
+   "sessions_7d": 1,
+   "sessions_per_active_today": 0.5,
+   "dau_mau": 1.0,
+   "retention": {
+    "d1": {
+     "rate": null,
+     "retained": 0,
+     "cohort": 0
+    },
+    "d7": {
+     "rate": null,
+     "retained": 0,
+     "cohort": 0
+    },
+    "d30": {
+     "rate": null,
+     "retained": 0,
+     "cohort": 0
+    }
+   },
+   "as_of": "2026-11-21T19:12:21.389426+00:00"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/daily?days=0",
+   "headers": {
+    "X-Admin-Key": "golden-admin-key"
+   }
+  },
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.6"
+  },
+  "body": {
+   "detail": [
+    {
+     "type": "greater_than_equal",
+     "loc": [
+      "query",
+      "days"
+     ],
+     "msg": "Input should be greater than or equal to 1",
+     "input": "0",
+     "ctx": {
+      "ge": 1
+     }
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/daily?days=2",
+   "headers": {
+    "X-Admin-Key": "golden-admin-key"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "cache-control": "no-store",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6"
+  },
+  "body": {
+   "days": [
+    {
+     "date": "2026-11-20",
+     "new_installations": 0,
+     "active_installations": 0,
+     "app_updates": 0,
+     "sessions": 0
+    },
+    {
+     "date": "2026-11-21",
+     "new_installations": 2,
+     "active_installations": 2,
+     "app_updates": 1,
+     "sessions": 1
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/platforms",
+   "headers": {
+    "X-Admin-Key": "golden-admin-key"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "cache-control": "no-store",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=2.6"
+  },
+  "body": {
+   "platforms": [
+    {
+     "value": "ios",
+     "installations": 1,
+     "active_30d": 1
+    },
+    {
+     "value": "android",
+     "installations": 1,
+     "active_30d": 1
+    }
+   ],
+   "app_versions": [
+    {
+     "value": "1.2.4",
+     "installations": 1,
+     "active_30d": 1
+    },
+    {
+     "value": "1.2.3",
+     "installations": 1,
+     "active_30d": 1
+    }
+   ],
+   "countries": [
+    {
+     "value": "NP",
+     "installations": 1,
+     "active_30d": 1
+    },
+    {
+     "value": "unknown",
+     "installations": 1,
+     "active_30d": 1
+    }
+   ]
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/v1/admin/analytics/installs/live",
+   "headers": {
+    "X-Admin-Key": "golden-admin-key"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "cache-control": "no-store",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.1"
+  },
+  "body": {
+   "online_now": null,
+   "last_15m": null,
+   "last_60m": null,
+   "as_of": "2026-11-21T19:12:21.410079+00:00"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=7.0",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Account deleted"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer ${bob}"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.6",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "User not found"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "DELETE",
+   "p": "/auth/me",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 200,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=4.5",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "message": "Account deleted"
+  },
+  "outbox": []
+ },
+ {
+  "step": {
+   "m": "GET",
+   "p": "/profiles",
+   "headers": {
+    "Authorization": "Bearer ${alice}"
+   }
+  },
+  "status": 401,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta",
+   "server-timing": "app;dur=1.9",
+   "cache-control": "private, no-store",
+   "cdn-cache-control": "private, no-store"
+  },
+  "body": {
+   "detail": "User not found"
+  },
+  "outbox": []
+ }
+]

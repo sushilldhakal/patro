@@ -23,6 +23,30 @@ pub(crate) enum Kind {
     DictLit(&'static [&'static str]),
     /// A nested model.
     Model(&'static [Field]),
+    /// `str` with `min_length` / `max_length`.
+    Str { min: usize, max: Option<usize> },
+    /// `str | None` with `min_length` / `max_length`.
+    OptStrLen { min: usize, max: Option<usize> },
+    /// `bool`.
+    Bool,
+    /// `bool | None`.
+    OptBool,
+    /// `EmailStr` (the normalized address comes back).
+    Email,
+    /// `EmailStr | None`.
+    OptEmail,
+    /// `float | None` with bounds.
+    OptFloat(Bounds),
+    /// `list[int]` with an optional `max_length`.
+    ListInt { max_items: Option<usize> },
+    /// `list[str]` with an optional `max_length`.
+    ListStrMax { max_items: Option<usize> },
+    /// `datetime`: the input comes back unchanged; read it with `accounts::pydt`.
+    DateTime,
+    /// `datetime | None`.
+    OptDateTime,
+    /// A 36-character random (version 4) UUID, canonicalized (`InstallReport`).
+    Uuid4,
 }
 
 /// Float bounds: (constraint, its spelling in the message).
@@ -534,6 +558,246 @@ fn with(loc: &[Value], part: Value) -> Vec<Value> {
     l
 }
 
+fn plural(n: usize, word: &str) -> String {
+    if n == 1 {
+        word.to_owned()
+    } else {
+        format!("{word}s")
+    }
+}
+
+fn validate_str(
+    v: &Value,
+    min: usize,
+    max: Option<usize>,
+    loc: &[Value],
+    errors: &mut Vec<Value>,
+) -> Option<Value> {
+    let Value::String(s) = v else {
+        return string_type(v, loc, errors);
+    };
+    let n = s.chars().count();
+    if n < min {
+        errors.push(error(
+            "string_too_short",
+            loc,
+            &format!(
+                "String should have at least {min} {}",
+                plural(min, "character")
+            ),
+            v,
+            Some(json!({ "min_length": min })),
+        ));
+        return None;
+    }
+    if let Some(max) = max
+        && n > max
+    {
+        errors.push(error(
+            "string_too_long",
+            loc,
+            &format!(
+                "String should have at most {max} {}",
+                plural(max, "character")
+            ),
+            v,
+            Some(json!({ "max_length": max })),
+        ));
+        return None;
+    }
+    Some(v.clone())
+}
+
+fn validate_bool(v: &Value, loc: &[Value], errors: &mut Vec<Value>) -> Option<Value> {
+    let parsed = match v {
+        Value::Bool(b) => Some(*b),
+        Value::Number(n) => n.as_f64().and_then(|x| {
+            if x == 0.0 {
+                Some(false)
+            } else if (x - 1.0).abs() < f64::EPSILON {
+                Some(true)
+            } else {
+                None
+            }
+        }),
+        Value::String(s) => match s.to_lowercase().as_str() {
+            "0" | "off" | "f" | "false" | "n" | "no" => Some(false),
+            "1" | "on" | "t" | "true" | "y" | "yes" => Some(true),
+            _ => None,
+        },
+        _ => {
+            errors.push(error(
+                "bool_type",
+                loc,
+                "Input should be a valid boolean",
+                v,
+                None,
+            ));
+            return None;
+        }
+    };
+    if let Some(b) = parsed {
+        return Some(json!(b));
+    }
+    errors.push(error(
+        "bool_parsing",
+        loc,
+        "Input should be a valid boolean, unable to interpret input",
+        v,
+        None,
+    ));
+    None
+}
+
+fn validate_email(v: &Value, loc: &[Value], errors: &mut Vec<Value>) -> Option<Value> {
+    let Value::String(s) = v else {
+        return string_type(v, loc, errors);
+    };
+    match accounts::email::validate(s) {
+        Ok(normalized) => Some(json!(normalized)),
+        Err(reason) => {
+            errors.push(error(
+                "value_error",
+                loc,
+                &format!("value is not a valid email address: {reason}"),
+                v,
+                Some(json!({ "reason": reason })),
+            ));
+            None
+        }
+    }
+}
+
+fn too_long(
+    v: &Value,
+    items: usize,
+    max: Option<usize>,
+    loc: &[Value],
+    errors: &mut Vec<Value>,
+) -> bool {
+    match max {
+        Some(max) if items > max => {
+            errors.push(error(
+                "too_long",
+                loc,
+                &format!(
+                    "List should have at most {max} {} after validation, not {items}",
+                    plural(max, "item")
+                ),
+                v,
+                Some(json!({"field_type": "List", "max_length": max, "actual_length": items})),
+            ));
+            true
+        }
+        _ => false,
+    }
+}
+
+fn validate_datetime(v: &Value, loc: &[Value], errors: &mut Vec<Value>) -> Option<Value> {
+    match accounts::pydt::parse_value(v) {
+        Ok(_) => Some(v.clone()),
+        Err(accounts::pydt::DateTimeError::Type) => {
+            errors.push(error(
+                "datetime_type",
+                loc,
+                "Input should be a valid datetime",
+                v,
+                None,
+            ));
+            None
+        }
+        Err(accounts::pydt::DateTimeError::Parsing(why)) => {
+            errors.push(error(
+                "datetime_from_date_parsing",
+                loc,
+                &format!("Input should be a valid datetime or date, {why}"),
+                v,
+                Some(json!({ "error": why })),
+            ));
+            None
+        }
+    }
+}
+
+/// Python's `uuid.UUID(text)`: optional `urn:`/`uuid:` and braces, hyphens anywhere, 32 hex digits.
+fn parse_uuid(text: &str) -> Option<u128> {
+    let t = text.replace("urn:", "").replace("uuid:", "");
+    let t = t.trim_matches(|c| c == '{' || c == '}').replace('-', "");
+    if t.len() != 32 || !t.chars().all(|c| c.is_ascii_hexdigit()) {
+        return None;
+    }
+    u128::from_str_radix(&t, 16).ok()
+}
+
+fn validate_uuid4(v: &Value, loc: &[Value], errors: &mut Vec<Value>) -> Option<Value> {
+    let ok = validate_str(v, 36, Some(36), loc, errors)?;
+    let text = ok.as_str().unwrap_or_default();
+    let fail = |msg: &str, errors: &mut Vec<Value>| {
+        errors.push(error(
+            "value_error",
+            loc,
+            &format!("Value error, {msg}"),
+            v,
+            Some(json!({"error": {}})),
+        ));
+        None
+    };
+    let Some(n) = parse_uuid(text) else {
+        return fail("installation_id must be a UUID", errors);
+    };
+    let variant_rfc = (n >> 62) & 0b11 == 0b10;
+    let version = (n >> 76) & 0xF;
+    if !variant_rfc || version != 4 {
+        return fail("installation_id must be a random (version 4) UUID", errors);
+    }
+    let h = format!("{n:032x}");
+    Some(json!(format!(
+        "{}-{}-{}-{}-{}",
+        &h[0..8],
+        &h[8..12],
+        &h[12..16],
+        &h[16..20],
+        &h[20..32]
+    )))
+}
+
+/// `list[int]` / `list[str]` with an optional `max_length`, checked before the items.
+fn validate_bounded_list(
+    v: &Value,
+    kind: Kind,
+    max_items: Option<usize>,
+    loc: &[Value],
+    errors: &mut Vec<Value>,
+) -> Option<Value> {
+    let Value::Array(items) = v else {
+        errors.push(error(
+            "list_type",
+            loc,
+            "Input should be a valid list",
+            v,
+            None,
+        ));
+        return None;
+    };
+    if too_long(v, items.len(), max_items, loc, errors) {
+        return None;
+    }
+    let before = errors.len();
+    let out: Vec<Value> = items
+        .iter()
+        .enumerate()
+        .filter_map(|(i, item)| {
+            let at = with(loc, json!(i));
+            if matches!(kind, Kind::ListInt { .. }) {
+                validate_int(item, None, None, &at, errors)
+            } else {
+                string_type(item, &at, errors)
+            }
+        })
+        .collect();
+    (errors.len() == before).then_some(Value::Array(out))
+}
+
 /// Validates `v` against `kind`; errors go to `errors`, the coerced value comes back.
 pub(crate) fn validate(
     v: &Value,
@@ -542,9 +806,17 @@ pub(crate) fn validate(
     errors: &mut Vec<Value>,
 ) -> Option<Value> {
     match kind {
-        Kind::Float(b) => validate_float(v, b, loc, errors),
         Kind::Int { ge, le } => validate_int(v, ge, le, loc, errors),
-        Kind::OptStr if v.is_null() => Some(Value::Null),
+        Kind::OptStr
+        | Kind::OptStrLen { .. }
+        | Kind::OptBool
+        | Kind::OptEmail
+        | Kind::OptFloat(_)
+        | Kind::OptDateTime
+            if v.is_null() =>
+        {
+            Some(Value::Null)
+        }
         Kind::OptStr => string_type(v, loc, errors),
         Kind::Lit(options) => validate_lit(v, options, loc, errors),
         Kind::ListStr => {
@@ -585,6 +857,17 @@ pub(crate) fn validate(
                 }
             }
             (errors.len() == before).then_some(Value::Object(out))
+        }
+        Kind::Str { min, max } | Kind::OptStrLen { min, max } => {
+            validate_str(v, min, max, loc, errors)
+        }
+        Kind::Bool | Kind::OptBool => validate_bool(v, loc, errors),
+        Kind::Email | Kind::OptEmail => validate_email(v, loc, errors),
+        Kind::Float(b) | Kind::OptFloat(b) => validate_float(v, b, loc, errors),
+        Kind::DateTime | Kind::OptDateTime => validate_datetime(v, loc, errors),
+        Kind::Uuid4 => validate_uuid4(v, loc, errors),
+        Kind::ListInt { max_items } | Kind::ListStrMax { max_items } => {
+            validate_bounded_list(v, kind, max_items, loc, errors)
         }
         Kind::Model(fields) => {
             let Value::Object(map) = v else {

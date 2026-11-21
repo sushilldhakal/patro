@@ -221,10 +221,53 @@ pub fn day_payload_for_jd(
     location: &Location,
     options: DayBuildOptions,
 ) -> Result<Value, DayError> {
+    day_payload_for_jd_with(jd_ut, location, options, DayVariant::default())
+}
+
+/// The `reference=` / `civil=` variants of a day response.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct DayVariant {
+    /// `reference=midnight`: moving angas re-read at local 00:00.
+    pub midnight: bool,
+    /// `civil=true`: attach the midnight → midnight `civil_timeline`.
+    pub civil_timeline: bool,
+}
+
+/// [`day_payload_for_jd`] with the `reference=` / `civil=` variants (`_day_payload_for_jd`).
+/// Both are ignored for days before 1582-10-15, except `reference=midnight`, which
+/// Python refuses there (501).
+///
+/// # Errors
+///
+/// [`DayError::BadRequest`] for invalid inputs, [`DayError::NotPorted`] for a
+/// midnight reference before 1582-10-15.
+pub fn day_payload_for_jd_with(
+    jd_ut: f64,
+    location: &Location,
+    options: DayBuildOptions,
+    variant: DayVariant,
+) -> Result<Value, DayError> {
     let civil = CivilDay::from_jd_ut(jd_ut);
     let mut payload = if civil.is_datetime_range() {
-        let raw = build_daily(civil, location)?;
-        build_daily_state(civil, location, &raw, options)
+        let mut state = if variant.midnight {
+            crate::midnight::midnight_day_state(civil, location, options)?
+        } else {
+            let raw = build_daily(civil, location)?;
+            build_daily_state(civil, location, &raw, options)
+        };
+        if variant.civil_timeline
+            && let Value::Object(map) = &mut state
+        {
+            map.insert(
+                "civil_timeline".into(),
+                crate::civil_timeline::build_civil_timeline(civil, location)?,
+            );
+        }
+        state
+    } else if variant.midnight {
+        return Err(DayError::NotPorted(
+            "midnight reference for BCE civil days is not supported yet".into(),
+        ));
     } else {
         // `_bce_day_payload`: the signed patro axis; festivals are only ever
         // resolved for `datetime` days, so the civil state never carries them.
@@ -748,12 +791,14 @@ fn festival_rows(
             Value::Object(row)
         })
         .collect();
-    let saits = (mode == FestivalMode::Include)
-        .then(|| festivals::attach_festival_saits(&mut slim, civil, location));
+    let saits = (mode == FestivalMode::Include).then(|| {
+        let ceremonies = crate::sait::ceremony_windows(civil, location);
+        festivals::attach_festival_saits(&mut slim, civil, location, &ceremonies)
+    });
     (slim, detail_rows, saits)
 }
 
-fn element_state(block: &Value, zone: &timescale::Zone) -> Value {
+pub(crate) fn element_state(block: &Value, zone: &timescale::Zone) -> Value {
     let mut out = Map::new();
     out.insert(
         "name".into(),
@@ -881,7 +926,10 @@ pub(crate) fn parse_ephemeris_instant(text: &str) -> Option<PrintedInstant> {
     };
     let label = CivilDay::new(sign * i32::try_from(y).ok()?, m, d);
     if label.is_datetime_range() {
-        UtcInstant::from_str(text).ok().map(PrintedInstant::Utc)
+        UtcInstant::from_str(text)
+            .ok()
+            .or_else(|| timescale::ZonedInstant::parse_iso(text).map(timescale::ZonedInstant::utc))
+            .map(PrintedInstant::Utc)
     } else {
         JdInstant::parse_expanded(text).map(PrintedInstant::Jd)
     }

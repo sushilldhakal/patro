@@ -182,7 +182,9 @@ fn sorted_by_start(mut rows: Vec<Value>) -> Vec<Value> {
     rows
 }
 
-fn location_key(location: &Location) -> String {
+/// `ObserverLocation.cache_key()`: `lat_lon_zone` to four places.
+#[must_use]
+pub fn location_key(location: &Location) -> String {
     format!(
         "{:.4}_{:.4}_{}",
         location.lat,

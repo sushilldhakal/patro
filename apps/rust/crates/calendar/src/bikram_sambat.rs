@@ -120,8 +120,42 @@ fn chained_starts(bs_year: i32, through: u32) -> Result<Vec<CivilDay>, BsError> 
 ///
 /// [`BsError::Sankranti`] if a sankranti is not found.
 pub fn month_starts(bs_year: i32) -> Result<[CivilDay; 12], BsError> {
-    let starts = chained_starts(bs_year, 12)?;
-    starts.try_into().map_err(|_| BsError::Month)
+    if let Some(starts) = cached_starts(bs_year) {
+        return Ok(starts);
+    }
+    let starts: [CivilDay; 12] = chained_starts(bs_year, 12)?
+        .try_into()
+        .map_err(|_| BsError::Month)?;
+    remember_starts(bs_year, starts);
+    Ok(starts)
+}
+
+/// Solved years kept at most (a year is 12 days; the cache is cleared when full).
+const STARTS_CAPACITY: usize = 4096;
+
+fn starts_cache() -> &'static std::sync::Mutex<std::collections::HashMap<i32, [CivilDay; 12]>> {
+    static CACHE: std::sync::OnceLock<
+        std::sync::Mutex<std::collections::HashMap<i32, [CivilDay; 12]>>,
+    > = std::sync::OnceLock::new();
+    CACHE.get_or_init(Default::default)
+}
+
+fn cached_starts(bs_year: i32) -> Option<[CivilDay; 12]> {
+    starts_cache()
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .get(&bs_year)
+        .copied()
+}
+
+fn remember_starts(bs_year: i32, starts: [CivilDay; 12]) {
+    let mut cache = starts_cache()
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    if cache.len() >= STARTS_CAPACITY {
+        cache.clear();
+    }
+    cache.insert(bs_year, starts);
 }
 
 /// The civil day BS `bs_year`/`bs_month` begins.
@@ -132,6 +166,12 @@ pub fn month_starts(bs_year: i32) -> Result<[CivilDay; 12], BsError> {
 pub fn month_start(bs_year: i32, bs_month: u32) -> Result<CivilDay, BsError> {
     if !(1..=12).contains(&bs_month) {
         return Err(BsError::Month);
+    }
+    // The chain is the same whichever month asks, so one solve serves the year. A
+    // year whose later sankrantis cannot be found keeps the month-by-month path, so
+    // its earlier months still answer.
+    if let Ok(starts) = month_starts(bs_year) {
+        return Ok(starts[bs_month as usize - 1]);
     }
     chained_starts(bs_year, bs_month)?
         .pop()

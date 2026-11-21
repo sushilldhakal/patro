@@ -60,6 +60,43 @@ fix, delete the entry here.
 12. Kshaya years: the masa a kshaya month skips (its second sankranti's name) keeps no
     lunar festivals that year — the owner's rule. Python fell back to the
     neighbouring year's occurrence. 1983 (Poush–Magh kshaya): no Magh festivals.
+    Only the occurrence the kshaya swallows is dropped (a fallback to another year's
+    date, or a date inside the kshaya month): the Surya Siddhanta kshaya of
+    16 Dec 2028 – 14 Jan 2029 skips Poush, and the regular Poush festivals of
+    January 2028 stay.
+
+13. ``reference=midnight`` on a DST transition day: Python bisected the midnight
+    spans (lagna, chandra rashi, nakshatra pada, anga ends) between zone-aware local
+    datetimes, and Python adds and subtracts same-zone datetimes on the wall clock,
+    so on a day whose clock jumps (New York 2026-03-08) every span after the jump was
+    wrong by the hour (Makara listed where Kumbha rose); and an instant read back
+    from its printed text kept that text's fixed offset, so times after a fall-back
+    printed with the summer offset (23:36-04:00 for 22:36-05:00). Rust does the
+    arithmetic in UTC and always prints on the observer's zone clock. The patch runs Python's builder from the
+    UTC instant of local midnight and re-prints its instants on the local clock;
+    on every other day this is byte-identical to Python.
+
+14. A clock time that does not exist on the observer's clock (the hour a DST
+    spring-forward skips: New York 2027-03-14 02:30) named the moment by Python's
+    ``fold=0`` rule but printed the impossible wall time (``02:30:00-05:00``). Rust
+    names the same instant and prints it as the clock shows it (``03:30:00-04:00``).
+    Affects ``query_instant`` of at-time and of month ``clock=`` rows.
+
+15. Not patched: a BS month grid with ``?clock=`` before 1582-10-15 — Python answers
+    400 (``Civil day CivilDay(...) is outside datetime.date range``); Rust reads each
+    day at that clock on the Julian Day axis, as the at-time route does.
+
+The account layer (Postgres; not in any golden, the account recorder never sends these):
+
+16. Not patched: a password longer than 72 bytes. bcrypt 5 raises ``ValueError``,
+    so ``/auth/signup`` and ``/auth/reset-password`` answer 500 and ``/auth/login``
+    401. Rust hashes and checks the first 72 bytes, as bcrypt 4 did.
+17. Not patched: ``PATCH /profiles/{id}`` with ``"full_name": null`` or
+    ``"is_default": null`` — the model accepts the null, the column is NOT NULL
+    and Python answers 500. Rust leaves those two fields unchanged.
+18. Not patched: two sign-ups racing for one email — the loser hits the unique
+    index and Python answers 500. Rust answers the usual 409 "Email already
+    registered".
 
     from rust_divergences import apply; apply()
 """
@@ -170,6 +207,8 @@ def apply() -> None:
     _patch_gochar_local_stamp()
     _patch_local_lunar_month_days()
     _patch_kshaya_drops_festivals()
+    _patch_midnight_utc_arithmetic()
+    _patch_clock_gap_printing()
 
     original_conjunct = sr._conjunct
     sr._conjunct = lambda chart, a, b: a != b and original_conjunct(chart, a, b)
@@ -323,23 +362,101 @@ def _patch_kshaya_drops_festivals() -> None:
     from engine.calendar.constants import BS_MONTH_NAMES
     from engine.panchanga.kshaya_maas import count_sankrantis_in_period
 
-    def dropped(name, gregorian_year):
+    def kshaya_windows(name, gregorian_year):
+        out = []
         for year in (gregorian_year - 1, gregorian_year):
             for m in lm.get_lunar_year(year).months:
                 if gregorian_year not in (m.start_Aausi.year, m.end_Aausi.year):
                     continue
                 sankrantis = count_sankrantis_in_period(m.start_Aausi, m.end_Aausi)
                 if len(sankrantis) >= 2 and BS_MONTH_NAMES[sankrantis[0]] == name:
-                    return True
-        return False
+                    out.append((m.start_Aausi.date(), m.end_Aausi.date()))
+        return out
 
     original = lm.find_festival_in_lunar_month
 
     def find(lunar_month_name, tithi, paksha, gregorian_year, *args, **kwargs):
-        if dropped(lunar_month_name, gregorian_year):
+        found = original(lunar_month_name, tithi, paksha, gregorian_year, *args, **kwargs)
+        windows = kshaya_windows(lunar_month_name, gregorian_year) if found else []
+        # Only the occurrence the kshaya swallowed goes: a fallback to another year's
+        # date, or a date inside the kshaya month. A real occurrence earlier in the
+        # same year stays (Poush in January 2028 survives the December 2028 kshaya).
+        if windows and (found.year != gregorian_year or any(s <= found <= e for s, e in windows)):
             return None
-        return original(lunar_month_name, tithi, paksha, gregorian_year, *args, **kwargs)
+        return found
 
     lm.find_festival_in_lunar_month = find
     ns.find_festival_in_lunar_month = find
     fr.find_festival_in_lunar_month = find
+
+
+def _patch_midnight_utc_arithmetic() -> None:
+    from datetime import datetime, timezone
+
+    import services.panchanga.panchanga_at_time as pat
+    from engine.astronomy.timescale import resolve_observer_timezone
+
+    original = pat.build_panchanga_civil_day
+    real_datetime = pat.datetime
+
+    class UtcMidnight(real_datetime):
+        def __new__(cls, *args, tzinfo=None, **kwargs):
+            if tzinfo is not None and len(args) == 3 and not kwargs:
+                u = real_datetime(*args, tzinfo=tzinfo).astimezone(timezone.utc)
+                return real_datetime(
+                    u.year, u.month, u.day, u.hour, u.minute, u.second, tzinfo=timezone.utc
+                )
+            return real_datetime.__new__(cls, *args, tzinfo=tzinfo, **kwargs)
+
+    def relocal(value, tz):
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key in ("start_time", "end_time") and isinstance(item, str) and item.endswith("+00:00"):
+                    value[key] = real_datetime.fromisoformat(item).astimezone(tz).isoformat()
+                else:
+                    relocal(item, tz)
+        elif isinstance(value, list):
+            for item in value:
+                relocal(item, tz)
+
+    overlay = (
+        "tithi", "nakshatra", "yoga", "karana", "chandra_rashi_spans",
+        "nakshatra_pada_spans", "lagna_spans", "udaya_lagna", "tarabalam",
+        "chandrabalam", "panchaka_rahita",
+    )
+
+    def build(greg, location, *args, **kwargs):
+        pat.datetime = UtcMidnight
+        try:
+            state = original(greg, location, *args, **kwargs)
+        finally:
+            pat.datetime = real_datetime
+        tz = resolve_observer_timezone(location.timezone, lat=location.lat, lon=location.lon)
+        detail = state.get("detail") or {}
+        for key in overlay:
+            relocal(detail.get(key), tz)
+        relocal(state.get("lagna_spans"), tz)
+        relocal(state.get("udaya_lagna"), tz)
+        return state
+
+    pat.build_panchanga_civil_day = build
+
+
+def _patch_clock_gap_printing() -> None:
+    from datetime import datetime, timezone
+
+    import engine.panchanga.at_time as at
+    import engine.panchanga.instants as inst
+    import services.panchanga.panchanga_at_time as pat
+
+    original = at.parse_clock_on_date
+
+    def parse(*args, **kwargs):
+        instant = original(*args, **kwargs)
+        if isinstance(instant, datetime) and instant.tzinfo is not None:
+            return instant.astimezone(timezone.utc).astimezone(instant.tzinfo)
+        return instant
+
+    at.parse_clock_on_date = parse
+    inst.parse_clock_on_date = parse
+    pat.parse_clock_on_date = parse

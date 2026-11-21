@@ -322,8 +322,8 @@ fn degree_crossing<I: PyInstant>(start: I, end: I, target: f64, lat: f64, lon: f
 
 /// `pushkara_times_for_span`: the span is read back from its printed ISO text.
 fn pushkara_hits<I: PyInstant>(span: &LagnaSpan<I>, lat: f64, lon: f64, zone: &Zone) -> Vec<Value> {
-    let start = I::parse_py(&span.start.to_string()).unwrap_or(span.start);
-    let end = I::parse_py(&span.end.to_string()).unwrap_or(span.end);
+    let start = span.start.reparse();
+    let end = span.end.reparse();
     pushkara_degrees(span.number)
         .into_iter()
         .filter_map(|deg| {
@@ -480,8 +480,8 @@ pub(crate) fn panchaka_rahita<I: PyInstant>(
     for span in spans {
         // Python reads each span back from its printed ISO text, which for a
         // Julian Day instant rounds it to the microsecond.
-        let start = I::parse_py(&span.start.to_string()).unwrap_or(span.start);
-        let end = I::parse_py(&span.end.to_string()).unwrap_or(span.end);
+        let start = span.start.reparse();
+        let end = span.end.reparse();
         let jd = start.to_jd();
         let lagna_number = u32::try_from(span.number).unwrap_or(0);
         let remainder = (tithi(jd).number + vaara + 1 + nakshatra(jd).number + lagna_number) % 9;

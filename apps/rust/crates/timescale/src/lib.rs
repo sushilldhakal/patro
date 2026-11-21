@@ -12,9 +12,11 @@ mod instant;
 mod jd_instant;
 mod julian;
 mod zone;
+mod zoned;
 
 pub use civil::{CivilDay, GREGORIAN_CUTOVER, GREGORIAN_CUTOVER_JD};
 pub use instant::{LocalDateTime, Moment, ParseInstantError, UtcInstant};
 pub use jd_instant::{JdInstant, PyInstant, WallClock};
 pub use julian::{Calendar, julday, revjul};
 pub use zone::{UnknownZoneError, Zone};
+pub use zoned::ZonedInstant;

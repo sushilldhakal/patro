@@ -58,7 +58,7 @@ pub fn stable_round(x: f64) -> f64 {
 pub fn timedelta_div(micros: i64, n: i64) -> i64 {
     let (mut q, r) = (micros.div_euclid(n), micros.rem_euclid(n));
     let r2 = r * 2;
-    if r2 > n || (r2 == n && q % 2 == 1) {
+    if r2 > n || (r2 == n && q.rem_euclid(2) == 1) {
         q += 1;
     }
     q

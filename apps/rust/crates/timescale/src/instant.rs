@@ -361,7 +361,8 @@ pub(crate) fn divide_and_round(a: i64, b: i64) -> i64 {
     let (mut q, r) = (a.div_euclid(b), a.rem_euclid(b));
     let r2 = r * 2;
     let greater_than_half = if b > 0 { r2 > b } else { r2 < b };
-    if greater_than_half || (r2 == b && q % 2 == 1) {
+    // Python's `q % 2` is never negative.
+    if greater_than_half || (r2 == b && q.rem_euclid(2) == 1) {
         q += 1;
     }
     q

@@ -58,6 +58,8 @@ pub struct NatalChart {
     degree: [f64; 9],
     sav: [u32; 12],
     bav: [[u32; 12]; 7],
+    /// The natal Moon's nakshatra, 0-based (`chart.moon_nak[0]`).
+    moon_nak: usize,
 }
 
 impl NatalChart {
@@ -69,7 +71,17 @@ impl NatalChart {
         let jd = utc.to_jd();
         let mut sign = [0usize; 9];
         let mut degree = [0.0; 9];
+        let mut moon_nak = 0;
         for row in graha_positions(jd) {
+            if row.key == "moon" {
+                #[expect(
+                    clippy::cast_possible_truncation,
+                    clippy::cast_sign_loss,
+                    reason = "a longitude in [0, 360) over a 13.3° span"
+                )]
+                let nak = (row.longitude / (360.0 / 27.0)) as usize % 27;
+                moon_nak = nak;
+            }
             if let Some(g) = Graha::from_key(row.key) {
                 sign[g.index()] = sign_of(row.longitude);
                 degree[g.index()] = py_round(py_mod(py_mod(row.longitude, 360.0), 30.0), 6);
@@ -90,7 +102,27 @@ impl NatalChart {
             degree,
             sav: av.sarva(),
             bav: av.bav,
+            moon_nak,
         }
+    }
+
+    /// The natal Moon's sign, 0-based (`natal.moon_sign`).
+    #[must_use]
+    pub fn moon_sign_index(&self) -> usize {
+        self.moon_sign()
+    }
+
+    /// The natal Moon's nakshatra, 0-based.
+    #[must_use]
+    pub const fn moon_nakshatra_index(&self) -> usize {
+        self.moon_nak
+    }
+
+    /// The running Mahadasha and Antardasha lords at `as_of` (UTC).
+    #[must_use]
+    pub fn dasha_lords(&self, as_of: UtcInstant) -> (Graha, Graha) {
+        let d = dasha_block(self, self.wall_of(as_of));
+        (d.maha.lord, d.antar.lord)
     }
 
     fn moon_sign(&self) -> usize {

@@ -164,6 +164,32 @@ pub(crate) fn pada_flat<I: PyInstant>(graha: Graha, at: I) -> i64 {
     nak * 4 + (pada - 1)
 }
 
+/// An upper bound on a graha's daily motion (degrees, either direction) on the
+/// Surya Siddhanta engine, with a wide margin: the Moon peaks near 15.4°/day,
+/// Mercury near 2.2, the nodes move about 0.053.
+const fn max_daily_motion(graha: Graha) -> f64 {
+    match graha {
+        Graha::Sun => 1.5,
+        Graha::Moon => 20.0,
+        Graha::Mars => 1.2,
+        Graha::Mercury => 3.0,
+        Graha::Jupiter => 0.5,
+        Graha::Venus => 2.0,
+        Graha::Saturn | Graha::Rahu | Graha::Ketu => 0.3,
+    }
+}
+
+/// Seconds during which a graha at `longitude` cannot reach a pada edge.
+fn quiet_seconds(graha: Graha, longitude: f64) -> f64 {
+    let into = py_mod(longitude, PADA_SPAN);
+    // A hundredth of a degree off each edge, for the float rounding of the index.
+    let room = into.min(PADA_SPAN - into) - 0.01;
+    if room <= 0.0 {
+        return 0.0;
+    }
+    room / max_daily_motion(graha) * 86_400.0
+}
+
 /// `_bisect_index_change`: when `get_index` first changes after `from`.
 fn bisect_index_change<I: PyInstant>(
     graha: Graha,
@@ -175,8 +201,17 @@ fn bisect_index_change<I: PyInstant>(
     let limit = from.add_days_f64(max_days);
     let (mut lo, mut hi) = (from, None);
     let mut cursor = from;
+    // Grid points closer to `from` than the graha can travel to the nearest pada
+    // edge (every rashi and nakshatra edge is one) cannot show a new index, so they
+    // are stepped over unevaluated. The grid itself is unchanged, so the bracket and
+    // the bisection, and with them the answer, are the ones the full scan finds.
+    let quiet_seconds = quiet_seconds(graha, longitude_for(graha, from));
     while cursor < limit {
         let next = py_min(cursor.add_hours(3), limit);
+        if next < limit && next.seconds_since(from) < quiet_seconds {
+            cursor = next;
+            continue;
+        }
         if get_index(graha, next) != current {
             lo = cursor;
             hi = Some(next);
@@ -261,7 +296,7 @@ impl<I: PyInstant> Ingress<I> {
     /// (`parse_ephemeris_instant`): a Julian Day instant rounds to the microsecond.
     #[must_use]
     pub fn printed_at(&self) -> I {
-        I::parse_py(&self.at.to_string()).unwrap_or(self.at)
+        self.at.reparse()
     }
 
     /// The raw entry dict, in the Python key order.
@@ -674,7 +709,7 @@ pub(crate) fn attach_local_time<I: PyInstant>(
     at: I,
     location: &Location,
 ) -> f64 {
-    let parsed = I::parse_py(&at.to_string()).unwrap_or(at);
+    let parsed = at.reparse();
     let wall = parsed.wall(&location.zone);
     entry.insert(
         "entry_time_local".into(),
@@ -1035,4 +1070,47 @@ pub fn gochar_year(bs_year: i32, location: &Location) -> Result<Value, GocharErr
         "upcoming_transits": upcoming,
         "monthly_snapshots": snapshots,
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The skip in `bisect_index_change` is only exact if no graha ever outruns
+    /// `max_daily_motion`: check every 6 hours across 1800–2200, with room to spare.
+    #[test]
+    fn daily_motion_stays_under_the_bound() {
+        let grahas = [
+            Graha::Sun,
+            Graha::Moon,
+            Graha::Mars,
+            Graha::Mercury,
+            Graha::Jupiter,
+            Graha::Venus,
+            Graha::Saturn,
+            Graha::Rahu,
+            Graha::Ketu,
+        ];
+        let start = 2_378_496.5; // 1800-01-01
+        let steps = 400 * 365 * 4;
+        for graha in grahas {
+            let bound = max_daily_motion(graha) * 0.25;
+            let mut fastest = 0.0_f64;
+            let mut prev = longitude_for(graha, timescale::JdInstant(start));
+            for k in 1..=steps {
+                let jd = start + f64::from(k) * 0.25;
+                let lon = longitude_for(graha, timescale::JdInstant(jd));
+                let mut step = (lon - prev).abs();
+                if step > 180.0 {
+                    step = 360.0 - step;
+                }
+                fastest = fastest.max(step);
+                prev = lon;
+            }
+            assert!(
+                fastest < bound * 0.9,
+                "{graha:?} moved {fastest}° in 6 h; bound {bound}°"
+            );
+        }
+    }
 }

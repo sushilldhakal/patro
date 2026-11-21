@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Golden festival lists from the production Python festival engine.
+"""Golden festival lists from the Python festival engine (with rust_divergences applied).
 
     cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_festival_golden.py
 
@@ -15,6 +15,12 @@ from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path.cwd()))
+import app.main  # noqa: E402,F401  (wiring: festival calendar, caches)
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rust_divergences import apply as _apply_divergences  # noqa: E402
+
+_apply_divergences()
 from engine.astronomy.location import ObserverLocation  # noqa: E402
 from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta  # noqa: E402
 from services.festivals import holiday_generator as hg  # noqa: E402
@@ -24,7 +30,7 @@ KTM = ObserverLocation()
 NY = ObserverLocation(40.7143, -74.006, "America/New_York", "New York")
 out = {"bs_years": [], "gregorian_years": [], "days": []}
 with use_siddhanta(SURYA_SIDDHANTA):
-    for bs_year, loc in [(2081, KTM), (2082, KTM), (2083, KTM), (2084, KTM), (2040, KTM), (2150, KTM), (2083, NY)]:
+    for bs_year, loc in [(2081, KTM), (2082, KTM), (2083, KTM), (2084, KTM), (2040, KTM), (2150, KTM), (2083, NY), (2039, KTM), (2085, KTM)]:
         fest = hg.generate_bs_festivals(bs_year, loc)["festivals"]
         out["bs_years"].append({"bs_year": bs_year, "location": loc.as_dict(), "festivals": fest})
     for gy, loc in [(2026, KTM), (1990, KTM), (2026, NY)]:

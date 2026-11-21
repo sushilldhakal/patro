@@ -21,7 +21,9 @@ use patro::{
 };
 
 use crate::{
-    respond::{Query, detail, detail_json, era_400, era_error, json_payload, siddhanta_error},
+    respond::{
+        Query, detail, detail_json, era_400, era_error, json_response_payload, siddhanta_error,
+    },
     state::AppState,
 };
 
@@ -91,12 +93,6 @@ pub(crate) async fn panchanga_at_time(
     if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
         return r;
     }
-    if q.get("ayanamsha").is_some_and(|a| !a.trim().is_empty()) {
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "ayanamsha= modes are not ported to the Rust server yet",
-        );
-    }
     let jd = match jd_param(&q) {
         Ok(Some(jd)) => Some(jd),
         Ok(None) => match era_parts_jd(&q) {
@@ -121,5 +117,5 @@ pub(crate) async fn panchanga_at_time(
         Ok(payload) => payload,
         Err(error) => return day_error(error),
     };
-    json_payload(&payload, &q, &headers, CACHE_CONTROL, None, started)
+    json_response_payload(&payload, &q, &headers, CACHE_CONTROL, None, started)
 }

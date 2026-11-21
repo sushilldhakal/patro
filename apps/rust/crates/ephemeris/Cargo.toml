@@ -1,0 +1,17 @@
+[package]
+name = "ephemeris"
+description = "Safe, serialized access to the Swiss Ephemeris 2.10.03 (drik)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+swiss-eph.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+serde_json = { workspace = true, features = ["float_roundtrip"] }

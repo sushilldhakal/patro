@@ -17,6 +17,8 @@ pub struct AppState {
     pub documents: DocumentsService,
     /// A fixed "now" for tests; the system clock when `None`.
     pub fixed_now: Option<timescale::UtcInstant>,
+    /// The account layer (Postgres), when `PATRO_RS_DATABASE_URL` is set.
+    pub accounts: Option<accounts::Accounts>,
     /// Vastu reference data, read on first use.
     vastu: Arc<OnceLock<Result<Arc<vastu::Rules>, String>>>,
 }
@@ -32,8 +34,16 @@ impl AppState {
             cities,
             documents,
             fixed_now: None,
+            accounts: None,
             vastu: Arc::new(OnceLock::new()),
         }
+    }
+
+    /// The same state with the account layer mounted.
+    #[must_use]
+    pub fn with_accounts(mut self, accounts: accounts::Accounts) -> Self {
+        self.accounts = Some(accounts);
+        self
     }
 
     /// The same state with "now" pinned (for goldens of routes that read the clock).

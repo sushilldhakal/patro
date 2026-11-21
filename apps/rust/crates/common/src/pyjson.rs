@@ -148,6 +148,38 @@ pub fn float_repr(x: f64) -> String {
     }
 }
 
+/// Python `repr()` of a `str`, as error messages quote user input
+/// (single quotes unless the text has a `'` and no `"`).
+#[must_use]
+pub fn py_repr_str(s: &str) -> String {
+    use std::fmt::Write as _;
+    let quote = if s.contains('\'') && !s.contains('"') {
+        '"'
+    } else {
+        '\''
+    };
+    let mut out = String::with_capacity(s.len() + 2);
+    out.push(quote);
+    for ch in s.chars() {
+        match ch {
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if c == quote => {
+                out.push('\\');
+                out.push(c);
+            }
+            c if (c as u32) < 0x20 || c as u32 == 0x7f => {
+                let _ = write!(out, "\\x{:02x}", c as u32);
+            }
+            c => out.push(c),
+        }
+    }
+    out.push(quote);
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
