@@ -63,7 +63,7 @@ apps/rust/
 │   ├── common/         AppConfig, AppError ({"detail": …} like FastAPI)
 │   ├── api/            routes/, handlers/, middleware/ (trace, timeout), state
 │   ├── timescale/      Julian Days, civil days, UTC instants, IANA zones
-│   ├── astronomy/      surya_siddhanta maths + engine (longitudes, rise/set)
+│   ├── astronomy/      position engine (Surya Siddhanta, drik), angas, solver, event engine, caches
 │   ├── panchanga/      angas + boundaries, and the full daily payload (daily.rs, blocks_*.rs)
 │   ├── calendar/       sankranti and the Bikram Sambat month grid
 │   ├── festivals/      festival rules, MoHA overrides, year/day festival lists
@@ -78,6 +78,27 @@ apps/rust/
 
 New crates (astronomy, panchanga, calendar, gochar, muhurta, vastu, database,
 cache) are added when the code that needs them arrives, not before.
+
+## Event engine
+
+The astronomy crate is the source of truth for boundaries; everything else reads
+from it instead of searching again.
+
+- `position`: one `Ephemeris` trait (`pos(jd)` → Sun, Moon); `SuryaSiddhanta` and
+  `Drik` (feature `drik`, Swiss Ephemeris, Lahiri) behind it.
+- `angles::Anga`: tithi, karana, nakshatra, pada, yoga, Moon rashi, Sun nakshatra,
+  sankranti and Sun degree as one table of (angle, span, mean rate).
+- `solver::next_crossing`: steps by the mean motion (the text's own "remaining
+  degrees ÷ gati"), then a bracketed secant with a bisection safeguard (Surya
+  Siddhanta longitudes are a 2^-13-day staircase).
+- `yearly` + `events`: every boundary generated once per 64-day chunk and read back by
+  binary search (`next_event`, `prev_event`, `events_between`, `next_sankranti`);
+  sunrise/sunset memoized per start and place.
+- Compatibility: the API still returns the exact microsecond the Python bisections
+  land on. `panchanga::boundaries`, the sankranti bracket scans and rise/set replay
+  those bisections against the known root, evaluating positions only next to it.
+  The full searches stay as test oracles (`engine_replay`, `sankranti_replay`,
+  `rise_set_replay` compare them bit for bit).
 
 ## Stack
 

@@ -6,7 +6,12 @@ edition.workspace = true
 rust-version.workspace = true
 publish.workspace = true
 
+[features]
+# Drik positions from the Swiss Ephemeris behind the same `Ephemeris` trait.
+drik = ["dep:ephemeris"]
+
 [dependencies]
+ephemeris = { workspace = true, optional = true }
 thiserror.workspace = true
 timescale.workspace = true
 

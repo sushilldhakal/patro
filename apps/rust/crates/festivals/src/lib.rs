@@ -14,8 +14,8 @@ pub mod sait;
 pub use compute::compute_festival_dates;
 pub use details::{attach_festival_details, festival_details};
 pub use lists::{
-    festival_location, festivals_for_day, filter_day as filter_redundant_day_festivals,
-    generate_bs_festivals, generate_festivals,
+    FestivalList, festival_location, festivals_for_day,
+    filter_day as filter_redundant_day_festivals, generate_bs_festivals, generate_festivals,
 };
 pub use rules::{is_public_holiday, rule};
 pub use sait::{

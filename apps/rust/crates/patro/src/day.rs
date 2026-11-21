@@ -766,7 +766,7 @@ fn festival_rows(
     // `festivals_on_date`: the Gregorian year's list, which holds occurrences a BS
     // year's list files under the neighbouring BS year (Chaite Dashain in March).
     let all = gregorian_year_festivals(civil.year, location);
-    let detail_rows = festivals::festivals_for_day(&all, civil);
+    let detail_rows = all.on_day(civil);
     let mut slim: Vec<Value> = detail_rows
         .iter()
         .map(|f| {

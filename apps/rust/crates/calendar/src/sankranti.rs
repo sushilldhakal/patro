@@ -1,6 +1,12 @@
 //! Sankranti: the moment the sidereal Sun enters a rashi.
 
-use astronomy::engine::sun_longitude;
+use astronomy::{
+    angles::Anga,
+    engine::sun_longitude,
+    events::{next_event, next_sankranti, prev_event, prev_sankranti},
+    position::SuryaSiddhanta,
+    solver::near,
+};
 
 /// Python's float `%` for a positive divisor (+0.0 for an exact zero).
 fn py_mod(x: f64, m: f64) -> f64 {
@@ -26,6 +32,35 @@ pub fn sun_rashi_at_jd(jd: f64) -> u32 {
 }
 
 /// Sun's longitude minus `target`, folded into [−180, 180).
+/// The Sun's rashi as a bracketing scan sees it, read from the event engine.
+///
+/// The day-by-day scans that bracket a sankranti only ever ask "which rashi is the
+/// Sun in on this grid day?" within a month of the entry into `target`. Given that
+/// entry's time, the answer is `prev` before it and `target` after it; the real
+/// longitude is evaluated only within a hair of the entry (or everywhere when
+/// `after` itself sits on a sankranti), so the scan finds the same bracket it
+/// always found while evaluating almost nothing.
+pub fn scan_rashi(target_rashi: u32, after_jd: f64) -> impl Fn(f64) -> u32 {
+    let eph = SuryaSiddhanta;
+    let prev = (target_rashi + 11) % 12;
+    let unsure = near(after_jd, next_event(&eph, Anga::Sankranti, after_jd).jd)
+        || near(after_jd, prev_event(&eph, Anga::Sankranti, after_jd).jd);
+    let entry = if sun_rashi_at_jd(after_jd) == target_rashi {
+        prev_sankranti(&eph, target_rashi, after_jd).jd
+    } else {
+        next_sankranti(&eph, target_rashi, after_jd).jd
+    };
+    move |jd: f64| {
+        if unsure || near(jd, entry) {
+            sun_rashi_at_jd(jd)
+        } else if jd < entry {
+            prev
+        } else {
+            target_rashi
+        }
+    }
+}
+
 fn angular_error_jd(jd: f64, target: f64) -> f64 {
     py_mod(sun_longitude(jd) - target + 180.0, 360.0) - 180.0
 }
@@ -120,6 +155,31 @@ fn brent(target: f64, low_jd: f64, high_jd: f64, tol: f64) -> f64 {
 /// to one second, or `None` if the day scan finds no bracket within `max_days`.
 #[must_use]
 pub fn find_sankranti_after_jd(target_rashi: u32, after_jd: f64, max_days: u32) -> Option<f64> {
+    find_with(
+        target_rashi,
+        after_jd,
+        max_days,
+        scan_rashi(target_rashi, after_jd),
+    )
+}
+
+/// The same search with the full day-by-day longitude scan, for the comparison tests.
+#[doc(hidden)]
+#[must_use]
+pub fn find_sankranti_after_jd_scan(
+    target_rashi: u32,
+    after_jd: f64,
+    max_days: u32,
+) -> Option<f64> {
+    find_with(target_rashi, after_jd, max_days, sun_rashi_at_jd)
+}
+
+fn find_with(
+    target_rashi: u32,
+    after_jd: f64,
+    max_days: u32,
+    rashi_at: impl Fn(f64) -> u32,
+) -> Option<f64> {
     let target = f64::from(target_rashi * 30);
     let prev = (target_rashi + 11) % 12;
     let current = sun_rashi_at_jd(after_jd);
@@ -127,20 +187,20 @@ pub fn find_sankranti_after_jd(target_rashi: u32, after_jd: f64, max_days: u32) 
         let mut search = after_jd;
         (0..max_days).find_map(|_| {
             search -= 1.0;
-            (sun_rashi_at_jd(search) == prev).then_some((search, after_jd))
+            (rashi_at(search) == prev).then_some((search, after_jd))
         })?
     } else if current == prev {
         let mut search = after_jd;
         (0..max_days).find_map(|_| {
             search += 1.0;
-            (sun_rashi_at_jd(search) == target_rashi).then_some((after_jd, search))
+            (rashi_at(search) == target_rashi).then_some((after_jd, search))
         })?
     } else {
         let mut search = after_jd;
         let mut found_prev = None;
         (0..max_days * 12).find_map(|_| {
             search += 1.0;
-            let rashi = sun_rashi_at_jd(search);
+            let rashi = rashi_at(search);
             if rashi == prev {
                 found_prev = Some(search);
                 None

@@ -39,7 +39,7 @@ pub use frame::{
     local_sidereal_degrees,
 };
 pub use position::{SPEED_HALF_STEP, true_longitude_and_speed, true_position};
-pub use rise_set::{Crossing, next_rise_or_set};
+pub use rise_set::{Crossing, next_rise_or_set, next_rise_or_set_scan};
 pub use yuga::{
     DAYS_CREATION_TO_KALI, KALI_EPOCH_JD, KALPA_DAYS, MAHAYUGA_DAYS, MAHAYUGA_YEARS,
     SATYA_YUGA_START_JD, YEAR_DAYS, ahargana, apsis_longitude, mean_longitude,

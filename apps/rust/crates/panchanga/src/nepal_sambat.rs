@@ -1,7 +1,9 @@
 //! Nepal Sambat (नेपाल सम्बत): amānta months from Kachhalā (Kartik), new year on
 //! Kartik Shukla Pratipada. A port of `engine/panchanga/nepal_sambat.py`.
 
-use astronomy::engine::Observer;
+use std::sync::LazyLock;
+
+use astronomy::{cache::Cache, engine::Observer};
 use serde_json::{Value, json};
 use timescale::CivilDay;
 
@@ -40,7 +42,24 @@ fn paksha_ne(paksha: Paksha) -> &'static str {
 }
 
 /// Kartik Shukla Pratipada inside the BS year (`find_ns_new_year`).
+type NewYearKey = (i32, u64, u64, String);
+
+/// Nepal Sambat new year per BS year and observer: the same for every day of the
+/// year, so found once instead of once per day.
+static NEW_YEARS: LazyLock<Cache<NewYearKey, Option<CivilDay>>> =
+    LazyLock::new(|| Cache::new(4096));
+
 fn ns_new_year(bs_year: i32, observer: &Observer) -> Option<CivilDay> {
+    let key = (
+        bs_year,
+        observer.latitude.to_bits(),
+        observer.longitude.to_bits(),
+        observer.zone.name().to_owned(),
+    );
+    NEW_YEARS.get_or_insert_with(key, || find_ns_new_year(bs_year, observer))
+}
+
+fn find_ns_new_year(bs_year: i32, observer: &Observer) -> Option<CivilDay> {
     let start = calendar::month_start(bs_year, 1).ok()?;
     let end = calendar::month_start(bs_year + 1, 1).ok()?.add_days(-1);
     (start.year..=end.year)
@@ -57,7 +76,6 @@ fn ns_new_year(bs_year: i32, observer: &Observer) -> Option<CivilDay> {
         .find(|d| start <= *d && *d <= end)
 }
 
-/// The day's Nepal Sambat block (`gregorian_to_ns`).
 pub(crate) struct NsInput<'a> {
     pub(crate) day: CivilDay,
     pub(crate) bs_year: i32,

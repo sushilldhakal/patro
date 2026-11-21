@@ -78,6 +78,48 @@ fn slim_day_for_wheel(day: &Value) -> Value {
     Value::Object(slim)
 }
 
+/// Most threads one year view uses: months are independent, so they build side by
+/// side, while a busy server still keeps cores for other requests.
+const YEAR_THREADS: usize = 4;
+
+/// The twelve months of a BS year, built on up to [`YEAR_THREADS`] threads, in
+/// month order.
+fn months_in_parallel(
+    bs_year: i32,
+    location: &Location,
+    embed: Embed,
+) -> Vec<Result<Value, MonthError>> {
+    let threads = std::thread::available_parallelism()
+        .map_or(1, std::num::NonZero::get)
+        .clamp(1, YEAR_THREADS);
+    let build = |m: u32| month_calendar(bs_year, m, location, International::Include, embed);
+    if threads == 1 {
+        return (1..=12).map(build).collect();
+    }
+    let mut slots: Vec<Option<Result<Value, MonthError>>> = (0..12).map(|_| None).collect();
+    std::thread::scope(|scope| {
+        let workers: Vec<_> = (0..threads)
+            .map(|w| {
+                scope.spawn(move || {
+                    (1..=12_u32)
+                        .filter(|m| (*m as usize - 1) % threads == w)
+                        .map(|m| (m, build(m)))
+                        .collect::<Vec<_>>()
+                })
+            })
+            .collect();
+        for worker in workers {
+            for (m, month) in worker.join().expect("a month builder panicked") {
+                slots[m as usize - 1] = Some(month);
+            }
+        }
+    });
+    slots
+        .into_iter()
+        .map(|m| m.expect("every month was built"))
+        .collect()
+}
+
 /// `build_year_calendar(bs_year, location, full=…, shape=…)`.
 ///
 /// # Errors
@@ -93,24 +135,22 @@ pub fn year_calendar(
     } else {
         Embed::Full
     };
+    let built = months_in_parallel(bs_year, location, embed);
     let mut months = Vec::with_capacity(12);
     let mut days = Vec::new();
     let mut year_length = 0u64;
-    for bs_month in 1..=12 {
-        let month = month_calendar(bs_year, bs_month, location, International::Include, embed)?;
+    for month in built {
+        let month = month?;
         year_length += month["month_length"].as_u64().unwrap_or(0);
         let Value::Object(mut fields) = month else {
             continue;
         };
-        let grid = match fields.get("calendar") {
-            Some(Value::Array(rows)) => rows.clone(),
-            _ => Vec::new(),
-        };
         if shape == YearShape::Wheel {
-            days.extend(grid.iter().map(slim_day_for_wheel));
-            fields.shift_remove("calendar");
-        } else {
-            days.extend(grid);
+            if let Some(Value::Array(rows)) = fields.shift_remove("calendar") {
+                days.extend(rows.iter().map(slim_day_for_wheel));
+            }
+        } else if let Some(Value::Array(rows)) = fields.get("calendar") {
+            days.extend(rows.iter().cloned());
         }
         months.push(Value::Object(fields));
     }

@@ -1047,9 +1047,11 @@ struct DailyKey {
     city_id: Option<i64>,
 }
 
-/// Recently built days (about 60 KB each).
+/// Recently built days. A day held as a JSON tree takes about 1 MB of memory
+/// (measured: 512 days held ~490 MB), so this keeps about three months; older days
+/// come back from the persistent day store or are rebuilt from the cached events.
 static DAILY_MEMO: std::sync::LazyLock<crate::memo::Memo<DailyKey, Result<Value, DailyError>>> =
-    std::sync::LazyLock::new(|| crate::memo::Memo::new(512));
+    std::sync::LazyLock::new(|| crate::memo::Memo::new(96));
 
 /// `build_daily_panchanga_civil`: the udaya panchanga of a civil day on the signed
 /// patro axis, for days `datetime` cannot hold (before 1582-10-15, and BCE).

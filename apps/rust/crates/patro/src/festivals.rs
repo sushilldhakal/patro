@@ -1035,24 +1035,26 @@ fn find_sankranti(target_rashi: u32, after: UtcInstant, max_days: u32) -> Option
     let target_deg = f64::from(target_rashi * 30);
     let prev_rashi = (target_rashi + 11) % 12;
     let current_rashi = sun_rashi_at_time(after);
+    let rashi_jd = calendar::scan_rashi(target_rashi, after.to_jd());
+    let rashi_at = |at: UtcInstant| rashi_jd(at.to_jd());
     let (low, high) = if current_rashi == target_rashi {
         let mut search = after;
         (0..max_days).find_map(|_| {
             search = search.add_days_f64(-1.0);
-            (sun_rashi_at_time(search) == prev_rashi).then_some((search, after))
+            (rashi_at(search) == prev_rashi).then_some((search, after))
         })?
     } else if current_rashi == prev_rashi {
         let mut search = after;
         (0..max_days).find_map(|_| {
             search = search.add_days_f64(1.0);
-            (sun_rashi_at_time(search) == target_rashi).then_some((after, search))
+            (rashi_at(search) == target_rashi).then_some((after, search))
         })?
     } else {
         let mut search = after;
         let mut found_prev = None;
         (0..max_days * 12).find_map(|_| {
             search = search.add_days_f64(1.0);
-            let rashi = sun_rashi_at_time(search);
+            let rashi = rashi_at(search);
             if rashi == prev_rashi {
                 found_prev = Some(search);
                 None

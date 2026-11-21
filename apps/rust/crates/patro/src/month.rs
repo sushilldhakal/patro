@@ -301,7 +301,7 @@ pub fn month_calendar(
         let p = patro_day_raw(day, location, bs)?;
         let todays = festivals
             .as_ref()
-            .map(|f| festivals::festivals_for_day(f, day))
+            .map(|f| f.on_day(day))
             .unwrap_or_default();
         let mut r = row(offset + 1, &day.to_string(), &p, &todays, international);
         if embed != Embed::Lite
@@ -451,7 +451,7 @@ pub fn month_calendar_at_clock(
         let mut r = instant_row(day, offset + 1, clock, location)?;
         let todays = festivals
             .as_ref()
-            .map(|f| festivals::festivals_for_day(f, day))
+            .map(|f| f.on_day(day))
             .unwrap_or_default();
         r.insert("festivals".into(), festival_names(&todays, international));
         match embed {
@@ -656,6 +656,7 @@ pub fn gregorian_month_calendar(
     let start = CivilDay::from_jd_ut(start.to_jd_ut());
     let end = start.add_days(length - 1);
     let (bs_years, festivals) = gregorian_month_festivals(start, end, location)?;
+    let festivals = festivals::FestivalList::new(festivals);
     let mut rows = Vec::with_capacity(usize::try_from(length).unwrap_or(31));
     let mut mid_lunar = Value::Null;
     for offset in 0..length {
@@ -663,7 +664,7 @@ pub fn gregorian_month_calendar(
         let bs = calendar::locate_patro_day(day)?;
         let p = patro_day_raw(day, location, bs)?;
         let todays = if day.is_datetime_range() {
-            festivals::festivals_for_day(&festivals, day)
+            festivals.on_day(day)
         } else {
             Vec::new()
         };

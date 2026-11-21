@@ -1,7 +1,7 @@
 //! The muhurta block: Rahu Kalam, Yamaganda, Gulika, Abhijit, and the extended
 //! auspicious / inauspicious timings (`muhurta.py`, `muhurta_timings.py`).
 
-use astronomy::engine::sun_longitude;
+use astronomy::{angles::Anga, engine::sun_longitude};
 use serde_json::{Map, Value, json};
 use timescale::{JdInstant, PyInstant, UtcInstant, Zone};
 
@@ -397,7 +397,7 @@ fn baana_segments(day: &Day<'_>) -> Vec<Value> {
             break;
         }
         let degree = band(cursor.to_jd()) + 1;
-        let band_end = span_end(cursor, 36, band);
+        let band_end = span_end(cursor, 36, Anga::SunDegree, band);
         let meta = match degree {
             1 | 10 | 19 | 28 => Some(("Mrityu", "मृत्यु")),
             2 | 11 | 20 | 29 => Some(("Agni", "अग्नि")),

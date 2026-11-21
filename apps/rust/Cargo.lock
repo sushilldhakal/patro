@@ -99,6 +99,7 @@ name = "astronomy"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "ephemeris",
  "serde_json",
  "thiserror",
  "timescale",

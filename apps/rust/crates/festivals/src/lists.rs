@@ -184,31 +184,73 @@ pub fn festivals_for_day(all: &[Value], day: CivilDay) -> Vec<Value> {
     filter_day(active)
 }
 
+/// A year's festival rows with their date spans read once, for per-day lookups.
+///
+/// [`festivals_for_day`] re-reads every row's date text on every call; a month or
+/// year view calls it once per day. This keeps the parsed spans beside the rows.
+#[derive(Debug, Clone)]
+pub struct FestivalList {
+    rows: Vec<Value>,
+    spans: Vec<Option<(CivilDay, CivilDay)>>,
+}
+
+impl FestivalList {
+    /// The rows, with each one's `start_date`..=`end_date` parsed.
+    #[must_use]
+    pub fn new(rows: Vec<Value>) -> Self {
+        let spans = rows
+            .iter()
+            .map(|f| Some((parse_day(&f["start_date"])?, parse_day(&f["end_date"])?)))
+            .collect();
+        Self { rows, spans }
+    }
+
+    /// Festivals active on `day`, after the day filter: the same rows, in the same
+    /// order, as [`festivals_for_day`] over these rows.
+    #[must_use]
+    pub fn on_day(&self, day: CivilDay) -> Vec<Value> {
+        let active = self
+            .rows
+            .iter()
+            .zip(&self.spans)
+            .filter(|(_, span)| span.is_some_and(|(s, e)| s <= day && day <= e))
+            .map(|(f, _)| f.clone())
+            .collect();
+        filter_day(active)
+    }
+}
+
+impl std::ops::Deref for FestivalList {
+    type Target = [Value];
+
+    fn deref(&self) -> &[Value] {
+        &self.rows
+    }
+}
+
 /// `filter_redundant_year_festivals`: keep rows that survive the day filter on one of their days.
 fn filter_year(festivals: Vec<Value>) -> Vec<Value> {
-    let mut by_day: Vec<(CivilDay, Vec<Value>)> = Vec::new();
+    // Day → rows active that day, in first-seen order (the order filter_day sees).
+    let mut by_day: std::collections::HashMap<CivilDay, Vec<Value>> =
+        std::collections::HashMap::new();
     for f in &festivals {
         let (Some(mut day), Some(end)) = (parse_day(&f["start_date"]), parse_day(&f["end_date"]))
         else {
             continue;
         };
         while day <= end {
-            match by_day.iter_mut().find(|(d, _)| *d == day) {
-                Some((_, list)) => list.push(f.clone()),
-                None => by_day.push((day, vec![f.clone()])),
-            }
+            by_day.entry(day).or_default().push(f.clone());
             day = day.add_days(1);
         }
     }
-    let mut kept: Vec<String> = Vec::new();
-    for (_, active) in by_day {
-        for f in filter_day(active) {
-            kept.push(id_of(&f).to_owned());
-        }
-    }
+    let kept: std::collections::HashSet<String> = by_day
+        .into_values()
+        .flat_map(filter_day)
+        .map(|f| id_of(&f).to_owned())
+        .collect();
     festivals
         .into_iter()
-        .filter(|f| kept.iter().any(|k| k == id_of(f)))
+        .filter(|f| kept.contains(id_of(f)))
         .collect()
 }
 
