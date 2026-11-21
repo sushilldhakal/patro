@@ -1,0 +1,28 @@
+[package]
+name = "api"
+description = "HTTP routes, handlers and middleware"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+astronomy.workspace = true
+axum.workspace = true
+calendar.workspace = true
+common.workspace = true
+flate2.workspace = true
+geography.workspace = true
+jyotish.workspace = true
+panchanga.workspace = true
+patro.workspace = true
+serde_json.workspace = true
+timescale.workspace = true
+tokio.workspace = true
+serde.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+vastu.workspace = true
+
+[lints]
+workspace = true

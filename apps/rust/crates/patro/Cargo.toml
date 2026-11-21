@@ -1,0 +1,25 @@
+[package]
+name = "patro"
+description = "API use cases: month grid, day, festivals, and the era layer, response-identical to FastAPI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+astronomy.workspace = true
+calendar.workspace = true
+festivals.workspace = true
+geography.workspace = true
+panchanga.workspace = true
+rusqlite.workspace = true
+serde_json.workspace = true
+sha2 = "0.10"
+thiserror.workspace = true
+timescale.workspace = true
+
+[dev-dependencies]
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+
+[lints]
+workspace = true

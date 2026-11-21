@@ -1,0 +1,107 @@
+# Vedic Patro API in Rust: a rewrite in progress, NOT production.
+# The Python FastAPI app in apps/api is the live server. Read README.md first.
+
+[workspace]
+resolver = "3"
+members = [".", "crates/*"]
+default-members = [".", "crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+
+[workspace.dependencies]
+common = { path = "crates/common" }
+api = { path = "crates/api" }
+
+anyhow = "1"
+axum = "0.8"
+config = { version = "0.15", default-features = false, features = ["toml"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.7", features = ["trace", "timeout"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+criterion = { version = "0.7", default-features = false }
+jiff = { version = "0.2", default-features = false, features = ["std", "tzdb-bundle-always"] }
+timescale = { path = "crates/timescale" }
+astronomy = { path = "crates/astronomy" }
+calendar = { path = "crates/calendar" }
+panchanga = { path = "crates/panchanga" }
+geography = { path = "crates/geography" }
+festivals = { path = "crates/festivals" }
+patro = { path = "crates/patro" }
+jyotish = { path = "crates/jyotish" }
+vastu = { path = "crates/vastu" }
+flate2 = "1"
+regex = "1"
+rusqlite = { version = "0.41", features = ["bundled"] }
+
+# Lints from the rust-best-practices skill (github.com/morganlinton/BeautifulRust,
+# lints/lints.toml). Every crate opts in with `[lints] workspace = true`.
+# CI strictness: cargo clippy --all-targets -- -D warnings
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "warn"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "warn"
+expect_used = "allow"
+panic_in_result_fn = "warn"
+missing_panics_doc = "warn"
+missing_errors_doc = "warn"
+missing_assert_message = "warn"
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+undocumented_unsafe_blocks = "warn"
+multiple_unsafe_ops_per_block = "warn"
+fn_params_excessive_bools = "warn"
+struct_excessive_bools = "warn"
+clone_on_ref_ptr = "warn"
+redundant_clone = "warn"
+rc_buffer = "warn"
+string_add = "warn"
+wildcard_imports = "warn"
+dbg_macro = "warn"
+todo = "warn"
+
+# The server binary (src/main.rs): wires config, logging and the api crate.
+[package]
+name = "vedic-patro"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+api.workspace = true
+axum.workspace = true
+common.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+flate2.workspace = true
+patro.workspace = true
+serde_json.workspace = true
+timescale.workspace = true
+tower.workspace = true
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

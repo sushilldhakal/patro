@@ -1,0 +1,25 @@
+[package]
+name = "panchanga"
+description = "Tithi, nakshatra, yoga, karana, vara, and when each begins and ends"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+astronomy.workspace = true
+calendar.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+timescale.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+
+[[bench]]
+name = "daily"
+harness = false
+
+[lints]
+workspace = true

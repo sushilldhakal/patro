@@ -1,0 +1,17 @@
+[package]
+name = "timescale"
+description = "Julian Days, civil days across the 1582 cutover, UTC instants and time zones"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+jiff.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+
+[lints]
+workspace = true

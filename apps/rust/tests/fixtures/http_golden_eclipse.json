@@ -1,0 +1,126 @@
+[
+ {
+  "path": "/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&city_id=1283240",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "cdn-cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"solar\", \"range_start_jd\": 2461144.5, \"range_start_jd_date\": \"2083-01-01\", \"range_end_jd\": 2461508.5, \"range_end_jd_date\": \"2083-12-30\", \"location\": {\"lat\": 27.7, \"lon\": 85.32, \"timezone\": \"Asia/Kathmandu\", \"name\": \"Kathmandu\", \"city_id\": 1283240}, \"events\": [{\"kind\": \"solar\", \"type\": \"partial\", \"type_ne\": \"आंशिक सूर्यग्रहण\", \"type_en\": \"Partial solar eclipse\", \"max_utc\": \"2026-08-12T17:52:55+00:00\", \"max_local\": \"2026-08-12T23:37:55+05:45\", \"date_jd\": 2461264.5, \"date_jd_date\": \"2083-04-27\", \"visible\": false, \"begin_local\": null, \"end_local\": null, \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"solar\", \"type\": \"partial\", \"type_ne\": \"आंशिक सूर्यग्रहण\", \"type_en\": \"Partial solar eclipse\", \"max_utc\": \"2026-09-11T03:04:04+00:00\", \"max_local\": \"2026-09-11T08:49:04+05:45\", \"date_jd\": 2461294.5, \"date_jd_date\": \"2083-05-26\", \"visible\": false, \"begin_local\": null, \"end_local\": null, \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"solar\", \"type\": \"annular\", \"type_ne\": \"वलयाकार सूर्यग्रहण\", \"type_en\": \"Annular solar eclipse\", \"max_utc\": \"2027-02-06T15:02:15+00:00\", \"max_local\": \"2027-02-06T20:47:15+05:45\", \"date_jd\": 2461442.5, \"date_jd_date\": \"2083-10-23\", \"visible\": false, \"begin_local\": null, \"end_local\": null, \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"bs_year\": 2083, \"era\": \"bs\", \"gregorian_range\": {\"start\": \"2026-04-14\", \"end\": \"2027-04-13\"}, \"language\": \"ne\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/lunar/year/2083?era=bs&year=2083&city_id=1283240",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "cdn-cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"lunar\", \"range_start_jd\": 2461144.5, \"range_start_jd_date\": \"2083-01-01\", \"range_end_jd\": 2461508.5, \"range_end_jd_date\": \"2083-12-30\", \"location\": {\"lat\": 27.7, \"lon\": 85.32, \"timezone\": \"Asia/Kathmandu\", \"name\": \"Kathmandu\", \"city_id\": 1283240}, \"events\": [{\"kind\": \"lunar\", \"type\": \"total\", \"type_ne\": \"पूर्ण चन्द्रग्रहण\", \"type_en\": \"Total lunar eclipse\", \"max_utc\": \"2026-08-28T03:23:19+00:00\", \"max_local\": \"2026-08-28T09:08:19+05:45\", \"date_jd\": 2461280.5, \"date_jd_date\": \"2083-05-12\", \"visible\": false, \"begin_local\": \"2026-08-28T07:15:38+05:45\", \"end_local\": \"2026-08-28T10:59:44+05:45\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"lunar\", \"type\": \"partial\", \"type_ne\": \"आंशिक चन्द्रग्रहण\", \"type_en\": \"Partial lunar eclipse\", \"max_utc\": \"2027-02-20T23:44:35+00:00\", \"max_local\": \"2027-02-21T05:29:35+05:45\", \"date_jd\": 2461457.5, \"date_jd_date\": \"2083-11-09\", \"visible\": true, \"begin_local\": \"2027-02-21T03:53:21+05:45\", \"end_local\": \"2027-02-21T06:54:29+05:45\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"bs_year\": 2083, \"era\": \"bs\", \"gregorian_range\": {\"start\": \"2026-04-14\", \"end\": \"2027-04-13\"}, \"language\": \"ne\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/lunar/year/2026?era=ad&city_id=1283240",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "cdn-cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"lunar\", \"range_start_jd\": 2461041.5, \"range_start_jd_date\": \"2026-01-01\", \"range_end_jd\": 2461405.5, \"range_end_jd_date\": \"2026-12-31\", \"location\": {\"lat\": 27.7, \"lon\": 85.32, \"timezone\": \"Asia/Kathmandu\", \"name\": \"Kathmandu\", \"city_id\": 1283240}, \"events\": [{\"kind\": \"lunar\", \"type\": \"total\", \"type_ne\": \"पूर्ण चन्द्रग्रहण\", \"type_en\": \"Total lunar eclipse\", \"max_utc\": \"2026-03-03T11:18:02+00:00\", \"max_local\": \"2026-03-03T17:03:02+05:45\", \"date_jd\": 2461102.5, \"date_jd_date\": \"2026-03-03\", \"visible\": false, \"begin_local\": \"2026-03-03T15:11:03+05:45\", \"end_local\": \"2026-03-03T18:55:10+05:45\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"lunar\", \"type\": \"total\", \"type_ne\": \"पूर्ण चन्द्रग्रहण\", \"type_en\": \"Total lunar eclipse\", \"max_utc\": \"2026-08-28T03:23:22+00:00\", \"max_local\": \"2026-08-28T09:08:22+05:45\", \"date_jd\": 2461280.5, \"date_jd_date\": \"2026-08-28\", \"visible\": false, \"begin_local\": \"2026-08-28T07:15:41+05:45\", \"end_local\": \"2026-08-28T10:59:46+05:45\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"ad_year\": 2026, \"era\": \"ad\", \"gregorian_range\": {\"start\": \"2026-01-01\", \"end\": \"2026-12-31\"}, \"language\": \"en\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/solar/year/2027?era=ad&year=2027&city_id=5128581&language=en",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "cdn-cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"solar\", \"range_start_jd\": 2461406.5, \"range_start_jd_date\": \"2027-01-01\", \"range_end_jd\": 2461770.5, \"range_end_jd_date\": \"2027-12-31\", \"location\": {\"lat\": 40.71, \"lon\": -74.01, \"timezone\": \"America/New_York\", \"name\": \"New York City\", \"city_id\": 5128581}, \"events\": [{\"kind\": \"solar\", \"type\": \"annular\", \"type_ne\": \"वलयाकार सूर्यग्रहण\", \"type_en\": \"Annular solar eclipse\", \"max_utc\": \"2027-02-06T15:02:20+00:00\", \"max_local\": \"2027-02-06T10:02:20-05:00\", \"date_jd\": 2461442.5, \"date_jd_date\": \"2027-02-06\", \"visible\": false, \"begin_local\": null, \"end_local\": null, \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"solar\", \"type\": \"total\", \"type_ne\": \"पूर्ण सूर्यग्रहण\", \"type_en\": \"Total solar eclipse\", \"max_utc\": \"2027-08-02T10:35:44+00:00\", \"max_local\": \"2027-08-02T06:35:44-04:00\", \"date_jd\": 2461619.5, \"date_jd_date\": \"2027-08-02\", \"visible\": false, \"begin_local\": \"2027-08-02T04:15:35-04:00\", \"end_local\": \"2027-08-02T06:13:03-04:00\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"ad_year\": 2027, \"era\": \"ad\", \"gregorian_range\": {\"start\": \"2027-01-01\", \"end\": \"2027-12-31\"}, \"language\": \"en\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/solar/year/2024?era=ad&city_id=5128581",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "cdn-cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"solar\", \"range_start_jd\": 2460310.5, \"range_start_jd_date\": \"2024-01-01\", \"range_end_jd\": 2460675.5, \"range_end_jd_date\": \"2024-12-31\", \"location\": {\"lat\": 40.71, \"lon\": -74.01, \"timezone\": \"America/New_York\", \"name\": \"New York City\", \"city_id\": 5128581}, \"events\": [{\"kind\": \"solar\", \"type\": \"total\", \"type_ne\": \"पूर्ण सूर्यग्रहण\", \"type_en\": \"Total solar eclipse\", \"max_utc\": \"2024-04-08T18:56:49+00:00\", \"max_local\": \"2024-04-08T14:56:49-04:00\", \"date_jd\": 2460408.5, \"date_jd_date\": \"2024-04-08\", \"visible\": true, \"begin_local\": \"2024-04-08T15:17:57-04:00\", \"end_local\": \"2024-04-08T17:04:54-04:00\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"solar\", \"type\": \"annular\", \"type_ne\": \"वलयाकार सूर्यग्रहण\", \"type_en\": \"Annular solar eclipse\", \"max_utc\": \"2024-10-02T16:59:25+00:00\", \"max_local\": \"2024-10-02T12:59:25-04:00\", \"date_jd\": 2460585.5, \"date_jd_date\": \"2024-10-02\", \"visible\": true, \"begin_local\": \"2024-10-02T11:30:52-04:00\", \"end_local\": \"2024-10-02T13:05:05-04:00\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"ad_year\": 2024, \"era\": \"ad\", \"gregorian_range\": {\"start\": \"2024-01-01\", \"end\": \"2024-12-31\"}, \"language\": \"en\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/lunar/year/2025?era=ad&city_id=2643743",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "cdn-cache-control": "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\": \"lunar\", \"range_start_jd\": 2460676.5, \"range_start_jd_date\": \"2025-01-01\", \"range_end_jd\": 2461040.5, \"range_end_jd_date\": \"2025-12-31\", \"location\": {\"lat\": 51.51, \"lon\": -0.13, \"timezone\": \"Europe/London\", \"name\": \"London\", \"city_id\": 2643743}, \"events\": [{\"kind\": \"lunar\", \"type\": \"partial\", \"type_ne\": \"आंशिक चन्द्रग्रहण\", \"type_en\": \"Partial lunar eclipse\", \"max_utc\": \"2025-03-14T05:44:43+00:00\", \"max_local\": \"2025-03-14T05:44:43+00:00\", \"date_jd\": 2460748.5, \"date_jd_date\": \"2025-03-14\", \"visible\": true, \"begin_local\": \"2025-03-14T04:31:20+00:00\", \"end_local\": \"2025-03-14T07:11:14+00:00\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}, {\"kind\": \"lunar\", \"type\": \"partial\", \"type_ne\": \"आंशिक चन्द्रग्रहण\", \"type_en\": \"Partial lunar eclipse\", \"max_utc\": \"2025-09-07T18:11:27+00:00\", \"max_local\": \"2025-09-07T19:11:27+01:00\", \"date_jd\": 2460925.5, \"date_jd_date\": \"2025-09-07\", \"visible\": false, \"begin_local\": \"2025-09-07T17:45:04+01:00\", \"end_local\": \"2025-09-07T20:48:56+01:00\", \"penumbral_begin_local\": null, \"penumbral_end_local\": null}], \"ad_year\": 2025, \"era\": \"ad\", \"gregorian_range\": {\"start\": \"2025-01-01\", \"end\": \"2025-12-31\"}, \"language\": \"en\"}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/solar/year/2090",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "cdn-cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\":\"solar\",\"range_start_jd\":2463701.5,\"range_end_jd\":2464065.5,\"location\":{\"lat\":27.7172,\"lon\":85.324,\"timezone\":\"Asia/Kathmandu\",\"name\":\"Kathmandu\"},\"events\":[{\"kind\":\"solar\",\"type\":\"partial\",\"type_ne\":\"आंशिक सूर्यग्रहण\",\"type_en\":\"Partial solar eclipse\",\"max_utc\":\"2033-04-29T03:10:20+00:00\",\"max_local\":\"2033-04-29T08:55:20+05:45\",\"date_jd\":2463716.5,\"visible\":false,\"begin_local\":null,\"end_local\":null,\"penumbral_begin_local\":null,\"penumbral_end_local\":null},{\"kind\":\"solar\",\"type\":\"partial\",\"type_ne\":\"आंशिक सूर्यग्रहण\",\"type_en\":\"Partial solar eclipse\",\"max_utc\":\"2033-10-23T05:41:15+00:00\",\"max_local\":\"2033-10-23T11:26:15+05:45\",\"date_jd\":2463893.5,\"visible\":false,\"begin_local\":null,\"end_local\":null,\"penumbral_begin_local\":null,\"penumbral_end_local\":null},{\"kind\":\"solar\",\"type\":\"total\",\"type_ne\":\"पूर्ण सूर्यग्रहण\",\"type_en\":\"Total solar eclipse\",\"max_utc\":\"2034-03-20T10:53:50+00:00\",\"max_local\":\"2034-03-20T16:38:50+05:45\",\"date_jd\":2464041.5,\"visible\":false,\"begin_local\":\"2034-03-20T17:42:42+05:45\",\"end_local\":\"2034-03-20T18:54:57+05:45\",\"penumbral_begin_local\":null,\"penumbral_end_local\":null}],\"bs_year\":2090,\"era\":\"bs\",\"gregorian_range\":{\"start\":\"2033-04-14\",\"end\":\"2034-04-13\"}}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/lunar/year/2081?city_id=1282898&cv=6506",
+  "status": 200,
+  "headers": {
+   "cache-control": "public, max-age=86400, stale-while-revalidate=604800",
+   "cdn-cache-control": "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000",
+   "vary": "Accept-Encoding",
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"kind\":\"lunar\",\"range_start_jd\":2460413.5,\"range_end_jd\":2460778.5,\"location\":{\"lat\":28.27,\"lon\":83.97,\"timezone\":\"Asia/Kathmandu\",\"name\":\"Pokhara\",\"city_id\":1282898},\"events\":[{\"kind\":\"lunar\",\"type\":\"partial\",\"type_ne\":\"आंशिक चन्द्रग्रहण\",\"type_en\":\"Partial lunar eclipse\",\"max_utc\":\"2025-03-14T05:44:42+00:00\",\"max_local\":\"2025-03-14T11:29:42+05:45\",\"date_jd\":2460748.5,\"visible\":false,\"begin_local\":\"2025-03-14T10:16:18+05:45\",\"end_local\":\"2025-03-14T12:56:12+05:45\",\"penumbral_begin_local\":null,\"penumbral_end_local\":null}],\"bs_year\":2081,\"era\":\"bs\",\"gregorian_range\":{\"start\":\"2024-04-13\",\"end\":\"2025-04-13\"}}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/moon/year/2083",
+  "status": 422,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"detail\":[{\"type\":\"literal_error\",\"loc\":[\"path\",\"kind\"],\"msg\":\"Input should be 'solar' or 'lunar'\",\"input\":\"moon\",\"ctx\":{\"expected\":\"'solar' or 'lunar'\"}}]}"
+ },
+ {
+  "path": "/v1/nepal/eclipse/solar/year/0",
+  "status": 400,
+  "headers": {
+   "content-type": "application/json",
+   "x-siddhanta": "surya_siddhanta",
+   "x-ayanamsha": "surya_siddhanta"
+  },
+  "body": "{\"detail\":\"bs year must be >= 1 — the eras carry the sign, not the number; got 0\"}"
+ }
+]

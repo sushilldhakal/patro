@@ -1,0 +1,91 @@
+//! Festival lists against the production Python festival engine.
+
+use std::sync::LazyLock;
+
+use festivals::{festival_location, festivals_for_day, generate_bs_festivals, generate_festivals};
+use panchanga::daily::Location;
+use serde_json::Value;
+use timescale::{CivilDay, Zone};
+
+static GOLDEN: LazyLock<Value> = LazyLock::new(|| {
+    serde_json::from_str(include_str!("fixtures/festival_golden.json"))
+        .expect("golden file is valid JSON")
+});
+
+fn location(v: &Value) -> Location {
+    Location {
+        lat: v["lat"].as_f64().expect("lat"),
+        lon: v["lon"].as_f64().expect("lon"),
+        zone: Zone::get(v["timezone"].as_str().expect("tz")).expect("zone"),
+        name: v["name"].as_str().expect("name").to_owned(),
+        city_id: v["city_id"].as_i64(),
+    }
+}
+
+fn year(v: &Value) -> i32 {
+    i32::try_from(v.as_i64().expect("year")).expect("fits")
+}
+
+/// First differing row, for a readable failure.
+fn compare(what: &str, got: &[Value], want: &Value) {
+    let want = want.as_array().expect("list");
+    for (i, (g, w)) in got.iter().zip(want).enumerate() {
+        assert_eq!(
+            serde_json::to_string(g).expect("json"),
+            serde_json::to_string(w).expect("json"),
+            "{what} row {i}"
+        );
+    }
+    let ids = |l: &mut dyn Iterator<Item = &Value>| {
+        l.map(|f| f["id"].as_str().unwrap_or_default().to_owned())
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(
+        got.len(),
+        want.len(),
+        "{what}: count; rust ids {:?} python ids {:?}",
+        ids(&mut got.iter()),
+        ids(&mut want.iter())
+    );
+}
+
+#[test]
+fn bs_years_match() {
+    for case in GOLDEN["bs_years"].as_array().expect("list") {
+        let y = year(&case["bs_year"]);
+        let loc = location(&case["location"]);
+        compare(
+            &format!("BS {y} {}", loc.name),
+            &generate_bs_festivals(y, &loc),
+            &case["festivals"],
+        );
+    }
+}
+
+#[test]
+fn gregorian_years_match() {
+    for case in GOLDEN["gregorian_years"].as_array().expect("list") {
+        let y = year(&case["year"]);
+        let loc = festival_location(&location(&case["location"]));
+        compare(
+            &format!("AD {y} {}", loc.name),
+            &generate_festivals(y, &loc),
+            &case["festivals"],
+        );
+    }
+}
+
+#[test]
+fn days_match() {
+    let all = generate_bs_festivals(2083, &Location::kathmandu());
+    for case in GOLDEN["days"].as_array().expect("list") {
+        let s = case["date"].as_str().expect("date");
+        let mut p = s.splitn(3, '-').map(|x| x.parse::<u32>().expect("n"));
+        let day = CivilDay::new(
+            i32::try_from(p.next().expect("y")).expect("y"),
+            p.next().expect("m"),
+            p.next().expect("d"),
+        );
+        compare(s, &festivals_for_day(&all, day), &case["festivals"]);
+    }
+}
