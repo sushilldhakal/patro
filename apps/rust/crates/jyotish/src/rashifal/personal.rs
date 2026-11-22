@@ -912,9 +912,9 @@ pub(crate) fn personal_window(
 mod tests {
     use super::{Support, favourable_sentence};
 
-    fn support(ne: bool, bindu: Option<&str>) -> String {
+    fn support(nepali: &str, bindu: Option<&str>) -> String {
         favourable_sentence(&Support {
-            ne,
+            ne: nepali == "ne",
             graha: "Rahu",
             sign: "Mesha",
             house_text: "5",
@@ -927,20 +927,20 @@ mod tests {
     #[test]
     fn a_bindu_count_is_quoted_when_the_graha_has_one() {
         assert_eq!(
-            support(false, Some("4")),
+            support("en", Some("4")),
             "Rahu transits Mesha into house 5, where your natal Ashtakavarga holds 4 bindus — direct support for children and study."
         );
-        assert!(support(true, Some("४")).contains("४ बिन्दु छन्"));
+        assert!(support("ne", Some("४")).contains("४ बिन्दु छन्"));
     }
 
     #[test]
     fn rahu_and_ketu_never_read_none_bindus() {
-        for text in [support(false, None), support(true, None)] {
+        for text in [support("en", None), support("ne", None)] {
             assert!(!text.contains("None"), "{text}");
             assert!(!text.contains("bindus") && !text.contains("बिन्दु"), "{text}");
         }
         assert_eq!(
-            support(false, None),
+            support("en", None),
             "Rahu transits Mesha into house 5 — direct support for children and study."
         );
     }

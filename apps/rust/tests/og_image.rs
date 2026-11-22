@@ -42,11 +42,7 @@ fn png_size(png: &[u8]) -> (u32, u32) {
 
 #[tokio::test]
 async fn the_card_is_a_cached_1200_by_630_png() {
-    let response = get(
-        "/og-image?date=2026-11-21&place=Pokhara&city=1283240",
-        false,
-    )
-    .await;
+    let response = get("/og-image?date=2026-11-21&place=Pokhara&city=1283240", None).await;
     assert_eq!(response.status(), StatusCode::OK);
     let headers = response.headers();
     assert_eq!(headers[header::CONTENT_TYPE], "image/png");
