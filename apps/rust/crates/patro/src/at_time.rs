@@ -6,8 +6,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use astronomy::engine::is_nepal_observer;
 use panchanga::{
-    at_time::{day_lagna_spans, instant_blocks, vedic_day, vedic_day_jd},
+    at_time::{InstantBlocks, day_lagna_spans, instant_blocks, vedic_day, vedic_day_jd},
     daily::Location,
+    payload::{Field, Fields},
 };
 use serde_json::{Map, Value, json};
 use timescale::{
@@ -17,7 +18,11 @@ use timescale::{
 
 use crate::{
     date_key::{py_int, py_repr_str},
-    day::{DayBuildOptions, DayError, DetailMode, FestivalMode, SlimMode, day_payload_for_jd},
+    day::{
+        DayBuildOptions, DayError, DayVariant, DetailMode, FestivalMode, SlimMode,
+        day_fields_for_jd_with,
+    },
+    midnight::object_fields,
 };
 
 /// The `Cache-Control` / `CDN-Cache-Control` of the route (`AT_TIME_PANCHANGA_CACHE_CONTROL`).
@@ -664,12 +669,21 @@ fn muhurta_now_jd(muhurta: &Map<String, Value>, instant: JdInstant, zone: &Zone)
 ///
 /// [`DayError`] when the day state cannot be built (polar sun, off the patro axis).
 pub fn at_time_payload_jd(instant: JdInstant, location: &Location) -> Result<Value, DayError> {
+    at_time_fields_jd(instant, location).map(|f| f.to_value())
+}
+
+/// [`at_time_payload_jd`] as typed fields.
+///
+/// # Errors
+///
+/// As [`at_time_payload_jd`].
+pub fn at_time_fields_jd(instant: JdInstant, location: &Location) -> Result<Fields, DayError> {
     let zone = &location.zone;
     let utc_clock = instant.astimezone(zone);
     let day = vedic_day_jd(instant, location)?;
     let blocks = instant_blocks(instant, &day, location);
     let lagna_spans = day_lagna_spans(&day, location);
-    let state = day_payload_for_jd(
+    let state = day_fields_for_jd_with(
         day.anchor.to_jd_ut(),
         location,
         DayBuildOptions {
@@ -677,77 +691,119 @@ pub fn at_time_payload_jd(instant: JdInstant, location: &Location) -> Result<Val
             slim: SlimMode::Keep,
             festivals: FestivalMode::Exclude,
         },
+        DayVariant::default(),
     )?;
-    let Value::Object(mut state) = state else {
-        return Ok(state);
+    let overlay = InstantOverlay {
+        blocks,
+        query_instant: instant.to_string(),
+        query_instant_local: format!("{} {}", utc_clock.day, utc_clock.hms),
+        local_hm: utc_clock.hm.clone(),
+        anchor: day.anchor,
+        before_sunrise: utc_clock.day > day.anchor,
+        lagna_spans: Some(Field::tree(lagna_spans)),
     };
-    let mut detail = match state.get("detail") {
-        Some(Value::Object(d)) => d.clone(),
+    Ok(instant_fields(state, overlay, |muhurta| {
+        muhurta_now_jd(muhurta, instant, zone)
+    }))
+}
+
+/// What `build_panchanga_at_time` lays over the udaya day state.
+struct InstantOverlay {
+    blocks: InstantBlocks,
+    query_instant: String,
+    query_instant_local: String,
+    local_hm: String,
+    anchor: CivilDay,
+    before_sunrise: bool,
+    /// The day's lagna spans; `None` keeps the ones already in its detail.
+    lagna_spans: Option<Field>,
+}
+
+/// The day state with the instant laid over it: the day's own blocks stay shared,
+/// only the overlaid fields are new.
+fn instant_fields(
+    mut state: Fields,
+    o: InstantOverlay,
+    muhurta_now: impl FnOnce(&Map<String, Value>) -> Value,
+) -> Fields {
+    let mut detail = object_fields(state.field("detail"));
+    let muhurta: Map<String, Value> = match detail.get("muhurta").as_deref() {
+        Some(Value::Object(daily)) => MUHURTA_KEYS
+            .iter()
+            .filter_map(|k| daily.get(*k).map(|v| ((*k).to_owned(), v.clone())))
+            .collect(),
         _ => Map::new(),
     };
-    let daily_muhurta = match detail.get("muhurta") {
-        Some(Value::Object(m)) => m.clone(),
-        _ => Map::new(),
-    };
-    let muhurta: Map<String, Value> = MUHURTA_KEYS
-        .iter()
-        .filter_map(|k| daily_muhurta.get(*k).map(|v| ((*k).to_owned(), v.clone())))
-        .collect();
-    let now = muhurta_now_jd(&muhurta, instant, zone);
-    let planets_anchor = json!({
+    let now = Field::tree(muhurta_now(&muhurta));
+    let planets_anchor = Field::tree(json!({
         "type": "instant",
-        "local_time": utc_clock.hm,
+        "local_time": o.local_hm,
         "label_ne": "क्षणिक स्पष्टग्रह",
         "label_en": "Instantaneous positions",
+    }));
+    let lagna_spans = o.lagna_spans.unwrap_or_else(|| {
+        detail
+            .field("lagna_spans")
+            .cloned()
+            .unwrap_or_else(|| Field::tree(Value::Null))
     });
-    detail.insert("planets".into(), blocks.planets.clone());
-    detail.insert("planets_anchor".into(), planets_anchor.clone());
-    detail.insert("muhurta_now".into(), now.clone());
-    detail.insert("instant_lagna".into(), blocks.lagna.clone());
-    detail.insert("lagna_spans".into(), lagna_spans.clone());
-    detail.insert("upagrahas".into(), blocks.upagrahas);
-    let lagna_name = blocks
-        .lagna
+    let InstantBlocks {
+        tithi,
+        nakshatra,
+        yoga,
+        karana,
+        planets,
+        lagna,
+        upagrahas,
+        ..
+    } = o.blocks;
+    let planets = Field::tree(planets);
+    detail.insert("planets", planets.clone());
+    detail.insert("planets_anchor", planets_anchor.clone());
+    detail.insert("muhurta_now", now.clone());
+    detail.insert_tree("instant_lagna", lagna.clone());
+    detail.insert("lagna_spans", lagna_spans.clone());
+    detail.insert_tree("upagrahas", upagrahas);
+    let state_text = |key: &str| {
+        state
+            .get(key)
+            .map_or(Value::Null, std::borrow::Cow::into_owned)
+    };
+    let lagna_name = lagna
         .get("name")
         .cloned()
-        .or_else(|| state.get("lagna").cloned())
-        .unwrap_or(Value::Null);
-    let lagna_ne = blocks
-        .lagna
+        .unwrap_or_else(|| state_text("lagna"));
+    let lagna_ne = lagna
         .get("name_ne")
         .cloned()
-        .or_else(|| state.get("lagna_ne").cloned())
-        .unwrap_or(Value::Null);
-    let updates: [(&str, Value); 18] = [
+        .unwrap_or_else(|| state_text("lagna_ne"));
+    for (key, value) in [
         ("mode", json!("ephemeris")),
         ("anchor", json!("instant")),
-        ("query_instant", json!(instant.to_string())),
-        (
-            "query_instant_local",
-            json!(format!("{} {}", utc_clock.day, utc_clock.hms)),
-        ),
-        ("panchanga_date_ad", json!(day.anchor.to_string())),
-        (
-            "before_sunrise_of_civil_day",
-            json!(utc_clock.day > day.anchor),
-        ),
-        ("lagna_spans", lagna_spans),
-        ("tithi", blocks.tithi),
-        ("nakshatra", blocks.nakshatra),
-        ("yoga", blocks.yoga),
-        ("karana", blocks.karana),
+        ("query_instant", json!(o.query_instant)),
+        ("query_instant_local", json!(o.query_instant_local)),
+        ("panchanga_date_ad", json!(o.anchor.to_string())),
+        ("before_sunrise_of_civil_day", json!(o.before_sunrise)),
+    ] {
+        state.insert_tree(key, value);
+    }
+    state.insert("lagna_spans", lagna_spans);
+    for (key, value) in [
+        ("tithi", tithi),
+        ("nakshatra", nakshatra),
+        ("yoga", yoga),
+        ("karana", karana),
         ("lagna", lagna_name),
         ("lagna_ne", lagna_ne),
         ("muhurta", Value::Object(muhurta)),
-        ("planets", blocks.planets),
-        ("planets_anchor", planets_anchor),
-        ("muhurta_now", now),
-        ("detail", Value::Object(detail)),
-    ];
-    for (key, value) in updates {
-        state.insert(key.to_owned(), value);
+    ] {
+        state.insert_tree(key, value);
     }
-    Ok(Value::Object(state))
+    state.insert("planets", planets);
+    state.insert("planets_anchor", planets_anchor);
+    state.insert("muhurta_now", now);
+    state.insert("detail", Field::Nested(std::sync::Arc::new(detail)));
+    state
 }
 
 const MUHURTA_KEYS: [&str; 6] = [
@@ -789,15 +845,15 @@ fn muhurta_now(muhurta: &Map<String, Value>, instant: UtcInstant) -> Value {
 /// # Errors
 ///
 /// [`DayError::BadRequest`] for a bad clock, [`DayError::NotPorted`] before 1582-10-15.
-pub fn at_time_on_day(day: CivilDay, clock: &str, location: &Location) -> Result<Value, DayError> {
+pub fn at_time_on_day(day: CivilDay, clock: &str, location: &Location) -> Result<Fields, DayError> {
     let zone = observer_zone(location);
     if !day.is_datetime_range() {
         // `local_wall_instant`: the wall clock on the Julian Day axis.
         let (hour, minute, second) = clock_parts(clock)?;
-        return at_time_payload_jd(local_wall_jd(day, hour, minute, second, &zone), location);
+        return at_time_fields_jd(local_wall_jd(day, hour, minute, second, &zone), location);
     }
     let instant = clock_on_day(clock, day, &zone)?;
-    at_time_payload(instant, location)
+    at_time_fields(instant, location)
 }
 
 /// `build_panchanga_at_time`.
@@ -806,11 +862,21 @@ pub fn at_time_on_day(day: CivilDay, clock: &str, location: &Location) -> Result
 ///
 /// [`DayError`] when the day state cannot be built (polar sun, pre-1582 days).
 pub fn at_time_payload(instant: UtcInstant, location: &Location) -> Result<Value, DayError> {
+    at_time_fields(instant, location).map(|f| f.to_value())
+}
+
+/// [`at_time_payload`] as typed fields: the udaya day's blocks shared, the instant's
+/// overlays new, written straight to text.
+///
+/// # Errors
+///
+/// As [`at_time_payload`].
+pub fn at_time_fields(instant: UtcInstant, location: &Location) -> Result<Fields, DayError> {
     let zone = observer_zone(location);
     let local: LocalDateTime = zone.local(instant);
     let day = vedic_day(instant, location, &zone)?;
     let blocks = instant_blocks(instant, &day, location);
-    let state = day_payload_for_jd(
+    let state = day_fields_for_jd_with(
         day.anchor.to_jd_ut(),
         location,
         DayBuildOptions {
@@ -818,78 +884,18 @@ pub fn at_time_payload(instant: UtcInstant, location: &Location) -> Result<Value
             slim: SlimMode::Keep,
             festivals: FestivalMode::Plain,
         },
+        DayVariant::default(),
     )?;
-    let Value::Object(mut state) = state else {
-        return Ok(state);
+    let overlay = InstantOverlay {
+        blocks,
+        query_instant: local.to_string(),
+        query_instant_local: format!("{} {}", local.day(), local.hms()),
+        local_hm: local.hm(),
+        anchor: day.anchor,
+        before_sunrise: local.day() > day.anchor,
+        lagna_spans: None,
     };
-    let mut detail = match state.get("detail") {
-        Some(Value::Object(d)) => d.clone(),
-        _ => Map::new(),
-    };
-    let daily_muhurta = match detail.get("muhurta") {
-        Some(Value::Object(m)) => m.clone(),
-        _ => Map::new(),
-    };
-    let muhurta: Map<String, Value> = MUHURTA_KEYS
-        .iter()
-        .filter_map(|k| daily_muhurta.get(*k).map(|v| ((*k).to_owned(), v.clone())))
-        .collect();
-    let now = muhurta_now(&muhurta, instant);
-    let planets_anchor = json!({
-        "type": "instant",
-        "local_time": local.hm(),
-        "label_ne": "क्षणिक स्पष्टग्रह",
-        "label_en": "Instantaneous positions",
-    });
-    let lagna_spans = detail.get("lagna_spans").cloned().unwrap_or(Value::Null);
-
-    detail.insert("planets".into(), blocks.planets.clone());
-    detail.insert("planets_anchor".into(), planets_anchor.clone());
-    detail.insert("muhurta_now".into(), now.clone());
-    detail.insert("instant_lagna".into(), blocks.lagna.clone());
-    detail.insert("lagna_spans".into(), lagna_spans.clone());
-    detail.insert("upagrahas".into(), blocks.upagrahas);
-
-    let lagna_name = blocks
-        .lagna
-        .get("name")
-        .cloned()
-        .or_else(|| state.get("lagna").cloned())
-        .unwrap_or(Value::Null);
-    let lagna_ne = blocks
-        .lagna
-        .get("name_ne")
-        .cloned()
-        .or_else(|| state.get("lagna_ne").cloned())
-        .unwrap_or(Value::Null);
-    let updates: [(&str, Value); 18] = [
-        ("mode", json!("ephemeris")),
-        ("anchor", json!("instant")),
-        ("query_instant", json!(local.to_string())),
-        (
-            "query_instant_local",
-            json!(format!("{} {}", local.day(), local.hms())),
-        ),
-        ("panchanga_date_ad", json!(day.anchor.to_string())),
-        (
-            "before_sunrise_of_civil_day",
-            json!(local.day() > day.anchor),
-        ),
-        ("lagna_spans", lagna_spans),
-        ("tithi", blocks.tithi),
-        ("nakshatra", blocks.nakshatra),
-        ("yoga", blocks.yoga),
-        ("karana", blocks.karana),
-        ("lagna", lagna_name),
-        ("lagna_ne", lagna_ne),
-        ("muhurta", Value::Object(muhurta)),
-        ("planets", blocks.planets),
-        ("planets_anchor", planets_anchor),
-        ("muhurta_now", now),
-        ("detail", Value::Object(detail)),
-    ];
-    for (key, value) in updates {
-        state.insert(key.to_owned(), value);
-    }
-    Ok(Value::Object(state))
+    Ok(instant_fields(state, overlay, |muhurta| {
+        muhurta_now(muhurta, instant)
+    }))
 }

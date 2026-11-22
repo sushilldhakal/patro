@@ -2,6 +2,7 @@
 
 pub mod config;
 pub mod error;
+pub mod keyprobe;
 pub mod pyjson;
 pub mod pyser;
 

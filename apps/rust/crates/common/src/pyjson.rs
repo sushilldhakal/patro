@@ -40,7 +40,7 @@ fn write_value(out: &mut String, value: &Value, style: Style) {
             } else if let Some(u) = n.as_u64() {
                 let _ = write!(out, "{u}");
             } else {
-                out.push_str(&float_repr(n.as_f64().unwrap_or(f64::NAN)));
+                write_float(out, n.as_f64().unwrap_or(f64::NAN));
             }
         }
         Value::String(s) => write_str(out, s),
@@ -78,29 +78,62 @@ pub(crate) fn write_str(out: &mut String, s: &str) {
     out.push('"');
     let bytes = s.as_bytes();
     let mut run = 0;
-    for (i, &b) in bytes.iter().enumerate() {
-        let escaped = match b {
-            b'"' => "\\\"",
-            b'\\' => "\\\\",
-            b'\n' => "\\n",
-            b'\r' => "\\r",
-            b'\t' => "\\t",
-            0x08 => "\\b",
-            0x0c => "\\f",
-            0x00..=0x1f => "",
-            _ => continue,
-        };
-        // `i` is at an ASCII byte, so both slices end on character boundaries.
-        out.push_str(&s[run..i]);
-        if escaped.is_empty() {
-            let _ = write!(out, "\\u{b:04x}");
-        } else {
-            out.push_str(escaped);
+    // A plain index loop over a lookup table: most strings need no escape at all,
+    // and this stays fast in unoptimized builds too (no iterator adapters).
+    let mut i = 0;
+    while i < bytes.len() {
+        let b = bytes[i];
+        if NEEDS_ESCAPE[b as usize] {
+            // `i` is at an ASCII byte, so both slices end on character boundaries.
+            out.push_str(&s[run..i]);
+            match b {
+                b'"' => out.push_str("\\\""),
+                b'\\' => out.push_str("\\\\"),
+                b'\n' => out.push_str("\\n"),
+                b'\r' => out.push_str("\\r"),
+                b'\t' => out.push_str("\\t"),
+                0x08 => out.push_str("\\b"),
+                0x0c => out.push_str("\\f"),
+                _ => {
+                    let _ = write!(out, "\\u{b:04x}");
+                }
+            }
+            run = i + 1;
         }
-        run = i + 1;
+        i += 1;
     }
     out.push_str(&s[run..]);
     out.push('"');
+}
+
+/// The bytes `json.dumps(ensure_ascii=False)` escapes: control characters, `"` and `\`.
+static NEEDS_ESCAPE: [bool; 256] = {
+    let mut table = [false; 256];
+    let mut b = 0;
+    while b < 0x20 {
+        table[b] = true;
+        b += 1;
+    }
+    table[b'"' as usize] = true;
+    table[b'\\' as usize] = true;
+    table
+};
+
+/// Appends [`float_repr`] of `x`. Inside Python's fixed-notation range Rust's `{}`
+/// prints the same shortest round-trip digits (only an integral value lacks the
+/// `.0`), so the common case is written in place without the allocations of the
+/// general path.
+pub(crate) fn write_float(out: &mut String, x: f64) {
+    let magnitude = x.abs();
+    if (1e-4..1e15).contains(&magnitude) {
+        let start = out.len();
+        let _ = write!(out, "{x}");
+        if !out[start..].contains('.') {
+            out.push_str(".0");
+        }
+    } else {
+        out.push_str(&float_repr(x));
+    }
 }
 
 /// Python's `repr(float)`: the shortest round-tripping digits, in fixed notation when
@@ -215,6 +248,35 @@ mod tests {
             (2.675e-7, "2.675e-07"),
         ] {
             assert_eq!(float_repr(x), want, "{x}");
+            let mut fast = String::new();
+            write_float(&mut fast, x);
+            assert_eq!(fast, want, "write_float {x}");
+        }
+    }
+
+    #[test]
+    fn the_fast_float_path_matches_repr() {
+        // Doubles of every magnitude, from a fixed xorshift sequence of bit patterns,
+        // plus values at the edges of the fast range.
+        let mut state: u64 = 0x9E37_79B9_7F4A_7C15;
+        let mut values = vec![1e-4, 0.000_100_000_000_000_01, 999_999_999_999_999.9, 1e15];
+        for _ in 0..200_000 {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            let x = f64::from_bits(state);
+            if x.is_finite() {
+                values.push(x);
+                values.push(
+                    x.abs().log10().fract()
+                        * 10f64.powi(i32::try_from(state % 24).unwrap_or(0) - 6),
+                );
+            }
+        }
+        for x in values {
+            let mut fast = String::new();
+            write_float(&mut fast, x);
+            assert_eq!(fast, float_repr(x), "{x:e}");
         }
     }
 

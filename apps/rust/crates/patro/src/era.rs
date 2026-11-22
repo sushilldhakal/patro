@@ -1,5 +1,8 @@
 //! The response half of `app/era_middleware.py`: era labels beside every Julian Day.
 
+use std::sync::Arc;
+
+use panchanga::payload::{Field, Fields};
 use serde_json::{Map, Value, json};
 use timescale::CivilDay;
 
@@ -191,6 +194,204 @@ pub fn render_part(part: &Value, era: &str) -> Value {
     let mut out = render(part, era, Level::Nested);
     align(&mut out);
     out
+}
+
+/// [`render_for_era`] over typed fields: the same bytes, without first building the
+/// whole payload as one tree. Nested payloads and lists stay [`Fields`]; each leaf
+/// tree or typed block is rendered on its own.
+#[must_use]
+pub fn render_fields_for_era(payload: &Fields, era: &str, language: &str) -> Fields {
+    let mut out = render_fields(payload, era, Level::Top);
+    align_fields(&mut out);
+    if !out.contains("era") {
+        out.insert_tree("era", json!(era));
+    }
+    if !out.contains("language") {
+        out.insert_tree("language", json!(language));
+    }
+    out
+}
+
+/// [`render_part`] over typed fields.
+#[must_use]
+pub fn render_fields_part(part: &Fields, era: &str) -> Fields {
+    let mut out = render_fields(part, era, Level::Nested);
+    align_fields(&mut out);
+    out
+}
+
+/// Whether rendering (or aligning) can change a tree: only objects with a Julian Day
+/// key or `date_parts` are touched. Anything else stays shared, as it is.
+fn tree_needs_render(node: &Value) -> bool {
+    match node {
+        Value::Object(map) => map
+            .iter()
+            .any(|(k, v)| is_jd_key(k) || k == "date_parts" || tree_needs_render(v)),
+        Value::Array(items) => items.iter().any(tree_needs_render),
+        _ => false,
+    }
+}
+
+/// [`tree_needs_render`] for a typed block, walked through serde without writing it.
+fn block_needs_render(block: &dyn panchanga::payload::Block) -> bool {
+    block.any_key(&|k| is_jd_key(k) || k == "date_parts")
+}
+
+fn render_field(field: &Field, era: &str) -> Field {
+    match field {
+        Field::Tree(v) if !tree_needs_render(v) => Field::Tree(Arc::clone(v)),
+        Field::Tree(v) => Field::tree(render(v, era, Level::Nested)),
+        Field::Typed(b) if !block_needs_render(&**b) => Field::Typed(Arc::clone(b)),
+        Field::Typed(b) => Field::tree(render(&b.value(), era, Level::Nested)),
+        Field::Nested(f) => Field::Nested(Arc::new(render_fields(f, era, Level::Nested))),
+        Field::List(rows) => Field::List(
+            rows.iter()
+                .map(|row| render_fields(row, era, Level::Nested))
+                .collect(),
+        ),
+    }
+}
+
+/// [`render`] of an object held as fields.
+fn render_fields(fields: &Fields, era: &str, level: Level) -> Fields {
+    let top = level == Level::Top;
+    let mut out = Fields::new();
+    for (key, field) in fields.iter() {
+        out.insert(key.to_owned(), render_field(field, era));
+        let jd = match field {
+            Field::Tree(v) if v.is_number() && is_jd_key(key) => v.as_f64(),
+            _ => None,
+        };
+        let Some(jd) = jd else {
+            continue;
+        };
+        let label_key = if matches!(key, "jd_ut" | "julian" | "jd") {
+            "date".to_owned()
+        } else {
+            format!("{key}_date")
+        };
+        if !fields.contains(&label_key) {
+            if let Some(label) = label_for(jd, era) {
+                out.insert_tree(label_key, json!(label));
+            }
+        }
+        if top && matches!(key, "jd_ut" | "julian" | "jd") && !fields.contains("date_parts") {
+            if let Some(parts) = date_parts(jd, era) {
+                out.insert_tree("date_parts", parts);
+            }
+        }
+    }
+    out
+}
+
+/// Sets `key` on a field that is an object (a tree, a typed block or nested fields);
+/// anything else is left alone, as `isinstance(x, dict)` checks it.
+fn set_key(field: &mut Field, key: &str, value: Value) {
+    if let Field::Typed(b) = field {
+        let tree = b.value();
+        if !tree.is_object() {
+            return;
+        }
+        *field = Field::tree(tree);
+    }
+    match field {
+        Field::Tree(v) => {
+            if let Value::Object(map) = Arc::make_mut(v) {
+                map.insert(key.to_owned(), value);
+            }
+        }
+        Field::Nested(f) => Arc::make_mut(f).insert_tree(key.to_owned(), value),
+        Field::Typed(_) | Field::List(_) => {}
+    }
+}
+
+/// Runs `change` on the object at `key` inside an object field, if both are objects.
+fn with_child(field: &mut Field, key: &str, change: impl FnOnce(&mut Field)) {
+    if let Field::Typed(b) = field {
+        let tree = b.value();
+        if !tree.is_object() {
+            return;
+        }
+        *field = Field::tree(tree);
+    }
+    match field {
+        Field::Tree(v) => {
+            if let Value::Object(map) = Arc::make_mut(v) {
+                if let Some(child) = map.get(key).filter(|c| c.is_object()).cloned() {
+                    let mut child = Field::tree(child);
+                    change(&mut child);
+                    map.insert(key.to_owned(), child.value());
+                }
+            }
+        }
+        Field::Nested(f) => {
+            if let Some(child) = Arc::make_mut(f).field_mut(key) {
+                change(child);
+            }
+        }
+        Field::Typed(_) | Field::List(_) => {}
+    }
+}
+
+/// [`align`] of an object held as fields.
+fn align_fields(fields: &mut Fields) {
+    if let Some(parts) = fields.get("date_parts").map(std::borrow::Cow::into_owned) {
+        let v = &parts["vikram"];
+        if let (Some(y), Some(m), Some(d)) =
+            (v["year"].as_i64(), v["month"].as_i64(), v["day"].as_i64())
+        {
+            fields.insert_tree("date_bs", json!(format!("{y}-{m:02}-{d:02}")));
+            let set_ymd = |f: &mut Field| {
+                set_key(f, "year", json!(y));
+                set_key(f, "month", json!(m));
+                set_key(f, "day", json!(d));
+            };
+            if let Some(bs) = fields.field_mut("bs_date") {
+                set_ymd(bs);
+            }
+            if let Some(detail) = fields.field_mut("detail") {
+                with_child(detail, "bs_date", set_ymd);
+            }
+        }
+        let g = &parts["gregorian"];
+        if let (Some(y), Some(m), Some(d)) =
+            (g["year"].as_i64(), g["month"].as_i64(), g["day"].as_i64())
+        {
+            let ad = format!("{y}-{m:02}-{d:02}");
+            fields.insert_tree("date_ad", json!(&ad));
+            if let Some(detail) = fields.field_mut("detail") {
+                set_key(detail, "date_ad", json!(&ad));
+                set_key(detail, "date", json!(ad));
+            }
+        }
+    }
+    for (_, field) in fields.iter_mut() {
+        align_field(field);
+    }
+}
+
+fn align_field(field: &mut Field) {
+    match field {
+        // Only an object with `date_parts` changes; shared trees without one stay shared.
+        Field::Tree(v) => {
+            if tree_needs_render(v) {
+                align(Arc::make_mut(v));
+            }
+        }
+        // Rendering keeps a typed block only when it has no Julian Day key and no
+        // `date_parts`, so aligning cannot change it.
+        Field::Typed(_) => {}
+        Field::Nested(f) => align_fields(Arc::make_mut(f)),
+        Field::List(rows) => {
+            if let Some(unique) = Arc::get_mut(rows) {
+                unique.iter_mut().for_each(align_fields);
+            } else {
+                let mut owned = rows.to_vec();
+                owned.iter_mut().for_each(align_fields);
+                *rows = owned.into();
+            }
+        }
+    }
 }
 
 /// `era_language`: Nepali for the Vikram eras, English for the Gregorian.

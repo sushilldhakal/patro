@@ -1,9 +1,12 @@
 //! `reference=midnight` day state: `build_panchanga_civil_day`
 //! (`services/panchanga/panchanga_at_time.py`) as `_day_payload_for_jd` uses it.
 
+use std::sync::Arc;
+
 use panchanga::{
     daily::{Location, build_daily},
-    midnight::{apply_to_detail, midnight_overlay},
+    midnight::midnight_overlay,
+    payload::{Field, Fields},
 };
 use serde_json::{Value, json};
 use timescale::CivilDay;
@@ -16,10 +19,20 @@ fn field(v: &Value, key: &str) -> Value {
     v.get(key).cloned().unwrap_or(Value::Null)
 }
 
+/// The fields of an object field (empty for anything else), to extend.
+pub(crate) fn object_fields(field: Option<&Field>) -> Fields {
+    match field {
+        Some(Field::Nested(f)) => (**f).clone(),
+        Some(other) => Fields::from_value(other.value()),
+        None => Fields::new(),
+    }
+}
+
 /// The civil-date state (festivals, ritu, sun/moon, muhurta …) with the moving
 /// angas re-read at local midnight. Python always builds it with festivals and
 /// detail, then drops the top-level `detail` / `festivals` the caller did not ask
-/// for (the detail keeps its festival rows).
+/// for (the detail keeps its festival rows). The state shares the day payload's
+/// blocks; only the overlaid fields are new.
 ///
 /// # Errors
 ///
@@ -28,9 +41,9 @@ pub(crate) fn midnight_day_state(
     civil: CivilDay,
     location: &Location,
     options: DayBuildOptions,
-) -> Result<Value, DayError> {
+) -> Result<Fields, DayError> {
     let daily = build_daily(civil, location)?;
-    let raw = daily.tree();
+    let raw = daily.fields();
     let festivals = if options.festivals == FestivalMode::Include {
         FestivalMode::Include
     } else {
@@ -45,27 +58,23 @@ pub(crate) fn midnight_day_state(
             festivals,
             ..options
         },
-    )
-    .to_value();
+    );
     let vaara = raw
         .get("vaara")
-        .and_then(|v| v.get("number"))
-        .and_then(Value::as_u64)
+        .and_then(|v| v.get("number").and_then(Value::as_u64))
         .and_then(|n| u32::try_from(n).ok())
         .unwrap_or(0);
-    let lunar = field(raw, "lunar_month");
+    let lunar = raw
+        .get("lunar_month")
+        .map_or(Value::Null, std::borrow::Cow::into_owned);
     let overlay = midnight_overlay(civil, location, &lunar, vaara)?;
 
-    let Value::Object(map) = &mut state else {
-        return Ok(state);
-    };
     // `attach_festival_saits` runs after the overlay in Python.
-    let saits = map.shift_remove("festival_saits");
-    let mut detail = match map.get("detail") {
-        Some(Value::Object(d)) => d.clone(),
-        _ => serde_json::Map::new(),
-    };
-    apply_to_detail(&mut detail, &overlay);
+    let saits = state.remove("festival_saits");
+    let mut detail = object_fields(state.field("detail"));
+    for (key, value) in &overlay.detail {
+        detail.insert_tree(*key, value.clone());
+    }
 
     let zone = &location.zone;
     let paksha = overlay.get("paksha");
@@ -96,19 +105,19 @@ pub(crate) fn midnight_day_state(
             "chandrabala_table",
             overlay.get("chandrabala_table").clone(),
         ),
-        ("detail", Value::Object(detail)),
     ];
     for (key, value) in updates {
-        map.insert(key.to_owned(), value);
+        state.insert_tree(key, value);
     }
+    state.insert("detail", Field::Nested(Arc::new(detail)));
     if options.detail == DetailMode::Exclude {
-        map.shift_remove("detail");
+        state.remove("detail");
     }
     if options.festivals == FestivalMode::Exclude {
-        map.shift_remove("festivals");
+        state.remove("festivals");
     }
     if let Some(saits) = saits {
-        map.insert("festival_saits".into(), saits);
+        state.insert("festival_saits", saits);
     }
     Ok(state)
 }

@@ -7,7 +7,7 @@
 //! ([`ZonedInstant`]).
 
 use astronomy::engine::{moon_longitude, sun_longitude};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use timescale::{CivilDay, PyInstant, ZonedInstant};
 
 use crate::{
@@ -103,11 +103,4 @@ pub fn midnight_overlay(
             ("panchaka_rahita", panchaka),
         ],
     })
-}
-
-/// `detail.update(overlay)` on a daily detail object.
-pub fn apply_to_detail(detail: &mut Map<String, Value>, overlay: &MidnightOverlay) {
-    for (key, value) in &overlay.detail {
-        detail.insert((*key).to_owned(), value.clone());
-    }
 }

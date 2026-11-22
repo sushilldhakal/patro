@@ -270,9 +270,7 @@ pub fn day_fields_for_jd_with(
     let civil = CivilDay::from_jd_ut(jd_ut);
     let mut payload = if civil.is_datetime_range() {
         let mut state = if variant.midnight {
-            Fields::from_value(crate::midnight::midnight_day_state(
-                civil, location, options,
-            )?)
+            crate::midnight::midnight_day_state(civil, location, options)?
         } else {
             let raw = build_daily(civil, location)?;
             build_daily_state(civil, location, &raw, options)

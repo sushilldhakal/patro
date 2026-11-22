@@ -16,7 +16,7 @@ use serde::{
     },
 };
 
-use crate::pyjson::{Style, float_repr, write_str};
+use crate::pyjson::{Style, float_repr, write_float, write_str};
 
 /// The marker under which [`RawJson`] hands its text to [`to_string`].
 const RAW_TOKEN: &str = "$pyser::RawJson";
@@ -167,7 +167,7 @@ impl<'w, 'a> Serializer for &'w mut Writer<'a> {
         self.serialize_f64(f64::from(v))
     }
     fn serialize_f64(self, v: f64) -> Result<(), Error> {
-        self.out.push_str(&float_repr(v));
+        write_float(self.out, v);
         Ok(())
     }
     fn serialize_char(self, v: char) -> Result<(), Error> {

@@ -204,65 +204,6 @@ impl YearText<'_> {
     }
 }
 
-/// Writes one month for the year payload and frees its tree: the month object (with
-/// its `calendar` unless the year is the wheel shape) and its rows for the year's own
-/// `calendar`.
-fn month_text(month: &Value, shape: YearShape, how: YearText<'_>) -> Option<MonthText> {
-    let rendered;
-    let month = match how.era {
-        Some((era, _)) => {
-            rendered = crate::era::render_part(month, era);
-            &rendered
-        }
-        None => month,
-    };
-    let (style, item, key_sep) = (how.style(), how.item(), how.key());
-    let Value::Object(fields) = month else {
-        return None;
-    };
-    let rows: Vec<&Value> = match fields.get("calendar") {
-        Some(Value::Array(rows)) => rows.iter().collect(),
-        _ => Vec::new(),
-    };
-    let mut rows_text = String::new();
-    for (i, row) in rows.iter().enumerate() {
-        if i > 0 {
-            rows_text.push_str(item);
-        }
-        if shape == YearShape::Wheel {
-            pyser::write(&mut rows_text, &slim_day_for_wheel(row), style);
-        } else {
-            pyser::write(&mut rows_text, *row, style);
-        }
-    }
-    let mut object = String::from("{");
-    let mut first = true;
-    for (key, value) in fields {
-        if key == "calendar" && shape == YearShape::Wheel {
-            continue;
-        }
-        if !first {
-            object.push_str(item);
-        }
-        first = false;
-        pyser::write(&mut object, key, style);
-        object.push_str(key_sep);
-        if key == "calendar" && matches!(value, Value::Array(_)) {
-            object.push('[');
-            object.push_str(&rows_text);
-            object.push(']');
-        } else {
-            pyser::write(&mut object, value, style);
-        }
-    }
-    object.push('}');
-    Some(MonthText {
-        object,
-        rows: rows_text,
-        length: month["month_length"].as_u64().unwrap_or(0),
-    })
-}
-
 /// A row trimmed to what the year wheel reads, as typed fields (`_slim_day_for_wheel`).
 fn slim_fields_for_wheel(day: &Fields) -> Fields {
     let Some(Field::Nested(embed)) = day.field("panchanga") else {
@@ -293,9 +234,20 @@ fn slim_fields_for_wheel(day: &Fields) -> Fields {
     slim
 }
 
-/// [`month_text`] for the plain compact body, written from the month's typed fields
-/// (each row's embedded panchanga written from its day's shared blocks).
-fn month_text_plain(month: &Fields, shape: YearShape) -> MonthText {
+/// Writes one month for the year payload from its typed fields (each row's embedded
+/// panchanga written from its day's shared blocks): the month object (with its
+/// `calendar` unless the year is the wheel shape) and its rows for the year's own
+/// `calendar`.
+fn month_text(month: &Fields, shape: YearShape, how: YearText<'_>) -> MonthText {
+    let rendered;
+    let month = match how.era {
+        Some((era, _)) => {
+            rendered = crate::era::render_fields_part(month, era);
+            &rendered
+        }
+        None => month,
+    };
+    let (style, item, key_sep) = (how.style(), how.item(), how.key());
     let rows: Vec<Fields> = match month.field("calendar") {
         Some(Field::List(rows)) => rows.to_vec(),
         Some(other) => match other.value() {
@@ -307,12 +259,12 @@ fn month_text_plain(month: &Fields, shape: YearShape) -> MonthText {
     let mut rows_text = String::new();
     for (i, row) in rows.iter().enumerate() {
         if i > 0 {
-            rows_text.push(',');
+            rows_text.push_str(item);
         }
         if shape == YearShape::Wheel {
-            slim_fields_for_wheel(row).write(&mut rows_text, Style::Compact);
+            slim_fields_for_wheel(row).write(&mut rows_text, style);
         } else {
-            row.write(&mut rows_text, Style::Compact);
+            row.write(&mut rows_text, style);
         }
     }
     let mut object = String::from("{");
@@ -322,17 +274,17 @@ fn month_text_plain(month: &Fields, shape: YearShape) -> MonthText {
             continue;
         }
         if !first {
-            object.push(',');
+            object.push_str(item);
         }
         first = false;
-        pyser::write(&mut object, key, Style::Compact);
-        object.push(':');
+        pyser::write(&mut object, key, style);
+        object.push_str(key_sep);
         if key == "calendar" {
             object.push('[');
             object.push_str(&rows_text);
             object.push(']');
         } else {
-            field.write(&mut object, Style::Compact);
+            field.write(&mut object, style);
         }
     }
     object.push('}');
@@ -367,15 +319,12 @@ pub fn year_calendar_text(
     } else {
         Embed::Full
     };
-    let built = months_in_parallel(bs_year, location, embed, |month| match how.era {
-        Some(_) => month_text(&month.to_value(), shape, how),
-        None => Some(month_text_plain(&month, shape)),
+    let built = months_in_parallel(bs_year, location, embed, |month| {
+        month_text(&month, shape, how)
     });
     let mut months = Vec::with_capacity(12);
     for month in built {
-        if let Some(text) = month? {
-            months.push(text);
-        }
+        months.push(month?);
     }
     let (style, item, key) = (how.style(), how.item(), how.key());
     let field = |out: &mut String, name: &str, first: bool| {

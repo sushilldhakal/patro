@@ -428,38 +428,42 @@ fn instant_row(
     bs_day: u32,
     clock: &str,
     location: &Location,
-) -> Result<Map<String, Value>, MonthError> {
+) -> Result<Fields, MonthError> {
     let snap = crate::at_time::at_time_on_day(day, clock, location).map_err(|e| match e {
         DayError::NotPorted(_) => MonthError::NotPorted("clock= month grids before 1582-10-15"),
         other => MonthError::BadRequest(other.to_string()),
     })?;
-    let name = |block: &str, key: &str| snap[block].get(key).cloned().unwrap_or(Value::Null);
-    let sun = |key: &str| snap["sun"].get(key).cloned().unwrap_or(Value::Null);
-    let mut r = Map::new();
+    let top = |key: &str| snap.get(key).map_or(Value::Null, Cow::into_owned);
+    let block = |block: &str, key: &str| {
+        snap.get(block)
+            .and_then(|b| b.get(key).cloned())
+            .unwrap_or(Value::Null)
+    };
+    let mut r = Fields::new();
     for (k, v) in [
         ("day", json!(bs_day)),
         ("date_ad", json!(day.to_string())),
-        ("weekday", snap["weekday"].clone()),
-        ("weekday_ne", snap["weekday"].clone()),
-        ("weekday_en", snap["weekday_en"].clone()),
-        ("tithi", snap["tithi"]["name"].clone()),
-        ("tithi_ne", name("tithi", "name_ne")),
-        ("nakshatra", snap["nakshatra"]["name"].clone()),
-        ("nakshatra_ne", name("nakshatra", "name_ne")),
-        ("yoga", snap["yoga"]["name"].clone()),
-        ("yoga_ne", name("yoga", "name_ne")),
-        ("karana", snap["karana"]["name"].clone()),
-        ("karana_ne", name("karana", "name_ne")),
-        ("sunrise", sun("sunrise")),
-        ("sunset", sun("sunset")),
+        ("weekday", top("weekday")),
+        ("weekday_ne", top("weekday")),
+        ("weekday_en", top("weekday_en")),
+        ("tithi", block("tithi", "name")),
+        ("tithi_ne", block("tithi", "name_ne")),
+        ("nakshatra", block("nakshatra", "name")),
+        ("nakshatra_ne", block("nakshatra", "name_ne")),
+        ("yoga", block("yoga", "name")),
+        ("yoga_ne", block("yoga", "name_ne")),
+        ("karana", block("karana", "name")),
+        ("karana_ne", block("karana", "name_ne")),
+        ("sunrise", block("sun", "sunrise")),
+        ("sunset", block("sun", "sunset")),
         ("mode", json!("ephemeris")),
-        ("query_instant", snap["query_instant"].clone()),
+        ("query_instant", top("query_instant")),
     ] {
-        r.insert(k.to_owned(), v);
+        r.insert_tree(k, v);
     }
     let abhijit = match snap.get("abhijit") {
-        Some(a) if truthy(Some(a)) => a.clone(),
-        _ => snap["muhurta"]["abhijit"].clone(),
+        Some(a) if truthy(Some(&a)) => a.into_owned(),
+        _ => block("muhurta", "abhijit"),
     };
     let text = |key: &str| {
         abhijit
@@ -479,9 +483,9 @@ fn instant_row(
         }
         _ => None,
     };
-    r.insert("panchanga".into(), snap);
+    r.insert("panchanga", Field::Nested(Arc::new(snap)));
     if let Some(ab) = abhijit_row {
-        r.insert("abhijit".into(), ab);
+        r.insert_tree("abhijit", ab);
     }
     Ok(r)
 }
@@ -500,7 +504,7 @@ pub fn month_calendar_at_clock(
     clock: &str,
     international: International,
     embed: Embed,
-) -> Result<Value, MonthError> {
+) -> Result<Fields, MonthError> {
     if !(1..=12).contains(&bs_month) {
         return Err(MonthError::BadRequest("bs_month must be 1..12".into()));
     }
@@ -519,24 +523,25 @@ pub fn month_calendar_at_clock(
             .as_ref()
             .map(|f| f.on_day(day))
             .unwrap_or_default();
-        r.insert("festivals".into(), festival_names(&todays, international));
+        r.insert_tree("festivals", festival_names(&todays, international));
         match embed {
             Embed::Lite => {
-                r.shift_remove("panchanga");
+                r.remove("panchanga");
             }
             Embed::FullSlim => {
-                if let Some(Value::Object(fields)) = r.get_mut("panchanga") {
+                if let Some(Field::Nested(fields)) = r.field_mut("panchanga") {
+                    let fields = Arc::make_mut(fields);
                     for key in MONTH_EMBED_SLIM_DROP_KEYS {
-                        fields.shift_remove(key);
+                        fields.remove(key);
                     }
-                    if truthy(fields.get("udaya_lagna")) {
-                        fields.shift_remove("lagna_spans");
+                    if truthy(fields.get("udaya_lagna").as_deref()) {
+                        fields.remove("lagna_spans");
                     }
                 }
             }
             Embed::Full => {}
         }
-        rows.push(Value::Object(r));
+        rows.push(r);
     }
     let mid = start.add_days(i32::try_from(length.min(15)).unwrap_or(1) - 1);
     let mid_raw = patro_day_raw(
@@ -549,40 +554,37 @@ pub fn month_calendar_at_clock(
         },
         RawDetail::Light,
     )?;
-    let lunar = &mid_raw.tree()["lunar_month"];
-    let mut out = Map::new();
-    out.insert("year_bs".into(), json!(bs_year));
-    out.insert("month_bs".into(), json!(bs_month));
-    out.insert(
-        "month_name".into(),
-        json!(BS_MONTH_NAMES[bs_month as usize - 1]),
-    );
-    out.insert(
-        "month_name_ne".into(),
+    let lunar = value_of(mid_raw.fields(), "lunar_month");
+    let mut out = Fields::new();
+    out.insert_tree("year_bs", json!(bs_year));
+    out.insert_tree("month_bs", json!(bs_month));
+    out.insert_tree("month_name", json!(BS_MONTH_NAMES[bs_month as usize - 1]));
+    out.insert_tree(
+        "month_name_ne",
         json!(BS_MONTH_NAMES_NE[bs_month as usize - 1]),
     );
-    out.insert("month_start_ad".into(), json!(start.to_string()));
-    out.insert("month_length".into(), json!(length));
-    out.insert("lunar_month".into(), lunar["name"].clone());
-    out.insert("lunar_month_full".into(), lunar["full_name"].clone());
-    out.insert(
-        "lunar_month_is_adhik".into(),
+    out.insert_tree("month_start_ad", json!(start.to_string()));
+    out.insert_tree("month_length", json!(length));
+    out.insert_tree("lunar_month", lunar["name"].clone());
+    out.insert_tree("lunar_month_full", lunar["full_name"].clone());
+    out.insert_tree(
+        "lunar_month_is_adhik",
         lunar.get("is_adhik").cloned().unwrap_or(json!(false)),
     );
-    out.insert("lunar_month_type".into(), lunar["type"].clone());
-    out.insert("location".into(), location.as_json());
-    out.insert("mode".into(), json!("ephemeris"));
-    out.insert("clock".into(), json!(clock));
-    out.insert("calendar".into(), Value::Array(rows));
+    out.insert_tree("lunar_month_type", lunar["type"].clone());
+    out.insert_tree("location", location.as_json());
+    out.insert_tree("mode", json!("ephemeris"));
+    out.insert_tree("clock", json!(clock));
+    out.insert("calendar", Field::List(rows.into()));
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,
         reason = "a weekday index is 0-6"
     )]
     let first_weekday = ((start.to_jd_ut() + 0.5) % 7.0) as u32;
-    out.insert("first_weekday".into(), json!(first_weekday));
-    out.insert("limits".into(), browse_limits());
-    Ok(Value::Object(out))
+    out.insert_tree("first_weekday", json!(first_weekday));
+    out.insert_tree("limits", browse_limits());
+    Ok(out)
 }
 
 /// The civil day a BS date falls on (used by callers to check ranges).
@@ -671,7 +673,7 @@ pub fn ad_month_calendar(
     location: &Location,
     international: International,
     embed: Embed,
-) -> Result<Value, MonthError> {
+) -> Result<Fields, MonthError> {
     gregorian_month_calendar(
         GregorianEra::Ad,
         ad_year,
@@ -704,7 +706,7 @@ pub fn gregorian_month_calendar(
     location: &Location,
     international: International,
     embed: Embed,
-) -> Result<Value, MonthError> {
+) -> Result<Fields, MonthError> {
     if !(1..=12).contains(&browse_month) {
         return Err(MonthError::BadRequest("month must be 1..12".into()));
     }
@@ -737,66 +739,71 @@ pub fn gregorian_month_calendar(
             Vec::new()
         };
         let base = row(day.day, &day.to_string(), p, &todays, international);
-        let mut r = Map::new();
-        r.insert("day".into(), json!(day.day));
-        r.insert("date_ad".into(), json!(day.to_string()));
-        r.insert("day_bs".into(), json!(bs.day));
-        r.insert("month_bs".into(), json!(bs.month));
-        r.insert("year_bs".into(), json!(bs.year));
+        let mut r = Fields::new();
+        r.insert_tree("day", json!(day.day));
+        r.insert_tree("date_ad", json!(day.to_string()));
+        r.insert_tree("day_bs", json!(bs.day));
+        r.insert_tree("month_bs", json!(bs.month));
+        r.insert_tree("year_bs", json!(bs.year));
         if let Value::Object(fields) = base {
             for (k, v) in fields {
                 if k != "day" && k != "date_ad" {
-                    r.insert(k, v);
+                    r.insert_tree(k, v);
                 }
             }
         }
         if embed != Embed::Lite {
             r.insert(
-                "panchanga".into(),
-                embed_for(day, location, &daily, embed, Grid::Gregorian).to_value(),
+                "panchanga",
+                Field::Nested(Arc::new(embed_for(
+                    day,
+                    location,
+                    &daily,
+                    embed,
+                    Grid::Gregorian,
+                ))),
             );
         }
-        rows.push(Value::Object(r));
+        rows.push(r);
         if offset == 14.min(length - 1) {
             mid_lunar = value_of(p, "lunar_month");
         }
     }
     let label = AD_MONTH_NAMES[start.add_days(14.min(length - 1)).month as usize - 1];
-    let mut out = Map::new();
-    out.insert(
-        "era".into(),
+    let mut out = Fields::new();
+    out.insert_tree(
+        "era",
         json!(if era == GregorianEra::Ad { "ad" } else { "bc" }),
     );
-    out.insert("month_ad".into(), json!(browse_month));
-    out.insert(
-        "year_bs".into(),
+    out.insert_tree("month_ad", json!(browse_month));
+    out.insert_tree(
+        "year_bs",
         if bs_years.len() == 1 {
             json!(bs_years[0])
         } else {
             Value::Null
         },
     );
-    out.insert("month_bs".into(), Value::Null);
-    out.insert("month_name".into(), json!(label));
-    out.insert("month_name_ne".into(), json!(label));
-    out.insert("month_start_ad".into(), json!(start.to_string()));
-    out.insert("month_length".into(), json!(length));
-    out.insert("lunar_month".into(), mid_lunar["name"].clone());
-    out.insert("lunar_month_full".into(), mid_lunar["full_name"].clone());
-    out.insert(
-        "lunar_month_is_adhik".into(),
+    out.insert_tree("month_bs", Value::Null);
+    out.insert_tree("month_name", json!(label));
+    out.insert_tree("month_name_ne", json!(label));
+    out.insert_tree("month_start_ad", json!(start.to_string()));
+    out.insert_tree("month_length", json!(length));
+    out.insert_tree("lunar_month", mid_lunar["name"].clone());
+    out.insert_tree("lunar_month_full", mid_lunar["full_name"].clone());
+    out.insert_tree(
+        "lunar_month_is_adhik",
         mid_lunar.get("is_adhik").cloned().unwrap_or(json!(false)),
     );
-    out.insert("lunar_month_type".into(), mid_lunar["type"].clone());
-    out.insert("location".into(), location.as_json());
-    out.insert("calendar".into(), Value::Array(rows));
-    out.insert(
+    out.insert_tree("lunar_month_type", mid_lunar["type"].clone());
+    out.insert_tree("location", location.as_json());
+    out.insert("calendar", Field::List(rows.into()));
+    out.insert_tree(
         if era == GregorianEra::Ad {
             "year_ad"
         } else {
             "year_bc"
-        }
-        .into(),
+        },
         json!(browse_year),
     );
     #[expect(
@@ -805,7 +812,7 @@ pub fn gregorian_month_calendar(
         reason = "a weekday index is 0-6"
     )]
     let first_weekday = ((start.to_jd_ut() + 0.5).rem_euclid(7.0)) as u32;
-    out.insert("first_weekday".into(), json!(first_weekday));
-    out.insert("limits".into(), browse_limits());
-    Ok(Value::Object(out))
+    out.insert_tree("first_weekday", json!(first_weekday));
+    out.insert_tree("limits", browse_limits());
+    Ok(out)
 }

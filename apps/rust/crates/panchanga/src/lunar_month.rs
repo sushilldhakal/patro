@@ -9,8 +9,9 @@ use std::sync::{Arc, LazyLock};
 
 use astronomy::engine::{Observer, rise_set_on_day, sun_longitude};
 use astronomy::surya_siddhanta::{Body, Crossing};
+use astronomy::{angles::Anga, events::next_entry, position::SuryaSiddhanta};
 use serde_json::{Value, json};
-use timescale::{CivilDay, Moment, UtcInstant};
+use timescale::{CivilDay, Moment, PyInstant, UtcInstant};
 
 use crate::{
     angas::{Paksha, tithi},
@@ -54,8 +55,10 @@ fn sun_rashi_at(at: UtcInstant) -> usize {
         .expect("rashi index is non-negative")
 }
 
-/// `find_next_tithi`: start of the next instant with this tithi, scanning in 12-hour
-/// steps for `within_days`.
+/// `find_next_tithi`: when this tithi begins: the start of the one in force at
+/// `after`, or the next one to begin within `within_days`. Read from the event
+/// engine's boundary tables (Python scanned in 12-hour steps for the same answer: a
+/// tithi always lasts longer than 12 hours, so the scan never skipped one).
 pub(crate) fn find_next_tithi(
     display: u32,
     paksha: Paksha,
@@ -67,15 +70,21 @@ pub(crate) fn find_next_tithi(
     } else {
         display
     };
-    let end = after.add_micros(within_days * MICROS_PER_DAY);
-    let mut search = after;
-    while search < end {
-        if tithi(search.to_jd()).number == target {
-            return Some(tithi_start(search));
-        }
-        search = search.add_hours(12);
+    if tithi(after.to_jd()).number == target {
+        return Some(tithi_start(after));
     }
-    None
+    // Tithi `n` begins where the elongation reaches the multiple `n − 1` of 12°.
+    let entry = next_entry(
+        &SuryaSiddhanta,
+        Anga::Tithi,
+        (target - 1) % 30,
+        after.to_jd(),
+    );
+    let end = after.add_micros(within_days * MICROS_PER_DAY);
+    if !entry.jd.is_finite() || entry.jd >= end.to_jd() {
+        return None;
+    }
+    after.at_boundary(entry.jd)
 }
 
 fn find_purnima(after: UtcInstant) -> Option<UtcInstant> {
@@ -665,7 +674,27 @@ fn bs_civil_fifteenth(
 /// sankrantis in one lunar month skip a masa name, and that masa's lunar festivals
 /// are not observed in that cycle (owner's rule; Python fell back to a neighbouring
 /// year's date). Each window is the kshaya month's civil span (UTC dates).
-fn kshaya_drops(name: &str, gregorian_year: i32) -> Vec<(CivilDay, CivilDay)> {
+///
+/// Every festival of a masa asks the same question for its year, so the answer is
+/// kept (keyed by the masa's place in [`BS_MONTH_NAMES`]).
+fn kshaya_drops(name: &str, gregorian_year: i32) -> Arc<[KshayaWindow]> {
+    static DROPS: LazyLock<Memo<(usize, i32), [KshayaWindow]>> =
+        LazyLock::new(|| Memo::new(KSHAYA_DROPS_CAPACITY));
+    let Some(masa) = BS_MONTH_NAMES.iter().position(|n| *n == name) else {
+        return Arc::from(Vec::new());
+    };
+    DROPS.get_or_insert_with(&(masa, gregorian_year), || {
+        Arc::from(kshaya_drops_uncached(BS_MONTH_NAMES[masa], gregorian_year))
+    })
+}
+
+/// A kshaya month's civil span (first and last UTC dates).
+type KshayaWindow = (CivilDay, CivilDay);
+
+/// Masa-years of kshaya drops kept in memory (twelve masas over a few hundred years).
+const KSHAYA_DROPS_CAPACITY: usize = 4096;
+
+fn kshaya_drops_uncached(name: &str, gregorian_year: i32) -> Vec<KshayaWindow> {
     [gregorian_year - 1, gregorian_year]
         .into_iter()
         .filter(|y| kshaya_possible(*y))

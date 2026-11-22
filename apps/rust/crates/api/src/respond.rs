@@ -273,30 +273,11 @@ pub(crate) fn json_payload(
     )
 }
 
-/// [`json_payload`] for a route that returns its own `JSONResponse` with cache
-/// headers but no `Vary` of its own (the day and at-time routes): `Vary` is then
-/// only what `GZipMiddleware` adds.
-pub(crate) fn json_response_payload(
-    payload: &Value,
-    q: &Query,
-    request_headers: &HeaderMap,
-    cache_control: &str,
-    cdn_cache_control: Option<&str>,
-    started: Instant,
-) -> Response {
-    cached_json(
-        payload,
-        q,
-        request_headers,
-        (cache_control, cdn_cache_control),
-        started,
-        RouteVary::None,
-    )
-}
-
-/// [`json_response_payload`] for a day state held as typed fields: written straight to
-/// text (sharing the day payload's blocks, never building the tree), or rendered as a
-/// tree for a request that names an era.
+/// [`json_payload`] for a route that returns its own `JSONResponse` with cache headers
+/// but no `Vary` of its own (the day and at-time routes; `Vary` is then only what
+/// `GZipMiddleware` adds), for a payload held as typed fields: written straight to
+/// text (sharing the day payload's blocks, never building the tree), rendered field by
+/// field for a request that names an era.
 pub(crate) fn json_response_fields(
     fields: &panchanga::payload::Fields,
     q: &Query,
@@ -349,10 +330,7 @@ fn send_fields(
         Some(era) => {
             drop(compact);
             let language = era_language_of(q, &era);
-            dumps(
-                &patro::era::render_for_era(&fields.to_value(), &era, &language),
-                Style::Default,
-            )
+            patro::era::render_fields_for_era(fields, &era, &language).to_text(Style::Default)
         }
     };
     send_cached(

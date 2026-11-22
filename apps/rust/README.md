@@ -118,10 +118,28 @@ from it instead of searching again.
   (`month_fields`) share the payload's blocks instead of copying them, and the day,
   month and year routes write them straight to text with `common::pyser` (the same
   bytes as `pyjson::dumps`, checked against every recorded body in
-  `tests/pyser_matches_dumps.rs`). A request naming an era still renders a tree.
+  `tests/pyser_matches_dumps.rs`). Every panchanga route is typed now: the AD/BC
+  month grids (`gregorian_month_calendar`), the clock grid (`month_calendar_at_clock`,
+  each row embedding its day's at-time state), `reference=midnight`
+  (`midnight_day_state`, which overlays the midnight angas on the day's shared
+  state) and the at-time route (`at_time_fields`, the instant's blocks laid over the
+  udaya day's state).
+- Era rendering works on `Fields` (`era::render_fields_for_era`, `render_fields_part`):
+  labels beside every Julian Day and the `date_parts` alignment are applied field by
+  field, and a block or tree that holds no Julian Day key and no `date_parts` (found
+  by `common::keyprobe`, a serde walk that writes nothing) stays shared and is written
+  as is. `patro/tests/typed_paths.rs` pins every typed route against its tree, plain
+  and in every era.
 - The year view is streamed (`year_calendar_text`): each month is built, written and
-  freed on its worker; `patro/tests/year_text.rs` pins the bytes against the tree path
-  in every era.
+  freed on its worker (rendered for an era as typed fields too);
+  `patro/tests/year_text.rs` pins the bytes against the tree path in every era.
+- JSON text: `pyjson::write_str` scans with a lookup table, and floats inside Python's
+  fixed-notation range are written in place (`write_float`, Rust's shortest digits
+  plus `.0`; 400k doubles checked against `float_repr`).
+- Festivals: `find_next_tithi` reads the next tithi entry from the event engine instead
+  of scanning in 12-hour steps, and the kshaya windows of a masa-year are memoized
+  (every festival of a masa asked the same question). Festival lists for 1950–2100
+  (Kathmandu and New York) and sample years to 3000 are byte-identical to before.
 - Nearest city: `geography::Cities` keeps every city's position in memory, sorted as
   SQLite's latitude index, and searches it by binary search; `nearest_index.rs`
   compares it with the old bounding-box query, ties included.

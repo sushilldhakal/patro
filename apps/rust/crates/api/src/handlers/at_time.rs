@@ -13,7 +13,7 @@ use axum::{
 };
 use patro::{
     at_time::{
-        AtInstant, CACHE_CONTROL, InstantQuery, at_time_payload, at_time_payload_jd,
+        AtInstant, CACHE_CONTROL, InstantQuery, at_time_fields, at_time_fields_jd,
         resolve_instant_any,
     },
     date_key::{py_int, to_jd},
@@ -22,7 +22,7 @@ use patro::{
 
 use crate::{
     respond::{
-        Query, detail, detail_json, era_400, era_error, json_response_payload, siddhanta_error,
+        Query, detail, detail_json, era_400, era_error, json_response_fields, siddhanta_error,
     },
     state::AppState,
 };
@@ -111,11 +111,11 @@ pub(crate) async fn panchanga_at_time(
         clock: q.get("clock").map(String::as_str),
     };
     let payload = match resolve_instant_any(query, &location).and_then(|instant| match instant {
-        AtInstant::Utc(utc) => at_time_payload(utc, &location),
-        AtInstant::Jd(jd) => at_time_payload_jd(jd, &location),
+        AtInstant::Utc(utc) => at_time_fields(utc, &location),
+        AtInstant::Jd(jd) => at_time_fields_jd(jd, &location),
     }) {
         Ok(payload) => payload,
         Err(error) => return day_error(error),
     };
-    json_response_payload(&payload, &q, &headers, CACHE_CONTROL, None, started)
+    json_response_fields(&payload, &q, &headers, CACHE_CONTROL, None, started)
 }

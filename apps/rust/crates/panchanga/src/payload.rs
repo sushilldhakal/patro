@@ -29,6 +29,9 @@ pub trait Block: Send + Sync + fmt::Debug + Any {
     fn value(&self) -> Value;
     /// The block as [`Any`], to read it back as its own type.
     fn as_any(&self) -> &dyn Any;
+    /// Whether any object key inside the block, at any depth, passes `matches`
+    /// (walked without writing anything; see [`common::keyprobe::any_key`]).
+    fn any_key(&self, matches: &dyn Fn(&str) -> bool) -> bool;
 }
 
 impl<T: Serialize + Send + Sync + fmt::Debug + 'static> Block for T {
@@ -40,6 +43,9 @@ impl<T: Serialize + Send + Sync + fmt::Debug + 'static> Block for T {
     }
     fn as_any(&self) -> &dyn Any {
         self
+    }
+    fn any_key(&self, matches: &dyn Fn(&str) -> bool) -> bool {
+        common::keyprobe::any_key(self, matches)
     }
 }
 
@@ -174,6 +180,28 @@ impl Fields {
     #[must_use]
     pub fn field(&self, key: &str) -> Option<&Field> {
         self.0.iter().find(|(k, _)| k == key).map(|(_, f)| f)
+    }
+
+    /// The field at `key`, to change in place.
+    pub fn field_mut(&mut self, key: &str) -> Option<&mut Field> {
+        self.0.iter_mut().find(|(k, _)| k == key).map(|(_, f)| f)
+    }
+
+    /// The fields, in order, to change in place.
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&str, &mut Field)> {
+        self.0.iter_mut().map(|(k, f)| (&**k, f))
+    }
+
+    /// The number of fields.
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Whether there are no fields.
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     /// The field at `key` as a tree (borrowed when it is one).

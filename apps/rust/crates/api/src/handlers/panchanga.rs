@@ -13,7 +13,6 @@ use axum::{
 };
 use geography::{LocationError, LocationQuery};
 use panchanga::daily::Location;
-use panchanga::payload::Fields;
 use patro::presentation::{Locale, MonthStyle};
 use patro::{
     month::{Embed, International, MonthError, month_fields},
@@ -290,8 +289,7 @@ pub(crate) async fn month(
                 &clock,
                 international,
                 embed,
-            )
-            .map(Fields::from_value),
+            ),
             None => month_fields(signed, month_u, &loc, international, embed),
         }
     })
@@ -381,7 +379,7 @@ pub(crate) async fn ad_month(
     })
     .await;
     match built {
-        Ok(Ok(payload)) => json_payload(
+        Ok(Ok(payload)) => json_payload_fields(
             &payload,
             &q,
             &headers,
@@ -446,7 +444,7 @@ pub(crate) async fn bc_month(
     match built {
         // `bs_year_cache_control(-bc_year)`: always a past year.
         Ok(Ok(payload)) => {
-            json_payload(&payload, &q, &headers, year_directive(-year), None, started)
+            json_payload_fields(&payload, &q, &headers, year_directive(-year), None, started)
         }
         Ok(Err(e)) => month_error(e),
         Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
