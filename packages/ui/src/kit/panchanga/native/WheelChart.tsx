@@ -1,5 +1,5 @@
 import { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { Animated, View, type ImageSourcePropType } from "react-native";
+import { Animated, StyleSheet, View, type ImageSourcePropType } from "react-native";
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { EASE_OUT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -1156,6 +1156,28 @@ function WheelChartImpl({
   }, [degreeStep, numberEvery1, selectedDeg, spin, pol, FONT]);
 
   const { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels } = staticLayers;
+  /* One element for the whole static layer, so a time change re-renders nothing inside it. */
+  const staticSvg = useMemo(
+    () => (
+      <>
+        <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
+        {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
+          <Circle key={`rc${k}`} cx={CX} cy={CY} r={rad} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
+        ))}
+        <Circle cx={CX} cy={CY} r={R.core} fill="none" stroke={W_RIM} strokeWidth={1.1} opacity={0.7} />
+
+        {rashiSegs}
+        {nakSegs}
+        {padaCells}
+        {rashiRays}
+        {nakDecor}
+        {rashiDecor}
+
+        {gregLabels}
+      </>
+    ),
+    [nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, rashiRays, gregLabels],
+  );
   const { markerNodes, innerRings, core, bsLabels } = dataLayers;
 
   /* The committed zoom and pan are drawn by the SVG itself, through its viewBox, so the wheel is
@@ -1196,21 +1218,20 @@ function WheelChartImpl({
           renderToHardwareTextureAndroid={zoom <= 1}
         >
         <View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, top: -bleedTop, bottom: -bleedBottom }}>
+        {/* Two layers, same viewBox. The bottom one holds what changes only with spin, selection
+            or zoom: rings, segments and their labels, most of the ~900 nodes. The top one holds
+            what follows the time: day labels, inner rings, the core, the grahas and the degree
+            ring. iOS react-native-svg redraws a whole <Svg> and rebuilds every glyph path when
+            any child changes; with one <Svg>, the 20 s "now" tick, a picked time or playback
+            blocked the main thread for ~3 s on an iPhone 11 (Sentry PATRO-Q). Keep time-driven
+            nodes out of the static layer. */}
+        <View pointerEvents="none" style={WHEEL_LAYER}>
         <Svg viewBox={viewBox} width="100%" height="100%" pointerEvents="none">
-        <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
-        {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
-          <Circle key={`rc${k}`} cx={CX} cy={CY} r={rad} fill="none" stroke={W_RIM} strokeWidth={0.8} opacity={0.55} />
-        ))}
-        <Circle cx={CX} cy={CY} r={R.core} fill="none" stroke={W_RIM} strokeWidth={1.1} opacity={0.7} />
-
-        {rashiSegs}
-        {nakSegs}
-        {padaCells}
-        {rashiRays}
-        {nakDecor}
-        {rashiDecor}
-
-        {gregLabels}
+          {staticSvg}
+        </Svg>
+        </View>
+        <View pointerEvents="none" style={WHEEL_LAYER}>
+        <Svg viewBox={viewBox} width="100%" height="100%" pointerEvents="none">
         {bsLabels}
 
         {innerRings}
@@ -1219,6 +1240,7 @@ function WheelChartImpl({
         {degreeRing}
       </Svg>
         </View>
+        </View>
         </Animated.View>
         </Reanimated.View>
       </Animated.View>
@@ -1226,6 +1248,8 @@ function WheelChartImpl({
     </GestureDetector>
   );
 }
+
+const WHEEL_LAYER = StyleSheet.absoluteFill;
 
 function WheelChartBound(props: WheelChartProps) {
   return (

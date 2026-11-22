@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
 import {
   fetchHolidays,
   fetchPanchanga,
@@ -194,6 +195,35 @@ async function gather(timezone: string, location: LocationParams | undefined): P
     windows: merged,
     panchanga,
   };
+}
+
+/** How long one widget gather is reused before the network is asked again. */
+const GATHER_REUSE_MS = 5 * 60_000;
+const gatherCache = new Map<string, { at: number; today: string; data: Promise<Built> }>();
+
+/**
+ * `gather`, shared. App start, foreground, the notification sync and the guest refresh each
+ * refresh the widget, often within a second of each other, and every call fetched the same three
+ * months, the holidays and four panchanga days again (Sentry PATRO-F, four identical batches in
+ * two seconds). Calls with the same place and calculation share one in-flight gather and reuse its result for
+ * five minutes, or until the date changes. A gather that failed to get this month is not kept.
+ */
+function gatherShared(timezone: string, location: LocationParams | undefined): Promise<Built> {
+  const key = `${calculationKey()}|${timezone}|${JSON.stringify(location ?? null)}`;
+  const today = todayIn(timezone);
+  const hit = gatherCache.get(key);
+  if (hit && hit.today === today && Date.now() - hit.at < GATHER_REUSE_MS) return hit.data;
+  const data = gather(timezone, location);
+  gatherCache.set(key, { at: Date.now(), today, data });
+  data.then(
+    (built) => {
+      if (built.months.length === 0 && gatherCache.get(key)?.data === data) gatherCache.delete(key);
+    },
+    () => {
+      if (gatherCache.get(key)?.data === data) gatherCache.delete(key);
+    },
+  );
+  return data;
 }
 
 /** The snapshot for `today` (a timeline entry can be built for tomorrow from the same data). */
@@ -419,7 +449,7 @@ export async function refreshTodayWidget(options: {
   const all = (["TodayWidget", "MonthWidget", "AgendaWidget", "PanchangaWidget"] as const).map(load).filter((w): w is Widget => w != null);
   if (all.length === 0) return;
   const { lang, timezone, events, location } = options;
-  const data = await gather(timezone, location);
+  const data = await gatherShared(timezone, location);
   const tomorrowIso = shiftDate(data.today, 1);
   // Local midnight in the place's zone, as an instant.
   const offset = Date.parse(`${data.today}T12:00:00Z`) - Date.parse(`${isoToZoned(`${data.today}T12:00:00Z`, timezone).date}T${isoToZoned(`${data.today}T12:00:00Z`, timezone).time}:00Z`);
