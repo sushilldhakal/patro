@@ -60,8 +60,12 @@ fn interned(zone: &Zone) -> &'static Zone {
         .get_or_init(|| Mutex::new(HashMap::new()))
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
-    map.entry(zone.name().to_owned())
-        .or_insert_with(|| Box::leak(Box::new(zone.clone())))
+    if let Some(known) = map.get(zone.name()) {
+        return known;
+    }
+    let leaked: &'static Zone = Box::leak(Box::new(zone.clone()));
+    map.insert(zone.name().to_owned(), leaked);
+    leaked
 }
 
 impl ZonedInstant {

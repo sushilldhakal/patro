@@ -153,6 +153,13 @@ from it instead of searching again.
 - Nearest city: `geography::Cities` keeps every city's position in memory, sorted as
   SQLite's latitude index, and searches it by binary search; `nearest_index.rs`
   compares it with the old bounding-box query, ties included.
+- Hot-path hashing: the anga-boundary cache keys are small internal numbers, so
+  `astronomy::cache` hashes them with an Fx-style multiply (not `SipHash`), and
+  `timescale::ZonedInstant::new` looks the interned zone up by `&str` instead of
+  allocating a `String` per instant. A cold run (60 Gregorian months + 21 lite years,
+  debug build) went from 15.0 s to 11.0 s; memory is unchanged (~148 MB). The
+  month, midnight, at-time and era routes were already typed `Fields`
+  (`crates/patro/tests/typed_paths.rs` pins them against the tree paths).
 - Contract: the API's shape is Python's, because the mobile and web apps read it:
   the same routes, keys in the same order, types, lists, names and integers. The
   *values* are the engine's own. Boundaries are the engine's solved times, printed

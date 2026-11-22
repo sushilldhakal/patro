@@ -7,23 +7,76 @@
 
 use std::{
     collections::HashMap,
-    hash::{BuildHasher, Hash, RandomState},
+    hash::{BuildHasher, BuildHasherDefault, Hash, Hasher},
     sync::{Mutex, PoisonError},
 };
 
 const SHARDS: usize = 16;
 
+/// A multiply-rotate hasher (the `FxHash` scheme) for the cache's small fixed-size
+/// keys. The keys are internal numbers, never request text, so `SipHash`'s
+/// collision resistance would only cost time on this hot path.
+#[derive(Debug, Default, Clone, Copy)]
+struct FastHasher(u64);
+
+const SEED: u64 = 0x51_7c_c1_b7_27_22_0a_95;
+
+impl FastHasher {
+    fn add(&mut self, word: u64) {
+        self.0 = (self.0.rotate_left(5) ^ word).wrapping_mul(SEED);
+    }
+}
+
+impl Hasher for FastHasher {
+    fn write(&mut self, bytes: &[u8]) {
+        for chunk in bytes.chunks(8) {
+            let mut word = [0u8; 8];
+            word[..chunk.len()].copy_from_slice(chunk);
+            self.add(u64::from_le_bytes(word));
+        }
+    }
+
+    fn write_u8(&mut self, i: u8) {
+        self.add(u64::from(i));
+    }
+
+    fn write_u32(&mut self, i: u32) {
+        self.add(u64::from(i));
+    }
+
+    fn write_u64(&mut self, i: u64) {
+        self.add(i);
+    }
+
+    fn write_i64(&mut self, i: i64) {
+        self.add(u64::from_ne_bytes(i.to_ne_bytes()));
+    }
+
+    fn write_usize(&mut self, i: usize) {
+        self.add(i as u64);
+    }
+
+    fn finish(&self) -> u64 {
+        // The multiply leaves the entropy in the high bits; one more round folds it
+        // down so the low bits (shard and bucket choice) are mixed too.
+        let m = self.0.wrapping_mul(0x9e37_79b9_7f4a_7c15);
+        m ^ (m >> 32)
+    }
+}
+
+type Fast = BuildHasherDefault<FastHasher>;
+
 #[derive(Debug)]
 struct Shard<K, V> {
-    hot: HashMap<K, V>,
-    cold: HashMap<K, V>,
+    hot: HashMap<K, V, Fast>,
+    cold: HashMap<K, V, Fast>,
 }
 
 /// A thread-safe cache holding roughly `capacity` recently used values.
 #[derive(Debug)]
 pub struct Cache<K, V> {
     per_shard: usize,
-    hasher: RandomState,
+    hasher: Fast,
     shards: [Mutex<Shard<K, V>>; SHARDS],
 }
 
@@ -34,11 +87,11 @@ impl<K: Eq + Hash, V: Clone> Cache<K, V> {
     pub fn new(capacity: usize) -> Self {
         Self {
             per_shard: (capacity / SHARDS).max(1),
-            hasher: RandomState::new(),
+            hasher: Fast::default(),
             shards: std::array::from_fn(|_| {
                 Mutex::new(Shard {
-                    hot: HashMap::new(),
-                    cold: HashMap::new(),
+                    hot: HashMap::default(),
+                    cold: HashMap::default(),
                 })
             }),
         }
@@ -111,6 +164,18 @@ mod tests {
             })
             .sum();
         assert!(held <= 64, "at most two generations: {held}");
+    }
+
+    #[test]
+    fn nearby_keys_spread_over_every_shard() {
+        let c: Cache<i64, u8> = Cache::new(64);
+        let mut hit = [false; SHARDS];
+        for k in 0..256_i64 {
+            let shard = std::ptr::from_ref(c.shard(&k));
+            let at = c.shards.iter().position(|s| std::ptr::eq(s, shard));
+            hit[at.expect("a shard of this cache")] = true;
+        }
+        assert!(hit.iter().all(|h| *h), "every shard is used: {hit:?}");
     }
 
     #[test]
