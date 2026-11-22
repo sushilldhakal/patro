@@ -88,7 +88,7 @@ fn conversions() {
 #[test]
 fn sankrantis_match_within_the_solver_tolerance() {
     for c in cases("sankranti") {
-        let got = find_sankranti_after_jd(u(&c[0]), c[1].as_f64().expect("jd"), 45);
+        let got = find_sankranti_after_jd(SS, u(&c[0]), c[1].as_f64().expect("jd"), 45);
         // Python bisected to a second; the engine solves the entry. Within 2.6 s.
         match (got, c[2].as_f64()) {
             (Some(g), Some(w)) => assert!((g - w).abs() < 3e-5, "sankranti {c}: rust {g} vs {w}"),
@@ -96,3 +96,5 @@ fn sankrantis_match_within_the_solver_tolerance() {
         }
     }
 }
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

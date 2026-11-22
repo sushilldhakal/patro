@@ -117,7 +117,7 @@ fn resolve_and_build_day(
     headers: &HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(q).or_else(|| siddhanta_error(q)) {
+    if let Some(r) = era_error(q).or_else(|| siddhanta_error(state, q)) {
         return r;
     }
     let location = match super::panchanga::location(q, state) {
@@ -200,7 +200,7 @@ pub(crate) async fn calendar_header(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -229,12 +229,13 @@ pub(crate) async fn calendar_header(
 
 /// `GET /v1/convert/ad-to-bs/{ad_date}`.
 pub(crate) async fn convert_ad_to_bs(
+    State(state): State<AppState>,
     Path(ad_date): Path<String>,
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let ad = match parse_ad_date(&ad_date) {
@@ -250,12 +251,13 @@ pub(crate) async fn convert_ad_to_bs(
 
 /// `GET /v1/convert/bs-to-ad/{bs_date}`.
 pub(crate) async fn convert_bs_to_ad(
+    State(state): State<AppState>,
     Path(bs_date): Path<String>,
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let payload = match patro::day::convert_bs_to_ad(&bs_date) {
@@ -324,7 +326,7 @@ pub(crate) async fn nepal_panchanga_day(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let loc = match location(&q, &state) {
@@ -392,7 +394,7 @@ pub(crate) async fn nepal_panchanga_month(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let (year, month) = match (

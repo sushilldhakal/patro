@@ -164,10 +164,11 @@ fn location(q: &Query, state: &AppState) -> Result<Location, Response> {
             })
             .transpose()?,
     };
-    geography::resolve_location(&query, &state.cities).map_err(|e| match e {
+    let resolved = geography::resolve_location(&query, &state.cities).map_err(|e| match e {
         LocationError::Invalid(msg) => detail_response(StatusCode::BAD_REQUEST, &msg),
         other => detail_response(StatusCode::SERVICE_UNAVAILABLE, &other.to_string()),
-    })
+    })?;
+    crate::respond::with_system(resolved, state, q)
 }
 
 fn current_bs_year() -> i32 {
@@ -211,12 +212,16 @@ fn validate_bs_year(bs_year: i32) -> Result<(), Response> {
     Ok(())
 }
 
-fn pre_checks(q: &Query) -> Option<Response> {
-    era_error(q).or_else(|| siddhanta_error(q))
+fn pre_checks(state: &AppState, q: &Query) -> Option<Response> {
+    era_error(q).or_else(|| siddhanta_error(state, q))
 }
 
-pub(crate) async fn categories(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(err) = pre_checks(&q) {
+pub(crate) async fn categories(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     match list_sait_categories() {
@@ -225,15 +230,23 @@ pub(crate) async fn categories(AxumQuery(q): AxumQuery<Query>, headers: HeaderMa
     }
 }
 
-pub(crate) async fn years(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(err) = pre_checks(&q) {
+pub(crate) async fn years(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     emit_json(&list_sait_years(), &q, &headers, None, RouteVary::None)
 }
 
-pub(crate) async fn about_all(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(err) = pre_checks(&q) {
+pub(crate) async fn about_all(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     match get_sait_about_all() {
@@ -243,11 +256,12 @@ pub(crate) async fn about_all(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap
 }
 
 pub(crate) async fn about_category(
+    State(state): State<AppState>,
     Path(category): Path<String>,
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(err) = pre_checks(&q) {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     match get_sait_about(&category) {
@@ -262,7 +276,7 @@ pub(crate) async fn month_all(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(err) = pre_checks(&q) {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     if let Err(err) = validate_bs_year(bs_year) {
@@ -284,7 +298,7 @@ pub(crate) async fn listing(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(err) = pre_checks(&q) {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     if let Err(err) = validate_bs_year(bs_year) {
@@ -306,7 +320,7 @@ pub(crate) async fn detail(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(err) = pre_checks(&q) {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     if let Err(err) = validate_bs_year(bs_year) {
@@ -359,7 +373,7 @@ pub(crate) async fn personalize(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(err) = pre_checks(&q) {
+    if let Some(err) = pre_checks(&state, &q) {
         return err;
     }
     if let Err(err) = validate_bs_year(bs_year) {

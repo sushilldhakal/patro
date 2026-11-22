@@ -21,19 +21,23 @@ fn instants(n: usize) -> impl Iterator<Item = UtcInstant> {
 }
 
 type Index = fn(f64) -> u32;
-type Finder = (&'static str, Index, fn(UtcInstant) -> UtcInstant);
+type Finder = (
+    &'static str,
+    Index,
+    fn(astronomy::System, UtcInstant) -> UtcInstant,
+);
 
 #[test]
 fn a_span_ends_when_the_next_anga_first_holds() {
     let finders: [Finder; 4] = [
-        ("tithi", |jd| tithi(jd).number, tithi_end),
-        ("nakshatra", |jd| nakshatra(jd).number, nakshatra_end),
-        ("yoga", |jd| yoga(jd).number, yoga_end),
-        ("karana", |jd| karana(jd).number, karana_end),
+        ("tithi", |jd| tithi(SS, jd).number, tithi_end),
+        ("nakshatra", |jd| nakshatra(SS, jd).number, nakshatra_end),
+        ("yoga", |jd| yoga(SS, jd).number, yoga_end),
+        ("karana", |jd| karana(SS, jd).number, karana_end),
     ];
     for at in instants(600) {
         for (name, index, end) in finders {
-            let e = end(at);
+            let e = end(SS, at);
             assert!(e > at, "{name} ends after {at}: {e}");
             assert_ne!(
                 index(e.to_jd()),
@@ -52,14 +56,14 @@ fn a_span_ends_when_the_next_anga_first_holds() {
 #[test]
 fn a_span_starts_when_its_own_anga_first_holds() {
     let finders: [Finder; 4] = [
-        ("tithi", |jd| tithi(jd).number, tithi_start),
-        ("nakshatra", |jd| nakshatra(jd).number, nakshatra_start),
-        ("yoga", |jd| yoga(jd).number, yoga_start),
-        ("karana", |jd| karana(jd).number, karana_start),
+        ("tithi", |jd| tithi(SS, jd).number, tithi_start),
+        ("nakshatra", |jd| nakshatra(SS, jd).number, nakshatra_start),
+        ("yoga", |jd| yoga(SS, jd).number, yoga_start),
+        ("karana", |jd| karana(SS, jd).number, karana_start),
     ];
     for at in instants(600) {
         for (name, index, start) in finders {
-            let s = start(at);
+            let s = start(SS, at);
             assert!(s <= at, "{name} starts by {at}: {s}");
             assert_eq!(
                 index(s.to_jd()),
@@ -79,9 +83,9 @@ fn a_span_starts_when_its_own_anga_first_holds() {
 fn a_tithi_and_a_karana_that_end_together_print_the_same_second() {
     // Every tithi end is a karana end; both read the same table, so never a second apart.
     for at in instants(600) {
-        let t = tithi_end(at);
+        let t = tithi_end(SS, at);
         assert_eq!(
-            karana_end(t.add_seconds(-2)),
+            karana_end(SS, t.add_seconds(-2)),
             t,
             "tithi and karana end together at {t}"
         );
@@ -92,21 +96,23 @@ fn a_tithi_and_a_karana_that_end_together_print_the_same_second() {
 fn the_moon_and_sun_spans_run_to_their_real_ends() {
     for at in instants(300) {
         // A Moon rashi lasts about two and a quarter days, a nakshatra about a day.
-        let rashi = moon_rashi_end(at).micros_since(at) / 3_600_000_000;
+        let rashi = moon_rashi_end(SS, at).micros_since(at) / 3_600_000_000;
         assert!(
             (0..=64).contains(&rashi),
             "moon rashi ends within 64 h, took {rashi} h at {at}"
         );
-        let pada = moon_pada_end(at).micros_since(at) / 3_600_000_000;
+        let pada = moon_pada_end(SS, at).micros_since(at) / 3_600_000_000;
         assert!(
             (0..=9).contains(&pada),
             "a pada ends within 9 h, took {pada} h at {at}"
         );
         // The Sun stays in a nakshatra about 13 days: the real end, not a 30 h window's edge.
-        let sun_days = sun_nakshatra_end(at).micros_since(at) / 86_400_000_000;
+        let sun_days = sun_nakshatra_end(SS, at).micros_since(at) / 86_400_000_000;
         assert!(
             (0..=15).contains(&sun_days),
             "sun nakshatra ends within 15 d, took {sun_days} d at {at}"
         );
     }
 }
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

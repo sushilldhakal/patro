@@ -33,8 +33,8 @@ pub(crate) fn gochar_error(error: GocharError) -> Response {
 }
 
 /// The common gate: era and siddhanta middleware errors.
-fn gate(q: &Query) -> Option<Response> {
-    era_error(q).or_else(|| siddhanta_error(q))
+fn gate(state: &AppState, q: &Query) -> Option<Response> {
+    era_error(q).or_else(|| siddhanta_error(state, q))
 }
 
 /// `GET /v1/nepal/gochar/{date_key}` (`era`, default `bs`; `upcoming`).
@@ -45,7 +45,7 @@ pub(crate) async fn gochar_day(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = gate(&q) {
+    if let Some(r) = gate(&state, &q) {
         return r;
     }
     let loc = match location(&q, &state) {
@@ -85,7 +85,7 @@ pub(crate) async fn gochar_jd(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = gate(&q) {
+    if let Some(r) = gate(&state, &q) {
         return r;
     }
     let Ok(jd_ut) = raw.trim().parse::<f64>() else {
@@ -124,7 +124,7 @@ pub(crate) async fn gochar_year_summary(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = gate(&q) {
+    if let Some(r) = gate(&state, &q) {
         return r;
     }
     let year = match path_int(&raw, "bs_year") {
@@ -183,7 +183,7 @@ pub(crate) async fn gochar_ingress_range(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = gate(&q) {
+    if let Some(r) = gate(&state, &q) {
         return r;
     }
     let loc = match location(&q, &state) {

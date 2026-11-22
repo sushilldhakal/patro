@@ -4,7 +4,7 @@ use serde::Serialize;
 use timescale::{PyInstant, Zone};
 
 use crate::{
-    angas::{karana, nakshatra, tithi},
+    angas::{karana, nakshatra_number, tithi},
     boundaries::{karana_end, moon_rashi_end, nakshatra_end, tithi_end},
     daily::{from_sunrise, py_min},
     text_tables::{
@@ -12,7 +12,10 @@ use crate::{
         SHIVAVASA,
     },
 };
-use astronomy::engine::{moon_longitude, sun_longitude};
+use astronomy::{
+    System,
+    engine::{moon_longitude, sun_longitude},
+};
 
 use crate::{angas::NAKSHATRA_SPAN, pyfloat::py_int};
 
@@ -121,13 +124,13 @@ struct Homahuti {
     is_auspicious: bool,
 }
 
-fn homahuti<I: PyInstant>(at: I) -> Homahuti {
+fn homahuti<I: PyInstant>(system: System, at: I) -> Homahuti {
     let jd = at.to_jd();
-    let mut sun_nak = py_int(sun_longitude(jd) / NAKSHATRA_SPAN) + 1;
+    let mut sun_nak = py_int(sun_longitude(system, jd) / NAKSHATRA_SPAN) + 1;
     if sun_nak > 27 {
         sun_nak = 1;
     }
-    let moon_nak = i64::from(nakshatra(jd).number);
+    let moon_nak = i64::from(nakshatra_number(system, jd));
     let distance = usize::try_from((moon_nak - sun_nak).rem_euclid(27)).unwrap_or(0);
     let (key, symbol, name_en, name_ne, is_auspicious) = HOMAHUTI_GRAHAS[(distance / 3) % 9];
     Homahuti {
@@ -139,12 +142,12 @@ fn homahuti<I: PyInstant>(at: I) -> Homahuti {
     }
 }
 
-fn moon_rashi_number<I: PyInstant>(at: I) -> usize {
-    usize::try_from(py_int(moon_longitude(at.to_jd()) / 30.0) % 12).unwrap_or(0) + 1
+fn moon_rashi_number<I: PyInstant>(system: System, at: I) -> usize {
+    usize::try_from(py_int(moon_longitude(system, at.to_jd()) / 30.0) % 12).unwrap_or(0) + 1
 }
 
-fn chandra_vasa<I: PyInstant>(at: I) -> Direction {
-    direction([2, 0, 3, 1][moon_rashi_number(at) % 4])
+fn chandra_vasa<I: PyInstant>(system: System, at: I) -> Direction {
+    direction([2, 0, 3, 1][moon_rashi_number(system, at) % 4])
 }
 
 /// How a timed span ends: with its end clock, or running to the next sunrise.
@@ -225,6 +228,7 @@ pub(crate) struct NivasShool {
 }
 
 struct Window<'a, I> {
+    system: System,
     sunrise: I,
     next_sunrise: I,
     zone: &'a Zone,
@@ -284,12 +288,12 @@ impl<I: PyInstant> Window<'_, I> {
         let mut out = Vec::new();
         let mut cursor = self.sunrise;
         while cursor < self.next_sunrise {
-            if karana(cursor.to_jd()).name() != "Vishti" {
-                cursor = karana_end(cursor).add_seconds(90);
+            if karana(self.system, cursor.to_jd()).name() != "Vishti" {
+                cursor = karana_end(self.system, cursor).add_seconds(90);
                 continue;
             }
-            let end = py_min(karana_end(cursor), self.next_sunrise);
-            let (loka_index, loka) = match moon_rashi_number(cursor) {
+            let end = py_min(karana_end(self.system, cursor), self.next_sunrise);
+            let (loka_index, loka) = match moon_rashi_number(self.system, cursor) {
                 1 | 2 | 3 | 8 => (0, "swarga"),
                 6 | 7 | 9 | 10 => (2, "patala"),
                 _ => (1, "prithvi"),
@@ -316,20 +320,22 @@ impl<I: PyInstant> Window<'_, I> {
 
 /// `build_nivas_shool_block` for the day from sunrise to the next sunrise.
 pub(crate) fn nivas_shool<I: PyInstant>(
+    system: System,
     sunrise: I,
     next_sunrise: I,
     weekday_py: usize,
     zone: &Zone,
 ) -> NivasShool {
     let w = Window {
+        system,
         sunrise,
         next_sunrise,
         zone,
     };
-    let tithi_bounds = w.boundaries(tithi_end);
-    let nak_bounds = w.boundaries(nakshatra_end);
-    let rashi_bounds = w.boundaries(moon_rashi_end);
-    let tithi_at = |at: I| tithi(at.to_jd());
+    let tithi_bounds = w.boundaries(|t| tithi_end(system, t));
+    let nak_bounds = w.boundaries(|t| nakshatra_end(system, t));
+    let rashi_bounds = w.boundaries(|t| moon_rashi_end(system, t));
+    let tithi_at = |at: I| tithi(system, at.to_jd());
     let agni = w.timed(&tithi_bounds, |at| {
         agnivasa(tithi_at(at).number, weekday_py)
     });
@@ -340,12 +346,12 @@ pub(crate) fn nivas_shool<I: PyInstant>(
     let mut homa_bounds: Vec<I> = tithi_bounds.iter().chain(&nak_bounds).copied().collect();
     homa_bounds.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     homa_bounds.dedup();
-    let homa = w.timed(&homa_bounds, homahuti);
-    let chandra = w.timed(&rashi_bounds, chandra_vasa);
+    let homa = w.timed(&homa_bounds, |at| homahuti(system, at));
+    let chandra = w.timed(&rashi_bounds, |at| chandra_vasa(system, at));
     let bhadra = w.vishti();
     let (key, name_en, name_ne) = RAHU_VASA[weekday_py % 7];
     NivasShool {
-        homahuti: spans(homa, || homahuti(sunrise)),
+        homahuti: spans(homa, || homahuti(system, sunrise)),
         disha_shool: disha_shool(weekday_py),
         rahu_vasa: Direction {
             key,
@@ -354,7 +360,7 @@ pub(crate) fn nivas_shool<I: PyInstant>(
         },
         agnivasa: spans(agni, || agnivasa(tithi_at(sunrise).number, weekday_py)),
         shivavasa: spans(shiva, || shivavasa(tithi_at(sunrise).number)),
-        chandra_vasa: spans(chandra, || chandra_vasa(sunrise)),
+        chandra_vasa: spans(chandra, || chandra_vasa(system, sunrise)),
         bhadravasa: Bhadravasa {
             active: !bhadra.is_empty(),
             segments: bhadra,

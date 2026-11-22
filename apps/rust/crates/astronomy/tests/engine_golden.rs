@@ -33,7 +33,7 @@ fn n(v: &Value) -> i64 {
 #[test]
 fn longitudes_are_the_engines() {
     for c in cases("longitudes") {
-        let (sun, moon) = sun_moon_longitudes(f(&c[0]));
+        let (sun, moon) = sun_moon_longitudes(SS, f(&c[0]));
         assert_eq!(sun.to_bits(), f(&c[1]).to_bits(), "sun {c}");
         assert_eq!(moon.to_bits(), f(&c[2]).to_bits(), "moon {c}");
     }
@@ -54,6 +54,7 @@ fn rise_and_set_on_a_civil_day() {
             u32::try_from(n(&c[4])).expect("day"),
         );
         let observer = Observer {
+            system: astronomy::System::SuryaSiddhanta,
             latitude: f(&c[5]),
             longitude: f(&c[6]),
             zone: Zone::get(c[7].as_str().expect("zone")).expect("known zone"),
@@ -73,3 +74,5 @@ fn rise_and_set_on_a_civil_day() {
         );
     }
 }
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

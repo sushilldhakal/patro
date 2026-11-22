@@ -1,7 +1,6 @@
 //! षड्बल: the sixfold strength of the seven grahas in virupas, with graha-yuddha
 //! (`engine/jyotish/shadbala.py`, `engine/jyotish/graha_yuddha.py`).
 
-use astronomy::surya_siddhanta::{OBLIQUITY, ascendant, ayanamsha};
 use panchanga::{
     daily::{DailyError, Location},
     graha_positions,
@@ -328,18 +327,19 @@ fn hora(p: Graha, birth: f64, sunrise: f64, weekday: usize) -> f64 {
     }
 }
 
-fn ayana(p: Graha, lon: f64, ayan: f64) -> f64 {
+/// `eps` is the obliquity in degrees (the text's 24°, or drik's of date).
+fn ayana(p: Graha, lon: f64, ayan: f64, eps: f64) -> f64 {
     let trop = py_mod(lon + ayan, 360.0);
-    let mut decl = (OBLIQUITY.to_radians().sin() * trop.to_radians().sin())
+    let mut decl = (eps.to_radians().sin() * trop.to_radians().sin())
         .asin()
         .to_degrees();
     let mut value = if p == Graha::Mercury {
-        (decl.abs() / 24.0 * 60.0).clamp(0.0, 60.0)
+        (decl.abs() / eps * 60.0).clamp(0.0, 60.0)
     } else {
         if matches!(p, Graha::Moon | Graha::Saturn) {
             decl = -decl;
         }
-        ((decl + 24.0) / 48.0 * 60.0).clamp(0.0, 60.0)
+        ((decl + eps) / (2.0 * eps) * 60.0).clamp(0.0, 60.0)
     };
     if p == Graha::Sun {
         value *= 2.0;
@@ -449,7 +449,7 @@ fn minutes(hms: &str) -> f64 {
 
 /// `_ingress_weekday`: the weekday the Sun last crossed `target`.
 fn ingress_weekday(birth: UtcInstant, target: f64, location: &Location, max_days: u32) -> usize {
-    let sun = |t: UtcInstant| astronomy::engine::sun_longitude(t.to_jd());
+    let sun = |t: UtcInstant| astronomy::engine::sun_longitude(location.system, t.to_jd());
     let mut day = birth;
     for _ in 0..max_days {
         let prev = day.add_seconds(-86_400);
@@ -563,10 +563,10 @@ fn yuddha(rows: &[Row], lons: &[f64; 9]) -> (Vec<Value>, Vec<(Graha, f64)>) {
 #[expect(clippy::too_many_lines, reason = "the Python table, row for row")]
 pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, DailyError> {
     let jd = instant.to_jd();
-    let ayan = ayanamsha(jd);
+    let ayan = location.system.ayanamsha(jd);
     let mut lons = [0.0; 9];
     let mut speeds = [0.0; 9];
-    for row in graha_positions(jd) {
+    for row in graha_positions(location.system, jd) {
         if let Some(g) = Graha::from_key(row.key) {
             lons[g.index()] = row.longitude;
             speeds[g.index()] = row.speed;
@@ -576,7 +576,7 @@ pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, Daily
     for p in PLANETS {
         d1[p.index()] = sign_of(lons[p.index()]);
     }
-    let lagna_lon = ascendant(jd, location.lat, location.lon);
+    let lagna_lon = location.system.ascendant(jd, location.lat, location.lon);
     let lagna_sign = sign_of(lagna_lon);
 
     let local = location.zone.local(instant);
@@ -615,7 +615,7 @@ pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, Daily
             let masa_b = if VARA_LORD[masa] == p { 30.0 } else { 0.0 };
             let varsha_b = if VARA_LORD[varsha] == p { 15.0 } else { 0.0 };
             let ho = hora(p, birth, sunrise, weekday);
-            let ay = ayana(p, lp, ayan);
+            let ay = ayana(p, lp, ayan, location.system.obliquity_degrees(jd));
             let kala = na + pa + tr + vara_b + masa_b + varsha_b + ho + ay + 0.0;
             let ch = match p {
                 Graha::Sun => ay,

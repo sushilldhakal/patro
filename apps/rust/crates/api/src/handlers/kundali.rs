@@ -21,7 +21,7 @@ use super::at_time::{day_error, era_parts_jd, jd_param};
 use crate::{
     respond::{
         Query, detail, detail_json, era_error, json_no_store_payload, json_payload,
-        json_plain_payload, siddhanta_error,
+        json_plain_payload, request_system, siddhanta_error,
     },
     state::AppState,
 };
@@ -30,7 +30,7 @@ use crate::{
 /// Siddhanta, as in Python),
 /// the location and the instant (`instant_for_request`).
 fn instant_request(q: &Query, state: &AppState) -> Result<(Location, UtcInstant), Response> {
-    if let Some(r) = era_error(q).or_else(|| siddhanta_error(q)) {
+    if let Some(r) = era_error(q).or_else(|| siddhanta_error(state, q)) {
         return Err(r);
     }
     let jd = match jd_param(q)? {
@@ -44,6 +44,9 @@ fn instant_request(q: &Query, state: &AppState) -> Result<(Location, UtcInstant)
         clock: q.get("clock").map(String::as_str),
     };
     let instant = resolve_instant(query, &location).map_err(day_error)?;
+    location
+        .ensure_supported(timescale::CivilDay::from_jd_ut(instant.to_jd()))
+        .map_err(|e| detail(StatusCode::BAD_REQUEST, &e.to_string()))?;
     Ok((location, instant))
 }
 
@@ -58,9 +61,16 @@ pub(crate) async fn planetary_positions(
         Ok(v) => v,
         Err(r) => return r,
     };
-    let mut payload = panchanga::at_time::planetary_snapshot(instant, loc.lat, loc.lon);
+    let mut payload = panchanga::at_time::planetary_snapshot(loc.system, instant, loc.lat, loc.lon);
     if let Value::Object(fields) = &mut payload {
-        fields.insert("ayanamsha".into(), json!("surya_siddhanta"));
+        fields.insert(
+            "ayanamsha".into(),
+            json!(if loc.system.is_drik() {
+                "lahiri"
+            } else {
+                "surya_siddhanta"
+            }),
+        );
         fields.insert("location".into(), loc.as_json());
         fields.insert("query_instant".into(), json!(observer_iso(instant, &loc)));
     }
@@ -171,7 +181,7 @@ pub(crate) async fn tropical_seasons(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let loc = match super::panchanga::location(&q, &state) {
@@ -225,7 +235,7 @@ pub(crate) async fn vimshottari(
         Ok(v) => v,
         Err(r) => return r,
     };
-    let moon = panchanga::graha_positions(instant.to_jd())
+    let moon = panchanga::graha_positions(loc.system, instant.to_jd())
         .iter()
         .find(|p| p.key == "moon")
         .map_or(0.0, |p| p.longitude);
@@ -274,7 +284,7 @@ pub(crate) async fn yoga_reference(
 ) -> Response {
     use patro::reference::{ReferenceError, YogaQuery, yoga_reference};
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let id = q.get("id").filter(|v| !v.is_empty());
@@ -323,7 +333,7 @@ pub(crate) async fn bhava_reference(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     match patro::reference::bhava_reference(&state.config.data_dir) {
@@ -347,7 +357,7 @@ pub(crate) async fn kundali_day(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let loc = match super::panchanga::location(&q, &state) {
@@ -411,10 +421,14 @@ pub(crate) async fn kundali_day(
 }
 
 /// `GET /v1/kundali/dasha/expand?lord=&start=&end=&system=`.
-pub(crate) async fn dasha_expand(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
+pub(crate) async fn dasha_expand(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
     use jyotish::dasha::{Aware, VIMSHOTTARI, YOGINI, sub_periods_aware};
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let missing: Vec<Value> = ["lord", "start", "end"]
@@ -461,7 +475,11 @@ pub(crate) async fn dasha_expand(AxumQuery(q): AxumQuery<Query>, headers: Header
 }
 
 /// One partner's birth moment for `/kundali/milan` (`instant_for_parts`).
-fn milan_partner(q: &Query, who: &str) -> Result<jyotish::milan::Partner, Response> {
+fn milan_partner(
+    system: astronomy::System,
+    q: &Query,
+    who: &str,
+) -> Result<jyotish::milan::Partner, Response> {
     let get = |k: &str| q.get(&format!("{who}_{k}")).map(String::as_str);
     let num = |k: &str| get(k).and_then(|v| v.trim().parse::<f64>().ok());
     let int = |k: &str| get(k).and_then(|v| v.trim().parse::<i64>().ok());
@@ -487,6 +505,7 @@ fn milan_partner(q: &Query, who: &str) -> Result<jyotish::milan::Partner, Respon
         zone,
         name: String::new(),
         city_id: None,
+        system,
     };
     let mut jd = num("jd");
     if jd.is_none()
@@ -504,7 +523,10 @@ fn milan_partner(q: &Query, who: &str) -> Result<jyotish::milan::Partner, Respon
         clock: get("clock"),
     };
     let instant = resolve_instant(query, &location).map_err(day_error)?;
-    let moon = panchanga::graha_positions(instant.to_jd())
+    location
+        .ensure_supported(timescale::CivilDay::from_jd_ut(instant.to_jd()))
+        .map_err(|e| detail(StatusCode::BAD_REQUEST, &e.to_string()))?;
+    let moon = panchanga::graha_positions(system, instant.to_jd())
         .iter()
         .find(|p| p.key == "moon")
         .map_or(0.0, |p| p.longitude);
@@ -569,11 +591,16 @@ fn milan_errors(q: &Query) -> Vec<Value> {
 }
 
 /// `GET /v1/kundali/milan`: Ashtakoota compatibility of two births.
-pub(crate) async fn milan(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
+pub(crate) async fn milan(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
+    let system = request_system(&state, &q).unwrap_or_default();
     let errors = milan_errors(&q);
     if !errors.is_empty() {
         return detail_json(StatusCode::UNPROCESSABLE_ENTITY, &Value::Array(errors));
@@ -591,7 +618,10 @@ pub(crate) async fn milan(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) ->
             );
         }
     }
-    let (boy, girl) = match (milan_partner(&q, "boy"), milan_partner(&q, "girl")) {
+    let (boy, girl) = match (
+        milan_partner(system, &q, "boy"),
+        milan_partner(system, &q, "girl"),
+    ) {
         (Ok(b), Ok(g)) => (b, g),
         (Err(r), _) | (_, Err(r)) => return r,
     };

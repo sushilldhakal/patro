@@ -167,7 +167,7 @@ fn special_block(state: &Value, location: &Location) -> Value {
         .and_then(Value::as_str)
         .and_then(parse_iso);
     let events = civil
-        .map(|c| sankrantis_on_date(c, &location.zone).unwrap_or_default())
+        .map(|c| sankrantis_on_date(location.system, c, &location.zone).unwrap_or_default())
         .unwrap_or_default();
     let sankranti = events.first().map_or(Value::Null, |ev| {
         json!({

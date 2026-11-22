@@ -536,7 +536,8 @@ pub(crate) fn day_block(state: &Value, location: &Location, locale: Locale) -> S
         special.push(label(locale, "Kshaya Maas", "क्षय मास").to_owned());
     }
     if let Some(day) = text(&state["date_ad"]).and_then(crate::festivals::parse_iso_day)
-        && let Ok(events) = crate::festivals::sankrantis_on_date(day, &location.zone)
+        && let Ok(events) =
+            crate::festivals::sankrantis_on_date(location.system, day, &location.zone)
         && let Some(ev) = events.first()
     {
         let sign = pick(locale, &ev["to_rashi_ne"], &ev["to_rashi"]).unwrap_or("");

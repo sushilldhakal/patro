@@ -14,6 +14,7 @@ static GOLDEN: LazyLock<Value> = LazyLock::new(|| {
 
 fn location(v: &Value) -> Location {
     Location {
+        system: astronomy::System::SuryaSiddhanta,
         lat: v["lat"].as_f64().expect("lat"),
         lon: v["lon"].as_f64().expect("lon"),
         zone: Zone::get(v["timezone"].as_str().expect("tz")).expect("zone"),

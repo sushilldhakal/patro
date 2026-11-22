@@ -27,6 +27,7 @@ const HEAVY: [&str; 17] = [
 
 fn places() -> Vec<Location> {
     let city = |lat: f64, lon: f64, zone: &str, name: &str| Location {
+        system: astronomy::System::SuryaSiddhanta,
         lat,
         lon,
         zone: Zone::get(zone).expect("known zone"),

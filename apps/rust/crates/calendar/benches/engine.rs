@@ -16,6 +16,7 @@ fn bench(c: &mut Criterion) {
     let at = UtcInstant::from_utc(CivilDay::new(2026, 11, 1), 6, 30, 15, 123_456)
         .expect("valid instant");
     let observer = Observer {
+        system: astronomy::System::SuryaSiddhanta,
         latitude: 27.7172,
         longitude: 85.324,
         zone: Zone::kathmandu(),
@@ -24,15 +25,15 @@ fn bench(c: &mut Criterion) {
         b.iter(|| {
             let jd = black_box(jd);
             (
-                panchanga::tithi(jd),
-                panchanga::nakshatra(jd),
-                panchanga::yoga(jd),
-                panchanga::karana(jd),
+                panchanga::tithi(SS, jd),
+                panchanga::nakshatra(SS, jd),
+                panchanga::yoga(SS, jd),
+                panchanga::karana(SS, jd),
             )
         });
     });
     c.bench_function("tithi end", |b| {
-        b.iter(|| panchanga::tithi_end(black_box(at)));
+        b.iter(|| panchanga::tithi_end(SS, black_box(at)));
     });
     c.bench_function("sunrise, Kathmandu", |b| {
         b.iter(|| {
@@ -51,3 +52,5 @@ fn bench(c: &mut Criterion) {
 
 criterion_group!(benches, bench);
 criterion_main!(benches);
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

@@ -67,6 +67,7 @@ dependencies = [
  "axum",
  "calendar",
  "common",
+ "ephdata",
  "flate2",
  "geography",
  "jiff",

@@ -37,6 +37,7 @@ fn daily_payloads_match_python_within_the_allowed_drift() {
         );
         let loc = &case["location"];
         let location = Location {
+            system: astronomy::System::SuryaSiddhanta,
             lat: loc["lat"].as_f64().expect("lat"),
             lon: loc["lon"].as_f64().expect("lon"),
             zone: Zone::get(loc["timezone"].as_str().expect("tz")).expect("known zone"),

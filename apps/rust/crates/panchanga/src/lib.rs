@@ -28,16 +28,18 @@ pub mod store;
 mod text_tables;
 
 pub use angas::{
-    Karana, Nakshatra, Paksha, Tithi, Vara, Yoga, elongation, karana, nakshatra, tithi, vara, yoga,
+    Karana, Nakshatra, Paksha, Tithi, Vara, Yoga, elongation, karana, nakshatra, nakshatra_number,
+    tithi, tithi_number, vara, yoga, yoga_number,
 };
+pub use astronomy::System;
 pub use boundaries::{
     karana_end, karana_start, moon_pada_end, moon_rashi_end, nakshatra_end, nakshatra_start,
     sun_nakshatra_end, tithi_end, tithi_start, yoga_end, yoga_start,
 };
 /// Tropical (sayana) Sun under the Surya Siddhanta: the text's Sun turned by real precession.
 #[must_use]
-pub fn tropical_sun_longitude(jd: f64) -> f64 {
-    blocks_time::tropical_sun(jd)
+pub fn tropical_sun_longitude(system: astronomy::System, jd: f64) -> f64 {
+    blocks_time::tropical_sun(system, jd)
 }
 
 pub use names::{

@@ -61,15 +61,14 @@ use std::{
 };
 
 use astronomy::{
+    System,
     engine::{Observer, moon_longitude, rise_set_on_day, sun_longitude},
-    surya_siddhanta::{
-        Body, Crossing, Direction, EclipseKind, ascendant, next_eclipse, true_longitude_and_speed,
-    },
+    surya_siddhanta::{Body, Crossing, Direction, EclipseKind, next_eclipse},
 };
 use calendar::{BsDate, bs_to_civil, month_length, month_start};
 use panchanga::{
-    daily::Location, karana, lunar_month::calendar_layers, nakshatra, tithi,
-    tropical_sun_longitude, vara, yoga,
+    daily::Location, karana, lunar_month::calendar_layers, nakshatra, nakshatra_number, tithi,
+    tropical_sun_longitude, vara, yoga_number,
 };
 use serde_json::{Map, Value, json};
 use timescale::{CivilDay, UtcInstant};
@@ -878,6 +877,7 @@ fn day_times(
     location: &Location,
 ) -> Result<(UtcInstant, UtcInstant, UtcInstant), SaitError> {
     let observer = Observer {
+        system: location.system,
         latitude: location.lat,
         longitude: location.lon,
         zone: location.zone.clone(),
@@ -911,33 +911,34 @@ fn day_times(
 }
 
 fn build_day_panchanga(day: CivilDay, location: &Location) -> Result<DayPanchanga, SaitError> {
+    let system = location.system;
     let (sunrise, _sunset, _next) = day_times(day, location)?;
     let sunrise_jd = sunrise.to_jd();
-    let tithi_info = tithi(sunrise_jd);
-    let nak = nakshatra(sunrise_jd);
+    let tithi_info = tithi(system, sunrise_jd);
+    let nak = nakshatra(system, sunrise_jd);
     let vaara_num = vara(sunrise_jd, &location.zone).number + 1;
     let sun_lon = stable_round({
-        let (lon, _) = true_longitude_and_speed(Body::Sun, sunrise_jd);
+        let (lon, _) = system.true_longitude_and_speed(Body::Sun, sunrise_jd);
         ((lon % 360.0) + 360.0) % 360.0
     });
     let jupiter = stable_round({
-        let (lon, _) = true_longitude_and_speed(Body::Jupiter, sunrise_jd);
+        let (lon, _) = system.true_longitude_and_speed(Body::Jupiter, sunrise_jd);
         ((lon % 360.0) + 360.0) % 360.0
     });
     let venus = stable_round({
-        let (lon, _) = true_longitude_and_speed(Body::Venus, sunrise_jd);
+        let (lon, _) = system.true_longitude_and_speed(Body::Venus, sunrise_jd);
         ((lon % 360.0) + 360.0) % 360.0
     });
     let mercury = stable_round({
-        let (lon, _) = true_longitude_and_speed(Body::Mercury, sunrise_jd);
+        let (lon, _) = system.true_longitude_and_speed(Body::Mercury, sunrise_jd);
         ((lon % 360.0) + 360.0) % 360.0
     });
-    let asc_lon = ascendant(sunrise_jd, location.lat, location.lon);
+    let asc_lon = system.ascendant(sunrise_jd, location.lat, location.lon);
     let lagna_rashi = rashi_from_longitude(asc_lon);
     let jupiter_rashi = rashi_from_longitude(jupiter);
     let mercury_rashi = rashi_from_longitude(mercury);
     let sun_rashi = rashi_from_longitude(sun_lon);
-    let tropical = tropical_sun_longitude(sunrise_jd);
+    let tropical = tropical_sun_longitude(system, sunrise_jd);
     let aayan = if (90.0..270.0).contains(&tropical) {
         "Dakshinayana"
     } else {
@@ -967,8 +968,8 @@ fn build_day_panchanga(day: CivilDay, location: &Location) -> Result<DayPanchang
         jupiter_rashi,
         jupiter_bala_vriddha: is_bala_vriddha(jupiter, sun_lon, 11.0, 14.0),
         venus_bala_vriddha: is_bala_vriddha(venus, sun_lon, 10.0, 13.0),
-        yoga: yoga(sunrise_jd).number,
-        karana: karana(sunrise_jd).name().to_owned(),
+        yoga: yoga_number(system, sunrise_jd),
+        karana: karana(system, sunrise_jd).name().to_owned(),
     })
 }
 
@@ -1301,6 +1302,7 @@ fn local_noon_utc(day: CivilDay, location: &Location) -> Option<UtcInstant> {
 }
 
 fn sankranti_on_day(greg: CivilDay, location: &Location) -> bool {
+    let system = location.system;
     let Some(noon) = local_noon_utc(greg, location) else {
         return false;
     };
@@ -1308,8 +1310,8 @@ fn sankranti_on_day(greg: CivilDay, location: &Location) -> bool {
     let Some(noon_next) = local_noon_utc(next_day, location) else {
         return false;
     };
-    let r0 = ((sun_longitude(noon.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
-    let r1 = ((sun_longitude(noon_next.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
+    let r0 = ((sun_longitude(system, noon.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
+    let r1 = ((sun_longitude(system, noon_next.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
     r0 != r1
 }
 
@@ -1352,7 +1354,9 @@ fn udaya_number_paksha(
     day: CivilDay,
     location: &Location,
 ) -> Result<(u32, &'static str), SaitError> {
+    let system = location.system;
     let observer = Observer {
+        system: location.system,
         latitude: location.lat,
         longitude: location.lon,
         zone: location.zone.clone(),
@@ -1365,7 +1369,7 @@ fn udaya_number_paksha(
             ));
         }
     };
-    let ti = tithi(sunrise.to_jd());
+    let ti = tithi(system, sunrise.to_jd());
     let paksha = if ti.paksha == panchanga::Paksha::Shukla {
         "shukla"
     } else {
@@ -1379,6 +1383,7 @@ fn latta_pierced_nakshatras(
     location: &Location,
     planets: &BTreeSet<&'static str>,
 ) -> BTreeSet<u32> {
+    let system = location.system;
     if planets.is_empty() {
         return BTreeSet::new();
     }
@@ -1393,15 +1398,19 @@ fn latta_pierced_nakshatras(
         ("ketu", -8),
     ];
     let mut pierced = BTreeSet::new();
-    let rahu_lon = true_longitude_and_speed(Body::Rahu, noon.to_jd()).0;
+    let rahu_lon = system.true_longitude_and_speed(Body::Rahu, noon.to_jd()).0;
     for (planet, offset) in offsets {
         if !planets.contains(planet) {
             continue;
         }
         let lon = match planet {
-            "sun" => true_longitude_and_speed(Body::Sun, noon.to_jd()).0,
-            "mars" => true_longitude_and_speed(Body::Mars, noon.to_jd()).0,
-            "saturn" => true_longitude_and_speed(Body::Saturn, noon.to_jd()).0,
+            "sun" => system.true_longitude_and_speed(Body::Sun, noon.to_jd()).0,
+            "mars" => system.true_longitude_and_speed(Body::Mars, noon.to_jd()).0,
+            "saturn" => {
+                system
+                    .true_longitude_and_speed(Body::Saturn, noon.to_jd())
+                    .0
+            }
             "rahu" => rahu_lon,
             "ketu" => (rahu_lon + 180.0) % 360.0,
             _ => 0.0,
@@ -1451,6 +1460,7 @@ fn dur_muhurta_intervals(
 }
 
 fn sankranti_vetoes(
+    system: System,
     rule: &CeremonyRule,
     sunrise: UtcInstant,
     end: UtcInstant,
@@ -1463,21 +1473,25 @@ fn sankranti_vetoes(
         .max(rule.major_sankranti_buffer_hours);
     let search_start = sunrise.add_seconds_f64(-pad_hours * 3600.0);
     let search_end = end.add_seconds_f64(pad_hours * 3600.0);
-    let r0 = ((sun_longitude(search_start.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
-    let r1 = ((sun_longitude(search_end.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
+    let r0 = ((sun_longitude(system, search_start.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
+    let r1 = ((sun_longitude(system, search_end.to_jd()) / 30.0).floor() as i32).rem_euclid(12);
     if r0 == r1 {
         return Vec::new();
     }
-    let Some(next_jd) =
-        calendar::find_sankranti_after_jd(u32::try_from(r1).unwrap_or(0), search_start.to_jd(), 5)
-    else {
+    let Some(next_jd) = calendar::find_sankranti_after_jd(
+        system,
+        u32::try_from(r1).unwrap_or(0),
+        search_start.to_jd(),
+        5,
+    ) else {
         return Vec::new();
     };
     let Some(moment) = UtcInstant::from_jd_truncated(next_jd) else {
         return Vec::new();
     };
-    let incoming =
-        ((sun_longitude(moment.add_seconds(60).to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
+    let incoming = ((sun_longitude(system, moment.add_seconds(60).to_jd()) / 30.0).floor() as i32)
+        .rem_euclid(12)
+        + 1;
     let hours = if rule
         .major_sankranti_rashis
         .contains(&u32::try_from(incoming).unwrap_or(0))
@@ -1497,6 +1511,7 @@ fn sankranti_vetoes(
 }
 
 fn major_dosha_at(
+    system: System,
     rule: &CeremonyRule,
     at: UtcInstant,
     day_vaara: u32,
@@ -1512,22 +1527,26 @@ fn major_dosha_at(
     if rule.block_dur_muhurta && in_dur_muhurta && !for_day_kill {
         return true;
     }
-    if !rule.avoid_yogas.is_empty() && rule.avoid_yogas.contains(&yoga(at.to_jd()).number) {
+    if !rule.avoid_yogas.is_empty() && rule.avoid_yogas.contains(&yoga_number(system, at.to_jd())) {
         return true;
     }
-    if !rule.avoid_karanas.is_empty() && rule.avoid_karanas.contains(karana(at.to_jd()).name()) {
+    if !rule.avoid_karanas.is_empty()
+        && rule
+            .avoid_karanas
+            .contains(karana(system, at.to_jd()).name())
+    {
         return true;
     }
     let shielded = in_godhuli && rule.godhuli_overrides_dagdha_shunya;
     if !shielded {
-        let ti = tithi(at.to_jd());
+        let ti = tithi(system, at.to_jd());
         if rule.check_dagdha && is_dagdha(day_vaara, ti.display_number) {
             return true;
         }
         if rule.check_shunya {
             if let Some(drained) = shunya_rashis(ti.display_number) {
                 let moon_rashi =
-                    ((moon_longitude(at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
+                    ((moon_longitude(system, at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
                 if drained.contains(&u32::try_from(moon_rashi).unwrap_or(0)) {
                     return true;
                 }
@@ -1535,7 +1554,7 @@ fn major_dosha_at(
         }
     }
     if !pierced_naks.is_empty() {
-        let nak = nakshatra(at.to_jd()).number;
+        let nak = nakshatra_number(system, at.to_jd());
         if pierced_naks.contains(&nak) {
             return true;
         }
@@ -1544,6 +1563,7 @@ fn major_dosha_at(
 }
 
 fn major_dosha_touches_practical_window(
+    system: System,
     rule: &CeremonyRule,
     sunrise: UtcInstant,
     sunset: UtcInstant,
@@ -1560,6 +1580,7 @@ fn major_dosha_touches_practical_window(
     let mut at = sunrise;
     while at < sunset {
         if major_dosha_at(
+            system,
             rule,
             at,
             day_vaara,
@@ -1587,13 +1608,14 @@ fn window_ok(
     in_dur_muhurta: bool,
     in_sankranti: bool,
 ) -> (bool, u32, u32, u32) {
+    let system = location.system;
     if in_sankranti {
         return (false, 0, 0, 0);
     }
     if rule.block_dur_muhurta && in_dur_muhurta {
         return (false, 0, 0, 0);
     }
-    let t = tithi(at.to_jd());
+    let t = tithi(system, at.to_jd());
     let tithi_display = t.display_number;
     if is_rikta_tithi(tithi_display) || rule.avoid_tithis.contains(&tithi_display) {
         return (false, 0, 0, 0);
@@ -1606,7 +1628,7 @@ fn window_ok(
         if rule.check_shunya {
             if let Some(drained) = shunya_rashis(tithi_display) {
                 let moon_rashi =
-                    ((moon_longitude(at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
+                    ((moon_longitude(system, at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
                 if drained.contains(&u32::try_from(moon_rashi).unwrap_or(0)) {
                     return (false, 0, 0, 0);
                 }
@@ -1628,20 +1650,24 @@ fn window_ok(
     if rule.shukla_only && t.paksha != panchanga::Paksha::Shukla {
         return (false, 0, 0, 0);
     }
-    if !rule.avoid_yogas.is_empty() && rule.avoid_yogas.contains(&yoga(at.to_jd()).number) {
+    if !rule.avoid_yogas.is_empty() && rule.avoid_yogas.contains(&yoga_number(system, at.to_jd())) {
         return (false, 0, 0, 0);
     }
-    if !rule.avoid_karanas.is_empty() && rule.avoid_karanas.contains(karana(at.to_jd()).name()) {
+    if !rule.avoid_karanas.is_empty()
+        && rule
+            .avoid_karanas
+            .contains(karana(system, at.to_jd()).name())
+    {
         return (false, 0, 0, 0);
     }
-    let nak = nakshatra(at.to_jd()).number;
+    let nak = nakshatra_number(system, at.to_jd());
     if !rule.nakshatras.is_empty() && !rule.nakshatras.contains(&nak) {
         return (false, 0, 0, 0);
     }
     if pierced_naks.contains(&nak) {
         return (false, 0, 0, 0);
     }
-    let lagna = ((ascendant(at.to_jd(), location.lat, location.lon) / 30.0).floor() as i32)
+    let lagna = ((system.ascendant(at.to_jd(), location.lat, location.lon) / 30.0).floor() as i32)
         .rem_euclid(12)
         + 1;
     let lagna_u = u32::try_from(lagna).unwrap_or(0);
@@ -1649,7 +1675,8 @@ fn window_ok(
         return (false, 0, 0, 0);
     }
     if !rule.avoid_moon_houses.is_empty() {
-        let moon_rashi = ((moon_longitude(at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
+        let moon_rashi =
+            ((moon_longitude(system, at.to_jd()) / 30.0).floor() as i32).rem_euclid(12) + 1;
         let moon_h = (moon_rashi - lagna).rem_euclid(12) + 1;
         if rule
             .avoid_moon_houses
@@ -1738,6 +1765,7 @@ fn muhurta_windows_for_rule(
     location: &Location,
     refine: bool,
 ) -> Result<Vec<MuhurtaWindow>, SaitError> {
+    let system = location.system;
     let gate = day_gate(rule, greg, location)?;
     if !gate.ok {
         return Ok(Vec::new());
@@ -1749,7 +1777,8 @@ fn muhurta_windows_for_rule(
             map.insert(
                 "sun".to_owned(),
                 u32::try_from(
-                    ((true_longitude_and_speed(Body::Sun, noon.to_jd()).0 / 30.0).floor() as i32)
+                    ((system.true_longitude_and_speed(Body::Sun, noon.to_jd()).0 / 30.0).floor()
+                        as i32)
                         .rem_euclid(12)
                         + 1,
                 )
@@ -1758,7 +1787,8 @@ fn muhurta_windows_for_rule(
             map.insert(
                 "mars".to_owned(),
                 u32::try_from(
-                    ((true_longitude_and_speed(Body::Mars, noon.to_jd()).0 / 30.0).floor() as i32)
+                    ((system.true_longitude_and_speed(Body::Mars, noon.to_jd()).0 / 30.0).floor()
+                        as i32)
                         .rem_euclid(12)
                         + 1,
                 )
@@ -1767,8 +1797,11 @@ fn muhurta_windows_for_rule(
             map.insert(
                 "saturn".to_owned(),
                 u32::try_from(
-                    ((true_longitude_and_speed(Body::Saturn, noon.to_jd()).0 / 30.0).floor()
-                        as i32)
+                    ((system
+                        .true_longitude_and_speed(Body::Saturn, noon.to_jd())
+                        .0
+                        / 30.0)
+                        .floor() as i32)
                         .rem_euclid(12)
                         + 1,
                 )
@@ -1777,7 +1810,8 @@ fn muhurta_windows_for_rule(
             map.insert(
                 "rahu".to_owned(),
                 u32::try_from(
-                    ((true_longitude_and_speed(Body::Rahu, noon.to_jd()).0 / 30.0).floor() as i32)
+                    ((system.true_longitude_and_speed(Body::Rahu, noon.to_jd()).0 / 30.0).floor()
+                        as i32)
                         .rem_euclid(12)
                         + 1,
                 )
@@ -1808,9 +1842,10 @@ fn muhurta_windows_for_rule(
     } else {
         None
     };
-    let sankranti_intervals = sankranti_vetoes(rule, sunrise, end);
+    let sankranti_intervals = sankranti_vetoes(system, rule, sunrise, end);
     if rule.day_kill_on_major_dosha
         && major_dosha_touches_practical_window(
+            system,
             rule,
             sunrise,
             sunset,
@@ -2339,6 +2374,7 @@ pub fn get_sait_detail(
     exclude_rules: &BTreeSet<String>,
     nakshatra_mode: Option<&str>,
 ) -> Result<Value, SaitError> {
+    let system = location.system;
     let categories = categories_json()?;
     let Some(meta) = categories.get(category).and_then(Value::as_object) else {
         return Err(SaitError::BadRequest(format!(
@@ -2427,7 +2463,7 @@ pub fn get_sait_detail(
             let start_local = location.zone.local(win.start);
             let end_local = location.zone.local(win.end);
             let start_jd = win.start.to_jd();
-            let tithi_block = tithi(start_jd);
+            let tithi_block = tithi(system, start_jd);
             let tdisp = usize::try_from(tithi_block.display_number.saturating_sub(1)).unwrap_or(0);
             let paksha = if tithi_block.paksha == panchanga::Paksha::Shukla {
                 "shukla"
@@ -2435,9 +2471,10 @@ pub fn get_sait_detail(
                 "krishna"
             };
             let nak_num =
-                usize::try_from(nakshatra(start_jd).number.saturating_sub(1)).unwrap_or(0);
-            let yoga_num = usize::try_from(yoga(start_jd).number.saturating_sub(1)).unwrap_or(0);
-            let karana_name = karana(start_jd).name();
+                usize::try_from(nakshatra_number(system, start_jd).saturating_sub(1)).unwrap_or(0);
+            let yoga_num =
+                usize::try_from(yoga_number(system, start_jd).saturating_sub(1)).unwrap_or(0);
+            let karana_name = karana(system, start_jd).name();
             let karana_index = panchanga::KARANA_NAMES
                 .iter()
                 .position(|name| *name == karana_name)
@@ -2637,9 +2674,9 @@ fn parse_clock(raw: &str) -> Result<(u32, u32), SaitError> {
     Ok((hour, minute))
 }
 
-fn compute_janma_from_jd(jd: f64) -> (u32, u32) {
-    let nak_num = nakshatra(jd).number;
-    let rashi_num = ((moon_longitude(jd) / 30.0).floor() as i32).rem_euclid(12) + 1;
+fn compute_janma_from_jd(system: System, jd: f64) -> (u32, u32) {
+    let nak_num = nakshatra_number(system, jd);
+    let rashi_num = ((moon_longitude(system, jd) / 30.0).floor() as i32).rem_euclid(12) + 1;
     (nak_num, u32::try_from(rashi_num).unwrap_or(1))
 }
 
@@ -2763,8 +2800,10 @@ fn kumbha_zone(count: i32) -> Value {
     })
 }
 
-fn kumbha_chakra(sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
-    let sun_lon = true_longitude_and_speed(Body::Sun, sunrise_utc.to_jd()).0;
+fn kumbha_chakra(system: System, sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
+    let sun_lon = system
+        .true_longitude_and_speed(Body::Sun, sunrise_utc.to_jd())
+        .0;
     let sun_nak = ((sun_lon / (360.0 / 27.0)).floor() as i32).rem_euclid(27) + 1;
     let count = ((i32::try_from(moon_nak).unwrap_or(1) - sun_nak).rem_euclid(27)) + 1;
     json!({
@@ -2779,7 +2818,7 @@ fn kumbha_chakra(sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
     })
 }
 
-fn agni_mukha(sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
+fn agni_mukha(system: System, sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
     let planets = [
         ("sun", "सूर्य", "Sun", false),
         ("mercury", "बुध", "Mercury", true),
@@ -2791,7 +2830,9 @@ fn agni_mukha(sunrise_utc: UtcInstant, moon_nak: u32) -> Value {
         ("rahu", "राहु", "Rahu", false),
         ("ketu", "केतु", "Ketu", false),
     ];
-    let sun_lon = true_longitude_and_speed(Body::Sun, sunrise_utc.to_jd()).0;
+    let sun_lon = system
+        .true_longitude_and_speed(Body::Sun, sunrise_utc.to_jd())
+        .0;
     let sun_nak = ((sun_lon / (360.0 / 27.0)).floor() as i32).rem_euclid(27) + 1;
     let count = ((i32::try_from(moon_nak).unwrap_or(1) - sun_nak).rem_euclid(27)) + 1;
     let idx = usize::try_from((count - 1) / 3)
@@ -2841,12 +2882,14 @@ fn annotate_one(
     birth_date: Option<CivilDay>,
     gender: Option<&str>,
 ) -> Result<Value, SaitError> {
+    let system = location.system;
     let (sunrise, _, _) = day_times(greg, location)?;
     let sunrise_jd = sunrise.to_jd();
-    let t_nak = nakshatra(sunrise_jd).number;
-    let t_rashi =
-        u32::try_from(((moon_longitude(sunrise_jd) / 30.0).floor() as i32).rem_euclid(12) + 1)
-            .unwrap_or(1);
+    let t_nak = nakshatra_number(system, sunrise_jd);
+    let t_rashi = u32::try_from(
+        ((moon_longitude(system, sunrise_jd) / 30.0).floor() as i32).rem_euclid(12) + 1,
+    )
+    .unwrap_or(1);
     let tara_num = compute_navatara_number(
         i32::try_from(janma_nak).unwrap_or(1) - 1,
         i32::try_from(t_nak).unwrap_or(1) - 1,
@@ -2875,14 +2918,14 @@ fn annotate_one(
         category_bad = t_nak == janma_nak;
     }
 
-    let shuddhi = graha_shuddhi(sunrise, janma_rashi, t_rashi, category);
+    let shuddhi = graha_shuddhi(system, sunrise, janma_rashi, t_rashi, category);
     let kumbha = if category == "griha-pravesh" {
-        Some(kumbha_chakra(sunrise, t_nak))
+        Some(kumbha_chakra(system, sunrise, t_nak))
     } else {
         None
     };
     let agni = if category == "agni-jurne" {
-        Some(agni_mukha(sunrise, t_nak))
+        Some(agni_mukha(system, sunrise, t_nak))
     } else {
         None
     };
@@ -2945,6 +2988,7 @@ fn annotate_one(
 }
 
 fn graha_shuddhi(
+    system: System,
     sunrise_utc: UtcInstant,
     janma_rashi: u32,
     moon_rashi: u32,
@@ -2968,7 +3012,8 @@ fn graha_shuddhi(
             moon_rashi
         } else {
             u32::try_from(
-                ((true_longitude_and_speed(body, sunrise_utc.to_jd()).0 / 30.0).floor() as i32)
+                ((system.true_longitude_and_speed(body, sunrise_utc.to_jd()).0 / 30.0).floor()
+                    as i32)
                     .rem_euclid(12)
                     + 1,
             )
@@ -3084,6 +3129,7 @@ pub fn personalize_for_birth(
     birth_clock: Option<&str>,
     gender: Option<&str>,
 ) -> Result<Value, SaitError> {
+    let system = location.system;
     let instant = parse_birth_instant(
         birth,
         birth_tz,
@@ -3099,7 +3145,7 @@ pub fn personalize_for_birth(
     if let Some(point) = instant {
         birth_date = Some(point.date);
         if janma_nak.is_none() || janma_ras.is_none() {
-            let (nak, ras) = compute_janma_from_jd(point.jd);
+            let (nak, ras) = compute_janma_from_jd(system, point.jd);
             janma_nak = Some(nak);
             janma_ras = Some(ras);
         }

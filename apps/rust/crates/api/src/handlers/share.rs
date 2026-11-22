@@ -575,12 +575,71 @@ pub async fn og_image(
     }
 }
 
-/// `GET /meta/provenance`: Python reports the Swiss Ephemeris environment (swisseph
-/// build, `.se1` inventory, JPL DE, ΔT probes) and the panchanga cache's rows. The
-/// Rust server has neither yet, so it answers 501 rather than borrow Python's values.
-pub async fn provenance() -> Response {
-    detail(
-        StatusCode::NOT_IMPLEMENTED,
-        "/meta/provenance describes the Swiss Ephemeris environment and the panchanga cache; neither is ported to the Rust server yet",
-    )
+/// `GET /meta/provenance`: the astronomical environment this process computes with,
+/// observed from the files it loaded (never typed in): our own `.veph` kernel, the
+/// `.vidx` event index, the frames and ΔT behaviour. Python reports its Swiss Ephemeris
+/// build here; this server's own ephemeris is the environment, so the fields differ
+/// but the shape is the same (`provenance` + `cache`). Without `PATRO_RS_EPHDATA` there
+/// is no own ephemeris to describe, so it answers 501.
+pub async fn provenance(State(state): State<AppState>) -> Response {
+    use sha2::{Digest, Sha256};
+    let Some(files) = state.drik else {
+        return detail(
+            StatusCode::NOT_IMPLEMENTED,
+            "/meta/provenance describes the own ephemeris; set PATRO_RS_EPHDATA to the folder holding kernel.veph and events.vidx",
+        );
+    };
+    let Some(sky) = files.system.drik() else {
+        return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error");
+    };
+    let (first, last) = sky.coverage_jd_ut();
+    let years = |jd: f64| CivilDay::from_jd_ut(jd).year;
+    // ΔT sampled where the engine serves, as Python's probes do: what the model did.
+    let delta_t: Vec<Value> = [2_451_545.0, 2_415_020.5, 1_721_423.5, 1_000_000.0]
+        .iter()
+        .map(|jd| {
+            json!({"jd": jd, "seconds": ephdata::deltat::delta_t_seconds(ephdata::deltat::year_of(*jd))})
+        })
+        .collect();
+    let index = sky.index().map(|ix| {
+        let (a, b) = ix.coverage();
+        json!({
+            "loaded": true, "bytes": files.index_bytes,
+            "coverage_jd_ut": [a, b], "coverage_years": [years(a), years(b)],
+            "stored": "tithi, karana, nakshatra, pada, yoga, Moon rashi, Sun nakshatra, sankranti, Sun degree, lunar phase, graha ingress and stations",
+        })
+    });
+    let environment = json!({
+        "engine": "own_drik",
+        "siddhanta": "drik",
+        "ephemeris": {
+            "source": "JPL DE441 development ephemeris, repacked as Chebyshev coefficients (.veph)",
+            "kernel_bytes": files.kernel_bytes,
+            "coverage_jd_ut": [first, last],
+            "coverage_years": [years(first), years(last)],
+            "answers_for_years": system_years(files.system),
+        },
+        "event_index": index.unwrap_or_else(|| json!({"loaded": false})),
+        "ayanamsha": {"name": "lahiri", "at_j2000_degrees": sky.ayanamsha(2_451_545.0)},
+        "frames": "IAU 2006 precession and mean obliquity; apparent places (light-time and annual aberration); mean equator of date for hour angles",
+        "delta_t": delta_t,
+        "sunrise_model": "upper limb of the Sun, refraction 34 arc-minutes; the Moon's horizon adds its parallax",
+    });
+    let hash = format!("{:x}", Sha256::digest(environment.to_string().as_bytes()));
+    let mut provenance = environment;
+    if let Some(map) = provenance.as_object_mut() {
+        map.insert("provenance_hash".into(), json!(hash));
+        map.insert("short_hash".into(), json!(&hash[..12]));
+    }
+    let payload = json!({
+        "provenance": provenance,
+        "cache": {"note": "this server keeps no panchanga cache keyed by environment"},
+    });
+    crate::respond::json_plain_payload(&payload, &Query::new(), &HeaderMap::new(), Instant::now())
+}
+
+fn system_years(system: astronomy::System) -> Value {
+    system
+        .supported_years()
+        .map_or(Value::Null, |(a, b)| json!([a, b]))
 }

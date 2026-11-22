@@ -6,10 +6,14 @@
 use std::collections::{HashMap, HashSet};
 
 use astronomy::{
+    System,
     engine::{Observer, moon_longitude, rise_set_on_day},
-    surya_siddhanta::{Body, Crossing, ascendant},
+    surya_siddhanta::{Body, Crossing},
 };
-use panchanga::{daily::Location, nakshatra, nakshatra_end, tithi, tithi_end, yoga, yoga_end};
+use panchanga::{
+    daily::Location, nakshatra_end, nakshatra_number, tithi_end, tithi_number, yoga_end,
+    yoga_number,
+};
 use serde_json::{Map, Value, json};
 use timescale::{CivilDay, Moment, UtcInstant, Zone};
 
@@ -175,31 +179,32 @@ fn utc(moment: Option<Moment>) -> Option<UtcInstant> {
 
 fn observer(location: &Location) -> Observer {
     Observer {
+        system: location.system,
         latitude: location.lat,
         longitude: location.lon,
         zone: location.zone.clone(),
     }
 }
 
-fn lagna_rashi(jd: f64, lat: f64, lon: f64) -> u32 {
+fn lagna_rashi(system: System, jd: f64, lat: f64, lon: f64) -> u32 {
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,
         reason = "ascendant/30 is in 0..12"
     )]
-    let i = (ascendant(jd, lat, lon) / 30.0) as u32 % 12;
+    let i = (system.ascendant(jd, lat, lon) / 30.0) as u32 % 12;
     i + 1
 }
 
-fn next_lagna_boundary(jd: f64, lat: f64, lon: f64) -> f64 {
-    let current = lagna_rashi(jd, lat, lon);
+fn next_lagna_boundary(system: System, jd: f64, lat: f64, lon: f64) -> f64 {
+    let current = lagna_rashi(system, jd, lat, lon);
     let (mut start, mut end) = (jd, jd + 4.0 / 24.0);
     for _ in 0..50 {
         if end - start < 1.0 / 86400.0 {
             return end;
         }
         let mid = start + (end - start) / 2.0;
-        if lagna_rashi(mid, lat, lon) == current {
+        if lagna_rashi(system, mid, lat, lon) == current {
             start = mid;
         } else {
             end = mid;
@@ -217,6 +222,7 @@ struct LagnaSpan {
 
 /// `build_lagna_spans(..., complete=True)`: every real lagna stretch to next sunrise.
 fn complete_lagna_spans(
+    system: System,
     sunrise: UtcInstant,
     next_sunrise: UtcInstant,
     lat: f64,
@@ -229,9 +235,9 @@ fn complete_lagna_spans(
             break;
         }
         let cursor_jd = cursor.to_jd();
-        let number = lagna_rashi(cursor_jd, lat, lon);
+        let number = lagna_rashi(system, cursor_jd, lat, lon);
         let idx = usize::try_from(number - 1).unwrap_or(0);
-        let end_jd = next_lagna_boundary(cursor_jd, lat, lon);
+        let end_jd = next_lagna_boundary(system, cursor_jd, lat, lon);
         let mut end = cursor.add_days_f64(end_jd - cursor_jd);
         if end > next_sunrise {
             end = next_sunrise;
@@ -251,6 +257,7 @@ fn complete_lagna_spans(
 }
 
 struct Sky {
+    system: System,
     sunrise: UtcInstant,
     sunset: UtcInstant,
     next_sunrise: UtcInstant,
@@ -267,8 +274,15 @@ fn local_sky(day: CivilDay, location: &Location) -> Option<Sky> {
         &obs,
         Crossing::Rise,
     ))?;
-    let lagna_spans = complete_lagna_spans(sunrise, next_sunrise, location.lat, location.lon);
+    let lagna_spans = complete_lagna_spans(
+        location.system,
+        sunrise,
+        next_sunrise,
+        location.lat,
+        location.lon,
+    );
     Some(Sky {
+        system: location.system,
         sunrise,
         sunset,
         next_sunrise,
@@ -413,27 +427,32 @@ fn spans_where(
     spans
 }
 
-fn tithi_spans(start: UtcInstant, end: UtcInstant, target: u32) -> Vec<Window> {
+fn tithi_spans(system: System, start: UtcInstant, end: UtcInstant, target: u32) -> Vec<Window> {
     let mut wanted = HashSet::new();
     wanted.insert(target);
     spans_where(
         start,
         end,
-        |at| tithi(at.to_jd()).number,
-        tithi_end,
+        |at| tithi_number(system, at.to_jd()),
+        |t| tithi_end(system, t),
         &wanted,
     )
 }
 
-fn avoided_spans(rule: &SaitRule, start: UtcInstant, end: UtcInstant) -> Vec<Window> {
+fn avoided_spans(
+    system: System,
+    rule: &SaitRule,
+    start: UtcInstant,
+    end: UtcInstant,
+) -> Vec<Window> {
     let mut spans = Vec::new();
     if !rule.avoid_nakshatras.is_empty() {
         let wanted: HashSet<u32> = rule.avoid_nakshatras.iter().copied().collect();
         spans.extend(spans_where(
             start,
             end,
-            |at| nakshatra(at.to_jd()).number,
-            nakshatra_end,
+            |at| nakshatra_number(system, at.to_jd()),
+            |t| nakshatra_end(system, t),
             &wanted,
         ));
     }
@@ -442,8 +461,8 @@ fn avoided_spans(rule: &SaitRule, start: UtcInstant, end: UtcInstant) -> Vec<Win
         spans.extend(spans_where(
             start,
             end,
-            |at| yoga(at.to_jd()).number,
-            yoga_end,
+            |at| yoga_number(system, at.to_jd()),
+            |t| yoga_end(system, t),
             &wanted,
         ));
     }
@@ -462,8 +481,8 @@ fn time_block(start: UtcInstant, end: UtcInstant, zone: &Zone) -> Map<String, Va
     out
 }
 
-fn chandra_vasa(at: UtcInstant) -> Value {
-    let lon = moon_longitude(at.to_jd());
+fn chandra_vasa(system: System, at: UtcInstant) -> Value {
+    let lon = moon_longitude(system, at.to_jd());
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,
@@ -492,12 +511,16 @@ struct Found {
     reason = "field-for-field port of Python _sait_on"
 )]
 fn sait_on(rule: &SaitRule, sky: &Sky, zone: &Zone) -> Option<Found> {
+    let system = sky.system;
     let kaals = kaal_windows(sky);
-    let tithi = tithi_spans(sky.sunrise, sky.next_sunrise, rule.absolute_tithi());
+    let tithi = tithi_spans(system, sky.sunrise, sky.next_sunrise, rule.absolute_tithi());
     if tithi.is_empty() {
         return None;
     }
-    let clean = subtract(&tithi, &avoided_spans(rule, sky.sunrise, sky.next_sunrise));
+    let clean = subtract(
+        &tithi,
+        &avoided_spans(system, rule, sky.sunrise, sky.next_sunrise),
+    );
     let pass_lists: Vec<Vec<Window>> = if clean == tithi {
         vec![tithi.clone()]
     } else {
@@ -558,7 +581,7 @@ fn sait_on(rule: &SaitRule, sky: &Sky, zone: &Zone) -> Option<Found> {
         row.insert(
             "facing".into(),
             if rule.tika == TikaFacing::Yes {
-                chandra_vasa(sait.start)
+                chandra_vasa(system, sait.start)
             } else {
                 Value::Null
             },

@@ -20,7 +20,12 @@
 //! km (1 m by default), which sets the position error, and gives each coefficient
 //! index only the bits its largest value needs.
 
-use std::{io::Write, path::Path};
+use std::{
+    cell::RefCell,
+    io::Write,
+    path::Path,
+    sync::atomic::{AtomicU64, Ordering},
+};
 
 use crate::daf::{DafError, RawSegment, read_spk};
 
@@ -115,9 +120,31 @@ pub const WANTED: [(i32, i32); 12] = [
     (9, 0),
 ];
 
+/// Source of kernel ids, so the per-thread record cache can tell two kernels apart.
+static NEXT_KERNEL_ID: AtomicU64 = AtomicU64::new(1);
+
+type Record = [[f64; MAX_COEF]; 3];
+
+/// A decoded record kept for the next evaluation.
+struct CachedRecord {
+    kernel: u64,
+    slot: usize,
+    rec: usize,
+    data: Record,
+}
+
+thread_local! {
+    /// The last decoded record of each segment slot, per thread. Evaluations close in
+    /// time (the Sun and the Moon several times a day, a day's rise and set) fall in
+    /// the same record, so decoding the packed coefficients once serves them all.
+    /// Decoding is deterministic: the cache never changes a value.
+    static RECORDS: RefCell<[Option<CachedRecord>; 16]> = const { RefCell::new([const { None }; 16]) };
+}
+
 /// The evaluator: every wanted segment's Chebyshev coefficients, in memory.
 #[derive(Debug, Clone)]
 pub struct Kernel {
+    id: u64,
     segments: Vec<Segment>,
     coefs: Vec<f64>,
     packed: Vec<u8>,
@@ -328,6 +355,7 @@ impl Kernel {
             });
         }
         Ok(Self {
+            id: NEXT_KERNEL_ID.fetch_add(1, Ordering::Relaxed),
             segments,
             coefs,
             packed,
@@ -485,6 +513,7 @@ impl Kernel {
         // Packed segments index straight into the file's own bytes.
         let packed = if any_packed { bytes } else { Vec::new() };
         Ok(Self {
+            id: NEXT_KERNEL_ID.fetch_add(1, Ordering::Relaxed),
             segments,
             coefs,
             packed,
@@ -513,10 +542,25 @@ impl Kernel {
             return Err(KernelError::OutOfRange(et));
         }
         let rec = (rel.floor() as usize).min(s.nrec - 1);
-        Ok((
-            s.record(&self.coefs, &self.packed, rec),
-            2.0 * (rel - rec as f64) - 1.0,
-        ))
+        let x = 2.0 * (rel - rec as f64) - 1.0;
+        let data = RECORDS.with_borrow_mut(|cache| {
+            let entry = &mut cache[slot % 16];
+            if let Some(hit) = entry
+                .as_ref()
+                .filter(|c| c.kernel == self.id && c.slot == slot && c.rec == rec)
+            {
+                return hit.data;
+            }
+            let data = s.record(&self.coefs, &self.packed, rec);
+            *entry = Some(CachedRecord {
+                kernel: self.id,
+                slot,
+                rec,
+                data,
+            });
+            data
+        });
+        Ok((data, x))
     }
 
     /// Position and velocity of segment `slot` at `et` seconds past J2000 TDB.

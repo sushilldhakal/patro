@@ -14,6 +14,10 @@ use common::pyjson::{Style, dumps};
 use flate2::{Compression, write::GzEncoder};
 use serde_json::{Value, json};
 
+use astronomy::System;
+
+use crate::state::AppState;
+
 /// `DEFAULT_CACHE_CONTROL`: what `serve_cached_json` sends when a route names none.
 pub(crate) const DEFAULT: &str =
     "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800";
@@ -545,21 +549,50 @@ pub(crate) fn era_params_errors(q: &Query) -> Vec<Value> {
     errors
 }
 
-/// The siddhanta middleware's check: only the Surya Siddhanta is ported.
-pub(crate) fn siddhanta_error(q: &Query) -> Option<Response> {
-    let raw = q.get("siddhanta")?;
+/// The siddhanta a request asks for (`?siddhanta=`): the Surya Siddhanta by default,
+/// drik from our own ephemeris when the server has loaded it.
+///
+/// # Errors
+///
+/// A 400 for a value that is neither siddhanta (the middleware's own message), a 501 for
+/// `drik` when `PATRO_RS_EPHDATA` named no usable files.
+pub(crate) fn request_system(state: &AppState, q: &Query) -> Result<System, Response> {
+    let Some(raw) = q.get("siddhanta") else {
+        return Ok(System::SuryaSiddhanta);
+    };
     let v = raw.trim().to_lowercase().replace('-', "_");
     match v.as_str() {
-        "" | "surya_siddhanta" | "surya" | "ss" => None,
-        "drik" => Some(detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "siddhanta=drik is not ported to the Rust server yet",
-        )),
-        _ => Some(python_json_400(&format!(
+        "" | "surya_siddhanta" | "surya" | "ss" => Ok(System::SuryaSiddhanta),
+        "drik" => state.drik.map(|d| d.system).ok_or_else(|| {
+            detail(
+                StatusCode::NOT_IMPLEMENTED,
+                "siddhanta=drik needs the own-ephemeris files: set PATRO_RS_EPHDATA to the folder holding kernel.veph and events.vidx",
+            )
+        }),
+        _ => Err(python_json_400(&format!(
             "siddhanta must be one of drik, surya_siddhanta; got {}",
             py_repr_str(raw)
         ))),
     }
+}
+
+/// The siddhanta middleware's check, as an optional early response.
+pub(crate) fn siddhanta_error(state: &AppState, q: &Query) -> Option<Response> {
+    request_system(state, q).err()
+}
+
+/// `location` answered by the siddhanta the request asked for.
+///
+/// # Errors
+///
+/// As [`request_system`].
+pub(crate) fn with_system(
+    mut location: panchanga::daily::Location,
+    state: &AppState,
+    q: &Query,
+) -> Result<panchanga::daily::Location, Response> {
+    location.system = request_system(state, q)?;
+    Ok(location)
 }
 
 /// A 400 whose body Python wrote with `json.dumps` default separators.

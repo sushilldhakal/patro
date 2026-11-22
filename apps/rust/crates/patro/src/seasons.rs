@@ -3,7 +3,7 @@
 //! starts, the ayana in force and the next one — each the real-sky (tropical)
 //! crossing, with the Surya Siddhanta's sidereal crossing of the same degree beside it.
 
-use astronomy::engine::sun_longitude;
+use astronomy::{System, engine::sun_longitude};
 use panchanga::{
     daily::Location,
     pyfloat::{py_floordiv, py_int, py_mod},
@@ -23,7 +23,7 @@ fn signed_diff(deg: f64) -> f64 {
 }
 
 /// `_refine_crossing`: sixteen Newton steps at the mean solar speed.
-fn refine(longitude: fn(f64) -> f64, target: f64, guess: f64) -> f64 {
+fn refine(longitude: impl Fn(f64) -> f64, target: f64, guess: f64) -> f64 {
     let mut jd = guess;
     for _ in 0..16 {
         jd -= signed_diff(longitude(jd) - target) / SUN_DEG_PER_DAY;
@@ -31,8 +31,8 @@ fn refine(longitude: fn(f64) -> f64, target: f64, guess: f64) -> f64 {
     jd
 }
 
-fn sidereal_sun(jd: f64) -> f64 {
-    py_mod(sun_longitude(jd), 360.0)
+fn sidereal_sun(system: System, jd: f64) -> f64 {
+    py_mod(sun_longitude(system, jd), 360.0)
 }
 
 /// `ritu_slot`: 0 Vasanta … 5 Shishira.
@@ -66,9 +66,9 @@ fn start_fields(jd: f64, zone: &Zone) -> Map<String, Value> {
 }
 
 /// `_with_vedic(angle, real_jd)`.
-fn with_vedic(angle: f64, real_jd: f64, zone: &Zone) -> Map<String, Value> {
+fn with_vedic(system: System, angle: f64, real_jd: f64, zone: &Zone) -> Map<String, Value> {
     let mut m = start_fields(real_jd, zone);
-    let vedic = refine(sidereal_sun, angle, real_jd);
+    let vedic = refine(|jd| sidereal_sun(system, jd), angle, real_jd);
     m.insert("vedic".into(), Value::Object(start_fields(vedic, zone)));
     m
 }
@@ -86,7 +86,8 @@ fn deg(angle: i64) -> f64 {
 pub fn tropical_seasons(location: &Location, now: UtcInstant) -> Value {
     let zone = &location.zone;
     let now_jd = now.to_jd();
-    let lambda = tropical_sun_longitude(now_jd);
+    let system = location.system;
+    let lambda = tropical_sun_longitude(system, now_jd);
     let current = ritu_slot(lambda);
     let boundaries: Vec<Value> = (0..6)
         .map(|i| {
@@ -98,14 +99,14 @@ pub fn tropical_seasons(location: &Location, now: UtcInstant) -> Value {
                 py_mod(deg(angle) - lambda, 360.0)
             };
             let real = refine(
-                tropical_sun_longitude,
+                |jd| tropical_sun_longitude(system, jd),
                 deg(angle),
                 now_jd + offset / SUN_DEG_PER_DAY,
             );
             let mut m = Map::new();
             m.insert("slot".into(), json!(slot));
             m.insert("angle".into(), json!(angle));
-            m.extend(with_vedic(deg(angle), real, zone));
+            m.extend(with_vedic(system, deg(angle), real, zone));
             m.insert("is_current".into(), json!(i == 0));
             Value::Object(m)
         })
@@ -126,7 +127,7 @@ pub fn tropical_seasons(location: &Location, now: UtcInstant) -> Value {
                 py_mod(deg(angle) - lambda, 360.0)
             };
             let real = refine(
-                tropical_sun_longitude,
+                |jd| tropical_sun_longitude(system, jd),
                 deg(angle),
                 now_jd + offset / SUN_DEG_PER_DAY,
             );
@@ -144,7 +145,7 @@ pub fn tropical_seasons(location: &Location, now: UtcInstant) -> Value {
                 }),
             );
             m.insert("angle".into(), json!(angle));
-            m.extend(with_vedic(deg(angle), real, zone));
+            m.extend(with_vedic(system, deg(angle), real, zone));
             m.insert("is_current".into(), json!(i == 0));
             Value::Object(m)
         })

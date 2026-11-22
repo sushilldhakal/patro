@@ -59,10 +59,11 @@ pub(crate) fn location(q: &Query, state: &AppState) -> Result<Location, Response
             })
             .transpose()?,
     };
-    geography::resolve_location(&query, &state.cities).map_err(|e| match e {
+    let resolved = geography::resolve_location(&query, &state.cities).map_err(|e| match e {
         LocationError::Invalid(msg) => detail(StatusCode::BAD_REQUEST, &msg),
         other => detail(StatusCode::SERVICE_UNAVAILABLE, &other.to_string()),
-    })
+    })?;
+    crate::respond::with_system(resolved, state, q)
 }
 
 /// The current BS year at the server's clock (`gregorian_to_bs(date.today())`).
@@ -145,7 +146,7 @@ pub(crate) async fn year(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let bs_year = match path_int(&raw_year, "bs_year") {
@@ -200,7 +201,7 @@ pub(crate) async fn year_sun(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let bs_year = match path_int(&raw_year, "bs_year") {
@@ -238,7 +239,7 @@ pub(crate) async fn month(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let loc = match location(&q, &state) {
@@ -338,7 +339,7 @@ pub(crate) async fn ad_month(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let (ad_year, ad_month) = match (
@@ -400,7 +401,7 @@ pub(crate) async fn bc_month(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let (bc_year, bc_month) = match (
@@ -460,7 +461,7 @@ pub(crate) async fn nepal_patro_ad(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let (year, month) = match (
@@ -500,7 +501,7 @@ pub(crate) async fn nepal_patro(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let (year, month) = match (

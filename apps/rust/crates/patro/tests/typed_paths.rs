@@ -54,6 +54,7 @@ fn check(what: &str, fields: &Fields) {
 
 fn new_york() -> Location {
     Location {
+        system: astronomy::System::SuryaSiddhanta,
         lat: 40.7128,
         lon: -74.006,
         zone: Zone::get("America/New_York").expect("zone"),

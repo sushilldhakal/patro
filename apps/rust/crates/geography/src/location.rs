@@ -215,5 +215,7 @@ fn finish(o: Observer) -> Result<Location, LocationError> {
         zone,
         name: display,
         city_id,
+        // The request's siddhanta is set by the server once it has read the query.
+        system: panchanga::System::SuryaSiddhanta,
     })
 }

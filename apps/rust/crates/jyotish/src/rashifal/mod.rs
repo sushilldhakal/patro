@@ -279,16 +279,16 @@ fn bs_month_days(bs_year: i32, bs_month: u32) -> Result<Vec<CivilDay>, RashifalE
 
 /// `compute_janma_from_instant`: (nakshatra 1–27, Moon rashi 1–12) at a birth instant.
 #[must_use]
-pub fn janma(instant: timescale::UtcInstant) -> (u32, i64) {
-    janma_at_jd(instant.to_jd())
+pub fn janma(system: astronomy::System, instant: timescale::UtcInstant) -> (u32, i64) {
+    janma_at_jd(system, instant.to_jd())
 }
 
 /// [`janma`] at a Julian Day (a birth before 1582-10-15 is a `UtInstant`).
 #[must_use]
-pub fn janma_at_jd(jd: f64) -> (u32, i64) {
-    let moon = astronomy::engine::moon_longitude(jd);
+pub fn janma_at_jd(system: astronomy::System, jd: f64) -> (u32, i64) {
+    let moon = astronomy::engine::moon_longitude(system, jd);
     (
-        panchanga::nakshatra(jd).number,
+        panchanga::nakshatra(system, jd).number,
         panchanga::pyfloat::py_int(moon / 30.0) % 12 + 1,
     )
 }

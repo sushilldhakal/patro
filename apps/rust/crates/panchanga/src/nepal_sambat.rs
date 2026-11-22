@@ -42,7 +42,7 @@ fn paksha_ne(paksha: Paksha) -> &'static str {
 }
 
 /// Kartik Shukla Pratipada inside the BS year (`find_ns_new_year`).
-type NewYearKey = (i32, u64, u64, String);
+type NewYearKey = (i32, u64, u64, String, usize);
 
 /// Nepal Sambat new year per BS year and observer: the same for every day of the
 /// year, so found once instead of once per day.
@@ -55,6 +55,7 @@ fn ns_new_year(bs_year: i32, observer: &Observer) -> Option<CivilDay> {
         observer.latitude.to_bits(),
         observer.longitude.to_bits(),
         observer.zone.name().to_owned(),
+        observer.system.key(),
     );
     NEW_YEARS.get_or_insert_with(key, || find_ns_new_year(bs_year, observer))
 }

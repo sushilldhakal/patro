@@ -103,7 +103,7 @@ struct YearRequest {
 }
 
 fn year_request(q: &Query, state: &AppState, raw_year: &str) -> Result<YearRequest, Response> {
-    if let Some(r) = era_error(q).or_else(|| siddhanta_error(q)) {
+    if let Some(r) = era_error(q).or_else(|| siddhanta_error(state, q)) {
         return Err(r);
     }
     let year = path_int(raw_year, "year")?;
@@ -219,7 +219,7 @@ pub(crate) async fn graha_sthiti(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let loc = match location(&q, &state) {
@@ -257,7 +257,7 @@ pub(crate) async fn eclipse_year(
 ) -> Response {
     let started = Instant::now();
     if !matches!(kind.as_str(), "solar" | "lunar") {
-        if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+        if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
             return r;
         }
         return crate::respond::detail_json(
@@ -273,6 +273,15 @@ pub(crate) async fn eclipse_year(
         Ok(r) => r,
         Err(resp) => return resp,
     };
+    if r.loc.system.is_drik() {
+        // Eclipses are computed from the text's own Moon latitude and shadow rules; drik has
+        // no ported rule set (Besselian elements) yet, so say so rather than serve the
+        // text's eclipses under drik's name.
+        return detail(
+            StatusCode::NOT_IMPLEMENTED,
+            "eclipses are not available with siddhanta=drik yet; use siddhanta=surya_siddhanta",
+        );
+    }
     let which = if kind == "solar" {
         astronomy::surya_siddhanta::EclipseKind::Solar
     } else {

@@ -409,6 +409,7 @@ pub fn year_sun_times(bs_year: i32, location: &Location) -> Result<Value, MonthE
                     hhmm(times.sunset),
                 )
             } else {
+                location.ensure_supported(day)?;
                 let observer = location.observer();
                 let event = |crossing| {
                     astronomy::engine::rise_set_on_day(
@@ -425,7 +426,7 @@ pub fn year_sun_times(bs_year: i32, location: &Location) -> Result<Value, MonthE
                 let hhmm = |t: timescale::JdInstant| t.add_seconds(30).wall(&location.zone).hm;
                 (rise.0, hhmm(rise), hhmm(set))
             };
-            let aayan = panchanga::aayan(sunrise_jd);
+            let aayan = panchanga::aayan(location.system, sunrise_jd);
             days.push(json!({
                 "day": offset + 1,
                 "date_ad": day.to_string(),

@@ -14,6 +14,7 @@ fn stored_days_round_trip_exactly() {
     assert!(panchanga::store::enabled());
 
     let location = Location {
+        system: astronomy::System::SuryaSiddhanta,
         lat: 27.7172,
         lon: 85.324,
         zone: Zone::kathmandu(),

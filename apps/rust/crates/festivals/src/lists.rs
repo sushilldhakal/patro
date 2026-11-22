@@ -33,6 +33,7 @@ pub fn festival_location(location: &Location) -> Location {
         zone: location.zone.clone(),
         name: "observer".into(),
         city_id: None,
+        system: location.system,
     }
 }
 

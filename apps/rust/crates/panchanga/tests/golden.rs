@@ -42,7 +42,7 @@ fn same(got: f64, want: &Value, what: &str) {
 fn angas_match() {
     for c in cases("angas") {
         let jd = f(&c[0]);
-        let (t, w) = (tithi(jd), &c[1]);
+        let (t, w) = (tithi(SS, jd), &c[1]);
         assert_eq!(
             (t.number, t.display_number, t.paksha.name()),
             (
@@ -54,7 +54,7 @@ fn angas_match() {
         );
         same(t.progress, &w["progress"], "tithi progress");
         same(t.elongation, &w["elongation"], "elongation");
-        let (k, w) = (nakshatra(jd), &c[2]);
+        let (k, w) = (nakshatra(SS, jd), &c[2]);
         assert_eq!(
             (k.number, k.pada, k.name()),
             (
@@ -65,14 +65,14 @@ fn angas_match() {
             "nakshatra {c}"
         );
         same(k.progress, &w["progress"], "nakshatra progress");
-        let (y, w) = (yoga(jd), &c[3]);
+        let (y, w) = (yoga(SS, jd), &c[3]);
         assert_eq!(
             (y.number, y.name()),
             (n(&w["number"]), w["name"].as_str().expect("name")),
             "yoga {c}"
         );
         same(y.progress, &w["progress"], "yoga progress");
-        let (kr, w) = (karana(jd), &c[4]);
+        let (kr, w) = (karana(SS, jd), &c[4]);
         assert_eq!(
             (kr.number, kr.name()),
             (n(&w["number"]), w["name"].as_str().expect("name")),
@@ -95,17 +95,17 @@ fn boundaries_land_within_the_allowed_drift() {
     for c in cases("finders") {
         let at: UtcInstant = c[1].as_str().expect("iso").parse().expect("parses");
         let got = match c[0].as_str().expect("name") {
-            "tithi_end" => tithi_end(at),
-            "tithi_start" => tithi_start(at),
-            "nakshatra_end" => nakshatra_end(at),
-            "nakshatra_start" => nakshatra_start(at),
-            "yoga_end" => yoga_end(at),
-            "yoga_start" => yoga_start(at),
-            "karana_end" => karana_end(at),
-            "karana_start" => karana_start(at),
-            "moon_rashi_end" => moon_rashi_end(at),
-            "moon_pada_end" => moon_pada_end(at),
-            "sun_nakshatra_end" => sun_nakshatra_end(at),
+            "tithi_end" => tithi_end(SS, at),
+            "tithi_start" => tithi_start(SS, at),
+            "nakshatra_end" => nakshatra_end(SS, at),
+            "nakshatra_start" => nakshatra_start(SS, at),
+            "yoga_end" => yoga_end(SS, at),
+            "yoga_start" => yoga_start(SS, at),
+            "karana_end" => karana_end(SS, at),
+            "karana_start" => karana_start(SS, at),
+            "moon_rashi_end" => moon_rashi_end(SS, at),
+            "moon_pada_end" => moon_pada_end(SS, at),
+            "sun_nakshatra_end" => sun_nakshatra_end(SS, at),
             other => panic!("unknown finder {other}"),
         };
         let want = c[2].as_str().expect("iso");
@@ -141,3 +141,5 @@ fn boundaries_land_within_the_allowed_drift() {
         );
     }
 }
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

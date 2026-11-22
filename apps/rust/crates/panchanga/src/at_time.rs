@@ -3,7 +3,7 @@
 //! `engine/panchanga/upagraha.py`, the instant parts of
 //! `services/panchanga/panchanga_at_time.py`).
 
-use astronomy::surya_siddhanta::ascendant;
+use astronomy::System;
 use serde_json::{Map, Value, json};
 use timescale::{CivilDay, JdInstant, PyInstant, UtcInstant, Zone};
 
@@ -91,7 +91,9 @@ pub fn vedic_day_jd(
 /// rebuilds them (`build_lagna_spans` + `enrich_lagna_spans_with_pushkara`).
 #[must_use]
 pub fn day_lagna_spans<I: PyInstant>(day: &VedicDay<I>, location: &Location) -> Value {
+    let system = location.system;
     lagna_rows_value(&lagna_spans_with_pushkara(
+        system,
         day.sunrise,
         day.next_sunrise,
         location.lat,
@@ -128,20 +130,21 @@ pub fn instant_blocks<I: PyInstant>(
     day: &VedicDay<I>,
     location: &Location,
 ) -> InstantBlocks {
+    let system = location.system;
     let zone = &location.zone;
     let jd = instant.to_jd();
     let vaara = vara(day.sunrise.to_jd(), zone).number;
-    let planets = planets_with_extras(jd);
+    let planets = planets_with_extras(system, jd);
     let sun_longitude = planets["sun"]["longitude"].as_f64().unwrap_or(0.0);
     let mut upagrahas = kala_vela_upagrahas(instant, day, vaara, location);
     upagrahas.extend(sun_based_upagrahas(sun_longitude));
     InstantBlocks {
-        tithi: tithi_block(instant, day.sunrise, zone, &tithi(jd)),
-        nakshatra: nakshatra_block(instant, day.sunrise, zone),
-        yoga: yoga_block(instant, day.sunrise, zone),
-        karana: karana_block(instant, day.sunrise, zone),
+        tithi: tithi_block(system, instant, day.sunrise, zone, &tithi(system, jd)),
+        nakshatra: nakshatra_block(system, instant, day.sunrise, zone),
+        yoga: yoga_block(system, instant, day.sunrise, zone),
+        karana: karana_block(system, instant, day.sunrise, zone),
         planets,
-        lagna: instant_lagna(jd, location.lat, location.lon),
+        lagna: instant_lagna(system, jd, location.lat, location.lon),
         upagrahas: Value::Array(upagrahas),
         vaara,
     }
@@ -150,12 +153,12 @@ pub fn instant_blocks<I: PyInstant>(
 /// `build_planetary_snapshot(instant, lat=, lon=)`: the nine grahas with their
 /// equatorial extras, the instant lagna, and the Moon's phase.
 #[must_use]
-pub fn planetary_snapshot(instant: UtcInstant, lat: f64, lon: f64) -> Value {
+pub fn planetary_snapshot(system: System, instant: UtcInstant, lat: f64, lon: f64) -> Value {
     let jd = instant.to_jd();
     json!({
-        "planets": planets_with_extras(jd),
-        "lagna": instant_lagna(jd, lat, lon),
-        "moon_phase": crate::daily::moon_phase(jd),
+        "planets": planets_with_extras(system, jd),
+        "lagna": instant_lagna(system, jd, lat, lon),
+        "moon_phase": crate::daily::moon_phase(system, jd),
         "anchor": "instant",
         "computed_at": instant.to_string(),
     })
@@ -247,7 +250,9 @@ fn kala_vela_upagrahas<I: PyInstant>(
                 .unwrap_or(0);
             let offset = f64::from(index) + if middle { 0.5 } else { 0.0 };
             let at = start.add_seconds_f64(portion * offset);
-            let asc = ascendant(at.to_jd(), location.lat, location.lon);
+            let asc = location
+                .system
+                .ascendant(at.to_jd(), location.lat, location.lon);
             entry(key, asc, Some(at.to_string()))
         })
         .collect()

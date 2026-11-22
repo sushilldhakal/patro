@@ -1469,7 +1469,12 @@ pub fn kundali_report(
     lang: &str,
 ) -> Result<Vec<Value>, crate::kundali_detail::DetailError> {
     use crate::chart::{ChartInputs, RawPlanet, build_chart, shadbala_facts};
-    let snapshot = panchanga::at_time::planetary_snapshot(instant, location.lat, location.lon);
+    let snapshot = panchanga::at_time::planetary_snapshot(
+        location.system,
+        instant,
+        location.lat,
+        location.lon,
+    );
     let raw: [RawPlanet; 9] = std::array::from_fn(|i| {
         let row = &snapshot["planets"][Graha::ALL[i].key()];
         RawPlanet {

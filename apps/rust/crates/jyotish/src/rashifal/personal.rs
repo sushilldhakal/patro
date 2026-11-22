@@ -2,7 +2,6 @@
 //! the birth Lagna, transit bindus read from the natal Ashtakavarga, and the running
 //! Vimshottari Mahadasha / Antardasha as a layer of its own.
 
-use astronomy::surya_siddhanta::ascendant;
 use panchanga::{
     RASHI_NAMES, RASHI_NAMES_NE, graha_positions, nepali_digits,
     pyfloat::{py_mod, py_round},
@@ -67,12 +66,19 @@ impl NatalChart {
     /// `wall` its wall clock in `zone` (the `tzinfo` Python's `datetime` carries,
     /// which the dasha boundaries are reckoned and printed in).
     #[must_use]
-    pub fn cast(utc: UtcInstant, wall: UtcInstant, zone: &Zone, lat: f64, lon: f64) -> Self {
+    pub fn cast(
+        system: astronomy::System,
+        utc: UtcInstant,
+        wall: UtcInstant,
+        zone: &Zone,
+        lat: f64,
+        lon: f64,
+    ) -> Self {
         let jd = utc.to_jd();
         let mut sign = [0usize; 9];
         let mut degree = [0.0; 9];
         let mut moon_nak = 0;
-        for row in graha_positions(jd) {
+        for row in graha_positions(system, jd) {
             if row.key == "moon" {
                 #[expect(
                     clippy::cast_possible_truncation,
@@ -87,7 +93,7 @@ impl NatalChart {
                 degree[g.index()] = py_round(py_mod(py_mod(row.longitude, 360.0), 30.0), 6);
             }
         }
-        let lagna_lon = py_round(ascendant(jd, lat, lon), 6);
+        let lagna_lon = py_round(system.ascendant(jd, lat, lon), 6);
         let lagna_sign = sign_of(lagna_lon);
         let mut seven = [0usize; 7];
         for (i, g) in Graha::SEVEN.iter().enumerate() {

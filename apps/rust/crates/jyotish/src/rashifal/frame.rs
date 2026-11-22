@@ -1,7 +1,7 @@
 //! `DayFrame` and `build_day_frame`: everything one sunrise contributes, computed once
 //! and read twelve times.
 
-use astronomy::surya_siddhanta::{Body, ascendant, ayanamsha, equatorial, true_position};
+use astronomy::{System, surya_siddhanta::Body};
 use panchanga::{
     daily::{DailyError, Location},
     graha_positions, hora_slots,
@@ -113,9 +113,9 @@ fn day_fraction_for(latitude: f64, declination: f64) -> f64 {
 }
 
 /// `sun_service.declination`: the Sun's क्रान्ति under the Surya Siddhanta, to 4 places.
-fn sun_declination(jd: f64) -> f64 {
-    let (lon, lat) = true_position(Body::Sun, jd);
-    let (_, dec) = equatorial(lon + ayanamsha(jd), lat);
+fn sun_declination(system: System, jd: f64) -> f64 {
+    let (lon, lat) = system.true_position(Body::Sun, jd);
+    let (_, dec) = system.equatorial(lon + system.ayanamsha(jd), lat, jd);
     py_round(dec, 4)
 }
 
@@ -149,7 +149,7 @@ pub(crate) fn build_day_frame(
         combust: false,
     }; 9];
     let mut graha_sign = [0usize; 9];
-    for row in graha_positions(jd_sunrise) {
+    for row in graha_positions(location.system, jd_sunrise) {
         let g = graha_for_key(row.key);
         positions[g.index()] = Placement {
             longitude: row.longitude,
@@ -160,7 +160,9 @@ pub(crate) fn build_day_frame(
         graha_sign[g.index()] = sign_of(row.longitude);
     }
 
-    let asc = ascendant(jd_sunrise, location.lat, location.lon);
+    let asc = location
+        .system
+        .ascendant(jd_sunrise, location.lat, location.lon);
     let lagna_sign = usize::try_from(py_int(asc / 30.0) % 12).unwrap_or(0);
     let lagna_longitude = py_round(asc, 6);
 
@@ -170,7 +172,7 @@ pub(crate) fn build_day_frame(
     );
     let tithi_index = py_int(py_floordiv(elongation, 12.0));
 
-    let day_fraction = day_fraction_for(location.lat, sun_declination(jd_sunrise));
+    let day_fraction = day_fraction_for(location.lat, sun_declination(location.system, jd_sunrise));
 
     let mut seven = [0usize; 7];
     for (i, g) in Graha::SEVEN.iter().enumerate() {

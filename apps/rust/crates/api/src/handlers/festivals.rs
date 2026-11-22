@@ -147,7 +147,7 @@ pub(crate) async fn festivals_bs_year(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -179,7 +179,7 @@ pub(crate) async fn festivals_day(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -202,7 +202,7 @@ pub(crate) async fn holidays_year(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -233,7 +233,7 @@ pub(crate) async fn nepal_festivals(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -274,7 +274,7 @@ pub(crate) async fn nepal_holidays(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -313,7 +313,7 @@ pub(crate) async fn nepal_upcoming_festivals(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -380,7 +380,7 @@ pub(crate) async fn nepal_special_months(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -413,7 +413,7 @@ pub(crate) async fn nepal_sankranti_year(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {
@@ -438,7 +438,7 @@ pub(crate) async fn nepal_sankranti_day(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = siddhanta_error(&q) {
+    if let Some(r) = siddhanta_error(&state, &q) {
         return r;
     }
     // FastAPI declares `era: Literal["bs", "ad"]` on this route (not the wider EraQuery).
@@ -466,7 +466,7 @@ pub(crate) async fn nepal_panchanga_year(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let location = match super::panchanga::location(&q, &state) {

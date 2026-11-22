@@ -9,14 +9,14 @@ use std::sync::{Arc, LazyLock};
 
 use astronomy::engine::{Observer, rise_set_on_day, sun_longitude};
 use astronomy::surya_siddhanta::{Body, Crossing};
-use astronomy::{angles::Anga, events::next_entry, position::SuryaSiddhanta};
+use astronomy::{System, angles::Anga, events::next_entry};
 use serde_json::{Value, json};
 use timescale::{
     Calendar, CivilDay, GREGORIAN_CUTOVER_JD, JdInstant, Moment, PyInstant, UtcInstant, julday,
 };
 
 use crate::{
-    angas::{Paksha, tithi},
+    angas::{Paksha, tithi_number},
     boundaries::{tithi_end, tithi_start},
     memo::Memo,
     pyfloat::py_int,
@@ -133,16 +133,16 @@ impl Stamp {
     }
 
     /// The end of the tithi in force.
-    fn tithi_end(self) -> Self {
+    fn tithi_end(self, system: System) -> Self {
         match self {
-            Self::Utc(t) => Self::Utc(tithi_end(t)),
-            Self::Jd(t) => Self::Jd(tithi_end(t)),
+            Self::Utc(t) => Self::Utc(tithi_end(system, t)),
+            Self::Jd(t) => Self::Jd(tithi_end(system, t)),
         }
     }
 }
 
-fn sun_rashi_at(at: Stamp) -> usize {
-    usize::try_from(py_int(sun_longitude(at.jd()) / 30.0) % 12)
+fn sun_rashi_at(system: System, at: Stamp) -> usize {
+    usize::try_from(py_int(sun_longitude(system, at.jd()) / 30.0) % 12)
         .expect("rashi index is non-negative")
 }
 
@@ -151,18 +151,22 @@ fn sun_rashi_at(at: Stamp) -> usize {
 /// engine's boundary tables (Python scanned in 12-hour steps for the same answer: a
 /// tithi always lasts longer than 12 hours, so the scan never skipped one).
 pub(crate) fn find_next_tithi(
+    system: System,
     display: u32,
     paksha: Paksha,
     after: Stamp,
     within_days: i64,
 ) -> Option<Stamp> {
     match after {
-        Stamp::Utc(t) => find_next_tithi_at(display, paksha, t, within_days).map(Stamp::Utc),
-        Stamp::Jd(t) => find_next_tithi_at(display, paksha, t, within_days).map(Stamp::Jd),
+        Stamp::Utc(t) => {
+            find_next_tithi_at(system, display, paksha, t, within_days).map(Stamp::Utc)
+        }
+        Stamp::Jd(t) => find_next_tithi_at(system, display, paksha, t, within_days).map(Stamp::Jd),
     }
 }
 
 fn find_next_tithi_at<I: PyInstant>(
+    system: System,
     display: u32,
     paksha: Paksha,
     after: I,
@@ -173,16 +177,11 @@ fn find_next_tithi_at<I: PyInstant>(
     } else {
         display
     };
-    if tithi(after.to_jd()).number == target {
-        return Some(tithi_start(after));
+    if tithi_number(system, after.to_jd()) == target {
+        return Some(tithi_start(system, after));
     }
     // Tithi `n` begins where the elongation reaches the multiple `n − 1` of 12°.
-    let entry = next_entry(
-        &SuryaSiddhanta,
-        Anga::Tithi,
-        (target - 1) % 30,
-        after.to_jd(),
-    );
+    let entry = next_entry(&system, Anga::Tithi, (target - 1) % 30, after.to_jd());
     let end = after.add_micros(within_days * MICROS_PER_DAY);
     if !entry.jd.is_finite() || entry.jd >= end.to_jd() {
         return None;
@@ -190,12 +189,12 @@ fn find_next_tithi_at<I: PyInstant>(
     after.at_boundary(entry.jd)
 }
 
-fn find_purnima(after: Stamp) -> Option<Stamp> {
-    find_next_tithi(15, Paksha::Shukla, after, 35).map(Stamp::tithi_end)
+fn find_purnima(system: System, after: Stamp) -> Option<Stamp> {
+    find_next_tithi(system, 15, Paksha::Shukla, after, 35).map(|s| s.tithi_end(system))
 }
 
-fn find_aausi(after: Stamp) -> Option<Stamp> {
-    find_next_tithi(15, Paksha::Krishna, after, 35).map(Stamp::tithi_end)
+fn find_aausi(system: System, after: Stamp) -> Option<Stamp> {
+    find_next_tithi(system, 15, Paksha::Krishna, after, 35).map(|s| s.tithi_end(system))
 }
 
 /// First civil day at the observer whose sunrise is at or after `instant`: a patro day
@@ -255,16 +254,16 @@ pub(crate) struct MonthDays {
     pub(crate) purnima: CivilDay,
 }
 
-fn compute_lunar_month(start: Stamp) -> Option<LunarMonth> {
-    let purnima = find_purnima(start.add_micros(2 * MICROS_PER_DAY))?;
-    let next = find_aausi(purnima.add_micros(2 * MICROS_PER_DAY))?;
-    let rashi = sun_rashi_at(start);
+fn compute_lunar_month(system: System, start: Stamp) -> Option<LunarMonth> {
+    let purnima = find_purnima(system, start.add_micros(2 * MICROS_PER_DAY))?;
+    let next = find_aausi(system, purnima.add_micros(2 * MICROS_PER_DAY))?;
+    let rashi = sun_rashi_at(system, start);
     Some(LunarMonth {
         start_aausi: start,
         end_purnima: purnima,
         end_aausi: next,
         name: BS_MONTH_NAMES[rashi],
-        is_adhik: rashi == sun_rashi_at(next),
+        is_adhik: rashi == sun_rashi_at(system, next),
     })
 }
 
@@ -294,11 +293,11 @@ fn lunar_year_anchor(year: i32) -> Stamp {
     Stamp::Jd(JdInstant(jd))
 }
 
-fn build_lunar_year(year: i32) -> LunarYear {
+fn build_lunar_year(system: System, year: i32) -> LunarYear {
     let mut months = Vec::new();
-    if let Some(mut current) = find_aausi(lunar_year_anchor(year)) {
+    if let Some(mut current) = find_aausi(system, lunar_year_anchor(year)) {
         for _ in 0..14 {
-            let Some(month) = compute_lunar_month(current) else {
+            let Some(month) = compute_lunar_month(system, current) else {
                 break;
             };
             current = month.end_aausi;
@@ -315,12 +314,14 @@ fn build_lunar_year(year: i32) -> LunarYear {
 /// Lunar years kept in memory: every request reads its own year and the two beside it.
 const LUNAR_YEAR_CAPACITY: usize = 256;
 
-static LUNAR_YEARS: LazyLock<Memo<i32, LunarYear>> =
+static LUNAR_YEARS: LazyLock<Memo<(i32, usize), LunarYear>> =
     LazyLock::new(|| Memo::new(LUNAR_YEAR_CAPACITY));
 
 /// The lunar year of a Gregorian year, memoized (`get_lunar_year`).
-pub(crate) fn lunar_year(year: i32) -> Arc<LunarYear> {
-    LUNAR_YEARS.get_or_insert_with(&year, || Arc::new(build_lunar_year(year)))
+pub(crate) fn lunar_year(system: System, year: i32) -> Arc<LunarYear> {
+    LUNAR_YEARS.get_or_insert_with(&(year, system.key()), || {
+        Arc::new(build_lunar_year(system, year))
+    })
 }
 
 /// Per-location month days kept in memory (a year's 14 months at one observer).
@@ -333,10 +334,11 @@ static MONTH_DAYS: LazyLock<Memo<DaysKey, [MonthDays]>> =
 
 fn observer_key(observer: &Observer) -> String {
     format!(
-        "{:.4}_{:.4}_{}",
+        "{:.4}_{:.4}_{}_{}",
         observer.latitude,
         observer.longitude,
-        observer.zone.name()
+        observer.zone.name(),
+        observer.system.key()
     )
 }
 
@@ -357,7 +359,8 @@ impl ObservedYear {
 
 /// [`lunar_year`] with its month days at `observer`, memoized per (year, observer).
 pub(crate) fn observed_year(year: i32, observer: &Observer) -> ObservedYear {
-    let lunar = lunar_year(year);
+    let system = observer.system;
+    let lunar = lunar_year(system, year);
     let days = MONTH_DAYS.get_or_insert_with(&(year, observer_key(observer)), || {
         lunar
             .months
@@ -575,7 +578,8 @@ pub(crate) fn merge_for_day(day: CivilDay, paksha: Paksha, observer: &Observer) 
 /// `get_lunar_calendar_layers`: adhik summary, amanta, pūrṇimānta and festival masa.
 #[must_use]
 pub fn calendar_layers(day: CivilDay, paksha: Paksha, observer: &Observer) -> Value {
-    let adhik = lunar_year(day.year).adhik_name;
+    let system = observer.system;
+    let adhik = lunar_year(system, day.year).adhik_name;
     json!({
         "adhik_maas": {
             "year_has_adhik": adhik.is_some(),
@@ -593,21 +597,30 @@ pub fn calendar_layers(day: CivilDay, paksha: Paksha, observer: &Observer) -> Va
 pub fn udaya_tithi(day: CivilDay, observer: &Observer) -> Option<(u32, Paksha)> {
     match rise_set_on_day(Body::Sun, day, observer, Crossing::Rise)? {
         Moment::Utc(sunrise) => {
-            let t = tithi(sunrise.to_jd());
-            Some((t.display_number, t.paksha))
+            let number = tithi_number(observer.system, sunrise.to_jd());
+            Some(if number <= 15 {
+                (number, Paksha::Shukla)
+            } else {
+                (number - 15, Paksha::Krishna)
+            })
         }
         Moment::Jd(_) => None,
     }
 }
 
 /// The instant this month's tithi begins, if it falls inside the month.
-fn boundary_instant(month: &LunarMonth, display: u32, paksha: Paksha) -> Option<Stamp> {
+fn boundary_instant(
+    system: System,
+    month: &LunarMonth,
+    display: u32,
+    paksha: Paksha,
+) -> Option<Stamp> {
     let search_start = if paksha == Paksha::Shukla {
         month.start_aausi
     } else {
         month.end_purnima
     };
-    let found = find_next_tithi(display, paksha, search_start, 35)?;
+    let found = find_next_tithi(system, display, paksha, search_start, 35)?;
     let inside = if paksha == Paksha::Krishna && display == 15 {
         search_start <= found && found <= month.end_aausi.add_hours(24)
     } else {
@@ -719,7 +732,8 @@ fn search_udaya(
     paksha: Paksha,
     observer: &Observer,
 ) -> Option<CivilDay> {
-    let boundary = boundary_instant(month, display, paksha)?.local_day(&observer.zone);
+    let system = observer.system;
+    let boundary = boundary_instant(system, month, display, paksha)?.local_day(&observer.zone);
     (0..5)
         .map(|offset| boundary.add_days(offset - 1))
         .find(|check| udaya_tithi(*check, observer) == Some((display, paksha)))
@@ -731,7 +745,8 @@ fn boundary_day(
     paksha: Paksha,
     observer: &Observer,
 ) -> Option<CivilDay> {
-    Some(boundary_instant(month, display, paksha)?.local_day(&observer.zone))
+    let system = observer.system;
+    Some(boundary_instant(system, month, display, paksha)?.local_day(&observer.zone))
 }
 
 /// One month's candidate day, and whether the selection rule itself resolved it (`_resolve_tithi_day`).
@@ -742,6 +757,7 @@ fn resolve_tithi_day(
     selection: DateSelection,
     observer: &Observer,
 ) -> Option<(CivilDay, bool)> {
+    let system = observer.system;
     match selection {
         DateSelection::Boundary => {
             return boundary_day(month, display, paksha, observer).map(|d| (d, false));
@@ -760,8 +776,12 @@ fn resolve_tithi_day(
             );
         }
         DateSelection::Madhyahna | DateSelection::Aparahna | DateSelection::Pradosh => {
-            if let Some(start) = boundary_instant(month, display, paksha).and_then(Stamp::utc) {
-                if let Some(day) = vyapini_date(start, tithi_end(start), selection, observer) {
+            if let Some(start) =
+                boundary_instant(system, month, display, paksha).and_then(Stamp::utc)
+            {
+                if let Some(day) =
+                    vyapini_date(start, tithi_end(system, start), selection, observer)
+                {
                     return Some((day, true));
                 }
             }
@@ -795,14 +815,18 @@ fn bs_civil_fifteenth(
 ///
 /// Every festival of a masa asks the same question for its year, so the answer is
 /// kept (keyed by the masa's place in [`BS_MONTH_NAMES`]).
-fn kshaya_drops(name: &str, gregorian_year: i32) -> Arc<[KshayaWindow]> {
-    static DROPS: LazyLock<Memo<(usize, i32), [KshayaWindow]>> =
+fn kshaya_drops(system: System, name: &str, gregorian_year: i32) -> Arc<[KshayaWindow]> {
+    static DROPS: LazyLock<Memo<(usize, i32, usize), [KshayaWindow]>> =
         LazyLock::new(|| Memo::new(KSHAYA_DROPS_CAPACITY));
     let Some(masa) = BS_MONTH_NAMES.iter().position(|n| *n == name) else {
         return Arc::from(Vec::new());
     };
-    DROPS.get_or_insert_with(&(masa, gregorian_year), || {
-        Arc::from(kshaya_drops_uncached(BS_MONTH_NAMES[masa], gregorian_year))
+    DROPS.get_or_insert_with(&(masa, gregorian_year, system.key()), || {
+        Arc::from(kshaya_drops_uncached(
+            system,
+            BS_MONTH_NAMES[masa],
+            gregorian_year,
+        ))
     })
 }
 
@@ -812,19 +836,19 @@ type KshayaWindow = (CivilDay, CivilDay);
 /// Masa-years of kshaya drops kept in memory (twelve masas over a few hundred years).
 const KSHAYA_DROPS_CAPACITY: usize = 4096;
 
-fn kshaya_drops_uncached(name: &str, gregorian_year: i32) -> Vec<KshayaWindow> {
+fn kshaya_drops_uncached(system: System, name: &str, gregorian_year: i32) -> Vec<KshayaWindow> {
     [gregorian_year - 1, gregorian_year]
         .into_iter()
-        .filter(|y| kshaya_possible(*y))
+        .filter(|y| kshaya_possible(system, *y))
         .flat_map(|y| {
-            lunar_year(y)
+            lunar_year(system, y)
                 .months
                 .iter()
                 .filter(|m| {
                     let in_year = m.start_aausi.utc_day().year == gregorian_year
                         || m.end_aausi.utc_day().year == gregorian_year;
                     in_year && {
-                        let sankrantis = sankrantis_in_period(m.start_aausi, m.end_aausi);
+                        let sankrantis = sankrantis_in_period(system, m.start_aausi, m.end_aausi);
                         sankrantis.len() >= 2 && BS_MONTH_NAMES[sankrantis[0] as usize] == name
                     }
                 })
@@ -860,6 +884,7 @@ pub fn find_festival_in_lunar_month(
     selection: DateSelection,
     observer: &Observer,
 ) -> Option<CivilDay> {
+    let system = observer.system;
     if name == "Shrawan" && display == 15 && paksha == Paksha::Shukla {
         // MoHA: Shrawan's civil Purnima unless it falls before day 20; then Bhadau's.
         let bs_year = gregorian_year + 57;
@@ -882,7 +907,7 @@ pub fn find_festival_in_lunar_month(
             return Some(day);
         }
     }
-    let kshaya = kshaya_drops(name, gregorian_year);
+    let kshaya = kshaya_drops(system, name, gregorian_year);
     let mut candidates: Vec<(CivilDay, bool)> = Vec::new();
     for search_year in [gregorian_year - 1, gregorian_year] {
         let year = observed_year(search_year, observer);
@@ -948,18 +973,18 @@ const RASHI_NAMES: [&str; 12] = [
     "Meena",
 ];
 
-fn sankrantis_in_period(start: Stamp, end: Stamp) -> Vec<u32> {
+fn sankrantis_in_period(system: System, start: Stamp, end: Stamp) -> Vec<u32> {
     let mut sankrantis = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut check = start.jd();
     let end_jd = end.jd();
     while check < end_jd {
-        let rashi = calendar::sun_rashi_at_jd(check);
+        let rashi = calendar::sun_rashi_at_jd(system, check);
         let next = (rashi + 1) % 12;
         if seen.contains(&next) {
             break;
         }
-        let Some(candidate) = calendar::find_sankranti_after_jd(next, check, 35) else {
+        let Some(candidate) = calendar::find_sankranti_after_jd(system, next, check, 35) else {
             break;
         };
         if candidate >= end_jd {
@@ -972,8 +997,8 @@ fn sankrantis_in_period(start: Stamp, end: Stamp) -> Vec<u32> {
     sankrantis
 }
 
-fn kshaya_info(start: Stamp, end: Stamp) -> Option<Value> {
-    let sankrantis = sankrantis_in_period(start, end);
+fn kshaya_info(system: System, start: Stamp, end: Stamp) -> Option<Value> {
+    let sankrantis = sankrantis_in_period(system, start, end);
     if sankrantis.len() < 2 {
         return None;
     }
@@ -1000,9 +1025,15 @@ fn kshaya_info(start: Stamp, end: Stamp) -> Option<Value> {
 /// is flanked by two adhik months in the same or an adjacent lunar year (BS 2039:
 /// Adhik Ashwin before, Adhik Phalgun after), so with fewer than two adhik months in
 /// the three lunar years around it there is nothing to search for.
-fn kshaya_possible(gregorian_year: i32) -> bool {
+fn kshaya_possible(system: System, gregorian_year: i32) -> bool {
     (gregorian_year - 1..=gregorian_year + 1)
-        .map(|y| lunar_year(y).months.iter().filter(|m| m.is_adhik).count())
+        .map(|y| {
+            lunar_year(system, y)
+                .months
+                .iter()
+                .filter(|m| m.is_adhik)
+                .count()
+        })
         .sum::<usize>()
         >= 2
 }
@@ -1011,6 +1042,7 @@ fn kshaya_possible(gregorian_year: i32) -> bool {
 /// (`get_special_months_for_gregorian_year`), with each month's dates at `observer`.
 #[must_use]
 pub fn special_months_for_gregorian_year(gregorian_year: i32, observer: &Observer) -> Value {
+    let system = observer.system;
     let year = observed_year(gregorian_year, observer);
     let adhik_months = year
         .months()
@@ -1043,13 +1075,13 @@ pub fn special_months_for_gregorian_year(gregorian_year: i32, observer: &Observe
             },
         );
     let mut kshaya = json!({"is_kshaya": false});
-    let candidates: Vec<(&LunarMonth, &MonthDays)> = if kshaya_possible(gregorian_year) {
+    let candidates: Vec<(&LunarMonth, &MonthDays)> = if kshaya_possible(system, gregorian_year) {
         year.months().collect()
     } else {
         Vec::new()
     };
     for (month, days) in candidates {
-        if let Some(mut info) = kshaya_info(month.start_aausi, month.end_aausi) {
+        if let Some(mut info) = kshaya_info(system, month.start_aausi, month.end_aausi) {
             if let Some(map) = info.as_object_mut() {
                 map.insert("start_date".into(), json!(days.first.to_string()));
                 map.insert("end_date".into(), json!(days.last.to_string()));
@@ -1089,11 +1121,11 @@ pub fn special_months_for_gregorian_year(gregorian_year: i32, observer: &Observe
 /// shortcut: the reference the shortcut is checked against.
 #[doc(hidden)]
 #[must_use]
-pub fn kshaya_months_exhaustive(gregorian_year: i32) -> Vec<String> {
-    lunar_year(gregorian_year)
+pub fn kshaya_months_exhaustive(system: System, gregorian_year: i32) -> Vec<String> {
+    lunar_year(system, gregorian_year)
         .months
         .iter()
-        .filter(|m| kshaya_info(m.start_aausi, m.end_aausi).is_some())
+        .filter(|m| kshaya_info(system, m.start_aausi, m.end_aausi).is_some())
         .map(|m| m.start_aausi.to_string())
         .collect()
 }
@@ -1101,6 +1133,6 @@ pub fn kshaya_months_exhaustive(gregorian_year: i32) -> Vec<String> {
 /// Whether the two-adhik shortcut would search `gregorian_year` for a kshaya month.
 #[doc(hidden)]
 #[must_use]
-pub fn kshaya_searched(gregorian_year: i32) -> bool {
-    kshaya_possible(gregorian_year)
+pub fn kshaya_searched(system: System, gregorian_year: i32) -> bool {
+    kshaya_possible(system, gregorian_year)
 }

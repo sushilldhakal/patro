@@ -19,7 +19,7 @@ use timescale::CivilDay;
 use crate::{
     respond::{
         Query, detail, detail_json, era_400, era_error, era_params_errors, json_payload,
-        siddhanta_error,
+        request_system, siddhanta_error,
     },
     state::AppState,
 };
@@ -101,7 +101,7 @@ pub(crate) async fn rashifal(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let period = match period(&q) {
@@ -154,11 +154,16 @@ pub(crate) fn birth_query<'a>(
 }
 
 /// `GET /v1/panchanga/rashifal/janma`: the janma nakshatra and Moon rashi of a birth.
-pub(crate) async fn janma(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
+pub(crate) async fn janma(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
+    let system = request_system(&state, &q).unwrap_or_default();
     let mut errors = Vec::new();
     let query = birth_query(&q, &mut errors);
     if !errors.is_empty() {
@@ -168,7 +173,16 @@ pub(crate) async fn janma(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) ->
         Ok(jd) => jd,
         Err(error) => return day_error(error),
     };
-    let (nakshatra, rashi) = jyotish::rashifal::janma_at_jd(jd);
+    if !system.supports_jd(jd) {
+        let (first, last) = system.supported_years().unwrap_or((0, 0));
+        return detail(
+            StatusCode::BAD_REQUEST,
+            &format!(
+                "birth is outside the own ephemeris, which covers AD {first} to {last}; use siddhanta=surya_siddhanta for this date"
+            ),
+        );
+    }
+    let (nakshatra, rashi) = jyotish::rashifal::janma_at_jd(system, jd);
     crate::respond::json_plain_payload(
         &json!({"janma_nakshatra": nakshatra, "janma_rashi": rashi}),
         &q,
@@ -212,7 +226,7 @@ pub(crate) async fn personal(
     headers: HeaderMap,
 ) -> Response {
     let started = Instant::now();
-    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&q)) {
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
         return r;
     }
     let mut errors = Vec::new();
@@ -239,6 +253,7 @@ pub(crate) async fn personal(
         Err(error) => return day_error(error),
     };
     let natal = jyotish::rashifal::NatalChart::cast(
+        location.system,
         moment.utc,
         moment.wall,
         &moment.zone,

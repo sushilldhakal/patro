@@ -190,8 +190,8 @@ fn tara_state(transit: usize, janma: usize) -> Value {
 }
 
 /// `_lord_motion`: (अस्त, वक्री) at `jd`; राहु and केतु are never वक्री here.
-fn lord_motion(lord: Graha, jd: f64) -> (bool, bool) {
-    let rows = panchanga::graha_positions(jd);
+fn lord_motion(system: astronomy::System, lord: Graha, jd: f64) -> (bool, bool) {
+    let rows = panchanga::graha_positions(system, jd);
     let row = |key: &str| rows.iter().find(|r| r.key == key);
     let vakri = match lord {
         Graha::Rahu | Graha::Ketu | Graha::Sun | Graha::Moon => false,
@@ -213,7 +213,11 @@ fn lord_motion(lord: Graha, jd: f64) -> (bool, bool) {
 }
 
 /// `_split_points`: sunrise, the next sunrise, and each Moon rashi or nakshatra change between.
-fn split_points(sunrise: UtcInstant, next: UtcInstant) -> Vec<UtcInstant> {
+fn split_points(
+    system: astronomy::System,
+    sunrise: UtcInstant,
+    next: UtcInstant,
+) -> Vec<UtcInstant> {
     let s = |n: i64| n * 1_000_000;
     let mut points = vec![sunrise, next];
     let mut cursor = sunrise;
@@ -221,7 +225,8 @@ fn split_points(sunrise: UtcInstant, next: UtcInstant) -> Vec<UtcInstant> {
         if cursor >= next.add_micros(-s(45)) {
             break;
         }
-        let change = panchanga::moon_rashi_end(cursor).min(panchanga::nakshatra_end(cursor));
+        let change =
+            panchanga::moon_rashi_end(system, cursor).min(panchanga::nakshatra_end(system, cursor));
         if change <= cursor.add_micros(s(20)) {
             cursor = cursor.add_micros(s(30 * 60));
             continue;
@@ -252,8 +257,8 @@ fn split_points(sunrise: UtcInstant, next: UtcInstant) -> Vec<UtcInstant> {
     merged
 }
 
-fn moon_rashi_and_nak(jd: f64) -> (usize, usize) {
-    let lon = astronomy::engine::moon_longitude(jd);
+fn moon_rashi_and_nak(system: astronomy::System, jd: f64) -> (usize, usize) {
+    let lon = astronomy::engine::moon_longitude(system, jd);
     #[expect(
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss,
@@ -276,12 +281,13 @@ fn personal_block(
     day: CivilDay,
     location: &Location,
 ) -> Result<Value, Response> {
+    let system = location.system;
     let sunrise = panchanga::sunrise_on(day, location).map_err(bad_day)?;
     let next = panchanga::sunrise_on(day.add_days(1), location).map_err(bad_day)?;
     let jd = sunrise.to_jd();
     let (maha, antar) = natal.dasha_lords(sunrise);
     let lord_row = |lord: Graha| {
-        let (asta, vakri) = lord_motion(lord, jd);
+        let (asta, vakri) = lord_motion(system, lord, jd);
         json!({
             "lord": lord.key(), "lord_ne": jyotish::dasha::lord_ne(lord), "lord_en": lord.en(),
             "asta": asta, "vakri": vakri,
@@ -289,7 +295,7 @@ fn personal_block(
     };
     let rashi_idx = natal.moon_sign_index();
     let nak_idx = natal.moon_nakshatra_index();
-    let points = split_points(sunrise, next);
+    let points = split_points(system, sunrise, next);
     let mut segments = Vec::new();
     for pair in points.windows(2) {
         let (start, end) = (pair[0], pair[1]);
@@ -300,7 +306,7 @@ fn personal_block(
         if probe >= end {
             probe = start;
         }
-        let (moon_rashi, transit_nak) = moon_rashi_and_nak(probe.to_jd());
+        let (moon_rashi, transit_nak) = moon_rashi_and_nak(system, probe.to_jd());
         let (house, state) = chandra_state(moon_rashi, rashi_idx);
         segments.push(json!({
             "start": clock_from_midnight(start, day, location),
@@ -592,7 +598,7 @@ fn day_guidance(
 }
 
 /// `natal_chart_for_profile`: `None` without a usable birth moment and place.
-fn natal_for(birth: &Birth) -> Option<NatalChart> {
+fn natal_for(system: astronomy::System, birth: &Birth) -> Option<NatalChart> {
     let (Some(date), Some(lat), Some(lon)) =
         (birth.date.as_deref(), birth.latitude, birth.longitude)
     else {
@@ -635,6 +641,7 @@ fn natal_for(birth: &Birth) -> Option<NatalChart> {
     };
     let moment = patro::at_time::birth_instant(&query, Some((lat, lon))).ok()?;
     Some(NatalChart::cast(
+        system,
         moment.utc,
         moment.wall,
         &moment.zone,
@@ -789,7 +796,7 @@ pub async fn daily_guidance(
         let rules = rules(&state)?;
         let now = state.now();
         let first = first.unwrap_or_else(|| CivilDay::from_jd_ut(now.to_jd()));
-        let natal = natal_for(&profile.birth);
+        let natal = natal_for(location.system, &profile.birth);
         let days = (0..days.clamp(1, MAX_DAYS))
             .map(|i| {
                 let offset = i32::try_from(i).unwrap_or(0);

@@ -1,6 +1,9 @@
 //! The Surya Siddhanta as an [`Ephemeris`]: the text's own true Sun and Moon.
 
-use crate::engine::{moon_longitude, sun_longitude};
+use crate::{
+    System,
+    engine::{moon_longitude, sun_longitude},
+};
 
 use super::{Ephemeris, Pos};
 
@@ -15,8 +18,8 @@ impl Ephemeris for SuryaSiddhanta {
 
     fn pos(&self, jd_ut: f64) -> Pos {
         Pos {
-            sun: sun_longitude(jd_ut),
-            moon: moon_longitude(jd_ut),
+            sun: sun_longitude(System::SuryaSiddhanta, jd_ut),
+            moon: moon_longitude(System::SuryaSiddhanta, jd_ut),
         }
     }
 }

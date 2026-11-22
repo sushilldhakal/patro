@@ -7,7 +7,7 @@
 //! (`timedelta(hours=1/3600)`), with `timedelta / 2`
 //! rounded half to even — so the reported instants agree to the microsecond.
 
-use astronomy::surya_siddhanta::{Body, ayanamsha, true_longitude_and_speed};
+use astronomy::{System, surya_siddhanta::Body};
 use panchanga::{
     NAKSHATRA_NAMES, NAKSHATRA_NAMES_NE, RASHI_NAMES, RASHI_NAMES_NE,
     daily::{DailyError, Location, SunriseInstant},
@@ -103,8 +103,8 @@ fn body(graha: Graha) -> Body {
 }
 
 /// `planet_service.position(jd, graha).longitude` (Ketu: the rounded Rahu + 180).
-pub(crate) fn position_longitude(graha: Graha, jd: f64) -> f64 {
-    let raw = py_mod(true_longitude_and_speed(body(graha), jd).0, 360.0);
+pub(crate) fn position_longitude(system: System, graha: Graha, jd: f64) -> f64 {
+    let raw = py_mod(system.true_longitude_and_speed(body(graha), jd).0, 360.0);
     if graha == Graha::Ketu {
         stable_round(py_mod(raw + 180.0, 360.0))
     } else {
@@ -113,17 +113,17 @@ pub(crate) fn position_longitude(graha: Graha, jd: f64) -> f64 {
 }
 
 /// `_longitude_for(graha, dt)`.
-fn longitude_for<I: PyInstant>(graha: Graha, at: I) -> f64 {
+fn longitude_for<I: PyInstant>(system: System, graha: Graha, at: I) -> f64 {
     let jd = at.to_jd();
     if graha == Graha::Ketu {
-        return py_mod(position_longitude(Graha::Rahu, jd) + 180.0, 360.0);
+        return py_mod(position_longitude(system, Graha::Rahu, jd) + 180.0, 360.0);
     }
-    position_longitude(graha, jd)
+    position_longitude(system, graha, jd)
 }
 
 /// `planet_service.speed(jd, graha)`.
-fn speed_for<I: PyInstant>(graha: Graha, at: I) -> f64 {
-    let speed = stable_round(true_longitude_and_speed(body(graha), at.to_jd()).1);
+fn speed_for<I: PyInstant>(system: System, graha: Graha, at: I) -> f64 {
+    let speed = stable_round(system.true_longitude_and_speed(body(graha), at.to_jd()).1);
     if graha == Graha::Ketu { -speed } else { speed }
 }
 
@@ -141,26 +141,26 @@ fn index(x: f64, span: f64, modulo: i64) -> i64 {
 }
 
 /// `_rashi_index_for`.
-fn rashi_index<I: PyInstant>(graha: Graha, at: I) -> i64 {
-    index(longitude_for(graha, at), 30.0, 12)
+fn rashi_index<I: PyInstant>(system: System, graha: Graha, at: I) -> i64 {
+    index(longitude_for(system, graha, at), 30.0, 12)
 }
 
 /// `_nakshatra_index_for`.
-fn nakshatra_index<I: PyInstant>(graha: Graha, at: I) -> i64 {
-    index(longitude_for(graha, at), NAKSHATRA_SPAN, 27)
+fn nakshatra_index<I: PyInstant>(system: System, graha: Graha, at: I) -> i64 {
+    index(longitude_for(system, graha, at), NAKSHATRA_SPAN, 27)
 }
 
 /// `_pada_tuple_for`: (nakshatra 0–26, pada 1–4).
-fn pada_tuple<I: PyInstant>(graha: Graha, at: I) -> (i64, i64) {
-    let lon = longitude_for(graha, at);
+fn pada_tuple<I: PyInstant>(system: System, graha: Graha, at: I) -> (i64, i64) {
+    let lon = longitude_for(system, graha, at);
     let nak = index(lon, NAKSHATRA_SPAN, 27);
     let pada = (py_int(py_mod(lon, NAKSHATRA_SPAN) / PADA_SPAN) + 1).min(4);
     (nak, pada)
 }
 
 /// `_pada_flat_for`: 0–107 across the ecliptic.
-pub(crate) fn pada_flat<I: PyInstant>(graha: Graha, at: I) -> i64 {
-    let (nak, pada) = pada_tuple(graha, at);
+pub(crate) fn pada_flat<I: PyInstant>(system: System, graha: Graha, at: I) -> i64 {
+    let (nak, pada) = pada_tuple(system, graha, at);
     nak * 4 + (pada - 1)
 }
 
@@ -192,12 +192,13 @@ fn quiet_seconds(graha: Graha, longitude: f64) -> f64 {
 
 /// `_bisect_index_change`: when `get_index` first changes after `from`.
 fn bisect_index_change<I: PyInstant>(
+    system: System,
     graha: Graha,
     from: I,
-    get_index: fn(Graha, I) -> i64,
+    get_index: fn(System, Graha, I) -> i64,
     max_days: f64,
 ) -> Option<I> {
-    let current = get_index(graha, from);
+    let current = get_index(system, graha, from);
     let limit = from.add_days_f64(max_days);
     let (mut lo, mut hi) = (from, None);
     let mut cursor = from;
@@ -205,14 +206,14 @@ fn bisect_index_change<I: PyInstant>(
     // edge (every rashi and nakshatra edge is one) cannot show a new index, so they
     // are stepped over unevaluated. The grid itself is unchanged, so the bracket and
     // the bisection, and with them the answer, are the ones the full scan finds.
-    let quiet_seconds = quiet_seconds(graha, longitude_for(graha, from));
+    let quiet_seconds = quiet_seconds(graha, longitude_for(system, graha, from));
     while cursor < limit {
         let next = py_min(cursor.add_hours(3), limit);
         if next < limit && next.seconds_since(from) < quiet_seconds {
             cursor = next;
             continue;
         }
-        if get_index(graha, next) != current {
+        if get_index(system, graha, next) != current {
             lo = cursor;
             hi = Some(next);
             break;
@@ -225,13 +226,13 @@ fn bisect_index_change<I: PyInstant>(
             break;
         }
         let mid = I::midpoint(lo, hi);
-        if get_index(graha, mid) == current {
+        if get_index(system, graha, mid) == current {
             lo = mid;
         } else {
             hi = mid;
         }
     }
-    (get_index(graha, hi) != current).then_some(hi)
+    (get_index(system, graha, hi) != current).then_some(hi)
 }
 
 /// What kind of moment an ingress entry marks.
@@ -395,13 +396,13 @@ impl<I: PyInstant> Ingress<I> {
 }
 
 /// `_rashi_again_prefix`: पुनः when the graha stood in `to` within the lookback.
-fn rashi_again<I: PyInstant>(graha: Graha, from: I, to: i64) -> bool {
+fn rashi_again<I: PyInstant>(system: System, graha: Graha, from: I, to: i64) -> bool {
     #[expect(clippy::cast_possible_truncation, reason = "at most 120 days")]
     let lookback = rashi_max_days(graha).min(120.0) as i64;
     let mut cursor = from.add_seconds(-86_400);
     let end = from.add_seconds(-86_400 * lookback);
     while cursor >= end {
-        if rashi_index(graha, cursor) == to {
+        if rashi_index(system, graha, cursor) == to {
             return true;
         }
         cursor = cursor.add_seconds(-86_400);
@@ -411,42 +412,52 @@ fn rashi_again<I: PyInstant>(graha: Graha, from: I, to: i64) -> bool {
 
 /// `find_next_rashi_entry`.
 #[must_use]
-pub fn next_rashi_entry<I: PyInstant>(graha: Graha, from: I) -> Option<Ingress<I>> {
-    let current = rashi_index(graha, from);
-    let at = bisect_index_change(graha, from, rashi_index, rashi_max_days(graha))?;
-    let to = rashi_index(graha, at) % 12;
+pub fn next_rashi_entry<I: PyInstant>(system: System, graha: Graha, from: I) -> Option<Ingress<I>> {
+    let current = rashi_index(system, graha, from);
+    let at = bisect_index_change(system, graha, from, rashi_index, rashi_max_days(graha))?;
+    let to = rashi_index(system, graha, at) % 12;
     Some(Ingress {
         graha,
         at,
         kind: Kind::Rashi {
             from: to_usize(current),
             to: to_usize(to),
-            again: rashi_again(graha, from, to),
+            again: rashi_again(system, graha, from, to),
         },
     })
 }
 
 /// `find_next_nakshatra_entry`.
 #[must_use]
-pub fn next_nakshatra_entry<I: PyInstant>(graha: Graha, from: I) -> Option<Ingress<I>> {
-    let current = nakshatra_index(graha, from);
-    let at = bisect_index_change(graha, from, nakshatra_index, nakshatra_max_days(graha))?;
+pub fn next_nakshatra_entry<I: PyInstant>(
+    system: System,
+    graha: Graha,
+    from: I,
+) -> Option<Ingress<I>> {
+    let current = nakshatra_index(system, graha, from);
+    let at = bisect_index_change(
+        system,
+        graha,
+        from,
+        nakshatra_index,
+        nakshatra_max_days(graha),
+    )?;
     Some(Ingress {
         graha,
         at,
         kind: Kind::Nakshatra {
             from: to_usize(current),
-            to: to_usize(nakshatra_index(graha, at)),
+            to: to_usize(nakshatra_index(system, graha, at)),
         },
     })
 }
 
 /// `find_next_pada_entry`.
 #[must_use]
-pub fn next_pada_entry<I: PyInstant>(graha: Graha, from: I) -> Option<Ingress<I>> {
-    let (fnak, fpada) = pada_tuple(graha, from);
-    let at = bisect_index_change(graha, from, pada_flat, pada_max_days(graha))?;
-    let (tnak, tpada) = pada_tuple(graha, at);
+pub fn next_pada_entry<I: PyInstant>(system: System, graha: Graha, from: I) -> Option<Ingress<I>> {
+    let (fnak, fpada) = pada_tuple(system, graha, from);
+    let at = bisect_index_change(system, graha, from, pada_flat, pada_max_days(graha))?;
+    let (tnak, tpada) = pada_tuple(system, graha, at);
     Some(Ingress {
         graha,
         at,
@@ -460,6 +471,7 @@ pub fn next_pada_entry<I: PyInstant>(graha: Graha, from: I) -> Option<Ingress<I>
 /// `find_upcoming_rashi_entries`.
 #[must_use]
 pub fn upcoming_rashi_entries<I: PyInstant>(
+    system: System,
     from: I,
     grahas: &[Graha],
     per_graha: usize,
@@ -468,7 +480,7 @@ pub fn upcoming_rashi_entries<I: PyInstant>(
     for &g in grahas {
         let mut cursor = from;
         for _ in 0..per_graha {
-            let Some(entry) = next_rashi_entry(g, cursor) else {
+            let Some(entry) = next_rashi_entry(system, g, cursor) else {
                 break;
             };
             out.push(entry);
@@ -489,23 +501,58 @@ fn sort_entries<I: PyInstant>(entries: &mut [Ingress<I>]) {
     });
 }
 
-fn retro_at<I: PyInstant>(graha: Graha, at: I) -> bool {
-    is_retrograde(graha, speed_for(graha, at))
+fn retro_at<I: PyInstant>(system: System, graha: Graha, at: I) -> bool {
+    is_retrograde(graha, speed_for(system, graha, at))
+}
+
+/// The stored stations of `graha` in `(from, until]`, as ingress entries.
+fn station_events<I: PyInstant>(
+    system: System,
+    graha: Graha,
+    from: I,
+    until: I,
+) -> Option<Vec<Ingress<I>>> {
+    if matches!(graha, Graha::Sun | Graha::Moon | Graha::Rahu | Graha::Ketu) {
+        // Never turn: the scan finds nothing either.
+        return system.is_drik().then(Vec::new);
+    }
+    let stored = system.station_events(body(graha), from.to_jd(), until.to_jd())?;
+    Some(
+        stored
+            .into_iter()
+            .filter_map(|(jd, retrograde)| {
+                let at = from.at_boundary(jd)?;
+                (at <= until).then_some(Ingress {
+                    graha,
+                    at,
+                    kind: Kind::Motion { retrograde },
+                })
+            })
+            .collect(),
+    )
 }
 
 /// `find_motion_stations_in_range` for `grahas`.
 pub(crate) fn motion_stations<I: PyInstant>(
+    system: System,
     from: I,
     until: I,
     grahas: &[Graha],
 ) -> Vec<Ingress<I>> {
     let mut events = Vec::new();
     for &g in grahas {
+        // Drik reads the stored stations (they are the same events the scan below finds,
+        // to a few hundredths of a second); the text, and a span the index does not
+        // cover, are scanned.
+        if let Some(stored) = station_events(system, g, from, until) {
+            events.extend(stored);
+            continue;
+        }
         let mut cursor = from;
-        let mut was = retro_at(g, cursor);
+        let mut was = retro_at(system, g, cursor);
         while cursor < until {
             let probe = py_min(cursor.add_hours(3), until);
-            let now = retro_at(g, probe);
+            let now = retro_at(system, g, probe);
             if now == was {
                 cursor = probe;
                 continue;
@@ -516,7 +563,7 @@ pub(crate) fn motion_stations<I: PyInstant>(
                     break;
                 }
                 let mid = I::midpoint(lo, hi);
-                if retro_at(g, mid) == now {
+                if retro_at(system, g, mid) == now {
                     hi = mid;
                 } else {
                     lo = mid;
@@ -553,28 +600,37 @@ fn combustion_threshold(graha: Graha, speed: f64) -> f64 {
 }
 
 /// `_elongation`: (separation, east of the Sun, speed).
-fn elongation<I: PyInstant>(graha: Graha, at: I) -> (f64, bool, f64) {
-    let sun = longitude_for(Graha::Sun, at);
-    let planet = longitude_for(graha, at);
+fn elongation<I: PyInstant>(system: System, graha: Graha, at: I) -> (f64, bool, f64) {
+    let sun = longitude_for(system, Graha::Sun, at);
+    let planet = longitude_for(system, graha, at);
     let diff = py_mod(planet - sun, 360.0);
-    (diff.min(360.0 - diff), diff < 180.0, speed_for(graha, at))
+    (
+        diff.min(360.0 - diff),
+        diff < 180.0,
+        speed_for(system, graha, at),
+    )
 }
 
 /// `is_heliacally_visible`.
-pub(crate) fn visible<I: PyInstant>(graha: Graha, at: I) -> bool {
-    let (sep, _, speed) = elongation(graha, at);
+pub(crate) fn visible<I: PyInstant>(system: System, graha: Graha, at: I) -> bool {
+    let (sep, _, speed) = elongation(system, graha, at);
     sep >= combustion_threshold(graha, speed)
 }
 
 /// `find_udayast_events_in_range`.
-pub(crate) fn udayast_events<I: PyInstant>(from: I, until: I, grahas: &[Graha]) -> Vec<Ingress<I>> {
+pub(crate) fn udayast_events<I: PyInstant>(
+    system: System,
+    from: I,
+    until: I,
+    grahas: &[Graha],
+) -> Vec<Ingress<I>> {
     let mut events = Vec::new();
     for &g in grahas {
         let mut cursor = from;
-        let mut was = visible(g, cursor);
+        let mut was = visible(system, g, cursor);
         while cursor < until {
             let probe = py_min(cursor.add_hours(2), until);
-            let now = visible(g, probe);
+            let now = visible(system, g, probe);
             if now == was {
                 cursor = probe;
                 continue;
@@ -585,7 +641,7 @@ pub(crate) fn udayast_events<I: PyInstant>(from: I, until: I, grahas: &[Graha]) 
                     break;
                 }
                 let mid = I::midpoint(lo, hi);
-                if visible(g, mid) == now {
+                if visible(system, g, mid) == now {
                     hi = mid;
                 } else {
                     lo = mid;
@@ -594,7 +650,7 @@ pub(crate) fn udayast_events<I: PyInstant>(from: I, until: I, grahas: &[Graha]) 
             if hi > until {
                 break;
             }
-            let (_, east, speed) = elongation(g, hi);
+            let (_, east, speed) = elongation(system, g, hi);
             let retrograde = is_retrograde(g, speed);
             events.push(Ingress {
                 graha: g,
@@ -655,23 +711,30 @@ impl Level {
 
 /// `find_ingress_entries_in_range`.
 fn ingress_entries<I: PyInstant>(
+    system: System,
     from: I,
     until: I,
     level: Level,
     grahas: &[Graha],
 ) -> Vec<Ingress<I>> {
-    let finder: fn(Graha, I) -> Option<Ingress<I>> = match level {
-        Level::Udayast => return udayast_events(from, until, grahas),
+    let finder: fn(System, Graha, I) -> Option<Ingress<I>> = match level {
+        Level::Udayast => return udayast_events(system, from, until, grahas),
         Level::Patro => {
-            let mut merged = ingress_entries(from, until, Level::Pada, grahas);
+            let mut merged = ingress_entries(system, from, until, Level::Pada, grahas);
             let rashi_grahas: Vec<Graha> = grahas
                 .iter()
                 .copied()
                 .filter(|g| !matches!(g, Graha::Sun | Graha::Moon))
                 .collect();
-            merged.extend(ingress_entries(from, until, Level::Rashi, &rashi_grahas));
-            merged.extend(udayast_events(from, until, &FIVE_PLANETS));
-            merged.extend(motion_stations(from, until, &FIVE_PLANETS));
+            merged.extend(ingress_entries(
+                system,
+                from,
+                until,
+                Level::Rashi,
+                &rashi_grahas,
+            ));
+            merged.extend(udayast_events(system, from, until, &FIVE_PLANETS));
+            merged.extend(motion_stations(system, from, until, &FIVE_PLANETS));
             sort_entries(&mut merged);
             return merged;
         }
@@ -683,7 +746,7 @@ fn ingress_entries<I: PyInstant>(
     for &g in grahas {
         let mut cursor = from;
         while cursor < until {
-            let Some(entry) = finder(g, cursor) else {
+            let Some(entry) = finder(system, g, cursor) else {
                 break;
             };
             let printed = entry.printed_at();
@@ -783,10 +846,11 @@ fn ingress_events<I: SunriseInstant>(
     level: Level,
     grahas: &[Graha],
 ) -> Result<Vec<Value>, GocharError> {
+    let system = location.system;
     let from = I::sunrise_on(first, location)?;
     let until = I::sunrise_on(after_last, location)?;
     let mut events = Vec::new();
-    for entry in ingress_entries(from, until, level, grahas) {
+    for entry in ingress_entries(system, from, until, level, grahas) {
         let mut m = entry.to_json();
         let entry_jd = attach_local_time(&mut m, entry.at, location);
         let day = CivilDay::from_jd_ut(entry_jd);
@@ -873,8 +937,8 @@ fn exalted(graha: Graha, rashi_no: usize) -> bool {
 
 /// `get_gochar_table(dt)`: every graha's row, by [`Graha::ALL`] order.
 #[must_use]
-pub fn gochar_table<I: PyInstant>(at: I) -> Vec<(Graha, Map<String, Value>)> {
-    let rows = graha_positions(at.to_jd());
+pub fn gochar_table<I: PyInstant>(system: System, at: I) -> Vec<(Graha, Map<String, Value>)> {
+    let rows = graha_positions(system, at.to_jd());
     Graha::ALL
         .into_iter()
         .map(|g| {
@@ -945,10 +1009,11 @@ fn gochar_on<I: SunriseInstant>(
     location: &Location,
     upcoming: Upcoming,
 ) -> Result<Value, GocharError> {
+    let system = location.system;
     let sunrise = I::sunrise_on(civil, location)?;
     let mut table = Map::new();
-    for (g, mut row) in gochar_table(sunrise) {
-        let rashi = next_rashi_entry(g, sunrise).map_or(Value::Null, |e| {
+    for (g, mut row) in gochar_table(system, sunrise) {
+        let rashi = next_rashi_entry(system, g, sunrise).map_or(Value::Null, |e| {
             let mut m = e.to_json();
             attach_local_time(&mut m, e.at, location);
             json!({
@@ -956,7 +1021,7 @@ fn gochar_on<I: SunriseInstant>(
                 "entry_time_local": m["entry_time_local"], "entry_time_utc": m["entry_time_utc"],
             })
         });
-        let nak = next_nakshatra_entry(g, sunrise).map_or(Value::Null, |e| {
+        let nak = next_nakshatra_entry(system, g, sunrise).map_or(Value::Null, |e| {
             let mut m = e.to_json();
             attach_local_time(&mut m, e.at, location);
             json!({
@@ -965,7 +1030,7 @@ fn gochar_on<I: SunriseInstant>(
                 "entry_time_local_short": m["entry_time_local_short"], "entry_time_utc": m["entry_time_utc"],
             })
         });
-        let pada = next_pada_entry(g, sunrise).map_or(Value::Null, |e| {
+        let pada = next_pada_entry(system, g, sunrise).map_or(Value::Null, |e| {
             let mut m = e.to_json();
             attach_local_time(&mut m, e.at, location);
             json!({
@@ -994,7 +1059,7 @@ fn gochar_on<I: SunriseInstant>(
     out.insert("location".into(), location.as_json());
     out.insert(
         "ayanamsa".into(),
-        json!({"name": "Surya Siddhanta", "degrees": py_round(ayanamsha(sunrise.to_jd()), 6)}),
+        json!({"name": if location.system.is_drik() { "Lahiri" } else { "Surya Siddhanta" }, "degrees": py_round(location.system.ayanamsha(sunrise.to_jd()), 6)}),
     );
     out.insert("gochar".into(), Value::Object(table));
     out.insert("vedic_stars".into(), json!([]));
@@ -1002,7 +1067,7 @@ fn gochar_on<I: SunriseInstant>(
         out.insert(
             "upcoming_transits".into(),
             Value::Array(
-                upcoming_rashi_entries(sunrise, &SLOW_GRAHAS, 3)
+                upcoming_rashi_entries(system, sunrise, &SLOW_GRAHAS, 3)
                     .iter()
                     .map(|e| Value::Object(e.to_json()))
                     .collect(),
@@ -1016,8 +1081,9 @@ fn year_upcoming<I: SunriseInstant>(
     year_start: CivilDay,
     location: &Location,
 ) -> Result<Vec<Value>, GocharError> {
+    let system = location.system;
     let sunrise = I::sunrise_on(year_start, location)?;
-    Ok(upcoming_rashi_entries(sunrise, &SLOW_GRAHAS, 4)
+    Ok(upcoming_rashi_entries(system, sunrise, &SLOW_GRAHAS, 4)
         .iter()
         .map(|e| Value::Object(e.to_json()))
         .collect())
@@ -1029,6 +1095,7 @@ fn year_upcoming<I: SunriseInstant>(
 ///
 /// [`GocharError`] when the BS year is off the table or a sunrise cannot be found.
 pub fn gochar_year(bs_year: i32, location: &Location) -> Result<Value, GocharError> {
+    let system = location.system;
     let year_start = calendar::month_start(bs_year, 1)?;
     let year_end = calendar::month_start(bs_year, 12)?
         .add_days(i32::try_from(calendar::month_length(bs_year, 12)?).unwrap_or(30) - 1);
@@ -1042,7 +1109,7 @@ pub fn gochar_year(bs_year: i32, location: &Location) -> Result<Value, GocharErr
         let mid = calendar::month_length(bs_year, bs_month)?.min(15);
         let day = calendar::month_start(bs_year, bs_month)?
             .add_days(i32::try_from(mid).unwrap_or(15) - 1);
-        let table = gochar_table(JdInstant(python_sunrise_jd(day, location)?));
+        let table = gochar_table(system, JdInstant(python_sunrise_jd(day, location)?));
         let gochar: Map<String, Value> = table
             .into_iter()
             .map(|(g, row)| {
@@ -1080,6 +1147,7 @@ mod tests {
     /// `max_daily_motion`: check every 6 hours across 1800–2200, with room to spare.
     #[test]
     fn daily_motion_stays_under_the_bound() {
+        let system = System::SuryaSiddhanta;
         let grahas = [
             Graha::Sun,
             Graha::Moon,
@@ -1096,10 +1164,10 @@ mod tests {
         for graha in grahas {
             let bound = max_daily_motion(graha) * 0.25;
             let mut fastest = 0.0_f64;
-            let mut prev = longitude_for(graha, timescale::JdInstant(start));
+            let mut prev = longitude_for(system, graha, timescale::JdInstant(start));
             for k in 1..=steps {
                 let jd = start + f64::from(k) * 0.25;
-                let lon = longitude_for(graha, timescale::JdInstant(jd));
+                let lon = longitude_for(system, graha, timescale::JdInstant(jd));
                 let mut step = (lon - prev).abs();
                 if step > 180.0 {
                     step = 360.0 - step;

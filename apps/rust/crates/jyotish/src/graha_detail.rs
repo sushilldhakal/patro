@@ -91,8 +91,9 @@ fn vakri_events<I: SunriseInstant>(
     jd_end: f64,
     location: &Location,
 ) -> Result<Vec<Value>, GocharError> {
+    let siddhanta = location.system;
     let (from, until) = sunrise_window::<I>(jd_start, jd_end, location)?;
-    Ok(motion_stations(from, until, &YEARLY_GRAHAS)
+    Ok(motion_stations(siddhanta, from, until, &YEARLY_GRAHAS)
         .into_iter()
         .map(|e| {
             let mut m = e.to_json();
@@ -185,7 +186,8 @@ fn planet_period<I: PyInstant>(
 
 /// `_planet_asta_periods`: asta → udaya pairs per graha (graha order of first event).
 fn planet_periods<I: PyInstant>(from: I, until: I, location: &Location) -> Vec<Period> {
-    let events = udayast_events(from, until, &YEARLY_GRAHAS);
+    let siddhanta = location.system;
+    let events = udayast_events(siddhanta, from, until, &YEARLY_GRAHAS);
     let mut order: Vec<Graha> = Vec::new();
     for e in &events {
         if !order.contains(&e.graha) {
@@ -216,9 +218,10 @@ fn planet_periods<I: PyInstant>(from: I, until: I, location: &Location) -> Vec<P
 }
 
 /// `_elongation_at`: the unsigned Sun–Moon elongation from the rounded positions.
-fn elongation_at(jd: f64) -> f64 {
+fn elongation_at(siddhanta: astronomy::System, jd: f64) -> f64 {
     let diff = py_mod(
-        position_longitude(Graha::Moon, jd) - position_longitude(Graha::Sun, jd),
+        position_longitude(siddhanta, Graha::Moon, jd)
+            - position_longitude(siddhanta, Graha::Sun, jd),
         360.0,
     );
     diff.min(360.0 - diff)
@@ -240,27 +243,28 @@ fn local_wall_jd(day: CivilDay, hour: u32, location: &Location) -> JdInstant {
 /// The smallest elongation of a local civil day, sampled every 30 minutes (99 when
 /// the Moon is far from the Sun at local noon).
 fn day_min_elongation(day: CivilDay, location: &Location) -> f64 {
+    let siddhanta = location.system;
     if !day.is_datetime_range() {
         let noon = local_wall_jd(day, 12, location);
-        if elongation_at(noon.0) > 28.0 {
+        if elongation_at(siddhanta, noon.0) > 28.0 {
             return 99.0;
         }
         let base = local_wall_jd(day, 0, location);
         return (0..48)
-            .map(|i| elongation_at(base.add_seconds(i * 1800).0))
+            .map(|i| elongation_at(siddhanta, base.add_seconds(i * 1800).0))
             .fold(f64::INFINITY, f64::min);
     }
     let Some(noon) = location.zone.local_to_utc(day, 12, 0, 0, 0) else {
         return 99.0;
     };
-    if elongation_at(noon.to_jd()) > 28.0 {
+    if elongation_at(siddhanta, noon.to_jd()) > 28.0 {
         return 99.0;
     }
     let Some(base) = location.zone.local_to_utc(day, 0, 0, 0, 0) else {
         return 99.0;
     };
     (0..48)
-        .map(|i| elongation_at(base.add_seconds(i * 1800).to_jd()))
+        .map(|i| elongation_at(siddhanta, base.add_seconds(i * 1800).to_jd()))
         .fold(f64::INFINITY, f64::min)
 }
 
@@ -461,8 +465,9 @@ pub fn graha_sthiti(jd: f64, location: &Location) -> Result<Value, GocharError> 
 
 fn graha_sthiti_at<I: PyInstant>(civil: CivilDay, sunrise: I, location: &Location) -> Value {
     let sjd = sunrise.to_jd();
-    let asc = astronomy::surya_siddhanta::ascendant(sjd, location.lat, location.lon);
-    let (ra, dec, speed) = panchanga::ascendant_extras(sjd, location.lat, location.lon);
+    let asc = location.system.ascendant(sjd, location.lat, location.lon);
+    let (ra, dec, speed) =
+        panchanga::ascendant_extras(location.system, sjd, location.lat, location.lon);
     let mut rows = vec![
         SphutaRow {
             key: "lagna",
@@ -477,7 +482,7 @@ fn graha_sthiti_at<I: PyInstant>(civil: CivilDay, sunrise: I, location: &Locatio
         }
         .to_json(),
     ];
-    let positions = panchanga::graha_positions(sjd);
+    let positions = panchanga::graha_positions(location.system, sjd);
     for g in Graha::ALL {
         let (lon, spd) = positions
             .iter()
@@ -489,7 +494,7 @@ fn graha_sthiti_at<I: PyInstant>(civil: CivilDay, sunrise: I, location: &Locatio
             _ => spd < 0.0,
         };
         let combust = !matches!(g, Graha::Sun | Graha::Moon | Graha::Rahu | Graha::Ketu)
-            && !crate::gochar::visible(g, sunrise);
+            && !crate::gochar::visible(location.system, g, sunrise);
         let (vedic, ne, symbol) = meta(g);
         rows.push(
             SphutaRow {
@@ -499,7 +504,8 @@ fn graha_sthiti_at<I: PyInstant>(civil: CivilDay, sunrise: I, location: &Locatio
                 symbol,
                 lon,
                 speed: spd,
-                coords: panchanga::graha_extras(sjd, g.key()).unwrap_or((0.0, 0.0, 0.0)),
+                coords: panchanga::graha_extras(location.system, sjd, g.key())
+                    .unwrap_or((0.0, 0.0, 0.0)),
                 retrograde,
                 combust,
             }

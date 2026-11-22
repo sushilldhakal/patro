@@ -1,12 +1,12 @@
 //! The muhurta block: Rahu Kalam, Yamaganda, Gulika, Abhijit, and the extended
 //! auspicious / inauspicious timings (`muhurta.py`, `muhurta_timings.py`).
 
-use astronomy::{angles::Anga, engine::sun_longitude};
+use astronomy::{System, angles::Anga, engine::sun_longitude};
 use serde::Serialize;
 use timescale::{PyInstant, UtcInstant, Zone};
 
 use crate::{
-    angas::{NAKSHATRA_SPAN, Paksha, karana, nakshatra, tithi, yoga},
+    angas::{NAKSHATRA_SPAN, Paksha, karana, nakshatra_number, tithi, yoga_number},
     boundaries::{
         karana_end, nakshatra_end, nakshatra_start, span_end, sun_nakshatra_end, tithi_end,
         tithi_start, yoga_end, yoga_start,
@@ -277,6 +277,7 @@ pub(crate) fn muhurta_basic<I: PyInstant>(
 
 /// The span of a panchanga day and its observer, shared by the timing helpers.
 struct Day<'a> {
+    system: System,
     sunrise: UtcInstant,
     sunset: UtcInstant,
     next_sunrise: UtcInstant,
@@ -402,8 +403,11 @@ fn moon_intervals(day: &Day<'_>) -> Vec<Interval> {
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
     while cursor < day.next_sunrise {
-        let n = nakshatra(cursor.to_jd()).number;
-        let (start, end) = (nakshatra_start(cursor), nakshatra_end(cursor));
+        let n = nakshatra_number(day.system, cursor.to_jd());
+        let (start, end) = (
+            nakshatra_start(day.system, cursor),
+            nakshatra_end(day.system, cursor),
+        );
         out.push(Interval {
             index: n as usize - 1,
             number: n,
@@ -424,12 +428,12 @@ fn sun_intervals(day: &Day<'_>) -> Vec<Interval> {
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
     while cursor < day.next_sunrise {
-        let mut n = py_int(sun_longitude(cursor.to_jd()) / NAKSHATRA_SPAN) + 1;
+        let mut n = py_int(sun_longitude(day.system, cursor.to_jd()) / NAKSHATRA_SPAN) + 1;
         if n > 27 {
             n = 1;
         }
         let n = u32::try_from(n).unwrap_or(1);
-        let end = sun_nakshatra_end(cursor).min(day.next_sunrise);
+        let end = sun_nakshatra_end(day.system, cursor).min(day.next_sunrise);
         out.push(Interval {
             index: n as usize - 1,
             number: n,
@@ -453,14 +457,14 @@ fn tithi_intervals(day: &Day<'_>) -> Vec<Interval> {
         if cursor >= day.next_sunrise {
             break;
         }
-        let t = tithi(cursor.to_jd());
-        let end = tithi_end(cursor);
+        let t = tithi(day.system, cursor.to_jd());
+        let end = tithi_end(day.system, cursor);
         out.push(Interval {
             index: 0,
             number: t.number,
             display: t.display_number,
             paksha: t.paksha,
-            start: tithi_start(cursor),
+            start: tithi_start(day.system, cursor),
             end,
         });
         if end >= day.next_sunrise {
@@ -478,14 +482,14 @@ fn yoga_intervals(day: &Day<'_>) -> Vec<Interval> {
         if cursor >= day.next_sunrise {
             break;
         }
-        let n = yoga(cursor.to_jd()).number;
-        let end = yoga_end(cursor);
+        let n = yoga_number(day.system, cursor.to_jd());
+        let end = yoga_end(day.system, cursor);
         out.push(Interval {
             index: 0,
             number: n,
             display: 0,
             paksha: Paksha::Shukla,
-            start: yoga_start(cursor),
+            start: yoga_start(day.system, cursor),
             end,
         });
         if end >= day.next_sunrise {
@@ -507,11 +511,11 @@ fn vishti_spans(day: &Day<'_>) -> Vec<Segment> {
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
     while cursor < day.next_sunrise {
-        if karana(cursor.to_jd()).name() != "Vishti" {
-            cursor = karana_end(cursor).add_seconds(90);
+        if karana(day.system, cursor.to_jd()).name() != "Vishti" {
+            cursor = karana_end(day.system, cursor).add_seconds(90);
             continue;
         }
-        let end = karana_end(cursor).min(day.next_sunrise);
+        let end = karana_end(day.system, cursor).min(day.next_sunrise);
         out.extend(day.clip(cursor, end));
         cursor = end.add_seconds(90);
     }
@@ -554,7 +558,8 @@ fn overlap_windows(
 }
 
 fn baana_segments(day: &Day<'_>) -> Vec<Segment> {
-    let band = |jd: f64| u32::try_from(py_int(py_mod(sun_longitude(jd), 30.0))).unwrap_or(0);
+    let band =
+        |jd: f64| u32::try_from(py_int(py_mod(sun_longitude(day.system, jd), 30.0))).unwrap_or(0);
     let mut out = Vec::new();
     let mut cursor = day.sunrise;
     for _ in 0..48 {
@@ -562,7 +567,7 @@ fn baana_segments(day: &Day<'_>) -> Vec<Segment> {
             break;
         }
         let degree = band(cursor.to_jd()) + 1;
-        let band_end = span_end(cursor, Anga::SunDegree);
+        let band_end = span_end(day.system, cursor, Anga::SunDegree);
         let meta = match degree {
             1 | 10 | 19 | 28 => Some(("Mrityu", "मृत्यु")),
             2 | 11 | 20 | 29 => Some(("Agni", "अग्नि")),
@@ -846,6 +851,7 @@ fn legacy_entry(
 
 /// `build_muhurta_block` + `enrich_muhurta_block`.
 pub(crate) fn muhurta(
+    system: System,
     sunrise: UtcInstant,
     sunset: UtcInstant,
     next_sunrise: UtcInstant,
@@ -865,6 +871,7 @@ pub(crate) fn muhurta(
     );
     let abhijit = abhijit(sunrise, sunset, zone, vaara);
     let day = Day {
+        system,
         sunrise,
         sunset,
         next_sunrise,

@@ -52,6 +52,18 @@ fn covering(eph: &(impl Ephemeris + ?Sized), from: f64, to: f64) -> Option<&ephd
     (from.is_finite() && to.is_finite() && from >= a && to <= b).then_some(index)
 }
 
+/// The span of `anga` holding `jd` (the `multiple` its last boundary entered), read
+/// straight from the stored boundaries, or `None` without an index covering `jd`.
+///
+/// For a question that needs only *which* tithi, nakshatra or yoga it is, this is one
+/// binary search instead of two body positions.
+#[must_use]
+pub fn anga_index_at(eph: &(impl Ephemeris + ?Sized), anga: Anga, jd: f64) -> Option<u32> {
+    covering(eph, jd, jd)?
+        .prev_event(kind_of(anga), jd)
+        .map(|c| c.multiple)
+}
+
 /// How many empty chunks a lookup crosses before giving up (no positions).
 const MAX_EMPTY_CHUNKS: i64 = 64;
 

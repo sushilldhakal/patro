@@ -8,11 +8,12 @@
 //! ([`PAYLOAD_KEYS`]); `docs/PORTING-engine-layer.md` lists what is still missing.
 
 use astronomy::{
+    System,
     engine::{
         Observer, moon_longitude, moon_phase_angle_and_fraction, rise_set_after, rise_set_on_day,
         sun_longitude, sun_moon_longitudes,
     },
-    surya_siddhanta::{Body, Crossing, ayanamsha},
+    surya_siddhanta::{Body, Crossing},
 };
 use std::{collections::HashMap, sync::Arc};
 
@@ -228,6 +229,8 @@ pub struct Location {
     pub name: String,
     /// City id from the city database, when the request named one.
     pub city_id: Option<i64>,
+    /// The siddhanta the request is answered by.
+    pub system: System,
 }
 
 impl Location {
@@ -240,6 +243,7 @@ impl Location {
             zone: Zone::kathmandu(),
             name: "Kathmandu".to_owned(),
             city_id: None,
+            system: System::SuryaSiddhanta,
         }
     }
 
@@ -247,10 +251,25 @@ impl Location {
     #[must_use]
     pub fn observer(&self) -> Observer {
         Observer {
+            system: self.system,
             latitude: self.lat,
             longitude: self.lon,
             zone: self.zone.clone(),
         }
+    }
+
+    /// Whether this location's siddhanta can answer for `day`: always for the Surya
+    /// Siddhanta, inside the kernel's span for drik.
+    ///
+    /// # Errors
+    ///
+    /// [`DailyError::OutsideEphemeris`] for a drik day outside the own ephemeris.
+    pub fn ensure_supported(&self, day: CivilDay) -> Result<(), DailyError> {
+        if self.system.supports_jd(day.to_jd_ut()) {
+            return Ok(());
+        }
+        let (first, last) = self.system.supported_years().unwrap_or((0, 0));
+        Err(DailyError::OutsideEphemeris { day, first, last })
     }
 
     /// `ObserverLocation.as_dict()`.
@@ -281,6 +300,18 @@ pub enum DailyError {
     /// The Nepal Sambat new year could not be placed in the BS year.
     #[error("no Nepal Sambat new year found for {0}")]
     NepalSambat(CivilDay),
+    /// The day is outside the span the own ephemeris covers (drik only).
+    #[error(
+        "{day}: outside the own ephemeris, which covers AD {first} to {last}; use siddhanta=surya_siddhanta for this date"
+    )]
+    OutsideEphemeris {
+        /// The requested day.
+        day: CivilDay,
+        /// First supported year.
+        first: i32,
+        /// Last supported year.
+        last: i32,
+    },
     /// The Bikram Sambat date could not be resolved.
     #[error(transparent)]
     Calendar(#[from] calendar::BsError),
@@ -499,9 +530,15 @@ fn enrich_next<I: PyInstant>(
 }
 
 /// `build_tithi_block(dt, sunrise_dt, …)`: the tithi running at `at`, clocks from `origin`.
-pub(crate) fn tithi_block<I: PyInstant>(at: I, origin: I, zone: &Zone, info: &Tithi) -> Value {
-    let (start, end) = (tithi_start(at), tithi_end(at));
-    let next = tithi(end.add_seconds(90).to_jd());
+pub(crate) fn tithi_block<I: PyInstant>(
+    system: System,
+    at: I,
+    origin: I,
+    zone: &Zone,
+    info: &Tithi,
+) -> Value {
+    let (start, end) = (tithi_start(system, at), tithi_end(system, at));
+    let next = tithi(system, end.add_seconds(90).to_jd());
     let mut block = element(
         origin,
         zone,
@@ -510,9 +547,14 @@ pub(crate) fn tithi_block<I: PyInstant>(at: I, origin: I, zone: &Zone, info: &Ti
         (start, end),
         &tithi_named(&next),
     );
-    enrich_next(&mut block, end, origin, zone, tithi_end, |after, _| {
-        tithi_named(&tithi(after.to_jd()))
-    });
+    enrich_next(
+        &mut block,
+        end,
+        origin,
+        zone,
+        |t| tithi_end(system, t),
+        |after, _| tithi_named(&tithi(system, after.to_jd())),
+    );
     Value::Object(block)
 }
 
@@ -525,11 +567,16 @@ fn star_named(number: u32, names: &[&'static str; 27], names_ne: &[&'static str;
 }
 
 /// `build_nakshatra_block(dt, sunrise_dt, …)`.
-pub(crate) fn nakshatra_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Value {
+pub(crate) fn nakshatra_block<I: PyInstant>(
+    system: System,
+    at: I,
+    origin: I,
+    zone: &Zone,
+) -> Value {
     let jd = at.to_jd();
-    let nak = nakshatra(jd);
-    let pada = (py_int(py_mod(moon_longitude(jd), NAKSHATRA_SPAN) / PADA_SPAN) + 1).min(4);
-    let (start, end) = (nakshatra_start(at), nakshatra_end(at));
+    let nak = nakshatra(system, jd);
+    let pada = (py_int(py_mod(moon_longitude(system, jd), NAKSHATRA_SPAN) / PADA_SPAN) + 1).min(4);
+    let (start, end) = (nakshatra_start(system, at), nakshatra_end(system, at));
     let current = star_named(nak.number, &NAKSHATRA_NAMES, &NAKSHATRA_NAMES_NE);
     let next = star_named(
         next_cyclic(nak.number, 27),
@@ -545,16 +592,21 @@ pub(crate) fn nakshatra_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Va
         &next,
     );
     block.insert("pada".into(), json!(pada));
-    enrich_next(&mut block, end, origin, zone, nakshatra_end, |_, n| {
-        star_named(next_cyclic(n, 27), &NAKSHATRA_NAMES, &NAKSHATRA_NAMES_NE)
-    });
+    enrich_next(
+        &mut block,
+        end,
+        origin,
+        zone,
+        |t| nakshatra_end(system, t),
+        |_, n| star_named(next_cyclic(n, 27), &NAKSHATRA_NAMES, &NAKSHATRA_NAMES_NE),
+    );
     Value::Object(block)
 }
 
 /// `build_yoga_block(dt, sunrise_dt, …)`.
-pub(crate) fn yoga_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Value {
-    let y = yoga(at.to_jd());
-    let (start, end) = (yoga_start(at), yoga_end(at));
+pub(crate) fn yoga_block<I: PyInstant>(system: System, at: I, origin: I, zone: &Zone) -> Value {
+    let y = yoga(system, at.to_jd());
+    let (start, end) = (yoga_start(system, at), yoga_end(system, at));
     let current = star_named(y.number, &YOGA_NAMES, &YOGA_NAMES_NE);
     let next = star_named(next_cyclic(y.number, 27), &YOGA_NAMES, &YOGA_NAMES_NE);
     let mut block = element(
@@ -565,14 +617,19 @@ pub(crate) fn yoga_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Value {
         (start, end),
         &next,
     );
-    enrich_next(&mut block, end, origin, zone, yoga_end, |_, n| {
-        star_named(next_cyclic(n, 27), &YOGA_NAMES, &YOGA_NAMES_NE)
-    });
+    enrich_next(
+        &mut block,
+        end,
+        origin,
+        zone,
+        |t| yoga_end(system, t),
+        |_, n| star_named(next_cyclic(n, 27), &YOGA_NAMES, &YOGA_NAMES_NE),
+    );
     Value::Object(block)
 }
 
-fn karana_named(jd: f64) -> Named {
-    let k = karana(jd);
+fn karana_named(system: System, jd: f64) -> Named {
+    let k = karana(system, jd);
     let name = k.name();
     let index = KARANA_NAMES.iter().position(|n| *n == name).unwrap_or(0);
     Named {
@@ -583,19 +640,19 @@ fn karana_named(jd: f64) -> Named {
 }
 
 /// `build_karana_block(dt, sunrise_dt, …)`.
-pub(crate) fn karana_block<I: PyInstant>(at: I, origin: I, zone: &Zone) -> Value {
-    let (start, end) = (karana_start(at), karana_end(at));
-    let next = karana_named(end.add_seconds(90).to_jd());
+pub(crate) fn karana_block<I: PyInstant>(system: System, at: I, origin: I, zone: &Zone) -> Value {
+    let (start, end) = (karana_start(system, at), karana_end(system, at));
+    let next = karana_named(system, end.add_seconds(90).to_jd());
     let mut block = element(
         origin,
         zone,
-        &karana_named(at.to_jd()),
+        &karana_named(system, at.to_jd()),
         None,
         (start, end),
         &next,
     );
     if let Some(Value::Object(next)) = block.get_mut("next") {
-        end_fields(next, karana_end(end.add_seconds(90)), origin, zone);
+        end_fields(next, karana_end(system, end.add_seconds(90)), origin, zone);
     }
     Value::Object(block)
 }
@@ -608,11 +665,11 @@ pub(crate) fn rashi_payload(longitude: f64) -> Value {
     })
 }
 
-pub(crate) fn moon_phase(jd: f64) -> Value {
-    let (sun, moon) = sun_moon_longitudes(jd);
+pub(crate) fn moon_phase(system: System, jd: f64) -> Value {
+    let (sun, moon) = sun_moon_longitudes(system, jd);
     let elongation = py_mod(moon - sun, 360.0);
     let index = idx(py_int(py_floordiv(py_mod(elongation + 22.5, 360.0), 45.0)));
-    let (phase_angle, lit) = moon_phase_angle_and_fraction(jd);
+    let (phase_angle, lit) = moon_phase_angle_and_fraction(system, jd);
     json!({
         "elongation": py_round(elongation, 6), "phase_index": index, "name": PHASE_NAMES[index],
         "name_ne": PHASE_NAMES_NE[index], "illuminated_fraction": py_round(lit, 6),
@@ -641,12 +698,17 @@ fn attach_end<I: PyInstant>(
     span.insert("end_ghati_clock".into(), json!(info.ghati_clock));
 }
 
-pub(crate) fn chandra_rashi_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zone: &Zone) -> Value {
+pub(crate) fn chandra_rashi_spans<I: PyInstant>(
+    system: System,
+    sunrise: I,
+    next_sunrise: I,
+    zone: &Zone,
+) -> Value {
     let mut spans = Vec::new();
     let mut cursor = sunrise;
     while cursor < next_sunrise && spans.len() < 4 {
-        let index = idx(py_int(moon_longitude(cursor.to_jd()) / 30.0) % 12);
-        let end = py_min(moon_rashi_end(cursor), next_sunrise);
+        let index = idx(py_int(moon_longitude(system, cursor.to_jd()) / 30.0) % 12);
+        let end = py_min(moon_rashi_end(system, cursor), next_sunrise);
         let mut span = Map::new();
         span.insert("number".into(), json!(index + 1));
         span.insert("name".into(), json!(RASHI_NAMES[index]));
@@ -662,6 +724,7 @@ pub(crate) fn chandra_rashi_spans<I: PyInstant>(sunrise: I, next_sunrise: I, zon
 }
 
 pub(crate) fn nakshatra_pada_spans<I: PyInstant>(
+    system: System,
     sunrise: I,
     next_sunrise: I,
     zone: &Zone,
@@ -669,13 +732,13 @@ pub(crate) fn nakshatra_pada_spans<I: PyInstant>(
     let mut spans = Vec::new();
     let mut cursor = sunrise;
     while cursor < next_sunrise && spans.len() < 8 {
-        let moon = moon_longitude(cursor.to_jd());
+        let moon = moon_longitude(system, cursor.to_jd());
         let mut number = py_int(moon / NAKSHATRA_SPAN) + 1;
         if number > 27 {
             number = 1;
         }
         let pada = (py_int(py_mod(moon, NAKSHATRA_SPAN) / PADA_SPAN) + 1).min(4);
-        let end = py_min(moon_pada_end(cursor), next_sunrise);
+        let end = py_min(moon_pada_end(system, cursor), next_sunrise);
         let i = usize::try_from(number - 1).unwrap_or(0);
         let mut span = Map::new();
         span.insert("nakshatra_number".into(), json!(number));
@@ -693,8 +756,16 @@ pub(crate) fn nakshatra_pada_spans<I: PyInstant>(
     Value::Array(spans)
 }
 
-fn surya_nakshatra(jd: f64) -> Value {
-    let mut number = py_int(sun_longitude(jd) / NAKSHATRA_SPAN) + 1;
+fn ayanamsha_name(system: System) -> &'static str {
+    if system.is_drik() {
+        "Lahiri"
+    } else {
+        "Surya Siddhanta"
+    }
+}
+
+fn surya_nakshatra(system: System, jd: f64) -> Value {
+    let mut number = py_int(sun_longitude(system, jd) / NAKSHATRA_SPAN) + 1;
     if number > 27 {
         number = 1;
     }
@@ -731,6 +802,7 @@ pub struct SunTimes {
 ///
 /// [`DailyError`] when the Sun does not rise (polar night) or the day is before 1582.
 pub fn sunrise_on(day: CivilDay, location: &Location) -> Result<UtcInstant, DailyError> {
+    location.ensure_supported(day)?;
     utc(
         rise_set_on_day(Body::Sun, day, &location.observer(), Crossing::Rise),
         day,
@@ -758,6 +830,7 @@ impl SunriseInstant for UtcInstant {
 
 impl SunriseInstant for JdInstant {
     fn sunrise_on(day: CivilDay, location: &Location) -> Result<Self, DailyError> {
+        location.ensure_supported(day)?;
         rise_set_on_day(Body::Sun, day, &location.observer(), Crossing::Rise)
             .map(|m| Self(m.to_jd()))
             .ok_or(DailyError::NoSunrise(day))
@@ -770,6 +843,7 @@ impl SunriseInstant for JdInstant {
 ///
 /// [`DailyError`] when any of the three cannot be found.
 pub fn sun_times(day: CivilDay, location: &Location) -> Result<SunTimes, DailyError> {
+    location.ensure_supported(day)?;
     let observer = location.observer();
     let sunrise = utc(
         rise_set_on_day(Body::Sun, day, &observer, Crossing::Rise),
@@ -813,6 +887,7 @@ fn day_times_as<I: PyInstant>(
     location: &Location,
     convert: impl Fn(Moment) -> Option<I>,
 ) -> Result<DayTimes<I>, DailyError> {
+    location.ensure_supported(day)?;
     let observer = location.observer();
     let event = |d: CivilDay, crossing| match rise_set_on_day(Body::Sun, d, &observer, crossing) {
         Some(m) => convert(m).ok_or(DailyError::BeforeGregorian(d)),
@@ -1008,12 +1083,14 @@ pub fn build_daily(day: CivilDay, location: &Location) -> Result<Arc<Daily>, Dai
     // (a deep copy of it on every hit cost as much as building a small one).
     (*DAILY_MEMO.get_or_insert_with(&key, || {
         let stored_key = key.stored();
-        if let Some(payload) = crate::store::get(&stored_key) {
+        let persist = !location.system.is_drik();
+        if persist && let Some(payload) = crate::store::get(&stored_key) {
             return Arc::new(Ok(Arc::new(Daily::from_tree(payload))));
         }
         let built = day_times(day, location)
             .and_then(|times| assemble(day, times, location, None, Detail::Full));
         if let Ok(fields) = &built
+            && persist
             && crate::store::enabled()
         {
             crate::store::put_text(
@@ -1062,6 +1139,9 @@ pub fn precompute_day(
     if !day.is_datetime_range() {
         return Err(DailyError::BeforeGregorian(day));
     }
+    if location.system.is_drik() {
+        return Ok(false);
+    }
     let key = DailyKey::of(day, location).stored();
     if force == Precompute::SkipStored && crate::store::contains(&key) {
         return Ok(false);
@@ -1074,6 +1154,9 @@ pub fn precompute_day(
 /// The payload the persistent store holds for this day and location, if any.
 #[must_use]
 pub fn stored_day(day: CivilDay, location: &Location) -> Option<Value> {
+    if location.system.is_drik() {
+        return None;
+    }
     crate::store::get(&DailyKey::of(day, location).stored())
 }
 
@@ -1095,10 +1178,11 @@ impl DailyKey {
             zone: location.zone.name().to_owned(),
             name: location.name.clone(),
             city_id: location.city_id,
+            system: location.system.key(),
         }
     }
 
-    /// The persistent store's key.
+    /// The persistent store's key (surya siddhanta days only: drik is never stored).
     fn stored(&self) -> String {
         format!(
             "{}|{:016x}|{:016x}|{}|{}|{}",
@@ -1133,6 +1217,8 @@ struct DailyKey {
     zone: String,
     name: String,
     city_id: Option<i64>,
+    /// Which siddhanta answered: part of the key, so no day crosses systems.
+    system: usize,
 }
 
 /// Recently built days. A day held as a JSON tree takes about 1 MB of memory
@@ -1175,8 +1261,16 @@ pub fn build_daily_civil(
 
 /// The blocks Python builds differently for a `datetime` and a `UtInstant` sunrise.
 trait DayInstant: PyInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Muhurta;
+    fn muhurta_block(
+        system: System,
+        sunrise: Self,
+        sunset: Self,
+        next: Self,
+        vaara: u32,
+        zone: &Zone,
+    ) -> Muhurta;
     fn lagna_rows(
+        system: System,
         sunrise: Self,
         next: Self,
         lat: f64,
@@ -1186,34 +1280,50 @@ trait DayInstant: PyInstant {
 }
 
 impl DayInstant for UtcInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, next: Self, vaara: u32, zone: &Zone) -> Muhurta {
-        muhurta(sunrise, sunset, next, vaara, zone)
+    fn muhurta_block(
+        system: System,
+        sunrise: Self,
+        sunset: Self,
+        next: Self,
+        vaara: u32,
+        zone: &Zone,
+    ) -> Muhurta {
+        muhurta(system, sunrise, sunset, next, vaara, zone)
     }
 
     fn lagna_rows(
+        system: System,
         sunrise: Self,
         next: Self,
         lat: f64,
         lon: f64,
         zone: &Zone,
     ) -> Vec<crate::blocks_lagna::LagnaSpan<Self>> {
-        lagna_spans(sunrise, next, lat, lon, zone)
+        lagna_spans(system, sunrise, next, lat, lon, zone)
     }
 }
 
 impl DayInstant for JdInstant {
-    fn muhurta_block(sunrise: Self, sunset: Self, _next: Self, vaara: u32, zone: &Zone) -> Muhurta {
+    fn muhurta_block(
+        _system: System,
+        sunrise: Self,
+        sunset: Self,
+        _next: Self,
+        vaara: u32,
+        zone: &Zone,
+    ) -> Muhurta {
         muhurta_basic(sunrise, sunset, vaara, zone)
     }
 
     fn lagna_rows(
+        system: System,
         sunrise: Self,
         next: Self,
         lat: f64,
         lon: f64,
         zone: &Zone,
     ) -> Vec<crate::blocks_lagna::LagnaSpan<Self>> {
-        lagna_spans_plain(sunrise, next, lat, lon, zone)
+        lagna_spans_plain(system, sunrise, next, lat, lon, zone)
     }
 }
 
@@ -1277,6 +1387,7 @@ fn assemble<I: DayInstant>(
 ) -> Result<Fields, DailyError> {
     let full = detail == Detail::Full;
     let zone = &location.zone;
+    let system = location.system;
     let observer = location.observer();
     let DayTimes {
         sunrise,
@@ -1286,12 +1397,11 @@ fn assemble<I: DayInstant>(
         moonset,
     } = times;
     let sunrise_jd = sunrise.to_jd();
-    let tithi_info = tithi(sunrise_jd);
+    let tithi_info = tithi(system, sunrise_jd);
     let vaara = vara(sunrise_jd, zone);
     let day_s = sunset.seconds_since(sunrise);
     let night_s = next_sunrise.seconds_since(sunset);
-    let ayanamsa =
-        json!({"name": "Surya Siddhanta", "degrees": py_round(ayanamsha(sunrise_jd), 6)});
+    let ayanamsa = json!({"name": ayanamsha_name(location.system), "degrees": py_round(location.system.ayanamsha(sunrise_jd), 6)});
     let display = tithi_info.display_number;
     let paksha = tithi_info.paksha;
     let vaara_english = VAARA_ENGLISH[vaara.number as usize];
@@ -1373,13 +1483,13 @@ fn assemble<I: DayInstant>(
         );
         b.insert(
             "solar_corrections",
-            solar_corrections(solar_day, location.lat, location.lon, zone, sunrise),
+            solar_corrections(system, solar_day, location.lat, location.lon, zone, sunrise),
         );
     }
     b.insert(
         "muhurta",
         Field::typed(if full {
-            I::muhurta_block(sunrise, sunset, next_sunrise, vaara.number, zone)
+            I::muhurta_block(system, sunrise, sunset, next_sunrise, vaara.number, zone)
         } else {
             muhurta_basic(sunrise, sunset, vaara.number, zone)
         }),
@@ -1388,7 +1498,7 @@ fn assemble<I: DayInstant>(
     if full {
         b.insert(
             "nivas_shool",
-            Field::typed(nivas_shool(sunrise, next_sunrise, weekday_py, zone)),
+            Field::typed(nivas_shool(system, sunrise, next_sunrise, weekday_py, zone)),
         );
     }
     b.insert(
@@ -1413,10 +1523,13 @@ fn assemble<I: DayInstant>(
             "name_english": vaara_english, "name_ne": VAARA_NAMES_NE[vaara.number as usize],
         }),
     );
-    b.insert("aayan", aayan(sunrise_jd));
-    b.insert("aayan_vedic", aayan_vedic(sunrise_jd));
-    b.insert("tithi", tithi_block(sunrise, sunrise, zone, &tithi_info));
-    let nak_block = nakshatra_block(sunrise, sunrise, zone);
+    b.insert("aayan", aayan(system, sunrise_jd));
+    b.insert("aayan_vedic", aayan_vedic(system, sunrise_jd));
+    b.insert(
+        "tithi",
+        tithi_block(system, sunrise, sunrise, zone, &tithi_info),
+    );
+    let nak_block = nakshatra_block(system, sunrise, sunrise, zone);
     if full {
         b.insert("tarabalam", tarabalam(sunrise, &nak_block, zone));
         b.insert(
@@ -1425,10 +1538,10 @@ fn assemble<I: DayInstant>(
         );
     }
     b.insert("nakshatra", nak_block);
-    b.insert("yoga", yoga_block(sunrise, sunrise, zone));
-    b.insert("karana", karana_block(sunrise, sunrise, zone));
+    b.insert("yoga", yoga_block(system, sunrise, sunrise, zone));
+    b.insert("karana", karana_block(system, sunrise, sunrise, zone));
     b.insert("paksha", paksha_block(&lunar, paksha));
-    let chandra_rashi = rashi_payload(moon_longitude(sunrise_jd));
+    let chandra_rashi = rashi_payload(moon_longitude(system, sunrise_jd));
     if full {
         let bala_table = ChandrabalaTable::new(&chandra_rashi);
         b.insert(
@@ -1438,22 +1551,28 @@ fn assemble<I: DayInstant>(
         b.insert("chandrabala_table", Field::typed(bala_table));
     }
     b.insert("chandra_rashi", chandra_rashi);
-    b.insert("moon_phase", moon_phase(sunrise_jd));
+    b.insert("moon_phase", moon_phase(system, sunrise_jd));
     if full {
-        let rashi_spans = chandra_rashi_spans(sunrise, next_sunrise, zone);
+        let rashi_spans = chandra_rashi_spans(system, sunrise, next_sunrise, zone);
         b.insert("chandrabalam", chandrabalam(sunrise, &rashi_spans, zone));
         b.insert("chandra_rashi_spans", rashi_spans);
         b.insert(
             "nakshatra_pada_spans",
-            nakshatra_pada_spans(sunrise, next_sunrise, zone),
+            nakshatra_pada_spans(system, sunrise, next_sunrise, zone),
         );
     }
-    b.insert("surya_rashi", rashi_payload(sun_longitude(sunrise_jd)));
-    b.insert("surya_nakshatra", surya_nakshatra(sunrise_jd));
-    b.insert("ritu", ritu(sunrise_jd, location.lat));
-    b.insert("ritu_vedic", ritu_vedic(sunrise_jd, location.lat));
+    b.insert(
+        "surya_rashi",
+        rashi_payload(sun_longitude(system, sunrise_jd)),
+    );
+    b.insert("surya_nakshatra", surya_nakshatra(system, sunrise_jd));
+    b.insert("ritu", ritu(system, sunrise_jd, location.lat));
+    b.insert("ritu_vedic", ritu_vedic(system, sunrise_jd, location.lat));
     if full {
-        b.insert("planets", Field::typed(PlanetTable::new(sunrise_jd)));
+        b.insert(
+            "planets",
+            Field::typed(PlanetTable::new(system, sunrise_jd)),
+        );
         b.insert(
             "planets_anchor",
             json!({
@@ -1463,12 +1582,22 @@ fn assemble<I: DayInstant>(
                 "label_en": "Udayakalika Spashtagraha (sunrise)",
             }),
         );
-        b.insert("lagna", lagna(sunrise_jd, location.lat, location.lon));
-        let spans = I::lagna_rows(sunrise, next_sunrise, location.lat, location.lon, zone);
+        b.insert(
+            "lagna",
+            lagna(system, sunrise_jd, location.lat, location.lon),
+        );
+        let spans = I::lagna_rows(
+            system,
+            sunrise,
+            next_sunrise,
+            location.lat,
+            location.lon,
+            zone,
+        );
         b.insert("udaya_lagna", Field::typed(udaya_lagna(&spans)));
         b.insert(
             "panchaka_rahita",
-            panchaka_rahita(sunrise, &spans, vaara.number, zone),
+            panchaka_rahita(system, sunrise, &spans, vaara.number, zone),
         );
         b.insert("lagna_spans", Field::typed(lagna_rows(spans)));
     }

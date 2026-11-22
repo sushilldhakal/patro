@@ -1,6 +1,11 @@
 //! The five angas at an instant.
 
-use astronomy::engine::{moon_longitude, sun_moon_longitudes};
+use astronomy::{
+    System,
+    angles::Anga,
+    engine::{moon_longitude, sun_moon_longitudes},
+    events::anga_index_at,
+};
 use timescale::{Moment, Zone};
 
 use crate::names::{
@@ -38,8 +43,8 @@ pub(crate) fn trunc(x: f64) -> u32 {
 
 /// Sun→Moon elongation in degrees [0, 360): tithi and karana are both cuts of it.
 #[must_use]
-pub fn elongation(jd_ut: f64) -> f64 {
-    let (sun, moon) = sun_moon_longitudes(jd_ut);
+pub fn elongation(system: System, jd_ut: f64) -> f64 {
+    let (sun, moon) = sun_moon_longitudes(system, jd_ut);
     py_mod(moon - sun, 360.0)
 }
 
@@ -92,8 +97,8 @@ impl Tithi {
 
 /// The tithi at `jd_ut`.
 #[must_use]
-pub fn tithi(jd_ut: f64) -> Tithi {
-    let elongation = elongation(jd_ut);
+pub fn tithi(system: System, jd_ut: f64) -> Tithi {
+    let elongation = elongation(system, jd_ut);
     let number = trunc(elongation / TITHI_SPAN) + 1;
     let paksha = if number <= 15 {
         Paksha::Shukla
@@ -107,6 +112,14 @@ pub fn tithi(jd_ut: f64) -> Tithi {
         progress: py_mod(elongation, TITHI_SPAN) / TITHI_SPAN,
         elongation,
     }
+}
+
+/// The tithi number (1–30) at `jd_ut`: from the stored boundaries when the system has
+/// them (one search), from the positions otherwise.
+#[must_use]
+pub fn tithi_number(system: System, jd_ut: f64) -> u32 {
+    anga_index_at(&system, Anga::Tithi, jd_ut)
+        .map_or_else(|| tithi(system, jd_ut).number, |i| i + 1)
 }
 
 /// The Moon's nakshatra at an instant.
@@ -130,8 +143,8 @@ impl Nakshatra {
 
 /// The Moon's nakshatra at `jd_ut`.
 #[must_use]
-pub fn nakshatra(jd_ut: f64) -> Nakshatra {
-    let raw = moon_longitude(jd_ut) / NAKSHATRA_SPAN;
+pub fn nakshatra(system: System, jd_ut: f64) -> Nakshatra {
+    let raw = moon_longitude(system, jd_ut) / NAKSHATRA_SPAN;
     let index = trunc(raw) % 27;
     let progress = py_mod(raw, 1.0);
     Nakshatra {
@@ -139,6 +152,13 @@ pub fn nakshatra(jd_ut: f64) -> Nakshatra {
         pada: (trunc(progress * 4.0) + 1).min(4),
         progress,
     }
+}
+
+/// The nakshatra number (1–27) at `jd_ut`, read from the stored boundaries when there are any.
+#[must_use]
+pub fn nakshatra_number(system: System, jd_ut: f64) -> u32 {
+    anga_index_at(&system, Anga::Nakshatra, jd_ut)
+        .map_or_else(|| nakshatra(system, jd_ut).number, |i| i + 1)
 }
 
 /// The yoga at an instant: a cut of the Sun + Moon longitude sum.
@@ -160,13 +180,19 @@ impl Yoga {
 
 /// The yoga at `jd_ut`.
 #[must_use]
-pub fn yoga(jd_ut: f64) -> Yoga {
-    let (sun, moon) = sun_moon_longitudes(jd_ut);
+pub fn yoga(system: System, jd_ut: f64) -> Yoga {
+    let (sun, moon) = sun_moon_longitudes(system, jd_ut);
     let raw = py_mod(sun + moon, 360.0) / NAKSHATRA_SPAN;
     Yoga {
         number: trunc(raw) % 27 + 1,
         progress: py_mod(raw, 1.0),
     }
+}
+
+/// The yoga number (1–27) at `jd_ut`, read from the stored boundaries when there are any.
+#[must_use]
+pub fn yoga_number(system: System, jd_ut: f64) -> u32 {
+    anga_index_at(&system, Anga::Yoga, jd_ut).map_or_else(|| yoga(system, jd_ut).number, |i| i + 1)
 }
 
 /// The karana at an instant: half a tithi.
@@ -192,8 +218,8 @@ impl Karana {
 
 /// The karana at `jd_ut`.
 #[must_use]
-pub fn karana(jd_ut: f64) -> Karana {
-    let elongation = elongation(jd_ut);
+pub fn karana(system: System, jd_ut: f64) -> Karana {
+    let elongation = elongation(system, jd_ut);
     Karana {
         number: trunc(elongation / KARANA_SPAN) + 1,
         progress: py_mod(elongation, KARANA_SPAN) / KARANA_SPAN,

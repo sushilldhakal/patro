@@ -1,6 +1,6 @@
 //! Choghadiya, hora, ritu and ayana blocks of the daily payload.
 
-use astronomy::engine::sun_longitude;
+use astronomy::{System, engine::sun_longitude};
 use serde::Serialize;
 use serde_json::{Value, json};
 use timescale::{PyInstant, Zone};
@@ -229,15 +229,19 @@ const AYANAMSHA_J2000_DEG: f64 = 23.853_056;
 const J2000: f64 = 2_451_545.0;
 
 /// Tropical Sun under the Surya Siddhanta: the text's Sun turned by real precession.
-pub(crate) fn tropical_sun(jd: f64) -> f64 {
+pub(crate) fn tropical_sun(system: System, jd: f64) -> f64 {
+    if system.is_drik() {
+        // Drik's Sun is the apparent place: tropical = sidereal + the ayanamsha.
+        return py_mod(sun_longitude(system, jd) + system.ayanamsha(jd), 360.0);
+    }
     py_mod(
-        sun_longitude(jd) + (AYANAMSHA_J2000_DEG + (jd - J2000) * PRECESSION_DEG_PER_DAY),
+        sun_longitude(system, jd) + (AYANAMSHA_J2000_DEG + (jd - J2000) * PRECESSION_DEG_PER_DAY),
         360.0,
     )
 }
 
-fn sidereal_sun(jd: f64) -> f64 {
-    py_mod(sun_longitude(jd), 360.0)
+fn sidereal_sun(system: System, jd: f64) -> f64 {
+    py_mod(sun_longitude(system, jd), 360.0)
 }
 
 fn sun_rashi(lon: f64) -> i64 {
@@ -256,9 +260,9 @@ fn ritu_from(lon: f64, lat: f64, basis: &str) -> Value {
 }
 
 /// `ritu_at`: the real (tropical) season at the observer.
-pub(crate) fn ritu(jd: f64, lat: f64) -> Value {
+pub(crate) fn ritu(system: System, jd: f64, lat: f64) -> Value {
     ritu_from(
-        tropical_sun(jd),
+        tropical_sun(system, jd),
         lat,
         if lat < 0.0 {
             "tropical_southern"
@@ -269,8 +273,8 @@ pub(crate) fn ritu(jd: f64, lat: f64) -> Value {
 }
 
 /// `vedic_ritu_at`: the season the sidereal Sun names.
-pub(crate) fn ritu_vedic(jd: f64, lat: f64) -> Value {
-    ritu_from(sidereal_sun(jd), lat, "sidereal")
+pub(crate) fn ritu_vedic(system: System, jd: f64, lat: f64) -> Value {
+    ritu_from(sidereal_sun(system, jd), lat, "sidereal")
 }
 
 fn ayana_from(lon: f64, basis: &str) -> Value {
@@ -287,11 +291,11 @@ fn ayana_from(lon: f64, basis: &str) -> Value {
 /// `ayana_at`: Uttarayana from the December solstice, from the tropical Sun.
 /// `rashi_service.aayan(jd)`: Uttarayana / Dakshinayana at an instant.
 #[must_use]
-pub fn aayan(jd: f64) -> Value {
-    ayana_from(tropical_sun(jd), "tropical")
+pub fn aayan(system: System, jd: f64) -> Value {
+    ayana_from(tropical_sun(system, jd), "tropical")
 }
 
 /// `vedic_ayana_at`: the same from the sidereal Sun.
-pub(crate) fn aayan_vedic(jd: f64) -> Value {
-    ayana_from(sidereal_sun(jd), "sidereal")
+pub(crate) fn aayan_vedic(system: System, jd: f64) -> Value {
+    ayana_from(sidereal_sun(system, jd), "sidereal")
 }

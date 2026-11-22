@@ -54,31 +54,38 @@ pub fn midnight_overlay(
     vaara: u32,
 ) -> Result<MidnightOverlay, DailyError> {
     let zone = &location.zone;
+    let system = location.system;
     let midnight =
         ZonedInstant::local_midnight(day, zone).ok_or(DailyError::BeforeGregorian(day))?;
     let next_midnight = midnight.add_hours(24);
     let jd = midnight.to_jd();
 
-    let tithi_info = tithi(jd);
-    let tithi = tithi_block(midnight, midnight, zone, &tithi_info);
-    let nakshatra = nakshatra_block(midnight, midnight, zone);
-    let yoga = yoga_block(midnight, midnight, zone);
-    let karana = karana_block(midnight, midnight, zone);
+    let tithi_info = tithi(system, jd);
+    let tithi = tithi_block(system, midnight, midnight, zone, &tithi_info);
+    let nakshatra = nakshatra_block(system, midnight, midnight, zone);
+    let yoga = yoga_block(system, midnight, midnight, zone);
+    let karana = karana_block(system, midnight, midnight, zone);
     let paksha = paksha_block(lunar, tithi_info.paksha);
-    let chandra_rashi = rashi_payload(moon_longitude(jd));
-    let surya_rashi = rashi_payload(sun_longitude(jd));
-    let lagna_now = lagna(jd, location.lat, location.lon);
+    let chandra_rashi = rashi_payload(moon_longitude(system, jd));
+    let surya_rashi = rashi_payload(sun_longitude(system, jd));
+    let lagna_now = lagna(system, jd, location.lat, location.lon);
 
-    let spans =
-        lagna_spans_with_pushkara(midnight, next_midnight, location.lat, location.lon, zone);
-    let rashi_spans = chandra_rashi_spans(midnight, next_midnight, zone);
-    let pada_spans = nakshatra_pada_spans(midnight, next_midnight, zone);
+    let spans = lagna_spans_with_pushkara(
+        system,
+        midnight,
+        next_midnight,
+        location.lat,
+        location.lon,
+        zone,
+    );
+    let rashi_spans = chandra_rashi_spans(system, midnight, next_midnight, zone);
+    let pada_spans = nakshatra_pada_spans(system, midnight, next_midnight, zone);
 
     let tara = tarabalam(midnight, &nakshatra, zone);
     let chandra = chandrabalam(midnight, &rashi_spans, zone);
     let tara_table = tarabala_table(&nakshatra);
     let chandra_table = chandrabala_table(&chandra_rashi);
-    let panchaka = panchaka_rahita(midnight, &spans, vaara, zone);
+    let panchaka = panchaka_rahita(system, midnight, &spans, vaara, zone);
     let udaya = crate::payload::to_value(&udaya_lagna(&spans));
     let lagna_spans = lagna_rows_value(&spans);
 

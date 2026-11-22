@@ -171,8 +171,8 @@ from it instead of searching again.
   packed). The evaluator, ΔT (Espenak–Meeus), IAU 2006 precession and obliquity,
   light-time, annual aberration and the Lahiri zero point (fixed in the ICRS, carried by
   our precession) are Rust (`ephdata::{kernel, deltat, frames, sky}`).
-  `astronomy::position::OwnDrik` puts it behind the `Ephemeris` trait. Not wired to any
-  route yet (step 4h): the server still answers `siddhanta=drik` with 501.
+  `astronomy::position::OwnDrik` puts it behind the `Ephemeris` trait; `siddhanta=drik`
+  now answers from it (see the next bullets).
 - **Event index (`ephdata::index`, `.vidx`).** Every tithi, karana, nakshatra, pada,
   yoga, Moon rashi, Sun nakshatra, sankranti, Sun degree and lunar phase boundary, plus
   rashi ingress and retrograde stations of Mercury–Saturn and Rahu (osculating node),
@@ -206,6 +206,63 @@ from it instead of searching again.
   chunk solver, 19,484 µs solving our own ephemeris on demand, **1.4 µs** from the index
   (0.7 µs warm); 40 years × 4 angas 453 ms / 3,945 ms / **3.1 ms**; memory grows 36 / 37 /
   **0.1 MB** while it runs (the index variant holds 98 MB: 62.7 MB kernel, 38.5 MB index).
+- **`siddhanta=drik` on the routes (step 4h).** Design: `docs/DRIK-SYSTEM-DESIGN.md`.
+  `astronomy::System` (`SuryaSiddhanta` | `Drik(&'static DrikSky)`) is a `Copy` value
+  carried explicitly (inside `panchanga::daily::Location` and `engine::Observer`, or a
+  leading argument where only a Julian Day was passed), never a global or a thread-local,
+  so `months_in_parallel` threads each carry their own. `System` is itself an
+  `Ephemeris`, so the event engine reads the index through it. Every cache key holds
+  `System::key()` (event chunks by `name()`, rise/set, the day memos, lunar years, month
+  days, kshaya drops, Nepal Sambat new years, festival lists); drik days are never read
+  from or written to the persistent day store. Config: `PATRO_RS_EPHDATA=<dir>` (the
+  folder holding `kernel.veph` and `events.vidx`) is loaded once at startup; unset (or an
+  unreadable kernel) keeps `siddhanta=drik` and `/meta/provenance` answering 501. A
+  missing index only means drik solves its boundaries. Surya Siddhanta answers are
+  untouched: 806 responses (every golden GET path plus random days, months, years,
+  at-time) are byte-identical before and after (`snap.py` oracle). Drik answers have
+  the same keys, order, types and list lengths as the text's (`tests/http_drik.rs` pins
+  day, month, year, at-time and planetary positions against the SS shape). Outside AD
+  1–2946 (the kernel less a 90-day margin at each end) a drik request is a 400 saying
+  so; inside the kernel but outside the index (AD 3–2945) the solver answers.
+  `/meta/provenance` describes our own files (kernel size and span, index size and span,
+  frames, ΔT probes, a SHA-256 of those facts). Drik's primitives (`astronomy::drik`):
+  apparent Lahiri-sidereal longitudes and latitudes from `Sky`, Rahu from the osculating
+  node, speeds by the same ±0.5 day central difference, GMST (IAU 2006), the mean
+  equator of date, and a horizon crossing solved from a few Sky evaluations (an
+  hour-angle prediction, a bracketed Illinois finish, a 30-minute scan for the rest).
+  Decisions for the text-specific pieces: the **civil Bikram Sambat grid and the solar
+  festival dates stay on the Surya Siddhanta's sankrantis** (the official patro's
+  month starts, so drik's BS month starts equal the text's); the **ascendant and lagna**
+  keep the text's closed form (ascendant = atan2 of the sidereal time and the
+  obliquity) with drik's GMST, mean obliquity of date and Lahiri ayanamsha; the
+  **equation of time** is Meeus 28.1 on drik's apparent Sun (agrees with the text within
+  four minutes, pinned); **sunrise** is the Sun's upper limb with 34′ of refraction (the
+  text's is its centre on the geometric horizon), the **Moon's horizon** adds its
+  parallax (0.7275 π − 34′); **samvatsara** stays the text's mean-Jupiter rule (a BS-year
+  convention); shadbala's ayana bala uses drik's obliquity instead of the text's 24°;
+  **eclipses are 501 under drik** (the text's Moon-latitude and shadow rules have no
+  drik rule set yet) and **sait's eclipse veto** still reads the text's eclipses; the
+  `ayanamsha=` parameter is still read and ignored.
+  Speed: tithi, nakshatra and yoga *numbers* (`panchanga::{tithi,nakshatra,yoga}_number`)
+  and retrograde stations (`System::station_events`) are read from the index when the
+  system has one; the text computes as before. `ephdata::kernel` keeps the last decoded
+  record of each segment per thread. Debug-build timings, cold (distinct days and
+  months), Surya Siddhanta / drik before → after: day 48 ms / 10.8 → **8.0 ms**; month
+  137 / 131 → **103 ms**; full month 249 / 260 → **201 ms**; year 198 / 226 → **164 ms**;
+  at-time 82 / 70 → **44 ms**; graha-vakri year 26 / 57 → **7 ms** (the index's true
+  stations differ from the old 1-day central-difference scan by up to two minutes: the
+  scan, not the index, is the approximation). A month or year cold is now dominated
+  by festival generation (76 % of the profile, the same code under both systems; each
+  year's list is memoised per location); `panchanga::lunar_month::find_next_tithi_at` is
+  under 5 %, so no lunation table was added to the index. Tabulating the Sun's and
+  Moon's places for rise/set was measured and dropped (slower in the debug build).
+  Not done on purpose: combustion (asta) windows and eclipses are not in the index. The
+  asta rule is a threshold that depends on whether the planet is retrograde *as the
+  ±0.5 day central difference sees it*, which flips minutes away from the true station
+  the index stores, so the stored events cannot reproduce it without redefining the
+  rule; the scan runs on drik positions (year of asta: 290 ms cold in debug against
+  116 ms for the text). Eclipse rules for drik are open (Besselian elements, which
+  limb, which magnitude convention).
 - Contract: the API's shape is Python's, because the mobile and web apps read it:
   the same routes, keys in the same order, types, lists, names and integers. The
   *values* are the engine's own. Boundaries are the engine's solved times, printed
@@ -276,9 +333,9 @@ Utoipa (OpenAPI), validator, Rayon (bounded CPU pool), Swiss Ephemeris binding.
 - [x] 4g⁸. `/v1/nepal/panchanga/{date_key}` and `/v1/nepal/panchanga/month/{y}/{m}` (no longer 501): the day state with public-holiday flags, every `format=` (raw, surya, canonical, patro, toyanath, dayblock + `output=text`), `variant=` publisher labels (never on `raw`, which Python returns before the registry), and the month's `full=` feeding the patro grid from embedded day states (`patro::nepal_panchanga`; `patro_month` now shares `patro_grid`). 37 goldens (`tests/http_golden_nepal_panchanga.rs`) and 80 unseen random requests identical
 - [x] 4g¹⁹. The account layer (38 routes, mounted only when `PATRO_RS_DATABASE_URL` is set — never Python's `DATABASE_URL`, so the Rust server cannot reach the production database by inheriting its environment): `/auth/*` (sign-up, log-in, Google / Facebook / Apple, refresh rotation with the lost-reply grace, logout, me, delete account, email verification, resend, forgot / reset password), `/profiles` CRUD with the one-default rule, `/profiles/{id}/daily-guidance`, `/devices`, `/reminders`, `/events` with RFC 5545 invitations and the private `/calendar/{token}.ics` feed, `/v1/analytics/install/*` and the four admin read-outs. New `accounts` crate on `tokio-postgres` + `deadpool`; the schema is the one SQLAlchemy creates (same tables, columns, indexes), so both servers can share a database. pydantic's `EmailStr` (email-validator 2.3 rules and messages), lax `datetime` / `date` and bool parsing, and the 422 items in order; bcrypt hashes and HS256 tokens interchangeable with Python's. `_guard_private_cache` (`private, no-store` on any `/auth` or `/profiles` path) is now a layer. Checked by replaying two recorded scenarios against a scratch Postgres (`scripts/gen_http_golden_accounts.py`, `tests/http_golden_accounts.rs`; 132 account steps and 18 guidance steps — statuses, bodies, headers and the emails each step sends — identical after ids, tokens and "now" stamps are normalized). Divergences #16–#18. Also fixed: "City not found" quoted the city with `"` instead of Python's `'`. Not ported (no API effect): Python's background kundali precompute on profile save, and its Postgres `sait_cache` / `blob_cache` (Rust has its own caches)
 - [x] 4g²⁰. Drik groundwork: `crates/ephemeris`, the Swiss Ephemeris 2.10.03 through the `swiss-eph` crate (vendored C, the version pyswisseph bundles) behind a safe API and one process-wide lock (the C library keeps its settings in globals, thread-local on Linux but shared on macOS). Bit-identical to pyswisseph — positions in every flag and ayanamsha mode, ayanamsha, ascendant, rise/set, equation of time, phenomena, 13000 BCE … 17000 CE (`scripts/gen_swe_golden.py`, `crates/ephemeris/tests/swe_golden.rs`) — once C is built without fused multiply-add (`.cargo/config.toml`: clang on Apple Silicon otherwise changes the last bits)
-- [ ] 4h. Next: thread `siddhanta=drik` / `ayanamsha=` through the engine, every memo key and the modules that branch on drik (unblocks `/meta/provenance`); `/og-image`
+- [x] 4h. `siddhanta=drik` threaded through the engine, every memo key and the modules that branch on it (see the Event engine section): day, month, year, at-time, gochar, kundali, rashifal, festivals, sait and the catalog answer from our own ephemeris when `PATRO_RS_EPHDATA` is set; `/meta/provenance` and `/og-image` answer. Eclipses are 501 under drik; `ayanamsha=` is still read and ignored.
 - [x] 5. Postgres (the account layer, `tokio-postgres`) and Redis (response cache, analytics counters)
-- [ ] 6. Kundali / jyotish, vastu, documents, cities, auth
-- [ ] 7. Swiss Ephemeris binding for drik
-- [ ] 4. First Panchanga endpoint, byte-compatible with production
+- [x] 6. Kundali / jyotish, vastu, documents, cities, auth
+- [x] 7. Swiss Ephemeris binding for drik (`crates/ephemeris`, kept for comparison; the server's drik uses our own `crates/ephdata`)
+- [x] 4. First Panchanga endpoint, byte-compatible with production
 - [ ] 5. Benchmark against FastAPI (where it runs is the owner's call)

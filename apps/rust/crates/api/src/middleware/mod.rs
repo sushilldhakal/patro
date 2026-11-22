@@ -13,6 +13,7 @@ mod identity_vary;
 mod load_shed;
 mod private_cache;
 pub mod response_cache;
+mod siddhanta_headers;
 mod versioned;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
@@ -31,6 +32,9 @@ pub fn apply(router: Router, timeout: Duration) -> Router {
         ))
         .layer(axum::middleware::from_fn(cpu_pool::cpu_pool))
         .layer(axum::middleware::from_fn(load_shed::load_shed))
+        .layer(axum::middleware::from_fn(
+            siddhanta_headers::siddhanta_headers,
+        ))
         .layer(axum::middleware::from_fn(response_cache::response_cache))
         .layer(axum::middleware::from_fn(cors::cors))
         .layer(TraceLayer::new_for_http())

@@ -7,6 +7,7 @@
 
 use std::fmt;
 
+use astronomy::System;
 use timescale::{CivilDay, Moment, Zone};
 
 use crate::sankranti::find_sankranti_after_jd;
@@ -87,8 +88,8 @@ fn opening_day(
     search_jd: f64,
     kathmandu: &Zone,
 ) -> Result<CivilDay, BsError> {
-    let sankranti =
-        find_sankranti_after_jd(bs_month - 1, search_jd, 45).ok_or(BsError::Sankranti {
+    let sankranti = find_sankranti_after_jd(System::SuryaSiddhanta, bs_month - 1, search_jd, 45)
+        .ok_or(BsError::Sankranti {
             year: bs_year,
             month: bs_month,
         })?;

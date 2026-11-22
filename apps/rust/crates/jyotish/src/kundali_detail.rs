@@ -1602,7 +1602,8 @@ pub fn assemble(inputs: &DetailInputs<'_>, panchanga: &Value) -> Result<Value, D
         zone,
         now,
     } = *inputs;
-    let snapshot = planetary_snapshot(instant, location.lat, location.lon);
+    let siddhanta = location.system;
+    let snapshot = planetary_snapshot(siddhanta, instant, location.lat, location.lon);
     let lagna_lon = snapshot["lagna"]["longitude"].as_f64().unwrap_or(0.0);
     let lagna_rashi = sign_of(lagna_lon) + 1;
     let raw: [RawPlanet; 9] = std::array::from_fn(|i| {
@@ -1681,7 +1682,7 @@ pub fn assemble(inputs: &DetailInputs<'_>, panchanga: &Value) -> Result<Value, D
         combustion.insert(g.key().into(), value);
     }
 
-    let saturn_rashi = gochar_table(now)
+    let saturn_rashi = gochar_table(siddhanta, now)
         .into_iter()
         .find(|(g, _)| *g == Graha::Saturn)
         .and_then(|(_, m)| m.get("rashi_no").and_then(Value::as_u64))
@@ -1720,7 +1721,7 @@ pub fn assemble(inputs: &DetailInputs<'_>, panchanga: &Value) -> Result<Value, D
         },
         "combustion": combustion,
         "lagnaRashi": lagna_rashi,
-        "ayanamsha": "surya_siddhanta",
+        "ayanamsha": if siddhanta.is_drik() { "lahiri" } else { "surya_siddhanta" },
         "location": location.as_json(),
         "birth_instant": local.to_string(),
     }))

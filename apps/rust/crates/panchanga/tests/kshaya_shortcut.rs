@@ -6,10 +6,10 @@ use panchanga::lunar_month::{kshaya_months_exhaustive, kshaya_searched};
 fn check(years: std::ops::RangeInclusive<i32>) -> Vec<(i32, Vec<String>)> {
     let mut found = Vec::new();
     for year in years {
-        let kshaya = kshaya_months_exhaustive(year);
+        let kshaya = kshaya_months_exhaustive(SS, year);
         if !kshaya.is_empty() {
             assert!(
-                kshaya_searched(year),
+                kshaya_searched(SS, year),
                 "{year}: kshaya {kshaya:?} but the shortcut skips it"
             );
             found.push((year, kshaya));
@@ -51,6 +51,7 @@ fn a_kshaya_month_drops_its_skipped_masas_festivals() {
     use timescale::Zone;
 
     let kathmandu = Observer {
+        system: astronomy::System::SuryaSiddhanta,
         latitude: 27.7172,
         longitude: 85.324,
         zone: Zone::kathmandu(),
@@ -73,3 +74,5 @@ fn a_kshaya_month_drops_its_skipped_masas_festivals() {
         "the kept masa keeps its festivals"
     );
 }
+
+const SS: astronomy::System = astronomy::System::SuryaSiddhanta;

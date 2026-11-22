@@ -3,6 +3,7 @@
 use std::path::Path;
 
 use astronomy::{
+    System,
     engine::{moon_longitude, rise_set_after},
     surya_siddhanta::{Body, Crossing},
 };
@@ -514,9 +515,9 @@ pub fn element_spans(
 
 /// The span searches of one element, for one instant kind.
 struct SpanFns<I> {
-    current: fn(I) -> SpanNow,
-    start_of: Option<fn(I) -> I>,
-    end_of: fn(I) -> I,
+    current: fn(System, I) -> SpanNow,
+    start_of: Option<fn(System, I) -> I>,
+    end_of: fn(System, I) -> I,
     lookback_hours: f64,
 }
 
@@ -570,17 +571,18 @@ fn span_rows<I: PyInstant>(
     let mut guard = 0_u32;
     while cursor < end && guard < 4000 {
         guard += 1;
-        let current = (fns.current)(cursor);
-        let mut seg_end = (fns.end_of)(cursor);
+        let system = location.system;
+        let current = (fns.current)(system, cursor);
+        let mut seg_end = (fns.end_of)(system, cursor);
         if seg_end <= cursor {
             seg_end = cursor.add_hours(1);
         }
         let seg_start = if let Some(end) = prev_end {
             end
         } else if let Some(start_of) = fns.start_of {
-            start_of(cursor)
+            start_of(system, cursor)
         } else {
-            find_start_generic(cursor, fns.current, fns.lookback_hours)
+            find_start_generic(system, cursor, fns.current, fns.lookback_hours)
         };
         let mut span = Map::new();
         span.insert("number".to_owned(), Value::from(current.number));
@@ -726,9 +728,9 @@ struct ElementSpec {
     label_ne: &'static str,
     label_en: &'static str,
     kind: ElementKind,
-    current: fn(UtcInstant) -> SpanNow,
-    start_of: Option<fn(UtcInstant) -> UtcInstant>,
-    end_of: fn(UtcInstant) -> UtcInstant,
+    current: fn(System, UtcInstant) -> SpanNow,
+    start_of: Option<fn(System, UtcInstant) -> UtcInstant>,
+    end_of: fn(System, UtcInstant) -> UtcInstant,
     lookback_hours: f64,
     extract_fn: Option<fn(&Value) -> Value>,
 }
@@ -951,8 +953,8 @@ fn extract_pushkara(raw: &Value) -> Value {
     Value::Array(out)
 }
 
-fn tithi_current<I: PyInstant>(at: I) -> SpanNow {
-    let t = tithi(at.to_jd());
+fn tithi_current<I: PyInstant>(system: System, at: I) -> SpanNow {
+    let t = tithi(system, at.to_jd());
     let mut extra = Map::new();
     extra.insert(
         "paksha".to_owned(),
@@ -974,8 +976,8 @@ fn tithi_current<I: PyInstant>(at: I) -> SpanNow {
     }
 }
 
-fn nakshatra_current<I: PyInstant>(at: I) -> SpanNow {
-    let n = nakshatra(at.to_jd());
+fn nakshatra_current<I: PyInstant>(system: System, at: I) -> SpanNow {
+    let n = nakshatra(system, at.to_jd());
     let mut extra = Map::new();
     extra.insert("progress".to_owned(), Value::from(py_round(n.progress, 4)));
     let idx = usize::try_from(n.number - 1).unwrap_or(0);
@@ -987,8 +989,8 @@ fn nakshatra_current<I: PyInstant>(at: I) -> SpanNow {
     }
 }
 
-fn yoga_current<I: PyInstant>(at: I) -> SpanNow {
-    let y = yoga(at.to_jd());
+fn yoga_current<I: PyInstant>(system: System, at: I) -> SpanNow {
+    let y = yoga(system, at.to_jd());
     let mut extra = Map::new();
     extra.insert("progress".to_owned(), Value::from(py_round(y.progress, 4)));
     let idx = usize::try_from(y.number - 1).unwrap_or(0);
@@ -1000,8 +1002,8 @@ fn yoga_current<I: PyInstant>(at: I) -> SpanNow {
     }
 }
 
-fn karana_current<I: PyInstant>(at: I) -> SpanNow {
-    let k = karana(at.to_jd());
+fn karana_current<I: PyInstant>(system: System, at: I) -> SpanNow {
+    let k = karana(system, at.to_jd());
     let name = k.name();
     let idx = KARANA_NAMES.iter().position(|n| *n == name).unwrap_or(0);
     SpanNow {
@@ -1012,12 +1014,12 @@ fn karana_current<I: PyInstant>(at: I) -> SpanNow {
     }
 }
 
-fn chandra_rashi_current<I: PyInstant>(at: I) -> SpanNow {
+fn chandra_rashi_current<I: PyInstant>(system: System, at: I) -> SpanNow {
     #[expect(
         clippy::cast_possible_truncation,
         reason = "rashi index is 0..11 from a truncated longitude"
     )]
-    let index = ((moon_longitude(at.to_jd()) / 30.0).trunc() as i64).rem_euclid(12);
+    let index = ((moon_longitude(system, at.to_jd()) / 30.0).trunc() as i64).rem_euclid(12);
     let idx = usize::try_from(index).unwrap_or(0);
     SpanNow {
         number: u32::try_from(idx + 1).unwrap_or(1),
@@ -1028,23 +1030,24 @@ fn chandra_rashi_current<I: PyInstant>(at: I) -> SpanNow {
 }
 
 fn find_start_generic<I: PyInstant>(
+    system: System,
     cursor: I,
-    current: fn(I) -> SpanNow,
+    current: fn(System, I) -> SpanNow,
     lookback_hours: f64,
 ) -> I {
-    let target = current(cursor).number;
+    let target = current(system, cursor).number;
     #[expect(
         clippy::cast_possible_truncation,
         reason = "lookback hours convert to whole seconds for the search window"
     )]
     let mut low = cursor.add_seconds(-((lookback_hours * 3600.0) as i64));
-    if current(low).number == target {
+    if current(system, low).number == target {
         return low;
     }
     let mut high = cursor;
     for _ in 0..48 {
         let mid = I::midpoint(low, high);
-        if current(mid).number == target {
+        if current(system, mid).number == target {
             high = mid;
         } else {
             low = mid;

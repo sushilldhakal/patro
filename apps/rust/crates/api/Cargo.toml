@@ -10,6 +10,7 @@ publish.workspace = true
 accounts.workspace = true
 jiff.workspace = true
 astronomy.workspace = true
+ephdata.workspace = true
 axum.workspace = true
 calendar.workspace = true
 common.workspace = true

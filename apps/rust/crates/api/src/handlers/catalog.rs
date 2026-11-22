@@ -69,8 +69,8 @@ fn handle(error: CatalogError) -> Response {
     }
 }
 
-fn gate(q: &Query) -> Option<Response> {
-    era_error(q).or_else(|| siddhanta_error(q))
+fn gate(state: &AppState, q: &Query) -> Option<Response> {
+    era_error(q).or_else(|| siddhanta_error(state, q))
 }
 
 /// `GET /v1/cities/search`.
@@ -79,7 +79,7 @@ pub async fn cities_search(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -104,7 +104,7 @@ pub async fn cities_nearest(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -131,7 +131,7 @@ pub async fn cities_popular(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -142,8 +142,12 @@ pub async fn cities_popular(
 }
 
 /// `GET /meta/capabilities`.
-pub async fn meta_capabilities(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(resp) = gate(&q) {
+pub async fn meta_capabilities(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -159,8 +163,12 @@ pub async fn meta_capabilities(AxumQuery(q): AxumQuery<Query>, headers: HeaderMa
 }
 
 /// `GET /about`.
-pub async fn about(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(resp) = gate(&q) {
+pub async fn about(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -169,8 +177,12 @@ pub async fn about(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Respon
 }
 
 /// `GET /v1/panchanga/elements`.
-pub async fn panchanga_elements(AxumQuery(q): AxumQuery<Query>, headers: HeaderMap) -> Response {
-    if let Some(resp) = gate(&q) {
+pub async fn panchanga_elements(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -185,7 +197,7 @@ pub async fn panchanga_element_day(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -207,7 +219,7 @@ pub async fn panchanga_element_spans(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -254,7 +266,7 @@ pub async fn panchanga_element_month(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -274,7 +286,7 @@ pub async fn documents_list(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -292,7 +304,7 @@ pub async fn document_detail(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -310,7 +322,7 @@ pub async fn document_chapter_detail(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let direction = q.get("direction").map_or("next", String::as_str);
@@ -348,7 +360,7 @@ pub async fn veda_details(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let Some(value) = q.get("value").map(String::as_str).filter(|v| !v.is_empty()) else {
@@ -385,7 +397,7 @@ pub async fn veda_detail_values(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();
@@ -402,7 +414,7 @@ pub async fn veda_daily(
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
 ) -> Response {
-    if let Some(resp) = gate(&q) {
+    if let Some(resp) = gate(&state, &q) {
         return resp;
     }
     let started = Instant::now();

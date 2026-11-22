@@ -1,7 +1,10 @@
 //! The day a festival rule falls on in a Gregorian year (`festival_rules.py`).
 
-use astronomy::engine::{Observer, rise_set_on_day};
 use astronomy::surya_siddhanta::{Body, Crossing};
+use astronomy::{
+    System,
+    engine::{Observer, rise_set_on_day},
+};
 use calendar::{BsDate, bs_to_civil, find_sankranti_after_jd};
 use panchanga::{
     Paksha,
@@ -70,7 +73,7 @@ fn solar(rule: &Map<String, Value>, gregorian_year: i32) -> Option<CivilDay> {
     }
     // Outside the month grid: the astronomical sankranti's Kathmandu day.
     let jan1 = CivilDay::new(gregorian_year, 1, 1).to_jd_ut();
-    let sankranti = find_sankranti_after_jd(bs_month - 1, jan1, 40)?;
+    let sankranti = find_sankranti_after_jd(System::SuryaSiddhanta, bs_month - 1, jan1, 40)?;
     let day = Zone::kathmandu().local_day(Moment::from_jd(sankranti));
     Some(day.add_days(i32::try_from(solar_day - 1).ok()?))
 }
@@ -111,7 +114,7 @@ fn ayana(rule: &Map<String, Value>, gregorian_year: i32, observer: &Observer) ->
     let mut jd = UtcInstant::from_utc(guess_day, 12, 0, 0, 0)?.to_jd();
     let sun_deg_per_day = 360.0 / 365.2422;
     for _ in 0..16 {
-        jd -= signed_diff(tropical_sun_longitude(jd) - target) / sun_deg_per_day;
+        jd -= signed_diff(tropical_sun_longitude(observer.system, jd) - target) / sun_deg_per_day;
     }
     let day = observer.zone.local_day(Moment::from_jd(jd));
     match rise_set_on_day(Body::Sun, day, observer, Crossing::Rise)? {

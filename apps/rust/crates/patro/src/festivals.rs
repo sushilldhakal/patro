@@ -8,7 +8,7 @@ use std::{
     sync::LazyLock,
 };
 
-use astronomy::engine::sun_longitude;
+use astronomy::{System, engine::sun_longitude};
 use calendar::{civil_to_bs, month_length, month_start};
 use festivals::{festival_location, festivals_for_day, generate_bs_festivals};
 use panchanga::{
@@ -918,14 +918,19 @@ fn nepali_digits(number: i32) -> String {
     clippy::cast_sign_loss,
     reason = "longitude / 30 is in [0, 12]"
 )]
-fn sun_rashi_at_time(at: UtcInstant) -> u32 {
-    (sun_longitude(at.to_jd()) / 30.0) as u32 % 12
+fn sun_rashi_at_time(system: System, at: UtcInstant) -> u32 {
+    (sun_longitude(system, at.to_jd()) / 30.0) as u32 % 12
 }
 
 /// The Sun's entry into `target_rashi` near `after`, as the first second the Sun is
 /// in it (see [`calendar::find_sankranti_after_jd`]).
-fn find_sankranti(target_rashi: u32, after: UtcInstant, max_days: u32) -> Option<UtcInstant> {
-    let jd = calendar::find_sankranti_after_jd(target_rashi, after.to_jd(), max_days)?;
+fn find_sankranti(
+    system: System,
+    target_rashi: u32,
+    after: UtcInstant,
+    max_days: u32,
+) -> Option<UtcInstant> {
+    let jd = calendar::find_sankranti_after_jd(system, target_rashi, after.to_jd(), max_days)?;
     timescale::PyInstant::at_boundary(after, jd)
 }
 
@@ -983,7 +988,11 @@ fn sankranti_entry(at: UtcInstant, to_rashi: u32, timezone: &Zone) -> Option<Val
     }))
 }
 
-fn list_sankrantis_for_year(ad_year: i32, timezone: &Zone) -> Result<Vec<Value>, String> {
+fn list_sankrantis_for_year(
+    system: System,
+    ad_year: i32,
+    timezone: &Zone,
+) -> Result<Vec<Value>, String> {
     let Some(start) = UtcInstant::from_utc(CivilDay::new(ad_year, 1, 1), 0, 0, 0, 0) else {
         return Err(format!("year {ad_year} is out of range"));
     };
@@ -993,9 +1002,9 @@ fn list_sankrantis_for_year(ad_year: i32, timezone: &Zone) -> Result<Vec<Value>,
     let mut rows = Vec::new();
     let mut cursor = start;
     while cursor <= end {
-        let current = sun_rashi_at_time(cursor);
+        let current = sun_rashi_at_time(system, cursor);
         let next = (current + 1) % 12;
-        let Some(found) = find_sankranti(next, cursor, 45) else {
+        let Some(found) = find_sankranti(system, next, cursor, 45) else {
             break;
         };
         if found > end {
@@ -1017,7 +1026,8 @@ fn list_sankrantis_for_year(ad_year: i32, timezone: &Zone) -> Result<Vec<Value>,
 ///
 /// Returns a 400 detail string when the Gregorian year cannot be represented.
 pub fn sankranti_year_payload(ad_year: i32, location: &Location) -> Result<Value, String> {
-    let sankrantis = list_sankrantis_for_year(ad_year, &location.zone)?;
+    let system = location.system;
+    let sankrantis = list_sankrantis_for_year(system, ad_year, &location.zone)?;
     Ok(json!({
         "ad_year": ad_year,
         "count": sankrantis.len(),
@@ -1027,23 +1037,30 @@ pub fn sankranti_year_payload(ad_year: i32, location: &Location) -> Result<Value
     }))
 }
 
-/// `sankrantis_on_date(target, timezone_name=…)`: ingresses within a day of `target`.
+/// `sankrantis_on_date(system, target, timezone_name=…)`: ingresses within a day of `target`.
 ///
 /// # Errors
 ///
 /// The year scan's error text.
-pub fn sankrantis_on_date(target: CivilDay, timezone: &Zone) -> Result<Vec<Value>, String> {
+pub fn sankrantis_on_date(
+    system: System,
+    target: CivilDay,
+    timezone: &Zone,
+) -> Result<Vec<Value>, String> {
     let Some(day_start) = UtcInstant::from_utc(target, 0, 0, 0, 0) else {
         return Err(format!("invalid date {target}"));
     };
     let window_start = day_start.add_hours(-24).to_jd();
     let window_end = day_start.add_hours(48).to_jd();
-    let mut events = list_sankrantis_for_year(target.year, timezone)?;
+    let mut events = list_sankrantis_for_year(system, target.year, timezone)?;
     if target.month == 1 {
-        events.splice(0..0, list_sankrantis_for_year(target.year - 1, timezone)?);
+        events.splice(
+            0..0,
+            list_sankrantis_for_year(system, target.year - 1, timezone)?,
+        );
     }
     if target.month == 12 {
-        events.extend(list_sankrantis_for_year(target.year + 1, timezone)?);
+        events.extend(list_sankrantis_for_year(system, target.year + 1, timezone)?);
     }
     let mut seen: HashSet<String> = HashSet::new();
     let mut matched = Vec::new();
@@ -1077,9 +1094,10 @@ pub fn sankranti_day_payload(
     era: &str,
     location: &Location,
 ) -> Result<Value, String> {
+    let system = location.system;
     let greg = gregorian_day_for_date_key(date_key, era)?;
     let bs = civil_to_bs(greg).map_err(|e| e.to_string())?;
-    let events = sankrantis_on_date(greg, &location.zone)?;
+    let events = sankrantis_on_date(system, greg, &location.zone)?;
     Ok(json!({
         "date_ad": greg.to_string(),
         "date_bs": format!("{}-{:02}-{:02}", bs.year, bs.month, bs.day),

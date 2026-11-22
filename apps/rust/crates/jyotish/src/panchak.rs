@@ -28,9 +28,9 @@ fn entry_flat(kind: Kind) -> i64 {
 }
 
 /// The next Moon pada ingress landing on `flat` after `cursor` (120 tries).
-fn next_landing<I: PyInstant>(mut cursor: I, flat: i64) -> Option<I> {
+fn next_landing<I: PyInstant>(siddhanta: astronomy::System, mut cursor: I, flat: i64) -> Option<I> {
     for _ in 0..120 {
-        let entry = next_pada_entry(Graha::Moon, cursor)?;
+        let entry = next_pada_entry(siddhanta, Graha::Moon, cursor)?;
         let at = entry.printed_at();
         if entry_flat(entry.kind) == flat {
             return Some(at);
@@ -41,11 +41,11 @@ fn next_landing<I: PyInstant>(mut cursor: I, flat: i64) -> Option<I> {
 }
 
 /// `_find_open_start`: the last Panchak start before `before` (7-day look-back).
-fn open_start<I: PyInstant>(before: I) -> Option<I> {
+fn open_start<I: PyInstant>(siddhanta: astronomy::System, before: I) -> Option<I> {
     let mut cursor = before.add_seconds(-7 * DAY);
     let mut last = None;
     while cursor < before {
-        let Some(entry) = next_pada_entry(Graha::Moon, cursor) else {
+        let Some(entry) = next_pada_entry(siddhanta, Graha::Moon, cursor) else {
             break;
         };
         let at = entry.printed_at();
@@ -79,27 +79,28 @@ fn periods<I: PyInstant>(
     bounds: (I, I),
     location: &Location,
 ) -> Vec<(I, I)> {
+    let siddhanta = location.system;
     let (s0, e0) = bounds;
     let search_start = s0.add_seconds(-7 * DAY);
     let search_end = e0.add_seconds(7 * DAY);
     let mut cursor = search_start;
     let mut raw = Vec::new();
-    if pada_flat(Graha::Moon, cursor) >= START_FLAT
-        && let Some(open) = open_start(cursor)
-        && let Some(close) = next_landing(open.add_seconds(30), END_FLAT)
+    if pada_flat(siddhanta, Graha::Moon, cursor) >= START_FLAT
+        && let Some(open) = open_start(siddhanta, cursor)
+        && let Some(close) = next_landing(siddhanta, open.add_seconds(30), END_FLAT)
         && close <= search_end
     {
         raw.push((open, close));
         cursor = close.add_seconds(30);
     }
     while cursor < search_end {
-        let Some(s) = next_landing(cursor, START_FLAT) else {
+        let Some(s) = next_landing(siddhanta, cursor, START_FLAT) else {
             break;
         };
         if s > search_end {
             break;
         }
-        let Some(e) = next_landing(s.add_seconds(30), END_FLAT) else {
+        let Some(e) = next_landing(siddhanta, s.add_seconds(30), END_FLAT) else {
             break;
         };
         raw.push((s, e));

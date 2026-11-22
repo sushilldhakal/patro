@@ -20,10 +20,11 @@ static GREGORIAN_FESTIVALS: LazyLock<Memo<Key, FestivalList>> =
 /// `ObserverLocation.cache_key()` of the festival location.
 fn location_key(location: &Location) -> String {
     format!(
-        "{:.4}_{:.4}_{}",
+        "{:.4}_{:.4}_{}_{}",
         location.lat,
         location.lon,
-        location.zone.name()
+        location.zone.name(),
+        location.system.key()
     )
 }
 

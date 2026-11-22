@@ -7,7 +7,10 @@
 
 use timescale::{CivilDay, Moment, UtcInstant, Zone};
 
-use crate::surya_siddhanta::{Body, Crossing, next_rise_or_set, true_position};
+use crate::{
+    System,
+    surya_siddhanta::{Body, Crossing},
+};
 
 /// Python's float `%` for a positive divisor, as the engine applies it to longitudes.
 fn wrap360(deg: f64) -> f64 {
@@ -23,35 +26,35 @@ fn wrap360(deg: f64) -> f64 {
 
 /// Sidereal longitude (degrees, [0, 360)) of a body, as `EngineBase._calc` returns it.
 #[must_use]
-pub fn longitude(body: Body, jd_ut: f64) -> f64 {
-    wrap360(true_position(body, jd_ut).0)
+pub fn longitude(system: System, body: Body, jd_ut: f64) -> f64 {
+    wrap360(system.true_position(body, jd_ut).0)
 }
 
 /// Sidereal longitude of the Sun.
 #[must_use]
-pub fn sun_longitude(jd_ut: f64) -> f64 {
-    longitude(Body::Sun, jd_ut)
+pub fn sun_longitude(system: System, jd_ut: f64) -> f64 {
+    longitude(system, Body::Sun, jd_ut)
 }
 
 /// Sidereal longitude of the Moon.
 #[must_use]
-pub fn moon_longitude(jd_ut: f64) -> f64 {
-    longitude(Body::Moon, jd_ut)
+pub fn moon_longitude(system: System, jd_ut: f64) -> f64 {
+    longitude(system, Body::Moon, jd_ut)
 }
 
 /// (Sun, Moon) sidereal longitudes at one instant.
 #[must_use]
-pub fn sun_moon_longitudes(jd_ut: f64) -> (f64, f64) {
-    (sun_longitude(jd_ut), moon_longitude(jd_ut))
+pub fn sun_moon_longitudes(system: System, jd_ut: f64) -> (f64, f64) {
+    (sun_longitude(system, jd_ut), moon_longitude(system, jd_ut))
 }
 
 /// The Moon's phase angle and lit fraction, from the text's own Sun and Moon
 /// (`SuryaSiddhantaEngine.phenomena`): phase angle = 180° − elongation, lit part
 /// (1 − cos e) / 2.
 #[must_use]
-pub fn moon_phase_angle_and_fraction(jd_ut: f64) -> (f64, f64) {
-    let sun = true_position(Body::Sun, jd_ut).0;
-    let moon = true_position(Body::Moon, jd_ut).0;
+pub fn moon_phase_angle_and_fraction(system: System, jd_ut: f64) -> (f64, f64) {
+    let sun = system.true_position(Body::Sun, jd_ut).0;
+    let moon = system.true_position(Body::Moon, jd_ut).0;
     let d = wrap360(moon - sun);
     let elongation = (if d > 180.0 { d - 360.0 } else { d }).abs();
     (
@@ -63,6 +66,8 @@ pub fn moon_phase_angle_and_fraction(jd_ut: f64) -> (f64, f64) {
 /// Where an observer stands: latitude and longitude in degrees, and their time zone.
 #[derive(Debug, Clone)]
 pub struct Observer {
+    /// The siddhanta that answers for this observer.
+    pub system: System,
     /// Degrees north.
     pub latitude: f64,
     /// Degrees east.
@@ -119,15 +124,16 @@ pub fn rise_set_on_day(
         &observer.zone
     };
     let jd_start = local_midnight_jd(day, zone);
-    next_rise_or_set(
-        body,
-        jd_start,
-        observer.latitude,
-        observer.longitude,
-        crossing,
-        0.0,
-    )
-    .map(Moment::from_jd)
+    observer
+        .system
+        .next_rise_or_set(
+            body,
+            jd_start,
+            observer.latitude,
+            observer.longitude,
+            crossing,
+        )
+        .map(Moment::from_jd)
 }
 
 /// The first rise or set of `body` at or after an instant (the panchanga day boundary).
@@ -138,15 +144,16 @@ pub fn rise_set_after(
     observer: &Observer,
     crossing: Crossing,
 ) -> Option<Moment> {
-    next_rise_or_set(
-        body,
-        after.to_jd(),
-        observer.latitude,
-        observer.longitude,
-        crossing,
-        0.0,
-    )
-    .map(Moment::from_jd)
+    observer
+        .system
+        .next_rise_or_set(
+            body,
+            after.to_jd(),
+            observer.latitude,
+            observer.longitude,
+            crossing,
+        )
+        .map(Moment::from_jd)
 }
 
 /// Sunrise on the civil day holding `jd_ut` (`SunService.sunrise`).
