@@ -645,7 +645,7 @@ function WheelChartImpl({
       const [x3, y3] = pol(L1, r0);
       const [x4, y4] = pol(L0, r0);
       const large = L1 - L0 > 180 ? 1 : 0;
-      return `M${x1},${y1} A${r1},${r1} 0 ${large} 0 ${x2},${y2} L${x3},${y3} A${r0},${r0} 0 ${large} 1 ${x4},${y4} Z`;
+      return `M${c2(x1)},${c2(y1)} A${r1},${r1} 0 ${large} 0 ${c2(x2)},${c2(y2)} L${c2(x3)},${c2(y3)} A${r0},${r0} 0 ${large} 1 ${c2(x4)},${c2(y4)} Z`;
     },
     [pol],
   );
@@ -653,7 +653,7 @@ function WheelChartImpl({
   const { moonLon, planetLons, sunLon } = markers;
 
   const staticLayers = useMemo(() => {
-    const nakSegs: ReactNode[] = [];
+    const nakFills = new Map<string, string[]>();
     const nakDecor: ReactNode[] = [];
     for (let i = 0; i < 27; i++) {
       const L0 = i * (360 / 27);
@@ -662,15 +662,7 @@ function WheelChartImpl({
       const ico = NAKSHATRA_ICONS[i]!;
       const isHot = hover?.type === "nak" && hover.i === i;
       const isSel = sel?.type === "nak" && sel.i === i;
-      nakSegs.push(
-        <Path
-          key={`ns${i}`}
-          d={arcSeg(L0, L1, R.nakIn, R.nakOut)}
-          fill={segNakFill({ alt: i % 2 === 1, hot: isHot, sel: isSel })}
-          stroke={W_SEP_SOFT}
-          strokeWidth={0.6}
-        />,
-      );
+      addTo(nakFills, segNakFill({ alt: i % 2 === 1, hot: isHot, sel: isSel }), arcSeg(L0, L1, R.nakIn, R.nakOut));
       // The name used to sit alone at the band's midpoint; it moves in to
       // R.nakName so the glyph can take R.nakIcon, the slot already reserved for
       // it out near the rim. Both stay — the icon reads at a glance, the name is
@@ -697,7 +689,8 @@ function WheelChartImpl({
       );
     }
 
-    const rashiSegs: ReactNode[] = [];
+    const nakSegs = mergedPaths("ns", nakFills, W_SEP_SOFT, 0.6);
+    const rashiFills = new Map<string, string[]>();
     const rashiDecor: ReactNode[] = [];
     for (let i = 0; i < 12; i++) {
       const L0 = i * 30;
@@ -706,15 +699,7 @@ function WheelChartImpl({
       const rs = getWheelRashis()[i]!;
       const isHot = hover?.type === "rashi" && hover.i === i;
       const isSel = sel?.type === "rashi" && sel.i === i;
-      rashiSegs.push(
-        <Path
-          key={`rs${i}`}
-          d={arcSeg(L0, L1, R.rashiIn, R.rashiOut)}
-          fill={segRashiFill({ alt: i % 2 === 1, hot: isHot, sel: isSel })}
-          stroke={W_SEP_SOFT}
-          strokeWidth={0.6}
-        />,
-      );
+      addTo(rashiFills, segRashiFill({ alt: i % 2 === 1, hot: isHot, sel: isSel }), arcSeg(L0, L1, R.rashiIn, R.rashiOut));
       const [gx, gy] = pol(Lm, R.rashiGlyph);
       rashiDecor.push(
         <G key={`rd${i}`}>
@@ -736,36 +721,32 @@ function WheelChartImpl({
       );
     }
 
+    const rashiSegs = mergedPaths("rs", rashiFills, W_SEP_SOFT, 0.6);
     const padaCells: ReactNode[] = [];
     if (tw.show_pada) {
+      const padaFills = new Map<string, string[]>();
+      const padaLabels: ReactNode[] = [];
       for (let i = 0; i < 108; i++) {
         const L0 = i * (360 / 108);
         const L1 = (i + 1) * (360 / 108);
         const Lm = (L0 + L1) / 2;
-        padaCells.push(
-          <G key={`pc${i}`}>
-            <Path
-              d={arcSeg(L0, L1, R.padaIn, R.padaOut)}
-              fill={Math.floor(i / 4) % 2 === 1 ? W_PADA_ALT : W_PADA}
-              stroke={W_SEP_SOFT}
-              strokeWidth={0.4}
-            />
-            <RingLabel L={Lm} r={R.padaNum} spin={spin} fill={W_INK_DIM}>
-              {PADA_AKSHAR[Math.floor(i / 4)]![i % 4]}
-            </RingLabel>
-          </G>,
+        addTo(padaFills, Math.floor(i / 4) % 2 === 1 ? W_PADA_ALT : W_PADA, arcSeg(L0, L1, R.padaIn, R.padaOut));
+        padaLabels.push(
+          <RingLabel key={`pc${i}`} L={Lm} r={R.padaNum} spin={spin} fill={W_INK_DIM}>
+            {PADA_AKSHAR[Math.floor(i / 4)]![i % 4]}
+          </RingLabel>,
         );
       }
+      padaCells.push(...mergedPaths("pc", padaFills, W_SEP_SOFT, 0.4), ...padaLabels);
     }
 
-    const rashiRays: ReactNode[] = [];
+    let rays = "";
     for (let i = 0; i < 12; i++) {
       const [x1, y1] = pol(i * 30, 12);
       const [x2, y2] = pol(i * 30, R.rimOuter - 2);
-      rashiRays.push(
-        <Line key={`ray${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={W_SEP_SOFT} strokeWidth={0.9} opacity={0.9} />,
-      );
+      rays += segment(x1, y1, x2, y2);
     }
+    const rashiRays: ReactNode[] = [<Path key="rays" d={rays} fill="none" stroke={W_SEP_SOFT} strokeWidth={0.9} opacity={0.9} />];
 
     const gregLabels: ReactNode[] = tw.show_greg
       ? gregMonths.map((label, i) => (
@@ -1105,20 +1086,13 @@ function WheelChartImpl({
   const selectedDeg = tw.show_today ? normDeg(planetLons[lineTarget] ?? moonLon) : null;
   const degreeRing = useMemo(() => {
     const nodes: ReactNode[] = [];
+    let majorTicks = "";
+    let minorTicks = "";
     for (const { deg, major, labelled } of wheelDegreeMarks(degreeStep, numberEvery1)) {
       const [x1, y1] = pol(deg, R.bsOut - 1);
       const [x2, y2] = pol(deg, R.bsOut - (major ? 8 : labelled ? 6 : 4.5));
-      nodes.push(
-        <Line
-          key={`dgt${deg}`}
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
-          stroke={major ? W_INK_DIM : W_INK_FAINT}
-          strokeWidth={major ? 1.1 : 0.7}
-        />,
-      );
+      if (major) majorTicks += segment(x1, y1, x2, y2);
+      else minorTicks += segment(x1, y1, x2, y2);
       if (!labelled || !wheelDegreeClearsReadout(deg, selectedDeg)) continue;
       nodes.push(
         <RingLabel key={`dgn${deg}`} L={deg} r={R.degNum - 1.5} spin={spin} fill={W_INK_DIM} size={wheelDegreeNumberSize(degreeStep)}>
@@ -1126,6 +1100,8 @@ function WheelChartImpl({
         </RingLabel>,
       );
     }
+    if (minorTicks) nodes.unshift(<Path key="dgt-minor" d={minorTicks} fill="none" stroke={W_INK_FAINT} strokeWidth={0.7} />);
+    if (majorTicks) nodes.unshift(<Path key="dgt-major" d={majorTicks} fill="none" stroke={W_INK_DIM} strokeWidth={1.1} />);
     if (selectedDeg != null) {
       const [x1, y1] = pol(selectedDeg, R.bsIn);
       const [x2, y2] = pol(selectedDeg, R.bsOut);
@@ -1250,6 +1226,35 @@ function WheelChartImpl({
 }
 
 const WHEEL_LAYER = StyleSheet.absoluteFill;
+
+/*
+ * On Android every react-native-svg element is a native View, measured, laid out and drawn on the
+ * main thread; the wheel's ~900 of them made low-end phones miss frames and hit ANRs when the
+ * panchanga page mounted or redrew (Sentry PATRO-W, PATRO-R, PATRO-P). Shapes that share their paint
+ * are drawn as one path with many sub-paths: the same pixels, a few hundred fewer views.
+ */
+function addTo(buckets: Map<string, string[]>, key: string, d: string): void {
+  const list = buckets.get(key);
+  if (list) list.push(d);
+  else buckets.set(key, [d]);
+}
+
+/** One <Path> per fill, in first-seen order, each holding every segment painted that colour. */
+function mergedPaths(prefix: string, buckets: Map<string, string[]>, stroke: string, strokeWidth: number): ReactNode[] {
+  return [...buckets].map(([fill, ds]) => (
+    <Path key={`${prefix}-${fill}`} d={ds.join(" ")} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+  ));
+}
+
+/** A straight segment as a sub-path ("M x1,y1 L x2,y2"). */
+function segment(x1: number, y1: number, x2: number, y2: number): string {
+  return `M${c2(x1)},${c2(y1)} L${c2(x2)},${c2(y2)} `;
+}
+
+/** A coordinate to 0.01 of a wheel unit: invisible at any zoom, and far shorter strings to parse. */
+function c2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
 
 function WheelChartBound(props: WheelChartProps) {
   return (

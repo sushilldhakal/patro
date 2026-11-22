@@ -12,8 +12,26 @@ const AUTO_UPDATE_CHANNELS = new Set(["preview", "production"]);
 const MIN_CHECK_GAP_MS = 30_000;
 /** How long the launch splash waits for a newer update before the app shows anyway. */
 const LAUNCH_BUDGET_MS = 4_000;
+/**
+ * How long the app must have been back in the foreground before a downloaded update reloads it.
+ * Android 12+ hands its splash surface to the app on the first draws after the activity resumes
+ * (or is recreated after the system dropped it); reloading inside that window released the surface
+ * under the hand-off and crashed (Sentry PATRO-Z, NullPointerException in
+ * syncTransferSplashscreenViewTransaction), or froze the first frame (PATRO-W).
+ */
+const FOREGROUND_SETTLE_MS = 2_500;
 
 const isAutoUpdating = () => !__DEV__ && Updates.isEnabled && AUTO_UPDATE_CHANNELS.has(Updates.channel ?? "");
+
+/**
+ * Runtimes whose binaries carry react-native-worklets 0.13. Reloading the app in place there tears
+ * down the JS runtime while worklets still hold values in it, and the app crashes freeing them
+ * (Sentry PATRO-N: EXC_BAD_ACCESS in RetainingSerializableStore right after "Restarting for
+ * update"; fixed upstream in worklets 0.14, which needs a new store build). On these runtimes an
+ * update is still downloaded, and opens on the next launch instead of reloading the running app.
+ */
+const RELOAD_UNSAFE_RUNTIMES = new Set(["1.2.2", "1.2.3"]);
+const canReloadInPlace = () => !RELOAD_UNSAFE_RUNTIMES.has(Updates.runtimeVersion ?? "");
 
 /**
  * Store and TestFlight builds: open a published update without waiting for two cold launches.
@@ -28,7 +46,8 @@ const isAutoUpdating = () => !__DEV__ && Updates.isEnabled && AUTO_UPDATE_CHANNE
  * update is downloaded and opened at once — the reader has only just returned, so nothing is lost.
  */
 export function useAutoUpdate(): boolean {
-  const [settled, setSettled] = useState(() => !isAutoUpdating());
+  // Without an in-place reload there is nothing for the splash to wait for.
+  const [settled, setSettled] = useState(() => !isAutoUpdating() || !canReloadInPlace());
 
   useEffect(() => {
     if (!isAutoUpdating()) return;
@@ -36,11 +55,13 @@ export function useAutoUpdate(): boolean {
     let lastCheck = 0;
     let busy = false;
     let launching = true;
+    /** When the app last became active; a newer value means it left and came back meanwhile. */
+    let activeSince = Date.now();
     const settle = () => {
       launching = false;
       setSettled(true);
     };
-    const budget = setTimeout(settle, LAUNCH_BUDGET_MS);
+    const budget = setTimeout(settle, canReloadInPlace() ? LAUNCH_BUDGET_MS : 0);
 
     const check = async (onForeground: boolean) => {
       const now = Date.now();
@@ -53,10 +74,18 @@ export function useAutoUpdate(): boolean {
         const fetched = await Updates.fetchUpdateAsync();
         // While the splash is up, or right as the reader returns to the app: open it now.
         // A launch download that ran past the splash budget opens on the next return or launch.
-        if (fetched.isNew && (launching || onForeground)) {
-          // The reloaded app keeps the splash's logo in place instead of replaying its entrance.
-          if (launching) markSplashReload();
-          await Updates.reloadAsync();
+        if (fetched.isNew && canReloadInPlace() && (launching || onForeground)) {
+          if (launching) {
+            // The reloaded app keeps the splash's logo in place instead of replaying its entrance.
+            markSplashReload();
+            await Updates.reloadAsync();
+          } else {
+            // Let the resumed activity finish its first draws (and the splash hand-off) first, and
+            // only reload if the reader is still here; otherwise it opens on the next launch.
+            const at = activeSince;
+            await new Promise((resolve) => setTimeout(resolve, Math.max(0, at + FOREGROUND_SETTLE_MS - Date.now())));
+            if (AppState.currentState === "active" && activeSince === at) await Updates.reloadAsync();
+          }
         }
       } catch {
         // Offline or the server is unreachable: keep running what is installed.
@@ -71,7 +100,10 @@ export function useAutoUpdate(): boolean {
 
     void check(false);
     const sub = AppState.addEventListener("change", (state) => {
-      if (state === "active") void check(true);
+      if (state === "active") {
+        activeSince = Date.now();
+        void check(true);
+      }
     });
     return () => {
       clearTimeout(budget);
